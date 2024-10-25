@@ -467,8 +467,8 @@ class DeleteVenueTest:
         venue = offerers_factories.CollectiveVenueFactory()
         template = educational_factories.CollectiveOfferTemplateFactory(venue=venue)
 
-        playlist = educational_factories.PlaylistFactory(venue=venue, collective_offer_template=template)
-        assert playlist.venue == venue
+        educational_factories.PlaylistFactory(venue=None, collective_offer_template=template)
+        educational_factories.PlaylistFactory(venue=venue, collective_offer_template=None)
 
         offerers_api.delete_venue(venue.id)
 
@@ -1210,6 +1210,24 @@ class DeleteOffererTest:
         # Then
         assert offerers_models.Offerer.query.count() == 0
         assert finance_models.BankAccount.query.count() == 0
+
+    def test_delete_cascade_offerer_should_remove_collective_templates_and_playlists(self):
+        # Given
+        venue = offerers_factories.CollectiveVenueFactory()
+        template = educational_factories.CollectiveOfferTemplateFactory(venue=venue)
+        educational_factories.EducationalRedactorWithFavoriteCollectiveOfferTemplate(
+            favoriteCollectiveOfferTemplates=[template]
+        )
+        educational_factories.PlaylistFactory(venue=venue, collective_offer_template=None)
+        educational_factories.PlaylistFactory(venue=None, collective_offer_template=template)
+
+        # When
+        offerers_api.delete_offerer(venue.managingOffererId)
+
+        # Then
+        assert offerers_models.Offerer.query.count() == 0
+        assert educational_models.CollectiveOfferTemplate.query.count() == 0
+        assert educational_models.CollectivePlaylist.query.count() == 0
 
 
 class SearchOffererTest:

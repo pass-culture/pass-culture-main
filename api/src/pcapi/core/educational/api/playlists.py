@@ -9,6 +9,7 @@ from pcapi.connectors.big_query.queries.base import BaseQuery
 from pcapi.core.educational import repository
 import pcapi.core.educational.api.institution as institution_api
 import pcapi.core.educational.models as educational_models
+from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 from pcapi.repository import transaction
 
@@ -24,6 +25,7 @@ class QueryCtx:
     query: type[BaseQuery]
     bq_attr_name: str
     local_attr_name: str
+    foreign_class: type
 
 
 QUERY_DESC = {
@@ -31,17 +33,25 @@ QUERY_DESC = {
         query=big_query.ClassroomPlaylistQuery,
         bq_attr_name="collective_offer_id",
         local_attr_name="collectiveOfferTemplateId",
+        foreign_class=educational_models.CollectiveOfferTemplate,
     ),
     educational_models.PlaylistType.NEW_OFFER: QueryCtx(
         query=big_query.NewTemplateOffersPlaylistQuery,
         bq_attr_name="collective_offer_id",
         local_attr_name="collectiveOfferTemplateId",
+        foreign_class=educational_models.CollectiveOfferTemplate,
     ),
     educational_models.PlaylistType.LOCAL_OFFERER: QueryCtx(
-        query=big_query.LocalOfferersQuery, bq_attr_name="venue_id", local_attr_name="venueId"
+        query=big_query.LocalOfferersQuery,
+        bq_attr_name="venue_id",
+        local_attr_name="venueId",
+        foreign_class=offerers_models.Venue,
     ),
     educational_models.PlaylistType.NEW_OFFERER: QueryCtx(
-        query=big_query.NewOffererQuery, bq_attr_name="venue_id", local_attr_name="venueId"
+        query=big_query.NewOffererQuery,
+        bq_attr_name="venue_id",
+        local_attr_name="venueId",
+        foreign_class=offerers_models.Venue,
     ),
 }
 
@@ -97,7 +107,17 @@ def synchronize_institution_playlist(
             educational_models.CollectivePlaylist.id.in_(playlist_ids_to_remove)
         ).delete()
     if playlist_items_to_add:
-        db.session.bulk_insert_mappings(educational_models.CollectivePlaylist, playlist_items_to_add)
+        # Ensure that objects added to playlist still exist before insertion
+        requested_foreign_ids = {item[ctx.local_attr_name] for item in playlist_items_to_add}
+        existing_foreign_ids = {
+            id_
+            for id_, in db.session.query(ctx.foreign_class.id).filter(ctx.foreign_class.id.in_(requested_foreign_ids))  # type: ignore[attr-defined]
+        }
+        playlist_items_to_really_add = filter(
+            lambda item: item[ctx.local_attr_name] in existing_foreign_ids,
+            playlist_items_to_add,
+        )
+        db.session.bulk_insert_mappings(educational_models.CollectivePlaylist, playlist_items_to_really_add)
     if playlist_items_to_update:
         db.session.bulk_update_mappings(educational_models.CollectivePlaylist, playlist_items_to_update)
 
