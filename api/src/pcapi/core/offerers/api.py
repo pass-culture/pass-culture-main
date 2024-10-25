@@ -2248,7 +2248,9 @@ def invite_member(offerer: models.Offerer, email: str, current_user: users_model
 def get_offerer_members(offerer: models.Offerer) -> list[tuple[str, OffererMemberStatus]]:
     users_offerers = (
         models.UserOfferer.query.filter(
-            models.UserOfferer.offererId == offerer.id, sa.not_(models.UserOfferer.isRejected)
+            models.UserOfferer.offererId == offerer.id,
+            sa.not_(models.UserOfferer.isRejected),
+            sa.not_(models.UserOfferer.isDeleted),
         )
         .options(sa.orm.joinedload(models.UserOfferer.user).load_only(users_models.User.email))
         .all()

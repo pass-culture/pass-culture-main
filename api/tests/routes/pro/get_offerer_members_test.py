@@ -20,6 +20,9 @@ class Returns200Test:
         offerers_factories.NotValidatedUserOffererFactory(
             offerer=offerer, validationStatus=ValidationStatus.REJECTED, user__email="rejected.pro@example.com"
         )
+        offerers_factories.NotValidatedUserOffererFactory(
+            offerer=offerer, validationStatus=ValidationStatus.DELETED, user__email="deleted.pro@example.com"
+        )
         offerers_factories.OffererInvitationFactory(email="invited.pro@example.com", user=pro, offerer=offerer)
         offerers_factories.OffererInvitationFactory(
             email="member.pro@example.com", user=pro, offerer=offerer, status=offerers_models.InvitationStatus.ACCEPTED
