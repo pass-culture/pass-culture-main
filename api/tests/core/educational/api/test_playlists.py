@@ -56,6 +56,11 @@ class SynchronizePlaylistsTest:
                     "collective_offer_id": str(offers[3].id),
                     "distance_in_km": updated_distance,
                 },
+                {
+                    "institution_id": str(institution.id),
+                    "collective_offer_id": str(offers[-1].id + 100),  # offer which does not exist: has been deleted
+                    "distance_in_km": updated_distance,
+                },
             ]
             playlist_api.synchronize_collective_playlist(playlist_type)
 
@@ -132,6 +137,11 @@ class SynchronizePlaylistsTest:
                     "institution_id": str(institution.id),
                     "venue_id": str(venues[3].id),
                     "distance_in_km": updated_distance,
+                },
+                {
+                    "institution_id": str(institution.id),
+                    "venue_id": str(venues[-1].id + 100),  # venue which does not exist:; has been deleted
+                    "distance_in_km": initial_distance,
                 },
             ]
             playlist_api.synchronize_collective_playlist(playlist_type)

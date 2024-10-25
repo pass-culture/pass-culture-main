@@ -518,10 +518,6 @@ def delete_venue(venue_id: int) -> None:
     if venue_used_as_reimbursement_point:
         raise exceptions.CannotDeleteVenueUsedAsReimbursementPointException()
 
-    educational_models.CollectivePlaylist.query.filter(
-        educational_models.CollectivePlaylist.venueId == venue_id
-    ).delete(synchronize_session=False)
-
     offer_ids_to_delete = _delete_objects_linked_to_venue(venue_id)
 
     # Warning: we should only delete rows where the "venueId" is the
@@ -660,6 +656,16 @@ def _delete_objects_linked_to_venue(venue_id: int) -> dict:
             educational_models.CollectiveOfferRequest.collectiveOfferTemplateId.in_(collective_offer_templates_id_chunk)
         ).delete(synchronize_session=False)
 
+    educational_models.CollectivePlaylist.query.filter(
+        sa.or_(
+            educational_models.CollectivePlaylist.venueId == venue_id,
+            educational_models.CollectivePlaylist.collectiveOfferTemplateId.in_(
+                db.session.query(educational_models.CollectiveOfferTemplate.id).filter(
+                    educational_models.CollectiveOfferTemplate.venueId == venue_id
+                )
+            ),
+        )
+    ).delete(synchronize_session=False)
     educational_models.CollectiveOfferTemplate.query.filter(
         educational_models.CollectiveOfferTemplate.venueId == venue_id
     ).delete(synchronize_session=False)
