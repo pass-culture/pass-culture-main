@@ -1,38 +1,44 @@
 import {
-  render,
   screen,
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { SWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { venueListItemFactory } from 'commons/utils/individualApiFactories'
+import {
+  defaultGetOffererResponseModel,
+  defaultGetOffererVenueResponseModel,
+} from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { Income, MOCK_INCOME_BY_YEAR } from './Income'
 import { IncomeResults, IncomeType } from './types'
 
 const MOCK_DATA = {
-  selectedOffererId: 1,
-  venues: [
-    venueListItemFactory({
-      id: 1,
-      name: 'mk2 - Bibliothèque',
-      offererName: 'mk2',
-    }),
-    venueListItemFactory({
-      id: 2,
-      name: 'mk2 - Quai de Loire',
-      offererName: 'mk2',
-    }),
-    venueListItemFactory({
-      id: 3,
-      name: 'mk2 - Beaubourg',
-      offererName: 'mk2',
-    }),
-  ],
+  selectedOffererId: 100,
+  offerer: {
+    ...defaultGetOffererResponseModel,
+    managedVenues: [
+      {
+        ...defaultGetOffererVenueResponseModel,
+        id: 1,
+        name: 'mk2 - Bibliothèque',
+      },
+      {
+        ...defaultGetOffererVenueResponseModel,
+        id: 2,
+        name: 'mk2 - Odéon',
+      },
+      {
+        ...defaultGetOffererVenueResponseModel,
+        id: 3,
+        name: 'mk2 - Nation',
+      },
+    ],
+  },
 }
 
 const LABELS = {
@@ -44,26 +50,22 @@ const LABELS = {
 }
 
 const renderIncome = () => {
-  render(
-    <SWRConfig value={{ provider: () => new Map() }}>
-      <Income />
-    </SWRConfig>
-  )
+  renderWithProviders(<Income />, {
+    user: sharedCurrentUserFactory(),
+    storeOverrides: {
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedOffererId: MOCK_DATA.selectedOffererId,
+      },
+    },
+  })
 }
 
 vi.mock('apiClient/api', () => ({
   api: {
-    getVenues: vi.fn(),
+    getOfferer: vi.fn(),
   },
 }))
-
-vi.mock('react-redux', async () => {
-  const originalModule = await vi.importActual('react-redux')
-  return {
-    ...originalModule,
-    useSelector: vi.fn(),
-  }
-})
 
 describe('Income', () => {
   describe('when the page first renders', () => {
@@ -74,15 +76,15 @@ describe('Income', () => {
     })
 
     it('should attempt to fetch venues data and display a loading spinner meanwhile', async () => {
-      vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: MOCK_DATA.venues })
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
       renderIncome()
 
       await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-      expect(api.getVenues).toHaveBeenCalledWith(null, null, undefined)
+      expect(api.getOfferer).toHaveBeenCalledWith(MOCK_DATA.selectedOffererId)
     })
 
     it('should display an error message if venues couldnt be fetched', async () => {
-      vi.spyOn(api, 'getVenues').mockRejectedValue(new Error('error'))
+      vi.spyOn(api, 'getOfferer').mockRejectedValue(new Error('error'))
       renderIncome()
 
       await waitFor(() => {
@@ -91,7 +93,10 @@ describe('Income', () => {
     })
 
     it('should display an empty screen if no venues were found', async () => {
-      vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
+      vi.spyOn(api, 'getOfferer').mockResolvedValue({
+        ...MOCK_DATA.offerer,
+        managedVenues: [],
+      })
       renderIncome()
 
       await waitFor(() => {
@@ -105,7 +110,7 @@ describe('Income', () => {
     it('should display an empty screen if no income data was found', () => {})
 
     it('should display a venue selector with all venues selected by default', async () => {
-      vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: MOCK_DATA.venues })
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
       renderIncome()
 
       await waitFor(() => {
@@ -115,7 +120,7 @@ describe('Income', () => {
           })
         ).toBeInTheDocument()
 
-        MOCK_DATA.venues.forEach((venue) => {
+        MOCK_DATA.offerer.managedVenues.forEach((venue) => {
           expect(
             screen.getByRole('button', {
               name: `Supprimer ${venue.name}`,
@@ -126,9 +131,7 @@ describe('Income', () => {
     })
 
     it('should not display a venue selector, nor the mandatory input helper if there is only one venue', async () => {
-      vi.spyOn(api, 'getVenues').mockResolvedValue({
-        venues: [MOCK_DATA.venues[0]],
-      })
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
       renderIncome()
 
       await waitFor(() => {
@@ -145,7 +148,7 @@ describe('Income', () => {
     })
 
     it('should display a set of year filters with the last year selected by default', async () => {
-      vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: MOCK_DATA.venues })
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
       renderIncome()
 
       await waitFor(() => {
@@ -161,7 +164,7 @@ describe('Income', () => {
     })
 
     it('should display the income results', async () => {
-      vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: MOCK_DATA.venues })
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
       renderIncome()
 
       await waitFor(() => {
@@ -173,7 +176,7 @@ describe('Income', () => {
 
   describe('when the user changes venue selection', () => {
     beforeEach(() => {
-      vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: MOCK_DATA.venues })
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
       vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
         logEvent: vi.fn(),
       }))
@@ -186,7 +189,7 @@ describe('Income', () => {
 
   describe('when the user changes year selection', () => {
     beforeEach(() => {
-      vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: MOCK_DATA.venues })
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
       vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
         logEvent: vi.fn(),
       }))

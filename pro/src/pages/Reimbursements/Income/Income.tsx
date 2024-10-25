@@ -5,11 +5,16 @@ import { useSelector } from 'react-redux'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { GET_VENUES_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import { GET_OFFERER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { formatAndOrderVenues } from 'repository/venuesService'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
+
+import {
+  getPhysicalVenuesFromOfferer,
+  getVirtualVenueFromOfferer,
+} from '../../Home/venueUtils'
 
 import styles from './Income.module.scss'
 import { IncomeError } from './IncomeError/IncomeError'
@@ -52,15 +57,19 @@ export const MOCK_INCOME_BY_YEAR: IncomeByYear = {
 export const Income = () => {
   const selectedOffererId = useSelector(selectCurrentOffererId)
   const {
-    data,
+    data: selectedOfferer,
     error: venuesApiError,
     isLoading: areVenuesLoading,
   } = useSWR(
-    [GET_VENUES_QUERY_KEY, selectedOffererId],
-    ([, offererIdParam]) => api.getVenues(null, null, offererIdParam),
-    { fallbackData: { venues: [] } }
+    selectedOffererId ? [GET_OFFERER_QUERY_KEY, selectedOffererId] : null,
+    ([, offererIdParam]) => api.getOfferer(offererIdParam)
   )
-  const venues = formatAndOrderVenues(data.venues)
+
+  const physicalVenues = getPhysicalVenuesFromOfferer(selectedOfferer)
+  const virtualVenue = getVirtualVenueFromOfferer(selectedOfferer)
+
+  const rawVenues = [...physicalVenues, virtualVenue].filter((v) => !!v)
+  const venues = formatAndOrderVenues(rawVenues)
   const venueValues = venues.map((v) => v.value)
 
   const [isIncomeLoading, setIsIncomeLoading] = useState(true)
