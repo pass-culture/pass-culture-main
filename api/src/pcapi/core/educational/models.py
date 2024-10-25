@@ -1096,7 +1096,7 @@ class CollectiveOfferTemplate(
         if self.validation == offer_mixin.OfferValidationStatus.DRAFT:
             return CollectiveOfferDisplayedStatus.DRAFT
 
-        if not self.isActive:
+        if not self.isActive or self.hasEndDatePassed:
             return CollectiveOfferDisplayedStatus.INACTIVE
 
         return CollectiveOfferDisplayedStatus.ACTIVE

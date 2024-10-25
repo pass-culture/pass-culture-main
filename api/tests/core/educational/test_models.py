@@ -23,6 +23,7 @@ from pcapi.models import db
 from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.utils import db as db_utils
 from pcapi.utils.image_conversion import CropParams
 from pcapi.utils.image_conversion import ImageRatio
 
@@ -652,6 +653,34 @@ class CollectiveOfferDisplayedStatusTest:
 
         assert offer.lastBookingStatus == CollectiveBookingStatus.REIMBURSED
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.REIMBURSED
+
+
+class CollectiveOfferTemplateDisplayedStatusTest:
+    @pytest.mark.parametrize(
+        "status",
+        [
+            CollectiveOfferDisplayedStatus.ACTIVE,
+            CollectiveOfferDisplayedStatus.ARCHIVED,
+            CollectiveOfferDisplayedStatus.DRAFT,
+            CollectiveOfferDisplayedStatus.INACTIVE,
+            CollectiveOfferDisplayedStatus.REJECTED,
+            CollectiveOfferDisplayedStatus.PENDING,
+        ],
+    )
+    def test_get_offer_displayed_status(self, status):
+        offer = factories.create_collective_offer_template_by_status(status)
+
+        assert offer.displayedStatus == status
+
+    def test_get_displayed_status_for_inactive_offer_due_to_end_date_passed(self):
+        offer = factories.CollectiveOfferTemplateFactory(
+            validation=OfferValidationStatus.APPROVED,
+            dateRange=db_utils.make_timerange(
+                start=datetime.datetime.utcnow() - datetime.timedelta(days=4),
+                end=datetime.datetime.utcnow() - datetime.timedelta(hours=1),
+            ),
+        )
+        assert offer.displayedStatus == CollectiveOfferDisplayedStatus.INACTIVE
 
 
 class CollectiveOfferAllowedActionsTest:
