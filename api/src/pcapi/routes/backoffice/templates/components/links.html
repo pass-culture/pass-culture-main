@@ -37,7 +37,7 @@
     <a href="{{ redirect | build_pro_link }}"
        class="{{ class }}"
        target="_blank"
-       rel="noopener">{{ text_link }}<i class="bi bi-box-arrow-up-right"></i></a>
+       rel="noopener">{{ text_link }} <i class="bi bi-box-arrow-up-right"></i></a>
   {% endif %}
 {% endmacro %}
 {# ----- internal links (backoffice) ----- #}
@@ -157,7 +157,13 @@
 {% endmacro %}
 {# ----- external links ----- #}
 {% macro build_siren_to_external_link(offerer) %}
-  {% if offerer.siren %}
+  {% set rid7 = offerer.rid7 %}
+  {% if rid7 %}
+    <a href="https://data.gouv.nc/explore/dataset/entreprises-actives-au-ridet/table/?q={{ rid7 }}"
+       target="_blank"
+       title="Rechercher dans l'open data de la Nouvelle Calédonie"
+       class="link-primary">{{ rid7 }} <i class="bi bi-box-arrow-up-right"></i></a>
+  {% elif offerer.siren %}
     <a href="https://annuaire-entreprises.data.gouv.fr/entreprise/{{ offerer.siren }}"
        target="_blank"
        title="Visualiser dans l'Annuaire des Entreprises"
@@ -165,7 +171,9 @@
   {% endif %}
 {% endmacro %}
 {% macro build_siret_to_external_link(venue) %}
-  {% if venue.siret %}
+  {% if venue.ridet %}
+    {{ venue.ridet }}
+  {% elif venue.siret %}
     <a href="https://annuaire-entreprises.data.gouv.fr/etablissement/{{ venue.siret }}"
        target="_blank"
        title="Visualiser dans l'Annuaire des Entreprises"

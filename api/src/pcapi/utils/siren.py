@@ -1,5 +1,20 @@
+import re
+
+
 SIREN_LENGTH = 9
 SIRET_LENGTH = 14
+
+# New Caledonia
+RID7_LENGTH = 7
+RIDET_LENGTH = 10
+# In order to write RID7/RIDET in SIREN/SIRET columns, choice has been made to prefix ISEE identifiers with "NC" in the
+# database. So the model is not changed with registrer management. Detection is made with this pattern.
+NEW_CALEDONIA_SIREN_PREFIX = "NC"
+NEW_CALEDONIA_SIREN_PREFIX_LEN = len(NEW_CALEDONIA_SIREN_PREFIX)
+NEW_CALEDONIA_SIRET_PADDING_CHAR = "X"
+NEW_CALEDONIA_SIREN_RE = r"^NC\d{7}$"
+NEW_CALEDONIA_SIRET_RE = r"^NC\d{10}XX$"
+SIRET_OR_RIDET_RE = r"^(\d{14}|NC\d{10}XX)$"
 
 
 def _compute_luhn_sum(digits: str, total_length: int) -> int:
@@ -48,3 +63,31 @@ def is_valid_siret(digits: str) -> bool:
         return sum(int(digit) for digit in digits) % 5 == 0
 
     return False
+
+
+def is_rid7(siren: str | None) -> bool:
+    return bool(siren and re.match(NEW_CALEDONIA_SIREN_RE, siren))
+
+
+def is_ridet(siret: str | None) -> bool:
+    return bool(siret and re.match(NEW_CALEDONIA_SIRET_RE, siret))
+
+
+def is_siret_or_ridet(data: str) -> bool:
+    return bool(re.match(SIRET_OR_RIDET_RE, data))
+
+
+def siren_to_rid7(siren: str) -> str:
+    return siren[NEW_CALEDONIA_SIREN_PREFIX_LEN:]
+
+
+def rid7_to_siren(rid7: str) -> str:
+    return NEW_CALEDONIA_SIREN_PREFIX + rid7
+
+
+def siret_to_ridet(siret: str) -> str:
+    return siret[NEW_CALEDONIA_SIREN_PREFIX_LEN:].strip(NEW_CALEDONIA_SIRET_PADDING_CHAR)
+
+
+def ridet_to_siret(ridet: str) -> str:
+    return (NEW_CALEDONIA_SIREN_PREFIX + ridet).ljust(SIRET_LENGTH, NEW_CALEDONIA_SIRET_PADDING_CHAR)

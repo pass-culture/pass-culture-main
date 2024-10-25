@@ -107,13 +107,13 @@
             {% endif %}
           </p>
           <p class="card-subtitle text-muted mb-3 h5">
-            SIRET : {{ links.build_siret_to_external_link(venue) }}
+            {{ venue.identifier_name }} : {{ links.build_siret_to_external_link(venue) }}
             {% if venue.siret %}
               <span class="ms-1 link-primary">
                 {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-                  {{ clipboard.copy_to_clipboard(venue.siret, "Copier le SIRET du partenaire culturel") }}
+                  {{ clipboard.copy_to_clipboard(venue.identifier, "Copier le " + venue.identifier_name + " du partenaire culturel") }}
                 {% else %}
-                  {{ clipboard.copy_to_clipboard(venue.siret, "Copier le SIRET du lieu") }}
+                  {{ clipboard.copy_to_clipboard(venue.identifier, "Copier le " + venue.identifier_name + " du lieu") }}
                 {% endif %}
               </span>
             {% endif %}
@@ -181,9 +181,11 @@
               <p class="mb-1">
                 <span class="fw-bold">Peut créer une offre EAC : {{ venue.managingOfferer.allowedOnAdage | format_bool_badge }}</span>
               </p>
-              <p class="mb-1">
-                <span class="fw-bold">Cartographié sur ADAGE : {{ (venue.adageId is not none) | format_bool_badge }}</span>
-              </p>
+              {% if not venue.managingOfferer.is_caledonian %}
+                <p class="mb-1">
+                  <span class="fw-bold">Cartographié sur ADAGE : {{ (venue.adageId is not none) | format_bool_badge }}</span>
+                </p>
+              {% endif %}
               {% if venue.adageId %}
                 <p class="mb-1">
                   <span class="fw-bold">ID ADAGE :</span>
@@ -351,18 +353,22 @@
               <p class="mb-1">
                 <span class="fw-bold">Offres BO :</span>
                 <a href="{{ url_for('backoffice_web.offer.list_offers', **search_params) }}"
-                   class="link-primary">individuelles</a> |
-                <a href="{{ url_for('backoffice_web.collective_offer.list_collective_offers', **search_params) }}"
-                   class="link-primary">collectives</a> |
-                <a href="{{ url_for('backoffice_web.collective_offer_template.list_collective_offer_templates', venue=venue.id) }}"
-                   class="link-primary">vitrine</a>
+                   class="link-primary">individuelles</a>
+                {% if not venue.managingOfferer.is_caledonian %}
+                  | <a href="{{ url_for('backoffice_web.collective_offer.list_collective_offers', **search_params) }}"
+    class="link-primary">collectives</a>
+                  | <a href="{{ url_for('backoffice_web.collective_offer_template.list_collective_offer_templates', venue=venue.id) }}"
+    class="link-primary">vitrine</a>
+                {% endif %}
               </p>
               <p class="mb-1">
                 <span class="fw-bold">Réservations BO :</span>
                 <a href="{{ url_for('backoffice_web.individual_bookings.list_individual_bookings', venue=venue.id) }}"
-                   class="link-primary">individuelles</a> |
-                <a href="{{ url_for('backoffice_web.collective_bookings.list_collective_bookings', venue=venue.id) }}"
-                   class="link-primary">collectives</a>
+                   class="link-primary">individuelles</a>
+                {% if not venue.managingOfferer.is_caledonian %}
+                  | <a href="{{ url_for('backoffice_web.collective_bookings.list_collective_bookings', venue=venue.id) }}"
+    class="link-primary">collectives</a>
+                {% endif %}
               </p>
               <div>
                 {% if zendesk_sell_synchronisation_form %}
@@ -431,10 +437,12 @@
       <div class="mt-4">
         {% call build_details_tabs_wrapper() %}
           {{ build_details_tab("history", "Historique du compte", active_tab == 'history') }}
-          {% if venue.siret and has_permission("READ_PRO_ENTREPRISE_INFO") %}
+          {% if venue.siret and not venue.ridet and has_permission("READ_PRO_ENTREPRISE_INFO") %}
             {{ build_details_tab("entreprise", "Données Entreprise", active_tab == 'entreprise') }}
           {% endif %}
-          {% if venue.siret %}{{ build_details_tab("dms-adage", "Dossiers DMS ADAGE", active_tab == 'dms_adage') }}{% endif %}
+          {% if venue.siret and not venue.managingOfferer.is_caledonian %}
+            {{ build_details_tab("dms-adage", "Dossiers DMS ADAGE", active_tab == 'dms_adage') }}
+          {% endif %}
         {% endcall %}
         {% call build_details_tabs_content_wrapper() %}
           {% call build_details_tab_content("history", active_tab == 'history') %}
@@ -442,14 +450,14 @@
             {{ build_loading_spinner() }}
             </turbo-frame>
           {% endcall %}
-          {% if venue.siret and has_permission("READ_PRO_ENTREPRISE_INFO") %}
+          {% if venue.siret and not venue.ridet and has_permission("READ_PRO_ENTREPRISE_INFO") %}
             {% call build_details_tab_content("entreprise", active_tab == 'entreprise') %}
               <turbo-frame data-turbo="false" id="venue_entreprise_frame" loading="lazy" src="{{ url_for('backoffice_web.venue.get_entreprise_info', venue_id=venue.id) }}">
               {{ build_loading_spinner() }}
               </turbo-frame>
             {% endcall %}
           {% endif %}
-          {% if venue.siret %}
+          {% if venue.siret and not venue.managingOfferer.is_caledonian %}
             {% call build_details_tab_content("dms-adage", active_tab == 'dms_adage') %}
               <turbo-frame data-turbo="false" id="venue_collective_dms_applications_frame" loading="lazy" src="{{ url_for('backoffice_web.venue.get_collective_dms_applications', venue_id=venue.id) }}">
               {{ build_loading_spinner() }}

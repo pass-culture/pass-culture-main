@@ -456,3 +456,61 @@ class OffererAddressTest:
         offererAddress = factories.OffererAddressFactory()
         factories.VenueFactory(offererAddress=offererAddress)
         assert models.OffererAddress.query.filter(models.OffererAddress.isLinkedToVenue == True).one()
+
+
+class OffererRid7Test:
+    def test_rid7_when_offerer_is_caledonian(self):
+        offerer = factories.OffererFactory(siren="NC1234567")
+        assert offerer.rid7 == "1234567"
+
+    def test_rid7_when_offerer_is_not_caledonian(self):
+        offerer = factories.OffererFactory()
+        assert offerer.rid7 is None
+
+
+class OffererIsCaledonianTest:
+    def test_offerer_with_rid7_is_caledonian(self):
+        offerer = factories.CaledonianOffererFactory(siren="NC1234567")
+        assert offerer.is_caledonian
+
+    def test_offerer_with_siren_is_caledonian(self):
+        offerer = factories.CaledonianOffererFactory(postalCode="98800")
+        assert offerer.is_caledonian
+
+    def test_offerer_is_not_caledonian(self):
+        offerer = factories.OffererFactory()
+        assert not offerer.is_caledonian
+
+
+class OffererIdentifierTest:
+    def test_identifier_is_siren(self):
+        offerer = factories.OffererFactory()
+        assert offerer.identifier_name == "SIREN"
+        assert offerer.identifier == offerer.siren
+
+    def test_identifier_is_rid7(self):
+        offerer = factories.CaledonianOffererFactory()
+        assert offerer.identifier_name == "RID7"
+        assert offerer.identifier == offerer.rid7
+
+
+class VenueRidetTest:
+    def test_ridet_when_venue_is_caledonian(self):
+        offerer = factories.CaledonianVenueFactory(siret="NC1234567001XX")
+        assert offerer.ridet == "1234567001"
+
+    def test_ridet_when_venue_is_not_caledonian(self):
+        offerer = factories.VenueFactory()
+        assert offerer.ridet is None
+
+
+class VenueIdentifierTest:
+    def test_identifier_is_siret(self):
+        venue = factories.VenueFactory()
+        assert venue.identifier_name == "SIRET"
+        assert venue.identifier == venue.siret
+
+    def test_identifier_is_rid7(self):
+        venue = factories.CaledonianVenueFactory()
+        assert venue.identifier_name == "RIDET"
+        assert venue.identifier == venue.ridet

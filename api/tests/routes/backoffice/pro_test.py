@@ -476,6 +476,39 @@ class SearchOffererTest:
 
         assert len(html_parser.extract_cards_text(response.data)) == 0
 
+    def test_can_search_caledonian_offerer_by_rid7(self, authenticated_client):
+        nc_offerer = offerers_factories.CaledonianOffererFactory(siren="NC1020304")
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q="1020304", pro_type=TypeOptions.OFFERER.name))
+            assert response.status_code == 303
+
+        # Redirected to single result
+        assert_response_location(
+            response, "backoffice_web.offerer.get", offerer_id=nc_offerer.id, q="1020304", search_rank=1, total_items=1
+        )
+
+    def test_search_caledonian_offerer_shows_rid7(self, authenticated_client):
+        offerer_1 = offerers_factories.CaledonianOffererFactory()
+        offerer_2 = offerers_factories.CaledonianOffererFactory()
+
+        with assert_num_queries(self.expected_num_queries_with_ff):
+            response = authenticated_client.get(
+                url_for(self.endpoint, q="calédonienne", pro_type=TypeOptions.OFFERER.name)
+            )
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert len(cards_text) == 2
+
+        assert f"Offerer ID : {offerer_1.id} " in cards_text[0]
+        assert "SIREN" not in cards_text[0]
+        assert f"RID7 : {offerer_1.rid7} " in cards_text[0]
+
+        assert f"Offerer ID : {offerer_2.id} " in cards_text[1]
+        assert "SIREN" not in cards_text[1]
+        assert f"RID7 : {offerer_2.rid7} " in cards_text[1]
+
 
 class SearchVenueTest:
     endpoint = "backoffice_web.pro.search_pro"
@@ -697,6 +730,37 @@ class SearchVenueTest:
             search_rank=1,
             total_items=1,
         )
+
+    def test_can_search_caledonian_venue_by_ridet(self, authenticated_client):
+        nc_venue = offerers_factories.CaledonianVenueFactory(siret="NC1020304001XX")
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q="1020304001", pro_type=TypeOptions.VENUE.name))
+            assert response.status_code == 303
+
+        # Redirected to single result
+        assert_response_location(
+            response, "backoffice_web.venue.get", venue_id=nc_venue.id, q="1020304001", search_rank=1, total_items=1
+        )
+
+    def test_search_caledonian_venue_shows_ridet(self, authenticated_client):
+        venue_1 = offerers_factories.CaledonianVenueFactory()
+        venue_2 = offerers_factories.CaledonianVenueFactory()
+
+        with assert_num_queries(self.expected_num_queries_with_ff):
+            response = authenticated_client.get(url_for(self.endpoint, q="calédonien", pro_type=TypeOptions.VENUE.name))
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert len(cards_text) == 2
+
+        assert f"Venue ID : {venue_1.id} " in cards_text[0]
+        assert "SIRET" not in cards_text[0]
+        assert f"RIDET : {venue_1.ridet} " in cards_text[0]
+
+        assert f"Venue ID : {venue_2.id} " in cards_text[1]
+        assert "SIRET" not in cards_text[1]
+        assert f"RIDET : {venue_2.ridet} " in cards_text[1]
 
     @pytest.mark.parametrize(
         "query,departments,feature_flag_count",

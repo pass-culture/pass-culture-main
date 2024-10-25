@@ -67,6 +67,7 @@ from pcapi.utils import crypto
 from pcapi.utils import human_ids
 from pcapi.utils import image_conversion
 from pcapi.utils import regions as utils_regions
+from pcapi.utils import siren as siren_utils
 from pcapi.utils.clean_accents import clean_accents
 import pcapi.utils.date as date_utils
 import pcapi.utils.db as db_utils
@@ -1547,12 +1548,12 @@ def search_offerer(search_query: str, departments: typing.Iterable[str] = ()) ->
         offerers = offerers.filter(models.Offerer.departementCode.in_(departments))  # type: ignore[attr-defined]
 
     if search_query.isnumeric():
-        if len(search_query) == 9:
-            offerers = offerers.filter(
-                sa.or_(models.Offerer.id == int(search_query), models.Offerer.siren == search_query)
-            )
-        else:
-            offerers = offerers.filter(models.Offerer.id == int(search_query))
+        numeric_filter = models.Offerer.id == int(search_query)
+        if len(search_query) == siren_utils.SIREN_LENGTH:
+            numeric_filter = sa.or_(numeric_filter, models.Offerer.siren == search_query)
+        elif len(search_query) == siren_utils.RID7_LENGTH:
+            numeric_filter = sa.or_(numeric_filter, models.Offerer.siren == siren_utils.rid7_to_siren(search_query))
+        offerers = offerers.filter(numeric_filter)
     else:
         if FeatureToggle.WIP_ENABLE_BO_PRO_SEARCH_BY_SIMILARITY.is_active():
             offerers = offerers.filter(
@@ -1590,13 +1591,15 @@ def search_venue(search_query: str, departments: typing.Iterable[str] = ()) -> B
         venues = venues.filter(models.Venue.departementCode.in_(departments))
 
     if search_query.isnumeric():
-        if len(search_query) == 14:
-            venues = venues.filter(sa.or_(models.Venue.id == int(search_query), models.Venue.siret == search_query))
-        # for dmsToken containing digits only
+        numeric_filter = models.Venue.id == int(search_query)
+        if len(search_query) == siren_utils.SIRET_LENGTH:
+            numeric_filter = sa.or_(numeric_filter, models.Venue.siret == search_query)
         elif len(search_query) == 12:
-            venues = venues.filter(sa.or_(models.Venue.id == int(search_query), models.Venue.dmsToken == search_query))
-        else:
-            venues = venues.filter(models.Venue.id == int(search_query))
+            # for dmsToken containing digits only
+            numeric_filter = sa.or_(numeric_filter, models.Venue.dmsToken == search_query)
+        elif len(search_query) == siren_utils.RIDET_LENGTH:
+            numeric_filter = sa.or_(numeric_filter, models.Venue.siret == siren_utils.ridet_to_siret(search_query))
+        venues = venues.filter(numeric_filter)
     else:
         # email
         sanitized_term = email_utils.sanitize_email(search_query)

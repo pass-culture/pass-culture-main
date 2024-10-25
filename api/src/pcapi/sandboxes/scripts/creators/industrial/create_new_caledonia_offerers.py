@@ -2,14 +2,12 @@ import datetime
 import decimal
 import logging
 
-import schwifty
-
 from pcapi.core.finance import factories as finance_factories
-from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
+from pcapi.utils import siren as siren_utils
 
 
 logger = logging.getLogger(__name__)
@@ -35,23 +33,21 @@ def _create_nc_active_offerer() -> None:
         banId="98818_w65mkd_00011",
         timezone="Pacific/Noumea",
     )
-    offerer = offerers_factories.NotValidatedOffererFactory(
+    offerer = offerers_factories.CaledonianOffererFactory(
         name="Structure calédonienne à Nouméa",
         street=address.street,
         postalCode=address.postalCode,
         city=address.city,
-        siren="NC1230001",  # NC + RID7 (experimental)
-        allowedOnAdage=False,
+        siren=siren_utils.rid7_to_siren("1230001"),
     )
-    venue = offerers_factories.VenueFactory(
+    venue = offerers_factories.CaledonianVenueFactory(
         managingOfferer=offerer,
         pricing_point="self",
         name="Lieu avec RIDET à Nouméa",
-        siret="NC1230001001",  # NC + RIDET (experimental)
-        departementCode="988",
+        siret=siren_utils.ridet_to_siret("1230001001"),
         latitude=address.latitude,
         longitude=address.longitude,
-        bookingEmail="venue.nc@example.net",
+        bookingEmail="venue.nc@example.com",
         street=address.street,
         postalCode=address.postalCode,
         city=address.city,
@@ -63,27 +59,49 @@ def _create_nc_active_offerer() -> None:
         contact__website="https://nc.example.com/noumea",
         contact__phone_number="+687263443",
         contact__social_medias={"instagram": "https://instagram.com/@noumea.nc"},
-        adageId=None,
         offererAddress__address=address,
     )
+    second_venue = offerers_factories.CaledonianVenueFactory(
+        managingOfferer=offerer,
+        pricing_point="self",
+        name="Lieu avec RIDET à Dumbéa",
+        siret=siren_utils.ridet_to_siret("1230001002"),
+        latitude=-22.204793,
+        longitude=166.452108,
+        bookingEmail="venue.nc@example.com",
+        street="285 Boulevard du Rail Caledonien",
+        postalCode="98835",
+        city="Dumbéa",
+        banId="98805_l2xcs6_00285",
+        timezone="Pacific/Noumea",
+        venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
+        description="Lieu de test en Nouvelle-Calédonie",
+        contact__email="dumbea.nc@example.com",
+        contact__website="https://nc.example.com/dumbea",
+        contact__phone_number="+687263443",
+        contact__social_medias={"instagram": "https://instagram.com/@dumbea.nc"},
+    )
+
     offerers_factories.UserOffererFactory(
         offerer=offerer,
         user__firstName="Mâ",
         user__lastName="Néo-Calédonien",
         user__email="pro1.nc@example.com",
         user__phoneNumber="+687263443",
+        user__postalCode="98800",
+        user__departementCode="988",
     )
 
-    bank_account = finance_factories.BankAccountFactory(
+    bank_account = finance_factories.CaledonianBankAccountFactory(
         label="Compte courant Banque de Nouvelle-Calédonie",
         offerer=offerer,
-        iban=schwifty.IBAN.generate("NC", bank_code="7528", account_code="98800000001").compact,
-        bic="CEPANCNM",
         dsApplicationId="988001",
-        status=finance_models.BankAccountApplicationStatus.ACCEPTED,
     )
     offerers_factories.VenueBankAccountLinkFactory(
         venue=venue, bankAccount=bank_account, timespan=(datetime.datetime.utcnow(),)
+    )
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=second_venue, bankAccount=bank_account, timespan=(datetime.datetime.utcnow(),)
     )
 
     event_offer = offers_factories.EventOfferFactory(name="Offre d'événement en Nouvelle-Calédonie", venue=venue)
@@ -118,23 +136,21 @@ def _create_nc_minimal_offerer() -> None:
         banId=None,
         timezone="Pacific/Noumea",
     )
-    offerer = offerers_factories.NotValidatedOffererFactory(
+    offerer = offerers_factories.NotValidatedCaledonianOffererFactory(
         name="Structure calédonienne à Thio",
         street=address.street,
         postalCode=address.postalCode,
         city=address.city,
-        siren="NC1230002",  # NC + RID7 (experimental)
-        allowedOnAdage=False,
+        siren=siren_utils.rid7_to_siren("1230002"),
     )
-    offerers_factories.VenueFactory(
+    offerers_factories.CaledonianVenueFactory(
         managingOfferer=offerer,
         pricing_point="self",
         name="Lieu avec RIDET à Thio",
-        siret="NC1230002001",  # NC + RIDET (experimental)
-        departementCode="988",
+        siret=siren_utils.ridet_to_siret("1230002001"),
         latitude=address.latitude,
         longitude=address.longitude,
-        bookingEmail="thio.nc@example.net",
+        bookingEmail="thio.nc@example.com",
         street=address.street,
         postalCode=address.postalCode,
         city=address.city,
@@ -147,7 +163,6 @@ def _create_nc_minimal_offerer() -> None:
         contact__website="https://nc.example.com/thio",
         contact__phone_number="+687442504",
         contact__social_medias={"instagram": "https://instagram.com/@thio.nc"},
-        adageId=None,
         offererAddress__address=address,
     )
     offerers_factories.UserOffererFactory(
@@ -156,4 +171,6 @@ def _create_nc_minimal_offerer() -> None:
         user__lastName="Néo-Calédonien",
         user__email="pro2.nc@example.com",
         user__phoneNumber="+687442504",
+        user__postalCode="98829",
+        user__departementCode="988",
     )

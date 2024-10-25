@@ -78,9 +78,9 @@
             Offerer ID : {{ offerer.id }} {{ clipboard.copy_to_clipboard(offerer.id, "Copier l'ID de la structure") }}
           </p>
           <p class="card-subtitle text-muted mb-3 h5">
-            SIREN : {{ links.build_siren_to_external_link(offerer) }}
+            {{ offerer.identifier_name }} : {{ links.build_siren_to_external_link(offerer) }}
             {% if offerer.siren %}
-              <span class="ms-1 link-primary">{{ clipboard.copy_to_clipboard(offerer.siren, "Copier le SIREN de la structure") }}</span>
+              <span class="ms-1 link-primary">{{ clipboard.copy_to_clipboard(offerer.identifier, "Copier le " + offerer.identifier_name  + " de la structure") }}</span>
             {% endif %}
           </p>
           <div class="row pt-3">
@@ -129,13 +129,15 @@
               <p class="mb-1">
                 <span class="fw-bold">Peut créer une offre EAC : {{ offerer.allowedOnAdage | format_bool_badge }}</span>
               </p>
-              <p class="mb-1">
-                {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-                  <span class="fw-bold">Partenaires culturels cartographiés sur ADAGE : {{ adage_information }}</span>
-                {% else %}
-                  <span class="fw-bold">Lieux cartographiés sur ADAGE : {{ adage_information }}</span>
-                {% endif %}
-              </p>
+              {% if not offerer.is_caledonian %}
+                <p class="mb-1">
+                  {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
+                    <span class="fw-bold">Partenaires culturels cartographiés sur ADAGE : {{ adage_information }}</span>
+                  {% else %}
+                    <span class="fw-bold">Lieux cartographiés sur ADAGE : {{ adage_information }}</span>
+                  {% endif %}
+                </p>
+              {% endif %}
               <p class="mb-1">
                 {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
                   <span class="fw-bold">Présence CB dans les partenaires culturels :</span>
@@ -167,18 +169,22 @@
               <p class="mb-1">
                 <span class="fw-bold">Offres BO :</span>
                 <a href="{{ url_for('backoffice_web.offer.list_offers', **search_params) }}"
-                   class="link-primary">individuelles</a> |
-                <a href="{{ url_for('backoffice_web.collective_offer.list_collective_offers', **search_params) }}"
-                   class="link-primary">collectives</a> |
-                <a href="{{ url_for('backoffice_web.collective_offer_template.list_collective_offer_templates', offerer=offerer.id) }}"
-                   class="link-primary">vitrine</a>
+                   class="link-primary">individuelles</a>
+                {% if not offerer.is_caledonian %}
+                  | <a href="{{ url_for('backoffice_web.collective_offer.list_collective_offers', **search_params) }}"
+    class="link-primary">collectives</a>
+                  | <a href="{{ url_for('backoffice_web.collective_offer_template.list_collective_offer_templates', offerer=offerer.id) }}"
+    class="link-primary">vitrine</a>
+                {% endif %}
               </p>
               <p class="mb-1">
                 <span class="fw-bold">Réservations BO :</span>
                 <a href="{{ url_for('backoffice_web.individual_bookings.list_individual_bookings', offerer=offerer.id) }}"
-                   class="link-primary">individuelles</a> |
-                <a href="{{ url_for('backoffice_web.collective_bookings.list_collective_bookings', offerer=offerer.id) }}"
-                   class="link-primary">collectives</a>
+                   class="link-primary">individuelles</a>
+                {% if not offerer.is_caledonian %}
+                  | <a href="{{ url_for('backoffice_web.collective_bookings.list_collective_bookings', offerer=offerer.id) }}"
+    class="link-primary">collectives</a>
+                {% endif %}
               </p>
               <div>
                 {% if zendesk_sell_synchronisation_form %}
@@ -242,7 +248,7 @@
           {% if show_subscription_tab %}
             {{ build_details_tab("subscription", "Parcours auto-entrepreneur", active_tab == 'subscription') }}
           {% endif %}
-          {% if offerer.siren and has_permission("READ_PRO_ENTREPRISE_INFO") %}
+          {% if offerer.siren and not offerer.rid7 and has_permission("READ_PRO_ENTREPRISE_INFO") %}
             {{ build_details_tab("entreprise", "Données Entreprise", active_tab == 'entreprise') }}
           {% endif %}
           {{ build_details_tab("pro-users", "Comptes pro", active_tab == 'users') }}
@@ -255,7 +261,7 @@
             {# tab is hidden when there is no address in database; so it does not need a FF until migration #}
             {{ build_details_tab("addresses", "Adresses", active_tab == 'addresses') }}
           {% endif %}
-          {{ build_details_tab("dms-adage", "Dossiers DMS ADAGE", active_tab == 'dms_adage') }}
+          {% if not offerer.is_caledonian %}{{ build_details_tab("dms-adage", "Dossiers DMS ADAGE", active_tab == 'dms_adage') }}{% endif %}
           {{ build_details_tab("bank-accounts", "Comptes bancaires", active_tab == 'bank_accounts') }}
         {% endcall %}
         {% call build_details_tabs_content_wrapper() %}
@@ -271,7 +277,7 @@
               </turbo-frame>
             {% endcall %}
           {% endif %}
-          {% if offerer.siren and has_permission("READ_PRO_ENTREPRISE_INFO") %}
+          {% if offerer.siren and not offerer.rid7 and has_permission("READ_PRO_ENTREPRISE_INFO") %}
             {% call build_details_tab_content("entreprise", active_tab == 'entreprise') %}
               <turbo-frame data-turbo="false" id="offerer_entreprise_frame" loading="lazy" src="{{ url_for('backoffice_web.offerer.get_entreprise_info', offerer_id=offerer.id) }}">
               {{ build_loading_spinner() }}
@@ -295,11 +301,13 @@
               </turbo-frame>
             {% endcall %}
           {% endif %}
-          {% call build_details_tab_content("dms-adage", active_tab == 'dms_adage') %}
-            <turbo-frame data-turbo="false" id="offerer_collective_dms_applications_frame" loading="lazy" src="{{ url_for('backoffice_web.offerer.get_collective_dms_applications', offerer_id=offerer.id) }}">
-            {{ build_loading_spinner() }}
-            </turbo-frame>
-          {% endcall %}
+          {% if not offerer.is_caledonian %}
+            {% call build_details_tab_content("dms-adage", active_tab == 'dms_adage') %}
+              <turbo-frame data-turbo="false" id="offerer_collective_dms_applications_frame" loading="lazy" src="{{ url_for('backoffice_web.offerer.get_collective_dms_applications', offerer_id=offerer.id) }}">
+              {{ build_loading_spinner() }}
+              </turbo-frame>
+            {% endcall %}
+          {% endif %}
           {% call build_details_tab_content("bank-accounts", active_tab == 'bank_accounts') %}
             <turbo-frame data-turbo="false" id="offerer_bank_accounts_frame" loading="lazy" src="{{ url_for('backoffice_web.offerer.get_bank_accounts', offerer_id=offerer.id) }}">
             {{ build_loading_spinner() }}

@@ -54,6 +54,15 @@ class BankAccountFactory(BaseFactory):
     dsApplicationId = factory.Sequence(lambda n: n)
 
 
+class CaledonianBankAccountFactory(BankAccountFactory):
+    offerer = factory.SubFactory(offerers_factories.CaledonianOffererFactory)
+    label = factory.Sequence(lambda n: f"Coordonnées bancaires calédoniennes n°{n}")
+    bic = "CEPANCNM"
+    iban = factory.LazyAttributeSequence(
+        lambda o, n: schwifty.IBAN.generate("NC", bank_code="14889", account_code=f"988{n:07}").compact
+    )
+
+
 class BankAccountStatusHistoryFactory(BaseFactory):
     class Meta:
         model = models.BankAccountStatusHistory

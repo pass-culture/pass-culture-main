@@ -5,6 +5,8 @@ from pcapi.utils.clean_accents import clean_accents
 
 NON_DIFFUSIBLE_TAG = "[ND]"
 
+NEW_CALEDONIA_DEPARTMENT_CODE = "988"
+
 REGION_DEPARTMENT_CODES: dict[str, tuple[str, ...]] = {
     "Auvergne-Rhône-Alpes": ("01", "03", "07", "15", "26", "38", "42", "43", "63", "69", "73", "74"),
     "Bourgogne-Franche-Comté": ("21", "25", "39", "58", "70", "71", "89", "90"),

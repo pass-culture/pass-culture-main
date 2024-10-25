@@ -15,6 +15,7 @@ from pcapi.core.users import models as users_models
 from pcapi.repository import atomic
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils import siren as siren_utils
 from pcapi.utils.clean_accents import clean_accents
 
 from . import blueprint
@@ -34,7 +35,7 @@ class AutocompleteResponse(BaseModel):
 
 
 def _get_offerer_choice_label(offerer: offerers_models.Offerer) -> str:
-    return f"{offerer.id} - {offerer.name} ({offerer.siren})"
+    return f"{offerer.id} - {offerer.name} ({offerer.identifier})"
 
 
 def _get_offerers_base_query() -> sa.orm.Query:
@@ -73,11 +74,12 @@ def autocomplete_offerers() -> AutocompleteResponse:
     else:
         filters = sa.func.immutable_unaccent(offerers_models.Offerer.name).ilike(f"%{clean_accents(query_string)}%")
 
-        if is_numeric_query and len(query_string) <= 9:
+        if is_numeric_query and len(query_string) <= siren_utils.SIREN_LENGTH:
             filters = sa.or_(
                 filters,
                 offerers_models.Offerer.id == int(query_string),
                 offerers_models.Offerer.siren.like(f"{query_string}%"),
+                offerers_models.Offerer.siren.like(f"{siren_utils.NEW_CALEDONIA_SIREN_PREFIX}{query_string}%"),
             )
 
     offerers = _get_offerers_base_query().filter(filters).limit(NUM_RESULTS)
@@ -157,7 +159,7 @@ def autocomplete_institutions() -> AutocompleteResponse:
 
 
 def _get_venue_choice_label(venue: offerers_models.Venue) -> str:
-    return f"{venue.id} - {venue.common_name} ({venue.siret or 'Pas de SIRET'})"
+    return f"{venue.id} - {venue.common_name} ({venue.identifier or 'Pas de SIRET'})"
 
 
 def _get_venues_base_query() -> sa.orm.Query:
@@ -211,10 +213,11 @@ def _autocomplete_venues(only_with_siret: bool = False) -> AutocompleteResponse:
             sa.func.immutable_unaccent(offerers_models.Venue.publicName).ilike(f"%{clean_accents(query_string)}%"),
         ]
 
-        if is_numeric_query and len(query_string) <= 14:
+        if is_numeric_query and len(query_string) <= siren_utils.SIRET_LENGTH:
             or_filters += [
                 offerers_models.Venue.id == int(query_string),
                 offerers_models.Venue.siret.like(f"{query_string}%"),
+                offerers_models.Venue.siret.like(f"{siren_utils.NEW_CALEDONIA_SIREN_PREFIX}{query_string}%"),
             ]
 
         filters = sa.or_(*or_filters)

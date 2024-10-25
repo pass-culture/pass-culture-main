@@ -10,7 +10,7 @@
     <div class="row">
       <div class="col">
         <h6 class="card-subtitle mt-4 mb-3 text-muted">Offerer ID : {{ row.id }}</h6>
-        <h6 class="card-subtitle mb-4 text-muted">SIREN : {{ row.siren | empty_string_if_null }}</h6>
+        <h6 class="card-subtitle mb-4 text-muted">{{ row.identifier_name }} : {{ (row.identifier) | empty_string_if_null }}</h6>
         <div class="fs-6">
           {% if row.email %}
             <p class="mb-1">

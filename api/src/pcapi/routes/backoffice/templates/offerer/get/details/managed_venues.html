@@ -6,7 +6,13 @@
       <th scope="col"></th>
       <th scope="col">ID</th>
       <th scope="col">Nom</th>
-      <th scope="col">SIRET</th>
+      <th scope="col">
+        {%+ if venues | map(attribute="ridet") | any +%}
+        RIDET
+        {%+ else +%}
+        SIRET
+        {%+ endif +%}
+      </th>
       <th scope="col">Permanent</th>
       <th scope="col">Activité principale</th>
       <th scope="col">Présence web</th>

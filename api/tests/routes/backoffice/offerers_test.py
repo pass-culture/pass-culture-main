@@ -243,6 +243,28 @@ class GetOffererTest(GetEndpointHelper):
         response_text = html_parser.content_as_text(response.data)
         assert f"Validation des offres : {expected_text}" in response_text
 
+    def test_get_caledonian_offerer(self, authenticated_client):
+        nc_offerer = offerers_factories.CaledonianOffererFactory()
+        url = url_for(self.endpoint, offerer_id=nc_offerer.id)
+        db.session.expire(nc_offerer)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        content = html_parser.content_as_text(response.data)
+
+        assert nc_offerer.name in content
+        assert f"Offerer ID : {nc_offerer.id} " in content
+        assert "SIREN" not in content
+        assert nc_offerer.siren not in content
+        assert f"RID7 : {nc_offerer.rid7} " in content
+        assert "Région : Nouvelle-Calédonie " in content
+        assert f"Ville : {nc_offerer.city} " in content
+        assert f"Code postal : {nc_offerer.postalCode} " in content
+        assert f"Adresse : {nc_offerer.street} " in content
+        assert "Peut créer une offre EAC : Non" in content
+
     def test_get_offerer_which_does_not_exist(self, authenticated_client):
         response = authenticated_client.get(url_for(self.endpoint, offerer_id=12345))
         assert response.status_code == 404
@@ -1543,6 +1565,31 @@ class GetOffererVenuesTest(GetEndpointHelper):
         assert rows[1]["Offres cibles"] == ""
         assert rows[1]["Compte bancaire associé"] == "Compte actuel"
 
+    def test_get_caledonian_managed_venues(self, authenticated_client):
+        offerer = offerers_factories.CaledonianOffererFactory()
+        venue = offerers_factories.CaledonianVenueFactory(managingOfferer=offerer)
+        bank_account = finance_factories.BankAccountFactory(offerer=offerer, label="Compte NC")
+        offerers_factories.VenueBankAccountLinkFactory(bankAccount=bank_account, venue=venue)
+
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+
+        assert rows[0]["ID"] == str(venue.id)
+        assert rows[0]["RIDET"] == venue.ridet
+        assert rows[0]["Permanent"] == "Lieu permanent"
+        assert rows[0]["Nom"] == venue.publicName
+        assert rows[0]["Activité principale"] == venue.venueTypeCode.value
+        assert not rows[0].get("Type de lieu")
+        assert rows[0]["Présence web"] == ""
+        assert rows[0]["Offres cibles"] == ""
+        assert rows[0]["Compte bancaire associé"] == "Compte NC"
+
 
 class GetOffererAddressesTest(GetEndpointHelper):
     endpoint = "backoffice_web.offerer.get_offerer_addresses"
@@ -2134,6 +2181,19 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             rows = html_parser.extract_table_rows(response.data)
             assert {row["Nom de la structure"] for row in rows} == {"D"}
 
+        def test_list_search_by_rid7(self, authenticated_client):
+            nc_offerer = offerers_factories.NotValidatedCaledonianOffererFactory()
+            rid7 = nc_offerer.siren[2:]
+
+            with assert_num_queries(self.expected_num_queries):
+                response = authenticated_client.get(
+                    url_for("backoffice_web.validation.list_offerers_to_validate", q=rid7)
+                )
+                assert response.status_code == 200
+
+            rows = html_parser.extract_table_rows(response.data)
+            assert {row["Nom de la structure"] for row in rows} == {nc_offerer.name}
+
         @pytest.mark.parametrize("postal_code", ["35400", "35 400"])
         def test_list_search_by_postal_code(self, authenticated_client, offerers_to_be_validated, postal_code):
             with assert_num_queries(self.expected_num_queries):
@@ -2170,7 +2230,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             assert {row["Nom de la structure"] for row in rows} == {"B", "D"}
             assert html_parser.extract_pagination_info(response.data) == (1, 1, 2)
 
-        @pytest.mark.parametrize("search", ["1", "1234", "123456", "1234567", "12345678", "12345678912345", "  1234"])
+        @pytest.mark.parametrize("search", ["1", "1234", "123456", "12345678", "12345678912345", "  1234"])
         def test_list_search_by_invalid_number_of_digits(self, authenticated_client, search):
             with assert_num_queries(self.expected_num_queries_when_no_query + 1):  # rollback transaction
                 response = authenticated_client.get(
@@ -2179,7 +2239,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 assert response.status_code == 400
 
             assert (
-                "Le nombre de chiffres ne correspond pas à un SIREN, code postal, département ou ID DMS CB"
+                "Le nombre de chiffres ne correspond pas à un SIREN, RID7, code postal, département ou ID DMS CB"
                 in response.data.decode("utf-8")
             )
 

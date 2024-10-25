@@ -54,6 +54,19 @@ class RejectedOffererFactory(OffererFactory):
     isActive = False
 
 
+class CaledonianOffererFactory(OffererFactory):
+    name = factory.Sequence("Structure calédonienne {}".format)
+    street = "Avenue James Cook"
+    postalCode = "98800"
+    city = "Nouméa"
+    siren = factory.Sequence(lambda n: siren_utils.rid7_to_siren(f"2{n + 1:06}"))
+    allowedOnAdage = False
+
+
+class NotValidatedCaledonianOffererFactory(CaledonianOffererFactory):
+    validationStatus = ValidationStatus.NEW
+
+
 class CollectiveOffererFactory(OffererFactory):
     name = factory.Sequence("[EAC] La structure de Moz'Art {}".format)
 
@@ -186,6 +199,22 @@ def _get_department_code(postal_code: str | None) -> str | None:
     if not postal_code:
         return None
     return postal_code_utils.PostalCode(postal_code).get_departement_code()
+
+
+class CaledonianVenueFactory(VenueFactory):
+    name = factory.Sequence("Partenaire culturel calédonien {}".format)
+    latitude: float | None = -22.26355
+    longitude: float | None = 166.4146
+    managingOfferer = factory.SubFactory(CaledonianOffererFactory)
+    street = factory.LazyAttribute(lambda o: None if o.isVirtual else "Avenue James Cook")
+    banId = factory.LazyAttribute(lambda o: None if o.isVirtual else "98818_w65mkd")
+    postalCode = factory.LazyAttribute(lambda o: None if o.isVirtual else "98800")
+    city = factory.LazyAttribute(lambda o: None if o.isVirtual else "Nouméa")
+    siret = factory.LazyAttributeSequence(
+        lambda o, n: siren_utils.ridet_to_siret(f"{siren_utils.siren_to_rid7(o.managingOfferer.siren)}{n%100:03}")
+    )
+    venueTypeCode = models.VenueTypeCode.BOOKSTORE
+    adageId = None
 
 
 class CollectiveVenueFactory(VenueFactory):
