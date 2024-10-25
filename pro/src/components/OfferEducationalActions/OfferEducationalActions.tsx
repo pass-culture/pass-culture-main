@@ -5,6 +5,7 @@ import { useSWRConfig } from 'swr'
 import { api } from 'apiClient/api'
 import {
   CollectiveBookingStatus,
+  CollectiveOfferDisplayedStatus,
   CollectiveOfferStatus,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
@@ -26,6 +27,7 @@ import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,
+  isDateValid,
   toDateStrippedOfTimezone,
 } from 'commons/utils/date'
 import { CollectiveStatusLabel } from 'components/CollectiveStatusLabel/CollectiveStatusLabel'
@@ -123,7 +125,19 @@ export const OfferEducationalActions = ({
     ])
   }
 
+  const isTemplateOfferExpired =
+    isDateValid(offer.dates?.end) &&
+    new Date(offer.dates.end).getTime() < Date.now()
+
   const activateOffer = async () => {
+    // TODO(anoukhello - 25-10-24) remove this condition when new collective status and actions will be enabled
+    // as publish action should not be enable for expired template offers
+    if (isTemplateOfferExpired) {
+      notify.error(
+        "Les dates de l'offre sont dépassées. Pour la publier, vous devez les modifier."
+      )
+      return
+    }
     if (isCollectiveOfferTemplate(offer) || offer.isActive) {
       await setIsOfferActive(!offer.isActive)
       return
@@ -148,10 +162,11 @@ export const OfferEducationalActions = ({
   const shouldDisplayAdagePublicationButton =
     !isBooked &&
     ![
-      CollectiveOfferStatus.EXPIRED,
-      CollectiveOfferStatus.PENDING,
-      CollectiveOfferStatus.ARCHIVED,
-    ].includes(offer.status)
+      CollectiveOfferDisplayedStatus.EXPIRED,
+      CollectiveOfferDisplayedStatus.PENDING,
+      CollectiveOfferDisplayedStatus.REJECTED,
+      CollectiveOfferDisplayedStatus.ARCHIVED,
+    ].includes(offer.displayedStatus)
 
   const shouldDisplayBookingLink =
     lastBookingId &&
@@ -161,21 +176,30 @@ export const OfferEducationalActions = ({
   const shouldDisplayStatusSeparator =
     shouldDisplayAdagePublicationButton || shouldDisplayBookingLink
 
+  const shouldShowHideButton = offer.isActive && !isTemplateOfferExpired
+  const publishButtonConfig = shouldShowHideButton
+    ? {
+        wording: `${areNewStatusesEnabled ? 'Mettre en pause' : 'Masquer la publication'} sur ADAGE`,
+        icon: fullHideIcon,
+      }
+    : {
+        wording: 'Publier sur ADAGE',
+        icon: strokeCheckIcon,
+      }
+
   return (
     <>
       {shouldShowOfferActions && (
         <div className={cn(style['actions'], className)}>
           {shouldDisplayAdagePublicationButton && (
             <Button
-              icon={offer.isActive ? fullHideIcon : strokeCheckIcon}
+              icon={publishButtonConfig.icon}
               onClick={activateOffer}
               variant={ButtonVariant.TERNARY}
               className={style['button-link']}
               iconPosition={IconPositionEnum.LEFT}
             >
-              {offer.isActive
-                ? `${areNewStatusesEnabled ? 'Mettre en pause' : 'Masquer la publication'} sur ADAGE`
-                : 'Publier sur ADAGE'}
+              {publishButtonConfig.wording}
             </Button>
           )}
 
