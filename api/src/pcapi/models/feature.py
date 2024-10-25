@@ -138,6 +138,7 @@ class FeatureToggle(enum.Enum):
     WIP_DISABLE_TODAY_STOCK_NOTIFICATION = (
         "Désactiver la notification push Batch pour les réservations se déroulant le jour même"
     )
+    WIP_ENABLE_PRO_ONBOARDING = "Activer le parcours d'onboarding didactique des acteurs culturels"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -202,6 +203,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE,
     FeatureToggle.WIP_ENABLE_NEW_HASHING_ALGORITHM,
     FeatureToggle.WIP_ENABLE_OFFER_ADDRESS,
+    FeatureToggle.WIP_ENABLE_PRO_ONBOARDING,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
     FeatureToggle.WIP_OFFERER_STATS_V2,
     FeatureToggle.WIP_SPLIT_OFFER,
