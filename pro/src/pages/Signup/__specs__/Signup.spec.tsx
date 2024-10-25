@@ -1,12 +1,15 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
 import { routesSignup } from 'app/AppRouter/subroutesSignupMap'
+import { getOffererNameFactory } from 'commons/utils/individualApiFactories'
 import {
-  RenderWithProvidersOptions,
   renderWithProviders,
+  RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { Signup } from '../Signup'
 
@@ -22,6 +25,7 @@ vi.mock('apiClient/api', () => ({
 const renderSignup = (options?: RenderWithProvidersOptions) =>
   renderWithProviders(
     <Routes>
+      <Route path="/accueil" element="Connecté" />
       <Route path="/inscription" element={<Signup />}>
         {routesSignup.map((route) => (
           <Route key={route.path} path={route.path} element={route.element} />
@@ -84,6 +88,42 @@ describe('src | components | pages | Signup', () => {
         'Vous allez recevoir un lien de confirmation par email. Cliquez sur ce lien pour confirmer la création de votre compte.'
       )
     ).toBeInTheDocument()
+  })
+
+  it('should redirect logged users on confirmation page', async () => {
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: [
+        getOffererNameFactory({
+          id: 1,
+          name: 'Mon super cinéma',
+        }),
+        getOffererNameFactory({
+          id: 1,
+          name: 'Ma super librairie',
+        }),
+      ],
+    })
+
+    const user = sharedCurrentUserFactory()
+    renderSignup({
+      initialRouterEntries: ['/inscription/confirmation'],
+      features: ['ENABLE_PRO_ACCOUNT_CREATION'],
+      user,
+      storeOverrides: {
+        user: {
+          selectedOffererId: 1,
+          currentUser: user,
+        },
+      },
+    })
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText(/Votre compte est en cours de création./)
+      ).not.toBeInTheDocument()
+    })
+
+    expect(screen.getByText(/Connecté/)).toBeInTheDocument()
   })
 
   it('should render maintenance page when signup is unavailable', () => {
