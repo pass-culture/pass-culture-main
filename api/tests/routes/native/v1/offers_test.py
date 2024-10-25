@@ -276,8 +276,10 @@ class OffersTest:
         offers_factories.ThingStockFactory(offer=offer, price=12.34, quantity=None)
 
         offer_id = offer.id
-        # select offer
-        with assert_num_queries(1):
+        # 1. select offer
+        # 2. select stocks
+        # 3. select mediations
+        with assert_num_queries(3):
             with assert_no_duplicated_queries():
                 response = client.get(f"/native/v1/offer/{offer_id}")
                 assert response.status_code == 200
