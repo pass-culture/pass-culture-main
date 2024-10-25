@@ -88,7 +88,7 @@ export const App = (): JSX.Element | null => {
   if (
     !currentRoute?.meta?.public &&
     !currentRoute?.path.includes('/parcours-inscription') &&
-    currentUser !== null &&
+    !!currentUser &&
     !currentUser.isAdmin &&
     !currentUser.hasUserOfferer
   ) {
