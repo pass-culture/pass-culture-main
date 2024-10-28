@@ -6,14 +6,13 @@ import useSWR from 'swr'
 import { api } from 'apiClient/api'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import * as orejime from 'app/App/analytics/orejime'
+import { App } from 'app/App/App'
 import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
-
-import { App } from '../App/App'
 
 vi.mock('app/App/analytics/firebase', () => ({ useFirebase: vi.fn() }))
 vi.mock('app/App/hook/useLogNavigation', () => ({ useLogNavigation: vi.fn() }))

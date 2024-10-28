@@ -24,6 +24,7 @@ import { Audience } from 'commons/core/shared/types'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { stringify } from 'commons/utils/query-string'
 import { NoData } from 'components/NoData/NoData'
 import { ChoosePreFiltersMessage } from 'pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import { NoBookingsForPreFiltersMessage } from 'pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
@@ -32,8 +33,6 @@ import {
   formatAndOrderVenues,
 } from 'repository/venuesService'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
-
-import { stringify } from '../../commons/utils/query-string'
 
 import styles from './Bookings.module.scss'
 import { BookingsRecapTable } from './BookingsRecapTable/BookingsRecapTable'

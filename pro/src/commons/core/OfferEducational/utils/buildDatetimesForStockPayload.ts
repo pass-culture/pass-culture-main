@@ -1,12 +1,8 @@
 import { endOfDay, isSameDay } from 'date-fns'
 
+import { isDateValid, toISOStringWithoutMilliseconds } from 'commons/utils/date'
+import { getUtcDateTimeFromLocalDepartement } from 'commons/utils/timezone'
 import { buildDateTime } from 'components/IndividualOffer/StocksEventEdition/serializers'
-
-import {
-  isDateValid,
-  toISOStringWithoutMilliseconds,
-} from '../../../utils/date'
-import { getUtcDateTimeFromLocalDepartement } from '../../../utils/timezone'
 
 const getBookingLimitDatetime = (
   bookingLimitDatetime: string,

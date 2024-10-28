@@ -17,8 +17,7 @@ import {
 } from 'commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-
-import { OffersRoute } from '../../../pages/Offers/OffersRoute'
+import { OffersRoute } from 'pages/Offers/OffersRoute'
 
 const categoriesAndSubcategories = {
   categories: [

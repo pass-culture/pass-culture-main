@@ -2,6 +2,8 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
+import * as useAnalytics from 'app/App/analytics/firebase'
+import { Events, VenueEvents } from 'commons/core/FirebaseEvents/constants'
 import {
   defaultGetOffererVenueResponseModel,
   defaultGetOffererResponseModel,
@@ -11,11 +13,6 @@ import {
   renderWithProviders,
 } from 'commons/utils/renderWithProviders'
 
-import * as useAnalytics from '../../../../app/App/analytics/firebase'
-import {
-  Events,
-  VenueEvents,
-} from '../../../../commons/core/FirebaseEvents/constants'
 import * as venueUtils from '../../venueUtils'
 import { VenueOfferSteps, VenueOfferStepsProps } from '../VenueOfferSteps'
 
