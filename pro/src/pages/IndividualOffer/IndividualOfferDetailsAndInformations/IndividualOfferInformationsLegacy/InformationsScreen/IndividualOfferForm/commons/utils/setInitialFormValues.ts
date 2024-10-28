@@ -5,8 +5,8 @@ import {
 import { AccessibilityEnum } from 'commons/core/shared/types'
 import { OFFER_LOCATION } from 'pages/IndividualOffer/commons/constants'
 import { IndividualOfferFormValues } from 'pages/IndividualOffer/commons/types'
+import { FORM_DEFAULT_VALUES } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/commons/constants'
 import { deSerializeDurationMinutes } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferDetails/commons/utils/utils'
-import { FORM_DEFAULT_VALUES } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferInformationsLegacy/InformationsScreen/IndividualOfferForm/commons/constants'
 
 import { buildSubcategoryFields } from './buildSubCategoryFields'
 

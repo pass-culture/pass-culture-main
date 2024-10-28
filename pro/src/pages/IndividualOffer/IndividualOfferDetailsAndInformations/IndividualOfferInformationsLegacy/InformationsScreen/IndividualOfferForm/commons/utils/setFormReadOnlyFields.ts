@@ -5,7 +5,7 @@ import {
 } from 'commons/core/Offers/constants'
 import { isOfferSynchronized } from 'commons/core/Offers/utils/typology'
 import { isAllocineProvider } from 'commons/core/Providers/utils/utils'
-import { FORM_DEFAULT_VALUES } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferInformationsLegacy/InformationsScreen/IndividualOfferForm/commons/constants'
+import { FORM_DEFAULT_VALUES } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/commons/constants'
 
 const setFormReadOnlyFieldsForSynchronizedOffer = (
   offer: GetIndividualOfferResponseModel

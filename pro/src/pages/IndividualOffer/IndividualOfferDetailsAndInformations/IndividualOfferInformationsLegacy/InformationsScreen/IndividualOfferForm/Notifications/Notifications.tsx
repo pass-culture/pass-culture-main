@@ -4,10 +4,9 @@ import { useEffect } from 'react'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { IndividualOfferFormValues } from 'pages/IndividualOffer/commons/types'
+import { NOTIFICATIONS_DEFAULT_VALUES } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/commons/constants'
 import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
-
-import { NOTIFICATIONS_DEFAULT_VALUES } from './constants'
 
 export interface NotificationsProps {
   venueBookingEmail?: string | null

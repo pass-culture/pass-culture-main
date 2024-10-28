@@ -13,14 +13,16 @@ import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullMoreIcon from 'icons/full-more.svg'
 import { IndividualOfferFormValues } from 'pages/IndividualOffer/commons/types'
-import { SUBCATEGORIES_FIELDS_DEFAULT_VALUES } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/commons/constants'
+import {
+  SUBCATEGORIES_FIELDS_DEFAULT_VALUES,
+  FORM_DEFAULT_VALUES,
+} from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/commons/constants'
 import { getFilteredVenueListBySubcategory } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferDetails/commons/getFilteredVenueList'
 import {
   hasMusicType,
   buildCategoryOptions,
   buildSubcategoryOptions,
 } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferDetails/commons/utils/utils'
-import { FORM_DEFAULT_VALUES } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferInformationsLegacy/InformationsScreen/IndividualOfferForm/commons/constants'
 import { Select } from 'ui-kit/form/Select/Select'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 

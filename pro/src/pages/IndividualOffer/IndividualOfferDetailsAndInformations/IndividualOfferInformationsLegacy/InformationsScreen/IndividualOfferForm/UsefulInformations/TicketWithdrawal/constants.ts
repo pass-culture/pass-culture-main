@@ -1,10 +1,4 @@
 import { WithdrawalTypeEnum } from 'apiClient/v1'
-import { SUBCATEGORIES_FIELDS_DEFAULT_VALUES } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/commons/constants'
-export const TICKET_WITHDRAWAL_DEFAULT_VALUES = {
-  withdrawalDetails: '',
-  withdrawalType: SUBCATEGORIES_FIELDS_DEFAULT_VALUES['withdrawalType'],
-  withdrawalDelay: SUBCATEGORIES_FIELDS_DEFAULT_VALUES['withdrawalDelay'],
-}
 
 export const ticketWithdrawalTypeRadios = [
   {

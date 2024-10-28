@@ -3,7 +3,7 @@ import useSWR from 'swr'
 import { api } from 'apiClient/api'
 import { GET_MUSIC_TYPES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { FORM_DEFAULT_VALUES } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferInformationsLegacy/InformationsScreen/IndividualOfferForm/commons/constants'
+import { FORM_DEFAULT_VALUES } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/commons/constants'
 import { Select } from 'ui-kit/form/Select/Select'
 
 interface MusicTypesProps {
