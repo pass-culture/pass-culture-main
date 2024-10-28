@@ -113,12 +113,18 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
   },
   // confirmation pages
   {
-    lazy: () => import('pages/IndividualOfferWizard/Confirmation/Confirmation'),
+    lazy: () =>
+      import(
+        'pages/IndividualOffer/IndividualOfferConfirmation/IndividualOfferConfirmation'
+      ),
     path: '/offre/individuelle/:offerId/creation/confirmation',
     title: 'Confirmation - Offre individuelle publiée',
   },
   {
-    lazy: () => import('pages/IndividualOfferWizard/Confirmation/Confirmation'),
+    lazy: () =>
+      import(
+        'pages/IndividualOffer/IndividualOfferConfirmation/IndividualOfferConfirmation'
+      ),
     path: '/offre/individuelle/:offerId/confirmation',
     title: 'Confirmation - Offre individuelle publiée',
   },
