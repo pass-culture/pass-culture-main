@@ -1,11 +1,11 @@
 import { Layout } from 'app/App/layout/Layout'
 import { isCollectiveOffer } from 'commons/core/OfferEducational/types'
-import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
 import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import {
   MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,
 } from 'pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
+import { CollectiveOfferLayout } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
 import { CollectiveOfferPreviewCreationScreen } from 'pages/CollectiveOffer/CollectiveOfferPreview/CollectiveOfferPreviewCreation/components/CollectiveOfferPreviewCreation/CollectiveOfferPreviewCreationScreen'
 
 export const CollectiveOfferPreviewCreation = ({

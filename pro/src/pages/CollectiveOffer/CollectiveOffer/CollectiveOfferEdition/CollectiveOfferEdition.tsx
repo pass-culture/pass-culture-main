@@ -5,7 +5,7 @@ import {
   isCollectiveOfferTemplate,
   Mode,
 } from 'commons/core/OfferEducational/types'
-import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
+import { CollectiveOfferLayout } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { OfferEducational } from '../components/OfferEducational/OfferEducational'
