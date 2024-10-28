@@ -7,7 +7,7 @@ import { EventDatesInfos } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { DownloadBookingsModal } from '../DownloadBookingsModal'
+import { DownloadBookingsModal } from './DownloadBookingsModal'
 
 const MOCK_OFFER_ID = 1
 const mockLogEvent = vi.fn()
