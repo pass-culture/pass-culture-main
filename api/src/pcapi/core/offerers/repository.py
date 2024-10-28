@@ -367,6 +367,11 @@ def get_venues_by_ids(ids: Collection[int]) -> Collection[models.Venue]:
     )
 
 
+def get_venue_ids_by_offerer_ids(ids: Collection[int]) -> Collection[int]:
+    query = models.Venue.query.filter(models.Venue.managingOffererId.in_(ids)).with_entities(models.Venue.id)
+    return [v.id for v in query]
+
+
 def get_emails_by_venue(venue: models.Venue) -> set[str]:
     """
     Get all emails for which pro attributes may be modified when the venue is updated or deleted.

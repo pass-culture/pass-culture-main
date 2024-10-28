@@ -31,6 +31,7 @@ from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
@@ -73,7 +74,7 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
     "CATEGORY": {
         "field": "category",
         "column": offers_models.Offer.subcategoryId,
-        "facet": "offer.category",
+        "facet": "offer.subcategoryId",
         "special": lambda l: [
             subcategory.id for subcategory in subcategories_v2.ALL_SUBCATEGORIES if subcategory.category.id in l
         ],
@@ -130,12 +131,12 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
     "NAME": {
         "field": "string",
         "column": offers_models.Offer.name,
-        "facet": "offer.name",
     },
     "OFFERER": {
         "field": "offerer",
         "column": offerers_models.Venue.managingOffererId,
-        "facet": "offerer.name",
+        "facet": "venue.id",
+        "algolia_special": offerers_repository.get_venue_ids_by_offerer_ids,
         "inner_join": "venue",
     },
     "TAG": {
@@ -163,7 +164,7 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
     },
     "SUBCATEGORY": {
         "field": "subcategory",
-        "facet": "offer.subCategoryId",
+        "facet": "offer.subcategoryId",
         "column": offers_models.Offer.subcategoryId,
     },
     "SYNCHRONIZED": {

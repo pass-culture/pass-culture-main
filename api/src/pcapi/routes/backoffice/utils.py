@@ -71,7 +71,7 @@ OPERATOR_DICT: dict[str, dict[str, typing.Any]] = {
 
 ALGOLIA_OPERATOR_DICT: dict[str, typing.Any] = {
     "IN": lambda x, y: "(" + " OR ".join([f"{x}:{i}" for i in y]) + ")",
-    "NOT_IN": lambda x, y: "NOT (" + " OR ".join([f"{x}:{i}" for i in y]) + ")",
+    "NOT_IN": lambda x, y: "(" + " AND ".join([f"NOT {x}:{i}" for i in y]) + ")",
     "EQUALS": lambda x, y: f"{x}:{y}",
     "NOT_EQUALS": lambda x, y: f"NOT {x}:{y}",
     "NUMBER_EQUALS": lambda x, y: f"{x}={y}",
@@ -428,7 +428,7 @@ def generate_algolia_search_string(
         if not meta_field:
             warnings.add(f"La règle de recherche '{search_field}' n'est pas supportée, merci de prévenir les devs")
             continue
-        field_value = meta_field.get("special", lambda x: x)(search_data.get(meta_field["field"]))
+        field_value = meta_field.get("algolia_special", lambda x: x)(search_data.get(meta_field["field"]))
         filters.append(ALGOLIA_OPERATOR_DICT[operator](meta_field["facet"], field_value))
 
     return " AND ".join(filters), warnings
