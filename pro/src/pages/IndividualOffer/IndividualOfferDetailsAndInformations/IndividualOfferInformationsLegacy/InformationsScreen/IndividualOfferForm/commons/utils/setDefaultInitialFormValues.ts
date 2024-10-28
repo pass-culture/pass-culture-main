@@ -4,11 +4,10 @@ import {
 } from 'apiClient/v1'
 import { AccessibilityEnum } from 'commons/core/shared/types'
 import { IndividualOfferFormValues } from 'pages/IndividualOffer/commons/types'
-
 import {
   FORM_DEFAULT_VALUES,
   FORM_DEFAULT_VALUES_NO_OFFER_LOCATION,
-} from '../constants'
+} from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/commons/constants'
 
 import { buildSubcategoryFields } from './buildSubCategoryFields'
 

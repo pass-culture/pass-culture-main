@@ -8,7 +8,7 @@ import {
   OFFER_STATUS_REJECTED,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferFactory } from 'commons/utils/individualApiFactories'
-import { FORM_DEFAULT_VALUES } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferInformationsLegacy/InformationsScreen/IndividualOfferForm/commons/constants'
+import { FORM_DEFAULT_VALUES } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/commons/constants'
 
 import { setFormReadOnlyFields } from '../setFormReadOnlyFields'
 

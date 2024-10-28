@@ -17,10 +17,10 @@ import {
 } from 'commons/utils/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { IndividualOfferFormValues } from 'pages/IndividualOffer/commons/types'
+import { CATEGORIES_DEFAULT_VALUES } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/commons/constants'
 import { Button } from 'ui-kit/Button/Button'
 
 import { Categories, CategoriesProps } from './Categories'
-import { CATEGORIES_DEFAULT_VALUES } from './constants'
 import { validationSchema } from './validationSchema'
 
 const renderCategories = ({

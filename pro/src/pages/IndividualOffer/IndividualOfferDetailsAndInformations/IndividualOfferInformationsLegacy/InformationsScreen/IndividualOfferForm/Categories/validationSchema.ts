@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-import { CATEGORIES_DEFAULT_VALUES } from './constants'
+import { CATEGORIES_DEFAULT_VALUES } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/commons/constants'
 
 export const validationSchema = {
   categoryId: yup.string().required('Veuillez sélectionner une catégorie'),

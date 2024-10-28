@@ -7,7 +7,7 @@ import {
   venueListItemFactory,
 } from 'commons/utils/individualApiFactories'
 import { IndividualOfferFormValues } from 'pages/IndividualOffer/commons/types'
-import { FORM_DEFAULT_VALUES } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferInformationsLegacy/InformationsScreen/IndividualOfferForm/commons/constants'
+import { FORM_DEFAULT_VALUES } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/commons/constants'
 
 import { setDefaultInitialFormValues } from '../setDefaultInitialFormValues'
 

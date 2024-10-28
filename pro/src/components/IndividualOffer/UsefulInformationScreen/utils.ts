@@ -12,7 +12,7 @@ import {
 import { isOfferSynchronized } from 'commons/core/Offers/utils/typology'
 import { AccessibilityEnum } from 'commons/core/shared/types'
 import { OFFER_LOCATION } from 'pages/IndividualOffer/commons/constants'
-import { FORM_DEFAULT_VALUES } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferInformationsLegacy/InformationsScreen/IndividualOfferForm/commons/constants'
+import { FORM_DEFAULT_VALUES } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/commons/constants'
 import { computeAddressDisplayName } from 'repository/venuesService'
 
 import { DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES } from './constants'
