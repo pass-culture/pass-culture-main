@@ -4,7 +4,7 @@ import { PatchOfferBodyModel, PostOfferBodyModel } from 'apiClient/v1'
 import { AccessibilityEnum } from 'commons/core/shared/types'
 import { getIndividualOfferFactory } from 'commons/utils/individualApiFactories'
 import { IndividualOfferFormValues } from 'pages/IndividualOffer/commons/types'
-import { OFFER_LOCATION } from 'pages/IndividualOffer/components/OfferLocation/constants'
+import { OFFER_LOCATION } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/components/OfferLocation/constants'
 
 import {
   serializeDurationMinutes,
