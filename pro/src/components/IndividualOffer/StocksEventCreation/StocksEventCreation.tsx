@@ -10,8 +10,8 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { StocksEventList } from 'components/StocksEventList/StocksEventList'
+import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
 
-import { ActionBar } from '../ActionBar/ActionBar'
 import { getDepartmentCode } from '../utils/getDepartmentCode'
 
 import { HelpSection } from './HelpSection/HelpSection'

@@ -27,12 +27,12 @@ import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIn
 import fullCodeIcon from 'icons/full-code.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
+import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
 import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
-import { ActionBar } from '../ActionBar/ActionBar'
 import { DialogStockThingDeleteConfirm } from '../DialogStockDeleteConfirm/DialogStockThingDeleteConfirm'
 import { useNotifyFormError } from '../hooks/useNotifyFormError'
 import { getDepartmentCode } from '../utils/getDepartmentCode'

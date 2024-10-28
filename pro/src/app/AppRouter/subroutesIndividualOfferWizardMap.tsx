@@ -5,28 +5,43 @@ import type { RouteConfig } from './routesMap'
 export const routesIndividualOfferWizard: RouteConfig[] = [
   // old information pages
   {
-    lazy: () => import('pages/IndividualOfferWizard/Offer/Offer'),
+    lazy: () =>
+      import(
+        'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferInformationsLegacy/IndividualOfferDetailsAndInformationsLegacy'
+      ),
     path: '/offre/individuelle/:offerId/informations',
     title: 'Détails - Créer une offre individuelle',
   },
   {
-    lazy: () => import('pages/IndividualOfferWizard/Offer/Offer'),
+    lazy: () =>
+      import(
+        'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferInformationsLegacy/IndividualOfferDetailsAndInformationsLegacy'
+      ),
     path: '/offre/individuelle/:offerId/creation/informations',
     title: 'Détails - Créer une offre individuelle',
   },
   {
-    lazy: () => import('pages/IndividualOfferWizard/Offer/Offer'),
+    lazy: () =>
+      import(
+        'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferInformationsLegacy/IndividualOfferDetailsAndInformationsLegacy'
+      ),
     path: '/offre/individuelle/:offerId/edition/informations',
     title: 'Détails - Modifier une offre individuelle',
   },
   // details pages
   {
-    lazy: () => import('pages/IndividualOfferWizard/Details/Details'),
+    lazy: () =>
+      import(
+        'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferDetails/IndividualOfferDetails'
+      ),
     path: '/offre/individuelle/creation/details',
     title: 'Détails de l’offre - Créer une offre individuelle',
   },
   {
-    lazy: () => import('pages/IndividualOfferWizard/Details/Details'),
+    lazy: () =>
+      import(
+        'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferDetails/IndividualOfferDetails'
+      ),
     path: '/offre/individuelle/:offerId/creation/details',
     title: 'Détails de l’offre - Créer une offre individuelle',
   },
@@ -37,7 +52,10 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
     title: 'Détails de l’offre - Consulter une offre individuelle',
   },
   {
-    lazy: () => import('pages/IndividualOfferWizard/Details/Details'),
+    lazy: () =>
+      import(
+        'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferDetails/IndividualOfferDetails'
+      ),
     path: '/offre/individuelle/:offerId/edition/details',
     title: 'Détails de l’offre - Modifier une offre individuelle',
   },

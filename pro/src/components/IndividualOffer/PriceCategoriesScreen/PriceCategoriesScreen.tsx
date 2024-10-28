@@ -16,8 +16,8 @@ import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
+import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
 
-import { ActionBar } from '../ActionBar/ActionBar'
 import { getSuccessMessage } from '../utils/getSuccessMessage'
 
 import { computeInitialValues } from './form/computeInitialValues'
