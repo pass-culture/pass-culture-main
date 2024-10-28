@@ -4,8 +4,8 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 import { IndividualOfferFormValues } from 'pages/IndividualOffer/commons/types'
 import { Button } from 'ui-kit/Button/Button'
 

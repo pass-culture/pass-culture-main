@@ -4,7 +4,7 @@ import React from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
-import { getIndividualOfferFactory } from 'commons/utils/individualApiFactories'
+import { getIndividualOfferFactory } from 'commons/utils/factories/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,

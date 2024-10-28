@@ -1,4 +1,5 @@
-import { priceCategoryFormFactory } from '../form/factories'
+import { priceCategoryFormFactory } from 'commons/utils/factories/priceCategoryFactories'
+
 import { PriceCategoriesFormValues } from '../form/types'
 import { arePriceCategoriesChanged } from '../PriceCategoriesScreen'
 

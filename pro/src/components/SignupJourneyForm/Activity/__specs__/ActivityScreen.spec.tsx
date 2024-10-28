@@ -10,8 +10,8 @@ import {
   SignupJourneyContext,
   SignupJourneyContextValues,
 } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 import { Notification } from 'components/Notification/Notification'
 
 import { Activity } from '../Activity'

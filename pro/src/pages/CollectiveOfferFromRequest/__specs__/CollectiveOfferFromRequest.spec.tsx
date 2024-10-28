@@ -9,7 +9,7 @@ import {
   getCollectiveOfferManagingOffererFactory,
   getCollectiveOfferTemplateFactory,
   getCollectiveOfferVenueFactory,
-} from 'commons/utils/collectiveApiFactories'
+} from 'commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { CollectiveOfferFromRequest } from '../CollectiveOfferFromRequest'

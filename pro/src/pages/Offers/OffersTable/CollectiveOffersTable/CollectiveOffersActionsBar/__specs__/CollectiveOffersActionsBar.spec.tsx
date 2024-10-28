@@ -9,7 +9,7 @@ import {
 } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
-import { collectiveOfferFactory } from 'commons/utils/collectiveApiFactories'
+import { collectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { Notification } from 'components/Notification/Notification'
 

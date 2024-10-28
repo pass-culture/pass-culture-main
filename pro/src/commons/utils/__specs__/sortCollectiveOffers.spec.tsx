@@ -1,5 +1,5 @@
 import { SortingMode } from 'commons/hooks/useColumnSorting'
-import { collectiveOfferFactory } from 'commons/utils/collectiveApiFactories'
+import { collectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
 import { sortCollectiveOffers } from 'commons/utils/sortCollectiveOffers'
 import { CollectiveOffersSortingColumn } from 'pages/CollectiveOffers/components/CollectiveOffersScreen/CollectiveOffersScreen'
 

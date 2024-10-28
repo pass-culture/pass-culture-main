@@ -3,9 +3,9 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { defaultGetOffererResponseModel } from 'commons/utils/individualApiFactories'
+import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { VenueCreation } from '../VenueCreation'
 

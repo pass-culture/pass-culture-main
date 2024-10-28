@@ -8,7 +8,7 @@ import { OfferStatus } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import * as useNotification from 'commons/hooks/useNotification'
-import { getIndividualOfferFactory } from 'commons/utils/individualApiFactories'
+import { getIndividualOfferFactory } from 'commons/utils/factories/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,

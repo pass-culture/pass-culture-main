@@ -4,7 +4,7 @@ import { OfferAddressType } from 'apiClient/adage'
 import {
   defaultCollectiveTemplateOffer,
   defaultCollectiveOffer,
-} from 'commons/utils/adageFactories'
+} from 'commons/utils/factories/adageFactories'
 
 import {
   AdageOfferInfoSection,

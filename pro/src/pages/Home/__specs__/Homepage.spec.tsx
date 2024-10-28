@@ -15,12 +15,12 @@ import * as useAnalytics from 'app/App/analytics/firebase'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { Homepage } from '../Homepage'
 

@@ -4,7 +4,7 @@ import React from 'react'
 import {
   defaultGetOffererVenueResponseModel,
   defaultGetOffererResponseModel,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { VenueList, VenueListProps } from '../VenueList'

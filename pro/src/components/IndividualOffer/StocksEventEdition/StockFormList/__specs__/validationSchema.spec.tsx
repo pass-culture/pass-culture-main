@@ -1,6 +1,6 @@
+import { stockEventFactory } from 'commons/utils/factories/stockEventFactories'
 import { getYupValidationSchemaErrors } from 'commons/utils/yupValidationTestHelpers'
 
-import { stockEventFactory } from '../stockEventFactory'
 import { StockEventFormValues } from '../types'
 import { getValidationSchema } from '../validationSchema'
 

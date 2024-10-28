@@ -4,7 +4,7 @@ import React from 'react'
 import {
   bookingRecapFactory,
   bookingRecapStockFactory,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {

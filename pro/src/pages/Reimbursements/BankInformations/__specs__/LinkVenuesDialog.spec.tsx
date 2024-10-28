@@ -7,7 +7,7 @@ import * as useNotification from 'commons/hooks/useNotification'
 import {
   defaultBankAccount,
   defaultManagedVenues,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { LinkVenuesDialog } from '../LinkVenuesDialog'

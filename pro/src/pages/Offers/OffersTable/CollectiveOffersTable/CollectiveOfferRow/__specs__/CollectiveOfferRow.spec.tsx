@@ -14,12 +14,12 @@ import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { CollectiveBookingsEvents } from 'commons/core/FirebaseEvents/constants'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'commons/core/Offers/constants'
+import { getToday } from 'commons/utils/date'
 import {
   collectiveOfferFactory,
   listOffersVenueFactory,
-} from 'commons/utils/collectiveApiFactories'
-import { getToday } from 'commons/utils/date'
-import { listOffersStockFactory } from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/collectiveApiFactories'
+import { listOffersStockFactory } from 'commons/utils/factories/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,

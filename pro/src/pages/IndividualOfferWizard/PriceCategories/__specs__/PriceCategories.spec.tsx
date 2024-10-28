@@ -6,7 +6,7 @@ import {
   IndividualOfferContextValues,
   IndividualOfferContext,
 } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { individualOfferContextValuesFactory } from 'commons/utils/individualApiFactories'
+import { individualOfferContextValuesFactory } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { PriceCategories } from '../PriceCategories'

@@ -3,7 +3,7 @@ import { screen } from '@testing-library/react'
 import {
   defaultAdageUser,
   defaultUseInfiniteHitsReturn,
-} from 'commons/utils/adageFactories'
+} from 'commons/utils/factories/adageFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,

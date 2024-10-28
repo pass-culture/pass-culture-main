@@ -3,7 +3,7 @@ import { screen } from '@testing-library/react'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,
-} from 'commons/utils/adageFactories'
+} from 'commons/utils/factories/adageFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 

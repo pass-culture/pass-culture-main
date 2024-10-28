@@ -13,7 +13,7 @@ import * as useNotification from 'commons/hooks/useNotification'
 import {
   collectiveBookingCollectiveStockFactory,
   collectiveBookingFactory,
-} from 'commons/utils/collectiveApiFactories'
+} from 'commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {

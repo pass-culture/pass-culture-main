@@ -5,12 +5,12 @@ import { generatePath } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
-import { venueListItemFactory } from 'commons/utils/individualApiFactories'
+import { venueListItemFactory } from 'commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 
 import { IndividualOfferDetailsAndInformationsLegacy } from './IndividualOfferDetailsAndInformationsLegacy'

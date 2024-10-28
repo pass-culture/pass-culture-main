@@ -5,16 +5,16 @@ import * as router from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { SubcategoryIdEnum, VenueTypeCode } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { defaultGetVenue } from 'commons/utils/collectiveApiFactories'
+import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
 import {
   categoryFactory,
   subcategoryFactory,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { OfferTypeScreen } from '../OfferType'
 

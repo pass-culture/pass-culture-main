@@ -12,7 +12,7 @@ import {
   defaultCollectiveTemplateOffer,
   defaultUseInfiniteHitsReturn,
   defaultUseStatsReturn,
-} from 'commons/utils/adageFactories'
+} from 'commons/utils/factories/adageFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,

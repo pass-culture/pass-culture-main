@@ -10,7 +10,7 @@ import {
 } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { BankAccountEvents } from 'commons/core/FirebaseEvents/constants'
-import { defaultManagedVenues } from 'commons/utils/individualApiFactories'
+import { defaultManagedVenues } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { ReimbursementBankAccount } from '../ReimbursementBankAccount'

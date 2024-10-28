@@ -10,7 +10,7 @@ import {
   getIndividualOfferFactory,
   bookingRecapStockFactory,
   individualOfferContextValuesFactory,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { IndividualOfferBookingsSummaryScreen } from './IndividualOfferBookingsSummaryScreen'

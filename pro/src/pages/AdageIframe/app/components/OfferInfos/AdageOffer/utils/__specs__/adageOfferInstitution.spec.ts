@@ -1,5 +1,5 @@
 import { CollectiveOfferResponseModel } from 'apiClient/adage'
-import { defaultCollectiveOffer } from 'commons/utils/adageFactories'
+import { defaultCollectiveOffer } from 'commons/utils/factories/adageFactories'
 
 import { getBookableOfferInstitutionAndTeacherName } from '../adageOfferInstitution'
 

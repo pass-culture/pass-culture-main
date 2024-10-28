@@ -24,12 +24,12 @@ import {
   getCollectiveOfferTemplateFactory,
   defaultGetVenue,
   getCollectiveOfferFactory,
-} from 'commons/utils/collectiveApiFactories'
+} from 'commons/utils/factories/collectiveApiFactories'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
 } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import {
   CollectiveOfferNavigation,

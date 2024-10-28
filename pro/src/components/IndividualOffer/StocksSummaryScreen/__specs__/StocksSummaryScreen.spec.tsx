@@ -7,7 +7,7 @@ import {
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
   getOfferStockFactory,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { StocksSummaryScreen } from '../StocksSummaryScreen'

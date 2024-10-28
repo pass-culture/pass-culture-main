@@ -3,8 +3,8 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { ConfirmedAttachment } from '../ConfirmedAttachment'
 

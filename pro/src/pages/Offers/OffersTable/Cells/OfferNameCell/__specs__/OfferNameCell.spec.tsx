@@ -2,17 +2,17 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { OfferStatus } from 'apiClient/v1'
+import { FORMAT_DD_MM_YYYY_HH_mm } from 'commons/utils/date'
 import {
   collectiveOfferFactory,
   listOffersVenueFactory,
-} from 'commons/utils/collectiveApiFactories'
-import { AddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/commonOffersApiFactories'
-import { FORMAT_DD_MM_YYYY_HH_mm } from 'commons/utils/date'
+} from 'commons/utils/factories/collectiveApiFactories'
+import { AddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
 import {
   getOfferVenueFactory,
   listOffersOfferFactory,
   listOffersStockFactory,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,

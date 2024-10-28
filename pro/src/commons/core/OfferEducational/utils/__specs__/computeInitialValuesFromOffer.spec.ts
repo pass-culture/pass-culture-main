@@ -1,7 +1,7 @@
 import { OfferContactFormEnum } from 'apiClient/v1'
 import { DEFAULT_EAC_FORM_VALUES } from 'commons/core/OfferEducational/constants'
-import { getCollectiveOfferTemplateFactory } from 'commons/utils/collectiveApiFactories'
 import { formatShortDateForInput } from 'commons/utils/date'
+import { getCollectiveOfferTemplateFactory } from 'commons/utils/factories/collectiveApiFactories'
 
 import { computeInitialValuesFromOffer } from '../computeInitialValuesFromOffer'
 

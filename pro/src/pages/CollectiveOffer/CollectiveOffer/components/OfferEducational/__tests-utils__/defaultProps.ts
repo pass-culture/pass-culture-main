@@ -1,9 +1,8 @@
 import { Mode } from 'commons/core/OfferEducational/types'
-import { getCollectiveOfferFactory } from 'commons/utils/collectiveApiFactories'
+import { getCollectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
+import { userOffererFactory } from 'commons/utils/factories/userOfferersFactories'
 
 import { OfferEducationalProps } from '../OfferEducational'
-
-import { userOffererFactory } from './userOfferersFactory'
 
 const mockUserOfferer = userOffererFactory({})
 

@@ -6,11 +6,11 @@ import * as router from 'react-router-dom'
 import { CollectiveBookingStatus } from 'apiClient/v1'
 import { DEFAULT_EAC_STOCK_FORM_VALUES } from 'commons/core/OfferEducational/constants'
 import { Mode, EducationalOfferType } from 'commons/core/OfferEducational/types'
+import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferCollectiveStockFactory,
-} from 'commons/utils/collectiveApiFactories'
-import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
+} from 'commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { DETAILS_PRICE_LABEL } from '../constants/labels'

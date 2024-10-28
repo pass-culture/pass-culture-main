@@ -5,7 +5,7 @@ import {
   getCollectiveOfferTemplateFactory,
   defaultGetCollectiveOfferRequest,
   getCollectiveOfferVenueFactory,
-} from 'commons/utils/collectiveApiFactories'
+} from 'commons/utils/factories/collectiveApiFactories'
 
 import { extractInitialStockValues } from '../extractInitialStockValues'
 

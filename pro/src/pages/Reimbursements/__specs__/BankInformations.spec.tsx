@@ -12,9 +12,9 @@ import * as useAnalytics from 'app/App/analytics/firebase'
 import {
   defaultGetOffererResponseModel,
   defaultManagedVenues,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 import { BankInformations } from 'pages/Reimbursements/BankInformations/BankInformations'
 import { ReimbursementsContextProps } from 'pages/Reimbursements/Reimbursements'
 

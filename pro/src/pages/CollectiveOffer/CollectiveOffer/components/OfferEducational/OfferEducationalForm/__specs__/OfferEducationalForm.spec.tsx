@@ -6,12 +6,12 @@ import {
   Mode,
   OfferEducationalFormValues,
 } from 'commons/core/OfferEducational/types'
+import { userOffererFactory } from 'commons/utils/factories/userOfferersFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
 
-import { userOffererFactory } from '../../__tests-utils__/userOfferersFactory'
 import {
   OfferEducationalForm,
   OfferEducationalFormProps,

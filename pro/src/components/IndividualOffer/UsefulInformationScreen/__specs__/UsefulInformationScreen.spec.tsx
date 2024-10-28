@@ -12,7 +12,7 @@ import {
   CATEGORY_STATUS,
   OFFER_WIZARD_MODE,
 } from 'commons/core/Offers/constants'
-import { AddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/commonOffersApiFactories'
+import { AddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
 import {
   categoryFactory,
   getIndividualOfferFactory,
@@ -20,12 +20,12 @@ import {
   individualOfferContextValuesFactory,
   subcategoryFactory,
   venueListItemFactory,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import {
   UsefulInformationScreen,

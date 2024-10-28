@@ -4,7 +4,7 @@ import { api } from 'apiClient/api'
 import {
   defaultGetVenue,
   getCollectiveOfferTemplateFactory,
-} from 'commons/utils/collectiveApiFactories'
+} from 'commons/utils/factories/collectiveApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,

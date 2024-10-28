@@ -7,13 +7,13 @@ import {
 } from 'apiClient/v1'
 import { IndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { CATEGORY_STATUS } from 'commons/core/Offers/constants'
-import { AddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/commonOffersApiFactories'
+import { AddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
 import {
   categoryFactory,
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
   subcategoryFactory,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,

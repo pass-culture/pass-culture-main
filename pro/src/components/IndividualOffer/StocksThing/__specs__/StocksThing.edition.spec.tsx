@@ -20,9 +20,9 @@ import {
   getIndividualOfferUrl,
 } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { PATCH_SUCCESS_MESSAGE } from 'commons/core/shared/constants'
-import { getOfferStockFactory } from 'commons/utils/individualApiFactories'
+import { getOfferStockFactory } from 'commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { Notification } from 'components/Notification/Notification'
 import { Stocks } from 'pages/IndividualOfferWizard/Stocks/Stocks'

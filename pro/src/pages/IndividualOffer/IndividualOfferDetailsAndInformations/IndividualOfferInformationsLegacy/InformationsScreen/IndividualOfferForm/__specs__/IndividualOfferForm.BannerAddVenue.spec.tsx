@@ -14,9 +14,9 @@ import {
   getOffererNameFactory,
   subcategoryFactory,
   venueListItemFactory,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 import { IndividualOfferFormValues } from 'pages/IndividualOffer/commons/types'
 import { setDefaultInitialFormValues } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferInformationsLegacy/InformationsScreen/IndividualOfferForm/commons/utils/setDefaultInitialFormValues'
 

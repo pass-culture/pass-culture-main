@@ -12,8 +12,8 @@ import {
   SignupJourneyContextValues,
 } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
 import * as getSirenData from 'commons/core/Offerers/getSirenData'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'components/SignupJourneyForm/Offerer/constants'
 
 import { Offerers } from '../Offerers'

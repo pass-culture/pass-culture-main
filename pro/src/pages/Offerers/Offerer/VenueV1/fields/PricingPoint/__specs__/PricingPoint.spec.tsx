@@ -4,11 +4,11 @@ import { Formik } from 'formik'
 
 import { api } from 'apiClient/api'
 import * as useNotification from 'commons/hooks/useNotification'
-import { defaultGetVenue } from 'commons/utils/collectiveApiFactories'
+import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
 import {
   defaultGetOffererVenueResponseModel,
   defaultGetOffererResponseModel,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { PricingPoint, PricingPointProps } from '../PricingPoint'

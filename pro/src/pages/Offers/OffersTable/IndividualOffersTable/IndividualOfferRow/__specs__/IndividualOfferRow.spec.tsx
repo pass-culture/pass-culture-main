@@ -10,11 +10,11 @@ import {
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import { listOffersVenueFactory } from 'commons/utils/collectiveApiFactories'
+import { listOffersVenueFactory } from 'commons/utils/factories/collectiveApiFactories'
 import {
   listOffersOfferFactory,
   listOffersStockFactory,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { Notification } from 'components/Notification/Notification'
 

@@ -14,9 +14,9 @@ import { Audience } from 'commons/core/shared/types'
 import {
   listOffersOfferFactory,
   venueListItemFactory,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { OffersRoute } from '../../../pages/Offers/OffersRoute'
 

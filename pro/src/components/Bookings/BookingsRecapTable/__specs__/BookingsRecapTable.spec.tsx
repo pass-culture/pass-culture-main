@@ -11,8 +11,8 @@ import {
   collectiveBookingByIdFactory,
   collectiveBookingCollectiveStockFactory,
   collectiveBookingFactory,
-} from 'commons/utils/collectiveApiFactories'
-import { bookingRecapFactory } from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/collectiveApiFactories'
+import { bookingRecapFactory } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import * as filterBookingsRecap from 'components/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
 

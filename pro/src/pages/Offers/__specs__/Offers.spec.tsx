@@ -27,10 +27,10 @@ import {
   defaultGetOffererResponseModel,
   listOffersOfferFactory,
   venueListItemFactory,
-} from 'commons/utils/individualApiFactories'
-import { offererAddressFactory } from 'commons/utils/offererAddressFactories'
+} from 'commons/utils/factories/individualApiFactories'
+import { offererAddressFactory } from 'commons/utils/factories/offererAddressFactories'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { OffersRoute } from '../../../pages/Offers/OffersRoute'
 

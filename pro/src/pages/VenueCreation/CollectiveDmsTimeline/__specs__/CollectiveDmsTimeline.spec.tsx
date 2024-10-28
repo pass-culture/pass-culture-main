@@ -5,7 +5,7 @@ import React from 'react'
 import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
-import { defaultDMSApplicationForEAC } from 'commons/utils/collectiveApiFactories'
+import { defaultDMSApplicationForEAC } from 'commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { CollectiveDmsTimeline } from '../CollectiveDmsTimeline'

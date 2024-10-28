@@ -14,9 +14,9 @@ import {
   individualOfferContextValuesFactory,
   subcategoryFactory,
   venueListItemFactory,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 import * as filterCategories from 'pages/IndividualOffer/commons/filterCategories'
 
 import {

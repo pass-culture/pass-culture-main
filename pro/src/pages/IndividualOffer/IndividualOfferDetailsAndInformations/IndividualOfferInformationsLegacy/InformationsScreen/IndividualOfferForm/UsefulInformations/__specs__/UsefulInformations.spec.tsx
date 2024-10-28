@@ -14,7 +14,7 @@ import {
   getOffererNameFactory,
   subcategoryFactory,
   venueListItemFactory,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { IndividualOfferFormValues } from 'pages/IndividualOffer/commons/types'
 import { setDefaultInitialFormValues } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferInformationsLegacy/InformationsScreen/IndividualOfferForm/commons/utils/setDefaultInitialFormValues'

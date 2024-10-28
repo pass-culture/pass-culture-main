@@ -5,8 +5,8 @@ import React from 'react'
 import { api } from 'apiClient/api'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 import {
   ActionBarProps,
   ActionBar,

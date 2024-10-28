@@ -8,11 +8,11 @@ import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import * as useCurrentUser from 'commons/hooks/useCurrentUser'
 import * as useNotification from 'commons/hooks/useNotification'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
 } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { SignupValidation } from '../SignUpValidation'
 

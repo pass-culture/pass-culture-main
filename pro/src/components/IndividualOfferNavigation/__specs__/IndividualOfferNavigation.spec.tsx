@@ -12,7 +12,7 @@ import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualO
 import {
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { OFFER_WIZARD_STEP_IDS } from '../constants'

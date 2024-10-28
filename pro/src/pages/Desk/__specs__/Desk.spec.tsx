@@ -5,7 +5,7 @@ import { apiContremarque } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import { defaultGetBookingResponse } from 'commons/utils/individualApiFactories'
+import { defaultGetBookingResponse } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { Desk } from '../Desk'

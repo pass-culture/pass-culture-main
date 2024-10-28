@@ -7,7 +7,7 @@ import {
   defaultAdageUser,
   defaultCollectiveOffer,
   defaultCollectiveTemplateOffer,
-} from 'commons/utils/adageFactories'
+} from 'commons/utils/factories/adageFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,

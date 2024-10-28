@@ -4,13 +4,13 @@ import { userEvent } from '@testing-library/user-event'
 import { api } from 'apiClient/api'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
-import { defaultAdageUser } from 'commons/utils/adageFactories'
+import { defaultAdageUser } from 'commons/utils/factories/adageFactories'
 import {
   defaultGetVenue,
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
-} from 'commons/utils/collectiveApiFactories'
-import { defaultGetOffererResponseModel } from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/collectiveApiFactories'
+import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,

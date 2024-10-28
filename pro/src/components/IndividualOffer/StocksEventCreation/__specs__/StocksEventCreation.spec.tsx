@@ -15,7 +15,7 @@ import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
 import {
   getIndividualOfferFactory,
   getOfferStockFactory,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { Notification } from 'components/Notification/Notification'

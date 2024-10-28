@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import React from 'react'
 
-import { defaultGetOffererResponseModel } from 'commons/utils/individualApiFactories'
+import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { OffererBanners, OffererBannersProps } from '../OffererBanners'

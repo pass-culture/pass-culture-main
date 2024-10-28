@@ -7,7 +7,7 @@ import { Events } from 'commons/core/FirebaseEvents/constants'
 import {
   defaultGetOffererVenueResponseModel,
   defaultGetOffererResponseModel,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { VenueCreationLinks } from '../VenueCreationLinks'

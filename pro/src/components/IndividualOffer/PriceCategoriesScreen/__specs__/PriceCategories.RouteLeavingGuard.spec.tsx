@@ -10,7 +10,7 @@ import {
 } from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
-import { getIndividualOfferFactory } from 'commons/utils/individualApiFactories'
+import { getIndividualOfferFactory } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'

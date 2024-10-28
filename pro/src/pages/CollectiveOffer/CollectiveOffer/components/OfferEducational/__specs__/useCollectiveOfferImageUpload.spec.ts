@@ -5,8 +5,8 @@ import * as useNotification from 'commons/hooks/useNotification'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
-} from 'commons/utils/collectiveApiFactories'
-import { imageUploadArgsFactory } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/__tests-utils__/imageUploadArgsFactory'
+} from 'commons/utils/factories/collectiveApiFactories'
+import { imageUploadArgsFactory } from 'commons/utils/factories/imageUploadArgsFactories'
 
 import { useCollectiveOfferImageUpload } from '../useCollectiveOfferImageUpload'
 

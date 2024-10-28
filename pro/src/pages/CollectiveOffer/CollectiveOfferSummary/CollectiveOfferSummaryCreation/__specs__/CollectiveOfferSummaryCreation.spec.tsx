@@ -1,7 +1,7 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 
 import { api } from 'apiClient/api'
-import { getCollectiveOfferFactory } from 'commons/utils/collectiveApiFactories'
+import { getCollectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,

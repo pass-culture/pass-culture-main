@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 
 import { DMSApplicationstatus } from 'apiClient/v1'
-import { defaultDMSApplicationForEAC } from 'commons/utils/collectiveApiFactories'
+import { defaultDMSApplicationForEAC } from 'commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {

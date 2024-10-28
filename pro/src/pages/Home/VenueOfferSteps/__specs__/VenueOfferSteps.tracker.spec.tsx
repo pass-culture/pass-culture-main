@@ -5,7 +5,7 @@ import React from 'react'
 import {
   defaultGetOffererVenueResponseModel,
   defaultGetOffererResponseModel,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,

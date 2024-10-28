@@ -1,6 +1,6 @@
 import { OfferStatus, WithdrawalTypeEnum } from 'apiClient/v1'
 import { AccessibilityEnum } from 'commons/core/shared/types'
-import { getIndividualOfferFactory } from 'commons/utils/individualApiFactories'
+import { getIndividualOfferFactory } from 'commons/utils/factories/individualApiFactories'
 import { OFFER_LOCATION } from 'pages/IndividualOffer/commons/constants'
 
 import { DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES } from '../constants'

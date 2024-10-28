@@ -8,7 +8,7 @@ import { GET_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
 import {
   defaultUseInfiniteHitsReturn,
   defaultUseStatsReturn,
-} from 'commons/utils/adageFactories'
+} from 'commons/utils/factories/adageFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,

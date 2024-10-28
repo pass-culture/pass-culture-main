@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import {
   defaultGetOffererVenueResponseModel,
   defaultGetOffererResponseModel,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,

@@ -20,7 +20,7 @@ import * as useNotification from 'commons/hooks/useNotification'
 import {
   defaultDMSApplicationForEAC,
   defaultGetVenue,
-} from 'commons/utils/collectiveApiFactories'
+} from 'commons/utils/factories/collectiveApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,

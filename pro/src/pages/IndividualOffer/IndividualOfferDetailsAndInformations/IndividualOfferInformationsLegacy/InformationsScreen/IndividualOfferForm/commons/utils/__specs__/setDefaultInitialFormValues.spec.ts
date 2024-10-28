@@ -5,7 +5,7 @@ import {
 import {
   getOffererNameFactory,
   venueListItemFactory,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
 import { IndividualOfferFormValues } from 'pages/IndividualOffer/commons/types'
 import { FORM_DEFAULT_VALUES } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/commons/constants'
 

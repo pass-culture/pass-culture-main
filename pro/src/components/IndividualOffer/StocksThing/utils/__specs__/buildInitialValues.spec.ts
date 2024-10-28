@@ -1,10 +1,10 @@
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
-import { AddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/commonOffersApiFactories'
+import { AddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
 import {
   getOfferVenueFactory,
   getIndividualOfferFactory,
   getOfferStockFactory,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
 
 import { STOCK_THING_FORM_DEFAULT_VALUES } from '../../constants'
 import { buildInitialValues } from '../buildInitialValues'

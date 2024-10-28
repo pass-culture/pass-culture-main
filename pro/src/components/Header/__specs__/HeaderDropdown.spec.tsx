@@ -9,7 +9,7 @@ import {
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { HeaderDropdown } from '../HeaderDropdown/HeaderDropdown'
