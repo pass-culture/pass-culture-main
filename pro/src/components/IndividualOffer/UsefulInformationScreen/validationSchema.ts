@@ -3,7 +3,7 @@ import * as yup from 'yup'
 import { WithdrawalTypeEnum } from 'apiClient/v1'
 import { validationSchema as offerLocationSchema } from 'components/IndividualOfferForm/OfferLocation/validationSchema'
 
-// FIX ME: this regex is subject to backtracking which can lead to "catastrophic backtracking", high memory usage and slow performance
+// TODO: this regex is subject to backtracking which can lead to "catastrophic backtracking", high memory usage and slow performance
 // we cannot use the yup url validation because we need to allow {} in the url to interpolate some data
 const offerFormUrlRegex = new RegExp(
   /*eslint-disable-next-line no-useless-escape*/

@@ -27,7 +27,7 @@ export const usePagination = <T>(
   }
 }
 
-// FIX ME: 27/10/2023
+// TODO: 27/10/2023
 // we duplicate this hook for now since bookings pages also used it
 // once we have adapted bookings pagination we can delete the old one
 // this is planned in PC-25444

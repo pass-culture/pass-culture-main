@@ -76,7 +76,7 @@ export const serializePostOffer = (
     motorDisabilityCompliant: formValues.accessibility[AccessibilityEnum.MOTOR],
     name: formValues.name,
     subcategoryId: formValues.subcategoryId,
-    // FIXME mageoffray (2023-04-03) : This is a dirty fix until GET /venues route returns dehumanized Id
+    // TODO mageoffray (2023-04-03) : This is a dirty fix until GET /venues route returns dehumanized Id
     venueId: Number(formValues.venueId),
     visualDisabilityCompliant:
       formValues.accessibility[AccessibilityEnum.VISUAL],
