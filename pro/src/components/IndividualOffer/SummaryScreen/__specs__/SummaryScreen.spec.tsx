@@ -329,6 +329,9 @@ describe('Summary', () => {
     })
 
     it('should allow to publish offer later if the offer is an event', async () => {
+      // Mock current date to avoid DST issues
+      vi.setSystemTime(new Date('2024-01-15T12:00:00.000Z'))
+
       vi.spyOn(api, 'getOfferer').mockResolvedValue(
         defaultGetOffererResponseModel
       )
@@ -386,8 +389,11 @@ describe('Summary', () => {
       ).toBeInTheDocument()
       expect(api.patchPublishOffer).toHaveBeenCalledWith({
         id: customContext.offer.id,
-        publicationDate: `${publicationDate}T09:00:00Z`,
+        publicationDate: `${publicationDate}T10:00:00Z`,
       })
+
+      // Clean up the mocked time
+      vi.useRealTimers()
     })
 
     it('should display notification on api error', async () => {
