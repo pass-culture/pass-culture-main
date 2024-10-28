@@ -1,3 +1,5 @@
+import datetime
+
 from pcapi import settings
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational.adage_backends import serialize
@@ -21,7 +23,9 @@ class AdageClient:
     def notify_booking_cancellation_by_offerer(self, data: prebooking.EducationalBookingResponse) -> None:
         raise NotImplementedError()
 
-    def get_cultural_partners(self, timestamp: int | None = None) -> list[dict[str, str | int | float | None]]:
+    def get_cultural_partners(
+        self, since_date: datetime.datetime | None = None
+    ) -> list[dict[str, str | int | float | None]]:
         raise NotImplementedError()
 
     def notify_institution_association(self, data: serialize.AdageCollectiveOffer) -> None:

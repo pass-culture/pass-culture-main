@@ -1,3 +1,4 @@
+import datetime
 import logging
 import traceback
 
@@ -119,12 +120,14 @@ class AdageHttpClient(AdageClient):
                 api_response, "Error posting booking cancellation by offerer notification to Adage API"
             )
 
-    def get_cultural_partners(self, timestamp: int | None = None) -> list[dict[str, str | int | float | None]]:
+    def get_cultural_partners(
+        self, since_date: datetime.datetime | None = None
+    ) -> list[dict[str, str | int | float | None]]:
         api_url = f"{self.base_url}/v1/partenaire-culturel"
 
         params = {}
-        if timestamp:
-            params["dateModificationMin"] = timestamp
+        if since_date:
+            params["dateModificationMin"] = since_date.strftime("%Y-%m-%d %H:%M:%S")
 
         try:
             api_response = requests.get(

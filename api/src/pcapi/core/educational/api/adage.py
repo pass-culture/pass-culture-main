@@ -38,7 +38,7 @@ def find_collective_bookings_for_adage(
 
 
 def get_cultural_partners(
-    *, timestamp: int | None = None, force_update: bool = False
+    *, since_date: datetime | None = None, force_update: bool = False
 ) -> venues_serialize.AdageCulturalPartners:
     CULTURAL_PARTNERS_CACHE_KEY = "api:adage_cultural_partner:cache"
     CULTURAL_PARTNERS_CACHE_TIMEOUT = 24 * 60 * 60  # 24h in seconds
@@ -47,7 +47,7 @@ def get_cultural_partners(
         adage_data = adage_client.get_cultural_partners()
         return json.dumps(adage_data)
 
-    if not timestamp:
+    if not since_date:
         cultural_partners_json = get_from_cache(
             key_template=CULTURAL_PARTNERS_CACHE_KEY,
             retriever=_get_cultural_partners,
@@ -56,7 +56,7 @@ def get_cultural_partners(
             force_update=force_update,
         )
     else:
-        adage_data = adage_client.get_cultural_partners(timestamp)
+        adage_data = adage_client.get_cultural_partners(since_date)
         cultural_partners_json = json.dumps(adage_data)
 
     cultural_partners_json = typing.cast(str, cultural_partners_json)
@@ -153,10 +153,10 @@ class CulturalPartner:
     active: int | None
 
 
-def synchronize_adage_ids_on_venues(debug: bool = False, timestamp: int | None = None) -> None:
+def synchronize_adage_ids_on_venues(debug: bool = False, since_date: datetime | None = None) -> None:
     from pcapi.core.external.attributes.api import update_external_pro
 
-    adage_cultural_partners = get_cultural_partners(force_update=True, timestamp=timestamp)
+    adage_cultural_partners = get_cultural_partners(force_update=True, since_date=since_date)
 
     adage_cps = []
     venue_to_adage_id = {}

@@ -1,4 +1,5 @@
 import csv
+import datetime
 from decimal import Decimal
 import logging
 import os
@@ -20,7 +21,6 @@ from pcapi.models import db
 from pcapi.repository import transaction
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.utils.blueprint import Blueprint
-import pcapi.utils.date as date_utils
 
 
 blueprint = Blueprint(__name__, __name__)
@@ -130,8 +130,9 @@ def import_deposit_csv(path: str, year: int, ministry: str, conflict: str, final
 @click.option("--with-timestamp", type=bool, is_flag=True, default=False, help="Add timestamp (couple days ago)")
 @log_cron_with_transaction
 def synchronize_venues_from_adage_cultural_partners(debug: bool = False, with_timestamp: bool = False) -> None:
-    timestamp = date_utils.days_ago_timestamp(2) if with_timestamp else None
-    adage_api.synchronize_adage_ids_on_venues(debug=debug, timestamp=timestamp)
+    # Change to use datetime arithmetic
+    since_date = datetime.datetime.utcnow() - datetime.timedelta(days=2) if with_timestamp else None
+    adage_api.synchronize_adage_ids_on_venues(debug=debug, since_date=since_date)
     # This commit is very much needed at this time.
     # log_cron_with_transaction will only commit IF the session is dirty
     # Since synchronize_adage_ids_on_venues changes are wrapped inside an atomic
@@ -144,9 +145,10 @@ def synchronize_venues_from_adage_cultural_partners(debug: bool = False, with_ti
 @click.option("--with-timestamp", type=bool, is_flag=True, default=False, help="Add timestamp (couple days ago)")
 @log_cron_with_transaction
 def synchronize_offerers_from_adage_cultural_partners(with_timestamp: bool = False) -> None:
-    timestamp = date_utils.days_ago_timestamp(2) if with_timestamp else None
+    # Change to use datetime arithmetic
+    since_date = datetime.datetime.utcnow() - datetime.timedelta(days=2) if with_timestamp else None
     with transaction():
-        adage_cultural_partners = adage_api.get_cultural_partners(timestamp=timestamp)
+        adage_cultural_partners = adage_api.get_cultural_partners(since_date=since_date)
         adage_api.synchronize_adage_ids_on_offerers(adage_cultural_partners.partners)
 
 

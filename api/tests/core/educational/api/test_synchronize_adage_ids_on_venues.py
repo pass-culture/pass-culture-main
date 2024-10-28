@@ -373,7 +373,7 @@ def test_synchronize_adage_ids_on_offerers_for_tricky_case(db_session):
     ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
 )
 @patch("pcapi.core.educational.api.adage.send_eac_offerer_activation_email")
-def test_synchronize_adage_ids_on_venues_with_timestamp_filter(mock_send_eac_email, db_session):
+def test_synchronize_adage_ids_on_venues_with_date_filter(mock_send_eac_email, db_session):
     venue1 = offerers_factories.VenueFactory()
     venue2 = offerers_factories.VenueFactory(adageId="11", adageInscriptionDate=datetime.utcnow())
 
@@ -422,3 +422,17 @@ def test_synchronize_adage_ids_on_venues_with_timestamp_filter(mock_send_eac_ema
     assert venue2.adageId == "11"
     assert venue2.adageInscriptionDate is not None
     assert len(venue2.adage_addresses) == 1
+
+
+def test_synchronize_adage_ids_on_venues_with_since_date():
+    since_date = datetime(2024, 3, 20, 16, 0, 0)
+    expected_datetime = "2024-03-20 16:00:00"
+
+    educational_api_adage.synchronize_adage_ids_on_venues(since_date=since_date)
+
+    from pcapi.core.educational.testing import adage_requests
+
+    assert len(adage_requests) == 1
+
+    last_request = adage_requests[0]
+    assert last_request["sent_data"]["dateModificationMin"] == expected_datetime
