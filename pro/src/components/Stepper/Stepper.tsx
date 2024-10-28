@@ -1,7 +1,6 @@
 import cn from 'classnames'
 import React, { useLayoutEffect, useRef, useState } from 'react'
 
-import { findLastIndex } from 'commons/utils/findLastIndex'
 import { StepContent } from 'components/Stepper/StepContent'
 
 import styles from './Stepper.module.scss'
@@ -36,7 +35,7 @@ export const Stepper = ({
   const [stepperWidth, setStepperWidth] = useState(0)
 
   const lastStepIndex = steps.length - 1
-  const lastLineToActivate = findLastIndex(steps, (step: Step) => !!step.url)
+  const lastLineToActivate = steps.findLastIndex((step: Step) => !!step.url)
 
   useLayoutEffect(() => {
     //  Before the first render, get the list total width
