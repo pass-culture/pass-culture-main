@@ -20,7 +20,7 @@ import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 import { Notification } from 'components/Notification/Notification'
 
-import { Confirmation } from '../Confirmation'
+import { IndividualOfferConfirmation } from './IndividualOfferConfirmation'
 
 window.open = vi.fn()
 
@@ -43,7 +43,7 @@ const renderOffer = (
           path="/confirmation"
           element={
             <IndividualOfferContext.Provider value={contextValue}>
-              <Confirmation />
+              <IndividualOfferConfirmation />
             </IndividualOfferContext.Provider>
           }
         />
@@ -57,7 +57,7 @@ const renderOffer = (
   )
 }
 
-describe('Confirmation', () => {
+describe('IndividualOfferConfirmation', () => {
   let contextOverride: Partial<IndividualOfferContextValues>
   let offer: GetIndividualOfferWithAddressResponseModel
   const venueId = 45

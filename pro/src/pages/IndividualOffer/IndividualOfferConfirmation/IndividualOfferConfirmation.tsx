@@ -2,10 +2,11 @@ import { useIndividualOfferContext } from 'commons/context/IndividualOfferContex
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { IndivualOfferLayout } from 'components/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
 import { getTitle } from 'components/IndividualOffer/IndivualOfferLayout/utils/getTitle'
-import { IndividualOfferConfirmationScreen } from 'pages/IndividualOfferWizard/Confirmation/IndividualOfferConfirmationScreen/IndividualOfferConfirmationScreen'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
-export const Confirmation = (): JSX.Element => {
+import { IndividualOfferConfirmationScreen } from './components/IndividualOfferConfirmationScreen'
+
+export const IndividualOfferConfirmation = (): JSX.Element => {
   const mode = useOfferWizardMode()
   const { offer } = useIndividualOfferContext()
 
@@ -27,4 +28,4 @@ export const Confirmation = (): JSX.Element => {
 
 // Below exports are used by react-router-dom
 // ts-unused-exports:disable-next-line
-export const Component = Confirmation
+export const Component = IndividualOfferConfirmation
