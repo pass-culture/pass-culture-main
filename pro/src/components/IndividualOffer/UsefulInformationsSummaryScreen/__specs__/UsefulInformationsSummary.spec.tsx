@@ -6,7 +6,7 @@ import {
   SubcategoryIdEnum,
 } from 'apiClient/v1'
 import { IndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { AddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
+import { getAddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
 import {
   getIndividualOfferFactory,
   getOfferVenueFactory,
@@ -65,7 +65,7 @@ describe('UsefulInformationsSummaryScreen', () => {
       name: 'Offre de test',
       subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
       address: {
-        ...AddressResponseIsLinkedToVenueModelFactory({
+        ...getAddressResponseIsLinkedToVenueModelFactory({
           label: 'mon adresse',
           city: 'ma ville',
           street: 'ma street',

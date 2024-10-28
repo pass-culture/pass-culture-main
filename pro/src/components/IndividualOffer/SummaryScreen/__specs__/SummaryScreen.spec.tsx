@@ -23,7 +23,7 @@ import {
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
-import { AddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
+import { getAddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
 import {
   categoryFactory,
   defaultGetOffererResponseModel,
@@ -628,7 +628,7 @@ describe('Summary', () => {
       customContext.offer = getIndividualOfferFactory({
         isEvent: true,
         address: {
-          ...AddressResponseIsLinkedToVenueModelFactory({
+          ...getAddressResponseIsLinkedToVenueModelFactory({
             label: 'mon adresse',
             city: 'ma ville',
             street: 'ma street',

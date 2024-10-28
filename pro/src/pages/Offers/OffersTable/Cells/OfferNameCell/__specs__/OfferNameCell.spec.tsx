@@ -7,7 +7,7 @@ import {
   collectiveOfferFactory,
   listOffersVenueFactory,
 } from 'commons/utils/factories/collectiveApiFactories'
-import { AddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
+import { getAddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
 import {
   getOfferVenueFactory,
   listOffersOfferFactory,
@@ -176,7 +176,7 @@ describe('OfferNameCell', () => {
           beginningDatetime: '2024-10-01T10:00:00.000', // this datetime is UTC
         }),
       ],
-      address: AddressResponseIsLinkedToVenueModelFactory({
+      address: getAddressResponseIsLinkedToVenueModelFactory({
         departmentCode: '972', // Fort-de-France (Martinique) department code (UTC-4 EDT)
       }),
       name: 'Individual offer',

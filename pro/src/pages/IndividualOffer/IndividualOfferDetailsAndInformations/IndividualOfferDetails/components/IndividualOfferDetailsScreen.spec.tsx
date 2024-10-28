@@ -20,7 +20,7 @@ import {
   OFFER_WIZARD_MODE,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
-import { AddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
+import { getAddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
 import {
   categoryFactory,
   getIndividualOfferFactory,
@@ -494,7 +494,7 @@ describe('screens:IndividualOffer::Informations', () => {
           id: 1,
           name: 'Venue 1',
           address: {
-            ...AddressResponseIsLinkedToVenueModelFactory({
+            ...getAddressResponseIsLinkedToVenueModelFactory({
               label: 'mon adresse',
               city: 'ma ville',
               street: 'ma street',
@@ -511,7 +511,7 @@ describe('screens:IndividualOffer::Informations', () => {
           id: 2,
           name: 'Venue 2',
           address: {
-            ...AddressResponseIsLinkedToVenueModelFactory({
+            ...getAddressResponseIsLinkedToVenueModelFactory({
               label: 'mon adresse',
               city: 'ma ville',
               street: 'ma street',
