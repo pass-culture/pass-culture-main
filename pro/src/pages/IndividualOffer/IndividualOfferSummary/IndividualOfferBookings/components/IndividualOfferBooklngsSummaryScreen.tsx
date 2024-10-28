@@ -24,16 +24,16 @@ import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import styles from './BookingsSummary.module.scss'
 import { DownloadBookingsModal } from './DownloadBookingsModal/DownloadBookingsModal'
+import styles from './IndividualOfferBookingsSummaryScreen.module.scss'
 
-interface BookingsSummaryScreenProps {
+interface IndividualOfferBooklngsSummaryScreenProps {
   offer: GetIndividualOfferResponseModel
 }
 
-export const BookingsSummaryScreen = ({
+export const IndividualOfferBooklngsSummaryScreen = ({
   offer,
-}: BookingsSummaryScreenProps) => {
+}: IndividualOfferBooklngsSummaryScreenProps) => {
   const [bookings, setBookings] = useState<BookingRecapResponseModel[] | null>(
     null
   )
