@@ -6,7 +6,7 @@ import {
 } from 'apiClient/v1'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { CollectiveStatusLabel } from '../CollectiveStatusLabel'
+import { CollectiveStatusLabel } from './CollectiveStatusLabel'
 
 interface TestCaseProps {
   status?: CollectiveOfferStatus
