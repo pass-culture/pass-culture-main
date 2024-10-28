@@ -1,4 +1,5 @@
 import * as Dialog from '@radix-ui/react-dialog'
+import cn from 'classnames'
 
 import styles from './DialogBuilder.module.scss'
 import { DialogBuilderCloseButton } from './DialogBuilderCloseButton'
@@ -10,6 +11,7 @@ type DialogBuilderProps = {
   onOpenChange?: (open: boolean) => void
   open?: boolean
   closeButtonClassName?: string
+  className?: string
 }
 
 export function DialogBuilder({
@@ -19,6 +21,7 @@ export function DialogBuilder({
   onOpenChange,
   open,
   closeButtonClassName,
+  className,
 }: DialogBuilderProps) {
   return (
     <Dialog.Root
@@ -30,7 +33,7 @@ export function DialogBuilder({
       <Dialog.Portal>
         <Dialog.Overlay className={styles['dialog-builder-overlay']}>
           <Dialog.Content
-            className={styles['dialog-builder-content']}
+            className={cn(styles['dialog-builder-content'], className)}
             aria-describedby={undefined}
           >
             <DialogBuilderCloseButton

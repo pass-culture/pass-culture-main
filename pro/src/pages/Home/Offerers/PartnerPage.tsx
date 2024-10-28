@@ -101,9 +101,9 @@ export const PartnerPage = ({
 
         <div>
           <div className={styles['venue-type']}>{venueType?.label}</div>
-          <div className={styles['venue-name']}>
+          <h3 className={styles['venue-name']}>
             {venue.publicName || venue.name}
-          </div>
+          </h3>
 
           {venue.street && (
             <address className={styles['venue-address']}>
