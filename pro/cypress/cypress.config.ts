@@ -1,3 +1,4 @@
+import { allureCypress } from 'allure-cypress/reporter'
 import { defineConfig } from 'cypress'
 import cypressFailFast = require('cypress-fail-fast/plugin')
 
@@ -6,6 +7,10 @@ export default defineConfig({
   e2e: {
     setupNodeEvents(on, config) {
       cypressFailFast(on, config)
+      allureCypress(on, config, {
+        // in main
+        resultsDir: '../../allure-results',
+      })
       // Make sure to return the config object as it might have been modified by the plugin.
       return config
     },

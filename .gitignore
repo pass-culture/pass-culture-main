@@ -38,6 +38,7 @@ pro-packed-staging/
 .dccache
 .graphqlconfig
 .yarn-integrity
+allure-results
 
 # storybook build
 docs-build/

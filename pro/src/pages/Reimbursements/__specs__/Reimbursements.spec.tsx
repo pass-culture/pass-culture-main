@@ -3,6 +3,7 @@ import {
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
+import * as allure from 'allure-js-commons'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -69,6 +70,9 @@ describe('Reimbursement page', () => {
   })
 
   it('should render reimbursement page', async () => {
+    await allure.epic('HELLO')
+    await allure.feature('Essential features')
+    await allure.story('Authentication')
     renderReimbursements()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))

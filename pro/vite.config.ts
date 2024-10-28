@@ -1,6 +1,7 @@
 import { fileURLToPath, URL } from 'url'
 
 import react from '@vitejs/plugin-react'
+import AllureReporter from 'allure-vitest/reporter'
 import * as preloads from 'design-system/dist/build/ts/font-preloads'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { defineConfig, PluginOption } from 'vite'
@@ -38,7 +39,7 @@ export default defineConfig(({ mode }) => {
     test: {
       globals: true,
       environment: 'jsdom',
-      setupFiles: './vitest.setup.ts',
+      setupFiles: ['./vitest.setup.ts', 'allure-vitest/setup'],
       clearMocks: true,
       restoreMocks: true,
       cacheDir: '../.vitest_cache',
@@ -52,6 +53,15 @@ export default defineConfig(({ mode }) => {
       maxThreads: 6,
       testTimeout: 30000,
       exclude: ['**/*.stories.tsx', ...configDefaults.exclude],
+      reporters: [
+        'verbose',
+        [
+          'allure-vitest/reporter',
+          {
+            resultsDir: '../allure-results',
+          },
+        ],
+      ],
     },
     css: {
       devSourcemap: true,

@@ -1,3 +1,5 @@
+import * as allure from 'allure-js-commons'
+
 describe('ADAGE discovery', () => {
   let offerId: number
   const offerName = 'Mon offre collective'
@@ -185,6 +187,10 @@ describe('ADAGE discovery', () => {
   })
 
   it('It should put an offer in favorite', () => {
+    allure.epic('Web interface')
+    allure.feature('Essential features')
+    allure.story('Authentication')
+
     cy.stepLog({ message: 'I open adage iframe' })
     const adageToken = Cypress.env('adageToken')
 

@@ -17,6 +17,7 @@
 import './commands'
 import { configure } from '@testing-library/react'
 import 'cypress-fail-fast'
+import 'allure-cypress'
 
 // Set to `defaultCommandTimeout` to match the cypress default timeout
 configure({ asyncUtilTimeout: 4000 })
