@@ -3,8 +3,8 @@ import {
   SubcategoryResponseModel,
 } from 'apiClient/v1'
 import { AccessibilityEnum } from 'commons/core/shared/types'
+import { OFFER_LOCATION } from 'pages/IndividualOffer/commons/constants'
 import { IndividualOfferFormValues } from 'pages/IndividualOffer/commons/types'
-import { OFFER_LOCATION } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/components/OfferLocation/constants'
 import { deSerializeDurationMinutes } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferDetails/commons/utils/utils'
 import { FORM_DEFAULT_VALUES } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferInformationsLegacy/InformationsScreen/IndividualOfferForm/commons/constants'
 

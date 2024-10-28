@@ -1,19 +1,4 @@
-export const SUBCATEGORIES_FIELDS_DEFAULT_VALUES = {
-  gtl_id: '',
-  musicType: '',
-  musicSubType: '',
-  showType: '',
-  showSubType: '',
-  author: '',
-  ean: '',
-  performer: '',
-  speaker: '',
-  stageDirector: '',
-  visa: '',
-  durationMinutes: '',
-  withdrawalType: undefined,
-  withdrawalDelay: undefined,
-}
+import { SUBCATEGORIES_FIELDS_DEFAULT_VALUES } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/commons/constants'
 
 export const CATEGORIES_DEFAULT_VALUES = {
   subCategoryFields: [],

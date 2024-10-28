@@ -10,7 +10,7 @@ import {
   subcategoryFactory,
   venueListItemFactory,
 } from 'commons/utils/individualApiFactories'
-import { OFFER_LOCATION } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/components/OfferLocation/constants'
+import { OFFER_LOCATION } from 'pages/IndividualOffer/commons/constants'
 
 import { DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES } from '../constants'
 import {

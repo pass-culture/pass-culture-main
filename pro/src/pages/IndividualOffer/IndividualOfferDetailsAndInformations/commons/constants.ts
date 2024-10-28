@@ -1,0 +1,16 @@
+export const SUBCATEGORIES_FIELDS_DEFAULT_VALUES = {
+  gtl_id: '',
+  musicType: '',
+  musicSubType: '',
+  showType: '',
+  showSubType: '',
+  author: '',
+  ean: '',
+  performer: '',
+  speaker: '',
+  stageDirector: '',
+  visa: '',
+  durationMinutes: '',
+  withdrawalType: undefined,
+  withdrawalDelay: undefined,
+}

@@ -1,5 +1,5 @@
 import { WithdrawalTypeEnum } from 'apiClient/v1'
-import { SUBCATEGORIES_FIELDS_DEFAULT_VALUES } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferInformationsLegacy/InformationsScreen/IndividualOfferForm/Categories/constants'
+import { SUBCATEGORIES_FIELDS_DEFAULT_VALUES } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/commons/constants'
 export const TICKET_WITHDRAWAL_DEFAULT_VALUES = {
   withdrawalDetails: '',
   withdrawalType: SUBCATEGORIES_FIELDS_DEFAULT_VALUES['withdrawalType'],
