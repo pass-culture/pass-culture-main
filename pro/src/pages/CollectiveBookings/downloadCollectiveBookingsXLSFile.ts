@@ -18,6 +18,7 @@ export const downloadCollectiveBookingsXLSFile = async (
       ? filters.offerEventDate
       : null,
     // TODO fix PreFiltersParams type to use CollectiveBookingStatusFilter type
+    // wait for squad eac to move collective on another page
     // @ts-expect-error
     filters.bookingStatusFilter as CollectiveBookingStatusFilter,
     isDateValid(filters.bookingBeginningDate)
