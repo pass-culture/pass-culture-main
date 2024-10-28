@@ -25,9 +25,12 @@ class AdageSpyClient(AdageClient):
     def notify_booking_cancellation_by_offerer(self, data: prebooking.EducationalBookingResponse) -> None:
         testing.adage_requests.append({"url": f"{self.base_url}/v1/prereservation-annule", "sent_data": data})
 
-    def get_cultural_partners(self, timestamp: int | None = None) -> list[dict[str, str | int | float | None]]:
+    def get_cultural_partners(
+        self, since_date: datetime.datetime | None = None
+    ) -> list[dict[str, str | int | float | None]]:
+        since_date_str = since_date.strftime("%Y-%m-%d %H:%M:%S") if since_date else None
         testing.adage_requests.append(
-            {"url": f"{self.base_url}/v1/partenaire-culturel", "sent_data": {"dateModificationMin": timestamp}}
+            {"url": f"{self.base_url}/v1/partenaire-culturel", "sent_data": {"dateModificationMin": since_date_str}}
         )
         return [
             {

@@ -1,3 +1,5 @@
+import datetime
+
 from pcapi import settings
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational.adage_backends import serialize
@@ -29,9 +31,9 @@ def notify_booking_cancellation_by_offerer(data: EducationalBookingResponse) -> 
     backend().notify_booking_cancellation_by_offerer(data=data)
 
 
-def get_cultural_partners(timestamp: int | None = None) -> list[dict[str, str | int | float | None]]:
+def get_cultural_partners(since_date: datetime.datetime | None = None) -> list[dict[str, str | int | float | None]]:
     backend = import_string(settings.ADAGE_BACKEND)
-    result = backend().get_cultural_partners(timestamp)
+    result = backend().get_cultural_partners(since_date=since_date)
     return result
 
 
