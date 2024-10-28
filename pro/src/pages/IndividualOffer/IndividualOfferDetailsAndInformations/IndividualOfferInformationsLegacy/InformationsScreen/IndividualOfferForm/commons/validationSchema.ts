@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-import { validationSchema as offerLocationSchema } from 'pages/IndividualOffer/components/OfferLocation/validationSchema'
+import { validationSchema as offerLocationSchema } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/components/OfferLocation/validationSchema'
 
 import { validationSchema as accessibilitySchema } from '../Accessibility/validationSchema'
 import { validationSchema as categoriesSchema } from '../Categories/validationSchema'

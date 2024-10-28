@@ -1,4 +1,4 @@
-import { OFFER_LOCATION_DEFAULT_VALUES } from 'pages/IndividualOffer/components/OfferLocation/constants'
+import { OFFER_LOCATION_DEFAULT_VALUES } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/components/OfferLocation/constants'
 
 import { ACCESSIBILITY_DEFAULT_VALUES } from '../Accessibility/constants'
 import { CATEGORIES_DEFAULT_VALUES } from '../Categories/constants'

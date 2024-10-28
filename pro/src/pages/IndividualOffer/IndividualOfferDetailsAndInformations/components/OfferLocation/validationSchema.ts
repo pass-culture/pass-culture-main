@@ -1,7 +1,7 @@
 import * as yup from 'yup'
 
 import { checkCoords } from 'commons/utils/coords'
-import { OFFER_LOCATION } from 'pages/IndividualOffer/components/OfferLocation/constants'
+import { OFFER_LOCATION } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/components/OfferLocation/constants'
 
 const locationSchema = {
   offerlocation: yup

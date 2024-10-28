@@ -18,7 +18,7 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { IndividualOfferFormValues } from 'pages/IndividualOffer/commons/types'
-import { OfferLocation } from 'pages/IndividualOffer/components/OfferLocation/OfferLocation'
+import { OfferLocation } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/components/OfferLocation/OfferLocation'
 import { ImageUploaderOffer } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/components/ImageUploaderOffer/ImageUploaderOffer'
 
 import { getFilteredVenueListBySubcategory } from '../../../IndividualOfferDetails/commons/getFilteredVenueList'
