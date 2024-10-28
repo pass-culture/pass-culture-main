@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { expect } from 'vitest'
 
 import {
   getCollectiveOfferFactory,

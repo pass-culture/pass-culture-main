@@ -9,7 +9,7 @@ import {
 } from 'pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 import { CollectiveOfferLayout } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
 
-import { CollectiveOfferSummaryCreationScreen } from './components/CollectiveOfferSummaryCreation/CollectiveOfferSummaryCreationScreen'
+import { CollectiveOfferSummaryCreationScreen } from './CollectiveOfferSummaryCreationScreen'
 
 export const CollectiveOfferSummaryCreation = ({
   offer,

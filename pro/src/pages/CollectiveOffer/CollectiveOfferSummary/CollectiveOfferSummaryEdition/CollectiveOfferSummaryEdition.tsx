@@ -1,34 +1,74 @@
-import { Layout } from 'app/App/layout/Layout'
-import { Mode } from 'commons/core/OfferEducational/types'
 import {
-  MandatoryCollectiveOfferFromParamsProps,
-  withCollectiveOfferFromParams,
-} from 'pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
-import { CollectiveOfferLayout } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
-import { CollectiveOfferSummaryEditionScreen } from 'pages/CollectiveOffer/CollectiveOfferSummary/CollectiveOfferSummaryEdition/components/CollectiveOfferSummaryEdition/CollectiveOfferSummaryEdition'
+  GetCollectiveOfferTemplateResponseModel,
+  GetCollectiveOfferResponseModel,
+} from 'apiClient/v1'
+import {
+  Mode,
+  isCollectiveOfferTemplate,
+} from 'commons/core/OfferEducational/types'
+import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
+import { computeCollectiveOffersUrl } from 'commons/core/Offers/utils/computeCollectiveOffersUrl'
+import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
+import { OfferEducationalActions } from 'components/OfferEducationalActions/OfferEducationalActions'
+import { CollectiveOfferSummary } from 'pages/CollectiveOffer/CollectiveOfferSummary/components/CollectiveOfferSummary/CollectiveOfferSummary'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
-const CollectiveOfferSummaryEdition = ({
-  offer,
-  isTemplate,
-}: MandatoryCollectiveOfferFromParamsProps) => {
-  return (
-    <Layout layout={'sticky-actions'}>
-      <CollectiveOfferLayout
-        subTitle={offer.name}
-        isTemplate={isTemplate}
-        offer={offer}
-      >
-        <CollectiveOfferSummaryEditionScreen
-          offer={offer}
-          mode={Mode.EDITION}
-        />
-      </CollectiveOfferLayout>
-    </Layout>
-  )
+import styles from './CollectiveOfferSummaryEdition.module.scss'
+
+interface CollectiveOfferSummaryEditionProps {
+  offer:
+    | GetCollectiveOfferTemplateResponseModel
+    | GetCollectiveOfferResponseModel
+  mode: Mode
 }
 
-// Lazy-loaded by react-router-dom
-// ts-unused-exports:disable-next-line
-export const Component = withCollectiveOfferFromParams(
-  CollectiveOfferSummaryEdition
-)
+export const CollectiveOfferSummaryEditionScreen = ({
+  offer,
+  mode,
+}: CollectiveOfferSummaryEditionProps) => {
+  const offerEditLink = `/offre/${computeURLCollectiveOfferId(
+    offer.id,
+    offer.isTemplate
+  )}/collectif/edition`
+
+  const stockEditLink = `/offre/${computeURLCollectiveOfferId(
+    offer.id,
+    offer.isTemplate
+  )}/collectif/stocks/edition`
+
+  const visibilityEditLink = `/offre/${offer.id}/collectif/visibilite/edition`
+
+  return (
+    <>
+      <OfferEducationalActions
+        className={styles.actions}
+        isBooked={
+          isCollectiveOfferTemplate(offer)
+            ? false
+            : Boolean(offer.collectiveStock?.isBooked)
+        }
+        offer={offer}
+        mode={mode}
+      />
+
+      <CollectiveOfferSummary
+        offer={offer}
+        offerEditLink={offerEditLink}
+        stockEditLink={stockEditLink}
+        visibilityEditLink={visibilityEditLink}
+      />
+
+      <ActionsBarSticky>
+        <ActionsBarSticky.Left>
+          <ButtonLink
+            variant={ButtonVariant.PRIMARY}
+            to={computeCollectiveOffersUrl({})}
+          >
+            Retour à la liste des offres
+          </ButtonLink>
+        </ActionsBarSticky.Left>
+      </ActionsBarSticky>
+    </>
+  )
+}

@@ -6,7 +6,7 @@ import {
 } from 'apiClient/v1'
 import { Mode } from 'commons/core/OfferEducational/types'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
-import { CollectiveOfferSummary } from 'components/CollectiveOfferSummary/CollectiveOfferSummary'
+import { CollectiveOfferSummary } from 'pages/CollectiveOffer/CollectiveOfferSummary/components/CollectiveOfferSummary/CollectiveOfferSummary'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -18,6 +18,7 @@ interface CollectiveOfferSummaryCreationProps {
     | GetCollectiveOfferResponseModel
 }
 
+// TODO(anoukhello - 28-10-24) implement this component directly inside CollectiveOfferSummaryCreation component
 export const CollectiveOfferSummaryCreationScreen = ({
   offer,
 }: CollectiveOfferSummaryCreationProps) => {
