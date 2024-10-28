@@ -7,7 +7,7 @@ import {
 } from 'commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { CollectiveOfferSummaryCreationScreen } from '../CollectiveOfferSummaryCreationScreen'
+import { CollectiveOfferSummaryCreationScreen } from './CollectiveOfferSummaryCreationScreen'
 
 describe('CollectiveOfferSummaryCreationScreen', () => {
   it('should render bookable offer summary creation screen with three edit links (details, stock, institution)', () => {

@@ -10,7 +10,7 @@ import { getCollectiveOfferTemplateFactory } from 'commons/utils/factories/colle
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { CollectiveOfferSummaryEditionScreen } from '../CollectiveOfferSummaryEdition'
+import { CollectiveOfferSummaryEditionScreen } from './CollectiveOfferSummaryEdition'
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()

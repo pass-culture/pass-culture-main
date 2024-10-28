@@ -8,7 +8,7 @@ import {
 } from 'commons/utils/renderWithProviders'
 import { MandatoryCollectiveOfferFromParamsProps } from 'pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 
-import { CollectiveOfferSummaryCreation } from '../CollectiveOfferSummaryCreation'
+import { CollectiveOfferSummaryCreation } from './CollectiveOfferSummaryCreation'
 
 vi.mock('react-router-dom', async () => ({
   ...(await vi.importActual('react-router-dom')),

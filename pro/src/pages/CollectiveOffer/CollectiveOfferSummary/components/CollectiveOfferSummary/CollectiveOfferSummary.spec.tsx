@@ -11,10 +11,10 @@ import {
 } from 'commons/utils/renderWithProviders'
 
 import {
-  CollectiveOfferSummary,
   CollectiveOfferSummaryProps,
-} from '../CollectiveOfferSummary'
-import { DEFAULT_RECAP_VALUE } from '../components/constants'
+  CollectiveOfferSummary,
+} from './CollectiveOfferSummary'
+import { DEFAULT_RECAP_VALUE } from './components/constants'
 
 vi.mock('apiClient/api', () => ({
   api: {
