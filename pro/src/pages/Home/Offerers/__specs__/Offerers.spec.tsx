@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/react'
-import React from 'react'
+import userEvent from '@testing-library/user-event'
 
 import {
   defaultGetOffererVenueResponseModel,
@@ -44,12 +44,30 @@ describe('Offerers', () => {
     renderOfferers({
       selectedOfferer: {
         ...defaultGetOffererResponseModel,
-        managedVenues: [defaultGetOffererVenueResponseModel],
+        managedVenues: [
+          {
+            ...defaultGetOffererVenueResponseModel,
+            id: 1,
+            name: 'Ma structure permanente',
+            isPermanent: true,
+          },
+          {
+            ...defaultGetOffererVenueResponseModel,
+            id: 2,
+            name: 'Ma seconde structure',
+            isPermanent: false,
+          },
+        ],
         isActive: true,
       },
     })
-
+    expect(
+      screen.getByRole('heading', { level: 3, name: /Ma structure permanente/ })
+    ).toBeInTheDocument()
     expect(screen.getByText('Vos adresses')).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { level: 3, name: /Ma seconde structure/ })
+    ).toBeInTheDocument()
   })
 
   it('should display venue creation link', () => {
@@ -65,9 +83,37 @@ describe('Offerers', () => {
       { features: ['API_SIRENE_AVAILABLE'] }
     )
 
-    expect(screen.getByText('Ajouter un lieu')).toHaveAttribute(
-      'href',
-      '/structures/200/lieux/creation'
+    expect(
+      screen.getByRole('link', { name: 'Ajouter un lieu' })
+    ).toHaveAttribute('href', '/structures/200/lieux/creation')
+  })
+
+  it('should display the new informative modal for offer address', async () => {
+    renderOfferers(
+      {
+        selectedOfferer: {
+          ...defaultGetOffererResponseModel,
+          id: 200,
+          managedVenues: [defaultGetOffererVenueResponseModel],
+          isActive: true,
+        },
+      },
+      { features: ['WIP_ENABLE_OFFER_ADDRESS'] }
     )
+
+    const addVenueButton = screen.getByRole('button', {
+      name: 'Ajouter un lieu',
+    })
+
+    expect(addVenueButton).toBeInTheDocument()
+
+    await userEvent.click(addVenueButton)
+
+    expect(
+      screen.getByRole('heading', {
+        level: 2,
+        name: 'Il n’est plus nécessaire de créer des lieux',
+      })
+    ).toBeInTheDocument()
   })
 })

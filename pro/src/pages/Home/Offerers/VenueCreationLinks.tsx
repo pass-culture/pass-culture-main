@@ -1,4 +1,3 @@
-import React from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
@@ -6,14 +5,18 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { UNAVAILABLE_ERROR_PAGE } from 'commons/utils/routes'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 
 import {
   getVirtualVenueFromOfferer,
   getPhysicalVenuesFromOfferer,
 } from '../venueUtils'
 
+import { DialogNoVenue } from './DialogNoVenue/DialogNoVenue'
+import dialogNoVenueStyles from './DialogNoVenue/DialogNoVenue.module.scss'
 import styles from './VenueCreationLinks.module.scss'
 
 interface VenueCreationLinksProps {
@@ -24,6 +27,7 @@ export const VenueCreationLinks = ({ offerer }: VenueCreationLinksProps) => {
   const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
   const { logEvent } = useAnalytics()
   const location = useLocation()
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const virtualVenue = getVirtualVenueFromOfferer(offerer)
   const physicalVenues = getPhysicalVenuesFromOfferer(offerer)
@@ -35,7 +39,9 @@ export const VenueCreationLinks = ({ offerer }: VenueCreationLinksProps) => {
   }
 
   const venueCreationUrl = isVenueCreationAvailable
-    ? `/structures/${offerer?.id}/lieux/creation`
+    ? isOfferAddressEnabled
+      ? `/parcours-inscription/structure`
+      : `/structures/${offerer?.id}/lieux/creation`
     : UNAVAILABLE_ERROR_PAGE
 
   return (
@@ -51,9 +57,21 @@ export const VenueCreationLinks = ({ offerer }: VenueCreationLinksProps) => {
             })
           }}
         >
-          Ajouter un lieu
+          {isOfferAddressEnabled ? 'Ajouter une structure' : 'Ajouter un lieu'}
         </ButtonLink>
       </div>
+      {isOfferAddressEnabled && (
+        <div className={styles['add-venue-button']}>
+          <DialogBuilder
+            className={dialogNoVenueStyles['dialog']}
+            trigger={
+              <Button variant={ButtonVariant.SECONDARY}>Ajouter un lieu</Button>
+            }
+          >
+            <DialogNoVenue />
+          </DialogBuilder>
+        </div>
+      )}
     </div>
   )
 }
