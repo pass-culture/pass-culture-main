@@ -19,7 +19,7 @@ import {
   PATCH_SUCCESS_MESSAGE,
 } from 'commons/core/shared/constants'
 import { useNotification } from 'commons/hooks/useNotification'
-import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
+import { CollectiveOfferLayout } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
 
 import {
   MandatoryCollectiveOfferFromParamsProps,

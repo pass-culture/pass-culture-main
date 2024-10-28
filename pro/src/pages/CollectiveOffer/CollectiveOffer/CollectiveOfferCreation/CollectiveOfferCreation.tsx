@@ -4,12 +4,12 @@ import { useLocation } from 'react-router-dom'
 import { Layout } from 'app/App/layout/Layout'
 import { isCollectiveOffer, Mode } from 'commons/core/OfferEducational/types'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
-import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
 import {
   OptionalCollectiveOfferFromParamsProps,
   withOptionalCollectiveOfferFromParams,
 } from 'pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 import { useOfferEducationalFormData } from 'pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useOfferEducationalFormData'
+import { CollectiveOfferLayout } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 

@@ -2,12 +2,12 @@ import React from 'react'
 
 import { Layout } from 'app/App/layout/Layout'
 import { isCollectiveOffer } from 'commons/core/OfferEducational/types'
-import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
 import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import {
   MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,
 } from 'pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
+import { CollectiveOfferLayout } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
 
 import { CollectiveOfferSummaryCreationScreen } from './components/CollectiveOfferSummaryCreation/CollectiveOfferSummaryCreationScreen'
 

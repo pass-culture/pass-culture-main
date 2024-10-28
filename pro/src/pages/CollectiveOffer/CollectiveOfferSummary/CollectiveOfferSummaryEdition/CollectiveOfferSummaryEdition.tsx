@@ -1,10 +1,10 @@
 import { Layout } from 'app/App/layout/Layout'
 import { Mode } from 'commons/core/OfferEducational/types'
-import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
 import {
   MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,
 } from 'pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
+import { CollectiveOfferLayout } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
 import { CollectiveOfferSummaryEditionScreen } from 'pages/CollectiveOffer/CollectiveOfferSummary/CollectiveOfferSummaryEdition/components/CollectiveOfferSummaryEdition/CollectiveOfferSummaryEdition'
 
 const CollectiveOfferSummaryEdition = ({
