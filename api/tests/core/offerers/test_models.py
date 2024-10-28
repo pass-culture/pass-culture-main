@@ -175,6 +175,14 @@ class OffererDepartementCodePropertyTest:
 
         assert offerer.departementCode == "973"
 
+    def test_guadeloupe_postal_code(self):
+        offerer = factories.OffererFactory(postalCode="97100")
+        assert offerer.departementCode == "971"
+
+    def test_saint_martin_postal_code(self):
+        offerer = factories.OffererFactory(postalCode="97150")
+        assert offerer.departementCode == "978"
+
 
 class OffererDepartementCodeSQLExpressionTest:
     def test_metropole_postal_code(self):
@@ -184,6 +192,14 @@ class OffererDepartementCodeSQLExpressionTest:
     def test_drom_postal_code(self):
         factories.OffererFactory(postalCode="97300")
         assert models.Offerer.query.filter_by(departementCode="973").count() == 1
+
+    def test_guadeloupe_postal_code(self):
+        factories.OffererFactory(postalCode="97100")
+        assert models.Offerer.query.filter_by(departementCode="971").count() == 1
+
+    def test_saint_martin_postal_code(self):
+        factories.OffererFactory(postalCode="97150")
+        assert models.Offerer.query.filter_by(departementCode="978").count() == 1
 
 
 class VenueNApprovedOffersTest:
