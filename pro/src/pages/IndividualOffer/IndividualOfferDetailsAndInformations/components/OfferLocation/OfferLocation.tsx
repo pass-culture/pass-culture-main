@@ -8,6 +8,7 @@ import { AddressManual } from 'components/AddressManual/AddressManual'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullBackIcon from 'icons/full-back.svg'
 import fullNextIcon from 'icons/full-next.svg'
+import { OFFER_LOCATION } from 'pages/IndividualOffer/commons/constants'
 import { IndividualOfferFormValues } from 'pages/IndividualOffer/commons/types'
 import { computeAddressDisplayName } from 'repository/venuesService'
 import { Button } from 'ui-kit/Button/Button'
@@ -16,7 +17,6 @@ import { RadioButton } from 'ui-kit/form/RadioButton/RadioButton'
 import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
-import { OFFER_LOCATION } from './constants'
 import styles from './OfferLocation.module.scss'
 
 interface OfferLocationProps {

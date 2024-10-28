@@ -1,7 +1,3 @@
-export enum OFFER_LOCATION {
-  OTHER_ADDRESS = 'other',
-}
-
 export const OFFER_LOCATION_DEFAULT_VALUES = {
   locationLabel: '',
   manuallySetAddress: false,

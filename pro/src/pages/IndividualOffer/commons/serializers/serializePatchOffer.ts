@@ -8,8 +8,8 @@ import { SYNCHRONIZED_OFFER_EDITABLE_FIELDS } from 'commons/core/Offers/constant
 import { isAllocineOffer } from 'commons/core/Providers/utils/localProvider'
 import { AccessibilityEnum } from 'commons/core/shared/types'
 import { trimStringsInObject } from 'commons/utils/trimStringsInObject'
+import { OFFER_LOCATION } from 'pages/IndividualOffer/commons/constants'
 import { IndividualOfferFormValues } from 'pages/IndividualOffer/commons/types'
-import { OFFER_LOCATION } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/components/OfferLocation/constants'
 
 export const serializeExtraData = (
   formValues: Partial<IndividualOfferFormValues>

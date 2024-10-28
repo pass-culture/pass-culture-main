@@ -1,4 +1,4 @@
-import { SUBCATEGORIES_FIELDS_DEFAULT_VALUES } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferInformationsLegacy/InformationsScreen/IndividualOfferForm/Categories/constants'
+import { SUBCATEGORIES_FIELDS_DEFAULT_VALUES } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/commons/constants'
 
 export const INFORMATIONS_DEFAULT_VALUES = {
   name: '',
