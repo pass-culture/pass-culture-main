@@ -6,8 +6,8 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
-import { CollectiveOfferNavigation } from 'components/CollectiveOfferNavigation/CollectiveOfferNavigation'
 import { HelpLink } from 'components/HelpLink/HelpLink'
+import { CollectiveOfferNavigation } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferNavigation/CollectiveOfferNavigation'
 import { getActiveStep } from 'pages/CollectiveOfferRoutes/utils/getActiveStep'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
