@@ -1048,11 +1048,15 @@ class Offerer(
     def departementCode(cls) -> Case:  # pylint: disable=no-self-argument
         return case(
             (
-                cast(func.substring(cls.postalCode, 1, 2), Integer)
-                >= postal_code_utils.OVERSEAS_DEPARTEMENT_CODE_START,
-                func.substring(cls.postalCode, 1, 3),
+                cls.postalCode == postal_code_utils.SAINT_MARTIN_POSTAL_CODE,
+                postal_code_utils.SAINT_MARTIN_DEPARTEMENT_CODE,
             ),
-            else_=func.substring(cls.postalCode, 1, 2),
+            (
+                cast(func.substring(cls.postalCode, 1, postal_code_utils.MAINLAND_DEPARTEMENT_CODE_LENGTH), Integer)
+                >= postal_code_utils.OVERSEAS_DEPARTEMENT_CODE_START,
+                func.substring(cls.postalCode, 1, postal_code_utils.OVERSEAS_DEPARTEMENT_CODE_LENGTH),
+            ),
+            else_=func.substring(cls.postalCode, 1, postal_code_utils.MAINLAND_DEPARTEMENT_CODE_LENGTH),
         )
 
     @property

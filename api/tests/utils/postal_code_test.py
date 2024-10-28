@@ -12,3 +12,11 @@ def test_get_departement_code_for_overseas_france():
 
     polynesie_francaise_postal_code = postal_code_utils.PostalCode(postalCode="98700")
     assert polynesie_francaise_postal_code.get_departement_code() == "987"
+
+    guadeloupe_postal_code = postal_code_utils.PostalCode(postalCode="97100")
+    assert guadeloupe_postal_code.get_departement_code() == "971"
+
+
+def test_get_departement_code_for_saint_martin():
+    saint_martin_postal_code = postal_code_utils.PostalCode(postalCode="97150")
+    assert saint_martin_postal_code.get_departement_code() == "978"

@@ -101,6 +101,7 @@ area_choices = (
     ("974", "974 - La Réunion"),
     ("975", "975 - Saint-Pierre-et-Miquelon"),
     ("976", "976 - Mayotte"),
+    ("978", "978 - Saint-Martin"),
     ("980", "980 - Monaco"),  # abroad but offers exist in Monaco
     ("986", "986 - Wallis et Futuna"),
     ("987", "987 - Polynésie Française"),
