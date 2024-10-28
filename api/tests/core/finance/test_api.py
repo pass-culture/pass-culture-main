@@ -1793,6 +1793,7 @@ def test_generate_payment_files(mocked_gdrive_create_file, clean_temp_files):
     assert gdrive_file_names == {
         "bank_accounts_20230201_1334.csv",
         f"down_payment_{cashflow.batch.label}_20230201_1334.csv",
+        f"down_payment_nc_{cashflow.batch.label}_20230201_1334.csv",
     }
 
 
@@ -2063,6 +2064,28 @@ def test_generate_payments_file(clean_temp_files):
         booking__stock__offer__venue=venue2,
     )
 
+    ## New Caledonia
+    # A Caledonian pricing, but in euro
+    nc_offerer = offerers_factories.CaledonianOffererFactory(name="Structure de Nouvelle-Calédonie")
+    nc_venue = offerers_factories.CaledonianVenueFactory(
+        name="Au Kanak fringuant",
+        pricing_point="self",
+        managingOfferer=nc_offerer,
+    )
+    nc_bank_account = factories.CaledonianBankAccountFactory(offerer=nc_venue.managingOfferer)
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=nc_venue, bankAccount=nc_bank_account, timespan=(datetime.datetime(actual_year, 1, 29),)
+    )
+
+    factories.PricingFactory(
+        amount=-1000,  # rate = 100 %
+        booking__amount=10,
+        booking__dateUsed=used_date,
+        booking__stock__offer__name="Une histoire calédonienne",
+        booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+        booking__stock__offer__venue=nc_venue,
+    )
+
     ## Collective incident
     # Collective booking, with an incident later
     collective_booking = educational_factories.ReimbursedCollectiveBookingFactory(
@@ -2106,7 +2129,7 @@ def test_generate_payments_file(clean_temp_files):
         reader = csv.DictReader(fp, quoting=csv.QUOTE_NONNUMERIC)
         rows = list(reader)
 
-    assert len(rows) == 7
+    assert len(rows) == 8
     assert {
         "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "SIREN de la structure": bank_account_1.offerer.siren,
@@ -2156,12 +2179,38 @@ def test_generate_payments_file(clean_temp_files):
         "Montant net offreur": 4 + 4,
     } in rows
     assert {
+        "Identifiant des coordonnées bancaires": human_ids.humanize(nc_bank_account.id),
+        "SIREN de la structure": nc_bank_account.offerer.rid7,
+        "Nom de la structure - Libellé des coordonnées bancaires": f"{nc_bank_account.offerer.name} - {nc_bank_account.label}",
+        "Type de réservation": "PC",
+        "Ministère": "NC",
+        "Montant net offreur": 10,  # not in XPF
+    } in rows
+    assert {
         "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_3.id),
         "SIREN de la structure": bank_account_3.offerer.siren,
         "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account_3.offerer.name} - {bank_account_3.label}",
         "Type de réservation": "EACC",
         "Ministère": "ARMEES",
         "Montant net offreur": -12,  # [0 - 12 = -12] from collective incident
+    } in rows
+
+    n_queries = 1  # select individual pricings only (batch already selected)
+    with assert_num_queries(n_queries):
+        path = api._generate_payments_file(batch, only_caledonian=True)
+
+    with open(path, encoding="utf-8") as fp:
+        reader = csv.DictReader(fp, quoting=csv.QUOTE_NONNUMERIC)
+        rows = list(reader)
+
+    assert len(rows) == 1
+    assert {
+        "Identifiant des coordonnées bancaires": human_ids.humanize(nc_bank_account.id),
+        "SIREN de la structure": nc_bank_account.offerer.rid7,
+        "Nom de la structure - Libellé des coordonnées bancaires": f"{nc_bank_account.offerer.name} - {nc_bank_account.label}",
+        "Type de réservation": "PC",
+        "Ministère": "NC",
+        "Montant net offreur": 1193.32,  # 10 € = 10*(1000/8.38) XPF = 1193.32 XPF
     } in rows
 
 
