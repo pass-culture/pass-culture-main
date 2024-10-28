@@ -1,9 +1,8 @@
 import { api } from 'apiClient/api'
 import { DEFAULT_PRE_FILTERS } from 'commons/core/Bookings/constants'
 import { PreFiltersParams } from 'commons/core/Bookings/types'
+import { isDateValid } from 'commons/utils/date'
 import { downloadFile } from 'commons/utils/downloadFile'
-
-import { isDateValid } from '../../commons/utils/date'
 
 export const downloadCollectiveBookingsXLSFile = async (
   filters: PreFiltersParams & { page?: number }
