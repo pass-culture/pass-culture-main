@@ -4,7 +4,7 @@ import { userEvent } from '@testing-library/user-event'
 import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import * as useNotification from 'commons/hooks/useNotification'
-import { defaultCollectiveOffer } from 'commons/utils/adageFactories'
+import { defaultCollectiveOffer } from 'commons/utils/factories/adageFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 

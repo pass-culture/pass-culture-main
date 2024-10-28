@@ -13,13 +13,13 @@ import {
   DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
 } from 'commons/core/Offers/constants'
 import * as useNotification from 'commons/hooks/useNotification'
-import { collectiveOfferFactory } from 'commons/utils/collectiveApiFactories'
-import { defaultGetOffererResponseModel } from 'commons/utils/individualApiFactories'
+import { collectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
+import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import {
   TemplateCollectiveOffersScreen,

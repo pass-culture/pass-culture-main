@@ -7,7 +7,7 @@ import {
   IndividualOfferContext,
   IndividualOfferContextValues,
 } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { subcategoryFactory } from 'commons/utils/individualApiFactories'
+import { subcategoryFactory } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {

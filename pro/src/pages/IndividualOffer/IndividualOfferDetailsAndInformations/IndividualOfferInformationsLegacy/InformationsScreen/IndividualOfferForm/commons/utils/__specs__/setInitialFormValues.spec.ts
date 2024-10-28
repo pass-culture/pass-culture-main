@@ -11,7 +11,7 @@ import {
   getIndividualOfferFactory,
   subcategoryFactory,
   venueListItemFactory,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
 
 import { buildAccessibilityFormValues } from '../setDefaultInitialFormValues'
 import { setInitialFormValues } from '../setInitialFormValues'

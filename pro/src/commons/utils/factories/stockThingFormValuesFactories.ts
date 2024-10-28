@@ -1,5 +1,5 @@
 /* istanbul ignore file: Those are test helpers, their coverage is not relevant */
-import { StockThingFormValues } from './types'
+import { StockThingFormValues } from 'components/IndividualOffer/StocksThing/types'
 
 export const stockThingFormValuesFactory = (
   customStockThing: Partial<StockThingFormValues> = {}

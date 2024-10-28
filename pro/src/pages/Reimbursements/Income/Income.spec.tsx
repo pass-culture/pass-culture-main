@@ -10,9 +10,9 @@ import * as useAnalytics from 'app/App/analytics/firebase'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { Income, MOCK_INCOME_BY_YEAR } from './Income'
 import { IncomeResults, IncomeType } from './types'

@@ -11,7 +11,7 @@ import {
   collectiveBookingCollectiveStockFactory,
   collectiveBookingByIdFactory,
   collectiveBookingFactory,
-} from 'commons/utils/collectiveApiFactories'
+} from 'commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {

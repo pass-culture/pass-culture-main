@@ -16,13 +16,13 @@ import {
 } from 'commons/core/Offers/constants'
 import { SearchFiltersParams } from 'commons/core/Offers/types'
 import * as useNotification from 'commons/hooks/useNotification'
-import { listOffersOfferFactory } from 'commons/utils/individualApiFactories'
-import { offererAddressFactory } from 'commons/utils/offererAddressFactories'
+import { listOffersOfferFactory } from 'commons/utils/factories/individualApiFactories'
+import { offererAddressFactory } from 'commons/utils/factories/offererAddressFactories'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 import { computeAddressDisplayName } from 'repository/venuesService'
 
 import {

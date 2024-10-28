@@ -4,12 +4,12 @@ import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { routesSignup } from 'app/AppRouter/subroutesSignupMap'
-import { getOffererNameFactory } from 'commons/utils/individualApiFactories'
+import { getOffererNameFactory } from 'commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { Signup } from '../Signup'
 

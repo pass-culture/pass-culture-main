@@ -9,7 +9,7 @@ import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import { GET_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
 import * as useNotification from 'commons/hooks/useNotification'
-import { defaultCollectiveTemplateOffer } from 'commons/utils/adageFactories'
+import { defaultCollectiveTemplateOffer } from 'commons/utils/factories/adageFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 

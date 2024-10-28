@@ -12,7 +12,7 @@ import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
   getCollectiveOfferVenueFactory,
-} from 'commons/utils/collectiveApiFactories'
+} from 'commons/utils/factories/collectiveApiFactories'
 import * as localStorageAvailable from 'commons/utils/localStorageAvailable'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 

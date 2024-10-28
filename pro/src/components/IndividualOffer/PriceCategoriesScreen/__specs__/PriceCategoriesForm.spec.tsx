@@ -5,14 +5,14 @@ import { Formik } from 'formik'
 import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
-import { getIndividualOfferFactory } from 'commons/utils/individualApiFactories'
+import { getIndividualOfferFactory } from 'commons/utils/factories/individualApiFactories'
+import { priceCategoryFormFactory } from 'commons/utils/factories/priceCategoryFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {
   FIRST_INITIAL_PRICE_CATEGORY,
   PRICE_CATEGORY_MAX_LENGTH,
 } from '../form/constants'
-import { priceCategoryFormFactory } from '../form/factories'
 import { PriceCategoriesFormValues } from '../form/types'
 import {
   PriceCategoriesForm,

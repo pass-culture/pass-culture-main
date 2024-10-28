@@ -5,7 +5,7 @@ import { BookingRecapStatus } from 'apiClient/v1'
 import {
   bookingRecapFactory,
   bookingRecapStockFactory,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {

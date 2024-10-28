@@ -7,7 +7,7 @@ import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import {
   getOfferManagingOffererFactory,
   getOfferVenueFactory,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
 
 import {
   EVENT_ADDRESS_OTHER_ADDRESS_LABEL,

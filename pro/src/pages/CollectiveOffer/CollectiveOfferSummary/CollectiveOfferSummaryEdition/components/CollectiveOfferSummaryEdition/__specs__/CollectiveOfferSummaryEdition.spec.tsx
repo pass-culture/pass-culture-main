@@ -6,9 +6,9 @@ import {
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
 import { Mode } from 'commons/core/OfferEducational/types'
-import { getCollectiveOfferTemplateFactory } from 'commons/utils/collectiveApiFactories'
+import { getCollectiveOfferTemplateFactory } from 'commons/utils/factories/collectiveApiFactories'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { CollectiveOfferSummaryEditionScreen } from '../CollectiveOfferSummaryEdition'
 

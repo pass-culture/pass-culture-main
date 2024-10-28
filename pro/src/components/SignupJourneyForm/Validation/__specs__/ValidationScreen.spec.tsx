@@ -14,9 +14,9 @@ import {
   SignupJourneyContextValues,
   SignupJourneyContext,
 } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import * as utils from 'commons/utils/recaptcha'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 import { Address } from 'components/Address/types'
 import { Notification } from 'components/Notification/Notification'
 import { Validation } from 'components/SignupJourneyForm/Validation/Validation'

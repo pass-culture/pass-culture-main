@@ -4,9 +4,9 @@ import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
-import { getCollectiveOfferFactory } from 'commons/utils/collectiveApiFactories'
+import { getCollectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { defaultCreationProps } from '../__tests-utils__/defaultProps'
 import { OfferEducational, OfferEducationalProps } from '../OfferEducational'

@@ -1,4 +1,7 @@
-import { PriceCategoriesFormValues, PriceCategoryForm } from './types'
+import {
+  PriceCategoriesFormValues,
+  PriceCategoryForm,
+} from 'components/IndividualOffer/PriceCategoriesScreen/form/types'
 
 let priceCategoryFormId = 1
 export const priceCategoryFormFactory = (

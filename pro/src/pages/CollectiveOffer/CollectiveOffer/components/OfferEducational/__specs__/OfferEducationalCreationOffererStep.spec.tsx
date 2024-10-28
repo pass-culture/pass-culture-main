@@ -1,14 +1,14 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
-
-import { defaultCreationProps } from '../__tests-utils__/defaultProps'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
   managedVenuesFactory,
   userOffererFactory,
-} from '../__tests-utils__/userOfferersFactory'
+} from 'commons/utils/factories/userOfferersFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+
+import { defaultCreationProps } from '../__tests-utils__/defaultProps'
 import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
 
 function renderOfferEducational(props: OfferEducationalProps) {

@@ -10,7 +10,7 @@ import { CATEGORY_STATUS } from 'commons/core/Offers/constants'
 import {
   getIndividualOfferFactory,
   subcategoryFactory,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
 
 import { serializeOfferSectionData } from '../serializer'
 

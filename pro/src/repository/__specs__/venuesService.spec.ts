@@ -1,6 +1,6 @@
-import { AddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/commonOffersApiFactories'
-import { venueListItemFactory } from 'commons/utils/individualApiFactories'
-import { offererAddressFactory } from 'commons/utils/offererAddressFactories'
+import { AddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
+import { venueListItemFactory } from 'commons/utils/factories/individualApiFactories'
+import { offererAddressFactory } from 'commons/utils/factories/offererAddressFactories'
 
 import {
   computeAddressDisplayName,

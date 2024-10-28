@@ -3,7 +3,7 @@ import {
   CollectiveOfferTemplateAllowedAction,
   CollectiveOffersStockResponseModel,
 } from 'apiClient/v1'
-import { collectiveOfferFactory } from 'commons/utils/collectiveApiFactories'
+import { collectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
 
 import { isCollectiveOfferArchivable } from '../isCollectiveOfferArchivable'
 

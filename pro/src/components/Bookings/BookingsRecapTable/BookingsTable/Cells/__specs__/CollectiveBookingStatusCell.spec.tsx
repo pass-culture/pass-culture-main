@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 
-import { collectiveBookingFactory } from 'commons/utils/collectiveApiFactories'
+import { collectiveBookingFactory } from 'commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {

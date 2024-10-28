@@ -1,5 +1,5 @@
 import { StockCreationBodyModel, StockEditionBodyModel } from 'apiClient/v1'
-import { stockEventFactory } from 'components/IndividualOffer/StocksEventEdition/StockFormList/stockEventFactory'
+import { stockEventFactory } from 'commons/utils/factories/stockEventFactories'
 
 import { serializeStockEventEdition } from '../serializers'
 import { STOCK_EVENT_FORM_DEFAULT_VALUES } from '../StockFormList/constants'

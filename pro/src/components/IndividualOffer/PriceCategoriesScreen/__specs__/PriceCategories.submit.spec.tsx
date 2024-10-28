@@ -10,7 +10,7 @@ import { PATCH_SUCCESS_MESSAGE } from 'commons/core/shared/constants'
 import {
   getIndividualOfferFactory,
   priceCategoryFactory,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { Notification } from 'components/Notification/Notification'

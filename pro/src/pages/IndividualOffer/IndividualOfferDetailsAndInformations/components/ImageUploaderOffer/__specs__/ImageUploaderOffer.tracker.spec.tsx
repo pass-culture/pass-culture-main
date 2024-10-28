@@ -9,9 +9,9 @@ import { Events } from 'commons/core/FirebaseEvents/constants'
 import {
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 
 import {

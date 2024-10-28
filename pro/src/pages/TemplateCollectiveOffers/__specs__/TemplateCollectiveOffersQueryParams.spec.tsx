@@ -15,13 +15,13 @@ import {
 import { DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS } from 'commons/core/Offers/constants'
 import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from 'commons/core/Offers/utils/computeCollectiveOffersUrl'
-import { collectiveOfferFactory } from 'commons/utils/collectiveApiFactories'
+import { collectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
   venueListItemFactory,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { TemplateCollectiveOffers } from '../TemplateCollectiveOffers'
 

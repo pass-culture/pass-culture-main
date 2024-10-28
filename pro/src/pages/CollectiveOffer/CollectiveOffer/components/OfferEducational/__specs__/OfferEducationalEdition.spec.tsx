@@ -5,14 +5,14 @@ import { Mode } from 'commons/core/OfferEducational/types'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferVenueFactory,
-} from 'commons/utils/collectiveApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-
-import { defaultEditionProps } from '../__tests-utils__/defaultProps'
+} from 'commons/utils/factories/collectiveApiFactories'
 import {
   managedVenueFactory,
   userOffererFactory,
-} from '../__tests-utils__/userOfferersFactory'
+} from 'commons/utils/factories/userOfferersFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+
+import { defaultEditionProps } from '../__tests-utils__/defaultProps'
 import {
   DURATION_LABEL,
   EMAIL_LABEL,

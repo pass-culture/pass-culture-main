@@ -1,4 +1,4 @@
-import { defaultCollectiveOffer } from 'commons/utils/adageFactories'
+import { defaultCollectiveOffer } from 'commons/utils/factories/adageFactories'
 
 import { getBookableOfferStockPrice } from '../adageOfferStocks'
 

@@ -14,9 +14,9 @@ import {
   defaultGetOffererResponseModel,
   defaultManagedVenues,
   getOffererNameFactory,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 import { Notification } from 'components/Notification/Notification'
 import { BankInformations } from 'pages/Reimbursements/BankInformations/BankInformations'
 

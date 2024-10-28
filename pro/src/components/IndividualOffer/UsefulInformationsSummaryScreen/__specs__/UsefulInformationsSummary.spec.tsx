@@ -6,12 +6,12 @@ import {
   SubcategoryIdEnum,
 } from 'apiClient/v1'
 import { IndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { AddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/commonOffersApiFactories'
+import { AddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
 import {
   getIndividualOfferFactory,
   getOfferVenueFactory,
   individualOfferContextValuesFactory,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,

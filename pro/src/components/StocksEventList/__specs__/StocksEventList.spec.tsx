@@ -8,7 +8,7 @@ import {
   getIndividualOfferFactory,
   getOfferStockFactory,
   priceCategoryFactory,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { StocksEventList, StocksEventListProps } from '../StocksEventList'

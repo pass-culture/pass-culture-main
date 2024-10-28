@@ -1,7 +1,7 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 
 import { apiAdage } from 'apiClient/api'
-import { defaultAdageUser } from 'commons/utils/adageFactories'
+import { defaultAdageUser } from 'commons/utils/factories/adageFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { Notification } from 'components/Notification/Notification'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'

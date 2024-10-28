@@ -1,4 +1,4 @@
-import { collectiveBookingCollectiveStockFactory } from 'commons/utils/collectiveApiFactories'
+import { collectiveBookingCollectiveStockFactory } from 'commons/utils/factories/collectiveApiFactories'
 
 import { getRemainingTime, getDate, shouldDisplayWarning } from '../utils'
 

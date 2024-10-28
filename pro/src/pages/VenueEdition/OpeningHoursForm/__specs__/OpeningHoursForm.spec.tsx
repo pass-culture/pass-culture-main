@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Formik, Form } from 'formik'
 
-import { defaultGetVenue } from 'commons/utils/collectiveApiFactories'
+import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
 import { setInitialFormValues } from 'pages/VenueEdition/setInitialFormValues'
 import { VenueEditionFormValues } from 'pages/VenueEdition/types'
 import { getValidationSchema } from 'pages/VenueEdition/validationSchema'

@@ -5,7 +5,7 @@ import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
 import { AdageHeaderLink } from 'apiClient/adage/models/AdageHeaderLink'
 import { apiAdage } from 'apiClient/api'
 import * as useNotification from 'commons/hooks/useNotification'
-import { defaultEducationalInstitution } from 'commons/utils/adageFactories'
+import { defaultEducationalInstitution } from 'commons/utils/factories/adageFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,

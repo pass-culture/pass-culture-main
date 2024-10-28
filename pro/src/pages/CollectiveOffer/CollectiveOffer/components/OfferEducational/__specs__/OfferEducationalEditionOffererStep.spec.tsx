@@ -7,15 +7,15 @@ import {
   getCollectiveOfferFactory,
   getCollectiveOfferManagingOffererFactory,
   getCollectiveOfferVenueFactory,
-} from 'commons/utils/collectiveApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
-
-import { defaultEditionProps } from '../__tests-utils__/defaultProps'
+} from 'commons/utils/factories/collectiveApiFactories'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
   managedVenuesFactory,
   userOffererFactory,
-} from '../__tests-utils__/userOfferersFactory'
+} from 'commons/utils/factories/userOfferersFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+
+import { defaultEditionProps } from '../__tests-utils__/defaultProps'
 import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
 
 function renderComponent(props: OfferEducationalProps) {

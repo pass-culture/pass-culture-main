@@ -9,8 +9,8 @@ import {
   SignupJourneyContext,
   SignupJourneyContextValues,
 } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 import { DEFAULT_ADDRESS_FORM_VALUES } from 'components/Address/constants'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'components/SignupJourneyForm/Offerer/constants'
 

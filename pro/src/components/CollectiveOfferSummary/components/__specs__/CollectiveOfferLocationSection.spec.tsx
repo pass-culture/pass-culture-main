@@ -7,7 +7,7 @@ import * as useNotification from 'commons/hooks/useNotification'
 import {
   getCollectiveOfferTemplateFactory,
   defaultGetVenue,
-} from 'commons/utils/collectiveApiFactories'
+} from 'commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import * as getInterventionAreaLabels from 'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea'
 

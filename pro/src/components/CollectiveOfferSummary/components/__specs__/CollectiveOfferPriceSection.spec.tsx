@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
-import { getCollectiveOfferTemplateFactory } from 'commons/utils/collectiveApiFactories'
+import { getCollectiveOfferTemplateFactory } from 'commons/utils/factories/collectiveApiFactories'
 
 import { CollectiveOfferPriceSection } from '../CollectiveOfferPriceSection'
 

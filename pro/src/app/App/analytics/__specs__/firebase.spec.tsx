@@ -6,8 +6,8 @@ import React from 'react'
 import { expect, vi } from 'vitest'
 
 import { firebaseConfig } from 'commons/config/firebase'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { destroyFirebase, useFirebase } from '../firebase'
 

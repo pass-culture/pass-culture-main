@@ -7,11 +7,11 @@ import { api } from 'apiClient/api'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import * as orejime from 'app/App/analytics/orejime'
 import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { App } from '../App/App'
 

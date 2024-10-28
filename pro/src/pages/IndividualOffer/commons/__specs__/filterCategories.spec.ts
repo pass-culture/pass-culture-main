@@ -6,7 +6,7 @@ import {
 import {
   categoryFactory,
   subcategoryFactory,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
 
 import {
   getOfferSubtypeFromParam,

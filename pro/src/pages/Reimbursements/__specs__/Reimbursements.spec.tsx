@@ -10,9 +10,9 @@ import { routesReimbursements } from 'app/AppRouter/subroutesReimbursements'
 import {
   defaultGetOffererResponseModel,
   getOffererNameFactory,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { Reimbursements, ReimbursementsContextProps } from '../Reimbursements'
 

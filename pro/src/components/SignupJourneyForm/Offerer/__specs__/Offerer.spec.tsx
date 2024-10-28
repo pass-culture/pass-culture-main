@@ -13,8 +13,8 @@ import {
   SignupJourneyContextValues,
 } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
 import * as siretApiValidate from 'commons/core/Venue/siretApiValidate'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 import { DEFAULT_ADDRESS_FORM_VALUES } from 'components/Address/constants'
 import { Notification } from 'components/Notification/Notification'
 

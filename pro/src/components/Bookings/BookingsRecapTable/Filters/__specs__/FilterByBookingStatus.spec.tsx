@@ -11,7 +11,7 @@ import { Audience } from 'commons/core/shared/types'
 import {
   bookingRecapFactory,
   bookingRecapStockFactory,
-} from 'commons/utils/individualApiFactories'
+} from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {
