@@ -21,6 +21,7 @@ module.exports = {
     '**/*.png',
     'src/index.html',
     '.eslintrc.cjs',
+    'src/**/*.gif',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
