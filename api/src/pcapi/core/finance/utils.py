@@ -8,6 +8,9 @@ import pytz
 
 ACCOUNTING_TIMEZONE = pytz.timezone("Europe/Paris")
 ROUNDING = decimal.ROUND_HALF_UP
+# Article D721-2, Code monétaire et financier
+# 1000 CFP = 8.38 €
+EUR_TO_XPF_RATE = 1000 / 8.38
 
 
 def to_eurocents(amount_in_euros: decimal.Decimal | float) -> int:
@@ -20,6 +23,10 @@ def to_eurocents(amount_in_euros: decimal.Decimal | float) -> int:
 def to_euros(amount_in_eurocents: int) -> decimal.Decimal:
     exponent = decimal.Decimal("0.01")
     return decimal.Decimal(amount_in_eurocents / 100).quantize(exponent)
+
+
+def euros_to_xpf(amount_in_euros: decimal.Decimal | float) -> int:
+    return round_to_integer(decimal.Decimal(amount_in_euros) * decimal.Decimal(EUR_TO_XPF_RATE))
 
 
 def round_to_integer(amount: decimal.Decimal) -> int:

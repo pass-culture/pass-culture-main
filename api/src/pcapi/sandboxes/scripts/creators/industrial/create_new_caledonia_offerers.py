@@ -2,7 +2,10 @@ import datetime
 import decimal
 import logging
 
+from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import factories as finance_factories
+from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
@@ -20,6 +23,8 @@ def create_new_caledonia_offerers() -> None:
     _create_nc_minimal_offerer()
 
     logger.info("created New Caledonia offerers")
+
+    _create_nc_invoice()
 
 
 def _create_nc_active_offerer() -> None:
@@ -169,8 +174,59 @@ def _create_nc_minimal_offerer() -> None:
         offerer=offerer,
         user__firstName="Méréï",
         user__lastName="Néo-Calédonien",
-        user__email="pro2.nc@example.com",
-        user__phoneNumber="+687442504",
+        user__email="pro3.nc@example.com",
+        user__phoneNumber="+687749362",
         user__postalCode="98829",
         user__departementCode="988",
     )
+
+
+def _create_nc_invoice() -> None:
+    logger.info("_create_nc_invoice")
+    offerer = offerers_factories.CaledonianOffererFactory(name="Structure Néo-calédonienne avec remboursement")
+    bank_account = finance_factories.CaledonianBankAccountFactory(offerer=offerer)
+    offerers_factories.UserOffererFactory(
+        offerer=offerer,
+        user__firstName="Jean-Michel",
+        user__lastName="Nouvelle-Calédonie",
+        user__email="pro2.nc@example.com",
+        user__postalCode="98800",
+        user__departementCode="988",
+    )
+    venue = offerers_factories.CaledonianVenueFactory(
+        name="Lieu calédonien avec justificatif",
+        managingOfferer=offerer,
+        pricing_point="self",
+        bank_account=bank_account,
+    )
+
+    offer1 = offers_factories.ThingOfferFactory(name="Offre calédonienne remboursée 1", venue=venue)
+    offer2 = offers_factories.ThingOfferFactory(name="Offre calédonienne remboursée 2", venue=venue)
+
+    stocks = [
+        offers_factories.StockFactory(offer=offer1, price=30),
+        offers_factories.StockFactory(offer=offer2, price=83.8),
+    ]
+
+    bookings = []
+    for stock in stocks:
+        booking = bookings_factories.UsedBookingFactory(
+            stock=stock,
+            user__deposit__source="_create_nc_invoice() in industrial sandbox",
+        )
+        bookings.append(booking)
+    for booking in bookings:
+        finance_factories.UsedBookingFinanceEventFactory(booking=booking)
+    for booking in bookings:
+        event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
+        finance_api.price_event(event)
+
+    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
+    cashflows = finance_models.Cashflow.query.filter_by(bankAccount=bank_account).all()
+    cashflow_ids = [c.id for c in cashflows]
+
+    finance_api.generate_and_store_invoice(
+        bank_account_id=bank_account.id,
+        cashflow_ids=cashflow_ids,
+    )
+    logger.info("Created caledonian Invoice")

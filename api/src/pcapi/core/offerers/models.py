@@ -37,6 +37,7 @@ from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import backref
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
+from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import Case
 import sqlalchemy.sql.functions as sqla_func
 from sqlalchemy.sql.selectable import Exists
@@ -1059,13 +1060,19 @@ class Offerer(
             else_=func.substring(cls.postalCode, 1, postal_code_utils.MAINLAND_DEPARTEMENT_CODE_LENGTH),
         )
 
-    @property
+    @hybrid_property
     def rid7(self) -> str | None:
         if self.siren and siren_utils.is_rid7(self.siren):
             return siren_utils.siren_to_rid7(self.siren)
         return None
 
-    @property
+    @rid7.expression  # type: ignore[no-redef]
+    def rid7(cls) -> Case:  # pylint: disable=no-self-argument
+        return sa.case(
+            (cls.siren.ilike(f"{siren_utils.NEW_CALEDONIA_SIREN_PREFIX}%"), func.substring(cls.siren, 3, 7)), else_=None
+        )
+
+    @hybrid_property
     def is_caledonian(self) -> bool:
         """
         Note that caledonian offerers may have a SIREN and be registered with their SIREN.
@@ -1077,6 +1084,13 @@ class Offerer(
         if self.postalCode.startswith(regions_utils.NEW_CALEDONIA_DEPARTMENT_CODE):
             return True
         return False
+
+    @is_caledonian.expression  # type: ignore[no-redef]
+    def is_caledonian(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+        return sa.or_(
+            cls.siren.ilike(f"{siren_utils.NEW_CALEDONIA_SIREN_PREFIX}%"),
+            cls.postalCode.ilike(f"{regions_utils.NEW_CALEDONIA_DEPARTMENT_CODE}%"),
+        )
 
     @property
     def identifier_name(self) -> str:

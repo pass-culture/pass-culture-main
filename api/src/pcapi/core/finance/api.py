@@ -1181,6 +1181,9 @@ def generate_payment_files(batch: models.CashflowBatch) -> None:
     logger.info("Generating payments file")
     file_paths["payments"] = _generate_payments_file(batch)
 
+    logger.info("Generating new-caledonian payments file")
+    file_paths["payments_nc"] = _generate_payments_file(batch, only_caledonian=True)
+
     logger.info(
         "Finance files have been generated",
         extra={"paths": [str(path) for path in file_paths.values()]},
@@ -1345,7 +1348,7 @@ def _clean_for_accounting(value: str) -> str:
     return value.strip().replace('"', "").replace(";", "").replace("\n", "")
 
 
-def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
+def _generate_payments_file(batch: models.CashflowBatch, only_caledonian: bool = False) -> pathlib.Path:
     batch_id = batch.id
     header = [
         "Identifiant des coordonnées bancaires",
@@ -1357,7 +1360,7 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
     ]
 
     def get_individual_data(query: BaseQuery) -> BaseQuery:
-        return (
+        individual_data_query = (
             query.filter(bookings_models.Booking.amount != 0)
             .join(bookings_models.Booking.deposit)
             .join(models.Pricing.cashflows)
@@ -1376,11 +1379,22 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
                 models.BankAccount.id.label("bank_account_id"),
                 models.BankAccount.label.label("bank_account_label"),
                 offerers_models.Offerer.name.label("offerer_name"),
-                offerers_models.Offerer.siren.label("offerer_siren"),
+                sa.case(
+                    (offerers_models.Offerer.is_caledonian == True, offerers_models.Offerer.rid7),
+                    else_=offerers_models.Offerer.siren,
+                ).label("offerer_siren"),
                 models.Deposit.type.label("deposit_type"),
-                sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
+                sa.case((offerers_models.Offerer.is_caledonian == True, "NC"), else_=None).label("caledonian_label"),
+                sqla_func.sum(models.Pricing.xpf_amount if only_caledonian else models.Pricing.amount).label(
+                    "pricing_amount"
+                ),
             )
         )
+
+        if only_caledonian:
+            individual_data_query = individual_data_query.filter(offerers_models.Offerer.is_caledonian)
+
+        return individual_data_query
 
     def get_collective_data(query: BaseQuery) -> BaseQuery:
         return (
@@ -1443,6 +1457,7 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
             sa.column("offerer_name"),
             sa.column("offerer_siren"),
             sa.column("deposit_type"),
+            sa.column("caledonian_label"),
         )
         .with_entities(
             sa.column("bank_account_id"),
@@ -1450,6 +1465,7 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
             sa.column("offerer_name"),
             sa.column("offerer_siren"),
             sa.column("deposit_type"),
+            sa.column("caledonian_label"),
             sqla_func.sum(sa.column("pricing_amount")).label("pricing_amount"),
         )
         .all()
@@ -1466,28 +1482,31 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
         .join(models.BookingFinanceIncident.collectiveBooking)
     )
 
-    collective_data = (
-        collective_query.union_all(collective_incident_query)
-        .group_by(
-            sa.column("bank_account_id"),
-            sa.column("bank_account_label"),
-            sa.column("offerer_name"),
-            sa.column("offerer_siren"),
-            sa.column("ministry"),
+    if only_caledonian:
+        collective_data = []
+    else:
+        collective_data = (
+            collective_query.union_all(collective_incident_query)
+            .group_by(
+                sa.column("bank_account_id"),
+                sa.column("bank_account_label"),
+                sa.column("offerer_name"),
+                sa.column("offerer_siren"),
+                sa.column("ministry"),
+            )
+            .with_entities(
+                sa.column("bank_account_id"),
+                sa.column("bank_account_label"),
+                sa.column("offerer_name"),
+                sa.column("offerer_siren"),
+                sa.column("ministry"),
+                sqla_func.sum(sa.column("pricing_amount")).label("pricing_amount"),
+            )
+            .all()
         )
-        .with_entities(
-            sa.column("bank_account_id"),
-            sa.column("bank_account_label"),
-            sa.column("offerer_name"),
-            sa.column("offerer_siren"),
-            sa.column("ministry"),
-            sqla_func.sum(sa.column("pricing_amount")).label("pricing_amount"),
-        )
-        .all()
-    )
 
     return _write_csv(
-        f"down_payment_{batch.label}",
+        f"down_payment{'_nc' if only_caledonian else ''}_{batch.label}",
         header,
         rows=itertools.chain(indiv_data, collective_data),
         row_formatter=_payment_details_row_formatter,
@@ -1504,7 +1523,7 @@ def _payment_details_row_formatter(sql_row: typing.Any) -> tuple:
     else:
         raise ValueError("Unknown booking type (not educational nor individual)")
 
-    ministry = getattr(sql_row, "ministry", "")
+    ministry = getattr(sql_row, "caledonian_label", getattr(sql_row, "ministry", ""))
     net_amount = utils.to_euros(-sql_row.pricing_amount)
 
     return (

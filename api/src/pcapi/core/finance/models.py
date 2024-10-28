@@ -461,6 +461,14 @@ class Pricing(PcObject, Base, Model):
 
         return self.cashflows[0]
 
+    @hybrid_property
+    def xpf_amount(self) -> int:
+        return utils.euros_to_xpf(self.amount)
+
+    @xpf_amount.expression  # type: ignore[no-redef]
+    def xpf_amount(cls) -> int:  # pylint: disable=no-self-argument
+        return sqla.cast(sqla.func.round(cls.amount * utils.EUR_TO_XPF_RATE), sqla.Integer)
+
 
 class PricingLine(PcObject, Base, Model):
 
