@@ -19,11 +19,11 @@ import { SummaryAside } from 'components/SummaryLayout/SummaryAside'
 import { SummaryContent } from 'components/SummaryLayout/SummaryContent'
 import { SummaryLayout } from 'components/SummaryLayout/SummaryLayout'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
+import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
 import { RedirectToBankAccountDialog } from 'pages/Offers/components/IndividualOffersScreen/RedirectToBankAccountDialog'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import { ActionBar } from '../ActionBar/ActionBar'
 import { serializeDateTimeToUTCFromLocalDepartment } from '../StocksEventEdition/serializers'
 
 import { DisplayOfferInAppLink } from './DisplayOfferInAppLink/DisplayOfferInAppLink'
