@@ -12,7 +12,7 @@ import {
   CATEGORY_STATUS,
   OFFER_WIZARD_MODE,
 } from 'commons/core/Offers/constants'
-import { AddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
+import { getAddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
 import {
   categoryFactory,
   getIndividualOfferFactory,
@@ -316,7 +316,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
     it('should display the dialog if user updated address field(s)', async () => {
       const propsWithOfferAddress = structuredClone(props)
       propsWithOfferAddress.offer.address =
-        AddressResponseIsLinkedToVenueModelFactory({
+        getAddressResponseIsLinkedToVenueModelFactory({
           id: 666,
           id_oa: 1337,
           isLinkedToVenue: false,
@@ -353,7 +353,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
     it('should display the dialog if user updated both withdrawalInformations and address field(s)', async () => {
       const propsWithOfferAddress = structuredClone(props)
       propsWithOfferAddress.offer.address =
-        AddressResponseIsLinkedToVenueModelFactory({
+        getAddressResponseIsLinkedToVenueModelFactory({
           id: 666,
           id_oa: 1337,
           isLinkedToVenue: false,

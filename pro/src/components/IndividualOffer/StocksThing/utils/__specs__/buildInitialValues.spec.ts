@@ -1,5 +1,5 @@
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
-import { AddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
+import { getAddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
 import {
   getOfferVenueFactory,
   getIndividualOfferFactory,
@@ -85,7 +85,7 @@ describe('StockThingForm::utils::buildInitialValues', () => {
   })
 
   it('should format date with good department code if FF WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE_ENABLED', () => {
-    offer.address = AddressResponseIsLinkedToVenueModelFactory({
+    offer.address = getAddressResponseIsLinkedToVenueModelFactory({
       departmentCode: '987', // Pacific/Tahiti
     })
 

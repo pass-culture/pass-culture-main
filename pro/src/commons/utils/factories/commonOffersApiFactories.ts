@@ -1,7 +1,7 @@
 import { AddressResponseIsLinkedToVenueModel } from 'apiClient/v1'
 
-export const AddressResponseIsLinkedToVenueModelFactory = (
-  customAddressResponseIsEditableModelFactory: Partial<AddressResponseIsLinkedToVenueModel> = {}
+export const getAddressResponseIsLinkedToVenueModelFactory = (
+  addressResponse: Partial<AddressResponseIsLinkedToVenueModel> = {}
 ): AddressResponseIsLinkedToVenueModel => {
   return {
     banId: 'ban',
@@ -16,6 +16,6 @@ export const AddressResponseIsLinkedToVenueModelFactory = (
     longitude: 2.333333,
     postalCode: '75008',
     street: 'ma super rue',
-    ...customAddressResponseIsEditableModelFactory,
+    ...addressResponse,
   }
 }
