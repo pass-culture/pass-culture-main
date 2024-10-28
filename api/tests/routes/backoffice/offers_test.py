@@ -1459,7 +1459,7 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
                 assert response.status_code == 200
             algolia_mock.assert_called_once_with(
                 query="display",
-                filters="(offer.category:CARTE_CINE_ILLIMITE OR offer.category:CARTE_CINE_MULTISEANCES OR offer.category:CARTE_JEUNES OR offer.category:CINE_PLEIN_AIR OR offer.category:CINE_VENTE_DISTANCE OR offer.category:EVENEMENT_CINE OR offer.category:FESTIVAL_CINE OR offer.category:SEANCE_CINE) AND offer.ean:1234567890123",
+                filters="(offer.subcategoryId:CARTE_CINE_ILLIMITE OR offer.subcategoryId:CARTE_CINE_MULTISEANCES OR offer.subcategoryId:CARTE_JEUNES OR offer.subcategoryId:CINE_PLEIN_AIR OR offer.subcategoryId:CINE_VENTE_DISTANCE OR offer.subcategoryId:EVENEMENT_CINE OR offer.subcategoryId:FESTIVAL_CINE OR offer.subcategoryId:SEANCE_CINE) AND offer.ean:1234567890123",
                 count=1001,
             )
 
@@ -1490,7 +1490,7 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
                 assert response.status_code == 200
             algolia_mock.assert_called_once_with(
                 query="display",
-                filters="NOT (offer.category:CARTE_CINE_ILLIMITE OR offer.category:CARTE_CINE_MULTISEANCES OR offer.category:CARTE_JEUNES OR offer.category:CINE_PLEIN_AIR OR offer.category:CINE_VENTE_DISTANCE OR offer.category:EVENEMENT_CINE OR offer.category:FESTIVAL_CINE OR offer.category:SEANCE_CINE) AND NOT offer.ean:1234567890123",
+                filters="(NOT offer.subcategoryId:CARTE_CINE_ILLIMITE AND NOT offer.subcategoryId:CARTE_CINE_MULTISEANCES AND NOT offer.subcategoryId:CARTE_JEUNES AND NOT offer.subcategoryId:CINE_PLEIN_AIR AND NOT offer.subcategoryId:CINE_VENTE_DISTANCE AND NOT offer.subcategoryId:EVENEMENT_CINE AND NOT offer.subcategoryId:FESTIVAL_CINE AND NOT offer.subcategoryId:SEANCE_CINE) AND NOT offer.ean:1234567890123",
                 count=1001,
             )
 
@@ -1527,8 +1527,7 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
                 count=1001,
             )
 
-        rows = html_parser.extract_table_rows(response.data)
-        assert len(rows) == 0
+        assert html_parser.count_table_rows(response.data) == 0
 
     def test_list_offers_filter_on_date(self, authenticated_client):
         offers_factories.OfferFactory(name="hide")
@@ -1559,8 +1558,45 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
                 count=1001,
             )
 
-        rows = html_parser.extract_table_rows(response.data)
-        assert len(rows) == 0
+        assert html_parser.count_table_rows(response.data) == 0
+
+    def test_list_offers_filter_on_offerer(self, authenticated_client):
+        venue1 = offerers_factories.VenueFactory()
+        venue2 = offerers_factories.VenueFactory(managingOfferer=venue1.managingOfferer)
+        offerers_factories.VenueFactory()
+        offers_factories.OfferFactory(name="hide")
+
+        query_args = {
+            "algolia_search": "",
+            "limit": 1000,
+            "search-0-search_field": "OFFERER",
+            "search-0-operator": "IN",
+            "search-0-offerer": venue1.managingOffererId,
+        }
+
+        with patch("pcapi.routes.backoffice.offers.blueprint.search_offer_ids", return_value=[]) as algolia_mock:
+            # one more request to get the venues from offerer id
+            # one more request to cherck the offerer id
+            # no offers from algolia therefore no request to retrieve their fields
+            with assert_num_queries(self.expected_num_queries + 1):
+                response = authenticated_client.get(url_for(self.endpoint, **query_args))
+                assert response.status_code == 200
+
+            # handle venue order randomness to avoid flakyness
+            try:
+                algolia_mock.assert_called_once_with(
+                    query="",
+                    filters=f"(venue.id:{venue1.id} OR venue.id:{venue2.id})",
+                    count=1001,
+                )
+            except AssertionError:
+                algolia_mock.assert_called_once_with(
+                    query="",
+                    filters=f"(venue.id:{venue2.id} OR venue.id:{venue1.id})",
+                    count=1001,
+                )
+
+        assert html_parser.count_table_rows(response.data) == 0
 
 
 class ValidateOfferTest(PostEndpointHelper):

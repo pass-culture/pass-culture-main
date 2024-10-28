@@ -466,7 +466,7 @@ class OfferAlgoliaSearchSubForm(forms_utils.PCForm):
     )
     show_type = fields.PCSelectMultipleField(
         "Type de spectacle",
-        choices=[(str(s), show_types.SHOW_TYPES_LABEL_BY_CODE[s]) for s in show_types.SHOW_TYPES_LABEL_BY_CODE],
+        choices=[(label, label) for label in show_types.SHOW_TYPES_LABEL_BY_CODE.values()],
         search_inline=True,
         field_list_compatibility=True,
     )
