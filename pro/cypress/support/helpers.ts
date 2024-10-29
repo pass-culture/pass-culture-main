@@ -48,7 +48,7 @@ export function logAndGoToPage(login: string, url: string) {
   })
   cy.findAllByTestId('spinner').should('not.exist')
 
-  cy.stepLog({ message: 'I open the "reservations/collectives" page' })
+  cy.stepLog({ message: `I open the "${url}" page` })
   cy.visit(url)
   cy.findAllByTestId('spinner').should('not.exist')
 

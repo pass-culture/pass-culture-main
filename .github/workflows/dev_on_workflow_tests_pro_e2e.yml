@@ -145,7 +145,7 @@ jobs:
           browser: chrome
           config-file: cypress/cypress.config.ts
           env: TAGS="@P0"
-          record: ${{ github.ref == 'refs/heads/master' }} # for Cypress Cloud
+          record: true #${{ github.ref == 'refs/heads/master' }} # for Cypress Cloud
           spec: "cypress/e2e/*"
         env:
           CYPRESS_RECORD_KEY: ${{ steps.secrets.outputs.CYPRESS_CLOUD_RECORD_KEY }}
