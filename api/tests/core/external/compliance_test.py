@@ -36,6 +36,28 @@ class GetDataComplianceScoringTest:
 
     @mock.patch("pcapi.core.external.compliance.compliance_backend", ComplianceBackend())
     @mock.patch("pcapi.core.auth.api.get_id_token_from_google", return_value="Good token")
+    def test_upsert_compliance_scoring(self, mock_get_id_token_from_google, requests_mock):
+        requests_mock.post(
+            "https://compliance.passculture.team/latest/model/compliance/scoring",
+            json={"probability_validated": 50, "rejection_main_features": ["offer_name"]},
+        )
+        offer = offers_factories.OfferFactory(
+            name="Hello la data",
+            extraData={"complianceScore": 30, "complianceReasons": ["stock_price", "offer_description"]},
+        )
+        offers_models.OfferCompliance(
+            offer=offer, compliance_score=30, compliance_reasons=["stock_price", "offer_description"]
+        )
+        payload = compliance._get_payload_for_compliance_api(offer)
+        compliance.make_update_offer_compliance_score(payload)
+        assert offer.extraData["complianceScore"] == 50
+        assert offer.extraData["complianceReasons"] == ["offer_name"]
+        offer_compliance = offers_models.OfferCompliance.query.filter_by(offerId=offer.id).one()
+        assert offer_compliance.compliance_score == 50
+        assert offer_compliance.compliance_reasons == ["offer_name"]
+
+    @mock.patch("pcapi.core.external.compliance.compliance_backend", ComplianceBackend())
+    @mock.patch("pcapi.core.auth.api.get_id_token_from_google", return_value="Good token")
     def test_get_data_compliance_scoring_without_reasons(self, mock_get_id_token_from_google, requests_mock):
         requests_mock.post(
             "https://compliance.passculture.team/latest/model/compliance/scoring",
