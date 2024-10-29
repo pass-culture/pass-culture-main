@@ -345,7 +345,10 @@ def _create_export_query(offer_id: int, event_beginning_date: date) -> BaseQuery
             .join(VenueOffererAddress, Venue.offererAddressId == VenueOffererAddress.id)
             .join(VenueAddress, VenueOffererAddress.addressId == VenueAddress.id)
         )
-        timezone_column = func.coalesce(Address.timezone, VenueAddress.timezone)
+        # NB: unfortunatly, we still have to use Venue.timezone for digital offers
+        # as they are still on virtual venues that don't have assocaited OA.
+        # Venue.timezone removal here requires that all venues have their OA
+        timezone_column = func.coalesce(Address.timezone, VenueAddress.timezone, Venue.timezone)
 
     query = (
         query.filter(
@@ -445,7 +448,10 @@ def _get_filtered_bookings_query(
             .join(VenueOffererAddress, Venue.offererAddressId == VenueOffererAddress.id)
             .join(VenueAddress, VenueOffererAddress.addressId == VenueAddress.id)
         )
-        timezone_column = func.coalesce(Address.timezone, VenueAddress.timezone)
+        # NB: unfortunatly, we still have to use Venue.timezone for digital offers
+        # as they are still on virtual venues that don't have assocaited OA.
+        # Venue.timezone removal here requires that all venues have their OA
+        timezone_column = func.coalesce(Address.timezone, VenueAddress.timezone, Venue.timezone)
     for join_key, *join_conditions in extra_joins:
         if join_conditions:
             bookings_query = bookings_query.join(join_key, *join_conditions, isouter=True)
