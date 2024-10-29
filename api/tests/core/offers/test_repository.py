@@ -181,7 +181,8 @@ class GetCappedOffersForFiltersTest:
         assert len(offers) == 0
 
     @pytest.mark.usefixtures("db_session")
-    def should_consider_venue_locale_datetime_when_filtering_by_date(self):
+    @pytest.mark.parametrize("use_oa", (False, True))
+    def should_consider_venue_locale_datetime_when_filtering_by_date(self, use_oa):
         # given
         admin = users_factories.AdminFactory()
         period_beginning_date = datetime.date(2020, 4, 21)
@@ -196,13 +197,14 @@ class GetCappedOffersForFiltersTest:
         factories.EventStockFactory(offer=offer_in_mayotte, beginningDatetime=mayotte_event_datetime)
 
         # When
-        offers = repository.get_capped_offers_for_filters(
-            user_id=admin.id,
-            user_is_admin=admin.has_admin_role,
-            offers_limit=10,
-            period_beginning_date=period_beginning_date,
-            period_ending_date=period_ending_date,
-        )
+        with override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=use_oa):
+            offers = repository.get_capped_offers_for_filters(
+                user_id=admin.id,
+                user_is_admin=admin.has_admin_role,
+                offers_limit=10,
+                period_beginning_date=period_beginning_date,
+                period_ending_date=period_ending_date,
+            )
 
         # then
         offers_id = [offer.id for offer in offers]

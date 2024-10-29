@@ -445,8 +445,8 @@ def _get_filtered_bookings_query(
         bookings_query = (
             bookings_query.outerjoin(Offer.offererAddress)
             .outerjoin(OffererAddress.address)
-            .join(VenueOffererAddress, Venue.offererAddressId == VenueOffererAddress.id)
-            .join(VenueAddress, VenueOffererAddress.addressId == VenueAddress.id)
+            .outerjoin(VenueOffererAddress, Venue.offererAddressId == VenueOffererAddress.id)
+            .outerjoin(VenueAddress, VenueOffererAddress.addressId == VenueAddress.id)
         )
         # NB: unfortunatly, we still have to use Venue.timezone for digital offers
         # as they are still on virtual venues that don't have assocaited OA.
