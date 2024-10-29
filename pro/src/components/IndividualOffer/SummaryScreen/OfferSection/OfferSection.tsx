@@ -93,7 +93,7 @@ export const OfferSection = ({
   const venueName = offerData.venuePublicName || offerData.venueName
   if (isOfferAddressEnabled) {
     aboutDescriptions.unshift({
-      title: 'Qui propose l’offre',
+      title: 'Structure',
       text: venueName,
     })
   } else if (isSplitOfferEnabled) {
