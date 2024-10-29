@@ -1,6 +1,7 @@
 import logging
 
 import sqlalchemy as sa
+from sqlalchemy.dialects.postgresql import insert
 
 from pcapi.core.external.compliance_backends import compliance_backend
 from pcapi.core.offers import models as offers_models
@@ -32,10 +33,17 @@ def make_update_offer_compliance_score(payload: GetComplianceScoreRequest) -> No
         offer.extraData = offer.extraData or {}
         offer.extraData["complianceScore"] = data_score
         offer.extraData["complianceReasons"] = data_reasons
-        offer_compliance = offers_models.OfferCompliance(
-            offer=offer, compliance_score=data_score, compliance_reasons=data_reasons
+
+        statement = insert(offers_models.OfferCompliance).values(
+            offerId=offer.id, compliance_score=data_score, compliance_reasons=data_reasons
         )
-        db.session.add_all([offer_compliance, offer])
+        statement = statement.on_conflict_do_update(
+            index_elements=["offerId"],  # Colonne causant le conflit
+            set_={"compliance_score": data_score, "compliance_reasons": data_reasons},
+        )
+
+        db.session.execute(statement)
+        db.session.add(offer)
         db.session.commit()
 
 

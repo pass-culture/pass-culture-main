@@ -397,3 +397,12 @@ class OfferPriceLimitationRuleFactory(BaseFactory):
 
     subcategoryId = subcategories.ACHAT_INSTRUMENT.id
     rate = decimal.Decimal(0.3)
+
+
+class OfferComplianceFactory(BaseFactory):
+    class Meta:
+        model = models.OfferCompliance
+
+    offer = factory.SubFactory(OfferFactory)
+    complianceScore = 12
+    complianceReasons = ["stock_price", "offer_description"]
