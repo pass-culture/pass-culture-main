@@ -6,7 +6,6 @@ import {
 } from 'commons/utils/individualApiFactories'
 
 import { DEFAULT_DETAILS_FORM_VALUES } from '../constants'
-
 import {
   hasMusicType,
   buildCategoryOptions,
@@ -21,7 +20,7 @@ import {
   setDefaultInitialValuesFromOffer,
   setFormReadOnlyFields,
   serializeDetailsPostData,
-} from './utils'
+} from '../utils'
 
 describe('hasMusicType', () => {
   it('should return true if categoryId=LIVRE and has a musicType as a conditional field', () =>

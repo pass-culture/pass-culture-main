@@ -17,11 +17,10 @@ import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { getFilteredVenueListBySubcategory } from 'pages/IndividualOffer/commons/getFilteredVenueList'
 import { IndividualOfferFormValues } from 'pages/IndividualOffer/commons/types'
-import { OfferLocation } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/components/OfferLocation/OfferLocation'
 import { ImageUploaderOffer } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/components/ImageUploaderOffer/ImageUploaderOffer'
-
-import { getFilteredVenueListBySubcategory } from '../../../IndividualOfferDetails/commons/getFilteredVenueList'
+import { OfferLocation } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/components/OfferLocation/OfferLocation'
 
 import { Accessibility } from './Accessibility/Accessibility'
 import { Categories } from './Categories/Categories'

@@ -32,12 +32,12 @@ import {
   getCategoryStatusFromOfferSubtype,
   getOfferSubtypeFromParam,
   isOfferSubtypeEvent,
-} from 'pages/IndividualOffer/commons/filterCategories/filterCategories'
+} from 'pages/IndividualOffer/commons/filterCategories'
+import { getFilteredVenueListByCategoryStatus } from 'pages/IndividualOffer/commons/getFilteredVenueList'
 import { serializePatchOffer } from 'pages/IndividualOffer/commons/serializers/serializePatchOffer'
 import { serializePostOffer } from 'pages/IndividualOffer/commons/serializers/serializePostOffer'
 import { IndividualOfferFormValues } from 'pages/IndividualOffer/commons/types'
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
-import { getFilteredVenueListByCategoryStatus } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferDetails/commons/getFilteredVenueList'
 import { useIndividualOfferImageUpload } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
 import { setDefaultInitialFormValues } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferInformationsLegacy/InformationsScreen/IndividualOfferForm/commons/utils/setDefaultInitialFormValues'
 

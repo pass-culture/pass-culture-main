@@ -8,7 +8,7 @@ import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/cons
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
-import { IndividualOfferBooklngsSummaryScreen } from './components/IndividualOfferBooklngsSummaryScreen'
+import { IndividualOfferBookingsSummaryScreen } from './components/IndividualOfferBookingsSummaryScreen'
 
 const IndividualOfferBookings = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
@@ -20,7 +20,7 @@ const IndividualOfferBookings = (): JSX.Element | null => {
 
   return (
     <IndivualOfferLayout title="Récapitulatif" offer={offer} mode={mode}>
-      <IndividualOfferBooklngsSummaryScreen offer={offer} />
+      <IndividualOfferBookingsSummaryScreen offer={offer} />
       <ActionBar step={OFFER_WIZARD_STEP_IDS.SUMMARY} isDisabled={false} />
     </IndivualOfferLayout>
   )

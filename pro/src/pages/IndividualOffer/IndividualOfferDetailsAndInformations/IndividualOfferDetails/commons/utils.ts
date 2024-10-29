@@ -14,8 +14,8 @@ import { SelectOption } from 'commons/custom_types/form'
 import { trimStringsInObject } from 'commons/utils/trimStringsInObject'
 import { computeVenueDisplayName } from 'repository/venuesService'
 
-import { DEFAULT_DETAILS_FORM_VALUES } from '../constants'
-import { DetailsFormValues } from '../types'
+import { DEFAULT_DETAILS_FORM_VALUES } from './constants'
+import { DetailsFormValues } from './types'
 
 export const isSubCategoryCD = (subcategoryId: string): boolean => {
   return subcategoryId === SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_CD

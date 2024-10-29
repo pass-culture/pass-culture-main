@@ -17,7 +17,7 @@ import {
 } from 'commons/utils/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
-import * as filterCategories from 'pages/IndividualOffer/commons/filterCategories/filterCategories'
+import * as filterCategories from 'pages/IndividualOffer/commons/filterCategories'
 
 import {
   InformationsScreen,

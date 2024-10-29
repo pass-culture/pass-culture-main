@@ -13,14 +13,14 @@ import {
 } from 'commons/utils/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { IndividualOfferBooklngsSummaryScreen } from './IndividualOfferBooklngsSummaryScreen'
+import { IndividualOfferBookingsSummaryScreen } from './IndividualOfferBookingsSummaryScreen'
 
 const render = (offer: GetIndividualOfferWithAddressResponseModel) => {
   const contextValue = individualOfferContextValuesFactory({ offer })
 
   renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
-      <IndividualOfferBooklngsSummaryScreen offer={offer} />
+      <IndividualOfferBookingsSummaryScreen offer={offer} />
     </IndividualOfferContext.Provider>
   )
 }

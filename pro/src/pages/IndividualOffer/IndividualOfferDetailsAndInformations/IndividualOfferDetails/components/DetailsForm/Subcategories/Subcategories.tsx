@@ -9,7 +9,7 @@ import {
   onCategoryChange,
   buildCategoryOptions,
   buildSubcategoryOptions,
-} from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferDetails/commons/utils/utils'
+} from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferDetails/commons/utils'
 import { Select } from 'ui-kit/form/Select/Select'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 

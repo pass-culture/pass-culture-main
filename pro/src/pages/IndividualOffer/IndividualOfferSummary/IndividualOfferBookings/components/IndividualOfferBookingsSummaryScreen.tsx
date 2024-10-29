@@ -27,13 +27,13 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { DownloadBookingsModal } from './DownloadBookingsModal/DownloadBookingsModal'
 import styles from './IndividualOfferBookingsSummaryScreen.module.scss'
 
-interface IndividualOfferBooklngsSummaryScreenProps {
+interface IndividualOfferBookingsSummaryScreenProps {
   offer: GetIndividualOfferResponseModel
 }
 
-export const IndividualOfferBooklngsSummaryScreen = ({
+export const IndividualOfferBookingsSummaryScreen = ({
   offer,
-}: IndividualOfferBooklngsSummaryScreenProps) => {
+}: IndividualOfferBookingsSummaryScreenProps) => {
   const [bookings, setBookings] = useState<BookingRecapResponseModel[] | null>(
     null
   )

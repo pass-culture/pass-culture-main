@@ -17,7 +17,7 @@ import { DetailsFormValues } from 'pages/IndividualOffer/IndividualOfferDetailsA
 import {
   buildShowSubTypeOptions,
   hasMusicType,
-} from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferDetails/commons/utils/utils'
+} from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferDetails/commons/utils'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'

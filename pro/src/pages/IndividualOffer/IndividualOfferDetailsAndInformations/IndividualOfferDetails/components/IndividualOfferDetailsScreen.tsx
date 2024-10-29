@@ -33,9 +33,9 @@ import {
   getCategoryStatusFromOfferSubtype,
   filterCategories,
   isOfferSubtypeEvent,
-} from 'pages/IndividualOffer/commons/filterCategories/filterCategories'
+} from 'pages/IndividualOffer/commons/filterCategories'
+import { getFilteredVenueListByCategoryStatus } from 'pages/IndividualOffer/commons/getFilteredVenueList'
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
-import { getFilteredVenueListByCategoryStatus } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferDetails/commons/getFilteredVenueList'
 import {
   DetailsFormValues,
   Product,
@@ -48,7 +48,7 @@ import {
   setDefaultInitialValuesFromOffer,
   setFormReadOnlyFields,
   hasMusicType,
-} from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferDetails/commons/utils/utils'
+} from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferDetails/commons/utils'
 import { validationSchema } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferDetails/commons/validationSchema'
 
 import { DetailsEanSearch } from './DetailsEanSearch/DetailsEanSearch'

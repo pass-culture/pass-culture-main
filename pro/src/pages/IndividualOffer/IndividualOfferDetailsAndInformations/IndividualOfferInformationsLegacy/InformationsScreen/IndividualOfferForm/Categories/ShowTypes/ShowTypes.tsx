@@ -4,7 +4,7 @@ import { showOptionsTree } from 'commons/core/Offers/categoriesSubTypes'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { IndividualOfferFormValues } from 'pages/IndividualOffer/commons/types'
 import { FORM_DEFAULT_VALUES } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/commons/constants'
-import { buildShowSubTypeOptions } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferDetails/commons/utils/utils'
+import { buildShowSubTypeOptions } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferDetails/commons/utils'
 import { Select } from 'ui-kit/form/Select/Select'
 
 interface ShowTypesProps {
