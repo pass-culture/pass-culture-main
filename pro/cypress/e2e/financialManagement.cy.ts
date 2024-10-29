@@ -30,7 +30,7 @@ describe('Financial Management - messages, links to external help page, reimburs
       )
     })
 
-    it('Check messages, reimbursement details and offerer selection change', () => {
+    it.only('Check messages, reimbursement details and offerer selection change', () => {
       logAndGoToPage(login, '/remboursements')
 
       cy.stepLog({
@@ -133,13 +133,21 @@ describe('Financial Management - messages, links to external help page, reimburs
         })
       })
 
-      cy.stepLog({ message: 'I download reimbursement details' })
+      cy.stepLog({ message: 'I download the reimbursement details in csv' })
       cy.findByTestId('dropdown-menu-trigger').click()
       cy.findByText(/Télécharger le détail des réservations/).click()
 
-      cy.stepLog({ message: 'I can see the reimbursement details' })
+      cy.stepLog({ message: 'I can see the reimbursement details in csv' })
       const filename = `${Cypress.config('downloadsFolder')}/remboursements_pass_culture.csv`
       cy.readFile(filename, { timeout: 15000 }).should('not.be.empty')
+
+      cy.stepLog({ message: 'I download the account receipt in pdf' })
+      cy.findByTestId('dropdown-menu-trigger').click()
+      cy.findByText(/Télécharger le justificatif comptable/).click()
+
+      cy.stepLog({ message: 'I can see the account receipt in pdf' })
+      const filenamePdf = `${Cypress.config('downloadsFolder')}/justificatif_comptable.pdf`
+      cy.readFile(filenamePdf, { timeout: 15000 }).should('not.be.empty')
     })
   })
 
