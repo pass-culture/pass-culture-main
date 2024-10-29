@@ -8,7 +8,7 @@ import {
 import {
   getFilteredVenueListByCategoryStatus,
   getFilteredVenueListBySubcategory,
-} from '../../../../../../IndividualOfferDetails/commons/getFilteredVenueList'
+} from '../getFilteredVenueList'
 
 describe('getFilteredVenueList', () => {
   const virtualVenueId = 1

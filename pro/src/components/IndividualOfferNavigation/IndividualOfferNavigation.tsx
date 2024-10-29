@@ -11,7 +11,7 @@ import { Step, StepPattern, Stepper } from 'components/Stepper/Stepper'
 import {
   getOfferSubtypeFromParam,
   isOfferSubtypeEvent,
-} from 'pages/IndividualOffer/commons/filterCategories/filterCategories'
+} from 'pages/IndividualOffer/commons/filterCategories'
 import { Tabs } from 'ui-kit/Tabs/Tabs'
 
 import { OFFER_WIZARD_STEP_IDS } from './constants'

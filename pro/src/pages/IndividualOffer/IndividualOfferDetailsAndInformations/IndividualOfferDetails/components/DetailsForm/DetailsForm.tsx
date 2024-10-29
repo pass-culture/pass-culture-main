@@ -25,7 +25,7 @@ import { DetailsFormValues } from 'pages/IndividualOffer/IndividualOfferDetailsA
 import {
   buildVenueOptions,
   isSubCategoryCD,
-} from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferDetails/commons/utils/utils'
+} from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferDetails/commons/utils'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'

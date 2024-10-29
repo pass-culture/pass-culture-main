@@ -12,7 +12,7 @@ import {
   getOfferSubtypeFromParam,
   getCategoryStatusFromOfferSubtype,
   filterCategories,
-} from './filterCategories'
+} from '../filterCategories'
 
 describe('getOfferSubtypeFromParam', () => {
   const cases = [
