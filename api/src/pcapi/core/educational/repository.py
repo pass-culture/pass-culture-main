@@ -1072,7 +1072,10 @@ def get_collective_offer_templates_by_ids_for_adage(offer_ids: typing.Collection
     # Filter out the archived offers
     query = query.filter(educational_models.CollectiveOfferTemplate.isArchived == False)
     # Filter out the offers not displayed on adage
-    query = query.filter(educational_models.CollectiveOfferTemplate.isActive == True)
+    query = query.filter(
+        educational_models.CollectiveOfferTemplate.isActive == True,
+        educational_models.CollectiveOfferTemplate.hasEndDatePassed == False,
+    )
 
     return query.filter(educational_models.CollectiveOfferTemplate.id.in_(offer_ids))
 
