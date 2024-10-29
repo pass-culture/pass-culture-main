@@ -5,7 +5,6 @@ from typing import Iterable
 
 import click
 import redis
-from rq import Connection
 from rq import Queue
 from rq import Worker
 from rq.job import Job
@@ -98,11 +97,10 @@ def run_worker(queues: Iterable = ()) -> None:
         db.session.close()
         db.engine.dispose()
 
-    # TODO: rewrite without this deprecated context manager
-    with Connection(conn):
-        worker = Worker(
-            list(map(Queue, queues)),
-            exception_handlers=[log_worker_error],
-            work_horse_killed_handler=work_horse_killed_handler,
-        )
-        worker.work()
+    worker = Worker(
+        [Queue(name, connection=conn) for name in queues],
+        exception_handlers=[log_worker_error],
+        work_horse_killed_handler=work_horse_killed_handler,
+        connection=conn,
+    )
+    worker.work()

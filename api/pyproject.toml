@@ -60,7 +60,7 @@ python-dotenv = "1.0.1"
 pytz = "2024.2"
 rapidfuzz = "^3.10.1"
 requests = "2.32.3"
-rq = "1.16.2"
+rq = "2.0.0"
 schwifty = "2024.9.0"
 semver = "3.0.2"
 sentry-sdk = { version = "2.18.0", extras = ["flask"] }
