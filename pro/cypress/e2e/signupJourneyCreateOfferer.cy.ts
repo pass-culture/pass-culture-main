@@ -144,7 +144,12 @@ describe('Signup journey with known venue', () => {
     ).as('search1Address')
     cy.intercept(
       'GET',
-      'https://api-adresse.data.gouv.fr/search/?limit=5&q=*'
+      'https://api-adresse.data.gouv.fr/search/?limit=5&q=*',
+      (req) =>
+        req.reply({
+          statusCode: 200,
+          body: addressInterceptionPayload5,
+        })
     ).as('search5Address')
     cy.intercept({ method: 'GET', url: '/offerers/names' }).as('getOfferers')
     cy.intercept({
@@ -346,4 +351,36 @@ const addressInterceptionPayload = {
   licence: 'ETALAB-2.0',
   query: '3 RUE DE VALOIS Paris 75001',
   limit: 1,
+}
+
+const addressInterceptionPayload5 = {
+  type: 'FeatureCollection',
+  version: 'draft',
+  features: [
+    {
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: [2.308289, 48.87171] },
+      properties: {
+        label: '89 Rue la Boétie 75008 Paris',
+        score: 0.97351,
+        housenumber: '89',
+        id: '75108_5194_00089',
+        name: '89 Rue la Boétie',
+        postcode: '75008',
+        citycode: '75108',
+        x: 649261.94,
+        y: 6863742.69,
+        city: 'Paris',
+        district: 'Paris 8e Arrondissement',
+        context: '75, Paris, Île-de-France',
+        type: 'housenumber',
+        importance: 0.70861,
+        street: 'Rue la Boétie',
+      },
+    },
+  ],
+  attribution: 'BAN',
+  licence: 'ETALAB-2.0',
+  query: '89 Rue la Boétie 75008 Paris',
+  limit: 5,
 }
