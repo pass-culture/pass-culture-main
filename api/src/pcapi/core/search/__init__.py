@@ -327,6 +327,9 @@ def _reindex_venue_ids(
         .options(sa.orm.joinedload(offerers_models.Venue.contact))
         .options(sa.orm.joinedload(offerers_models.Venue.criteria))
         .options(sa.orm.joinedload(offerers_models.Venue.googlePlacesInfo))
+        .options(
+            sa.orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address)
+        )
     )
 
     to_add = []
@@ -460,6 +463,9 @@ def get_base_query_for_offer_indexation() -> BaseQuery:
         .options(sa.orm.joinedload(offers_models.Offer.criteria))
         .options(sa.orm.joinedload(offers_models.Offer.mediations))
         .options(sa.orm.joinedload(offers_models.Offer.product))
+        .options(
+            sa.orm.joinedload(offers_models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address)
+        )
     )
 
 
