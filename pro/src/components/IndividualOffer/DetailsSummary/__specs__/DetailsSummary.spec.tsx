@@ -110,7 +110,7 @@ describe('DetailsSummaryScreen', () => {
     })
   })
 
-  it('should have "Qui propose l’offre ?" section if WIP_ENABLE_OFFER_ADDRESS FF is active', async () => {
+  it('should have "Structure" section if WIP_ENABLE_OFFER_ADDRESS FF is active', async () => {
     const offer = getIndividualOfferFactory({
       name: 'Offre de test',
       subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
@@ -128,6 +128,6 @@ describe('DetailsSummaryScreen', () => {
       features: ['WIP_ENABLE_OFFER_ADDRESS'],
     })
 
-    expect(await screen.findByText(/Qui propose l’offre/)).toBeInTheDocument()
+    expect(await screen.findByText(/Structure/)).toBeInTheDocument()
   })
 })

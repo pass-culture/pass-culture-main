@@ -649,7 +649,7 @@ describe('Summary', () => {
         { features: ['WIP_SPLIT_OFFER', 'WIP_ENABLE_OFFER_ADDRESS'] }
       )
 
-      expect(await screen.findByText(/Qui propose l’offre/)).toBeInTheDocument()
+      expect(await screen.findByText(/Structure/)).toBeInTheDocument()
       expect(
         await screen.findByText('Localisation de l’offre')
       ).toBeInTheDocument()
