@@ -5,7 +5,7 @@
     "maxValuesPerFacet": 100,
     "version": 2,
     "searchableAttributes": [
-        "ordered(offer.name)",
+        "offer.name",
         "unordered(venue.publicName)",
         "unordered(offer.artist)",
         "unordered(offer.subcategoryId)",
