@@ -221,25 +221,17 @@ TEMPLATE_ALLOWED_ACTIONS_BY_DISPLAYED_STATUS: typing.Final[
         CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS,
         CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE,
     ),
-    CollectiveOfferDisplayedStatus.PENDING: (CollectiveOfferTemplateAllowedAction.CAN_DUPLICATE,),
+    CollectiveOfferDisplayedStatus.PENDING: (),
     CollectiveOfferDisplayedStatus.ACTIVE: (
         CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS,
-        CollectiveOfferTemplateAllowedAction.CAN_DUPLICATE,
         CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE,
         CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
         CollectiveOfferTemplateAllowedAction.CAN_HIDE,
     ),
-    CollectiveOfferDisplayedStatus.REJECTED: (
-        CollectiveOfferTemplateAllowedAction.CAN_DUPLICATE,
-        CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE,
-    ),
-    CollectiveOfferDisplayedStatus.ARCHIVED: (
-        CollectiveOfferTemplateAllowedAction.CAN_DUPLICATE,
-        CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
-    ),
+    CollectiveOfferDisplayedStatus.REJECTED: (CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE,),
+    CollectiveOfferDisplayedStatus.ARCHIVED: (),
     CollectiveOfferDisplayedStatus.INACTIVE: (
         CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS,
-        CollectiveOfferTemplateAllowedAction.CAN_DUPLICATE,
         CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE,
         CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
         CollectiveOfferTemplateAllowedAction.CAN_PUBLISH,
