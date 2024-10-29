@@ -1358,6 +1358,31 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
     @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    def test_connect_as_venue_user_has_multiple_offerer(self, authenticated_client, legit_user):
+        hidden_user_offerer = offerers_factories.UserOffererFactory()
+        offerers_factories.UserOffererFactory(user=hidden_user_offerer.user)
+        user_offerer = offerers_factories.UserOffererFactory(offerer=hidden_user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        form_data = {"object_type": "venue", "object_id": venue.id, "redirect": "/venue"}
+        expected_token_data = {
+            "user_id": user_offerer.userId,
+            "internal_admin_id": legit_user.id,
+            "internal_admin_email": legit_user.email,
+            "redirect_link": settings.PRO_URL + "/venue",
+        }
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries_without_user,
+        )
+
+        assert response.status_code == 303
+        base_url, key_token = response.location.rsplit("/", 1)
+        assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
+        assert SecureToken(token=key_token).data == expected_token_data
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_offerer(self, authenticated_client, legit_user):
         user_offerer = offerers_factories.UserOffererFactory()
         form_data = {"object_type": "offerer", "object_id": user_offerer.offerer.id, "redirect": "/venue"}
@@ -1482,6 +1507,31 @@ class ConnectAsProUserTest(PostEndpointHelper):
             html_parser.extract_alert(redirected_response.data)
             == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette structure"
         )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    def test_connect_as_offerer_user_has_multiple_offerer(self, authenticated_client, legit_user):
+        hidden_user_offerer = offerers_factories.UserOffererFactory()
+        offerers_factories.UserOffererFactory(user=hidden_user_offerer.user)
+        user_offerer = offerers_factories.UserOffererFactory(offerer=hidden_user_offerer.offerer)
+
+        form_data = {"object_type": "offerer", "object_id": user_offerer.offerer.id, "redirect": "/venue"}
+        expected_token_data = {
+            "user_id": user_offerer.userId,
+            "internal_admin_id": legit_user.id,
+            "internal_admin_email": legit_user.email,
+            "redirect_link": settings.PRO_URL + "/venue",
+        }
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries_without_user,
+        )
+
+        assert response.status_code == 303
+        base_url, key_token = response.location.rsplit("/", 1)
+        assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
+        assert SecureToken(token=key_token).data == expected_token_data
 
     @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_offer(self, authenticated_client, legit_user):
@@ -1619,6 +1669,33 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
     @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    def test_connect_as_collective_offer_template_user_has_multiple_offerer(self, authenticated_client, legit_user):
+        hidden_user_offerer = offerers_factories.UserOffererFactory()
+        offerers_factories.UserOffererFactory(user=hidden_user_offerer.user)
+        user_offerer = offerers_factories.UserOffererFactory(offerer=hidden_user_offerer.offerer)
+        offer = offers_factories.OfferFactory(
+            venue__managingOfferer=user_offerer.offerer,
+        )
+        form_data = {"object_type": "offer", "object_id": offer.id, "redirect": "/offer"}
+        expected_token_data = {
+            "user_id": user_offerer.userId,
+            "internal_admin_id": legit_user.id,
+            "internal_admin_email": legit_user.email,
+            "redirect_link": settings.PRO_URL + "/offer",
+        }
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries_without_user,
+        )
+
+        assert response.status_code == 303
+        base_url, key_token = response.location.rsplit("/", 1)
+        assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
+        assert SecureToken(token=key_token).data == expected_token_data
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_bank_account(self, authenticated_client, legit_user):
         bank_account = finance_factories.BankAccountFactory(offerer=offerers_factories.UserOffererFactory().offerer)
 
@@ -1748,6 +1825,31 @@ class ConnectAsProUserTest(PostEndpointHelper):
             html_parser.extract_alert(redirected_response.data)
             == "Aucun utilisateur approprié n'a été trouvé pour se connecter à ce compte bancaire"
         )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    def test_connect_as_bank_account_user_has_multiple_offerer(self, authenticated_client, legit_user):
+        hidden_user_offerer = offerers_factories.UserOffererFactory()
+        offerers_factories.UserOffererFactory(user=hidden_user_offerer.user)
+        user_offerer = offerers_factories.UserOffererFactory(offerer=hidden_user_offerer.offerer)
+        bank_account = finance_factories.BankAccountFactory(offerer=user_offerer.offerer)
+        form_data = {"object_type": "bank_account", "object_id": bank_account.id, "redirect": "/bank_account"}
+        expected_token_data = {
+            "user_id": user_offerer.userId,
+            "internal_admin_id": legit_user.id,
+            "internal_admin_email": legit_user.email,
+            "redirect_link": settings.PRO_URL + "/bank_account",
+        }
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries_without_user,
+        )
+
+        assert response.status_code == 303
+        base_url, key_token = response.location.rsplit("/", 1)
+        assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
+        assert SecureToken(token=key_token).data == expected_token_data
 
     @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_collective_offer(self, authenticated_client, legit_user):
@@ -1885,6 +1987,33 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
     @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    def test_connect_as_collective_offer_template_user_has_multiple_offerer(self, authenticated_client, legit_user):
+        hidden_user_offerer = offerers_factories.UserOffererFactory()
+        offerers_factories.UserOffererFactory(user=hidden_user_offerer.user)
+        user_offerer = offerers_factories.UserOffererFactory(offerer=hidden_user_offerer.offerer)
+        offer = educational_factories.CollectiveOfferFactory(
+            venue__managingOfferer=user_offerer.offerer,
+        )
+        form_data = {"object_type": "collective_offer", "object_id": offer.id, "redirect": "/venue"}
+        expected_token_data = {
+            "user_id": user_offerer.userId,
+            "internal_admin_id": legit_user.id,
+            "internal_admin_email": legit_user.email,
+            "redirect_link": settings.PRO_URL + "/venue",
+        }
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries_without_user,
+        )
+
+        assert response.status_code == 303
+        base_url, key_token = response.location.rsplit("/", 1)
+        assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
+        assert SecureToken(token=key_token).data == expected_token_data
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_collective_offer_template(self, authenticated_client, legit_user):
         user_offerer = offerers_factories.UserOffererFactory()
         offer = educational_factories.CollectiveOfferTemplateFactory(
@@ -2018,3 +2147,30 @@ class ConnectAsProUserTest(PostEndpointHelper):
             html_parser.extract_alert(redirected_response.data)
             == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre collective vitrine"
         )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    def test_connect_as_collective_offer_template_user_has_multiple_offerer(self, authenticated_client, legit_user):
+        hidden_user_offerer = offerers_factories.UserOffererFactory()
+        offerers_factories.UserOffererFactory(user=hidden_user_offerer.user)
+        user_offerer = offerers_factories.UserOffererFactory(offerer=hidden_user_offerer.offerer)
+        offer = educational_factories.CollectiveOfferTemplateFactory(
+            venue__managingOfferer=user_offerer.offerer,
+        )
+        form_data = {"object_type": "collective_offer_template", "object_id": offer.id, "redirect": "/venue"}
+        expected_token_data = {
+            "user_id": user_offerer.userId,
+            "internal_admin_id": legit_user.id,
+            "internal_admin_email": legit_user.email,
+            "redirect_link": settings.PRO_URL + "/venue",
+        }
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries_without_user,
+        )
+
+        assert response.status_code == 303
+        base_url, key_token = response.location.rsplit("/", 1)
+        assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
+        assert SecureToken(token=key_token).data == expected_token_data

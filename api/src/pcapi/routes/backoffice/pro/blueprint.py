@@ -9,6 +9,7 @@ from flask import url_for
 from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
 from markupsafe import Markup
+from sqlalchemy import func
 from werkzeug.exceptions import NotFound
 
 from pcapi import settings
@@ -24,6 +25,7 @@ from pcapi.core.token import SecureToken
 from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import atomic
@@ -282,7 +284,8 @@ def create_offerer() -> utils.BackofficeResponse:
     return redirect(url_for("backoffice_web.offerer.get", offerer_id=user_offerer.offererId), code=303)
 
 
-def get_user_id_for_connect_as_base_query() -> BaseQuery:
+def _get_connect_as_base_query() -> BaseQuery:
+    """Returns all user_id to be used as a subquery."""
     return (
         users_models.User.query.with_entities(users_models.User.id)
         .join(users_models.User.UserOfferers)
@@ -293,6 +296,30 @@ def get_user_id_for_connect_as_base_query() -> BaseQuery:
             offerers_models.UserOfferer.isValidated,
         )
     )
+
+
+def _get_best_user_id_for_connect_as(query: BaseQuery) -> int | None:
+    """Partial workaround to fix connect as when a user as multiple offerers.
+
+    The workaround is to try to always select a user with only one offerer when we can
+    (it is not always possible).
+    """
+    result = (
+        db.session.query(
+            offerers_models.UserOfferer.userId.label("id"),
+            func.count(offerers_models.UserOfferer.offererId),
+        )
+        .filter(offerers_models.UserOfferer.userId.in_(query))
+        .group_by(
+            offerers_models.UserOfferer.userId,
+        )
+        .order_by(
+            func.count(offerers_models.UserOfferer.offererId),
+        )
+        .limit(1)
+        .one_or_none()
+    )
+    return result.id if result else None
 
 
 def _check_user_for_user_id(user_id: int) -> int:
@@ -319,15 +346,13 @@ def _get_user_id_from_venue_id(venue_id: int) -> int:
         raise ValueError(
             "L'utilisation de la version étendue de « connect as » requiert l'activation de la feature : WIP_CONNECT_AS_EXTENDED"
         )
-    query = get_user_id_for_connect_as_base_query()
-    user_id = (
-        query.join(offerers_models.UserOfferer.offerer)
+    query = (
+        _get_connect_as_base_query()
+        .join(offerers_models.UserOfferer.offerer)
         .join(offerers_models.Offerer.managedVenues)
         .filter(offerers_models.Venue.id == venue_id)
-        .order_by(offerers_models.UserOfferer.id)
-        .limit(1)
-        .scalar()
     )
+    user_id = _get_best_user_id_for_connect_as(query)
     if not user_id:
         if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
             raise ValueError("Aucun utilisateur approprié n'a été trouvé pour se connecter à ce partenaire culturel")
@@ -340,14 +365,8 @@ def _get_user_id_from_offerer_id(offerer_id: int) -> int:
         raise ValueError(
             "L'utilisation de la version étendue de « connect as » requiert l'activation de la feature : WIP_CONNECT_AS_EXTENDED"
         )
-    query = get_user_id_for_connect_as_base_query()
-    user_id = (
-        query.filter(offerers_models.UserOfferer.offererId == offerer_id)
-        .order_by(offerers_models.UserOfferer.id)
-        .limit(1)
-        .scalar()
-    )
-
+    query = _get_connect_as_base_query().filter(offerers_models.UserOfferer.offererId == offerer_id)
+    user_id = _get_best_user_id_for_connect_as(query)
     if not user_id:
         raise ValueError("Aucun utilisateur approprié n'a été trouvé pour se connecter à cette structure")
     return user_id
@@ -358,16 +377,14 @@ def _get_user_id_from_offer_id(offer_id: int) -> int:
         raise ValueError(
             "L'utilisation de la version étendue de « connect as » requiert l'activation de la feature : WIP_CONNECT_AS_EXTENDED"
         )
-    query = get_user_id_for_connect_as_base_query()
-    user_id = (
-        query.join(offerers_models.UserOfferer.offerer)
+    query = (
+        _get_connect_as_base_query()
+        .join(offerers_models.UserOfferer.offerer)
         .join(offerers_models.Offerer.managedVenues)
         .join(offerers_models.Venue.offers)
         .filter(offers_models.Offer.id == offer_id)
-        .order_by(offerers_models.UserOfferer.id)
-        .limit(1)
-        .scalar()
     )
+    user_id = _get_best_user_id_for_connect_as(query)
     if not user_id:
         raise ValueError("Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre")
     return user_id
@@ -378,16 +395,14 @@ def _get_user_id_from_collective_offer_id(offer_id: int) -> int:
         raise ValueError(
             "L'utilisation de la version étendue de « connect as » requiert l'activation de la feature : WIP_CONNECT_AS_EXTENDED"
         )
-    query = get_user_id_for_connect_as_base_query()
-    user_id = (
-        query.join(offerers_models.UserOfferer.offerer)
+    query = (
+        _get_connect_as_base_query()
+        .join(offerers_models.UserOfferer.offerer)
         .join(offerers_models.Offerer.managedVenues)
         .join(offerers_models.Venue.collectiveOffers)
         .filter(educational_models.CollectiveOffer.id == offer_id)
-        .order_by(offerers_models.UserOfferer.id)
-        .limit(1)
-        .scalar()
     )
+    user_id = _get_best_user_id_for_connect_as(query)
     if not user_id:
         raise ValueError("Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre collective")
     return user_id
@@ -398,16 +413,14 @@ def _get_user_id_from_collective_offer_template_id(offer_id: int) -> int:
         raise ValueError(
             "L'utilisation de la version étendue de « connect as » requiert l'activation de la feature : WIP_CONNECT_AS_EXTENDED"
         )
-    query = get_user_id_for_connect_as_base_query()
-    user_id = (
-        query.join(offerers_models.UserOfferer.offerer)
+    query = (
+        _get_connect_as_base_query()
+        .join(offerers_models.UserOfferer.offerer)
         .join(offerers_models.Offerer.managedVenues)
         .join(offerers_models.Venue.collectiveOfferTemplates)
         .filter(educational_models.CollectiveOfferTemplate.id == offer_id)
-        .order_by(offerers_models.UserOfferer.id)
-        .limit(1)
-        .scalar()
     )
+    user_id = _get_best_user_id_for_connect_as(query)
     if not user_id:
         raise ValueError(
             "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre collective vitrine"
@@ -420,15 +433,13 @@ def _get_user_id_from_bank_account_id(bank_account_id: int) -> int:
         raise ValueError(
             "L'utilisation de la version étendue de « connect as » requiert l'activation de la feature : WIP_CONNECT_AS_EXTENDED"
         )
-    query = get_user_id_for_connect_as_base_query()
-    user_id = (
-        query.join(offerers_models.UserOfferer.offerer)
+    query = (
+        _get_connect_as_base_query()
+        .join(offerers_models.UserOfferer.offerer)
         .join(offerers_models.Offerer.bankAccounts)
         .filter(finance_models.BankAccount.id == bank_account_id)
-        .order_by(offerers_models.UserOfferer.id)
-        .limit(1)
-        .scalar()
     )
+    user_id = _get_best_user_id_for_connect_as(query)
     if not user_id:
         raise ValueError("Aucun utilisateur approprié n'a été trouvé pour se connecter à ce compte bancaire")
     return user_id
@@ -439,7 +450,6 @@ def _get_user_id_from_bank_account_id(bank_account_id: int) -> int:
 @atomic()
 def connect_as() -> utils.BackofficeResponse:
     form = pro_forms.ConnectAsForm()
-
     if not form.validate():
         flash("Échec de la validation de sécurité, veuillez réessayer", "warning")
         mark_transaction_as_invalid()
