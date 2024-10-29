@@ -4296,8 +4296,8 @@ class GetCsvReportTest:
         _, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 0
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
-    def test_should_return_booking_date_with_offerer_timezone_when_venue_is_digital(self, app: fixture):
+    @pytest.mark.parametrize("use_oa", (False, True))
+    def test_should_return_booking_date_with_offerer_timezone_when_venue_is_digital(self, use_oa, app: fixture):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
@@ -4316,9 +4316,10 @@ class GetCsvReportTest:
             token="ABCDEF",
         )
 
-        bookings_csv = booking_repository.get_export(
-            user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
-        )
+        with override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=use_oa):
+            bookings_csv = booking_repository.get_export(
+                user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
+            )
 
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 1

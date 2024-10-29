@@ -325,17 +325,12 @@ def get_offers_by_filters(
         if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
             stock_query = (
                 stock_query.join(offers_model.Offer)
-                .join(
+                .outerjoin(
                     offerers_models.OffererAddress,
-                    offers_model.Offer.offererAddressId == offerers_models.OffererAddress.id,
+                    offer_alias.offererAddressId == offerers_models.OffererAddress.id,
                     isouter=True,
                 )
                 .join(geography_models.Address, offerers_models.OffererAddress.addressId == geography_models.Address.id)
-                .options(
-                    sa_orm.joinedload(offer_alias.offererAddress)
-                    .joinedload(offerers_models.OffererAddress.address)
-                    .joinedload(geography_models.Address)
-                )
             )
             target_timezone = geography_models.Address.timezone
         if period_beginning_date is not None:
