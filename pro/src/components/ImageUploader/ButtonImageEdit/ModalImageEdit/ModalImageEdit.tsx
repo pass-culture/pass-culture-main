@@ -30,7 +30,7 @@ interface ModalImageEditProps {
   initialValues?: UploadImageValues
 }
 
-// FIXME: find a way to test FileReader
+// TODO: find a way to test FileReader
 /* istanbul ignore next: DEBT, TO FIX */
 export const ModalImageEdit = ({
   mode,

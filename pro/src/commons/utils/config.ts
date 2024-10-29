@@ -3,7 +3,7 @@ export const IS_DEV = import.meta.env.MODE === 'development'
 
 export const CGU_URL = 'https://pass.culture.fr/cgu-professionnels/'
 
-// FIXME : Remove when transition to new domain is done
+// TODO : Remove when transition to new domain is done
 let apiUrlBasedOnDomain
 if (typeof window !== 'undefined') {
   apiUrlBasedOnDomain = window.location.hostname.includes('beta.gouv')

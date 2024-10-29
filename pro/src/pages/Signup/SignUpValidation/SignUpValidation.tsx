@@ -24,7 +24,7 @@ export const SignupValidation = (): JSX.Element | null => {
         } catch (error) {
           if (isErrorAPIError(error)) {
             const errors = getError(error)
-            // FIXME: if we use notify, the notification doesn't appear,
+            // TODO: if we use notify, the notification doesn't appear,
             // we have to send the message and status with get parameters
             setUrlToRedirect(
               '/connexion?accountValidation=false&message=' + errors.global

@@ -6,7 +6,7 @@ export const unregister = () => {
         registration.unregister()
       })
       .catch((error) => {
-        // FIX ME
+        // TODO
         // eslint-disable-next-line
         console.error(error.message)
       })

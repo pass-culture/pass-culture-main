@@ -1,6 +1,6 @@
 import { CollectiveOfferStatus, OfferStatus } from 'apiClient/v1'
 
-// FIXME(anoukhello - 2024-06-21) remove this function for collective offers as it is
+// TODO(anoukhello - 2024-06-21) remove this function for collective offers as it is
 // redundant with the attribute isEditable on collective offer
 export const isOfferDisabled = (
   status: OfferStatus | CollectiveOfferStatus

@@ -195,7 +195,7 @@ export const VenueSettingsForm = ({
         </FormLayout.Section>
 
         {!venue.siret && (
-          // FIXME: Uncontrolled field warning (debt)
+          // TODO: Uncontrolled field warning (debt)
           <ReimbursementFields
             offerer={offerer}
             scrollToSection={Boolean(location.state) || Boolean(location.hash)}

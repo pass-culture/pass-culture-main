@@ -25,7 +25,7 @@ import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { CollectiveOffers } from '../CollectiveOffers'
 
-//FIX ME : extract inital values and constant to reduce code duplication with CollectiveOffers.spec.tsx
+//TODO : extract inital values and constant to reduce code duplication with CollectiveOffers.spec.tsx
 
 vi.mock('react-router-dom', async () => ({
   ...(await vi.importActual('react-router-dom')),

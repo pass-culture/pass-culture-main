@@ -22,7 +22,7 @@ import { IncomeResultsBox } from './IncomeResultsBox/IncomeResultsBox'
 import { IncomeVenueSelector } from './IncomeVenueSelector/IncomeVenueSelector'
 import { IncomeByYear } from './types'
 
-// FIXME: remove this, use real data.
+// TODO: remove this, use real data.
 // Follow-up Jira ticket : https://passculture.atlassian.net/browse/PC-32278
 export const MOCK_INCOME_BY_YEAR: IncomeByYear = {
   2021: {},
