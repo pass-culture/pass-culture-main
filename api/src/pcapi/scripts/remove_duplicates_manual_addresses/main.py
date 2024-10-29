@@ -107,7 +107,7 @@ def get_offerers_addresses(address_ids: list[int]) -> list[dict]:
     ]
 
 
-def get_duplicates_addresses() -> list[dict]:
+def get_duplicates_addresses(check_nulls_duplicates_on: str) -> list[dict]:
     """
     Will return something like this
     All ids sharing same duplicated data
@@ -120,10 +120,23 @@ def get_duplicates_addresses() -> list[dict]:
       ...
     ]
     """
-    return [
-        address
-        for address, in db.session.execute(
-            """
+    join_on = {
+        "banId": 'address."banId" = a2."banId"',
+        "inseeCode": 'address."inseeCode" = a2."inseeCode"',
+        "street": 'address."street" = a2."street"',
+        "postalCode": 'address."postalCode" = a2."postalCode"',
+        "city": 'address."city" = a2."city"',
+        "latitude": 'address."latitude" = a2."latitude"',
+        "longitude": 'address."longitude" = a2."longitude"',
+        "departmentCode": 'address."departmentCode" = a2."departmentCode"',
+        "timezone": 'address."timezone" = a2."timezone"',
+    }
+
+    join_on[check_nulls_duplicates_on] = (
+        f'address."{check_nulls_duplicates_on}" is null and a2."{check_nulls_duplicates_on}" is null'
+    )
+
+    query = f"""
         SELECT
             jsonb_build_object(
                 'ids',
@@ -132,17 +145,7 @@ def get_duplicates_addresses() -> list[dict]:
         FROM
             address
         JOIN
-            address a2 on address."street" = a2."street"
-            AND address."postalCode" = a2."postalCode"
-            AND address."inseeCode" = a2."inseeCode"
-            AND address."city" = a2."city"
-            AND address."latitude" = a2."latitude"
-            AND address."longitude" = a2."longitude"
-            AND address."isManualEdition" = a2."isManualEdition"
-            AND address."departmentCode" = a2."departmentCode"
-            AND address."timezone" = a2."timezone"
-            AND address."isManualEdition" is True
-            AND address."id" != a2."id"
+            address a2 ON address."id" != a2."id" AND {" AND ".join(join_on.values())}
         GROUP BY
             address."street",
             address."city",
@@ -152,9 +155,8 @@ def get_duplicates_addresses() -> list[dict]:
             address."longitude",
             address."departmentCode",
             address."timezone"
-        """
-        ).all()
-    ]
+    """
+    return [address for address, in db.session.execute(query).all()]
 
 
 def switch_offerers_addresses_to_main_address_id(duplicates: list[dict]) -> None:
@@ -198,16 +200,19 @@ def remove_duplicates_addresses(duplicates: list[dict]) -> None:
 
 def process_duplicates_addresses(dry_run: bool) -> None:
     db.session.execute("SET SESSION statement_timeout = '300s'")
-    duplicates = get_duplicates_addresses()
-    print(f"Found {len(duplicates)} addresses that appears more than once")
+    for nullable_column in ("banId", "inseeCode", "street", "departmentCode"):
+        duplicates = get_duplicates_addresses(nullable_column)
+        print(
+            f"Found {len(duplicates)} addresses that appears more than once (checking nulls duplicates on {nullable_column})"
+        )
 
-    try:
-        empty_ban_id_on_addresses()
-        switch_offerers_addresses_to_main_address_id(duplicates)
-        remove_duplicates_addresses(duplicates)
-    except Exception:
-        db.session.rollback()
-        raise
+        try:
+            empty_ban_id_on_addresses()
+            switch_offerers_addresses_to_main_address_id(duplicates)
+            remove_duplicates_addresses(duplicates)
+        except Exception:
+            db.session.rollback()
+            raise
 
     if not dry_run:
         db.session.commit()
