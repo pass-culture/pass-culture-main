@@ -30,10 +30,6 @@ def make_update_offer_compliance_score(payload: GetComplianceScoreRequest) -> No
         offer = offers_models.Offer.query.with_for_update().get(payload.offer_id)
         if offer is None:  # if offer is deleted before the task is run
             return
-        offer.extraData = offer.extraData or {}
-        offer.extraData["complianceScore"] = data_score
-        offer.extraData["complianceReasons"] = data_reasons
-
         statement = insert(offers_models.OfferCompliance).values(
             offerId=offer.id, compliance_score=data_score, compliance_reasons=data_reasons
         )
@@ -43,7 +39,6 @@ def make_update_offer_compliance_score(payload: GetComplianceScoreRequest) -> No
         )
 
         db.session.execute(statement)
-        db.session.add(offer)
         db.session.commit()
 
 
