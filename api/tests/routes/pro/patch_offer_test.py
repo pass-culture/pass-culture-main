@@ -571,6 +571,43 @@ class Returns200Test:
         assert response.status_code == 200
         assert len(mails_testing.outbox) == 0
 
+    @pytest.mark.parametrize("should_send_mail", [True, False])
+    @pytest.mark.parametrize("is_manual_edition", [True, False])
+    def test_withdrawal_update_send_email_at_address_modification(self, is_manual_edition, should_send_mail, client):
+        # given
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.CONCERT.id,
+            bookingContact="booking@conta.ct",
+            name="New name",
+        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+        stock = offers_factories.StockFactory(offer=offer)
+        _ = [bookings_factories.BookingFactory(stock=stock) for _ in range(3)]
+
+        data = {
+            "address": {
+                "longitude": 1.3522,
+                "isVenueAddress": False,
+                "city": "Paris",
+                "label": "New label",
+                "latitude": 1.3040,
+                "postalCode": "75001",
+                "street": "1 rue de la paix",
+                "isManualEdition": is_manual_edition,
+            },
+            "shouldSendMail": should_send_mail,
+        }
+
+        # when
+        response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
+
+        # then
+        assert response.status_code == 200
+        if should_send_mail == False:
+            assert len(mails_testing.outbox) == 0
+        else:
+            assert len(mails_testing.outbox) == 3
+
 
 class Returns400Test:
     def when_trying_to_patch_forbidden_attributes(self, app, client):
