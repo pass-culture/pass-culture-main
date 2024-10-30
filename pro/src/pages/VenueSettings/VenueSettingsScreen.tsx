@@ -149,7 +149,11 @@ export const VenueSettingsScreen = ({
       }
 
       if (!formErrors || Object.keys(formErrors).length === 0) {
-        notify.error('Erreur inconnue lors de la sauvegarde du lieu.')
+        notify.error(
+          isOfferAddressEnabled
+            ? 'Erreur inconnue lors de la sauvegarde de la structure.'
+            : 'Erreur inconnue lors de la sauvegarde du lieu.'
+        )
       } else {
         notify.error(
           'Une ou plusieurs erreurs sont présentes dans le formulaire'

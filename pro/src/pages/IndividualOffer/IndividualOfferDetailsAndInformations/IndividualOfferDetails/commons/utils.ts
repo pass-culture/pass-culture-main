@@ -180,7 +180,8 @@ export const onSubcategoryChange = async ({
 
 export const buildVenueOptions = (
   venues: VenueListItemResponseModel[],
-  areSuggestedCategoriesEnabled: boolean
+  areSuggestedCategoriesEnabled: boolean,
+  isOfferAddressEnabled: boolean
 ) => {
   let venueOptions = venues
     .filter((venue) => !areSuggestedCategoriesEnabled || !venue.isVirtual)
@@ -191,7 +192,12 @@ export const buildVenueOptions = (
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
   if (venueOptions.length > 1) {
     venueOptions = [
-      { value: '', label: 'Sélectionner le partenaire' },
+      {
+        value: '',
+        label: isOfferAddressEnabled
+          ? 'Sélectionner la structure'
+          : 'Sélectionner le partenaire',
+      },
       ...venueOptions,
     ]
   }

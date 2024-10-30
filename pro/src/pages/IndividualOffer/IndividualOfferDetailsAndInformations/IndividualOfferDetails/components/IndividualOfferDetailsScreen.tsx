@@ -49,7 +49,7 @@ import {
   setFormReadOnlyFields,
   hasMusicType,
 } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferDetails/commons/utils'
-import { validationSchema } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferDetails/commons/validationSchema'
+import { getValidationSchema } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferDetails/commons/validationSchema'
 
 import { DetailsEanSearch } from './DetailsEanSearch/DetailsEanSearch'
 import { DetailsForm } from './DetailsForm/DetailsForm'
@@ -81,6 +81,7 @@ export const IndividualOfferDetailsScreen = ({
   const categoryStatus = getCategoryStatusFromOfferSubtype(offerSubtype)
 
   const isSearchByEanEnabled = useActiveFeature('WIP_EAN_CREATION')
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const { categories, subCategories, offer } = useIndividualOfferContext()
   const isDirtyDraftOffer = !offer
@@ -189,7 +190,7 @@ export const IndividualOfferDetailsScreen = ({
 
   const formik = useFormik({
     initialValues,
-    validationSchema,
+    validationSchema: getValidationSchema({ isOfferAddressEnabled }),
     onSubmit,
   })
   const handlePreviousStepOrBackToReadOnly = () => {

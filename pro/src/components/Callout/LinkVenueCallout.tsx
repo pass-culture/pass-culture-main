@@ -1,9 +1,9 @@
-import React from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { BankAccountEvents } from 'commons/core/FirebaseEvents/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 
@@ -17,6 +17,7 @@ export const LinkVenueCallout = ({
 }: LinkVenueCalloutProps): JSX.Element | null => {
   const { logEvent } = useAnalytics()
   const location = useLocation()
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const displayCallout =
     offerer &&
@@ -33,7 +34,7 @@ export const LinkVenueCallout = ({
         {
           href:
             '/remboursements/informations-bancaires?structure=' + offerer.id,
-          label: 'Gérer le rattachement de mes lieux',
+          label: `Gérer le rattachement de mes ${isOfferAddressEnabled ? 'structures' : 'lieux'}`,
           onClick: () => {
             logEvent(BankAccountEvents.CLICKED_ADD_VENUE_TO_BANK_ACCOUNT, {
               from: location.pathname,
@@ -46,8 +47,12 @@ export const LinkVenueCallout = ({
     >
       Dernière étape pour vous faire rembourser : rattachez
       {offerer.venuesWithNonFreeOffersWithoutBankAccounts.length > 1
-        ? ' vos lieux '
-        : ' votre lieu '}
+        ? isOfferAddressEnabled
+          ? ' vos structures '
+          : ' vos lieux '
+        : isOfferAddressEnabled
+          ? ' votre structure '
+          : ' votre lieu '}
       à un compte bancaire
     </Callout>
   )

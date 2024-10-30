@@ -9,6 +9,7 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_VENUE_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { PATCH_SUCCESS_MESSAGE } from 'commons/core/shared/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { useNotification } from 'commons/hooks/useNotification'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -38,6 +39,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
   const { currentUser } = useCurrentUser()
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const onSubmit: FormikConfig<VenueEditionFormValues>['onSubmit'] = async (
     values,
@@ -79,7 +81,11 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
       }
 
       if (!formErrors || Object.keys(formErrors).length === 0) {
-        notify.error('Erreur inconnue lors de la sauvegarde du lieu.')
+        notify.error(
+          isOfferAddressEnabled
+            ? 'Erreur inconnue lors de la sauvegarde de la structure.'
+            : 'Erreur inconnue lors de la sauvegarde du lieu.'
+        )
       } else {
         notify.error(
           'Une ou plusieurs erreurs sont présentes dans le formulaire'

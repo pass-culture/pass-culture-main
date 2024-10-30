@@ -156,6 +156,7 @@ describe('buildVenueOptions', () => {
     expect(
       buildVenueOptions(
         [venueListItemFactory({}), venueListItemFactory({})],
+        false,
         false
       )
     ).toStrictEqual([

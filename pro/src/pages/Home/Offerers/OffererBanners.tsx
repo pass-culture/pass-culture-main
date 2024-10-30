@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 
@@ -18,6 +19,7 @@ export const OffererBanners = ({
   offerer,
 }: OffererBannersProps) => {
   const hasAtLeastOnePhysicalVenue = hasOffererAtLeastOnePhysicalVenue(offerer)
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   if (!isUserOffererValidated) {
     return (
@@ -35,8 +37,9 @@ export const OffererBanners = ({
         ]}
       >
         <strong>
-          Le rattachement à votre structure est en cours de traitement par les
-          équipes du pass Culture
+          Le rattachement à votre{' '}
+          {isOfferAddressEnabled ? 'entité juridique' : 'structure'} est en
+          cours de traitement par les équipes du pass Culture
         </strong>
         <br />
         Un email vous sera envoyé lors de la validation de votre rattachement.
@@ -60,20 +63,22 @@ export const OffererBanners = ({
         ]}
       >
         <strong>
-          Votre structure est en cours de traitement par les équipes du pass
-          Culture
+          Votre {isOfferAddressEnabled ? 'entité juridique' : 'structure'} est
+          en cours de traitement par les équipes du pass Culture
         </strong>
         <br />
         {hasAtLeastOnePhysicalVenue ? (
           <>
-            Toutes les offres créées à l’échelle de vos lieux seront publiées
-            sous réserve de validation de votre structure.
+            {isOfferAddressEnabled
+              ? 'Toutes les offres créées seront publiées sous réserve de validation de votre structure'
+              : 'Toutes les offres créées à l’échelle de vos lieux seront publiées sous réserve de validation de votre structure.'}
           </>
         ) : (
           <>
-            Nous vous invitons à créer un lieu afin de pouvoir proposer des
-            offres physiques ou des évènements. Vous pouvez dès à présent créer
-            des offres numériques.
+            Nous vous invitons à créer{' '}
+            {isOfferAddressEnabled ? 'une structure' : 'un lieu'} afin de
+            pouvoir proposer des offres physiques ou des évènements. Vous pouvez
+            dès à présent créer des offres numériques.
             <br />
             L’ensemble de ces offres seront publiées sous réserve de validation
             de votre structure.
