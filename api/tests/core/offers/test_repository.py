@@ -1084,10 +1084,20 @@ class IncomingEventStocksTest:
         tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
         next_week = datetime.datetime.utcnow() + datetime.timedelta(days=7)
 
-        self.stock_today = factories.EventStockFactory(beginningDatetime=today)
+        address_paris = geography_factories.AddressFactory()
+        address_overseas = geography_factories.AddressFactory(postalCode="97180", departmentCode="971")
+
+        offerer_address = offerers_factories.OffererAddressFactory(address=address_paris)
+        offer = factories.OfferFactory(
+            venue__departementCode="75", venue__postalCode="75002", offererAddress=offerer_address
+        )
+        self.stock_today = factories.EventStockFactory(beginningDatetime=today, offer=offer)
         bookings_factories.BookingFactory.create_batch(2, stock=self.stock_today)
 
-        offer = factories.OfferFactory(venue__departementCode="97", venue__postalCode="97180")
+        overseas_offerer_address = offerers_factories.OffererAddressFactory(address=address_overseas)
+        offer = factories.OfferFactory(
+            venue__departementCode="97", venue__postalCode="97180", offererAddress=overseas_offerer_address
+        )
         self.stock_today_overseas = factories.EventStockFactory(beginningDatetime=today, offer=offer)
         bookings_factories.BookingFactory(stock=self.stock_today_overseas)
 
@@ -1138,6 +1148,48 @@ class IncomingEventStocksTest:
         stock_ids = repository.find_today_event_stock_ids_from_departments(today_min, today_max, departments_prefixes)
 
         assert set(stock_ids) == {self.stock_today_overseas.id}
+
+    @time_machine.travel("2024-10-15 15:00:00")
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def test_find_today_event_stock_ids_by_departments_with_address_different_than_the_venue(self):
+        self.setup_stocks()
+
+        today_min = datetime.datetime(2024, 10, 15, 8, 00)
+        today_max = datetime.datetime(2024, 10, 15, 19, 00)
+
+        departments_prefixes = ["971", "75"]
+
+        stock_ids = repository.find_today_event_stock_ids_from_departments(today_min, today_max, departments_prefixes)
+
+        assert set(stock_ids) == {self.stock_today_overseas.id, self.stock_today.id}
+
+    @time_machine.travel("2024-10-15 15:00:00")
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def test_find_today_event_stock_ids_by_departments_with_address_different_than_the_venue_2(self):
+        self.setup_stocks()
+
+        today_min = datetime.datetime(2024, 10, 15, 8, 00)
+        today_max = datetime.datetime(2024, 10, 15, 19, 00)
+
+        departments_prefixes = ["971"]
+
+        stock_ids = repository.find_today_event_stock_ids_from_departments(today_min, today_max, departments_prefixes)
+
+        assert set(stock_ids) == {self.stock_today_overseas.id}
+
+    @time_machine.travel("2024-10-15 15:00:00")
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def test_find_today_event_stock_ids_by_departments_with_address_different_than_the_venue_3(self):
+        self.setup_stocks()
+
+        today_min = datetime.datetime(2024, 10, 15, 8, 00)
+        today_max = datetime.datetime(2024, 10, 15, 19, 00)
+
+        departments_prefixes = ["75"]
+
+        stock_ids = repository.find_today_event_stock_ids_from_departments(today_min, today_max, departments_prefixes)
+
+        assert set(stock_ids) == {self.stock_today.id}
 
 
 @pytest.mark.usefixtures("db_session")
