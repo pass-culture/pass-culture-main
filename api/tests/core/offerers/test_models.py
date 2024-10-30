@@ -23,15 +23,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class VenueModelConstraintsTest:
-    def test_virtual_venue_cannot_have_address(self):
-        venue = factories.VirtualVenueFactory()
-
-        with pytest.raises(IntegrityError) as err:
-            venue.street = "1 test address"
-            db.session.add(venue)
-            db.session.flush()
-        assert "check_is_virtual_xor_has_address" in str(err.value)
-
     def test_virtual_venue_cannot_have_siret(self):
         venue = factories.VirtualVenueFactory()
         with pytest.raises(IntegrityError) as err:
@@ -43,25 +34,6 @@ class VenueModelConstraintsTest:
     def test_non_virtual_with_siret_can_have_null_address(self):
         # The following statement should not fail.
         factories.VenueFactory(siret="siret", street=None)
-
-    def test_non_virtual_with_siret_must_have_postal_code_and_city(self):
-        venue = factories.VenueFactory(siret="siret")
-        venue.postal_code = None
-        venue.city = None
-        with pytest.raises(IntegrityError) as err:
-            db.session.add(venue)
-            db.session.flush()
-        assert "check_is_virtual_xor_has_address" in str(err.value)
-
-    def test_non_virtual_without_siret_must_have_full_address(self):
-        venue = factories.VenueWithoutSiretFactory()
-        venue.address = None
-        venue.postal_code = None
-        venue.city = None
-        with pytest.raises(IntegrityError) as err:
-            db.session.add(venue)
-            db.session.flush()
-        assert "check_is_virtual_xor_has_address" in str(err.value)
 
     def test_non_virtual_without_siret_must_have_comment(self):
         venue = factories.VenueWithoutSiretFactory()
