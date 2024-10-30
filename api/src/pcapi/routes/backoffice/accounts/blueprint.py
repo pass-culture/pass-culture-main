@@ -13,6 +13,7 @@ from flask import request
 from flask import url_for
 from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
+from markupsafe import Markup
 from markupsafe import escape
 import sqlalchemy as sa
 from werkzeug.exceptions import BadRequest
@@ -26,6 +27,7 @@ from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
+from pcapi.core.mails.transactional.users.personal_data_updated import send_beneficiary_personal_data_updated
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
@@ -971,7 +973,23 @@ def update_public_account(user_id: int) -> utils.BackofficeResponse:
         # TODO (prouzet) old email should also be updated, but there is no update_external_user by email
         external_attributes_api.update_external_user(user)
 
-    flash("Les informations ont été mises à jour", "success")
+    modified_info = snapshot.to_dict()
+    if user.isActive and send_beneficiary_personal_data_updated(
+        user,
+        is_first_name_updated=bool(modified_info.get("firstName", {}).get("new_info")),
+        is_last_name_updated=bool(modified_info.get("lastName", {}).get("new_info")),
+        is_email_updated=email_changed,
+        is_phone_number_updated=bool(modified_info.get("phoneNumber", {}).get("new_info")),
+    ):
+        flash(
+            Markup("Les informations ont été mises à jour, un mail de confirmation est envoyé à <b>{email}</b>").format(
+                email=user.email
+            ),
+            "success",
+        )
+    else:
+        flash("Les informations ont été mises à jour", "success")
+
     return redirect(get_public_account_link(user_id, active_tab="history"), code=303)
 
 

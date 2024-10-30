@@ -1,3 +1,4 @@
+import dataclasses
 import datetime
 import os
 import re
@@ -1074,6 +1075,16 @@ class UpdatePublicAccountTest(PostEndpointHelper):
             "postalCode": {"new_info": expected_new_postal_code, "old_info": None},
         }
 
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
+            TransactionalEmail.PERSONAL_DATA_UPDATED_FROM_BACKOFFICE.value
+        )
+        assert mails_testing.outbox[0]["params"] == {
+            "FIRSTNAME": user.firstName,
+            "LASTNAME": user.lastName,
+            "UPDATED_FIELD": "EMAIL,PHONE_NUMBER",
+        }
+
     def test_update_all_fields(self, legit_user, authenticated_client):
         date_of_birth = datetime.datetime.combine(
             datetime.date.today() - relativedelta(years=18, months=5, days=3), datetime.time.min
@@ -1148,6 +1159,41 @@ class UpdatePublicAccountTest(PostEndpointHelper):
             "notificationSubscriptions.marketing_email": {"new_info": False, "old_info": True},
         }
 
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
+            TransactionalEmail.PERSONAL_DATA_UPDATED_FROM_BACKOFFICE.value
+        )
+        assert mails_testing.outbox[0]["params"] == {
+            "FIRSTNAME": user.firstName,
+            "LASTNAME": user.lastName,
+            "UPDATED_FIELD": "EMAIL,FIRST_NAME,LAST_NAME",
+        }
+
+    def test_update_email_for_suspended_user(self, legit_user, authenticated_client):
+        user = users_factories.UserFactory(isActive=False)
+
+        form_data = {
+            "first_name": user.firstName,
+            "last_name": user.lastName,
+            "email": "updated@example.com",
+            "birth_date": user.birth_date,
+            "phone_number": user.phoneNumber,
+            "id_piece_number": user.idPieceNumber,
+            "street": user.address,
+            "postal_code": user.postalCode,
+            "city": user.city,
+            "marketing_email_subscription": "on",
+        }
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=form_data)
+        assert response.status_code == 303
+
+        user = users_models.User.query.filter_by(id=user.id).one()
+        assert user.email == "updated@example.com"
+
+        assert len(user.email_history) == 1
+        assert len(mails_testing.outbox) == 0
+
     def test_unknown_field(self, authenticated_client):
         user_to_edit = users_factories.BeneficiaryGrant18Factory()
         base_form = {
@@ -1157,6 +1203,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, user_id=user_to_edit.id, form=base_form)
         assert response.status_code == 400
+        assert len(mails_testing.outbox) == 0
 
     def test_update_email_triggers_history_token_and_mail(self, authenticated_client):
         user, _, _, _, _ = create_bunch_of_accounts()
