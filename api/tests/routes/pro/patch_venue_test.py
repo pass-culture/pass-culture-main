@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.connectors.api_adresse import AddressInfo
 import pcapi.connectors.entreprise.exceptions as entreprise_exceptions
 from pcapi.core import search
 from pcapi.core.external.zendesk_sell_backends import testing as zendesk_testing
@@ -180,7 +181,7 @@ class Returns200Test:
         assert offerer_address.addressId == address.id
         assert offerer_address.label is None
 
-    def test_update_venue_location_with_manual_edition(self, client, requests_mock) -> None:
+    def test_update_venue_location_with_manual_edition(self, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
         address = geography_factories.AddressFactory(
             street="1 boulevard Poissonnière", postalCode="75000", inseeCode="75000", city="Paris"
@@ -258,6 +259,94 @@ class Returns200Test:
         assert venue.action_history[0].extraData["modified_info"]["postalCode"] == {
             "new_info": "75001",
             "old_info": "75000",
+        }
+
+    @patch("pcapi.connectors.api_adresse.get_address")
+    def test_update_should_be_able_to_update_venue_even_if_only_centroid_found(
+        self, mocked_get_address, client
+    ) -> None:
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+        )
+        venue_without_siret = offerers_factories.VenueWithoutSiretFactory(managingOfferer=user_offerer.offerer)
+
+        mocked_get_address.return_value = AddressInfo(
+            id="58062",
+            label="Château-Chinon (Ville)",
+            postcode="58120",
+            citycode="58062",
+            latitude=47.066641,
+            longitude=3.933363,
+            score=0.9384945454545454,
+            city="Château-Chinon (Ville)",
+            street=None,
+        )
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        venue_id = venue.id
+
+        venue_data = populate_missing_data_from_venue(
+            {
+                # Data sent by the frontend, originated from BAN autocomplete field
+                "street": "Château-Chinon (Ville)",
+                "banId": "58062",
+                "city": "Château-Chinon (Ville)",
+                "latitude": 47.066641,
+                "longitude": 3.933363,
+                "postalCode": "58120",
+                "isManualEdition": False,
+                "comment": "Lieu sans SIRET car dépend du SIRET d'un autre lieu",
+            },
+            venue_without_siret,
+        )
+
+        response = auth_request.patch("/venues/%s" % venue_without_siret.id, json=venue_data)
+
+        # then
+        assert response.status_code == 200
+        venue = offerers_models.Venue.query.filter_by(id=venue_without_siret.id).one()
+        address = geography_models.Address.query.order_by(geography_models.Address.id.desc()).first()
+        offerer_address = offerers_models.OffererAddress.query.one()
+
+        assert venue.offererAddressId == offerer_address.id
+        assert address.street == venue.street == None  # Centroid found only, nothing to fill in street column
+        assert address.city == venue.city == "Château-Chinon (Ville)"
+        assert address.postalCode == venue.postalCode == "58120"
+        assert address.inseeCode.startswith(address.departmentCode)
+        assert address.longitude == venue.longitude == Decimal("3.93336")
+        assert address.latitude == venue.latitude == Decimal("47.06664")
+        assert address.isManualEdition is False
+        assert offerer_address.addressId == address.id
+        assert offerer_address.label is None
+
+        assert response.json["street"] == venue.street
+        assert response.json["banId"] == venue.banId
+        assert response.json["city"] == venue.city
+        assert response.json["siret"] == venue.siret
+        assert response.json["postalCode"] == venue.postalCode
+        assert len(venue.action_history) == 1
+        assert venue.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
+        assert venue.action_history[0].venueId == venue_without_siret.id
+        assert venue.action_history[0].authorUser.id == user_offerer.user.id
+        assert venue.action_history[0].extraData["modified_info"]["street"] == {
+            "new_info": None,
+            "old_info": "1 boulevard Poissonnière",
+        }
+        assert venue.action_history[0].extraData["modified_info"]["banId"] == {
+            "new_info": "58062",
+            "old_info": "75102_7560_00001",
+        }
+        assert venue.action_history[0].extraData["modified_info"]["latitude"] == {
+            "new_info": "47.066641",
+            "old_info": "48.87004",
+        }
+        assert venue.action_history[0].extraData["modified_info"]["longitude"] == {
+            "new_info": "3.933363",
+            "old_info": "2.3785",
+        }
+        assert venue.action_history[0].extraData["modified_info"]["postalCode"] == {
+            "new_info": "58120",
+            "old_info": "75002",
         }
 
     def test_edit_only_activity_parameters_and_not_venue_accessibility(self, client):

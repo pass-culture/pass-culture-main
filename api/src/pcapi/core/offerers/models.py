@@ -82,26 +82,6 @@ if typing.TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS = """
-(
-    "isVirtual" IS TRUE
-    AND (address IS NULL AND "postalCode" IS NULL AND city IS NULL AND "departementCode" IS NULL)
-)
-OR
-(
-    "isVirtual" IS FALSE
-    AND siret is NOT NULL
-    AND ("postalCode" IS NOT NULL AND city IS NOT NULL AND "departementCode" IS NOT NULL)
-)
-OR
-(
-    "isVirtual" IS FALSE
-    AND (siret is NULL and comment is NOT NULL)
-    AND (address IS NOT NULL AND "postalCode" IS NOT NULL AND city IS NOT NULL AND "departementCode" IS NOT NULL)
-)
-
-"""
-
 CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL = """
     (siret IS NULL AND comment IS NULL AND "isVirtual" IS TRUE)
     OR (siret IS NULL AND comment IS NOT NULL AND "isVirtual" IS FALSE)
@@ -272,7 +252,6 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
 
     isVirtual: bool = Column(
         Boolean,
-        CheckConstraint(CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS, name="check_is_virtual_xor_has_address"),
         nullable=False,
         default=False,
         server_default=expression.false(),
