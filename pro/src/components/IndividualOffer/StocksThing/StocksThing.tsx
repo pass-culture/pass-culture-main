@@ -30,7 +30,10 @@ import strokeEuroIcon from 'icons/stroke-euro.svg'
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
 import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
-import { QuantityInput } from 'ui-kit/form/QuantityInput/QuantityInput'
+import {
+  Quantity,
+  QuantityInput,
+} from 'ui-kit/form/QuantityInput/QuantityInput'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
@@ -203,7 +206,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     setIsDeleteConfirmVisible(false)
   }
 
-  const onQuantityChange = async (newQuantity: string) => {
+  const onQuantityChange = async (newQuantity: Quantity) => {
     let remainingQuantity: number | string =
       // No need to test
       /* istanbul ignore next */

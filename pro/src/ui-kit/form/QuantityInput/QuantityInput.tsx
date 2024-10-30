@@ -7,6 +7,7 @@ import { TextInput, TextInputProps } from 'ui-kit/form/TextInput/TextInput'
 
 import styles from './QuantityInput.module.scss'
 
+export type Quantity = number | ''
 export type QuantityInputProps = Pick<
   TextInputProps,
   | 'disabled'
@@ -33,7 +34,7 @@ export type QuantityInputProps = Pick<
    * otherwise, setFieldValue must be called manually.
    * This is to support custom logic when the quantity changes.
    */
-  onChange?: (quantity: string) => void
+  onChange?: (quantity: Quantity) => void
 }
 
 export const QuantityInput = ({
@@ -69,7 +70,7 @@ export const QuantityInput = ({
   }, [isUnlimited])
 
   const onQuantityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newQuantity = event.target.value
+    const newQuantity = parseInt(event.target.value)
     onChange?.(newQuantity)
   }
 
@@ -77,7 +78,7 @@ export const QuantityInput = ({
     const nextIsUnlimitedState = !isUnlimited
     setIsUnlimited(nextIsUnlimitedState)
 
-    let nextFieldValue = '1'
+    let nextFieldValue: Quantity = 1
     if (nextIsUnlimitedState) {
       // If the checkbox is going to be checked,
       // we need to clear the quantity field as an empty
