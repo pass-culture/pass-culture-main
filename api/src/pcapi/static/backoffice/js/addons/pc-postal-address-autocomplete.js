@@ -510,7 +510,7 @@ class PcPostalAddressAutocomplete extends PcAddOn {
       $street.parentElement.classList[isManualEditing ? 'remove' : 'add']('d-none')
     }
     if ($banId) {
-      $banId.parentElement.classList[isManualEditing ? 'remove' : 'add']('d-none')
+      $banId.parentElement.classList.add('d-none')
     }
     if ($latitude) {
       $latitude.parentElement.classList[isManualEditing ? 'remove' : 'add']('d-none')
