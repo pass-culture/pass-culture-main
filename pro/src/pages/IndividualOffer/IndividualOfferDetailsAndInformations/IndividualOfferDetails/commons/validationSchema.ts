@@ -10,54 +10,69 @@ const eanValidation = yup
     test: (ean) => ean === undefined || ean.length === 13,
   })
 
-export const validationSchema = yup.object().shape({
-  name: yup.string().trim().max(90).required('Veuillez renseigner un titre'),
-  description: yup.string(),
-  author: yup.string(),
-  performer: yup.string(),
-  ean: eanValidation,
-  speaker: yup.string(),
-  stageDirector: yup.string(),
-  visa: yup.string(),
-  durationMinutes: yup.string().when('subcategoryConditionalFields', {
-    is: (subcategoryConditionalFields: string[]) =>
-      subcategoryConditionalFields.includes('durationMinutes'),
-    then: (schema) =>
-      schema.matches(
-        /^\d{1,3}:\d{2}$/,
-        'Veuillez entrer une durée sous la forme HH:MM (ex: 1:30 pour 1h30)'
+export const getValidationSchema = ({
+  isOfferAddressEnabled = false,
+}: {
+  isOfferAddressEnabled: boolean
+}) => {
+  return yup.object().shape({
+    name: yup.string().trim().max(90).required('Veuillez renseigner un titre'),
+    description: yup.string(),
+    author: yup.string(),
+    performer: yup.string(),
+    ean: eanValidation,
+    speaker: yup.string(),
+    stageDirector: yup.string(),
+    visa: yup.string(),
+    durationMinutes: yup.string().when('subcategoryConditionalFields', {
+      is: (subcategoryConditionalFields: string[]) =>
+        subcategoryConditionalFields.includes('durationMinutes'),
+      then: (schema) =>
+        schema.matches(
+          /^\d{1,3}:\d{2}$/,
+          'Veuillez entrer une durée sous la forme HH:MM (ex: 1:30 pour 1h30)'
+        ),
+    }),
+    categoryId: yup.string().required('Veuillez sélectionner une catégorie'),
+    subcategoryId: yup.string().when('categoryId', {
+      is: (categoryId: string) => categoryId,
+      then: (schema) =>
+        schema.required('Veuillez sélectionner une sous-catégorie'),
+    }),
+    showType: yup.string().when('subcategoryConditionalFields', {
+      is: (subcategoryConditionalFields: string[]) =>
+        subcategoryConditionalFields.includes('showType'),
+      then: (schema) =>
+        schema.required('Veuillez sélectionner un type de spectacle'),
+    }),
+    showSubType: yup
+      .string()
+      .when(['subcategoryConditionalFields', 'showType'], {
+        is: (subcategoryConditionalFields: string[], showType: string) =>
+          subcategoryConditionalFields.includes('showType') &&
+          showType !== DEFAULT_DETAILS_FORM_VALUES.showType,
+        then: (schema) =>
+          schema.required('Veuillez sélectionner un sous-type de spectacle'),
+      }),
+    gtl_id: yup.string().when(['subcategoryConditionalFields', 'categoryId'], {
+      is: (subcategoryConditionalFields: string[], categoryId: string) => {
+        return (
+          subcategoryConditionalFields.includes('gtl_id') &&
+          categoryId !== 'LIVRE'
+        )
+      },
+      then: (schema) =>
+        schema.required('Veuillez sélectionner un genre musical'),
+    }),
+    venueId: yup
+      .string()
+      .required(
+        isOfferAddressEnabled
+          ? 'Veuillez sélectionner une structure'
+          : 'Veuillez sélectionner un lieu'
       ),
-  }),
-  categoryId: yup.string().required('Veuillez sélectionner une catégorie'),
-  subcategoryId: yup.string().when('categoryId', {
-    is: (categoryId: string) => categoryId,
-    then: (schema) =>
-      schema.required('Veuillez sélectionner une sous-catégorie'),
-  }),
-  showType: yup.string().when('subcategoryConditionalFields', {
-    is: (subcategoryConditionalFields: string[]) =>
-      subcategoryConditionalFields.includes('showType'),
-    then: (schema) =>
-      schema.required('Veuillez sélectionner un type de spectacle'),
-  }),
-  showSubType: yup.string().when(['subcategoryConditionalFields', 'showType'], {
-    is: (subcategoryConditionalFields: string[], showType: string) =>
-      subcategoryConditionalFields.includes('showType') &&
-      showType !== DEFAULT_DETAILS_FORM_VALUES.showType,
-    then: (schema) =>
-      schema.required('Veuillez sélectionner un sous-type de spectacle'),
-  }),
-  gtl_id: yup.string().when(['subcategoryConditionalFields', 'categoryId'], {
-    is: (subcategoryConditionalFields: string[], categoryId: string) => {
-      return (
-        subcategoryConditionalFields.includes('gtl_id') &&
-        categoryId !== 'LIVRE'
-      )
-    },
-    then: (schema) => schema.required('Veuillez sélectionner un genre musical'),
-  }),
-  venueId: yup.string().required('Veuillez sélectionner un lieu'),
-})
+  })
+}
 
 export const eanSearchValidationSchema = yup.object().shape({
   eanSearch: eanValidation,

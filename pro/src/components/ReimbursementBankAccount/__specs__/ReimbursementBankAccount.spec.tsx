@@ -1,6 +1,5 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import {
@@ -11,7 +10,10 @@ import {
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { BankAccountEvents } from 'commons/core/FirebaseEvents/constants'
 import { defaultManagedVenues } from 'commons/utils/factories/individualApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import {
+  renderWithProviders,
+  RenderWithProvidersOptions,
+} from 'commons/utils/renderWithProviders'
 
 import { ReimbursementBankAccount } from '../ReimbursementBankAccount'
 
@@ -22,7 +24,8 @@ const renderReimbursementBankAccount = (
   bankAccount: BankAccountResponseModel,
   managedVenues: ManagedVenues[],
   offererId = 0,
-  hasWarning = false
+  hasWarning = false,
+  options: RenderWithProvidersOptions = {}
 ) =>
   renderWithProviders(
     <Routes>
@@ -42,6 +45,7 @@ const renderReimbursementBankAccount = (
     {
       storeOverrides: {},
       initialRouterEntries: ['/remboursements/informations-bancaires'],
+      ...options,
     }
   )
 
@@ -83,7 +87,7 @@ describe('ReimbursementBankAccount', () => {
     expect(screen.getByText(/en cours de validation/)).toBeInTheDocument()
     expect(screen.getByText('Voir le dossier')).toBeInTheDocument()
     expect(
-      screen.queryByText('Lieu(x) rattaché(s) à ce compte bancaire')
+      screen.queryByText('Lieu rattaché à ce compte bancaire')
     ).not.toBeInTheDocument()
   })
 
@@ -98,7 +102,7 @@ describe('ReimbursementBankAccount', () => {
     expect(screen.getByText(/informations manquantes/)).toBeInTheDocument()
     expect(screen.getByText(/Compléter le dossier/)).toBeInTheDocument()
     expect(
-      screen.queryByText('Lieu(x) rattaché(s) à ce compte bancaire')
+      screen.queryByText('Lieu rattaché à ce compte bancaire')
     ).not.toBeInTheDocument()
   })
 
@@ -113,7 +117,7 @@ describe('ReimbursementBankAccount', () => {
     expect(screen.getByText(/en cours de validation/)).toBeInTheDocument()
     expect(screen.getByText('Voir le dossier')).toBeInTheDocument()
     expect(
-      screen.queryByText('Lieu(x) rattaché(s) à ce compte bancaire')
+      screen.queryByText('Lieu rattaché à ce compte bancaire')
     ).not.toBeInTheDocument()
   })
 
@@ -131,7 +135,7 @@ describe('ReimbursementBankAccount', () => {
     ).not.toBeInTheDocument()
 
     expect(
-      screen.getByText('Lieu(x) rattaché(s) à ce compte bancaire')
+      screen.getByText('Lieu rattaché à ce compte bancaire')
     ).toBeInTheDocument()
 
     expect(
@@ -304,7 +308,7 @@ describe('ReimbursementBankAccount', () => {
     renderReimbursementBankAccount(bankAccount, [])
 
     expect(
-      screen.getByText('Lieu(x) rattaché(s) à ce compte bancaire')
+      screen.getByText('Lieu rattaché à ce compte bancaire')
     ).toBeInTheDocument()
 
     expect(
@@ -328,5 +332,59 @@ describe('ReimbursementBankAccount', () => {
     expect(
       screen.queryByText('Certains de vos lieux ne sont pas rattachés.')
     ).not.toBeInTheDocument()
+  })
+
+  it('should display the correct button with WIP_ENABLE_OFFER_ADDRESS', () => {
+    bankAccount.linkedVenues = []
+    managedVenues[0].bankAccountId = null
+    renderReimbursementBankAccount(bankAccount, managedVenues, 0, false, {
+      features: ['WIP_ENABLE_OFFER_ADDRESS'],
+    })
+
+    expect(
+      screen.getByText('Aucune structure n’est rattachée à ce compte bancaire')
+    )
+    expect(screen.getByRole('button', { name: 'Rattacher une structure' }))
+  })
+
+  describe('plurals', () => {
+    it('should display "lieux" plurals', () => {
+      // Adds a second linked venue
+      bankAccount.linkedVenues.push({
+        id: 316,
+        commonName: 'Le Petit Rintintin 2',
+      })
+      // Adds a venue not linked to a bank account
+      managedVenues.push({
+        ...defaultManagedVenues,
+      })
+      renderReimbursementBankAccount(bankAccount, managedVenues, 0, false)
+
+      expect(
+        screen.getByText('Lieux rattachés à ce compte bancaire')
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText('Certains de vos lieux ne sont pas rattachés.')
+      ).toBeInTheDocument()
+    })
+
+    it('should display "structures" plurals (WIP_ENABLE_OFFER_ADDRESS)', () => {
+      // Adds a second linked venue
+      bankAccount.linkedVenues.push({
+        id: 316,
+        commonName: 'Le Petit Rintintin 2',
+      })
+      // Adds a venue not linked to a bank account
+      managedVenues.push({
+        ...defaultManagedVenues,
+      })
+      renderReimbursementBankAccount(bankAccount, managedVenues, 0, false, {
+        features: ['WIP_ENABLE_OFFER_ADDRESS'],
+      })
+
+      expect(
+        screen.getByText('Structures rattachées à ce compte bancaire')
+      ).toBeInTheDocument()
+    })
   })
 })

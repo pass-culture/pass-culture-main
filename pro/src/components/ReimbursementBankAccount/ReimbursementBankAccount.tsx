@@ -1,5 +1,4 @@
 import cn from 'classnames'
-import React from 'react'
 import { useLocation } from 'react-router-dom'
 
 import {
@@ -9,6 +8,8 @@ import {
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { BankAccountEvents } from 'commons/core/FirebaseEvents/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { pluralizeString } from 'commons/utils/pluralize'
 import fullErrorIcon from 'icons/full-error.svg'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullWaitIcon from 'icons/full-wait.svg'
@@ -37,6 +38,7 @@ export const ReimbursementBankAccount = ({
   const hasLinkedVenues = bankAccount.linkedVenues.length > 0
   const { logEvent } = useAnalytics()
   const location = useLocation()
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   const venuesNotLinkedToBankAccount = managedVenues.filter(
     (venue) => !venue.bankAccountId
   ).length
@@ -114,7 +116,9 @@ export const ReimbursementBankAccount = ({
           data-testid="reimbursement-bank-account-linked-venues"
         >
           <div className={styles['linked-venues-section-title']}>
-            Lieu(x) rattaché(s) à ce compte bancaire
+            {isOfferAddressEnabled
+              ? `${pluralizeString('Structure rattachée', bankAccount.linkedVenues.length)} à ce compte bancaire`
+              : `${pluralizeString('Lieu', bankAccount.linkedVenues.length, 'x')} ${pluralizeString('rattaché', bankAccount.linkedVenues.length)} à ce compte bancaire`}
             {hasWarning && managedVenues.length > 0 && (
               <SvgIcon
                 src={fullErrorIcon}
@@ -128,14 +132,20 @@ export const ReimbursementBankAccount = ({
             <div className={styles['linked-venues-content']}>
               {!hasLinkedVenues && (
                 <div className={styles['issue-text']}>
-                  Aucun lieu n’est rattaché à ce compte bancaire.
+                  {isOfferAddressEnabled
+                    ? 'Aucune structure n’est rattachée à ce compte bancaire'
+                    : 'Aucun lieu n’est rattaché à ce compte bancaire.'}
                   {venuesNotLinkedToBankAccount === 0 &&
-                    ' Désélectionnez un lieu déjà rattaché et rattachez-le à ce compte bancaire.'}
+                    (isOfferAddressEnabled
+                      ? ' Désélectionnez une structure déjà rattachée et rattachez-la à ce compte bancaire.'
+                      : ' Désélectionnez un lieu déjà rattaché et rattachez-le à ce compte bancaire.')}
                 </div>
               )}
               {hasLinkedVenues && venuesNotLinkedToBankAccount > 0 && (
                 <div className={styles['issue-text']}>
-                  Certains de vos lieux ne sont pas rattachés.
+                  {isOfferAddressEnabled
+                    ? 'Certaines de vos structures ne sont pas rattachées.'
+                    : 'Certains de vos lieux ne sont pas rattachés.'}
                 </div>
               )}
               {hasLinkedVenues && (
@@ -177,7 +187,9 @@ export const ReimbursementBankAccount = ({
                     onUpdateButtonClick?.(bankAccount.id)
                   }}
                 >
-                  Rattacher un lieu
+                  {isOfferAddressEnabled
+                    ? 'Rattacher une structure'
+                    : 'Rattacher un lieu'}
                 </Button>
               )}
             </div>

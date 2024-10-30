@@ -92,7 +92,7 @@ export const OfferLocation = ({ venue }: OfferLocationProps): JSX.Element => {
       className={styles['offerlocation-wrapper']}
     >
       <p className={styles['infotext']}>
-        Il s’agit de l’adresse à laquelle votre public devra se présenter.
+        Il s’agit de l’adresse à laquelle les jeunes devront se présenter.
       </p>
       <FormLayout.Row className={styles['location-row']}>
         <RadioButton

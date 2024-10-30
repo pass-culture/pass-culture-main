@@ -71,13 +71,14 @@ export const DetailsForm = ({
   const { subcategoryId, description, venueId, name, suggestedSubcategory } =
     values
   const { offer, subCategories } = useIndividualOfferContext()
+  const offerAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const venueOptions = buildVenueOptions(
     filteredVenues,
-    areSuggestedSubcategoriesUsed
+    areSuggestedSubcategoriesUsed,
+    offerAddressEnabled
   )
 
-  const offerAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   const splitOfferEnabled = useActiveFeature('WIP_SPLIT_OFFER')
 
   async function getSuggestedSubcategories() {

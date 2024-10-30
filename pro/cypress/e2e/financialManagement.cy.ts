@@ -179,7 +179,7 @@ describe('Financial Management - messages, links to external help page, reimburs
         message: 'Unattach 2 in 4 venues',
       })
       cy.findByTestId('reimbursement-bank-account-linked-venues').within(() => {
-        cy.contains('Lieu(x) rattaché(s) à ce compte bancaire')
+        cy.contains('Lieux rattachés à ce compte bancaire')
         cy.contains('Mon lieu 1')
         cy.contains('Mon lieu 2')
         cy.contains('Mon lieu 3')
@@ -203,7 +203,7 @@ describe('Financial Management - messages, links to external help page, reimburs
       })
       cy.findByTestId('reimbursement-bank-account-linked-venues').within(
         ($elt) => {
-          cy.contains('Lieu(x) rattaché(s) à ce compte bancaire')
+          cy.contains('Lieu rattaché à ce compte bancaire')
           cy.contains('Certains de vos lieux ne sont pas rattachés.')
           cy.get('div').contains('Mon lieu 3')
           cy.wrap($elt)
@@ -218,7 +218,7 @@ describe('Financial Management - messages, links to external help page, reimburs
       })
 
       cy.findByText('Modifier').click()
-      cy.contains('Lieu(x) rattaché(s) à ce compte bancaire')
+      cy.contains('Lieu rattaché à ce compte bancaire')
       cy.findByRole('dialog').within(() => {
         cy.findByText('Tout désélectionner').click()
         cy.findByText('Enregistrer').click()
@@ -235,7 +235,7 @@ describe('Financial Management - messages, links to external help page, reimburs
       })
       cy.findByTestId('reimbursement-bank-account-linked-venues').within(
         ($elt) => {
-          cy.contains('Lieu(x) rattaché(s) à ce compte bancaire')
+          cy.contains('Lieu rattaché à ce compte bancaire')
           cy.contains('Aucun lieu n’est rattaché à ce compte bancaire.')
           cy.wrap($elt)
             .should('not.contain', 'Mon lieu 1')
