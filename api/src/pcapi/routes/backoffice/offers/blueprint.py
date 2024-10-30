@@ -88,7 +88,7 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
     },
     "DATE": {
         "field": "date",
-        "facet": "offer.date",
+        "facet": "offer.dates",
     },
     "DEPARTMENT": {
         "field": "department",
@@ -114,9 +114,7 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
     "EVENT_DATE": {
         "field": "date",
         "column": offers_models.Stock.beginningDatetime,
-        "facet": "offer.dates",
         "subquery_join": "stock",
-        "algolia_special": lambda d: d.timestamp(),
     },
     "BOOKING_LIMIT_DATE": {
         "field": "date",
@@ -284,7 +282,7 @@ SUBQUERY_DICT: dict[str, dict[str, typing.Any]] = {
 
 
 def _get_offer_ids_algolia(form: forms.GetOfferAlgoliaSearchForm) -> list[int]:
-    filter_str, warnings = utils.generate_algolia_search_string(
+    filters, warnings = utils.generate_algolia_search_string(
         search_parameters=form.search.data,
         fields_definition=SEARCH_FIELD_TO_PYTHON,
     )
@@ -292,11 +290,7 @@ def _get_offer_ids_algolia(form: forms.GetOfferAlgoliaSearchForm) -> list[int]:
         flash(escape(warning), "warning")
 
     # +1 to check if there are more results than requested
-    ids = search_offer_ids(
-        query=form.algolia_search.data or "",
-        filters=filter_str,
-        count=form.limit.data + 1,
-    )
+    ids = search_offer_ids(query=form.algolia_search.data or "", count=form.limit.data + 1, **filters)
     return ids
 
 

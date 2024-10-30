@@ -1430,7 +1430,7 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(url_for(self.endpoint, **query_args))
                 assert response.status_code == 200
-            algolia_mock.assert_called_once_with(query="display", filters="", count=101)
+            algolia_mock.assert_called_once_with(query="display", facetFilters=[], numericFilters=[], count=101)
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
@@ -1459,8 +1459,21 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
                 assert response.status_code == 200
             algolia_mock.assert_called_once_with(
                 query="display",
-                filters="(offer.subcategoryId:CARTE_CINE_ILLIMITE OR offer.subcategoryId:CARTE_CINE_MULTISEANCES OR offer.subcategoryId:CARTE_JEUNES OR offer.subcategoryId:CINE_PLEIN_AIR OR offer.subcategoryId:CINE_VENTE_DISTANCE OR offer.subcategoryId:EVENEMENT_CINE OR offer.subcategoryId:FESTIVAL_CINE OR offer.subcategoryId:SEANCE_CINE) AND offer.ean:1234567890123",
                 count=1001,
+                facetFilters=[
+                    [
+                        "offer.subcategoryId:CARTE_CINE_ILLIMITE",
+                        "offer.subcategoryId:CARTE_CINE_MULTISEANCES",
+                        "offer.subcategoryId:CARTE_JEUNES",
+                        "offer.subcategoryId:CINE_PLEIN_AIR",
+                        "offer.subcategoryId:CINE_VENTE_DISTANCE",
+                        "offer.subcategoryId:EVENEMENT_CINE",
+                        "offer.subcategoryId:FESTIVAL_CINE",
+                        "offer.subcategoryId:SEANCE_CINE",
+                    ],
+                    "offer.ean:1234567890123",
+                ],
+                numericFilters=[],
             )
 
         rows = html_parser.extract_table_rows(response.data)
@@ -1490,8 +1503,19 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
                 assert response.status_code == 200
             algolia_mock.assert_called_once_with(
                 query="display",
-                filters="(NOT offer.subcategoryId:CARTE_CINE_ILLIMITE AND NOT offer.subcategoryId:CARTE_CINE_MULTISEANCES AND NOT offer.subcategoryId:CARTE_JEUNES AND NOT offer.subcategoryId:CINE_PLEIN_AIR AND NOT offer.subcategoryId:CINE_VENTE_DISTANCE AND NOT offer.subcategoryId:EVENEMENT_CINE AND NOT offer.subcategoryId:FESTIVAL_CINE AND NOT offer.subcategoryId:SEANCE_CINE) AND NOT offer.ean:1234567890123",
                 count=1001,
+                facetFilters=[
+                    "offer.subcategoryId:-CARTE_CINE_ILLIMITE",
+                    "offer.subcategoryId:-CARTE_CINE_MULTISEANCES",
+                    "offer.subcategoryId:-CARTE_JEUNES",
+                    "offer.subcategoryId:-CINE_PLEIN_AIR",
+                    "offer.subcategoryId:-CINE_VENTE_DISTANCE",
+                    "offer.subcategoryId:-EVENEMENT_CINE",
+                    "offer.subcategoryId:-FESTIVAL_CINE",
+                    "offer.subcategoryId:-SEANCE_CINE",
+                    "offer.ean:-1234567890123",
+                ],
+                numericFilters=[],
             )
 
         rows = html_parser.extract_table_rows(response.data)
@@ -1523,8 +1547,13 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
 
             algolia_mock.assert_called_once_with(
                 query="",
-                filters="offer.prices=15 AND offer.prices>=15.12 AND offer.prices<12.34",
                 count=1001,
+                facetFilters=[],
+                numericFilters=[
+                    "offer.prices=15",
+                    "offer.prices>=15.12",
+                    "offer.prices<12.34",
+                ],
             )
 
         assert html_parser.count_table_rows(response.data) == 0
@@ -1554,8 +1583,14 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
 
             algolia_mock.assert_called_once_with(
                 query="",
-                filters="offer.date>=1727733600 AND offer.date<=1727820000 AND (offer.date>=1727733600 AND offer.date<=1727820000)",
                 count=1001,
+                facetFilters=[],
+                numericFilters=[
+                    "offer.dates>=1727733600",
+                    "offer.dates<=1727820000",
+                    "offer.dates>=1727733600",
+                    "offer.dates<=1727820000",
+                ],
             )
 
         assert html_parser.count_table_rows(response.data) == 0
@@ -1586,14 +1621,16 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
             try:
                 algolia_mock.assert_called_once_with(
                     query="",
-                    filters=f"(venue.id:{venue1.id} OR venue.id:{venue2.id})",
                     count=1001,
+                    facetFilters=[[f"venue.id:{venue1.id}", f"venue.id:{venue2.id}"]],
+                    numericFilters=[],
                 )
             except AssertionError:
                 algolia_mock.assert_called_once_with(
                     query="",
-                    filters=f"(venue.id:{venue2.id} OR venue.id:{venue1.id})",
                     count=1001,
+                    facetFilters=[[f"venue.id:{venue2.id}", f"venue.id:{venue1.id}"]],
+                    numericFilters=[],
                 )
 
         assert html_parser.count_table_rows(response.data) == 0

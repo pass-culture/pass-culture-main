@@ -2,6 +2,7 @@ from collections import abc
 import datetime
 import enum
 import logging
+import typing
 
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
@@ -689,9 +690,9 @@ def unindex_all_venues() -> None:
         logger.exception("Could not unindex all venues")
 
 
-def search_offer_ids(query: str = "", filters: str = "", count: int = 20) -> list[int]:
+def search_offer_ids(query: str = "", count: int = 20, **params: typing.Any) -> list[int]:
     backend = _get_backend()
-    return backend.search_offer_ids(query, filters, count)
+    return backend.search_offer_ids(query, count=count, **params)
 
 
 def get_last_30_days_bookings_for_eans() -> dict[str, int]:
