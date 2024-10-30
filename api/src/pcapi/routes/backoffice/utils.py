@@ -70,16 +70,20 @@ OPERATOR_DICT: dict[str, dict[str, typing.Any]] = {
 
 
 ALGOLIA_OPERATOR_DICT: dict[str, typing.Any] = {
-    "IN": lambda x, y: "(" + " OR ".join([f"{x}:{i}" for i in y]) + ")",
-    "NOT_IN": lambda x, y: "(" + " AND ".join([f"NOT {x}:{i}" for i in y]) + ")",
-    "EQUALS": lambda x, y: f"{x}:{y}",
-    "NOT_EQUALS": lambda x, y: f"NOT {x}:{y}",
-    "NUMBER_EQUALS": lambda x, y: f"{x}={y}",
-    "GREATER_THAN_OR_EQUAL_TO": lambda x, y: f"{x}>={y}",
-    "LESS_THAN": lambda x, y: f"{x}<{y}",
-    "DATE_FROM": lambda x, y: f"{x}>={round(date_utils.date_to_localized_datetime(y, datetime.time.min).timestamp())}",  # type: ignore [union-attr]
-    "DATE_TO": lambda x, y: f"{x}<={round(date_utils.date_to_localized_datetime(y, datetime.time.max).timestamp())}",  # type: ignore [union-attr]
-    "DATE_EQUALS": lambda x, y: f'({ALGOLIA_OPERATOR_DICT["DATE_FROM"](x, y)} AND {ALGOLIA_OPERATOR_DICT["DATE_TO"](x, y)})',
+    "IN": lambda x, y: ([f"{x}:{i}" for i in y],),
+    "NOT_IN": lambda x, y: ([f"{x}:-{i}" for i in y], False, True),
+    "EQUALS": lambda x, y: (f"{x}:{y}",),
+    "NOT_EQUALS": lambda x, y: (f"{x}:-{y}",),
+    "NUMBER_EQUALS": lambda x, y: (f"{x}={y}", True),
+    "GREATER_THAN_OR_EQUAL_TO": lambda x, y: (f"{x}>={y}", True),
+    "LESS_THAN": lambda x, y: (f"{x}<{y}", True),
+    "DATE_FROM": lambda x, y: (f"{x}>={round(date_utils.date_to_localized_datetime(y, datetime.time.min).timestamp())}", True),  # type: ignore [union-attr]
+    "DATE_TO": lambda x, y: (f"{x}<={round(date_utils.date_to_localized_datetime(y, datetime.time.max).timestamp())}", True),  # type: ignore [union-attr]
+    "DATE_EQUALS": lambda x, y: (
+        [ALGOLIA_OPERATOR_DICT["DATE_FROM"](x, y)[0], ALGOLIA_OPERATOR_DICT["DATE_TO"](x, y)[0]],
+        True,
+        True,
+    ),
 }
 
 
@@ -413,8 +417,11 @@ def log_backoffice_tracking_data(
 def generate_algolia_search_string(
     search_parameters: typing.Iterable[dict[str, typing.Any]],
     fields_definition: dict[str, dict[str, typing.Any]],
-) -> tuple[str, set[str]]:
-    filters: list[str] = []
+) -> tuple[dict, set[str]]:
+    filter_dict: dict[str, list[list[str] | str]] = {
+        "facetFilters": [],
+        "numericFilters": [],
+    }
     warnings: set[str] = set()
     for search_data in search_parameters:
         operator = search_data.get("operator", "")
@@ -429,6 +436,17 @@ def generate_algolia_search_string(
             warnings.add(f"La règle de recherche '{search_field}' n'est pas supportée, merci de prévenir les devs")
             continue
         field_value = meta_field.get("algolia_special", lambda x: x)(search_data.get(meta_field["field"]))
-        filters.append(ALGOLIA_OPERATOR_DICT[operator](meta_field["facet"], field_value))
 
-    return " AND ".join(filters), warnings
+        result, *options = ALGOLIA_OPERATOR_DICT[operator](meta_field["facet"], field_value)
+        is_number = options[0] if len(options) else False
+        is_and_operator = options[1] if len(options) >= 2 else False
+
+        if not is_and_operator:
+            result = [result]
+
+        if is_number:
+            filter_dict["numericFilters"].extend(result)
+        else:
+            filter_dict["facetFilters"].extend(result)
+
+    return filter_dict, warnings

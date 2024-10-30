@@ -104,5 +104,5 @@ class SearchBackend:
     def clean_processing_queues(self) -> None:
         raise NotImplementedError()
 
-    def search_offer_ids(self, query: str = "", filters: str = "", count: int = 20) -> list[int]:
+    def search_offer_ids(self, query: str = "", count: int = 20, **params: typing.Any) -> list[int]:
         raise NotImplementedError()

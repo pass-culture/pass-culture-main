@@ -766,9 +766,8 @@ class AlgoliaBackend(base.SearchBackend):
                     extra={"queue": originating_queue, "processing_queue": processing_queue},
                 )
 
-    def search_offer_ids(self, query: str = "", filters: str = "", count: int = 20) -> list[int]:
+    def search_offer_ids(self, query: str = "", count: int = 20, **params: typing.Any) -> list[int]:
         ids: list[int] = []
-        params: dict[str, str | int] = {"filters": filters}
         for page, _count in enumerate(range(0, count, MAX_SEARCH_QUERY_COUNT)):
             # handle algolia pagination of results
             hits_per_page = min(count, count - _count, MAX_SEARCH_QUERY_COUNT)
@@ -782,7 +781,7 @@ class AlgoliaBackend(base.SearchBackend):
                     exp,
                     extra={
                         "query": query,
-                        "filters": filters,
+                        "params": params,
                     },
                 )
                 raise SearchError("Failed to search in algolia")
