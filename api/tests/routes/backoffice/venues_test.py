@@ -1232,6 +1232,9 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.offererAddress.address.city == other_venue.offererAddress.address.city
         assert venue.offererAddress.address.banId is None
 
+        update_snapshot = venue.action_history[0].extraData["modified_info"]
+        assert not update_snapshot.get("offererAddress.address.banId")
+
     @patch(
         "pcapi.connectors.api_adresse.get_municipality_centroid",
         return_value=api_adresse.AddressInfo(
@@ -1246,7 +1249,7 @@ class UpdateVenueTest(PostEndpointHelper):
             street="unused",
         ),
     )
-    def test_update_venue_manual_address_reuses_existing_manual_edited_address(
+    def test_update_venue_manual_address_reuses_existing_manual_edited_address_even_with_sending_old_ban_id(
         self, mock_get_municipality_centroid, authenticated_client
     ):
         venue = offerers_factories.VenueFactory()
@@ -1269,6 +1272,67 @@ class UpdateVenueTest(PostEndpointHelper):
             "city": other_venue.city,
             "postal_code": other_venue.postalCode,
             "street": other_venue.street,
+            "banId": venue.banId,
+            "is_manual_address": "on",
+            "booking_email": venue.bookingEmail,
+            "phone_number": venue.contact.phone_number,
+            "is_permanent": venue.isPermanent,
+            "latitude": other_venue.latitude,
+            "longitude": other_venue.longitude,
+            "venue_type_code": venue.venueTypeCode.name,
+            "acceslibre_url": "",
+        }
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+        assert response.status_code == 303
+
+        db.session.refresh(venue)
+
+        assert venue.banId == other_venue.banId
+        assert venue.timezone == "Indian/Reunion"
+
+        assert venue.offererAddressId == offerer_address_id  # unchanged
+        assert venue.offererAddress.addressId == other_venue.offererAddress.addressId
+        assert venue.offererAddress.address.isManualEdition is True
+
+    @patch(
+        "pcapi.connectors.api_adresse.get_municipality_centroid",
+        return_value=api_adresse.AddressInfo(
+            id="unused",
+            label="unused",
+            postcode="unused",
+            citycode="97411",
+            latitude=1,
+            longitude=1,
+            score=1,
+            city="Saint-Denis",
+            street="unused",
+        ),
+    )
+    def test_update_venue_manual_address_reuses_existing_manual_edited_address_without_ban_id_case(
+        self, mock_get_municipality_centroid, authenticated_client
+    ):
+        venue = offerers_factories.VenueFactory()
+        offerer_address_id = venue.offererAddressId
+        other_venue = offerers_factories.VenueFactory(
+            street="1 Rue Poivre",
+            postalCode="97400",
+            city="97411",
+            latitude=-20.88756,
+            longitude=55.451442,
+            banId=None,
+            offererAddress__address__isManualEdition=True,
+            offererAddress__address__inseeCode="97411",
+        )
+
+        data = {
+            "name": venue.name,
+            "public_name": venue.publicName,
+            "siret": venue.siret,
+            "city": other_venue.city,
+            "postal_code": other_venue.postalCode,
+            "street": other_venue.street,
+            "banId": "",
             "is_manual_address": "on",
             "booking_email": venue.bookingEmail,
             "phone_number": venue.contact.phone_number,

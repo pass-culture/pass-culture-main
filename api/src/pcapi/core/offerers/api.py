@@ -275,9 +275,13 @@ def update_venue_location(
         "latitude": address.latitude,
         "longitude": address.longitude,
         "street": address.street,
-        "banId": address.banId,
         "inseeCode": address.inseeCode,
     }
+    # Trace banId modification only if edition is not manual
+    # In case of manual edition, banId is emptied with any action user
+    # and we don’t that action to appears as user’s action
+    if not is_manual_edition:
+        snapshot_location_data["banId"] = address.banId
 
     if not venue.offererAddressId:
         offerer_address = get_or_create_offerer_address(venue.managingOffererId, address.id)
