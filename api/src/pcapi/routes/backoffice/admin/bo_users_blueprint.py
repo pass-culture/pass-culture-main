@@ -116,7 +116,9 @@ def render_bo_user_page(user_id: int, edit_form: forms.EditBOUserForm | None = N
         raise NotFound()
 
     kwargs = user_forms.get_toggle_suspension_args(
-        user, required_permission=perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS
+        user,
+        suspension_type=user_forms.SuspensionUserType.ADMIN,
+        required_permission=perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS,
     )
 
     if utils.has_current_user_permission(perm_models.Permissions.READ_ADMIN_ACCOUNTS):

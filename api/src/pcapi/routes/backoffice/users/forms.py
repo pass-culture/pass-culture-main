@@ -16,6 +16,7 @@ from pcapi.routes.backoffice.utils import has_current_user_permission
 class SuspensionUserType(enum.Enum):
     PRO = "pro user"
     PUBLIC = "public user"
+    ADMIN = "admin_user"
 
 
 class SuspendUserForm(FlaskForm):
@@ -26,6 +27,9 @@ class SuspendUserForm(FlaskForm):
         ],
     )
     comment = fields.PCOptCommentField("Commentaire interne optionnel")
+    clear_email = fields.PCSwitchBooleanField(
+        "Supprimer l'adresse email (à utiliser pour les cas de doublons afin de la libérer)", full_row=True
+    )
 
     def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
         super().__init__(*args, **kwargs)
@@ -35,11 +39,13 @@ class SuspendUserForm(FlaskForm):
                 (opt.name, users_constants.PRO_SUSPENSION_REASON_CHOICES[opt])
                 for opt in set(users_constants.PRO_SUSPENSION_REASON_CHOICES)
             ]
-        if suspension_type == SuspensionUserType.PUBLIC:
+        if suspension_type in (SuspensionUserType.PUBLIC, SuspensionUserType.ADMIN):
             self.reason.choices = [
                 (opt.name, users_constants.PUBLIC_SUSPENSION_REASON_CHOICES[opt])
                 for opt in set(users_constants.PUBLIC_SUSPENSION_REASON_CHOICES)
             ]
+        if suspension_type in (SuspensionUserType.PRO, SuspensionUserType.ADMIN):
+            del self.clear_email
 
 
 class UnsuspendUserForm(FlaskForm):

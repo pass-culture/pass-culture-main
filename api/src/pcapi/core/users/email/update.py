@@ -347,6 +347,18 @@ def full_email_update_by_admin(user: models.User, email: str, commit: bool = Fal
         db.session.commit()
 
 
+def clear_email_by_admin(user: models.User) -> None:
+    email = f"{user.id}@email.supprime"
+
+    admin_update_event = models.UserEmailHistory.build_admin_update(user=user, new_email=email)
+    db.session.add(admin_update_event)
+
+    user.email = email
+    db.session.add(user)
+
+    db.session.flush()
+
+
 def get_active_token_expiration(user: models.User) -> datetime | None:
     """
     Returns the expiration date of the active token
