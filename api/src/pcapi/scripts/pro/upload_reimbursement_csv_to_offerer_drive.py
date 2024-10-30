@@ -4,6 +4,8 @@ import logging
 import pathlib
 import tempfile
 
+from sqlalchemy.orm.exc import NoResultFound
+
 from pcapi import settings
 from pcapi.connectors import googledrive
 from pcapi.core import mails
@@ -87,10 +89,10 @@ def _create_and_get_csv_file(user_id: int, batch_id: int, parent_folder_id: str,
 
 def export_csv_and_send_notfication_emails(batch_id: int) -> None:
     for email, infos in OFFERER_INFORMATION.items():
-        user = user_models.User.query.filter_by(email=email).one_or_none()
-        if user is None:
-            logger.error("Email is not linked to any user", extra={"email": email})
-            continue
+        try:
+            user = user_models.User.query.filter_by(email=email).one()
+        except NoResultFound:
+            logger.exception("Email is not linked to any user", extra={"email": email})
         filename = _get_filename(infos["structure_name"])
         link_to_csv = _create_and_get_csv_file(user.id, batch_id, infos["parent_folder_id"], filename)
         if link_to_csv is not None:
