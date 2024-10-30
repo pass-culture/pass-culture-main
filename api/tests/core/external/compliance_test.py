@@ -28,8 +28,6 @@ class GetDataComplianceScoringTest:
         offer = offers_factories.OfferFactory(name="Hello la data")
         payload = compliance._get_payload_for_compliance_api(offer)
         compliance.make_update_offer_compliance_score(payload)
-        assert offer.extraData["complianceScore"] == 50
-        assert offer.extraData["complianceReasons"] == ["stock_price", "offer_description"]
         offer_compliance = offers_models.OfferCompliance.query.filter_by(offerId=offer.id).one()
         assert offer_compliance.compliance_score == 50
         assert offer_compliance.compliance_reasons == ["stock_price", "offer_description"]
@@ -43,15 +41,12 @@ class GetDataComplianceScoringTest:
         )
         offer = offers_factories.OfferFactory(
             name="Hello la data",
-            extraData={"complianceScore": 30, "complianceReasons": ["stock_price", "offer_description"]},
         )
         offers_factories.OfferComplianceFactory(
             offer=offer, compliance_score=30, compliance_reasons=["stock_price", "offer_description"]
         )
         payload = compliance._get_payload_for_compliance_api(offer)
         compliance.make_update_offer_compliance_score(payload)
-        assert offer.extraData["complianceScore"] == 50
-        assert offer.extraData["complianceReasons"] == ["offer_name"]
         offer_compliance = offers_models.OfferCompliance.query.filter_by(offerId=offer.id).one()
         assert offer_compliance.compliance_score == 50
         assert offer_compliance.compliance_reasons == ["offer_name"]
@@ -66,8 +61,6 @@ class GetDataComplianceScoringTest:
         offer = offers_factories.OfferFactory(name="Hello la data")
         payload = compliance._get_payload_for_compliance_api(offer)
         compliance.make_update_offer_compliance_score(payload)
-        assert offer.extraData["complianceScore"] == 50
-        assert offer.extraData["complianceReasons"] == []
         offer_compliance = offers_models.OfferCompliance.query.filter_by(offerId=offer.id).one()
         assert offer_compliance.compliance_score == 50
         assert offer_compliance.compliance_reasons == []
@@ -76,7 +69,7 @@ class GetDataComplianceScoringTest:
     @mock.patch("pcapi.core.auth.api.get_id_token_from_google", return_value="Good token")
     def test_get_data_compliance_scoring_with_failed_auth_exception(self, mock_requests_post, requests_mock, caplog):
         requests_mock.post("https://compliance.passculture.team/latest/model/compliance/scoring", status_code=401)
-        offer = offers_factories.OfferFactory(name="Hello la data", extraData={})
+        offer = offers_factories.OfferFactory(name="Hello la data")
         payload = compliance._get_payload_for_compliance_api(offer)
 
         with caplog.at_level(logging.ERROR):
@@ -92,7 +85,7 @@ class GetDataComplianceScoringTest:
     @mock.patch("pcapi.core.auth.api.get_id_token_from_google", return_value="Good token")
     def test_get_data_compliance_scoring_with_bad_data_exception(self, mock_requests_post, requests_mock, caplog):
         requests_mock.post("https://compliance.passculture.team/latest/model/compliance/scoring", status_code=422)
-        offer = offers_factories.OfferFactory(name="Hello la data", extraData={})
+        offer = offers_factories.OfferFactory(name="Hello la data")
         payload = compliance._get_payload_for_compliance_api(offer)
 
         with caplog.at_level(logging.ERROR):
@@ -108,7 +101,7 @@ class GetDataComplianceScoringTest:
     @mock.patch("pcapi.core.auth.api.get_id_token_from_google", return_value="Good token")
     def test_get_data_compliance_scoring_with_unknown_exception(self, mock_requests_post, requests_mock, caplog):
         requests_mock.post("https://compliance.passculture.team/latest/model/compliance/scoring", status_code=500)
-        offer = offers_factories.OfferFactory(name="Hello la data", extraData={})
+        offer = offers_factories.OfferFactory(name="Hello la data")
         payload = compliance._get_payload_for_compliance_api(offer)
 
         with caplog.at_level(logging.ERROR):
@@ -118,8 +111,6 @@ class GetDataComplianceScoringTest:
         assert exc.value.is_retryable is True
         assert caplog.records[0].message == "Response from Compliance API is not ok"
         assert caplog.records[0].extra == {"status_code": 500}
-        assert "complianceScore" not in offer.extraData
-        assert "complianceReasons" not in offer.extraData
         assert not offers_models.OfferCompliance.query.filter_by(offerId=offer.id).count()
 
 
