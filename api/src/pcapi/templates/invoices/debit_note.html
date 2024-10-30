@@ -192,7 +192,7 @@
     </clipPath>
   </defs>
 </svg>
-<h1>Note de débit</h1>
+<h1>Note de débit</h1>{% set currency_symbol = "CFP" if is_caledonian_invoice else "€" %}
 <div class="customerInfo">
     <p><b>Structure :</b> {{ bank_account.offerer.name }} - {{ bank_account.offerer.identifier }}</p>
     <p><b>Compte bancaire :</b> {{ bank_account_label }} - {{ bank_account_iban }}</p>
@@ -223,28 +223,28 @@
       <tr>
         <td class="headRow">{{ line.label }}</td>
         <td>{{ line.rate|fr_percentage }}</td>
-        <td>{{ line.bookings_amount|fr_currency }} €</td>
+        <td>{{ line.bookings_amount|fr_currency(is_caledonian_invoice) }} {{ currency_symbol }}</td>
         <td>{{ line.contribution_rate|fr_percentage }}</td>
-        <td>{{ line.contributionAmount|fr_currency }} €</td>
-        <td>{{ line.reimbursedAmount|fr_currency_opposite }} €</td>
+        <td>{{ line.contributionAmount|fr_currency(is_caledonian_invoice) }} {{ currency_symbol }}</td>
+        <td>{{ line.reimbursedAmount|fr_currency_opposite(is_caledonian_invoice) }} {{ currency_symbol }}</td>
       </tr>
     {% endfor %}
     <tr style="color: dimgrey">
       <td class="headRow">SOUS-TOTAL</td>
       <td></td>
-      <td>{{ group.used_bookings_subtotal|fr_currency }} €</td>
+      <td>{{ group.used_bookings_subtotal|fr_currency(is_caledonian_invoice) }} {{ currency_symbol }}</td>
       <td></td>
-      <td>{{ group.contribution_subtotal|fr_currency }} €</td>
-      <td>{{ group.reimbursed_amount_subtotal|fr_currency_opposite }} €</td>
+      <td>{{ group.contribution_subtotal|fr_currency(is_caledonian_invoice) }} {{ currency_symbol }}</td>
+      <td>{{ group.reimbursed_amount_subtotal|fr_currency_opposite(is_caledonian_invoice) }} {{ currency_symbol }}</td>
     </tr>
   {% endfor %}
   <tr class="bottomTableText">
     <td class="headRow">TOTAL</td>
     <td></td>
-    <td>{{ total_used_bookings_amount|fr_currency }} €</td>
+    <td>{{ total_used_bookings_amount|fr_currency(is_caledonian_invoice) }} {{ currency_symbol }}</td>
     <td></td>
-    <td>{{ total_contribution_amount|fr_currency }} €</td>
-    <td>{{ total_reimbursed_amount|fr_currency_opposite }} €</td>
+    <td>{{ total_contribution_amount|fr_currency(is_caledonian_invoice) }} {{ currency_symbol }}</td>
+    <td>{{ total_reimbursed_amount|fr_currency_opposite(is_caledonian_invoice) }} {{ currency_symbol }}</td>
   </tr>
   </tbody>
 </table>

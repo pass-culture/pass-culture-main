@@ -1814,6 +1814,8 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
         return (
             query.join(models.Pricing.lines)
             .join(bookings_models.Booking.deposit)
+            .join(models.Invoice.bankAccount)
+            .join(models.BankAccount.offerer)
             .filter(
                 models.Cashflow.batchId == batch.id,
                 models.Invoice.bankAccountId.in_(bank_accounts),
@@ -1824,6 +1826,7 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
                 models.Invoice.reference,
                 models.Invoice.bankAccountId,
                 models.PricingLine.category,
+                offerers_models.Offerer.is_caledonian,
                 models.Deposit.type,
             )
             .with_entities(
@@ -1833,6 +1836,7 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
                 models.Invoice.bankAccountId.label("bank_account_id"),
                 models.PricingLine.category.label("pricing_line_category"),
                 models.Deposit.type.label("deposit_type"),
+                sa.case((offerers_models.Offerer.is_caledonian == True, "NC"), else_=None).label("ministry"),
                 sqla_func.sum(models.PricingLine.amount).label("pricing_line_amount"),
             )
         )
@@ -1915,6 +1919,7 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
                 sa.column("bank_account_id"),
                 sa.column("pricing_line_category"),
                 sa.column("deposit_type"),
+                sa.column("ministry"),
             )
             .with_entities(
                 sa.column("invoice_date"),
@@ -1922,6 +1927,7 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
                 sa.column("bank_account_id"),
                 sa.column("pricing_line_category"),
                 sa.column("deposit_type"),
+                sa.column("ministry"),
                 sqla_func.sum(sa.column("pricing_line_amount")).label("pricing_line_amount"),
             )
             .all()
@@ -1986,7 +1992,7 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
 
 
 def _invoice_row_formatter(sql_row: typing.Any) -> tuple:
-    if hasattr(sql_row, "ministry"):
+    if sql_row.ministry and sql_row.ministry != "NC":
         booking_type = "EACC"
     elif sql_row.deposit_type == models.DepositType.GRANT_15_17.value:
         booking_type = "EACI"
@@ -2233,6 +2239,7 @@ def _prepare_invoice_context(invoice: models.Invoice, batch: models.CashflowBatc
     # Easier to sort here and not in PostgreSQL, and not much slower
     # because there are very few cashflows (and usually only 1).
     cashflows = sorted(filter(lambda c: c.amount != 0, invoice.cashflows), key=lambda c: (c.creationDate, c.id))
+    is_caledonian_invoice = invoice.bankAccount.offerer.is_caledonian
 
     invoice_lines = sorted(invoice.lines, key=lambda k: (k.group["position"], -k.rate))
     total_used_bookings_amount = 0
@@ -2276,6 +2283,7 @@ def _prepare_invoice_context(invoice: models.Invoice, batch: models.CashflowBatc
 
     return dict(
         invoice=invoice,
+        is_caledonian_invoice=is_caledonian_invoice,
         cashflows=cashflows,
         groups=groups,
         bank_account=bank_account,

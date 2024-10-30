@@ -191,7 +191,7 @@
         </clipPath>
     </defs>
 </svg>
-<h1>Justificatif de remboursement</h1>
+<h1>Justificatif de remboursement</h1>{% set currency_symbol = "CFP" if is_caledonian_invoice else "€" %}
 <div class="customerInfo">
     <p><b>Structure :</b> {{ bank_account.offerer.name }} - {{ bank_account.offerer.identifier }}</p>
     <p><b>Compte bancaire :</b> {{ bank_account_label }} - {{ bank_account_iban }}</p>
@@ -223,28 +223,28 @@
     <tr>
         <td class="headRow">{{ line.label }}</td>
         <td>{{ line.rate|fr_percentage }}</td>
-        <td>{{ line.bookings_amount|fr_currency }} €</td>
+        <td>{{ line.bookings_amount|fr_currency(is_caledonian_invoice) }} {{ currency_symbol }}</td>
         <td>{{ line.contribution_rate|fr_percentage }}</td>
-        <td>{{ line.contributionAmount|fr_currency }} €</td>
-        <td>{{ line.reimbursedAmount|fr_currency_opposite }} €</td>
+        <td>{{ line.contributionAmount|fr_currency(is_caledonian_invoice) }} {{ currency_symbol }}</td>
+        <td>{{ line.reimbursedAmount|fr_currency_opposite(is_caledonian_invoice) }} {{ currency_symbol }}</td>
     </tr>
 {% endfor %}
     <tr style="color: dimgrey">
         <td class="headRow">SOUS-TOTAL</td>
         <td></td>
-        <td>{{ group.used_bookings_subtotal|fr_currency }} €</td>
+        <td>{{ group.used_bookings_subtotal|fr_currency(is_caledonian_invoice) }} {{ currency_symbol }}</td>
         <td></td>
-        <td>{{ group.contribution_subtotal|fr_currency }} €</td>
-        <td>{{ group.reimbursed_amount_subtotal|fr_currency_opposite }} €</td>
+        <td>{{ group.contribution_subtotal|fr_currency(is_caledonian_invoice) }} {{ currency_symbol }}</td>
+        <td>{{ group.reimbursed_amount_subtotal|fr_currency_opposite(is_caledonian_invoice) }} {{ currency_symbol }}</td>
     </tr>
 {% endfor %}
     <tr class="bottomTableText">
         <td class="headRow">TOTAL</td>
         <td></td>
-        <td>{{ total_used_bookings_amount|fr_currency }} €</td>
+        <td>{{ total_used_bookings_amount|fr_currency(is_caledonian_invoice) }} {{ currency_symbol }}</td>
         <td></td>
-        <td>{{ total_contribution_amount|fr_currency }} €</td>
-        <td>{{ total_reimbursed_amount|fr_currency_opposite }} €</td>
+        <td>{{ total_contribution_amount|fr_currency(is_caledonian_invoice) }} {{ currency_symbol }}</td>
+        <td>{{ total_reimbursed_amount|fr_currency_opposite(is_caledonian_invoice) }} {{ currency_symbol }}</td>
     </tr>
     </tbody>
 </table>
@@ -274,18 +274,18 @@
         <td>Virement {{ cashflow.bankAccount.iban }}</td>
         <td class="cashflow_batch_label">{{ cashflow.batch.label }}</td>
         <td class="cashflow_creation_date">{{ invoice.date.strftime("%d/%m/%Y") }}</td>
-        <td>{{ cashflow.amount|fr_currency_opposite }} €</td>
+        <td>{{ cashflow.amount|fr_currency_opposite(is_caledonian_invoice) }} {{ currency_symbol }}</td>
         <td>{{ bank_account_label }}</td>
     </tr>
 {% endfor %}
     <tr class="coloredSection bottomTableText">
         <td class="headRow" colspan="3">TOTAL RÈGLEMENT PASS CULTURE</td>
-        <td>{{ invoice.amount|fr_currency_opposite }} €</td>
+        <td>{{ invoice.amount|fr_currency_opposite(is_caledonian_invoice) }} {{ currency_symbol }}</td>
     </tr>
     </tbody>
 </table>
 {% endif %}
-<h3>Montant des remboursements par lieu et détail de la part individuelle et collective</h3>
+<h3>Montant des remboursements par lieu{{ ' et détail de la part individuelle et collective' if not is_caledonian_invoice else '' }}</h3>
 <table class="reimbursmentByVenueTable">
     <thead>
         <tr>
@@ -295,21 +295,25 @@
             <th>Incidents (TTC)</th>
             <th>Contribution offreur incidents (TTC)</th>
             <th class="coloredSection">Montant remboursé (TTC)</th>
+{%- if not is_caledonian_invoice %}
             <th class="minimizedCell">Dont offres individuelles (TTC)</th>
             <th class="minimizedCell">Dont offres collectives (TTC)</th>
+{%- endif %}
         </tr>
     </thead>
     <tbody>
 {% for venue in reimbursements_by_venue %}
         <tr>
             <td>{{ venue.venue_name }}</td>
-            <td>{{ venue.validated_booking_amount|fr_currency_opposite }} €</td>
-            <td>{{ (venue.validated_booking_amount - venue.reimbursed_amount)|fr_currency_opposite }} €</td>
-            <td>{{ (venue.finance_incident_amount + venue.finance_incident_contribution)|fr_currency }} €</td>
-            <td>{{ venue.finance_incident_contribution|fr_currency }} €</td>
-            <td class="coloredSection">{{ (venue.reimbursed_amount + venue.finance_incident_amount)|fr_currency_opposite }} €</td>
-            <td>{{ (venue.individual_amount + venue.individual_incident_amount)|fr_currency_opposite }} €</td>
-            <td>{{ (venue.reimbursed_amount - venue.individual_amount + (venue.finance_incident_amount - venue.individual_incident_amount))|fr_currency_opposite }} €</td>
+            <td>{{ venue.validated_booking_amount|fr_currency_opposite(is_caledonian_invoice) }} {{ currency_symbol }}</td>
+            <td>{{ (venue.validated_booking_amount - venue.reimbursed_amount)|fr_currency_opposite(is_caledonian_invoice) }} {{ currency_symbol }}</td>
+            <td>{{ (venue.finance_incident_amount + venue.finance_incident_contribution)|fr_currency(is_caledonian_invoice) }} {{ currency_symbol }}</td>
+            <td>{{ venue.finance_incident_contribution|fr_currency(is_caledonian_invoice) }} {{ currency_symbol }}</td>
+            <td class="coloredSection">{{ (venue.reimbursed_amount + venue.finance_incident_amount)|fr_currency_opposite(is_caledonian_invoice) }} {{ currency_symbol }}</td>
+{%- if not is_caledonian_invoice %}
+            <td>{{ (venue.individual_amount + venue.individual_incident_amount)|fr_currency_opposite(is_caledonian_invoice) }} {{ currency_symbol }}</td>
+            <td>{{ (venue.reimbursed_amount - venue.individual_amount + (venue.finance_incident_amount - venue.individual_incident_amount))|fr_currency_opposite(is_caledonian_invoice) }} {{ currency_symbol }}</td>
+{%- endif %}
         </tr>
 {% endfor %}
     </tbody>

@@ -20,9 +20,9 @@ def to_eurocents(amount_in_euros: decimal.Decimal | float) -> int:
     return int(100 * decimal.Decimal(f"{amount_in_euros}").quantize(exponent, ROUNDING))
 
 
-def to_euros(amount_in_eurocents: int) -> decimal.Decimal:
+def to_euros(amount_in_cents: int) -> decimal.Decimal:
     exponent = decimal.Decimal("0.01")
-    return decimal.Decimal(amount_in_eurocents / 100).quantize(exponent)
+    return decimal.Decimal(amount_in_cents / 100).quantize(exponent)
 
 
 def euros_to_xpf(amount_in_euros: decimal.Decimal | float) -> int:
@@ -45,15 +45,19 @@ def fr_percentage_filter(decimal_rate: decimal.Decimal) -> str:
     return numbers.format_percent(decimal_rate, locale="fr_FR", decimal_quantization=False)
 
 
-def fr_currency_filter(eurocents: int) -> str:
+def fr_currency_filter(cents: int, use_xpf: bool = False) -> str:
     """Returns a localized str without currency symbol"""
-    amount_in_euros = to_euros(eurocents)
-    return numbers.format_decimal(amount_in_euros, format="#,##0.00", locale="fr_FR")
+    if use_xpf:
+        # to_euros changes cents to main currency unit (euro or xpf)
+        amount = to_euros(euros_to_xpf(cents))
+    else:
+        amount = to_euros(cents)
+    return numbers.format_decimal(amount, format="#,##0.00", locale="fr_FR")
 
 
-def fr_currency_opposite_filter(eurocents: int) -> str:
+def fr_currency_opposite_filter(cents: int, use_xpf: bool = False) -> str:
     """Returns a localized str without currency symbol"""
-    return fr_currency_filter(-eurocents)
+    return fr_currency_filter(-cents, use_xpf)
 
 
 def install_template_filters(app: Flask) -> None:
