@@ -909,10 +909,16 @@ def get_expired_offers(interval: list[datetime.datetime]) -> BaseQuery:
 def find_today_event_stock_ids_metropolitan_france(
     today_min: datetime.datetime, today_max: datetime.datetime
 ) -> set[int]:
-    not_overseas_france = sa.and_(
-        sa.not_(offerers_models.Venue.departementCode.startswith("97")),
-        sa.not_(offerers_models.Venue.departementCode.startswith("98")),
-    )
+    if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
+        not_overseas_france = sa.and_(
+            sa.not_(geography_models.Address.departmentCode.startswith("97")),
+            sa.not_(geography_models.Address.departmentCode.startswith("98")),
+        )
+    else:
+        not_overseas_france = sa.and_(
+            sa.not_(offerers_models.Venue.departementCode.startswith("97")),
+            sa.not_(offerers_models.Venue.departementCode.startswith("98")),
+        )
 
     return _find_today_event_stock_ids_filter_by_departments(today_min, today_max, not_overseas_france)
 
@@ -922,8 +928,15 @@ def find_today_event_stock_ids_from_departments(
     today_max: datetime.datetime,
     postal_codes_prefixes: typing.Any,
 ) -> set[int]:
-    departments = sa.and_(*[offerers_models.Venue.departementCode.startswith(code) for code in postal_codes_prefixes])
-    return _find_today_event_stock_ids_filter_by_departments(today_min, today_max, departments)
+    if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
+        departments_query = sa.or_(
+            *[geography_models.Address.departmentCode.startswith(code) for code in postal_codes_prefixes]
+        )
+    else:
+        departments_query = sa.or_(
+            *[offerers_models.Venue.departementCode.startswith(code) for code in postal_codes_prefixes]
+        )
+    return _find_today_event_stock_ids_filter_by_departments(today_min, today_max, departments_query)
 
 
 def _find_today_event_stock_ids_filter_by_departments(
@@ -938,7 +951,16 @@ def _find_today_event_stock_ids_filter_by_departments(
         * matches the `departments_filter`.
     """
     base_query = find_event_stocks_day(today_min, today_max)
-    query = base_query.join(offerers_models.Venue).filter(departments_filter).with_entities(models.Stock.id)
+    if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
+        query = (
+            base_query.join(offers_model.Offer)
+            .join(offerers_models.OffererAddress)
+            .join(geography_models.Address)
+            .filter(departments_filter)
+            .with_entities(models.Stock.id)
+        )
+    else:
+        query = base_query.join(offerers_models.Venue).filter(departments_filter).with_entities(models.Stock.id)
 
     return {stock.id for stock in query}
 
