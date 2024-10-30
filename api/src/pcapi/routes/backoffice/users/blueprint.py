@@ -19,6 +19,8 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
+from pcapi.core.users.email import update as email_update
+from pcapi.repository import atomic
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.users import forms
 from pcapi.utils.requests import ExternalAPIException
@@ -64,6 +66,7 @@ def _check_user_role_vs_backoffice_permission(user: users_models.User, unsuspend
 
 
 @users_blueprint.route("/<int:user_id>/suspend", methods=["POST"])
+@atomic()
 @utils.permission_required_in(
     [
         perm_models.Permissions.SUSPEND_USER,
@@ -89,9 +92,12 @@ def suspend_user(user_id: int) -> utils.BackofficeResponse:
             comment=form.comment.data,
             is_backoffice_action=True,
         )
+        email = user.email
+        if getattr(form, "clear_email") and form.clear_email.data:
+            email_update.clear_email_by_admin(user)
         flash(
             Markup("Le compte de l'utilisateur <b>{email}</b> ({user_id}) a été suspendu").format(
-                email=user.email, user_id=user.id
+                email=email, user_id=user.id
             ),
             "success",
         )

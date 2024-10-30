@@ -77,6 +77,7 @@ class SuspendUserTest(PostEndpointHelper):
             form={
                 "reason": users_constants.SuspensionReason.FRAUD_RESELL_PRODUCT.name,
                 "comment": "Le jeune a mis en ligne des annonces de vente le lendemain",
+                "clear_email": "",
             },
         )
 
@@ -86,6 +87,7 @@ class SuspendUserTest(PostEndpointHelper):
         )
 
         assert not user.isActive
+        assert not "email.supprime" in user.email
         assert len(user.action_history) == 1
         assert user.action_history[0].actionType == history_models.ActionType.USER_SUSPENDED
         assert user.action_history[0].authorUser == beneficiary_fraud_admin
@@ -123,6 +125,7 @@ class SuspendUserTest(PostEndpointHelper):
             form={
                 "reason": reason.name,
                 "comment": "Le jeune a mis en ligne des annonces de vente le lendemain",
+                "clear_email": "",
             },
         )
         db.session.refresh(confirmed_booking)
@@ -144,6 +147,26 @@ class SuspendUserTest(PostEndpointHelper):
             assert event_booking.status == bookings_models.BookingStatus.CANCELLED
         else:
             assert event_booking.status == bookings_models.BookingStatus.CONFIRMED
+
+    def test_suspend_public_user_and_clear_email(self, client, beneficiary_fraud_admin):
+        user = users_factories.UserFactory()
+
+        response = self.post_to_endpoint(
+            client.with_bo_session_auth(beneficiary_fraud_admin),
+            user_id=user.id,
+            form={
+                "reason": users_constants.SuspensionReason.UPON_USER_REQUEST.name,
+                "comment": "Doublon",
+                "clear_email": "on",
+            },
+        )
+
+        assert response.status_code == 303
+
+        assert not user.isActive
+        assert user.email == f"{user.id}@email.supprime"
+        assert len(user.action_history) == 1
+        assert len(user.email_history) == 1
 
     def test_suspend_pro_user(self, client, pro_fraud_admin):
         user = offerers_factories.UserOffererFactory().user
@@ -179,6 +202,7 @@ class SuspendUserTest(PostEndpointHelper):
             form={
                 "reason": users_constants.SuspensionReason.FRAUD_HACK.name,
                 "comment": "",  # optional, keep empty
+                "clear_email": "",
             },
         )
 
@@ -194,6 +218,7 @@ class SuspendUserTest(PostEndpointHelper):
             form={
                 "reason": users_constants.SuspensionReason.FRAUD_HACK.name,
                 "comment": "",  # optional, keep empty
+                "clear_email": "",
             },
         )
 
@@ -209,6 +234,7 @@ class SuspendUserTest(PostEndpointHelper):
             form={
                 "reason": users_constants.SuspensionReason.FRAUD_HACK.name,
                 "comment": "",  # optional, keep empty
+                "clear_email": "",
             },
         )
 
@@ -231,7 +257,15 @@ class SuspendUserTest(PostEndpointHelper):
     def test_suspend_without_reason(self, authenticated_client, legit_user):
         user = users_factories.UnderageBeneficiaryFactory()
 
-        response = self.post_to_endpoint(authenticated_client, user_id=user.id, form={"reason": "", "comment": ""})
+        response = self.post_to_endpoint(
+            authenticated_client,
+            user_id=user.id,
+            form={
+                "reason": "",
+                "comment": "",
+                "clear_email": "",
+            },
+        )
 
         assert response.status_code == 303
         assert response.location == url_for(
