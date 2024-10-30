@@ -404,5 +404,5 @@ class OfferComplianceFactory(BaseFactory):
         model = models.OfferCompliance
 
     offer = factory.SubFactory(OfferFactory)
-    complianceScore = 12
-    complianceReasons = ["stock_price", "offer_description"]
+    compliance_score = 12
+    compliance_reasons = ["stock_price", "offer_description"]

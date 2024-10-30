@@ -45,7 +45,7 @@ class GetDataComplianceScoringTest:
             name="Hello la data",
             extraData={"complianceScore": 30, "complianceReasons": ["stock_price", "offer_description"]},
         )
-        offers_models.OfferCompliance(
+        offers_factories.OfferComplianceFactory(
             offer=offer, compliance_score=30, compliance_reasons=["stock_price", "offer_description"]
         )
         payload = compliance._get_payload_for_compliance_api(offer)
@@ -86,8 +86,6 @@ class GetDataComplianceScoringTest:
         assert exc.value.is_retryable is False
         assert caplog.records[0].message == "Connection to Compliance API was refused"
         assert caplog.records[0].extra == {"status_code": 401}
-        assert "complianceScore" not in offer.extraData
-        assert "complianceReasons" not in offer.extraData
         assert not offers_models.OfferCompliance.query.filter_by(offerId=offer.id).count()
 
     @mock.patch("pcapi.core.external.compliance.compliance_backend", ComplianceBackend())
@@ -104,8 +102,6 @@ class GetDataComplianceScoringTest:
         assert exc.value.is_retryable is False
         assert caplog.records[0].message == "Data sent to Compliance API is faulty"
         assert caplog.records[0].extra == {"status_code": 422}
-        assert "complianceScore" not in offer.extraData
-        assert "complianceReasons" not in offer.extraData
         assert not offers_models.OfferCompliance.query.filter_by(offerId=offer.id).count()
 
     @mock.patch("pcapi.core.external.compliance.compliance_backend", ComplianceBackend())

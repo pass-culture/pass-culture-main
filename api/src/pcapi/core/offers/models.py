@@ -536,7 +536,9 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     )
     bookingContact = sa.Column(sa.String(120), nullable=True)
     bookingEmail = sa.Column(sa.String(120), nullable=True)
-    compliance: sa_orm.Mapped["OfferCompliance"] = sa_orm.relationship("OfferCompliance", back_populates="offer")
+    compliance: sa_orm.Mapped["OfferCompliance | None"] = sa_orm.relationship(
+        "OfferCompliance", back_populates="offer", uselist=False
+    )
     criteria: sa_orm.Mapped["Criterion"] = sa.orm.relationship(
         "Criterion", backref=db.backref("criteria", lazy="dynamic"), secondary="offer_criterion"
     )

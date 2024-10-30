@@ -807,13 +807,14 @@ class ListOffersTest(GetEndpointHelper):
     def test_list_offers_with_flagging_rules(self, authenticated_client):
         rule_1 = offers_factories.OfferValidationRuleFactory(name="Règle magique")
         rule_2 = offers_factories.OfferValidationRuleFactory(name="Règle moldue")
-        offers_factories.OfferFactory(
+        offer = offers_factories.OfferFactory(
             validation=offers_models.OfferValidationStatus.PENDING,
             flaggingValidationRules=[rule_1, rule_2],
-            extraData={
-                "complianceScore": 50,
-                "complianceReasons": ["stock_price", "offer_subcategoryid", "offer_description"],
-            },
+        )
+        offers_factories.OfferComplianceFactory(
+            offer=offer,
+            compliance_score=50,
+            compliance_reasons=["stock_price", "offer_subcategoryid", "offer_description"],
         )
 
         query_args = {
@@ -1794,11 +1795,14 @@ class GetOfferDetailsTest(GetEndpointHelper):
             withdrawalDetails="Demander à la caisse",
             extraData={
                 "ean": "1234567891234",
-                "complianceScore": 55,
                 "author": "Author",
                 "editeur": "Editor",
-                "complianceReasons": ["stock_price", "offer_subcategoryid", "offer_description"],
             },
+        )
+        offers_factories.OfferComplianceFactory(
+            offer=offer,
+            compliance_score=55,
+            compliance_reasons=["stock_price", "offer_subcategoryid", "offer_description"],
         )
         url = url_for(self.endpoint, offer_id=offer.id, _external=True)
         with assert_num_queries(self.expected_num_queries):
