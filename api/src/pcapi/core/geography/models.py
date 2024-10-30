@@ -45,18 +45,6 @@ class Address(PcObject, Base, Model):
             postgresql_where=sa.and_(street.is_not(None), inseeCode.is_not(None), isManualEdition.is_not(True)),
         ),
         sa.Index(
-            # if manual edition does not alter autocompleted address, re-use it
-            "ix_complete_unique_address",
-            "banId",
-            "inseeCode",
-            "street",
-            "postalCode",
-            "city",
-            "latitude",
-            "longitude",
-            unique=True,
-        ),
-        sa.Index(
             # FIXME (dramelet, 14-10-2024)
             # Our current version of sqlalchemy (1.4) doesn't handle
             # the option `nulls_not_distinct` from postgresql dialect
