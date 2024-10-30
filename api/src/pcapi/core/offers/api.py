@@ -417,7 +417,8 @@ def update_offer(
 
     withdrawal_fields = {"bookingContact", "withdrawalDelay", "withdrawalDetails", "withdrawalType"}
     withdrawal_updated = updates_set & withdrawal_fields
-    if should_send_mail and withdrawal_updated:
+    oa_updated = "offererAddress" in updates
+    if should_send_mail and (withdrawal_updated or oa_updated):
         transactional_mails.send_email_for_each_ongoing_booking(offer)
 
     reason = search.IndexationReason.OFFER_UPDATE
