@@ -2653,6 +2653,31 @@ def test_generate_invoice_file(clean_temp_files):
         cashflows=[cashflow1],
     )
 
+    nc_venue = offerers_factories.CaledonianVenueFactory(pricing_point="self")
+    nc_offerer = nc_venue.managingOfferer
+    nc_bank_account = factories.CaledonianBankAccountFactory(offerer=nc_offerer)
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=nc_venue, bankAccount=nc_bank_account, timespan=(datetime.datetime.utcnow(),)
+    )
+    nc_pricing = factories.PricingFactory(
+        status=models.PricingStatus.VALIDATED,
+        booking__stock__offer__venue=nc_venue,
+        amount=-1000,
+    )
+    nc_pline_1 = factories.PricingLineFactory(pricing=nc_pricing, amount=-1100)
+    nc_pline_2 = factories.PricingLineFactory(
+        pricing=nc_pricing,
+        amount=100,
+        category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
+    )
+    nc_cashflow = factories.CashflowFactory(
+        bankAccount=nc_bank_account, pricings=[nc_pricing], status=models.CashflowStatus.ACCEPTED, batch=cashflow1.batch
+    )
+    nc_invoice = factories.InvoiceFactory(
+        bankAccount=nc_bank_account,
+        cashflows=[nc_cashflow],
+    )
+
     # The file should contain only cashflows from the selected batch.
     # This second invoice should not appear.
     second_siret = "12345673900"
@@ -2683,7 +2708,7 @@ def test_generate_invoice_file(clean_temp_files):
             reader = csv.DictReader(csv_textfile, quoting=csv.QUOTE_NONNUMERIC)
             rows = list(reader)
 
-    assert len(rows) == 5
+    assert len(rows) == 7
     assert rows[0] == {
         "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
@@ -2705,8 +2730,27 @@ def test_generate_invoice_file(clean_temp_files):
         "Ministère": "",
         "Somme des tickets de facturation": pline12.amount + pline12_identical.amount + pline22.amount,
     }
-    # collective pricing lines
+    # New Caledonia
     assert rows[2] == {
+        "Identifiant des coordonnées bancaires": human_ids.humanize(nc_bank_account.id),
+        "Date du justificatif": datetime.date.today().isoformat(),
+        "Référence du justificatif": nc_invoice.reference,
+        "Type de ticket de facturation": nc_pline_1.category.value,
+        "Type de réservation": "PC",
+        "Ministère": "NC",
+        "Somme des tickets de facturation": nc_pline_1.amount,
+    }
+    assert rows[3] == {
+        "Identifiant des coordonnées bancaires": human_ids.humanize(nc_bank_account.id),
+        "Date du justificatif": datetime.date.today().isoformat(),
+        "Référence du justificatif": nc_invoice.reference,
+        "Type de ticket de facturation": nc_pline_2.category.value,
+        "Type de réservation": "PC",
+        "Ministère": "NC",
+        "Somme des tickets de facturation": nc_pline_2.amount,
+    }
+    # collective pricing lines
+    assert rows[4] == {
         "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
@@ -2715,7 +2759,7 @@ def test_generate_invoice_file(clean_temp_files):
         "Ministère": "AGRICULTURE",
         "Somme des tickets de facturation": pline31.amount,
     }
-    assert rows[3] == {
+    assert rows[5] == {
         "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
@@ -2724,7 +2768,7 @@ def test_generate_invoice_file(clean_temp_files):
         "Ministère": "AGRICULTURE",
         "Somme des tickets de facturation": pline32.amount,
     }
-    assert rows[4] == {
+    assert rows[6] == {
         "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
@@ -2794,6 +2838,51 @@ def invoice_test_data():
     )
     bank_account = factories.BankAccountFactory(
         offerer=offerer, iban="FR2710010000000000000000064", label="Compte bancaire Coiffeur"
+    )
+    offerers_factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)
+
+    thing_offer1 = offers_factories.ThingOfferFactory(venue=venue)
+    thing_offer2 = offers_factories.ThingOfferFactory(venue=venue)
+    book_offer1 = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
+    book_offer2 = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
+    digital_offer1 = offers_factories.DigitalOfferFactory(venue=venue)
+    digital_offer2 = offers_factories.DigitalOfferFactory(venue=venue)
+    custom_rule_offer1 = offers_factories.ThingOfferFactory(venue=venue)
+    factories.CustomReimbursementRuleFactory(rate=0.94, offer=custom_rule_offer1)
+    custom_rule_offer2 = offers_factories.ThingOfferFactory(venue=venue)
+    factories.CustomReimbursementRuleFactory(amount=2200, offer=custom_rule_offer2)
+
+    stocks = [
+        offers_factories.StockFactory(offer=thing_offer1, price=30),
+        offers_factories.StockFactory(offer=book_offer1, price=20),
+        offers_factories.StockFactory(offer=thing_offer2, price=19_950),
+        offers_factories.StockFactory(offer=thing_offer2, price=81.3),
+        offers_factories.StockFactory(offer=book_offer2, price=40),
+        offers_factories.StockFactory(offer=digital_offer1, price=27),
+        offers_factories.StockFactory(offer=digital_offer2, price=31),
+        offers_factories.StockFactory(offer=custom_rule_offer1, price=20),
+        offers_factories.StockFactory(offer=custom_rule_offer2, price=23),
+    ]
+
+    return bank_account, stocks, venue
+
+
+@pytest.fixture(name="invoice_nc_data")
+def invoice_nc_test_data():
+    venue_kwargs = {
+        "pricing_point": "self",
+    }
+    offerer = offerers_factories.CaledonianOffererFactory(name="Association de coiffeurs", siren="NC8533184")
+    venue = offerers_factories.CaledonianVenueFactory(
+        publicName="Coiffeur justificaTIF",
+        name="Coiffeur explicaTIF",
+        siret="NC8533184234XX",
+        bookingEmail="pro@example.com",
+        managingOfferer=offerer,
+        **venue_kwargs,
+    )
+    bank_account = factories.CaledonianBankAccountFactory(
+        offerer=offerer, iban="NC5307528000009880000000100", label="Compte bancaire Coiffeur"
     )
     offerers_factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)
 
@@ -3509,7 +3598,7 @@ class PrepareInvoiceContextTest:
 class GenerateDebitNoteHtmlTest:
     TEST_FILES_PATH = pathlib.Path(tests.__path__[0]) / "files"
 
-    def generate_and_compare_invoice(self, bank_account, venue):
+    def generate_and_compare_invoice(self, bank_account, venue, expected_generated_file_name):
         user = users_factories.RichBeneficiaryFactory()
         book_offer = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
         factories.CustomReimbursementRuleFactory(amount=2850, offer=book_offer)
@@ -3574,7 +3663,6 @@ class GenerateDebitNoteHtmlTest:
         )
         batch = models.CashflowBatch.query.get(batch.id)
         invoice_html = api._generate_debit_note_html(invoice, batch)
-        expected_generated_file_name = "rendered_debit_note.html"
 
         with open(self.TEST_FILES_PATH / "invoice" / expected_generated_file_name, "r", encoding="utf-8") as f:
             expected_invoice_html = f.read()
@@ -3591,13 +3679,20 @@ class GenerateDebitNoteHtmlTest:
 
         del stocks  # we don't need it
 
-        self.generate_and_compare_invoice(bank_account, venue)
+        self.generate_and_compare_invoice(bank_account, venue, "rendered_debit_note.html")
+
+    def test_nc_invoice(self, invoice_nc_data):
+        bank_account, stocks, venue = invoice_nc_data
+
+        del stocks  # we don't need it
+
+        self.generate_and_compare_invoice(bank_account, venue, "rendered_nc_debit_note.html")
 
 
 class GenerateInvoiceHtmlTest:
     TEST_FILES_PATH = pathlib.Path(tests.__path__[0]) / "files"
 
-    def generate_and_compare_invoice(self, stocks, bank_account, venue):
+    def generate_and_compare_invoice(self, stocks, bank_account, venue, is_caledonian):
         user = users_factories.RichBeneficiaryFactory()
         book_offer = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
         factories.CustomReimbursementRuleFactory(amount=2850, offer=book_offer)
@@ -3631,17 +3726,20 @@ class GenerateInvoiceHtmlTest:
         )
         api.price_event(incident_booking2_event)
 
-        incident_collective_booking_event = factories.UsedCollectiveBookingFinanceEventFactory(
-            collectiveBooking__collectiveStock__price=30,
-            collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
-            pricingOrderingDate=datetime.datetime.utcnow(),
-        )
-        api.price_event(incident_collective_booking_event)
+        if not is_caledonian:
+            incident_collective_booking_event = factories.UsedCollectiveBookingFinanceEventFactory(
+                collectiveBooking__collectiveStock__price=30,
+                collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
+                pricingOrderingDate=datetime.datetime.utcnow(),
+            )
+            api.price_event(incident_collective_booking_event)
 
         # Mark incident bookings as already invoiced
         incident_booking1_event.booking.pricings[0].status = models.PricingStatus.INVOICED
         incident_booking2_event.booking.pricings[0].status = models.PricingStatus.INVOICED
-        incident_collective_booking_event.pricings[0].status = models.PricingStatus.INVOICED
+
+        if not is_caledonian:
+            incident_collective_booking_event.pricings[0].status = models.PricingStatus.INVOICED
 
         incident_events = []
         # create total overpayment incident (30 €)
@@ -3662,15 +3760,16 @@ class GenerateInvoiceHtmlTest:
             booking_partial_incident, datetime.datetime.utcnow()
         )
 
-        # create collective total overpayment incident (30 €)
-        collective_booking_total_incident = factories.CollectiveBookingFinanceIncidentFactory(
-            incident__status=models.IncidentStatus.VALIDATED,
-            collectiveBooking=incident_collective_booking_event.collectiveBooking,
-            newTotalAmount=0,
-        )
-        incident_events += api._create_finance_events_from_incident(
-            collective_booking_total_incident, datetime.datetime.utcnow()
-        )
+        if not is_caledonian:
+            # create collective total overpayment incident (30 €)
+            collective_booking_total_incident = factories.CollectiveBookingFinanceIncidentFactory(
+                incident__status=models.IncidentStatus.VALIDATED,
+                collectiveBooking=incident_collective_booking_event.collectiveBooking,
+                newTotalAmount=0,
+            )
+            incident_events += api._create_finance_events_from_incident(
+                collective_booking_total_incident, datetime.datetime.utcnow()
+            )
 
         for event in incident_events:
             api.price_event(event)
@@ -3686,7 +3785,7 @@ class GenerateInvoiceHtmlTest:
 
         batch = models.CashflowBatch.query.get(batch.id)
         invoice_html = api._generate_invoice_html(invoice, batch)
-        expected_generated_file_name = "rendered_invoice.html"
+        expected_generated_file_name = f"rendered_{'nc_' if is_caledonian else ''}invoice.html"
         with open(self.TEST_FILES_PATH / "invoice" / expected_generated_file_name, "r", encoding="utf-8") as f:
             expected_invoice_html = f.read()
 
@@ -3743,7 +3842,12 @@ class GenerateInvoiceHtmlTest:
         api.price_event(collective_booking_finance_event1)
         api.price_event(collective_booking_finance_event2)
 
-        self.generate_and_compare_invoice(stocks, bank_account, venue)
+        self.generate_and_compare_invoice(stocks, bank_account, venue, False)
+
+    def test_nc_invoice(self, invoice_nc_data):
+        bank_account, stocks, venue = invoice_nc_data
+
+        self.generate_and_compare_invoice(stocks, bank_account, venue, True)
 
 
 class StoreInvoicePdfTest:

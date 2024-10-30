@@ -2,7 +2,10 @@ import datetime
 import decimal
 import logging
 
+from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.bookings import models as bookings_models
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
@@ -12,6 +15,8 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.models import db
+from pcapi.routes.backoffice.finance import validation
 from pcapi.utils import siren as siren_utils
 
 
@@ -28,6 +33,7 @@ def create_new_caledonia_offerers() -> None:
     logger.info("created New Caledonia offerers")
 
     _create_nc_invoice()
+    _create_one_nc_individual_incident()
 
 
 def _create_nc_beneficiary() -> users_models.User:
@@ -216,16 +222,97 @@ def _create_nc_invoice() -> None:
         pricing_point="self",
         bank_account=bank_account,
     )
+    virtual_venue = offerers_factories.VirtualVenueFactory(
+        managingOfferer=offerer,
+        name=f"{venue.name} (Offre numérique)",
+        pricing_point=venue,
+        bank_account=bank_account,
+    )
 
-    offer1 = offers_factories.ThingOfferFactory(name="Offre calédonienne remboursée 1", venue=venue)
-    offer2 = offers_factories.ThingOfferFactory(name="Offre calédonienne remboursée 2", venue=venue)
+    thing_offer1 = offers_factories.ThingOfferFactory(name="Offre calédonienne remboursée 1", venue=venue)
+    thing_offer2 = offers_factories.ThingOfferFactory(name="Offre calédonienne remboursée 2", venue=venue)
+    book_offer1 = offers_factories.OfferFactory(
+        name="Livre calédonien remboursé 1", venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id
+    )
+    book_offer2 = offers_factories.OfferFactory(
+        name="Livre calédonien remboursé 2", venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id
+    )
+    digital_offer1 = offers_factories.DigitalOfferFactory(name="Calédonien numérique remboursé 1", venue=virtual_venue)
+    digital_offer2 = offers_factories.DigitalOfferFactory(name="Calédonien numérique remboursé 2", venue=virtual_venue)
+    custom_rule_offer = offers_factories.ThingOfferFactory(name="Calédonien dérogatoire remboursé", venue=venue)
+    finance_factories.CustomReimbursementRuleFactory(rate=0.94, offer=custom_rule_offer)
 
     stocks = [
-        offers_factories.StockFactory(offer=offer1, price=30),
-        offers_factories.StockFactory(offer=offer2, price=83.8),
+        offers_factories.StockFactory(offer=thing_offer1, price=30),
+        offers_factories.StockFactory(offer=thing_offer2, price=83.8),
+        offers_factories.StockFactory(offer=book_offer1, price=20),
+        offers_factories.StockFactory(offer=book_offer2, price=40),
+        offers_factories.StockFactory(offer=digital_offer1, price=27),
+        offers_factories.StockFactory(offer=digital_offer2, price=31),
+        offers_factories.StockFactory(offer=custom_rule_offer, price=20),
+    ]
+    # This is a quick way to have a Venue reach the revenue threshold to reach the next ReimbursementRule,
+    # without generating 60+ Bookings in bulk
+    special_stock = offers_factories.StockFactory(offer=thing_offer2, price=19_950)
+    special_user = users_factories.BeneficiaryGrant18Factory(
+        firstName="This caledonian User has voluntarily a large deposit",
+        deposit__source="_create_nc_invoice() in industrial sandbox",
+    )
+    special_user.deposit.amount = 20000
+    db.session.add(special_user)
+    db.session.commit()
+
+    # Add finance incidents to invoice
+    booking_with_total_incident = bookings_factories.ReimbursedBookingFactory(
+        stock=offers_factories.StockFactory(offer=thing_offer1, price=30),
+        quantity=1,
+        amount=30,
+        user__deposit__source="_create_nc_invoice() in industrial sandbox",
+    )
+    booking_with_partial_incident = bookings_factories.ReimbursedBookingFactory(
+        stock=offers_factories.StockFactory(offer=book_offer1, price=30),
+        quantity=1,
+        amount=30,
+        user__deposit__source="_create_nc_invoice() in industrial sandbox",
+    )
+    bookings_with_incident = [booking_with_total_incident, booking_with_partial_incident]
+
+    for booking in bookings_with_incident:
+        event = finance_factories.UsedBookingFinanceEventFactory(booking=booking)
+        pricing = finance_api.price_event(event)
+        if pricing:
+            pricing.status = finance_models.PricingStatus.INVOICED
+
+    total_booking_finance_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
+        booking=booking_with_total_incident,
+        newTotalAmount=0,
+        incident__venue=venue,
+        incident__status=finance_models.IncidentStatus.VALIDATED,
+    )
+    partial_booking_finance_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
+        booking=booking_with_partial_incident,
+        newTotalAmount=2000,
+        incident__venue=venue,
+        incident__status=finance_models.IncidentStatus.VALIDATED,
+    )
+    booking_incidents = [total_booking_finance_incident, partial_booking_finance_incident]
+
+    incident_events = []
+    for booking_finance_incident in booking_incidents:
+        incident_events += finance_api._create_finance_events_from_incident(
+            booking_finance_incident, incident_validation_date=datetime.datetime.utcnow()
+        )
+
+    for event in incident_events:
+        finance_api.price_event(event)
+
+    bookings = [
+        bookings_factories.UsedBookingFactory(
+            stock=special_stock,
+            user=special_user,
+        ),
     ]
 
-    bookings = []
     for stock in stocks:
         booking = bookings_factories.UsedBookingFactory(
             stock=stock,
@@ -247,3 +334,55 @@ def _create_nc_invoice() -> None:
         cashflow_ids=cashflow_ids,
     )
     logger.info("Created caledonian Invoice")
+
+
+def _create_one_nc_individual_incident() -> None:
+    offerer = offerers_factories.CaledonianOffererFactory(name="Structure Néo-calédonienne avec note de débit")
+    pro = offerers_factories.UserOffererFactory(offerer=offerer).user
+    bank_account = finance_factories.CaledonianBankAccountFactory(offerer=offerer)
+    venue = offerers_factories.CaledonianVenueFactory(
+        name="Lieu calédonien avec note de débit",
+        managingOfferer=offerer,
+        pricing_point="self",
+        bank_account=bank_account,
+    )
+
+    incident_booking = bookings_factories.BookingFactory(
+        stock__offer__venue=venue,
+        stock__price=decimal.Decimal("30"),
+        user__deposit__source="_create_one_nc_individual_incident() in industrial sandbox",
+    )
+    bookings_api.mark_as_used(
+        booking=incident_booking,
+        validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
+    )
+    finance_api.price_event(incident_booking.finance_events[0])
+    batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
+    finance_api.generate_invoices(batch)
+
+    assert incident_booking.status == bookings_models.BookingStatus.REIMBURSED
+
+    amount = decimal.Decimal("10")
+    check_bookings = validation.check_incident_bookings([incident_booking])
+    check_amount = validation.check_total_amount(amount, [incident_booking])
+    if not (check_bookings and check_amount):
+        raise ValueError("Couldn't create overpayment incident, invalid parameters")
+
+    # Create the overpayment incident and validate it
+    finance_incident = finance_api.create_overpayment_finance_incident(
+        bookings=[incident_booking],
+        author=pro,
+        origin="Incident de Nouvelle-Calédonie",
+        amount=amount,
+    )
+    finance_api.validate_finance_overpayment_incident(
+        finance_incident=finance_incident,
+        force_debit_note=True,
+        author=pro,
+    )
+    for booking_finance_incident in finance_incident.booking_finance_incidents:
+        for finance_event in booking_finance_incident.finance_events:
+            finance_api.price_event(finance_event)
+
+    batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
+    finance_api.generate_debit_notes(batch)
