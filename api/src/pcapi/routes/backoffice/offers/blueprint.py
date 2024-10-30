@@ -456,6 +456,7 @@ def _get_offers_by_ids(
                 users_models.User.firstName,
                 users_models.User.lastName,
             ),
+            sa.orm.joinedload(offers_models.Offer.compliance),
         )
     )
 
@@ -979,6 +980,7 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
         sa.orm.joinedload(offers_models.Offer.offererAddress)
         .load_only(offerers_models.OffererAddress.label)
         .joinedload(offerers_models.OffererAddress.address),
+        sa.orm.joinedload(offers_models.Offer.compliance),
     )
     offer = offer_query.one_or_none()
 

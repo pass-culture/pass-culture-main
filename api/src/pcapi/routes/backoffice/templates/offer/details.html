@@ -143,15 +143,16 @@
                   <span class="fw-bold">Date de création :</span> {{ offer.dateCreated | format_date }}
                 </p>
                 {% if has_permission("PRO_FRAUD_ACTIONS") %}
-                  {% set compliance_score = offer.extraData.get("complianceScore", "") if offer.extraData else "" %}
+                  {% set compliance_score = offer.compliance.compliance_score if offer.compliance else "" %}
                   {% if compliance_score %}
                     <p class="mb-1">
                       <span class="fw-bold">Score data :</span> {{ compliance_score }}
                     </p>
-                    {% set compliance_reasons = offer.extraData.get("complianceReasons") if offer.extraData else none %}
+                    {% set compliance_reasons = offer.compliance.compliance_reasons if offer.compliance else none %}
                     {% if compliance_reasons %}
                       <p class="mb-1">
-                        <span class="fw-bold">Raison de score faible :</span> {{ compliance_reasons | format_compliance_reasons | safe }}
+                        <span class="fw-bold">Raison de score faible :</span> {{ compliance_reasons | format_compliance_reasons
+                        | safe }}
                       </p>
                     {% endif %}
                   {% endif %}
