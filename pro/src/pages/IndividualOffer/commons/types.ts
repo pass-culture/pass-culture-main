@@ -1,5 +1,3 @@
-import type { FormikProps } from 'formik'
-
 import { WithdrawalTypeEnum } from 'apiClient/v1'
 import { AccessibilityFormValues } from 'commons/core/shared/types'
 import { type AddressFormValues } from 'components/AddressManual/AddressManual'
@@ -41,5 +39,3 @@ export interface IndividualOfferFormValues extends Partial<AddressFormValues> {
   locationLabel?: string | null
   manuallySetAddress?: boolean
 }
-
-export type IndividualOfferForm = FormikProps<IndividualOfferFormValues>

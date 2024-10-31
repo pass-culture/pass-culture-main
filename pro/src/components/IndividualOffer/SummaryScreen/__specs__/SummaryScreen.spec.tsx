@@ -160,7 +160,6 @@ describe('Summary', () => {
   const expectOfferFields = async () => {
     expect(await screen.findByText('Détails de l’offre')).toBeInTheDocument()
     expect(screen.getByText('Type d’offre')).toBeInTheDocument()
-    expect(screen.getByText('Informations artistiques')).toBeInTheDocument()
     expect(screen.getByText('Informations pratiques')).toBeInTheDocument()
     expect(screen.getByText('Modalités d’accessibilité')).toBeInTheDocument()
     expect(
@@ -173,7 +172,6 @@ describe('Summary', () => {
 
     expect(screen.getByText(categories[0].proLabel)).toBeInTheDocument()
     expect(screen.getByText(subCategories[0].proLabel)).toBeInTheDocument()
-    expect(screen.getByText('mon offerer')).toBeInTheDocument()
     expect(screen.getByText('ma venue (nom public)')).toBeInTheDocument()
     expect(screen.getByText('détails de retrait')).toBeInTheDocument()
     expect(
@@ -234,8 +232,7 @@ describe('Summary', () => {
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
-        ),
-        { features: ['WIP_SPLIT_OFFER'] }
+        )
       )
 
       expect(
@@ -646,7 +643,7 @@ describe('Summary', () => {
           }),
           { offerId: 'AA' }
         ),
-        { features: ['WIP_SPLIT_OFFER', 'WIP_ENABLE_OFFER_ADDRESS'] }
+        { features: ['WIP_ENABLE_OFFER_ADDRESS'] }
       )
 
       expect(await screen.findByText(/Structure/)).toBeInTheDocument()

@@ -29,49 +29,38 @@ describe('IndividualOffer::ActionBar', () => {
     props = {
       onClickPrevious: onClickPreviousMock,
       onClickNext: onClickNextMock,
-      step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+      step: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
       isDisabled: false,
     }
   })
 
   describe('on creation', () => {
-    it('should render the component for information page', async () => {
-      props.step = OFFER_WIZARD_STEP_IDS.INFORMATIONS
-
+    it('should always display a "Retour" button', async () => {
+      props.step = OFFER_WIZARD_STEP_IDS.DETAILS
       renderActionBar({ props })
 
-      expect(screen.getByText('Retour')).toBeInTheDocument()
-      const buttonNextStep = screen.getByText('Enregistrer et continuer')
-      await userEvent.click(buttonNextStep)
-      expect(onClickNextMock).toHaveBeenCalled()
-    })
-
-    it('should render the component for stock page', async () => {
-      props.step = OFFER_WIZARD_STEP_IDS.STOCKS
-
-      renderActionBar({ props })
-
-      const buttonPreviousStep = screen.getByText('Retour')
-      await userEvent.click(buttonPreviousStep)
+      const previousStepButton = screen.getByText(/Retour/)
+      await userEvent.click(previousStepButton)
       expect(onClickPreviousMock).toHaveBeenCalled()
-      const buttonNextStep = screen.getByText('Enregistrer et continuer')
-      await userEvent.click(buttonNextStep)
-      expect(onClickNextMock).toHaveBeenCalled()
     })
 
-    it('should render the component for summary page', async () => {
+    it('should display "Sauvegarder le brouillon" and "Publier l’offre" buttons on summary page', () => {
       props.step = OFFER_WIZARD_STEP_IDS.SUMMARY
-
       renderActionBar({ props })
 
-      const buttonPreviousStep = screen.getByText('Retour')
-      await userEvent.click(buttonPreviousStep)
-      expect(onClickPreviousMock).toHaveBeenCalled()
-      const buttonSaveDraft = screen.getByText(
-        'Sauvegarder le brouillon et quitter'
-      )
-      expect(buttonSaveDraft).toHaveAttribute('href', '/offres')
-      expect(screen.getByText('Publier l’offre')).toBeInTheDocument()
+      const saveDraftButton = screen.getByText(/Sauvegarder le brouillon/)
+      expect(saveDraftButton).toHaveAttribute('href', '/offres')
+
+      const submitButton = screen.getByText(/Publier/)
+      expect(submitButton).toHaveAttribute('type', 'submit')
+    })
+
+    it('should display "Enregistrer et continuer" button on other pages', () => {
+      props.step = OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS
+      renderActionBar({ props })
+
+      const submitButton = screen.getByText(/Enregistrer et continuer/)
+      expect(submitButton).toHaveAttribute('type', 'submit')
     })
 
     it('should show draft saved indicator', () => {
@@ -94,8 +83,8 @@ describe('IndividualOffer::ActionBar', () => {
   })
 
   describe('on edition', () => {
-    it('should render the component for information page', async () => {
-      props.step = OFFER_WIZARD_STEP_IDS.INFORMATIONS
+    it('should render the component for details page', async () => {
+      props.step = OFFER_WIZARD_STEP_IDS.DETAILS
 
       renderActionBar({ props, url: '/edition/url' })
 

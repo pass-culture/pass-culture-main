@@ -3,31 +3,6 @@
 import type { RouteConfig } from './routesMap'
 
 export const routesIndividualOfferWizard: RouteConfig[] = [
-  // old information pages
-  {
-    lazy: () =>
-      import(
-        'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferInformationsLegacy/IndividualOfferDetailsAndInformationsLegacy'
-      ),
-    path: '/offre/individuelle/:offerId/informations',
-    title: 'Détails - Créer une offre individuelle',
-  },
-  {
-    lazy: () =>
-      import(
-        'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferInformationsLegacy/IndividualOfferDetailsAndInformationsLegacy'
-      ),
-    path: '/offre/individuelle/:offerId/creation/informations',
-    title: 'Détails - Créer une offre individuelle',
-  },
-  {
-    lazy: () =>
-      import(
-        'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferInformationsLegacy/IndividualOfferDetailsAndInformationsLegacy'
-      ),
-    path: '/offre/individuelle/:offerId/edition/informations',
-    title: 'Détails - Modifier une offre individuelle',
-  },
   // details pages
   {
     lazy: () =>

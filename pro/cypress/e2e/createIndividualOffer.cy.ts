@@ -11,8 +11,6 @@ describe('Create individual offers', () => {
     }).then((response) => {
       login = response.body.user.email
     })
-    cy.stepLog({ message: 'I activate a feature flag "WIP_SPLIT_OFFER"' })
-    cy.setFeatureFlags([{ name: 'WIP_SPLIT_OFFER', isActive: true }])
     cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
     cy.intercept({ method: 'POST', url: '/offers/draft' }).as('postDraftOffer')
     cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')

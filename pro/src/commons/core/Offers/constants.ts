@@ -48,10 +48,7 @@ export const OFFER_WITHDRAWAL_TYPE_LABELS = {
   [WithdrawalTypeEnum.IN_APP]: 'Les billets seront affichés dans l’application',
 }
 
-export const OFFER_STATUS_ACTIVE = OfferStatus.ACTIVE
-export const OFFER_STATUS_INACTIVE = OfferStatus.INACTIVE
 export const OFFER_STATUS_SOLD_OUT = OfferStatus.SOLD_OUT
-export const OFFER_STATUS_EXPIRED = OfferStatus.EXPIRED
 export const OFFER_STATUS_PENDING = OfferStatus.PENDING
 export const OFFER_STATUS_REJECTED = OfferStatus.REJECTED
 export const OFFER_STATUS_DRAFT = OfferStatus.DRAFT

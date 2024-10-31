@@ -67,7 +67,7 @@ describe('screens:IndividualOffer::OfferType', () => {
     await userEvent.click(screen.getByText('Étape suivante'))
 
     expect(mockNavigate).toHaveBeenCalledWith({
-      pathname: '/offre/individuelle/creation/informations',
+      pathname: '/offre/individuelle/creation/details',
       search: 'offer-type=PHYSICAL_GOOD',
     })
   })
@@ -79,12 +79,12 @@ describe('screens:IndividualOffer::OfferType', () => {
     await userEvent.click(screen.getByText('Étape suivante'))
 
     expect(mockNavigate).toHaveBeenCalledWith({
-      pathname: '/offre/individuelle/creation/informations',
+      pathname: '/offre/individuelle/creation/details',
       search: 'lieu=123&offer-type=PHYSICAL_EVENT',
     })
   })
 
-  it('should diable button when type was not selected', async () => {
+  it('should disable button when type was not selected', async () => {
     renderOfferTypes('123')
 
     // type is not selected
@@ -108,7 +108,7 @@ describe('screens:IndividualOffer::OfferType', () => {
     await userEvent.click(screen.getByText('Étape suivante'))
 
     expect(mockNavigate).toHaveBeenCalledWith({
-      pathname: '/offre/individuelle/creation/informations',
+      pathname: '/offre/individuelle/creation/details',
       search: 'lieu=123',
     })
   })

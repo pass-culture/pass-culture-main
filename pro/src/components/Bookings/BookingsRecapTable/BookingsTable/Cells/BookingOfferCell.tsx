@@ -6,7 +6,6 @@ import {
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
 import { OFFER_STATUS_PENDING } from 'commons/core/Offers/constants'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useOfferEditionURL } from 'commons/hooks/useOfferEditionURL'
 import {
   FORMAT_DD_MM_YYYY_HH_mm,
@@ -37,13 +36,10 @@ export const BookingOfferCell = ({
   booking,
   className,
 }: BookingOfferCellProps) => {
-  const isSplitOfferEnabled = useActiveFeature('WIP_SPLIT_OFFER')
-
   const editionUrl = useOfferEditionURL({
     isOfferEducational: booking.stock.offerIsEducational,
     offerId: booking.stock.offerId,
     isShowcase: false,
-    isSplitOfferEnabled,
   })
   const eventBeginningDatetime = booking.stock.eventBeginningDatetime
 

@@ -11,18 +11,18 @@ describe('getIndividualOfferUrl', () => {
       props: {
         offerId: undefined,
         mode: OFFER_WIZARD_MODE.CREATION,
-        step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        step: OFFER_WIZARD_STEP_IDS.DETAILS,
       },
-      expectedUrl: '/offre/individuelle/creation/informations',
+      expectedUrl: '/offre/individuelle/creation/details',
     },
     // when creation mode
     {
       props: {
         offerId: offerId,
         mode: OFFER_WIZARD_MODE.CREATION,
-        step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        step: OFFER_WIZARD_STEP_IDS.DETAILS,
       },
-      expectedUrl: '/offre/individuelle/42/creation/informations',
+      expectedUrl: '/offre/individuelle/42/creation/details',
     },
     {
       props: {
@@ -61,9 +61,9 @@ describe('getIndividualOfferUrl', () => {
       props: {
         offerId: offerId,
         mode: OFFER_WIZARD_MODE.EDITION,
-        step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        step: OFFER_WIZARD_STEP_IDS.DETAILS,
       },
-      expectedUrl: '/offre/individuelle/42/edition/informations',
+      expectedUrl: '/offre/individuelle/42/edition/details',
     },
     {
       props: {

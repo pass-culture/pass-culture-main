@@ -4,7 +4,6 @@ import { generatePath, useLocation } from 'react-router-dom'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useActiveStep } from 'commons/hooks/useActiveStep'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { Step, StepPattern, Stepper } from 'components/Stepper/Stepper'
@@ -25,7 +24,6 @@ interface IndividualOfferNavigationProps {
 export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
   isUsefulInformationSubmitted,
 }) => {
-  const isSplitOfferEnabled = useActiveFeature('WIP_SPLIT_OFFER')
   const { offer, isEvent: isEventOfferContext } = useIndividualOfferContext()
   const activeStep = useActiveStep(Object.values(OFFER_WIZARD_STEP_IDS))
   const mode = useOfferWizardMode()
@@ -41,54 +39,26 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
   const isEvent =
     isEventOfferContext || offer?.isEvent || isOfferSubtypeEvent(offerSubtype)
 
-  const steps: StepPattern[] = []
-
-  // First step/tab: informations form or recap
-  if (!isSplitOfferEnabled) {
-    if (mode === OFFER_WIZARD_MODE.READ_ONLY) {
-      steps.push({
-        id: OFFER_WIZARD_STEP_IDS.SUMMARY,
-        label: 'Détails de l’offre',
-        path: getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-          mode,
-        }),
-        isActive: true,
-      })
-    } else {
-      steps.push({
-        id: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-        label: 'Détails de l’offre',
-        path: getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-          mode,
-        }),
-        isActive: true,
-      })
-    }
-  }
-  if (isSplitOfferEnabled) {
-    steps.push(
-      {
-        id: OFFER_WIZARD_STEP_IDS.DETAILS,
-        label: 'Détails de l’offre',
-        path: getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.DETAILS,
-          mode,
-        }),
-        isActive: true,
-      },
-      {
-        id: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
-        label: 'Informations pratiques',
-        path: getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
-          mode,
-        }),
-        isActive: true,
-      }
-    )
-  }
+  const steps: StepPattern[] = [
+    {
+      id: OFFER_WIZARD_STEP_IDS.DETAILS,
+      label: 'Détails de l’offre',
+      path: getIndividualOfferPath({
+        step: OFFER_WIZARD_STEP_IDS.DETAILS,
+        mode,
+      }),
+      isActive: true,
+    },
+    {
+      id: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
+      label: 'Informations pratiques',
+      path: getIndividualOfferPath({
+        step: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
+        mode,
+      }),
+      isActive: true,
+    },
+  ]
 
   // Intermediate steps depending on isEvent
   if (isEvent) {
@@ -167,12 +137,6 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
     return step
   })
 
-  const tabs = stepList.map(({ id, label, url }) => ({
-    key: id,
-    label,
-    url,
-  }))
-
   return (
     <>
       {mode === OFFER_WIZARD_MODE.CREATION ? (
@@ -183,7 +147,14 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
         />
       ) : (
         <div className={styles['tabs']}>
-          <Tabs tabs={tabs} selectedKey={activeStep} />
+          <Tabs
+            tabs={stepList.map(({ id, label, url }) => ({
+              key: id,
+              label,
+              url,
+            }))}
+            selectedKey={activeStep}
+          />
         </div>
       )}
     </>

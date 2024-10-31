@@ -43,7 +43,7 @@ const INFORMATIONS_DEFAULT_VALUES = {
   durationMinutes: SUBCATEGORIES_FIELDS_DEFAULT_VALUES['durationMinutes'],
 }
 
-export const CATEGORIES_DEFAULT_VALUES = {
+const CATEGORIES_DEFAULT_VALUES = {
   subCategoryFields: [],
   categoryId: '',
   subcategoryId: '',
@@ -72,22 +72,17 @@ const ACCESSIBILITY_DEFAULT_VALUES = {
   },
 }
 
-export const NOTIFICATIONS_DEFAULT_VALUES = {
+const NOTIFICATIONS_DEFAULT_VALUES = {
   receiveNotificationEmails: false,
   bookingEmail: '',
 }
 
-export const FORM_DEFAULT_VALUES_NO_OFFER_LOCATION = {
+export const FORM_DEFAULT_VALUES = {
   ...INFORMATIONS_DEFAULT_VALUES,
   ...CATEGORIES_DEFAULT_VALUES,
   ...USEFUL_INFORMATIONS_DEFAULT_VALUES,
   ...ACCESSIBILITY_DEFAULT_VALUES,
   ...NOTIFICATIONS_DEFAULT_VALUES,
-  isDuo: false,
-}
-
-export const FORM_DEFAULT_VALUES = {
-  ...FORM_DEFAULT_VALUES_NO_OFFER_LOCATION,
   ...OFFER_LOCATION_DEFAULT_VALUES,
   isDuo: false,
 }

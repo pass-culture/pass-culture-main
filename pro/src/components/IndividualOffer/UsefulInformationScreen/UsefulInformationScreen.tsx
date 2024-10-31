@@ -30,7 +30,7 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
-import { serializePatchOffer } from 'pages/IndividualOffer/commons/serializers/serializePatchOffer'
+import { serializePatchOffer } from 'pages/IndividualOffer/commons/serializePatchOffer'
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
 import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
 
