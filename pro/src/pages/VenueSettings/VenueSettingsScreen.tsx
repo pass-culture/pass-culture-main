@@ -103,7 +103,11 @@ export const VenueSettingsScreen = ({
   }
 
   const onSubmit = async (values: VenueSettingsFormValues) => {
-    if (!handleDialogAddressChange() && isOfferAddressEnabled) {
+    if (
+      !handleDialogAddressChange() &&
+      isOfferAddressEnabled &&
+      venue.hasOffers
+    ) {
       return
     }
 
