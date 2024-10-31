@@ -1,0 +1,28 @@
+{
+    "requests": [
+        {
+            "indexName": "PRODUCTION B",
+            "query": "",
+            "advancedSyntax": true,
+            "params": "page=0&hitsPerPage=1000",
+            "aroundRadius": "1000000",
+            "aroundLatLng": "48.87171, 2.308289",
+            "facetFilters": [
+                [
+                    "offer.isEducational:false"
+                ],
+                [
+                    "offer.searchGroupNamev2:LIVRES"
+                ]
+            ],
+            "attributesToRetrieve": [
+                "offer.ean",
+                "offer.indexedAt",
+                "offer.last30DaysBookings",
+                "offer.name",
+                "objectID"
+            ],
+            "distinct": false
+        }
+    ]
+}
