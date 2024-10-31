@@ -217,8 +217,8 @@ describe('Financial Management - messages, links to external help page, reimburs
         message: 'Unattach all venues',
       })
 
+      cy.contains('Lieux rattachés à ce compte bancaire')
       cy.findByText('Modifier').click()
-      cy.contains('Lieu rattaché à ce compte bancaire')
       cy.findByRole('dialog').within(() => {
         cy.findByText('Tout désélectionner').click()
         cy.findByText('Enregistrer').click()
