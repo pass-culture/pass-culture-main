@@ -1,4 +1,5 @@
 import argparse
+import itertools
 import logging
 
 from pcapi import settings
@@ -107,7 +108,7 @@ def get_offerers_addresses(address_ids: list[int]) -> list[dict]:
     ]
 
 
-def get_duplicates_addresses(check_nulls_duplicates_on: str) -> list[dict]:
+def get_duplicates_addresses(check_nulls_duplicates_on: tuple[str]) -> list[dict]:
     """
     Will return something like this
     All ids sharing same duplicated data
@@ -132,9 +133,8 @@ def get_duplicates_addresses(check_nulls_duplicates_on: str) -> list[dict]:
         "timezone": 'address."timezone" = a2."timezone"',
     }
 
-    join_on[check_nulls_duplicates_on] = (
-        f'address."{check_nulls_duplicates_on}" is null and a2."{check_nulls_duplicates_on}" is null'
-    )
+    for column in check_nulls_duplicates_on:
+        join_on[column] = f'address."{column}" is null and a2."{column}" is null'
 
     query = f"""
         SELECT
@@ -200,10 +200,14 @@ def remove_duplicates_addresses(duplicates: list[dict]) -> None:
 
 def process_duplicates_addresses(dry_run: bool) -> None:
     db.session.execute("SET SESSION statement_timeout = '300s'")
-    for nullable_column in ("banId", "inseeCode", "street", "departmentCode"):
-        duplicates = get_duplicates_addresses(nullable_column)
+    nullable_columns = ("banId", "inseeCode", "street", "departmentCode")
+    possible_nullable_combinations = []
+    for count in range(1, 5):
+        possible_nullable_combinations.extend(list(itertools.combinations(nullable_columns, r=count)))
+    for combinations in possible_nullable_combinations:
+        duplicates = get_duplicates_addresses(combinations)
         print(
-            f"Found {len(duplicates)} addresses that appears more than once (checking nulls duplicates on {nullable_column})"
+            f"Found {len(duplicates)} addresses that appears more than once (checking nulls duplicates on columns combination {combinations})"
         )
 
         try:
