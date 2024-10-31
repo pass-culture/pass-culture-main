@@ -8,6 +8,7 @@ import uuid
 
 from dateutil import relativedelta
 import pytest
+import pytz
 import time_machine
 
 from pcapi import settings
@@ -330,19 +331,20 @@ class DmsWebhookApplicationTest:
         assert domains_credit.all.initial == 300
         assert domains_credit.all.remaining == 300
 
-    @time_machine.travel("2021-10-30 09:00:00")
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_dms_request_draft_application(self, execute_query, client):
         user = users_factories.UserFactory()
         execute_query.return_value = make_single_application(
             12, state=dms_models.GraphQLApplicationStates.draft, email=user.email
         )
+        updated_at = datetime.datetime.utcnow() - datetime.timedelta(days=30)
+        updated_at = updated_at.replace(tzinfo=pytz.timezone("Europe/Paris"))
 
         form_data = {
             "procedure_id": 48860,
             "dossier_id": 6044787,
             "state": dms_models.GraphQLApplicationStates.draft.value,
-            "updated_at": "2021-09-30 17:55:58 +0200",
+            "updated_at": updated_at.strftime("%Y-%m-%d %H:%M:%S %z"),
         }
         client.post(
             f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
@@ -363,19 +365,20 @@ class DmsWebhookApplicationTest:
             == f"Nous avons bien reçu ton dossier le {fraud_check.dateCreated.strftime('%d/%m/%Y')}. Rends-toi sur la messagerie du site Démarches-Simplifiées pour être informé en temps réel."
         )
 
-    @time_machine.travel("2021-10-30 09:00:00")
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_dms_request_on_going_application(self, execute_query, client):
         user = users_factories.UserFactory()
         execute_query.return_value = make_single_application(
             12, state=dms_models.GraphQLApplicationStates.on_going, email=user.email
         )
+        updated_at = datetime.datetime.utcnow() - datetime.timedelta(days=30)
+        updated_at = updated_at.replace(tzinfo=pytz.timezone("Europe/Paris"))
 
         form_data = {
             "procedure_id": 48860,
             "dossier_id": 6044787,
             "state": dms_models.GraphQLApplicationStates.on_going.value,
-            "updated_at": "2021-09-30 17:55:58 +0200",
+            "updated_at": updated_at.strftime("%Y-%m-%d %H:%M:%S %z"),
         }
         client.post(
             f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
