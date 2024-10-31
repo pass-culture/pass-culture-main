@@ -12,6 +12,7 @@ import {
 } from 'commons/core/OfferEducational/types'
 import { computeCollectiveOffersUrl } from 'commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { SelectOption } from 'commons/custom_types/form'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { sortByLabel } from 'commons/utils/strings'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { BannerPublicApi } from 'components/Banner/BannerPublicApi'
@@ -78,6 +79,8 @@ export const OfferEducationalForm = ({
   const { values, setFieldValue, initialValues, dirty } =
     useFormikContext<OfferEducationalFormValues>()
 
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+
   useEffect(() => {
     async function handleOffererValues() {
       if (userOfferer) {
@@ -93,7 +96,10 @@ export const OfferEducationalForm = ({
         }))
         if (venuesOptions.length > 1) {
           venuesOptions = [
-            { value: '', label: 'Sélectionner un lieu' },
+            {
+              value: '',
+              label: `Sélectionner ${isOfferAddressEnabled ? 'une structure' : 'un lieu'}`,
+            },
             ...sortByLabel(venuesOptions),
           ]
         }
