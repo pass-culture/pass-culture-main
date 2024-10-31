@@ -137,4 +137,16 @@ describe('filter bookings by bookings period', () => {
 
     expect(screen.queryByLabelText('Localisation')).not.toBeInTheDocument()
   })
+
+  it('should use "Structure" instead of "Lieu" if the WIP_ENABLE_OFFER_ADDRESS FF is active', () => {
+    props.audience = Audience.COLLECTIVE
+    renderPreFilters(props, ['WIP_ENABLE_OFFER_ADDRESS'])
+
+    expect(
+      screen.getByRole('combobox', { name: 'Structure' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('option', { name: 'Toutes les structures' })
+    ).toBeInTheDocument()
+  })
 })
