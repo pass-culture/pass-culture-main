@@ -4,40 +4,33 @@
 {% macro _random() %}{{ range(1000000000000) |random }}{% endmacro %}
 {# djlint:on #}
 {% macro build_connect_as_pseudo_link(object_id, object_type, redirect, text_link, class) %}
-  {% if is_feature_active("WIP_CONNECT_AS_EXTENDED") %}
-    {% if has_permission("CONNECT_AS_PRO") %}
-      {# add some randomness to ids to avoid collisions #}
-      {% set randomness = _random() %}
-      <form id="connect-as-form-{{ object_type }}-{{ object_id }}-{{ randomness }}"
-            class="d-none"
-            target="_blank"
-            rel="noopener"
-            action="{{ url_for('backoffice_web.pro.connect_as') }}"
-            method="post">
-        {{ csrf_token }}
-        <input type="hidden"
-               name="object_type"
-               value="{{ object_type }}" />
-        <input type="hidden"
-               name="object_id"
-               value="{{ object_id }}" />
-        <input type="hidden"
-               name="redirect"
-               value="{{ redirect }}" />
-      </form>
-      <a href="{{ redirect | build_pro_link }}"
-         class="{{ class }}"
-         onclick="document.getElementById('connect-as-form-{{ object_type }}-{{ object_id }}-{{ randomness }}').submit(); return false;">
-        {{ text_link }} <i class="bi bi-box-arrow-up-right"></i>
-      </a>
-    {% else %}
-      {{ text_link }}
-    {% endif %}
-  {% else %}
+  {% if has_permission("CONNECT_AS_PRO") %}
+    {# add some randomness to ids to avoid collisions #}
+    {% set randomness = _random() %}
+    <form id="connect-as-form-{{ object_type }}-{{ object_id }}-{{ randomness }}"
+          class="d-none"
+          target="_blank"
+          rel="noopener"
+          action="{{ url_for('backoffice_web.pro.connect_as') }}"
+          method="post">
+      {{ csrf_token }}
+      <input type="hidden"
+             name="object_type"
+             value="{{ object_type }}" />
+      <input type="hidden"
+             name="object_id"
+             value="{{ object_id }}" />
+      <input type="hidden"
+             name="redirect"
+             value="{{ redirect }}" />
+    </form>
     <a href="{{ redirect | build_pro_link }}"
        class="{{ class }}"
-       target="_blank"
-       rel="noopener">{{ text_link }} <i class="bi bi-box-arrow-up-right"></i></a>
+       onclick="document.getElementById('connect-as-form-{{ object_type }}-{{ object_id }}-{{ randomness }}').submit(); return false;">
+      {{ text_link }} <i class="bi bi-box-arrow-up-right"></i>
+    </a>
+  {% else %}
+    {{ text_link }}
   {% endif %}
 {% endmacro %}
 {# ----- internal links (backoffice) ----- #}

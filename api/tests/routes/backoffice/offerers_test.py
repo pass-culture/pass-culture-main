@@ -25,7 +25,6 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users import testing
@@ -57,7 +56,7 @@ class GetOffererTest(GetEndpointHelper):
     # - offerer with joined data except tags (1 query)
     # - get offerer tags (1 query)
     # - get all tags for edit form (1 query)
-    # - get feature flag: WIP_CONNECT_AS_EXTENDED (1 query)
+    # - get feature flag: WIP_ENABLE_OFFER_ADDRESS (1 query)
     expected_num_queries = 6
 
     def test_keep_search_parameters_on_top(self, authenticated_client, offerer):
@@ -1230,8 +1229,7 @@ class GetOffererUsersTest(GetEndpointHelper):
     # - session + authenticated user (2 queries)
     # - users with joined data (1 query)
     # - offerer_invitation data
-    # - retrieve FF WIP_CONNECT_AS_EXTENDED
-    expected_num_queries = 5
+    expected_num_queries = 4
 
     def test_get_pro_users(self, authenticated_client, offerer):
         uo1 = offerers_factories.UserOffererFactory(
@@ -1288,7 +1286,6 @@ class GetOffererUsersTest(GetEndpointHelper):
             ([users_models.UserRole.PRO], True, True),
         ],
     )
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_available_for_pro(self, authenticated_client, offerer, roles, active, result):
         user = users_factories.ProFactory(roles=roles, isActive=active)
         offerers_factories.UserOffererFactory(
@@ -1297,11 +1294,7 @@ class GetOffererUsersTest(GetEndpointHelper):
         )
 
         url = url_for(self.endpoint, offerer_id=offerer.id)
-        expected_num_queries = self.expected_num_queries
-        if not result:
-            # no FF to retrieve in that case
-            expected_num_queries -= 1
-        with assert_num_queries(expected_num_queries):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -1387,7 +1380,7 @@ class GetOffererUsersTest(GetEndpointHelper):
 
         url = url_for(self.endpoint, offerer_id=offerer.id)
 
-        with assert_num_queries(self.expected_num_queries - 1):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -1738,8 +1731,7 @@ class GetOffererBankAccountTest(GetEndpointHelper):
 
     # - session + authenticated user (2 queries)
     # - bank accounts (1 query)
-    # - connect as extended FF (1 query)
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_get_bank_accounts(self, authenticated_client, offerer):
         offerer = offerers_factories.OffererFactory()

@@ -342,10 +342,6 @@ def _check_user_for_user_id(user_id: int) -> int:
 
 
 def _get_user_id_from_venue_id(venue_id: int) -> int:
-    if not FeatureToggle.WIP_CONNECT_AS_EXTENDED.is_active():
-        raise ValueError(
-            "L'utilisation de la version étendue de « connect as » requiert l'activation de la feature : WIP_CONNECT_AS_EXTENDED"
-        )
     query = (
         _get_connect_as_base_query()
         .join(offerers_models.UserOfferer.offerer)
@@ -361,10 +357,6 @@ def _get_user_id_from_venue_id(venue_id: int) -> int:
 
 
 def _get_user_id_from_offerer_id(offerer_id: int) -> int:
-    if not FeatureToggle.WIP_CONNECT_AS_EXTENDED.is_active():
-        raise ValueError(
-            "L'utilisation de la version étendue de « connect as » requiert l'activation de la feature : WIP_CONNECT_AS_EXTENDED"
-        )
     query = _get_connect_as_base_query().filter(offerers_models.UserOfferer.offererId == offerer_id)
     user_id = _get_best_user_id_for_connect_as(query)
     if not user_id:
@@ -373,10 +365,6 @@ def _get_user_id_from_offerer_id(offerer_id: int) -> int:
 
 
 def _get_user_id_from_offer_id(offer_id: int) -> int:
-    if not FeatureToggle.WIP_CONNECT_AS_EXTENDED.is_active():
-        raise ValueError(
-            "L'utilisation de la version étendue de « connect as » requiert l'activation de la feature : WIP_CONNECT_AS_EXTENDED"
-        )
     query = (
         _get_connect_as_base_query()
         .join(offerers_models.UserOfferer.offerer)
@@ -391,10 +379,6 @@ def _get_user_id_from_offer_id(offer_id: int) -> int:
 
 
 def _get_user_id_from_collective_offer_id(offer_id: int) -> int:
-    if not FeatureToggle.WIP_CONNECT_AS_EXTENDED.is_active():
-        raise ValueError(
-            "L'utilisation de la version étendue de « connect as » requiert l'activation de la feature : WIP_CONNECT_AS_EXTENDED"
-        )
     query = (
         _get_connect_as_base_query()
         .join(offerers_models.UserOfferer.offerer)
@@ -409,10 +393,6 @@ def _get_user_id_from_collective_offer_id(offer_id: int) -> int:
 
 
 def _get_user_id_from_collective_offer_template_id(offer_id: int) -> int:
-    if not FeatureToggle.WIP_CONNECT_AS_EXTENDED.is_active():
-        raise ValueError(
-            "L'utilisation de la version étendue de « connect as » requiert l'activation de la feature : WIP_CONNECT_AS_EXTENDED"
-        )
     query = (
         _get_connect_as_base_query()
         .join(offerers_models.UserOfferer.offerer)
@@ -429,10 +409,6 @@ def _get_user_id_from_collective_offer_template_id(offer_id: int) -> int:
 
 
 def _get_user_id_from_bank_account_id(bank_account_id: int) -> int:
-    if not FeatureToggle.WIP_CONNECT_AS_EXTENDED.is_active():
-        raise ValueError(
-            "L'utilisation de la version étendue de « connect as » requiert l'activation de la feature : WIP_CONNECT_AS_EXTENDED"
-        )
     query = (
         _get_connect_as_base_query()
         .join(offerers_models.UserOfferer.offerer)
