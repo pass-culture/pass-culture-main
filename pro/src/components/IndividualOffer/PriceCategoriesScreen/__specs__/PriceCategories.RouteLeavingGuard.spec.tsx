@@ -62,7 +62,7 @@ const renderPriceCategories = (
 
       <Route
         path={getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          step: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
           mode: OFFER_WIZARD_MODE.CREATION,
         })}
         element={<div>There is the informations route content</div>}

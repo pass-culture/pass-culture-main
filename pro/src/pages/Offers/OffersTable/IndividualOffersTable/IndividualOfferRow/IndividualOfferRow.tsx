@@ -33,7 +33,6 @@ export const IndividualOfferRow = ({
   selectOffer,
   isFirstRow,
 }: IndividualOfferRowProps) => {
-  const isSplitOfferEnabled = useActiveFeature('WIP_SPLIT_OFFER')
   const offerAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const editionOfferLink = useOfferEditionURL({
@@ -41,7 +40,6 @@ export const IndividualOfferRow = ({
     offerId: offer.id,
     isShowcase: false,
     status: offer.status,
-    isSplitOfferEnabled,
   })
   const editionStockLink = useOfferStockEditionURL(false, offer.id, false)
 

@@ -167,7 +167,7 @@ describe('IndividualOfferRow', () => {
         const links = screen.getAllByRole('link')
         expect(links[links.length - 1]).toHaveAttribute(
           'href',
-          `/offre/individuelle/${offer.id}/recapitulatif`
+          `/offre/individuelle/${offer.id}/recapitulatif/details`
         )
       })
 
@@ -195,7 +195,7 @@ describe('IndividualOfferRow', () => {
       expect(offerTitle).toBeInTheDocument()
       expect(offerTitle).toHaveAttribute(
         'href',
-        `/offre/individuelle/${props.offer.id}/recapitulatif`
+        `/offre/individuelle/${props.offer.id}/recapitulatif/details`
       )
     })
   })
@@ -408,7 +408,7 @@ describe('IndividualOfferRow', () => {
     const links = screen.getAllByRole('link')
     expect(links[links.length - 1]).toHaveAttribute(
       'href',
-      `/offre/individuelle/${offer.id}/creation/informations`
+      `/offre/individuelle/${offer.id}/creation/details`
     )
   })
 })

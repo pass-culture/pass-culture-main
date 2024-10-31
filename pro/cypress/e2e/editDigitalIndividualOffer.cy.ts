@@ -13,7 +13,6 @@ describe('Edit digital individual offers', () => {
         url: 'http://localhost:5001/sandboxes/pro/create_regular_pro_user_with_virtual_offer',
       }).then((response) => {
         login = response.body.user.email
-        cy.setFeatureFlags([{ name: 'WIP_SPLIT_OFFER', isActive: true }])
       })
     })
 
@@ -92,7 +91,6 @@ describe('Edit digital individual offers', () => {
         url: 'http://localhost:5001/sandboxes/pro/create_pro_user_with_bookings',
       }).then((response) => {
         login = response.body.user.email
-        cy.setFeatureFlags([{ name: 'WIP_SPLIT_OFFER', isActive: true }])
       })
     })
 

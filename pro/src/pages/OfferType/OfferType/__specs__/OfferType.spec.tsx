@@ -51,7 +51,7 @@ const renderOfferTypes = (structureId?: string, venueId?: string) => {
         element={<div>Création vitrine collectif</div>}
       />
       <Route
-        path="/offre/individuelle/creation/informations"
+        path="/offre/individuelle/creation/details"
         element={<div>Création individuel</div>}
       />
       <Route

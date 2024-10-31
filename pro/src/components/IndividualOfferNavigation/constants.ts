@@ -1,5 +1,4 @@
 export enum OFFER_WIZARD_STEP_IDS {
-  INFORMATIONS = 'informations',
   DETAILS = 'details',
   USEFUL_INFORMATIONS = 'pratiques',
   TARIFS = 'tarifs',

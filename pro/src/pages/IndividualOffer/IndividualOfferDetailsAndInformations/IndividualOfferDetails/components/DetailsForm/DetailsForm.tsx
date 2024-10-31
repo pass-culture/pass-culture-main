@@ -79,8 +79,6 @@ export const DetailsForm = ({
     offerAddressEnabled
   )
 
-  const splitOfferEnabled = useActiveFeature('WIP_SPLIT_OFFER')
-
   async function getSuggestedSubcategories() {
     if (!areSuggestedSubcategoriesUsed && !offer) {
       return
@@ -132,11 +130,6 @@ export const DetailsForm = ({
   const isSubCategorySelected =
     subcategoryId !== DEFAULT_DETAILS_FORM_VALUES.subcategoryId
 
-  // Show the field if more than 1 venue (whatever the FF),
-  // otherwise if there is only 1 venue, we want to show only if both offerAddress and splitOfferEnabled are enabled
-  const SHOW_VENUE_SELECTION_FIELD =
-    venueOptions.length > 1 || (!offerAddressEnabled && !splitOfferEnabled)
-
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const showAddVenueBanner =
@@ -175,7 +168,7 @@ export const DetailsForm = ({
         )}
         {!showAddVenueBanner && (
           <>
-            {SHOW_VENUE_SELECTION_FIELD && (
+            {venueOptions.length > 1 && (
               <FormLayout.Row>
                 <Select
                   label={offerAddressEnabled ? 'Qui propose l’offre ?' : 'Lieu'}

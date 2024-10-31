@@ -15,7 +15,6 @@ import {
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { serializeApiCollectiveFilters } from 'commons/core/Offers/utils/serializer'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useSuggestedSubcategoriesAbTest } from 'commons/hooks/useSuggestedSubcategoriesAbTest'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
@@ -33,7 +32,6 @@ import styles from './OfferType.module.scss'
 import { OfferTypeFormValues } from './types'
 
 export const OfferTypeScreen = (): JSX.Element => {
-  const isSplitOfferEnabled = useActiveFeature('WIP_SPLIT_OFFER')
   const navigate = useNavigate()
   const location = useLocation()
   const queryParams = new URLSearchParams(location.search)
@@ -78,22 +76,13 @@ export const OfferTypeScreen = (): JSX.Element => {
         params.append('offer-type', values.individualOfferSubtype)
       }
 
-      return isSplitOfferEnabled
-        ? navigate({
-            pathname: getIndividualOfferUrl({
-              step: OFFER_WIZARD_STEP_IDS.DETAILS,
-              mode: OFFER_WIZARD_MODE.CREATION,
-              isSplitOfferEnabled,
-            }),
-            search: params.toString(),
-          })
-        : navigate({
-            pathname: getIndividualOfferUrl({
-              step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-              mode: OFFER_WIZARD_MODE.CREATION,
-            }),
-            search: params.toString(),
-          })
+      return navigate({
+        pathname: getIndividualOfferUrl({
+          step: OFFER_WIZARD_STEP_IDS.DETAILS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        }),
+        search: params.toString(),
+      })
     }
 
     // Offer type is EDUCATIONAL

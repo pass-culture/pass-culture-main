@@ -12,7 +12,6 @@ type UseOfferEditionURL = {
   offerId: number
   isShowcase?: boolean
   status?: string
-  isSplitOfferEnabled?: boolean
 }
 
 export const useOfferEditionURL = ({
@@ -20,7 +19,6 @@ export const useOfferEditionURL = ({
   offerId,
   isShowcase,
   status,
-  isSplitOfferEnabled = false,
 }: UseOfferEditionURL): string => {
   if (isOfferEducational) {
     const id = computeURLCollectiveOfferId(offerId, Boolean(isShowcase))
@@ -33,18 +31,14 @@ export const useOfferEditionURL = ({
     return getIndividualOfferUrl({
       offerId,
       mode: OFFER_WIZARD_MODE.CREATION,
-      step: isSplitOfferEnabled
-        ? OFFER_WIZARD_STEP_IDS.DETAILS
-        : OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+      step: OFFER_WIZARD_STEP_IDS.DETAILS,
     })
   }
 
   return getIndividualOfferUrl({
     offerId,
     mode: OFFER_WIZARD_MODE.READ_ONLY,
-    step: isSplitOfferEnabled
-      ? OFFER_WIZARD_STEP_IDS.DETAILS
-      : OFFER_WIZARD_STEP_IDS.SUMMARY,
+    step: OFFER_WIZARD_STEP_IDS.DETAILS,
   })
 }
 

@@ -1,340 +1,251 @@
 import { screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
 import React from 'react'
-import { generatePath, Route, Routes } from 'react-router-dom'
 
-import {
-  IndividualOfferContextValues,
-  IndividualOfferContext,
-} from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { IndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
-import {
-  getIndividualOfferFactory,
-  individualOfferContextValuesFactory,
-} from 'commons/utils/factories/individualApiFactories'
+import { individualOfferContextValuesFactory } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { OFFER_WIZARD_STEP_IDS } from '../constants'
 import { IndividualOfferNavigation } from '../IndividualOfferNavigation'
 
-const offerId = 12
+type IndividualOfferNavigationTestProps = {
+  mode?: OFFER_WIZARD_MODE
+  isEvent?: boolean
+  isUsefulInformationSubmitted?: boolean
+  hasPriceCategories?: boolean
+  hasStocks?: boolean
+  storeOverrides?: any
+}
 
-const renderIndividualOfferNavigation = (
-  contextOverride: Partial<IndividualOfferContextValues> = {},
-  url = getIndividualOfferPath({
-    step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-    mode: OFFER_WIZARD_MODE.CREATION,
-  }),
-  storeOverrides = {}
-) => {
-  const contextValues = individualOfferContextValuesFactory(contextOverride)
+const renderIndividualOfferNavigation = ({
+  mode = OFFER_WIZARD_MODE.CREATION,
+  isEvent = false,
+  isUsefulInformationSubmitted = false,
+  hasPriceCategories = false,
+  hasStocks = false,
+  storeOverrides,
+}: IndividualOfferNavigationTestProps = {}) => {
+  const contextValues = individualOfferContextValuesFactory({ isEvent })
+  if (contextValues.offer) {
+    if (!hasPriceCategories) {
+      contextValues.offer = {
+        ...contextValues.offer,
+        priceCategories: [],
+      }
+    }
+
+    if (!hasStocks) {
+      contextValues.offer = {
+        ...contextValues.offer,
+        hasStocks: false,
+      }
+    }
+
+    if (!isEvent) {
+      contextValues.offer = {
+        ...contextValues.offer,
+        isEvent: false,
+      }
+    }
+  }
 
   renderWithProviders(
     <IndividualOfferContext.Provider value={contextValues}>
-      <IndividualOfferNavigation isUsefulInformationSubmitted />
-      <Routes>
-        {[OFFER_WIZARD_MODE.CREATION, OFFER_WIZARD_MODE.EDITION].map((mode) => (
-          <React.Fragment key={mode}>
-            <Route
-              path={getIndividualOfferPath({
-                step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-                mode,
-              })}
-              element={<div>Informations screen</div>}
-            />
-
-            <Route
-              path={getIndividualOfferPath({
-                step: OFFER_WIZARD_STEP_IDS.STOCKS,
-                mode,
-              })}
-              element={<div>Stocks screen</div>}
-            />
-
-            <Route
-              path={getIndividualOfferPath({
-                step: OFFER_WIZARD_STEP_IDS.TARIFS,
-                mode,
-              })}
-              element={<div>Tarifs screen</div>}
-            />
-
-            <Route
-              path={getIndividualOfferPath({
-                step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-                mode,
-              })}
-              element={<div>Summary screen</div>}
-            />
-          </React.Fragment>
-        ))}
-
-        <Route
-          path={getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          })}
-          element={<div>Confirmation screen</div>}
-        />
-      </Routes>
+      <IndividualOfferNavigation
+        isUsefulInformationSubmitted={isUsefulInformationSubmitted}
+      />
     </IndividualOfferContext.Provider>,
-    { storeOverrides, initialRouterEntries: [url] }
+    {
+      storeOverrides,
+      initialRouterEntries: [
+        getIndividualOfferPath({
+          step: OFFER_WIZARD_STEP_IDS.DETAILS,
+          mode,
+        }),
+      ],
+    }
   )
 }
 
-describe('test IndividualOfferNavigation', () => {
-  describe('in creation', () => {
-    it('should render stepper in creation', () => {
-      renderIndividualOfferNavigation()
+const LABELS = {
+  DETAILS: /Détails/,
+  USEFUL_INFORMATIONS: /Informations pratiques/,
+  PRICES: /Tarifs/,
+  DATES_CAPACITIES: /Dates/,
+  STOCK_PRICES: /Stock/,
+  SUMMARY: /Récapitulatif/,
+  BOOKING: /Réservation/,
+}
 
-      expect(screen.getByTestId('stepper')).toBeInTheDocument()
+describe('IndividualOfferNavigation', () => {
+  it('should always display "Détails" and "Informations pratiques" active/enabled steps', () => {
+    renderIndividualOfferNavigation()
+
+    const detailsStep = screen.getByRole('link', { name: LABELS.DETAILS })
+    expect(detailsStep).toBeInTheDocument()
+
+    const usefulInformationsStep = screen.getByRole('link', {
+      name: LABELS.USEFUL_INFORMATIONS,
     })
-
-    it('should render steps when no offer is given', async () => {
-      renderIndividualOfferNavigation({
-        offer: getIndividualOfferFactory({ isEvent: false }),
-      })
-      expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
-      expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
-      expect(screen.getByText('Récapitulatif')).toBeInTheDocument()
-      expect(screen.queryByText('Confirmation')).not.toBeInTheDocument()
-
-      expect(screen.getByText('Informations screen')).toBeInTheDocument()
-      expect(screen.getByTestId('stepper')).toBeInTheDocument()
-
-      await userEvent.click(screen.getByText('Stock & Prix'))
-      expect(screen.getByText('Stocks screen')).toBeInTheDocument()
-      await userEvent.click(screen.getByText('Récapitulatif'))
-      expect(screen.getByText('Summary screen')).toBeInTheDocument()
-    })
-
-    it('should render steps when offer without stock is given', async () => {
-      const offer = getIndividualOfferFactory({
-        hasStocks: false,
-        isEvent: false,
-      })
-
-      renderIndividualOfferNavigation({ offer })
-
-      expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
-      expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
-      expect(screen.getByText('Récapitulatif')).toBeInTheDocument()
-      expect(screen.queryByText('Confirmation')).not.toBeInTheDocument()
-
-      expect(screen.getByText('Informations screen')).toBeInTheDocument()
-
-      await userEvent.click(screen.getByText('Stock & Prix'))
-      expect(screen.getByText('Stocks screen')).toBeInTheDocument()
-      await userEvent.click(screen.getByText('Récapitulatif'))
-      expect(screen.getByText('Stocks screen')).toBeInTheDocument()
-    })
-
-    it('should render steps when offer and stock are given', async () => {
-      const offer = getIndividualOfferFactory({
-        isEvent: false,
-      })
-
-      renderIndividualOfferNavigation({ offer })
-
-      expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
-      expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
-      expect(screen.getByText('Récapitulatif')).toBeInTheDocument()
-      expect(screen.queryByText('Confirmation')).not.toBeInTheDocument()
-
-      expect(screen.getByText('Informations screen')).toBeInTheDocument()
-
-      await userEvent.click(screen.getByText('Stock & Prix'))
-      expect(screen.getByText('Stocks screen')).toBeInTheDocument()
-      await userEvent.click(screen.getByText('Récapitulatif'))
-      expect(screen.getByText('Summary screen')).toBeInTheDocument()
-    })
-
-    it('should render steps on Information', () => {
-      renderIndividualOfferNavigation(
-        { offer: getIndividualOfferFactory({ isEvent: false }) },
-        generatePath(
-          getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          }),
-          { offerId: offerId }
-        )
-      )
-
-      expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
-      expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
-      expect(screen.getByText('Récapitulatif')).toBeInTheDocument()
-      expect(screen.queryByText('Confirmation')).not.toBeInTheDocument()
-      expect(screen.getByText('Informations screen')).toBeInTheDocument()
-    })
-
-    it('should render steps on Stocks', () => {
-      renderIndividualOfferNavigation(
-        { offer: getIndividualOfferFactory({ isEvent: false }) },
-        generatePath(
-          getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          }),
-          { offerId: offerId }
-        )
-      )
-
-      expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
-      expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
-      expect(screen.getByText('Récapitulatif')).toBeInTheDocument()
-      expect(screen.queryByText('Confirmation')).not.toBeInTheDocument()
-      expect(screen.getByText('Stocks screen')).toBeInTheDocument()
-    })
-
-    it('should render steps on Summary', () => {
-      renderIndividualOfferNavigation(
-        { offer: getIndividualOfferFactory({ isEvent: false }) },
-        generatePath(
-          getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          }),
-          { offerId: offerId }
-        )
-      )
-
-      expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
-      expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
-      expect(screen.getByText('Récapitulatif')).toBeInTheDocument()
-      expect(screen.queryByText('Confirmation')).not.toBeInTheDocument()
-      expect(screen.getByText('Summary screen')).toBeInTheDocument()
-    })
-
-    it('should render steps on tarif', () => {
-      renderIndividualOfferNavigation(
-        {
-          offer: {
-            ...getIndividualOfferFactory(),
-            isEvent: true,
-          },
-        },
-        generatePath(
-          getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.TARIFS,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          }),
-          { offerId: offerId }
-        )
-      )
-
-      expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
-      expect(screen.getByText('Dates & Capacités')).toBeInTheDocument()
-      expect(screen.queryByText('Stock & Prix')).not.toBeInTheDocument()
-      expect(screen.getByText('Tarifs')).toBeInTheDocument()
-
-      expect(screen.getByText('Récapitulatif')).toBeInTheDocument()
-      expect(screen.queryByText('Confirmation')).not.toBeInTheDocument()
-      expect(screen.getByText('Tarifs screen')).toBeInTheDocument()
-    })
-
-    it('should not render tarif step when offer is not an event', () => {
-      renderIndividualOfferNavigation(
-        {
-          offer: {
-            ...getIndividualOfferFactory(),
-            isEvent: false,
-          },
-        },
-        generatePath(
-          getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          }),
-          { offerId: offerId }
-        )
-      )
-
-      expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
-      expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
-      expect(screen.queryByText('Dates & Capacités')).not.toBeInTheDocument()
-      expect(screen.queryByText('Tarifs')).not.toBeInTheDocument()
-      expect(screen.getByText('Récapitulatif')).toBeInTheDocument()
-      expect(screen.queryByText('Confirmation')).not.toBeInTheDocument()
-      expect(screen.getByText('Stocks screen')).toBeInTheDocument()
-    })
+    expect(usefulInformationsStep).toBeInTheDocument()
   })
 
-  describe('in edition', () => {
-    it('should render tabs navigation in edition', () => {
-      const offer = getIndividualOfferFactory({
-        id: offerId,
+  describe('when offer is an event', () => {
+    it('should display "Tarifs" and "Dates & Capacités" steps', () => {
+      renderIndividualOfferNavigation({ isEvent: true })
+
+      const pricesStepAsALink = screen.queryByRole('link', {
+        name: LABELS.PRICES,
+      })
+      expect(pricesStepAsALink).not.toBeInTheDocument()
+      const pricesStep = screen.getByText(LABELS.PRICES)
+      expect(pricesStep).toBeInTheDocument()
+
+      const datesCapacitiesStepAsALink = screen.queryByRole('link', {
+        name: LABELS.DATES_CAPACITIES,
+      })
+      expect(datesCapacitiesStepAsALink).not.toBeInTheDocument()
+      const datesCapacitiesStep = screen.getByText(LABELS.DATES_CAPACITIES)
+      expect(datesCapacitiesStep).toBeInTheDocument()
+    })
+
+    it('should display "Tarifs" step as active/enabled when offer is no longer a non-published draft', () => {
+      renderIndividualOfferNavigation({
+        isEvent: true,
+        isUsefulInformationSubmitted: true,
+      })
+
+      const pricesStep = screen.getByText(LABELS.PRICES)
+      expect(pricesStep).toBeInTheDocument()
+
+      const datesCapacitiesStep = screen.getByText(LABELS.DATES_CAPACITIES)
+      expect(datesCapacitiesStep).toBeInTheDocument()
+    })
+
+    it('should display "Tarifs" step as active/enabled when offer has price categories', () => {
+      renderIndividualOfferNavigation({
+        isEvent: true,
+        hasPriceCategories: true,
+      })
+
+      const pricesStep = screen.getByText(LABELS.PRICES)
+      expect(pricesStep).toBeInTheDocument()
+    })
+
+    it('should display "Dates et Capacités" step as active/enabled when offer has price categories', () => {
+      renderIndividualOfferNavigation({
+        isEvent: true,
+        hasPriceCategories: true,
+      })
+
+      const datesCapacitiesStep = screen.getByText(LABELS.DATES_CAPACITIES)
+      expect(datesCapacitiesStep).toBeInTheDocument()
+    })
+
+    it('should never display "Stock & Prix" step', () => {
+      renderIndividualOfferNavigation({
         isEvent: true,
       })
 
-      renderIndividualOfferNavigation(
-        { offer },
-        generatePath(
-          getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-            mode: OFFER_WIZARD_MODE.EDITION,
-          }),
-          { offerId: offerId }
-        )
-      )
+      const stockPricesStep = screen.queryByText(LABELS.STOCK_PRICES)
+      expect(stockPricesStep).not.toBeInTheDocument()
+    })
+  })
 
-      expect(screen.getByText('Informations screen')).toBeInTheDocument()
-      expect(
-        screen.getByRole('tab', { name: 'Dates & Capacités' })
-      ).toBeInTheDocument()
+  describe('when offer is not an event', () => {
+    it('should display "Stock & Prix" step', () => {
+      renderIndividualOfferNavigation({ isEvent: false })
+
+      const stockStepAsALink = screen.queryByRole('link', {
+        name: LABELS.STOCK_PRICES,
+      })
+      expect(stockStepAsALink).not.toBeInTheDocument()
+      const stockStep = screen.getByText(LABELS.STOCK_PRICES)
+      expect(stockStep).toBeInTheDocument()
     })
 
-    it('should render steps on Information', () => {
-      const offer = getIndividualOfferFactory({
-        id: offerId,
+    it('should display "Stock & Prix" step as active/enabled when offer is no longer a non-published draft', () => {
+      renderIndividualOfferNavigation({
         isEvent: false,
+        isUsefulInformationSubmitted: true,
       })
 
-      renderIndividualOfferNavigation(
-        { offer },
-        generatePath(
-          getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-            mode: OFFER_WIZARD_MODE.EDITION,
-          }),
-          { offerId: offerId }
-        )
-      )
-
-      expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
-      expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
-      expect(screen.queryByText('Récapitulatif')).not.toBeInTheDocument()
-      expect(screen.queryByText('Confirmation')).not.toBeInTheDocument()
-      expect(screen.queryByText('Réservations')).toBeInTheDocument()
-
-      expect(screen.getByText('Informations screen')).toBeInTheDocument()
+      const stockStep = screen.getByText(LABELS.STOCK_PRICES)
+      expect(stockStep).toBeInTheDocument()
     })
 
-    it('should render steps on Stocks', () => {
-      const offer = getIndividualOfferFactory({
-        id: offerId,
+    it('should display "Stock & Prix" step as active/enabled when offer has stocks', () => {
+      renderIndividualOfferNavigation({
         isEvent: false,
+        hasStocks: true,
       })
 
-      renderIndividualOfferNavigation(
-        { offer },
-        generatePath(
-          getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.EDITION,
-          }),
-          { offerId: offerId }
-        )
-      )
+      const stockStep = screen.getByText(LABELS.STOCK_PRICES)
+      expect(stockStep).toBeInTheDocument()
+    })
+  })
 
-      expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
-      expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
-      expect(screen.queryByText('Récapitulatif')).not.toBeInTheDocument()
-      expect(screen.queryByText('Confirmation')).not.toBeInTheDocument()
-      expect(screen.queryByText('Réservations')).toBeInTheDocument()
+  describe('on creation mode', () => {
+    it('should display "Récapitulatif" step', () => {
+      renderIndividualOfferNavigation({ mode: OFFER_WIZARD_MODE.CREATION })
 
-      expect(screen.getByText('Stocks screen')).toBeInTheDocument()
+      const summaryStepAsALink = screen.queryByRole('link', {
+        name: LABELS.SUMMARY,
+      })
+      expect(summaryStepAsALink).not.toBeInTheDocument()
+      const summaryStep = screen.getByText(LABELS.SUMMARY)
+      expect(summaryStep).toBeInTheDocument()
+    })
+
+    it('should display "Récapitulatif" step as active/enabled when offer has stocks', () => {
+      renderIndividualOfferNavigation({
+        mode: OFFER_WIZARD_MODE.CREATION,
+        hasStocks: true,
+      })
+
+      const summaryStep = screen.getByText(LABELS.SUMMARY)
+      expect(summaryStep).toBeInTheDocument()
+    })
+
+    it('should never display "Réservation" step', () => {
+      renderIndividualOfferNavigation({ mode: OFFER_WIZARD_MODE.CREATION })
+
+      const bookingStep = screen.queryByText(LABELS.BOOKING)
+      expect(bookingStep).not.toBeInTheDocument()
+    })
+  })
+
+  describe('on edition mode', () => {
+    it('should display "Réservation" active/enabled step', () => {
+      renderIndividualOfferNavigation({ mode: OFFER_WIZARD_MODE.EDITION })
+
+      const bookingStep = screen.getByText(LABELS.BOOKING)
+      expect(bookingStep).toBeInTheDocument()
+    })
+
+    it('should never display "Récapitulatif" step', () => {
+      renderIndividualOfferNavigation({ mode: OFFER_WIZARD_MODE.EDITION })
+
+      const summaryStep = screen.queryByText(LABELS.SUMMARY)
+      expect(summaryStep).not.toBeInTheDocument()
+    })
+  })
+
+  describe('on read-only mode', () => {
+    it('should display "Réservation" active/enabled step', () => {
+      renderIndividualOfferNavigation({ mode: OFFER_WIZARD_MODE.READ_ONLY })
+
+      const bookingStep = screen.getByText(LABELS.BOOKING)
+      expect(bookingStep).toBeInTheDocument()
+    })
+
+    it('should never display "Récapitulatif" step', () => {
+      renderIndividualOfferNavigation({ mode: OFFER_WIZARD_MODE.READ_ONLY })
+
+      const summaryStep = screen.queryByText(LABELS.SUMMARY)
+      expect(summaryStep).not.toBeInTheDocument()
     })
   })
 })

@@ -12,7 +12,7 @@ describe('useOfferEditionURL', () => {
     })
 
     expect(urlResult).toStrictEqual(
-      `/offre/individuelle/${offerId}/recapitulatif`
+      `/offre/individuelle/${offerId}/recapitulatif/details`
     )
   })
 
@@ -38,20 +38,6 @@ describe('useOfferEditionURL', () => {
 
     expect(urlResult).toStrictEqual(
       `/offre/T-${offerId}/collectif/recapitulatif`
-    )
-  })
-
-  it('should return right url when offer is individual after split of offer', () => {
-    const offerId = 3
-
-    const urlResult = useOfferEditionURL({
-      isOfferEducational: false,
-      offerId,
-      isSplitOfferEnabled: true,
-    })
-
-    expect(urlResult).toStrictEqual(
-      `/offre/individuelle/${offerId}/recapitulatif/details`
     )
   })
 
