@@ -1099,9 +1099,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
     # session
     # current user
     # pro user data
-    expected_num_queries_with_user = 3
-    # get feature flags
-    expected_num_queries_without_user = 4
+    expected_num_queries = 3
 
     @pytest.mark.parametrize("roles", [[users_models.UserRole.PRO], [users_models.UserRole.NON_ATTACHED_PRO]])
     def test_connect_as_user(self, authenticated_client, legit_user, roles):
@@ -1118,7 +1116,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_with_user,
+            expected_num_queries=self.expected_num_queries,
         )
 
         # check url form
@@ -1135,7 +1133,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_with_user,
+            expected_num_queries=self.expected_num_queries,
         )
 
         # check url form
@@ -1155,7 +1153,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_with_user,
+            expected_num_queries=self.expected_num_queries,
         )
 
         # check url form
@@ -1172,7 +1170,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_with_user + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
         )
         assert response.status_code == 404
 
@@ -1183,7 +1181,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_with_user + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
         )
 
         assert response.status_code == 303
@@ -1215,7 +1213,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user,
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for transaction rollback
         )
 
         assert response.status_code == 303
@@ -1224,7 +1222,6 @@ class ConnectAsProUserTest(PostEndpointHelper):
             redirected_response = authenticated_client.get(response.location)
             assert html_parser.extract_alert(redirected_response.data) == warning
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_venue(self, authenticated_client, legit_user):
         venue = offerers_factories.VenueFactory(
             managingOfferer=offerers_factories.UserOffererFactory().offerer,
@@ -1241,7 +1238,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user,
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1249,26 +1246,6 @@ class ConnectAsProUserTest(PostEndpointHelper):
         assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
         assert SecureToken(token=key_token).data == expected_token_data
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=False)
-    def test_connect_as_venue_protected_by_feature_flag(self, authenticated_client):
-        venue = offerers_factories.VenueFactory()
-
-        form_data = {"object_type": "venue", "object_id": venue.id, "redirect": "/venue"}
-        response = self.post_to_endpoint(
-            authenticated_client,
-            form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user,
-        )
-
-        assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
-        redirected_response = authenticated_client.get(response.location)
-        assert (
-            html_parser.extract_alert(redirected_response.data)
-            == "L'utilisation de la version étendue de « connect as » requiert l'activation de la feature : WIP_CONNECT_AS_EXTENDED"
-        )
-
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_venue_without_user(self, authenticated_client):
         venue = offerers_factories.VenueFactory()
 
@@ -1276,7 +1253,9 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+            # +1 for WIP_ENABLE_OFFER_ADDRESS
+            # +1 for rollback query
+            expected_num_queries=self.expected_num_queries + 2,
         )
 
         assert response.status_code == 303
@@ -1287,13 +1266,14 @@ class ConnectAsProUserTest(PostEndpointHelper):
             == "Aucun utilisateur approprié n'a été trouvé pour se connecter à ce lieu"
         )
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_venue_not_found(self, authenticated_client):
         form_data = {"object_type": "venue", "object_id": 0, "redirect": "/venue"}
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+            # +1 for WIP_ENABLE_OFFER_ADDRESS
+            # +1 for rollback query
+            expected_num_queries=self.expected_num_queries + 2,
         )
 
         assert response.status_code == 303
@@ -1304,7 +1284,6 @@ class ConnectAsProUserTest(PostEndpointHelper):
             == "Aucun utilisateur approprié n'a été trouvé pour se connecter à ce lieu"
         )
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_venue_without_active_user(self, authenticated_client):
         venue = offerers_factories.VenueFactory(
             managingOfferer=offerers_factories.UserOffererFactory(
@@ -1316,7 +1295,9 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+            # +1 for WIP_ENABLE_OFFER_ADDRESS
+            # +1 for rollback query
+            expected_num_queries=self.expected_num_queries + 2,
         )
 
         assert response.status_code == 303
@@ -1327,7 +1308,6 @@ class ConnectAsProUserTest(PostEndpointHelper):
             == "Aucun utilisateur approprié n'a été trouvé pour se connecter à ce lieu"
         )
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     @pytest.mark.parametrize(
         "roles",
         [
@@ -1346,7 +1326,9 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+            # +1 for WIP_ENABLE_OFFER_ADDRESS
+            # +1 for rollback query
+            expected_num_queries=self.expected_num_queries + 2,
         )
 
         assert response.status_code == 303
@@ -1357,7 +1339,6 @@ class ConnectAsProUserTest(PostEndpointHelper):
             == "Aucun utilisateur approprié n'a été trouvé pour se connecter à ce lieu"
         )
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_venue_user_has_multiple_offerer(self, authenticated_client, legit_user):
         hidden_user_offerer = offerers_factories.UserOffererFactory()
         offerers_factories.UserOffererFactory(user=hidden_user_offerer.user)
@@ -1374,7 +1355,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user,
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1382,7 +1363,6 @@ class ConnectAsProUserTest(PostEndpointHelper):
         assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
         assert SecureToken(token=key_token).data == expected_token_data
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_offerer(self, authenticated_client, legit_user):
         user_offerer = offerers_factories.UserOffererFactory()
         form_data = {"object_type": "offerer", "object_id": user_offerer.offerer.id, "redirect": "/venue"}
@@ -1396,7 +1376,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user,
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1404,26 +1384,6 @@ class ConnectAsProUserTest(PostEndpointHelper):
         assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
         assert SecureToken(token=key_token).data == expected_token_data
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=False)
-    def test_connect_as_offerer_protected_by_feature_flag(self, authenticated_client):
-        user_offerer = offerers_factories.UserOffererFactory()
-
-        form_data = {"object_type": "offerer", "object_id": user_offerer.offerer.id, "redirect": "/venue"}
-        response = self.post_to_endpoint(
-            authenticated_client,
-            form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user,
-        )
-
-        assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
-        redirected_response = authenticated_client.get(response.location)
-        assert (
-            html_parser.extract_alert(redirected_response.data)
-            == "L'utilisation de la version étendue de « connect as » requiert l'activation de la feature : WIP_CONNECT_AS_EXTENDED"
-        )
-
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_offerer_without_user(self, authenticated_client):
         offerer = offerers_factories.OffererFactory()
 
@@ -1431,7 +1391,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
         )
 
         assert response.status_code == 303
@@ -1442,13 +1402,12 @@ class ConnectAsProUserTest(PostEndpointHelper):
             == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette structure"
         )
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_offerer_not_found(self, authenticated_client):
         form_data = {"object_type": "offerer", "object_id": 0, "redirect": "/venue"}
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
         )
 
         assert response.status_code == 303
@@ -1459,7 +1418,6 @@ class ConnectAsProUserTest(PostEndpointHelper):
             == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette structure"
         )
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_offerer_without_active_user(self, authenticated_client):
         user_offerer = offerers_factories.UserOffererFactory(
             user__isActive=False,
@@ -1469,7 +1427,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
         )
 
         assert response.status_code == 303
@@ -1480,7 +1438,6 @@ class ConnectAsProUserTest(PostEndpointHelper):
             == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette structure"
         )
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     @pytest.mark.parametrize(
         "roles",
         [
@@ -1497,7 +1454,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
         )
 
         assert response.status_code == 303
@@ -1508,7 +1465,6 @@ class ConnectAsProUserTest(PostEndpointHelper):
             == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette structure"
         )
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_offerer_user_has_multiple_offerer(self, authenticated_client, legit_user):
         hidden_user_offerer = offerers_factories.UserOffererFactory()
         offerers_factories.UserOffererFactory(user=hidden_user_offerer.user)
@@ -1525,7 +1481,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user,
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1533,7 +1489,6 @@ class ConnectAsProUserTest(PostEndpointHelper):
         assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
         assert SecureToken(token=key_token).data == expected_token_data
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_offer(self, authenticated_client, legit_user):
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.OfferFactory(
@@ -1550,7 +1505,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user,
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1558,26 +1513,6 @@ class ConnectAsProUserTest(PostEndpointHelper):
         assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
         assert SecureToken(token=key_token).data == expected_token_data
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=False)
-    def test_connect_as_offer_protected_by_feature_flag(self, authenticated_client):
-        offer = offers_factories.OfferFactory()
-
-        form_data = {"object_type": "offer", "object_id": offer.id, "redirect": "/venue"}
-        response = self.post_to_endpoint(
-            authenticated_client,
-            form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user,
-        )
-
-        assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
-        redirected_response = authenticated_client.get(response.location)
-        assert (
-            html_parser.extract_alert(redirected_response.data)
-            == "L'utilisation de la version étendue de « connect as » requiert l'activation de la feature : WIP_CONNECT_AS_EXTENDED"
-        )
-
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_offer_without_user(self, authenticated_client):
         offer = offers_factories.OfferFactory()
 
@@ -1585,7 +1520,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
         )
 
         assert response.status_code == 303
@@ -1596,13 +1531,12 @@ class ConnectAsProUserTest(PostEndpointHelper):
             == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre"
         )
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_offer_not_found(self, authenticated_client):
         form_data = {"object_type": "offer", "object_id": 0, "redirect": "/venue"}
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
         )
 
         assert response.status_code == 303
@@ -1613,7 +1547,6 @@ class ConnectAsProUserTest(PostEndpointHelper):
             == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre"
         )
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_offer_without_active_user(self, authenticated_client):
         user_offerer = offerers_factories.UserOffererFactory(
             user__isActive=False,
@@ -1626,7 +1559,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
         )
 
         assert response.status_code == 303
@@ -1637,7 +1570,6 @@ class ConnectAsProUserTest(PostEndpointHelper):
             == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre"
         )
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     @pytest.mark.parametrize(
         "roles",
         [
@@ -1657,7 +1589,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
         )
 
         assert response.status_code == 303
@@ -1668,7 +1600,6 @@ class ConnectAsProUserTest(PostEndpointHelper):
             == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre"
         )
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_collective_offer_template_user_has_multiple_offerer(self, authenticated_client, legit_user):
         hidden_user_offerer = offerers_factories.UserOffererFactory()
         offerers_factories.UserOffererFactory(user=hidden_user_offerer.user)
@@ -1687,7 +1618,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user,
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1695,7 +1626,6 @@ class ConnectAsProUserTest(PostEndpointHelper):
         assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
         assert SecureToken(token=key_token).data == expected_token_data
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_bank_account(self, authenticated_client, legit_user):
         bank_account = finance_factories.BankAccountFactory(offerer=offerers_factories.UserOffererFactory().offerer)
 
@@ -1710,7 +1640,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user,
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1718,26 +1648,6 @@ class ConnectAsProUserTest(PostEndpointHelper):
         assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
         assert SecureToken(token=key_token).data == expected_token_data
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=False)
-    def test_connect_as_bank_account_protected_by_feature_flag(self, authenticated_client):
-        bank_account = finance_factories.BankAccountFactory(offerer=offerers_factories.UserOffererFactory().offerer)
-
-        form_data = {"object_type": "bank_account", "object_id": bank_account.id, "redirect": "/bank_account"}
-        response = self.post_to_endpoint(
-            authenticated_client,
-            form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user,
-        )
-
-        assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
-        redirected_response = authenticated_client.get(response.location)
-        assert (
-            html_parser.extract_alert(redirected_response.data)
-            == "L'utilisation de la version étendue de « connect as » requiert l'activation de la feature : WIP_CONNECT_AS_EXTENDED"
-        )
-
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_bank_account_without_user(self, authenticated_client):
         bank_account = finance_factories.BankAccountFactory()
 
@@ -1745,7 +1655,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
         )
 
         assert response.status_code == 303
@@ -1756,13 +1666,12 @@ class ConnectAsProUserTest(PostEndpointHelper):
             == "Aucun utilisateur approprié n'a été trouvé pour se connecter à ce compte bancaire"
         )
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_bank_account_not_found(self, authenticated_client):
         form_data = {"object_type": "bank_account", "object_id": 0, "redirect": "/bank_account"}
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
         )
 
         assert response.status_code == 303
@@ -1773,7 +1682,6 @@ class ConnectAsProUserTest(PostEndpointHelper):
             == "Aucun utilisateur approprié n'a été trouvé pour se connecter à ce compte bancaire"
         )
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_bank_account_without_active_user(self, authenticated_client):
         bank_account = finance_factories.BankAccountFactory(
             offerer=offerers_factories.UserOffererFactory(
@@ -1785,7 +1693,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
         )
 
         assert response.status_code == 303
@@ -1796,7 +1704,6 @@ class ConnectAsProUserTest(PostEndpointHelper):
             == "Aucun utilisateur approprié n'a été trouvé pour se connecter à ce compte bancaire"
         )
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     @pytest.mark.parametrize(
         "roles",
         [
@@ -1815,7 +1722,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
         )
 
         assert response.status_code == 303
@@ -1826,7 +1733,6 @@ class ConnectAsProUserTest(PostEndpointHelper):
             == "Aucun utilisateur approprié n'a été trouvé pour se connecter à ce compte bancaire"
         )
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_bank_account_user_has_multiple_offerer(self, authenticated_client, legit_user):
         hidden_user_offerer = offerers_factories.UserOffererFactory()
         offerers_factories.UserOffererFactory(user=hidden_user_offerer.user)
@@ -1843,7 +1749,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user,
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1851,7 +1757,6 @@ class ConnectAsProUserTest(PostEndpointHelper):
         assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
         assert SecureToken(token=key_token).data == expected_token_data
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_collective_offer(self, authenticated_client, legit_user):
         user_offerer = offerers_factories.UserOffererFactory()
         offer = educational_factories.CollectiveOfferFactory(
@@ -1868,7 +1773,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user,
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1876,26 +1781,6 @@ class ConnectAsProUserTest(PostEndpointHelper):
         assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
         assert SecureToken(token=key_token).data == expected_token_data
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=False)
-    def test_connect_as_collective_offer_protected_by_feature_flag(self, authenticated_client):
-        offer = educational_factories.CollectiveOfferFactory()
-
-        form_data = {"object_type": "collective_offer", "object_id": offer.id, "redirect": "/venue"}
-        response = self.post_to_endpoint(
-            authenticated_client,
-            form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user,
-        )
-
-        assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
-        redirected_response = authenticated_client.get(response.location)
-        assert (
-            html_parser.extract_alert(redirected_response.data)
-            == "L'utilisation de la version étendue de « connect as » requiert l'activation de la feature : WIP_CONNECT_AS_EXTENDED"
-        )
-
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_collective_offer_without_user(self, authenticated_client):
         offer = educational_factories.CollectiveOfferFactory()
 
@@ -1903,7 +1788,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
         )
 
         assert response.status_code == 303
@@ -1914,13 +1799,12 @@ class ConnectAsProUserTest(PostEndpointHelper):
             == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre collective"
         )
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_collective_offer_not_found(self, authenticated_client):
         form_data = {"object_type": "collective_offer", "object_id": 0, "redirect": "/venue"}
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
         )
 
         assert response.status_code == 303
@@ -1931,7 +1815,6 @@ class ConnectAsProUserTest(PostEndpointHelper):
             == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre collective"
         )
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_collective_offer_without_active_user(self, authenticated_client):
         user_offerer = offerers_factories.UserOffererFactory(
             user__isActive=False,
@@ -1944,7 +1827,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
         )
 
         assert response.status_code == 303
@@ -1955,7 +1838,6 @@ class ConnectAsProUserTest(PostEndpointHelper):
             == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre collective"
         )
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     @pytest.mark.parametrize(
         "roles",
         [
@@ -1975,7 +1857,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
         )
 
         assert response.status_code == 303
@@ -1986,7 +1868,6 @@ class ConnectAsProUserTest(PostEndpointHelper):
             == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre collective"
         )
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_collective_offer_template_user_has_multiple_offerer(self, authenticated_client, legit_user):
         hidden_user_offerer = offerers_factories.UserOffererFactory()
         offerers_factories.UserOffererFactory(user=hidden_user_offerer.user)
@@ -2005,7 +1886,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user,
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -2013,7 +1894,6 @@ class ConnectAsProUserTest(PostEndpointHelper):
         assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
         assert SecureToken(token=key_token).data == expected_token_data
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_collective_offer_template(self, authenticated_client, legit_user):
         user_offerer = offerers_factories.UserOffererFactory()
         offer = educational_factories.CollectiveOfferTemplateFactory(
@@ -2030,7 +1910,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user,
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -2038,26 +1918,6 @@ class ConnectAsProUserTest(PostEndpointHelper):
         assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
         assert SecureToken(token=key_token).data == expected_token_data
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=False)
-    def test_connect_as_collective_offer_template_protected_by_feature_flag(self, authenticated_client):
-        offer = educational_factories.CollectiveOfferTemplateFactory()
-
-        form_data = {"object_type": "collective_offer_template", "object_id": offer.id, "redirect": "/venue"}
-        response = self.post_to_endpoint(
-            authenticated_client,
-            form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user,
-        )
-
-        assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
-        redirected_response = authenticated_client.get(response.location)
-        assert (
-            html_parser.extract_alert(redirected_response.data)
-            == "L'utilisation de la version étendue de « connect as » requiert l'activation de la feature : WIP_CONNECT_AS_EXTENDED"
-        )
-
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_collective_offer_template_without_user(self, authenticated_client):
         offer = educational_factories.CollectiveOfferTemplateFactory()
 
@@ -2065,7 +1925,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
         )
 
         assert response.status_code == 303
@@ -2076,13 +1936,12 @@ class ConnectAsProUserTest(PostEndpointHelper):
             == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre collective vitrine"
         )
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_collective_offer_template_not_found(self, authenticated_client):
         form_data = {"object_type": "collective_offer_template", "object_id": 0, "redirect": "/venue"}
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
         )
 
         assert response.status_code == 303
@@ -2093,7 +1952,6 @@ class ConnectAsProUserTest(PostEndpointHelper):
             == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre collective vitrine"
         )
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_collective_offer_template_without_active_user(self, authenticated_client):
         user_offerer = offerers_factories.UserOffererFactory(
             user__isActive=False,
@@ -2106,7 +1964,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
         )
 
         assert response.status_code == 303
@@ -2117,7 +1975,6 @@ class ConnectAsProUserTest(PostEndpointHelper):
             == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre collective vitrine"
         )
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     @pytest.mark.parametrize(
         "roles",
         [
@@ -2137,7 +1994,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
         )
 
         assert response.status_code == 303
@@ -2148,7 +2005,6 @@ class ConnectAsProUserTest(PostEndpointHelper):
             == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre collective vitrine"
         )
 
-    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_collective_offer_template_user_has_multiple_offerer(self, authenticated_client, legit_user):
         hidden_user_offerer = offerers_factories.UserOffererFactory()
         offerers_factories.UserOffererFactory(user=hidden_user_offerer.user)
@@ -2167,7 +2023,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries_without_user,
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
