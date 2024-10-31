@@ -11,28 +11,39 @@
     </tr>
   </thead>
   <tbody>
-    {% for offerer_address in offerer_addresses %}
+    {% for address in offerer_addresses %}
       <tr>
         <th scope="row"></th>
-        <td>{{ offerer_address.label | empty_string_if_null }}</td>
-        <td>
-          {{ offerer_address.address.street | empty_string_if_null }} {{ offerer_address.address.postalCode }} {{ offerer_address.address.city }}
-        </td>
-        <td>{{ links.build_external_address_link(offerer_address.address) }}</td>
-        <td>
-          {% set search_params = {
-                      "search-0-search_field": "OFFERER",
-                      "search-0-operator": "IN",
-                      "search-0-offerer": offerer_id,
-                      "search-1-search_field": "ADDRESS",
-                      "search-1-operator": "IN",
-                      "search-1-address": offerer_address.address.id,
-                    } %}
-          <a href="{{ url_for('backoffice_web.offer.list_offers', **search_params) }}"
-             class="link-primary">individuelles</a>
-        </td>
-      </tr>
-    {% endfor %}
-  </tbody>
-</table>
-</turbo-frame>
+        {% if address.titles %}
+          <td>
+            {# Display all address.label/venue.name except `None` values #}
+            {% for title in address.titles if title %}
+              {% if not loop.last %}
+                {# Trailing comma for elements except last one #}
+                {{ title }},
+              {% else %}
+                {{ title }}
+              {% endif %}
+            {% endfor %}
+          {% else %}
+            <td></td>
+          {% endif %}
+          <td>{{ address.street | empty_string_if_null }} {{ address.postalCode }} {{ address.city }}</td>
+          <td>{{ links.build_external_address_link(address) }}</td>
+          <td>
+            {% set search_params = {
+                          "search-0-search_field": "OFFERER",
+                          "search-0-operator": "IN",
+                          "search-0-offerer": offerer_id,
+                          "search-1-search_field": "ADDRESS",
+                          "search-1-operator": "IN",
+                          "search-1-address": address.id,
+                        } %}
+            <a href="{{ url_for('backoffice_web.offer.list_offers', **search_params) }}"
+               class="link-primary">individuelles</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </turbo-frame>

@@ -19,6 +19,7 @@ from pcapi.connectors.entreprise import exceptions as entreprise_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.finance import models as finance_models
+from pcapi.core.geography import models as geography_models
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import transactional as transactional_mails
@@ -843,12 +844,34 @@ def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
 @repository.atomic()
 def get_offerer_addresses(offerer_id: int) -> utils.BackofficeResponse:
     offerer_addresses = (
-        offerers_models.OffererAddress.query.filter_by(offererId=offerer_id)
-        .options(
-            sa.orm.load_only(offerers_models.OffererAddress.label),
-            sa.orm.joinedload(offerers_models.OffererAddress.address),
+        db.session.query(
+            geography_models.Address.id,
+            geography_models.Address.street,
+            geography_models.Address.postalCode,
+            geography_models.Address.city,
+            geography_models.Address.banId,
+            geography_models.Address.latitude,
+            geography_models.Address.longitude,
+            sa.func.array_agg(
+                sa.func.coalesce(
+                    offerers_models.OffererAddress.label, offerers_models.Venue.publicName, offerers_models.Venue.name
+                )
+            ).label("titles"),
         )
-        .order_by(offerers_models.OffererAddress.label)
+        .select_from(geography_models.Address)
+        .join(offerers_models.OffererAddress)
+        .outerjoin(offerers_models.Venue, offerers_models.OffererAddress.id == offerers_models.Venue.offererAddressId)
+        .filter(offerers_models.OffererAddress.offererId == offerer_id)
+        .group_by(
+            geography_models.Address.id,
+            geography_models.Address.street,
+            geography_models.Address.postalCode,
+            geography_models.Address.city,
+            geography_models.Address.banId,
+            geography_models.Address.latitude,
+            geography_models.Address.longitude,
+        )
+        .order_by(geography_models.Address.street)
         .all()
     )
 
