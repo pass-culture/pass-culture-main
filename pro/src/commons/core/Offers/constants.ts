@@ -58,6 +58,7 @@ export const OFFER_STATUS_DRAFT = OfferStatus.DRAFT
 
 const ALL_OFFERS = ''
 export const ALL_VENUES = 'all'
+const ALL_STRUCTURES = 'all'
 export const ALL_OFFERER_ADDRESSES = 'all'
 const ALL_CATEGORIES = 'all'
 export const ALL_FORMATS = 'all'
@@ -112,6 +113,11 @@ export const DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS: CollectiveSearchFilters
 export const ALL_VENUES_OPTION: SelectOption = {
   label: 'Tous les lieux',
   value: ALL_VENUES,
+}
+
+export const ALL_STRUCTURES_OPTION: SelectOption = {
+  label: 'Toutes les structures',
+  value: ALL_STRUCTURES,
 }
 
 export const ALL_OFFERER_ADDRESS_OPTION: SelectOption = {

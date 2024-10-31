@@ -527,4 +527,23 @@ describe('CollectiveOffersScreen', () => {
       screen.getByRole('option', { name: 'Remboursée' })
     ).toBeInTheDocument()
   })
+
+  it('should display "Structure" instead of "Lieu" of the WIP_ENABLE_OFFER_ADDRESS FF is active', () => {
+    renderOffers(
+      {
+        ...props,
+      },
+      { features: ['WIP_ENABLE_OFFER_ADDRESS'] }
+    )
+
+    // In filters
+    expect(
+      screen.getByRole('combobox', { name: 'Structure' })
+    ).toBeInTheDocument()
+
+    // In table results
+    expect(
+      screen.getByRole('columnheader', { name: 'Structure' })
+    ).toBeInTheDocument()
+  })
 })

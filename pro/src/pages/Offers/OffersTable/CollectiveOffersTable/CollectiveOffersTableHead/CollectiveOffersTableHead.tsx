@@ -23,6 +23,8 @@ export const CollectiveOffersTableHead = ({
   const isCollectiveOffersExpirationEnabled = useActiveFeature(
     'ENABLE_COLLECTIVE_OFFERS_EXPIRATION'
   )
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+
   return (
     <thead className={styles['collective-offers-thead']}>
       <tr>
@@ -79,7 +81,7 @@ export const CollectiveOffersTableHead = ({
             styles['collective-th-width']
           )}
         >
-          Lieu
+          {isOfferAddressEnabled ? 'Structure' : 'Lieu'}
         </th>
         <th
           id="collective-offer-head-institution"

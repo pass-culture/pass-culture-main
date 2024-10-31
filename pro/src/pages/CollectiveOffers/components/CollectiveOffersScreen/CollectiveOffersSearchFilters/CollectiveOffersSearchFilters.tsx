@@ -9,6 +9,7 @@ import {
 } from 'apiClient/v1'
 import {
   ALL_FORMATS_OPTION,
+  ALL_STRUCTURES_OPTION,
   ALL_VENUES_OPTION,
   COLLECTIVE_OFFER_TYPES_OPTIONS,
 } from 'commons/core/Offers/constants'
@@ -92,6 +93,7 @@ export const CollectiveOffersSearchFilters = ({
   const areCollectiveNewStatusesEnabled = useActiveFeature(
     'ENABLE_COLLECTIVE_NEW_STATUSES'
   )
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const defaultCollectiveFilters = useDefaultCollectiveSearchFilters()
 
@@ -226,9 +228,17 @@ export const CollectiveOffersSearchFilters = ({
           />
         </FieldLayout>
         <FormLayout.Row inline>
-          <FieldLayout label="Lieu" name="lieu" isOptional>
+          <FieldLayout
+            label={isOfferAddressEnabled ? 'Structure' : 'Lieu'}
+            name="lieu"
+            isOptional
+          >
             <SelectInput
-              defaultOption={ALL_VENUES_OPTION}
+              defaultOption={
+                isOfferAddressEnabled
+                  ? ALL_STRUCTURES_OPTION
+                  : ALL_VENUES_OPTION
+              }
               onChange={storeSelectedVenue}
               disabled={disableAllFilters}
               name="lieu"
