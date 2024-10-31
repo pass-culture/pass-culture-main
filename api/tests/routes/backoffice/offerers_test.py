@@ -1618,12 +1618,41 @@ class GetOffererAddressesTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 2
 
-        assert rows[0]["Intitulé"] == "Deuxième adresse"
-        assert rows[0]["Adresse"] == "5 Bd Poissonnière 75002 Paris"
+        assert rows[0]["Intitulé"] == "Première adresse"
+        assert rows[0]["Adresse"] == "3 Bd Poissonnière 75002 Paris"
         assert rows[0]["Localisation"] == "48.87055, 2.34765"
 
-        assert rows[1]["Intitulé"] == "Première adresse"
-        assert rows[1]["Adresse"] == "3 Bd Poissonnière 75002 Paris"
+        assert rows[1]["Intitulé"] == "Deuxième adresse"
+        assert rows[1]["Adresse"] == "5 Bd Poissonnière 75002 Paris"
+        assert rows[1]["Localisation"] == "48.87055, 2.34765"
+
+    def test_offerer_addresses_linked_to_venues_should_display_common_name(self, authenticated_client, offerer):
+        oa_linked_to_venue = offerers_factories.OffererAddressFactory(
+            offerer=offerer, address__street="3 Bd Poissonnière", label=None
+        )
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress=oa_linked_to_venue)
+        venue_2 = offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress=oa_linked_to_venue)
+        offerers_factories.OffererAddressFactory(
+            offerer=offerer, label="Autre localisation", address__street="5 Bd Poissonnière"
+        )
+        offerers_factories.OffererAddressFactory()  # other offerer
+
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+
+        assert venue.common_name in rows[0]["Intitulé"]
+        assert venue_2.common_name in rows[0]["Intitulé"]
+        assert rows[0]["Adresse"] == "3 Bd Poissonnière 75002 Paris"
+        assert rows[0]["Localisation"] == "48.87055, 2.34765"
+
+        assert rows[1]["Intitulé"] == "Autre localisation"
+        assert rows[1]["Adresse"] == "5 Bd Poissonnière 75002 Paris"
         assert rows[1]["Localisation"] == "48.87055, 2.34765"
 
 
