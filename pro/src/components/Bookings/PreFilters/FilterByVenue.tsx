@@ -1,7 +1,11 @@
 import React from 'react'
 
-import { ALL_VENUES_OPTION } from 'commons/core/Bookings/constants'
+import {
+  ALL_STRUCTURES_OPTION,
+  ALL_VENUES_OPTION,
+} from 'commons/core/Bookings/constants'
 import { PreFiltersParams } from 'commons/core/Bookings/types'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 
@@ -25,15 +29,19 @@ export const FilterByVenue = ({
     label: venue.displayName,
   }))
 
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+
   return (
     <FieldLayout
-      label="Lieu"
+      label={isOfferAddressEnabled ? 'Structure' : 'Lieu'}
       name="lieu"
       className={styles['venue-filter']}
       isOptional
     >
       <SelectInput
-        defaultOption={ALL_VENUES_OPTION}
+        defaultOption={
+          isOfferAddressEnabled ? ALL_STRUCTURES_OPTION : ALL_VENUES_OPTION
+        }
         onChange={(event) =>
           updateFilters({ offerVenueId: event.target.value })
         }
