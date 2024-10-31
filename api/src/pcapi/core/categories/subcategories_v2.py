@@ -270,7 +270,7 @@ SEARCH_GROUP_CINEMA = SearchGroup(
 )
 SEARCH_GROUP_FILMS_DOCUMENTAIRES_SERIES = SearchGroup(
     technical_name="FILMS_DOCUMENTAIRES_SERIES",
-    label="Films, documentaires et séries",
+    label="Films, séries et documentaires",
     position=3,
 )
 # FIXME (thconte, 2024-10-15): Delete this SearchGroup once app's minimal version has bumped
@@ -324,7 +324,7 @@ SEARCH_GROUP_SPECTACLES = SearchGroup(
 # region NativeCategory
 NATIVE_CATEGORY_ABO_PLATEFORME_VIDEO = NativeCategory(
     technical_name="ABO_PLATEFORME_VIDEO",
-    label="Plateformes de streaming",
+    label="Abonnements streaming",
     parents=[SEARCH_GROUP_FILMS_SERIES_CINEMA.id, SEARCH_GROUP_FILMS_DOCUMENTAIRES_SERIES.id],
 )
 NATIVE_CATEGORY_ABONNEMENTS_MUSEE = NativeCategory(
