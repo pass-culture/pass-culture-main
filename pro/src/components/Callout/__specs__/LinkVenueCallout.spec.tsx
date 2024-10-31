@@ -91,6 +91,10 @@ describe('LinkVenueCallout', () => {
       renderWithProviders(<LinkVenueCallout {...props} />)
 
       expect(
+        screen.getByText(/Gérer le rattachement de mes lieux/)
+      ).toBeInTheDocument()
+
+      expect(
         screen.getByText(
           /Dernière étape pour vous faire rembourser : rattachez votre lieu/
         )
@@ -113,6 +117,50 @@ describe('LinkVenueCallout', () => {
           /Dernière étape pour vous faire rembourser : rattachez vos lieux/
         )
       ).toBeInTheDocument()
+    })
+
+    describe('WIP_ENABLE_OFFER_ADDRESS', () => {
+      it('should render LinkVenueCallout with singular wording', () => {
+        props.titleOnly = false
+        props.offerer = {
+          ...defaultGetOffererResponseModel,
+          hasValidBankAccount: true,
+          venuesWithNonFreeOffersWithoutBankAccounts: [1],
+        }
+        renderWithProviders(<LinkVenueCallout {...props} />, {
+          features: ['WIP_ENABLE_OFFER_ADDRESS'],
+        })
+
+        expect(
+          screen.getByText(/Gérer le rattachement de mes structures/)
+        ).toBeInTheDocument()
+
+        expect(
+          screen.getByText(
+            /Dernière étape pour vous faire rembourser : rattachez votre structure/
+          )
+        ).toBeInTheDocument()
+      })
+
+      it('should render LinkVenueCallout with singular plural', () => {
+        props = {
+          titleOnly: false,
+        }
+        props.offerer = {
+          ...defaultGetOffererResponseModel,
+          hasValidBankAccount: true,
+          venuesWithNonFreeOffersWithoutBankAccounts: [1, 2],
+        }
+        renderWithProviders(<LinkVenueCallout {...props} />, {
+          features: ['WIP_ENABLE_OFFER_ADDRESS'],
+        })
+
+        expect(
+          screen.getByText(
+            /Dernière étape pour vous faire rembourser : rattachez vos structures/
+          )
+        ).toBeInTheDocument()
+      })
     })
 
     it('should log add venue bank to account', async () => {
