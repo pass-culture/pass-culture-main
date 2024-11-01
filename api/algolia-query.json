@@ -12,11 +12,11 @@
                     "offer.isEducational:false"
                 ],
                 [
-                    "offer.searchGroupNamev2:LIVRES"
+                    "offer.subcategoryId:SEANCE_CINE"
                 ]
             ],
             "attributesToRetrieve": [
-                "offer.ean",
+                "distinct",
                 "offer.indexedAt",
                 "offer.last30DaysBookings",
                 "offer.name",
