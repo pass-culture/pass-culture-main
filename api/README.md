@@ -28,11 +28,11 @@ Spectree :
 
 #### Poetry
 
-Avec Python **3.11** :
+Avec Python **3.12** :
 
 ```shell
 curl -sSL https://install.python-poetry.org | python3 -
-poetry env use python3.11
+poetry env use python3.12
 poetry install --with dev
 ```
 
