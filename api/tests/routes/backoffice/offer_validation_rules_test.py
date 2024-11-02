@@ -1047,7 +1047,7 @@ class ListRulesHistoryTest(GetEndpointHelper):
         rule_creation_history = history_factories.ActionHistoryFactory(
             ruleId=rule.id,
             actionType=history_models.ActionType.RULE_CREATED,
-            actionDate=datetime.datetime.utcnow(),
+            actionDate=datetime.datetime.now(),
             authorUser=legit_user,
             comment=None,
             extraData={
@@ -1075,7 +1075,7 @@ class ListRulesHistoryTest(GetEndpointHelper):
         rule_modification_history = history_factories.ActionHistoryFactory(
             ruleId=rule.id,
             actionType=history_models.ActionType.RULE_MODIFIED,
-            actionDate=datetime.datetime.utcnow(),
+            actionDate=datetime.datetime.now(),
             authorUser=legit_user,
             comment=None,
             extraData={
@@ -1113,7 +1113,7 @@ class ListRulesHistoryTest(GetEndpointHelper):
         rule_deletion_history = history_factories.ActionHistoryFactory(
             ruleId=rule.id,
             actionType=history_models.ActionType.RULE_DELETED,
-            actionDate=datetime.datetime.utcnow(),
+            actionDate=datetime.datetime.now(),
             authorUser=legit_user,
             comment=None,
             extraData={

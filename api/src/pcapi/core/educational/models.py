@@ -690,7 +690,7 @@ class CollectiveOffer(
         if end is None:
             return False
 
-        return end + timedelta(days=2) < datetime.utcnow()
+        return end + timedelta(days=2) < datetime.now()
 
     @property
     def hasBookingLimitDatetimePassed(self) -> bool:
@@ -748,7 +748,7 @@ class CollectiveOffer(
         if not self.collectiveStock:
             return None
 
-        delta = self.collectiveStock.bookingLimitDatetime - datetime.utcnow()
+        delta = self.collectiveStock.bookingLimitDatetime - datetime.now()
         return delta.days
 
     @property
@@ -1138,11 +1138,11 @@ class CollectiveOfferTemplate(
     def hasEndDatePassed(self) -> bool:
         if not self.end:
             return False
-        return self.end < datetime.utcnow()
+        return self.end < datetime.now()
 
     @hasEndDatePassed.expression  # type: ignore[no-redef]
     def hasEndDatePassed(cls) -> Exists:  # pylint: disable=no-self-argument
-        return cls.dateRange.contained_by(psycopg2.extras.DateTimeRange(upper=datetime.utcnow()))
+        return cls.dateRange.contained_by(psycopg2.extras.DateTimeRange(upper=datetime.now()))
 
     @hybrid_property
     def hasBookingLimitDatetimesPassed(self) -> bool:
@@ -1353,7 +1353,7 @@ class CollectiveStock(PcObject, Base, Model):
 
     @hybrid_property
     def hasBookingLimitDatetimePassed(self) -> bool:
-        return self.bookingLimitDatetime <= datetime.utcnow()
+        return self.bookingLimitDatetime <= datetime.now()
 
     @hasBookingLimitDatetimePassed.expression  # type: ignore[no-redef]
     def hasBookingLimitDatetimePassed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
@@ -1361,7 +1361,7 @@ class CollectiveStock(PcObject, Base, Model):
 
     @hybrid_property
     def hasBeginningDatetimePassed(self) -> bool:
-        return self.beginningDatetime <= datetime.utcnow()
+        return self.beginningDatetime <= datetime.now()
 
     @hasBeginningDatetimePassed.expression  # type: ignore[no-redef]
     def hasBeginningDatetimePassed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
@@ -1369,7 +1369,7 @@ class CollectiveStock(PcObject, Base, Model):
 
     @hybrid_property
     def hasEndDatetimePassed(self) -> bool:
-        return self.endDatetime <= datetime.utcnow()
+        return self.endDatetime <= datetime.now()
 
     @hasEndDatetimePassed.expression  # type: ignore[no-redef]
     def hasEndDatetimePassed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
@@ -1377,7 +1377,7 @@ class CollectiveStock(PcObject, Base, Model):
 
     @hybrid_property
     def isEventExpired(self) -> bool:  # todo rewrite
-        return self.beginningDatetime <= datetime.utcnow()
+        return self.beginningDatetime <= datetime.now()
 
     @isEventExpired.expression  # type: ignore[no-redef]
     def isEventExpired(cls):  # pylint: disable=no-self-argument
@@ -1389,7 +1389,7 @@ class CollectiveStock(PcObject, Base, Model):
 
     @property
     def isEventDeletable(self) -> bool:
-        return self.beginningDatetime >= datetime.utcnow()
+        return self.beginningDatetime >= datetime.now()
 
     @property
     def isSoldOut(self) -> bool:
@@ -1650,7 +1650,7 @@ class CollectiveBooking(PcObject, Base, Model):
         if self.status is CollectiveBookingStatus.USED and not cancel_even_if_used:
             raise exceptions.CollectiveBookingIsAlreadyUsed
         self.status = CollectiveBookingStatus.CANCELLED
-        self.cancellationDate = datetime.utcnow()
+        self.cancellationDate = datetime.now()
         self.cancellationReason = reason
         self.cancellationUserId = author_id
         self.dateUsed = None
@@ -1662,9 +1662,9 @@ class CollectiveBooking(PcObject, Base, Model):
         self.cancellationReason = None
         self.cancellationUserId = None
         if self.confirmationDate:
-            if self.collectiveStock.beginningDatetime < datetime.utcnow():
+            if self.collectiveStock.beginningDatetime < datetime.now():
                 self.status = CollectiveBookingStatus.USED
-                self.dateUsed = datetime.utcnow()
+                self.dateUsed = datetime.now()
             else:
                 self.status = CollectiveBookingStatus.CONFIRMED
         else:
@@ -1675,15 +1675,15 @@ class CollectiveBooking(PcObject, Base, Model):
             raise booking_exceptions.ConfirmationLimitDateHasPassed()
 
         self.status = CollectiveBookingStatus.CONFIRMED
-        self.confirmationDate = datetime.utcnow()
+        self.confirmationDate = datetime.now()
 
     @hybrid_property
     def isConfirmed(self) -> bool:
-        return self.cancellationLimitDate <= datetime.utcnow()
+        return self.cancellationLimitDate <= datetime.now()
 
     @isConfirmed.expression  # type: ignore[no-redef]
     def isConfirmed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
-        return cls.cancellationLimitDate <= datetime.utcnow()
+        return cls.cancellationLimitDate <= datetime.now()
 
     @hybrid_property
     def is_used_or_reimbursed(self) -> bool:
@@ -1714,12 +1714,12 @@ class CollectiveBooking(PcObject, Base, Model):
         return f"{self.educationalRedactor.firstName} {self.educationalRedactor.lastName}"
 
     def has_confirmation_limit_date_passed(self) -> bool:
-        return self.confirmationLimitDate <= datetime.utcnow()
+        return self.confirmationLimitDate <= datetime.now()
 
     def mark_as_refused(self) -> None:
         from pcapi.core.educational import exceptions
 
-        if self.status != CollectiveBookingStatus.PENDING and self.cancellationLimitDate <= datetime.utcnow():
+        if self.status != CollectiveBookingStatus.PENDING and self.cancellationLimitDate <= datetime.now():
             raise exceptions.EducationalBookingNotRefusable()
         cancellation_reason = (
             CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE

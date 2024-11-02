@@ -389,7 +389,7 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
                     ).upper(),
                     ZendeskCustomFieldsNames.TYPAGE.value: ["Lieu"],
                     ZendeskCustomFieldsNames.BACKOFFICE_LINK.value: urls.build_backoffice_venue_link(venue.id),
-                    ZendeskCustomFieldsNames.UPDATED_IN_PRODUCT.value: datetime.datetime.utcnow().isoformat(),
+                    ZendeskCustomFieldsNames.UPDATED_IN_PRODUCT.value: datetime.datetime.now().isoformat(),
                 },
             }
         }
@@ -426,7 +426,7 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
                     ZendeskCustomFieldsNames.SIREN.value: offerer.siren,
                     ZendeskCustomFieldsNames.TYPAGE.value: ["Structure"],
                     ZendeskCustomFieldsNames.BACKOFFICE_LINK.value: urls.build_backoffice_offerer_link(offerer.id),
-                    ZendeskCustomFieldsNames.UPDATED_IN_PRODUCT.value: datetime.datetime.utcnow().isoformat(),
+                    ZendeskCustomFieldsNames.UPDATED_IN_PRODUCT.value: datetime.datetime.now().isoformat(),
                 },
             }
         }

@@ -59,12 +59,12 @@ def offer_venue_fixture(venue):
 
 @pytest.fixture(name="template_start", scope="module")
 def template_start_fixture():
-    return datetime.utcnow() + timedelta(days=1)
+    return datetime.now() + timedelta(days=1)
 
 
 @pytest.fixture(name="template_end", scope="module")
 def template_end_fixture():
-    return datetime.utcnow() + timedelta(days=100)
+    return datetime.now() + timedelta(days=100)
 
 
 @pytest.fixture(name="payload")
@@ -301,7 +301,7 @@ class InvalidDatesTest:
         assert "dates.start" in response.json
 
     def test_start_is_in_the_past(self, pro_client, payload, template_end):
-        one_week_ago = datetime.utcnow() - timedelta(days=7)
+        one_week_ago = datetime.now() - timedelta(days=7)
         dates_extra = {"start": one_week_ago.isoformat(), "end": template_end.isoformat()}
 
         response = self.send_request(pro_client, payload, dates_extra)

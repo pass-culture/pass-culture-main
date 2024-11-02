@@ -125,7 +125,7 @@ class BoostGetResourceTest:
         cinema_details = providers_factories.BoostCinemaDetailsFactory(
             cinemaUrl="https://cinema.example.com/",
             token="invalid-token",
-            tokenExpirationDate=datetime.datetime.utcnow() + datetime.timedelta(hours=24),
+            tokenExpirationDate=datetime.datetime.now() + datetime.timedelta(hours=24),
         )
         resource = boost.ResourceBoost.EXAMPLE
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
@@ -305,7 +305,7 @@ class BoostPostResourceTest:
         cinema_details = providers_factories.BoostCinemaDetailsFactory(
             cinemaUrl="https://cinema.example.com/",
             token="invalid-token",
-            tokenExpirationDate=datetime.datetime.utcnow() + datetime.timedelta(hours=24),
+            tokenExpirationDate=datetime.datetime.now() + datetime.timedelta(hours=24),
         )
         resource = boost.ResourceBoost.EXAMPLE
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
@@ -444,7 +444,7 @@ class BoostPutResourceTest:
         cinema_details = providers_factories.BoostCinemaDetailsFactory(
             cinemaUrl="https://cinema.example.com/",
             token="invalid-token",
-            tokenExpirationDate=datetime.datetime.utcnow() + datetime.timedelta(hours=24),
+            tokenExpirationDate=datetime.datetime.now() + datetime.timedelta(hours=24),
         )
         resource = boost.ResourceBoost.EXAMPLE
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider

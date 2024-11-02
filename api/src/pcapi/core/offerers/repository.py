@@ -601,7 +601,7 @@ def get_offerer_bank_accounts(offerer_id: int) -> models.Offerer | None:
             models.VenuePricingPointLink,
             sqla.and_(
                 models.VenuePricingPointLink.venueId == models.Venue.id,
-                models.VenuePricingPointLink.timespan.contains(datetime.utcnow()),
+                models.VenuePricingPointLink.timespan.contains(datetime.now()),
             ),
         )
         .outerjoin(
@@ -609,7 +609,7 @@ def get_offerer_bank_accounts(offerer_id: int) -> models.Offerer | None:
             sqla.and_(
                 finance_models.BankAccount.id == models.VenueBankAccountLink.bankAccountId,
                 models.Venue.id == models.VenueBankAccountLink.venueId,
-                models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+                models.VenueBankAccountLink.timespan.contains(datetime.now()),
             ),
         )
         .options(
@@ -670,7 +670,7 @@ def get_venues_with_non_free_offers_without_bank_accounts(offerer_id: int) -> li
             models.VenueBankAccountLink,
             sqla.and_(
                 models.VenueBankAccountLink.venueId == models.Venue.id,
-                models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+                models.VenueBankAccountLink.timespan.contains(datetime.now()),
             ),
         )
         .with_entities(models.Venue.id)

@@ -120,7 +120,7 @@ def _create_pro_user(row: dict) -> User:
     # Validate offerer
     offerer = user_offerer.offerer
     offerer.validationStatus = ValidationStatus.VALIDATED
-    offerer.dateValidated = datetime.datetime.utcnow()
+    offerer.dateValidated = datetime.datetime.now()
     db.session.add(offerer)
 
     history_api.add_action(
@@ -170,7 +170,7 @@ def _create_pro_user(row: dict) -> User:
         if status is finance_models.BankAccountApplicationStatus.ACCEPTED:
             db.session.add(
                 offerers_models.VenueBankAccountLink(
-                    venue=venue, bankAccount=bank_account, timespan=(datetime.datetime.utcnow(),)
+                    venue=venue, bankAccount=bank_account, timespan=(datetime.datetime.now(),)
                 )
             )
 

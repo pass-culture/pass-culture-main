@@ -12,7 +12,7 @@ class EventOccurrence:
         offer: Offer,
         price: decimal.Decimal,
         price_category: PriceCategory,
-        beginning_datetime: datetime = datetime.utcnow() + timedelta(hours=2),
+        beginning_datetime: datetime = datetime.now() + timedelta(hours=2),
     ) -> None:
         self.offer = offer
         self.offerId = offer.id

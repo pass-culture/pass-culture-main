@@ -102,7 +102,7 @@ class EMSContext(PivotContext):
     def check_if_api_call_is_ok(cls) -> None:
         connector = EMSScheduleConnector()
         try:
-            connector.get_schedules(version=int(datetime.utcnow().timestamp()))
+            connector.get_schedules(version=int(datetime.now().timestamp()))
             flash("Connexion à l'API EMS OK.", "success")
         except Exception as exc:  # pylint: disable=broad-except
             logger.exception("Error while checking EMS API information", extra={"exc": exc})

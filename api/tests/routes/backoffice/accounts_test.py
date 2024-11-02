@@ -450,7 +450,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
     def test_search_suspended_unsuspended_twice(self, authenticated_client):
         user = users_factories.UserFactory(isActive=False)
         email = user.email
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now()
         history_factories.ActionHistoryFactory(
             actionType=history_models.ActionType.USER_SUSPENDED,
             actionDate=now - datetime.timedelta(days=4),
@@ -707,7 +707,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         first_name = "Jack"
         last_name = "Sparrow"
         email = "jsparrow@pirate.mail"
-        birth_date = datetime.datetime.utcnow() - relativedelta(years=18, days=15)
+        birth_date = datetime.datetime.now() - relativedelta(years=18, days=15)
         id_piece_number = "1234243344533"
 
         original_user = users_factories.BeneficiaryGrant18Factory(
@@ -769,8 +769,8 @@ class GetPublicAccountTest(GetEndpointHelper):
 
     def test_get_public_account_birth_dates(self, authenticated_client):
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, days=15),
-            validatedBirthDate=datetime.datetime.utcnow() - relativedelta(years=17, days=15),
+            dateOfBirth=datetime.datetime.now() - relativedelta(years=18, days=15),
+            validatedBirthDate=datetime.datetime.now() - relativedelta(years=17, days=15),
         )
         user_id = user.id
 
@@ -909,9 +909,7 @@ class GetPublicAccountTest(GetEndpointHelper):
     def test_get_public_account_history(self, legit_user, authenticated_client):
         # More than 30 days ago to have deterministic order because "Import ubble" is generated randomly between
         # -30 days and -1 day in BeneficiaryImportStatusFactory
-        user = users_factories.BeneficiaryGrant18Factory(
-            dateCreated=datetime.datetime.utcnow() - relativedelta(days=40)
-        )
+        user = users_factories.BeneficiaryGrant18Factory(dateCreated=datetime.datetime.now() - relativedelta(days=40))
         no_date_action = history_factories.ActionHistoryFactory(
             actionType=history_models.ActionType.USER_SUSPENDED,
             actionDate=None,
@@ -922,13 +920,13 @@ class GetPublicAccountTest(GetEndpointHelper):
         admin = users_factories.AdminFactory()
         unsuspended = history_factories.ActionHistoryFactory(
             actionType=history_models.ActionType.USER_UNSUSPENDED,
-            actionDate=datetime.datetime.utcnow() - relativedelta(days=35),
+            actionDate=datetime.datetime.now() - relativedelta(days=35),
             user=user,
             authorUser=admin,
         )
         history_factories.ActionHistoryFactory(
             actionType=history_models.ActionType.INFO_MODIFIED,
-            actionDate=datetime.datetime.utcnow() - relativedelta(days=30),
+            actionDate=datetime.datetime.now() - relativedelta(days=30),
             user=user,
             authorUser=admin,
             comment=None,
@@ -1385,7 +1383,7 @@ class SendValidationCodeTest(PostEndpointHelper):
         assert token_utils.SixDigitsToken.get_expiration_date(
             token_utils.TokenType.PHONE_VALIDATION, user.id
         ).timestamp() == pytest.approx(
-            (datetime.datetime.utcnow() + users_constants.PHONE_VALIDATION_TOKEN_LIFE_TIME).timestamp(),
+            (datetime.datetime.now() + users_constants.PHONE_VALIDATION_TOKEN_LIFE_TIME).timestamp(),
             1,
         )
 
@@ -1490,9 +1488,9 @@ class UpdatePublicAccountReviewTest(PostEndpointHelper):
         )
 
         assert len(deposits) == 2
-        assert deposits[0].expirationDate < datetime.datetime.utcnow()
+        assert deposits[0].expirationDate < datetime.datetime.now()
         assert deposits[0].amount < 300
-        assert deposits[1].expirationDate > datetime.datetime.utcnow()
+        assert deposits[1].expirationDate > datetime.datetime.now()
         assert deposits[1].amount == 300
 
     def test_malformed_form(self, authenticated_client):
@@ -1586,18 +1584,18 @@ class GetPublicAccountHistoryTest:
         assert history[0].authorUser == user
 
     def test_history_contains_email_changes(self):
-        user = users_factories.UserFactory(dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1))
+        user = users_factories.UserFactory(dateCreated=datetime.datetime.now() - datetime.timedelta(days=1))
         email_request = users_factories.EmailUpdateEntryFactory(
             user=user,
-            creationDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=10),
+            creationDate=datetime.datetime.now() - datetime.timedelta(minutes=10),
             newUserEmail=None,
             newDomainEmail=None,
         )
         email_confirmation = users_factories.EmailConfirmationEntryFactory(
-            user=user, creationDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=5)
+            user=user, creationDate=datetime.datetime.now() - datetime.timedelta(minutes=5)
         )
         email_validation = users_factories.EmailValidationEntryFactory(
-            user=user, creationDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=5)
+            user=user, creationDate=datetime.datetime.now() - datetime.timedelta(minutes=5)
         )
 
         history = get_public_account_history(user)
@@ -1617,18 +1615,18 @@ class GetPublicAccountHistoryTest:
         assert history[2].comment == f"Lien envoyé à {email_request.oldEmail} pour choisir une nouvelle adresse email"
 
     def test_history_contains_suspensions(self):
-        user = users_factories.UserFactory(dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=3))
+        user = users_factories.UserFactory(dateCreated=datetime.datetime.now() - datetime.timedelta(days=3))
         author = users_factories.UserFactory()
         suspension_action = history_factories.SuspendedUserActionHistoryFactory(
             user=user,
             authorUser=author,
-            actionDate=datetime.datetime.utcnow() - relativedelta(days=2),
+            actionDate=datetime.datetime.now() - relativedelta(days=2),
             reason=users_constants.SuspensionReason.FRAUD_SUSPICION,
         )
         unsuspension_action = history_factories.UnsuspendedUserActionHistoryFactory(
             user=user,
             authorUser=author,
-            actionDate=datetime.datetime.utcnow() - relativedelta(days=1),
+            actionDate=datetime.datetime.now() - relativedelta(days=1),
         )
 
         history = get_public_account_history(user)
@@ -1638,21 +1636,21 @@ class GetPublicAccountHistoryTest:
         assert history[1] == suspension_action
 
     def test_history_contains_fraud_checks(self):
-        user = users_factories.UserFactory(dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1))
+        user = users_factories.UserFactory(dateCreated=datetime.datetime.now() - datetime.timedelta(days=1))
         dms = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.DMS,
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(minutes=15),
+            dateCreated=datetime.datetime.now() - datetime.timedelta(minutes=15),
         )
         phone = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.PHONE_VALIDATION,
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(minutes=10),
+            dateCreated=datetime.datetime.now() - datetime.timedelta(minutes=10),
         )
         honor = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(minutes=5),
+            dateCreated=datetime.datetime.now() - datetime.timedelta(minutes=5),
             status=None,
         )
 
@@ -1682,19 +1680,19 @@ class GetPublicAccountHistoryTest:
         )
 
     def test_history_contains_reviews(self):
-        user = users_factories.UserFactory(dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1))
+        user = users_factories.UserFactory(dateCreated=datetime.datetime.now() - datetime.timedelta(days=1))
         author_user = users_factories.UserFactory()
         ko = fraud_factories.BeneficiaryFraudReviewFactory(
             user=user,
             author=author_user,
-            dateReviewed=datetime.datetime.utcnow() - datetime.timedelta(minutes=10),
+            dateReviewed=datetime.datetime.now() - datetime.timedelta(minutes=10),
             review=fraud_models.FraudReviewStatus.KO,
             reason="pas glop",
         )
         dms = fraud_factories.BeneficiaryFraudReviewFactory(
             user=user,
             author=author_user,
-            dateReviewed=datetime.datetime.utcnow() - datetime.timedelta(minutes=15),
+            dateReviewed=datetime.datetime.now() - datetime.timedelta(minutes=15),
             review=fraud_models.FraudReviewStatus.REDIRECTED_TO_DMS,
             reason="",
         )
@@ -1714,7 +1712,7 @@ class GetPublicAccountHistoryTest:
         assert history[0].authorUser == dms.author
 
     def test_history_contains_imports(self):
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now()
         user = users_factories.UserFactory(dateCreated=now - datetime.timedelta(days=1))
         author_user = users_factories.UserFactory()
         dms = users_factories.BeneficiaryImportFactory(
@@ -1781,7 +1779,7 @@ class GetPublicAccountHistoryTest:
             assert history[2 - i].authorUser == status.author
 
     def test_history_is_sorted_antichronologically(self):
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now()
         user = users_factories.UserFactory(dateCreated=now - datetime.timedelta(days=1))
         author_user = users_factories.UserFactory()
 
@@ -1868,7 +1866,7 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             ("Attestation sur l'honneur", expected_items_status_18),
             ("Pass 18", SubscriptionItemStatus.VOID),
         ]
-        date_of_birth = datetime.datetime.utcnow() - relativedelta(years=age, months=3)
+        date_of_birth = datetime.datetime.now() - relativedelta(years=age, months=3)
         user = users_factories.UserFactory(
             dateCreated=date_of_birth + relativedelta(years=17, days=5),
             dateOfBirth=date_of_birth,
@@ -2058,27 +2056,27 @@ class RegistrationStepTest:
         "dateCreated,dateOfBirth,tunnel_type",
         [
             (
-                datetime.datetime.utcnow(),
+                datetime.datetime.now(),
                 None,
                 TunnelType.NOT_ELIGIBLE,
             ),
             (
-                datetime.datetime.utcnow(),
+                datetime.datetime.now(),
                 datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18 + 1, days=1),
                 TunnelType.NOT_ELIGIBLE,
             ),
             (
-                datetime.datetime.utcnow(),
+                datetime.datetime.now(),
                 datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, days=1),
                 TunnelType.AGE18,
             ),
             (
-                datetime.datetime.utcnow(),
+                datetime.datetime.now(),
                 datetime.date.today() - relativedelta(years=users_constants.ACCOUNT_CREATION_MINIMUM_AGE, days=1),
                 TunnelType.UNDERAGE,
             ),
             (
-                datetime.datetime.utcnow() - relativedelta(years=users_constants.ACCOUNT_CREATION_MINIMUM_AGE, days=2),
+                datetime.datetime.now() - relativedelta(years=users_constants.ACCOUNT_CREATION_MINIMUM_AGE, days=2),
                 datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, days=1),
                 TunnelType.UNDERAGE_AGE18,
             ),
@@ -2097,17 +2095,17 @@ class RegistrationStepTest:
         "dateCreated,dateOfBirth,age",
         [
             (
-                datetime.datetime.utcnow(),
+                datetime.datetime.now(),
                 datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, days=1),
                 users_constants.ELIGIBILITY_AGE_18,
             ),
             (
-                datetime.datetime.utcnow(),
+                datetime.datetime.now(),
                 datetime.date.today() - relativedelta(years=users_constants.ACCOUNT_CREATION_MINIMUM_AGE, days=1),
                 users_constants.ACCOUNT_CREATION_MINIMUM_AGE,
             ),
             (
-                datetime.datetime.utcnow() - relativedelta(years=users_constants.ACCOUNT_CREATION_MINIMUM_AGE, days=2),
+                datetime.datetime.now() - relativedelta(years=users_constants.ACCOUNT_CREATION_MINIMUM_AGE, days=2),
                 datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, days=1),
                 users_constants.ELIGIBILITY_AGE_18,
             ),
@@ -2274,7 +2272,7 @@ class RegistrationStepTest:
                 assert len(step.fraud_actions_history) == 1
 
     def test_get_steps_tunnel_underage_age18(self):
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now()
         dateCreated = now - relativedelta(years=users_constants.ACCOUNT_CREATION_MINIMUM_AGE, days=2)
         dateOfBirth = datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, days=1)
         user = users_factories.UserFactory(
@@ -2320,22 +2318,22 @@ class RegistrationStepTest:
         "dateCreated,dateOfBirth,tunnel_type",
         [
             (
-                datetime.datetime.utcnow(),
+                datetime.datetime.now(),
                 datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, days=1),
                 TunnelType.AGE18,
             ),
             (
-                datetime.datetime.utcnow(),
+                datetime.datetime.now(),
                 datetime.date.today() - relativedelta(years=users_constants.ACCOUNT_CREATION_MINIMUM_AGE, days=1),
                 TunnelType.UNDERAGE,
             ),
             (
-                datetime.datetime.utcnow() - relativedelta(years=users_constants.ACCOUNT_CREATION_MINIMUM_AGE, days=2),
+                datetime.datetime.now() - relativedelta(years=users_constants.ACCOUNT_CREATION_MINIMUM_AGE, days=2),
                 datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, days=1),
                 TunnelType.UNDERAGE_AGE18,
             ),
             (
-                datetime.datetime.utcnow(),
+                datetime.datetime.now(),
                 datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18 + 1, days=1),
                 TunnelType.NOT_ELIGIBLE,
             ),
@@ -2445,17 +2443,17 @@ class RegistrationStepTest:
         "dateCreated,dateOfBirth,tunnel_type",
         [
             (
-                datetime.datetime.utcnow(),
+                datetime.datetime.now(),
                 datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, days=1),
                 TunnelType.AGE18,
             ),
             (
-                datetime.datetime.utcnow(),
+                datetime.datetime.now(),
                 datetime.date.today() - relativedelta(years=users_constants.ACCOUNT_CREATION_MINIMUM_AGE, days=1),
                 TunnelType.UNDERAGE,
             ),
             (
-                datetime.datetime.utcnow() - relativedelta(years=users_constants.ACCOUNT_CREATION_MINIMUM_AGE, days=2),
+                datetime.datetime.now() - relativedelta(years=users_constants.ACCOUNT_CREATION_MINIMUM_AGE, days=2),
                 datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, days=1),
                 TunnelType.UNDERAGE_AGE18,
             ),
@@ -2731,7 +2729,7 @@ class AnonymizePublicAccountTest(PostEndpointHelper, StorageFolderManager):
     def test_anonymize_public_is_suspended_for_fraud(self, authenticated_client):
         user = users_factories.BeneficiaryFactory(isActive=False)
         history_factories.SuspendedUserActionHistoryFactory(
-            actionDate=datetime.datetime.utcnow(),
+            actionDate=datetime.datetime.now(),
             actionType=history_models.ActionType.USER_SUSPENDED,
             reason=users_constants.SuspensionReason.FRAUD_RESELL_PASS,
             user=user,
@@ -2796,7 +2794,7 @@ class ExtractPublicAccountTest(PostEndpointHelper):
     @override_features(WIP_BENEFICIARY_EXTRACT_TOOL=True)
     def test_extract_public_account_with_existing_extract_data_expired(self, authenticated_client, legit_user):
         expired_gdpr_data_extract = users_factories.GdprUserDataExtractBeneficiaryFactory(
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=8)
+            dateCreated=datetime.datetime.now() - datetime.timedelta(days=8)
         )
 
         response = self.post_to_endpoint(authenticated_client, user_id=expired_gdpr_data_extract.user.id)

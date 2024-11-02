@@ -854,7 +854,7 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
         if offer.validation != new_validation:
             old_validation = offer.validation
             offer.validation = new_validation
-            offer.lastValidationDate = datetime.datetime.utcnow()
+            offer.lastValidationDate = datetime.datetime.now()
             offer.lastValidationType = OfferValidationType.MANUAL
             offer.lastValidationAuthorUserId = current_user.id
             if not (offer.futureOffer and offer.futureOffer.isWaitingForPublication):
@@ -897,7 +897,7 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
         if offer.validation != new_validation:
             old_validation = offer.validation
             offer.validation = new_validation
-            offer.lastValidationDate = datetime.datetime.utcnow()
+            offer.lastValidationDate = datetime.datetime.now()
             offer.lastValidationType = OfferValidationType.MANUAL
             offer.lastValidationAuthorUserId = current_user.id
             offer.isActive = False
@@ -1312,7 +1312,7 @@ def edit_offer_venue(offer_id: int) -> utils.BackofficeResponse:
                 offerers_models.VenuePricingPointLink,
                 sa.and_(
                     offerers_models.VenuePricingPointLink.venueId == offerers_models.Venue.id,
-                    offerers_models.VenuePricingPointLink.timespan.contains(datetime.datetime.utcnow()),
+                    offerers_models.VenuePricingPointLink.timespan.contains(datetime.datetime.now()),
                 ),
             )
             .options(

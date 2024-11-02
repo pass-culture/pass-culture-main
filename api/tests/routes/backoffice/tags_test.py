@@ -130,7 +130,7 @@ class ListTagsTest(GetEndpointHelper):
     def test_list_tags(self, authenticated_client):
         categories = criteria_factories.CriterionCategoryFactory.create_batch(2)
 
-        now = datetime.utcnow()
+        now = datetime.now()
         tag_1 = criteria_factories.CriterionFactory(
             description="tag1 description", startDateTime=now, categories=[categories[0]]
         )
@@ -164,12 +164,8 @@ class ListTagsTest(GetEndpointHelper):
     )
     def test_search_list_tags(self, authenticated_client, q, expected_nb_results, expected_results_key):
         tags = {
-            "tag1": criteria_factories.CriterionFactory(
-                description="tag1 description", startDateTime=datetime.utcnow()
-            ),
-            "tag2": criteria_factories.CriterionFactory(
-                description="tag2 description", startDateTime=datetime.utcnow()
-            ),
+            "tag1": criteria_factories.CriterionFactory(description="tag1 description", startDateTime=datetime.now()),
+            "tag2": criteria_factories.CriterionFactory(description="tag2 description", startDateTime=datetime.now()),
         }
 
         offers_factories.OfferFactory(criteria=[tags["tag1"], tags["tag2"]])

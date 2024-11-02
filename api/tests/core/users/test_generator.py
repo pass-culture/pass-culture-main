@@ -207,7 +207,7 @@ class UserGeneratorTest:
         assert user.age == users_constants.ELIGIBILITY_AGE_18
         assert user.has_underage_beneficiary_role
         assert user.deposit.type == finance_models.DepositType.GRANT_15_17
-        assert user.deposit.expirationDate < datetime.datetime.utcnow()
+        assert user.deposit.expirationDate < datetime.datetime.now()
         user_subscription_state = subscription_api.get_user_subscription_state(user)
         assert user_subscription_state.next_step == subscription_models.SubscriptionStep.PHONE_VALIDATION
 

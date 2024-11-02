@@ -75,7 +75,7 @@ def update_external_pro(email: str | None) -> None:
     from pcapi.tasks.serialization.external_pro_tasks import UpdateProAttributesRequest
 
     if email:
-        now = datetime.utcnow()
+        now = datetime.now()
         on_commit(
             partial(
                 update_sib_pro_attributes_task.delay,

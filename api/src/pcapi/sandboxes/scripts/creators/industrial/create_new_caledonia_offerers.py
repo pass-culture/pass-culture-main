@@ -103,15 +103,15 @@ def _create_nc_active_offerer() -> None:
         dsApplicationId="988001",
     )
     offerers_factories.VenueBankAccountLinkFactory(
-        venue=venue, bankAccount=bank_account, timespan=(datetime.datetime.utcnow(),)
+        venue=venue, bankAccount=bank_account, timespan=(datetime.datetime.now(),)
     )
     offerers_factories.VenueBankAccountLinkFactory(
-        venue=second_venue, bankAccount=bank_account, timespan=(datetime.datetime.utcnow(),)
+        venue=second_venue, bankAccount=bank_account, timespan=(datetime.datetime.now(),)
     )
 
     event_offer = offers_factories.EventOfferFactory(name="Offre d'événement en Nouvelle-Calédonie", venue=venue)
     # 22:00 UTC = 11:00 Noumea time on the day after
-    ref_date = datetime.datetime.utcnow().replace(hour=22, minute=0, second=0, microsecond=0)
+    ref_date = datetime.datetime.now().replace(hour=22, minute=0, second=0, microsecond=0)
     for days in range(8, 15):
         offers_factories.EventStockFactory(
             offer=event_offer,
@@ -221,7 +221,7 @@ def _create_nc_invoice() -> None:
         event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
         finance_api.price_event(event)
 
-    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
+    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.now())
     cashflows = finance_models.Cashflow.query.filter_by(bankAccount=bank_account).all()
     cashflow_ids = [c.id for c in cashflows]
 

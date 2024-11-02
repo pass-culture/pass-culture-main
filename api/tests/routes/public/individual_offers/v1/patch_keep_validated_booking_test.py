@@ -27,15 +27,15 @@ class PatchKeepBookingByTokenTest(PublicAPIVenueEndpointHelper):
             name="Vieux motard que jamais",
             extraData={"ean": "1234567890123"},
         )
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        past = datetime.datetime.now() - datetime.timedelta(days=2)
         product_stock = offers_factories.StockFactory(offer=offer, beginningDatetime=past)
         booking = bookings_factories.BookingFactory(
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2),
+            user__dateOfBirth=datetime.datetime.now() - relativedelta(years=18, months=2),
             stock=product_stock,
-            dateUsed=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            dateUsed=datetime.datetime.now() - datetime.timedelta(days=1),
             status=status or BookingStatus.USED,
         )
         return offer, booking
@@ -90,12 +90,12 @@ class PatchKeepBookingByTokenTest(PublicAPIVenueEndpointHelper):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         event_offer = offers_factories.EventOfferFactory(venue=venue_provider.venue)
         event_stock = offers_factories.StockFactory(
-            offer=event_offer, bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=10)
+            offer=event_offer, bookingLimitDatetime=datetime.datetime.now() + datetime.timedelta(days=10)
         )
         booking = bookings_factories.BookingFactory(
             stock=event_stock,
             status=BookingStatus.CONFIRMED,
-            dateCreated=datetime.datetime.utcnow() + datetime.timedelta(hours=10),
+            dateCreated=datetime.datetime.now() + datetime.timedelta(hours=10),
         )
 
         response = client.with_explicit_token(plain_api_key).patch(self.endpoint_url.format(token=booking.token))

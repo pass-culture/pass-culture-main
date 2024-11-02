@@ -293,7 +293,7 @@ class StockFactory(BaseFactory):
     beginningDatetime = factory.Maybe(
         "offer.isEvent",
         factory.LazyFunction(
-            lambda: datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
+            lambda: datetime.datetime.now().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
         ),
         None,
     )
@@ -311,7 +311,7 @@ class ThingStockFactory(StockFactory):
 class EventStockFactory(StockFactory):
     offer = factory.SubFactory(EventOfferFactory)
     beginningDatetime = factory.LazyFunction(
-        lambda: datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
+        lambda: datetime.datetime.now().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
     )
     bookingLimitDatetime = factory.LazyAttribute(lambda stock: stock.beginningDatetime - datetime.timedelta(minutes=60))
     priceCategory = factory.SubFactory(
@@ -324,7 +324,7 @@ class EventStockFactory(StockFactory):
 
 class CinemaStockProviderFactory(EventStockFactory):
     beginningDatetime = factory.LazyFunction(
-        lambda: datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
+        lambda: datetime.datetime.now().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
     )
     bookingLimitDatetime = factory.LazyAttribute(lambda stock: stock.beginningDatetime - datetime.timedelta(minutes=60))
 

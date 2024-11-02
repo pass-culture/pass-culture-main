@@ -38,7 +38,7 @@ class ImportDepositInstitutionDataTest:
         assert institution.phoneNumber == "0600000000"
         assert institution.isActive is True
         assert deposit.amount == Decimal(1250)
-        assert deposit.dateCreated - datetime.utcnow() < timedelta(seconds=5)
+        assert deposit.dateCreated - datetime.now() < timedelta(seconds=5)
         assert deposit.isFinal is False
         assert deposit.ministry == educational_models.Ministry.EDUCATION_NATIONALE
 
@@ -70,7 +70,7 @@ class ImportDepositInstitutionDataTest:
         assert institution.phoneNumber == "0600000000"
         assert institution.isActive is True
         assert deposit.amount == Decimal(1250)
-        assert deposit.dateCreated - datetime.utcnow() < timedelta(seconds=5)
+        assert deposit.dateCreated - datetime.now() < timedelta(seconds=5)
         assert deposit.isFinal is False
         assert deposit.ministry == educational_models.Ministry.EDUCATION_NATIONALE
 

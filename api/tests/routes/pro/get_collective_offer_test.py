@@ -199,8 +199,8 @@ class Returns200Test:
 
     def test_inactive_offer(self, client):
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime.utcnow() + timedelta(days=125),
-            bookingLimitDatetime=datetime.utcnow() - timedelta(days=125),
+            beginningDatetime=datetime.now() + timedelta(days=125),
+            bookingLimitDatetime=datetime.now() - timedelta(days=125),
         )
         offer = educational_factories.CollectiveOfferFactory(
             collectiveStock=stock,
@@ -263,8 +263,8 @@ class Returns200Test:
         assert response.json["subcategoryId"] is None
 
     def test_dates_on_offer(self, client):
-        beginningDate = datetime.utcnow() + timedelta(days=100)
-        endDate = datetime.utcnow() + timedelta(days=125)
+        beginningDate = datetime.now() + timedelta(days=100)
+        endDate = datetime.now() + timedelta(days=125)
         stock = educational_factories.CollectiveStockFactory(
             beginningDatetime=beginningDate,
             endDatetime=endDate,

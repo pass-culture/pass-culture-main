@@ -92,7 +92,7 @@ def manage_pro_session(user: users_models.User | None) -> users_models.User | No
     if getattr(flask.request, "blueprint", "") not in PRO_APIS:
         return user
 
-    current_timestamp = datetime.utcnow().timestamp()
+    current_timestamp = datetime.now().timestamp()
     last_login = datetime.fromtimestamp(flask.session.get("last_login", current_timestamp))
     last_api_call = datetime.fromtimestamp(flask.session.get("last_api_call", current_timestamp))
 
@@ -111,7 +111,7 @@ def manage_pro_session(user: users_models.User | None) -> users_models.User | No
 
 
 def compute_pro_session_validity(last_login: datetime, last_api_call: datetime) -> bool:
-    now = datetime.utcnow()
+    now = datetime.now()
 
     if last_api_call + PRO_SESSION_BASE_TIMEOUT < now:
         return False

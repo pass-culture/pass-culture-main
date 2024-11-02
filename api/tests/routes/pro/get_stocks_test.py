@@ -47,7 +47,7 @@ class Returns200Test:
     num_queries += 1  # select stocks
 
     def test_returns_an_event_stock(self, client):
-        now = datetime.utcnow()
+        now = datetime.now()
         booking_datetime = now + timedelta(hours=1)
         booking_datetime_as_isoformat = booking_datetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
         user_offerer = offerers_factories.UserOffererFactory()
@@ -88,7 +88,7 @@ class Returns200Test:
         }
 
     def test_returns_a_thing_stock(self, client):
-        now = datetime.utcnow()
+        now = datetime.now()
         user_offerer = offerers_factories.UserOffererFactory()
         thing_offer = offers_factories.ThingOfferFactory(venue__managingOfferer=user_offerer.offerer)
         stock = offers_factories.ThingStockFactory(
@@ -162,8 +162,8 @@ class Returns200Test:
         assert response.json["hasStocks"] == False
 
     def test_returns_true_if_stock_exists_outside_filter(self, client):
-        date_1 = datetime.utcnow()
-        date_2 = datetime.utcnow() + timedelta(days=1)
+        date_1 = datetime.now()
+        date_2 = datetime.now() + timedelta(days=1)
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
         offers_factories.StockFactory.create_batch(
@@ -180,8 +180,8 @@ class Returns200Test:
         assert response.json["hasStocks"] == True
 
     def test_should_return_total_stock_count_when_unfiltered(self, client):
-        date_1 = datetime.utcnow()
-        date_2 = datetime.utcnow() + timedelta(days=1)
+        date_1 = datetime.now()
+        date_2 = datetime.now() + timedelta(days=1)
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
         offers_factories.StockFactory.create_batch(3, beginningDatetime=date_1, offer=offer)
@@ -197,7 +197,7 @@ class Returns200Test:
         assert len(response.json["stocks"]) == 5
 
     def test_should_return_filtered_stock_count(self, client):
-        now = datetime.utcnow()
+        now = datetime.now()
         beginning_datetime = now + timedelta(seconds=1)
         booking_limit_datetime = beginning_datetime.replace(hour=23, minute=59) - timedelta(days=3)
         user_offerer = offerers_factories.UserOffererFactory()
@@ -236,8 +236,8 @@ class Returns200Test:
         }
 
     def test_should_return_filtered_stock_count_and_filtered_stock_list(self, client):
-        date_1 = datetime.utcnow()
-        date_2 = datetime.utcnow() + timedelta(days=1)
+        date_1 = datetime.now()
+        date_2 = datetime.now() + timedelta(days=1)
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
         offers_factories.StockFactory.create_batch(
@@ -262,8 +262,8 @@ class Returns200Test:
     def test_should_return_filtered_stock_count_and_filtered_stock_list_with_stocks_inferior_to_limit_per_page(
         self, client
     ):
-        date_1 = datetime.utcnow()
-        date_2 = datetime.utcnow() + timedelta(days=1)
+        date_1 = datetime.now()
+        date_2 = datetime.now() + timedelta(days=1)
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
         offers_factories.StockFactory.create_batch(
@@ -297,7 +297,7 @@ class Returns200WithOffererAddressAsDataSourceTest:
 
     @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_returns_an_event_stock(self, client):
-        now = datetime.utcnow()
+        now = datetime.now()
         booking_datetime = now + timedelta(hours=1)
         booking_datetime_as_isoformat = booking_datetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
         user_offerer = offerers_factories.UserOffererFactory()
@@ -360,7 +360,7 @@ class Returns200WithOffererAddressAsDataSourceTest:
 
     @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_returns_a_thing_stock(self, client):
-        now = datetime.utcnow()
+        now = datetime.now()
         user_offerer = offerers_factories.UserOffererFactory()
         thing_offer = offers_factories.ThingOfferFactory(venue__managingOfferer=user_offerer.offerer)
         stock = offers_factories.ThingStockFactory(
@@ -438,8 +438,8 @@ class Returns200WithOffererAddressAsDataSourceTest:
 
     @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_returns_true_if_stock_exists_outside_filter(self, client):
-        date_1 = datetime.utcnow()
-        date_2 = datetime.utcnow() + timedelta(days=1)
+        date_1 = datetime.now()
+        date_2 = datetime.now() + timedelta(days=1)
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
         offers_factories.StockFactory.create_batch(
@@ -457,8 +457,8 @@ class Returns200WithOffererAddressAsDataSourceTest:
 
     @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_should_return_total_stock_count_when_unfiltered(self, client):
-        date_1 = datetime.utcnow()
-        date_2 = datetime.utcnow() + timedelta(days=1)
+        date_1 = datetime.now()
+        date_2 = datetime.now() + timedelta(days=1)
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
         offers_factories.StockFactory.create_batch(3, beginningDatetime=date_1, offer=offer)
@@ -475,7 +475,7 @@ class Returns200WithOffererAddressAsDataSourceTest:
 
     @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_should_return_filtered_stock_count(self, client):
-        now = datetime.utcnow()
+        now = datetime.now()
         beginning_datetime = now + timedelta(seconds=1)
         booking_limit_datetime = beginning_datetime.replace(hour=23, minute=59) - timedelta(days=3)
         user_offerer = offerers_factories.UserOffererFactory()
@@ -515,8 +515,8 @@ class Returns200WithOffererAddressAsDataSourceTest:
 
     @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_should_return_filtered_stock_count_and_filtered_stock_list(self, client):
-        date_1 = datetime.utcnow()
-        date_2 = datetime.utcnow() + timedelta(days=1)
+        date_1 = datetime.now()
+        date_2 = datetime.now() + timedelta(days=1)
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
         offers_factories.StockFactory.create_batch(
@@ -542,8 +542,8 @@ class Returns200WithOffererAddressAsDataSourceTest:
     def test_should_return_filtered_stock_count_and_filtered_stock_list_with_stocks_inferior_to_limit_per_page(
         self, client
     ):
-        date_1 = datetime.utcnow()
-        date_2 = datetime.utcnow() + timedelta(days=1)
+        date_1 = datetime.now()
+        date_2 = datetime.now() + timedelta(days=1)
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
         offers_factories.StockFactory.create_batch(

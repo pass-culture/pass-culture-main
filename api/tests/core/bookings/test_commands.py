@@ -15,7 +15,7 @@ class ArchiveOldBookingsTest:
     @pytest.mark.usefixtures("clean_database")
     def test_basics(self, app):
         # given
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now()
         recent = now - datetime.timedelta(days=29, hours=23)
         old = now - datetime.timedelta(days=30, hours=1)
         offer = offers_factories.OfferFactory(url="http://example.com")
@@ -43,7 +43,7 @@ class ArchiveOldBookingsTest:
     )
     def test_old_subcategories_bookings_are_archived(self, app, subcategoryId):
         # given
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now()
         recent = now - datetime.timedelta(days=29, hours=23)
         old = now - datetime.timedelta(days=30, hours=1)
         stock_free = offers_factories.StockFactory(
@@ -78,7 +78,7 @@ class ArchiveOldBookingsTest:
     )
     def test_old_subcategories_bookings_are_archived_when_no_longer_free(self, app, subcategoryId, client):
         # given
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now()
         recent = now - datetime.timedelta(days=29, hours=23)
         old = now - datetime.timedelta(days=30, hours=1)
         offer = offers_factories.ThingOfferFactory(subcategoryId=subcategoryId)

@@ -130,9 +130,9 @@ def test_generate_invoices_internal_notification(app, css_font_http_request_mock
 
 @pytest.mark.usefixtures("clean_database")
 def test_when_there_is_a_debit_note_to_generate_on_total_incident(app, css_font_http_request_mock):
-    sixteen_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=16)
-    fifteen_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=15)
-    fourteen_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=14)
+    sixteen_days_ago = datetime.datetime.now() - datetime.timedelta(days=16)
+    fifteen_days_ago = datetime.datetime.now() - datetime.timedelta(days=15)
+    fourteen_days_ago = datetime.datetime.now() - datetime.timedelta(days=14)
 
     user = users_factories.RichBeneficiaryFactory()
     venue_kwargs = {
@@ -193,13 +193,11 @@ def test_when_there_is_a_debit_note_to_generate_on_total_incident(app, css_font_
         booking=previous_incident_booking.booking,
         newTotalAmount=-previous_incident_booking.booking.total_amount * 100,
     )
-    incident_event = finance_api._create_finance_events_from_incident(
-        booking_total_incident, datetime.datetime.utcnow()
-    )
+    incident_event = finance_api._create_finance_events_from_incident(booking_total_incident, datetime.datetime.now())
 
     finance_api.price_event(incident_event[0])
 
-    second_batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
+    second_batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.now())
 
     run_command(
         app,
@@ -219,9 +217,9 @@ def test_when_there_is_a_debit_note_to_generate_on_total_incident(app, css_font_
 
 @pytest.mark.usefixtures("clean_database")
 def test_when_there_is_a_debit_note_to_generate_on_partial_incident(app, css_font_http_request_mock):
-    sixteen_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=16)
-    fifteen_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=15)
-    fourteen_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=14)
+    sixteen_days_ago = datetime.datetime.now() - datetime.timedelta(days=16)
+    fifteen_days_ago = datetime.datetime.now() - datetime.timedelta(days=15)
+    fourteen_days_ago = datetime.datetime.now() - datetime.timedelta(days=14)
 
     user = users_factories.RichBeneficiaryFactory()
     venue_kwargs = {
@@ -283,13 +281,13 @@ def test_when_there_is_a_debit_note_to_generate_on_partial_incident(app, css_fon
         newTotalAmount=((previous_incident_booking.booking.total_amount * 100) / 2),
     )
     incident_events = finance_api._create_finance_events_from_incident(
-        booking_partial_incident, datetime.datetime.utcnow()
+        booking_partial_incident, datetime.datetime.now()
     )
 
     for incident_event in incident_events:
         finance_api.price_event(incident_event)
 
-    second_batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
+    second_batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.now())
     run_command(
         app,
         "generate_invoices",
@@ -342,7 +340,7 @@ def test_generate_invoice_file_with_debit_note(app, tmp_path, monkeypatch, css_f
     initial_finance_event = finance_events[0]
     finance_api.price_event(initial_finance_event)
 
-    cashflow_batch1 = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
+    cashflow_batch1 = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.now())
     run_command(
         app,
         "generate_invoices",
@@ -435,7 +433,7 @@ def test_generate_invoice_file_with_debit_note(app, tmp_path, monkeypatch, css_f
     ####################################################################################################
     # Generate the cashflows and the invoice csv that should include both lines for income and outcome #
     ####################################################################################################
-    cashflow_batch2 = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
+    cashflow_batch2 = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.now())
     run_command(
         app,
         "generate_invoices",

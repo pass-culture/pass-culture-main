@@ -52,7 +52,7 @@ SUBCATEGORY_IDS_WITH_REACTION_AVAILABLE = [SEANCE_CINE.id]
 
 
 def get_booking_with_available_reactions(user_id: int) -> list[bookings_models.Booking]:
-    cooldown_datetime = datetime.datetime.utcnow() - datetime.timedelta(
+    cooldown_datetime = datetime.datetime.now() - datetime.timedelta(
         seconds=settings.SUGGEST_REACTION_COOLDOWN_IN_SECONDS
     )
 

@@ -112,15 +112,15 @@ def test_too_many_bookings_postgresql_exception_not_executed():
 @pytest.mark.parametrize(
     "booking_date_created, email_at_booking_created_date",
     [
-        (datetime.utcnow() - relativedelta(days=7), "first@example.com"),
-        (datetime.utcnow() - relativedelta(days=5), "second@example.fr"),
-        (datetime.utcnow() - relativedelta(days=3), "third@example.team"),
-        (datetime.utcnow() - relativedelta(days=1), "fourth@example.app"),
+        (datetime.now() - relativedelta(days=7), "first@example.com"),
+        (datetime.now() - relativedelta(days=5), "second@example.fr"),
+        (datetime.now() - relativedelta(days=3), "third@example.team"),
+        (datetime.now() - relativedelta(days=1), "fourth@example.app"),
     ],
 )
 def test_email_at_booking_date_with_mail_history(booking_date_created, email_at_booking_created_date):
     user = users_factories.BeneficiaryGrant18Factory(
-        dateCreated=datetime.utcnow() - relativedelta(days=8), email="fourth@example.app"
+        dateCreated=datetime.now() - relativedelta(days=8), email="fourth@example.app"
     )
     users_factories.EmailValidationEntryFactory(
         user=user,
@@ -128,7 +128,7 @@ def test_email_at_booking_date_with_mail_history(booking_date_created, email_at_
         oldDomainEmail="example.com",
         newUserEmail="second",
         newDomainEmail="example.fr",
-        creationDate=datetime.utcnow() - relativedelta(days=6),
+        creationDate=datetime.now() - relativedelta(days=6),
     )
     users_factories.EmailValidationEntryFactory(
         user=user,
@@ -136,7 +136,7 @@ def test_email_at_booking_date_with_mail_history(booking_date_created, email_at_
         oldDomainEmail="example.fr",
         newUserEmail="third",
         newDomainEmail="example.team",
-        creationDate=datetime.utcnow() - relativedelta(days=4),
+        creationDate=datetime.now() - relativedelta(days=4),
     )
     users_factories.EmailValidationEntryFactory(
         user=user,
@@ -144,19 +144,19 @@ def test_email_at_booking_date_with_mail_history(booking_date_created, email_at_
         oldDomainEmail="example.team",
         newUserEmail="fourth",
         newDomainEmail="example.app",
-        creationDate=datetime.utcnow() - relativedelta(days=2),
+        creationDate=datetime.now() - relativedelta(days=2),
     )
 
 
 class BookingIsConfirmedPropertyTest:
     def test_booking_is_confirmed_when_cancellation_limit_date_is_in_the_past(self):
-        yesterday = datetime.utcnow() - timedelta(days=1)
+        yesterday = datetime.now() - timedelta(days=1)
         booking = factories.BookingFactory(cancellation_limit_date=yesterday)
 
         assert booking.isConfirmed is True
 
     def test_booking_is_not_confirmed_when_cancellation_limit_date_is_in_the_future(self):
-        tomorrow = datetime.utcnow() + timedelta(days=1)
+        tomorrow = datetime.now() + timedelta(days=1)
         booking = factories.BookingFactory(cancellation_limit_date=tomorrow)
 
         assert booking.isConfirmed is False
@@ -169,7 +169,7 @@ class BookingIsConfirmedPropertyTest:
 
 class BookingIsConfirmedSqlQueryTest:
     def test_booking_is_confirmed_when_cancellation_limit_date_is_in_the_past(self):
-        yesterday = datetime.utcnow() - timedelta(days=1)
+        yesterday = datetime.now() - timedelta(days=1)
         factories.BookingFactory(cancellation_limit_date=yesterday)
 
         query_result = Booking.query.filter(Booking.isConfirmed.is_(True)).all()
@@ -177,7 +177,7 @@ class BookingIsConfirmedSqlQueryTest:
         assert len(query_result) == 1
 
     def test_booking_is_not_confirmed_when_cancellation_limit_date_is_in_the_future(self):
-        tomorrow = datetime.utcnow() + timedelta(days=1)
+        tomorrow = datetime.now() + timedelta(days=1)
         factories.BookingFactory(cancellation_limit_date=tomorrow)
 
         query_result = Booking.query.filter(Booking.isConfirmed.is_(False)).all()
@@ -197,27 +197,27 @@ class BookingExpirationDateTest:
         user = BeneficiaryGrant18Factory()
         book_booking = factories.BookingFactory(
             user=user,
-            dateCreated=datetime.utcnow(),
+            dateCreated=datetime.now(),
             stock__price=10,
             stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
         dvd_booking = factories.BookingFactory(
             user=user,
-            dateCreated=datetime.utcnow(),
+            dateCreated=datetime.now(),
             stock__price=10,
             stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
         digital_book_booking = factories.BookingFactory(
             user=user,
-            dateCreated=datetime.utcnow(),
+            dateCreated=datetime.now(),
             stock__price=10,
             stock__offer__subcategoryId=subcategories.LIVRE_NUMERIQUE.id,
         )
 
-        assert book_booking.expirationDate.strftime("%d/%m/%Y") == (
-            datetime.utcnow() + relativedelta(days=10)
-        ).strftime("%d/%m/%Y")
-        assert dvd_booking.expirationDate.strftime("%d/%m/%Y") == (datetime.utcnow() + relativedelta(days=30)).strftime(
+        assert book_booking.expirationDate.strftime("%d/%m/%Y") == (datetime.now() + relativedelta(days=10)).strftime(
+            "%d/%m/%Y"
+        )
+        assert dvd_booking.expirationDate.strftime("%d/%m/%Y") == (datetime.now() + relativedelta(days=30)).strftime(
             "%d/%m/%Y"
         )
         assert not digital_book_booking.expirationDate

@@ -294,7 +294,7 @@ class FindDuplicateUserTest:
 
     def test_send_email_to_fraud_if_duplicated_beneficiary(self):
         # 2 years ago
-        with time_machine.travel(datetime.datetime.utcnow() - relativedelta(years=2, days=2)):
+        with time_machine.travel(datetime.datetime.now() - relativedelta(years=2, days=2)):
             user1 = users_factories.BeneficiaryFactory(
                 age=17,
                 beneficiaryFraudChecks__type=fraud_models.FraudCheckType.EDUCONNECT,
@@ -302,7 +302,7 @@ class FindDuplicateUserTest:
 
         # A year ago
         # user 1 is now 18 yo
-        with time_machine.travel(datetime.datetime.utcnow() - relativedelta(years=1, days=1)):
+        with time_machine.travel(datetime.datetime.now() - relativedelta(years=1, days=1)):
             user2 = users_factories.BeneficiaryFactory(
                 age=17, beneficiaryFraudChecks__type=fraud_models.FraudCheckType.EDUCONNECT
             )
@@ -351,7 +351,7 @@ class FindDuplicateUserTest:
 class EduconnectFraudTest:
     def test_on_educonnect_result(self):
         birth_date = (datetime.datetime.today() - relativedelta(years=15, days=5)).date()
-        registration_date = datetime.datetime.utcnow() - relativedelta(days=3)  # eligible 15-17
+        registration_date = datetime.datetime.now() - relativedelta(days=3)  # eligible 15-17
         user = users_factories.UserFactory(dateOfBirth=birth_date)
         fraud_api.on_educonnect_result(
             user,
@@ -526,7 +526,7 @@ class EduconnectFraudTest:
 
 def build_user_at_id_check(age, eligibility_type=users_models.EligibilityType.AGE18):
     user = users_factories.UserFactory(
-        dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=age, days=5),
+        dateOfBirth=datetime.datetime.now() - relativedelta(years=age, days=5),
         phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
     )
     fraud_factories.ProfileCompletionFraudCheckFactory(
@@ -632,7 +632,7 @@ class HasUserPerformedIdentityCheckTest:
 
     def test_user_beneficiary(self):
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=20, months=1),
+            dateOfBirth=datetime.datetime.now() - relativedelta(years=20, months=1),
             roles=[users_models.UserRole.BENEFICIARY],
         )
         assert fraud_api.has_user_performed_identity_check(user)
@@ -762,7 +762,7 @@ class DecideEligibilityTest:
     def test_decide_eligibility_for_underage_users(self):
         # All 15-17 users are eligible after 2022-01-01
         for age in range(15, 18):
-            user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=age))
+            user = users_factories.UserFactory(dateOfBirth=datetime.datetime.now() - relativedelta(years=age))
             birth_date = user.dateOfBirth
             registration_datetime = datetime.datetime.today()
 
@@ -774,7 +774,7 @@ class DecideEligibilityTest:
     @time_machine.travel("2022-01-01")
     def test_decide_eligibility_for_18_yo_users_is_always_age_18(self):
         # 18 users are always eligible
-        birth_date = datetime.datetime.utcnow() - relativedelta(years=18)
+        birth_date = datetime.datetime.now() - relativedelta(years=18)
         user = users_factories.UserFactory()
 
         assert (
@@ -783,7 +783,7 @@ class DecideEligibilityTest:
         )
         assert fraud_api.decide_eligibility(user, birth_date, None) == users_models.EligibilityType.AGE18
         assert (
-            fraud_api.decide_eligibility(user, birth_date, datetime.datetime.utcnow() - relativedelta(years=1))
+            fraud_api.decide_eligibility(user, birth_date, datetime.datetime.now() - relativedelta(years=1))
             == users_models.EligibilityType.AGE18
         )
 

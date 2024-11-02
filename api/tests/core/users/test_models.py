@@ -37,15 +37,15 @@ class UserTest:
             assert user.deposit is None
 
         def test_return_expired_deposit_if_only_expired_deposits_exists(self):
-            user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
+            user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=18))
             user.add_beneficiary_role()
-            yesterday = datetime.utcnow() - timedelta(days=1)
+            yesterday = datetime.now() - timedelta(days=1)
             users_factories.DepositGrantFactory(user=user, expirationDate=yesterday)
 
             assert user.deposit.type == finance_models.DepositType.GRANT_18
 
         def test_return_last_expired_deposit_if_only_expired_deposits_exists(self):
-            with time_machine.travel(datetime.utcnow() - relativedelta(years=3)):
+            with time_machine.travel(datetime.now() - relativedelta(years=3)):
                 user = users_factories.UnderageBeneficiaryFactory()
 
             users_factories.DepositGrantFactory(user=user)
@@ -235,30 +235,30 @@ class UserTest:
 
     class EligibilityTest:
         def test_received_pass_15_17(self):
-            dateOfBirth = datetime.utcnow() - relativedelta(years=16, days=1)
+            dateOfBirth = datetime.now() - relativedelta(years=16, days=1)
             user = users_factories.UserFactory(dateOfBirth=dateOfBirth, validatedBirthDate=dateOfBirth)
             user.add_beneficiary_role()
-            yesterday = datetime.utcnow() - timedelta(days=1)
+            yesterday = datetime.now() - timedelta(days=1)
             users_factories.DepositGrantFactory(user=user, expirationDate=yesterday)
             assert user.received_pass_15_17 is True
             assert user.received_pass_18 is False
 
         def test_received_pass_18(self):
-            dateOfBirth = datetime.utcnow() - relativedelta(years=18, days=1)
+            dateOfBirth = datetime.now() - relativedelta(years=18, days=1)
             user = users_factories.UserFactory(dateOfBirth=dateOfBirth, validatedBirthDate=dateOfBirth)
             user.add_beneficiary_role()
-            yesterday = datetime.utcnow() - timedelta(days=1)
+            yesterday = datetime.now() - timedelta(days=1)
             users_factories.DepositGrantFactory(user=user, expirationDate=yesterday)
 
             assert user.received_pass_15_17 is False
             assert user.received_pass_18 is True
 
         def test_received_pass_15_17_and_18(self):
-            dateOfBirth16 = datetime.utcnow() - relativedelta(years=16, days=1)
-            dateOfBirth18 = datetime.utcnow() - relativedelta(years=18, days=1)
+            dateOfBirth16 = datetime.now() - relativedelta(years=16, days=1)
+            dateOfBirth18 = datetime.now() - relativedelta(years=18, days=1)
             user = users_factories.UserFactory(dateOfBirth=dateOfBirth16, validatedBirthDate=dateOfBirth16)
             user.add_beneficiary_role()
-            yesterday = datetime.utcnow() - timedelta(days=1)
+            yesterday = datetime.now() - timedelta(days=1)
             users_factories.DepositGrantFactory(user=user, expirationDate=yesterday)
 
             assert user.received_pass_15_17 is True
@@ -270,13 +270,13 @@ class UserTest:
             assert user.received_pass_18 is True
 
         def test_not_eligible_when_19(self):
-            user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=19, days=1))
+            user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=19, days=1))
             assert user.eligibility is None
 
         def test_eligible_when_19_with_subscription_attempt_at_18(self):
-            user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=19))
+            user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=19))
             fraud_factories.BeneficiaryFraudCheckFactory(
-                dateCreated=datetime.utcnow() - relativedelta(years=1),
+                dateCreated=datetime.now() - relativedelta(years=1),
                 user=user,
                 type=fraud_models.FraudCheckType.DMS,
                 status=fraud_models.FraudCheckStatus.KO,
@@ -285,9 +285,9 @@ class UserTest:
             assert user.eligibility is user_models.EligibilityType.AGE18
 
         def test_eligible_when_19_with_subscription_attempt_at_18_without_account(self):
-            user_19_yo_birth_date = datetime.utcnow() - relativedelta(years=19, months=3)
-            dms_registration_date_by_18_yo = datetime.utcnow() - relativedelta(months=6)
-            user_account_creation_date_by_19_yo = datetime.utcnow()
+            user_19_yo_birth_date = datetime.now() - relativedelta(years=19, months=3)
+            dms_registration_date_by_18_yo = datetime.now() - relativedelta(months=6)
+            user_account_creation_date_by_19_yo = datetime.now()
 
             user = users_factories.UserFactory(dateOfBirth=user_19_yo_birth_date)
             dms_content_before_account_creation = fraud_factories.DMSContentFactory(
@@ -445,7 +445,7 @@ class UserWalletBalanceTest:
 @pytest.mark.usefixtures("db_session")
 class SQLFunctionsTest:
     def test_wallet_balance(self):
-        with time_machine.travel(datetime.utcnow() - relativedelta(years=2, days=2)):
+        with time_machine.travel(datetime.now() - relativedelta(years=2, days=2)):
             user = users_factories.UnderageBeneficiaryFactory(subscription_age=16)
             # disable trigger because deposit.expirationDate > now() is False in database time
             db.session.execute(sa.text("ALTER TABLE booking DISABLE TRIGGER booking_update;"))
@@ -477,7 +477,7 @@ class SQLFunctionsTest:
         assert "more than one row returned by a subquery" in str(exc.value)
 
     def test_wallet_balance_expired_deposit(self):
-        with time_machine.travel(datetime.utcnow() - relativedelta(years=2, days=2)):
+        with time_machine.travel(datetime.now() - relativedelta(years=2, days=2)):
             user = users_factories.UnderageBeneficiaryFactory(subscription_age=16)
             # disable trigger because deposit.expirationDate > now() is False in database time
             db.session.execute(sa.text("ALTER TABLE booking DISABLE TRIGGER booking_update;"))

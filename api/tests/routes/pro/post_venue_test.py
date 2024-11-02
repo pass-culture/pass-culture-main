@@ -100,7 +100,7 @@ class Returns201Test:
     def test_register_new_venue(self, client, requests_mock):
         api_adresse_response = get_api_address_response()
         user = ProFactory(
-            lastConnectionDate=datetime.utcnow(),
+            lastConnectionDate=datetime.now(),
         )
         venue_data = create_valid_venue_data(user)
         requests_mock.get(

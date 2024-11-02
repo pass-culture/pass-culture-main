@@ -35,8 +35,8 @@ def redactor_fixture():
 @pytest.fixture(name="offer")
 def offer_fixture():
     offer_range = educational_factories.DateRangeFactory(
-        start=datetime.datetime.utcnow() - datetime.timedelta(days=7),
-        end=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        start=datetime.datetime.now() - datetime.timedelta(days=7),
+        end=datetime.datetime.now() - datetime.timedelta(days=1),
     )
     return offer_range
 
@@ -159,10 +159,10 @@ class CollectiveOfferTemplateTest:
                 "otherAddress": "",
             },
             nationalProgramId=educational_factories.NationalProgramFactory().id,
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=9),
+            dateCreated=datetime.datetime.now() - datetime.timedelta(days=9),
             dateRange=db_utils.make_timerange(
-                start=datetime.datetime.utcnow() - datetime.timedelta(days=7),
-                end=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+                start=datetime.datetime.now() - datetime.timedelta(days=7),
+                end=datetime.datetime.now() - datetime.timedelta(days=1),
             ),
         )
 
@@ -192,7 +192,7 @@ class CollectiveOfferTemplateTest:
                 "otherAddress": "",
             },
             nationalProgramId=educational_factories.NationalProgramFactory().id,
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=9),
+            dateCreated=datetime.datetime.now() - datetime.timedelta(days=9),
             dateRange=None,
         )
 
@@ -332,7 +332,7 @@ class GetCollectiveOfferTemplatesTest:
 
     def test_one_template_id_with_one_archived_template(self, eac_client, redactor):
         offer = educational_factories.CollectiveOfferTemplateFactory()
-        archived_offer = educational_factories.CollectiveOfferTemplateFactory(dateArchived=datetime.datetime.utcnow())
+        archived_offer = educational_factories.CollectiveOfferTemplateFactory(dateArchived=datetime.datetime.now())
 
         url = url_for(self.endpoint, ids=[offer.id, archived_offer.id])
 

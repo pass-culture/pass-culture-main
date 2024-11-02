@@ -104,7 +104,7 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
         event_offer = self.setup_base_resource(venue=venue_provider.venue)
         event_offer_id = event_offer.id
 
-        publication_date = datetime.utcnow().replace(minute=0, second=0, microsecond=0) + timedelta(days=30)
+        publication_date = datetime.now().replace(minute=0, second=0, microsecond=0) + timedelta(days=30)
         offers_factories.FutureOfferFactory(
             offerId=event_offer_id,
             publicationDate=publication_date,

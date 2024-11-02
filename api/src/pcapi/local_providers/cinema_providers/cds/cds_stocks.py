@@ -77,7 +77,7 @@ class CDSStocks(LocalProvider):
 
         venue_movie_unique_id = _build_movie_uuid(self.movie_information.id, self.venue)
         offer_providable_info = self.create_providable_info(
-            offers_models.Offer, venue_movie_unique_id, datetime.utcnow(), venue_movie_unique_id
+            offers_models.Offer, venue_movie_unique_id, datetime.now(), venue_movie_unique_id
         )
         providable_information_list.append(offer_providable_info)
 
@@ -86,7 +86,7 @@ class CDSStocks(LocalProvider):
                 self.movie_information.id, self.venue, show["show_information"]
             )
             stock_providable_info = self.create_providable_info(
-                offers_models.Stock, stock_showtime_unique_id, datetime.utcnow(), stock_showtime_unique_id
+                offers_models.Stock, stock_showtime_unique_id, datetime.now(), stock_showtime_unique_id
             )
             providable_information_list.append(stock_providable_info)
 

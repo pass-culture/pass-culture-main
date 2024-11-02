@@ -42,7 +42,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
     def test_should_raise_404_because_has_no_access_to_venue(self, client):
         plain_api_key, _ = self.setup_provider()
         venue = self.setup_venue()
-        in_ten_minutes = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
+        in_ten_minutes = datetime.datetime.now().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
         in_ten_minutes_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(in_ten_minutes, "973")
 
         response = client.with_explicit_token(plain_api_key).post(
@@ -67,7 +67,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         plain_api_key, venue_provider = self.setup_inactive_venue_provider()
         venue = venue_provider.venue
 
-        in_ten_minutes = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
+        in_ten_minutes = datetime.datetime.now().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
         in_ten_minutes_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(in_ten_minutes, "973")
 
         response = client.with_explicit_token(plain_api_key).post(
@@ -105,7 +105,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         )
         unknown_ean = "1234567897123"
 
-        in_ten_minutes = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
+        in_ten_minutes = datetime.datetime.now().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
         in_ten_minutes_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(in_ten_minutes, "973")
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",
@@ -224,7 +224,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         stock = offers_factories.ThingStockFactory(offer=offer, quantity=10, price=100)
         bookings_factories.BookingFactory(stock=stock, quantity=2)
 
-        tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",
             json={
@@ -301,7 +301,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
                         "ean": product.extraData["ean"],
                         "stock": {
                             "bookingLimitDatetime": date_utils.format_into_utc_date(
-                                datetime.datetime.utcnow() + datetime.timedelta(days=1)
+                                datetime.datetime.now() + datetime.timedelta(days=1)
                             ),
                             "price": 1234,
                             "quantity": 0,
@@ -341,7 +341,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         cd_stock = offers_factories.ThingStockFactory(offer=cd_offer, quantity=10, price=100)
         book_stock = offers_factories.ThingStockFactory(offer=book_offer, quantity=10, price=100)
 
-        in_ten_minutes = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
+        in_ten_minutes = datetime.datetime.now().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
         in_ten_minutes_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(in_ten_minutes, "973")
         with caplog.at_level(logging.INFO):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
@@ -399,7 +399,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         # environments, therefore we cannot rely on its side effects
         update_sib_pro_task_mock.side_effect = None
 
-        in_ten_minutes = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
+        in_ten_minutes = datetime.datetime.now().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
         in_ten_minutes_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(in_ten_minutes, "973")
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",

@@ -220,7 +220,7 @@ def signin(body: users_serializers.LoginUserBodyModel) -> users_serializers.Shar
     discard_session()
     login_user(user)
     stamp_session(user)
-    flask.session["last_login"] = datetime.utcnow().timestamp()
+    flask.session["last_login"] = datetime.now().timestamp()
     users_api.update_last_connection_date(user)
 
     return users_serializers.SharedLoginUserResponseModel.from_orm(user)
@@ -332,7 +332,7 @@ def connect_as(token: str) -> Response:
     stamp_session(user)
     flask.session["internal_admin_email"] = token_data.internal_admin_email
     flask.session["internal_admin_id"] = token_data.internal_admin_id
-    flask.session["last_login"] = datetime.utcnow().timestamp()
+    flask.session["last_login"] = datetime.now().timestamp()
     return flask.redirect(token_data.redirect_link, code=302)
 
 

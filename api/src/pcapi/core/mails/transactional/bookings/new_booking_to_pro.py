@@ -25,7 +25,7 @@ def get_new_booking_to_pro_email_data(
             offerers_models.VenueBankAccountLink,
             sa.and_(
                 offerers_models.Venue.id == offerers_models.VenueBankAccountLink.venueId,
-                offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+                offerers_models.VenueBankAccountLink.timespan.contains(datetime.now()),
             ),
         )
         .outerjoin(

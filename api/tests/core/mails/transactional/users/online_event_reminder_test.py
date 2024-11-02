@@ -17,7 +17,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class OnlineEventReminderTest:
     def setup_method(self):
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now()
         normalized_minute = 0 if now.minute < 30 else 30
 
         self.now = now.replace(minute=normalized_minute, second=0, microsecond=0)

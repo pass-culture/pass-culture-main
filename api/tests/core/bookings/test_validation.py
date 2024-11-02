@@ -109,7 +109,7 @@ class CheckStockIsBookableTest:
         validation.check_stock_is_bookable(stock, self.booking_quantity)  # should not raise
 
     def test_raise_if_not_bookable(self):
-        yesterday = datetime.utcnow() - timedelta(days=1)
+        yesterday = datetime.now() - timedelta(days=1)
         stock = offers_factories.StockFactory(bookingLimitDatetime=yesterday)
 
         with pytest.raises(exceptions.StockIsNotBookable) as error:
@@ -198,7 +198,7 @@ class CheckExpenseLimitsDepositVersion2Test:
         return users_factories.BeneficiaryGrant18Factory(**kwargs)
 
     def test_raise_if_deposit_expired(self):
-        yesterday = datetime.utcnow() - timedelta(days=1)
+        yesterday = datetime.now() - timedelta(days=1)
         beneficiary = self._get_beneficiary(deposit__expirationDate=yesterday)
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.ACHAT_INSTRUMENT.id)
         with pytest.raises(exceptions.UserHasInsufficientFunds):
@@ -254,7 +254,7 @@ class CheckExpenseLimitsDepositVersion2Test:
 class InsufficientFundsSQLCheckTest:
     def _expire_deposit(self, user):
         deposit = user.deposits[0]
-        deposit.expirationDate = datetime.utcnow() - timedelta(days=1)
+        deposit.expirationDate = datetime.now() - timedelta(days=1)
         repository.save(deposit)
 
     def test_insufficient_funds_when_user_has_negative_deposit(self):
@@ -370,20 +370,20 @@ class CheckIsUsableTest:
         validation.check_is_usable(booking)
 
     def should_pass_when_event_begins_in_less_than_48_hours(self):
-        soon = datetime.utcnow() + timedelta(hours=48)
+        soon = datetime.now() + timedelta(hours=48)
         booking = factories.BookingFactory(stock__beginningDatetime=soon)
         validation.check_is_usable(booking)
 
     def should_pass_when_event_begins_in_more_than_72_hours_and_booking_created_more_than_48_hours_ago(self):
-        next_week = datetime.utcnow() + timedelta(weeks=1)
-        three_days_ago = datetime.utcnow() - timedelta(days=3)
+        next_week = datetime.now() + timedelta(weeks=1)
+        three_days_ago = datetime.now() - timedelta(days=3)
         booking = factories.BookingFactory(stock__beginningDatetime=next_week, dateCreated=three_days_ago)
         validation.check_is_usable(booking)
 
     def should_not_validate_when_event_booking_not_confirmed(self):
         # Given
-        next_week = datetime.utcnow() + timedelta(weeks=1)
-        one_day_before = datetime.utcnow() - timedelta(days=1)
+        next_week = datetime.now() + timedelta(weeks=1)
+        one_day_before = datetime.now() - timedelta(days=1)
         booking = factories.BookingFactory(dateCreated=one_day_before, stock__beginningDatetime=next_week)
 
         # When
@@ -399,7 +399,7 @@ class CheckBeneficiaryCanCancelBookingTest:
 
     def test_can_cancel_if_event_is_in_a_long_time(self):
         booking = factories.BookingFactory(
-            stock__beginningDatetime=datetime.utcnow() + timedelta(days=10),
+            stock__beginningDatetime=datetime.now() + timedelta(days=10),
         )
         validation.check_beneficiary_can_cancel_booking(booking.user, booking)  # should not raise
 
@@ -416,7 +416,7 @@ class CheckBeneficiaryCanCancelBookingTest:
 
     def test_raise_if_event_too_close(self):
         booking = factories.BookingFactory(
-            stock__beginningDatetime=datetime.utcnow() + timedelta(days=1),
+            stock__beginningDatetime=datetime.now() + timedelta(days=1),
         )
         with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
             validation.check_beneficiary_can_cancel_booking(booking.user, booking)
@@ -427,8 +427,8 @@ class CheckBeneficiaryCanCancelBookingTest:
 
     def test_raise_if_booked_long_ago(self):
         booking = factories.BookingFactory(
-            stock__beginningDatetime=datetime.utcnow() + timedelta(days=10),
-            dateCreated=datetime.utcnow() - timedelta(days=2),
+            stock__beginningDatetime=datetime.now() + timedelta(days=10),
+            dateCreated=datetime.now() - timedelta(days=2),
         )
         with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
             validation.check_beneficiary_can_cancel_booking(booking.user, booking)
@@ -439,8 +439,8 @@ class CheckBeneficiaryCanCancelBookingTest:
 
     def test_raise_if_event_too_close_and_booked_long_ago(self):
         booking = factories.BookingFactory(
-            stock__beginningDatetime=datetime.utcnow() + timedelta(days=1),
-            dateCreated=datetime.utcnow() - timedelta(days=2),
+            stock__beginningDatetime=datetime.now() + timedelta(days=1),
+            dateCreated=datetime.now() - timedelta(days=2),
         )
         with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
             validation.check_beneficiary_can_cancel_booking(booking.user, booking)

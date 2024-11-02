@@ -79,7 +79,7 @@ def download_gdpr_extract(extract_id: int) -> utils.BackofficeResponse:
     extract = (
         users_models.GdprUserDataExtract.query.filter(
             users_models.GdprUserDataExtract.id == extract_id,
-            users_models.GdprUserDataExtract.expirationDate > datetime.utcnow(),  # type: ignore [operator]
+            users_models.GdprUserDataExtract.expirationDate > datetime.now(),  # type: ignore [operator]
         )
         .options(joinedload(users_models.GdprUserDataExtract.user).load_only(users_models.User.email))
         .one_or_none()

@@ -147,7 +147,7 @@ def book_event_ticket(
             REDIS_EXTERNAL_BOOKINGS_NAME,
             {
                 "barcode": ticket.barcode,
-                "timestamp": datetime.datetime.utcnow().timestamp(),
+                "timestamp": datetime.datetime.now().timestamp(),
                 "booking_type": RedisExternalBookingType.EVENT,
                 "cancel_event_info": {
                     "provider_id": provider.id,
@@ -175,7 +175,7 @@ def _verify_and_return_tickets_with_same_quantity_as_booking(
             REDIS_EXTERNAL_BOOKINGS_NAME,
             {
                 "barcode": tickets[0].barcode,
-                "timestamp": datetime.datetime.utcnow().timestamp(),
+                "timestamp": datetime.datetime.now().timestamp(),
                 "booking_type": RedisExternalBookingType.EVENT,
                 "cancel_event_info": {
                     "provider_id": stock.offer.lastProvider.id,

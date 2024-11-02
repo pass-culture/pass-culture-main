@@ -131,7 +131,7 @@ class GetFutureEventsRequiringProviderTicketingSystemTest:
             lastProvider=provider, venue=venue, withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP
         )
         # Old stock
-        one_day_ago = datetime.utcnow() - timedelta(days=1)
+        one_day_ago = datetime.now() - timedelta(days=1)
         offers_factories.StockFactory(offer=event_offer, beginningDatetime=one_day_ago)
 
         future_events = repository.get_future_events_requiring_provider_ticketing_system(provider)
@@ -172,7 +172,7 @@ class GetFutureVenueEventsRequiringATicketingSystemTest:
         offers_factories.StockFactory(offer=expected_event_offer)
         offers_factories.StockFactory(offer=not_linked_to_ticketing_event_offer)
         offers_factories.StockFactory(offer=linked_to_other_venue_offer)
-        one_day_ago = datetime.utcnow() - timedelta(days=1)
+        one_day_ago = datetime.now() - timedelta(days=1)
         offers_factories.StockFactory(offer=event_with_old_sock, beginningDatetime=one_day_ago)
 
         future_events = repository.get_future_venue_events_requiring_a_ticketing_system(venue_provider)

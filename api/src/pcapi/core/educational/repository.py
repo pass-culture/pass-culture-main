@@ -47,14 +47,14 @@ BOOKING_DATE_STATUS_MAPPING: dict[educational_models.CollectiveBookingStatusFilt
 
 
 def find_bookings_starting_in_x_days(number_of_days: int) -> list[educational_models.CollectiveBooking]:
-    target_day = datetime.utcnow() + timedelta(days=number_of_days)
+    target_day = datetime.now() + timedelta(days=number_of_days)
     start = datetime.combine(target_day, time.min)
     end = datetime.combine(target_day, time.max)
     return find_bookings_in_interval(start, end, educational_models.CollectiveStock.beginningDatetime)
 
 
 def find_bookings_ending_in_x_days(number_of_days: int) -> list[educational_models.CollectiveBooking]:
-    target_day = datetime.utcnow() + timedelta(days=number_of_days)
+    target_day = datetime.now() + timedelta(days=number_of_days)
     start = datetime.combine(target_day, time.min)
     end = datetime.combine(target_day, time.max)
     return find_bookings_in_interval(start, end, educational_models.CollectiveStock.endDatetime)
@@ -1206,7 +1206,7 @@ def search_educational_institution(
 
 
 def find_pending_booking_confirmation_limit_date_in_3_days() -> list[educational_models.CollectiveBooking]:
-    target_day = datetime.utcnow() + timedelta(days=3)
+    target_day = datetime.now() + timedelta(days=3)
     start = datetime.combine(target_day, time.min)
     end = datetime.combine(target_day, time.max)
     query = (
@@ -1250,7 +1250,7 @@ def get_booking_related_bank_account(booking_id: int) -> offerers_models.VenueBa
             offerers_models.VenueBankAccountLink,
             sa.and_(
                 offerers_models.VenueBankAccountLink.bankAccountId == finance_models.BankAccount.id,
-                offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+                offerers_models.VenueBankAccountLink.timespan.contains(datetime.now()),
             ),
         )
         .join(offerers_models.Venue, offerers_models.VenueBankAccountLink.venueId == offerers_models.Venue.id)

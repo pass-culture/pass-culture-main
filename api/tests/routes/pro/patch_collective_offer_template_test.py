@@ -60,7 +60,7 @@ class PayloadContext:
 
 
 def build_template_start():
-    return datetime.utcnow() + timedelta(days=1)
+    return datetime.now() + timedelta(days=1)
 
 
 def build_template_end(template_start=None):
@@ -414,7 +414,7 @@ class InvalidDatesTest:
         pro_client = build_pro_client(client, offer_ctx.user)
         offer_id = offer_ctx.offer.id
 
-        one_week_ago = datetime.utcnow() - timedelta(days=7)
+        one_week_ago = datetime.now() - timedelta(days=7)
         dates = {"start": one_week_ago.isoformat(), "end": build_template_end().isoformat()}
 
         response = self.send_request(pro_client, offer_id, dates)

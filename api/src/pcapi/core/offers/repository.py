@@ -176,7 +176,7 @@ def get_capped_offers_for_filters(
 
 def get_offers_by_publication_date(publication_date: datetime.datetime | None = None) -> BaseQuery:
     if publication_date is None:
-        publication_date = datetime.datetime.utcnow()
+        publication_date = datetime.datetime.now()
     publication_date = publication_date.replace(minute=0, second=0, microsecond=0, tzinfo=None)
     future_offers_subquery = db.session.query(models.FutureOffer.offerId).filter_by(publicationDate=publication_date)
     return models.Offer.query.filter(models.Offer.id.in_(future_offers_subquery))
@@ -871,7 +871,7 @@ def check_stock_consistency() -> list[int]:
 
 
 def find_event_stocks_happening_in_x_days(number_of_days: int) -> BaseQuery:
-    target_day = datetime.datetime.utcnow() + datetime.timedelta(days=number_of_days)
+    target_day = datetime.datetime.now() + datetime.timedelta(days=number_of_days)
     start = datetime.datetime.combine(target_day, datetime.time.min)
     end = datetime.datetime.combine(target_day, datetime.time.max)
 
@@ -952,8 +952,7 @@ def get_available_activation_code(stock: models.Stock) -> models.ActivationCode 
         (
             code
             for code in stock.activationCodes
-            if code.bookingId is None
-            and (code.expirationDate is None or code.expirationDate > datetime.datetime.utcnow())
+            if code.bookingId is None and (code.expirationDate is None or code.expirationDate > datetime.datetime.now())
         ),
         None,
     )

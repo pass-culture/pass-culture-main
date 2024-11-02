@@ -58,7 +58,7 @@ class ImportDSBankAccountApplicationsTest:
         latest_import = ds_factories.LatestDmsImportFactory(
             procedureId=settings.DMS_VENUE_PROCEDURE_ID_V4,
             isProcessing=True,
-            latestImportDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=2),
+            latestImportDatetime=datetime.datetime.now() - datetime.timedelta(days=2),
         )
 
         import_ds_bank_information_applications(procedure_number=settings.DMS_VENUE_PROCEDURE_ID_V4)
@@ -119,8 +119,8 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         application_id = random.randint(1, 100000)
         status = BankAccountApplicationStatus.DRAFT
         BankAccountFactory(dsApplicationId=application_id, status=status)
-        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).astimezone().isoformat()
-        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
+        dead_line_application = (datetime.datetime.now() - datetime.timedelta(days=91)).astimezone().isoformat()
+        dead_line_annotation = (datetime.datetime.now() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,
@@ -164,7 +164,7 @@ class MarkWithoutApplicationTooOldApplicationsTest:
 
         bank_account = BankAccount.query.filter_by(dsApplicationId=application_id).one()
         assert bank_account.status == BankAccountApplicationStatus.WITHOUT_CONTINUATION
-        assert bank_account.dateLastStatusUpdate.timestamp() == pytest.approx(datetime.datetime.utcnow().timestamp())
+        assert bank_account.dateLastStatusUpdate.timestamp() == pytest.approx(datetime.datetime.now().timestamp())
 
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
@@ -176,8 +176,8 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         application_id = random.randint(1, 100000)
         status = BankAccountApplicationStatus.ON_GOING
         BankAccountFactory(dsApplicationId=application_id, status=status)
-        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).astimezone().isoformat()
-        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
+        dead_line_application = (datetime.datetime.now() - datetime.timedelta(days=91)).astimezone().isoformat()
+        dead_line_annotation = (datetime.datetime.now() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.on_going.value,
             "last_modification_date": dead_line_application,
@@ -217,7 +217,7 @@ class MarkWithoutApplicationTooOldApplicationsTest:
 
         bank_account = BankAccount.query.filter_by(dsApplicationId=application_id).one()
         assert bank_account.status == BankAccountApplicationStatus.WITHOUT_CONTINUATION
-        assert bank_account.dateLastStatusUpdate.timestamp() == pytest.approx(datetime.datetime.utcnow().timestamp())
+        assert bank_account.dateLastStatusUpdate.timestamp() == pytest.approx(datetime.datetime.now().timestamp())
 
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
@@ -229,8 +229,8 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         application_id = random.randint(1, 100000)
         status = BankAccountApplicationStatus.DRAFT
         BankAccountFactory(dsApplicationId=application_id, status=status)
-        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).astimezone().isoformat()
-        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
+        dead_line_application = (datetime.datetime.now() - datetime.timedelta(days=91)).astimezone().isoformat()
+        dead_line_annotation = (datetime.datetime.now() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,
@@ -275,8 +275,8 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         application_id = random.randint(1, 100000)
         status = BankAccountApplicationStatus.DRAFT
         BankAccountFactory(dsApplicationId=application_id, status=status)
-        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).astimezone().isoformat()
-        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=5 * 31)).astimezone().isoformat()
+        dead_line_application = (datetime.datetime.now() - datetime.timedelta(days=91)).astimezone().isoformat()
+        dead_line_annotation = (datetime.datetime.now() - datetime.timedelta(days=5 * 31)).astimezone().isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,
@@ -321,8 +321,8 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         application_id = random.randint(1, 100000)
         status = BankAccountApplicationStatus.DRAFT
         BankAccountFactory(dsApplicationId=application_id, status=status)
-        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=89)).astimezone().isoformat()
-        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
+        dead_line_application = (datetime.datetime.now() - datetime.timedelta(days=89)).astimezone().isoformat()
+        dead_line_annotation = (datetime.datetime.now() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,
@@ -368,15 +368,15 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         status = BankAccountApplicationStatus.DRAFT
         bank_account = BankAccountFactory(dsApplicationId=application_id, status=status)
         status_history = BankAccountStatusHistoryFactory(
-            bankAccount=bank_account, status=status, timespan=(datetime.datetime.utcnow(),)
+            bankAccount=bank_account, status=status, timespan=(datetime.datetime.now(),)
         )
         venue = VenueFactory(managingOfferer=bank_account.offerer)
         # This shouldn't happen but we need to be sure that if any venue is linked to a bank account
         # that is going to be marked without continuation, it's unlinked.
         # We don't want any Cashflow to be generated using non valid bank accounts
         VenueBankAccountLinkFactory(bankAccount=bank_account, venue=venue)
-        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).isoformat()
-        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).isoformat()
+        dead_line_application = (datetime.datetime.now() - datetime.timedelta(days=91)).isoformat()
+        dead_line_annotation = (datetime.datetime.now() - datetime.timedelta(days=6 * 31)).isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,
@@ -435,7 +435,7 @@ class MarkWithoutApplicationTooOldApplicationsTest:
 
         bank_account = BankAccount.query.filter_by(dsApplicationId=application_id).one()
         assert bank_account.status == BankAccountApplicationStatus.WITHOUT_CONTINUATION
-        assert bank_account.dateLastStatusUpdate.timestamp() == pytest.approx(datetime.datetime.utcnow().timestamp())
+        assert bank_account.dateLastStatusUpdate.timestamp() == pytest.approx(datetime.datetime.now().timestamp())
         assert bank_account.venueLinks
         assert len(bank_account.statusHistory) == 2
         for status_history in bank_account.statusHistory:

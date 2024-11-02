@@ -19,7 +19,7 @@ from pcapi.utils.image_conversion import DO_NOT_CROP
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
     def when_user_has_rights_on_managing_offerer(self, client, db_session):
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now()
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
         venue = offerers_factories.CollectiveVenueFactory(
             name="L'encre et la plume",

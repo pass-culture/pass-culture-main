@@ -74,13 +74,13 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
     def test_request_not_existing_page(self, client: TestClient):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         offer = self.setup_base_resource(venue=venue_provider.venue)
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        past = datetime.datetime.now() - datetime.timedelta(days=2)
         product_stock = offers_factories.StockFactory(offer=offer, beginningDatetime=past)
         booking = bookings_factories.BookingFactory(
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2),
+            user__dateOfBirth=datetime.datetime.now() - relativedelta(years=18, months=2),
             stock=product_stock,
         )
 
@@ -106,13 +106,13 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             name="Vieux motard que jamais",
             extraData={"ean": "1234567890123"},
         )
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        past = datetime.datetime.now() - datetime.timedelta(days=2)
         product_stock = offers_factories.StockFactory(offer=product_offer, beginningDatetime=past)
         booking = bookings_factories.BookingFactory(
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2),
+            user__dateOfBirth=datetime.datetime.now() - relativedelta(years=18, months=2),
             stock=product_stock,
         )
 
@@ -166,20 +166,20 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
         )
-        past = datetime.datetime.utcnow() - datetime.timedelta(weeks=2)
+        past = datetime.datetime.now() - datetime.timedelta(weeks=2)
         event_stock = offers_factories.EventStockFactory(offer=event_offer, beginningDatetime=past)
         booking = bookings_factories.BookingFactory(
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(months=2),
+            user__dateOfBirth=datetime.datetime.now() - relativedelta(months=2),
             stock=event_stock,
         )
         booking_2 = bookings_factories.BookingFactory(
             dateCreated=past - datetime.timedelta(days=1),
             user__email="beneficiary-2@example.com",
             user__phoneNumber="0698271625",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=1),
+            user__dateOfBirth=datetime.datetime.now() - relativedelta(years=1),
             stock=event_stock,
         )
 
@@ -260,7 +260,7 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
         )
-        past = datetime.datetime.utcnow() - datetime.timedelta(weeks=2)
+        past = datetime.datetime.now() - datetime.timedelta(weeks=2)
         price_category = offers_factories.PriceCategoryFactory(price=1010, offer=event_offer)
         event_stock = offers_factories.EventStockFactory(
             offer=event_offer,
@@ -270,14 +270,14 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(months=2),
+            user__dateOfBirth=datetime.datetime.now() - relativedelta(months=2),
             stock=event_stock,
         )
         booking_2 = bookings_factories.BookingFactory(
             dateCreated=past - datetime.timedelta(days=1),
             user__email="beneficiary-2@example.com",
             user__phoneNumber="0698271625",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=1),
+            user__dateOfBirth=datetime.datetime.now() - relativedelta(years=1),
             stock=event_stock,
         )
 
@@ -360,7 +360,7 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
         )
-        past = datetime.datetime.utcnow() - datetime.timedelta(weeks=2)
+        past = datetime.datetime.now() - datetime.timedelta(weeks=2)
         event_stock = offers_factories.EventStockFactory(
             offer=event_offer,
             beginningDatetime=past,
@@ -373,14 +373,14 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(months=2),
+            user__dateOfBirth=datetime.datetime.now() - relativedelta(months=2),
             stock=event_stock,
         )
         bookings_factories.BookingFactory(
             dateCreated=past - datetime.timedelta(days=1),
             user__email="beneficiary-2@example.com",
             user__phoneNumber="0698271625",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=1),
+            user__dateOfBirth=datetime.datetime.now() - relativedelta(years=1),
             stock=event_stock_2,
         )
 
@@ -436,7 +436,7 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
         )
-        past = datetime.datetime.utcnow() - datetime.timedelta(weeks=2)
+        past = datetime.datetime.now() - datetime.timedelta(weeks=2)
         event_stock = offers_factories.EventStockFactory(
             offer=event_offer,
             beginningDatetime=past,
@@ -449,14 +449,14 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(months=2),
+            user__dateOfBirth=datetime.datetime.now() - relativedelta(months=2),
             stock=event_stock,
         )
         bookings_factories.BookingFactory(
             dateCreated=past - datetime.timedelta(days=1),
             user__email="beneficiary-2@example.com",
             user__phoneNumber="0698271625",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=1),
+            user__dateOfBirth=datetime.datetime.now() - relativedelta(years=1),
             stock=event_stock_2,
         )
 
@@ -512,7 +512,7 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
         )
-        past = datetime.datetime.utcnow() - datetime.timedelta(weeks=2)
+        past = datetime.datetime.now() - datetime.timedelta(weeks=2)
         event_stock = offers_factories.EventStockFactory(
             offer=event_offer,
             beginningDatetime=past,
@@ -526,14 +526,14 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(months=2),
+            user__dateOfBirth=datetime.datetime.now() - relativedelta(months=2),
             stock=event_stock,
         )
         bookings_factories.UsedBookingFactory(
             dateCreated=past - datetime.timedelta(days=1),
             user__email="beneficiary-2@example.com",
             user__phoneNumber="0698271625",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=1),
+            user__dateOfBirth=datetime.datetime.now() - relativedelta(years=1),
             stock=event_stock_2,
         )
 
@@ -589,7 +589,7 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
         )
-        past = datetime.datetime.utcnow() - datetime.timedelta(weeks=2)
+        past = datetime.datetime.now() - datetime.timedelta(weeks=2)
         event_stock = offers_factories.EventStockFactory(
             offer=event_offer,
             beginningDatetime=past,
@@ -602,21 +602,21 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(months=2),
+            user__dateOfBirth=datetime.datetime.now() - relativedelta(months=2),
             stock=event_stock,
         )
         bookings_factories.UsedBookingFactory(
             dateCreated=past - datetime.timedelta(days=1),
             user__email="beneficiary-2@example.com",
             user__phoneNumber="0698271625",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=1),
+            user__dateOfBirth=datetime.datetime.now() - relativedelta(years=1),
             stock=event_stock,
         )
         booking = bookings_factories.UsedBookingFactory(
             dateCreated=past - datetime.timedelta(days=1),
             user__email="beneficiary-3@example.com",
             user__phoneNumber="0698273632",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=2),
+            user__dateOfBirth=datetime.datetime.now() - relativedelta(years=2),
             stock=event_stock_2,
         )
 
@@ -677,27 +677,27 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
         )
-        past = datetime.datetime.utcnow() - datetime.timedelta(weeks=2)
+        past = datetime.datetime.now() - datetime.timedelta(weeks=2)
         event_stock = offers_factories.EventStockFactory(offer=event_offer, beginningDatetime=past)
         booking = bookings_factories.BookingFactory(
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(months=2),
+            user__dateOfBirth=datetime.datetime.now() - relativedelta(months=2),
             stock=event_stock,
         )
         booking_2 = bookings_factories.BookingFactory(
             dateCreated=past - datetime.timedelta(days=1),
             user__email="beneficiary-2@example.com",
             user__phoneNumber="0698271625",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=1),
+            user__dateOfBirth=datetime.datetime.now() - relativedelta(years=1),
             stock=event_stock,
         )
         bookings_factories.BookingFactory(
             dateCreated=past - datetime.timedelta(days=1),
             user__email="beneficiary-3@example.com",
             user__phoneNumber="0698890987",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=1),
+            user__dateOfBirth=datetime.datetime.now() - relativedelta(years=1),
             stock=event_stock,
         )
 
@@ -778,27 +778,27 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
         )
-        past = datetime.datetime.utcnow() - datetime.timedelta(weeks=2)
+        past = datetime.datetime.now() - datetime.timedelta(weeks=2)
         event_stock = offers_factories.EventStockFactory(offer=event_offer, beginningDatetime=past)
         bookings_factories.BookingFactory(
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(months=2),
+            user__dateOfBirth=datetime.datetime.now() - relativedelta(months=2),
             stock=event_stock,
         )
         booking_2 = bookings_factories.BookingFactory(
             dateCreated=past - datetime.timedelta(days=1),
             user__email="beneficiary-2@example.com",
             user__phoneNumber="0698271625",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=1),
+            user__dateOfBirth=datetime.datetime.now() - relativedelta(years=1),
             stock=event_stock,
         )
         booking_3 = bookings_factories.BookingFactory(
             dateCreated=past - datetime.timedelta(days=1),
             user__email="beneficiary-3@example.com",
             user__phoneNumber="0698890987",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=1),
+            user__dateOfBirth=datetime.datetime.now() - relativedelta(years=1),
             stock=event_stock,
         )
 

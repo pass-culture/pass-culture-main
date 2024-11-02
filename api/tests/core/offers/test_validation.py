@@ -212,7 +212,7 @@ class CheckRequiredDatesForStockTest:
         with pytest.raises(ApiErrors) as error:
             validation.check_required_dates_for_stock(
                 offer,
-                beginning=datetime.datetime.utcnow(),
+                beginning=datetime.datetime.now(),
                 booking_limit_datetime=None,
             )
 
@@ -226,7 +226,7 @@ class CheckRequiredDatesForStockTest:
         validation.check_required_dates_for_stock(
             offer,
             beginning=None,
-            booking_limit_datetime=datetime.datetime.utcnow(),
+            booking_limit_datetime=datetime.datetime.now(),
         )
 
     def test_thing_offer_ok_without_booking_limit_datetime(self):
@@ -245,7 +245,7 @@ class CheckRequiredDatesForStockTest:
             validation.check_required_dates_for_stock(
                 offer,
                 beginning=None,
-                booking_limit_datetime=datetime.datetime.utcnow(),
+                booking_limit_datetime=datetime.datetime.now(),
             )
         assert error.value.errors["beginningDatetime"] == ["Ce paramètre est obligatoire"]
 
@@ -255,7 +255,7 @@ class CheckRequiredDatesForStockTest:
         with pytest.raises(ApiErrors) as error:
             validation.check_required_dates_for_stock(
                 offer,
-                beginning=datetime.datetime.utcnow(),
+                beginning=datetime.datetime.now(),
                 booking_limit_datetime=None,
             )
         assert error.value.errors["bookingLimitDatetime"] == ["Ce paramètre est obligatoire"]
@@ -265,8 +265,8 @@ class CheckRequiredDatesForStockTest:
 
         validation.check_required_dates_for_stock(
             offer,
-            beginning=datetime.datetime.utcnow(),
-            booking_limit_datetime=datetime.datetime.utcnow(),
+            beginning=datetime.datetime.now(),
+            booking_limit_datetime=datetime.datetime.now(),
         )
 
 
@@ -302,13 +302,13 @@ class CheckStockIsDeletableTest:
         ]
 
     def test_recently_begun_event_stock(self):
-        recently = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        recently = datetime.datetime.now() - datetime.timedelta(days=1)
         stock = offers_factories.EventStockFactory(beginningDatetime=recently)
 
         validation.check_stock_is_deletable(stock)
 
     def test_long_begun_event_stock(self):
-        too_long_ago = datetime.datetime.utcnow() - datetime.timedelta(days=3)
+        too_long_ago = datetime.datetime.now() - datetime.timedelta(days=3)
         stock = offers_factories.EventStockFactory(beginningDatetime=too_long_ago)
 
         with pytest.raises(exceptions.TooLateToDeleteStock) as error:
@@ -359,7 +359,7 @@ class CheckStockIsUpdatableTest:
         assert error.value.errors["global"] == ["Les offres importées ne sont pas modifiables"]
 
     def test_past_event_stock(self):
-        recently = datetime.datetime.utcnow() - datetime.timedelta(minutes=1)
+        recently = datetime.datetime.now() - datetime.timedelta(minutes=1)
         stock = offers_factories.EventStockFactory(beginningDatetime=recently)
 
         with pytest.raises(ApiErrors) as error:
@@ -368,7 +368,7 @@ class CheckStockIsUpdatableTest:
         assert error.value.errors["global"] == ["Les évènements passés ne sont pas modifiables"]
 
     def test_past_event_draft_stock(self):
-        recently = datetime.datetime.utcnow() - datetime.timedelta(minutes=1)
+        recently = datetime.datetime.now() - datetime.timedelta(minutes=1)
         stock = offers_factories.EventStockFactory(
             beginningDatetime=recently, offer__validation=OfferValidationStatus.DRAFT
         )
@@ -809,7 +809,7 @@ class CheckPublicationDateTest:
         assert validation.check_publication_date(offer, publication_date) is None
 
         offer = offers_factories.ThingOfferFactory()
-        publication_date = datetime.datetime.utcnow().replace(minute=0) + datetime.timedelta(days=30)
+        publication_date = datetime.datetime.now().replace(minute=0) + datetime.timedelta(days=30)
         offers_factories.FutureOfferFactory(offerId=offer.id, publicationDate=publication_date)
         with pytest.raises(exceptions.FutureOfferException) as exc:
             validation.check_publication_date(offer, publication_date)
@@ -831,19 +831,19 @@ class CheckPublicationDateTest:
             assert exc.value.errors["publication_date"] == [msg]
 
         offer = offers_factories.EventOfferFactory()
-        publication_date = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        publication_date = datetime.datetime.now() - datetime.timedelta(days=1)
         with pytest.raises(exceptions.FutureOfferException) as exc:
             validation.check_publication_date(offer, publication_date)
             msg = "Impossible de sélectionner une date de publication dans le passé"
             assert exc.value.errors["publication_date"] == [msg]
 
         offer = offers_factories.EventOfferFactory()
-        publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=750)
+        publication_date = datetime.datetime.now() + datetime.timedelta(days=750)
         with pytest.raises(exceptions.FutureOfferException) as exc:
             validation.check_publication_date(offer, publication_date)
             msg = "Impossible sélectionner une date de publication plus de 2 ans en avance"
             assert exc.value.errors["publication_date"] == [msg]
 
         offer = offers_factories.EventOfferFactory()
-        publication_date = datetime.datetime.utcnow().replace(minute=0) + datetime.timedelta(days=30)
+        publication_date = datetime.datetime.now().replace(minute=0) + datetime.timedelta(days=30)
         assert validation.check_publication_date(offer, publication_date) is None

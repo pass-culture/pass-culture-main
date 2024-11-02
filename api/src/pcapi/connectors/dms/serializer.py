@@ -321,10 +321,10 @@ class MarkWithoutContinuationApplicationDetail(BaseModel):
 
     @property
     def should_be_marked_without_continuation(self) -> bool:
-        dead_line_application = datetime.utcnow() - timedelta(
+        dead_line_application = datetime.now() - timedelta(
             days=int(settings.DS_MARK_WITHOUT_CONTINUATION_APPLICATION_DEADLINE)
         )
-        dead_line_annotation = datetime.utcnow() - timedelta(
+        dead_line_annotation = datetime.now() - timedelta(
             days=int(settings.DS_MARK_WITHOUT_CONTINUATION_ANNOTATION_DEADLINE)
         )
 

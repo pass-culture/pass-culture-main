@@ -51,7 +51,7 @@ class EducationalDepositTest:
 
 class CollectiveStockIsBookableTest:
     def test_not_bookable_if_booking_limit_datetime_has_passed(self) -> None:
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        past = datetime.datetime.now() - datetime.timedelta(days=2)
         collective_stock = factories.CollectiveStockFactory(bookingLimitDatetime=past)
         assert not collective_stock.isBookable
 
@@ -72,7 +72,7 @@ class CollectiveStockIsBookableTest:
         assert not collective_stock.isBookable
 
     def test_not_bookable_if_offer_is_event_with_passed_begining_datetime(self) -> None:
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        past = datetime.datetime.now() - datetime.timedelta(days=2)
         collective_stock = factories.CollectiveStockFactory(beginningDatetime=past)
         assert not collective_stock.isBookable
 
@@ -304,13 +304,13 @@ class CollectiveOfferIsArchiveTest:
 
         assert offer.isArchived == False
 
-        offer.dateArchived = datetime.datetime.utcnow()
+        offer.dateArchived = datetime.datetime.now()
 
         assert offer.isArchived == True
         assert offer.status == CollectiveOfferStatus.ARCHIVED.value
 
     def test_query_is_archived(self) -> None:
-        offer_archived = factories.CollectiveOfferFactory(dateArchived=datetime.datetime.utcnow())
+        offer_archived = factories.CollectiveOfferFactory(dateArchived=datetime.datetime.now())
         offer_not_archived = factories.CollectiveOfferFactory(dateArchived=None)
 
         results = db.session.query(CollectiveOffer.id).filter(CollectiveOffer.isArchived).all()
@@ -321,7 +321,7 @@ class CollectiveOfferIsArchiveTest:
         assert offer_not_archived.id not in results_ids
 
     def test_query_status_for_archived(self) -> None:
-        offer_archived = factories.CollectiveOfferFactory(dateArchived=datetime.datetime.utcnow())
+        offer_archived = factories.CollectiveOfferFactory(dateArchived=datetime.datetime.now())
         offer_not_archived = factories.CollectiveOfferFactory(dateArchived=None)
 
         results = db.session.query(CollectiveOffer.id, CollectiveOffer.status).all()
@@ -618,20 +618,20 @@ class CollectiveOfferDisplayedStatusTest:
     def test_get_displayed_status_for_inactive_offer_due_to_booking_date_passed(self):
         offer = factories.CollectiveOfferFactory()
 
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        past = datetime.datetime.now() - datetime.timedelta(days=2)
         stock = factories.CollectiveStockFactory(bookingLimitDatetime=past, collectiveOffer=offer)
 
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.INACTIVE
 
-        futur = datetime.datetime.utcnow() + datetime.timedelta(days=2)
+        futur = datetime.datetime.now() + datetime.timedelta(days=2)
         stock.bookingLimitDatetime = futur
 
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ACTIVE
 
     def test_get_displayed_status_for_offer_when_in_between_beginningDatetime_endDatetime(self):
         offer = factories.CollectiveOfferFactory()
-        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-        futur = datetime.datetime.utcnow() + datetime.timedelta(days=2)
+        yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
+        futur = datetime.datetime.now() + datetime.timedelta(days=2)
         stock = factories.CollectiveStockFactory(
             collectiveOffer=offer, beginningDatetime=yesterday, endDatetime=futur, bookingLimitDatetime=futur
         )
@@ -640,7 +640,7 @@ class CollectiveOfferDisplayedStatusTest:
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.BOOKED
 
     def test_get_displayed_status_for_offer_with_cancelled_booking(self):
-        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
 
         offer = factories.CollectiveOfferFactory()
         stock = factories.CollectiveStockFactory(
@@ -649,7 +649,7 @@ class CollectiveOfferDisplayedStatusTest:
         factories.CancelledCollectiveBookingFactory(
             collectiveStock=stock, dateCreated=yesterday - datetime.timedelta(days=3)
         )
-        factories.ReimbursedCollectiveBookingFactory(collectiveStock=stock, dateCreated=datetime.datetime.utcnow())
+        factories.ReimbursedCollectiveBookingFactory(collectiveStock=stock, dateCreated=datetime.datetime.now())
 
         assert offer.lastBookingStatus == CollectiveBookingStatus.REIMBURSED
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.REIMBURSED
@@ -676,8 +676,8 @@ class CollectiveOfferTemplateDisplayedStatusTest:
         offer = factories.CollectiveOfferTemplateFactory(
             validation=OfferValidationStatus.APPROVED,
             dateRange=db_utils.make_timerange(
-                start=datetime.datetime.utcnow() - datetime.timedelta(days=4),
-                end=datetime.datetime.utcnow() - datetime.timedelta(hours=1),
+                start=datetime.datetime.now() - datetime.timedelta(days=4),
+                end=datetime.datetime.now() - datetime.timedelta(hours=1),
             ),
         )
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.INACTIVE
@@ -710,7 +710,7 @@ class CollectiveOfferAllowedActionsTest:
             CollectiveOfferAllowedAction.CAN_CANCEL,
         ]
 
-        offer.collectiveStock.endDatetime = datetime.datetime.utcnow() - datetime.timedelta(days=3)
+        offer.collectiveStock.endDatetime = datetime.datetime.now() - datetime.timedelta(days=3)
         assert offer.allowedActions == [
             CollectiveOfferAllowedAction.CAN_DUPLICATE,
         ]
@@ -719,13 +719,13 @@ class CollectiveOfferAllowedActionsTest:
         offer = factories.CollectiveOfferFactory()
         factories.CollectiveStockFactory(collectiveOffer=offer)
 
-        assert offer.collectiveStock.endDatetime > datetime.datetime.utcnow()
+        assert offer.collectiveStock.endDatetime > datetime.datetime.now()
         assert not offer.is_two_days_past_end
 
         offer.collectiveStock.endDatetime = None
         assert not offer.is_two_days_past_end
 
-        offer.collectiveStock.endDatetime = datetime.datetime.utcnow() - datetime.timedelta(days=3)
+        offer.collectiveStock.endDatetime = datetime.datetime.now() - datetime.timedelta(days=3)
         assert offer.is_two_days_past_end
 
     @pytest.mark.parametrize("status", COLLECTIVE_OFFER_TEMPLATE_STATUSES)

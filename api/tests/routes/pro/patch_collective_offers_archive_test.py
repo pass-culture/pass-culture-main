@@ -116,7 +116,7 @@ class Returns204Test:
 class Returns422Test:
     def when_archiving_already_archived(self, client):
         # Given
-        offer_already_archived = CollectiveOfferFactory(dateArchived=datetime.utcnow())
+        offer_already_archived = CollectiveOfferFactory(dateArchived=datetime.now())
         venue = offer_already_archived.venue
         offer_not_archived = CollectiveOfferFactory(venue=venue)
         offerer = venue.managingOfferer

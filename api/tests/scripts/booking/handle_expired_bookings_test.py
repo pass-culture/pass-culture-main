@@ -24,7 +24,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class CancelExpiredBookingsTest:
     def test_should_cancel_old_thing_that_can_expire_booking(self, app) -> None:
-        now = datetime.utcnow()
+        now = datetime.now()
         eleven_days_ago = now - timedelta(days=11)
         two_months_ago = now - timedelta(days=60)
         old_book_booking = booking_factories.BookingFactory(
@@ -37,12 +37,12 @@ class CancelExpiredBookingsTest:
         handle_expired_bookings.cancel_expired_individual_bookings()
 
         assert old_book_booking.status is BookingStatus.CANCELLED
-        assert old_book_booking.cancellationDate.timestamp() == pytest.approx(datetime.utcnow().timestamp(), rel=1)
+        assert old_book_booking.cancellationDate.timestamp() == pytest.approx(datetime.now().timestamp(), rel=1)
         assert old_book_booking.cancellationReason == BookingCancellationReasons.EXPIRED
         assert old_book_booking.stock.dnBookedQuantity == 0
 
         assert old_dvd_booking.status is BookingStatus.CANCELLED
-        assert old_dvd_booking.cancellationDate.timestamp() == pytest.approx(datetime.utcnow().timestamp(), rel=1)
+        assert old_dvd_booking.cancellationDate.timestamp() == pytest.approx(datetime.now().timestamp(), rel=1)
         assert old_dvd_booking.cancellationReason == BookingCancellationReasons.EXPIRED
         assert old_dvd_booking.stock.dnBookedQuantity == 0
 
@@ -57,8 +57,8 @@ class CancelExpiredBookingsTest:
         assert not book_booking.cancellationReason
 
     def should_not_cancel_old_event_booking(self, app) -> None:
-        two_months_ago = datetime.utcnow() - timedelta(days=60)
-        tomorrow = datetime.utcnow() + timedelta(days=1)
+        two_months_ago = datetime.now() - timedelta(days=60)
+        tomorrow = datetime.now() + timedelta(days=1)
         old_concert_booking = booking_factories.BookingFactory(
             dateCreated=two_months_ago,
             stock__beginningDatetime=tomorrow,
@@ -72,7 +72,7 @@ class CancelExpiredBookingsTest:
         assert not old_concert_booking.cancellationReason
 
     def should_not_cancel_old_thing_that_cannot_expire_booking(self, app) -> None:
-        two_months_ago = datetime.utcnow() - timedelta(days=60)
+        two_months_ago = datetime.now() - timedelta(days=60)
         old_press_subscription_booking = booking_factories.BookingFactory(
             stock__offer__subcategoryId=subcategories.ABO_PRESSE_EN_LIGNE.id, dateCreated=two_months_ago
         )
@@ -95,7 +95,7 @@ class CancelExpiredBookingsTest:
         assert old_book_booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
 
     def should_only_cancel_old_thing_that_can_expire_bookings_before_start_date(self, app) -> None:
-        now = datetime.utcnow()
+        now = datetime.now()
         two_months_ago = now - timedelta(days=60)
         old_guitar_booking = booking_factories.BookingFactory(
             stock__offer__subcategoryId=subcategories.ACHAT_INSTRUMENT.id, dateCreated=two_months_ago
@@ -110,11 +110,11 @@ class CancelExpiredBookingsTest:
         handle_expired_bookings.cancel_expired_individual_bookings()
 
         assert old_guitar_booking.status is BookingStatus.CANCELLED
-        assert old_guitar_booking.cancellationDate.timestamp() == pytest.approx(datetime.utcnow().timestamp(), rel=1)
+        assert old_guitar_booking.cancellationDate.timestamp() == pytest.approx(datetime.now().timestamp(), rel=1)
         assert old_guitar_booking.cancellationReason == BookingCancellationReasons.EXPIRED
 
         assert old_disc_booking.status is BookingStatus.CANCELLED
-        assert old_disc_booking.cancellationDate.timestamp() == pytest.approx(datetime.utcnow().timestamp(), rel=1)
+        assert old_disc_booking.cancellationDate.timestamp() == pytest.approx(datetime.now().timestamp(), rel=1)
         assert old_disc_booking.cancellationReason == BookingCancellationReasons.EXPIRED
 
         assert old_vod_booking.status is not BookingStatus.CANCELLED
@@ -123,7 +123,7 @@ class CancelExpiredBookingsTest:
 
     def test_handle_expired_bookings_should_cancel_expired_individual_bookings(self, app) -> None:
         # Given
-        now = datetime.utcnow()
+        now = datetime.now()
         two_months_ago = now - timedelta(days=60)
 
         cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id)
@@ -142,7 +142,7 @@ class CancelExpiredBookingsTest:
         assert book_individual_recent_booking.status != BookingStatus.CANCELLED
 
     def test_queries_performance_individual_bookings(self, app) -> None:
-        now = datetime.utcnow()
+        now = datetime.now()
         two_months_ago = now - timedelta(days=60)
         book = ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
         booking_factories.BookingFactory.create_batch(size=10, stock__offer__product=book, dateCreated=two_months_ago)
@@ -156,7 +156,7 @@ class CancelExpiredBookingsTest:
 class CancelExpiredCollectiveBookingsTest:
     def test_should_cancel_pending_dated_collective_booking_when_confirmation_limit_date_has_passed(self, app) -> None:
         # Given
-        now = datetime.utcnow()
+        now = datetime.now()
         yesterday = now - timedelta(days=1)
         expired_pending_collective_booking: CollectiveBooking = educational_factories.PendingCollectiveBookingFactory(
             confirmationLimitDate=yesterday
@@ -168,7 +168,7 @@ class CancelExpiredCollectiveBookingsTest:
         # Then
         assert expired_pending_collective_booking.status == CollectiveBookingStatus.CANCELLED
         assert expired_pending_collective_booking.cancellationDate.timestamp() == pytest.approx(
-            datetime.utcnow().timestamp(), rel=1
+            datetime.now().timestamp(), rel=1
         )
         assert expired_pending_collective_booking.cancellationReason == CollectiveBookingCancellationReasons.EXPIRED
 
@@ -176,7 +176,7 @@ class CancelExpiredCollectiveBookingsTest:
         self, app
     ) -> None:
         # Given
-        now = datetime.utcnow()
+        now = datetime.now()
         yesterday = now - timedelta(days=1)
         confirmed_collective_booking: CollectiveBooking = educational_factories.CollectiveBookingFactory(
             confirmationLimitDate=yesterday
@@ -192,7 +192,7 @@ class CancelExpiredCollectiveBookingsTest:
         self, app
     ) -> None:
         # Given
-        now = datetime.utcnow()
+        now = datetime.now()
         tomorrow = now + timedelta(days=1)
         pending_collective_booking: CollectiveBooking = educational_factories.PendingCollectiveBookingFactory(
             confirmationLimitDate=tomorrow
@@ -206,7 +206,7 @@ class CancelExpiredCollectiveBookingsTest:
 
     def test_handle_expired_bookings_should_cancel_expired_collective_bookings(self, app) -> None:
         # Given
-        now = datetime.utcnow()
+        now = datetime.now()
         yesterday = now - timedelta(days=1)
         tomorrow = now + timedelta(days=1)
 
@@ -225,7 +225,7 @@ class CancelExpiredCollectiveBookingsTest:
         assert non_expired_pending_collective_booking.status == CollectiveBookingStatus.PENDING
 
     def test_queries_performance_collective_bookings(self, app) -> None:
-        now = datetime.utcnow()
+        now = datetime.now()
         yesterday = now - timedelta(days=1)
         educational_factories.PendingCollectiveBookingFactory.create_batch(size=10, confirmationLimitDate=yesterday)
         n_queries = +1 + 4 * (1)  # select collective_booking ids  # update collective_booking
@@ -236,7 +236,7 @@ class CancelExpiredCollectiveBookingsTest:
 
 class NotifyUsersOfExpiredBookingsTest:
     def should_notify_of_todays_expired_bookings(self, app) -> None:
-        now = datetime.utcnow()
+        now = datetime.now()
         yesterday = now - timedelta(days=1)
         long_ago = now - timedelta(days=31)
         very_long_ago = now - timedelta(days=32)
@@ -280,7 +280,7 @@ class NotifyUsersOfExpiredBookingsTest:
 class NotifyOfferersOfExpiredBookingsTest:
     @mock.patch("pcapi.core.mails.transactional.send_bookings_expiration_to_pro_email")
     def test_should_notify_of_todays_expired_individual_bookings(self, mocked_send_email_recap, app) -> None:
-        now = datetime.utcnow()
+        now = datetime.now()
         yesterday = now - timedelta(days=1)
         long_ago = now - timedelta(days=31)
         very_long_ago = now - timedelta(days=32)

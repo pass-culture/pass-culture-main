@@ -313,7 +313,7 @@ def create_venues_across_cities() -> None:
                     offers_factories.EventStockFactory(
                         quantity=random.randint(10, 100),
                         offer=event_offer,
-                        beginningDatetime=datetime.datetime.utcnow()
+                        beginningDatetime=datetime.datetime.now()
                         + datetime.timedelta(
                             days=random.randint(30, 59),
                             hours=random.randint(1, 23),
@@ -336,7 +336,7 @@ def create_offers_for_each_subcategory() -> None:
                     offer__venue__longitude=2.37850 if is_in_Paris else 5.37421,
                     price=0 if is_free else i * 2,
                     quantity=i * 10,
-                    beginningDatetime=datetime.datetime.utcnow()
+                    beginningDatetime=datetime.datetime.now()
                     + datetime.timedelta(
                         days=i + 7,
                         hours=(3 * i) % 60,
@@ -686,7 +686,7 @@ def create_users_with_reactions() -> None:
 
 
 def create_user_that_booked_some_cinema() -> None:
-    seance_cine_start = datetime.datetime.utcnow() - datetime.timedelta(hours=25)
+    seance_cine_start = datetime.datetime.now() - datetime.timedelta(hours=25)
     stock = offers_factories.StockFactory(
         beginningDatetime=seance_cine_start, quantity=100, offer__subcategoryId=subcategories_v2.SEANCE_CINE.id
     )

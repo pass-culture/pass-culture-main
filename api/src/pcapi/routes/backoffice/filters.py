@@ -83,7 +83,7 @@ def format_deposit_type(deposit_type: finance_models.DepositType) -> str:
 
 def format_active_deposit(deposit: finance_models.Deposit | None) -> str:
     if deposit:
-        if not deposit.expirationDate or deposit.expirationDate > datetime.datetime.utcnow():
+        if not deposit.expirationDate or deposit.expirationDate > datetime.datetime.now():
             return Markup('<span class="visually-hidden">Oui</span><i class="bi bi-check-circle-fill"></i>')
     return Markup('<span class="visually-hidden">Non</span><i class="bi bi-x-circle-fill"></i>')
 

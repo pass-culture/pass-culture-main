@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 def synchronize_venue_provider(venue_provider: VenueProvider) -> None:
     venue = venue_provider.venue
     provider = venue_provider.provider
-    start_sync_date = datetime.utcnow()
+    start_sync_date = datetime.now()
 
     start = time.perf_counter()
     logger.info("Starting synchronization of venue=%s provider=%s", venue.id, provider.name)

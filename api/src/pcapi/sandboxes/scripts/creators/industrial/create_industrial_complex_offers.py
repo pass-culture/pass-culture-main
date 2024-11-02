@@ -77,7 +77,7 @@ Ut quis egestas neque. Fusce sem nulla, luctus ac sagittis eu, mattis quis purus
         isActive=True,
         isDuo=False,
     )
-    offers_factories.StockFactory(offer=movie_offer, bookingLimitDatetime=datetime.datetime.utcnow())
+    offers_factories.StockFactory(offer=movie_offer, bookingLimitDatetime=datetime.datetime.now())
 
     book_product = offers_factories.ProductFactory(
         subcategoryId=subcategories_v2.LIVRE_PAPIER.id,

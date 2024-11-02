@@ -132,7 +132,7 @@ class Returns200Test:
         expired_stock = offers_factories.EventStockFactory(
             offer=offer,
             priceCategory=price_category,
-            beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=-2),
+            beginningDatetime=datetime.datetime.now() + datetime.timedelta(days=-2),
         )
 
         response = client.with_session_auth("user@example.com").post(

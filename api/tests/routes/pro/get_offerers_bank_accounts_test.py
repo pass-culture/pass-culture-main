@@ -133,7 +133,7 @@ class OfferersBankAccountTest:
         offers_factories.StockFactory(offer=offer_bis)
         expected_bank_account = finance_factories.BankAccountFactory(offerer=offerer)
         offerers_factories.VenueBankAccountLinkFactory(
-            venue=expected_venue, bankAccount=expected_bank_account, timespan=(datetime.datetime.utcnow(),)
+            venue=expected_venue, bankAccount=expected_bank_account, timespan=(datetime.datetime.now(),)
         )
 
         http_client = client.with_session_auth(pro_user.email)
@@ -221,10 +221,10 @@ class OfferersBankAccountTest:
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
         first_bank_account = finance_factories.BankAccountFactory(
-            offerer=offerer, isActive=True, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1)
+            offerer=offerer, isActive=True, dateCreated=datetime.datetime.now() - datetime.timedelta(days=1)
         )
         second_bank_account = finance_factories.BankAccountFactory(
-            offerer=offerer, isActive=True, dateCreated=datetime.datetime.utcnow()
+            offerer=offerer, isActive=True, dateCreated=datetime.datetime.now()
         )
 
         venue_linked = offerers_factories.VenueFactory(pricing_point="self", managingOfferer=offerer)
@@ -233,12 +233,12 @@ class OfferersBankAccountTest:
             venueId=venue_linked.id,
             bankAccountId=first_bank_account.id,
             timespan=(
-                datetime.datetime.utcnow() - datetime.timedelta(days=365),
-                datetime.datetime.utcnow() - datetime.timedelta(seconds=10),
+                datetime.datetime.now() - datetime.timedelta(days=365),
+                datetime.datetime.now() - datetime.timedelta(seconds=10),
             ),
         )
         offerers_factories.VenueBankAccountLinkFactory(
-            venue=venue_linked, bankAccount=second_bank_account, timespan=(datetime.datetime.utcnow(), None)
+            venue=venue_linked, bankAccount=second_bank_account, timespan=(datetime.datetime.now(), None)
         )
 
         venue_not_linked_with_free_offer = offerers_factories.VenueWithoutSiretFactory(managingOfferer=offerer)

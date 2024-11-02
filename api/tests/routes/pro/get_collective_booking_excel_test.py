@@ -32,7 +32,7 @@ class Returns200Test:
         booking = educational_factories.CollectiveBookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
             collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
-            cancellationLimitDate=datetime.utcnow() + timedelta(days=1),
+            cancellationLimitDate=datetime.now() + timedelta(days=1),
             reimbursementDate=datetime(2021, 8, 11, 12, 0, 0),
             dateUsed=datetime(2020, 8, 15, 12, 0, 0),
             collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
@@ -77,7 +77,7 @@ class Returns200Test:
         booking = educational_factories.CollectiveBookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
             collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
-            cancellationLimitDate=datetime.utcnow() + timedelta(days=1),
+            cancellationLimitDate=datetime.now() + timedelta(days=1),
             reimbursementDate=None,
             dateUsed=None,
             collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
@@ -121,7 +121,7 @@ class Returns200Test:
         booking = educational_factories.CollectiveBookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
             collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
-            cancellationLimitDate=datetime.utcnow() + timedelta(days=1),
+            cancellationLimitDate=datetime.now() + timedelta(days=1),
             reimbursementDate=datetime(2021, 8, 11, 12, 0, 0),
             dateUsed=datetime(2020, 8, 15, 12, 0, 0),
             collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
@@ -170,7 +170,7 @@ class Returns200Test:
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
             collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
             reimbursementDate=datetime(2021, 8, 11, 12, 0, 0),
-            cancellationLimitDate=datetime.utcnow() + timedelta(days=1),
+            cancellationLimitDate=datetime.now() + timedelta(days=1),
             dateUsed=datetime(2020, 8, 15, 12, 0, 0),
             collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
             offerer=user_offerer.offerer,
@@ -209,7 +209,7 @@ class Returns200Test:
             educational_factories.CollectiveBookingFactory(
                 dateCreated=datetime(2020, 8, 11, 12, 0, 0),
                 collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
-                cancellationLimitDate=datetime.utcnow() + timedelta(days=1),
+                cancellationLimitDate=datetime.now() + timedelta(days=1),
                 reimbursementDate=datetime(2021, 8, 11, 12, 0, 0),
                 dateUsed=datetime(2020, 8, 15, 12, 0, 0),
                 collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
@@ -220,7 +220,7 @@ class Returns200Test:
             educational_factories.CollectiveBookingFactory(
                 dateCreated=datetime(2020, 8, 11, 12, 0, 0),
                 collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
-                cancellationLimitDate=datetime.utcnow() + timedelta(days=1),
+                cancellationLimitDate=datetime.now() + timedelta(days=1),
                 reimbursementDate=datetime(2021, 8, 11, 12, 0, 0),
                 dateUsed=datetime(2020, 8, 15, 12, 0, 0),
                 collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
@@ -231,7 +231,7 @@ class Returns200Test:
             educational_factories.CollectiveBookingFactory(
                 dateCreated=datetime(2020, 8, 11, 12, 0, 0),
                 collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
-                cancellationLimitDate=datetime.utcnow() + timedelta(days=1),
+                cancellationLimitDate=datetime.now() + timedelta(days=1),
                 reimbursementDate=datetime(2021, 8, 11, 12, 0, 0),
                 dateUsed=datetime(2020, 8, 15, 12, 0, 0),
                 collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
@@ -371,7 +371,7 @@ class Returns200Test:
         booking = educational_factories.CollectiveBookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
             collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
-            cancellationLimitDate=datetime.utcnow() + timedelta(days=1),
+            cancellationLimitDate=datetime.now() + timedelta(days=1),
             reimbursementDate=datetime(2021, 8, 11, 12, 0, 0),
             dateUsed=datetime(2020, 8, 15, 12, 0, 0),
             collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
@@ -416,7 +416,7 @@ class Returns200Test:
         booking = educational_factories.CollectiveBookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
             collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
-            cancellationLimitDate=datetime.utcnow() + timedelta(days=1),
+            cancellationLimitDate=datetime.now() + timedelta(days=1),
             reimbursementDate=None,
             dateUsed=None,
             collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
@@ -460,7 +460,7 @@ class Returns200Test:
         booking = educational_factories.CollectiveBookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
             collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
-            cancellationLimitDate=datetime.utcnow() + timedelta(days=1),
+            cancellationLimitDate=datetime.now() + timedelta(days=1),
             reimbursementDate=datetime(2021, 8, 11, 12, 0, 0),
             dateUsed=datetime(2020, 8, 15, 12, 0, 0),
             collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
@@ -509,7 +509,7 @@ class Returns200Test:
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
             collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
             reimbursementDate=datetime(2021, 8, 11, 12, 0, 0),
-            cancellationLimitDate=datetime.utcnow() + timedelta(days=1),
+            cancellationLimitDate=datetime.now() + timedelta(days=1),
             dateUsed=datetime(2020, 8, 15, 12, 0, 0),
             collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
             offerer=user_offerer.offerer,
@@ -548,7 +548,7 @@ class Returns200Test:
             educational_factories.CollectiveBookingFactory(
                 dateCreated=datetime(2020, 8, 11, 12, 0, 0),
                 collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
-                cancellationLimitDate=datetime.utcnow() + timedelta(days=1),
+                cancellationLimitDate=datetime.now() + timedelta(days=1),
                 reimbursementDate=datetime(2021, 8, 11, 12, 0, 0),
                 dateUsed=datetime(2020, 8, 15, 12, 0, 0),
                 collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
@@ -559,7 +559,7 @@ class Returns200Test:
             educational_factories.CollectiveBookingFactory(
                 dateCreated=datetime(2020, 8, 11, 12, 0, 0),
                 collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
-                cancellationLimitDate=datetime.utcnow() + timedelta(days=1),
+                cancellationLimitDate=datetime.now() + timedelta(days=1),
                 reimbursementDate=datetime(2021, 8, 11, 12, 0, 0),
                 dateUsed=datetime(2020, 8, 15, 12, 0, 0),
                 collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
@@ -570,7 +570,7 @@ class Returns200Test:
             educational_factories.CollectiveBookingFactory(
                 dateCreated=datetime(2020, 8, 11, 12, 0, 0),
                 collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
-                cancellationLimitDate=datetime.utcnow() + timedelta(days=1),
+                cancellationLimitDate=datetime.now() + timedelta(days=1),
                 reimbursementDate=datetime(2021, 8, 11, 12, 0, 0),
                 dateUsed=datetime(2020, 8, 15, 12, 0, 0),
                 collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,

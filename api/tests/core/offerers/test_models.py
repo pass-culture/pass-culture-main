@@ -300,13 +300,13 @@ class VenueDmsAdageStatusTest:
     def test_dms_adage_status_when_multiple_dms_application(self):
         venue = factories.VenueFactory()
         educational_factories.CollectiveDmsApplicationFactory.create_batch(
-            2, venue=venue, lastChangeDate=datetime.datetime.utcnow() - datetime.timedelta(days=1)
+            2, venue=venue, lastChangeDate=datetime.datetime.now() - datetime.timedelta(days=1)
         )
         latest = educational_factories.CollectiveDmsApplicationFactory(
-            venue=venue, state="accepte", lastChangeDate=datetime.datetime.utcnow() - datetime.timedelta(hours=1)
+            venue=venue, state="accepte", lastChangeDate=datetime.datetime.now() - datetime.timedelta(hours=1)
         )
         educational_factories.CollectiveDmsApplicationFactory.create_batch(
-            2, venue=venue, lastChangeDate=datetime.datetime.utcnow() - datetime.timedelta(days=1)
+            2, venue=venue, lastChangeDate=datetime.datetime.now() - datetime.timedelta(days=1)
         )
 
         assert venue.dms_adage_status == latest.state
@@ -340,7 +340,7 @@ class CurrentPricingPointTest:
 
     def test_pricing_point(self):
         venue = factories.VenueWithoutSiretFactory()
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now()
         factories.VenuePricingPointLinkFactory(
             venue=venue,
             pricingPoint=factories.VenueFactory(managingOfferer=venue.managingOfferer, name="former"),
@@ -380,7 +380,7 @@ class CurrentBankAccountTest:
 
     def test_bank_account_link(self):
         venue = factories.VenueWithoutSiretFactory()
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now()
         factories.VenueBankAccountLinkFactory(
             venue=venue,
             bankAccount=finance_factories.BankAccountFactory(offererId=venue.managingOffererId, label="former"),

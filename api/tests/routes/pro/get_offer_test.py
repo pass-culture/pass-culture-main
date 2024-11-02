@@ -107,7 +107,7 @@ class Returns200Test:
 
     @time_machine.travel("2020-10-15 00:00:00")
     def test_returns_an_event_stock(self, client):
-        now = datetime.utcnow()
+        now = datetime.now()
         user_offerer = offerers_factories.UserOffererFactory(
             offerer__dateCreated=now,
             offerer__siren="123456789",
@@ -382,7 +382,7 @@ class Returns200Test:
 
     @time_machine.travel("2020-10-15 00:00:00")
     def test_future_offer(self, client):
-        now = datetime.utcnow()
+        now = datetime.now()
         user_offerer = offerers_factories.UserOffererFactory(
             offerer__dateCreated=now,
             offerer__siren="123456789",

@@ -33,15 +33,15 @@ class GetOffererTest:
             reimbursementPoint=venue_2,
             # old, inactive link
             timespan=[
-                datetime.datetime.utcnow() - datetime.timedelta(days=10),
-                datetime.datetime.utcnow() - datetime.timedelta(days=9),
+                datetime.datetime.now() - datetime.timedelta(days=10),
+                datetime.datetime.now() - datetime.timedelta(days=9),
             ],
         )
         venue = offerers_factories.VenueFactory(
             managingOfferer=offerer,
             withdrawalDetails="More venue withdrawal details",
             adageId="123",
-            adageInscriptionDate=datetime.datetime.utcnow(),
+            adageInscriptionDate=datetime.datetime.now(),
         )
         collective_factories.CollectiveDmsApplicationFactory(
             venue=venue,
@@ -477,17 +477,17 @@ class GetOffererTest:
         _up_to_date_link = offerers_factories.VenueBankAccountLinkFactory(
             venue=venue_linked,
             bankAccount=expected_bank_account,
-            timespan=(datetime.datetime.utcnow(), None),
+            timespan=(datetime.datetime.now(), None),
         )
         offerers_factories.VenueBankAccountLinkFactory(
-            venue=expected_venue, bankAccount=expected_bank_account, timespan=(datetime.datetime.utcnow(),)
+            venue=expected_venue, bankAccount=expected_bank_account, timespan=(datetime.datetime.now(),)
         )
         offerers_factories.VenueBankAccountLinkFactory(
             venue=non_linked_venue,
             bankAccount=expected_bank_account,
             timespan=(
-                datetime.datetime.utcnow() - datetime.timedelta(days=365),
-                datetime.datetime.utcnow() - datetime.timedelta(days=10),
+                datetime.datetime.now() - datetime.timedelta(days=365),
+                datetime.datetime.now() - datetime.timedelta(days=10),
             ),
         )
 
@@ -627,10 +627,10 @@ class GetOffererTest:
         _up_to_date_link = offerers_factories.VenueBankAccountLinkFactory(
             venue=venue_linked,
             bankAccount=expected_bank_account,
-            timespan=(datetime.datetime.utcnow(), None),
+            timespan=(datetime.datetime.now(), None),
         )
         offerers_factories.VenueBankAccountLinkFactory(
-            venue=expected_venue, bankAccount=expected_bank_account, timespan=(datetime.datetime.utcnow(),)
+            venue=expected_venue, bankAccount=expected_bank_account, timespan=(datetime.datetime.now(),)
         )
 
         http_client = client.with_session_auth(pro_user.email)
@@ -737,7 +737,7 @@ class GetOffererTest:
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
         bank_account = finance_factories.BankAccountFactory(
-            offerer=offerer, isActive=True, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1)
+            offerer=offerer, isActive=True, dateCreated=datetime.datetime.now() - datetime.timedelta(days=1)
         )
 
         first_venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer=offerer)

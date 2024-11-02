@@ -60,7 +60,7 @@ def bookings_fixture() -> tuple:
         stock__offer__isDuo=True,
         stock__offer__name="Guide du Routard Sainte-Hélène",
         stock__offer__subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
-        dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=4),
+        dateCreated=datetime.datetime.now() - datetime.timedelta(days=4),
         validationAuthorType=bookings_models.BookingValidationAuthorType.BACKOFFICE,
     )
     offerers_factories.UserOffererFactory(offerer=used.offerer)
@@ -71,8 +71,8 @@ def bookings_fixture() -> tuple:
         amount=12.5,
         token="CNCL02",
         stock__offer__subcategoryId=subcategories_v2.FESTIVAL_SPECTACLE.id,
-        stock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=11),
-        dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=3),
+        stock__beginningDatetime=datetime.datetime.now() + datetime.timedelta(days=11),
+        dateCreated=datetime.datetime.now() - datetime.timedelta(days=3),
     )
     confirmed = bookings_factories.BookingFactory(
         id=1000003,
@@ -83,16 +83,16 @@ def bookings_fixture() -> tuple:
         stock__quantity="2",
         stock__offer__name="Guide Ile d'Elbe 1814 Petit Futé",
         stock__offer__subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
-        dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=2),
-        cancellation_limit_date=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        dateCreated=datetime.datetime.now() - datetime.timedelta(days=2),
+        cancellation_limit_date=datetime.datetime.now() - datetime.timedelta(days=1),
     )
     reimbursed = bookings_factories.ReimbursedBookingFactory(
         id=1000004,
         user=user3,
         token="REIMB3",
         stock__offer__subcategoryId=subcategories_v2.SPECTACLE_REPRESENTATION.id,
-        stock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=12),
-        dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        stock__beginningDatetime=datetime.datetime.now() + datetime.timedelta(days=12),
+        dateCreated=datetime.datetime.now() - datetime.timedelta(days=1),
     )
     booked = bookings_factories.BookingFactory(
         id=1000005,
@@ -103,7 +103,7 @@ def bookings_fixture() -> tuple:
         stock__quantity="1",
         stock__offer__name="Guide Ile d'Elbe 1814 Petit Futé",
         stock__offer__subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
-        dateCreated=datetime.datetime.utcnow(),
+        dateCreated=datetime.datetime.now(),
     )
 
     return used, cancelled, confirmed, reimbursed, booked
@@ -171,8 +171,8 @@ class ListIndividualBookingsTest(GetEndpointHelper):
 
         users_factories.DepositGrantFactory(
             bookings=[booking],
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=5),
-            expirationDate=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            dateCreated=datetime.datetime.now() - datetime.timedelta(days=5),
+            expirationDate=datetime.datetime.now() - datetime.timedelta(days=1),
         )
 
         with assert_num_queries(self.expected_num_queries):
@@ -475,7 +475,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         offer_id = offer.id
 
         expired_deposit_booking = bookings_factories.UsedBookingFactory(token="EXPIRD", stock__offer=offer)
-        expired_deposit_booking.deposit.expirationDate = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        expired_deposit_booking.deposit.expirationDate = datetime.datetime.now() - datetime.timedelta(days=1)
         db.session.flush()
 
         bookings_factories.UsedBookingFactory(token="ACTIVE", stock__offer=offer)
@@ -498,8 +498,8 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         )
         users_factories.DepositGrantFactory(
             bookings=[expired_deposit_booking],
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=5),
-            expirationDate=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            dateCreated=datetime.datetime.now() - datetime.timedelta(days=5),
+            expirationDate=datetime.datetime.now() - datetime.timedelta(days=1),
         )
 
         new_user = users_factories.BeneficiaryGrant18Factory()
@@ -700,7 +700,7 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
         booking = bookings_factories.BookingFactory(
             status=bookings_models.BookingStatus.CANCELLED,
             deposit=users_factories.DepositGrantFactory(
-                expirationDate=datetime.datetime.utcnow() - datetime.timedelta(days=1)
+                expirationDate=datetime.datetime.now() - datetime.timedelta(days=1)
             ),
         )
 
@@ -887,7 +887,7 @@ class CancelBookingTest(PostEndpointHelper):
         stock = offers_factories.EventStockFactory(
             offer=offer,
             idAtProviders="1111%2222%EMS#3333",
-            beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=2),
+            beginningDatetime=datetime.datetime.now() - datetime.timedelta(days=2),
         )
         booking = bookings_factories.BookingFactory(stock=stock, user=beneficiary)
         external_bookings_factories.ExternalBookingFactory(
@@ -971,7 +971,7 @@ class CancelBookingTest(PostEndpointHelper):
         stock = offers_factories.StockFactory(
             lastProvider=cgr_provider,
             idAtProviders="123%12354114%CGR#111",
-            beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=2),
+            beginningDatetime=datetime.datetime.now() - datetime.timedelta(days=2),
             offer=offer,
         )
         booking_to_cancel = bookings_factories.BookingFactory(stock=stock)
@@ -1056,7 +1056,7 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
         expired_booking = bookings_factories.BookingFactory(
             status=bookings_models.BookingStatus.CANCELLED,
             deposit=users_factories.DepositGrantFactory(
-                expirationDate=datetime.datetime.utcnow() - datetime.timedelta(days=1)
+                expirationDate=datetime.datetime.now() - datetime.timedelta(days=1)
             ),
         )
         other_booking = bookings_factories.BookingFactory(status=bookings_models.BookingStatus.CANCELLED)

@@ -86,7 +86,7 @@ class DMSContentFactory(factory.Factory):
     phone = factory.Sequence("+33612{:06}".format)
     postal_code = "75008"
     procedure_number = factory.Faker("pyint")
-    registration_datetime = LazyAttribute(lambda _: datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S"))
+    registration_datetime = LazyAttribute(lambda _: datetime.now().strftime("%Y-%m-%dT%H:%M:%S"))
 
 
 class UbbleContentFactory(factory.Factory):

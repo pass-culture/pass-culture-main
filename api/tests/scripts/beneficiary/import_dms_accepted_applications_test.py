@@ -26,9 +26,9 @@ from pcapi.scripts.subscription.dms.import_dms_applications import import_all_up
 from tests.scripts.beneficiary import fixture
 
 
-NOW = datetime.utcnow()
+NOW = datetime.now()
 
-AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=ELIGIBILITY_AGE_18)
+AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=ELIGIBILITY_AGE_18)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -186,7 +186,7 @@ class RunIntegrationTest:
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_ex_underage_beneficiary(self, get_applications_with_details):
-        with time_machine.travel(datetime.utcnow() - relativedelta(years=2, month=1)):
+        with time_machine.travel(datetime.now() - relativedelta(years=2, month=1)):
             user = users_factories.UnderageBeneficiaryFactory(
                 email="john.doe@example.com",
                 firstName="john",
@@ -197,7 +197,7 @@ class RunIntegrationTest:
             )
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
         details = fixture.make_parsed_graphql_application(application_number=123, state="accepte", email=user.email)
-        details.draft_date = datetime.utcnow().isoformat()
+        details.draft_date = datetime.now().isoformat()
         get_applications_with_details.return_value = [details]
         import_all_updated_dms_applications(6712558)
 
@@ -254,7 +254,7 @@ class RunIntegrationTest:
                 application_number=123,
                 state="accepte",
                 email=user.email,
-                construction_datetime=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
+                construction_datetime=datetime.now().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
             )
         ]
         # when
@@ -311,7 +311,7 @@ class RunIntegrationTest:
                 state="accepte",
                 email=user.email,
                 birth_date=dms_validated_birth_date,
-                construction_datetime=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
+                construction_datetime=datetime.now().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
             ),
         ]
 
@@ -355,7 +355,7 @@ class RunIntegrationTest:
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_makes_user_beneficiary_after_19_birthday(self, get_applications_with_details):
-        date_of_birth = (datetime.utcnow() - relativedelta(years=19)).strftime("%Y-%m-%dT%H:%M:%S")
+        date_of_birth = (datetime.now() - relativedelta(years=19)).strftime("%Y-%m-%dT%H:%M:%S")
 
         # Create a user that has validated its email and phone number, meaning it
         # should become beneficiary.
@@ -372,7 +372,7 @@ class RunIntegrationTest:
                 state="accepte",
                 email=user.email,
                 # For the user to be automatically credited, the DMS application must be created before user's 19th birthday
-                construction_datetime=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
+                construction_datetime=datetime.now().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
             )
         ]
         import_all_updated_dms_applications(6712558)
@@ -487,7 +487,7 @@ class RunIntegrationTest:
                 application_number=123,
                 state="accepte",
                 email=user.email,
-                construction_datetime=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
+                construction_datetime=datetime.now().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
             )
         ]
         import_all_updated_dms_applications(6712558)
@@ -606,7 +606,7 @@ class RunIntegrationTest:
                 application_number=123,
                 state="accepte",
                 city="Strasbourg",
-                construction_datetime=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
+                construction_datetime=datetime.now().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
             )
         ]
         import_all_updated_dms_applications(6712558)
@@ -660,7 +660,7 @@ class GraphQLSourceProcessApplicationTest:
                 123,
                 "accepte",
                 email=user.email,
-                construction_datetime=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
+                construction_datetime=datetime.now().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
             ),
         ]
 
@@ -672,12 +672,12 @@ class GraphQLSourceProcessApplicationTest:
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_process_accepted_application_user_registered_at_18_dms_at_19(self, get_applications_with_details):
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.utcnow() - relativedelta(years=19, months=4),
+            dateOfBirth=datetime.now() - relativedelta(years=19, months=4),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
         fraud_factories.ProfileCompletionFraudCheckFactory(
             user=user,
-            dateCreated=datetime.utcnow() - relativedelta(years=1, months=2),
+            dateCreated=datetime.now() - relativedelta(years=1, months=2),
         )
 
         get_applications_with_details.return_value = [
@@ -687,7 +687,7 @@ class GraphQLSourceProcessApplicationTest:
                 email=user.email,
                 birth_date=user.dateOfBirth,
                 # For the user to be automatically credited, the DMS application must be created before user's 19th birthday
-                construction_datetime=(datetime.utcnow() - relativedelta(months=5)).strftime("%Y-%m-%dT%H:%M:%S+02:00"),
+                construction_datetime=(datetime.now() - relativedelta(months=5)).strftime("%Y-%m-%dT%H:%M:%S+02:00"),
             ),
         ]
 
@@ -699,12 +699,12 @@ class GraphQLSourceProcessApplicationTest:
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_process_accepted_application_user_registered_at_18_dms_started_at_19(self, get_applications_with_details):
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.utcnow() - relativedelta(years=19, days=1),
+            dateOfBirth=datetime.now() - relativedelta(years=19, days=1),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
         fraud_factories.ProfileCompletionFraudCheckFactory(
             user=user,
-            dateCreated=datetime.utcnow() - relativedelta(years=1),
+            dateCreated=datetime.now() - relativedelta(years=1),
         )
 
         get_applications_with_details.return_value = [
@@ -715,7 +715,7 @@ class GraphQLSourceProcessApplicationTest:
                 birth_date=user.dateOfBirth,
                 # For the user to be automatically credited, the DMS application must be created before user's 19th birthday
                 # Here it's created after 19yo, so requires a manual review
-                construction_datetime=(datetime.utcnow()).strftime("%Y-%m-%dT%H:%M:%S+02:00"),
+                construction_datetime=(datetime.now()).strftime("%Y-%m-%dT%H:%M:%S+02:00"),
             ),
         ]
 
@@ -727,7 +727,7 @@ class GraphQLSourceProcessApplicationTest:
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_process_accepted_application_user_not_eligible(self, get_applications_with_details):
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.utcnow() - relativedelta(years=19, months=4),
+            dateOfBirth=datetime.now() - relativedelta(years=19, months=4),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
 
@@ -737,7 +737,7 @@ class GraphQLSourceProcessApplicationTest:
                 "accepte",
                 email=user.email,
                 birth_date=user.dateOfBirth,
-                construction_datetime=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
+                construction_datetime=datetime.now().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
             ),
         ]
 

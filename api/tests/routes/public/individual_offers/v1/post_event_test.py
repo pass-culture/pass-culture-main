@@ -85,7 +85,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
         payload = self._get_base_payload(venue_provider.venueId)
-        publication_date = datetime.utcnow().replace(minute=0, second=0) + timedelta(days=30)
+        publication_date = datetime.now().replace(minute=0, second=0) + timedelta(days=30)
         payload["publicationDate"] = publication_date.isoformat()
         response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
 
@@ -594,7 +594,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
     def test_future_event_400(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
 
-        publication_date = datetime.utcnow().replace(minute=0, second=0) - timedelta(days=30)
+        publication_date = datetime.now().replace(minute=0, second=0) - timedelta(days=30)
         response = client.with_explicit_token(plain_api_key).post(
             self.endpoint_url,
             json={

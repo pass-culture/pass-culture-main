@@ -75,7 +75,7 @@ class EducationalInstitutionTest:
 
 def _build_educational_year(delta: relativedelta | None = None):
     delta = delta if delta else relativedelta(years=0)
-    now = datetime.utcnow() - delta
+    now = datetime.now() - delta
 
     return educational_factories.EducationalYearFactory(
         beginningDate=datetime(now.year, 9, 1),

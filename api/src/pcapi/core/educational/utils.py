@@ -58,7 +58,7 @@ def create_adage_jwt_fake_valid_token(readonly: bool) -> str:
             "nom": "TEST",
             "prenom": "COMPTE",
             "mail": "compte.test@education.gouv.fr",
-            "exp": datetime.utcnow() + timedelta(days=1),
+            "exp": datetime.now() + timedelta(days=1),
         }
         if not readonly:
             authenticated_informations["uai"] = "0910620E"

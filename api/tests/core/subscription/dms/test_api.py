@@ -559,7 +559,7 @@ class DmsSubscriptionMessageTest:
             application_number=1,
             state=dms_models.GraphQLApplicationStates.draft,
             email=self.user_email,
-            birth_date=datetime.datetime.utcnow() - relativedelta(years=18),
+            birth_date=datetime.datetime.now() - relativedelta(years=18),
         )
         fraud_check = dms_subscription_api.handle_dms_application(dms_response)
 
@@ -579,7 +579,7 @@ class DmsSubscriptionMessageTest:
             application_number=1,
             state=dms_models.GraphQLApplicationStates.draft,
             email=self.user_email,
-            birth_date=datetime.datetime.utcnow(),
+            birth_date=datetime.datetime.now(),
         )
         fraud_check = dms_subscription_api.handle_dms_application(wrong_birth_date_application)
 
@@ -599,7 +599,7 @@ class DmsSubscriptionMessageTest:
             application_number=1,
             state=dms_models.GraphQLApplicationStates.draft,
             email=self.user_email,
-            birth_date=datetime.datetime.utcnow(),
+            birth_date=datetime.datetime.now(),
             id_piece_number="r2d2",
         )
         fraud_check = dms_subscription_api.handle_dms_application(wrong_birth_date_application)
@@ -620,8 +620,8 @@ class DmsSubscriptionMessageTest:
             application_number=1,
             state=dms_models.GraphQLApplicationStates.on_going,
             email=self.user_email,
-            birth_date=datetime.datetime.utcnow() - relativedelta(years=20),
-            construction_datetime=datetime.datetime.utcnow(),
+            birth_date=datetime.datetime.now() - relativedelta(years=20),
+            construction_datetime=datetime.datetime.now(),
         )
         fraud_check = dms_subscription_api.handle_dms_application(not_eligible_application)
 
@@ -645,8 +645,8 @@ class DmsSubscriptionMessageTest:
             application_number=1,
             state=dms_models.GraphQLApplicationStates.accepted,
             email=self.user_email,
-            birth_date=datetime.datetime.utcnow() - relativedelta(years=20),
-            construction_datetime=datetime.datetime.utcnow(),
+            birth_date=datetime.datetime.now() - relativedelta(years=20),
+            construction_datetime=datetime.datetime.now(),
         )
         fraud_check = dms_subscription_api.handle_dms_application(not_eligible_application)
 
@@ -666,7 +666,7 @@ class DmsSubscriptionMessageTest:
             application_number=1,
             state=dms_models.GraphQLApplicationStates.accepted,
             email=self.user_email,
-            birth_date=datetime.datetime.utcnow() - relativedelta(years=18),
+            birth_date=datetime.datetime.now() - relativedelta(years=18),
         )
         fraud_check = dms_subscription_api.handle_dms_application(application_ok)
 
@@ -679,7 +679,7 @@ class DmsSubscriptionMessageTest:
             application_number=1,
             state=dms_models.GraphQLApplicationStates.refused,
             email=self.user_email,
-            birth_date=datetime.datetime.utcnow() - relativedelta(years=18),
+            birth_date=datetime.datetime.now() - relativedelta(years=18),
         )
         fraud_check = dms_subscription_api.handle_dms_application(refused_application)
 
@@ -701,7 +701,7 @@ class DmsSubscriptionMessageTest:
     def test_duplicate(self, mock_send_user_message):
         first_name = "Jean-Michel"
         last_name = "Doublon"
-        birth_date = datetime.datetime.utcnow() - relativedelta(years=18, days=1)
+        birth_date = datetime.datetime.now() - relativedelta(years=18, days=1)
         users_factories.BeneficiaryGrant18Factory(
             firstName=first_name, lastName=last_name, dateOfBirth=birth_date, email="jean-michel@doublon.com"
         )
@@ -867,7 +867,7 @@ class ShouldImportDmsApplicationTest:
             application_techid="TECH_ID",
             state=dms_models.GraphQLApplicationStates.draft,
             email=self.user_email,
-            last_modification_date=datetime.datetime.utcnow(),
+            last_modification_date=datetime.datetime.now(),
         )
         _process_dms_application_mock.reset_mock()
 

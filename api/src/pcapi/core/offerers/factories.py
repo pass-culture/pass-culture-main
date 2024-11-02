@@ -223,7 +223,7 @@ class CollectiveVenueFactory(VenueFactory):
     isPermanent = True
 
     adageId = factory.Sequence(str)
-    adageInscriptionDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=365))
+    adageInscriptionDate = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=365))
 
     managingOfferer = factory.SubFactory(CollectiveOffererFactory)
 
@@ -281,7 +281,7 @@ class VenuePricingPointLinkFactory(BaseFactory):
     )
     timespan = factory.LazyFunction(
         lambda: [
-            datetime.datetime.utcnow() - datetime.timedelta(days=365),
+            datetime.datetime.now() - datetime.timedelta(days=365),
             None,
         ]
     )
@@ -298,7 +298,7 @@ class VenueReimbursementPointLinkFactory(BaseFactory):
     )
     timespan = factory.LazyFunction(
         lambda: [
-            datetime.datetime.utcnow() - datetime.timedelta(days=365),
+            datetime.datetime.now() - datetime.timedelta(days=365),
             None,
         ]
     )
@@ -312,7 +312,7 @@ class VenueBankAccountLinkFactory(BaseFactory):
     bankAccount = factory.SubFactory(
         "pcapi.core.finance.factories.BankAccountFactory", offerer=factory.SelfAttribute("..venue.managingOfferer")
     )
-    timespan = factory.LazyFunction(lambda: [datetime.datetime.utcnow() - datetime.timedelta(days=365), None])
+    timespan = factory.LazyFunction(lambda: [datetime.datetime.now() - datetime.timedelta(days=365), None])
 
 
 class OpeningHoursFactory(BaseFactory):
@@ -454,7 +454,7 @@ class OffererInvitationFactory(BaseFactory):
 
     offerer = factory.SubFactory(OffererFactory)
     email = factory.Sequence("invited.pro{}@example.net".format)
-    dateCreated = datetime.datetime.utcnow()
+    dateCreated = datetime.datetime.now()
     user = factory.SubFactory(users_factories.ProFactory)
     status = models.InvitationStatus.PENDING
 

@@ -78,7 +78,7 @@ def cancel_expired_bookings(query: BaseQuery, batch_size: int = 500) -> None:
             {
                 "status": BookingStatus.CANCELLED,
                 "cancellationReason": BookingCancellationReasons.EXPIRED,
-                "cancellationDate": datetime.datetime.utcnow(),
+                "cancellationDate": datetime.datetime.now(),
             },
             synchronize_session=False,
         )
@@ -211,7 +211,7 @@ def cancel_expired_collective_bookings(batch_size: int = 500) -> None:
             {
                 "status": CollectiveBookingStatus.CANCELLED,
                 "cancellationReason": CollectiveBookingCancellationReasons.EXPIRED,
-                "cancellationDate": datetime.datetime.utcnow(),
+                "cancellationDate": datetime.datetime.now(),
             },
             synchronize_session=False,
         )

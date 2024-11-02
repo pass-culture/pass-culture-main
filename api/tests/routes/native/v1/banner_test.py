@@ -65,7 +65,7 @@ class BannerTest:
         assert response.json == self.geolocation_banner
 
     def should_return_activation_banner_when_user_has_phone_validation_to_complete(self, client):
-        dateOfBirth = datetime.datetime.utcnow() - relativedelta(years=18, months=5)
+        dateOfBirth = datetime.datetime.now() - relativedelta(years=18, months=5)
         user = users_factories.UserFactory(dateOfBirth=dateOfBirth)
 
         client.with_token(email=user.email)
@@ -76,7 +76,7 @@ class BannerTest:
         assert response.json == self.activation_banner
 
     def should_return_activation_banner_when_user_has_profile_to_complete(self, client):
-        dateOfBirth = datetime.datetime.utcnow() - relativedelta(years=18, months=5)
+        dateOfBirth = datetime.datetime.now() - relativedelta(years=18, months=5)
         user = users_factories.UserFactory(
             dateOfBirth=dateOfBirth, phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
         )
@@ -89,7 +89,7 @@ class BannerTest:
         assert response.json == self.activation_banner
 
     def should_return_activation_banner_when_user_has_identity_check_to_complete(self, client):
-        dateOfBirth = datetime.datetime.utcnow() - relativedelta(years=18, months=5)
+        dateOfBirth = datetime.datetime.now() - relativedelta(years=18, months=5)
         user = users_factories.UserFactory(
             dateOfBirth=dateOfBirth, phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
         )
@@ -105,7 +105,7 @@ class BannerTest:
         assert response.json == self.activation_banner
 
     def should_return_activation_banner_when_user_has_honor_statement_to_complete(self, client):
-        dateOfBirth = datetime.datetime.utcnow() - relativedelta(years=18, months=5)
+        dateOfBirth = datetime.datetime.now() - relativedelta(years=18, months=5)
         user = users_factories.UserFactory(
             dateOfBirth=dateOfBirth, phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
         )
@@ -134,7 +134,7 @@ class BannerTest:
         assert response.json == {"banner": None}
 
     def should_return_activation_banner_with_20_euros_when_15_year_old(self, client):
-        dateOfBirth = datetime.datetime.utcnow() - relativedelta(years=15, months=5)
+        dateOfBirth = datetime.datetime.now() - relativedelta(years=15, months=5)
         user = users_factories.UserFactory(dateOfBirth=dateOfBirth)
 
         client.with_token(email=user.email)
@@ -191,7 +191,7 @@ class BannerTest:
         }
 
     def should_get_17_18_transition_id_check_done_banner(self, client):
-        a_year_ago = datetime.datetime.utcnow() - relativedelta(years=1, months=1)
+        a_year_ago = datetime.datetime.now() - relativedelta(years=1, months=1)
         with time_machine.travel(a_year_ago):
             user = users_factories.BeneficiaryFactory(age=17)
 

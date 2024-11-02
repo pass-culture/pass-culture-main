@@ -17,7 +17,7 @@ class RepositoryUnitTest:
         repository.create_orphan_dms_application(
             application_number=88,
             procedure_number=99,
-            latest_modification_datetime=datetime.datetime.utcnow(),
+            latest_modification_datetime=datetime.datetime.now(),
             email="john.stiles@example.com",
         )
         assert repository.get_orphan_dms_application_by_application_id(88) is not None

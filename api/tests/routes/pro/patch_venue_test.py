@@ -50,7 +50,7 @@ class Returns200Test:
     def test_should_update_venue(self, client) -> None:
         # given
         user_offerer = offerers_factories.UserOffererFactory(
-            user__lastConnectionDate=datetime.utcnow(),
+            user__lastConnectionDate=datetime.now(),
         )
         venue = offerers_factories.VenueFactory(name="old name", managingOfferer=user_offerer.offerer)
 
@@ -427,7 +427,7 @@ class Returns200Test:
         self, mocked_update_all_venue_offers_email_job, client
     ):
         user_offerer = offerers_factories.UserOffererFactory(
-            user__lastConnectionDate=datetime.utcnow(),
+            user__lastConnectionDate=datetime.now(),
         )
         venue = offerers_factories.VenueFactory(
             name="old name", managingOfferer=user_offerer.offerer, bookingEmail="old.venue@email.com"

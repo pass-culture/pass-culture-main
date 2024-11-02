@@ -67,7 +67,7 @@ class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
                     {
                         "cinema_id": self.cinema_id,
                         "token": booking.token,
-                        "timestamp": datetime.datetime.utcnow().timestamp(),
+                        "timestamp": datetime.datetime.now().timestamp(),
                     }
                 )
 

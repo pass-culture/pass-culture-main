@@ -663,7 +663,7 @@ def _notify_beneficiaries_upon_stock_edit(stock: models.Stock, bookings: list[bo
             )
             return
         bookings = bookings_api.update_cancellation_limit_dates(bookings, stock.beginningDatetime)
-        date_in_two_days = datetime.datetime.utcnow() + datetime.timedelta(days=2)
+        date_in_two_days = datetime.datetime.now() + datetime.timedelta(days=2)
         check_event_is_in_more_than_48_hours = stock.beginningDatetime > date_in_two_days
         if check_event_is_in_more_than_48_hours:
             bookings = _invalidate_bookings(bookings)
@@ -907,7 +907,7 @@ def update_offer_fraud_information(offer: AnyOffer, user: users_models.User | No
 
     if user is not None:
         offer.author = user
-    offer.lastValidationDate = datetime.datetime.utcnow()
+    offer.lastValidationDate = datetime.datetime.now()
     offer.lastValidationType = OfferValidationType.AUTO
     offer.lastValidationAuthorUserId = None
 
@@ -1144,7 +1144,7 @@ def reject_inappropriate_products(
     offer_updated_counts = offers_query.update(
         values={
             "validation": models.OfferValidationStatus.REJECTED,
-            "lastValidationDate": datetime.datetime.utcnow(),
+            "lastValidationDate": datetime.datetime.now(),
             "lastValidationType": OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
             "lastValidationAuthorUserId": author.id if author else None,
         },
@@ -1665,7 +1665,7 @@ def approves_provider_product_and_rejected_offers(ean: str) -> None:
             offer_updated_counts = offers_query.update(
                 values={
                     "validation": models.OfferValidationStatus.APPROVED,
-                    "lastValidationDate": datetime.datetime.utcnow(),
+                    "lastValidationDate": datetime.datetime.now(),
                     "lastValidationType": OfferValidationType.AUTO,
                 },
                 synchronize_session=False,
@@ -1738,7 +1738,7 @@ def check_can_move_event_offer(offer: models.Offer) -> list[offerers_models.Venu
         models.Stock.query.with_entities(models.Stock.id)
         .filter(
             models.Stock.offerId == offer.id,
-            models.Stock.beginningDatetime < datetime.datetime.utcnow(),
+            models.Stock.beginningDatetime < datetime.datetime.now(),
             models.Stock.isSoftDeleted.is_(False),
         )
         .count()
@@ -1764,7 +1764,7 @@ def check_can_move_event_offer(offer: models.Offer) -> list[offerers_models.Venu
             offerers_models.VenuePricingPointLink,
             sa.and_(
                 offerers_models.VenuePricingPointLink.venueId == offerers_models.Venue.id,
-                offerers_models.VenuePricingPointLink.timespan.contains(datetime.datetime.utcnow()),
+                offerers_models.VenuePricingPointLink.timespan.contains(datetime.datetime.now()),
             ),
         )
         .options(

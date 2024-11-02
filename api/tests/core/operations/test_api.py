@@ -18,7 +18,7 @@ class CreateSpecialEventFromTypeformTest:
         return_value=typeform.TypeformForm(
             form_id="test",
             title="Mon questionnaire",
-            date_created=datetime.datetime.utcnow() - datetime.timedelta(days=3),
+            date_created=datetime.datetime.now() - datetime.timedelta(days=3),
             fields=[
                 typeform.TypeformQuestion(field_id="question1", title="Quel est ton prénom ?"),
                 typeform.TypeformQuestion(field_id="question2", title="Que penses-tu de ce test ?"),
@@ -27,7 +27,7 @@ class CreateSpecialEventFromTypeformTest:
     )
     def test_create_special_event_from_typeform(self, mock_get_form):
         venue = offerers_factories.VenueFactory()
-        event_date = datetime.datetime.utcnow() + datetime.timedelta(days=15)
+        event_date = datetime.datetime.now() + datetime.timedelta(days=15)
 
         special_event_id = operations_api.create_special_event_from_typeform(
             "test", event_date=event_date, venue_id=venue.id

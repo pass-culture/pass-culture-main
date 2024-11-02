@@ -27,10 +27,10 @@ def test_send_today_events_notifications_only_to_individual_bookings_users():
     creates a job that will send a notification to all of the stock's users
     with a valid (not cancelled) booking, for individual bookings only.
     """
-    in_one_hour = datetime.utcnow() + timedelta(hours=1)
+    in_one_hour = datetime.now() + timedelta(hours=1)
     stock_today = offers_factories.EventStockFactory(beginningDatetime=in_one_hour, offer__name="my_offer")
 
-    next_week = datetime.utcnow() + timedelta(days=7)
+    next_week = datetime.now() + timedelta(days=7)
     stock_next_week = offers_factories.EventStockFactory(beginningDatetime=next_week)
 
     user1 = users_factories.BeneficiaryGrant18Factory()
@@ -66,10 +66,10 @@ def test_send_today_events_notifications_only_to_individual_bookings_users_with_
     creates a job that will send a notification to all of the stock's users
     with a valid (not cancelled) booking, for individual bookings only.
     """
-    in_one_hour = datetime.utcnow() + timedelta(hours=1)
+    in_one_hour = datetime.now() + timedelta(hours=1)
     stock_today = offers_factories.EventStockFactory(beginningDatetime=in_one_hour, offer__name="my_offer")
 
-    next_week = datetime.utcnow() + timedelta(days=7)
+    next_week = datetime.now() + timedelta(days=7)
     stock_next_week = offers_factories.EventStockFactory(beginningDatetime=next_week)
 
     user1 = users_factories.BeneficiaryGrant18Factory()
@@ -96,7 +96,7 @@ def test_send_today_events_notifications_only_to_individual_bookings_users_with_
 def test_notify_users_bookings_not_retrieved() -> None:
     user = users_factories.BeneficiaryGrant18Factory()
     stock = offers_factories.ThingStockFactory()
-    creation_date = datetime.utcnow() - constants.BOOKINGS_AUTO_EXPIRY_DELAY + timedelta(days=3)
+    creation_date = datetime.now() - constants.BOOKINGS_AUTO_EXPIRY_DELAY + timedelta(days=3)
 
     # booking that will expire in three days
     booking = bookings_factories.BookingFactory(user=user, stock=stock, dateCreated=creation_date)
@@ -118,7 +118,7 @@ def test_notify_users_bookings_not_retrieved() -> None:
 def test_notify_users_bookings_not_retrieved_with_FF() -> None:
     user = users_factories.BeneficiaryGrant18Factory()
     stock = offers_factories.ThingStockFactory()
-    creation_date = datetime.utcnow() - constants.BOOKINGS_AUTO_EXPIRY_DELAY + timedelta(days=3)
+    creation_date = datetime.now() - constants.BOOKINGS_AUTO_EXPIRY_DELAY + timedelta(days=3)
 
     # booking that will expire in three days
     bookings_factories.BookingFactory(user=user, stock=stock, dateCreated=creation_date)

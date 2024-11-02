@@ -170,7 +170,7 @@ def list_custom_reimbursement_rules() -> utils.BackofficeResponse:
         "custom_reimbursement_rules/list.html",
         rows=custom_reimbursement_rules,
         form=form,
-        now=datetime.utcnow(),
+        now=datetime.now(),
     )
 
 

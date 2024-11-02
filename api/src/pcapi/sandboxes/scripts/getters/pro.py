@@ -231,7 +231,7 @@ def create_pro_user_with_collective_bookings() -> dict:
     collectiveStock = educational_factories.CollectiveStockFactory(
         collectiveOffer__venue=venue,
         collectiveOffer__name="Mon offre",
-        beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=10),
+        beginningDatetime=datetime.datetime.now() + datetime.timedelta(days=10),
     )
     collectiveStock_B = educational_factories.CollectiveStockFactory(
         collectiveOffer__venue=venue, collectiveOffer__name="Mon autre offre"
@@ -239,7 +239,7 @@ def create_pro_user_with_collective_bookings() -> dict:
     educational_factories.CollectiveBookingFactory(collectiveStock=collectiveStock)
     educational_factories.CollectiveBookingFactory(
         collectiveStock__collectiveOffer__name="Encore une autre offre",
-        collectiveStock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=10),
+        collectiveStock__beginningDatetime=datetime.datetime.now() + datetime.timedelta(days=10),
         collectiveStock__collectiveOffer__venue=venue,
         educationalInstitution__name="Autre collège",
     )

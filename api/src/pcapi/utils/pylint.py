@@ -73,7 +73,7 @@ class BaseModelImportChecker(pylint.checkers.BaseChecker):
 
 MSG_USE_OF_DATETIME_NOW = "datetime-now"
 DATETIME_NOW_HELP = """\
-Datetimes are stored in UTC. As such, `datetime.utcnow()` should be used
+Datetimes are stored in UTC. As such, `datetime.now()` should be used
 instead of `now()`, unless you are really sure that you want a local,
 non-UTC datetime.
 """

@@ -386,7 +386,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
     def eligibility(self) -> EligibilityType | None:
         from pcapi.core.fraud import api as fraud_api
 
-        return fraud_api.decide_eligibility(self, self.birth_date, datetime.utcnow())
+        return fraud_api.decide_eligibility(self, self.birth_date, datetime.now())
 
     @hybrid_property
     def full_name(self) -> str:
@@ -412,7 +412,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
 
     @property
     def has_active_deposit(self) -> bool:
-        return self.deposit.expirationDate > datetime.utcnow() if self.deposit else False  # type: ignore[operator]
+        return self.deposit.expirationDate > datetime.now() if self.deposit else False  # type: ignore[operator]
 
     @property
     def is_eligible(self) -> bool:
@@ -1011,7 +1011,7 @@ class GdprUserDataExtract(PcObject, Base, Model):
 
     @property
     def is_expired(self) -> bool:
-        return datetime.utcnow() > self.expirationDate
+        return datetime.now() > self.expirationDate
 
 
 class GdprUserAnonymization(PcObject, Base, Model):

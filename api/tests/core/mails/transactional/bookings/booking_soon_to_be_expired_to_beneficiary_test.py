@@ -57,7 +57,7 @@ class SendinblueSendSoonToBeExpiredBookingsEmailToBeneficiaryTest:
         self,
     ):
         # given
-        now = datetime.utcnow()
+        now = datetime.now()
         email = "isasimov@example.com"
         user = users_factories.BeneficiaryGrant18Factory(email=email)
         created_5_days_ago = now - timedelta(days=5)

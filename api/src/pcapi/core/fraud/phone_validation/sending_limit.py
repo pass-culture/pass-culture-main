@@ -42,7 +42,7 @@ def get_remaining_sms_sending_attempts(redis: Redis, user: User) -> int:
 def get_attempt_limitation_expiration_time(redis: Redis, user: User) -> datetime | None:
     ttl = redis.ttl(_sent_SMS_counter_key_name(user))
     if ttl > 0:
-        return datetime.utcnow() + timedelta(seconds=ttl)
+        return datetime.now() + timedelta(seconds=ttl)
 
     return None
 

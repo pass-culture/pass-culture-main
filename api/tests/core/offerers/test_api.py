@@ -197,8 +197,8 @@ class DeleteVenueTest:
             2,  # other venues
             pricingPoint=venue_to_delete,
             timespan=[
-                datetime.datetime.utcnow() - datetime.timedelta(days=10),
-                datetime.datetime.utcnow() - datetime.timedelta(days=5),
+                datetime.datetime.now() - datetime.timedelta(days=10),
+                datetime.datetime.now() - datetime.timedelta(days=5),
             ],
         )
 
@@ -213,14 +213,14 @@ class DeleteVenueTest:
             2,
             pricingPoint=venue_to_delete,
             timespan=[
-                datetime.datetime.utcnow() - datetime.timedelta(days=10),
-                datetime.datetime.utcnow() - datetime.timedelta(days=5),
+                datetime.datetime.now() - datetime.timedelta(days=10),
+                datetime.datetime.now() - datetime.timedelta(days=5),
             ],
         )
         finance_event = finance_factories.FinanceEventFactory(
             venue=links[1].venue,
             pricingPoint=venue_to_delete,
-            pricingOrderingDate=datetime.datetime.utcnow() - datetime.timedelta(days=7),
+            pricingOrderingDate=datetime.datetime.now() - datetime.timedelta(days=7),
         )
         finance_factories.PricingFactory(
             booking=finance_event.booking, pricingPoint=venue_to_delete, event=finance_event
@@ -1898,7 +1898,7 @@ class HasVenueAtLeastOneBookableOfferTest:
     def test_expired_event(self):
         venue = offerers_factories.VenueFactory(isPermanent=True)
 
-        one_week_ago = datetime.datetime.utcnow() - datetime.timedelta(days=7)
+        one_week_ago = datetime.datetime.now() - datetime.timedelta(days=7)
         offers_factories.EventStockFactory(beginningDatetime=one_week_ago, offer__venue=venue)
 
         assert not offerers_api.has_venue_at_least_one_bookable_offer(venue)
@@ -1911,7 +1911,7 @@ class HasVenueAtLeastOneBookableOfferTest:
         offers_factories.EventStockFactory(offer__venue=venue)
 
         # without the previous offer, the venue would not be eligible
-        one_week_ago = datetime.datetime.utcnow() - datetime.timedelta(days=7)
+        one_week_ago = datetime.datetime.now() - datetime.timedelta(days=7)
         offers_factories.EventStockFactory(beginningDatetime=one_week_ago, offer__venue=venue)
 
         assert offerers_api.has_venue_at_least_one_bookable_offer(venue)
@@ -1940,7 +1940,7 @@ class GetOffererTotalRevenueTest:
         bookings_factories.UsedBookingFactory(
             stock__offer__venue__managingOfferer=offerer,
             stock__price=11.5,
-            dateUsed=datetime.datetime.utcnow() - datetime.timedelta(days=400),
+            dateUsed=datetime.datetime.now() - datetime.timedelta(days=400),
         )
         bookings_factories.ReimbursedBookingFactory(
             stock__offer__venue__managingOfferer=offerer, stock__price=12, quantity=2
@@ -1955,7 +1955,7 @@ class GetOffererTotalRevenueTest:
         educational_factories.ReimbursedCollectiveBookingFactory(
             collectiveStock__collectiveOffer__venue__managingOfferer=offerer,
             collectiveStock__price=1555,
-            dateUsed=datetime.datetime.utcnow() - datetime.timedelta(days=500),
+            dateUsed=datetime.datetime.now() - datetime.timedelta(days=500),
         )
         educational_factories.CancelledCollectiveBookingFactory(
             collectiveStock__collectiveOffer__venue__managingOfferer=offerer, collectiveStock__price=6000

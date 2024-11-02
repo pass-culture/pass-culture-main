@@ -15,7 +15,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 def _with_age(age):
-    return datetime.datetime.utcnow() - relativedelta(years=age)
+    return datetime.datetime.now() - relativedelta(years=age)
 
 
 class YoungStatusTest:
@@ -37,7 +37,7 @@ class YoungStatusTest:
             user = users_factories.UserFactory(dateOfBirth=_with_age(19))
             fraud_factories.BeneficiaryFraudCheckFactory(
                 resultContent=fraud_factories.DMSContentFactory(
-                    registration_datetime=datetime.datetime.utcnow() - relativedelta(years=1)
+                    registration_datetime=datetime.datetime.now() - relativedelta(years=1)
                 ),
                 type=fraud_models.FraudCheckType.DMS,
                 user=user,
@@ -191,7 +191,7 @@ class YoungStatusTest:
 
     def should_be_ex_beneficiary_when_beneficiary_have_his_deposit_expired(self):
         user = users_factories.BeneficiaryGrant18Factory(
-            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(days=1)
+            deposit__expirationDate=datetime.datetime.now() - relativedelta(days=1)
         )
         assert young_status.young_status(user) == young_status.ExBeneficiary()
 

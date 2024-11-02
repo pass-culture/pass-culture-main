@@ -136,7 +136,7 @@ class GetEventDetailsTest(GetEndpointHelper):
         event = operations_factories.SpecialEventFactory(
             externalId="fake00001",
             title="Énigme des enchanteurs",
-            eventDate=datetime.datetime.utcnow() + datetime.timedelta(days=2),
+            eventDate=datetime.datetime.now() + datetime.timedelta(days=2),
         )
         special_event_id = event.id
         name_question = operations_factories.SpecialEventQuestionFactory(

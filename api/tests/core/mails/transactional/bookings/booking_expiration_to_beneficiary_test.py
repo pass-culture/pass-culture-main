@@ -63,7 +63,7 @@ class SendExpiredBookingsEmailToBeneficiarySendinblueTest:
         assert mails_testing.outbox[1]["params"]["WITHDRAWAL_PERIOD"] == 30
 
     def test_should_get_correct_data_when_expired_bookings_cancelled(self):
-        now = datetime.utcnow()
+        now = datetime.now()
         amnesiac_user = users_factories.BeneficiaryGrant18Factory(email="dory@example.com", firstName="Dory")
         long_ago = now - timedelta(days=31)
         dvd = ProductFactory(name="Memento", subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)

@@ -68,7 +68,7 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
             offerers_models.VenueBankAccountLink,
             sa.and_(
                 offerers_models.VenueBankAccountLink.venueId == offerers_models.Venue.id,
-                offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
+                offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.now()),
             ),
         )
         .filter(
@@ -798,7 +798,7 @@ def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
             offerers_models.VenueBankAccountLink,
             sa.and_(
                 offerers_models.VenueBankAccountLink.venueId == offerers_models.Venue.id,
-                offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
+                offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.now()),
             ),
         )
         .options(
@@ -1027,12 +1027,12 @@ def create_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
     if not offerer.individualSubscription:
         db.session.add(
             offerers_models.IndividualOffererSubscription(
-                offererId=offerer_id, isEmailSent=True, dateEmailSent=datetime.datetime.utcnow()
+                offererId=offerer_id, isEmailSent=True, dateEmailSent=datetime.datetime.now()
             )
         )
     elif not offerer.individualSubscription.isEmailSent:
         offerer.individualSubscription.isEmailSent = True
-        offerer.individualSubscription.dateEmailSent = datetime.datetime.utcnow()
+        offerer.individualSubscription.dateEmailSent = datetime.datetime.now()
         db.session.add(offerer.individualSubscription)
 
     callback = partial(

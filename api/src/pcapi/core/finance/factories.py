@@ -236,8 +236,8 @@ class CustomReimbursementRuleFactory(BaseFactory):
     offer = factory.SubFactory(offers_factories.OfferFactory)
     timespan = factory.LazyFunction(
         lambda: [
-            datetime.datetime.utcnow() - datetime.timedelta(days=365),
-            datetime.datetime.utcnow() + datetime.timedelta(days=365),
+            datetime.datetime.now() - datetime.timedelta(days=365),
+            datetime.datetime.now() + datetime.timedelta(days=365),
         ]
     )
     amount = 500
@@ -376,7 +376,7 @@ class FinanceIncidentFactory(BaseFactory):
     status = models.IncidentStatus.CREATED
     details = {
         "origin": "Demande e-mail",
-        "createdAt": datetime.datetime.utcnow().isoformat(),
+        "createdAt": datetime.datetime.now().isoformat(),
         "author": "Sandy Box",
         "validator": "",
         "validatedAt": "",
@@ -392,7 +392,7 @@ class FinanceCommercialGestureFactory(BaseFactory):
     status = models.IncidentStatus.CREATED
     details = {
         "origin": "Demande e-mail",
-        "createdAt": datetime.datetime.utcnow().isoformat(),
+        "createdAt": datetime.datetime.now().isoformat(),
         "authorId": 1,
         "validator": "",
         "validatedAt": "",

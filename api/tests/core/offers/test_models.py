@@ -57,12 +57,12 @@ class OfferHasBookingLimitDatetimesPassedTest:
     def test_with_stock_with_no_booking_limit_datetime(self):
         stock = factories.StockFactory(bookingLimitDatetime=None)
         offer = stock.offer
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        past = datetime.datetime.now() - datetime.timedelta(days=1)
         stock = factories.StockFactory(offer=offer, isSoftDeleted=True, bookingLimitDatetime=past)
         assert not offer.hasBookingLimitDatetimesPassed
 
     def test_with_stocks_with_booking_limit_datetime(self):
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        past = datetime.datetime.now() - datetime.timedelta(days=1)
         stock = factories.StockFactory(bookingLimitDatetime=past)
         assert stock.offer.hasBookingLimitDatetimesPassed
 
@@ -74,7 +74,7 @@ class OfferHasBookingLimitDatetimesPassedTest:
         assert models.Offer.query.filter(models.Offer.hasBookingLimitDatetimesPassed.is_(False)).all() == [offer]
 
     def test_expression_with_stock_with_booking_limit_datetime_passed(self):
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        past = datetime.datetime.now() - datetime.timedelta(days=1)
         stock = factories.StockFactory(bookingLimitDatetime=past)
         offer = stock.offer
 
@@ -82,7 +82,7 @@ class OfferHasBookingLimitDatetimesPassedTest:
         assert models.Offer.query.filter(models.Offer.hasBookingLimitDatetimesPassed.is_(False)).all() == []
 
     def test_expression_with_stock_with_booking_limit_datetime_in_the_future(self):
-        future = datetime.datetime.utcnow() + datetime.timedelta(days=2)
+        future = datetime.datetime.now() + datetime.timedelta(days=2)
         stock = factories.StockFactory(bookingLimitDatetime=future)
         offer = stock.offer
 
@@ -96,7 +96,7 @@ class OfferHasBookingLimitDatetimesPassedTest:
         assert models.Offer.query.filter(models.Offer.hasBookingLimitDatetimesPassed.is_(False)).all() == [offer]
 
     def test_expression_with_soft_deleted_stock(self):
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        past = datetime.datetime.now() - datetime.timedelta(days=2)
         stock = factories.StockFactory(bookingLimitDatetime=past, isSoftDeleted=True)
         offer = stock.offer
 
@@ -223,7 +223,7 @@ class OfferStatusTest:
         ]
 
     def test_expired(self):
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        past = datetime.datetime.now() - datetime.timedelta(days=2)
         expired_stock = factories.StockFactory(bookingLimitDatetime=past)
         expired_offer = factories.OfferFactory(
             validation=models.OfferValidationStatus.APPROVED,
@@ -236,7 +236,7 @@ class OfferStatusTest:
         assert expired_offer.status == offer_mixin.OfferStatus.EXPIRED
 
     def test_expression_expired(self):
-        expired_stock = factories.StockFactory(bookingLimitDatetime=datetime.datetime.utcnow())
+        expired_stock = factories.StockFactory(bookingLimitDatetime=datetime.datetime.now())
         expired_offer = expired_stock.offer
         approved_offer = factories.OfferFactory()
 
@@ -275,8 +275,8 @@ class OfferStatusTest:
         assert models.Offer.query.filter(models.Offer.status != offer_mixin.OfferStatus.SOLD_OUT.name).count() == 0
 
     def test_expression_sold_out_offer_with_passed_stock(self):
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
-        future = datetime.datetime.utcnow() + datetime.timedelta(days=2)
+        past = datetime.datetime.now() - datetime.timedelta(days=2)
+        future = datetime.datetime.now() + datetime.timedelta(days=2)
         offer = factories.OfferFactory()
         factories.StockFactory(offer=offer, quantity=10, beginningDatetime=past, bookingLimitDatetime=past)
         factories.StockFactory(offer=offer, quantity=0, beginningDatetime=future, bookingLimitDatetime=future)
@@ -352,7 +352,7 @@ class OfferIsSoldOutTest:
         assert models.Offer.query.filter(models.Offer.isSoldOut.is_(False)).count() == 0
 
     def test_offer_with_passed_stock_date(self):
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        past = datetime.datetime.now() - datetime.timedelta(days=2)
         stock = factories.StockFactory(quantity=10, beginningDatetime=past)
         offer = stock.offer
 
@@ -427,7 +427,7 @@ class StockDateModifiedTest:
         stock.quantity = 10
         repository.save(stock)
         stock = models.Stock.query.one()
-        assert stock.dateModified.timestamp() == pytest.approx(datetime.datetime.utcnow().timestamp())
+        assert stock.dateModified.timestamp() == pytest.approx(datetime.datetime.now().timestamp())
 
     def test_do_not_update_dateModified_if_price_changes(self):
         initial_dt = datetime.datetime(2018, 2, 12)
@@ -510,7 +510,7 @@ class StockQuantityTest:
 
 class StockIsBookableTest:
     def test_not_bookable_if_booking_limit_datetime_has_passed(self):
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        past = datetime.datetime.now() - datetime.timedelta(days=2)
         stock = factories.StockFactory(bookingLimitDatetime=past)
         assert not stock.isBookable
 
@@ -531,7 +531,7 @@ class StockIsBookableTest:
         assert not stock.isBookable
 
     def test_not_bookable_if_offer_is_event_with_passed_begining_datetime(self):
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        past = datetime.datetime.now() - datetime.timedelta(days=2)
         stock = factories.EventStockFactory(beginningDatetime=past)
         assert not stock.isBookable
 
@@ -568,12 +568,12 @@ class StockIsEventExpiredTest:
         assert not stock.isEventExpired
 
     def test_is_not_expired_when_stock_is_an_event_in_the_future(self):
-        future = datetime.datetime.utcnow() + datetime.timedelta(hours=72)
+        future = datetime.datetime.now() + datetime.timedelta(hours=72)
         stock = factories.EventStockFactory(beginningDatetime=future)
         assert not stock.isEventExpired
 
     def test_is_expired_when_stock_is_an_event_in_the_past(self):
-        past = datetime.datetime.utcnow() - datetime.timedelta(hours=24)
+        past = datetime.datetime.now() - datetime.timedelta(hours=24)
         stock = factories.EventStockFactory(beginningDatetime=past)
         assert stock.isEventExpired
 
@@ -584,22 +584,22 @@ class StockIsEventDeletableTest:
         assert stock.isEventDeletable
 
     def test_is_deletable_when_stock_is_an_event_in_the_future(self):
-        future = datetime.datetime.utcnow() + datetime.timedelta(hours=72)
+        future = datetime.datetime.now() + datetime.timedelta(hours=72)
         stock = factories.EventStockFactory(beginningDatetime=future)
         assert stock.isEventDeletable
 
     def test_is_deletable_when_stock_is_expired_since_less_than_event_automatic_refund_delay(self):
-        dt = datetime.datetime.utcnow() - bookings_constants.AUTO_USE_AFTER_EVENT_TIME_DELAY + datetime.timedelta(1)
+        dt = datetime.datetime.now() - bookings_constants.AUTO_USE_AFTER_EVENT_TIME_DELAY + datetime.timedelta(1)
         stock = factories.EventStockFactory(beginningDatetime=dt)
         assert stock.isEventDeletable
 
     def test_is_not_deletable_when_stock_is_expired_since_more_than_event_automatic_refund_delay(self):
-        dt = datetime.datetime.utcnow() - bookings_constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
+        dt = datetime.datetime.now() - bookings_constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
         stock = factories.EventStockFactory(beginningDatetime=dt)
         assert not stock.isEventDeletable
 
     def test_is_deletable_when_stock_is_expired_since_more_than_event_automatic_refund_delay_but_is_draft(self):
-        dt = datetime.datetime.utcnow() - bookings_constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
+        dt = datetime.datetime.now() - bookings_constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
         stock = factories.EventStockFactory(beginningDatetime=dt, offer__validation=models.OfferValidationStatus.DRAFT)
         assert stock.isEventDeletable
 

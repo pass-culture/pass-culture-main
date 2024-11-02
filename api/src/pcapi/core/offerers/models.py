@@ -625,7 +625,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
 
     @property
     def current_pricing_point_id(self) -> int | None:
-        now = datetime.utcnow()
+        now = datetime.now()
         return (
             db.session.query(VenuePricingPointLink.pricingPointId)
             .filter(
@@ -639,7 +639,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     def current_pricing_point_link(self) -> "VenuePricingPointLink | None":
         # Unlike current_pricing_point_id, this property uses pricing_point_links joinedloaded with the venue, which
         # avoids additional SQL query
-        now = datetime.utcnow()
+        now = datetime.now()
 
         for link in self.pricing_point_links:
             lower = link.timespan.lower
@@ -659,7 +659,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
 
     @property
     def current_bank_account_link(self) -> "VenueBankAccountLink | None":
-        now = datetime.utcnow()
+        now = datetime.now()
 
         for link in self.bankAccountLinks:
             lower = link.timespan.lower

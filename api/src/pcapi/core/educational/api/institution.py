@@ -132,7 +132,7 @@ def get_current_year_remaining_credit(institution: educational_models.Educationa
 
       current year deposit amount - sum of confirmed bookings amounts
     """
-    educational_year = educational_repository.find_educational_year_by_date(datetime.utcnow())
+    educational_year = educational_repository.find_educational_year_by_date(datetime.now())
     assert educational_year is not None
 
     deposit = educational_repository.find_educational_deposit_by_institution_id_and_year(
@@ -153,7 +153,7 @@ def create_missing_educational_institution_from_adage(destination_uai: str) -> E
     Fetch known adage institutions of the current year and create the
     missing institution inside or database if the target uai exists.
     """
-    year = find_educational_year_by_date(datetime.utcnow())
+    year = find_educational_year_by_date(datetime.now())
     if year is None:
         raise educational_exceptions.EducationalYearNotFound()
 

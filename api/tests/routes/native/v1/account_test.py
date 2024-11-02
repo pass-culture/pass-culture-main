@@ -162,7 +162,7 @@ class AccountTest:
         assert response.json == EXPECTED_DATA
 
     def test_status_contains_subscription_status_when_eligible(self, client):
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
+        user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=18))
 
         expected_num_queries = (
             6  # user + beneficiary_fraud_review + feature + beneficiary_fraud_check + deposit + booking
@@ -241,7 +241,7 @@ class AccountTest:
         """
         user = users_factories.UserFactory(
             activity=users_models.ActivityEnum.STUDENT.value,
-            dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5),
+            dateOfBirth=datetime.now() - relativedelta(years=18, days=5),
             email=self.identifier,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
@@ -266,7 +266,7 @@ class AccountTest:
     def test_subscription_message_with_call_to_action(self, client):
         user = users_factories.UserFactory(
             activity=users_models.ActivityEnum.STUDENT.value,
-            dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5),
+            dateOfBirth=datetime.now() - relativedelta(years=18, days=5),
             email=self.identifier,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
@@ -345,7 +345,7 @@ class AccountTest:
     def test_num_queries_with_next_step(self, client):
         user = users_factories.UserFactory(
             activity=users_models.ActivityEnum.STUDENT.value,
-            dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5),
+            dateOfBirth=datetime.now() - relativedelta(years=18, days=5),
             email=self.identifier,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
@@ -468,7 +468,7 @@ class AccountCreationTest:
         data = {
             "email": "John.doe@example.com",
             "password": "Aazflrifaoi6@",
-            "birthdate": (datetime.utcnow() - relativedelta(years=15, days=-1)).date().isoformat(),
+            "birthdate": (datetime.now() - relativedelta(years=15, days=-1)).date().isoformat(),
             "notifications": True,
             "token": "gnagna",
             "marketingEmailSubscription": True,
@@ -685,7 +685,7 @@ class AccountCreationWithSSOTest:
             "/native/v1/oauth/google/account",
             json={
                 "accountCreationToken": account_creation_token.encoded_token,
-                "birthdate": (datetime.utcnow() - relativedelta(years=15, days=-1)).date().isoformat(),
+                "birthdate": (datetime.now() - relativedelta(years=15, days=-1)).date().isoformat(),
                 "notifications": True,
                 "token": "gnagna",
                 "marketingEmailSubscription": True,
@@ -708,7 +708,7 @@ class AccountCreationWithSSOTest:
             "/native/v1/oauth/google/account",
             json={
                 "accountCreationToken": account_creation_token.encoded_token,
-                "birthdate": (datetime.utcnow() - relativedelta(years=15, days=-1)).date().isoformat(),
+                "birthdate": (datetime.now() - relativedelta(years=15, days=-1)).date().isoformat(),
                 "notifications": True,
                 "token": "gnagna",
                 "marketingEmailSubscription": True,
@@ -1119,7 +1119,7 @@ class ConfirmUpdateUserEmailTest:
 
     def test_cannot_confirm_if_no_pending_email_update(self, client, app):
         user = users_factories.BeneficiaryGrant18Factory()
-        expiration_date = datetime.utcnow() + users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
+        expiration_date = datetime.now() + users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
         token = encode_jwt_payload({"current_email": user.email, "new_email": "exemple@exemple.com"}, expiration_date)
 
         client.with_token(user.email)
@@ -1588,9 +1588,7 @@ class ValidateEmailTest:
 
     @patch("pcapi.core.subscription.dms.api.try_dms_orphan_adoption")
     def test_dms_adoption_on_email_validation_for_eligible_user(self, try_dms_orphan_adoption_mock, app, client):
-        user = users_factories.UserFactory(
-            email=self.old_email, dateOfBirth=datetime.utcnow() - relativedelta(years=18)
-        )
+        user = users_factories.UserFactory(email=self.old_email, dateOfBirth=datetime.now() - relativedelta(years=18))
         token = self._initialize_token(user, app, self.new_email)
         response = client.put("/native/v1/profile/email_update/validate", json={"token": token})
 
@@ -1693,7 +1691,7 @@ class GetTokenExpirationTest:
         a ms precision here.
         """
         user = users_factories.UserFactory(email=self.email)
-        expiration_date = datetime.utcnow() + users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
+        expiration_date = datetime.now() + users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
         token_utils.Token.create(
             type_=token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION,
             ttl=users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME,
@@ -1831,15 +1829,15 @@ class EmailValidationRemainingResendsTest:
 class ShowEligibleCardTest:
     @pytest.mark.parametrize("age,expected", [(17, False), (18, True), (19, False)])
     def test_against_different_age(self, age, expected):
-        date_of_birth = datetime.utcnow() - relativedelta(years=age, days=5)
-        date_of_creation = datetime.utcnow() - relativedelta(years=4)
+        date_of_birth = datetime.now() - relativedelta(years=age, days=5)
+        date_of_creation = datetime.now() - relativedelta(years=4)
         user = users_factories.UserFactory(dateOfBirth=date_of_birth, dateCreated=date_of_creation)
         assert account_serializers.UserProfileResponse.from_orm(user).show_eligible_card == expected
 
     @pytest.mark.parametrize("beneficiary,expected", [(False, True), (True, False)])
     def test_against_beneficiary(self, beneficiary, expected):
-        date_of_birth = datetime.utcnow() - relativedelta(years=18, days=5)
-        date_of_creation = datetime.utcnow() - relativedelta(years=4)
+        date_of_birth = datetime.now() - relativedelta(years=18, days=5)
+        date_of_creation = datetime.now() - relativedelta(years=4)
         roles = [users_models.UserRole.BENEFICIARY] if beneficiary else []
         user = users_factories.UserFactory(
             dateOfBirth=date_of_birth,
@@ -1849,8 +1847,8 @@ class ShowEligibleCardTest:
         assert account_serializers.UserProfileResponse.from_orm(user).show_eligible_card == expected
 
     def test_user_eligible_but_created_after_18(self):
-        date_of_birth = datetime.utcnow() - relativedelta(years=18, days=5)
-        date_of_creation = datetime.utcnow()
+        date_of_birth = datetime.now() - relativedelta(years=18, days=5)
+        date_of_creation = datetime.now()
         user = users_factories.UserFactory(dateOfBirth=date_of_birth, dateCreated=date_of_creation)
         assert account_serializers.UserProfileResponse.from_orm(user).show_eligible_card is False
 
@@ -1873,8 +1871,8 @@ class SendPhoneValidationCodeTest:
         token = token_utils.SixDigitsToken.load_without_checking(
             encoded_token, token_utils.TokenType.PHONE_VALIDATION, user.id
         )
-        assert token.get_expiration_date_from_token() >= datetime.utcnow() + timedelta(hours=10)
-        assert token.get_expiration_date_from_token() < datetime.utcnow() + timedelta(hours=13)
+        assert token.get_expiration_date_from_token() >= datetime.now() + timedelta(hours=10)
+        assert token.get_expiration_date_from_token() < datetime.now() + timedelta(hours=13)
 
         assert sms_testing.requests == [
             {"recipient": "+33601020304", "content": f"{token.encoded_token} est ton code de confirmation pass Culture"}
@@ -1893,7 +1891,7 @@ class SendPhoneValidationCodeTest:
     @override_settings(MAX_SMS_SENT_FOR_PHONE_VALIDATION=1)
     def test_send_phone_validation_code_too_many_attempts(self, client):
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5),
+            dateOfBirth=datetime.now() - relativedelta(years=18, days=5),
         )
         client.with_token(email=user.email)
 
@@ -1978,7 +1976,7 @@ class SendPhoneValidationCodeTest:
         user = users_factories.UserFactory(
             isEmailValidated=True,
             phoneNumber="+33601020304",
-            dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5),
+            dateOfBirth=datetime.now() - relativedelta(years=18, days=5),
         )
         client.with_token(email=user.email)
 
@@ -2044,7 +2042,7 @@ class SendPhoneValidationCodeTest:
     @override_settings(BLACKLISTED_SMS_RECIPIENTS={"+33601020304"})
     def test_blocked_phone_number(self, client):
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5),
+            dateOfBirth=datetime.now() - relativedelta(years=18, days=5),
         )
         client.with_token(email=user.email)
 
@@ -2078,7 +2076,7 @@ class ValidatePhoneNumberTest:
 
     def test_validate_phone_number(self, client, app):
         user = users_factories.UserFactory(
-            phoneNumber="+33607080900", dateOfBirth=datetime.utcnow() - relativedelta(years=18)
+            phoneNumber="+33607080900", dateOfBirth=datetime.now() - relativedelta(years=18)
         )
         client.with_token(email=user.email)
         token = create_phone_validation_token(user, "+33607080900")
@@ -2120,7 +2118,7 @@ class ValidatePhoneNumberTest:
 
     def test_validate_phone_number_and_become_beneficiary(self, client):
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5),
+            dateOfBirth=datetime.now() - relativedelta(years=18, days=5),
             phoneNumber="+33607080900",
             activity="Lycéen",
         )
@@ -2147,7 +2145,7 @@ class ValidatePhoneNumberTest:
     def test_validate_phone_number_too_many_attempts(self, client, app):
         user = users_factories.UserFactory(
             phoneNumber="+33607080900",
-            dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5),
+            dateOfBirth=datetime.now() - relativedelta(years=18, days=5),
         )
         client.with_token(email=user.email)
         token = create_phone_validation_token(user, "+33607080900")
@@ -2183,7 +2181,7 @@ class ValidatePhoneNumberTest:
     @override_settings(MAX_SMS_SENT_FOR_PHONE_VALIDATION=1)
     @time_machine.travel("2022-05-17 15:00")
     def test_phone_validation_remaining_attempts(self, client):
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5))
+        user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=18, days=5))
         client.with_token(email=user.email)
         response = client.get("/native/v1/phone_validation/remaining_attempts")
 
@@ -2236,7 +2234,7 @@ class ValidatePhoneNumberTest:
             user = users_factories.UserFactory(phoneNumber="+33607080900")
             token = create_phone_validation_token(user, "+33607080900")
 
-            with time_machine.travel(datetime.utcnow() + timedelta(hours=15)):
+            with time_machine.travel(datetime.now() + timedelta(hours=15)):
                 client.with_token(email=user.email)
                 response = client.post("/native/v1/validate_phone_number", {"code": token.encoded_token})
 
@@ -2301,7 +2299,7 @@ class SuspendAccountTest:
 
 def build_user_at_id_check(age):
     user = users_factories.UserFactory(
-        dateOfBirth=datetime.utcnow() - relativedelta(years=age, days=5),
+        dateOfBirth=datetime.now() - relativedelta(years=age, days=5),
         phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
     )
     fraud_factories.ProfileCompletionFraudCheckFactory(
@@ -2343,7 +2341,7 @@ class IdentificationSessionTest:
 
     @pytest.mark.parametrize("age", [14, 19, 20])
     def test_request_not_eligible(self, client, ubble_mock, age):
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=age, days=5))
+        user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=age, days=5))
 
         client.with_token(user.email)
 
@@ -2397,7 +2395,7 @@ class IdentificationSessionTest:
         ],
     )
     def test_request_ubble_second_check_blocked(self, client, fraud_check_status, ubble_status):
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5))
+        user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=18, days=5))
         client.with_token(user.email)
 
         # Perform phone validation
@@ -2776,7 +2774,7 @@ class SuspendAccountForSuspiciousLoginTest:
 
     def test_error_when_token_is_expired(self, client):
         with patch("flask.current_app.redis_client", fakeredis.FakeStrictRedis()):
-            current_time = datetime.utcnow()
+            current_time = datetime.now()
             passed_expiration_date = (
                 current_time - users_constants.SUSPICIOUS_LOGIN_EMAIL_TOKEN_LIFE_TIME - timedelta(days=1)
             )

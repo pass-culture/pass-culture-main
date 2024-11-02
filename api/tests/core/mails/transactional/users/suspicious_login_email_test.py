@@ -32,7 +32,7 @@ class SendinblueSuspiciousLoginEmailTest:
     def setup_method(self):
         with mock.patch("flask.current_app.redis_client", self.mock_redis_client):
             self.user = users_factories.UserFactory()
-            current_time = datetime.utcnow()
+            current_time = datetime.now()
             with time_machine.travel(current_time):
                 self.account_suspension_token = token_utils.Token.create(
                     token_utils.TokenType.SUSPENSION_SUSPICIOUS_LOGIN,

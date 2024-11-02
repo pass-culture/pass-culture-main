@@ -114,7 +114,7 @@ class TestLocalProviderWithThumbIndexAt4(LocalProvider):
 def create_finance_event_to_update(stock, venue_provider):
     """Create the different objects in db for finance event update"""
 
-    booking = bookings_factories.UsedBookingFactory(stock=stock, dateUsed=datetime.datetime.utcnow())
+    booking = bookings_factories.UsedBookingFactory(stock=stock, dateUsed=datetime.datetime.now())
     event = finance_factories.FinanceEventFactory(
         booking=booking,
         pricingOrderingDate=stock.beginningDatetime,

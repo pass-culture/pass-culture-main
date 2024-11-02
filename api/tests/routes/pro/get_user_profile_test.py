@@ -45,7 +45,7 @@ class Returns200Test:
             email="toto@example.com",
             firstName="Jean",
             lastName="Smisse",
-            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18),
+            dateOfBirth=datetime.datetime.now() - relativedelta(years=18),
             phoneNumber="0612345678",
             isEmailValidated=True,
         )

@@ -20,7 +20,7 @@ import pcapi.notifications.push.testing as push_testing
 def build_user_with_ko_retryable_ubble_fraud_check(
     user: users_models.User | None = None,
     user_age: int = 18,
-    ubble_date_created: datetime.datetime = datetime.datetime.utcnow() - relativedelta(days=7),
+    ubble_date_created: datetime.datetime = datetime.datetime.now() - relativedelta(days=7),
     ubble_eligibility: users_models.EligibilityType = users_models.EligibilityType.AGE18,
     # pylint: disable=dangerous-default-value
     reasonCodes: list[fraud_models.FraudReasonCode] = [fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC],
@@ -32,7 +32,7 @@ def build_user_with_ko_retryable_ubble_fraud_check(
     """
     if user is None:
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=user_age),
+            dateOfBirth=datetime.datetime.now() - relativedelta(years=user_age),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
     fraud_factories.BeneficiaryFraudCheckFactory(
@@ -55,7 +55,7 @@ def build_user_with_ko_retryable_ubble_fraud_check(
 @pytest.mark.usefixtures("db_session")
 class FindUsersThatFailedUbbleTest:
     def setup_method(self):
-        self.eighteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=18)
+        self.eighteen_years_ago = datetime.datetime.now() - relativedelta(years=18)
         self.error_codes = (
             ubble_constants.REASON_CODES_FOR_QUICK_ACTION_REMINDERS
             + ubble_constants.REASON_CODES_FOR_LONG_ACTION_REMINDERS
@@ -74,7 +74,7 @@ class FindUsersThatFailedUbbleTest:
     def should_not_find_users_to_remind(self):
         # Given
         build_user_with_ko_retryable_ubble_fraud_check(
-            ubble_date_created=datetime.datetime.utcnow() - relativedelta(days=6)
+            ubble_date_created=datetime.datetime.now() - relativedelta(days=6)
         )
 
         # When
@@ -163,14 +163,14 @@ class FindUsersThatFailedUbbleTest:
 
     def should_find_correct_reason_codes(self):
         user = build_user_with_ko_retryable_ubble_fraud_check(
-            ubble_date_created=datetime.datetime.utcnow() - relativedelta(days=7)
+            ubble_date_created=datetime.datetime.now() - relativedelta(days=7)
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.UBBLE,
             status=fraud_models.FraudCheckStatus.KO,
             reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE],
-            dateCreated=datetime.datetime.utcnow() - relativedelta(days=5),  # I want this one
+            dateCreated=datetime.datetime.now() - relativedelta(days=5),  # I want this one
         )
 
         result = _find_users_to_remind(days_ago=7, reason_codes_filter=self.error_codes)
@@ -216,7 +216,7 @@ class SendUbbleKoReminderReminderTest:
 
     @override_settings(DAYS_BEFORE_UBBLE_LONG_ACTION_REMINDER=21)
     def should_send_21_days_reminders(self):
-        twenty_one_days_ago = datetime.datetime.utcnow() - relativedelta(days=21)
+        twenty_one_days_ago = datetime.datetime.now() - relativedelta(days=21)
         user1 = build_user_with_ko_retryable_ubble_fraud_check(
             reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED], ubble_date_created=twenty_one_days_ago
         )
@@ -283,7 +283,7 @@ class SendUbbleKoReminderReminderTest:
     def should_send_email_for_long_action_to_user(self, reason_code):
         # Given
         user = build_user_with_ko_retryable_ubble_fraud_check(
-            reasonCodes=[reason_code], ubble_date_created=datetime.datetime.utcnow() - relativedelta(days=21)
+            reasonCodes=[reason_code], ubble_date_created=datetime.datetime.now() - relativedelta(days=21)
         )
 
         # When
@@ -318,7 +318,7 @@ class SendUbbleKoReminderReminderTest:
         # Given
         user = build_user_with_ko_retryable_ubble_fraud_check(
             reasonCodes=[reason_code, other_reason_code],
-            ubble_date_created=datetime.datetime.utcnow() - relativedelta(days=21),
+            ubble_date_created=datetime.datetime.now() - relativedelta(days=21),
         )
 
         # When

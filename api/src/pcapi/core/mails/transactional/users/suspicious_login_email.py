@@ -32,7 +32,7 @@ def get_suspicious_login_email_data(
     )
 
     localized_login_datetime = utc_datetime_to_department_timezone(
-        login_info.dateCreated if login_info else datetime.utcnow(), user.departementCode
+        login_info.dateCreated if login_info else datetime.now(), user.departementCode
     )
 
     if login_info:

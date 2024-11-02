@@ -77,7 +77,7 @@ def login_educonnect_e2e(user: users_models.User, body: educonnect_serializers.E
     educonnect_user = users_factories.EduconnectUserFactory(
         birth_date=body.birthDate,
         civility=users_models.GenderEnum.F,
-        connection_datetime=datetime.datetime.utcnow(),
+        connection_datetime=datetime.datetime.now(),
         educonnect_id=f"educonnect-id_e2e-test_{user.id}",
         first_name=body.firstName,
         ine_hash=f"inehash_e2e-test_{user.id}",

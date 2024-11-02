@@ -134,48 +134,48 @@ class ManageProSessionTest:
 
 class ComputeProSessionValidityTest:
     def test_newly_connected(self, login_manager):
-        last_login = datetime.utcnow()
-        last_api_call = datetime.utcnow()
+        last_login = datetime.now()
+        last_api_call = datetime.now()
 
         result = login_manager.compute_pro_session_validity(last_login, last_api_call)
 
         assert result
 
     def test_old_connection_not_recently_used(self, login_manager):
-        last_login = datetime.utcnow() - timedelta(days=46)
-        last_api_call = datetime.utcnow() - timedelta(days=46)
+        last_login = datetime.now() - timedelta(days=46)
+        last_api_call = datetime.now() - timedelta(days=46)
 
         result = login_manager.compute_pro_session_validity(last_login, last_api_call)
 
         assert not result
 
     def test_old_connection_recently_used(self, login_manager):
-        last_login = datetime.utcnow() - timedelta(days=46)
-        last_api_call = datetime.utcnow() - timedelta(days=3)
+        last_login = datetime.now() - timedelta(days=46)
+        last_api_call = datetime.now() - timedelta(days=3)
 
         result = login_manager.compute_pro_session_validity(last_login, last_api_call)
 
         assert result
 
     def test_connexion_expired_but_still_active(self, login_manager):
-        last_login = datetime.utcnow() - timedelta(days=90)
-        last_api_call = datetime.utcnow()
+        last_login = datetime.now() - timedelta(days=90)
+        last_api_call = datetime.now()
 
         result = login_manager.compute_pro_session_validity(last_login, last_api_call)
 
         assert result
 
     def test_connexion_expired_and_not_active(self, login_manager):
-        last_login = datetime.utcnow() - timedelta(days=90)
-        last_api_call = datetime.utcnow() - timedelta(days=1)
+        last_login = datetime.now() - timedelta(days=90)
+        last_api_call = datetime.now() - timedelta(days=1)
 
         result = login_manager.compute_pro_session_validity(last_login, last_api_call)
 
         assert not result
 
     def test_connexion_expired_but_still_active_older_than_grace_time(self, login_manager):
-        last_login = datetime.utcnow() - timedelta(days=91)
-        last_api_call = datetime.utcnow()
+        last_login = datetime.now() - timedelta(days=91)
+        last_api_call = datetime.now()
 
         result = login_manager.compute_pro_session_validity(last_login, last_api_call)
 

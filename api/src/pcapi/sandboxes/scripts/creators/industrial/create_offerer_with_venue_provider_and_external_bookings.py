@@ -88,8 +88,7 @@ def _create_offers(provider: Provider) -> Venue:
             CinemaStockProviderFactory(offer=offer_with_past_stock)
             CinemaStockProviderFactory(
                 offer=offer_with_past_stock,
-                beginningDatetime=datetime.datetime.utcnow().replace(second=0, microsecond=0)
-                - datetime.timedelta(days=5),
+                beginningDatetime=datetime.datetime.now().replace(second=0, microsecond=0) - datetime.timedelta(days=5),
             )
     return venue
 

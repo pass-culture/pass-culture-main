@@ -14,7 +14,7 @@ def _query_ordered_email_update_entry(user: User) -> BaseQuery:
 
 
 def get_latest_pending_email_validation(user: User) -> None | UserEmailHistory:
-    creation_date_limit = datetime.utcnow() - constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
+    creation_date_limit = datetime.now() - constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
     latest_entry = (
         _query_ordered_email_update_entry(user).filter(UserEmailHistory.creationDate >= creation_date_limit).first()
     )

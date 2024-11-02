@@ -18,8 +18,8 @@ from pcapi.models.offer_mixin import OfferValidationStatus
 @pytest.mark.usefixtures("db_session")
 class VenueAutomationsTest:
     def test_get_inactive_venues_emails(self):
-        date_92_days_ago = datetime.utcnow() - relativedelta(days=92)
-        date_70_days_ago = datetime.utcnow() - relativedelta(days=70)
+        date_92_days_ago = datetime.now() - relativedelta(days=92)
+        date_70_days_ago = datetime.now() - relativedelta(days=70)
 
         offerer_validated_92_days_ago = offerers_factories.OffererFactory(dateValidated=date_92_days_ago)
 
@@ -96,7 +96,7 @@ class VenueAutomationsTest:
     @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
     @override_features(WIP_ENABLE_BREVO_PRO_SUBACCOUNT=False)
     def test_pro_inactive_venues_automation(self, mock_import_contacts):
-        offerer = offerers_factories.OffererFactory(dateValidated=datetime.utcnow() - relativedelta(days=100))
+        offerer = offerers_factories.OffererFactory(dateValidated=datetime.now() - relativedelta(days=100))
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offers_factories.EventOfferFactory(venue=venue, validation=OfferValidationStatus.APPROVED)
 
@@ -121,7 +121,7 @@ class VenueAutomationsTest:
     @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
     @override_features(WIP_ENABLE_BREVO_PRO_SUBACCOUNT=True)
     def test_pro_inactive_venues_automation_with_subaccount(self, mock_import_contacts):
-        offerer = offerers_factories.OffererFactory(dateValidated=datetime.utcnow() - relativedelta(days=100))
+        offerer = offerers_factories.OffererFactory(dateValidated=datetime.now() - relativedelta(days=100))
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offers_factories.EventOfferFactory(venue=venue, validation=OfferValidationStatus.APPROVED)
 

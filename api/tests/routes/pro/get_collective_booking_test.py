@@ -73,7 +73,7 @@ class Returns200Test:
             offerer=user_offerer.offerer, status=finance_models.BankAccountApplicationStatus.ACCEPTED
         )
         offerers_factories.VenueBankAccountLinkFactory(
-            bankAccount=bank_account, venue=venue, timespan=(datetime.utcnow() - timedelta(days=365), None)
+            bankAccount=bank_account, venue=venue, timespan=(datetime.now() - timedelta(days=365), None)
         )
         booking = educational_factories.CollectiveBookingFactory(collectiveStock__collectiveOffer__venue=venue)
         booking_id = booking.id

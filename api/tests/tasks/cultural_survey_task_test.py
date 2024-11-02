@@ -8,8 +8,8 @@ from pcapi.tasks.cloud_task import AUTHORIZATION_HEADER_VALUE
 class CulturalSurveyAnswerTest:
     @patch("pcapi.core.object_storage.backends.gcp.GCPBackend.store_public_object")
     def test_cultural_survey_task(self, store_public_object, client, db_session):
-        submit_time = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S")
-        submit_time_short = datetime.utcnow().strftime("%Y%m%d")
+        submit_time = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+        submit_time_short = datetime.now().strftime("%Y%m%d")
         data = {
             "user_id": 1,
             "submitted_at": submit_time,

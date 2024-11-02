@@ -918,7 +918,7 @@ def offerer_has_ongoing_bookings(offerer_id: int) -> bool:
 
 
 def find_individual_bookings_event_happening_tomorrow_query() -> list[Booking]:
-    tomorrow = datetime.utcnow() + timedelta(days=1)
+    tomorrow = datetime.now() + timedelta(days=1)
     tomorrow_min = datetime.combine(tomorrow, time.min)
     tomorrow_max = datetime.combine(tomorrow, time.max)
 

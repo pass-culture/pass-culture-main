@@ -36,7 +36,7 @@ from pcapi.models.feature import FeatureToggle
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-NOW = datetime.utcnow()
+NOW = datetime.now()
 YESTERDAY = NOW - timedelta(days=1)
 TWO_DAYS_AGO = NOW - timedelta(days=2)
 THREE_DAYS_AGO = NOW - timedelta(days=3)
@@ -275,9 +275,9 @@ class FindByProUserTest:
 
         offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(
-            offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
+            offer=offer, price=0, beginningDatetime=datetime.now() + timedelta(hours=98)
         )
-        yesterday = datetime.utcnow() - timedelta(days=1)
+        yesterday = datetime.now() - timedelta(days=1)
         bookings_factories.BookingFactory(
             user=beneficiary,
             stock=stock,
@@ -320,9 +320,9 @@ class FindByProUserTest:
 
         offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(
-            offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
+            offer=offer, price=0, beginningDatetime=datetime.now() + timedelta(hours=98)
         )
-        more_than_two_days_ago = datetime.utcnow() - timedelta(days=3)
+        more_than_two_days_ago = datetime.now() - timedelta(days=3)
         bookings_factories.BookingFactory(
             user=beneficiary, stock=stock, dateCreated=more_than_two_days_ago, token="ABCDEF"
         )
@@ -347,7 +347,7 @@ class FindByProUserTest:
 
         offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=5)
-        yesterday = datetime.utcnow() - timedelta(days=1)
+        yesterday = datetime.now() - timedelta(days=1)
         bookings_factories.CancelledBookingFactory(
             user=beneficiary,
             stock=stock,
@@ -377,7 +377,7 @@ class FindByProUserTest:
         product = offers_factories.EventProductFactory()
         offer = offers_factories.EventOfferFactory(venue=venue, product=product)
         stock = offers_factories.EventStockFactory(offer=offer, price=5)
-        yesterday = datetime.utcnow() - timedelta(days=1)
+        yesterday = datetime.now() - timedelta(days=1)
         bookings_factories.UsedBookingFactory(
             user=beneficiary,
             stock=stock,
@@ -410,7 +410,7 @@ class FindByProUserTest:
 
         offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
-        today = datetime.utcnow()
+        today = datetime.now()
         bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="ABCD")
 
         offerer2 = offerers_factories.OffererFactory(siren="8765432")
@@ -438,8 +438,8 @@ class FindByProUserTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = offers_factories.EventOfferFactory(venue=venue)
         stock = offers_factories.EventStockFactory(offer=offer, price=0)
-        today = datetime.utcnow()
-        yesterday = datetime.utcnow() - timedelta(days=1)
+        today = datetime.now()
+        yesterday = datetime.now() - timedelta(days=1)
         bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=yesterday, token="ABCD")
         booking2 = bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="FGHI")
 
@@ -481,8 +481,8 @@ class FindByProUserTest:
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = offers_factories.EventOfferFactory(venue=venue, isDuo=True)
-        stock = offers_factories.EventStockFactory(offer=offer, price=0, beginningDatetime=datetime.utcnow())
-        today = datetime.utcnow()
+        stock = offers_factories.EventStockFactory(offer=offer, price=0, beginningDatetime=datetime.now())
+        today = datetime.now()
         booking = bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="FGHI")
 
         bookings_query, total = booking_repository.find_by_pro_user(
@@ -503,8 +503,8 @@ class FindByProUserTest:
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = offers_factories.EventOfferFactory(venue=venue, isDuo=True)
-        stock = offers_factories.EventStockFactory(offer=offer, price=0, beginningDatetime=datetime.utcnow())
-        today = datetime.utcnow()
+        stock = offers_factories.EventStockFactory(offer=offer, price=0, beginningDatetime=datetime.now())
+        today = datetime.now()
         booking = bookings_factories.BookingFactory(
             user=beneficiary, stock=stock, dateCreated=today, token="FGHI", quantity=2
         )
@@ -934,9 +934,9 @@ class FindByProUserWithOffererAddressAsDataSourceTest:
 
         offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(
-            offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
+            offer=offer, price=0, beginningDatetime=datetime.now() + timedelta(hours=98)
         )
-        yesterday = datetime.utcnow() - timedelta(days=1)
+        yesterday = datetime.now() - timedelta(days=1)
         bookings_factories.BookingFactory(
             user=beneficiary,
             stock=stock,
@@ -980,9 +980,9 @@ class FindByProUserWithOffererAddressAsDataSourceTest:
 
         offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(
-            offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
+            offer=offer, price=0, beginningDatetime=datetime.now() + timedelta(hours=98)
         )
-        more_than_two_days_ago = datetime.utcnow() - timedelta(days=3)
+        more_than_two_days_ago = datetime.now() - timedelta(days=3)
         bookings_factories.BookingFactory(
             user=beneficiary, stock=stock, dateCreated=more_than_two_days_ago, token="ABCDEF"
         )
@@ -1008,7 +1008,7 @@ class FindByProUserWithOffererAddressAsDataSourceTest:
 
         offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=5)
-        yesterday = datetime.utcnow() - timedelta(days=1)
+        yesterday = datetime.now() - timedelta(days=1)
         bookings_factories.CancelledBookingFactory(
             user=beneficiary,
             stock=stock,
@@ -1039,7 +1039,7 @@ class FindByProUserWithOffererAddressAsDataSourceTest:
         product = offers_factories.EventProductFactory()
         offer = offers_factories.EventOfferFactory(venue=venue, product=product)
         stock = offers_factories.EventStockFactory(offer=offer, price=5)
-        yesterday = datetime.utcnow() - timedelta(days=1)
+        yesterday = datetime.now() - timedelta(days=1)
         bookings_factories.UsedBookingFactory(
             user=beneficiary,
             stock=stock,
@@ -1073,7 +1073,7 @@ class FindByProUserWithOffererAddressAsDataSourceTest:
 
         offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
-        today = datetime.utcnow()
+        today = datetime.now()
         bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="ABCD")
 
         offerer2 = offerers_factories.OffererFactory(siren="8765432")
@@ -1102,8 +1102,8 @@ class FindByProUserWithOffererAddressAsDataSourceTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = offers_factories.EventOfferFactory(venue=venue)
         stock = offers_factories.EventStockFactory(offer=offer, price=0)
-        today = datetime.utcnow()
-        yesterday = datetime.utcnow() - timedelta(days=1)
+        today = datetime.now()
+        yesterday = datetime.now() - timedelta(days=1)
         bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=yesterday, token="ABCD")
         booking2 = bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="FGHI")
 
@@ -1147,8 +1147,8 @@ class FindByProUserWithOffererAddressAsDataSourceTest:
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = offers_factories.EventOfferFactory(venue=venue, isDuo=True)
-        stock = offers_factories.EventStockFactory(offer=offer, price=0, beginningDatetime=datetime.utcnow())
-        today = datetime.utcnow()
+        stock = offers_factories.EventStockFactory(offer=offer, price=0, beginningDatetime=datetime.now())
+        today = datetime.now()
         booking = bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="FGHI")
 
         bookings_query, total = booking_repository.find_by_pro_user(
@@ -1170,8 +1170,8 @@ class FindByProUserWithOffererAddressAsDataSourceTest:
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = offers_factories.EventOfferFactory(venue=venue, isDuo=True)
-        stock = offers_factories.EventStockFactory(offer=offer, price=0, beginningDatetime=datetime.utcnow())
-        today = datetime.utcnow()
+        stock = offers_factories.EventStockFactory(offer=offer, price=0, beginningDatetime=datetime.now())
+        today = datetime.now()
         booking = bookings_factories.BookingFactory(
             user=beneficiary, stock=stock, dateCreated=today, token="FGHI", quantity=2
         )
@@ -1433,19 +1433,15 @@ class GetOfferBookingsByStatusCSVTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=10)
-        )
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=10))
 
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock)
 
-        stock_2 = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=40)
-        )
+        stock_2 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=40))
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary_2)
         bookings_factories.BookingFactory(stock=stock_2)
 
@@ -1487,22 +1483,18 @@ class GetOfferBookingsByStatusCSVTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=10)
-        )
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=10))
 
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock)
         bookings_factories.CancelledBookingFactory(
-            stock=stock, user=beneficiary_2, cancellation_limit_date=datetime.utcnow() - timedelta(days=2)
+            stock=stock, user=beneficiary_2, cancellation_limit_date=datetime.now() - timedelta(days=2)
         )
 
-        stock_2 = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=40)
-        )
+        stock_2 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=40))
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary_2)
         bookings_factories.BookingFactory(stock=stock_2)
 
@@ -1544,16 +1536,14 @@ class GetOfferBookingsByStatusCSVTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5))
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=5))
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary, quantity=2)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock)
 
-        stock_2 = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=40)
-        )
+        stock_2 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=40))
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary_2)
         bookings_factories.BookingFactory(stock=stock_2)
 
@@ -1598,12 +1588,10 @@ class GetOfferBookingsByStatusCSVTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=10)
-        )
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=10))
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         reimbursed_booking = bookings_factories.ReimbursedBookingFactory(user=beneficiary_3, stock=stock)
         new_booking = bookings_factories.BookingFactory(user=beneficiary_4, stock=stock)
@@ -1644,10 +1632,10 @@ class GetOfferBookingsByStatusCSVTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5))
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=5))
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary, quantity=2)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         reimbursed_booking = bookings_factories.ReimbursedBookingFactory(user=beneficiary, stock=stock)
         new_booking = bookings_factories.BookingFactory(user=beneficiary_2, stock=stock, quantity=2)
@@ -1697,19 +1685,15 @@ class GetOfferBookingsByStatusCSVTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=10)
-        )
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=10))
 
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock)
 
-        stock_2 = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=40)
-        )
+        stock_2 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=40))
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary_2)
         bookings_factories.BookingFactory(stock=stock_2)
 
@@ -1752,22 +1736,18 @@ class GetOfferBookingsByStatusCSVTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=10)
-        )
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=10))
 
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock)
         bookings_factories.CancelledBookingFactory(
-            stock=stock, user=beneficiary_2, cancellation_limit_date=datetime.utcnow() - timedelta(days=2)
+            stock=stock, user=beneficiary_2, cancellation_limit_date=datetime.now() - timedelta(days=2)
         )
 
-        stock_2 = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=40)
-        )
+        stock_2 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=40))
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary_2)
         bookings_factories.BookingFactory(stock=stock_2)
 
@@ -1810,16 +1790,14 @@ class GetOfferBookingsByStatusCSVTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5))
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=5))
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary, quantity=2)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock)
 
-        stock_2 = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=40)
-        )
+        stock_2 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=40))
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary_2)
         bookings_factories.BookingFactory(stock=stock_2)
 
@@ -1865,12 +1843,10 @@ class GetOfferBookingsByStatusCSVTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=10)
-        )
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=10))
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         reimbursed_booking = bookings_factories.ReimbursedBookingFactory(user=beneficiary_3, stock=stock)
         new_booking = bookings_factories.BookingFactory(user=beneficiary_4, stock=stock)
@@ -1912,10 +1888,10 @@ class GetOfferBookingsByStatusCSVTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5))
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=5))
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary, quantity=2)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         reimbursed_booking = bookings_factories.ReimbursedBookingFactory(user=beneficiary, stock=stock)
         new_booking = bookings_factories.BookingFactory(user=beneficiary_2, stock=stock, quantity=2)
@@ -2015,19 +1991,15 @@ class LegacyGetOfferBookingsByStatusCSVTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue, offererAddress=None)
-        stock = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=10)
-        )
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=10))
 
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock)
 
-        stock_2 = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=40)
-        )
+        stock_2 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=40))
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary_2)
         bookings_factories.BookingFactory(stock=stock_2)
 
@@ -2070,19 +2042,15 @@ class LegacyGetOfferBookingsByStatusCSVTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=10)
-        )
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=10))
 
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock)
 
-        stock_2 = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=40)
-        )
+        stock_2 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=40))
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary_2)
         bookings_factories.BookingFactory(stock=stock_2)
 
@@ -2125,22 +2093,18 @@ class LegacyGetOfferBookingsByStatusCSVTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue, offererAddress=None)
-        stock = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=10)
-        )
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=10))
 
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock)
         bookings_factories.CancelledBookingFactory(
-            stock=stock, user=beneficiary_2, cancellation_limit_date=datetime.utcnow() - timedelta(days=2)
+            stock=stock, user=beneficiary_2, cancellation_limit_date=datetime.now() - timedelta(days=2)
         )
 
-        stock_2 = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=40)
-        )
+        stock_2 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=40))
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary_2)
         bookings_factories.BookingFactory(stock=stock_2)
 
@@ -2183,22 +2147,18 @@ class LegacyGetOfferBookingsByStatusCSVTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=10)
-        )
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=10))
 
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock)
         bookings_factories.CancelledBookingFactory(
-            stock=stock, user=beneficiary_2, cancellation_limit_date=datetime.utcnow() - timedelta(days=2)
+            stock=stock, user=beneficiary_2, cancellation_limit_date=datetime.now() - timedelta(days=2)
         )
 
-        stock_2 = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=40)
-        )
+        stock_2 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=40))
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary_2)
         bookings_factories.BookingFactory(stock=stock_2)
 
@@ -2241,16 +2201,14 @@ class LegacyGetOfferBookingsByStatusCSVTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue, offererAddress=None)
-        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5))
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=5))
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary, quantity=2)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock)
 
-        stock_2 = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=40)
-        )
+        stock_2 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=40))
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary_2)
         bookings_factories.BookingFactory(stock=stock_2)
 
@@ -2290,16 +2248,14 @@ class LegacyGetOfferBookingsByStatusCSVTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5))
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=5))
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary, quantity=2)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock)
 
-        stock_2 = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=40)
-        )
+        stock_2 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=40))
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary_2)
         bookings_factories.BookingFactory(stock=stock_2)
 
@@ -2345,12 +2301,10 @@ class LegacyGetOfferBookingsByStatusCSVTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue, offererAddress=None)
-        stock = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=10)
-        )
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=10))
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         reimbursed_booking = bookings_factories.ReimbursedBookingFactory(user=beneficiary_3, stock=stock)
         new_booking = bookings_factories.BookingFactory(user=beneficiary_4, stock=stock)
@@ -2398,12 +2352,10 @@ class LegacyGetOfferBookingsByStatusCSVTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=10)
-        )
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=10))
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         reimbursed_booking = bookings_factories.ReimbursedBookingFactory(user=beneficiary_3, stock=stock)
         new_booking = bookings_factories.BookingFactory(user=beneficiary_4, stock=stock)
@@ -2445,10 +2397,10 @@ class LegacyGetOfferBookingsByStatusCSVTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue, offererAddress=None)
-        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5))
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=5))
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary, quantity=2)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         reimbursed_booking = bookings_factories.ReimbursedBookingFactory(user=beneficiary, stock=stock)
         new_booking = bookings_factories.BookingFactory(user=beneficiary_2, stock=stock, quantity=2)
@@ -2498,10 +2450,10 @@ class LegacyGetOfferBookingsByStatusCSVTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5))
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=5))
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary, quantity=2)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         reimbursed_booking = bookings_factories.ReimbursedBookingFactory(user=beneficiary, stock=stock)
         new_booking = bookings_factories.BookingFactory(user=beneficiary_2, stock=stock, quantity=2)
@@ -2629,19 +2581,17 @@ class GetOfferBookingsByStatusExcelTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=3))
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=3))
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock)
 
-        stock_2 = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5)
-        )
+        stock_2 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=5))
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary)
         bookings_factories.BookingFactory(
-            stock=stock_2, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock_2, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock_2)
 
@@ -2682,19 +2632,17 @@ class GetOfferBookingsByStatusExcelTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=3))
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=3))
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary, quantity=2)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock)
 
-        stock_2 = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5)
-        )
+        stock_2 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=5))
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary)
         bookings_factories.BookingFactory(
-            stock=stock_2, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock_2, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock_2)
 
@@ -2738,22 +2686,18 @@ class GetOfferBookingsByStatusExcelTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=30)
-        )
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=30))
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         reimbursed_booking = bookings_factories.ReimbursedBookingFactory(user=beneficiary_3, stock=stock)
         new_booking = bookings_factories.BookingFactory(user=beneficiary_4, stock=stock)
 
-        stock_2 = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5)
-        )
+        stock_2 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=5))
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary)
         bookings_factories.BookingFactory(
-            stock=stock_2, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock_2, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock_2)
 
@@ -2798,19 +2742,17 @@ class GetOfferBookingsByStatusExcelTest:
 
         offer = offers_factories.OfferFactory(venue=venue)
         offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=3))
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=3))
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary, quantity=2)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock)
 
-        stock_2 = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5)
-        )
+        stock_2 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=5))
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary)
         bookings_factories.BookingFactory(
-            stock=stock_2, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock_2, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock_2)
 
@@ -2848,22 +2790,18 @@ class GetOfferBookingsByStatusExcelTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=30)
-        )
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=30))
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary, quantity=2)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         reimbursed_booking = bookings_factories.ReimbursedBookingFactory(user=beneficiary, stock=stock)
         new_booking = bookings_factories.BookingFactory(user=beneficiary_2, stock=stock, quantity=2)
 
-        stock_2 = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5)
-        )
+        stock_2 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=5))
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary)
         bookings_factories.BookingFactory(
-            stock=stock_2, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock_2, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock_2)
 
@@ -2988,19 +2926,17 @@ class LegacyGetOfferBookingsByStatusExcelTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue, offererAddress=None)
-        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=3))
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=3))
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock)
 
-        stock_2 = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5)
-        )
+        stock_2 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=5))
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary)
         bookings_factories.BookingFactory(
-            stock=stock_2, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock_2, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock_2)
 
@@ -3041,19 +2977,17 @@ class LegacyGetOfferBookingsByStatusExcelTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=3))
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=3))
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock)
 
-        stock_2 = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5)
-        )
+        stock_2 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=5))
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary)
         bookings_factories.BookingFactory(
-            stock=stock_2, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock_2, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock_2)
 
@@ -3094,19 +3028,17 @@ class LegacyGetOfferBookingsByStatusExcelTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue, offererAddress=None)
-        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=3))
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=3))
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary, quantity=2)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock)
 
-        stock_2 = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5)
-        )
+        stock_2 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=5))
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary)
         bookings_factories.BookingFactory(
-            stock=stock_2, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock_2, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock_2)
 
@@ -3144,19 +3076,17 @@ class LegacyGetOfferBookingsByStatusExcelTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=3))
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=3))
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary, quantity=2)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock)
 
-        stock_2 = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5)
-        )
+        stock_2 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=5))
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary)
         bookings_factories.BookingFactory(
-            stock=stock_2, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock_2, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock_2)
 
@@ -3200,22 +3130,18 @@ class LegacyGetOfferBookingsByStatusExcelTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue, offererAddress=None)
-        stock = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=30)
-        )
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=30))
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         reimbursed_booking = bookings_factories.ReimbursedBookingFactory(user=beneficiary_3, stock=stock)
         new_booking = bookings_factories.BookingFactory(user=beneficiary_4, stock=stock)
 
-        stock_2 = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5)
-        )
+        stock_2 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=5))
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary)
         bookings_factories.BookingFactory(
-            stock=stock_2, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock_2, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock_2)
 
@@ -3260,22 +3186,18 @@ class LegacyGetOfferBookingsByStatusExcelTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=30)
-        )
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=30))
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         reimbursed_booking = bookings_factories.ReimbursedBookingFactory(user=beneficiary_3, stock=stock)
         new_booking = bookings_factories.BookingFactory(user=beneficiary_4, stock=stock)
 
-        stock_2 = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5)
-        )
+        stock_2 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=5))
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary)
         bookings_factories.BookingFactory(
-            stock=stock_2, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock_2, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock_2)
 
@@ -3318,19 +3240,17 @@ class LegacyGetOfferBookingsByStatusExcelTest:
 
         offer = offers_factories.OfferFactory(venue=venue, offererAddress=None)
         offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=3))
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=3))
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary, quantity=2)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock)
 
-        stock_2 = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5)
-        )
+        stock_2 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=5))
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary)
         bookings_factories.BookingFactory(
-            stock=stock_2, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock_2, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock_2)
 
@@ -3374,19 +3294,17 @@ class LegacyGetOfferBookingsByStatusExcelTest:
 
         offer = offers_factories.OfferFactory(venue=venue)
         offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=3))
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=3))
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary, quantity=2)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock)
 
-        stock_2 = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5)
-        )
+        stock_2 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=5))
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary)
         bookings_factories.BookingFactory(
-            stock=stock_2, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock_2, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock_2)
 
@@ -3424,22 +3342,18 @@ class LegacyGetOfferBookingsByStatusExcelTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue, offererAddress=None)
-        stock = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=30)
-        )
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=30))
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary, quantity=2)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         reimbursed_booking = bookings_factories.ReimbursedBookingFactory(user=beneficiary, stock=stock)
         new_booking = bookings_factories.BookingFactory(user=beneficiary_2, stock=stock, quantity=2)
 
-        stock_2 = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5)
-        )
+        stock_2 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=5))
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary)
         bookings_factories.BookingFactory(
-            stock=stock_2, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock_2, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock_2)
 
@@ -3486,22 +3400,18 @@ class LegacyGetOfferBookingsByStatusExcelTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=30)
-        )
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=30))
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary, quantity=2)
         validated_booking_2 = bookings_factories.BookingFactory(
-            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         reimbursed_booking = bookings_factories.ReimbursedBookingFactory(user=beneficiary, stock=stock)
         new_booking = bookings_factories.BookingFactory(user=beneficiary_2, stock=stock, quantity=2)
 
-        stock_2 = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5)
-        )
+        stock_2 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now() + timedelta(days=5))
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary)
         bookings_factories.BookingFactory(
-            stock=stock_2, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+            stock=stock_2, cancellation_limit_date=datetime.now() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock_2)
 
@@ -3925,9 +3835,9 @@ class GetCsvReportTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = offers_factories.EventOfferFactory(venue=venue, offererAddress=None)
         stock = offers_factories.EventStockFactory(
-            offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
+            offer=offer, price=0, beginningDatetime=datetime.now() + timedelta(hours=98)
         )
-        yesterday = datetime.utcnow() - timedelta(days=1)
+        yesterday = datetime.now() - timedelta(days=1)
         booking = bookings_factories.BookingFactory(
             user=beneficiary, stock=stock, dateCreated=yesterday, token="ABCDEF"
         )
@@ -3975,9 +3885,9 @@ class GetCsvReportTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = offers_factories.EventOfferFactory(venue=venue)
         stock = offers_factories.EventStockFactory(
-            offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
+            offer=offer, price=0, beginningDatetime=datetime.now() + timedelta(hours=98)
         )
-        yesterday = datetime.utcnow() - timedelta(days=1)
+        yesterday = datetime.now() - timedelta(days=1)
         booking = bookings_factories.BookingFactory(
             user=beneficiary, stock=stock, dateCreated=yesterday, token="ABCDEF"
         )
@@ -4026,9 +3936,9 @@ class GetCsvReportTest:
 
         offer = offers_factories.ThingOfferFactory(venue=venue, offererAddress=None)
         stock = offers_factories.ThingStockFactory(
-            offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
+            offer=offer, price=0, beginningDatetime=datetime.now() + timedelta(hours=98)
         )
-        more_than_two_days_ago = datetime.utcnow() - timedelta(days=3)
+        more_than_two_days_ago = datetime.now() - timedelta(days=3)
         bookings_factories.BookingFactory(
             user=beneficiary, stock=stock, dateCreated=more_than_two_days_ago, token="ABCDEF"
         )
@@ -4058,9 +3968,9 @@ class GetCsvReportTest:
 
         offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(
-            offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
+            offer=offer, price=0, beginningDatetime=datetime.now() + timedelta(hours=98)
         )
-        more_than_two_days_ago = datetime.utcnow() - timedelta(days=3)
+        more_than_two_days_ago = datetime.now() - timedelta(days=3)
         bookings_factories.BookingFactory(
             user=beneficiary, stock=stock, dateCreated=more_than_two_days_ago, token="ABCDEF"
         )
@@ -4088,7 +3998,7 @@ class GetCsvReportTest:
 
         offer = offers_factories.ThingOfferFactory(venue=venue, offererAddress=None)
         stock = offers_factories.ThingStockFactory(offer=offer, price=5)
-        yesterday = datetime.utcnow() - timedelta(days=1)
+        yesterday = datetime.now() - timedelta(days=1)
         bookings_factories.CancelledBookingFactory(
             user=beneficiary,
             stock=stock,
@@ -4124,7 +4034,7 @@ class GetCsvReportTest:
 
         offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=5)
-        yesterday = datetime.utcnow() - timedelta(days=1)
+        yesterday = datetime.now() - timedelta(days=1)
         bookings_factories.CancelledBookingFactory(
             user=beneficiary,
             stock=stock,
@@ -4158,7 +4068,7 @@ class GetCsvReportTest:
         product = offers_factories.EventProductFactory()
         offer = offers_factories.EventOfferFactory(venue=venue, product=product, offererAddress=None)
         stock = offers_factories.EventStockFactory(offer=offer, price=5)
-        yesterday = datetime.utcnow() - timedelta(days=1)
+        yesterday = datetime.now() - timedelta(days=1)
         booking = bookings_factories.UsedBookingFactory(
             user=beneficiary,
             stock=stock,
@@ -4191,7 +4101,7 @@ class GetCsvReportTest:
         product = offers_factories.EventProductFactory()
         offer = offers_factories.EventOfferFactory(venue=venue, product=product)
         stock = offers_factories.EventStockFactory(offer=offer, price=5)
-        yesterday = datetime.utcnow() - timedelta(days=1)
+        yesterday = datetime.now() - timedelta(days=1)
         booking = bookings_factories.UsedBookingFactory(
             user=beneficiary,
             stock=stock,
@@ -4224,7 +4134,7 @@ class GetCsvReportTest:
 
         offer = offers_factories.ThingOfferFactory(venue=venue, offererAddress=None)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
-        today = datetime.utcnow()
+        today = datetime.now()
         bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="ABCD")
 
         offerer2 = offerers_factories.OffererFactory(siren="8765432")
@@ -4258,7 +4168,7 @@ class GetCsvReportTest:
 
         offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
-        today = datetime.utcnow()
+        today = datetime.now()
         bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="ABCD")
 
         offerer2 = offerers_factories.OffererFactory(siren="8765432")
@@ -5059,7 +4969,7 @@ class GetCsvReportTest:
         @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
         def test_should_output_the_correct_status_for_individual_bookings_before_cancellationLimitDate(self, app):
 
-            date_created = datetime.utcnow() - timedelta(hours=6)
+            date_created = datetime.now() - timedelta(hours=6)
 
             pro = users_factories.ProFactory()
             offerer = offerers_factories.OffererFactory()
@@ -5075,8 +4985,8 @@ class GetCsvReportTest:
                 dateCreated=date_created,
             )
 
-            beginning_period = (datetime.utcnow().date() - timedelta(days=1)).isoformat()
-            ending_period = (datetime.utcnow().date() + timedelta(days=360)).isoformat()
+            beginning_period = (datetime.now().date() - timedelta(days=1)).isoformat()
+            ending_period = (datetime.now().date() + timedelta(days=360)).isoformat()
             bookings_csv = booking_repository.get_export(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
@@ -5090,7 +5000,7 @@ class GetCsvReportTest:
         @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
         def test_should_output_the_correct_status_for_individual_bookings_things_after_cancellationLimitDate(self, app):
 
-            date_created = datetime.utcnow() - timedelta(days=10)
+            date_created = datetime.now() - timedelta(days=10)
 
             pro = users_factories.ProFactory()
             offerer = offerers_factories.OffererFactory()
@@ -5115,8 +5025,8 @@ class GetCsvReportTest:
                 dateCreated=date_created,
             )
 
-            beginning_period = (datetime.utcnow().date() - timedelta(days=11)).isoformat()
-            ending_period = (datetime.utcnow().date() + timedelta(days=360)).isoformat()
+            beginning_period = (datetime.now().date() - timedelta(days=11)).isoformat()
+            ending_period = (datetime.now().date() + timedelta(days=360)).isoformat()
             bookings_csv = booking_repository.get_export(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
@@ -5130,8 +5040,8 @@ class GetCsvReportTest:
         @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
         def test_should_output_the_correct_status_for_individual_bookings_events_after_cancellationLimitDate(self, app):
 
-            date_created = datetime.utcnow() - timedelta(days=10)
-            event_date = datetime.utcnow() + timedelta(days=2)
+            date_created = datetime.now() - timedelta(days=10)
+            event_date = datetime.now() + timedelta(days=2)
 
             pro = users_factories.ProFactory()
             offerer = offerers_factories.OffererFactory()
@@ -5156,8 +5066,8 @@ class GetCsvReportTest:
                 dateCreated=date_created,
             )
 
-            beginning_period = (datetime.utcnow().date() - timedelta(days=11)).isoformat()
-            ending_period = (datetime.utcnow().date() + timedelta(days=360)).isoformat()
+            beginning_period = (datetime.now().date() - timedelta(days=11)).isoformat()
+            ending_period = (datetime.now().date() + timedelta(days=360)).isoformat()
             bookings_csv = booking_repository.get_export(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
@@ -5173,7 +5083,7 @@ class GetCsvReportTest:
             self, app
         ):
 
-            date_created = datetime.utcnow() - timedelta(hours=6)
+            date_created = datetime.now() - timedelta(hours=6)
 
             pro = users_factories.ProFactory()
             offerer = offerers_factories.OffererFactory()
@@ -5189,8 +5099,8 @@ class GetCsvReportTest:
                 dateCreated=date_created,
             )
 
-            beginning_period = (datetime.utcnow().date() - timedelta(days=1)).isoformat()
-            ending_period = (datetime.utcnow().date() + timedelta(days=360)).isoformat()
+            beginning_period = (datetime.now().date() - timedelta(days=1)).isoformat()
+            ending_period = (datetime.now().date() + timedelta(days=360)).isoformat()
             bookings_csv = booking_repository.get_export(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
@@ -5206,7 +5116,7 @@ class GetCsvReportTest:
             self, app
         ):
 
-            date_created = datetime.utcnow() - timedelta(days=10)
+            date_created = datetime.now() - timedelta(days=10)
 
             pro = users_factories.ProFactory()
             offerer = offerers_factories.OffererFactory()
@@ -5231,8 +5141,8 @@ class GetCsvReportTest:
                 dateCreated=date_created,
             )
 
-            beginning_period = (datetime.utcnow().date() - timedelta(days=11)).isoformat()
-            ending_period = (datetime.utcnow().date() + timedelta(days=360)).isoformat()
+            beginning_period = (datetime.now().date() - timedelta(days=11)).isoformat()
+            ending_period = (datetime.now().date() + timedelta(days=360)).isoformat()
             bookings_csv = booking_repository.get_export(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
@@ -5248,8 +5158,8 @@ class GetCsvReportTest:
             self, app
         ):
 
-            date_created = datetime.utcnow() - timedelta(days=10)
-            event_date = datetime.utcnow() + timedelta(days=2)
+            date_created = datetime.now() - timedelta(days=10)
+            event_date = datetime.now() + timedelta(days=2)
 
             pro = users_factories.ProFactory()
             offerer = offerers_factories.OffererFactory()
@@ -5274,8 +5184,8 @@ class GetCsvReportTest:
                 dateCreated=date_created,
             )
 
-            beginning_period = (datetime.utcnow().date() - timedelta(days=11)).isoformat()
-            ending_period = (datetime.utcnow().date() + timedelta(days=360)).isoformat()
+            beginning_period = (datetime.now().date() - timedelta(days=11)).isoformat()
+            ending_period = (datetime.now().date() + timedelta(days=360)).isoformat()
             bookings_csv = booking_repository.get_export(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
@@ -5492,7 +5402,7 @@ class FindSoonToBeExpiredBookingsTest:
 
 class FindExpiringBookingsTest:
     def test_find_expired_bookings_before_and_after_enabling_feature_flag(self):
-        now = datetime.utcnow()
+        now = datetime.now()
         book_offer = offers_factories.OfferFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
         movie_offer = offers_factories.OfferFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
 
@@ -5533,7 +5443,7 @@ class SoonExpiringBookingsTest:
         bookings_factories.CancelledBookingFactory(stock=stock)
         booking = bookings_factories.BookingFactory(stock=stock)
 
-        creation_date = datetime.utcnow() - timedelta(days=1)
+        creation_date = datetime.now() - timedelta(days=1)
         bookings_factories.BookingFactory(stock=stock, dateCreated=creation_date)
 
         remaining_days = (booking.expirationDate.date() - date.today()).days
@@ -5552,7 +5462,7 @@ class SoonExpiringBookingsTest:
 
 class GetTomorrowEventOfferTest:
     def test_find_tomorrow_event_offer(self):
-        tomorrow = datetime.utcnow() + timedelta(days=1)
+        tomorrow = datetime.now() + timedelta(days=1)
         bookings_factories.BookingFactory(
             stock=offers_factories.EventStockFactory(
                 beginningDatetime=tomorrow,
@@ -5564,7 +5474,7 @@ class GetTomorrowEventOfferTest:
         assert len(bookings) == 1
 
     def should_not_select_given_before_tomorrow_booking_event(self):
-        yesterday = datetime.utcnow() - timedelta(days=1)
+        yesterday = datetime.now() - timedelta(days=1)
         bookings_factories.BookingFactory(
             stock=offers_factories.EventStockFactory(
                 beginningDatetime=yesterday,
@@ -5576,7 +5486,7 @@ class GetTomorrowEventOfferTest:
         assert len(bookings) == 0
 
     def should_not_select_given_after_tomorrow_booking_event(self):
-        after_tomorrow = datetime.utcnow() + timedelta(days=2)
+        after_tomorrow = datetime.now() + timedelta(days=2)
         bookings_factories.BookingFactory(
             stock=offers_factories.EventStockFactory(
                 beginningDatetime=after_tomorrow,
@@ -5588,7 +5498,7 @@ class GetTomorrowEventOfferTest:
         assert len(bookings) == 0
 
     def should_not_select_given_not_booking_event(self):
-        tomorrow = datetime.utcnow() + timedelta(days=1)
+        tomorrow = datetime.now() + timedelta(days=1)
         bookings_factories.BookingFactory(stock__beginningDatetime=tomorrow)
 
         bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
@@ -5596,7 +5506,7 @@ class GetTomorrowEventOfferTest:
         assert len(bookings) == 0
 
     def should_do_only_one_query(self):
-        tomorrow = datetime.utcnow() + timedelta(days=1)
+        tomorrow = datetime.now() + timedelta(days=1)
         bookings_factories.BookingFactory(
             stock=offers_factories.EventStockFactory(
                 beginningDatetime=tomorrow,
@@ -5609,7 +5519,7 @@ class GetTomorrowEventOfferTest:
         assert len(bookings) == 1
 
     def should_not_select_digital_event(self):
-        tomorrow = datetime.utcnow() + timedelta(days=1)
+        tomorrow = datetime.now() + timedelta(days=1)
         bookings_factories.BookingFactory(
             stock=offers_factories.EventStockFactory(
                 beginningDatetime=tomorrow,
@@ -5629,7 +5539,7 @@ class GetTomorrowEventOfferTest:
         ],
     )
     def should_select_not_digital_event(self, offer_url):
-        tomorrow = datetime.utcnow() + timedelta(days=1)
+        tomorrow = datetime.now() + timedelta(days=1)
         bookings_factories.BookingFactory(
             stock=offers_factories.EventStockFactory(
                 beginningDatetime=tomorrow,
@@ -5642,7 +5552,7 @@ class GetTomorrowEventOfferTest:
         assert len(bookings) == 1
 
     def should_not_select_cancelled_booking(self):
-        tomorrow = datetime.utcnow() + timedelta(days=1)
+        tomorrow = datetime.now() + timedelta(days=1)
         bookings_factories.BookingFactory(
             stock=offers_factories.EventStockFactory(
                 beginningDatetime=tomorrow,
@@ -5655,7 +5565,7 @@ class GetTomorrowEventOfferTest:
         assert len(bookings) == 0
 
     def should_select_several_bookings_given_one_stock_with_several_bookings(self):
-        tomorrow = datetime.utcnow() + timedelta(days=1)
+        tomorrow = datetime.now() + timedelta(days=1)
         stock = offers_factories.EventStockFactory(
             beginningDatetime=tomorrow,
         )
@@ -5667,7 +5577,7 @@ class GetTomorrowEventOfferTest:
         assert len(bookings) == 2
 
     def test_find_tomorrow_event_offer_without_address(self):
-        tomorrow = datetime.utcnow() + timedelta(days=1)
+        tomorrow = datetime.now() + timedelta(days=1)
         bookings_factories.BookingFactory(
             stock=offers_factories.EventStockFactory(
                 beginningDatetime=tomorrow,

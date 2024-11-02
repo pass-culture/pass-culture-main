@@ -20,9 +20,7 @@ def get_first_venue_approved_offer_email_data(offer: Offer) -> models.Transactio
         Venue.query.filter(Venue.id == offer.venueId)
         .outerjoin(
             VenueBankAccountLink,
-            sa.and_(
-                Venue.id == VenueBankAccountLink.venueId, VenueBankAccountLink.timespan.contains(datetime.utcnow())
-            ),
+            sa.and_(Venue.id == VenueBankAccountLink.venueId, VenueBankAccountLink.timespan.contains(datetime.now())),
         )
         .outerjoin(finance_models.BankAccount, VenueBankAccountLink.bankAccountId == finance_models.BankAccount.id)
         .options(

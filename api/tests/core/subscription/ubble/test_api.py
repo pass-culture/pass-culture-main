@@ -179,7 +179,7 @@ class UbbleWorkflowTest:
         ubble_mocker,
     ):
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18),
+            dateOfBirth=datetime.datetime.now() - relativedelta(years=18),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
@@ -216,7 +216,7 @@ class UbbleWorkflowTest:
             assert message.pop_over_icon == subscription_models.PopOverIcon.CLOCK
 
     def test_ubble_workflow_rejected_add_inapp_message(self, ubble_mocker):
-        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=1))
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.now() - relativedelta(years=18, months=1))
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.PENDING, user=user
         )
@@ -366,7 +366,7 @@ class UbbleWorkflowTest:
         assert user.validatedBirthDate == document_birth_date.date()
 
     def test_ubble_workflow_updates_user_birth_date_when_already_beneficiary(self, ubble_mocker):
-        with time_machine.travel(datetime.datetime.utcnow() - relativedelta(years=1)):
+        with time_machine.travel(datetime.datetime.now() - relativedelta(years=1)):
             user = users_factories.BeneficiaryFactory(
                 age=17,
                 beneficiaryFraudChecks__type=fraud_models.FraudCheckType.EDUCONNECT,

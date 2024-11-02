@@ -55,7 +55,7 @@ def book_collective_offer(
             raise exceptions.EducationalYearNotFound()
         validation.check_user_can_prebook_collective_stock(redactor_informations.uai, stock)
 
-        utcnow = datetime.datetime.utcnow()
+        utcnow = datetime.datetime.now()
         booking = educational_models.CollectiveBooking(
             educationalInstitution=educational_institution,
             educationalYear=educational_year,

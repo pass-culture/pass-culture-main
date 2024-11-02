@@ -323,7 +323,7 @@ def render_public_account_details(
     history = get_public_account_history(user)
     duplicate_user_id = None
     eligibility_history = get_eligibility_history(user)
-    user_current_eligibility = users_api.get_eligibility_at_date(user.birth_date, datetime.datetime.utcnow())
+    user_current_eligibility = users_api.get_eligibility_at_date(user.birth_date, datetime.datetime.now())
 
     if (
         user_current_eligibility is not None and user_current_eligibility.value in eligibility_history

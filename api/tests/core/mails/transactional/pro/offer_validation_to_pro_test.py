@@ -40,7 +40,7 @@ class SendinblueSendOfferValidationTest:
     def test_get_validation_approval_correct_email_metadata_when_future_offer(self):
         # Given
         offer = offers_factories.OfferFactory(name="Ma petite offre", venue__name="Mon stade")
-        publication_date = datetime.utcnow() + timedelta(days=30)
+        publication_date = datetime.now() + timedelta(days=30)
         offers_factories.FutureOfferFactory(offerId=offer.id, publicationDate=publication_date)
 
         # When

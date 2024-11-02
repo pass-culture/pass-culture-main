@@ -96,7 +96,7 @@ class Returns200Test:
         )
 
         client = client.with_session_auth("user@example.com")
-        publication_date = datetime.datetime.utcnow().replace(minute=0, second=0) + datetime.timedelta(days=30)
+        publication_date = datetime.datetime.now().replace(minute=0, second=0) + datetime.timedelta(days=30)
         offer_id = stock.offerId
         # +1 insert into future_offer
         with assert_num_queries(self.num_queries + 1):
@@ -140,7 +140,7 @@ class Returns200Test:
         )
 
         client = client.with_session_auth("user@example.com")
-        publication_date = datetime.datetime.utcnow().replace(minute=0, second=0) + datetime.timedelta(days=30)
+        publication_date = datetime.datetime.now().replace(minute=0, second=0) + datetime.timedelta(days=30)
         offer_id = stock.offerId
         # +1 insert into future_offer
         with assert_num_queries(self.num_queries + 1):
@@ -199,7 +199,7 @@ class Returns400Test:
         stock = offers_factories.StockFactory(
             offer__isActive=False,
             offer__validation=OfferValidationStatus.DRAFT,
-            beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            beginningDatetime=datetime.datetime.now() - datetime.timedelta(days=1),
         )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
@@ -229,7 +229,7 @@ class Returns400Test:
         )
 
         client = client.with_session_auth("user@example.com")
-        publication_date = datetime.datetime.utcnow().replace(minute=0, second=0) - datetime.timedelta(days=30)
+        publication_date = datetime.datetime.now().replace(minute=0, second=0) - datetime.timedelta(days=30)
         response = client.patch(
             "/offers/publish",
             json={

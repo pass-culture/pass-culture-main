@@ -352,7 +352,7 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
                 assert offer.lastValidationDate == initially_rejected[offer.id]["date"]
             else:
                 assert offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT
-                assert datetime.datetime.utcnow() - offer.lastValidationDate < datetime.timedelta(seconds=5)
+                assert datetime.datetime.now() - offer.lastValidationDate < datetime.timedelta(seconds=5)
 
     @pytest.mark.usefixtures("db_session")
     def test_cancel_bookings_and_send_transactional_email(self, authenticated_client):
@@ -438,7 +438,7 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
         assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
         assert offer.validation == offers_models.OfferValidationStatus.REJECTED
         assert offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT
-        assert datetime.datetime.utcnow() - offer.lastValidationDate < datetime.timedelta(seconds=5)
+        assert datetime.datetime.now() - offer.lastValidationDate < datetime.timedelta(seconds=5)
 
         assert bookings_models.Booking.query.filter(bookings_models.Booking.is_used_or_reimbursed).count() == 2
         assert bookings_models.Booking.query.filter(bookings_models.Booking.isCancelled).count() == 2

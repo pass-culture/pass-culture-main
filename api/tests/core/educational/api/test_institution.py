@@ -18,7 +18,7 @@ def freeze_fixture():
 
 @pytest.fixture(name="current_year_deposit")
 def current_year_deposit_fixture(freeze):
-    now = datetime.utcnow()
+    now = datetime.now()
 
     return educational_factories.EducationalDepositFactory(
         educationalYear__beginningDate=datetime(now.year, 9, 1),

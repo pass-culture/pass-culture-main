@@ -32,7 +32,7 @@ class TokenTest:
         assert token.type_ == self.token_type
         assert token.encoded_token is not None
         assert token_tools.Token.get_expiration_date(self.token_type, self.user_id).isoformat(timespec="hours") == (
-            datetime.utcnow() + self.ttl
+            datetime.now() + self.ttl
         ).isoformat(timespec="hours")
 
     def test_create_token_with_no_data_no_ttl(self):
@@ -58,7 +58,7 @@ class TokenTest:
         assert token.type_ == old_token.type_
         assert token.encoded_token == old_token.encoded_token
         assert token_tools.Token.get_expiration_date(self.token_type, self.user_id).isoformat(timespec="hours") == (
-            datetime.utcnow() + self.ttl
+            datetime.now() + self.ttl
         ).isoformat(timespec="hours")
 
     def test_get_expiration_date_used_token(self):
@@ -243,7 +243,7 @@ class AsymetricTokenTest:
             token.key_suffix,
         ).isoformat(
             timespec="hours"
-        ) == (datetime.utcnow() + self.ttl).isoformat(timespec="hours")
+        ) == (datetime.now() + self.ttl).isoformat(timespec="hours")
 
     @override_settings(DISCORD_JWT_PRIVATE_KEY=private_key_pem, DISCORD_JWT_PUBLIC_KEY=public_key_pem)
     def test_create_token_with_non_corresponding_keys(self):
@@ -272,7 +272,7 @@ class AsymetricTokenTest:
         assert token.encoded_token == old_token.encoded_token
         assert token_tools.AsymetricToken.get_expiration_date(self.token_type, token.key_suffix).isoformat(
             timespec="hours"
-        ) == (datetime.utcnow() + self.ttl).isoformat(timespec="hours")
+        ) == (datetime.now() + self.ttl).isoformat(timespec="hours")
 
     @override_settings(DISCORD_JWT_PRIVATE_KEY=private_key_pem, DISCORD_JWT_PUBLIC_KEY=public_key_pem)
     def test_load_without_checking_wrong_public_key(self):

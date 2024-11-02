@@ -52,7 +52,7 @@ class OfferStockResponseGetterDict(GetterDict):
     def get(self, key: str, default: Any = None) -> Any:
         stock = self._obj
         if key == "cancellation_limit_datetime":
-            return compute_booking_cancellation_limit_date(stock.beginningDatetime, datetime.utcnow())
+            return compute_booking_cancellation_limit_date(stock.beginningDatetime, datetime.now())
 
         if key == "activationCode":
             if not stock.canHaveActivationCodes:

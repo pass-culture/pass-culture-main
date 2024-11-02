@@ -189,14 +189,14 @@ class BankAccountRulesTest:
         factories.BankAccountStatusHistoryFactory(
             bankAccount=bank_account,
             status=models.BankAccountApplicationStatus.DRAFT,
-            timespan=(datetime.datetime.utcnow(),),
+            timespan=(datetime.datetime.now(),),
         )
 
         with pytest.raises(sa_exc.IntegrityError):
             factories.BankAccountStatusHistoryFactory(
                 bankAccount=bank_account,
                 status=models.BankAccountApplicationStatus.ON_GOING,
-                timespan=(datetime.datetime.utcnow(),),
+                timespan=(datetime.datetime.now(),),
             )
 
 

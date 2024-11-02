@@ -7,10 +7,10 @@ assertion.
 
 def test_calls_to_datetime_now():
     variable.now()
-    datetime.datetime.utcnow()
+    datetime.datetime.now()
     datetime.datetime.now()  # should yield a warning
 
-    datetime.utcnow()
+    datetime.now()
     datetime.now()  # should yield a warning
     a = datetime.now()  # should yield a warning
     func(datetime.now())  # should yield a warning

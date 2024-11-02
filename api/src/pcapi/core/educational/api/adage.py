@@ -233,7 +233,7 @@ def synchronize_adage_ids_on_venues(debug: bool = False, since_date: datetime | 
                     update_external_pro(email)
                 if venue.managingOfferer.isValidated:
                     send_eac_offerer_activation_email(venue, list(emails))
-                venue.adageInscriptionDate = datetime.utcnow()
+                venue.adageInscriptionDate = datetime.now()
 
             new_adage_id = venue_to_adage_id.get(venue.id)
             if new_adage_id:

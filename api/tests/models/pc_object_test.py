@@ -29,4 +29,4 @@ class TestPcObject(PcObject, Base, Model):
 time_interval = TimeInterval()
 time_interval.start = datetime(2018, 1, 1, 10, 20, 30, 111000)
 time_interval.end = datetime(2018, 2, 2, 5, 15, 25, 222000)
-now = datetime.utcnow()
+now = datetime.now()

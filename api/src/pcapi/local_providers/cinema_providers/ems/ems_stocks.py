@@ -76,7 +76,7 @@ class EMSStocks:
 
             self.created_offers.add(offer)
 
-        self.venue_provider.lastSyncDate = datetime.datetime.utcnow()
+        self.venue_provider.lastSyncDate = datetime.datetime.now()
         db.session.add(self.venue_provider)
 
         db.session.commit()

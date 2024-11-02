@@ -226,7 +226,7 @@ class IdentityValidatedUserFactory(ProfileCompletedUserFactory):
     - identity validation
     """
 
-    validatedBirthDate = LazyAttribute(lambda o: datetime.utcnow().date() - relativedelta(years=o.age))
+    validatedBirthDate = LazyAttribute(lambda o: datetime.now().date() - relativedelta(years=o.age))
 
     @classmethod
     def set_custom_attributes(cls, obj: models.User, **kwargs: typing.Any) -> None:
@@ -514,8 +514,8 @@ class BeneficiaryGrant18Factory(BaseFactory):
     email = factory.LazyFunction(lambda: f"jeanne.doux_{uuid.uuid4()}@example.com")
     address = factory.Sequence("{} rue des machines".format)
     city = "Paris"
-    dateCreated = LazyAttribute(lambda _: datetime.utcnow())
-    lastConnectionDate = LazyAttribute(lambda _: datetime.utcnow() - relativedelta(days=1))
+    dateCreated = LazyAttribute(lambda _: datetime.now())
+    lastConnectionDate = LazyAttribute(lambda _: datetime.now() - relativedelta(days=1))
     dateOfBirth = LazyAttribute(  # LazyAttribute to allow freez_time overrides
         lambda _: datetime.combine(date.today(), time(0, 0))
         - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, months=1)
@@ -928,7 +928,7 @@ class DepositGrantFactory(BaseFactory):
     class Meta:
         model = finance_models.Deposit
 
-    dateCreated = LazyAttribute(lambda _: datetime.utcnow())
+    dateCreated = LazyAttribute(lambda _: datetime.now())
     user = factory.SubFactory(UserFactory)  # BeneficiaryGrant18Factory is already creating a deposit
     source = "public"
 
@@ -1054,7 +1054,7 @@ class GdprUserDataExtractBeneficiaryFactory(BaseFactory):
     class Meta:
         model = models.GdprUserDataExtract
 
-    dateCreated = LazyAttribute(lambda _: datetime.utcnow() - timedelta(days=1))
+    dateCreated = LazyAttribute(lambda _: datetime.now() - timedelta(days=1))
     user = factory.SubFactory(BeneficiaryFactory)
     authorUser = factory.SubFactory(AdminFactory)
 
@@ -1063,5 +1063,5 @@ class GdprUserAnonymizationFactory(BaseFactory):
     class Meta:
         model = models.GdprUserAnonymization
 
-    dateCreated = LazyAttribute(lambda _: datetime.utcnow() - timedelta(days=1))
+    dateCreated = LazyAttribute(lambda _: datetime.now() - timedelta(days=1))
     user = factory.SubFactory(BeneficiaryFactory)

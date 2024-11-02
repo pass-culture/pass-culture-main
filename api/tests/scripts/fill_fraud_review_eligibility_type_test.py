@@ -37,7 +37,7 @@ class FillFraudReviewEligibilityTypeTest:
 
     @pytest.mark.parametrize(
         "deposit_creation_date",
-        [datetime.utcnow() + timedelta(minutes=30), datetime.utcnow() - timedelta(minutes=1)],
+        [datetime.now() + timedelta(minutes=30), datetime.now() - timedelta(minutes=1)],
     )
     def test_not_add_eligibility_to_reviews_based_on_deposit(self, deposit_creation_date: datetime) -> None:
         beneficiary = UserFactory()
@@ -55,7 +55,7 @@ class FillFraudReviewEligibilityTypeTest:
         [19, 18, 17, 16, 15],
     )
     def test_add_eligibility_to_reviews_based_on_beneficiary(self, beneficiary_age: int) -> None:
-        beneficiary = UserFactory(dateOfBirth=(datetime.utcnow() - relativedelta(years=beneficiary_age)).date())
+        beneficiary = UserFactory(dateOfBirth=(datetime.now() - relativedelta(years=beneficiary_age)).date())
         BeneficiaryFraudReviewFactory(user=beneficiary, eligibilityType=None)
 
         add_eligibility_to_reviews_based_on_beneficiary_age(do_update=True)

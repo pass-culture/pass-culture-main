@@ -38,7 +38,7 @@ class GeneratePdfFromHtmlTest:
         fetcher = pdf._get_url_fetcher()
         fetcher.delete_cache()
         fetcher.create_cache()
-        metadata = pdf.PdfMetadata(created=datetime.datetime.utcnow())
+        metadata = pdf.PdfMetadata(created=datetime.datetime.now())
         out1 = pdf.generate_pdf_from_html(example_html, metadata)
         out2 = pdf.generate_pdf_from_html(example_html, metadata)
         # Do not use `assert out == expected_pdf`: pytest would try to

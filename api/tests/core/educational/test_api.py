@@ -100,28 +100,28 @@ class UnindexExpiredOffersTest:
         # Given
         # Expired template offer
         collective_offer_template_1 = educational_factories.CollectiveOfferTemplateFactory(
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=9),
+            dateCreated=datetime.datetime.now() - datetime.timedelta(days=9),
             dateRange=db_utils.make_timerange(
-                start=datetime.datetime.utcnow() - datetime.timedelta(days=7),
-                end=datetime.datetime.utcnow() - datetime.timedelta(days=3),
+                start=datetime.datetime.now() - datetime.timedelta(days=7),
+                end=datetime.datetime.now() - datetime.timedelta(days=3),
             ),
         )
         # Non expired template offer
         educational_factories.CollectiveOfferTemplateFactory()
         # Expired template offer
         collective_offer_template_2 = educational_factories.CollectiveOfferTemplateFactory(
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=9),
+            dateCreated=datetime.datetime.now() - datetime.timedelta(days=9),
             dateRange=db_utils.make_timerange(
-                start=datetime.datetime.utcnow() - datetime.timedelta(days=7),
-                end=datetime.datetime.utcnow() - datetime.timedelta(hours=1),
+                start=datetime.datetime.now() - datetime.timedelta(days=7),
+                end=datetime.datetime.now() - datetime.timedelta(hours=1),
             ),
         )
         # Non expired template offer with dateRange overlapping today
         educational_factories.CollectiveOfferTemplateFactory(
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=9),
+            dateCreated=datetime.datetime.now() - datetime.timedelta(days=9),
             dateRange=db_utils.make_timerange(
-                start=datetime.datetime.utcnow() - datetime.timedelta(days=3),
-                end=datetime.datetime.utcnow() + datetime.timedelta(days=3),
+                start=datetime.datetime.now() - datetime.timedelta(days=3),
+                end=datetime.datetime.now() + datetime.timedelta(days=3),
             ),
         )
         # When

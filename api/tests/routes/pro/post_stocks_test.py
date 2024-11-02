@@ -103,7 +103,7 @@ class Returns201Test:
         second_label = offers_factories.PriceCategoryLabelFactory(label="Tarif 2", venue=offer.venue)
         first_price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=first_label, price=20)
         second_price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=second_label, price=30)
-        beginning = datetime.datetime.utcnow() + relativedelta(days=10)
+        beginning = datetime.datetime.now() + relativedelta(days=10)
 
         # When
         stock_data = {
@@ -161,8 +161,8 @@ class Returns201Test:
         first_price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=shared_label, price=20)
         unique_label = offers_factories.PriceCategoryLabelFactory(label="unique", venue=offer.venue)
         second_price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=unique_label, price=30)
-        beginning = datetime.datetime.utcnow() + relativedelta(days=10)
-        beginning_later = datetime.datetime.utcnow() + relativedelta(days=11)
+        beginning = datetime.datetime.now() + relativedelta(days=10)
+        beginning_later = datetime.datetime.now() + relativedelta(days=11)
 
         # When
         stock_data = {
@@ -223,7 +223,7 @@ class Returns201Test:
 
     def test_do_not_edit_one_stock_when_duplicated(self, client):
         offer = offers_factories.EventOfferFactory()
-        beginning = datetime.datetime.utcnow()
+        beginning = datetime.datetime.now()
         tomorrow = beginning + relativedelta(days=1)
         price_cat_label = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 1")
         price_category = offers_factories.PriceCategoryFactory(
@@ -270,7 +270,7 @@ class Returns201Test:
 
     def test_avoid_duplication_with_different_quantity(self, client):
         offer = offers_factories.EventOfferFactory()
-        beginning = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+        beginning = datetime.datetime.now() + datetime.timedelta(hours=1)
         price_cat_label = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 1")
         price_category = offers_factories.PriceCategoryFactory(
             offer=offer, priceCategoryLabel=price_cat_label, price=10
@@ -320,7 +320,7 @@ class Returns201Test:
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
-        beginning = datetime.datetime.utcnow() + relativedelta(days=10)
+        beginning = datetime.datetime.now() + relativedelta(days=10)
 
         stock_data = {
             "offerId": offer.id,
@@ -360,7 +360,7 @@ class Returns201Test:
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         ).user
-        beginning = datetime.datetime.utcnow() + relativedelta(days=10)
+        beginning = datetime.datetime.now() + relativedelta(days=10)
 
         stock_data = {
             "offerId": offer.id,
@@ -501,7 +501,7 @@ class Returns201Test:
         price_cat_label = offers_factories.PriceCategoryLabelFactory(venue=venue, label="Tarif 1")
         price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=price_cat_label, price=10)
         existing_stock = offers_factories.EventStockFactory(offer=offer, priceCategory=price_cat)
-        beginning = datetime.datetime.utcnow() + relativedelta(days=10)
+        beginning = datetime.datetime.now() + relativedelta(days=10)
 
         stock_data = {
             "offerId": offer.id,
@@ -540,7 +540,7 @@ class Returns201Test:
     def should_update_bookings_cancellation_limit_date_on_delayed_event(
         self, mock_update_cancellation_limit_dates, client
     ):
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now()
         event_in_4_days = now + relativedelta(days=4)
         event_reported_in_10_days = now + relativedelta(days=10)
         offer = offers_factories.EventOfferFactory(bookingEmail="test@bookingEmail.fr")
@@ -574,7 +574,7 @@ class Returns201Test:
 
     def should_invalidate_booking_token_when_event_is_reported(self, client):
         # Given
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now()
         booking_made_3_days_ago = now - relativedelta(days=3)
         event_in_4_days = now + relativedelta(days=4)
         event_reported_in_10_days = now + relativedelta(days=10)
@@ -613,7 +613,7 @@ class Returns201Test:
 
     def should_not_invalidate_booking_token_when_event_is_reported_in_less_than_48_hours(self, client):
         # Given
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now()
         date_used_in_48_hours = now + relativedelta(days=2)
         event_in_3_days = now + relativedelta(days=3)
         event_reported_in_less_48_hours = now + relativedelta(days=1)
@@ -704,7 +704,7 @@ class Returns201Test:
         assert not response.json["ended_bookings"]
 
     def test_update_event_stock_quantity(self, client):
-        beginning = datetime.datetime.utcnow()
+        beginning = datetime.datetime.now()
         offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
         price_category_1 = offers_factories.PriceCategoryFactory(offer=offer, price=10)
         existing_stock = offers_factories.EventStockFactory(
@@ -742,7 +742,7 @@ class Returns201Test:
     def should_not_create_duplicated_stock(self, client):
         # Given
         offer = offers_factories.EventOfferFactory()
-        beginning = datetime.datetime.utcnow()
+        beginning = datetime.datetime.now()
         beginning_later = beginning + relativedelta(days=10)
         price_cat_label_1 = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 1")
         price_cat_label_2 = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 2")
@@ -1101,7 +1101,7 @@ class Returns400Test:
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
-        beginning = datetime.datetime.utcnow() + relativedelta(days=10)
+        beginning = datetime.datetime.now() + relativedelta(days=10)
         stock_data = {
             "offerId": offer.id,
             "stocks": [
@@ -1124,7 +1124,7 @@ class Returns400Test:
             offerer=offer.venue.managingOfferer,
         )
         price_category = offers_factories.PriceCategoryFactory(offer=offer)
-        beginning = datetime.datetime.utcnow() + relativedelta(days=10)
+        beginning = datetime.datetime.now() + relativedelta(days=10)
         stock_data = {
             "offerId": offer.id,
             "stocks": [
@@ -1209,7 +1209,7 @@ class Returns400Test:
         too_high_price_category = offers_factories.PriceCategoryFactory(
             offer=offer, priceCategoryLabel__label="too_high_price_category", price=310
         )
-        beginning = datetime.datetime.utcnow() + relativedelta(days=10)
+        beginning = datetime.datetime.now() + relativedelta(days=10)
         existing_stock = offers_factories.EventStockFactory(
             offer=offer, priceCategoryId=positive_price_category.id, beginningDatetime=beginning
         )
@@ -1244,7 +1244,7 @@ class Returns403Test:
         user = users_factories.ProFactory(email="wrong@example.com")
         offer = offers_factories.ThingOfferFactory()
         offerers_factories.UserOffererFactory(user__email="right@example.com", offerer=offer.venue.managingOfferer)
-        booking_datetime = datetime.datetime.utcnow()
+        booking_datetime = datetime.datetime.now()
 
         # When
         stock_data = {

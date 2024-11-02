@@ -194,7 +194,7 @@ class Booking(PcObject, Base, Model):
             raise exceptions.BookingHasAlreadyBeenUsed()
         if self.status is BookingStatus.CANCELLED:
             raise exceptions.BookingIsCancelled()
-        self.dateUsed = datetime.utcnow()
+        self.dateUsed = datetime.now()
         self.status = BookingStatus.USED
         self.validationAuthorType = validation_author_type
 
@@ -216,7 +216,7 @@ class Booking(PcObject, Base, Model):
         if self.status is BookingStatus.USED and not cancel_even_if_used:
             raise exceptions.BookingIsAlreadyUsed()
         self.status = BookingStatus.CANCELLED
-        self.cancellationDate = datetime.utcnow()
+        self.cancellationDate = datetime.now()
         self.cancellationReason = reason
         self.cancellationUserId = author_id
         self.dateUsed = None
@@ -228,7 +228,7 @@ class Booking(PcObject, Base, Model):
         self.cancellationReason = None
         self.cancellationUserId = None
         self.status = BookingStatus.USED
-        self.dateUsed = datetime.utcnow()
+        self.dateUsed = datetime.now()
 
     @property
     def expirationDate(self) -> datetime | None:
@@ -270,11 +270,11 @@ class Booking(PcObject, Base, Model):
 
     @hybrid_property
     def isConfirmed(self) -> bool:
-        return self.cancellationLimitDate is not None and self.cancellationLimitDate <= datetime.utcnow()
+        return self.cancellationLimitDate is not None and self.cancellationLimitDate <= datetime.now()
 
     @isConfirmed.expression  # type: ignore[no-redef]
     def isConfirmed(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
-        return and_(cls.cancellationLimitDate.is_not(None), cls.cancellationLimitDate <= datetime.utcnow())
+        return and_(cls.cancellationLimitDate.is_not(None), cls.cancellationLimitDate <= datetime.now())
 
     @hybrid_property
     def is_used_or_reimbursed(self) -> bool:

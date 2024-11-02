@@ -262,7 +262,7 @@ class BankAccount(PcObject, Base, Model, DeactivableMixin):
     @property
     def current_link(self) -> "offerers_models.VenueBankAccountLink | None":
         for link in self.venueLinks:
-            if link.timespan.upper is None and link.timespan.lower <= datetime.datetime.utcnow():
+            if link.timespan.upper is None and link.timespan.lower <= datetime.datetime.now():
                 return link
         return None
 

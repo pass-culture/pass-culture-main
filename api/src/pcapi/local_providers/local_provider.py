@@ -299,7 +299,7 @@ class LocalProvider(Iterator):
         self.log_provider_event(providers_models.LocalProviderEventType.SyncEnd)
 
         if self.venue_provider is not None:
-            self.venue_provider.lastSyncDate = datetime.utcnow()
+            self.venue_provider.lastSyncDate = datetime.now()
             repository.save(self.venue_provider)
 
     def postTreatment(self) -> None:

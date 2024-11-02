@@ -52,7 +52,7 @@ def get_age_at_date(birth_date: date, specified_datetime: datetime) -> int:
 
 
 def get_age_from_birth_date(birth_date: date) -> int:
-    return get_age_at_date(birth_date, datetime.utcnow())
+    return get_age_at_date(birth_date, datetime.now())
 
 
 def format_login_location(country_name: str | None, city_name: str | None) -> str | None:

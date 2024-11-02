@@ -18,7 +18,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_account_is_known(self, client, caplog):
         # given
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now()
         user = users_factories.BeneficiaryGrant18Factory(
             civility=users_models.GenderEnum.M.value,
             city=None,
@@ -146,7 +146,7 @@ class Returns200Test:
     def test_with_user_offerer(self, client):
         # Given
         user_offerer = offerers_factories.UserOffererFactory(
-            user__lastConnectionDate=datetime.datetime.utcnow(),
+            user__lastConnectionDate=datetime.datetime.now(),
         )
         data = {
             "identifier": user_offerer.user.email,

@@ -151,7 +151,7 @@ def _get_mocked_user_for_performance_tests(user_id: str) -> models.EduconnectUse
 
     return users_factories.EduconnectUserFactory(
         birth_date=user.dateOfBirth.date(),
-        connection_datetime=datetime.utcnow(),
+        connection_datetime=datetime.now(),
         educonnect_id=f"educonnect-id_perf-test_{user.id}",
         first_name="".join(random.choice(string.ascii_letters) for _ in range(10)),
         ine_hash=f"inehash_perf-test_{user.id}",

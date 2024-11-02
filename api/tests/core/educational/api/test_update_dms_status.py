@@ -148,7 +148,7 @@ class UpdateDmsStatusTest:
         latest_import = dms_factories.LatestDmsImportFactory(
             procedureId=123,
             isProcessing=True,
-            latestImportDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=2),
+            latestImportDatetime=datetime.datetime.now() - datetime.timedelta(days=2),
         )
 
         with patch("pcapi.connectors.dms.api.DMSGraphQLClient", return_value=mock):

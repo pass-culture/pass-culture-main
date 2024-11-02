@@ -276,7 +276,7 @@ class SearchProUserTest:
         common_name = "Pro"
         users_factories.ProFactory(firstName=common_name)
         suspended_user = users_factories.ProFactory(firstName=common_name, isActive=False)
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now()
         history_factories.ActionHistoryFactory(
             actionType=history_models.ActionType.USER_SUSPENDED,
             actionDate=now - datetime.timedelta(days=4),

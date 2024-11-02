@@ -27,11 +27,11 @@ class Returns200Test:
     num_queries += 1  # select venue
 
     def test_when_user_has_rights_and_regular_offer(self, client):
-        past = datetime.utcnow() - timedelta(days=2)
+        past = datetime.now() - timedelta(days=2)
         booking = bookings_factories.BookingFactory(
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
-            user__dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2),
+            user__dateOfBirth=datetime.now() - relativedelta(years=18, months=2),
             stock__beginningDatetime=past,
             stock__offer=offers_factories.EventOfferFactory(
                 extraData={
@@ -95,7 +95,7 @@ class Returns200Test:
 
     def test_when_user_has_rights_and_regular_offer_and_token_in_lower_case(self, client):
         booking = bookings_factories.BookingFactory(
-            stock__beginningDatetime=datetime.utcnow() - timedelta(days=2),
+            stock__beginningDatetime=datetime.now() - timedelta(days=2),
         )
         booking_token = booking.token.lower()
         user_offerer = offerers_factories.UserOffererFactory(offerer=booking.offerer)
@@ -184,7 +184,7 @@ class Returns403Test:
         ]
 
     def test_when_booking_not_confirmed(self, client):
-        next_week = datetime.utcnow() + timedelta(weeks=1)
+        next_week = datetime.now() + timedelta(weeks=1)
         booking = bookings_factories.BookingFactory(stock__beginningDatetime=next_week)
         pro_user = offerers_factories.UserOffererFactory(offerer=booking.offerer).user
 

@@ -179,7 +179,7 @@ class GetSirenByOffererIdTest:
 
 class HasNoOfferAndAtLeastOnePhysicalVenueAndCreatedSinceXDaysTest:
     def test_should_return_two_venues_of_offerer_without_offers_and_validated_5_days_ago(self):
-        five_days_ago = datetime.utcnow() - timedelta(days=5)
+        five_days_ago = datetime.now() - timedelta(days=5)
         # Offerer with two physical venues and one offer => venues should not be returned
         offerer_with_two_venues = offerers_factories.OffererFactory(dateValidated=five_days_ago)
         venue_with_offers = offerers_factories.VenueFactory(managingOfferer=offerer_with_two_venues)

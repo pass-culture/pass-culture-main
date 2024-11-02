@@ -178,21 +178,21 @@ class HasReimbursementTest:
 
 class HasActiveOrFutureCustomRemibursementRuleTest:
     def test_active_rule(self):
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now()
         timespan = (now - datetime.timedelta(days=1), now + datetime.timedelta(days=1))
         rule = factories.CustomReimbursementRuleFactory(timespan=timespan)
         offer = rule.offer
         assert repository.has_active_or_future_custom_reimbursement_rule(offer)
 
     def test_future_rule(self):
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now()
         timespan = (now + datetime.timedelta(days=1), None)
         rule = factories.CustomReimbursementRuleFactory(timespan=timespan)
         offer = rule.offer
         assert repository.has_active_or_future_custom_reimbursement_rule(offer)
 
     def test_past_rule(self):
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now()
         timespan = (now - datetime.timedelta(days=2), now - datetime.timedelta(days=1))
         rule = factories.CustomReimbursementRuleFactory(timespan=timespan)
         offer = rule.offer

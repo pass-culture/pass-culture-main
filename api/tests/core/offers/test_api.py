@@ -261,7 +261,7 @@ class CreateStockTest:
     def test_does_not_allow_beginning_datetime_for_thing_offers(self):
         # Given
         offer = factories.ThingOfferFactory()
-        beginning_date = datetime.utcnow() + timedelta(days=4)
+        beginning_date = datetime.now() + timedelta(days=4)
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
@@ -290,7 +290,7 @@ class CreateStockTest:
                 quantity=None,
                 booking_limit_datetime=None,
                 activation_codes=["ABC", "DEF"],
-                activation_codes_expiration_datetime=datetime.utcnow(),
+                activation_codes_expiration_datetime=datetime.now(),
             )
 
         # Then
@@ -335,7 +335,7 @@ class CreateStockTest:
     def test_does_not_allow_booking_limit_after_beginning_for_an_event_offer(self):
         # Given
         offer = factories.EventOfferFactory()
-        beginning_date = datetime.utcnow() + timedelta(days=4)
+        beginning_date = datetime.now() + timedelta(days=4)
         booking_limit = beginning_date + timedelta(days=4)
 
         # When
@@ -414,9 +414,9 @@ class EditStockTest:
 
     def test_edit_beginning_datetime(self):
         # Given
-        previous_booking_limit = datetime.utcnow() + timedelta(days=4)
-        previous_beginning = datetime.utcnow() + timedelta(days=8)
-        new_beginning = datetime.utcnow() + timedelta(days=15)
+        previous_booking_limit = datetime.now() + timedelta(days=4)
+        previous_beginning = datetime.now() + timedelta(days=8)
+        new_beginning = datetime.now() + timedelta(days=15)
         existing_stock = factories.EventStockFactory(
             price=10, quantity=7, beginningDatetime=previous_beginning, bookingLimitDatetime=previous_booking_limit
         )
@@ -440,9 +440,9 @@ class EditStockTest:
 
     def test_edit_event_without_beginning_update(self):
         # Given
-        previous_booking_limit = datetime.utcnow() + timedelta(days=4)
-        beginning = datetime.utcnow() + timedelta(days=8)
-        new_booking_limit = datetime.utcnow() + timedelta(days=6)
+        previous_booking_limit = datetime.now() + timedelta(days=4)
+        beginning = datetime.now() + timedelta(days=8)
+        new_booking_limit = datetime.now() + timedelta(days=6)
         existing_stock = factories.EventStockFactory(
             price=10, quantity=7, beginningDatetime=beginning, bookingLimitDatetime=previous_booking_limit
         )
@@ -515,7 +515,7 @@ class EditStockTest:
     def test_does_not_allow_price_above_300_euros(self):
         # Given
         existing_stock = factories.EventStockFactory(price=10)
-        now = datetime.utcnow()
+        now = datetime.now()
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
@@ -642,7 +642,7 @@ class EditStockTest:
     def test_does_not_allow_beginning_datetime_for_thing_offers(self):
         # Given
         offer = factories.ThingOfferFactory()
-        beginning_date = datetime.utcnow() + timedelta(days=4)
+        beginning_date = datetime.now() + timedelta(days=4)
         existing_stock = factories.StockFactory(offer=offer, price=10)
 
         # When
@@ -662,8 +662,8 @@ class EditStockTest:
 
     def test_validate_booking_limit_datetime_with_expiration_datetime(self):
         # Given
-        existing_stock = factories.StockFactory(bookingLimitDatetime=datetime.utcnow())
-        factories.ActivationCodeFactory(expirationDate=datetime.utcnow(), stock=existing_stock)
+        existing_stock = factories.StockFactory(bookingLimitDatetime=datetime.now())
+        factories.ActivationCodeFactory(expirationDate=datetime.now(), stock=existing_stock)
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
@@ -692,12 +692,12 @@ class EditStockTest:
 
     def test_does_not_allow_booking_limit_after_beginning_for_an_event_offer(self):
         # Given
-        previous_booking_limit = datetime.utcnow()
-        previous_beginning = datetime.utcnow() + timedelta(days=1)
+        previous_booking_limit = datetime.now()
+        previous_beginning = datetime.now() + timedelta(days=1)
         existing_stock = factories.EventStockFactory(
             bookingLimitDatetime=previous_booking_limit, beginningDatetime=previous_beginning
         )
-        beginning_date = datetime.utcnow() + timedelta(days=4)
+        beginning_date = datetime.now() + timedelta(days=4)
         booking_limit = beginning_date + timedelta(days=4)
 
         # When
@@ -716,7 +716,7 @@ class EditStockTest:
 
     def test_does_not_allow_edition_of_a_past_event_stock(self):
         # Given
-        date_in_the_past = datetime.utcnow() - timedelta(days=4)
+        date_in_the_past = datetime.now() - timedelta(days=4)
         existing_stock = factories.EventStockFactory(price=10, beginningDatetime=date_in_the_past)
 
         # When
@@ -735,7 +735,7 @@ class EditStockTest:
         offer = factories.EventOfferFactory(
             lastProvider=providers_factories.AllocineProviderFactory(localClass="AllocineStocks")
         )
-        date_in_the_future = datetime.utcnow() + timedelta(days=4)
+        date_in_the_future = datetime.now() + timedelta(days=4)
         existing_stock = factories.StockFactory(offer=offer, price=10, beginningDatetime=date_in_the_future, quantity=2)
 
         # When
@@ -757,8 +757,8 @@ class EditStockTest:
         offer = factories.EventOfferFactory(
             lastProvider=providers_factories.AllocineProviderFactory(localClass="AllocineStocks")
         )
-        date_in_the_future = datetime.utcnow() + timedelta(days=4)
-        other_date_in_the_future = datetime.utcnow() + timedelta(days=6)
+        date_in_the_future = datetime.now() + timedelta(days=4)
+        other_date_in_the_future = datetime.now() + timedelta(days=6)
         existing_stock = factories.StockFactory(offer=offer, price=10, beginningDatetime=date_in_the_future)
 
         # When
@@ -796,26 +796,26 @@ class EditStockTest:
     @time_machine.travel("2023-10-20 17:00:00", tick=False)
     def test_editing_beginning_datetime_edits_finance_event(self):
         # Given
-        new_beginning_datetime = datetime.utcnow() + timedelta(days=4)
+        new_beginning_datetime = datetime.now() + timedelta(days=4)
 
         pricing_point = offerers_factories.VenueFactory()
         oldest_event = _generate_finance_event_context(
-            pricing_point, stock_date=datetime.utcnow() + timedelta(days=2), used_date=datetime.utcnow()
+            pricing_point, stock_date=datetime.now() + timedelta(days=2), used_date=datetime.now()
         )
         older_event = _generate_finance_event_context(
-            pricing_point, stock_date=datetime.utcnow() + timedelta(days=6), used_date=datetime.utcnow()
+            pricing_point, stock_date=datetime.now() + timedelta(days=6), used_date=datetime.now()
         )
         changing_event = _generate_finance_event_context(
-            pricing_point, datetime.utcnow() + timedelta(days=8), used_date=datetime.utcnow()
+            pricing_point, datetime.now() + timedelta(days=8), used_date=datetime.now()
         )
         newest_event = _generate_finance_event_context(
-            pricing_point, stock_date=datetime.utcnow() + timedelta(days=10), used_date=datetime.utcnow()
+            pricing_point, stock_date=datetime.now() + timedelta(days=10), used_date=datetime.now()
         )
 
         unrelated_event = _generate_finance_event_context(
             offerers_factories.VenueFactory(),
-            stock_date=datetime.utcnow() + timedelta(days=8),
-            used_date=datetime.utcnow(),
+            stock_date=datetime.now() + timedelta(days=8),
+            used_date=datetime.now(),
         )
 
         # When
@@ -825,24 +825,24 @@ class EditStockTest:
         )
 
         # Then
-        assert oldest_event.pricingOrderingDate == datetime.utcnow() + timedelta(days=2)
+        assert oldest_event.pricingOrderingDate == datetime.now() + timedelta(days=2)
         assert oldest_event.status == finance_models.FinanceEventStatus.PRICED
         assert len(oldest_event.pricings) == 1
 
-        assert older_event.pricingOrderingDate == datetime.utcnow() + timedelta(days=6)
+        assert older_event.pricingOrderingDate == datetime.now() + timedelta(days=6)
         assert older_event.status == finance_models.FinanceEventStatus.READY
         assert len(older_event.pricings) == 0
 
-        assert changing_event.pricingOrderingDate == datetime.utcnow() + timedelta(days=4)
+        assert changing_event.pricingOrderingDate == datetime.now() + timedelta(days=4)
         assert changing_event.status == finance_models.FinanceEventStatus.READY
         assert len(changing_event.pricings) == 1
         assert changing_event.pricings[0].status == finance_models.PricingStatus.CANCELLED
 
-        assert newest_event.pricingOrderingDate == datetime.utcnow() + timedelta(days=10)
+        assert newest_event.pricingOrderingDate == datetime.now() + timedelta(days=10)
         assert newest_event.status == finance_models.FinanceEventStatus.READY
         assert len(newest_event.pricings) == 0
 
-        assert unrelated_event.pricingOrderingDate == datetime.utcnow() + timedelta(days=8)
+        assert unrelated_event.pricingOrderingDate == datetime.now() + timedelta(days=8)
         assert unrelated_event.status == finance_models.FinanceEventStatus.PRICED
         assert len(unrelated_event.pricings) == 1
 
@@ -1053,7 +1053,7 @@ class DeleteStockTest:
         assert stock.isSoftDeleted
 
     def test_can_delete_if_event_ended_recently(self):
-        recently = datetime.utcnow() - timedelta(days=1)
+        recently = datetime.now() - timedelta(days=1)
         stock = factories.EventStockFactory(beginningDatetime=recently)
 
         api.delete_stock(stock)
@@ -1061,7 +1061,7 @@ class DeleteStockTest:
         assert stock.isSoftDeleted
 
     def test_cannot_delete_if_too_late(self):
-        too_long_ago = datetime.utcnow() - timedelta(days=3)
+        too_long_ago = datetime.now() - timedelta(days=3)
         stock = factories.EventStockFactory(beginningDatetime=too_long_ago)
 
         with pytest.raises(exceptions.TooLateToDeleteStock):
@@ -1160,7 +1160,7 @@ class DeleteStockWithOffererAddressAsDataSourceTest:
 
     @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_can_delete_if_event_ended_recently(self):
-        recently = datetime.utcnow() - timedelta(days=1)
+        recently = datetime.now() - timedelta(days=1)
         stock = factories.EventStockFactory(beginningDatetime=recently)
 
         api.delete_stock(stock)
@@ -1169,7 +1169,7 @@ class DeleteStockWithOffererAddressAsDataSourceTest:
 
     @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_cannot_delete_if_too_late(self):
-        too_long_ago = datetime.utcnow() - timedelta(days=3)
+        too_long_ago = datetime.now() - timedelta(days=3)
         stock = factories.EventStockFactory(beginningDatetime=too_long_ago)
 
         with pytest.raises(exceptions.TooLateToDeleteStock):
@@ -2023,7 +2023,7 @@ class ActivateFutureOffersTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_activate_future_offers(self, mocked_async_index_offer_ids):
         offer = factories.OfferFactory(isActive=False)
-        publication_date = datetime.utcnow().replace(minute=0, second=0, microsecond=0) + timedelta(days=30)
+        publication_date = datetime.now().replace(minute=0, second=0, microsecond=0) + timedelta(days=30)
         factories.FutureOfferFactory(offerId=offer.id, publicationDate=publication_date)
 
         api.activate_future_offers(publication_date=publication_date)
@@ -2946,7 +2946,7 @@ class DeleteStocksTest:
     @time_machine.travel("2020-10-15 00:00:00")
     def test_delete_batch_stocks_filtered_by_date(self):
         # Given
-        beginning_datetime = datetime.utcnow()
+        beginning_datetime = datetime.now()
         offer = factories.OfferFactory()
         stock_1 = factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
         stock_2 = factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + timedelta(days=1))
@@ -2966,7 +2966,7 @@ class DeleteStocksTest:
     @time_machine.travel("2020-10-15 00:00:00")
     def test_delete_batch_stocks_filtered_by_time(self):
         # Given
-        beginning_datetime = datetime.utcnow()
+        beginning_datetime = datetime.now()
         offer = factories.OfferFactory()
         stock_1 = factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + timedelta(seconds=15))
         stock_2 = factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + timedelta(hours=1))
@@ -3821,7 +3821,7 @@ class GetStocksStatsTest:
     def test_get_stocks_stats(self):
         # Given
         offer = factories.OfferFactory()
-        now = datetime.utcnow()
+        now = datetime.now()
         factories.StockFactory(offer=offer, quantity=10, dnBookedQuantity=5, beginningDatetime=now)
         factories.StockFactory(offer=offer, quantity=20, dnBookedQuantity=5, beginningDatetime=now + timedelta(hours=1))
 
@@ -3862,7 +3862,7 @@ class GetStocksStatsTest:
     def test_get_stocks_stats_with_another_stock_has_unlimited_quantity(self):
         # Given
         offer = factories.OfferFactory()
-        now = datetime.utcnow()
+        now = datetime.now()
         factories.StockFactory(
             beginningDatetime=now + timedelta(hours=1),
             quantity=20,
@@ -3956,7 +3956,7 @@ class UpdateUsedStockPriceTest:
         later_booking = bookings_factories.UsedBookingFactory(
             stock__offer__venue=venue,
             stock__offer__subcategoryId=subcategories.CONFERENCE.id,
-            stock__beginningDatetime=datetime.utcnow() + timedelta(hours=2),
+            stock__beginningDatetime=datetime.now() + timedelta(hours=2),
         )
         later_event = finance_factories.FinanceEventFactory(
             booking=later_booking,

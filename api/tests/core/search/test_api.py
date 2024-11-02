@@ -30,7 +30,7 @@ def make_bookable_offer() -> offers_models.Offer:
 def make_booked_offer() -> offers_models.Offer:
     offer = make_bookable_offer()
     offers_factories.StockFactory(offer=offer)
-    now = datetime.datetime.utcnow()
+    now = datetime.datetime.now()
     ago_30_days = now - datetime.timedelta(days=30, hours=-1)
     ago_31_days = now - datetime.timedelta(days=30, hours=1)
     bookings = []
@@ -156,8 +156,8 @@ class ReindexOfferIdsTest:
         # `reindex_offer_ids()`.
         unbookable = make_unbookable_offer()
         bookable = make_bookable_offer()
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=10)
-        future = datetime.datetime.utcnow() + datetime.timedelta(days=10)
+        past = datetime.datetime.now() - datetime.timedelta(days=10)
+        future = datetime.datetime.now() + datetime.timedelta(days=10)
         multi_dates_unbookable = offers_factories.EventStockFactory(beginningDatetime=past).offer
         multi_dates_bookable = offers_factories.EventStockFactory(beginningDatetime=past).offer
         offers_factories.EventStockFactory(offer=multi_dates_bookable, beginningDatetime=future)

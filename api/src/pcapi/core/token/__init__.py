@@ -85,7 +85,7 @@ class AbstractToken(abc.ABC):
         if ttl < 0:
             # -2 if doesn't exist, -1 if no expiration
             return None
-        return datetime.utcnow() + timedelta(seconds=ttl)
+        return datetime.now() + timedelta(seconds=ttl)
 
     @classmethod
     def delete(cls: typing.Type[T], type_: TokenType, key_suffix: int | str | None) -> None:
@@ -157,7 +157,7 @@ class Token(AbstractToken):
             "data": data or {},
         }
         if ttl:
-            payload["exp"] = (datetime.utcnow() + ttl).timestamp()
+            payload["exp"] = (datetime.now() + ttl).timestamp()
 
         encoded_token = utils.encode_jwt_payload(payload)
         if ttl is None or ttl > timedelta(0):
@@ -256,7 +256,7 @@ class UUIDToken(AbstractToken):
             "data": data or {},
         }
         if ttl:
-            payload["exp"] = (datetime.utcnow() + ttl).timestamp()
+            payload["exp"] = (datetime.now() + ttl).timestamp()
         encoded_token = utils.encode_jwt_payload(payload)
 
         if ttl is None or ttl > timedelta(0):
@@ -349,7 +349,7 @@ class AsymetricToken(AbstractToken):
             "data": data or {},
         }
         if ttl:
-            payload["exp"] = (datetime.utcnow() + ttl).timestamp()
+            payload["exp"] = (datetime.now() + ttl).timestamp()
 
         encoded_token = utils.encode_jwt_payload_rs256(payload, private_key=private_key)
         if ttl is None or ttl > timedelta(0):

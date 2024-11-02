@@ -99,11 +99,11 @@ class GetNewlyEligibleUsersTest:
         assert set(users) == {user_just_18, user_just_18_ex_underage_beneficiary, user_already_18}
 
     def test_eligible_user_with_discordant_dates_on_declared_one(self):
-        date_to_check = datetime.utcnow() - relativedelta(days=1)
+        date_to_check = datetime.now() - relativedelta(days=1)
         users_factories.BaseUserFactory(
-            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
-            validatedBirthDate=datetime.utcnow() - relativedelta(years=17, months=11),
-            dateCreated=datetime.utcnow() - relativedelta(months=1),
+            dateOfBirth=datetime.now() - relativedelta(years=18),
+            validatedBirthDate=datetime.now() - relativedelta(years=17, months=11),
+            dateCreated=datetime.now() - relativedelta(months=1),
             roles=[UserRole.UNDERAGE_BENEFICIARY],
         )
         users = repository.get_newly_eligible_age_18_users(since=date_to_check)
@@ -111,11 +111,11 @@ class GetNewlyEligibleUsersTest:
 
     @time_machine.travel("2024-02-01")
     def test_eligible_user_with_discordant_dates_on_validated_one(self):
-        date_to_check = datetime.utcnow() - relativedelta(days=1)
+        date_to_check = datetime.now() - relativedelta(days=1)
         user_just_18_discordant_dates = users_factories.BaseUserFactory(
-            dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=1),
-            validatedBirthDate=datetime.utcnow() - relativedelta(years=18),
-            dateCreated=datetime.utcnow() - relativedelta(months=2),
+            dateOfBirth=datetime.now() - relativedelta(years=18, months=1),
+            validatedBirthDate=datetime.now() - relativedelta(years=18),
+            dateCreated=datetime.now() - relativedelta(months=2),
             roles=[UserRole.UNDERAGE_BENEFICIARY],
         )
 

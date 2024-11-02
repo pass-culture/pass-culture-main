@@ -15,7 +15,7 @@ class Returns204Test:
     def test_delete_filtered_stocks(self, client):
         # Given
         offer = offers_factories.OfferFactory()
-        offers_factories.EventStockFactory.create_batch(3, offer=offer, beginningDatetime=datetime.utcnow())
+        offers_factories.EventStockFactory.create_batch(3, offer=offer, beginningDatetime=datetime.now())
         user = users_factories.UserFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offer.venue.managingOfferer)
 
@@ -62,7 +62,7 @@ class Returns403Test:
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.utcnow())
+        offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.now())
         data = {
             "offer_id": offer.id,
             "date": "2020-10-15",

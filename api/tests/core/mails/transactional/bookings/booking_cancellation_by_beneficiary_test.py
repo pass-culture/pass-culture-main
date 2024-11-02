@@ -54,7 +54,7 @@ class MakeBeneficiaryBookingCancellationEmailSendinblueDataTest:
             user=BeneficiaryGrant18Factory(email="fabien@example.com", firstName="Fabien"),
             stock=ThingStockFactory(
                 price=10.20,
-                beginningDatetime=datetime.utcnow() - timedelta(days=1),
+                beginningDatetime=datetime.now() - timedelta(days=1),
                 offer__name="Test thing name",
                 offer__id=123456,
             ),
@@ -84,7 +84,7 @@ class MakeBeneficiaryBookingCancellationEmailSendinblueDataTest:
             user=BeneficiaryGrant18Factory(email="fabien@example.com", firstName="Fabien"),
             stock=EventStockFactory(
                 price=10.20,
-                beginningDatetime=datetime.utcnow(),
+                beginningDatetime=datetime.now(),
                 offer__name="Test event name",
                 offer__id=123456,
             ),

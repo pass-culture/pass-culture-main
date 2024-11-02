@@ -302,7 +302,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIEndpointBaseHelper):
             collectiveOffer=offer,
         )
 
-        next_month = datetime.utcnow().replace(second=0, microsecond=0) + timedelta(days=30)
+        next_month = datetime.now().replace(second=0, microsecond=0) + timedelta(days=30)
         next_month_minus_one_day = next_month - timedelta(days=1)
 
         stringified_next_month = date_utils.utc_datetime_to_department_timezone(next_month, None).isoformat()
@@ -342,7 +342,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIEndpointBaseHelper):
             collectiveOffer=offer,
         )
 
-        next_month = datetime.utcnow().replace(second=0, microsecond=0) + timedelta(days=30)
+        next_month = datetime.now().replace(second=0, microsecond=0) + timedelta(days=30)
         next_month_minus_one_day = next_month - timedelta(days=1)
 
         payload = {

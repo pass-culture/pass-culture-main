@@ -125,7 +125,7 @@ def _create_total_commercial_gesture_collective_offer(
         booking = educational_factories.UsedCollectiveBookingFactory(
             collectiveStock__collectiveOffer__venue=venue,
             collectiveStock__price=decimal.Decimal("14") + decimal.Decimal(i),
-            collectiveStock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            collectiveStock__beginningDatetime=datetime.datetime.now() - datetime.timedelta(days=1),
             educationalInstitution=deposit.educationalInstitution,
             educationalYear=deposit.educationalYear,
         )
@@ -326,7 +326,7 @@ def _generate_bookings_for_commercial_gesture_creation(venue: offerers_models.Ve
         booking = educational_factories.UsedCollectiveBookingFactory(
             collectiveStock__collectiveOffer__venue=venue,
             collectiveStock__price=decimal.Decimal("14") + decimal.Decimal(i),
-            collectiveStock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            collectiveStock__beginningDatetime=datetime.datetime.now() - datetime.timedelta(days=1),
             educationalInstitution=deposit.educationalInstitution,
             educationalYear=deposit.educationalYear,
         )
@@ -401,7 +401,7 @@ def create_industrial_commercial_gestures() -> None:
             users_count=3 + i,
         )
 
-    cashflow_batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
+    cashflow_batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.now())
     finance_api.generate_invoices(cashflow_batch)
     finance_api.generate_debit_notes(cashflow_batch)
     db.session.flush()

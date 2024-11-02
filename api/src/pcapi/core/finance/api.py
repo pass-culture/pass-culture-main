@@ -147,7 +147,7 @@ def add_event(
 
     elif motive == models.FinanceEventMotive.BOOKING_UNUSED:
         # The value is irrelevant because the event won't be priced.
-        value_date = datetime.datetime.utcnow()
+        value_date = datetime.datetime.now()
 
         status = models.FinanceEventStatus.NOT_TO_BE_PRICED
         pricing_point_id = None
@@ -254,7 +254,7 @@ def price_events(
     # recent event that may have been COMMITed to the database just
     # before another event with a slightly older date (see note in
     # module docstring).
-    threshold = datetime.datetime.utcnow() - datetime.timedelta(minutes=1)
+    threshold = datetime.datetime.now() - datetime.timedelta(minutes=1)
     window = (min_date, threshold)
 
     errored_pricing_point_ids = set()
@@ -1071,7 +1071,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                         .first()
                     )
                     if last_cashflow:
-                        last_cashflow_age = (datetime.datetime.utcnow() - last_cashflow.creationDate).days
+                        last_cashflow_age = (datetime.datetime.now() - last_cashflow.creationDate).days
                     else:
                         last_cashflow_age = 0
 
@@ -1269,7 +1269,7 @@ def _write_csv(
     row_formatter: typing.Callable[[typing.Iterable], typing.Iterable] = lambda row: row,
     compress: bool = False,
 ) -> pathlib.Path:
-    local_now = pytz.utc.localize(datetime.datetime.utcnow()).astimezone(utils.ACCOUNTING_TIMEZONE)
+    local_now = pytz.utc.localize(datetime.datetime.now()).astimezone(utils.ACCOUNTING_TIMEZONE)
     filename = filename_base + local_now.strftime("_%Y%m%d_%H%M") + ".csv"
     # Store file in a dedicated directory within "/tmp". It's easier
     # to clean files in tests that way.
@@ -1689,7 +1689,7 @@ def _mark_free_pricings_as_invoiced() -> None:
                 "cancelled": bookings_models.BookingStatus.CANCELLED.value,
                 "reimbursed": bookings_models.BookingStatus.REIMBURSED.value,
                 "pricing_ids": tuple(pricing_ids),
-                "reimbursement_date": datetime.datetime.utcnow(),
+                "reimbursement_date": datetime.datetime.now(),
             },
         )
 
@@ -1716,7 +1716,7 @@ def _mark_free_pricings_as_invoiced() -> None:
                 "cancelled": bookings_models.BookingStatus.CANCELLED.value,
                 "reimbursed": bookings_models.BookingStatus.REIMBURSED.value,
                 "pricing_ids": tuple(pricing_ids),
-                "reimbursement_date": datetime.datetime.utcnow(),
+                "reimbursement_date": datetime.datetime.now(),
             },
         )
 
@@ -2196,7 +2196,7 @@ def _generate_invoice(
                 "cancelled": bookings_models.BookingStatus.CANCELLED.value,
                 "reimbursed": bookings_models.BookingStatus.REIMBURSED.value,
                 "cashflow_ids": tuple(cashflow_ids),
-                "reimbursement_date": datetime.datetime.utcnow(),
+                "reimbursement_date": datetime.datetime.now(),
             },
         )
 
@@ -2224,7 +2224,7 @@ def _generate_invoice(
                 "cancelled": bookings_models.BookingStatus.CANCELLED.value,
                 "reimbursed": bookings_models.BookingStatus.REIMBURSED.value,
                 "cashflow_ids": tuple(cashflow_ids),
-                "reimbursement_date": datetime.datetime.utcnow(),
+                "reimbursement_date": datetime.datetime.now(),
             },
         )
 
@@ -2666,7 +2666,7 @@ def edit_reimbursement_rule(
     rule: models.CustomReimbursementRule,
     end_date: datetime.datetime,
 ) -> models.CustomReimbursementRule:
-    if end_date.date() <= datetime.datetime.utcnow().date():
+    if end_date.date() <= datetime.datetime.now().date():
         error = "La date de fin doit être postérieure à la date du jour."
         raise exceptions.WrongDateForReimbursementRule(error)
     # To avoid complexity, we do not allow to edit the end date of a
@@ -2716,7 +2716,7 @@ def get_granted_deposit(
         )
 
     if eligibility == users_models.EligibilityType.AGE18:
-        expiration_date = datetime.datetime.utcnow().date() + relativedelta(years=conf.GRANT_18_VALIDITY_IN_YEARS)
+        expiration_date = datetime.datetime.now().date() + relativedelta(years=conf.GRANT_18_VALIDITY_IN_YEARS)
         expiration_datetime = datetime.datetime.combine(expiration_date, datetime.time.max)
         return models.GrantedDeposit(
             amount=conf.GRANTED_DEPOSIT_AMOUNTS_FOR_18_BY_VERSION[2],
@@ -2816,11 +2816,11 @@ def create_deposit(
 def expire_current_deposit_for_user(user: users_models.User) -> None:
     models.Deposit.query.filter(
         models.Deposit.user == user,
-        models.Deposit.expirationDate > datetime.datetime.utcnow(),
+        models.Deposit.expirationDate > datetime.datetime.now(),
     ).update(
         {
-            models.Deposit.expirationDate: datetime.datetime.utcnow() - datetime.timedelta(seconds=1),
-            models.Deposit.dateUpdated: datetime.datetime.utcnow(),
+            models.Deposit.expirationDate: datetime.datetime.now() - datetime.timedelta(seconds=1),
+            models.Deposit.dateUpdated: datetime.datetime.now(),
         },
     )
 
@@ -2972,8 +2972,8 @@ def _get_known_birthday_at_deposit(user: users_models.User) -> datetime.date | N
 def recredit_underage_users() -> None:
     import pcapi.core.users.api as users_api
 
-    sixteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=16)
-    eighteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=18)
+    sixteen_years_ago = datetime.datetime.now() - relativedelta(years=16)
+    eighteen_years_ago = datetime.datetime.now() - relativedelta(years=18)
 
     user_ids = [
         result
@@ -3074,7 +3074,7 @@ def update_bank_account_venues_links(
             link_bulk_update_mapping.append(
                 {
                     "id": link.id,
-                    "timespan": db_utils.make_timerange(link.timespan.lower, datetime.datetime.utcnow()),
+                    "timespan": db_utils.make_timerange(link.timespan.lower, datetime.datetime.now()),
                 }
             )
             action_history_bulk_insert_mapping.append(
@@ -3107,7 +3107,7 @@ def update_bank_account_venues_links(
                 {
                     "venueId": venue_id,
                     "bankAccountId": bank_account.id,
-                    "timespan": db_utils.make_timerange(datetime.datetime.utcnow()),
+                    "timespan": db_utils.make_timerange(datetime.datetime.now()),
                 }
             )
             action_history_bulk_insert_mapping.append(
@@ -3146,7 +3146,7 @@ def create_overpayment_finance_incident(
         details={
             "origin": origin,
             "authorId": author.id,
-            "createdAt": datetime.datetime.utcnow().isoformat(),
+            "createdAt": datetime.datetime.now().isoformat(),
         },
     )
     db.session.add(incident)
@@ -3201,7 +3201,7 @@ def create_overpayment_finance_incident_collective_booking(
         details={
             "origin": origin,
             "authorId": author.id,
-            "createdAt": datetime.datetime.utcnow().isoformat(),
+            "createdAt": datetime.datetime.now().isoformat(),
         },
     )
     db.session.add(incident)
@@ -3239,7 +3239,7 @@ def create_finance_commercial_gesture(
         details={
             "origin": origin,
             "authorId": author.id,
-            "createdAt": datetime.datetime.utcnow().isoformat(),
+            "createdAt": datetime.datetime.now().isoformat(),
         },
     )
     db.session.add(incident)
@@ -3303,7 +3303,7 @@ def create_finance_commercial_gesture_collective_booking(
         details={
             "origin": origin,
             "authorId": author.id,
-            "createdAt": datetime.datetime.utcnow().isoformat(),
+            "createdAt": datetime.datetime.now().isoformat(),
         },
     )
     db.session.add(incident)
@@ -3373,7 +3373,7 @@ def validate_finance_overpayment_incident(
     force_debit_note: bool,
     author: users_models.User,
 ) -> None:
-    incident_validation_date = datetime.datetime.utcnow()
+    incident_validation_date = datetime.datetime.now()
     finance_events = []
     for booking_incident in finance_incident.booking_finance_incidents:
         finance_events.extend(
@@ -3454,7 +3454,7 @@ def validate_finance_commercial_gesture(
     finance_incident: models.FinanceIncident,
     author: users_models.User,
 ) -> None:
-    incident_validation_date = datetime.datetime.utcnow()
+    incident_validation_date = datetime.datetime.now()
     finance_events = []
     for booking_incident in finance_incident.booking_finance_incidents:
         finance_events += _create_finance_events_from_incident(
@@ -3534,7 +3534,7 @@ def deprecate_venue_bank_account_links(bank_account: models.BankAccount) -> None
     """
     for link in bank_account.venueLinks:
         if link.timespan.upper is None:
-            link.timespan = db_utils.make_timerange(link.timespan.lower, datetime.datetime.utcnow())
+            link.timespan = db_utils.make_timerange(link.timespan.lower, datetime.datetime.now())
             action_history = history_models.ActionHistory(
                 venueId=link.venueId,
                 bankAccountId=bank_account.id,
@@ -3546,7 +3546,7 @@ def deprecate_venue_bank_account_links(bank_account: models.BankAccount) -> None
 
 
 def mark_bank_account_without_continuation(ds_application_id: int) -> None:
-    now = datetime.datetime.utcnow()
+    now = datetime.datetime.now()
 
     bank_account = (
         models.BankAccount.query.filter_by(dsApplicationId=ds_application_id)

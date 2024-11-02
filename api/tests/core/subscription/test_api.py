@@ -531,7 +531,7 @@ class OverflowSubscriptionLimitationTest:
     @pytest.mark.parametrize("age", [15, 16, 17, 18])
     def test__is_ubble_allowed_if_subscription_overflow(self, age):
         # user birthday is in settings.UBBLE_SUBSCRIPTION_LIMITATION_DAYS days
-        birth_date = datetime.utcnow() - relativedelta(years=age + 1)
+        birth_date = datetime.now() - relativedelta(years=age + 1)
         birth_date += relativedelta(days=settings.UBBLE_SUBSCRIPTION_LIMITATION_DAYS - 1)
 
         # the user has:
@@ -540,8 +540,7 @@ class OverflowSubscriptionLimitationTest:
 
         users_utils.get_age_from_birth_date(user_approching_birthday.dateOfBirth)
         user_not_allowed = users_factories.UserFactory(
-            dateOfBirth=datetime.utcnow()
-            - relativedelta(years=age, days=settings.UBBLE_SUBSCRIPTION_LIMITATION_DAYS + 10)
+            dateOfBirth=datetime.now() - relativedelta(years=age, days=settings.UBBLE_SUBSCRIPTION_LIMITATION_DAYS + 10)
         )
 
         assert subscription_api._is_ubble_allowed_if_subscription_overflow(user_approching_birthday)
@@ -657,7 +656,7 @@ class UpdateBirthDateTest:
         assert user.validatedBirthDate == new_birth_date.date()
 
     def test_update_birth_date_when_eligible_to_upgrade_age18_based_on_user_birth_date(self):
-        with time_machine.travel(datetime.utcnow() - relativedelta(years=1)):
+        with time_machine.travel(datetime.now() - relativedelta(years=1)):
             user = users_factories.BeneficiaryFactory(age=17)
 
         assert user.validatedBirthDate == user.dateOfBirth.date()
@@ -668,7 +667,7 @@ class UpdateBirthDateTest:
         assert user.validatedBirthDate == new_birth_date.date()
 
     def test_does_not_update_birth_date_when_eligible_to_upgrade_age18_based_on_identity_check_birth_date(self):
-        with time_machine.travel(datetime.utcnow() - relativedelta(months=11)):
+        with time_machine.travel(datetime.now() - relativedelta(months=11)):
             user = users_factories.BeneficiaryFactory(age=17)
 
         assert user.validatedBirthDate == user.dateOfBirth.date()
@@ -701,7 +700,7 @@ class UpdateBirthDateTest:
 
 @pytest.mark.usefixtures("db_session")
 class SubscriptionItemTest:
-    AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=18, months=4)
+    AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
 
     def test_phone_validation_item(self):
         user = users_factories.UserFactory(
@@ -750,9 +749,9 @@ class SubscriptionItemTest:
 
 @pytest.mark.usefixtures("db_session")
 class IdentityCheckSubscriptionStatusTest:
-    AGE16_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=16, months=4)
-    AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=18, months=4)
-    AGE20_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=20, months=4)
+    AGE16_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=16, months=4)
+    AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
+    AGE20_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=20, months=4)
 
     def test_not_eligible(self):
         user = users_factories.UserFactory(dateOfBirth=self.AGE20_ELIGIBLE_BIRTH_DATE)
@@ -931,9 +930,9 @@ class IdentityCheckSubscriptionStatusTest:
 
 @pytest.mark.usefixtures("db_session")
 class NeedsToPerformeIdentityCheckTest:
-    AGE16_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=16, months=4)
-    AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=18, months=4)
-    AGE20_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=20, months=4)
+    AGE16_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=16, months=4)
+    AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
+    AGE20_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=20, months=4)
 
     def test_not_eligible(self):
         user = users_factories.UserFactory(dateOfBirth=self.AGE20_ELIGIBLE_BIRTH_DATE)
@@ -1168,7 +1167,7 @@ class CompleteProfileTest:
         was cancelled because of "eligibility_changed" scenario
         """
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
+            dateOfBirth=datetime.now() - relativedelta(years=18),
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -1204,7 +1203,7 @@ class CompleteProfileTest:
 class ActivateBeneficiaryIfNoMissingStepTest:
     def test_activation_success(self):
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
+            dateOfBirth=datetime.now() - relativedelta(years=18),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             firstName="profile-firstname",
             lastName="profile-lastname",
@@ -1255,7 +1254,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
 
     def test_activation_fails_when_no_result_content(self):
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
+            dateOfBirth=datetime.now() - relativedelta(years=18),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -1289,7 +1288,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
 
     def test_admin_review_ko(self):
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
+            dateOfBirth=datetime.now() - relativedelta(years=18),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             firstName="profile-firstname",
             lastName="profile-lastname",
@@ -1336,7 +1335,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
 
     def test_missing_step(self):
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
+            dateOfBirth=datetime.now() - relativedelta(years=18),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             firstName=None,
             lastName=None,
@@ -1370,12 +1369,12 @@ class ActivateBeneficiaryIfNoMissingStepTest:
     def test_duplicate_detected(self):
         first_name = "Alain"
         last_name = "Milourd"
-        birth_date = datetime.utcnow() - relativedelta(years=18)
+        birth_date = datetime.now() - relativedelta(years=18)
 
         users_factories.BeneficiaryGrant18Factory(firstName=first_name, lastName=last_name, dateOfBirth=birth_date)
 
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
+            dateOfBirth=datetime.now() - relativedelta(years=18),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             firstName=None,
             lastName=None,
@@ -1417,8 +1416,8 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.firstName is None
         assert user.lastName is None
 
-    AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=18, months=4)
-    UNDERAGE_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=16, months=4)
+    AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
+    UNDERAGE_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=16, months=4)
 
     def eligible_user(
         self,
@@ -1500,7 +1499,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         identity_firstname = "Yolan"
         identity_lastname = "Mac Doumy"
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
+            dateOfBirth=datetime.now() - relativedelta(years=18),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             firstName=identity_firstname,
             lastName=identity_lastname,
@@ -1551,7 +1550,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         identity_firstname = "Yolan"
         identity_lastname = "Mac Doumy"
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
+            dateOfBirth=datetime.now() - relativedelta(years=18),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             firstName=identity_firstname,
             lastName=identity_lastname,
@@ -1599,7 +1598,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         )
 
     def test_manual_review_is_required_for_post_19yo_dms(self):
-        with time_machine.travel(datetime.utcnow() - relativedelta(days=1)):
+        with time_machine.travel(datetime.now() - relativedelta(days=1)):
             user = users_factories.ProfileCompletedUserFactory(age=19)
 
         dms_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
@@ -1637,7 +1636,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
     def test_manual_review_is_not_required_for_pre_19yo_dms(self):
         user = users_factories.ProfileCompletedUserFactory(age=19)
 
-        with time_machine.travel(datetime.utcnow() - relativedelta(days=1)):
+        with time_machine.travel(datetime.now() - relativedelta(days=1)):
             dms_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
                 user=user,
                 type=fraud_models.FraudCheckType.DMS,
@@ -1656,7 +1655,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
 @pytest.mark.usefixtures("db_session")
 class SubscriptionMessageTest:
     def test_not_eligible(self):
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=20))
+        user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=20))
 
         assert subscription_api.get_user_subscription_state(user).subscription_message is None
 
@@ -1666,9 +1665,7 @@ class SubscriptionMessageTest:
         assert subscription_api.get_user_subscription_state(user).subscription_message is None
 
     def test_other_next_step(self):
-        user_needing_honor_statement = users_factories.UserFactory(
-            dateOfBirth=datetime.utcnow() - relativedelta(years=17)
-        )
+        user_needing_honor_statement = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=17))
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
@@ -1687,7 +1684,7 @@ class SubscriptionMessageTest:
     @override_features(ENABLE_UBBLE=False)
     def test_maintenance(self):
         user_needing_identity_check = users_factories.UserFactory(
-            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
+            dateOfBirth=datetime.now() - relativedelta(years=18),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -1713,7 +1710,7 @@ class SubscriptionMessageTest:
         mocked_dms_message.return_value = dms_returned_message
 
         user_with_dms_pending = users_factories.UserFactory(
-            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
+            dateOfBirth=datetime.now() - relativedelta(years=18),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -1751,7 +1748,7 @@ class SubscriptionMessageTest:
         mocked_ubble_message.return_value = ubble_returned_message
 
         user_with_ubble_pending = users_factories.UserFactory(
-            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
+            dateOfBirth=datetime.now() - relativedelta(years=18),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -1789,7 +1786,7 @@ class SubscriptionMessageTest:
         mocked_ubble_message.return_value = ubble_returned_message
 
         user_with_ubble_pending = users_factories.UserFactory(
-            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
+            dateOfBirth=datetime.now() - relativedelta(years=18),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -1828,7 +1825,7 @@ class SubscriptionMessageTest:
         mocked_educonnect_message.return_value = educonnect_returned_message
 
         user_with_educonnect = users_factories.UserFactory(
-            dateOfBirth=datetime.utcnow() - relativedelta(years=16),
+            dateOfBirth=datetime.now() - relativedelta(years=16),
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             eligibilityType=users_models.EligibilityType.UNDERAGE,
@@ -1866,7 +1863,7 @@ class SubscriptionMessageTest:
 class HasCompletedProfileTest:
     def test_has_completed(self):
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
+            dateOfBirth=datetime.now() - relativedelta(years=18),
             activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
         )
         fraud_factories.ProfileCompletionFraudCheckFactory(
@@ -1879,24 +1876,24 @@ class HasCompletedProfileTest:
         assert subscription_api.has_completed_profile_for_given_eligibility(user, user.eligibility) is False
 
     def test_has_completed_with_profile_completion_ok(self):
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
+        user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=18))
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user, status=fraud_models.FraudCheckStatus.OK)
         assert subscription_api.has_completed_profile_for_given_eligibility(user, user.eligibility) is True
 
     def test_has_not_completed_with_profile_completion_cancelled(self):
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
+        user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=18))
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user, status=fraud_models.FraudCheckStatus.CANCELED)
         assert subscription_api.has_completed_profile_for_given_eligibility(user, user.eligibility) is False
 
     def test_has_completed_with_dms_form_filled(self):
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
+        user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=18))
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.DMS, user=user, status=fraud_models.FraudCheckStatus.PENDING
         )
         assert subscription_api.has_completed_profile_for_given_eligibility(user, user.eligibility) is True
 
     def test_has_not_completed_with_dms_form_filled_for_underage(self):
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
+        user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=18))
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.DMS,
             user=user,
@@ -1923,7 +1920,7 @@ class GetRelevantFraudCheckTest:
     )
     def should_get_relevant_identity_fraud_check_when_same_eligibility(self, user_eligibility, fraud_check_type):
         age = 17 if user_eligibility == users_models.EligibilityType.UNDERAGE else 18
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=age))
+        user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=age))
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, eligibilityType=user_eligibility, type=fraud_check_type
         )
@@ -1979,7 +1976,7 @@ class GetRelevantFraudCheckTest:
         self, user_eligibility, fraud_check_eligibility, fraud_check_type
     ):
         age = 17 if user_eligibility == users_models.EligibilityType.UNDERAGE else 18
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=age))
+        user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=age))
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, eligibilityType=fraud_check_eligibility, type=fraud_check_type
         )
@@ -1987,7 +1984,7 @@ class GetRelevantFraudCheckTest:
         assert subscription_api.get_relevant_identity_fraud_check(user, user_eligibility) is None
 
     def should_get_ok_fraud_check_if_any(self):
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=17))
+        user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=17))
         fraud_check_ok = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
@@ -2005,7 +2002,7 @@ class GetRelevantFraudCheckTest:
         )
 
     def should_get_pending_fraud_check_when_no_ok(self):
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=17))
+        user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=17))
         fraud_check_pending = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
@@ -2023,7 +2020,7 @@ class GetRelevantFraudCheckTest:
         )
 
     def should_get_latest_ko_fraud_check_when_no_pending_or_ok(self):
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=17))
+        user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=17))
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
@@ -2044,7 +2041,7 @@ class GetRelevantFraudCheckTest:
 @pytest.mark.usefixtures("db_session")
 class GetStatusFromFraudCheckTest:
     def get_date_of_birth_to_be_eligible(self, eligibility_type):
-        return datetime.utcnow() - relativedelta(
+        return datetime.now() - relativedelta(
             years=17 if eligibility_type == users_models.EligibilityType.UNDERAGE else 18
         )
 

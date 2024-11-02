@@ -753,7 +753,7 @@ def check_publication_date(offer: models.Offer, publication_date: datetime.datet
         msg = "L’heure de publication doit être une heure pile"
         raise exceptions.FutureOfferException("publication_date", msg)
 
-    now = datetime.datetime.utcnow()
+    now = datetime.datetime.now()
     if publication_date < now:
         msg = "Impossible de sélectionner une date de publication dans le passé"
         raise exceptions.FutureOfferException("publication_date", msg)

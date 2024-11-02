@@ -215,7 +215,7 @@ class BookOfferTest:
 
     def test_free_offer_booking_by_ex_beneficiary(self):
         ex_beneficiary = users_factories.BeneficiaryGrant18Factory(
-            deposit__expirationDate=datetime.utcnow() - timedelta(days=1000)  # ~ 2 years and a half
+            deposit__expirationDate=datetime.now() - timedelta(days=1000)  # ~ 2 years and a half
         )
         stock = offers_factories.StockFactory(price=0, dnBookedQuantity=5, offer__bookingEmail="offerer@example.com")
 
@@ -233,7 +233,7 @@ class BookOfferTest:
         stock2 = offers_factories.StockFactory(price=10, dnBookedQuantity=5, offer=offer2)
 
         beneficiary = users_factories.BeneficiaryGrant18Factory()
-        date_created = datetime.utcnow() - timedelta(days=5)
+        date_created = datetime.now() - timedelta(days=5)
         bookings_factories.BookingFactory.create_batch(3, user=beneficiary, dateCreated=date_created, stock=stock2)
 
         booking = api.book_offer(beneficiary=beneficiary, stock_id=stock1.id, quantity=1)
@@ -273,7 +273,7 @@ class BookOfferTest:
         assert event is None
 
     def test_create_event_booking(self):
-        ten_days_from_now = datetime.utcnow() + timedelta(days=10)
+        ten_days_from_now = datetime.now() + timedelta(days=10)
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         stock = offers_factories.EventStockFactory(price=10, beginningDatetime=ten_days_from_now, dnBookedQuantity=5)
 
@@ -600,7 +600,7 @@ class BookOfferTest:
             assert booking_queued["cinema_id"] == venue_provider.venueIdAtOfferProvider
             assert booking_queued["token"] == token
             timestamp = booking_queued["timestamp"]
-            assert timestamp == pytest.approx(datetime.utcnow().timestamp())
+            assert timestamp == pytest.approx(datetime.now().timestamp())
 
             mock_llen.side_effect = [1, 0]
             mock_rpop.return_value = json.dumps(
@@ -608,7 +608,7 @@ class BookOfferTest:
                     "cinema_id": venue_provider.venueIdAtOfferProvider,
                     "token": token,
                     # Mocking an older booking, otherwise tests runs too fast
-                    "timestamp": (datetime.utcnow() - timedelta(seconds=180)).timestamp(),
+                    "timestamp": (datetime.now() - timedelta(seconds=180)).timestamp(),
                 }
             )
 
@@ -711,7 +711,7 @@ class BookOfferTest:
             assert booking_queued["cinema_id"] == venue_provider.venueIdAtOfferProvider
             assert booking_queued["token"] == token
             timestamp = booking_queued["timestamp"]
-            assert timestamp == pytest.approx(datetime.utcnow().timestamp())
+            assert timestamp == pytest.approx(datetime.now().timestamp())
 
             mock_llen.side_effect = [1, 0]
             mock_rpop.return_value = json.dumps(
@@ -828,7 +828,7 @@ class BookOfferTest:
                     "cinema_id": venue_provider.venueIdAtOfferProvider,
                     "token": token,
                     # Mocking an older booking, otherwise tests runs too fast
-                    "timestamp": (datetime.utcnow() - timedelta(seconds=180)).timestamp(),
+                    "timestamp": (datetime.now() - timedelta(seconds=180)).timestamp(),
                 }
             )
 
@@ -1237,7 +1237,7 @@ class CancelByBeneficiaryTest:
         assert booking.status is not BookingStatus.CANCELLED
 
     def test_raise_if_event_too_close(self):
-        event_date_too_close_to_cancel_booking = datetime.utcnow() + timedelta(days=1)
+        event_date_too_close_to_cancel_booking = datetime.now() + timedelta(days=1)
         booking = bookings_factories.BookingFactory(
             stock__beginningDatetime=event_date_too_close_to_cancel_booking,
         )
@@ -1251,8 +1251,8 @@ class CancelByBeneficiaryTest:
         ]
 
     def test_raise_if_booking_created_too_long_ago_to_cancel_booking(self):
-        event_date_far_enough_to_cancel_booking = datetime.utcnow() + timedelta(days=2, minutes=1)
-        booking_date_too_long_ago_to_cancel_booking = datetime.utcnow() - timedelta(days=2, minutes=1)
+        event_date_far_enough_to_cancel_booking = datetime.now() + timedelta(days=2, minutes=1)
+        booking_date_too_long_ago_to_cancel_booking = datetime.now() - timedelta(days=2, minutes=1)
         booking = bookings_factories.BookingFactory(
             stock__beginningDatetime=event_date_far_enough_to_cancel_booking,
             dateCreated=booking_date_too_long_ago_to_cancel_booking,
@@ -1267,8 +1267,8 @@ class CancelByBeneficiaryTest:
         ]
 
     def test_raise_if_event_too_close_and_booked_long_ago(self):
-        booking_date_too_long_ago_to_cancel_booking = datetime.utcnow() - timedelta(days=2, minutes=1)
-        event_date_too_close_to_cancel_booking = datetime.utcnow() + timedelta(days=1)
+        booking_date_too_long_ago_to_cancel_booking = datetime.now() - timedelta(days=2, minutes=1)
+        event_date_too_close_to_cancel_booking = datetime.now() + timedelta(days=1)
         booking = bookings_factories.BookingFactory(
             stock__beginningDatetime=event_date_too_close_to_cancel_booking,
             dateCreated=booking_date_too_long_ago_to_cancel_booking,
@@ -1652,7 +1652,7 @@ class MarkAsUsedTest:
         assert event.motive == finance_models.FinanceEventMotive.BOOKING_USED_AFTER_CANCELLATION
 
     def test_mark_as_used_when_stock_starts_soon(self):
-        booking = bookings_factories.BookingFactory(stock__beginningDatetime=datetime.utcnow() + timedelta(days=1))
+        booking = bookings_factories.BookingFactory(stock__beginningDatetime=datetime.now() + timedelta(days=1))
         api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
         assert booking.status is BookingStatus.USED
         assert booking.validationAuthorType == models.BookingValidationAuthorType.OFFERER
@@ -1674,7 +1674,7 @@ class MarkAsUsedTest:
             api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
 
     def test_raise_if_too_soon_to_mark_as_used(self):
-        booking = bookings_factories.BookingFactory(stock__beginningDatetime=datetime.utcnow() + timedelta(days=4))
+        booking = bookings_factories.BookingFactory(stock__beginningDatetime=datetime.now() + timedelta(days=4))
         with pytest.raises(exceptions.BookingIsNotConfirmed):
             api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
         assert booking.status is not BookingStatus.USED
@@ -1740,7 +1740,7 @@ class MarkAsUnusedTest:
 
 @pytest.mark.parametrize(
     "booking_creation_date",
-    [datetime(2020, 7, 14, 15, 30), datetime(2020, 10, 25, 1, 45), datetime.utcnow()],
+    [datetime(2020, 7, 14, 15, 30), datetime(2020, 10, 25, 1, 45), datetime.now()],
     ids=["14 Jul", "Daylight Saving Switch", "Now"],
 )
 @pytest.mark.usefixtures("db_session")
@@ -1777,7 +1777,7 @@ class ComputeCancellationDateTest:
 class UpdateCancellationLimitDatesTest:
     def should_update_bookings_cancellation_limit_dates_for_event_beginning_tomorrow(self):
         # Given
-        now = datetime.utcnow()
+        now = datetime.now()
         recent_booking = bookings_factories.BookingFactory(stock__beginningDatetime=now + timedelta(days=90))
         old_booking = bookings_factories.BookingFactory(stock=recent_booking.stock, dateCreated=now - timedelta(days=7))
         # When
@@ -1796,7 +1796,7 @@ class UpdateCancellationLimitDatesTest:
 
     def should_update_bookings_cancellation_limit_dates_for_event_beginning_in_three_days(self):
         # Given
-        now = datetime.utcnow()
+        now = datetime.now()
         recent_booking = bookings_factories.BookingFactory(stock__beginningDatetime=now + timedelta(days=90))
         old_booking = bookings_factories.BookingFactory(stock=recent_booking.stock, dateCreated=now - timedelta(days=7))
         # When
@@ -1815,7 +1815,7 @@ class UpdateCancellationLimitDatesTest:
 
     def should_update_bookings_cancellation_limit_dates_for_event_beginning_in_a_week(self):
         # Given
-        now = datetime.utcnow()
+        now = datetime.now()
         recent_booking = bookings_factories.BookingFactory(stock__beginningDatetime=now + timedelta(days=90))
         old_booking = bookings_factories.BookingFactory(stock=recent_booking.stock, dateCreated=now - timedelta(days=7))
         # When
@@ -1845,7 +1845,7 @@ class AutoMarkAsUsedAfterEventTest:
         assert not booking.dateUsed
 
     def test_update_booking_used_when_event_date_is_3_days_before(self):
-        event_date = datetime.utcnow() - timedelta(days=3)
+        event_date = datetime.now() - timedelta(days=3)
         bookings_factories.BookingFactory(stock__beginningDatetime=event_date)
 
         api.auto_mark_as_used_after_event()
@@ -1856,7 +1856,7 @@ class AutoMarkAsUsedAfterEventTest:
         assert booking.dateUsed is not None
 
     def test_create_finance_event_for_individual_booking(self):
-        event_date = datetime.utcnow() - timedelta(days=3)
+        event_date = datetime.now() - timedelta(days=3)
         booking = bookings_factories.BookingFactory(stock__beginningDatetime=event_date)
 
         api.auto_mark_as_used_after_event()
@@ -1866,7 +1866,7 @@ class AutoMarkAsUsedAfterEventTest:
         assert event.valueDate == booking.dateUsed != None
 
     def test_num_queries(self):
-        event_date = datetime.utcnow() - timedelta(days=3)
+        event_date = datetime.now() - timedelta(days=3)
         bookings_factories.BookingFactory(stock__beginningDatetime=event_date)
         bookings_factories.BookingFactory(stock__beginningDatetime=event_date)
         educational_factories.CollectiveBookingFactory(collectiveStock__beginningDatetime=event_date)
@@ -1894,7 +1894,7 @@ class AutoMarkAsUsedAfterEventTest:
             api.auto_mark_as_used_after_event()
 
     def test_does_not_update_when_event_date_is_only_1_day_before(self):
-        event_date = datetime.utcnow() - timedelta(days=1)
+        event_date = datetime.now() - timedelta(days=1)
         bookings_factories.BookingFactory(stock__beginningDatetime=event_date)
 
         api.auto_mark_as_used_after_event()
@@ -1904,7 +1904,7 @@ class AutoMarkAsUsedAfterEventTest:
         assert booking.dateUsed is None
 
     def test_does_not_update_booking_if_already_used(self):
-        event_date = datetime.utcnow() - timedelta(days=3)
+        event_date = datetime.now() - timedelta(days=3)
         booking = bookings_factories.UsedBookingFactory(stock__beginningDatetime=event_date)
         initial_date_used = booking.dateUsed
 
@@ -1915,7 +1915,7 @@ class AutoMarkAsUsedAfterEventTest:
         assert booking.dateUsed == initial_date_used
 
     def test_does_not_update_booking_if_cancelled(self):
-        event_date = datetime.utcnow() - timedelta(days=3)
+        event_date = datetime.now() - timedelta(days=3)
         booking = bookings_factories.CancelledBookingFactory(stock__beginningDatetime=event_date)
 
         api.auto_mark_as_used_after_event()
@@ -1924,7 +1924,7 @@ class AutoMarkAsUsedAfterEventTest:
         assert booking.status is BookingStatus.CANCELLED
 
     def test_update_external_booking_if_not_used(self):
-        event_date = datetime.utcnow() - timedelta(days=3)
+        event_date = datetime.now() - timedelta(days=3)
         ExternalBookingFactory(
             booking__stock__beginningDatetime=event_date,
         )
@@ -1934,7 +1934,7 @@ class AutoMarkAsUsedAfterEventTest:
         assert validated_external_booking.status is BookingStatus.USED
 
     def test_update_collective_booking_when_not_used_and_event_date_is_3_days_before(self, caplog):
-        event_date = datetime.utcnow() - timedelta(days=3)
+        event_date = datetime.now() - timedelta(days=3)
         educational_factories.CollectiveBookingFactory(collectiveStock__beginningDatetime=event_date)
 
         with caplog.at_level(logging.INFO):
@@ -1951,7 +1951,7 @@ class AutoMarkAsUsedAfterEventTest:
         }
 
     def test_create_finance_event_for_collective_booking(self):
-        event_date = datetime.utcnow() - timedelta(days=3)
+        event_date = datetime.now() - timedelta(days=3)
         booking = educational_factories.CollectiveBookingFactory(collectiveStock__endDatetime=event_date)
 
         api.auto_mark_as_used_after_event()
@@ -1960,7 +1960,7 @@ class AutoMarkAsUsedAfterEventTest:
         assert event.collectiveBooking == booking
 
     def test_does_not_update_collective_booking_when_event_date_is_only_1_day_before(self):
-        event_date = datetime.utcnow() - timedelta(days=1)
+        event_date = datetime.now() - timedelta(days=1)
         educational_factories.CollectiveBookingFactory(collectiveStock__endDatetime=event_date)
 
         api.auto_mark_as_used_after_event()
@@ -1970,7 +1970,7 @@ class AutoMarkAsUsedAfterEventTest:
         assert collectiveBooking.dateUsed is None
 
     def test_does_not_update_collective_booking_when_cancelled(self):
-        event_date = datetime.utcnow() - timedelta(days=3)
+        event_date = datetime.now() - timedelta(days=3)
         educational_factories.CollectiveBookingFactory(
             collectiveStock__beginningDatetime=event_date, status=CollectiveBookingStatus.CANCELLED
         )
@@ -2022,7 +2022,7 @@ class GetInvidualBookingsFromStockTest:
 class ArchiveOldBookingsTest:
     def test_old_activation_code_bookings_are_archived(self, db_session):
         # given
-        now = datetime.utcnow()
+        now = datetime.now()
         recent = now - timedelta(days=29, hours=23)
         old = now - timedelta(days=30, hours=1)
         offer = offers_factories.OfferFactory(url="http://example.com")
@@ -2047,7 +2047,7 @@ class ArchiveOldBookingsTest:
     )
     def test_old_subcategories_bookings_are_archived(self, db_session, subcategoryId):
         # given
-        now = datetime.utcnow()
+        now = datetime.now()
         recent = now - timedelta(days=29, hours=23)
         old = now - timedelta(days=30, hours=1)
         stock_free = offers_factories.StockFactory(
@@ -2077,7 +2077,7 @@ class ArchiveOldBookingsTest:
     )
     def test_old_subcategories_bookings_are_archived_is_no_longer_free(self, db_session, subcategoryId, client):
         # given
-        now = datetime.utcnow()
+        now = datetime.now()
         recent = now - timedelta(days=29, hours=23)
         old = now - timedelta(days=30, hours=1)
         offer = offers_factories.ThingOfferFactory(subcategoryId=subcategoryId)
@@ -2112,7 +2112,7 @@ class PopBarcodesFromQueueAndCancelWastedExternalBookingTest:
             {
                 "barcode": "AAA-123456789",
                 "venue_id": 12,
-                "timestamp": datetime.utcnow().timestamp(),
+                "timestamp": datetime.now().timestamp(),
                 "booking_type": RedisExternalBookingType.CINEMA,
             },
         )
@@ -2125,7 +2125,7 @@ class PopBarcodesFromQueueAndCancelWastedExternalBookingTest:
     def test_should_pop_and_cancel_only_external_booking_reached_minimum_age(
         self, mocked_cancel_external_booking, app, requests_mock
     ):
-        now = datetime.utcnow()
+        now = datetime.now()
         provider = providers_factories.ProviderFactory(
             bookingExternalUrl="http://example.com/book", cancelExternalUrl="http://example.com/cancel"
         )

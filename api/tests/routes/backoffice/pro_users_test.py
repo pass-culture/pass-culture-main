@@ -291,10 +291,10 @@ class GetProUserHistoryTest(GetEndpointHelper):
 
     def test_get_history(self, authenticated_client, pro_user):
         action1 = history_factories.ActionHistoryFactory(
-            user=pro_user, actionDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=5)
+            user=pro_user, actionDate=datetime.datetime.now() - datetime.timedelta(minutes=5)
         )
         action2 = history_factories.ActionHistoryFactory(
-            actionDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=2),
+            actionDate=datetime.datetime.now() - datetime.timedelta(minutes=2),
             actionType=history_models.ActionType.USER_SUSPENDED,
             user=pro_user,
             comment="Test de suspension",
@@ -385,7 +385,7 @@ class GetProUserOfferersTest(GetEndpointHelper):
     def test_get_user_offerers(self, authenticated_client):
         pro_user = users_factories.ProFactory()
         offerer_1 = offerers_factories.UserOffererFactory(
-            user=pro_user, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1)
+            user=pro_user, dateCreated=datetime.datetime.now() - datetime.timedelta(days=1)
         ).offerer
         offerer_2 = offerers_factories.NotValidatedUserOffererFactory(user=pro_user).offerer
         url = url_for(self.endpoint, user_id=pro_user.id)

@@ -404,7 +404,7 @@ class Return400Test:
     def should_edit_stock_when_event_expired(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime.utcnow() - timedelta(minutes=1),
+            beginningDatetime=datetime.now() - timedelta(minutes=1),
         )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",

@@ -22,7 +22,7 @@ DEFAULT_DIGITAL_VENUE_LABEL = "Offre numérique"
 def test_create_virtual_venue(client):
     # given
     pro = users_factories.ProFactory(
-        lastConnectionDate=datetime.utcnow(),
+        lastConnectionDate=datetime.now(),
     )
 
     body = {
@@ -98,7 +98,7 @@ def test_user_cant_create_same_offerer_twice(client):
 def test_when_no_address_is_provided(client):
     # given
     pro = users_factories.ProFactory(
-        lastConnectionDate=datetime.utcnow(),
+        lastConnectionDate=datetime.now(),
     )
     body = {"name": "Test Offerer", "siren": "418166096", "postalCode": "93100", "city": "Montreuil"}
 

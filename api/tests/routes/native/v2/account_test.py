@@ -226,7 +226,7 @@ class EmailUpdateStatusTest:
         token.expire()
 
     def test_status_returns_new_email_selection_token(self, client):
-        yesterday = datetime.utcnow() + timedelta(days=-1)
+        yesterday = datetime.now() + timedelta(days=-1)
         user = users_factories.BeneficiaryGrant18Factory()
         users_factories.EmailUpdateEntryFactory(
             user=user, creationDate=yesterday, newUserEmail=None, newDomainEmail=None
@@ -252,7 +252,7 @@ class EmailUpdateStatusTest:
         token.expire()
 
     def test_status_returns_reset_password_token(self, client):
-        yesterday = datetime.utcnow() + timedelta(days=-1)
+        yesterday = datetime.now() + timedelta(days=-1)
         user = users_factories.UserFactory(password=None)
         users_factories.EmailUpdateEntryFactory(
             user=user, creationDate=yesterday, newUserEmail=None, newDomainEmail=None
@@ -278,7 +278,7 @@ class EmailUpdateStatusTest:
         reset_password_token.expire()
 
     def test_status_returns_recently_reset_password(self, client):
-        yesterday = datetime.utcnow() + timedelta(days=-1)
+        yesterday = datetime.now() + timedelta(days=-1)
         user = users_factories.UserFactory(password=None)
         users_factories.EmailUpdateEntryFactory(
             user=user, creationDate=yesterday, newUserEmail=None, newDomainEmail=None
@@ -303,7 +303,7 @@ class EmailUpdateStatusTest:
         recently_reset_password_token.expire()
 
     def test_new_email_selection_status(self, client):
-        yesterday = datetime.utcnow() + timedelta(days=-1)
+        yesterday = datetime.now() + timedelta(days=-1)
         two_days_ago = yesterday + timedelta(days=-1)
         user = users_factories.BeneficiaryGrant18Factory()
         users_factories.EmailUpdateEntryFactory(

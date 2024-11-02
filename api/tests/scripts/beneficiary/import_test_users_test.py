@@ -15,8 +15,8 @@ from pcapi.utils import crypto
 from pcapi.utils.email import sanitize_email
 
 
-AGE18_ELIGIBLE_BIRTH_DATE = datetime.datetime.utcnow() - relativedelta(years=18, months=4)
-AGE17_ELIGIBLE_BIRTH_DATE = datetime.datetime.utcnow() - relativedelta(years=17, months=4)
+AGE18_ELIGIBLE_BIRTH_DATE = datetime.datetime.now() - relativedelta(years=18, months=4)
+AGE17_ELIGIBLE_BIRTH_DATE = datetime.datetime.now() - relativedelta(years=17, months=4)
 
 CSV = f"""Nom,Prénom,Mail,Téléphone,Département,Code postal,Date de naissance,Role,SIREN,Mot de passe,Type
 Doux,Jeanne,jeanne.doux@example.com,0102030405,86,86140,{AGE18_ELIGIBLE_BIRTH_DATE:%Y-%m-%d},BENEFICIARY,,,interne:test

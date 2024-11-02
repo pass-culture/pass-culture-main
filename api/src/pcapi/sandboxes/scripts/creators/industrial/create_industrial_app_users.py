@@ -83,7 +83,7 @@ def create_industrial_app_beneficiaries() -> dict[str, User]:
             deposit__version=deposit_version,
         )
         users_factories.DepositGrantFactory(
-            user=user, expirationDate=datetime.utcnow(), source="sandbox", type=finance_models.DepositType.GRANT_15_17
+            user=user, expirationDate=datetime.now(), source="sandbox", type=finance_models.DepositType.GRANT_15_17
         )
 
         user_key = f"jeune{departement_code} {tag} v{deposit_version}"
@@ -263,7 +263,7 @@ def create_short_email_beneficiaries() -> dict[str, User]:
             needsToFillCulturalSurvey=False,
         )
     )
-    with time_machine.travel(datetime.utcnow() - relativedelta(years=3)):
+    with time_machine.travel(datetime.now() - relativedelta(years=3)):
         users.append(
             users_factories.UnderageBeneficiaryFactory(
                 email="exunderage_18@example.com",
@@ -292,9 +292,7 @@ def create_short_email_beneficiaries() -> dict[str, User]:
     beneficiary_and_exunderage.add_beneficiary_role()
     users.append(beneficiary_and_exunderage)
 
-    with time_machine.travel(
-        datetime.utcnow() - relativedelta(years=finance_conf.GRANT_18_VALIDITY_IN_YEARS, months=5)
-    ):
+    with time_machine.travel(datetime.now() - relativedelta(years=finance_conf.GRANT_18_VALIDITY_IN_YEARS, months=5)):
         users.append(
             users_factories.BeneficiaryGrant18Factory(
                 email="exbene_20@example.com",

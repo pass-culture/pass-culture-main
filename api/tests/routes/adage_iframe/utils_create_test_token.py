@@ -28,7 +28,7 @@ def create_adage_jwt_default_fake_valid_token(
         firstname=firstname,
         email=email,
         uai=uai,
-        expiration_date=datetime.utcnow() + timedelta(days=1),
+        expiration_date=datetime.now() + timedelta(days=1),
         lat=lat,
         lon=lon,
     )
@@ -79,7 +79,7 @@ def create_adage_valid_token_with_email(
         firstname=firstname,
         email=email,
         uai=uai,
-        expiration_date=datetime.utcnow() + timedelta(days=1),
+        expiration_date=datetime.now() + timedelta(days=1),
         lat=lat,
         lon=lon,
     )
@@ -94,7 +94,7 @@ def create_adage_jwt_fake_invalid_token(
     lat: float | None = None,
     lon: float | None = None,
 ) -> bytes:
-    now = datetime.utcnow()
+    now = datetime.now()
     with open(INVALID_RSA_PRIVATE_KEY_PATH, "rb") as reader:
         return jwt.encode(
             {

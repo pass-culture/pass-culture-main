@@ -377,7 +377,7 @@ def get_active_token_expiration(user: models.User) -> datetime | None:
 
 
 def generate_email_change_token_expiration_date() -> datetime:
-    return datetime.utcnow() + constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
+    return datetime.now() + constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
 
 
 def check_user_password(user: models.User, password: str) -> None:

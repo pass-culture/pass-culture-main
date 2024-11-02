@@ -27,13 +27,13 @@ class CancelBookingByTokenTest(PublicAPIVenueEndpointHelper):
             name="Vieux motard que jamais",
             extraData={"ean": "1234567890123"},
         )
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        past = datetime.datetime.now() - datetime.timedelta(days=2)
         product_stock = offers_factories.StockFactory(offer=offer, beginningDatetime=past)
         booking = bookings_factories.BookingFactory(
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2),
+            user__dateOfBirth=datetime.datetime.now() - relativedelta(years=18, months=2),
             stock=product_stock,
         )
         return offer, booking
@@ -70,14 +70,14 @@ class CancelBookingByTokenTest(PublicAPIVenueEndpointHelper):
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
         )
-        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-        in_3_days = datetime.datetime.utcnow() + datetime.timedelta(days=3)
+        yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
+        in_3_days = datetime.datetime.now() + datetime.timedelta(days=3)
         event_stock = offers_factories.EventStockFactory(offer=event_offer, beginningDatetime=in_3_days)
         booking = bookings_factories.BookingFactory(
             dateCreated=yesterday,
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2),
+            user__dateOfBirth=datetime.datetime.now() - relativedelta(years=18, months=2),
             stock=event_stock,
         )
 
@@ -88,7 +88,7 @@ class CancelBookingByTokenTest(PublicAPIVenueEndpointHelper):
 
     def test_should_raise_403_when_booking_event_in_less_than_48_hours(self, client: TestClient):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)
 
         offer = offers_factories.EventOfferFactory(venue=venue_provider.venue)
         stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=tomorrow)
@@ -101,8 +101,8 @@ class CancelBookingByTokenTest(PublicAPIVenueEndpointHelper):
 
     def test_should_raise_403_when_cancelling_after_48_hours_following_booking_date(self, client: TestClient):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        in_2_weeks = datetime.datetime.utcnow() + datetime.timedelta(weeks=1)
-        two_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        in_2_weeks = datetime.datetime.now() + datetime.timedelta(weeks=1)
+        two_days_ago = datetime.datetime.now() - datetime.timedelta(days=2)
 
         offer = offers_factories.EventOfferFactory(venue=venue_provider.venue)
         stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=in_2_weeks)
@@ -115,8 +115,8 @@ class CancelBookingByTokenTest(PublicAPIVenueEndpointHelper):
 
     def test_when_cancelling_less_than_48_hours_before_beginning_date(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-        in_36_hours = datetime.datetime.utcnow() + datetime.timedelta(hours=36)
+        yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
+        in_36_hours = datetime.datetime.now() + datetime.timedelta(hours=36)
 
         offer = offers_factories.EventOfferFactory(venue=venue_provider.venue)
         stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=in_36_hours)

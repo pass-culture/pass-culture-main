@@ -64,7 +64,7 @@ class AllocineStocks(LocalProvider):
             offers_models.Offer,
             id_at_providers=venue_movie_unique_id,
             new_id_at_provider=venue_movie_unique_id,
-            date_modified_at_provider=datetime.utcnow(),
+            date_modified_at_provider=datetime.now(),
         )
         providable_information_list.append(offer_providable_information)
 
@@ -74,7 +74,7 @@ class AllocineStocks(LocalProvider):
                 offers_models.Stock,
                 id_at_providers=id_at_providers,
                 new_id_at_provider=id_at_providers,
-                date_modified_at_provider=datetime.utcnow(),
+                date_modified_at_provider=datetime.now(),
             )
             providable_information_list.append(stock_providable_information)
 

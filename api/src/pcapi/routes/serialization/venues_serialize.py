@@ -212,7 +212,7 @@ class GetVenueResponseGetterDict(base.VenueResponseGetterDict):
         if key == "hasAdageId":
             return bool(venue.adageId)
         if key == "pricingPoint":
-            now = datetime.utcnow()
+            now = datetime.now()
             for pricing_link in venue.pricing_point_links:
                 if pricing_link.timespan.lower <= now and (
                     not pricing_link.timespan.upper or pricing_link.timespan.upper > now
@@ -220,7 +220,7 @@ class GetVenueResponseGetterDict(base.VenueResponseGetterDict):
                     return pricing_link.pricingPoint
             return None
         if key == "reimbursementPointId":
-            now = datetime.utcnow()
+            now = datetime.now()
             for reimbursement_link in venue.reimbursement_point_links:
                 if reimbursement_link.timespan.lower <= now and (
                     not reimbursement_link.timespan.upper or reimbursement_link.timespan.upper > now

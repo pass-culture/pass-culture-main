@@ -210,7 +210,7 @@ def _get_future_provider_events_requiring_a_ticketing_system_query(
 
     # Events with future stocks
     events_query = events_query.filter(
-        offers_models.Stock.beginningDatetime >= datetime.datetime.utcnow(),
+        offers_models.Stock.beginningDatetime >= datetime.datetime.now(),
     )
 
     return events_query

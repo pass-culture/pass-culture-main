@@ -20,7 +20,7 @@ class ZendeskWebhookTest:
         "phone_number,postal_code", [("0612345678", 55270), ("06 12 34 56 78", None), ("+33612345678", 97600)]
     )
     def test_webhook_update_user_by_email(self, client, caplog, phone_number, postal_code):
-        birth_year = datetime.utcnow().year - user_constants.ELIGIBILITY_AGE_18
+        birth_year = datetime.now().year - user_constants.ELIGIBILITY_AGE_18
 
         user = users_factories.BeneficiaryGrant18Factory(
             dateOfBirth=datetime(birth_year, 1, 2),
@@ -127,7 +127,7 @@ class ZendeskWebhookTest:
         }
 
     def test_webhook_update_user_without_subscription_process(self, client):
-        birth_year = datetime.utcnow().year - user_constants.ELIGIBILITY_AGE_18
+        birth_year = datetime.now().year - user_constants.ELIGIBILITY_AGE_18
 
         # first name, last name and phone number unknown
         user = users_factories.UserFactory(

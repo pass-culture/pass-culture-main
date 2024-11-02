@@ -138,7 +138,7 @@ def get_migration_date_and_hour_keys() -> tuple[str, str]:
     """
     Format current datetime to tuple `target_day`, `target_hour`.
     """
-    now_utc = datetime.datetime.utcnow()
+    now_utc = datetime.datetime.now()
     now_in_paris_tz = utc_datetime_to_department_timezone(now_utc, departement_code="75")
     today = now_in_paris_tz.strftime("%d/%m/%y")
     one_hour_from_now = now_in_paris_tz + datetime.timedelta(hours=1)

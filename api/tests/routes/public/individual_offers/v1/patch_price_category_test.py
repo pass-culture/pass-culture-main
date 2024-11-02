@@ -184,7 +184,7 @@ class PatchPriceCategoryTest(PublicAPIVenueEndpointHelper):
         expired_stock = offers_factories.EventStockFactory(
             offer=event,
             priceCategory=price_category,
-            beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=-2),
+            beginningDatetime=datetime.datetime.now() + datetime.timedelta(days=-2),
         )
 
         response = client.with_explicit_token(plain_api_key).patch(

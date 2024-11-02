@@ -307,7 +307,7 @@ class Stock(PcObject, Base, Model, SoftDeletableMixin):
 
     @hybrid_property
     def hasBookingLimitDatetimePassed(self) -> bool:
-        return bool(self.bookingLimitDatetime and self.bookingLimitDatetime <= datetime.datetime.utcnow())
+        return bool(self.bookingLimitDatetime and self.bookingLimitDatetime <= datetime.datetime.now())
 
     @hasBookingLimitDatetimePassed.expression  # type: ignore[no-redef]
     def hasBookingLimitDatetimePassed(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
@@ -334,7 +334,7 @@ class Stock(PcObject, Base, Model, SoftDeletableMixin):
 
     @hybrid_property
     def isEventExpired(self) -> bool:
-        return bool(self.beginningDatetime and self.beginningDatetime <= datetime.datetime.utcnow())
+        return bool(self.beginningDatetime and self.beginningDatetime <= datetime.datetime.now())
 
     @isEventExpired.expression  # type: ignore[no-redef]
     def isEventExpired(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
@@ -353,14 +353,14 @@ class Stock(PcObject, Base, Model, SoftDeletableMixin):
         if not self.beginningDatetime or self.offer.validation == OfferValidationStatus.DRAFT:
             return True
         limit_date_for_stock_deletion = self.beginningDatetime + bookings_constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
-        return limit_date_for_stock_deletion >= datetime.datetime.utcnow()
+        return limit_date_for_stock_deletion >= datetime.datetime.now()
 
     @hybrid_property
     def isSoldOut(self) -> bool:
         # pylint: disable=comparison-with-callable
         return (
             self.isSoftDeleted
-            or (self.beginningDatetime is not None and self.beginningDatetime <= datetime.datetime.utcnow())
+            or (self.beginningDatetime is not None and self.beginningDatetime <= datetime.datetime.now())
             or (self.remainingQuantity != "unlimited" and self.remainingQuantity <= 0)
         )
 
@@ -501,7 +501,7 @@ class FutureOffer(PcObject, Base, Model):
 
     @hybrid_property
     def isWaitingForPublication(self) -> bool:
-        return datetime.datetime.utcnow() < self.publicationDate
+        return datetime.datetime.now() < self.publicationDate
 
     @isWaitingForPublication.expression  # type: ignore[no-redef]
     def isWaitingForPublication(cls) -> bool:  # pylint: disable=no-self-argument
@@ -659,7 +659,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         for stock in self.stocks:
             if (
                 not stock.isSoftDeleted
-                and (stock.beginningDatetime is None or stock.beginningDatetime > datetime.datetime.utcnow())
+                and (stock.beginningDatetime is None or stock.beginningDatetime > datetime.datetime.now())
                 and (stock.remainingQuantity == "unlimited" or stock.remainingQuantity > 0)
             ):
                 return False

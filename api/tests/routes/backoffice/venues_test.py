@@ -400,7 +400,7 @@ class GetVenueTest(GetEndpointHelper):
         provider = providers_factories.APIProviderFactory()
         providers_factories.AllocineVenueProviderFactory(
             venue=random_venue,
-            lastSyncDate=datetime.utcnow() - timedelta(hours=4),
+            lastSyncDate=datetime.now() - timedelta(hours=4),
             isActive=True,
             provider=provider,
         )
@@ -417,7 +417,7 @@ class GetVenueTest(GetEndpointHelper):
         provider = providers_factories.APIProviderFactory(name="Praxiel")
         provider = providers_factories.AllocineVenueProviderFactory(
             venue=random_venue,
-            lastSyncDate=datetime.utcnow() - timedelta(hours=4),
+            lastSyncDate=datetime.now() - timedelta(hours=4),
             isActive=True,
             provider=provider,
         )
@@ -589,7 +589,7 @@ class GetVenueStatsTest(GetEndpointHelper):
         bank_account = finance_factories.BankAccountFactory()
         venue = offerers_factories.VenueFactory(pricing_point="self")
         offerers_factories.VenueBankAccountLinkFactory(
-            venue=venue, bankAccount=bank_account, timespan=(datetime.utcnow() - timedelta(days=1),)
+            venue=venue, bankAccount=bank_account, timespan=(datetime.now() - timedelta(days=1),)
         )
         url = url_for(self.endpoint, venue_id=venue.id)
 
@@ -599,7 +599,7 @@ class GetVenueStatsTest(GetEndpointHelper):
 
         cards_content = html_parser.extract_cards_text(response.data)
         assert (
-            f"Compte bancaire : {bank_account.label} ({(datetime.utcnow() - timedelta(days=1)).strftime('%d/%m/%Y')})"
+            f"Compte bancaire : {bank_account.label} ({(datetime.now() - timedelta(days=1)).strftime('%d/%m/%Y')})"
             in cards_content[2]
         )
 
@@ -712,7 +712,7 @@ class GetVenueRevenueDetailsTest(GetEndpointHelper):
         collective_venue_booking,
     ):
         venue_id = venue_with_accepted_bank_account.id
-        current_year = datetime.utcnow().year
+        current_year = datetime.now().year
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
@@ -742,7 +742,7 @@ class FullySyncVenueTest(PostEndpointHelper):
         provider = providers_factories.APIProviderFactory()
         providers_factories.AllocineVenueProviderFactory(
             venue=random_venue,
-            lastSyncDate=datetime.utcnow() - timedelta(hours=5),
+            lastSyncDate=datetime.now() - timedelta(hours=5),
             isActive=True,
             provider=provider,
         )
@@ -756,7 +756,7 @@ class FullySyncVenueTest(PostEndpointHelper):
         provider = providers_factories.APIProviderFactory()
         providers_factories.AllocineVenueProviderFactory(
             venue=random_venue,
-            lastSyncDate=datetime.utcnow() - timedelta(hours=4),
+            lastSyncDate=datetime.now() - timedelta(hours=4),
             isActive=False,
             provider=provider,
         )
@@ -1646,7 +1646,7 @@ class UpdateVenueTest(PostEndpointHelper):
         offerers_factories.VenuePricingPointLinkFactory(
             venue=venue,
             pricingPoint=offerers_factories.VenueFactory(),
-            timespan=[datetime.utcnow() - timedelta(days=60), None],
+            timespan=[datetime.now() - timedelta(days=60), None],
         )
 
         data = self._get_current_data(venue)
@@ -2164,7 +2164,7 @@ class GetVenueHistoryTest(GetEndpointHelper):
         history_factories.ActionHistoryFactory(
             # displayed because legit_user has fraud permission
             actionType=history_models.ActionType.FRAUD_INFO_MODIFIED,
-            actionDate=datetime.utcnow() - timedelta(days=2),
+            actionDate=datetime.now() - timedelta(days=2),
             authorUser=pro_fraud_admin,
             venue=venue,
             comment="Sous surveillance",
@@ -2179,14 +2179,14 @@ class GetVenueHistoryTest(GetEndpointHelper):
         )
         history_factories.ActionHistoryFactory(
             actionType=history_models.ActionType.COMMENT,
-            actionDate=datetime.utcnow() - timedelta(hours=3),
+            actionDate=datetime.now() - timedelta(hours=3),
             authorUser=legit_user,
             venue=venue,
             comment=comment,
         )
         history_factories.ActionHistoryFactory(
             actionType=history_models.ActionType.INFO_MODIFIED,
-            actionDate=datetime.utcnow() - timedelta(hours=2),
+            actionDate=datetime.now() - timedelta(hours=2),
             authorUser=legit_user,
             venue=venue,
             comment=None,
@@ -2340,10 +2340,10 @@ class GetVenueCollectiveDmsApplicationsTest(GetEndpointHelper):
         db.session.expire(venue)
 
         accepted_application = educational_factories.CollectiveDmsApplicationFactory(
-            venue=venue, depositDate=datetime.utcnow() - timedelta(days=10), state="accepte"
+            venue=venue, depositDate=datetime.now() - timedelta(days=10), state="accepte"
         )
         expired_application = educational_factories.CollectiveDmsApplicationFactory(
-            venue=venue, depositDate=datetime.utcnow() - timedelta(days=5), state="refuse"
+            venue=venue, depositDate=datetime.now() - timedelta(days=5), state="refuse"
         )
 
         with assert_num_queries(self.expected_num_queries):
@@ -2601,7 +2601,7 @@ class GetRemovePricingPointFormTest(GetEndpointHelper):
         offerers_factories.VenuePricingPointLinkFactory(
             venue=venue,
             pricingPoint=offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer),
-            timespan=[datetime.utcnow() - timedelta(days=7), None],
+            timespan=[datetime.now() - timedelta(days=7), None],
         )
 
         response = authenticated_client.get(url_for(self.endpoint, venue_id=venue.id))
@@ -2779,7 +2779,7 @@ class RemovePricingPointTest(PostEndpointHelper):
         assert response.status_code == 303
 
         assert venue_with_no_siret.current_pricing_point is None
-        assert venue_with_no_siret.pricing_point_links[0].timespan.upper <= datetime.utcnow()
+        assert venue_with_no_siret.pricing_point_links[0].timespan.upper <= datetime.now()
 
         action = history_models.ActionHistory.query.one()
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
@@ -2810,7 +2810,7 @@ class RemovePricingPointTest(PostEndpointHelper):
         assert response.status_code == 303
 
         assert venue_with_no_siret.current_pricing_point is None
-        assert venue_with_no_siret.pricing_point_links[0].timespan.upper <= datetime.utcnow()
+        assert venue_with_no_siret.pricing_point_links[0].timespan.upper <= datetime.now()
 
         action = history_models.ActionHistory.query.one()
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
@@ -2829,7 +2829,7 @@ class RemovePricingPointTest(PostEndpointHelper):
         offerers_factories.VenuePricingPointLinkFactory(
             venue=venue,
             pricingPoint=offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer),
-            timespan=[datetime.utcnow() - timedelta(days=7), None],
+            timespan=[datetime.now() - timedelta(days=7), None],
         )
 
         response = self.post_to_endpoint(
@@ -2897,7 +2897,7 @@ class RemovePricingPointTest(PostEndpointHelper):
 
         assert response.status_code == 303
         assert venue_with_no_siret.current_pricing_point is None
-        assert venue_with_no_siret.pricing_point_links[0].timespan.upper <= datetime.utcnow()
+        assert venue_with_no_siret.pricing_point_links[0].timespan.upper <= datetime.now()
 
 
 class GetRemoveSiretFormTest(GetEndpointHelper):
@@ -2985,7 +2985,7 @@ class RemoveSiretTest(PostEndpointHelper):
 
         assert venue.siret is None
         assert venue.comment == "test"
-        assert venue.pricing_point_links[0].timespan.upper <= datetime.utcnow()
+        assert venue.pricing_point_links[0].timespan.upper <= datetime.now()
         assert venue.current_pricing_point == target_venue
 
         action = history_models.ActionHistory.query.filter_by(venueId=venue.id).one()
@@ -2999,7 +2999,7 @@ class RemoveSiretTest(PostEndpointHelper):
             "pricingPointSiret": {"old_info": old_siret, "new_info": target_venue.siret},
         }
 
-        assert other_venue.pricing_point_links[0].timespan.upper <= datetime.utcnow()
+        assert other_venue.pricing_point_links[0].timespan.upper <= datetime.now()
         assert other_venue.current_pricing_point is None
 
         other_action = history_models.ActionHistory.query.filter_by(venueId=other_venue.id).one()

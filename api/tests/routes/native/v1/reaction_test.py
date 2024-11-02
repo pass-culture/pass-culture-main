@@ -172,10 +172,10 @@ class GetAvailableReactionTest:
             user=user, status=bookings_models.BookingStatus.CONFIRMED, stock__offer=cine_offer_1
         )
         # Not eligible: booking has been used less than 24 hours ago
-        less_than_24h_ago = datetime.datetime.utcnow() - datetime.timedelta(hours=23)
+        less_than_24h_ago = datetime.datetime.now() - datetime.timedelta(hours=23)
         bookings_factories.UsedBookingFactory(user=user, stock__offer=cine_offer_2, dateUsed=less_than_24h_ago)
         # Not eligible: reaction has already been posted
-        more_than_24h_ago = datetime.datetime.utcnow() - datetime.timedelta(hours=25)
+        more_than_24h_ago = datetime.datetime.now() - datetime.timedelta(hours=25)
         bookings_factories.UsedBookingFactory(user=user, stock__offer=cine_offer_3, dateUsed=more_than_24h_ago)
         ReactionFactory(user=user, offer=cine_offer_3)
 
@@ -208,7 +208,7 @@ class GetAvailableReactionTest:
         product_offer_2 = offers_factories.OfferFactory(product=product)
 
         # User booked and reacted to the product_offer_1
-        more_than_24h_ago = datetime.datetime.utcnow() - datetime.timedelta(hours=25)
+        more_than_24h_ago = datetime.datetime.now() - datetime.timedelta(hours=25)
         bookings_factories.UsedBookingFactory(user=user, stock__offer=product_offer_1, dateUsed=more_than_24h_ago)
         ReactionFactory(user=user, product=product)
 
@@ -230,8 +230,8 @@ class GetAvailableReactionTest:
         cine_offer_1 = offers_factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
         cine_offer_2 = offers_factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
 
-        a_little_more_than_24h_ago = datetime.datetime.utcnow() - datetime.timedelta(hours=25)
-        a_lot_more_than_24h_ago = datetime.datetime.utcnow() - datetime.timedelta(hours=48)
+        a_little_more_than_24h_ago = datetime.datetime.now() - datetime.timedelta(hours=25)
+        a_lot_more_than_24h_ago = datetime.datetime.now() - datetime.timedelta(hours=48)
         booking_yesterday = bookings_factories.UsedBookingFactory(
             user=user, stock__offer=cine_offer_1, dateUsed=a_little_more_than_24h_ago
         )
@@ -269,7 +269,7 @@ class GetAvailableReactionTest:
         user = users_factories.BeneficiaryFactory()
 
         cine_offer = offers_factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
-        around_30s_ago = datetime.datetime.utcnow() - datetime.timedelta(seconds=32)
+        around_30s_ago = datetime.datetime.now() - datetime.timedelta(seconds=32)
         booking = bookings_factories.UsedBookingFactory(user=user, stock__offer=cine_offer, dateUsed=around_30s_ago)
 
         client.with_token(user.email)

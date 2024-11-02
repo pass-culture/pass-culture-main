@@ -83,7 +83,7 @@ def _is_ended_booking(booking: Booking) -> bool:
     if (
         booking.stock.beginningDatetime
         and booking.status != BookingStatus.CANCELLED
-        and booking.stock.beginningDatetime >= datetime.datetime.utcnow()
+        and booking.stock.beginningDatetime >= datetime.datetime.now()
     ):
         # consider future events as "ongoing" even if they are used
         return False
@@ -245,7 +245,7 @@ def _book_offer(
             ),
         )
 
-        booking.dateCreated = datetime.datetime.utcnow()
+        booking.dateCreated = datetime.datetime.now()
         booking.cancellationLimitDate = compute_booking_cancellation_limit_date(
             stock.beginningDatetime, booking.dateCreated
         )
@@ -771,11 +771,7 @@ def mark_as_used_with_uncancelling(booking: Booking, validation_author_type: Boo
     # a rollback if we raise a validation exception.
     # Since I lock the stock, I really want to make sure the lock is
     # removed ASAP.
-    if (
-        booking.deposit
-        and booking.deposit.expirationDate
-        and booking.deposit.expirationDate < datetime.datetime.utcnow()
-    ):
+    if booking.deposit and booking.deposit.expirationDate and booking.deposit.expirationDate < datetime.datetime.now():
         raise bookings_exceptions.BookingDepositCreditExpired()
 
     if booking.status == BookingStatus.CANCELLED:
@@ -829,7 +825,7 @@ def mark_as_cancelled(
             )
             or (
                 booking.stock.beginningDatetime
-                and booking.stock.beginningDatetime < datetime.datetime.utcnow() - datetime.timedelta(days=15)
+                and booking.stock.beginningDatetime < datetime.datetime.now() - datetime.timedelta(days=15)
             )
         ):
             raise exceptions.OneSideCancellationForbidden()
@@ -846,7 +842,7 @@ def mark_as_cancelled(
     if one_side_cancellation:
         logging.info("External booking cancelled unilaterally", extra={"booking_id": booking.id})
         assert booking.stock.beginningDatetime
-        if booking.stock.beginningDatetime < datetime.datetime.utcnow():
+        if booking.stock.beginningDatetime < datetime.datetime.now():
             transactional_mails.send_booking_cancelled_unilaterally_provider_support_email(booking)
         else:
             transactional_mails.send_booking_cancellation_by_beneficiary_to_pro_email(booking, one_side_cancellation)
@@ -895,7 +891,7 @@ def update_cancellation_limit_dates(
     for booking in bookings_to_update:
         booking.cancellationLimitDate = _compute_edition_cancellation_limit_date(
             event_beginning=new_beginning_datetime,
-            edition_date=datetime.datetime.utcnow(),
+            edition_date=datetime.datetime.now(),
         )
     repository.save(*bookings_to_update)
     return bookings_to_update
@@ -942,7 +938,7 @@ def auto_mark_as_used_after_event() -> None:
     if not FeatureToggle.UPDATE_BOOKING_USED.is_active():
         raise ValueError("This function is behind a deactivated feature flag.")
 
-    now = datetime.datetime.utcnow()
+    now = datetime.datetime.now()
     threshold = now - constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
 
     # Revisit with SQLAlchemy 2.
@@ -1071,7 +1067,7 @@ def get_individual_bookings_from_stock(
 
 
 def archive_old_bookings() -> None:
-    date_condition = Booking.dateCreated < datetime.datetime.utcnow() - constants.ARCHIVE_DELAY
+    date_condition = Booking.dateCreated < datetime.datetime.now() - constants.ARCHIVE_DELAY
 
     query_old_booking_ids = (
         Booking.query.join(Booking.stock)
@@ -1121,7 +1117,7 @@ def cancel_unstored_external_bookings() -> None:
         if not external_booking_info:
             break
         if (
-            datetime.datetime.utcnow().timestamp() - external_booking_info["timestamp"]
+            datetime.datetime.now().timestamp() - external_booking_info["timestamp"]
             < constants.EXTERNAL_BOOKINGS_MINIMUM_ITEM_AGE_IN_QUEUE
         ):
             queue.add_to_queue(
@@ -1168,7 +1164,7 @@ def cancel_ems_external_bookings() -> None:
             booking_to_cancel["timestamp"],
         )
 
-        if timestamp + EMS_DEADLINE_BEFORE_CANCELLING > datetime.datetime.utcnow().timestamp():
+        if timestamp + EMS_DEADLINE_BEFORE_CANCELLING > datetime.datetime.now().timestamp():
             # This is the oldest booking to cancel we have in the queue and its too recent.
             redis_client.rpush(ems_queue, json.dumps(booking_to_cancel))
             return

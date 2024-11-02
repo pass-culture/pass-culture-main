@@ -14,7 +14,7 @@ class SpecialEventFactory(BaseFactory):
         model = models.SpecialEvent
 
     externalId = factory.Sequence("ExtIdEvt{:04}".format)
-    dateCreated = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=2))
+    dateCreated = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=2))
     title = factory.Sequence("Opération #{}".format)
 
 
@@ -33,7 +33,7 @@ class SpecialEventResponseFactory(BaseFactory):
 
     event = factory.SubFactory(SpecialEventFactory)
     externalId = factory.Sequence("ExtIdRes{:04}".format)
-    dateSubmitted = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1))
+    dateSubmitted = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=1))
     user = factory.SubFactory(users_factories.BeneficiaryGrant18Factory)
     phoneNumber = factory.SelfAttribute("user.phoneNumber")
     email = factory.SelfAttribute("user.email")

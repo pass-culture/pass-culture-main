@@ -25,8 +25,8 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
 
     @staticmethod
     def _get_base_payload(price_category_id) -> dict:
-        next_month = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
-        two_weeks_from_now = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=2)
+        next_month = datetime.datetime.now().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
+        two_weeks_from_now = datetime.datetime.now().replace(second=0, microsecond=0) + datetime.timedelta(weeks=2)
         return {
             "beginningDatetime": date_utils.utc_datetime_to_department_timezone(next_month, None).isoformat(),
             "bookingLimitDatetime": date_utils.utc_datetime_to_department_timezone(
@@ -43,7 +43,7 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
         price_category = offers_factories.PriceCategoryFactory(
             offer=event, price=decimal.Decimal("88.99"), priceCategoryLabel=category_label
         )
-        next_year = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=365)
+        next_year = datetime.datetime.now().replace(second=0, microsecond=0) + datetime.timedelta(days=365)
         stock = offers_factories.EventStockFactory(
             offer=event,
             quantity=10,
@@ -79,8 +79,8 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
         event, stock = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
         price_category = offers_factories.PriceCategoryFactory(offer=event)
 
-        one_week_from_now = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=1)
-        twenty_four_day_from_now = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(
+        one_week_from_now = datetime.datetime.now().replace(second=0, microsecond=0) + datetime.timedelta(weeks=1)
+        twenty_four_day_from_now = datetime.datetime.now().replace(second=0, microsecond=0) + datetime.timedelta(
             days=24
         )
         with caplog.at_level(logging.INFO):
@@ -123,7 +123,7 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
     def test_sends_email_if_beginning_date_changes_on_edition(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         event, stock = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now()
         two_days_after = now + datetime.timedelta(days=2)
         three_days_after = now + datetime.timedelta(days=3)
 
@@ -158,7 +158,7 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
     def test_update_all_fields_on_date_with_price_category(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         event = offers_factories.EventOfferFactory(venue=venue_provider.venue, lastProvider=venue_provider.provider)
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now()
         tomorrow = now + datetime.timedelta(days=1)
         two_days_after = now + datetime.timedelta(days=2)
         three_days_after = now + datetime.timedelta(days=3)
@@ -197,7 +197,7 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
             lastProvider=venue_provider.provider,
         )
         price_category = offers_factories.PriceCategoryFactory(offer=event)
-        next_year = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=365)
+        next_year = datetime.datetime.now().replace(second=0, microsecond=0) + datetime.timedelta(days=365)
         stock = offers_factories.EventStockFactory(
             offer=event,
             quantity=10,
@@ -207,7 +207,7 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
             idAtProviders="hoho",
         )
 
-        eight_days_from_now = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=8)
+        eight_days_from_now = datetime.datetime.now().replace(second=0, microsecond=0) + datetime.timedelta(days=8)
         response = client.with_explicit_token(plain_api_key).patch(
             self.endpoint_url.format(event_id=stock.offerId, stock_id=stock.id),
             json={
@@ -333,7 +333,7 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
             lastProvider=venue_provider.provider,
         )
         # dates
-        two_weeks_from_now = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=2)
+        two_weeks_from_now = datetime.datetime.now().replace(second=0, microsecond=0) + datetime.timedelta(weeks=2)
         one_hour_later = two_weeks_from_now + datetime.timedelta(hours=1)
 
         # event stock 2 weeks from now

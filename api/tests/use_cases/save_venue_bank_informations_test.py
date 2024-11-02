@@ -192,7 +192,7 @@ class BankAccountJourneyTest:
         venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
         bank_account = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
         soon_to_be_deprecated_link = offerers_factories.VenueBankAccountLinkFactory(
-            bankAccount=bank_account, venue=venue, timespan=(datetime.utcnow(),)
+            bankAccount=bank_account, venue=venue, timespan=(datetime.now(),)
         )
         venue_with_no_bank_account = offerers_factories.VenueFactory(
             pricing_point="self", managingOfferer=venue.managingOfferer

@@ -19,7 +19,7 @@ DEFAULT_MESSAGES = [
 ]
 
 
-AGE18_ELIGIBLE_BIRTH_DATE = datetime.datetime.utcnow() - relativedelta(years=ELIGIBILITY_AGE_18)
+AGE18_ELIGIBLE_BIRTH_DATE = datetime.datetime.now() - relativedelta(years=ELIGIBILITY_AGE_18)
 
 
 # TODO (thconte: 2023-09-06)

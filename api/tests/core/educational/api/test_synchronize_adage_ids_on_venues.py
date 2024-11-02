@@ -55,8 +55,8 @@ def test_synchronize_adage_ids_on_venues(db_session):
     venue2 = offerers_factories.VenueFactory()
     venue3 = offerers_factories.VenueFactory()
     venue4 = offerers_factories.VenueFactory()
-    venue5 = offerers_factories.VenueFactory(adageId="11", adageInscriptionDate=datetime.utcnow())
-    venue6 = offerers_factories.VenueFactory(adageId="1252", adageInscriptionDate=datetime.utcnow())
+    venue5 = offerers_factories.VenueFactory(adageId="11", adageInscriptionDate=datetime.now())
+    venue6 = offerers_factories.VenueFactory(adageId="1252", adageInscriptionDate=datetime.now())
 
     adage_id1 = 128028
     adage_id2 = 128029
@@ -248,10 +248,10 @@ def test_synchronize_adage_ids_on_offerers(db_session):
     venue3 = offerers_factories.VenueFactory(managingOfferer__allowedOnAdage=False)
     venue4 = offerers_factories.VenueFactory(managingOfferer__allowedOnAdage=False)
     venue5 = offerers_factories.VenueFactory(
-        managingOfferer__allowedOnAdage=False, adageId="11", adageInscriptionDate=datetime.utcnow()
+        managingOfferer__allowedOnAdage=False, adageId="11", adageInscriptionDate=datetime.now()
     )
     venue6 = offerers_factories.VenueFactory(
-        managingOfferer__allowedOnAdage=False, adageId="1252", adageInscriptionDate=datetime.utcnow()
+        managingOfferer__allowedOnAdage=False, adageId="1252", adageInscriptionDate=datetime.now()
     )
     venue7 = offerers_factories.VenueFactory(managingOfferer__allowedOnAdage=False)
     venue8 = offerers_factories.VenueFactory(managingOfferer__allowedOnAdage=False)
@@ -375,7 +375,7 @@ def test_synchronize_adage_ids_on_offerers_for_tricky_case(db_session):
 @patch("pcapi.core.educational.api.adage.send_eac_offerer_activation_email")
 def test_synchronize_adage_ids_on_venues_with_date_filter(mock_send_eac_email, db_session):
     venue1 = offerers_factories.VenueFactory()
-    venue2 = offerers_factories.VenueFactory(adageId="11", adageInscriptionDate=datetime.utcnow())
+    venue2 = offerers_factories.VenueFactory(adageId="11", adageInscriptionDate=datetime.now())
 
     adage_id1 = 128028
     adage_id2 = 128029

@@ -86,13 +86,13 @@ def test_with_venue_filter_with_pricings(client, cutoff, fortnight):
     venue1 = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
     bank_account_1 = finance_factories.BankAccountFactory(offerer=offerer)
     offerers_factories.VenueBankAccountLinkFactory(
-        venue=venue1, bankAccount=bank_account_1, timespan=(datetime.datetime.utcnow(),)
+        venue=venue1, bankAccount=bank_account_1, timespan=(datetime.datetime.now(),)
     )
 
     venue2 = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point=venue1)
     bank_account_2 = finance_factories.BankAccountFactory(offerer=offerer)
     offerers_factories.VenueBankAccountLinkFactory(
-        venue=venue2, bankAccount=bank_account_2, timespan=(datetime.datetime.utcnow(),)
+        venue=venue2, bankAccount=bank_account_2, timespan=(datetime.datetime.now(),)
     )
 
     batch = finance_factories.CashflowBatchFactory(cutoff=cutoff)
@@ -285,13 +285,13 @@ def test_with_bank_account_filter_with_pricings_collective_use_case(client, cuto
     venue1 = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
     bank_account_1 = finance_factories.BankAccountFactory(offerer=offerer)
     offerers_factories.VenueBankAccountLinkFactory(
-        venue=venue1, bankAccount=bank_account_1, timespan=(datetime.datetime.utcnow(),)
+        venue=venue1, bankAccount=bank_account_1, timespan=(datetime.datetime.now(),)
     )
 
     venue2 = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point=venue1)
     bank_account_2 = finance_factories.BankAccountFactory(offerer=offerer)
     offerers_factories.VenueBankAccountLinkFactory(
-        venue=venue2, bankAccount=bank_account_2, timespan=(datetime.datetime.utcnow(),)
+        venue=venue2, bankAccount=bank_account_2, timespan=(datetime.datetime.now(),)
     )
 
     batch = finance_factories.CashflowBatchFactory(cutoff=cutoff)
@@ -512,7 +512,7 @@ def test_with_offer_address_and_venue_address(client, offer_has_oa, len_offerer_
     venue = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
     bank_account = finance_factories.BankAccountFactory(offerer=offerer)
     offerers_factories.VenueBankAccountLinkFactory(
-        venue=venue, bankAccount=bank_account, timespan=(datetime.datetime.utcnow(),)
+        venue=venue, bankAccount=bank_account, timespan=(datetime.datetime.now(),)
     )
     batch = finance_factories.CashflowBatchFactory(cutoff=cutoff)
 

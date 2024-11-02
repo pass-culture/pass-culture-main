@@ -95,7 +95,7 @@ class TestingBackend(BaseBackend):
         return TypeformForm(
             form_id=form_id,
             title=title,
-            date_created=datetime.utcnow(),
+            date_created=datetime.now(),
             fields=[
                 TypeformQuestion(field_id=f"{form_id}-{i:04}", title=question)
                 for i, question in enumerate(self.QUESTIONS)

@@ -356,7 +356,7 @@ class BulkImportUsersDataTest:
         warnings.filterwarnings(action="ignore", message="unclosed", category=ResourceWarning)
 
         # 40 characters per email address
-        test_time = datetime.utcnow().strftime("%y%m%d.%H%M")
+        test_time = datetime.now().strftime("%y%m%d.%H%M")
         thousands_emails = (f"test.{prefix}.{test_time}.{i:06d}@example.net" for i in range(1, count + 1))
 
         result = add_contacts_to_list(thousands_emails, SENDINBLUE_AUTOMATION_TEST_CONTACT_LIST_ID)
@@ -386,7 +386,7 @@ class BulkImportUsersDataTest:
         # Note that SENDINBLUE_API_KEY must be filled in settings.
         make_update_request(
             sendinblue_tasks.UpdateSendinblueContactRequest(
-                email=f"test.pro.{datetime.utcnow().strftime('%y%m%d.%H%M')}@example.net",
+                email=f"test.pro.{datetime.now().strftime('%y%m%d.%H%M')}@example.net",
                 use_pro_subaccount=True,
                 attributes=format_user_attributes(common_pro_attributes),
                 contact_list_ids=[SENDINBLUE_PRO_TESTING_CONTACT_LIST_ID],
@@ -404,7 +404,7 @@ class BulkImportUsersDataTest:
         ],
     )
     def test_make_update_request(self, feature_flag, use_pro_subaccount, expected_use_pro_subaccount):
-        email = f"test.pro.{datetime.utcnow().strftime('%y%m%d.%H%M')}@example.net"
+        email = f"test.pro.{datetime.now().strftime('%y%m%d.%H%M')}@example.net"
         attributes = format_user_attributes(common_pro_attributes)
 
         with override_features(WIP_ENABLE_BREVO_PRO_SUBACCOUNT=feature_flag):
