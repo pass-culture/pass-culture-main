@@ -246,6 +246,10 @@ export const CollectiveActionsCells = ({
       )
     : canArchiveCollectiveOffer(offer)
 
+  const noActionsAllowed = areCollectiveNewStatusesEnabled
+    ? offer.allowedActions.length === 0
+    : offer.isShowcase && offer.status === CollectiveOfferStatus.ARCHIVED
+
   return (
     <td
       className={cn(styles['offers-table-cell'], styles['actions-column'])}
@@ -267,12 +271,7 @@ export const CollectiveActionsCells = ({
             <ListIconButton
               icon={fullThreeDotsIcon}
               title="Action"
-              className={
-                offer.isShowcase &&
-                offer.status === CollectiveOfferStatus.ARCHIVED
-                  ? styles['dropdown-button-hide']
-                  : ''
-              }
+              className={noActionsAllowed ? styles['dropdown-button-hide'] : ''}
             >
               Voir les actions
             </ListIconButton>
