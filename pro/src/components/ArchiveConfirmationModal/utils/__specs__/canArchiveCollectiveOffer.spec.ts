@@ -137,4 +137,29 @@ describe('canArchiveCollectiveOffer', () => {
       )
     ).toStrictEqual(false)
   })
+
+  it('should not be able to archive when the offer is already archived and the offer is reimbursed', () => {
+    expect(
+      canArchiveCollectiveOffer(
+        collectiveOfferFactory({
+          status: CollectiveOfferStatus.ARCHIVED,
+          booking: {
+            booking_status: CollectiveBookingStatus.REIMBURSED,
+            id: 1,
+          },
+        })
+      )
+    ).toStrictEqual(false)
+  })
+
+  it('should not be able to archive from summary when the offer is already archived and the offer is reimbursed', () => {
+    expect(
+      canArchiveCollectiveOfferFromSummary(
+        getCollectiveOfferFactory({
+          status: CollectiveOfferStatus.ARCHIVED,
+          lastBookingStatus: CollectiveBookingStatus.REIMBURSED,
+        })
+      )
+    ).toStrictEqual(false)
+  })
 })
