@@ -2,6 +2,7 @@ import pytest
 
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.exceptions as offers_exceptions
 from pcapi.core.offers.schemas import PatchDraftOfferBodyModel
 from pcapi.core.offers.schemas import PostDraftOfferBodyModel
 
@@ -27,3 +28,12 @@ class PatchDraftOfferBodyModelTest:
         _ = PatchDraftOfferBodyModel(
             name="Name", description="description", extraData={"artist": "An-2"}, durationMinutes=12
         )
+
+    def test_patch_offer_with_invalid_subcategory(self):
+        with pytest.raises(offers_exceptions.UnknownOfferSubCategory) as error:
+            _ = PatchDraftOfferBodyModel(
+                name="I solemnly swear that my intentions are evil",
+                subcategoryId="Misconduct fullfield",
+            )
+
+        assert error.value.errors["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]

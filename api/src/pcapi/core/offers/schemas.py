@@ -11,6 +11,8 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 
+from .validation import check_offer_subcategory_is_valid
+
 
 class PostDraftOfferBodyModel(BaseModel):
     name: str
@@ -42,6 +44,11 @@ class PatchDraftOfferBodyModel(BaseModel):
     def validate_name(cls, name: str, values: dict) -> str:
         check_offer_name_length_is_valid(name)
         return name
+
+    @validator("subcategory_id", pre=True)
+    def validate_subcategory_id(cls, subcategory_id: str, values: dict) -> str:
+        check_offer_subcategory_is_valid(subcategory_id)
+        return subcategory_id
 
     class Config:
         alias_generator = to_camel
