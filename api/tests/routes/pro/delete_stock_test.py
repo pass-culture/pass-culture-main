@@ -9,6 +9,8 @@ from pcapi.core.token.serialization import ConnectAsInternalModel
 import pcapi.core.users.factories as users_factories
 from pcapi.notifications.push import testing as push_testing
 
+from tests.conftest import TestClient
+
 
 class Returns200Test:
     @override_features(WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION=False)
@@ -62,7 +64,7 @@ class Returns200Test:
         cancel_notification_requests = [req for req in push_testing.requests if req.get("group_id") == "Cancel_booking"]
         assert len(cancel_notification_requests) == 0
 
-    def when_current_user_is_connect_as(self, client, db_session):
+    def when_current_user_is_connect_as(self, client: TestClient, db_session):
         # given
         offer = offers_factories.OfferFactory()
         user_offerer = offerers_factories.UserOffererFactory(
@@ -80,7 +82,7 @@ class Returns200Test:
                 internal_admin_id=admin.id,
             ).dict(),
         )
-        client = client.with_session_auth(admin.email)
+
         response_token = client.get(f"/users/connect-as/{secure_token.token}")
         assert response_token.status_code == 302
 
@@ -97,10 +99,13 @@ class Returns200Test:
 class Returns400Test:
     def test_delete_non_approved_offer_fails(self, client, db_session):
         pending_validation_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__email="pro@example.com",
+            offerer=pending_validation_offer.venue.managingOfferer,
+        )
         stock = offers_factories.StockFactory(offer=pending_validation_offer)
-        user = users_factories.AdminFactory()
 
-        response = client.with_session_auth(user.email).delete(f"/stocks/{stock.id}")
+        response = client.with_session_auth(user_offerer.user.email).delete(f"/stocks/{stock.id}")
 
         assert response.status_code == 400
         assert response.json["global"] == ["Les offres refusées ou en attente de validation ne sont pas modifiables"]

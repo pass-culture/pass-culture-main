@@ -28,22 +28,6 @@ class Returns200Test:
     # 4. collective_booking
     expected_num_queries = 4
 
-    @time_machine.travel("2022-05-01 15:00:00")
-    def test_when_user_is_admin(self, client):
-        admin = users_factories.AdminFactory()
-        user_offerer = offerers_factories.UserOffererFactory()
-        educational_factories.CollectiveBookingFactory(
-            dateCreated=datetime(2022, 3, 11, 12, 0, 0),
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
-        )
-
-        client = client.with_session_auth(admin.email)
-        with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked")
-            assert response.status_code == 200
-
-        assert len(response.json["bookingsRecap"]) == 1
-
     @time_machine.travel("2022-05-01 15:00:00", tick=False)
     def test_when_regular_pro_user_and_booking_confirmed_by_ce(self, client):
         # Given

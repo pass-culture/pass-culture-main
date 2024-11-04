@@ -62,10 +62,8 @@ class Returns401Test:
 
     @pytest.mark.usefixtures("db_session")
     def test_when_user_not_logged_in_and_given_api_key_that_does_not_exists(self, client):
-        # Given
         booking = bookings_factories.BookingFactory()
 
-        # When
         unknown_auth = "Bearer WrongApiKey1234567"
         url = "/v2/bookings/keep/token/{}".format(booking.token)
         response = client.patch(url, headers={"Authorization": unknown_auth})
@@ -78,11 +76,9 @@ class Returns403Test:
     class WithApiKeyAuthTest:
         @pytest.mark.usefixtures("db_session")
         def test_when_the_api_key_is_not_linked_to_the_right_offerer(self, client):
-            # Given
             booking = bookings_factories.BookingFactory()
             offerers_factories.ApiKeyFactory()  # another offerer's API key
 
-            # When
             wrong_auth = "Bearer " + offerers_factories.DEFAULT_CLEAR_API_KEY
             url = f"/v2/bookings/keep/token/{booking.token}"
             response = client.patch(url, headers={"Authorization": wrong_auth})
@@ -96,11 +92,9 @@ class Returns403Test:
     class WithBasicAuthTest:
         @pytest.mark.usefixtures("db_session")
         def test_when_user_is_not_attached_to_linked_offerer(self, client):
-            # Given
             booking = bookings_factories.UsedBookingFactory()
             another_pro_user = offerers_factories.UserOffererFactory().user
 
-            # When
             url = f"/v2/bookings/keep/token/{booking.token}?email={booking.email}"
             response = client.with_session_auth(another_pro_user.email).patch(url)
 
@@ -130,11 +124,9 @@ class Returns404Test:
 class Returns410Test:
     @pytest.mark.usefixtures("db_session")
     def test_when_booking_has_not_been_used_yet(self, client):
-        # Given
         booking = bookings_factories.BookingFactory()
         pro_user = offerers_factories.UserOffererFactory(offerer=booking.offerer).user
 
-        # When
         url = f"/v2/bookings/keep/token/{booking.token}"
         response = client.with_session_auth(pro_user.email).patch(url)
 
@@ -145,11 +137,9 @@ class Returns410Test:
 
     @pytest.mark.usefixtures("db_session")
     def test_when_user_is_logged_in_and_booking_payment_exists(self, client):
-        # Given
         booking = bookings_factories.ReimbursedBookingFactory()
         pro_user = offerers_factories.UserOffererFactory(offerer=booking.offerer).user
 
-        # When
         url = f"/v2/bookings/keep/token/{booking.token}"
         response = client.with_session_auth(pro_user.email).patch(url)
 
@@ -160,13 +150,12 @@ class Returns410Test:
 
     @pytest.mark.usefixtures("db_session")
     def test_when_user_is_logged_in_and_booking_has_been_cancelled_already(self, client):
-        # Given
-        admin = users_factories.AdminFactory()
         booking = bookings_factories.CancelledBookingFactory()
+        user = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=booking.offerer)
         url = f"/v2/bookings/keep/token/{booking.token}"
 
-        # When
-        response = client.with_session_auth(admin.email).patch(url)
+        response = client.with_session_auth(user.email).patch(url)
 
         # Then
         booking = Booking.query.get(booking.id)

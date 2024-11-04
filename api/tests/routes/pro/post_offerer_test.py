@@ -131,25 +131,6 @@ def test_use_offerer_name_retrieved_from_sirene_api(client):
     assert response.json["name"] == "MINISTERE DE LA CULTURE"
 
 
-def test_when_current_user_is_admin(client):
-    # Given
-    admin = users_factories.AdminFactory()
-    body = {
-        "name": "Test Offerer",
-        "siren": "418166096",
-        "address": "123 rue de Paris",
-        "postalCode": "93100",
-        "city": "Montreuil",
-    }
-
-    # When
-    client = client.with_session_auth(admin.email)
-    response = client.post("/offerers", json=body)
-
-    # then
-    assert response.status_code == 201
-
-
 def test_current_user_has_access_to_created_offerer(client):
     # Given
     pro = users_factories.ProFactory()

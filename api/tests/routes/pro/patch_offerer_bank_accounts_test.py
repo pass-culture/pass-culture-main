@@ -89,18 +89,18 @@ class OffererPatchBankAccountsTest:
                 internal_admin_id=impersonator.id,
             ).dict(),
         )
-        impersonated_client = client.with_session_auth(impersonator.email)
-        impersonated_client.get(f"/users/connect-as/{secure_token.token}")
+
+        client.get(f"/users/connect-as/{secure_token.token}")
 
         assert not bank_account.venueLinks
 
-        response = impersonated_client.patch(
+        response = client.patch(
             f"/offerers/{offerer.id}/bank-accounts/{bank_account.id}", json={"venues_ids": [venue.id]}
         )
 
         assert response.status_code == 204
 
-        response = impersonated_client.get(f"/offerers/{offerer.id}/bank-accounts/")
+        response = client.get(f"/offerers/{offerer.id}/bank-accounts/")
 
         assert response.status_code == 200
 

@@ -268,6 +268,20 @@ class Returns401Test:
         assert response.json["identifier"] == ["Ce compte n'est pas validé."]
 
     @pytest.mark.usefixtures("db_session")
+    def when_account_is_an_admin_account(self, client):
+        # Given
+        user = users_factories.AdminFactory()
+        repository.save(user)
+        data = {"identifier": user.email, "password": user.clearTextPassword, "captchaToken": "token"}
+
+        # When
+        response = client.post("/users/signin", json=data)
+
+        # Then
+        assert response.status_code == 401
+        assert response.json["identifier"] == ["Vous ne pouvez pas vous connecter avec un compte ADMIN."]
+
+    @pytest.mark.usefixtures("db_session")
     def test_session_timeout(self, client):
         from dateutil.relativedelta import relativedelta
         import time_machine

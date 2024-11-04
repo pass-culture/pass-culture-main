@@ -133,12 +133,14 @@ class Returns410Test:
 
     def test_when_user_is_logged_in_and_booking_has_been_cancelled_already(self, client):
         # Given
-        admin = users_factories.AdminFactory()
         booking = bookings_factories.CancelledBookingFactory()
+        user = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=booking.offerer)
+
         url = f"/v2/bookings/use/token/{booking.token}"
 
         # When
-        response = client.with_session_auth(admin.email).patch(url)
+        response = client.with_session_auth(user.email).patch(url)
 
         # Then
         assert response.status_code == 410

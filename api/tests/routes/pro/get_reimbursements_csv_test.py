@@ -55,26 +55,6 @@ def test_without_offerer_id(client):
 
 
 @pytest.mark.usefixtures("db_session")
-def test_admin_cannot_access_reimbursements_data_without_bank_account_filter(client):
-    period = datetime.date(2021, 1, 1), datetime.date(2021, 1, 15)
-    admin = users_factories.AdminFactory()
-
-    client = client.with_session_auth(admin.email)
-    with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES):
-        response = client.get(
-            "/reimbursements/csv?"
-            + urllib.parse.urlencode(
-                {
-                    "reimbursementPeriodBeginningDate": period[0].isoformat(),
-                    "reimbursementPeriodEndingDate": period[1].isoformat(),
-                    "offererId": 1,
-                }
-            )
-        )
-        assert response.status_code == 400
-
-
-@pytest.mark.usefixtures("db_session")
 @pytest.mark.parametrize(
     "cutoff,fortnight",
     [(datetime.date(year=2023, month=1, day=16), "1ère"), (datetime.date(year=2023, month=1, day=1), "2nde")],
