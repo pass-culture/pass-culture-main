@@ -1,4 +1,5 @@
 import datetime
+from json import JSONDecodeError
 import logging
 import traceback
 
@@ -34,7 +35,16 @@ class AdageHttpClient(AdageClient):
 
     @staticmethod
     def _get_api_adage_exception(api_response: requests.Response, message: str) -> exceptions.AdageException:
-        detail = dict(api_response.json()).get("detail", "")
+        try:
+            json_response = api_response.json()
+        except JSONDecodeError:
+            return exceptions.AdageException(
+                message=f"Error while reading Adage API json response - status code: {api_response.status_code}",
+                status_code=api_response.status_code,
+                response_text=api_response.text,
+            )
+
+        detail = dict(json_response).get("detail", "")
 
         full_message = f"{message} - status code: {api_response.status_code}"
         if detail:
