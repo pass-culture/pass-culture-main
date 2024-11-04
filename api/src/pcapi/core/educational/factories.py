@@ -387,7 +387,7 @@ def create_collective_offer_by_status(
 ) -> models.CollectiveOffer:
     match status.value:
         case CollectiveOfferDisplayedStatus.ARCHIVED.value:
-            kwargs["dateArchived"] = datetime.datetime.utcnow()
+            kwargs.update({"isActive": False, "dateArchived": datetime.datetime.utcnow()})
             return CollectiveOfferFactory(**kwargs)
         case CollectiveOfferDisplayedStatus.REJECTED.value:
             kwargs["validation"] = OfferValidationStatus.REJECTED
@@ -454,7 +454,7 @@ def create_collective_offer_template_by_status(
 ) -> models.CollectiveOfferTemplate:
     match status.value:
         case CollectiveOfferDisplayedStatus.ARCHIVED.value:
-            kwargs["dateArchived"] = datetime.datetime.utcnow()
+            kwargs.update({"isActive": False, "dateArchived": datetime.datetime.utcnow()})
             return CollectiveOfferTemplateFactory(**kwargs)
 
         case CollectiveOfferDisplayedStatus.REJECTED.value:

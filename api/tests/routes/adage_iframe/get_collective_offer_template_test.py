@@ -332,7 +332,9 @@ class GetCollectiveOfferTemplatesTest:
 
     def test_one_template_id_with_one_archived_template(self, eac_client, redactor):
         offer = educational_factories.CollectiveOfferTemplateFactory()
-        archived_offer = educational_factories.CollectiveOfferTemplateFactory(dateArchived=datetime.datetime.utcnow())
+        archived_offer = educational_factories.CollectiveOfferTemplateFactory(
+            isActive=False, dateArchived=datetime.datetime.utcnow()
+        )
 
         url = url_for(self.endpoint, ids=[offer.id, archived_offer.id])
 

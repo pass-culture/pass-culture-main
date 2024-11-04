@@ -3,9 +3,9 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
-from pcapi.core.educational.models import CollectiveOfferTemplate
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
+from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 
@@ -35,8 +35,12 @@ class Returns204Test:
                 assert response.status_code == 204
 
         # Then
-        assert CollectiveOfferTemplate.query.get(offer1.id).isArchived
-        assert CollectiveOfferTemplate.query.get(offer2.id).isArchived
+        db.session.refresh(offer1)
+        assert offer1.isArchived
+        assert not offer1.isActive
+        db.session.refresh(offer2)
+        assert offer2.isArchived
+        assert not offer2.isActive
 
     def when_archiving_existing_offers_from_other_offerer(self, client):
         # Given
@@ -61,8 +65,12 @@ class Returns204Test:
 
         # Then
         assert response.status_code == 204
-        assert CollectiveOfferTemplate.query.get(offer.id).isArchived
-        assert not CollectiveOfferTemplate.query.get(other_offer.id).isArchived
+        db.session.refresh(offer)
+        assert offer.isArchived
+        assert not offer.isActive
+        db.session.refresh(other_offer)
+        assert not other_offer.isArchived
+        assert other_offer.isActive
 
     def when_archiving_draft_offers_templates(self, client):
         # Given
@@ -88,8 +96,12 @@ class Returns204Test:
                 assert response.status_code == 204
 
         # Then
-        assert CollectiveOfferTemplate.query.get(draft_template_offer.id).isArchived
-        assert CollectiveOfferTemplate.query.get(other_template_offer.id).isArchived
+        db.session.refresh(draft_template_offer)
+        assert draft_template_offer.isArchived
+        assert not draft_template_offer.isActive
+        db.session.refresh(other_template_offer)
+        assert other_template_offer.isArchived
+        assert not other_template_offer.isActive
 
     def when_archiving_rejected_offers_templates(self, client):
         rejected_template_offer = CollectiveOfferTemplateFactory(validation=OfferValidationStatus.REJECTED)
@@ -112,5 +124,9 @@ class Returns204Test:
                 response = client.patch("/collective/offers-template/archive", json=data)
                 assert response.status_code == 204
 
-        assert CollectiveOfferTemplate.query.get(rejected_template_offer.id).isArchived
-        assert CollectiveOfferTemplate.query.get(other_template_offer.id).isArchived
+        db.session.refresh(rejected_template_offer)
+        assert rejected_template_offer.isArchived
+        assert not rejected_template_offer.isActive
+        db.session.refresh(other_template_offer)
+        assert other_template_offer.isArchived
+        assert not other_template_offer.isActive

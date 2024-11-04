@@ -47,6 +47,7 @@ class CollectiveOfferTest:
             },
         )
         # this archived offer should not appear in the result
+        stocks[2].collectiveOffer.isActive = False
         stocks[2].collectiveOffer.dateArchived = datetime.utcnow() - timedelta(days=1)
 
         dst = url_for("adage_iframe.get_collective_offers_for_my_institution")

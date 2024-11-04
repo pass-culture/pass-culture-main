@@ -1483,7 +1483,9 @@ class GetFilteredCollectiveOffersTest:
             venue__managingOfferer=user_offerer.offerer
         )
         collective_offer_archived = educational_factories.CollectiveOfferFactory(
-            venue__managingOfferer=user_offerer.offerer, dateArchived=datetime.datetime(year=2000, month=1, day=1)
+            venue__managingOfferer=user_offerer.offerer,
+            isActive=False,
+            dateArchived=datetime.datetime(year=2000, month=1, day=1),
         )
 
         offers = repository.get_collective_offers_by_filters(

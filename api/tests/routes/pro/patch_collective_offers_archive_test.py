@@ -8,6 +8,7 @@ from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
+from pcapi.models import db
 
 
 @pytest.mark.usefixtures("db_session")
@@ -34,8 +35,12 @@ class Returns204Test:
             assert response.status_code == 204
 
         # Then
-        assert CollectiveOffer.query.get(offer1.id).isArchived
-        assert CollectiveOffer.query.get(offer2.id).isArchived
+        db.session.refresh(offer1)
+        assert offer1.isArchived
+        assert not offer1.isActive
+        db.session.refresh(offer2)
+        assert offer2.isArchived
+        assert not offer2.isActive
 
     def when_archiving_existing_offers_from_other_offerer(self, client):
         # Given
@@ -60,8 +65,12 @@ class Returns204Test:
 
         # Then
         assert response.status_code == 204
-        assert CollectiveOffer.query.get(offer.id).isArchived
-        assert not CollectiveOffer.query.get(other_offer.id).isArchived
+        db.session.refresh(offer)
+        assert offer.isArchived
+        assert not offer.isActive
+        db.session.refresh(other_offer)
+        assert not other_offer.isArchived
+        assert other_offer.isActive
 
     def when_archiving_draft_offers(self, client):
         # Given
@@ -85,8 +94,12 @@ class Returns204Test:
             assert response.status_code == 204
 
         # Then
-        assert CollectiveOffer.query.get(draft_offer.id).isArchived
-        assert CollectiveOffer.query.get(other_offer.id).isArchived
+        db.session.refresh(draft_offer)
+        assert draft_offer.isArchived
+        assert not draft_offer.isActive
+        db.session.refresh(other_offer)
+        assert other_offer.isArchived
+        assert not other_offer.isActive
 
     def test_archive_rejected_offer(self, client):
         # Given
@@ -109,14 +122,16 @@ class Returns204Test:
             assert response.status_code == 204
 
         # Then
-        assert CollectiveOffer.query.get(offer.id).isArchived
+        db.session.refresh(offer)
+        assert offer.isArchived
+        assert not offer.isActive
 
 
 @pytest.mark.usefixtures("db_session")
 class Returns422Test:
     def when_archiving_already_archived(self, client):
         # Given
-        offer_already_archived = CollectiveOfferFactory(dateArchived=datetime.utcnow())
+        offer_already_archived = CollectiveOfferFactory(isActive=False, dateArchived=datetime.utcnow())
         venue = offer_already_archived.venue
         offer_not_archived = CollectiveOfferFactory(venue=venue)
         offerer = venue.managingOfferer
@@ -130,7 +145,7 @@ class Returns422Test:
 
         # Then
         assert response.status_code == 422
-        assert response.json == {"global": ["One of the offer is already archived"]}
+        assert response.json == {"global": ["One of the offers is already archived"]}
 
         assert CollectiveOffer.query.get(offer_already_archived.id).isArchived
         assert not CollectiveOffer.query.get(offer_not_archived.id).isArchived
