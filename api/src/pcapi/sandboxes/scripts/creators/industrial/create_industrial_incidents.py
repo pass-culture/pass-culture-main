@@ -159,7 +159,7 @@ def _create_one_individual_incident(
 
     # Mark incident bookings as `REIMBURSED`
     batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
-    finance_api.generate_invoices(batch)
+    finance_api.generate_invoices_and_debit_notes_legacy(batch)
 
     assert {b.status for b in bookings} == {bookings_models.BookingStatus.REIMBURSED}, [
         (b.id, b.status) for b in bookings
@@ -203,9 +203,7 @@ def _create_one_individual_incident(
             finance_api.price_event(finance_event)
 
     batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
-    if not force_debit_note:
-        finance_api.generate_invoices(batch)
-    finance_api.generate_debit_notes(batch)
+    finance_api.generate_invoices_and_debit_notes_legacy(batch)
 
 
 def _create_one_collective_incident(
@@ -277,7 +275,7 @@ def _create_one_collective_incident(
 
     # Mark incident bookings as `REIMBURSED`
     batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
-    finance_api.generate_invoices(batch)
+    finance_api.generate_invoices_and_debit_notes_legacy(batch)
 
     assert {booking.status for booking in bookings} == {educational_models.CollectiveBookingStatus.REIMBURSED}, [
         (booking.id, booking.status) for booking in bookings
@@ -315,8 +313,7 @@ def _create_one_collective_incident(
                 finance_api.price_event(finance_event)
 
     batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
-    finance_api.generate_invoices(batch)
-    finance_api.generate_debit_notes(batch)
+    finance_api.generate_invoices_and_debit_notes_legacy(batch)
 
 
 def create_industrial_incidents() -> None:

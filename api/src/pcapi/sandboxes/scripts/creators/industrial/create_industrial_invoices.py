@@ -31,7 +31,7 @@ def create_industrial_invoices() -> None:
     cashflows_created = finance_models.Cashflow.query.count()
     logger.info("Created %s Cashflows", cashflows_created)
 
-    finance_api.generate_invoices(batch)
+    finance_api.generate_invoices_and_debit_notes_legacy(batch)
     logger.info("Created %s Invoices", finance_models.Invoice.query.count())
 
 

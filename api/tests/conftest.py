@@ -1,4 +1,5 @@
 import contextlib
+import functools
 import os
 from pathlib import Path
 from pprint import pprint
@@ -558,3 +559,36 @@ class TestClient:
             pprint(result.json)
 
         print("===========================================\n")
+
+
+@pytest.fixture
+def _features(request):
+    from pcapi.core.testing import override_features
+    from pcapi.models.feature import FeatureToggle
+
+    marker = request.node.get_closest_marker("features")
+    if marker:
+        if kwargs := marker.kwargs:
+            if invalid_features := {feature for feature in kwargs if feature not in FeatureToggle._member_names_}:
+                raise ValueError(f"Invalid features to override: {', '.join(invalid_features)}")
+            with override_features(**kwargs):
+                yield
+        else:
+            raise ValueError(
+                "Invalid usage of `features` marker, missing features to override.\n"
+                "Eg. @pytest.mark.features(WIP_ENABLE_NEW_FEATURE=True)"
+            )
+
+
+@pytest.fixture(autouse=True)
+def _features_marker(request: pytest.FixtureRequest) -> None:
+    marker = request.node.get_closest_marker("features")
+    if marker:
+        request.getfixturevalue("_features")
+
+
+@pytest.fixture
+def run_command(app, clean_database):
+    from tests.test_utils import run_command as _run_command
+
+    return functools.partial(_run_command, app)

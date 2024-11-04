@@ -404,7 +404,7 @@ def _create_one_nc_individual_incident() -> None:
     )
     finance_api.price_event(incident_booking.finance_events[0])
     batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
-    finance_api.generate_invoices(batch)
+    finance_api.generate_invoices_and_debit_notes_legacy(batch)
 
     assert incident_booking.status == bookings_models.BookingStatus.REIMBURSED
 
@@ -431,4 +431,4 @@ def _create_one_nc_individual_incident() -> None:
             finance_api.price_event(finance_event)
 
     batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
-    finance_api.generate_debit_notes(batch)
+    finance_api.generate_invoices_and_debit_notes_legacy(batch)

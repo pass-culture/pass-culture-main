@@ -14,7 +14,10 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.models import db
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
+pytestmark = [
+    pytest.mark.usefixtures("db_session"),
+    pytest.mark.features(WIP_ENABLE_NEW_FINANCE_WORKFLOW=False),
+]
 
 
 def test_integration_full_workflow(css_font_http_request_mock):
@@ -52,7 +55,7 @@ def test_integration_full_workflow(css_font_http_request_mock):
     db.session.refresh(pricing)
     assert pricing.status == models.PricingStatus.PROCESSED
 
-    api.generate_invoices(batch)
+    api.generate_invoices_and_debit_notes_legacy(batch)
     db.session.refresh(cashflow)
     assert cashflow.status == models.CashflowStatus.ACCEPTED
     db.session.refresh(pricing)

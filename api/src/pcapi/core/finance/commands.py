@@ -44,8 +44,9 @@ def generate_cashflows_and_payment_files(override_feature_flag: bool, cutoff: da
     if not cutoff:
         last_day = datetime.date.today() - datetime.timedelta(days=1)
         cutoff = finance_utils.get_cutoff_as_datetime(last_day)
-
-    finance_api.generate_cashflows_and_payment_files(cutoff)
+    batch = finance_api.generate_cashflows_and_payment_files(cutoff)
+    if FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW:
+        finance_api.generate_invoices_and_debit_notes(batch)
 
 
 @blueprint.cli.command("generate_invoices")
@@ -60,12 +61,16 @@ def generate_invoices(batch_id: int) -> None:
         print(f"Could not generate invoices for this batch, as it doesn't exist :{batch_id}")
         return
 
+    if FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW:
+        logger.warning(
+            "Standalone `generate_invoices` command is deprecated. "
+            "It's integrated in `generate_cashflows_and_payment_files` command."
+        )
+
     try:
-        finance_api.generate_invoices(batch)
+        finance_api.generate_invoices_and_debit_notes_legacy(batch)
     except finance_exceptions.NoInvoiceToGenerate:
-        logger.info("No invoice to generate")
-    finally:
-        finance_api.generate_debit_notes(batch)
+        logger.info("Neither invoice nor debit note to generate")
 
     if settings.SLACK_GENERATE_INVOICES_FINISHED_CHANNEL:
         send_internal_message(

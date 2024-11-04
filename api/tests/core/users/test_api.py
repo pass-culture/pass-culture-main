@@ -857,7 +857,9 @@ class DomainsCreditTest:
         cashflow.status = finance_models.CashflowStatus.UNDER_REVIEW
         db.session.add(cashflow)
         db.session.flush()
-        finance_api._generate_invoice(bank_account_id=bank_account.id, cashflow_ids=[c.id for c in batch.cashflows])
+        finance_api._generate_invoice_legacy(
+            bank_account_id=bank_account.id, cashflow_ids=[c.id for c in batch.cashflows]
+        )
 
         # Create the finance incidents and validate them
         #  - For booking2 → cancelled totally
@@ -948,7 +950,9 @@ class DomainsCreditTest:
         cashflow.status = finance_models.CashflowStatus.UNDER_REVIEW
         db.session.add(cashflow)
         db.session.flush()
-        finance_api._generate_invoice(bank_account_id=bank_account.id, cashflow_ids=[c.id for c in batch.cashflows])
+        finance_api._generate_invoice_legacy(
+            bank_account_id=bank_account.id, cashflow_ids=[c.id for c in batch.cashflows]
+        )
 
         # Create the finance incidents and validate them
         #  - For booking2 → cancelled totally
@@ -1036,7 +1040,9 @@ class DomainsCreditTest:
         cashflow.status = finance_models.CashflowStatus.UNDER_REVIEW
         db.session.add(cashflow)
         db.session.flush()
-        finance_api._generate_invoice(bank_account_id=bank_account.id, cashflow_ids=[c.id for c in batch.cashflows])
+        finance_api._generate_invoice_legacy(
+            bank_account_id=bank_account.id, cashflow_ids=[c.id for c in batch.cashflows]
+        )
 
         # Create the finance incidents and validate them
         #  - For booking2 → cancelled totally

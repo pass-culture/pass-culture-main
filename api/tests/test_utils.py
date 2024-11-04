@@ -27,10 +27,16 @@ def gen_offerer_tags():
     return tags
 
 
-def run_command(app, command_name, *args):
+def run_command(app, command_name, *args, raise_on_error=False):
     runner = app.test_cli_runner()
     args = (command_name, *args)
-    return runner.invoke(args=args)
+    run = runner.invoke(args=args)
+
+    # This helps debugging muted errors from executed command
+    if run.exit_code and raise_on_error:
+        raise run.exception from run.exception
+
+    return run
 
 
 class StorageFolderManager:
