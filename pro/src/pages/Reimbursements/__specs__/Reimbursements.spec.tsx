@@ -121,4 +121,15 @@ describe('Reimbursement page', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(screen.getByText('Informations bancaires')).toBeInTheDocument()
   })
+
+  it('should not render component on getOfferer error', async () => {
+    vi.spyOn(api, 'getOfferer').mockRejectedValue({})
+    renderReimbursements()
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText('Informations bancaires')
+      ).not.toBeInTheDocument()
+    })
+  })
 })

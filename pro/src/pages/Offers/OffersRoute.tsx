@@ -117,7 +117,7 @@ export const OffersRoute = (): JSX.Element => {
     )
   })
 
-  const offers = offersQuery.data || []
+  const offers = offersQuery.error ? [] : offersQuery.data || []
 
   return (
     <Layout>
