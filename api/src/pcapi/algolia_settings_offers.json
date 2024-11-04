@@ -62,6 +62,7 @@
         "offer.gtlCodeLevel4",
         "offer.nativeCategoryId",
         "filterOnly(offer.prices)",
+        "searchable(offer.releaseDate)",
         "offer.searchGroups",
         "offer.searchGroupNamev2",
         "offer.showType",
