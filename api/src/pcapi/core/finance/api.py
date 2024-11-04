@@ -71,6 +71,7 @@ import pcapi.core.users.constants as users_constants
 import pcapi.core.users.models as users_models
 from pcapi.domain import reimbursement
 from pcapi.models import db
+from pcapi.models import feature
 from pcapi.repository import is_managed_transaction
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import on_commit
@@ -1720,40 +1721,6 @@ def _mark_free_pricings_as_invoiced() -> None:
         )
 
 
-def generate_debit_notes(batch: models.CashflowBatch) -> None:
-    """Generate (and store) all invoices."""
-
-    debit_note_rows = _get_cashflows_by_bank_accounts(batch, only_debit_notes=True)
-    _mark_free_pricings_as_invoiced()
-
-    for row in debit_note_rows:
-        try:
-            with transaction():
-                extra = {"bank_account_id": row.bank_account_id}
-                with log_elapsed(logger, "Generated and sent debit note", extra):
-                    generate_and_store_invoice(
-                        bank_account_id=row.bank_account_id,
-                        cashflow_ids=row.cashflow_ids,
-                        is_debit_note=True,
-                    )
-        except Exception as exc:  # pylint: disable=broad-except
-            if settings.IS_RUNNING_TESTS:
-                raise
-            logger.exception(
-                "Could not generate debit note",
-                extra={
-                    "bank_account_id": row.bank_account_id,
-                    "cashflow_ids": row.cashflow_ids,
-                    "exc": str(exc),
-                },
-            )
-    with log_elapsed(logger, "Generated CSV invoices file"):
-        path = generate_invoice_file(batch)
-    drive_folder_name = _get_drive_folder_name(batch)
-    with log_elapsed(logger, "Uploaded CSV invoices file to Google Drive"):
-        _upload_files_to_google_drive(drive_folder_name, [path])
-
-
 def _get_cashflows_by_bank_accounts(batch: models.CashflowBatch, only_debit_notes: bool = False) -> list:
     query = _filter_invoiceable_cashflows(
         db.session.query(
@@ -1766,37 +1733,85 @@ def _get_cashflows_by_bank_accounts(batch: models.CashflowBatch, only_debit_note
 
     rows = query.group_by(models.Cashflow.bankAccountId).all()
 
-    if not rows and not only_debit_notes:  # Probably a mistake in the batch id input
-        raise exceptions.NoInvoiceToGenerate()
-
     return rows
 
 
-def generate_invoices(batch: models.CashflowBatch) -> None:
-    """Generate (and store) all invoices."""
-    rows = _get_cashflows_by_bank_accounts(batch)
+def generate_invoices_and_debit_notes(batch: models.CashflowBatch) -> None:
+    """Generate and store all invoices and debit notes."""
+    invoice_rows = [(False, row) for row in _get_cashflows_by_bank_accounts(batch)]
+    debit_note_rows = [(True, row) for row in _get_cashflows_by_bank_accounts(batch, only_debit_notes=True)]
+
+    if not invoice_rows and not debit_note_rows:
+        raise exceptions.NoInvoiceToGenerate()
+
     _mark_free_pricings_as_invoiced()
 
-    for row in rows:
+    for is_debit_note, row in invoice_rows + debit_note_rows:
+        try:
+            with transaction():
+                extra = {"bank_account_id": row.bank_account_id}
+                message = "Generated and send debit note" if is_debit_note else "Generated and sent invoice"
+                with log_elapsed(logger, message, extra):
+                    generate_and_store_invoice(
+                        bank_account_id=row.bank_account_id,
+                        cashflow_ids=row.cashflow_ids,
+                        is_debit_note=is_debit_note,
+                    )
+        except Exception:  # pylint: disable=broad-except
+            if settings.IS_RUNNING_TESTS:
+                raise
+            logger.exception(
+                "Could not generate debit note" if is_debit_note else "Could not generate invoice",
+                extra={
+                    "bank_account_id": row.bank_account_id,
+                    "cashflow_ids": row.cashflow_ids,
+                },
+            )
+
+    # TODO: remove csv generation once migration to the new finance tool is finalized
+    with log_elapsed(logger, "Generated CSV invoices file"):
+        path = generate_invoice_file(batch)
+    drive_folder_name = _get_drive_folder_name(batch)
+    with log_elapsed(logger, "Uploaded CSV invoices file to Google Drive"):
+        _upload_files_to_google_drive(drive_folder_name, [path])
+
+
+def generate_invoices_and_debit_notes_legacy(batch: models.CashflowBatch) -> None:
+    """Generate and store all invoices and debit notes."""
+    invoice_rows = [(False, row) for row in _get_cashflows_by_bank_accounts(batch)]
+    debit_note_rows = [(True, row) for row in _get_cashflows_by_bank_accounts(batch, only_debit_notes=True)]
+
+    if not invoice_rows and not debit_note_rows:
+        raise exceptions.NoInvoiceToGenerate()
+
+    _mark_free_pricings_as_invoiced()
+
+    for is_debit_note, row in invoice_rows + debit_note_rows:
         try:
             with transaction():
                 extra = {"bank_account_id": row.bank_account_id}
                 with log_elapsed(logger, "Generated and sent invoice", extra):
-                    generate_and_store_invoice(
+                    generate_and_store_invoice_legacy(
                         bank_account_id=row.bank_account_id,
                         cashflow_ids=row.cashflow_ids,
+                        is_debit_note=is_debit_note,
                     )
-        except Exception as exc:  # pylint: disable=broad-except
+        except Exception:  # pylint: disable=broad-except
             if settings.IS_RUNNING_TESTS:
                 raise
             logger.exception(
-                "Could not generate invoice",
+                "Could not generate debit note" if is_debit_note else "Could not generate invoice",
                 extra={
                     "bank_account_id": row.bank_account_id,
                     "cashflow_ids": row.cashflow_ids,
-                    "exc": str(exc),
                 },
             )
+
+    with log_elapsed(logger, "Generated CSV invoices file"):
+        path = generate_invoice_file(batch)
+    drive_folder_name = _get_drive_folder_name(batch)
+    with log_elapsed(logger, "Uploaded CSV invoices file to Google Drive"):
+        _upload_files_to_google_drive(drive_folder_name, [path])
 
 
 def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
@@ -2044,9 +2059,40 @@ def generate_and_store_invoice(bank_account_id: int, cashflow_ids: list[int], is
         transactional_mails.send_invoice_available_to_pro_email(invoice, batch)
 
 
-def _generate_invoice(
+def generate_and_store_invoice_legacy(
+    bank_account_id: int, cashflow_ids: list[int], is_debit_note: bool = False
+) -> None:
+    log_extra = {"bank_account": bank_account_id}
+    with log_elapsed(logger, "Generated invoice model instance", log_extra):
+        invoice = _generate_invoice_legacy(
+            bank_account_id=bank_account_id, cashflow_ids=cashflow_ids, is_debit_note=is_debit_note
+        )
+        if not invoice:
+            return
+
+    # The cashflows all come from the same cashflow batch,
+    # so batch_id should be the same for every cashflow
+    batch = (
+        models.CashflowBatch.query.join(models.Cashflow.batch)
+        .join(models.Cashflow.invoices)
+        .filter(models.Invoice.id == invoice.id)
+    ).one()
+
+    with log_elapsed(logger, "Generated invoice HTML", log_extra):
+        if is_debit_note:
+            invoice_html = _generate_debit_note_html(invoice, batch)
+        else:
+            invoice_html = _generate_invoice_html(invoice, batch)
+    with log_elapsed(logger, "Generated and stored PDF invoice", log_extra):
+        _store_invoice_pdf(invoice_storage_id=invoice.storage_object_id, invoice_html=invoice_html)
+    with log_elapsed(logger, "Sent invoice", log_extra):
+        transactional_mails.send_invoice_available_to_pro_email(invoice, batch)
+
+
+def _generate_invoice_legacy(
     bank_account_id: int, cashflow_ids: list[int], is_debit_note: bool = False
 ) -> models.Invoice | None:
+    assert not feature.FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW
     # Acquire lock to avoid 2 simultaneous calls to this function (on
     # the same bank account) generating 2 duplicate invoices.
     # This is also why we call `_filter_invoiceable_cashflows()` again
@@ -2097,6 +2143,7 @@ def _generate_invoice(
         invoice_lines += _make_invoice_lines(custom_rule.group, pricings, custom_rule.rate)
 
     invoice.amount = sum(line.reimbursedAmount for line in invoice_lines)
+    invoice.status = models.InvoiceStatus.PAID
     # As of Python 3.9, DEFAULT_ENTROPY is 32 bytes
     invoice.token = secrets.token_urlsafe()
     scheme_name = "invoice.reference" if not is_debit_note else "debit_note.reference"
@@ -2222,6 +2269,103 @@ def _generate_invoice(
                 "reimbursed": bookings_models.BookingStatus.REIMBURSED.value,
                 "cashflow_ids": tuple(cashflow_ids),
                 "reimbursement_date": datetime.datetime.utcnow(),
+            },
+        )
+
+    db.session.commit()
+    return invoice
+
+
+def _generate_invoice(
+    bank_account_id: int, cashflow_ids: list[int], is_debit_note: bool = False
+) -> models.Invoice | None:
+    assert feature.FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW
+    # Acquire lock to avoid 2 simultaneous calls to this function (on
+    # the same bank account) generating 2 duplicate invoices.
+    # This is also why we call `_filter_invoiceable_cashflows()` again
+    # below : the function will process the requested cashflows only
+    # in the first call
+    lock_bank_account(bank_account_id)
+    invoice = models.Invoice(
+        bankAccountId=bank_account_id,
+    )
+    cashflows = _filter_invoiceable_cashflows(
+        models.Cashflow.query.filter(models.Cashflow.id.in_(cashflow_ids)).options(
+            sqla_orm.joinedload(models.Cashflow.pricings)
+            .options(sqla_orm.joinedload(models.Pricing.lines))
+            .options(sqla_orm.joinedload(models.Pricing.customRule))
+            .options(
+                sqla_orm.joinedload(models.Pricing.event, innerjoin=True).joinedload(
+                    models.FinanceEvent.bookingFinanceIncident
+                )
+            )
+        )
+    ).all()
+    if not cashflows:
+        # We should not end up here unless another instance of the
+        # `generate_invoices` command is being executed simultaneously
+        # and it has already processed this bank account.
+        return None
+    pricings_and_rates_by_rule_group = defaultdict(list)
+    pricings_by_custom_rule = defaultdict(list)
+
+    for pricing in sum([cf.pricings for cf in cashflows], []):
+        rule_reference = pricing.standardRule or pricing.customRuleId
+        rule = find_reimbursement_rule(rule_reference)
+        if isinstance(rule, models.CustomReimbursementRule):
+            pricings_by_custom_rule[rule].append(pricing)
+        else:
+            pricings_and_rates_by_rule_group[rule.group].append((pricing, rule.rate))  # type: ignore[attr-defined]
+
+    invoice_lines = []
+    for rule_group, pricings_and_rates in pricings_and_rates_by_rule_group.items():
+        rates = defaultdict(list)
+        for pricing, rate in pricings_and_rates:
+            rates[rate].append(pricing)
+        for rate, pricings in rates.items():
+            invoice_lines += _make_invoice_lines(rule_group, pricings, rate)
+
+    for custom_rule, pricings in pricings_by_custom_rule.items():
+        # An InvoiceLine rate will be calculated for a CustomRule with a set reimbursed amount
+        invoice_lines += _make_invoice_lines(custom_rule.group, pricings, custom_rule.rate)
+
+    invoice.status = models.InvoiceStatus.PENDING
+    invoice.amount = sum(line.reimbursedAmount for line in invoice_lines)
+    # As of Python 3.9, DEFAULT_ENTROPY is 32 bytes
+    invoice.token = secrets.token_urlsafe()
+    scheme_name = "invoice.reference" if not is_debit_note else "debit_note.reference"
+    scheme = reference_models.ReferenceScheme.get_and_lock(name=scheme_name, year=datetime.date.today().year)
+    invoice.reference = scheme.formatted_reference
+    scheme.increment_after_use()
+    db.session.add(scheme)
+    db.session.add(invoice)
+    db.session.flush()
+    for line in invoice_lines:
+        line.invoiceId = invoice.id
+    db.session.bulk_save_objects(invoice_lines)
+    cf_links = [models.InvoiceCashflow(invoiceId=invoice.id, cashflowId=cashflow.id) for cashflow in cashflows]
+    db.session.bulk_save_objects(cf_links)
+
+    # Cashflow.status: UNDER_REVIEW → PENDING_ACCEPTANCE for new workflow
+    with log_elapsed(logger, "Updating status of cashflows"):
+        db.session.execute(
+            sa.text(
+                """
+                WITH updated AS (
+                  UPDATE cashflow
+                  SET status = :pending_acceptance
+                  WHERE id IN :cashflow_ids
+                  RETURNING id AS cashflow_id
+                )
+                INSERT INTO cashflow_log
+                ("cashflowId", "statusBefore", "statusAfter")
+                SELECT updated.cashflow_id, :under_review, :pending_acceptance FROM updated
+                """
+            ),
+            params={
+                "cashflow_ids": tuple(cashflow_ids),
+                "pending_acceptance": models.CashflowStatus.PENDING_ACCEPTANCE.value,
+                "under_review": models.CashflowStatus.UNDER_REVIEW.value,
             },
         )
 

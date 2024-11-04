@@ -402,8 +402,7 @@ def create_industrial_commercial_gestures() -> None:
         )
 
     cashflow_batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
-    finance_api.generate_invoices(cashflow_batch)
-    finance_api.generate_debit_notes(cashflow_batch)
+    finance_api.generate_invoices_and_debit_notes_legacy(cashflow_batch)
     db.session.flush()
 
     for i in range(2):

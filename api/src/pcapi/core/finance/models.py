@@ -197,6 +197,8 @@ class CashflowStatus(enum.Enum):
     PENDING = "pending"
     # Then it is sent to our accounting system for review.
     UNDER_REVIEW = "under review"
+    # Intermediary status to await acceptance from finance tool (after invoice push)
+    PENDING_ACCEPTANCE = "pending acceptance"
     # And it's finally sent to the bank. By default, we decide it's
     # accepted. The bank will inform us later if it rejected the
     # cashflow. (For now, this happens outside of this application,
@@ -803,6 +805,13 @@ class InvoiceLine(PcObject, Base, Model):
         return 1 - self.rate
 
 
+class InvoiceStatus(enum.Enum):
+    PENDING = "pending"
+    PENDING_PAYMENT = "pending_payment"
+    PAID = "paid"
+    REJECTED = "rejected"
+
+
 @dataclasses.dataclass
 class InvoiceLineGroup:
     position: int
@@ -833,6 +842,7 @@ class Invoice(PcObject, Base, Model):
     cashflows: list[Cashflow] = sqla_orm.relationship(
         "Cashflow", secondary="invoice_cashflow", back_populates="invoices"
     )
+    status: InvoiceStatus = sqla.Column(db_utils.MagicEnum(InvoiceStatus), nullable=True)
 
     @property
     def storage_object_id(self) -> str:
