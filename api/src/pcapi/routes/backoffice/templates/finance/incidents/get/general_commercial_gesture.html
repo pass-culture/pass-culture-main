@@ -56,10 +56,10 @@
               </p>
             {% endif %}
             <p class="mb-1">
-              <span class="fw-bold">Montant d'origine {{ incident.booking_finance_incidents | length | pluralize('de la réservation', 'des réservations')   }} :</span> {{ bookings_total_amount | format_amount }}
+              <span class="fw-bold">Montant d'origine {{ incident.booking_finance_incidents | length | pluralize('de la réservation', 'des réservations') }} :</span> {{ bookings_total_amount | format_amount(target=incident.venue) }}
             </p>
             <p class="mb-1">
-              <span class="fw-bold">Montant du geste commercial à verser à l'acteur :</span> {{ commercial_gesture_amount | format_cents }}
+              <span class="fw-bold">Montant du geste commercial à verser à l'acteur :</span> {{ commercial_gesture_amount | format_cents(target=incident.venue) }}
             </p>
             {% if incident.author_full_name %}
               <p class="mb-1">
@@ -68,7 +68,7 @@
             {% endif %}
             {% if incident.cashflow_batch_label %}
               <p class="mb-1">
-                <span class="fw-bold">Batch :</span> {{ incident.cashflow_batch_label }}
+                <span class="fw-bold">Batch :</span> {{ incident.cashflow_batch_label }}
               </p>
             {% endif %}
             {% if incident.invoice_url %}

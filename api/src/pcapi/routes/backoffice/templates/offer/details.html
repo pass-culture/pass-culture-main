@@ -274,9 +274,9 @@
                     {% endif %}
                     <td>
                       {% if stock.priceCategory %}
-                        {{ stock.priceCategory.price | format_amount }}{# same as PC Pro which shows priceCategory.price #}
+                        {{ stock.priceCategory.price | format_amount(target=offer.venue) }}{# same as PC Pro which shows priceCategory.price #}
                       {% else %}
-                        {{ stock.price | format_amount }}
+                        {{ stock.price | format_amount(target=offer.venue) }}
                       {% endif %}
                     </td>
                     {% if offer.isEvent %}

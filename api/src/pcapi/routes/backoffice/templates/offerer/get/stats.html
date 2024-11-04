@@ -10,7 +10,7 @@
                   data-bs-placement="top"
                   data-bs-title="Il y a trop d'offres pour en afficher la valeur">N/A</span>
           {% else %}
-            {{ stats.total_revenue | format_amount }}
+            {{ stats.total_revenue | format_amount(target=offerer) }}
           {% endif %}
         </h6>
         <div class="d-flex flex-row">
@@ -21,7 +21,7 @@
                       data-bs-toggle="modal"
                       data-bs-target="#display-revenue-details"
                       type="button">plus de détails…</button>
-              {{ build_lazy_modal(url_for("backoffice_web.offerer.get_revenue_details", offerer_id=offerer_id) , "display-revenue-details") }}
+              {{ build_lazy_modal(url_for("backoffice_web.offerer.get_revenue_details", offerer_id=offerer.id) , "display-revenue-details") }}
             {% endif %}
           </div>
         </div>

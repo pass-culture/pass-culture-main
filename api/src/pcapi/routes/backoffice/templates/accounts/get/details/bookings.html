@@ -20,7 +20,7 @@
           <td>{{ booking.offerer.name | escape }}</td>
           <td>{{ links.build_offer_name_to_pc_pro_link(booking.stock.offer) }}</td>
           <td>
-            {{ booking.amount | format_amount }}
+            {{ booking.amount | format_amount(target=booking.user) }}
             {% if booking.stock.offer.isDuo and booking.quantity == 2 %}(Duo){% endif %}
           </td>
           <td>{{ booking.dateCreated | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
@@ -67,8 +67,8 @@
                 {{ booking.stock.offer.subcategoryId | format_offer_category }}
               </p>
               <p class="mb-1">
-                <span class="fw-bold">Formats :</span>
-                {{ booking.stock.offer.formats | format_collective_offer_formats }}
+                <span class="fw-bold">Sous-catégorie :</span>
+                {{ booking.stock.offer.subcategoryId | format_offer_subcategory }}
               </p>
               <p class="mb-1">
                 <span class="fw-bold">Crédit utilisé par le jeune :</span>

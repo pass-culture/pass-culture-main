@@ -1168,8 +1168,21 @@ class ListOffersTest(GetEndpointHelper):
             assert row["Stock réservé"] == "0"
             assert row["Stock restant"] == "-"
 
-    def test_list_offers_price_with_different_stocks(self, client, pro_fraud_admin):
-        offer = offers_factories.OfferFactory()
+    @pytest.mark.parametrize(
+        "venue_factory,expected_price_1,expected_price_2",
+        [
+            (offerers_factories.VenueFactory, "10,00 €", "10,00 € - 15,00 €"),
+            (
+                offerers_factories.CaledonianVenueFactory,
+                "10,00 € (1193 CFP)",
+                "10,00 € (1193 CFP) - 15,00 € (1790 CFP)",
+            ),
+        ],
+    )
+    def test_list_offers_price_with_different_stocks(
+        self, client, pro_fraud_admin, venue_factory, expected_price_1, expected_price_2
+    ):
+        offer = offers_factories.OfferFactory(venue=venue_factory())
 
         client = client.with_bo_session_auth(pro_fraud_admin)
         query_args = self._get_query_args_by_id(offer.id)
@@ -1186,7 +1199,7 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert rows[0]["Tarif"] == "10,00 €"
+        assert rows[0]["Tarif"] == expected_price_1
 
         offers_factories.StockFactory(offer=offer, price=15)
         with assert_num_queries(self.expected_num_queries):
@@ -1194,7 +1207,7 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert rows[0]["Tarif"] == "10,00 € - 15,00 €"
+        assert rows[0]["Tarif"] == expected_price_2
 
     def test_list_offers_with_offerer_confidence_rule(self, client, pro_fraud_admin):
         rule = offerers_factories.ManualReviewOffererConfidenceRuleFactory(offerer__name="Offerer")
@@ -2141,19 +2154,26 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert stocks_rows[0]["Date / Heure"] == format_date(expired_stock_2.beginningDatetime, "%d/%m/%Y à %Hh%M")
 
     @pytest.mark.parametrize(
-        "quantity,booked_quantity,expected_remaining",
+        "quantity,booked_quantity,expected_remaining,venue_factory,expected_price",
         [
-            (1000, 0, "1000"),
-            (1000, 50, "950"),
-            (1000, 1000, "0"),
-            (None, 0, "Illimité"),
-            (None, 50, "Illimité"),
+            (1000, 0, "1000", offerers_factories.VenueFactory, "10,10 €"),
+            (1000, 50, "950", offerers_factories.VenueFactory, "10,10 €"),
+            (1000, 1000, "0", offerers_factories.VenueFactory, "10,10 €"),
+            (None, 0, "Illimité", offerers_factories.VenueFactory, "10,10 €"),
+            (None, 50, "Illimité", offerers_factories.CaledonianVenueFactory, "10,10 € (1205 CFP)"),
         ],
     )
     def test_get_offer_details_with_one_bookable_stock(
-        self, legit_user, authenticated_client, quantity, booked_quantity, expected_remaining
+        self,
+        legit_user,
+        authenticated_client,
+        quantity,
+        booked_quantity,
+        expected_remaining,
+        venue_factory,
+        expected_price,
     ):
-        offer = offers_factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id, venue=venue_factory())
         stock = offers_factories.EventStockFactory(offer=offer, quantity=quantity, dnBookedQuantity=booked_quantity)
 
         query_count = self.expected_num_queries
@@ -2170,7 +2190,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert stocks_rows[0]["Stock ID"] == str(stock.id)
         assert stocks_rows[0]["Stock réservé"] == str(booked_quantity)
         assert stocks_rows[0]["Stock restant"] == expected_remaining
-        assert stocks_rows[0]["Prix"] == "10,10 €"
+        assert stocks_rows[0]["Prix"] == expected_price
         assert stocks_rows[0]["Date / Heure"] == format_date(stock.beginningDatetime, "%d/%m/%Y à %Hh%M")
 
     def test_get_offer_details_with_soft_deleted_stock(self, authenticated_client):
@@ -2193,8 +2213,29 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert stocks_rows[0]["Prix"] == "10,10 €"
         assert stocks_rows[0]["Date / Heure"] == format_date(stock.beginningDatetime, "%d/%m/%Y à %Hh%M")
 
-    def test_get_offer_details_with_price_categories(self, authenticated_client):
-        venue = offerers_factories.VenueFactory()
+    @pytest.mark.parametrize(
+        "venue_factory,expected_price_1,expected_price_2,expected_price_3,expected_price_4",
+        [
+            (offerers_factories.VenueFactory, "0,00 €", "13,00 €", "42,00 €", "66,60 €"),
+            (
+                offerers_factories.CaledonianVenueFactory,
+                "0,00 € (0 CFP)",
+                "13,00 € (1551 CFP)",
+                "42,00 € (5012 CFP)",
+                "66,60 € (7947 CFP)",
+            ),
+        ],
+    )
+    def test_get_offer_details_with_price_categories(
+        self,
+        authenticated_client,
+        venue_factory,
+        expected_price_1,
+        expected_price_2,
+        expected_price_3,
+        expected_price_4,
+    ):
+        venue = venue_factory()
         offer = offers_factories.EventOfferFactory(venue=venue)
         price_gold = offers_factories.PriceCategoryFactory(
             offer=offer, priceCategoryLabel__label="OR", price=66.6, priceCategoryLabel__venue=venue
@@ -2226,13 +2267,13 @@ class GetOfferDetailsTest(GetEndpointHelper):
         stocks_rows = html_parser.extract_table_rows(response.data, parent_class="stock-tab-pane")
         assert len(stocks_rows) == 4
         assert stocks_rows[0]["Tarif"] == "GRATUIT"
-        assert stocks_rows[0]["Prix"] == "0,00 €"
+        assert stocks_rows[0]["Prix"] == expected_price_1
         assert stocks_rows[1]["Tarif"] == "BRONZE"
-        assert stocks_rows[1]["Prix"] == "13,00 €"
+        assert stocks_rows[1]["Prix"] == expected_price_2
         assert stocks_rows[2]["Tarif"] == "ARGENT"
-        assert stocks_rows[2]["Prix"] == "42,00 €"
+        assert stocks_rows[2]["Prix"] == expected_price_3
         assert stocks_rows[3]["Tarif"] == "OR"
-        assert stocks_rows[3]["Prix"] == "66,60 €"
+        assert stocks_rows[3]["Prix"] == expected_price_4
 
     def test_get_offer_details_stocks_sorted_by_event_date_desc(self, authenticated_client):
         now = datetime.datetime.utcnow()

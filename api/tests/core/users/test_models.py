@@ -648,3 +648,13 @@ class UserLoginTest:
 
         saved_user = user_models.User.query.one()
         assert saved_user.password is None
+
+
+class UserIsCaledonianTest:
+    def test_user_is_caledonian(self):
+        offerer = users_factories.UserFactory(postalCode="98800")
+        assert offerer.is_caledonian
+
+    def test_user_is_not_caledonian(self):
+        offerer = users_factories.UserFactory()
+        assert not offerer.is_caledonian

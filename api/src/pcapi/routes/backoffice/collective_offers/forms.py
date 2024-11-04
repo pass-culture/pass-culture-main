@@ -128,7 +128,7 @@ class CollectiveOfferAdvancedSearchSubForm(forms_utils.PCForm):
         ],
     )
     price = fields.PCDecimalField(
-        "Prix",
+        "Prix en euros",
         validators=[
             wtforms.validators.Optional(""),
             wtforms.validators.NumberRange(min=0, message="Doit contenir un nombre positif"),

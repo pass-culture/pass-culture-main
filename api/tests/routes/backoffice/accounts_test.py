@@ -782,26 +782,43 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert f"Date de naissance {user.validatedBirthDate.strftime('%d/%m/%Y')} " in content
         assert f"Date de naissance déclarée à l'inscription {user.dateOfBirth.strftime('%d/%m/%Y')} " in content
 
-    def test_get_beneficiary_credit(self, authenticated_client):
-        _, grant_18, _, _, _ = create_bunch_of_accounts()
+    @pytest.mark.parametrize(
+        "user_factory,expected_remaining_text,expected_digital_remaining_text",
+        [
+            (
+                users_factories.BeneficiaryGrant18Factory,
+                "287,50 € Crédit restant 300,00 €",
+                "87,50 € Crédit digital restant 100,00 €",
+            ),
+            (
+                users_factories.CaledonianBeneficiaryGrant18Factory,
+                "287,50 € (34308 CFP) Crédit restant 300,00 € (35800 CFP)",
+                "87,50 € (10442 CFP) Crédit digital restant 100,00 € (11933 CFP)",
+            ),
+        ],
+    )
+    def test_get_beneficiary_credit(
+        self, authenticated_client, user_factory, expected_remaining_text, expected_digital_remaining_text
+    ):
+        beneficiary = user_factory()
 
         bookings_factories.BookingFactory(
-            user=grant_18,
+            user=beneficiary,
             stock__offer__subcategoryId=subcategories.VOD.id,
             stock__offer__url="http://example.com",
             amount=12.5,
             user__deposit__expirationDate=datetime.datetime(year=2031, month=12, day=31),
         )
 
-        user_id = grant_18.id
+        user_id = beneficiary.id
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
         cards_text = html_parser.extract_cards_text(response.data)
         # Remaining credit + Title + Initial Credit
-        assert "287,50 € Crédit restant 300,00 €" in cards_text
-        assert "87,50 € Crédit digital restant 100,00 €" in cards_text
+        assert expected_remaining_text in cards_text
+        assert expected_digital_remaining_text in cards_text
 
     def test_get_non_beneficiary_credit(self, authenticated_client):
         _, _, _, random, _ = create_bunch_of_accounts()
@@ -813,8 +830,15 @@ class GetPublicAccountTest(GetEndpointHelper):
 
         assert "Crédit restant" not in html_parser.content_as_text(response.data)
 
-    def test_get_beneficiary_bookings(self, authenticated_client):
-        user = users_factories.BeneficiaryGrant18Factory()
+    @pytest.mark.parametrize(
+        "user_factory,expected_price_1,expected_price_2",
+        [
+            (users_factories.BeneficiaryGrant18Factory, "20,00 €", "12,50 €"),
+            (users_factories.CaledonianBeneficiaryGrant18Factory, "20,00 € (2387 CFP)", "12,50 € (1492 CFP)"),
+        ],
+    )
+    def test_get_beneficiary_bookings(self, authenticated_client, user_factory, expected_price_1, expected_price_2):
+        user = user_factory()
         b1 = bookings_factories.CancelledBookingFactory(
             user=user, amount=12.5, dateCreated=datetime.date.today() - relativedelta(days=2)
         )
@@ -831,14 +855,14 @@ class GetPublicAccountTest(GetEndpointHelper):
 
         assert bookings[0]["Offreur"] == b2.offerer.name
         assert bookings[0]["Nom de l'offre"] == b2.stock.offer.name
-        assert bookings[0]["Prix"] == "20,00 €"
+        assert bookings[0]["Prix"] == expected_price_1
         assert bookings[0]["Date de résa"].startswith(datetime.date.today().strftime("Le %d/%m/%Y"))
         assert bookings[0]["État"] == "Le jeune a consommé l'offre"
         assert bookings[0]["Contremarque"] == b2.token
 
         assert bookings[1]["Offreur"] == b1.offerer.name
         assert bookings[1]["Nom de l'offre"] == b1.stock.offer.name
-        assert bookings[1]["Prix"] == "12,50 €"
+        assert bookings[1]["Prix"] == expected_price_2
         assert bookings[1]["Date de résa"].startswith(
             (datetime.date.today() - relativedelta(days=2)).strftime("Le %d/%m/%Y")
         )

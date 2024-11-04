@@ -5,6 +5,7 @@ from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
 from markupsafe import escape
+import sqlalchemy as sa
 
 from pcapi.core.finance import siret_api
 from pcapi.core.offerers import models as offerers_models
@@ -37,7 +38,15 @@ def _validate_move_siret_form() -> (
             flash("Les lieux source et destination doivent être différents", "warning")
         return form, None, None
 
-    source_venue = offerers_models.Venue.query.filter_by(id=form.source_venue.data).one_or_none()
+    source_venue = (
+        offerers_models.Venue.query.filter_by(id=form.source_venue.data)
+        .options(
+            sa.orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
+                offerers_models.Offerer.siren, offerers_models.Offerer.postalCode
+            )
+        )
+        .one_or_none()
+    )
     if not source_venue:
         if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
             flash(
@@ -53,7 +62,15 @@ def _validate_move_siret_form() -> (
             )
         return form, None, None
 
-    target_venue = offerers_models.Venue.query.filter_by(id=form.target_venue.data).one_or_none()
+    target_venue = (
+        offerers_models.Venue.query.filter_by(id=form.target_venue.data)
+        .options(
+            sa.orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
+                offerers_models.Offerer.siren, offerers_models.Offerer.postalCode
+            )
+        )
+        .one_or_none()
+    )
     if not target_venue:
         if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
             flash(

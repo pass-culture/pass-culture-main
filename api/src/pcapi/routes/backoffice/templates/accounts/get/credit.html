@@ -3,10 +3,10 @@
     <div class="card shadow-sm">
       {% if credit is not none %}
         <div class="card-body">
-          <h6 class="card-title fs-1 mb-3">{{ credit.all.remaining | format_amount }}</h6>
+          <h6 class="card-title fs-1 mb-3">{{ credit.all.remaining | format_amount(target=user) }}</h6>
           <div class="d-flex">
             <h6 class="card-subtitle text-muted me-auto">Crédit restant</h6>
-            <h6 class="card-subtitle text-muted ms-auto">{{ credit.all.initial | format_amount }}</h6>
+            <h6 class="card-subtitle text-muted ms-auto">{{ credit.all.initial | format_amount(target=user) }}</h6>
           </div>
           <div class="progress mt-2">
             {% set progress_value = ( credit.all.remaining / credit.all.initial ) * 100 %}
@@ -26,10 +26,10 @@
     <div class="card shadow-sm">
       {% if credit is not none and credit.digital is not none %}
         <div class="card-body">
-          <h6 class="card-title fs-1 mb-3">{{ credit.digital.remaining | format_amount }}</h6>
+          <h6 class="card-title fs-1 mb-3">{{ credit.digital.remaining | format_amount(target=user) }}</h6>
           <div class="d-flex">
             <h6 class="card-subtitle text-muted me-auto">Crédit digital restant</h6>
-            <h6 class="card-subtitle text-muted ms-auto">{{ credit.digital.initial | format_amount }}</h6>
+            <h6 class="card-subtitle text-muted ms-auto">{{ credit.digital.initial | format_amount(target=user) }}</h6>
           </div>
           <div class="progress mt-2">
             {% set progress_value = ( credit.digital.remaining / credit.digital.initial ) * 100 %}

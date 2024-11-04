@@ -747,6 +747,10 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     def identifier(self) -> str | None:
         return self.ridet or self.siret
 
+    @property
+    def is_caledonian(self) -> bool:
+        return self.managingOfferer.is_caledonian
+
 
 class GooglePlacesInfo(PcObject, Base, Model):
     __tablename__ = "google_places_info"

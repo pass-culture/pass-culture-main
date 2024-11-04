@@ -20,7 +20,7 @@
         {% for year, year_stats in details | dictsort(reverse=true) %}
           <tr>
             <td class="text-start">{{ year }}</td>
-            <td class="text-end">{{ year_stats.individual | format_amount }}</td>
+            <td class="text-end">{{ year_stats.individual | format_amount(target=target) }}</td>
             <td class="text-end">{{ year_stats.collective | format_amount }}</td>
           </tr>
         {% endfor %}

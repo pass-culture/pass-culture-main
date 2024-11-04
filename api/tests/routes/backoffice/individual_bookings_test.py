@@ -551,6 +551,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert "Montant remboursé : 10,10 €" in reimbursement_data
         assert f"N° de virement : {cashflow.batch.label}" in reimbursement_data
         assert "Taux de remboursement : 100,0 %" in reimbursement_data
+        assert "CFP" not in reimbursement_data
 
     def test_sort_bookings_by_date(self, authenticated_client, bookings):
         with assert_num_queries(self.expected_num_queries):
@@ -646,6 +647,32 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         response = authenticated_client.get(url_for(self.endpoint, **{field: "1)"}))
         assert response.status_code == 400
         assert html_parser.extract_warnings(response.data) == [f"ID invalide pour {field} : 1)"]
+
+    def test_list_caledonian_booking_shows_xfp_amounts(self, authenticated_client):
+        nc_booking = bookings_factories.ReimbursedBookingFactory(
+            user=users_factories.CaledonianBeneficiaryGrant18Factory(), token="NC988F", amount=150.0
+        )
+        bank_account = finance_factories.BankAccountFactory()
+        offerers_factories.VenueBankAccountLinkFactory(venue=nc_booking.venue, bankAccount=bank_account)
+        pricing = finance_factories.PricingFactory(
+            booking=nc_booking,
+            status=finance_models.PricingStatus.INVOICED,
+            venue=nc_booking.venue,
+        )
+        finance_factories.CashflowFactory(bankAccount=bank_account, pricings=[pricing])
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q="NC988F"))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID résa"] == str(nc_booking.id)
+        assert rows[0]["Montant"] == "150,00 € (17900 CFP)"
+
+        reimbursement_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[0]
+        assert "Total payé par l'utilisateur : 150,00 € (17900 CFP)" in reimbursement_data
+        assert "Montant remboursé : 150,00 € (17900 CFP)" in reimbursement_data
 
 
 class MarkBookingAsUsedTest(PostEndpointHelper):

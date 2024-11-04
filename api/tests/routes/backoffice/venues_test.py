@@ -699,9 +699,10 @@ class GetVenueRevenueDetailsTest(GetEndpointHelper):
 
     # session
     # user
+    # venue and offerer (to check is_caledonian)
     # bookings revenue stats
     # collective bookings revenue stats
-    expected_num_queries = 4
+    expected_num_queries = 5
 
     def test_venue_revenue_details(
         self,

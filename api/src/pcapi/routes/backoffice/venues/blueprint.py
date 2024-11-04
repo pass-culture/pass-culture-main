@@ -361,7 +361,10 @@ def get_stats(venue_id: int) -> utils.BackofficeResponse:
             sa.orm.contains_eager(offerers_models.Venue.bankAccountLinks)
             .load_only(offerers_models.VenueBankAccountLink.timespan)
             .contains_eager(offerers_models.VenueBankAccountLink.bankAccount)
-            .load_only(finance_models.BankAccount.id, finance_models.BankAccount.label)
+            .load_only(finance_models.BankAccount.id, finance_models.BankAccount.label),
+            sa.orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
+                offerers_models.Offerer.siren, offerers_models.Offerer.postalCode
+            ),
         )
     )
 
@@ -381,10 +384,25 @@ def get_stats(venue_id: int) -> utils.BackofficeResponse:
 
 @venue_blueprint.route("/<int:venue_id>/revenue-details", methods=["GET"])
 def get_revenue_details(venue_id: int) -> utils.BackofficeResponse:
+    venue = (
+        offerers_models.Venue.query.filter_by(id=venue_id)
+        .options(
+            sa.orm.load_only(offerers_models.Venue.id),
+            sa.orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
+                offerers_models.Offerer.siren, offerers_models.Offerer.postalCode
+            ),
+        )
+        .one_or_none()
+    )
+
+    if not venue:
+        raise NotFound()
+
     details = offerers_repository.get_revenues_per_year(venueId=venue_id)
     return render_template(
         "components/revenue_details.html",
         details=details,
+        target=venue,
     )
 
 

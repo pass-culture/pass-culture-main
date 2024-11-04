@@ -122,7 +122,12 @@ def _get_incidents(
         sa.orm.contains_eager(finance_models.FinanceIncident.venue)
         .load_only(offerer_models.Venue.id, offerer_models.Venue.name, offerer_models.Venue.publicName)
         .joinedload(offerer_models.Venue.managingOfferer)
-        .load_only(offerer_models.Offerer.id, offerer_models.Offerer.name),
+        .load_only(
+            offerer_models.Offerer.id,
+            offerer_models.Offerer.name,
+            offerer_models.Offerer.siren,
+            offerer_models.Offerer.postalCode,
+        ),
         sa.orm.contains_eager(finance_models.FinanceIncident.booking_finance_incidents)
         .load_only(finance_models.BookingFinanceIncident.id, finance_models.BookingFinanceIncident.newTotalAmount)
         .contains_eager(finance_models.BookingFinanceIncident.booking)
@@ -317,9 +322,10 @@ def get_individual_bookings_overpayment_creation_form() -> utils.BackofficeRespo
                 .load_only(offers_models.Stock.id)
                 .joinedload(offers_models.Stock.offer)
                 .load_only(offers_models.Offer.name),
-                sa.orm.joinedload(bookings_models.Booking.venue).load_only(
-                    offerer_models.Venue.publicName, offerer_models.Venue.name
-                ),
+                sa.orm.joinedload(bookings_models.Booking.venue)
+                .load_only(offerer_models.Venue.publicName, offerer_models.Venue.name)
+                .joinedload(offerer_models.Venue.managingOfferer)
+                .load_only(offerer_models.Offerer.siren, offerer_models.Offerer.postalCode),
             )
             .filter(
                 bookings_models.Booking.id.in_(form.object_ids_list),
@@ -382,9 +388,10 @@ def get_individual_bookings_commercial_gesture_creation_form() -> utils.Backoffi
                 .load_only(offers_models.Stock.id)
                 .joinedload(offers_models.Stock.offer)
                 .load_only(offers_models.Offer.name),
-                sa.orm.joinedload(bookings_models.Booking.venue).load_only(
-                    offerer_models.Venue.publicName, offerer_models.Venue.name
-                ),
+                sa.orm.joinedload(bookings_models.Booking.venue)
+                .load_only(offerer_models.Venue.publicName, offerer_models.Venue.name)
+                .joinedload(offerer_models.Venue.managingOfferer)
+                .load_only(offerer_models.Offerer.siren, offerer_models.Offerer.postalCode),
             )
             .filter(
                 bookings_models.Booking.id.in_(form.object_ids_list),
@@ -738,9 +745,10 @@ def _initialize_additional_data(bookings: list[bookings_models.Booking]) -> dict
         additional_data["Contremarque"] = booking.token
         additional_data["Nom de l'offre"] = booking.stock.offer.name
         additional_data["Bénéficiaire"] = booking.user.full_name
-        additional_data["Montant de la réservation"] = filters.format_amount(booking.total_amount)
+        additional_data["Montant de la réservation"] = filters.format_amount(booking.total_amount, target=booking.venue)
         additional_data["Montant remboursé à l'acteur"] = filters.format_amount(
-            -finance_utils.to_euros(booking.reimbursement_pricing.amount) if booking.reimbursement_pricing else 0
+            -finance_utils.to_euros(booking.reimbursement_pricing.amount) if booking.reimbursement_pricing else 0,
+            target=booking.venue,
         )
     else:
         additional_data["Nombre de réservations"] = len(bookings)
@@ -827,7 +835,7 @@ def _get_finance_overpayment_incident_validation_form(
             "Vous allez valider un incident de {incident_amount} sur le compte bancaire {details}. "
             "Voulez-vous continuer ?"
         ).format(
-            incident_amount=filters.format_amount(incident_total_amount_euros),
+            incident_amount=filters.format_amount(incident_total_amount_euros, target=finance_incident.venue),
             details=bank_account_details_str,
         ),
     )
@@ -857,7 +865,7 @@ def _get_finance_commercial_gesture_validation_form(
             "Vous allez valider un geste commercial de {commercial_gesture_amount} sur le compte bancaire {details}. "
             "Voulez-vous continuer ?"
         ).format(
-            commercial_gesture_amount=filters.format_amount(commercial_gesture_amount),
+            commercial_gesture_amount=filters.format_amount(commercial_gesture_amount, target=finance_incident.venue),
             details=bank_account_details_str,
         ),
     )
@@ -1060,14 +1068,20 @@ def _get_incident(finance_incident_id: int, **args: typing.Any) -> finance_model
             # Venue info
             sa.orm.joinedload(offerer_models.Venue, finance_models.FinanceIncident.venue)
             .load_only(offerer_models.Venue.id, offerer_models.Venue.name, offerer_models.Venue.publicName)
-            .contains_eager(offerer_models.Venue.bankAccountLinks)
-            .load_only(offerer_models.VenueBankAccountLink.timespan)
-            .contains_eager(offerer_models.VenueBankAccountLink.bankAccount)
-            .load_only(finance_models.BankAccount.id, finance_models.BankAccount.label),
+            .options(
+                sa.orm.contains_eager(offerer_models.Venue.bankAccountLinks)
+                .load_only(offerer_models.VenueBankAccountLink.timespan)
+                .contains_eager(offerer_models.VenueBankAccountLink.bankAccount)
+                .load_only(finance_models.BankAccount.id, finance_models.BankAccount.label),
+                sa.orm.joinedload(offerer_models.Venue.managingOfferer).load_only(
+                    offerer_models.Offerer.siren, offerer_models.Offerer.postalCode
+                ),
+            ),
             # Booking incidents info
             sa.orm.joinedload(
                 finance_models.BookingFinanceIncident, finance_models.FinanceIncident.booking_finance_incidents
-            ).load_only(
+            )
+            .load_only(
                 finance_models.BookingFinanceIncident.id,
                 finance_models.BookingFinanceIncident.newTotalAmount,
                 finance_models.BookingFinanceIncident.beneficiaryId,
@@ -1075,132 +1089,105 @@ def _get_incident(finance_incident_id: int, **args: typing.Any) -> finance_model
                 finance_models.BookingFinanceIncident.collectiveBookingId,
                 finance_models.BookingFinanceIncident.incidentId,
             )
-            # Bookings info
-            .joinedload(finance_models.BookingFinanceIncident.booking).load_only(
-                bookings_models.Booking.id,
-                bookings_models.Booking.quantity,
-                bookings_models.Booking.amount,
-                bookings_models.Booking.cancellationDate,
-                bookings_models.Booking.cancellationReason,
-                bookings_models.Booking.dateCreated,
-                bookings_models.Booking.dateUsed,
-                bookings_models.Booking.status,
-                bookings_models.Booking.token,
-            )
-            # Booking venue info
-            .joinedload(bookings_models.Booking.venue).load_only(offerer_models.Venue.bookingEmail),
-            # Booking user info
-            sa.orm.joinedload(
-                finance_models.BookingFinanceIncident, finance_models.FinanceIncident.booking_finance_incidents
-            )
-            .joinedload(finance_models.BookingFinanceIncident.booking)
-            .joinedload(bookings_models.Booking.user)
-            .load_only(
-                users_models.User.id,
-                users_models.User.firstName,
-                users_models.User.lastName,
-                users_models.User.email,
-            ),
-            # Booking deposit info
-            sa.orm.joinedload(
-                finance_models.BookingFinanceIncident, finance_models.FinanceIncident.booking_finance_incidents
-            )
-            .joinedload(finance_models.BookingFinanceIncident.booking)
-            .joinedload(bookings_models.Booking.deposit)
-            .load_only(finance_models.Deposit.type),
-            # Booking pricing info
-            sa.orm.joinedload(
-                finance_models.BookingFinanceIncident, finance_models.FinanceIncident.booking_finance_incidents
-            )
-            .joinedload(finance_models.BookingFinanceIncident.booking)
-            .joinedload(bookings_models.Booking.pricings)
-            .load_only(
-                finance_models.Pricing.amount,
-                finance_models.Pricing.status,
-                finance_models.Pricing.creationDate,
-            ),
-            # Batch infos
-            sa.orm.joinedload(
-                finance_models.BookingFinanceIncident, finance_models.FinanceIncident.booking_finance_incidents
-            )
-            .joinedload(finance_models.BookingFinanceIncident.finance_events)
-            .load_only(finance_models.FinanceEvent.id)
-            .joinedload(finance_models.FinanceEvent.pricings)
-            .load_only(finance_models.Pricing.id, finance_models.Pricing.amount, finance_models.Pricing.status)
-            .joinedload(finance_models.Pricing.cashflows)
-            .load_only(finance_models.Cashflow.id)
             .options(
-                # Cashflow batch label
-                sa.orm.joinedload(finance_models.Cashflow.batch).load_only(finance_models.CashflowBatch.label),
-                # Invoice url
-                sa.orm.joinedload(finance_models.Cashflow.invoices).load_only(
-                    finance_models.Invoice.token,
-                    finance_models.Invoice.date,
-                    finance_models.Invoice.reference,
+                # Bookings info
+                sa.orm.joinedload(finance_models.BookingFinanceIncident.booking)
+                .load_only(
+                    bookings_models.Booking.id,
+                    bookings_models.Booking.quantity,
+                    bookings_models.Booking.amount,
+                    bookings_models.Booking.cancellationDate,
+                    bookings_models.Booking.cancellationReason,
+                    bookings_models.Booking.dateCreated,
+                    bookings_models.Booking.dateUsed,
+                    bookings_models.Booking.status,
+                    bookings_models.Booking.token,
+                )
+                .options(
+                    # Booking venue info
+                    sa.orm.joinedload(bookings_models.Booking.venue).load_only(offerer_models.Venue.bookingEmail),
+                    # Booking user info
+                    sa.orm.joinedload(bookings_models.Booking.user).load_only(
+                        users_models.User.id,
+                        users_models.User.firstName,
+                        users_models.User.lastName,
+                        users_models.User.email,
+                    ),
+                    # Booking deposit info
+                    sa.orm.joinedload(bookings_models.Booking.deposit).load_only(finance_models.Deposit.type),
+                    # Booking pricing info
+                    sa.orm.joinedload(bookings_models.Booking.pricings).load_only(
+                        finance_models.Pricing.amount,
+                        finance_models.Pricing.status,
+                        finance_models.Pricing.creationDate,
+                    ),
+                    # booking stock info
+                    sa.orm.joinedload(bookings_models.Booking.stock)
+                    .load_only(
+                        offers_models.Stock.beginningDatetime,
+                        offers_models.Stock.price,
+                    )
+                    .joinedload(offers_models.Stock.offer)
+                    .load_only(
+                        offers_models.Offer.id,
+                        offers_models.Offer.name,
+                        offers_models.Offer.url,
+                        offers_models.Offer.subcategoryId,
+                    ),
                 ),
-            ),
-            # booking stock info
-            sa.orm.joinedload(
-                finance_models.BookingFinanceIncident, finance_models.FinanceIncident.booking_finance_incidents
-            )
-            .joinedload(finance_models.BookingFinanceIncident.booking)
-            .joinedload(bookings_models.Booking.stock)
-            .load_only(
-                offers_models.Stock.beginningDatetime,
-                offers_models.Stock.price,
-            )
-            .joinedload(offers_models.Stock.offer)
-            .load_only(
-                offers_models.Offer.id,
-                offers_models.Offer.name,
-                offers_models.Offer.url,
-                offers_models.Offer.subcategoryId,
-            ),
-            # collective booking info
-            sa.orm.joinedload(
-                finance_models.BookingFinanceIncident, finance_models.FinanceIncident.booking_finance_incidents
-            )
-            .joinedload(finance_models.BookingFinanceIncident.collectiveBooking)
-            .load_only(
-                educational_models.CollectiveBooking.id,
-                educational_models.CollectiveBooking.status,
-                educational_models.CollectiveBooking.dateCreated,
-                educational_models.CollectiveBooking.dateUsed,
-                educational_models.CollectiveBooking.cancellationDate,
-                educational_models.CollectiveBooking.cancellationReason,
-            )
-            # collective booking educational redactor info
-            .joinedload(educational_models.CollectiveBooking.educationalRedactor).load_only(
-                educational_models.EducationalRedactor.firstName, educational_models.EducationalRedactor.lastName
-            ),
-            # collective booking education institution info
-            sa.orm.joinedload(
-                finance_models.BookingFinanceIncident, finance_models.FinanceIncident.booking_finance_incidents
-            )
-            .joinedload(finance_models.BookingFinanceIncident.collectiveBooking)
-            .joinedload(educational_models.CollectiveBooking.educationalInstitution)
-            .load_only(educational_models.EducationalInstitution.name),
-            # collective booking offer info
-            sa.orm.joinedload(
-                finance_models.BookingFinanceIncident, finance_models.FinanceIncident.booking_finance_incidents
-            )
-            .joinedload(finance_models.BookingFinanceIncident.collectiveBooking)
-            .joinedload(educational_models.CollectiveBooking.collectiveStock)
-            .load_only(educational_models.CollectiveStock.beginningDatetime, educational_models.CollectiveStock.price)
-            .joinedload(educational_models.CollectiveStock.collectiveOffer)
-            .load_only(
-                educational_models.CollectiveOffer.id,
-                educational_models.CollectiveOffer.name,
-                educational_models.CollectiveOffer.subcategoryId,
-                educational_models.CollectiveOffer.formats,
-            ),
-            sa.orm.joinedload(
-                finance_models.BookingFinanceIncident, finance_models.FinanceIncident.booking_finance_incidents
-            )
-            .joinedload(finance_models.BookingFinanceIncident.collectiveBooking)
-            .joinedload(educational_models.CollectiveBooking.pricings)
-            .load_only(
-                finance_models.Pricing.amount,
+                # Batch infos
+                sa.orm.joinedload(finance_models.BookingFinanceIncident.finance_events)
+                .load_only(finance_models.FinanceEvent.id)
+                .joinedload(finance_models.FinanceEvent.pricings)
+                .load_only(finance_models.Pricing.id, finance_models.Pricing.amount, finance_models.Pricing.status)
+                .joinedload(finance_models.Pricing.cashflows)
+                .load_only(finance_models.Cashflow.id)
+                .options(
+                    # Cashflow batch label
+                    sa.orm.joinedload(finance_models.Cashflow.batch).load_only(finance_models.CashflowBatch.label),
+                    # Invoice url
+                    sa.orm.joinedload(finance_models.Cashflow.invoices).load_only(
+                        finance_models.Invoice.token,
+                        finance_models.Invoice.date,
+                        finance_models.Invoice.reference,
+                    ),
+                ),
+                # collective booking info
+                sa.orm.joinedload(finance_models.BookingFinanceIncident.collectiveBooking)
+                .load_only(
+                    educational_models.CollectiveBooking.id,
+                    educational_models.CollectiveBooking.status,
+                    educational_models.CollectiveBooking.dateCreated,
+                    educational_models.CollectiveBooking.dateUsed,
+                    educational_models.CollectiveBooking.cancellationDate,
+                    educational_models.CollectiveBooking.cancellationReason,
+                )
+                .options(
+                    # collective booking educational redactor info
+                    sa.orm.joinedload(educational_models.CollectiveBooking.educationalRedactor).load_only(
+                        educational_models.EducationalRedactor.firstName,
+                        educational_models.EducationalRedactor.lastName,
+                    ),
+                    # collective booking education institution info
+                    sa.orm.joinedload(educational_models.CollectiveBooking.educationalInstitution).load_only(
+                        educational_models.EducationalInstitution.name
+                    ),
+                    # collective booking offer info
+                    sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock)
+                    .load_only(
+                        educational_models.CollectiveStock.beginningDatetime, educational_models.CollectiveStock.price
+                    )
+                    .joinedload(educational_models.CollectiveStock.collectiveOffer)
+                    .load_only(
+                        educational_models.CollectiveOffer.id,
+                        educational_models.CollectiveOffer.name,
+                        educational_models.CollectiveOffer.subcategoryId,
+                        educational_models.CollectiveOffer.formats,
+                    ),
+                    sa.orm.joinedload(educational_models.CollectiveBooking.pricings).load_only(
+                        finance_models.Pricing.amount,
+                    ),
+                ),
             ),
         )
         .one_or_none()

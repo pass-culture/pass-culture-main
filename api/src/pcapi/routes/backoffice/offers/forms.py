@@ -249,7 +249,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         ],
     )
     price = fields.PCDecimalField(
-        "Prix",
+        "Prix en euros",
         use_locale=True,
         validators=[
             wtforms.validators.Optional(""),

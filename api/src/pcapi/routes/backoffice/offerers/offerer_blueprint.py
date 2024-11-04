@@ -292,21 +292,24 @@ def get_stats_data(offerer_id: int) -> dict:
 @offerer_blueprint.route("/stats", methods=["GET"])
 @repository.atomic()
 def get_stats(offerer_id: int) -> utils.BackofficeResponse:
+    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
     data = get_stats_data(offerer_id)
     return render_template(
         "offerer/get/stats.html",
         stats=data,
-        offerer_id=offerer_id,
+        offerer=offerer,
     )
 
 
 @offerer_blueprint.route("/revenue-details", methods=["GET"])
 @repository.atomic()
 def get_revenue_details(offerer_id: int) -> utils.BackofficeResponse:
+    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
     details = offerers_repository.get_revenues_per_year(offererId=offerer_id)
     return render_template(
         "components/revenue_details.html",
         details=details,
+        target=offerer,
     )
 
 

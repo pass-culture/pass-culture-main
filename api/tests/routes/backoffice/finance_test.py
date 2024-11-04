@@ -137,7 +137,9 @@ class ListIncidentsTest(GetEndpointHelper):
 
     def test_list_incidents_without_filter(self, authenticated_client):
         partial_booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(newTotalAmount=8.10)
-        total_booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(newTotalAmount=0)
+        total_booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
+            newTotalAmount=0, incident__venue=offerers_factories.CaledonianVenueFactory()
+        )
 
         url = url_for(self.endpoint)
 
@@ -151,10 +153,12 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Statut de l'incident"] == "Créé"
         assert rows[0]["Type d'incident"] == "Trop Perçu"
         assert rows[0]["Nature"] == "Total"
+        assert rows[0]["Montant total"] == "10,10 € (1205 CFP)"
         assert rows[1]["ID"] == str(partial_booking_incident.incident.id)
         assert rows[1]["Statut de l'incident"] == "Créé"
         assert rows[1]["Type d'incident"] == "Trop Perçu"
         assert rows[1]["Nature"] == "Partiel"
+        assert rows[1]["Montant total"] == "10,02 €"
 
     def test_list_incident_by_incident_id(self, authenticated_client, incidents):
         searched_id = str(incidents[0].id)
@@ -1037,8 +1041,12 @@ class GetOverpaymentIncidentTest(GetEndpointHelper):
     expected_num_queries += 1  # Fetch Incidents infos
     expected_num_queries += 1  # Fetch connect as extended FF
 
-    def test_get_incident(self, authenticated_client):
-        finance_incident = finance_factories.FinanceIncidentFactory()
+    @pytest.mark.parametrize(
+        "venue_factory,expected_xpf_text",
+        [(offerers_factories.VenueFactory, ""), (offerers_factories.CaledonianVenueFactory, "(1205 CFP)")],
+    )
+    def test_get_incident(self, authenticated_client, venue_factory, expected_xpf_text):
+        finance_incident = finance_factories.FinanceIncidentFactory(venue=venue_factory())
         finance_factories.IndividualBookingFinanceIncidentFactory(newTotalAmount=0, incident=finance_incident)
         bank_account = finance_factories.BankAccountFactory(offerer=finance_incident.venue.managingOfferer)
         offerers_factories.VenueBankAccountLinkFactory(venue=finance_incident.venue, bankAccount=bank_account)
@@ -1056,6 +1064,7 @@ class GetOverpaymentIncidentTest(GetEndpointHelper):
         assert f"ID : {finance_incident.id}" in content
         assert f"Lieu porteur de l'offre : {finance_incident.venue.name}" in content
         assert f"Compte bancaire : {bank_account.label}" in content
+        assert f"Montant trop perçu par l'acteur culturel à récupérer : 10,10 € {expected_xpf_text}" in content
         assert "Batch :" not in content
         assert "Justificatif de remboursement :" not in content
 
@@ -1138,10 +1147,17 @@ class GetCommercialGestureTest(GetEndpointHelper):
     expected_num_queries += 1  # Fetch Incidents infos
     expected_num_queries += 1  # Fetch connect as extended FF
 
-    def test_get_incident(self, authenticated_client):
-        finance_incident = finance_factories.FinanceIncidentFactory(kind=finance_models.IncidentType.COMMERCIAL_GESTURE)
+    @pytest.mark.parametrize(
+        "venue_factory,expected_xpf_text",
+        [(offerers_factories.VenueFactory, ""), (offerers_factories.CaledonianVenueFactory, "(1205 CFP)")],
+    )
+    def test_get_incident(self, authenticated_client, venue_factory, expected_xpf_text):
+        finance_incident = finance_factories.FinanceIncidentFactory(
+            kind=finance_models.IncidentType.COMMERCIAL_GESTURE, venue=venue_factory()
+        )
         bank_account = finance_factories.BankAccountFactory(offerer=finance_incident.venue.managingOfferer)
         offerers_factories.VenueBankAccountLinkFactory(venue=finance_incident.venue, bankAccount=bank_account)
+        finance_factories.IndividualBookingFinanceCommercialGestureFactory(incident=finance_incident, newTotalAmount=0)
         url = url_for(self.endpoint, finance_incident_id=finance_incident.id)
 
         with assert_num_queries(self.expected_num_queries):
@@ -1149,12 +1165,15 @@ class GetCommercialGestureTest(GetEndpointHelper):
             assert response.status_code == 200
 
         badges = html_parser.extract(response.data, tag="span", class_="badge")
-        assert badges == ["Créé", "Total"]
+        assert badges == ["Créé", "Total", "Annulée", "Pass 18"]  # incident badges + booking badges
 
         content = html_parser.content_as_text(response.data)
         assert f"ID : {finance_incident.id}" in content
         assert f"Lieu porteur de l'offre : {finance_incident.venue.name}" in content
         assert f"Compte bancaire : {bank_account.label}" in content
+        assert f"Montant d'origine de la réservation : 10,10 € {expected_xpf_text}" in content
+        assert f"Montant du geste commercial à verser à l'acteur : 10,10 € {expected_xpf_text}" in content
+        assert f"Geste commercial créé par : {finance_incident.details['author']}" in content
         assert "Batch :" not in content
         assert "Justificatif de remboursement :" not in content
 
@@ -1234,8 +1253,17 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
 
     expected_num_queries = 8
 
-    def test_get_overpayment_creation_for_one_booking_form(self, authenticated_client, invoiced_pricing):
-        venue = offerers_factories.VenueFactory()
+    @pytest.mark.parametrize(
+        "venue_factory,show_xfp_amount",
+        [
+            (offerers_factories.VenueFactory, False),
+            (offerers_factories.CaledonianVenueFactory, True),
+        ],
+    )
+    def test_get_overpayment_creation_for_one_booking_form(
+        self, authenticated_client, invoiced_pricing, venue_factory, show_xfp_amount
+    ):
+        venue = venue_factory()
         offer = offers_factories.OfferFactory(venue=venue)
         stock = offers_factories.StockFactory(offer=offer)
         booking = bookings_factories.ReimbursedBookingFactory(stock=stock, pricings=[invoiced_pricing])
@@ -1253,8 +1281,13 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
         assert f"Contremarque : {booking.token}" in additional_data_text
         assert f"Nom de l'offre : {offer.name}" in additional_data_text
         assert f"Bénéficiaire : {booking.user.full_name}" in additional_data_text
-        assert "Montant de la réservation : 10,10 €" in additional_data_text
-        assert "Montant remboursé à l'acteur : 10,00 €" in additional_data_text
+        if show_xfp_amount:
+            assert "Montant de la réservation : 10,10 € (1205 CFP)" in additional_data_text
+            assert "Montant remboursé à l'acteur : 10,00 € (1193 CFP)" in additional_data_text
+        else:
+            assert "Montant de la réservation : 10,10 €" in additional_data_text
+            assert "Montant remboursé à l'acteur : 10,00 €" in additional_data_text
+            assert "CFP" not in additional_data_text
 
         default_amount = html_parser.extract_input_value(response.data, "total_amount")
         assert default_amount == str(booking.total_amount)
@@ -1475,8 +1508,17 @@ class GetCommercialGestureCreationFormTest(PostEndpointHelper):
 
     expected_num_queries = 8
 
-    def test_get_commercial_gesture_creation_for_one_booking_form(self, authenticated_client):
-        venue = offerers_factories.VenueFactory(name="Etablissement")
+    @pytest.mark.parametrize(
+        "venue_factory,show_xfp_amount",
+        [
+            (offerers_factories.VenueFactory, False),
+            (offerers_factories.CaledonianVenueFactory, True),
+        ],
+    )
+    def test_get_commercial_gesture_creation_for_one_booking_form(
+        self, authenticated_client, venue_factory, show_xfp_amount
+    ):
+        venue = venue_factory(name="Etablissement")
         offer = offers_factories.OfferFactory(venue=venue, name="Offre ++")
         stock = offers_factories.StockFactory(offer=offer)
         invoiced_pricing = finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-10_00)
@@ -1503,8 +1545,13 @@ class GetCommercialGestureCreationFormTest(PostEndpointHelper):
         assert "Contremarque : TOK3N" in additional_data_text
         assert "Nom de l'offre : Offre ++" in additional_data_text
         assert "Bénéficiaire : John Doe" in additional_data_text
-        assert "Montant de la réservation : 200,00 €" in additional_data_text
-        assert "Montant remboursé à l'acteur : 10,00 €" in additional_data_text
+        if show_xfp_amount:
+            assert "Montant de la réservation : 200,00 € (23866 CFP)" in additional_data_text
+            assert "Montant remboursé à l'acteur : 10,00 € (1193 CFP)" in additional_data_text
+        else:
+            assert "Montant de la réservation : 200,00 €" in additional_data_text
+            assert "Montant remboursé à l'acteur : 10,00 €" in additional_data_text
+            assert "CFP" not in additional_data_text
 
         default_amount = html_parser.extract_input_value(response.data, "total_amount")
         assert default_amount == str(booking.total_amount)

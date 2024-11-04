@@ -789,8 +789,22 @@ class GetOffererStatsTest(GetEndpointHelper):
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    def test_get_stats(self, authenticated_client, offerer):
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+    # get session (1 query)
+    # get user with profile and permissions (1 query)
+    # get offerer (1 query)
+    # get total revenue (1 query)
+    # get offerers offers stats (6 query: 3 to check the quantity and 3 to get the data)
+    expected_num_queries = 10
+
+    @pytest.mark.parametrize(
+        "venue_factory,expected_revenue_text",
+        [
+            (offerers_factories.VenueFactory, "10,00 € de CA"),
+            (offerers_factories.CaledonianVenueFactory, "10,00 € (1193 CFP) de CA"),
+        ],
+    )
+    def test_get_stats(self, authenticated_client, venue_factory, expected_revenue_text):
+        venue = venue_factory()
         offer = offers_factories.OfferFactory(
             venue=venue,
             validation=offers_models.OfferValidationStatus.APPROVED.value,
@@ -809,18 +823,14 @@ class GetOffererStatsTest(GetEndpointHelper):
             amount=10,
             stock=offers_factories.StockFactory(offer=offer),
         )
-        url = url_for(self.endpoint, offerer_id=offerer.id)
+        url = url_for(self.endpoint, offerer_id=venue.managingOffererId)
 
-        # get session (1 query)
-        # get user with profile and permissions (1 query)
-        # get total revenue (1 query)
-        # get offerers offers stats (6 query: 3 to check the quantity and 3 to get the data)
-        with assert_num_queries(9):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
         cards_text = html_parser.extract_cards_text(response.data)
-        assert f"{str(booking.amount).replace('.', ',')} € de CA" in cards_text[0]
+        assert expected_revenue_text in cards_text[0]
         assert "3 offres actives ( 1 IND / 2 EAC ) 0 offres inactives ( 0 IND / 0 EAC )" in cards_text
 
 

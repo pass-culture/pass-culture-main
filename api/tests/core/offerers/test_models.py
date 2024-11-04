@@ -462,7 +462,7 @@ class OffererIsCaledonianTest:
         assert offerer.is_caledonian
 
     def test_offerer_with_siren_is_caledonian(self):
-        offerer = factories.CaledonianOffererFactory(postalCode="98800")
+        offerer = factories.CaledonianOffererFactory(siren="123456789", postalCode="98800")
         assert offerer.is_caledonian
 
     def test_offerer_is_not_caledonian(self):
@@ -502,3 +502,18 @@ class VenueIdentifierTest:
         venue = factories.CaledonianVenueFactory()
         assert venue.identifier_name == "RIDET"
         assert venue.identifier == venue.ridet
+
+
+class VenueIsCaledonianTest:
+    def test_venue_is_caledonian(self):
+        venue = factories.CaledonianVenueFactory()
+        assert venue.is_caledonian
+
+    def test_virtual_venue_is_caledonian(self):
+        offerer = factories.CaledonianOffererFactory(siren="123456789", postalCode="98800")
+        venue = factories.VirtualVenueFactory(managingOfferer=offerer)
+        assert venue.is_caledonian
+
+    def test_offerer_is_not_caledonian(self):
+        venue = factories.VenueFactory()
+        assert not venue.is_caledonian
