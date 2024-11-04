@@ -129,7 +129,13 @@ export const useAnalytics = () => {
     (
       event: string,
       params?: {
-        [key: string]: string | string[] | number | boolean | undefined
+        [key: string]:
+          | string
+          | string[]
+          | number
+          | boolean
+          | undefined
+          | { [key: string]: any }
       }
     ) => {
       if (!firebaseApp || !firebaseRemoteConfig) {
