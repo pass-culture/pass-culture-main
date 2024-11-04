@@ -10,6 +10,8 @@ import { NewNavReview } from 'components/NewNavReview/NewNavReview'
 import { SkipLinks } from 'components/SkipLinks/SkipLinks'
 import fullGoTop from 'icons/full-go-top.svg'
 import fullInfoIcon from 'icons/full-info.svg'
+import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
+import logoStyles from 'styles/components/_Logo.module.scss'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { LateralPanel } from './LateralPanel/LateralPanel'
@@ -22,7 +24,7 @@ export interface LayoutProps {
    * Make sure that only one heading is displayed per page.
    */
   mainHeading?: string
-  layout?: 'basic' | 'funnel' | 'without-nav' | 'sticky-actions'
+  layout?: 'basic' | 'funnel' | 'sticky-actions' | 'logged-out'
 }
 
 export const Layout = ({
@@ -40,7 +42,24 @@ export const Layout = ({
   const isMobileScreen = useMediaQuery('(max-width: 46.5rem)')
 
   const shouldDisplayNewNavReview =
-    layout !== 'funnel' && layout !== 'without-nav'
+    layout !== 'funnel' && layout !== 'logged-out'
+
+  const mainHeaing = mainHeading && (
+    <div className={styles['main-heading-wrapper']}>
+      <h1 className={styles['main-heading']}>{mainHeading}</h1>
+      <a
+        id="back-to-nav-link"
+        href={isMobileScreen ? '#header-nav-toggle' : '#lateral-panel'}
+        className={styles['back-to-nav-link']}
+      >
+        <SvgIcon
+          src={fullGoTop}
+          alt="Revenir à la barre de navigation"
+          width="20"
+        />
+      </a>
+    </div>
+  )
 
   return (
     <>
@@ -96,36 +115,48 @@ export const Layout = ({
               navPanel={navPanel}
             />
           )}
-          <div id="content-wrapper" className={styles['content-wrapper']}>
+          <div
+            id="content-wrapper"
+            className={cn(styles['content-wrapper'], {
+              [styles['content-wrapper-side']]: layout === 'logged-out',
+            })}
+          >
             {shouldDisplayNewNavReview && <NewNavReview />}
+            {layout === 'logged-out' && (
+              <header className={styles['content-wrapper-side-logo']}>
+                <SvgIcon
+                  className={logoStyles['logo-unlogged']}
+                  viewBox="0 0 282 120"
+                  alt="Pass Culture pro, l’espace des acteurs culturels"
+                  src={logoPassCultureProFullIcon}
+                  width="135"
+                />
+              </header>
+            )}
             <div
               className={cn(styles['content-container'], {
                 [styles['content-container-funnel']]: layout === 'funnel',
+                [styles['content-container-logged-out']]:
+                  layout === 'logged-out',
               })}
             >
               <main id="content">
-                {mainHeading && (
-                  <div className={styles['main-heading-wrapper']}>
-                    <h1 className={styles['main-heading']}>{mainHeading}</h1>
-                    <a
-                      id="back-to-nav-link"
-                      href={
-                        isMobileScreen ? '#header-nav-toggle' : '#lateral-panel'
-                      }
-                      className={styles['back-to-nav-link']}
-                    >
-                      <SvgIcon
-                        src={fullGoTop}
-                        alt="Revenir à la barre de navigation"
-                        width="20"
-                      />
-                    </a>
-                  </div>
-                )}
-                {layout === 'funnel' || layout === 'without-nav' ? (
-                  children
+                {layout === 'funnel' ? (
+                  <>
+                    {mainHeaing}
+                    {children}
+                  </>
                 ) : (
-                  <div className={styles.content}>{children}</div>
+                  <div
+                    className={cn(styles.content, {
+                      [styles['content-logged-out']]: layout === 'logged-out',
+                      [styles['content-logged-out-with-heading']]:
+                        layout === 'logged-out' && mainHeading,
+                    })}
+                  >
+                    {mainHeaing}
+                    {children}
+                  </div>
                 )}
               </main>
               {layout !== 'funnel' && <Footer layout={layout} />}

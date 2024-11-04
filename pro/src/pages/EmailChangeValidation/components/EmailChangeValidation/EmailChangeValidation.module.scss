@@ -1,19 +1,10 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_forms.scss" as forms;
-@use "styles/mixins/_layout.scss" as layout;
 @use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 @use "styles/variables/_size.scss" as size;
 
 .title {
   @include fonts-design-system.title1;
-}
-
-.logo-side {
-  @include layout.logo-side;
-}
-
-.content {
-  @include layout.full-content-side;
 }
 
 .subtitle {

@@ -5,7 +5,7 @@ import { Navigate, useSearchParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { HTTP_STATUS, isErrorAPIError } from 'apiClient/helpers'
-import { OldLayout } from 'app/App/layout/OldLayout'
+import { Layout } from 'app/App/layout/Layout'
 import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
@@ -15,10 +15,6 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { useRedirectLoggedUser } from 'commons/hooks/useRedirectLoggedUser'
 import { updateUser } from 'commons/store/user/reducer'
 import { getReCaptchaToken } from 'commons/utils/recaptcha'
-import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
-import { CookiesFooter } from 'pages/CookiesFooter/CookiesFooter'
-import logoStyles from 'styles/components/_Logo.module.scss'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { SIGNIN_FORM_DEFAULT_VALUES } from './constants'
 import styles from './Signin.module.scss'
@@ -107,16 +103,7 @@ export const SignIn = (): JSX.Element => {
   return shouldRedirect ? (
     <Navigate to="/" replace />
   ) : (
-    <OldLayout>
-      <header className={styles['logo-side']}>
-        <SvgIcon
-          className={logoStyles['logo-unlogged']}
-          viewBox="0 0 282 120"
-          alt="Pass Culture pro, l’espace des acteurs culturels"
-          src={logoPassCultureProFullIcon}
-          width="135"
-        />
-      </header>
+    <Layout layout="logged-out">
       <section className={styles['content']}>
         <h1 className={styles['title']}>
           Bienvenue sur l’espace dédié aux acteurs culturels
@@ -128,9 +115,8 @@ export const SignIn = (): JSX.Element => {
         <FormikProvider value={formik}>
           <SigninForm />
         </FormikProvider>
-        <CookiesFooter className={styles['cookies-footer']} />
       </section>
-    </OldLayout>
+    </Layout>
   )
 }
 

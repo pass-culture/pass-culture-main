@@ -20,10 +20,6 @@
 
   @media (min-width: size.$tablet) {
     min-height: size.$footer-height;
-
-    &-layout-without-nav {
-      margin: -#{size.$footer-height} 0 0 size.$side-logo-width;
-    }
   }
 
   @media (min-width: size.$mobile) {

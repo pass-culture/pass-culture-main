@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { OldLayout } from 'app/App/layout/OldLayout'
+import { Layout } from 'app/App/layout/Layout'
 import { updateUser } from 'commons/store/user/reducer'
 import { parse } from 'commons/utils/query-string'
 
@@ -43,9 +43,9 @@ const EmailChangeValidation = (): JSX.Element => {
   }
 
   return (
-    <OldLayout>
+    <Layout layout="logged-out">
       <EmailChangeValidationScreen isSuccess={isSuccess} />
-    </OldLayout>
+    </Layout>
   )
 }
 

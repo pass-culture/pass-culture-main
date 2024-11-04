@@ -1,8 +1,5 @@
-import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
-import logoStyles from 'styles/components/_Logo.module.scss'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './EmailChangeValidation.module.scss'
 
@@ -15,15 +12,6 @@ export const EmailChangeValidationScreen = ({
 }: EmailChangeValidationProps): JSX.Element => {
   return (
     <>
-      <header className={styles['logo-side']}>
-        <SvgIcon
-          className={logoStyles['logo-unlogged']}
-          viewBox="0 0 282 120"
-          alt="Pass Culture pro, l’espace des acteurs culturels"
-          src={logoPassCultureProFullIcon}
-          width="135"
-        />
-      </header>
       {isSuccess && (
         <section className={styles['content']}>
           <h1 className={styles['title']}>Et voilà !</h1>

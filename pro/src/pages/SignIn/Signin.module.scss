@@ -1,17 +1,8 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
-@use "styles/mixins/_layout.scss" as layout;
 @use "styles/variables/_forms.scss" as forms;
 @use "styles/variables/_size.scss" as size;
-
-.logo-side {
-  @include layout.logo-side;
-}
-
-.content {
-  @include layout.full-content-side;
-}
 
 .mandatory {
   @include fonts.caption;
@@ -40,10 +31,5 @@
   .buttons {
     width: 100%;
   }
-}
-
-.cookies-footer {
-  margin-top: rem.torem(24px);
-  padding: 0 rem.torem(24px);
 }
 
