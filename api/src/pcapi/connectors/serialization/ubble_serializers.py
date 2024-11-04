@@ -2,6 +2,7 @@ import contextlib
 import datetime
 import enum
 import logging
+import re
 
 import pydantic.v1 as pydantic_v1
 
@@ -150,6 +151,26 @@ def _get_first_and_last_name(document: UbbleDocument) -> tuple[str, str]:
     return first_name, last_name
 
 
+class WebhookBodyV2(pydantic_v1.BaseModel):
+    # https://docs.ubble.ai/#section/Webhooks/Body
+    identity_verification_id: str
+    status: UbbleIdentificationStatus
+
+    class Config:
+        use_enum_values = True
+
+
+# Ubble only consider HTTP status 200 and 201 as success
+# but we are not able to respond with empty body unless we return a 204 HTTP status
+# so we need a dummy reponse_model to be used for the webhook response
+class WebhookDummyReponse(pydantic_v1.BaseModel):
+    status: str = "ok"
+
+
+class WebhookStoreIdPicturesRequest(pydantic_v1.BaseModel):
+    identification_id: str
+
+
 # DEPRECATED Ubble V1
 
 
@@ -282,3 +303,24 @@ class UbbleIdentificationIncludedDocFaceMatches(UbbleIdentificationIncluded):
 class UbbleIdentificationResponse(pydantic_v1.BaseModel):
     data: UbbleIdentificationData
     included: list[UbbleIdentificationIncluded]
+
+
+class Configuration(pydantic_v1.BaseModel):
+    id: int
+    name: str
+
+
+class WebhookRequest(pydantic_v1.BaseModel):
+    identification_id: str
+    status: UbbleIdentificationStatus
+    configuration: Configuration
+
+
+UBBLE_SIGNATURE_RE = re.compile(r"^ts=(?P<ts>\d+),v1=(?P<v1>\S{64})$")
+
+
+class WebhookRequestHeaders(pydantic_v1.BaseModel):
+    ubble_signature: str = pydantic_v1.Field(..., regex=UBBLE_SIGNATURE_RE.pattern, alias="Ubble-Signature")
+
+    class Config:
+        extra = "allow"

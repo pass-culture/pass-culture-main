@@ -962,12 +962,39 @@ class DmsWebhookApplicationTest:
 
 
 @pytest.mark.usefixtures("db_session")
+class UbbleWebhookV2Test:
+    @pytest.mark.parametrize(
+        "status",
+        [
+            ubble_serializers.UbbleIdentificationStatus.PENDING,
+            ubble_serializers.UbbleIdentificationStatus.CAPTURE_IN_PROGRESS,
+        ],
+    )
+    def test_ignore_events_before_identification_conclusion(self, client, requests_mock, status):
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            thirdPartyId="idv_qwerty123",
+            status=fraud_models.FraudCheckStatus.STARTED,
+        )
+
+        with patch(
+            "pcapi.core.subscription.ubble.api.update_ubble_workflow",
+        ) as mocked_update:
+            client.post(
+                "/webhooks/ubble/v2/application_status",
+                json={"identity_verification_id": "idv_qwerty123", "status": status.value},
+            )
+
+            mocked_update.assert_not_called()
+
+
+@pytest.mark.usefixtures("db_session")
 class UbbleWebhookTest:
-    def _get_request_body(self, fraud_check, status) -> ubble_routes.WebhookRequest:
-        return ubble_routes.WebhookRequest(
+    def _get_request_body(self, fraud_check, status) -> ubble_serializers.WebhookRequest:
+        return ubble_serializers.WebhookRequest(
             identification_id=fraud_check.thirdPartyId,
             status=status,
-            configuration=ubble_routes.Configuration(
+            configuration=ubble_serializers.Configuration(
                 id=fraud_check.user.id,
                 name="Pass Culture",
             ),
@@ -1477,7 +1504,7 @@ class UbbleWebhookTest:
 
     def _init_decision_test(
         self,
-    ) -> tuple[users_models.User, fraud_models.BeneficiaryFraudCheck, ubble_routes.WebhookRequest]:
+    ) -> tuple[users_models.User, fraud_models.BeneficiaryFraudCheck, ubble_serializers.WebhookRequest]:
         birth_date = datetime.datetime.utcnow().date() - relativedelta.relativedelta(years=18, months=6)
         user = users_factories.UserFactory(dateOfBirth=datetime.datetime.combine(birth_date, datetime.time(0, 0)))
         identification_id = str(uuid.uuid4())

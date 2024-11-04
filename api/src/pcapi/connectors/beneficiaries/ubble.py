@@ -1,9 +1,10 @@
 from contextlib import suppress
-import re
 import functools
 import logging
+import re
 import typing
 
+import flask
 from pydantic.v1 import networks as pydantic_networks
 from pydantic.v1 import parse_obj_as
 from urllib3 import exceptions as urllib3_exceptions
@@ -30,10 +31,12 @@ V2_IDENTIFICATION_RE = r"^idv_\w+"
 
 
 def start_identification(
-    user_id: int, first_name: str, last_name: str, webhook_url: str, redirect_url: str
+    user_id: int, first_name: str, last_name: str, redirect_url: str, webhook_url: str | None = None
 ) -> fraud_models.UbbleContent:
     ubble_backend = _get_ubble_backend()
-    return ubble_backend.start_identification(user_id, first_name, last_name, webhook_url, redirect_url)
+    return ubble_backend.start_identification(
+        user_id=user_id, first_name=first_name, last_name=last_name, redirect_url=redirect_url, webhook_url=webhook_url
+    )
 
 
 def get_content(identification_id: str) -> fraud_models.UbbleContent:
@@ -80,13 +83,14 @@ def download_ubble_picture(http_url: pydantic_networks.HttpUrl) -> tuple[str | N
 
 
 class UbbleBackend:
-    def start_identification(  # pylint: disable=too-many-positional-arguments
+    def start_identification(
         self,
+        *,
         user_id: int,
         first_name: str,
         last_name: str,
-        webhook_url: str,
         redirect_url: str,
+        webhook_url: str | None = None,
     ) -> fraud_models.UbbleContent:
         raise NotImplementedError()
 
@@ -164,14 +168,17 @@ def log_and_handle_ubble_response(
 
 class UbbleV2Backend(UbbleBackend):
     @log_and_handle_ubble_response("create-and-start-idv")
-    def start_identification(  # pylint: disable=too-many-positional-arguments
+    def start_identification(
         self,
+        *,
         user_id: int,
         first_name: str,
         last_name: str,
-        webhook_url: str,
         redirect_url: str,
+        webhook_url: str | None = None,
     ) -> fraud_models.UbbleContent:
+        if webhook_url is None:
+            webhook_url = flask.url_for("Public API.ubble_v2_webhook_update_application_status", _external=True)
         response = requests.post(
             build_url("/v2/create-and-start-idv", user_id),
             json={
@@ -206,14 +213,17 @@ class UbbleV2Backend(UbbleBackend):
 
 
 class UbbleV1Backend(UbbleBackend):
-    def start_identification(  # pylint: disable=too-many-positional-arguments
+    def start_identification(
         self,
+        *,
         user_id: int,
         first_name: str,
         last_name: str,
-        webhook_url: str,
         redirect_url: str,
+        webhook_url: str | None = None,
     ) -> fraud_models.UbbleContent:
+        if webhook_url is None:
+            webhook_url = flask.url_for("Public API.ubble_webhook_update_application_status", _external=True)
         session = configure_session()
 
         data = {
