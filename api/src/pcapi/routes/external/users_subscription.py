@@ -1,6 +1,7 @@
 import logging
 
 from pcapi.connectors.dms import api as dms_connector_api
+from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.fraud.exceptions import IncompatibleFraudCheckStatus
 from pcapi.core.fraud.models import FraudCheckStatus
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
@@ -27,27 +28,53 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
     dms_subscription_api.handle_dms_application(dms_application)
 
 
+@public_api.route("/webhooks/ubble/v2/application_status", methods=["POST"])
+@spectree_serialize(
+    on_success_status=200,
+    response_model=ubble_serializers.WebhookDummyReponse,  # type: ignore[arg-type]
+)
+def ubble_v2_webhook_update_application_status(
+    body: ubble_serializers.WebhookBodyV2,
+) -> ubble_serializers.WebhookDummyReponse:
+    if body.status in (
+        ubble_serializers.UbbleIdentificationStatus.CHECKS_IN_PROGRESS,
+        ubble_serializers.UbbleIdentificationStatus.APPROVED,
+        ubble_serializers.UbbleIdentificationStatus.DECLINED,
+        ubble_serializers.UbbleIdentificationStatus.RETRY_REQUIRED,
+        ubble_serializers.UbbleIdentificationStatus.INCONCLUSIVE,
+        ubble_serializers.UbbleIdentificationStatus.REFUSED,
+    ):
+        return _update_ubble_workflow(body.identity_verification_id, body.status)
+    return ubble_serializers.WebhookDummyReponse()
+
+
 @public_api.route("/webhooks/ubble/application_status", methods=["POST"])
 @ubble_validation.require_ubble_signature
 @spectree_serialize(
-    headers=ubble_validation.WebhookRequestHeaders,  # type: ignore[arg-type]
+    headers=ubble_serializers.WebhookRequestHeaders,  # type: ignore[arg-type]
     on_success_status=200,
-    response_model=ubble_validation.WebhookDummyReponse,  # type: ignore[arg-type]
+    response_model=ubble_serializers.WebhookDummyReponse,  # type: ignore[arg-type]
 )
 def ubble_webhook_update_application_status(
-    body: ubble_validation.WebhookRequest,
-) -> ubble_validation.WebhookDummyReponse:
-    log_extra_data = {"identification_id": body.identification_id, "status": str(body.status)}
+    body: ubble_serializers.WebhookRequest,
+) -> ubble_serializers.WebhookDummyReponse:
+    return _update_ubble_workflow(body.identification_id, body.status)
+
+
+def _update_ubble_workflow(
+    identification_id: str, status: ubble_serializers.UbbleIdentificationStatus
+) -> ubble_serializers.WebhookDummyReponse:
+    log_extra_data = {"identification_id": identification_id, "status": str(status)}
     logger.info("Ubble webhook called", extra=log_extra_data)
 
-    fraud_check = ubble_fraud_api.get_ubble_fraud_check(body.identification_id)
+    fraud_check = ubble_fraud_api.get_ubble_fraud_check(identification_id)
     if not fraud_check:
-        raise ValueError(f"no Ubble fraud check found with identification_id {body.identification_id}")
+        raise ValueError(f"no Ubble fraud check found with identification_id {identification_id}")
 
     finished_status = [FraudCheckStatus.OK, FraudCheckStatus.KO, FraudCheckStatus.CANCELED, FraudCheckStatus.SUSPICIOUS]
     if fraud_check.status in finished_status:
         logger.warning("Ubble fraud check already has finished status", extra=log_extra_data)
-        return ubble_validation.WebhookDummyReponse()
+        return ubble_serializers.WebhookDummyReponse()
 
     try:
         ubble_subscription_api.update_ubble_workflow(fraud_check)
@@ -60,17 +87,17 @@ def ubble_webhook_update_application_status(
         logger.exception("Could not update Ubble workflow", extra=log_extra_data)
         raise ApiErrors({"msg": "an error occured during workflow update"}, status_code=500)
 
-    return ubble_validation.WebhookDummyReponse()
+    return ubble_serializers.WebhookDummyReponse()
 
 
 @public_api.route("/webhooks/ubble/store_id_pictures", methods=["POST"])
 @spectree_serialize(
     on_success_status=200,
-    response_model=ubble_validation.WebhookDummyReponse,  # type: ignore[arg-type]
+    response_model=ubble_serializers.WebhookDummyReponse,  # type: ignore[arg-type]
 )
 def ubble_webhook_store_id_pictures(
-    body: ubble_validation.WebhookStoreIdPicturesRequest,
-) -> ubble_validation.WebhookDummyReponse:
+    body: ubble_serializers.WebhookStoreIdPicturesRequest,
+) -> ubble_serializers.WebhookDummyReponse:
     logger.info("Webhook store id pictures called ", extra={"identification_id": body.identification_id})
     try:
         ubble_subscription_api.archive_ubble_user_id_pictures(body.identification_id)
@@ -83,4 +110,4 @@ def ubble_webhook_store_id_pictures(
     except IncompatibleFraudCheckStatus as err:
         raise ApiErrors({"err": str(err)}, status_code=422)
 
-    return ubble_validation.WebhookDummyReponse()
+    return ubble_serializers.WebhookDummyReponse()

@@ -5,7 +5,6 @@ import pathlib
 import shutil
 import tempfile
 
-import flask
 from pydantic.v1.networks import HttpUrl
 
 from pcapi import settings
@@ -105,7 +104,6 @@ def start_ubble_workflow(user: users_models.User, first_name: str, last_name: st
         user_id=user.id,
         first_name=first_name,
         last_name=last_name,
-        webhook_url=flask.url_for("Public API.ubble_webhook_update_application_status", _external=True),
         redirect_url=redirect_url,
     )
     fraud_check = subscription_api.initialize_identity_fraud_check(

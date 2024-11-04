@@ -71,7 +71,7 @@ class UbbleWorkflowV2Test:
         assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
 
         ubble_request = requests_mock.last_request.json()
-        assert ubble_request["webhook_url"] == "http://localhost/webhooks/ubble/application_status"
+        assert ubble_request["webhook_url"] == "http://localhost/webhooks/ubble/v2/application_status"
 
         assert push_testing.requests[0] == {
             "can_be_asynchronously_retried": True,
