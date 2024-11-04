@@ -197,6 +197,7 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_tests_api.yml
     with:
       tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}

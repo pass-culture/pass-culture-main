@@ -291,7 +291,7 @@ def patch_draft_offer(
             offer = offers_api.update_draft_offer(offer, body)
     except (exceptions.OfferCreationBaseException, exceptions.OfferEditionBaseException) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
-
+    print("I'm a dummy changes")
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
