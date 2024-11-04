@@ -110,6 +110,7 @@ esac
 
 ROOT_PATH=$(realpath "$(dirname "$PRG")")
 INFRA_SCRIPTS_PATH="$ROOT_PATH"/infra/pc_scripts/
+CONSOLE_PRODUCTION_ERROR="Console actions are not available on production environment"
 
 FLASK_CONTAINER_NAME='pc-api'
 
@@ -147,6 +148,9 @@ if [[ "$CMD" == "alembic" ]]; then
 elif [[ "$CMD" == "bash" ]]; then
   if [[ "$ENV" == "development" ]]; then
     RUN='docker exec -it '$FLASK_CONTAINER_NAME' bash'
+  elif [[ "$ENV" == "production" ]]; then
+    echo $CONSOLE_PRODUCTION_ERROR
+    exit 1
   else
     if [ "$FILE_TO_UPLOAD" == 'none' ]; then
       kubectl -n $ENV exec -it $(pod_console) -- bash
@@ -160,6 +164,10 @@ elif [[ "$CMD" == "bash" ]]; then
 # Create diff output between schema in an environment & local
 elif [[ "$CMD" == "diff-schema" ]]; then
   docker exec pc-postgres pg_dump -d pass_culture -U pass_culture -s >/tmp/pc_schema_local
+  if [[ "$ENV" == "production" ]]; then
+    echo $CONSOLE_PRODUCTION_ERROR
+    exit 1
+  fi
   kubectl -n $ENV exec -it $(pod_console) -- bash -c 'pg_dump "$DATABASE_URL" -s' >/tmp/pc_schema_$ENV
   diff /tmp/pc_schema_$ENV /tmp/pc_schema_local
   exit
@@ -318,6 +326,10 @@ elif [[ "$CMD" == "psql" ]]; then
   COLUMNS=${COLUMNS:-''}
   if [[ "$ENV" == "development" ]]; then
     RUN='docker exec -it pc-postgres bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pass_culture pass_culture $*"'
+  f
+  elif [[ "$ENV" == "production" ]]; then
+    echo $CONSOLE_PRODUCTION_ERROR
+    exit 1
   else
     kubectl -n $ENV exec -it $(pod_console) -- bash -c 'psql "$DATABASE_URL"'
     exit
@@ -339,6 +351,9 @@ elif [[ "$CMD" == "pgcli" ]]; then
   if [[ "$ENV" == "development" ]]; then
     source "$ROOT_PATH"/env_file
     RUN='docker exec -it '$FLASK_CONTAINER_NAME' bash -c "bin/pgcli-wrapper.sh"'
+  elif [[ "$ENV" == "production" ]]; then
+    echo $CONSOLE_PRODUCTION_ERROR
+    exit 1
   else
     kubectl -n $ENV exec -it $(pod_console) -- bash -c 'bin/pgcli-wrapper.sh'
     exit
@@ -349,6 +364,9 @@ elif [[ "$CMD" == "python" ]]; then
   COLUMNS=${COLUMNS:-''}
   if [[ "$ENV" == "development" ]]; then
     RUN='docker exec -it '$FLASK_CONTAINER_NAME' bash -c "cd /usr/src/app/ && flask shell '"$*"'"'
+  elif [[ "$ENV" == "production" ]]; then
+    echo $CONSOLE_PRODUCTION_ERROR
+    exit 1
   else
     if [ "$FILE_TO_UPLOAD" == 'none' ]; then
       kubectl -n $ENV exec -it $(pod_console) -- flask shell
@@ -367,6 +385,9 @@ elif [[ "$CMD" == "python" ]]; then
 else
   if [[ "$ENV" == "development" ]]; then
     RUN='docker exec '$FLASK_CONTAINER_NAME' bash -c "cd /usr/src/app/ && flask '"$CMD $*"'"'
+  elif [[ "$ENV" == "production" ]]; then
+    echo $CONSOLE_PRODUCTION_ERROR
+    exit 1
   else
     if [ "$FILE_TO_UPLOAD" == 'none' ]; then
       kubectl -n $ENV exec -it $(pod_console) -- flask "$CMD" $*
