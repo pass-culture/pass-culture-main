@@ -2235,12 +2235,12 @@
   dependencies:
     "@sentry/types" "8.36.0"
 
-"@storybook/addon-a11y@^8.3.6":
-  version "8.3.6"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-a11y/-/addon-a11y-8.3.6.tgz#4d4528718b378886b7f5602880162145f819abad"
-  integrity sha512-EeVzUN+WaLtz/DXVBL3rIGvP8+pTuJXA3lEz9CbTQXRO7QMhzTTXLKmp8xmSA2w5H01a8XpjLcZ5LYjdKrvw0g==
+"@storybook/addon-a11y@^8.4.0":
+  version "8.4.0"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-a11y/-/addon-a11y-8.4.0.tgz#844df631bc0733f1788d612355316a626a97fc64"
+  integrity sha512-FbvdAnYG5y0l1iBvtwlN8sQL39/FyQefKGK4+0MDmdDvCDq2JpkNU9rDL4HT8aYVAiPfr+M2DmXGJihLxwRyhw==
   dependencies:
-    "@storybook/addon-highlight" "8.3.6"
+    "@storybook/addon-highlight" "8.4.0"
     axe-core "^4.2.0"
 
 "@storybook/addon-controls@^8.3.6":
@@ -2271,10 +2271,10 @@
     rehype-slug "^6.0.0"
     ts-dedent "^2.0.0"
 
-"@storybook/addon-highlight@8.3.6":
-  version "8.3.6"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-highlight/-/addon-highlight-8.3.6.tgz#34c28e8ee0f71b2dad579ab11bf66962d5393bf9"
-  integrity sha512-A7uU+1OPVXGpkklEUJjSl2VEEDLCSNvmffUJlvW1GjajsNFIHOW2CSD+KnfFlQyPxyVbnWAYLqUP4XJxoqrvDw==
+"@storybook/addon-highlight@8.4.0":
+  version "8.4.0"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-highlight/-/addon-highlight-8.4.0.tgz#e19006aa7c2cf47b70cac75473bc7389dbf5e251"
+  integrity sha512-tshX/2HnPzGQ9Kza2DARNfirBRhE/Ts7bldbhMiJu20YhJD1jQzXSDEX1cCgHsDc8HKYOsV/Kuu5WDzp/1i97w==
   dependencies:
     "@storybook/global" "^5.0.0"
 
