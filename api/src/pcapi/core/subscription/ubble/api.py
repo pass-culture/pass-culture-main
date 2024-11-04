@@ -38,7 +38,6 @@ logger = logging.getLogger(__name__)
 
 def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> None:
     content = ubble.get_content(fraud_check.thirdPartyId)
-    status = content.status
 
     if settings.ENABLE_UBBLE_TEST_EMAIL and ubble_fraud_api.does_match_ubble_test_email(fraud_check.user.email):
         content.birth_date = fraud_check.user.birth_date
@@ -48,11 +47,20 @@ def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> No
 
     user: users_models.User = fraud_check.user
 
-    if status == ubble_serializers.UbbleIdentificationStatus.PROCESSING:
+    status = content.status
+    if status in (
+        ubble_serializers.UbbleIdentificationStatus.PROCESSING,
+        ubble_serializers.UbbleIdentificationStatus.CHECKS_IN_PROGRESS,
+    ):
         fraud_check.status = fraud_models.FraudCheckStatus.PENDING
         pcapi_repository.repository.save(user, fraud_check)
 
-    elif status == ubble_serializers.UbbleIdentificationStatus.PROCESSED:
+    elif status in [
+        ubble_serializers.UbbleIdentificationStatus.APPROVED,
+        ubble_serializers.UbbleIdentificationStatus.RETRY_REQUIRED,
+        ubble_serializers.UbbleIdentificationStatus.DECLINED,
+        ubble_serializers.UbbleIdentificationStatus.PROCESSED,
+    ]:
         fraud_check = subscription_api.handle_eligibility_difference_between_declaration_and_identity_provider(
             user, fraud_check
         )
@@ -83,6 +91,8 @@ def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> No
             external_attributes_api.update_external_user(user)
 
     elif status in (
+        ubble_serializers.UbbleIdentificationStatus.INCONCLUSIVE,
+        ubble_serializers.UbbleIdentificationStatus.REFUSED,
         ubble_serializers.UbbleIdentificationStatus.ABORTED,
         ubble_serializers.UbbleIdentificationStatus.EXPIRED,
     ):

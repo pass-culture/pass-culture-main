@@ -1,4 +1,5 @@
 from contextlib import suppress
+import re
 import functools
 import logging
 import typing
@@ -25,6 +26,8 @@ INCLUDED_MODELS = {
     "reference-data-checks": ubble_serializers.UbbleIdentificationReferenceDataChecks,
 }
 
+V2_IDENTIFICATION_RE = r"^idv_\w+"
+
 
 def start_identification(
     user_id: int, first_name: str, last_name: str, webhook_url: str, redirect_url: str
@@ -34,8 +37,16 @@ def start_identification(
 
 
 def get_content(identification_id: str) -> fraud_models.UbbleContent:
-    ubble_backend = _get_ubble_backend()
-    return ubble_backend.get_content(identification_id)
+    if is_v2_identification(identification_id):
+        return UbbleV2Backend().get_content(identification_id)
+    return UbbleV1Backend().get_content(identification_id)
+
+
+def is_v2_identification(identification_id: str | None) -> bool:
+    if not identification_id:
+        return False
+    v2_match = re.match(V2_IDENTIFICATION_RE, identification_id)
+    return bool(v2_match)
 
 
 def download_ubble_picture(http_url: pydantic_networks.HttpUrl) -> tuple[str | None, typing.Any]:
@@ -86,7 +97,7 @@ class UbbleBackend:
 P = typing.ParamSpec("P")
 
 
-def log_and_handle_response_status(
+def log_and_handle_ubble_response(
     request_type: str,
 ) -> typing.Callable[[typing.Callable[P, fraud_models.UbbleContent]], typing.Callable[P, fraud_models.UbbleContent]]:
     def log_response_status_and_reraise_if_needed(
@@ -152,7 +163,7 @@ def log_and_handle_response_status(
 
 
 class UbbleV2Backend(UbbleBackend):
-    @log_and_handle_response_status("create-and-start-idv")
+    @log_and_handle_ubble_response("create-and-start-idv")
     def start_identification(  # pylint: disable=too-many-positional-arguments
         self,
         user_id: int,
@@ -182,8 +193,16 @@ class UbbleV2Backend(UbbleBackend):
 
         return ubble_content
 
+    @log_and_handle_ubble_response("identity-verifications")
     def get_content(self, identification_id: str) -> fraud_models.UbbleContent:
-        raise NotImplementedError()
+        response = requests.get(
+            build_url(f"/v2/identity-verifications/{identification_id}"),
+            cert=(settings.UBBLE_CLIENT_CERTIFICATE_PATH, settings.UBBLE_CLIENT_KEY_PATH),
+        )
+        response.raise_for_status()
+
+        ubble_identification = parse_obj_as(ubble_serializers.UbbleV2IdentificationResponse, response.json())
+        return ubble_serializers.convert_identification_to_ubble_content(ubble_identification)
 
 
 class UbbleV1Backend(UbbleBackend):
