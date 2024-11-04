@@ -130,13 +130,13 @@ files = [
 
 [[package]]
 name = "asynch"
-version = "0.2.5"
-description = "An asyncio driver for ClickHouse with native TCP support"
+version = "0.2.4"
+description = "A asyncio driver for ClickHouse with native tcp protocol"
 optional = false
-python-versions = "<4.0,>=3.9"
+python-versions = "<4.0,>=3.7"
 files = [
-    {file = "asynch-0.2.5-py3-none-any.whl", hash = "sha256:b14a4d4f49c3ed2f77a44722ce33a48b8049acb1ba24f425792ffdb3d1ef2829"},
-    {file = "asynch-0.2.5.tar.gz", hash = "sha256:e8e1656c81a1a156df20334e4c08d5832b02f38166dffc979235336309608543"},
+    {file = "asynch-0.2.4-py3-none-any.whl", hash = "sha256:7286a88da4060ecd23a3b4caff6c25e9e6f26561c1b3d61853f2d6d88d57c33d"},
+    {file = "asynch-0.2.4.tar.gz", hash = "sha256:15ef9517bb093dfd5a0f1f31cc31e0da84543eead0269345052922cf399d280e"},
 ]
 
 [package.dependencies]
@@ -1010,16 +1010,16 @@ zstd = ["clickhouse-cityhash (>=1.0.2.1)", "zstd"]
 
 [[package]]
 name = "clickhouse-sqlalchemy"
-version = "0.2.6"
+version = "0.2.7"
 description = "Simple ClickHouse SQLAlchemy Dialect"
 optional = false
 python-versions = "<4,>=3.7"
 files = [
-    {file = "clickhouse-sqlalchemy-0.2.6.tar.gz", hash = "sha256:9369c5c94b0462e109240063067be1a496acd6ddf0f1ee6b23b43c4a1d08d3e1"},
+    {file = "clickhouse-sqlalchemy-0.2.7.tar.gz", hash = "sha256:73eda69df52244759077d53af2059452fd7a603e2712e52a9cc94042ee9e2154"},
 ]
 
 [package.dependencies]
-asynch = ">=0.2.2"
+asynch = ">=0.2.2,<=0.2.4"
 clickhouse-driver = ">=0.1.2"
 requests = "*"
 sqlalchemy = ">=1.4.24,<1.5"
@@ -6082,4 +6082,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "fd2a306ad245666bf388fdf7946d91c29f228eaac795d18fd95c559e7b7734d2"
+content-hash = "844306418e4bf76ec9301082301d4b8914c8186a30fa18533d84723a36e305bb"
