@@ -121,9 +121,6 @@
      target="_top">{{ special_event[text_attr] }}</a>
 {% endmacro %}
 {# ----- PC Pro links ----- #}
-{% macro build_pro_offerer_offers_link(offerer) %}
-  {{ build_connect_as_pseudo_link(offerer.id, "offerer", "/offres?structure="~offerer.id~"&from-bo=true", "Offres associées", "fw-bold link-primary") }}
-{% endmacro %}
 {% macro build_offerer_name_to_pc_pro_link(offerer) %}
   {{ build_connect_as_pseudo_link(offerer.id, "offerer", "/accueil?structure="~offerer.id~"&from-bo=true", offerer.name, "link-primary") }}
 {% endmacro %}

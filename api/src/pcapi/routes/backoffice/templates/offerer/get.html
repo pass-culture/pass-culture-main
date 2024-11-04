@@ -160,7 +160,11 @@
               {% endif %}
             </div>
             <div class="col-4">
-              <p class="mb-1">{{ links.build_pro_offerer_offers_link(offerer) }}</p>
+              {% if has_permission("CONNECT_AS_PRO") %}
+                <p class="mb-1">
+                  {{ links.build_connect_as_pseudo_link(offerer.id, "offerer", "/offres?structure="~offerer.id~"&from-bo=true", "Offres associées ", "fw-bold link-primary") }}
+                </p>
+              {% endif %}
               {% set search_params = {
                               "search-0-search_field": "OFFERER",
                               "search-0-operator": "IN",
