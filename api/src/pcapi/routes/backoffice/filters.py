@@ -350,7 +350,18 @@ def format_booking_cancellation(
                     full_name=author.full_name,
                 )
             return "Annulée depuis le backoffice pour erreur d'information dans l'offre"
-
+        case (
+            bookings_models.BookingCancellationReasons.BACKOFFICE_OFFERER_BUSINESS_CLOSED
+            | educational_models.CollectiveBookingCancellationReasons.BACKOFFICE_OFFERER_BUSINESS_CLOSED
+        ):
+            if author:
+                return Markup(
+                    'Annulée depuis le backoffice par <a class="link-primary" href="{url}">{full_name}</a> pour cause de fermeture de structure'
+                ).format(
+                    url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
+                    full_name=author.full_name,
+                )
+            return "Annulée depuis le backoffice pour cause de fermeture de structure"
         case (
             bookings_models.BookingCancellationReasons.REFUSED_BY_INSTITUTE
             | educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE
