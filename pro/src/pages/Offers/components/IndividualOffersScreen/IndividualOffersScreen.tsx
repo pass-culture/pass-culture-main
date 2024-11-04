@@ -68,7 +68,7 @@ export const IndividualOffersScreen = ({
   const areAllOffersSelected =
     selectedOffers.length > 0 && selectedOffers.length === offers.length
 
-  function clearSelectedOfferIds() {
+  function clearSelectedOffers() {
     setSelectedOffers([])
   }
 
@@ -167,8 +167,11 @@ export const IndividualOffersScreen = ({
             {selectedOffers.length > 0 && (
               <IndividualOffersActionsBar
                 areAllOffersSelected={areAllOffersSelected}
-                clearSelectedOfferIds={clearSelectedOfferIds}
-                selectedOfferIds={selectedOffers.map((offer) => offer.id)}
+                clearSelectedOffers={clearSelectedOffers}
+                selectedOffers={selectedOffers.map((offer) => ({
+                  id: offer.id,
+                  status: offer.status,
+                }))}
                 toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
                 getUpdateOffersStatusMessage={getUpdateOffersStatusMessage}
                 canDeleteOffers={canDeleteOffers}
