@@ -240,12 +240,9 @@ export const MultiyearScheme = () => {
         Conformément aux dispositions prévues par le RGAA et aux attentes
         légitimes des utilisateurs, un moyen de contact est mis en place : les
         demandes sont traitées par le pôle Support (contact –{' '}
-        <a
-          className={styles['link']}
-          href="mailto:accessibilite@passculture.app"
-        >
+        <ButtonLink isExternal to="mailto:accessibilite@passculture.app">
           accessibilite@passculture.app
-        </a>
+        </ButtonLink>
         ),
       </p>
       <p className={styles['paragraph']}>
@@ -271,17 +268,17 @@ export const MultiyearScheme = () => {
         <strong>Recensement</strong>
       </p>
       <p className={styles['paragraph']}>
-        Ce schéma pluriannuel ne concerne que le site
-        <a className={styles['link']} href="https://passculture.pro/">
-          {''} https://passculture.pro/
-        </a>
+        Ce schéma pluriannuel ne concerne que le site{' '}
+        <ButtonLink to="https://passculture.pro/" isExternal>
+          https://passculture.pro/
+        </ButtonLink>
       </p>
       <p className={styles['paragraph']}>
         Vous pouvez retrouver le plan annuel général incluant l’ensemble des
-        sites gérés par le pass Culture à l’adresse suivante:
-        <a className={styles['link']} href="https://passculture.fr/">
-          {''} https://passculture.fr/
-        </a>
+        sites gérés par le pass Culture à l’adresse suivante:{' '}
+        <ButtonLink to="https://passculture.fr/" isExternal>
+          https://passculture.fr/
+        </ButtonLink>
       </p>
       <p className={styles['paragraph']}>
         <strong>Évaluation et qualification</strong>
@@ -339,9 +336,9 @@ export const MultiyearScheme = () => {
       </h2>
       <p className={styles['paragraph']}>
         Site à destination des acteurs culturels :{' '}
-        <a className={styles['link']} href="https://passculture.pro/">
+        <ButtonLink to="https://passculture.pro/" isExternal>
           https://passculture.pro/
-        </a>
+        </ButtonLink>
       </p>
       <h3 className={styles['heading3']}>Plan annuel 2024</h3>
       <ul>
