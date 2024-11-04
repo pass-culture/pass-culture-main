@@ -8,6 +8,7 @@ import { api } from 'apiClient/api'
 import {
   ApiError,
   CollectiveOfferAllowedAction,
+  CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseIdModel,
   CollectiveOfferStatus,
   CollectiveOfferTemplateAllowedAction,
@@ -326,6 +327,7 @@ describe('CollectiveOfferNavigation', () => {
         offererId: '1',
         offerId: 1,
         offerType: 'collective',
+        offerStatus: CollectiveOfferDisplayedStatus.ACTIVE,
       }
     )
   })
