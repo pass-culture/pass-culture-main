@@ -119,32 +119,25 @@ class Returns200Test:
     @override_settings(RECAPTCHA_WHITELIST=["whitelisted@email.com", "alsoWithelisted@test.com"])
     @pytest.mark.usefixtures("db_session")
     def when_account_is_whitelisted_for_recaptcha(self, client):
-        # Given
         user = users_factories.UserFactory(email="whitelisted@email.com")
         data = {"identifier": user.email, "password": user.clearTextPassword}
 
-        # When
         response = client.post("/users/signin", json=data)
 
-        # Then
         assert response.status_code == 200
 
     @pytest.mark.usefixtures("db_session")
     def when_missing_recaptcha_token(self, client):
-        # Given
         user = users_factories.UserFactory()
         data = {"identifier": user.email, "password": user.clearTextPassword}
 
-        # When
         response = client.post("/users/signin", json=data)
 
-        # Then
         assert response.status_code == 400
         assert response.json == {"captchaToken": "Ce champ est obligatoire"}
 
     @pytest.mark.usefixtures("db_session")
     def test_with_user_offerer(self, client):
-        # Given
         user_offerer = offerers_factories.UserOffererFactory(
             user__lastConnectionDate=datetime.datetime.utcnow(),
         )
@@ -154,7 +147,6 @@ class Returns200Test:
             "captchaToken": "token",
         }
 
-        # When
         # 1. fetch user
         # 2. stamp session
         # 3. fetch user for serialization
@@ -166,7 +158,6 @@ class Returns200Test:
         with assert_num_queries(7):
             response = client.post("/users/signin", json=data)
 
-        # Then
         assert response.status_code == 200
         assert response.json == {
             "activity": None,
@@ -197,87 +188,67 @@ class Returns200Test:
 class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def when_identifier_is_missing(self, client, caplog):
-        # Given
         user = users_factories.UserFactory()
         data = {"identifier": None, "password": user.clearTextPassword, "captchaToken": "token"}
 
-        # When
         with caplog.at_level(logging.INFO):
             response = client.post("/users/signin", json=data)
 
-        # Then
         assert response.status_code == 400
         assert response.json["identifier"] == ["Ce champ ne peut pas être nul"]
         assert "Failed authentication attempt" not in caplog.messages
 
     @pytest.mark.usefixtures("db_session")
     def when_identifier_is_incorrect(self, client, caplog):
-        # Given
         user = users_factories.UserFactory()
         data = {"identifier": "random.email@test.com", "password": user.clearTextPassword, "captchaToken": "token"}
 
-        # When
         with caplog.at_level(logging.INFO):
             response = client.post("/users/signin", json=data)
 
-        # Then
         assert response.status_code == 401
         assert response.json["identifier"] == ["Identifiant ou mot de passe incorrect"]
         assert "Failed authentication attempt" in caplog.messages
 
     @pytest.mark.usefixtures("db_session")
     def when_password_is_missing(self, client):
-        # Given
         user = users_factories.UserFactory()
         data = {"identifier": user.email, "password": None, "captchaToken": "token"}
 
-        # When
         response = client.post("/users/signin", json=data)
 
-        # Then
         assert response.status_code == 400
         assert response.json["password"] == ["Ce champ ne peut pas être nul"]
 
     @pytest.mark.usefixtures("db_session")
     def when_password_is_incorrect(self, client, caplog):
-        # Given
         user = users_factories.UserFactory()
         data = {"identifier": user.email, "password": "wr0ng_p455w0rd", "captchaToken": "token"}
 
-        # When
         with caplog.at_level(logging.INFO):
             response = client.post("/users/signin", json=data)
 
-        # Then
         assert response.status_code == 401
         assert response.json["identifier"] == ["Identifiant ou mot de passe incorrect"]
         assert "Failed authentication attempt" in caplog.messages
 
     @pytest.mark.usefixtures("db_session")
     def when_account_is_not_validated(self, client):
-        # Given
         user = users_factories.UserFactory(isEmailValidated=False)
-        repository.save(user)
         data = {"identifier": user.email, "password": user.clearTextPassword, "captchaToken": "token"}
 
-        # When
         response = client.post("/users/signin", json=data)
 
-        # Then
         assert response.status_code == 401
         assert response.json["identifier"] == ["Ce compte n'est pas validé."]
 
     @pytest.mark.usefixtures("db_session")
     def when_account_is_an_admin_account(self, client):
-        # Given
         user = users_factories.AdminFactory()
-        repository.save(user)
         data = {"identifier": user.email, "password": user.clearTextPassword, "captchaToken": "token"}
 
-        # When
         response = client.post("/users/signin", json=data)
 
-        # Then
         assert response.status_code == 401
         assert response.json["identifier"] == ["Vous ne pouvez pas vous connecter avec un compte ADMIN."]
 
