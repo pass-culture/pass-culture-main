@@ -11,6 +11,8 @@ from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.core.users import factories as user_factories
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
 
+from tests.conftest import TestClient
+
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
@@ -76,7 +78,7 @@ class Returns204Test:
                 internal_admin_id=admin.id,
             ).dict(),
         )
-        client = client.with_session_auth(admin.email)
+
         response_token = client.get(f"/users/connect-as/{secure_token.token}")
         assert response_token.status_code == 302
 
@@ -90,7 +92,7 @@ class Returns204Test:
 
 class Returns404Test:
     def test_no_collective_offer_found(self, client):
-        user = user_factories.AdminFactory()
+        user = user_factories.UserFactory()
         offer_id = 123789654
 
         client = client.with_session_auth(user.email)
@@ -124,34 +126,19 @@ class Returns403Test:
 
 
 class Returns400Test:
-    def test_offer_has_no_booking_to_cancel(self, client):
-        user = user_factories.AdminFactory()
-        educational_booking = CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED)
+
+    @pytest.mark.parametrize(
+        "status", [CollectiveBookingStatus.CANCELLED, CollectiveBookingStatus.USED, CollectiveBookingStatus.REIMBURSED]
+    )
+    def test_offer_that_cannot_be_cancelled_because_of_status(self, client: TestClient, status):
+        user = user_factories.UserFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
+
+        educational_booking = CollectiveBookingFactory(
+            status=status, collectiveStock__collectiveOffer__venue__managingOfferer=offerer
+        )
         offer_id = educational_booking.collectiveStock.collectiveOffer.id
-
-        client = client.with_session_auth(user.email)
-        response = client.patch(f"/collective/offers/{offer_id}/cancel_booking")
-
-        assert response.status_code == 400
-        assert response.json == {"code": "NO_BOOKING", "message": "This collective offer has no booking to cancel"}
-        assert len(adage_api_testing.adage_requests) == 0
-
-    def test_booking_is_already_used(self, client):
-        user = user_factories.AdminFactory()
-        collective_booking = CollectiveBookingFactory(status=CollectiveBookingStatus.USED)
-        offer_id = collective_booking.collectiveStock.collectiveOffer.id
-
-        client = client.with_session_auth(user.email)
-        response = client.patch(f"/collective/offers/{offer_id}/cancel_booking")
-
-        assert response.status_code == 400
-        assert response.json == {"code": "NO_BOOKING", "message": "This collective offer has no booking to cancel"}
-        assert len(adage_api_testing.adage_requests) == 0
-
-    def test_booking_is_already_reimbursed(self, client):
-        user = user_factories.AdminFactory()
-        collective_booking = CollectiveBookingFactory(status=CollectiveBookingStatus.REIMBURSED)
-        offer_id = collective_booking.collectiveStock.collectiveOffer.id
 
         client = client.with_session_auth(user.email)
         response = client.patch(f"/collective/offers/{offer_id}/cancel_booking")

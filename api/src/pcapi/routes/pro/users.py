@@ -28,6 +28,7 @@ from pcapi.core.users.email import repository as email_repository
 from pcapi.domain.password import check_password_validity
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
+from pcapi.models.api_errors import UnauthorizedError
 from pcapi.routes.serialization import users as users_serializers
 from pcapi.routes.shared.cookies_consent import CookieConsentRequest
 from pcapi.serialization.decorator import spectree_serialize
@@ -206,8 +207,7 @@ def signin(body: users_serializers.LoginUserBodyModel) -> users_serializers.Shar
         except ReCaptchaException:
             raise ApiErrors({"captchaToken": "The given token is invalid"})
 
-    errors = ApiErrors()
-    errors.status_code = 401
+    errors = UnauthorizedError()
     try:
         user = users_repo.get_user_with_credentials(body.identifier, body.password)
     except users_exceptions.InvalidIdentifier as exc:
@@ -216,6 +216,10 @@ def signin(body: users_serializers.LoginUserBodyModel) -> users_serializers.Shar
     except users_exceptions.UnvalidatedAccount as exc:
         errors.add_error("identifier", "Ce compte n'est pas validé.")
         raise errors from exc
+
+    if user.has_admin_role:
+        errors.add_error("identifier", "Vous ne pouvez pas vous connecter avec un compte ADMIN.")
+        raise errors
 
     discard_session()
     login_user(user)

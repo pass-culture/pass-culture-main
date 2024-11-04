@@ -143,21 +143,6 @@ class Returns200Test:
     expected_num_queries += 1  # 5. check if WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE is active
 
     @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
-    def when_user_is_admin(self, client: Any):
-        admin = users_factories.AdminFactory()
-        user_offerer = offerers_factories.UserOffererFactory()
-        bookings_factories.BookingFactory(
-            dateCreated=datetime(2020, 8, 11, 12, 0, 0),
-            stock__offer__venue__managingOfferer=user_offerer.offerer,
-        )
-
-        client = client.with_session_auth(admin.email)
-        with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked")
-            assert response.status_code == 200
-            assert len(response.json["bookingsRecap"]) == 1
-
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_when_user_is_linked_to_a_valid_offerer(self, client: Any):
         stock = offers_factories.StockFactory(offer__extraData={"ean": "1234567891234"})
         used_booking = bookings_factories.UsedBookingFactory(
@@ -331,21 +316,6 @@ class Returns200Test:
             assert response.status_code == 200
 
         assert response.json["bookingsRecap"][0]["bookingToken"] is None
-
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
-    def when_user_is_admin_with_offerer_address_as_data_source(self, client: Any):
-        admin = users_factories.AdminFactory()
-        user_offerer = offerers_factories.UserOffererFactory()
-        bookings_factories.BookingFactory(
-            dateCreated=datetime(2020, 8, 11, 12, 0, 0),
-            stock__offer__venue__managingOfferer=user_offerer.offerer,
-        )
-
-        client = client.with_session_auth(admin.email)
-        with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked")
-            assert response.status_code == 200
-            assert len(response.json["bookingsRecap"]) == 1
 
     @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_when_user_is_linked_to_a_valid_offerer_with_offerer_address_as_data_source(self, client: Any):

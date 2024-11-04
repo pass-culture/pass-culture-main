@@ -29,8 +29,9 @@ class Returns201Test:
         self, mock_siret_can_be_synchronized, mock_synchronize_venue_provider, client
     ):
         # Given
-        user = user_factories.AdminFactory()
         venue = offerers_factories.VenueFactory(siret="12345678912345")
+        user = user_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
 
         provider = providers_factories.APIProviderFactory()
 
@@ -67,7 +68,8 @@ class Returns201Test:
     ):
         # Given
         venue = offerers_factories.VenueFactory(managingOfferer__siren="775671464")
-        user = user_factories.AdminFactory()
+        user = user_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
         providers_factories.AllocineTheaterFactory(siret=venue.siret)
         provider = providers_factories.AllocineProviderFactory()
 
@@ -97,7 +99,8 @@ class Returns201Test:
     def test_when_add_allocine_stocks_provider_for_venue_without_siret(self, mock_synchronize_venue_provider, client):
         # Given
         venue = offerers_factories.VenueWithoutSiretFactory(managingOfferer__siren="775671464")
-        user = user_factories.AdminFactory()
+        user = user_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
         providers_factories.AllocinePivotFactory(venue=venue)
         provider = providers_factories.AllocineProviderFactory()
 
@@ -129,8 +132,9 @@ class Returns201Test:
         self, mock_siret_can_be_synchronized, mock_synchronize_venue_provider, client
     ):
         # Given
-        user = user_factories.AdminFactory()
         venue = offerers_factories.VenueFactory(siret="12345678912345")
+        user = user_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
 
         provider = providers_factories.APIProviderFactory()
 
@@ -174,8 +178,9 @@ class Returns201Test:
         self, mock_siret_can_be_synchronized, mock_synchronize_venue_provider, client
     ):
         # Given
-        user = user_factories.AdminFactory()
         venue = offerers_factories.VenueFactory(siret="12345678912345")
+        user = user_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
 
         provider = providers_factories.APIProviderFactory()
 
@@ -205,10 +210,11 @@ class Returns201Test:
     @patch("pcapi.core.providers.api._siret_can_be_synchronized", lambda *args: True)
     def test_when_add_same_provider(self, client):
         # Given
-        admin = user_factories.AdminFactory()
         venue_provider = providers_factories.VenueProviderFactory()
+        user = user_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue_provider.venue.managingOfferer)
 
-        client = client.with_session_auth(email=admin.email)
+        client = client.with_session_auth(email=user.email)
         venue_provider_data = {
             "providerId": venue_provider.providerId,
             "venueId": venue_provider.venueId,
@@ -228,11 +234,12 @@ class Returns201Test:
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def test_create_venue_provider_for_cds_cinema(self, mock_get_venue_movies, mock_get_shows, requests_mock, client):
         # Given
-        user = user_factories.AdminFactory()
+        venue = offerers_factories.VenueFactory()
+        user = user_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
         client = client.with_session_auth(email=user.email)
         provider = Provider.query.filter(Provider.localClass == "CDSStocks").first()
 
-        venue = offerers_factories.VenueFactory()
         cds_pivot = CinemaProviderPivotFactory(venue=venue, provider=provider)
         providers_factories.CDSCinemaDetailsFactory(
             cinemaProviderPivot=cds_pivot, cinemaApiToken="test_token", accountId="test_account"
@@ -317,13 +324,14 @@ class Returns201Test:
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.synchronize_ems_venue_provider")
     def test_create_venue_provider_for_ems_cinema(self, mocked_synchronize_ems_venue_provider, requests_mock, client):
-        admin = user_factories.AdminFactory()
-        ems_provider = providers_repository.get_provider_by_local_class("EMSStocks")
         venue = offerers_factories.VenueFactory()
+        user = user_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
+        ems_provider = providers_repository.get_provider_by_local_class("EMSStocks")
         pivot = providers_factories.CinemaProviderPivotFactory(venue=venue, provider=ems_provider)
         providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=pivot)
 
-        client = client.with_session_auth(email=admin.email)
+        client = client.with_session_auth(email=user.email)
         venue_provider_data = {"providerId": ems_provider.id, "venueId": venue.id}
 
         response = client.post("/venueProviders", json=venue_provider_data)
@@ -341,7 +349,7 @@ class Returns400Test:
     @pytest.mark.usefixtures("db_session")
     def test_when_api_error_raise_when_missing_fields(self, client):
         # Given
-        user = user_factories.AdminFactory()
+        user = user_factories.ProFactory()
         auth_request = client.with_session_auth(email=user.email)
         venue_provider_data = {}
 
@@ -357,7 +365,8 @@ class Returns400Test:
     def test_when_add_allocine_stocks_provider_with_wrong_format_price(self, client):
         # Given
         venue = offerers_factories.VenueFactory(managingOfferer__siren="775671464")
-        user = user_factories.AdminFactory()
+        user = user_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
         providers_factories.AllocineTheaterFactory(siret=venue.siret)
         provider = providers_factories.AllocineProviderFactory()
 
@@ -382,7 +391,8 @@ class Returns400Test:
     def test_when_add_allocine_stocks_provider_with_no_price(self, client):
         # Given
         venue = offerers_factories.VenueFactory(managingOfferer__siren="775671464")
-        user = user_factories.AdminFactory()
+        user = user_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
         providers_factories.AllocineTheaterFactory(siret=venue.siret)
         provider = providers_factories.AllocineProviderFactory()
 
@@ -405,7 +415,8 @@ class Returns400Test:
     def test_when_add_allocine_stocks_provider_with_negative_price(self, client):
         # Given
         venue = offerers_factories.VenueFactory(managingOfferer__siren="775671464")
-        user = user_factories.AdminFactory()
+        user = user_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
         providers_factories.AllocineTheaterFactory(siret=venue.siret)
         provider = providers_factories.AllocineProviderFactory()
 
@@ -440,7 +451,7 @@ class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def test_when_venue_does_not_exist(self, client):
         # Given
-        user = user_factories.AdminFactory()
+        user = user_factories.ProFactory()
 
         provider = providers_factories.APIProviderFactory()
 
@@ -463,7 +474,8 @@ class Returns404Test:
     def test_when_add_allocine_pivot_is_missing(self, client):
         # Given
         venue = offerers_factories.VenueFactory(managingOfferer__siren="775671464")
-        user = user_factories.AdminFactory()
+        user = user_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
         provider = providers_factories.AllocineProviderFactory()
 
         venue_provider_data = {
@@ -493,15 +505,13 @@ class Returns422Test:
     @patch("pcapi.core.providers.api._siret_can_be_synchronized")
     def test_when_provider_api_not_available(self, mock_siret_can_be_synchronized, client):
         # Given
-        user = user_factories.AdminFactory()
         venue = offerers_factories.VenueFactory(siret="12345678912345")
+        user = user_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
 
         provider = providers_factories.APIProviderFactory()
 
-        venue_provider_data = {
-            "providerId": provider.id,
-            "venueId": venue.id,
-        }
+        venue_provider_data = {"providerId": provider.id, "venueId": venue.id}
 
         auth_request = client.with_session_auth(email=user.email)
 
@@ -532,8 +542,9 @@ class ConnectProviderToVenueTest:
         self, mocked_connect_venue_to_provider, mock_siret_can_be_synchronized, client
     ):
         # Given
-        user = user_factories.AdminFactory()
         venue = offerers_factories.VenueFactory(siret="12345678912345")
+        user = user_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
 
         provider = providers_factories.APIProviderFactory()
 
@@ -559,8 +570,9 @@ class ConnectProviderToVenueTest:
         client,
     ):
         # Given
-        user = user_factories.AdminFactory()
         venue = offerers_factories.VenueFactory()
+        user = user_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
         providers_factories.AllocineTheaterFactory(siret=venue.siret)
         provider = providers_factories.AllocineProviderFactory()
 
@@ -589,8 +601,9 @@ class ConnectProviderToVenueTest:
         mocked_venue_provider_job,
         client,
     ):
-        user = user_factories.AdminFactory()
         venue = offerers_factories.VenueFactory()
+        user = user_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
         provider = providers_factories.ProviderFactory(
             name="Technical provider", localClass=None, isActive=True, enabledForPro=True
         )
@@ -616,8 +629,9 @@ class ConnectProviderToVenueTest:
         mocked_venue_provider_job,
         client,
     ):
-        user = user_factories.AdminFactory()
         venue = offerers_factories.VenueWithoutSiretFactory()
+        user = user_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
         provider = providers_factories.ProviderFactory(
             name="Technical provider", localClass=None, isActive=True, enabledForPro=True
         )

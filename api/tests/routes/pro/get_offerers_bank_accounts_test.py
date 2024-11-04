@@ -31,20 +31,6 @@ class OfferersBankAccountTest:
         assert "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information." in str(response.json)
 
     @pytest.mark.usefixtures("db_session")
-    def test_accessing_inexisting_offerer_return_proper_404_error(self, client):
-        # This is a special test case for admin users as pro users would instead get a 403
-        admin = users_factories.AdminFactory()
-
-        http_client = client.with_session_auth(admin.email)
-
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # Check user permission on offerer
-        with testing.assert_num_queries(num_queries):
-            response = http_client.get("/offerers/42/bank-accounts")
-
-        assert response.status_code == 404
-
-    @pytest.mark.usefixtures("db_session")
     def test_user_can_access_bank_accounts_page_even_if_it_doesnt_have_any(self, client):
         pro_user = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()

@@ -155,46 +155,6 @@ def test_response_created_offer_serialization(client):
     assert response.json["venues"][3]["hasCreatedOffer"] is False
 
 
-def test_admin_call(client):
-    admin_user = users_factories.AdminFactory(email="admin.pro@test.com")
-
-    user_offerers = offerers_factories.UserOffererFactory.create_batch(3)
-
-    offerers_factories.VenueFactory(managingOfferer=user_offerers[0].offerer)
-    offerers_factories.VenueFactory(managingOfferer=user_offerers[1].offerer)
-    offerers_factories.VenueFactory(managingOfferer=user_offerers[2].offerer)
-
-    client = client.with_session_auth(admin_user.email)
-    with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES):
-        response = client.get("/venues")
-        assert response.status_code == 200
-
-    assert len(response.json["venues"]) == 0
-
-
-def test_admin_call_with_offerer_id(client):
-    admin_user = users_factories.AdminFactory(email="admin.pro@test.com")
-
-    user_offerers = offerers_factories.UserOffererFactory.create_batch(3)
-
-    offerers_factories.VenueFactory(managingOfferer=user_offerers[0].offerer)
-    offerers_factories.VenueFactory(managingOfferer=user_offerers[1].offerer)
-    offerers_factories.VenueFactory(managingOfferer=user_offerers[2].offerer)
-
-    params = {"offererId": str(user_offerers[1].offerer.id)}
-    client = client.with_session_auth(admin_user.email)
-
-    num_queries = testing.AUTHENTICATION_QUERIES
-    num_queries += 1  # select venues
-    num_queries += 1  # select venue_ids with validated offers
-    with testing.assert_num_queries(num_queries):
-        response = client.get("/venues", params)
-
-    assert response.status_code == 200
-    assert len(response.json["venues"]) == 1
-    assert response.json["venues"][0]["id"] == user_offerers[1].offerer.managedVenues[0].id
-
-
 def test_invalid_offerer_id(client):
     pro_user = users_factories.ProFactory()
     offerer = offerers_factories.OffererFactory()

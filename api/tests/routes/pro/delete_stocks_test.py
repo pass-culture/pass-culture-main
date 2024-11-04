@@ -50,7 +50,7 @@ class Returns204Test:
                 internal_admin_id=admin.id,
             ).dict(),
         )
-        client = client.with_session_auth(admin.email)
+
         response_token = client.get(f"/users/connect-as/{secure_token.token}")
         assert response_token.status_code == 302
 

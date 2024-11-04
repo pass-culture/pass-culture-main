@@ -123,7 +123,7 @@ class Returns200Test:
 
     def test_current_user_already_connected(self, client, db_session):
         # given
-        admin = users_factories.AdminFactory(email="admin@example.com")
+        admin = users_factories.ProFactory()
         target = users_factories.ProFactory()
 
         expected_redirect_link = "https://example.com"
