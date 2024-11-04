@@ -9,8 +9,7 @@
 .heading3,
 .paragraph,
 .downlist-item,
-.list-item,
-.link {
+.list-item {
   margin-bottom: rem.torem(16px);
 }
 
@@ -22,15 +21,6 @@
 .downlist-item {
   list-style: circle;
   margin-left: rem.torem(32px);
-}
-
-.link {
-  color: var(--color-grey-dark);
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-  }
 }
 
 .back-link {

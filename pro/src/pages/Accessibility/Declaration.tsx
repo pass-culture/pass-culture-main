@@ -1,5 +1,3 @@
-import { Link } from 'react-router-dom'
-
 import fullBackIcon from 'icons/full-back.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 
@@ -27,27 +25,21 @@ export const Declaration = () => {
 
       <ul>
         <li className={styles['list-item']}>
-          <Link
-            to="/accessibilite/schema-pluriannuel"
-            className={styles['link']}
-          >
+          <ButtonLink to="/accessibilite/schema-pluriannuel">
             Schéma pluriannuel d’accessibilité 2024 - 2025
-          </Link>
+          </ButtonLink>
         </li>
         <li className={styles['list-item']}>
-          <Link
-            to="/accessibilite/schema-pluriannuel"
-            className={styles['link']}
-          >
+          <ButtonLink to="/accessibilite/schema-pluriannuel">
             Plan d’actions 2024 - 2025
-          </Link>
+          </ButtonLink>
         </li>
       </ul>
       <p className={styles['paragraph']}>
         Cette déclaration d’accessibilité s’applique au site internet{' '}
-        <a className={styles['link']} href="https://passculture.pro/">
+        <ButtonLink to="https://passculture.pro/" isExternal>
           https://passculture.pro/
-        </a>
+        </ButtonLink>
       </p>
       <h2 className={styles['heading2']}>État de conformité</h2>
       <p className={styles['paragraph']}>
@@ -210,14 +202,14 @@ export const Declaration = () => {
         La restitution des contenus avec les outils d’assistance a été testée
         conformément aux environnements de test suivants :
       </p>
-      <a
-        className={styles['link']}
-        href="https://accessibilite.numerique.gouv.fr/methode/environnement-de-test/"
-      >
-        <p className={styles['paragraph']}>
+      <p className={styles['paragraph']}>
+        <ButtonLink
+          to="https://accessibilite.numerique.gouv.fr/methode/environnement-de-test/"
+          isExternal
+        >
           Plus d’information sur l’environnement de test
-        </p>
-      </a>
+        </ButtonLink>
+      </p>
       <h3 className={styles['heading3']}>
         Les outils utilisés lors de l’évaluation
       </h3>
@@ -227,14 +219,14 @@ export const Declaration = () => {
         été utilisés afin de s’assurer d’une restitution correcte de contenus
         accessibles dans le cas où l’examen du code seul n’a pas suffi.
       </p>
-      <a
-        className={styles['link']}
-        href="https://accessibilite.numerique.gouv.fr/ressources/methodologie-de-test/"
-      >
-        <p className={styles['paragraph']}>
+      <p className={styles['paragraph']}>
+        <ButtonLink
+          to="https://accessibilite.numerique.gouv.fr/ressources/methodologie-de-test/"
+          isExternal
+        >
           Plus d’information sur les outils d’assistance
-        </p>
-      </a>
+        </ButtonLink>
+      </p>
       <h3 className={styles['heading3']}>
         Pages du site ayant fait l’objet de la vérification de conformité
       </h3>
@@ -249,89 +241,89 @@ export const Declaration = () => {
           <tr className={styles['tr']}>
             <td className={styles['td']}>Connexion</td>
             <td className={styles['td']}>
-              <a
-                className={styles['link']}
-                href="https://integration.passculture.pro/connexion?de=%2F"
+              <ButtonLink
+                to="https://integration.passculture.pro/connexion?de=%2F"
+                isExternal
               >
                 https://integration.passculture.pro/connexion?de=%2F
-              </a>
+              </ButtonLink>
             </td>
           </tr>
           <tr>
             <td className={styles['td']}>Mot de passe oublié</td>
             <td className={styles['td']}>
-              <a
-                className={styles['link']}
-                href="https://integration.passculture.pro/demande-mot-de-passe"
+              <ButtonLink
+                to="https://integration.passculture.pro/demande-mot-de-passe"
+                isExternal
               >
                 https://integration.passculture.pro/demande-mot-de-passe
-              </a>
+              </ButtonLink>
             </td>
           </tr>
           <tr>
             <td className={styles['td']}>Inscription</td>
             <td className={styles['td']}>
-              <a
-                className={styles['link']}
-                href="https://integration.passculture.pro/inscription"
+              <ButtonLink
+                to="https://integration.passculture.pro/inscription"
+                isExternal
               >
                 https://integration.passculture.pro/inscription
-              </a>
+              </ButtonLink>
             </td>
           </tr>
           <tr>
             <td className={styles['td']}>Confirmation d’inscription - Merci</td>
             <td className={styles['td']}>
-              <a
-                className={styles['link']}
-                href="https://integration.passculture.pro/inscription/confirmation"
+              <ButtonLink
+                isExternal
+                to="https://integration.passculture.pro/inscription/confirmation"
               >
                 https://integration.passculture.pro/inscription/confirmation
-              </a>
+              </ButtonLink>
             </td>
           </tr>
           <tr>
             <td className={styles['td']}>Accueil connecté</td>
             <td className={styles['td']}>
-              <a
-                className={styles['link']}
-                href="https://integration.passculture.pro/accueil"
+              <ButtonLink
+                isExternal
+                to="https://integration.passculture.pro/accueil"
               >
                 https://integration.passculture.pro/accueil
-              </a>
+              </ButtonLink>
             </td>
           </tr>
           <tr>
             <td className={styles['td']}>Offres / Recherche offres</td>
             <td className={styles['td']}>
-              <a
-                className={styles['link']}
-                href="https://integration.passculture.pro/offres"
+              <ButtonLink
+                isExternal
+                to="https://integration.passculture.pro/offres"
               >
                 https://integration.passculture.pro/offres
-              </a>
+              </ButtonLink>
             </td>
           </tr>
           <tr>
             <td className={styles['td']}>Création d’une offre - Accueil</td>
             <td className={styles['td']}>
-              <a
-                className={styles['link']}
-                href="https://integration.passculture.pro/offre/creation"
+              <ButtonLink
+                isExternal
+                to="https://integration.passculture.pro/offre/creation"
               >
                 https://integration.passculture.pro/offre/creation
-              </a>
+              </ButtonLink>
             </td>
           </tr>
           <tr>
             <td className={styles['td']}>Création d’une offre - Détails</td>
             <td className={styles['td']}>
-              <a
-                className={styles['link']}
-                href="https://integration.passculture.pro/offre/individuelle/creation/informations?offer-type=PHYSICAL_GOOD"
+              <ButtonLink
+                isExternal
+                to="https://integration.passculture.pro/offre/individuelle/creation/informations?offer-type=PHYSICAL_GOOD"
               >
                 https://integration.passculture.pro/offre/individuelle/creation/informations?offer-type=PHYSICAL_GOOD
-              </a>
+              </ButtonLink>
             </td>
           </tr>
           <tr>
@@ -339,12 +331,12 @@ export const Declaration = () => {
               Réservations / recherche réservations
             </td>
             <td className={styles['td']}>
-              <a
-                className={styles['link']}
-                href="https://integration.passculture.pro/parcours-inscription/structure"
+              <ButtonLink
+                isExternal
+                to="https://integration.passculture.pro/parcours-inscription/structure"
               >
                 https://integration.passculture.pro/parcours-inscription/structure
-              </a>
+              </ButtonLink>
             </td>
           </tr>
           <tr>
@@ -352,12 +344,12 @@ export const Declaration = () => {
               Création d’une offre - Stock & prix
             </td>
             <td className={styles['td']}>
-              <a
-                className={styles['link']}
-                href="https://integration.passculture.pro/offre/individuelle/24200/creation/stocks"
+              <ButtonLink
+                isExternal
+                to="https://integration.passculture.pro/offre/individuelle/24200/creation/stocks"
               >
                 https://integration.passculture.pro/offre/individuelle/24200/creation/stocks
-              </a>
+              </ButtonLink>
             </td>
           </tr>
           <tr>
@@ -365,12 +357,12 @@ export const Declaration = () => {
               Création d’une offre - Récapitulatif
             </td>
             <td className={styles['td']}>
-              <a
-                className={styles['link']}
-                href="https://integration.passculture.pro/offre/individuelle/24200/creation/recapitulatif"
+              <ButtonLink
+                isExternal
+                to="https://integration.passculture.pro/offre/individuelle/24200/creation/recapitulatif"
               >
                 https://integration.passculture.pro/offre/individuelle/24200/creation/recapitulatif
-              </a>
+              </ButtonLink>
             </td>
           </tr>
           <tr>
@@ -378,67 +370,67 @@ export const Declaration = () => {
               Création d’une offre - Confirmation
             </td>
             <td className={styles['td']}>
-              <a
-                className={styles['link']}
-                href="https://integration.passculture.pro/offre/individuelle/creation/confirmation"
+              <ButtonLink
+                isExternal
+                to="https://integration.passculture.pro/offre/individuelle/creation/confirmation"
               >
                 https://integration.passculture.pro/offre/individuelle/creation/confirmation
-              </a>
+              </ButtonLink>
             </td>
           </tr>
           <tr>
             <td className={styles['td']}>Première connexion - Rattachement</td>
             <td className={styles['td']}>
-              <a
-                className={styles['link']}
-                href="https://integration.passculture.pro/parcours-inscription/structure/rattachement"
+              <ButtonLink
+                isExternal
+                to="https://integration.passculture.pro/parcours-inscription/structure/rattachement"
               >
                 https://integration.passculture.pro/parcours-inscription/structure/rattachement
-              </a>
+              </ButtonLink>
             </td>
           </tr>
           <tr>
             <td className={styles['td']}>Première connexion - Accueil</td>
             <td className={styles['td']}>
-              <a
-                className={styles['link']}
-                href="https://integration.passculture.pro/parcours-inscription"
+              <ButtonLink
+                isExternal
+                to="https://integration.passculture.pro/parcours-inscription"
               >
                 https://integration.passculture.pro/parcours-inscription
-              </a>
+              </ButtonLink>
             </td>
           </tr>
           <tr>
             <td className={styles['td']}>Première connexion - Structure</td>
             <td className={styles['td']}>
-              <a
-                className={styles['link']}
-                href="https://integration.passculture.pro/parcours-inscription/structure"
+              <ButtonLink
+                isExternal
+                to="https://integration.passculture.pro/parcours-inscription/structure"
               >
                 https://integration.passculture.pro/parcours-inscription/structure
-              </a>
+              </ButtonLink>
             </td>
           </tr>
           <tr>
             <td className={styles['td']}>Inscription - Identification</td>
             <td className={styles['td']}>
-              <a
-                className={styles['link']}
-                href="https://integration.passculture.pro/parcours-inscription/identification"
+              <ButtonLink
+                isExternal
+                to="https://integration.passculture.pro/parcours-inscription/identification"
               >
                 https://integration.passculture.pro/parcours-inscription/identification
-              </a>
+              </ButtonLink>
             </td>
           </tr>
           <tr>
             <td className={styles['td']}>Inscription - Activité</td>
             <td className={styles['td']}>
-              <a
-                className={styles['link']}
-                href="https://integration.passculture.pro/parcours-inscription/activite"
+              <ButtonLink
+                isExternal
+                to="https://integration.passculture.pro/parcours-inscription/activite"
               >
                 https://integration.passculture.pro/parcours-inscription/activite
-              </a>
+              </ButtonLink>
             </td>
           </tr>
           <tr>
@@ -446,12 +438,12 @@ export const Declaration = () => {
               Création d’une offre - Collective - Détail
             </td>
             <td className={styles['td']}>
-              <a
-                className={styles['link']}
-                href="https://integration.passculture.pro/offre/creation/collectif"
+              <ButtonLink
+                isExternal
+                to="https://integration.passculture.pro/offre/creation/collectif"
               >
                 https://integration.passculture.pro/offre/creation/collectif
-              </a>
+              </ButtonLink>
             </td>
           </tr>
           <tr>
@@ -459,34 +451,34 @@ export const Declaration = () => {
               Création d’une offre - Collective - Aperçu
             </td>
             <td className={styles['td']}>
-              <a
-                className={styles['link']}
-                href="https://integration.passculture.pro/offre/552/collectif/creation/apercu"
+              <ButtonLink
+                isExternal
+                to="https://integration.passculture.pro/offre/552/collectif/creation/apercu"
               >
                 https://integration.passculture.pro/offre/552/collectif/creation/apercu
-              </a>
+              </ButtonLink>
             </td>
           </tr>
           <tr>
             <td className={styles['td']}>Inscription - Validation</td>
             <td className={styles['td']}>
-              <a
-                className={styles['link']}
-                href="https://integration.passculture.pro/parcours-inscription/validation"
+              <ButtonLink
+                isExternal
+                to="https://integration.passculture.pro/parcours-inscription/validation"
               >
                 https://integration.passculture.pro/parcours-inscription/validation
-              </a>
+              </ButtonLink>
             </td>
           </tr>
           <tr>
             <td className={styles['td']}>Création d’une offre - Tarifs</td>
             <td className={styles['td']}>
-              <a
-                className={styles['link']}
-                href="https://integration.passculture.pro/offre/individuelle/68514/creation/tarifs"
+              <ButtonLink
+                isExternal
+                to="https://integration.passculture.pro/offre/individuelle/68514/creation/tarifs"
               >
                 https://integration.passculture.pro/offre/individuelle/68514/creation/tarifs
-              </a>
+              </ButtonLink>
             </td>
           </tr>
           <tr>
@@ -494,12 +486,12 @@ export const Declaration = () => {
               Création d’une offre - Dates & Capacités
             </td>
             <td className={styles['td']}>
-              <a
-                className={styles['link']}
-                href="https://integration.passculture.pro/offre/individuelle/68514/creation/stocks"
+              <ButtonLink
+                isExternal
+                to="https://integration.passculture.pro/offre/individuelle/68514/creation/stocks"
               >
                 https://integration.passculture.pro/offre/individuelle/68514/creation/stocks
-              </a>
+              </ButtonLink>
             </td>
           </tr>
         </tbody>
@@ -508,12 +500,9 @@ export const Declaration = () => {
       <p className={styles['paragraph']}>
         Si vous avez des questions ou des remarques concernant l’accessibilité
         du site, veuillez contacter notre équipe à l’adresse suivante:&nbsp;
-        <a
-          className={styles['link']}
-          href="mailto:accessibilite@passculture.app"
-        >
+        <ButtonLink isExternal to="mailto:accessibilite@passculture.app">
           accessibilite@passculture.app
-        </a>{' '}
+        </ButtonLink>{' '}
       </p>
       <h2 className={styles['heading2']}>Voies de recours</h2>
       <p className={styles['paragraph']}>
@@ -527,22 +516,19 @@ export const Declaration = () => {
       <ul>
         <li className={styles['list-item']}>
           Écrire un message au Défenseur des droits (
-          <a
-            className={styles['link']}
-            href="https://formulaire.defenseurdesdroits.fr/"
-          >
+          <ButtonLink isExternal to="https://formulaire.defenseurdesdroits.fr/">
             Ouvrir le formulaire
-          </a>
+          </ButtonLink>
           )
         </li>
         <li className={styles['list-item']}>
           Contacter le délégué du Défenseur des droits dans votre région (
-          <a
-            className={styles['link']}
-            href="https://www.defenseurdesdroits.fr/saisir/delegues"
+          <ButtonLink
+            isExternal
+            to="https://www.defenseurdesdroits.fr/saisir/delegues"
           >
             Consulter l’annuaire des délégués
-          </a>
+          </ButtonLink>
           )
         </li>
         <li className={styles['list-item']}>

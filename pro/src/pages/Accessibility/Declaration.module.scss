@@ -11,23 +11,13 @@
 .list-item,
 .table,
 .td,
-.th,
-.link {
+.th {
   margin-bottom: rem.torem(16px);
 }
 
 .list-item {
   list-style: disc;
   margin-left: rem.torem(16px);
-}
-
-.link {
-  color: var(--color-grey-dark);
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-  }
 }
 
 .table {

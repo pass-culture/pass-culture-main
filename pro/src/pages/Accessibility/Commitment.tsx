@@ -1,5 +1,3 @@
-import { Link } from 'react-router-dom'
-
 import fullBackIcon from 'icons/full-back.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 
@@ -86,10 +84,10 @@ export const Commitment = () => {
         démarche d’accessibilité est évidemment essentielle à la dimension
         inclusive de l’ensemble du dispositif pass Culture et, <i>in fine</i> ,
         à l’accès de tous les jeunes à la culture. En 2024, ce travail a été
-        prolongé avec la mise en place d’un partenariat technologique avec
-        <a className={styles['link']} href="https://acceslibre.beta.gouv.fr/">
-          {''} acceslibre {''}
-        </a>
+        prolongé avec la mise en place d’un partenariat technologique avec{' '}
+        <ButtonLink to="https://acceslibre.beta.gouv.fr/" isExternal>
+          acceslibre
+        </ButtonLink>{' '}
         afin d’enrichir plus largement les informations d’accessibilité des
         lieux tout en contribuant à ce projet qui dépasse le pass Culture et qui
         vise à rendre faciliter l’accès pour les personnes en situation de
@@ -101,16 +99,16 @@ export const Commitment = () => {
       <p className={styles['paragraph']}>
         D’autres évolutions sont prévues dans les prochains mois et sont
         disponibles sur le {''}
-        <Link className={styles['link']} to="/accessibilite/schema-pluriannuel">
+        <ButtonLink to="/accessibilite/schema-pluriannuel">
           Schéma pluriannuel d’accessibilité 2024 - 2025
-        </Link>
+        </ButtonLink>
         {''} et le {''}
-        <a
-          className={styles['link']}
-          href="https://passculture.app/accessibilite/plan-d-actions"
+        <ButtonLink
+          to="https://passculture.app/accessibilite/plan-d-actions"
+          isExternal
         >
           Schéma pluriannuel d’accessibilité 2022 - 2024
-        </a>
+        </ButtonLink>
       </p>
       <p className={styles['paragraph']}>
         Au delà de ces premiers aspects, le rôle des aidants et des structures
@@ -130,21 +128,18 @@ export const Commitment = () => {
         Vous trouverez d’ailleurs dans le schéma pluriannuel les chantiers sur
         lesquels nous travaillons à ce niveau. Si vous avez des retours au sujet
         de notre traitement, n’hésitez pas à écrire à {''}
-        <a
-          className={styles['link']}
-          href="mailto:accessibilite@passculture.app"
-        >
+        <ButtonLink isExternal to="mailto:accessibilite@passculture.app">
           accessibilite@passculture.app
-        </a>
+        </ButtonLink>
       </p>
       <p className={styles['paragraph']}>
-        <a
-          className={styles['link']}
-          href="https://aide.passculture.app/hc/fr/sections/4597468688924-Situation-de-handicap"
+        <ButtonLink
+          to="https://aide.passculture.app/hc/fr/sections/4597468688924-Situation-de-handicap"
+          isExternal
         >
           Vous pouvez retrouver également toutes nos fiches d’aide pour vous
           inscrire sur le pass Culture directement dans notre centre d’aide.
-        </a>
+        </ButtonLink>
       </p>
     </AccessibilityLayout>
   )
