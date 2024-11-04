@@ -1,4 +1,5 @@
 import { Layout, LayoutProps } from 'app/App/layout/Layout'
+import { OldLayout } from 'app/App/layout/OldLayout'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import fullBackIcon from 'icons/full-back.svg'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
@@ -28,7 +29,7 @@ export const AccessibilityLayout = ({
   return isUserConnected ? (
     <Layout mainHeading={mainHeading}>{children}</Layout>
   ) : (
-    <Layout mainHeading={mainHeading} layout="without-nav">
+    <OldLayout>
       <header className={styles['logo-side']}>
         <SvgIcon
           className={logoStyles['logo-unlogged']}
@@ -39,6 +40,7 @@ export const AccessibilityLayout = ({
         />
       </header>
       <section className={styles['layout']} data-testid="logged-out-section">
+        <h1 className={styles['main-heading']}>{mainHeading}</h1>
         <div className={styles['content']}>{children}</div>
         {showBackToSignInButton && (
           <ButtonLink
@@ -50,6 +52,6 @@ export const AccessibilityLayout = ({
           </ButtonLink>
         )}
       </section>
-    </Layout>
+    </OldLayout>
   )
 }

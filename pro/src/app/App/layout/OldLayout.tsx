@@ -18,15 +18,8 @@ interface OldLayoutProps {
   mainHeading?: string
 }
 
-export const OldLayout = ({ children, mainHeading }: OldLayoutProps) => {
+export const OldLayout = ({ children }: OldLayoutProps) => {
   const currentUser = useSelector(selectCurrentUser)
-  const renderMainHeading = () => {
-    if (!mainHeading) {
-      return null
-    }
-
-    return <h1 className={styles['main-heading']}>{mainHeading}</h1>
-  }
 
   return (
     <>
@@ -54,10 +47,7 @@ export const OldLayout = ({ children, mainHeading }: OldLayoutProps) => {
           [styles['container-without-nav']]: true,
         })}
       >
-        <>
-          {renderMainHeading()}
-          {children}
-        </>
+        {children}
       </main>
     </>
   )
