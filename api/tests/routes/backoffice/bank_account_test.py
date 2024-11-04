@@ -278,8 +278,17 @@ class GetBankAccountInvoicesTest(GetEndpointHelper):
 
         assert "Aucun remboursement à ce jour" in html_parser.content_as_text(response.data)
 
-    def test_bank_account_has_invoices(self, authenticated_client):
-        bank_account = finance_factories.BankAccountFactory()
+    @pytest.mark.parametrize(
+        "factory,expected_invoice1_amount,expected_invoice2_amount",
+        [
+            (finance_factories.BankAccountFactory, "10,00 €", "12,50 €"),
+            (finance_factories.CaledonianBankAccountFactory, "10,00 € (1193 CFP)", "12,50 € (1492 CFP)"),
+        ],
+    )
+    def test_bank_account_has_invoices(
+        self, authenticated_client, factory, expected_invoice1_amount, expected_invoice2_amount
+    ):
+        bank_account = factory()
         bank_account_id = bank_account.id
         invoice1 = finance_factories.InvoiceFactory(
             bankAccount=bank_account, date=datetime.datetime(2023, 4, 1), amount=-1000
@@ -305,12 +314,12 @@ class GetBankAccountInvoicesTest(GetEndpointHelper):
         assert rows[0]["Date du justificatif"] == "01/05/2023"
         assert rows[0]["N° du justificatif"] == invoice2.reference
         assert rows[0]["N° de virement"] == "TEST123"
-        assert rows[0]["Montant remboursé"] == "12,50 €"
+        assert rows[0]["Montant remboursé"] == expected_invoice2_amount
 
         assert rows[1]["Date du justificatif"] == "01/04/2023"
         assert rows[1]["N° du justificatif"] == invoice1.reference
         assert rows[1]["N° de virement"] == "TEST123"
-        assert rows[1]["Montant remboursé"] == "10,00 €"
+        assert rows[1]["Montant remboursé"] == expected_invoice1_amount
 
 
 class DownloadReimbursementDetailsTest(PostEndpointHelper):

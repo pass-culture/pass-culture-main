@@ -10,6 +10,8 @@ from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as users_models
 from pcapi.utils import siren as siren_utils
 
 
@@ -19,15 +21,24 @@ logger = logging.getLogger(__name__)
 def create_new_caledonia_offerers() -> None:
     logger.info("create_new_caledonia_offerers")
 
-    _create_nc_active_offerer()
-    _create_nc_minimal_offerer()
+    beneficiary = _create_nc_beneficiary()
+    _create_nc_active_offerer(beneficiary)
+    _create_nc_new_offerer()
 
     logger.info("created New Caledonia offerers")
 
     _create_nc_invoice()
 
 
-def _create_nc_active_offerer() -> None:
+def _create_nc_beneficiary() -> users_models.User:
+    return users_factories.CaledonianBeneficiaryGrant18Factory(
+        email="beneficiaire.nc@example.com",
+        firstName="Bénéficiaire",
+        lastName="Néo-Calédonien",
+    )
+
+
+def _create_nc_active_offerer(beneficiary: users_models.User) -> None:
     address = geography_factories.AddressFactory(
         street="11 Avenue James Cook",
         postalCode="98800",
@@ -112,7 +123,7 @@ def _create_nc_active_offerer() -> None:
     event_offer = offers_factories.EventOfferFactory(name="Offre d'événement en Nouvelle-Calédonie", venue=venue)
     # 22:00 UTC = 11:00 Noumea time on the day after
     ref_date = datetime.datetime.utcnow().replace(hour=22, minute=0, second=0, microsecond=0)
-    for days in range(8, 15):
+    event_stocks = [
         offers_factories.EventStockFactory(
             offer=event_offer,
             beginningDatetime=ref_date + datetime.timedelta(days=days),
@@ -120,16 +131,22 @@ def _create_nc_active_offerer() -> None:
             price=decimal.Decimal("15"),
             quantity=50,
         )
+        for days in range(8, 15)
+    ]
 
-    offers_factories.ThingStockFactory(
+    bookings_factories.BookingFactory(stock=event_stocks[0], user=beneficiary)
+
+    thing_stock = offers_factories.ThingStockFactory(
         offer__name="Offre physique en Nouvelle-Calédonie",
         offer__venue=venue,
         price=decimal.Decimal("100"),
         quantity=10,
     )
 
+    bookings_factories.UsedBookingFactory(stock=thing_stock, user=beneficiary)
 
-def _create_nc_minimal_offerer() -> None:
+
+def _create_nc_new_offerer() -> None:
     # No address referenced in Thio, in Base d'Adresses Nationale
     address = geography_factories.AddressFactory(
         street="Village de Thio Rue rapadzi",

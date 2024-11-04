@@ -34,7 +34,9 @@ class CommercialGestureCreationForm(empty_forms.BatchForm, BaseIncidentCreationF
         locales = ["fr_FR", "fr"]
 
     total_amount = fields.PCDecimalField(
-        "Montant total dû à l'acteur culturel (sans le calcul de barème)", use_locale=True, validators=[Optional()]
+        "Montant total dû à l'acteur culturel (en euros, sans le calcul de barème)",
+        use_locale=True,
+        validators=[Optional()],
     )
 
 
@@ -51,7 +53,9 @@ class BookingOverPaymentIncidentForm(empty_forms.BatchForm, BaseIncidentCreation
         locales = ["fr_FR", "fr"]
 
     total_amount = fields.PCDecimalField(
-        "Montant de l'incident à récupérer (sans le calcul de barème)", use_locale=True, validators=[Optional()]
+        "Montant de l'incident à récupérer (en euros, sans le calcul de barème)",
+        use_locale=True,
+        validators=[Optional()],
     )
 
 

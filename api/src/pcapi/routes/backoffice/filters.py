@@ -131,20 +131,33 @@ def format_timespan(timespan: psycopg2.extras.DateTimeRange) -> str:
     return f"{start} → {end}"
 
 
-def format_amount(amount: float | decimal.Decimal | None) -> str:
+def format_amount(
+    amount: float | decimal.Decimal | None,
+    target: users_models.User | offerers_models.Offerer | offerers_models.Venue | None = None,
+) -> str:
     if amount is None:
         amount = 0.0
 
-    return Markup('<span class="text-nowrap">{formatted_amount} €</span>').format(
+    display = Markup('<span class="text-nowrap">{formatted_amount} €</span>').format(
         formatted_amount=f"{amount:,.2f}".replace(",", "\u202f").replace(".", ",")
     )
 
+    if target is not None and target.is_caledonian:
+        display += Markup(' <span class="text-nowrap text-muted">({formatted_amount} CFP)</span>').format(
+            formatted_amount=f"{finance_utils.euros_to_xpf(amount)}".replace(",", "\u202f")
+        )
 
-def format_cents(amount_in_cents: int | None) -> str:
+    return display
+
+
+def format_cents(
+    amount_in_cents: int | None,
+    target: users_models.User | offerers_models.Offerer | offerers_models.Venue | None = None,
+) -> str:
     if amount_in_cents is None:
         amount_in_cents = 0
 
-    return format_amount(finance_utils.to_euros(amount_in_cents))
+    return format_amount(finance_utils.to_euros(amount_in_cents), target=target)
 
 
 def format_rate(rate: float | None) -> str:

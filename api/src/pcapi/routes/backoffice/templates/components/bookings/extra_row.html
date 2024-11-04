@@ -11,12 +11,12 @@
   {% endcall %}
 {% endmacro %}
 {% macro build_individual_booking_extra_row(booking, stock, offer) %}
-  {% call build_booking_extra_row(booking, stock, offer) %}
+  {% call build_booking_extra_row(booking, stock, offer, booking.user) %}
     <li>Catégorie : {{ offer.subcategoryId | format_offer_category }}</li>
     <li>Sous-catégorie : {{ offer.subcategoryId | format_offer_subcategory }}</li>
   {% endcall %}
 {% endmacro %}
-{% macro build_booking_extra_row(booking, stock, offer) %}
+{% macro build_booking_extra_row(booking, stock, offer, target = none) %}
   <tr class="collapse accordion-collapse pc-booking-{{ booking.id }}">
     <td colspan="100%">
       <div class="row">
@@ -59,14 +59,14 @@
           {% if booking.isReimbursed %}
             <div class="card shadow-sm p-3">
               <ul>
-                <li>Total payé par l'utilisateur : {{ booking.total_amount | format_amount }}</li>
+                <li>Total payé par l'utilisateur : {{ booking.total_amount | format_amount(target=target) }}</li>
                 <li>
                   Date de remboursement :
                   {{ booking.reimbursementDate | format_date_time }}
                 </li>
                 <li>
                   Montant remboursé :
-                  {% if booking.reimbursement_pricing %}{{ -booking.reimbursement_pricing.amount | format_cents }}{% endif %}
+                  {% if booking.reimbursement_pricing %}{{ -booking.reimbursement_pricing.amount | format_cents(target=target) }}{% endif %}
                 </li>
                 <li>
                   N° de virement :

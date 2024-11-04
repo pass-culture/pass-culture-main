@@ -77,7 +77,7 @@
               </p>
               <p class="mb-1">
                 <span class="fw-bold">Montant de la réservation :</span>
-                {{ booking_finance_incident.booking.total_amount | format_amount }}
+                {{ booking_finance_incident.booking.total_amount | format_amount(target=incident.venue) }}
               </p>
             </div>
           </td>

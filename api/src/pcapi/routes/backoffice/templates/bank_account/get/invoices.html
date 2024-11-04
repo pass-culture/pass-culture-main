@@ -40,7 +40,7 @@
           <td>{{ invoice.date | format_date }}</td>
           <td>{{ invoice.reference }}</td>
           <td>{{ invoice.cashflows | map(attribute="batch.label") | join(", ") | escape }}</td>
-          <td>{{ -invoice.amount | format_cents }}</td>
+          <td>{{ -invoice.amount | format_cents(target=invoice.bankAccount.offerer) }}</td>
           <td>
             <a class="link-primary"
                download

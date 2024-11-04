@@ -69,10 +69,10 @@
               </p>
             {% endif %}
             <p class="mb-1">
-              <span class="fw-bold">Montant initialement remboursé à l'acteur culturel :</span> {{ initial_reimbursement_amount | format_cents }}
+              <span class="fw-bold">Montant initialement remboursé à l'acteur culturel :</span> {{ initial_reimbursement_amount | format_cents(target=incident.venue) }}
             </p>
             <p class="mb-1">
-              <span class="fw-bold">Montant trop perçu par l'acteur culturel à récupérer :</span> {{ incident.due_amount_by_offerer | format_cents }}
+              <span class="fw-bold">Montant trop perçu par l'acteur culturel à récupérer :</span> {{ incident.due_amount_by_offerer | format_cents(target=incident.venue) }}
             </p>
             {% if incident.author_full_name %}
               <p class="mb-1">
@@ -81,7 +81,7 @@
             {% endif %}
             {% if incident.cashflow_batch_label %}
               <p class="mb-1">
-                <span class="fw-bold">Batch :</span> {{ incident.cashflow_batch_label }}
+                <span class="fw-bold">Batch :</span> {{ incident.cashflow_batch_label }}
               </p>
             {% endif %}
             {% if incident.invoice_url %}

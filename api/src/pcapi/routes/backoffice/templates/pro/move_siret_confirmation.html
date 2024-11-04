@@ -19,7 +19,7 @@
         <p>
           {% if yearly_revenue is not false %}
             <span class="fw-bold">Revenu de l'année :</span>
-            {{ yearly_revenue | format_amount }}
+            {{ yearly_revenue | format_amount(target=venue) }}
           {% else %}
             &nbsp;
           {% endif %}

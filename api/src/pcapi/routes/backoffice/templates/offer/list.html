@@ -214,11 +214,11 @@
                     {% if row.prices.min_price is none %}
                       -
                     {% elif row.prices.min_price == row.prices.max_price %}
-                      {{ row.prices.min_price | format_amount }}
+                      {{ row.prices.min_price | format_amount(target=offer.venue) }}
                     {% else %}
-                      {{ row.prices.min_price | format_amount }}
+                      {{ row.prices.min_price | format_amount(target=offer.venue) }}
                       -
-                      {{ row.prices.max_price | format_amount }}
+                      {{ row.prices.max_price | format_amount(target=offer.venue) }}
                     {% endif %}
                   </td>
                 {% endif %}

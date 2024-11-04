@@ -133,6 +133,10 @@ def get_invoices(bank_account_id: int) -> utils.BackofficeResponse:
             .load_only(finance_models.Cashflow.batchId)
             .joinedload(finance_models.Cashflow.batch)
             .load_only(finance_models.CashflowBatch.label),
+            sa.orm.joinedload(finance_models.Invoice.bankAccount, innerjoin=True)
+            .load_only(finance_models.BankAccount.id)
+            .joinedload(finance_models.BankAccount.offerer, innerjoin=True)
+            .load_only(offerers_models.Offerer.siren, offerers_models.Offerer.postalCode),
         )
         .order_by(finance_models.Invoice.date.desc())
     ).all()

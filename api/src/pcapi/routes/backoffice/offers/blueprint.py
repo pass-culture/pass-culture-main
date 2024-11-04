@@ -445,7 +445,12 @@ def _get_offers_by_ids(
                 offerers_models.Venue.departementCode,
             )
             .contains_eager(offerers_models.Venue.managingOfferer)
-            .load_only(offerers_models.Offerer.id, offerers_models.Offerer.name)
+            .load_only(
+                offerers_models.Offerer.id,
+                offerers_models.Offerer.name,
+                offerers_models.Offerer.siren,
+                offerers_models.Offerer.postalCode,
+            )
             .joinedload(offerers_models.Offerer.confidenceRule)
             .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
             sa.orm.contains_eager(offers_models.Offer.venue)
@@ -963,6 +968,8 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
             offerers_models.Offerer.name,
             offerers_models.Offerer.isActive,
             offerers_models.Offerer.validationStatus,
+            offerers_models.Offerer.siren,
+            offerers_models.Offerer.postalCode,
         ),
         sa.orm.joinedload(offers_models.Offer.stocks)
         .joinedload(offers_models.Stock.priceCategory)

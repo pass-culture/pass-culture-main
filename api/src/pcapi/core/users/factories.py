@@ -639,6 +639,14 @@ class BeneficiaryGrant18Factory(BaseFactory):
         return DepositGrantFactory(user=obj, **kwargs)
 
 
+class CaledonianBeneficiaryGrant18Factory(BeneficiaryGrant18Factory):
+    address = factory.Sequence("{} place des Cocotiers".format)
+    city = "Nouméa"
+    postalCode = "98800"
+    departementCode = "988"
+    phoneNumber = factory.Sequence(lambda n: f"+68777{n%10000:04}")
+
+
 def RichBeneficiaryFactory() -> models.User:
     # Create a rich beneficiary who can book expensive stocks. Useful
     # when we want to simulate a large amount of (booked) money

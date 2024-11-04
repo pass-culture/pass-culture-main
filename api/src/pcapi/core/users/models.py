@@ -34,6 +34,7 @@ from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import crypto
+from pcapi.utils import regions as regions_utils
 from pcapi.utils.phone_number import ParsedPhoneNumber
 
 
@@ -717,6 +718,10 @@ class User(PcObject, Base, Model, DeactivableMixin):
     @property
     def is_impersonated(self) -> bool:
         return bool(self.impersonator)
+
+    @property
+    def is_caledonian(self) -> bool:
+        return self.postalCode.startswith(regions_utils.NEW_CALEDONIA_DEPARTMENT_CODE) if self.postalCode else False
 
 
 class DiscordUser(PcObject, Base, Model):
