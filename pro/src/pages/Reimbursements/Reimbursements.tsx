@@ -38,7 +38,11 @@ export const Reimbursements = (): JSX.Element => {
     ([, offererId]) => api.getOfferer(Number(offererId))
   )
 
-  if (offererNamesQuery.isLoading || offererQuery.isLoading) {
+  if (
+    offererNamesQuery.isLoading ||
+    offererQuery.isLoading ||
+    offererQuery.error
+  ) {
     return (
       <Layout>
         <Spinner />
