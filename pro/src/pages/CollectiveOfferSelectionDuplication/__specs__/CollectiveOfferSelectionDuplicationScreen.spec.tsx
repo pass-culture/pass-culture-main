@@ -7,7 +7,10 @@ import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
 
 import { api } from 'apiClient/api'
-import { CollectiveOfferResponseModel } from 'apiClient/v1'
+import {
+  CollectiveOfferDisplayedStatus,
+  CollectiveOfferResponseModel,
+} from 'apiClient/v1'
 import * as createFromTemplateUtils from 'commons/core/OfferEducational/utils/createOfferFromTemplate'
 import * as useNotification from 'commons/hooks/useNotification'
 import { collectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
@@ -105,7 +108,11 @@ describe('CollectiveOfferConfirmation', () => {
     expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
       'Le nom de l’offre 3',
       undefined,
-      undefined,
+      [
+        CollectiveOfferDisplayedStatus.ACTIVE,
+        CollectiveOfferDisplayedStatus.INACTIVE,
+        CollectiveOfferDisplayedStatus.ENDED,
+      ],
       undefined,
       undefined,
       undefined,

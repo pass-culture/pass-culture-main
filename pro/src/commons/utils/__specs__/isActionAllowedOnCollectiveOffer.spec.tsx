@@ -6,7 +6,7 @@ import {
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
-} from '../collectiveApiFactories'
+} from '../factories/collectiveApiFactories'
 import { isActionAllowedOnCollectiveOffer } from '../isActionAllowedOnCollectiveOffer'
 
 describe('isActionAllowedOnCollectiveOffer', () => {

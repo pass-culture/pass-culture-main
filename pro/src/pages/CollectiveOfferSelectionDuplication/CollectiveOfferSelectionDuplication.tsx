@@ -5,7 +5,11 @@ import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { CollectiveOfferResponseModel, CollectiveOfferType } from 'apiClient/v1'
+import {
+  CollectiveOfferDisplayedStatus,
+  CollectiveOfferResponseModel,
+  CollectiveOfferType,
+} from 'apiClient/v1'
 import { Layout } from 'app/App/layout/Layout'
 import { createOfferFromTemplate } from 'commons/core/OfferEducational/utils/createOfferFromTemplate'
 import { DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS } from 'commons/core/Offers/constants'
@@ -68,6 +72,11 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
           nameOrIsbn: offerName,
           offererId: queryOffererId ? queryOffererId.toString() : 'all',
           venueId: queryVenueId ? queryVenueId : 'all',
+          status: [
+            CollectiveOfferDisplayedStatus.ACTIVE,
+            CollectiveOfferDisplayedStatus.INACTIVE,
+            CollectiveOfferDisplayedStatus.ENDED,
+          ],
         },
         DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS
       )
