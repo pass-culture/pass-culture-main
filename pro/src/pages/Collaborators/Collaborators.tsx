@@ -104,9 +104,7 @@ export const Collaborators = (): JSX.Element | null => {
       <h1 className={styles['title']}>Collaborateurs</h1>
 
       <section className={styles['section']} ref={scrollToSection}>
-        <h2 className={styles['main-list-title-new']}>
-          {'Liste des collaborateurs'}
-        </h2>
+        <h2 className={styles['main-list-title']}>Liste des collaborateurs</h2>
 
         {members.length > 0 && (
           <div className={styles['members-container']}>
