@@ -2278,7 +2278,7 @@
   dependencies:
     "@storybook/global" "^5.0.0"
 
-"@storybook/blocks@8.3.6", "@storybook/blocks@^8.3.6":
+"@storybook/blocks@8.3.6":
   version "8.3.6"
   resolved "https://registry.yarnpkg.com/@storybook/blocks/-/blocks-8.3.6.tgz#ac2e4f07a4df23004b3361c592c2cffe6b95464a"
   integrity sha512-Oc5jU6EzfsENjrd91KcKyEKBh60RT+8uyLi1RIrymC2C/mzZMTEoNIrbnQt0eIqbjlHxn6y9JMJxHu4NJ4EmZg==
@@ -2297,6 +2297,15 @@
     telejson "^7.2.0"
     ts-dedent "^2.0.0"
     util-deprecate "^1.0.2"
+
+"@storybook/blocks@^8.4.0":
+  version "8.4.0"
+  resolved "https://registry.yarnpkg.com/@storybook/blocks/-/blocks-8.4.0.tgz#fbc7952b019186c6f6cd66ca84698273ae7bb137"
+  integrity sha512-LeXsZLTNcmKtgt0ZRdgzBa2Z8A5CH3gGyjG7QT3M+3yH9fVAXB2XplKOIejDsvR9jSBww3mKXyabX12NVZKz0A==
+  dependencies:
+    "@storybook/csf" "^0.1.11"
+    "@storybook/icons" "^1.2.12"
+    ts-dedent "^2.0.0"
 
 "@storybook/builder-vite@8.3.6":
   version "8.3.6"
@@ -2354,7 +2363,7 @@
   resolved "https://registry.yarnpkg.com/@storybook/global/-/global-5.0.0.tgz#b793d34b94f572c1d7d9e0f44fac4e0dbc9572ed"
   integrity sha512-FcOqPAXACP0I3oJ/ws6/rrPT9WGhu915Cg8D02a9YxLo0DE9zI+a9A5gRGvmQ09fiWPukqI8ZAEoQEdWUKMQdQ==
 
-"@storybook/icons@^1.2.10":
+"@storybook/icons@^1.2.10", "@storybook/icons@^1.2.12":
   version "1.2.12"
   resolved "https://registry.yarnpkg.com/@storybook/icons/-/icons-1.2.12.tgz#3e4c939113b67df7ab17b78f805dbb57f4acf0db"
   integrity sha512-UxgyK5W3/UV4VrI3dl6ajGfHM4aOqMAkFLWe2KibeQudLf6NJpDrDMSHwZj+3iKC4jFU7dkKbbtH2h/al4sW3Q==
