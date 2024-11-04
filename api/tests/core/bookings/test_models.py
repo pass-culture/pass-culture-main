@@ -238,6 +238,7 @@ class BookingCancellationReasonsTest:
             (BookingCancellationReasons.BACKOFFICE_BENEFICIARY_REQUEST, True),
             (BookingCancellationReasons.BACKOFFICE_OFFER_MODIFIED, True),
             (BookingCancellationReasons.BACKOFFICE_OFFER_WITH_WRONG_INFORMATION, True),
+            (BookingCancellationReasons.BACKOFFICE_OFFERER_BUSINESS_CLOSED, True),
             (BookingCancellationReasons.OFFERER_CONNECT_AS, False),
         ],
     )
