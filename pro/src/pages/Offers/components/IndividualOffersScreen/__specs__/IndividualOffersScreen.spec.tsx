@@ -646,7 +646,7 @@ describe('IndividualOffersScreen', () => {
 
     expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)
     expect(mockNotifySuccess).toHaveBeenCalledWith(
-      'Les brouillons ont bien été supprimés'
+      '2 brouillons ont bien été supprimés'
     )
   })
 })

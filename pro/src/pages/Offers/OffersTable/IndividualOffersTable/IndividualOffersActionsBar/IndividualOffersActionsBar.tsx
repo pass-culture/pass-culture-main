@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { mutate, useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
+import { OfferStatus } from 'apiClient/v1'
 import { DEFAULT_SEARCH_FILTERS } from 'commons/core/Offers/constants'
 import { useQuerySearchFilters } from 'commons/core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from 'commons/core/Offers/types'
@@ -26,8 +27,8 @@ import { IndividualDeactivationConfirmDialog } from './IndividualDeactivationCon
 
 export interface IndividualOffersActionsBarProps {
   areAllOffersSelected: boolean
-  clearSelectedOfferIds: () => void
-  selectedOfferIds: number[]
+  clearSelectedOffers: () => void
+  selectedOffers: { id: number; status: OfferStatus }[]
   toggleSelectAllCheckboxes: () => void
   getUpdateOffersStatusMessage: (selectedOfferIds: number[]) => string
   canDeleteOffers: boolean
@@ -121,8 +122,8 @@ const updateIndividualOffersStatus = async (
 }
 
 export const IndividualOffersActionsBar = ({
-  selectedOfferIds,
-  clearSelectedOfferIds,
+  selectedOffers,
+  clearSelectedOffers,
   toggleSelectAllCheckboxes,
   areAllOffersSelected,
   getUpdateOffersStatusMessage,
@@ -146,7 +147,7 @@ export const IndividualOffersActionsBar = ({
   delete apiFilters.page
 
   const handleClose = () => {
-    clearSelectedOfferIds()
+    clearSelectedOffers()
     if (areAllOffersSelected) {
       toggleSelectAllCheckboxes()
     }
@@ -156,7 +157,13 @@ export const IndividualOffersActionsBar = ({
     await updateIndividualOffersStatus(
       isActivating,
       areAllOffersSelected,
-      selectedOfferIds,
+      selectedOffers
+        .filter((offer) =>
+          isActivating
+            ? offer.status === OfferStatus.INACTIVE
+            : offer.status === OfferStatus.ACTIVE
+        )
+        .map((offer) => offer.id),
       notify,
       apiFilters,
       areNewStatusesEnabled
@@ -166,8 +173,9 @@ export const IndividualOffersActionsBar = ({
   }
 
   const handleActivate = async () => {
-    const updateOfferStatusMessage =
-      getUpdateOffersStatusMessage(selectedOfferIds)
+    const updateOfferStatusMessage = getUpdateOffersStatusMessage(
+      selectedOffers.map((offer) => offer.id)
+    )
     if (!updateOfferStatusMessage) {
       await handleUpdateOffersStatus(true)
     } else {
@@ -183,13 +191,17 @@ export const IndividualOffersActionsBar = ({
   const handleDelete = async () => {
     try {
       await api.deleteDraftOffers({
-        ids: selectedOfferIds.map((id) => Number(id)),
+        ids: selectedOffers.map((offer) => offer.id),
       })
-      notify.success(computeDeletionSuccessMessage(selectedOfferIds.length))
+      notify.success(
+        computeDeletionSuccessMessage(
+          selectedOffers.filter((o) => o.status === OfferStatus.DRAFT).length
+        )
+      )
       await mutate([GET_OFFERS_QUERY_KEY, apiFilters])
-      clearSelectedOfferIds()
+      clearSelectedOffers()
     } catch {
-      notify.error(computeDeletionErrorMessage(selectedOfferIds.length))
+      notify.error(computeDeletionErrorMessage(selectedOffers.length))
     }
     setIsDeleteDialogOpen(false)
   }
@@ -206,22 +218,28 @@ export const IndividualOffersActionsBar = ({
     <>
       <IndividualDeactivationConfirmDialog
         areAllOffersSelected={areAllOffersSelected}
-        nbSelectedOffers={selectedOfferIds.length}
+        nbSelectedOffers={
+          selectedOffers.filter((offer) => offer.status === OfferStatus.ACTIVE)
+            .length
+        }
         onConfirm={handleDeactivateOffers}
         onCancel={() => setIsDeactivationDialogOpen(false)}
         isDialogOpen={isDeactivationDialogOpen}
       />
 
       <DeleteConfirmDialog
+        nbSelectedOffers={
+          selectedOffers.filter((offer) => offer.status === OfferStatus.DRAFT)
+            .length
+        }
+        onConfirm={handleDelete}
         onCancel={() => setIsDeleteDialogOpen(false)}
-        nbSelectedOffers={selectedOfferIds.length}
-        handleDelete={handleDelete}
         isDialogOpen={isDeleteDialogOpen}
       />
 
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
-          {computeSelectedOffersLabel(selectedOfferIds.length)}
+          {computeSelectedOffersLabel(selectedOffers.length)}
         </ActionsBarSticky.Left>
         <ActionsBarSticky.Right>
           <Button onClick={handleClose} variant={ButtonVariant.SECONDARY}>

@@ -121,7 +121,7 @@ describe('IndividualOfferRow', () => {
           ids: [offerId],
         })
         expect(
-          screen.getByText('Le brouillon a bien été supprimé')
+          screen.getByText('1 brouillon a bien été supprimé')
         ).toBeInTheDocument()
       })
 
