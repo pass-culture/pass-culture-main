@@ -1,6 +1,10 @@
 import { useLocation } from 'react-router-dom'
 
-import { CollectiveOfferResponseModel } from 'apiClient/v1'
+import {
+  CollectiveOfferResponseModel,
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
+} from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
@@ -9,7 +13,10 @@ import strokeThingIcon from 'icons/stroke-thing.svg'
 interface OfferEducationalModalProps {
   onDismiss(): void
   onValidate(): void
-  offerId?: number
+  offer?:
+    | GetCollectiveOfferResponseModel
+    | GetCollectiveOfferTemplateResponseModel
+    | CollectiveOfferResponseModel
   hasMultipleOffers?: boolean
   selectedOffers?: CollectiveOfferResponseModel[]
   isDialogOpen: boolean
@@ -20,23 +27,28 @@ export const ArchiveConfirmationModal = ({
   onValidate,
   hasMultipleOffers = false,
   selectedOffers = [],
-  offerId,
+  offer,
   isDialogOpen,
 }: OfferEducationalModalProps): JSX.Element => {
   const location = useLocation()
   const { logEvent } = useAnalytics()
 
   function onConfirmArchive() {
-    const collectiveOfferIds = selectedOffers.map((offer) =>
-      offer.id.toString()
-    )
-
     logEvent(Events.CLICKED_ARCHIVE_COLLECTIVE_OFFER, {
       from: location.pathname,
       selected_offers:
-        selectedOffers.length > 0 ? collectiveOfferIds : offerId?.toString(),
+        selectedOffers.length > 0
+          ? selectedOffers.map((offer) => ({
+              offerId: offer.id.toString(),
+              offerStatus: offer.displayedStatus,
+            }))
+          : [
+              {
+                offerId: offer?.id.toString(),
+                offerStatus: offer?.displayedStatus,
+              },
+            ],
     })
-
     onValidate()
   }
 
