@@ -1,11 +1,15 @@
 import contextlib
 import datetime
 import enum
+import logging
 
 import pydantic.v1 as pydantic_v1
 
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import models as users_models
+
+
+logger = logging.getLogger(__name__)
 
 
 class UbbleIdentificationStatus(enum.Enum):
@@ -16,7 +20,8 @@ class UbbleIdentificationStatus(enum.Enum):
     APPROVED = "approved"
     DECLINED = "declined"
     RETRY_REQUIRED = "retry_required"
-    REFUSED = "refused"
+    INCONCLUSIVE = "inconclusive"  # id verification is anonymized
+    REFUSED = "refused"  # user did not consent to the verification
     # ubble v1
     UNINITIATED = "uninitiated"  # Identification has only been created (user has not started the verification flow)
     INITIATED = "initiated"  # User has started the verification flow
@@ -43,6 +48,8 @@ class UbbleLinks(pydantic_v1.BaseModel):
 
 class UbbleDocument(pydantic_v1.BaseModel):
     full_name: str
+    first_names: str | None
+    last_name: str | None
     birth_date: datetime.date | None
     document_type: str
     document_number: str | None
@@ -60,7 +67,7 @@ class UbbleDocument(pydantic_v1.BaseModel):
 
 
 class UbbleResponseCode(pydantic_v1.BaseModel):
-    response_code: int
+    code: int
 
 
 class UbbleV2IdentificationResponse(pydantic_v1.BaseModel):
@@ -86,7 +93,7 @@ class UbbleV2IdentificationResponse(pydantic_v1.BaseModel):
     def fraud_reason_codes(self) -> list["fraud_models.FraudReasonCode"]:
         return [
             fraud_models.UBBLE_REASON_CODE_MAPPING.get(
-                response_code.response_code, fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER
+                response_code.code, fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER
             )
             for response_code in self.response_codes
         ]
@@ -102,7 +109,7 @@ def convert_identification_to_ubble_content(
     if not document:
         first_name, last_name = None, None
     else:
-        first_name, last_name = document.full_name.split(" ", maxsplit=1)
+        first_name, last_name = _get_first_and_last_name(document)
 
     content = fraud_models.UbbleContent(
         birth_date=getattr(document, "birth_date", None),
@@ -129,6 +136,18 @@ def convert_identification_to_ubble_content(
         supported=None,
     )
     return content
+
+
+def _get_first_and_last_name(document: UbbleDocument) -> tuple[str, str]:
+    if document.first_names and document.last_name:
+        return document.first_names.split(", ")[0], document.last_name
+
+    logger.error(
+        "Name not composed of first names and last name: %s, defaulting to naive first name detection",
+        document.full_name,
+    )
+    first_name, last_name = document.full_name.split(" ", maxsplit=1)
+    return first_name, last_name
 
 
 # DEPRECATED Ubble V1

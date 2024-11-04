@@ -1,6 +1,41 @@
 from pcapi.connectors.serialization import ubble_serializers
 
 
+UBBLE_IDENTIFICATION_V2_RESPONSE = {
+    "id": "idv_01jbcfv575hfh62b6t89304769",
+    "user_journey_id": "usj_02h13smebsb2y1tyyrzx1sgma7",
+    "applicant_id": "aplt_02jbcfv54zmsbrrzf4g1f7qfh7",
+    "webhook_url": "https://webhook.example.com",
+    "redirect_url": "https://redirect.example.com",
+    "declared_data": {"name": "Oriane Bertone"},
+    "created_on": "2024-10-29T15:55:50.391708Z",
+    "modified_on": "2024-10-30T17:01:23.856294Z",
+    "status": "approved",
+    "face": {"image_signed_url": "https://api.ubble.example.com/idv_01jbcfv575hfh62b6t89304769"},
+    "response_codes": [{"code": 10000, "summary": "approved"}],
+    "documents": [
+        {
+            "birth_date": "2005-03-10",
+            "document_expiry_date": "2030-01-01",
+            "document_issue_date": "2020-01-02",
+            "document_issuing_country": "FRA",
+            "document_mrz": "MRZ",
+            "document_number": "12AB12345",
+            "document_type": "Passport",
+            "first_names": "ORIANE, MAX",
+            "front_image_signed_url": "https://api.ubble.example.com/idv_01jbcfv575hfh62b6t89304769",
+            "full_name": "ORIANE MAX BERTONE",
+            "gender": "F",
+            "last_name": "BERTONE",
+        }
+    ],
+    "_links": {
+        "self": {"href": "https://api.ubble.example.com/v2/identity-verifications/idv_01jbcfv575hfh62b6t89304769"},
+        "applicant": {"href": "https://api.ubble.example.com/v2/applicants/aplt_01jbcfv54zmsbrrzf4g1f7qfh7"},
+        "verification_url": {"href": "https://verification.ubble.example.com/"},
+    },
+}
+
 UBBLE_IDENTIFICATION_RESPONSE = {
     "data": {
         "type": "identifications",

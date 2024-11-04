@@ -328,8 +328,23 @@ class DMSContent(common_models.IdentityCheckContent):
         return self.registration_datetime
 
 
-# https://ubbleai.github.io/developer-documentation/#reason-codes
 UBBLE_REASON_CODE_MAPPING = {
+    # Ubble V2 https://docs.ubble.ai/#section/Handle-verification-results/Response-codes
+    61201: FraudReasonCode.NETWORK_CONNECTION_ISSUE,  # applicant did not have a sufficient connection
+    61301: FraudReasonCode.BLURRY_DOCUMENT_VIDEO,  # applicant’s document video is too blurry
+    61302: FraudReasonCode.LACK_OF_LUMINOSITY,  # applicant performed their id verification under poor lighting conditions
+    61312: FraudReasonCode.LACK_OF_LUMINOSITY,  # applicant hides part of the document
+    61313: FraudReasonCode.LACK_OF_LUMINOSITY,  # applicant did not present a dynamic view of the document
+    61901: FraudReasonCode.UBBLE_INTERNAL_ERROR,  # ubble messed up
+    62101: FraudReasonCode.ID_CHECK_EXPIRED,  # applicant presented an expired document
+    62102: FraudReasonCode.ID_CHECK_NOT_SUPPORTED,  # applicant presented a document which is not accepted
+    62103: FraudReasonCode.DOCUMENT_DAMAGED,  # applicant has submitted a damaged document
+    62201: FraudReasonCode.ID_CHECK_NOT_AUTHENTIC,  # applicant presented a photocopy of the document
+    62202: FraudReasonCode.ID_CHECK_NOT_AUTHENTIC,  # applicant presented the document on a screen
+    62301: FraudReasonCode.ID_CHECK_NOT_AUTHENTIC,  # applicant has submitted a counterfeit or falsification
+    62304: FraudReasonCode.NOT_DOCUMENT_OWNER,  # applicant does not match the photograph of the document
+    62401: FraudReasonCode.ID_CHECK_DATA_MATCH,  # applicant’s identity does not match with the expected one
+    # Ubble V1 https://ubbleai.github.io/developer-documentation/#reason-codes
     1201: FraudReasonCode.NETWORK_CONNECTION_ISSUE,  # applicant did not have a sufficient connection
     1301: FraudReasonCode.BLURRY_DOCUMENT_VIDEO,  # applicant’s document video is too blurry
     1304: FraudReasonCode.LACK_OF_LUMINOSITY,  # applicant hides part of the document
@@ -371,9 +386,13 @@ class UbbleContent(common_models.IdentityCheckContent):
     signed_image_front_url: pydantic_v1.HttpUrl | None
     signed_image_back_url: pydantic_v1.HttpUrl | None
 
-    _parse_birth_date = pydantic_v1.validator("birth_date", pre=True, allow_reuse=True)(
-        lambda d: datetime.datetime.strptime(d, "%Y-%m-%d").date() if d is not None else None
-    )
+    @pydantic_v1.validator("birth_date", pre=True)
+    def parse_birth_date(cls, birth_date: datetime.date | str | None) -> datetime.date | None:
+        if isinstance(birth_date, datetime.date):
+            return birth_date
+        if isinstance(birth_date, str):
+            return datetime.datetime.strptime(birth_date, "%Y-%m-%d").date()
+        return None
 
     def get_birth_date(self) -> datetime.date | None:
         return self.birth_date

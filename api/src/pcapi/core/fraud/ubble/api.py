@@ -2,6 +2,7 @@ import logging
 import re
 
 from pcapi import settings
+from pcapi.connectors.beneficiaries import ubble
 from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
@@ -30,6 +31,42 @@ def _ubble_message_from_code(code: fraud_models.FraudReasonCode) -> str:
 
 
 def _ubble_result_fraud_item(user: users_models.User, content: fraud_models.UbbleContent) -> fraud_models.FraudItem:
+    if ubble.is_v2_identification(content.identification_id):
+        return _ubble_result_fraud_item_using_status(user, content)
+    return _ubble_result_fraud_item_using_score(user, content)
+
+
+def _ubble_result_fraud_item_using_status(
+    user: users_models.User, content: fraud_models.UbbleContent
+) -> fraud_models.FraudItem:
+    detail = f"Ubble {content.status.name if content.status else ''}"
+    match content.status:
+        case ubble_serializers.UbbleIdentificationStatus.APPROVED:
+            id_provider_detected_eligibility = subscription_api.get_id_provider_detected_eligibility(user, content)
+            if id_provider_detected_eligibility:
+                return fraud_models.FraudItem(status=fraud_models.FraudStatus.OK, detail=detail, reason_codes=[])
+            return _ubble_not_eligible_fraud_item(user, content)
+        case (
+            ubble_serializers.UbbleIdentificationStatus.RETRY_REQUIRED
+            | ubble_serializers.UbbleIdentificationStatus.DECLINED
+        ):
+            status = fraud_models.FraudStatus.SUSPICIOUS
+        case _:
+            raise ValueError(f"unhandled Ubble status {content.status} for identification {content.identification_id}")
+
+    reason_codes = content.reason_codes or []
+    ubble_error_messages = [ubble_errors.UBBLE_CODE_ERROR_MAPPING.get(reason_code) for reason_code in reason_codes]
+    reason_code_details = [
+        ubble_error.detail_message for ubble_error in ubble_error_messages if ubble_error is not None
+    ]
+    if reason_code_details:
+        detail += ": " + " | ".join(reason_code_details)
+    return fraud_models.FraudItem(status=status, detail=detail, reason_codes=reason_codes)
+
+
+def _ubble_result_fraud_item_using_score(
+    user: users_models.User, content: fraud_models.UbbleContent
+) -> fraud_models.FraudItem:
     status = None
     reason_codes = set(content.reason_codes or [])
     detail = f"Ubble score {_ubble_readable_score(content.score)}: {content.comment}"
@@ -47,17 +84,7 @@ def _ubble_result_fraud_item(user: users_models.User, content: fraud_models.Ubbl
         if id_provider_detected_eligibility:
             status = fraud_models.FraudStatus.OK
         else:
-            status = fraud_models.FraudStatus.KO
-            birth_date = content.get_birth_date()
-            registration_datetime = content.get_registration_datetime()
-            assert birth_date and registration_datetime  # helps mypy next line
-            age = users_utils.get_age_at_date(birth_date, registration_datetime)
-            if age < min(users_constants.ELIGIBILITY_UNDERAGE_RANGE):
-                reason_codes.add(fraud_models.FraudReasonCode.AGE_TOO_YOUNG)
-                detail = _ubble_message_from_code(fraud_models.FraudReasonCode.AGE_TOO_YOUNG).format(age=age)
-            elif age > users_constants.ELIGIBILITY_AGE_18:
-                reason_codes.add(fraud_models.FraudReasonCode.AGE_TOO_OLD)
-                detail = _ubble_message_from_code(fraud_models.FraudReasonCode.AGE_TOO_OLD).format(age=age)
+            return _ubble_not_eligible_fraud_item(user, content)
     elif content.score == ubble_serializers.UbbleScore.INVALID.value:
         for score, reason_code in [
             (content.reference_data_check_score, fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH),
@@ -91,6 +118,26 @@ def _ubble_result_fraud_item(user: users_models.User, content: fraud_models.Ubbl
         reason_codes.add(fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER)
 
     return fraud_models.FraudItem(status=status, detail=detail, reason_codes=list(reason_codes))
+
+
+def _ubble_not_eligible_fraud_item(
+    user: users_models.User, content: fraud_models.UbbleContent
+) -> fraud_models.FraudItem:
+    detail = ""
+    reason_codes = []
+
+    birth_date = content.get_birth_date()
+    registration_datetime = content.get_registration_datetime()
+    assert birth_date and registration_datetime  # helps mypy
+    age = users_utils.get_age_at_date(birth_date, registration_datetime)
+    if age < min(users_constants.ELIGIBILITY_UNDERAGE_RANGE):
+        reason_codes.append(fraud_models.FraudReasonCode.AGE_TOO_YOUNG)
+        detail = _ubble_message_from_code(fraud_models.FraudReasonCode.AGE_TOO_YOUNG).format(age=age)
+    elif age > users_constants.ELIGIBILITY_AGE_18:
+        reason_codes.append(fraud_models.FraudReasonCode.AGE_TOO_OLD)
+        detail = _ubble_message_from_code(fraud_models.FraudReasonCode.AGE_TOO_OLD).format(age=age)
+
+    return fraud_models.FraudItem(status=fraud_models.FraudStatus.KO, detail=detail, reason_codes=reason_codes)
 
 
 def ubble_fraud_checks(user: users_models.User, content: fraud_models.UbbleContent) -> list[fraud_models.FraudItem]:
