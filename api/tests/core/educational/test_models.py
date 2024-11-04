@@ -304,13 +304,14 @@ class CollectiveOfferIsArchiveTest:
 
         assert offer.isArchived == False
 
+        offer.isActive = False
         offer.dateArchived = datetime.datetime.utcnow()
 
         assert offer.isArchived == True
         assert offer.status == CollectiveOfferStatus.ARCHIVED.value
 
     def test_query_is_archived(self) -> None:
-        offer_archived = factories.CollectiveOfferFactory(dateArchived=datetime.datetime.utcnow())
+        offer_archived = factories.CollectiveOfferFactory(isActive=False, dateArchived=datetime.datetime.utcnow())
         offer_not_archived = factories.CollectiveOfferFactory(dateArchived=None)
 
         results = db.session.query(CollectiveOffer.id).filter(CollectiveOffer.isArchived).all()
@@ -321,7 +322,7 @@ class CollectiveOfferIsArchiveTest:
         assert offer_not_archived.id not in results_ids
 
     def test_query_status_for_archived(self) -> None:
-        offer_archived = factories.CollectiveOfferFactory(dateArchived=datetime.datetime.utcnow())
+        offer_archived = factories.CollectiveOfferFactory(isActive=False, dateArchived=datetime.datetime.utcnow())
         offer_not_archived = factories.CollectiveOfferFactory(dateArchived=None)
 
         results = db.session.query(CollectiveOffer.id, CollectiveOffer.status).all()

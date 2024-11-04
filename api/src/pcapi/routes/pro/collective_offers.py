@@ -416,9 +416,9 @@ def patch_collective_offers_archive(
     collective_query = educational_api_offer.get_query_for_collective_offers_by_ids_for_user(current_user, body.ids)
 
     if educational_api_offer.query_has_any_archived(collective_query):
-        raise ApiErrors({"global": ["One of the offer is already archived"]}, status_code=422)
+        raise ApiErrors({"global": ["One of the offers is already archived"]}, status_code=422)
 
-    offers_api.batch_update_collective_offers(collective_query, {"dateArchived": datetime.utcnow()})
+    offers_api.batch_update_collective_offers(collective_query, {"isActive": False, "dateArchived": datetime.utcnow()})
 
 
 @private_api.route("/collective/offers-template/active-status", methods=["PATCH"])
@@ -454,7 +454,9 @@ def patch_collective_offers_template_archive(
     collective_template_query = educational_api_offer.get_query_for_collective_offers_template_by_ids_for_user(
         current_user, body.ids
     )
-    offers_api.batch_update_collective_offers_template(collective_template_query, {"dateArchived": datetime.utcnow()})
+    offers_api.batch_update_collective_offers_template(
+        collective_template_query, {"isActive": False, "dateArchived": datetime.utcnow()}
+    )
 
 
 @private_api.route("/collective/offers/<int:offer_id>/educational_institution", methods=["PATCH"])
