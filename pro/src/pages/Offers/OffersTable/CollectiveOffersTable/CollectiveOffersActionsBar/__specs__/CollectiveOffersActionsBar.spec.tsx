@@ -5,6 +5,7 @@ import { api } from 'apiClient/api'
 import {
   CollectiveBookingStatus,
   CollectiveOfferAllowedAction,
+  CollectiveOfferDisplayedStatus,
   CollectiveOfferStatus,
   CollectiveOffersStockResponseModel,
 } from 'apiClient/v1'
@@ -429,7 +430,10 @@ describe('ActionsBar', () => {
       Events.CLICKED_ARCHIVE_COLLECTIVE_OFFER,
       {
         from: '/offres/collectives',
-        selected_offers: ['1', '2'],
+        selected_offers: [
+          { offerId: '1', offerStatus: CollectiveOfferDisplayedStatus.ACTIVE },
+          { offerId: '2', offerStatus: CollectiveOfferDisplayedStatus.ACTIVE },
+        ],
       }
     )
   })
