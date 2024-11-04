@@ -3,13 +3,10 @@ import React, { useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { OldLayout } from 'app/App/layout/OldLayout'
+import { Layout } from 'app/App/layout/Layout'
 import { useRedirectLoggedUser } from 'commons/hooks/useRedirectLoggedUser'
 import { parse } from 'commons/utils/query-string'
-import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
-import logoStyles from 'styles/components/_Logo.module.scss'
 import { Hero } from 'ui-kit/Hero/Hero'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { ChangePasswordForm } from './ChangePasswordForm/ChangePasswordForm'
 import styles from './ResetPassword.module.scss'
@@ -41,17 +38,8 @@ export const ResetPassword = (): JSX.Element => {
   })
 
   return (
-    <OldLayout>
-      <header className={styles['logo-side']}>
-        <SvgIcon
-          className={logoStyles['logo-unlogged']}
-          viewBox="0 0 282 120"
-          alt="Pass Culture pro, l’espace des acteurs culturels"
-          src={logoPassCultureProFullIcon}
-          width="135"
-        />
-      </header>
-      <div className={styles['content']}>
+    <Layout layout="logged-out">
+      <div>
         {passwordChanged && !isBadToken && (
           <Hero
             linkLabel="Se connecter"
@@ -79,7 +67,7 @@ export const ResetPassword = (): JSX.Element => {
           </section>
         )}
       </div>
-    </OldLayout>
+    </Layout>
   )
 }
 

@@ -1,8 +1,5 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
-@use "styles/variables/_forms.scss" as forms;
-@use "styles/variables/_size.scss" as size;
-@use "styles/mixins/_layout.scss" as layout;
 
 .sign-up-unavailable-section {
   height: 100%;
@@ -10,10 +7,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.content {
-  @include layout.full-content-side;
 }
 
 .title {

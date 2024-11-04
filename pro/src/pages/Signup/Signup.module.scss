@@ -1,6 +1,0 @@
-@use "styles/mixins/_layout.scss" as layout;
-@use "styles/variables/_size.scss" as size;
-
-.logo-side {
-  @include layout.logo-side;
-}

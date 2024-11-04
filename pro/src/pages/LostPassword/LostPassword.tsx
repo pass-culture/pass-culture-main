@@ -2,7 +2,7 @@ import { Formik } from 'formik'
 import { useState } from 'react'
 
 import { api } from 'apiClient/api'
-import { OldLayout } from 'app/App/layout/OldLayout'
+import { Layout } from 'app/App/layout/Layout'
 import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
@@ -11,13 +11,9 @@ import { useInitReCaptcha } from 'commons/hooks/useInitReCaptcha'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useRedirectLoggedUser } from 'commons/hooks/useRedirectLoggedUser'
 import { getReCaptchaToken } from 'commons/utils/recaptcha'
-import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
-import logoStyles from 'styles/components/_Logo.module.scss'
 import { Hero } from 'ui-kit/Hero/Hero'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { ChangePasswordRequestForm } from './ChangePasswordRequestForm/ChangePasswordRequestForm'
-import styles from './LostPassword.module.scss'
 import { validationSchema } from './validationSchema'
 
 type FormValues = { email: string }
@@ -44,35 +40,24 @@ export const LostPassword = (): JSX.Element => {
   }
 
   return (
-    <OldLayout>
-      <header className={styles['logo-side']}>
-        <SvgIcon
-          className={logoStyles['logo-unlogged']}
-          viewBox="0 0 282 120"
-          alt="Pass Culture pro, l’espace des acteurs culturels"
-          src={logoPassCultureProFullIcon}
-          width="135"
+    <Layout layout="logged-out">
+      {mailSent ? (
+        <Hero
+          linkLabel="Retourner sur la page de connexion"
+          linkTo="/"
+          text="Vous allez recevoir par email les instructions pour définir un nouveau mot de passe."
+          title="Merci !"
         />
-      </header>
-      <div className={styles['content']}>
-        {mailSent ? (
-          <Hero
-            linkLabel="Retourner sur la page de connexion"
-            linkTo="/"
-            text="Vous allez recevoir par email les instructions pour définir un nouveau mot de passe."
-            title="Merci !"
-          />
-        ) : (
-          <Formik
-            initialValues={{ email: '' }}
-            onSubmit={submitChangePasswordRequest}
-            validationSchema={validationSchema}
-          >
-            <ChangePasswordRequestForm />
-          </Formik>
-        )}
-      </div>
-    </OldLayout>
+      ) : (
+        <Formik
+          initialValues={{ email: '' }}
+          onSubmit={submitChangePasswordRequest}
+          validationSchema={validationSchema}
+        >
+          <ChangePasswordRequestForm />
+        </Formik>
+      )}
+    </Layout>
   )
 }
 

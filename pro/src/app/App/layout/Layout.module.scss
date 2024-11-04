@@ -45,6 +45,37 @@ $connect-as-header-height: rem.torem(52px);
   width: 100%;
   overflow-y: auto;
   background-color: var(--color-white);
+
+  &-side {
+    @media (min-width: size.$tablet) {
+      flex-direction: row;
+    }
+
+    &-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: rem.torem(120px);
+      background-image: linear-gradient(
+          97deg,
+          var(--color-primary),
+          var(--color-secondary)
+      );
+
+      @media (min-width: size.$tablet) {
+        min-width: rem.torem(202px);
+        width: size.$side-logo-width;
+        min-height: 100vh;
+        box-shadow: inset rem.torem(-10px) 0 rem.torem(20px) 0
+        var(--color-large-shadow);
+        max-width: size.$logo-side-width;
+        position: sticky;
+        height: 100vh;
+        top: 0;
+      }
+    }
+  }
 }
 
 .content-container {
@@ -64,6 +95,10 @@ $connect-as-header-height: rem.torem(52px);
     background-color: var(--color-white);
     padding: 0;
   }
+
+  &-logged-out {
+    padding: 0;
+  }
 }
 
 .content {
@@ -71,6 +106,24 @@ $connect-as-header-height: rem.torem(52px);
   max-width: 100%;
   border: none;
   margin: 0;
+
+  &-logged-out {
+    padding: rem.torem(24px);
+    margin: auto;
+    min-height: calc(100vh - #{size.$footer-height});
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    @media (min-width: size.$tablet) {
+      min-width: size.$full-content-min-width;
+      max-width: size.$full-content-max-width;
+    }
+
+    &-with-heading {
+      min-height: calc(100vh - #{size.$footer-height} - rem.torem(32px) - var(--typography-title1-line-height));
+    }
+  }
 }
 
 .connect-as {

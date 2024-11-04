@@ -11,7 +11,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import styles from './Footer.module.scss'
 
 type FooterProps = {
-  layout?: 'basic' | 'funnel' | 'without-nav' | 'sticky-actions'
+  layout?: 'basic' | 'funnel' | 'sticky-actions' | 'logged-out'
 }
 export const Footer = ({ layout }: FooterProps) => {
   const currentUser = useSelector(selectCurrentUser)

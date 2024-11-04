@@ -2,21 +2,12 @@
 @use "styles/variables/_size.scss" as size;
 @use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 @use "styles/variables/_forms.scss" as forms;
-@use "styles/mixins/_layout.scss" as layout;
 
 .title {
   @include fonts-design-system.title1;
 }
 
 .content {
-  margin-bottom: size.$footer-height;
-
-  @include layout.full-content-side;
-
-  @media (min-width: size.$tablet) {
-    margin-top: size.$top-menu-height;
-  }
-
   .siren-field {
     margin-bottom: rem.torem(16px);
   }
@@ -48,9 +39,4 @@
 
 .mandatory {
   margin: rem.torem(24px) 0;
-}
-
-.cookie-footer {
-  margin-top: rem.torem(32px);
-  padding: 0 rem.torem(24px);
 }
