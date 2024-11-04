@@ -4,6 +4,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.repository.clean_database import clean_all_database
 from pcapi.routes.apis import private_api
 from pcapi.sandboxes.scripts import getters
+import pcapi.core.mails.testing as mails_testing
 
 
 @private_api.route("/sandboxes/<module_name>/<getter_name>", methods=["GET"])
@@ -37,3 +38,11 @@ def get_sandbox(module_name, getter_name):  # type: ignore [no-untyped-def]
             ),
         )
         raise errors
+
+
+@private_api.route("/sandboxes/get_latest_email", methods=["GET"])
+def get_latest_email():
+    # This endpoint must only be used with EMAIL_BACKEND set to `pcapi.core.mails.backends.testing.TestingBackend`
+    # otherwise the outbox will be empty
+    # This endpoint is only available if ENABLE_TEST_ROUTES is set to 1
+    return mails_testing.outbox.pop(-1)
