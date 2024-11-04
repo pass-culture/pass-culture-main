@@ -313,6 +313,7 @@ export const CollectiveOfferNavigation = ({
                   offererId: selectedOffererId?.toString(),
                   offerId,
                   offerType: 'collective',
+                  offerStatus: offer?.displayedStatus,
                 })
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 createOfferFromTemplate(

@@ -120,6 +120,7 @@ export const CollectiveActionsCells = ({
       offererId: selectedOffererId?.toString(),
       offerId: offer.id,
       offerType: 'collective',
+      offerStatus: offer.displayedStatus,
     })
     if (shouldNotDisplayModalAgain && isLocalStorageAvailable) {
       localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY, 'true')
@@ -141,6 +142,7 @@ export const CollectiveActionsCells = ({
           offererId: selectedOffererId?.toString(),
           offerId: offer.id,
           offerType: 'collective',
+          offerStatus: offer.displayedStatus,
         })
         await createOfferFromTemplate(
           navigate,
