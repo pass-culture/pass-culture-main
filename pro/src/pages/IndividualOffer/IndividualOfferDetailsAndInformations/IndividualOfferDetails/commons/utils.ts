@@ -370,6 +370,7 @@ export function serializeDetailsPostData(
     durationMinutes: serializeDurationMinutes(formValues.durationMinutes ?? ''),
     extraData: serializeExtraData(formValues),
     productId: formValues.productId ? Number(formValues.productId) : undefined,
+    callId: formValues.callId,
   })
 }
 

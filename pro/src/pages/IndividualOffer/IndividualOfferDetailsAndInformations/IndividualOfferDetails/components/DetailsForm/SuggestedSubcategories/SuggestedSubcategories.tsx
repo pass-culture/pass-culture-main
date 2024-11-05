@@ -1,7 +1,11 @@
 import { useFormikContext } from 'formik'
 import { useEffect, useState } from 'react'
 
-import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
+import {
+  CategoryResponseModel,
+  SubcategoryResponseModel,
+  SuggestedSubcategoriesResponseModel,
+} from 'apiClient/v1'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { DEFAULT_DETAILS_FORM_VALUES } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferDetails/commons/constants'
@@ -20,7 +24,7 @@ import styles from './SuggestedSubcategories.module.scss'
 
 export type SuggestedSubcategoriesProps = {
   hasApiBeenCalled: boolean
-  suggestedSubcategories: string[]
+  suggestedSubcategories: SuggestedSubcategoriesResponseModel['subcategoryIds']
   readOnlyFields: string[]
   filteredCategories: CategoryResponseModel[]
   filteredSubcategories: SubcategoryResponseModel[]

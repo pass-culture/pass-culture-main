@@ -18,6 +18,7 @@ export type DetailsFormValues = {
   subcategoryConditionalFields: string[]
   suggestedSubcategory: string
   productId: string
+  callId?: string
 }
 
 export type Product = {

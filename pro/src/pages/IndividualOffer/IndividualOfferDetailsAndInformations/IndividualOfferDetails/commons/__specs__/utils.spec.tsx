@@ -202,6 +202,7 @@ describe('setDefaultInitialValues', () => {
       venueId: '',
       visa: '',
       productId: '',
+      callId: '',
     })
 
     expect(
@@ -247,6 +248,7 @@ describe('setDefaultInitialValuesFromOffer', () => {
       venueId: '6',
       visa: 'USA',
       productId: '',
+      callId: '',
     })
   })
 })
@@ -425,6 +427,7 @@ describe('serializeDetailsPostData', () => {
       subcategoryConditionalFields: [],
       suggestedSubcategory: '',
       productId: '',
+      callId: '1',
     }
 
     expect(serializeDetailsPostData(formValues)).toStrictEqual({
@@ -445,6 +448,7 @@ describe('serializeDetailsPostData', () => {
         ean: 'any ean',
       },
       productId: undefined,
+      callId: '1',
     })
   })
 })
