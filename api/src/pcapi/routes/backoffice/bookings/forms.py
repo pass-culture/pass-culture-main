@@ -181,6 +181,11 @@ class GetIndividualBookingListForm(BaseBookingListForm):
         default=DEPOSIT_DEFAULT_VALUE,
         validators=(wtforms.validators.Optional(),),
     )
+    is_duo = fields.PCSelectMultipleField(
+        "Réservation Duo",
+        choices=((1, "solo"), (2, "duo")),
+        coerce=int,
+    )
 
     def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
         super().__init__(*args, **kwargs)
@@ -195,6 +200,7 @@ class GetIndividualBookingListForm(BaseBookingListForm):
         self._fields.move_to_end("status")
         self._fields.move_to_end("cancellation_reason")
         self._fields.move_to_end("cashflow_batches")
+        self._fields.move_to_end("is_duo")
 
     def is_empty(self) -> bool:
         return (
@@ -202,6 +208,7 @@ class GetIndividualBookingListForm(BaseBookingListForm):
             and not self.category.data
             and not self.cancellation_reason.data
             and (not self.deposit.data or self.deposit.data == DEPOSIT_DEFAULT_VALUE)
+            and len(self.is_duo.data) != 1
         )
 
     @property

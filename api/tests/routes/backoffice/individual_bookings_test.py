@@ -674,6 +674,15 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert "Total payé par l'utilisateur : 150,00 € (17900 CFP)" in reimbursement_data
         assert "Montant remboursé : 150,00 € (17900 CFP)" in reimbursement_data
 
+    @pytest.mark.parametrize("quantity", [1, 2])
+    def test_display_duo_bookings(self, authenticated_client, bookings, quantity):
+        with assert_no_duplicated_queries():
+            response = authenticated_client.get(url_for(self.endpoint, is_duo=[quantity]))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert {int(r["ID résa"]) for r in rows} == {b.id for b in bookings if b.quantity == quantity}
+
 
 class MarkBookingAsUsedTest(PostEndpointHelper):
     endpoint = "backoffice_web.individual_bookings.mark_booking_as_used"

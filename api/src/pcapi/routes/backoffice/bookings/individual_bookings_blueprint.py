@@ -116,6 +116,9 @@ def _get_individual_bookings(
         elif form.deposit.data == "expired":
             base_query = base_query.filter(finance_models.Deposit.expirationDate <= sa.func.now())
 
+    if len(form.is_duo.data) == 1:
+        base_query = base_query.filter(bookings_models.Booking.quantity == form.is_duo.data[0])
+
     or_filters = []
     if form.q.data:
         search_query = form.q.data

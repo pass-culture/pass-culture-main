@@ -209,7 +209,7 @@
                 <td>{{ links.build_public_user_name_to_details_link(booking.user) }}</td>
                 <td>{{ links.build_offer_name_to_pc_pro_link(offer) }}</td>
                 <td>{{ links.build_offer_name_to_details_link(offer, text_attr="id") }}</td>
-                <td>{{ (offer.isDuo and booking.quantity == 2) | format_bool }}</td>
+                <td>{{ (booking.quantity == 2) | format_bool }}</td>
                 <td>{{ booking.stock.quantity }}</td>
                 <td>{{ booking.total_amount | format_amount(target=booking.user) }}</td>
                 <td>{{ booking | format_booking_status(with_badge=True) | safe }}</td>

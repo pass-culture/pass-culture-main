@@ -70,6 +70,7 @@ def _create_offers(provider: Provider) -> Venue:
                 venue=venue,
                 subcategoryId=subcategories.SEANCE_CINE.id,
                 lastProvider=provider,
+                isDuo=True,
             )
             stock_duo = CinemaStockProviderFactory(offer=offer_duo)
             booking_duo = BookingFactory(quantity=2, stock=stock_duo, user=user_bene)
