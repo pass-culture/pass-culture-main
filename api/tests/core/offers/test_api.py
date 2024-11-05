@@ -3634,6 +3634,13 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
             log_extra={"sold_out": True},
         )
 
+    @patch("pcapi.core.offers.api.external_bookings_api.get_active_cinema_venue_provider")
+    def test_should_not_deactivate_manual_offers(self, mocked_get_active_cinema_venue_provider):
+        offer = factories.EventOfferFactory()
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
+        mocked_get_active_cinema_venue_provider.assert_not_called()
+        assert offer.isActive
+
 
 @pytest.mark.usefixtures("db_session")
 class ApproveProductAndRejectedOffersTest:
