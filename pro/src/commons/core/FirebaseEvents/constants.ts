@@ -34,6 +34,7 @@ export enum Events {
   CLICKED_STATS = 'hasClickedOffererStats',
   CLICKED_TICKET = 'hasClickedTicket',
   CLICKED_DUPLICATE_TEMPLATE_OFFER = 'hasClickedDuplicateTemplateOffer',
+  CLICKED_DUPLICATE_BOOKABLE_OFFER = 'hasClickedDuplicateBookableOffer',
   CLICKED_BEST_PRACTICES_STUDIES = 'hasClickedBestPracticesAndStudies',
   CLICKED_HELP_LINK = 'hasClickedHelpLink',
   CLICKED_RESET_FILTERS = 'hasClickedResetFilter',

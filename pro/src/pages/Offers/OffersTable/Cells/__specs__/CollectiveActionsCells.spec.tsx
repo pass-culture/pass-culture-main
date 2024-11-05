@@ -4,7 +4,16 @@ import { beforeEach, expect } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 
 import { api } from 'apiClient/api'
-import { CollectiveOfferStatus, OfferAddressType } from 'apiClient/v1'
+import {
+  CollectiveOfferDisplayedStatus,
+  CollectiveOfferStatus,
+  OfferAddressType,
+} from 'apiClient/v1'
+import * as useAnalytics from 'app/App/analytics/firebase'
+import {
+  COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
+  Events,
+} from 'commons/core/FirebaseEvents/constants'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'commons/core/Offers/constants'
 import * as useNotification from 'commons/hooks/useNotification'
 import {
@@ -32,6 +41,8 @@ vi.mock('react-router-dom', async () => {
     default: vi.fn(),
   }
 })
+
+const mockLogEvent = vi.fn()
 
 const mockDeselectOffer = vi.fn()
 const notifyError = vi.fn()
@@ -82,6 +93,9 @@ describe('CollectiveActionsCells', () => {
       ...notifsImport,
       error: notifyError,
       success: vi.fn(),
+    }))
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
     }))
   })
 
@@ -192,6 +206,7 @@ describe('CollectiveActionsCells', () => {
 
     expect(screen.getByText('Dupliquer')).toBeInTheDocument()
   })
+
   describe('CollectiveActionsCells:Duplicate', () => {
     beforeEach(() => {
       vi.spyOn(api, 'listEducationalOfferers').mockResolvedValueOnce({
@@ -245,6 +260,35 @@ describe('CollectiveActionsCells', () => {
       })
       expect(mockNavigate).toHaveBeenCalledWith(
         '/offre/collectif/201/creation?structure=1'
+      )
+    })
+
+    it('should log event when duplicating a bookable offer', async () => {
+      vi.spyOn(api, 'getCollectiveOffer').mockResolvedValueOnce(
+        getCollectiveOfferFactory({
+          imageUrl: 'https://http.cat/201',
+          imageCredit: 'chats',
+        })
+      )
+
+      renderCollectiveActionsCell({
+        offer: collectiveOfferFactory({
+          id: 200,
+        }),
+      })
+
+      await userEvent.click(screen.getByTitle('Action'))
+      await userEvent.click(screen.getByText('Dupliquer'))
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        1,
+        Events.CLICKED_DUPLICATE_BOOKABLE_OFFER,
+        {
+          from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFERS,
+          offerId: 200,
+          offerStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+          offerType: 'collective',
+        }
       )
     })
 
@@ -304,7 +348,7 @@ describe('CollectiveActionsCells', () => {
         thumb: expect.anything(),
       })
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offre/collectif/202/creation?structure=3'
+        '/offre/collectif/202/creation?structure=4'
       )
     })
   })

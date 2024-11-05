@@ -307,7 +307,7 @@ describe('CollectiveOfferNavigation', () => {
     )
   })
 
-  it('should log event when clicking duplicate offer button', async () => {
+  it('should log event when clicking "Créer une offre réservable" button', async () => {
     renderCollectiveOfferNavigation({
       ...props,
       isTemplate: true,
@@ -322,6 +322,30 @@ describe('CollectiveOfferNavigation', () => {
     expect(mockLogEvent).toHaveBeenNthCalledWith(
       1,
       Events.CLICKED_DUPLICATE_TEMPLATE_OFFER,
+      {
+        from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFER_RECAP,
+        offererId: '1',
+        offerId: 1,
+        offerType: 'collective',
+        offerStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+      }
+    )
+  })
+
+  it('should log event when clicking "Dupliquer" button', async () => {
+    renderCollectiveOfferNavigation({
+      ...props,
+      isCreatingOffer: false,
+    })
+
+    const duplicateOffer = screen.getByRole('button', {
+      name: 'Dupliquer',
+    })
+    await userEvent.click(duplicateOffer)
+
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_DUPLICATE_BOOKABLE_OFFER,
       {
         from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFER_RECAP,
         offererId: '1',
