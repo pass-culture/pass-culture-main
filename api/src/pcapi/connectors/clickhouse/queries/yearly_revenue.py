@@ -4,7 +4,7 @@ import json
 import pydantic.v1 as pydantic_v1
 
 from pcapi.connectors.clickhouse.queries.base import BaseQuery
-from pcapi.serialization.utils import to_camel
+from pcapi.routes.serialization.offers_serialize import to_camel
 
 
 class Revenue(pydantic_v1.BaseModel):
@@ -18,7 +18,7 @@ class Revenue(pydantic_v1.BaseModel):
 
 class AggregatedRevenue(pydantic_v1.BaseModel):
     revenue: Revenue
-    expected_revenue: Revenue | None
+    expected_revenue: Revenue
 
     class Config:
         extra = "forbid"
@@ -26,13 +26,17 @@ class AggregatedRevenue(pydantic_v1.BaseModel):
 
 
 class YearlyAggregatedRevenueModel(pydantic_v1.BaseModel):
-    income_by_year: dict[str, AggregatedRevenue]
+    income_by_year: dict[str, AggregatedRevenue | dict]
+
+    class Config:
+        extra = "forbid"
+        alias_generator = to_camel
 
 
-class YearlyAggregatedRevenueQuery(BaseQuery):
+class YearlyAggregatedRevenueQuery(BaseQuery[YearlyAggregatedRevenueModel]):
     def _format_result(self, results: list) -> dict:
         return {
-            "income_by_year": {
+            "incomeByYear": {
                 result.year: {
                     "revenue": json.loads(result.revenue),
                     "expectedRevenue": json.loads(result.expected_revenue),
@@ -62,4 +66,6 @@ class YearlyAggregatedRevenueQuery(BaseQuery):
             ORDER BY year
         """
 
-    model = YearlyAggregatedRevenueModel
+    @property
+    def model(self) -> type[YearlyAggregatedRevenueModel]:
+        return YearlyAggregatedRevenueModel

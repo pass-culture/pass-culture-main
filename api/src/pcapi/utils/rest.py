@@ -11,3 +11,13 @@ def check_user_has_access_to_offerer(user: User, offerer_id: int) -> None:
             },
             status_code=403,
         )
+
+
+def check_user_has_access_to_venues(user: User, venue_ids: list[int]) -> None:
+    if not users_repository.has_access_to_venues(user, venue_ids):
+        raise ApiErrors(
+            errors={
+                "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."],
+            },
+            status_code=403,
+        )

@@ -6,6 +6,7 @@ import typing
 from dateutil.relativedelta import relativedelta
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
+from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.functions import func
 
 import pcapi.core.offerers.models as offerers_models
@@ -85,6 +86,31 @@ def has_access(user: models.User, offerer_id: int) -> bool:
             offerers_models.UserOfferer.isValidated,
         ).exists()
     ).scalar()
+
+
+def has_access_to_venues(user: models.User, venue_ids: list[int]) -> bool:
+    """Return whether the user has access to the requested venues' data."""
+    query = offerers_models.UserOfferer.query
+    query = query.options(
+        joinedload(offerers_models.UserOfferer).load_only(
+            offerers_models.UserOfferer.offererId,
+            offerers_models.UserOfferer.userId,
+            offerers_models.UserOfferer.isValidated,
+        )
+    )
+    query = query.options(
+        joinedload(offerers_models.Venue).load_only(offerers_models.Venue.id, offerers_models.Venue.managingOffererId)
+    )
+    filters = [
+        offerers_models.UserOfferer.offererId == offerers_models.Venue.managingOffererId,
+        offerers_models.UserOfferer.userId == user.id,
+        offerers_models.UserOfferer.isValidated,
+        offerers_models.Venue.id.in_(venue_ids),
+    ]
+
+    query = db.session.query(query.filter(*filters).exists()).scalar()
+
+    return query
 
 
 def get_newly_eligible_age_18_users(since: date) -> list[models.User]:

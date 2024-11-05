@@ -1,3 +1,4 @@
+from collections.abc import Mapping
 import typing
 
 import pydantic.v1 as pydantic_v1
@@ -5,7 +6,10 @@ import pydantic.v1 as pydantic_v1
 import pcapi.connectors.clickhouse as clickhouse_connector
 
 
-class BaseQuery:
+ModelType = typing.TypeVar("ModelType", bound=pydantic_v1.BaseModel)
+
+
+class BaseQuery(typing.Generic[ModelType]):
     def __init__(self) -> None:
         self.backend = clickhouse_connector.get_backend()
 
@@ -20,10 +24,10 @@ class BaseQuery:
         raise NotImplementedError()
 
     @property
-    def model(self) -> type[pydantic_v1.BaseModel]:
+    def model(self) -> type[ModelType]:
         raise NotImplementedError()
 
-    def execute(self, params: typing.Tuple) -> pydantic_v1.BaseModel:
+    def execute(self, params: typing.Tuple) -> ModelType:
         rows = self._get_rows(params)
-        results_dict = self._format_result(rows)
-        return self.model(**results_dict)
+        results = self._format_result(rows)
+        return self.model(**typing.cast(Mapping, results))
