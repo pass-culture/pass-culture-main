@@ -9,7 +9,7 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { computeInitialValuesFromOffer } from './computeInitialValuesFromOffer'
 import { postCollectiveOfferImage } from './postCollectiveOfferImage'
 
-export const createOfferFromBookableOffer = async (
+export const duplicateBookableOffer = async (
   navigate: ReturnType<typeof useNavigate>,
   notify: ReturnType<typeof useNotification>,
   offerId: number
