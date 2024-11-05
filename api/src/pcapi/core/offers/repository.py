@@ -962,6 +962,13 @@ def _find_today_event_stock_ids_filter_by_departments(
     else:
         query = base_query.join(offerers_models.Venue).filter(departments_filter).with_entities(models.Stock.id)
 
+    # add stocks with a virtual Venue with an address in the departement filter to the query
+    query = query.union(
+        base_query.join(offerers_models.Venue)
+        .filter(offerers_models.Venue.isVirtual == True)
+        .with_entities(models.Stock.id)
+    )
+
     return {stock.id for stock in query}
 
 

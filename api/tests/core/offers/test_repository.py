@@ -1191,6 +1191,26 @@ class IncomingEventStocksTest:
 
         assert set(stock_ids) == {self.stock_today.id}
 
+    @time_machine.travel("2024-10-15 15:00:00")
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def test_find_today_digital_stock_ids_by_departments_with_address_different_than_the_venue(self):
+        self.setup_stocks()
+
+        # add digital offer
+        today = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+        offer = factories.OfferFactory(venue__departementCode="97", venue__postalCode="97180")
+        digital_stock = factories.StockWithActivationCodesFactory(beginningDatetime=today, offer=offer)
+        bookings_factories.BookingFactory(stock=digital_stock)
+
+        today_min = datetime.datetime(2024, 10, 15, 8, 00)
+        today_max = datetime.datetime(2024, 10, 15, 19, 00)
+
+        departments_prefixes = ["75"]
+
+        stock_ids = repository.find_today_event_stock_ids_from_departments(today_min, today_max, departments_prefixes)
+
+        assert set(stock_ids) == {self.stock_today.id, digital_stock.id}
+
 
 @pytest.mark.usefixtures("db_session")
 class GetExpiredOffersTest:
