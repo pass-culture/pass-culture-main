@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { Formik } from 'formik'
 import React from 'react'
 
@@ -8,6 +8,7 @@ import {
   getOfferManagingOffererFactory,
   getOfferVenueFactory,
 } from 'commons/utils/factories/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {
   EVENT_ADDRESS_OTHER_ADDRESS_LABEL,
@@ -25,7 +26,7 @@ const renderFormPracticalInformation = (
     'eventAddress' | 'priceDetail' | 'interventionArea'
   >
 ) => {
-  render(
+  renderWithProviders(
     <Formik initialValues={initialValues} onSubmit={() => {}}>
       <FormPracticalInformation {...props} />
     </Formik>

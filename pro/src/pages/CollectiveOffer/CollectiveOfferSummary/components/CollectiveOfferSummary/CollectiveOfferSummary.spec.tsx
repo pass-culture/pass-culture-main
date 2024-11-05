@@ -1,4 +1,5 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import { expect } from 'vitest'
 
 import { EacFormat, OfferContactFormEnum } from 'apiClient/v1'
 import {
@@ -6,13 +7,13 @@ import {
   getCollectiveOfferTemplateFactory,
 } from 'commons/utils/factories/collectiveApiFactories'
 import {
-  RenderWithProvidersOptions,
   renderWithProviders,
+  RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
 
 import {
-  CollectiveOfferSummaryProps,
   CollectiveOfferSummary,
+  CollectiveOfferSummaryProps,
 } from './CollectiveOfferSummary'
 import { DEFAULT_RECAP_VALUE } from './components/constants'
 
@@ -155,5 +156,40 @@ describe('CollectiveOfferSummary', () => {
     expect(
       screen.queryByRole('link', { name: 'Modifier' })
     ).not.toBeInTheDocument()
+  })
+
+  describe('OA feature flag', () => {
+    it('should display the right wording without the OA FF', async () => {
+      renderCollectiveOfferSummary({ ...props, offerEditLink: undefined })
+
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+      expect(
+        screen.getByText('Lieu de rattachement de votre offre')
+      ).toBeInTheDocument()
+      const summaryList = screen.getByTestId(
+        'summary-description-list'
+      ).childNodes
+      expect(summaryList[0].textContent).toContain('Structure')
+      expect(summaryList[1].textContent).toContain('Lieu')
+    })
+
+    it('should display the right wording with the OA FF', async () => {
+      renderCollectiveOfferSummary(
+        { ...props, offerEditLink: undefined },
+        {
+          features: ['WIP_ENABLE_OFFER_ADDRESS'],
+        }
+      )
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+      expect(
+        screen.getByText('Structure de rattachement de votre offre')
+      ).toBeInTheDocument()
+      const summaryList = screen.getByTestId(
+        'summary-description-list'
+      ).childNodes
+      expect(summaryList[0].textContent).toContain('Entité juridique')
+      expect(summaryList[1].textContent).toContain('Structure')
+    })
   })
 })

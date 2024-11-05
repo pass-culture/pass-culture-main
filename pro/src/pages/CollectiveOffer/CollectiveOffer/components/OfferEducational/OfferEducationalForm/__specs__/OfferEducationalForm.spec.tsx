@@ -1,12 +1,16 @@
 import { screen, waitFor } from '@testing-library/react'
 import { Formik } from 'formik'
+import { describe, expect } from 'vitest'
 
 import { DEFAULT_EAC_FORM_VALUES } from 'commons/core/OfferEducational/constants'
 import {
   Mode,
   OfferEducationalFormValues,
 } from 'commons/core/OfferEducational/types'
-import { userOffererFactory } from 'commons/utils/factories/userOfferersFactories'
+import {
+  managedVenueFactory,
+  userOffererFactory,
+} from 'commons/utils/factories/userOfferersFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
@@ -39,7 +43,9 @@ const renderOfferEducationalForm = (
 }
 
 const defaultProps: OfferEducationalFormProps = {
-  userOfferer: userOffererFactory({}),
+  userOfferer: userOffererFactory({
+    managedVenues: [managedVenueFactory(), managedVenueFactory()],
+  }),
   mode: Mode.CREATION,
   domainsOptions: [],
   nationalPrograms: [],
@@ -129,5 +135,41 @@ describe('OfferEducationalForm', () => {
     expect(
       await screen.findByRole('button', { name: 'Enregistrer et continuer' })
     ).toBeInTheDocument()
+  })
+
+  describe('OA feature flag', () => {
+    it('should display the right wording without the OA FF', async () => {
+      renderOfferEducationalForm(defaultProps)
+      await waitFor(() => {
+        expect(screen.getByText('Enregistrer et continuer')).toBeEnabled()
+      })
+
+      expect(
+        screen.getAllByText('Sélectionner un lieu').length
+      ).toBeGreaterThan(0)
+      expect(
+        screen.getByText(
+          /Le lieu de rattachement permet d’associer votre compte/
+        )
+      ).toBeInTheDocument()
+    })
+
+    it('should display the right wording with the OA FF', async () => {
+      renderOfferEducationalForm(defaultProps, {
+        features: ['WIP_ENABLE_OFFER_ADDRESS'],
+      })
+      await waitFor(() => {
+        expect(screen.getByText('Enregistrer et continuer')).toBeInTheDocument()
+        expect(
+          screen.getAllByText(/Sélectionner une structure/).length
+        ).toBeGreaterThan(0)
+      })
+
+      expect(
+        screen.getByText(
+          /La structure de rattachement permet d’associer votre compte/
+        )
+      ).toBeInTheDocument()
+    })
   })
 })

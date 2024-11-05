@@ -59,6 +59,8 @@ export const CollectiveDataForm = ({
   >(null)
   const initialValues = extractInitialValuesFromVenue(venue)
 
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+
   const isMarseilleEnabled = useActiveFeature('WIP_ENABLE_MARSEILLE')
   const studentOptions = isMarseilleEnabled
     ? studentLevels
@@ -151,7 +153,13 @@ export const CollectiveDataForm = ({
                 </FormLayout.Row>
               </FormLayout.SubSection>
 
-              <FormLayout.SubSection title="Informations du lieu">
+              <FormLayout.SubSection
+                title={
+                  isOfferAddressEnabled
+                    ? 'Informations de la structure'
+                    : 'Informations du lieu'
+                }
+              >
                 <FormLayout.Row>
                   <SelectAutocomplete
                     multi
