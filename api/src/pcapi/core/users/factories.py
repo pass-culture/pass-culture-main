@@ -1031,23 +1031,23 @@ class UserEmailHistoryFactory(BaseFactory):
 
 
 class EmailUpdateEntryFactory(UserEmailHistoryFactory):
-    eventType = models.EmailHistoryEventTypeEnum.UPDATE_REQUEST.value
+    eventType = models.EmailHistoryEventTypeEnum.UPDATE_REQUEST
 
 
 class EmailConfirmationEntryFactory(UserEmailHistoryFactory):
-    eventType = models.EmailHistoryEventTypeEnum.CONFIRMATION.value
+    eventType = models.EmailHistoryEventTypeEnum.CONFIRMATION
 
 
 class NewEmailSelectionEntryFactory(UserEmailHistoryFactory):
-    eventType = models.EmailHistoryEventTypeEnum.NEW_EMAIL_SELECTION.value
+    eventType = models.EmailHistoryEventTypeEnum.NEW_EMAIL_SELECTION
 
 
 class EmailValidationEntryFactory(UserEmailHistoryFactory):
-    eventType = models.EmailHistoryEventTypeEnum.VALIDATION.value
+    eventType = models.EmailHistoryEventTypeEnum.VALIDATION
 
 
-class EmailAdminValidationEntryFactory(UserEmailHistoryFactory):
-    eventType = models.EmailHistoryEventTypeEnum.ADMIN_VALIDATION.value
+class EmailAdminUpdateEntryFactory(UserEmailHistoryFactory):
+    eventType = models.EmailHistoryEventTypeEnum.ADMIN_UPDATE
 
 
 class UserProFlagsFactory(BaseFactory):

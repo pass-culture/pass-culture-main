@@ -317,6 +317,15 @@ def render_public_account_details(
     if not user:
         raise NotFound()
 
+    has_changed_email = any(
+        email_event.eventType
+        not in (
+            users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST,
+            users_models.EmailHistoryEventTypeEnum.CANCELLATION,
+        )
+        for email_event in user.email_history
+    )
+
     domains_credit = (
         users_api.get_domains_credit(user, user_bookings=user.userBookings) if user.is_beneficiary else None
     )
@@ -421,6 +430,7 @@ def render_public_account_details(
         search_form=account_forms.AccountSearchForm(),  # values taken from request
         search_dst=url_for(".search_public_accounts"),
         user=user,
+        has_changed_email=has_changed_email,
         tunnel=tunnel,
         fraud_actions_desc=fraud_actions_desc,
         credit=domains_credit,
