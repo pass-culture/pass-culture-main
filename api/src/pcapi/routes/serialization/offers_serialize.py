@@ -557,6 +557,7 @@ class SuggestedSubcategoriesQueryModel(BaseModel):
 
 
 class SuggestedSubcategoriesResponseModel(ConfiguredBaseModel):
+    call_id: str
     subcategory_ids: list[str]
 
 

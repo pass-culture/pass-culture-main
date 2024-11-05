@@ -38,7 +38,6 @@ class SubcategorySuggestionBackend(BaseBackend):
             "offerer_name": venue.managingOfferer.name if venue else "",
         }
         response = requests.post(url, headers=headers, json=data, timeout=SUBCATEGORY_SUGGESTION_TIMEOUT_SECONDS)
-
         if response.status_code != 200:
             raise SubcategorySuggestionApiException(
                 f"Error getting subcategory suggestion from API with code {response.status_code}"

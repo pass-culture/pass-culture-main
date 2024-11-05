@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type SuggestedSubcategoriesResponseModel = {
+  callId: string;
   subcategoryIds: Array<string>;
 };
 

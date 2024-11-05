@@ -519,10 +519,10 @@ def get_categories() -> offers_serialize.CategoriesResponseModel:
 def get_suggested_subcategories(
     query: offers_serialize.SuggestedSubcategoriesQueryModel,
 ) -> offers_serialize.SuggestedSubcategoriesResponseModel:
-    subcategory_ids = subcategory_suggestion.get_most_probable_subcategory_ids(
+    call_id, subcategory_ids = subcategory_suggestion.get_most_probable_subcategory_ids(
         offer_name=query.offer_name, offer_description=query.offer_description, venue_id=query.venue_id
     )
-    return offers_serialize.SuggestedSubcategoriesResponseModel(subcategory_ids=subcategory_ids)
+    return offers_serialize.SuggestedSubcategoriesResponseModel(call_id=call_id, subcategory_ids=subcategory_ids)
 
 
 @private_api.route("/offers/music-types", methods=["GET"])
