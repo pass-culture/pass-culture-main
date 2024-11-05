@@ -380,7 +380,7 @@ def _batch_validate_bookings(bookings: list[bookings_models.Booking]) -> None:
                                 "backoffice_web.individual_bookings.list_individual_bookings",
                                 q=token,
                             ),
-                            message=str(exc),
+                            message=str(exc) or exc.__class__.__name__,
                         ),
                         "warning",
                     )
@@ -395,7 +395,7 @@ def _batch_validate_bookings(bookings: list[bookings_models.Booking]) -> None:
                             "backoffice_web.individual_bookings.list_individual_bookings",
                             q=token,
                         ),
-                        message=str(exc),
+                        message=str(exc) or exc.__class__.__name__,
                     ),
                     "warning",
                 )
@@ -455,7 +455,7 @@ def _batch_cancel_bookings(
                                 "backoffice_web.individual_bookings.list_individual_bookings",
                                 q=token,
                             ),
-                            message=str(exception),
+                            message=str(exception) or exception.__class__.__name__,
                         ),
                         "warning",
                     )
@@ -470,7 +470,7 @@ def _batch_cancel_bookings(
                             "backoffice_web.individual_bookings.list_individual_bookings",
                             q=token,
                         ),
-                        message=str(exc),
+                        message=str(exc) or exc.__class__.__name__,
                     ),
                     "warning",
                 )
