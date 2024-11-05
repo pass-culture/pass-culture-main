@@ -25,7 +25,6 @@ def install_routes(app: Flask) -> None:
     from .custom_reimbursement_rule import blueprint as custom_reimbursement_rule_blueprint
     from .external.zendesk_sell import blueprint as zendesk_sell_blueprint
     from .finance import finance_incidents_blueprint
-    from .finance import generate_invoices_blueprint as invoices_blueprint
     from .fraud import blueprint as fraud_blueprint
     from .gdpr_user_extract import blueprint as gdpr_extract_blueprint
     from .multiple_offers import blueprint as multiple_offers_blueprint

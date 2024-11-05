@@ -75,7 +75,6 @@ from pcapi.repository import is_managed_transaction
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import on_commit
 from pcapi.repository import transaction
-from pcapi.tasks import finance_tasks
 from pcapi.utils import human_ids
 import pcapi.utils.date as date_utils
 import pcapi.utils.db as db_utils
@@ -1798,20 +1797,6 @@ def generate_invoices(batch: models.CashflowBatch) -> None:
                     "exc": str(exc),
                 },
             )
-
-
-def async_generate_invoices(batch: models.CashflowBatch) -> None:
-    rows = _get_cashflows_by_bank_accounts(batch)
-
-    app.redis_client.set(
-        conf.REDIS_INVOICES_LEFT_TO_GENERATE, len(rows), ex=conf.REDIS_GENERATE_INVOICES_COUNTER_TIMEOUT
-    )
-    app.redis_client.set(conf.REDIS_GENERATE_INVOICES_LENGTH, len(rows), ex=conf.REDIS_GENERATE_INVOICES_LENGTH_TIMEOUT)
-    for row in rows:
-        row_payload = finance_tasks.GenerateInvoicePayload(
-            bank_account_id=row.bank_account_id, cashflow_ids=row.cashflow_ids, batch_id=batch.id
-        )
-        finance_tasks.generate_and_store_invoice_task.delay(row_payload)
 
 
 def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
