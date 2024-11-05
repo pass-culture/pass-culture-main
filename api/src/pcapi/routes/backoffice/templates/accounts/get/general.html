@@ -91,7 +91,10 @@
               <div class="mb-1">
                 <div class="d-flex align-items-center">
                   <span class="fw-bold me-1">Email :</span> {{ user.email }}
-                  {% if user.email_history | length > 0 %}<i class="bi bi-bag-check-fill text-warning ms-1 fs-4 pc-email-changed-icon"></i>{% endif %}
+                  {% if has_changed_email %}
+                    <i class="bi bi-envelope-plus-fill text-warning ms-1 me-1 fs-4 pc-email-changed-icon"
+                       title="L'utilisateur a déjà changé d'email"></i>
+                  {% endif %}
                   <span class="ms-1">{{ clipboard.copy_to_clipboard(user.email, "Copier l'adresse email") }}</span>
                 </div>
                 {% if resend_email_validation_form %}

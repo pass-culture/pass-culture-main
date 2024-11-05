@@ -2923,8 +2923,7 @@ def generate_beneficiary():
         oldDomainEmail="example.com",
         user=user,
     )
-    users_factories.EmailAdminValidationEntryFactory(
-        eventType=users_models.EmailHistoryEventTypeEnum.ADMIN_UPDATE,
+    users_factories.EmailAdminUpdateEntryFactory(
         creationDate=now,
         newUserEmail="beneficiary",
         newDomainEmail="example.com",

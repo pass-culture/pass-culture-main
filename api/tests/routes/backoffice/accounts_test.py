@@ -687,10 +687,35 @@ class GetPublicAccountTest(GetEndpointHelper):
         content = html_parser.content_as_text(response.data)
         assert "Date de suspension : 03/11/2023" in content
 
-    def test_get_public_account_with_modified_email(self, authenticated_client):
-        _, grant_18, _, _, _ = create_bunch_of_accounts()
-        users_factories.EmailUpdateEntryFactory(user=grant_18)
-        user_id = grant_18.id
+    def test_get_public_account_with_unconfirmed_modified_email(self, authenticated_client):
+        user = users_factories.UserFactory()
+        users_factories.EmailUpdateEntryFactory(user=user)
+        user_id = user.id
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
+
+        parsed_html = html_parser.get_soup(response.data)
+        assert parsed_html.find("i", class_="pc-email-changed-icon") is None
+
+    def test_get_public_account_with_confirmed_modified_email(self, authenticated_client):
+        user = users_factories.UserFactory()
+        users_factories.EmailUpdateEntryFactory(user=user)
+        users_factories.EmailConfirmationEntryFactory(user=user)
+        user_id = user.id
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
+
+        parsed_html = html_parser.get_soup(response.data)
+        assert parsed_html.find("i", class_="pc-email-changed-icon") is not None
+
+    def test_get_public_account_with_admin_modified_email(self, authenticated_client):
+        user = users_factories.UserFactory()
+        users_factories.EmailAdminUpdateEntryFactory(user=user)
+        user_id = user.id
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
