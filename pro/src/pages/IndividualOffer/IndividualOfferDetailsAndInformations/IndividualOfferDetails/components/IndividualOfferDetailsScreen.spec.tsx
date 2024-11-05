@@ -4,7 +4,6 @@ import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import {
-  CategoryResponseModel,
   SubcategoryIdEnum,
   SubcategoryResponseModel,
   VenueTypeCode,
@@ -20,7 +19,6 @@ import {
   OFFER_WIZARD_MODE,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
-import { getAddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
 import {
   categoryFactory,
   getIndividualOfferFactory,
@@ -67,15 +65,100 @@ const DEFAULTS = {
   submitButtonLabel: 'Enregistrer et continuer',
 }
 
-const renderDetailsScreen = (
-  props: IndividualOfferDetailsScreenProps,
-  contextValue: IndividualOfferContextValues,
-  options: RenderWithProvidersOptions = {},
-  mode: OFFER_WIZARD_MODE = DEFAULTS.mode
-) => {
+const MOCK_DATA = {
+  title: 'My super offer',
+  description: 'My super description',
+  venues: [
+    venueListItemFactory({ id: 189 }),
+    venueListItemFactory({ id: 190 }),
+  ],
+  categories: [
+    categoryFactory({
+      id: 'A',
+      proLabel: 'Catégorie A',
+      isSelectable: true,
+    }),
+  ],
+  subCategories: [
+    subcategoryFactory({
+      id: 'virtual',
+      categoryId: 'A',
+      proLabel: 'Sous catégorie online de A',
+      isEvent: false,
+      conditionalFields: ['author', 'durationMinutes'],
+      canBeDuo: false,
+      onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
+    }),
+    subcategoryFactory({
+      id: 'physical',
+      categoryId: 'A',
+      proLabel: 'Sous catégorie offline de A',
+      isEvent: false,
+      conditionalFields: ['ean', 'showType', 'gtl_id'],
+      canBeDuo: true,
+      canBeEducational: false,
+      canBeWithdrawable: false,
+      onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
+    }),
+    subcategoryFactory({
+      id: 'physicalBis',
+      categoryId: 'A',
+      proLabel: 'Autre sous catégorie offline de A',
+      isEvent: false,
+      conditionalFields: [],
+      canBeDuo: true,
+      canBeEducational: false,
+      canBeWithdrawable: false,
+      onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
+    }),
+    subcategoryFactory({
+      id: 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE',
+      categoryId: 'MUSIQUE_ENREGISTREE',
+      proLabel: 'Vinyles et autres supports',
+      conditionalFields: ['gtl_id', 'author', 'performer', 'ean'],
+    }),
+  ],
+  suggestedSubcategories: ['virtual', 'physical'],
+  suggestedSubcatCallId: '1',
+  ean: '1234567891234',
+  showType: 'Cirque',
+  showSubType: 'Clown',
+  musicType: 'Pop',
+}
+
+const LABELS = {
+  title: /Titre de l’offre/,
+  description: /Description/,
+  venue: /Lieu/,
+  category: /Catégorie/,
+  subcategory: /Sous-catégorie/,
+  ean: /EAN/,
+  showType: /Type de spectacle/,
+  showSubType: /Sous-type/,
+  musicType: /Genre musical/,
+  suggestedSubCatTitle: /Catégories suggérées pour votre offre/,
+  suggestedSubCatEmptyState: /Veuillez renseigner un titre ou une description/,
+}
+
+const renderDetailsScreen = ({
+  props,
+  contextValue,
+  options = {},
+  mode = DEFAULTS.mode,
+}: {
+  props?: IndividualOfferDetailsScreenProps
+  contextValue: IndividualOfferContextValues
+  options?: RenderWithProvidersOptions
+  mode?: OFFER_WIZARD_MODE
+}) => {
+  const finalProps = {
+    ...(props || {}),
+    venues: props?.venues || MOCK_DATA.venues,
+  }
+
   const element = (
     <IndividualOfferContext.Provider value={contextValue}>
-      <IndividualOfferDetailsScreen {...props} />
+      <IndividualOfferDetailsScreen {...finalProps} />
     </IndividualOfferContext.Provider>
   )
 
@@ -110,76 +193,87 @@ const renderDetailsScreen = (
   )
 }
 
+// User always selects 'physical' subcategory and fills related fields
+// (e.g: EAN, showType, showSubType, musicType conditional fields).
+// Mind that vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
+// { canBeEvent: true, label: 'Pop', gtl_id: 'pop' },
+// ]) must be added to the test file where this function is called.
+const userFillsEverything = async ({
+  withSubcategorySuggestion = false,
+}: {
+  withSubcategorySuggestion?: boolean
+} = {}) => {
+  await userEvent.type(screen.getByLabelText(LABELS.title), MOCK_DATA.title)
+  await userEvent.type(
+    screen.getByLabelText(LABELS.description),
+    MOCK_DATA.description
+  )
+  await userEvent.selectOptions(
+    await screen.findByLabelText(LABELS.venue),
+    MOCK_DATA.venues[0].id.toString()
+  )
+
+  if (!withSubcategorySuggestion) {
+    await userEvent.selectOptions(
+      await screen.findByLabelText(LABELS.category),
+      MOCK_DATA.categories[0].id
+    )
+    await userEvent.selectOptions(
+      await screen.findByLabelText(LABELS.subcategory),
+      (
+        MOCK_DATA.subCategories.find(
+          (s) => s.id === 'physical'
+        ) as SubcategoryResponseModel
+      ).proLabel
+    )
+  } else {
+    await userEvent.click(
+      await screen.findByRole('radio', {
+        name: (
+          MOCK_DATA.subCategories.find(
+            (s) => s.id === 'physical'
+          ) as SubcategoryResponseModel
+        ).proLabel,
+      })
+    )
+  }
+
+  await userEvent.type(screen.getByLabelText(LABELS.ean), MOCK_DATA.ean)
+  await userEvent.selectOptions(
+    await screen.findByLabelText(LABELS.showType),
+    MOCK_DATA.showType
+  )
+  await userEvent.selectOptions(
+    await screen.findByLabelText(LABELS.showSubType),
+    MOCK_DATA.showSubType
+  )
+
+  await userEvent.selectOptions(
+    await screen.findByLabelText(LABELS.musicType),
+    MOCK_DATA.musicType
+  )
+}
+
 describe('screens:IndividualOffer::Informations', () => {
-  let props: IndividualOfferDetailsScreenProps
   let contextValue: IndividualOfferContextValues
-  let categories: CategoryResponseModel[]
-  let subCategories: SubcategoryResponseModel[]
 
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
 
-    categories = [
-      categoryFactory({
-        id: 'A',
-        proLabel: 'Catégorie A',
-        isSelectable: true,
-      }),
-    ]
-
-    subCategories = [
-      subcategoryFactory({
-        id: 'virtual',
-        categoryId: 'A',
-        proLabel: 'Sous catégorie online de A',
-        isEvent: false,
-        conditionalFields: ['author', 'durationMinutes'],
-        canBeDuo: false,
-        onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
-      }),
-      subcategoryFactory({
-        id: 'physical',
-        categoryId: 'A',
-        proLabel: 'Sous catégorie offline de A',
-        isEvent: false,
-        conditionalFields: ['ean', 'showType', 'gtl_id'],
-        canBeDuo: true,
-        canBeEducational: false,
-        canBeWithdrawable: false,
-        onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
-      }),
-      subcategoryFactory({
-        id: 'physicalBis',
-        categoryId: 'A',
-        proLabel: 'Autre sous catégorie offline de A',
-        isEvent: false,
-        conditionalFields: [],
-        canBeDuo: true,
-        canBeEducational: false,
-        canBeWithdrawable: false,
-        onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
-      }),
-      subcategoryFactory({
-        id: 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE',
-        categoryId: 'MUSIQUE_ENREGISTREE',
-        proLabel: 'Vinyles et autres supports',
-        conditionalFields: ['gtl_id', 'author', 'performer', 'ean'],
-      }),
-    ]
-
-    props = {
-      venues: [],
-    }
-
     contextValue = individualOfferContextValuesFactory({
-      categories,
-      subCategories,
+      categories: MOCK_DATA.categories,
+      subCategories: MOCK_DATA.subCategories,
       offer: null,
     })
   })
 
   it('should render banner when no venue available', async () => {
-    renderDetailsScreen(props, contextValue)
+    renderDetailsScreen({
+      props: {
+        venues: [],
+      },
+      contextValue,
+    })
 
     expect(
       await screen.findByRole('heading', { name: 'À propos de votre offre' })
@@ -188,16 +282,7 @@ describe('screens:IndividualOffer::Informations', () => {
   })
 
   it('should render the component', async () => {
-    renderDetailsScreen(
-      {
-        ...props,
-        venues: [
-          venueListItemFactory({ id: 189 }),
-          venueListItemFactory({ id: 190 }),
-        ],
-      },
-      contextValue
-    )
+    renderDetailsScreen({ contextValue })
 
     expect(
       await screen.findByRole('heading', { name: 'À propos de votre offre' })
@@ -209,16 +294,7 @@ describe('screens:IndividualOffer::Informations', () => {
   })
 
   it('should display the full form when categories, and subcategories has been selected', async () => {
-    renderDetailsScreen(
-      {
-        ...props,
-        venues: [
-          venueListItemFactory({ id: 189 }),
-          venueListItemFactory({ id: 190 }),
-        ],
-      },
-      contextValue
-    )
+    renderDetailsScreen({ contextValue })
     const categoriesInput = await screen.findByLabelText('Catégorie *')
     expect(categoriesInput).toBeEnabled()
     await userEvent.selectOptions(categoriesInput, 'A')
@@ -236,20 +312,18 @@ describe('screens:IndividualOffer::Informations', () => {
   })
 
   it('should not display the venues list when venues is <= 1', () => {
-    props.venues = [venueListItemFactory({ id: 189 })]
-
-    renderDetailsScreen(props, contextValue)
+    renderDetailsScreen({
+      props: {
+        venues: [venueListItemFactory({ id: 189 })],
+      },
+      contextValue,
+    })
 
     expect(screen.queryByText(/Qui propose l’offre ?/)).not.toBeInTheDocument()
   })
 
   it('should show errors in the form when not all field has been filled', async () => {
-    props.venues = [
-      venueListItemFactory({ id: 189 }),
-      venueListItemFactory({ id: 190 }),
-    ]
-
-    renderDetailsScreen(props, contextValue)
+    renderDetailsScreen({ contextValue })
 
     await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
     expect(
@@ -298,12 +372,8 @@ describe('screens:IndividualOffer::Informations', () => {
     vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
       { canBeEvent: true, label: 'Pop', gtl_id: 'pop' },
     ])
-    props.venues = [
-      venueListItemFactory({ id: 189 }),
-      venueListItemFactory({ id: 190 }),
-    ]
 
-    renderDetailsScreen(props, contextValue)
+    renderDetailsScreen({ contextValue })
 
     await userEvent.type(
       screen.getByLabelText(/Titre de l’offre/),
@@ -357,47 +427,9 @@ describe('screens:IndividualOffer::Informations', () => {
     vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
       { canBeEvent: true, label: 'Pop', gtl_id: 'pop' },
     ])
-    props.venues = [
-      venueListItemFactory({ id: 189 }),
-      venueListItemFactory({ id: 190 }),
-    ]
 
-    renderDetailsScreen(props, contextValue)
-
-    await userEvent.type(
-      screen.getByLabelText(/Titre de l’offre/),
-      'My super offer'
-    )
-    await userEvent.type(
-      screen.getByLabelText(/Description/),
-      'My super description'
-    )
-
-    await userEvent.selectOptions(await screen.findByLabelText(/Lieu/), '189')
-
-    await userEvent.selectOptions(
-      await screen.findByLabelText('Catégorie *'),
-      'A'
-    )
-
-    await userEvent.selectOptions(
-      await screen.findByLabelText('Sous-catégorie *'),
-      'physical'
-    )
-
-    await userEvent.type(screen.getByLabelText(/EAN/), '1234567891234')
-    await userEvent.selectOptions(
-      await screen.findByLabelText(/Type de spectacle/),
-      'Cirque'
-    )
-    await userEvent.selectOptions(
-      await screen.findByLabelText(/Sous-type/),
-      'Clown'
-    )
-    await userEvent.selectOptions(
-      await screen.findByLabelText(/Genre musical/),
-      'Pop'
-    )
+    renderDetailsScreen({ contextValue })
+    await userFillsEverything()
 
     await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
 
@@ -418,6 +450,7 @@ describe('screens:IndividualOffer::Informations', () => {
       name: 'My super offer',
       subcategoryId: 'physical',
       venueId: 189,
+      callId: '',
     })
     expect(mockLogEvent).toHaveBeenCalledWith(
       Events.CLICKED_OFFER_FORM_NAVIGATION,
@@ -441,13 +474,12 @@ describe('screens:IndividualOffer::Informations', () => {
     vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
       { canBeEvent: true, label: 'Pop', gtl_id: 'pop' },
     ])
-    props.venues = [venueListItemFactory({ id: 189 })]
     contextValue.offer = getIndividualOfferFactory({
       id: 12,
       subcategoryId: 'physicalBis' as SubcategoryIdEnum,
     })
 
-    renderDetailsScreen(props, contextValue)
+    renderDetailsScreen({ contextValue })
 
     await userEvent.clear(screen.getByLabelText(/Titre de l’offre/))
     await userEvent.type(
@@ -482,94 +514,61 @@ describe('screens:IndividualOffer::Informations', () => {
   })
 
   describe('about categories / subcategories selection', () => {
-    const venueSelectorLabel = /Lieu/
-    const titleLabel = /Titre de l’offre/
-    const suggestedSubCatTitle = /Catégories suggérées pour votre offre/
-    const suggestedSubCatEmptyState =
-      /Veuillez renseigner un titre ou une description/
-    const customProps = {
-      ...props,
-      venues: [
-        {
-          id: 1,
-          name: 'Venue 1',
-          address: {
-            ...getAddressResponseIsLinkedToVenueModelFactory({
-              label: 'mon adresse',
-              city: 'ma ville',
-              street: 'ma street',
-              postalCode: '1',
-            }),
-          },
-          isVirtual: false,
-          hasCreatedOffer: false,
-          managingOffererId: 1,
-          offererName: 'Offerer 1',
-          venueTypeCode: VenueTypeCode.FESTIVAL,
-        },
-        {
-          id: 2,
-          name: 'Venue 2',
-          address: {
-            ...getAddressResponseIsLinkedToVenueModelFactory({
-              label: 'mon adresse',
-              city: 'ma ville',
-              street: 'ma street',
-              postalCode: '1',
-            }),
-          },
-          isVirtual: false,
-          hasCreatedOffer: false,
-          managingOffererId: 1,
-          offererName: 'Offerer 1',
-          venueTypeCode: VenueTypeCode.FESTIVAL,
-        },
-      ],
-    }
-
     it('should render suggested subcategories when enabled', async () => {
-      const chosenSubCategoriesIds = ['virtual', 'physical']
       vi.spyOn(api, 'getSuggestedSubcategories').mockResolvedValue({
-        subcategoryIds: chosenSubCategoriesIds,
+        callId: MOCK_DATA.suggestedSubcatCallId,
+        subcategoryIds: MOCK_DATA.suggestedSubcategories,
       })
       vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
         SUGGESTED_CATEGORIES: 'true',
       })
 
-      renderDetailsScreen(customProps, contextValue, {
-        features: ['WIP_SUGGESTED_SUBCATEGORIES'],
+      renderDetailsScreen({
+        contextValue,
+        options: {
+          features: ['WIP_SUGGESTED_SUBCATEGORIES'],
+        },
       })
 
-      // User selects a venue or fills the title.
-      const venueSelector = screen.getByLabelText(venueSelectorLabel)
-      const titleInput = screen.getByLabelText(titleLabel)
-      await userEvent.selectOptions(venueSelector, '1')
-      await userEvent.type(titleInput, 'My super offer')
+      // Init.
+      const title = screen.getByText(LABELS.suggestedSubCatTitle)
+      expect(title).toBeInTheDocument()
+      const initText = screen.queryByText(LABELS.suggestedSubCatEmptyState)
+      expect(initText).toBeInTheDocument()
+
+      // User fills the title.
+      const titleInput = screen.getByLabelText(LABELS.title)
+      await userEvent.type(titleInput, MOCK_DATA.title)
+      expect(initText).not.toBeInTheDocument()
 
       // Suggested subcategories are displayed along with the "Autre" option.
       const radioButtons = screen.getAllByRole('radio')
-      expect(radioButtons).toHaveLength(chosenSubCategoriesIds.length + 1)
+      expect(radioButtons).toHaveLength(
+        MOCK_DATA.suggestedSubcategories.length + 1
+      )
     })
 
     it('should fallback to manual selection when suggested subcategories are enabled but not available', async () => {
       // An empty array of suggestions will be handled the same way as an api error.
       // To test this, we either mock the api call to return an empty array or reject the promise.
       vi.spyOn(api, 'getSuggestedSubcategories').mockResolvedValue({
+        callId: '',
         subcategoryIds: [],
       })
       vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
         SUGGESTED_CATEGORIES: 'true',
       })
 
-      renderDetailsScreen(customProps, contextValue, {
-        features: ['WIP_SUGGESTED_SUBCATEGORIES'],
+      renderDetailsScreen({
+        contextValue,
+        options: {
+          features: ['WIP_SUGGESTED_SUBCATEGORIES'],
+        },
       })
 
-      // User selects a venue or fills the title.
-      const venueSelector = screen.getByLabelText(venueSelectorLabel)
-      const titleInput = screen.getByLabelText(titleLabel)
-      await userEvent.selectOptions(venueSelector, '1')
-      await userEvent.type(titleInput, 'My super offer')
+      // User selects fills the title.
+      const titleInput = screen.getByLabelText(LABELS.title)
+      await userEvent.type(titleInput, MOCK_DATA.title)
 
       // Only the "Autre" option should be available and selected.
       const radioButtons = screen.getAllByRole('radio')
@@ -578,44 +577,85 @@ describe('screens:IndividualOffer::Informations', () => {
 
     it('should render an error when no selection has been made', async () => {
       vi.spyOn(api, 'getSuggestedSubcategories').mockResolvedValue({
-        subcategoryIds: ['virtual', 'physical'],
+        callId: MOCK_DATA.suggestedSubcatCallId,
+        subcategoryIds: MOCK_DATA.suggestedSubcategories,
       })
       vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
         SUGGESTED_CATEGORIES: 'true',
       })
 
-      renderDetailsScreen(customProps, contextValue, {
-        features: ['WIP_SUGGESTED_SUBCATEGORIES'],
+      renderDetailsScreen({
+        contextValue,
+        options: {
+          features: ['WIP_SUGGESTED_SUBCATEGORIES'],
+        },
       })
 
-      // Init.
-      const title = screen.getByText(suggestedSubCatTitle)
-      expect(title).toBeInTheDocument()
-      const initText = screen.queryByText(suggestedSubCatEmptyState)
-      expect(initText).toBeInTheDocument()
-
-      // User selects a venue or fills the title.
-      const venueSelector = screen.getByLabelText(venueSelectorLabel)
-      const titleInput = screen.getByLabelText(titleLabel)
-      await userEvent.selectOptions(venueSelector, '1')
-      await userEvent.type(titleInput, 'My super offer')
+      // User selects fills the title.
+      const titleInput = screen.getByLabelText(LABELS.title)
+      await userEvent.type(titleInput, MOCK_DATA.title)
 
       // User doesn't select anything and submits.
-      expect(initText).not.toBeInTheDocument()
       await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
       const error = screen.getByText('Veuillez sélectionner une catégorie')
       expect(error).toBeInTheDocument()
     })
+
+    it('should pass callId to the api when suggested subcategories are enabled and used once', async () => {
+      vi.spyOn(api, 'getSuggestedSubcategories').mockResolvedValue({
+        callId: MOCK_DATA.suggestedSubcatCallId,
+        subcategoryIds: MOCK_DATA.suggestedSubcategories,
+      })
+      vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
+        SUGGESTED_CATEGORIES: 'true',
+      })
+      vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
+        { canBeEvent: true, label: 'Pop', gtl_id: 'pop' },
+      ])
+
+      renderDetailsScreen({
+        contextValue,
+        options: {
+          features: ['WIP_SUGGESTED_SUBCATEGORIES'],
+        },
+      })
+
+      // User selects fills the title, which triggers the api call.
+      await userFillsEverything({ withSubcategorySuggestion: true })
+
+      // User submits the form.
+      // The callId is passed to the api (we don't care if the form is entirely filled or not).
+      await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
+
+      expect(api.postDraftOffer).toHaveBeenCalledOnce()
+      expect(api.postDraftOffer).toHaveBeenCalledWith({
+        description: 'My super description',
+        extraData: {
+          author: '',
+          ean: '1234567891234',
+          gtl_id: 'pop',
+          showSubType: '205',
+          showType: '200',
+          performer: '',
+          speaker: '',
+          stageDirector: '',
+          visa: '',
+        },
+        name: 'My super offer',
+        subcategoryId: 'physical',
+        venueId: 189,
+        callId: MOCK_DATA.suggestedSubcatCallId,
+      })
+    })
   })
 
   it('should display first venue banner when venues are empty and suggested categories not enable', () => {
-    renderDetailsScreen(
-      {
-        ...props,
+    renderDetailsScreen({
+      props: {
         venues: [],
       },
-      contextValue
-    )
+      contextValue,
+    })
     expect(
       screen.getByText(
         'Pour créer une offre dans cette catégorie, ajoutez d’abord un lieu à votre structure.'
@@ -625,20 +665,20 @@ describe('screens:IndividualOffer::Informations', () => {
 
   it('should display second venue banner when only one virtual venue and not virtual subcategory chosen', async () => {
     vi.spyOn(api, 'getSuggestedSubcategories').mockResolvedValue({
+      callId: '1',
       subcategoryIds: ['virtual', 'physical'],
     })
     vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
       SUGGESTED_CATEGORIES: 'true',
     })
 
-    renderDetailsScreen(
-      {
-        ...props,
+    renderDetailsScreen({
+      props: {
         venues: [venueListItemFactory({ id: 189, isVirtual: true })],
       },
       contextValue,
-      { features: ['WIP_SUGGESTED_SUBCATEGORIES'] }
-    )
+      options: { features: ['WIP_SUGGESTED_SUBCATEGORIES'] },
+    })
     await userEvent.type(screen.getByLabelText(/Titre de l’offre/), 'My title')
     await userEvent.click(
       await screen.findByText('Sous catégorie offline de A')
@@ -660,46 +700,44 @@ describe('screens:IndividualOffer::Informations', () => {
 
       it('should render EAN search for record stores as a venue', () => {
         const context = individualOfferContextValuesFactory({
-          categories,
-          subCategories,
+          categories: MOCK_DATA.categories,
+          subCategories: MOCK_DATA.subCategories,
           offer: null,
         })
 
-        renderDetailsScreen(
-          {
-            ...props,
+        renderDetailsScreen({
+          props: {
             venues: [
               venueListItemFactory({
                 venueTypeCode: 'RECORD_STORE' as VenueTypeCode,
               }),
             ],
           },
-          context,
-          { features: ['WIP_EAN_CREATION'] }
-        )
+          contextValue: context,
+          options: { features: ['WIP_EAN_CREATION'] },
+        })
 
         expect(screen.getByText(eanSearchTitle)).toBeInTheDocument()
       })
 
       it('should not render EAN search for other venues', () => {
         const context = individualOfferContextValuesFactory({
-          categories,
-          subCategories,
+          categories: MOCK_DATA.categories,
+          subCategories: MOCK_DATA.subCategories,
           offer: null,
         })
 
-        renderDetailsScreen(
-          {
-            ...props,
+        renderDetailsScreen({
+          props: {
             venues: [
               venueListItemFactory({
                 venueTypeCode: VenueTypeCode.FESTIVAL,
               }),
             ],
           },
-          context,
-          { features: ['WIP_EAN_CREATION'] }
-        )
+          contextValue: context,
+          options: { features: ['WIP_EAN_CREATION'] },
+        })
 
         expect(screen.queryByText(eanSearchTitle)).not.toBeInTheDocument()
       })
@@ -721,24 +759,23 @@ describe('screens:IndividualOffer::Informations', () => {
           }
 
           const context = individualOfferContextValuesFactory({
-            categories,
-            subCategories,
+            categories: MOCK_DATA.categories,
+            subCategories: MOCK_DATA.subCategories,
             offer: null,
           })
 
           vi.spyOn(api, 'getProductByEan').mockResolvedValue(productData)
-          renderDetailsScreen(
-            {
-              ...props,
+          renderDetailsScreen({
+            props: {
               venues: [
                 venueListItemFactory({
                   venueTypeCode: 'RECORD_STORE' as VenueTypeCode,
                 }),
               ],
             },
-            context,
-            { features: ['WIP_EAN_CREATION'] }
-          )
+            contextValue: context,
+            options: { features: ['WIP_EAN_CREATION'] },
+          })
 
           const button = screen.getByRole('button', { name: eanButtonLabel })
           const input = screen.getByRole('textbox', { name: eanInputLabel })
@@ -768,8 +805,8 @@ describe('screens:IndividualOffer::Informations', () => {
       describe('when the draft offer being created is no longer local but posted', () => {
         it('should render EAN search when the draft offer is product-based', () => {
           const context = individualOfferContextValuesFactory({
-            categories,
-            subCategories,
+            categories: MOCK_DATA.categories,
+            subCategories: MOCK_DATA.subCategories,
             offer: getIndividualOfferFactory({
               subcategoryId:
                 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE' as SubcategoryIdEnum,
@@ -777,43 +814,41 @@ describe('screens:IndividualOffer::Informations', () => {
             }),
           })
 
-          renderDetailsScreen(
-            {
-              ...props,
+          renderDetailsScreen({
+            props: {
               venues: [
                 venueListItemFactory({
                   venueTypeCode: 'RECORD_STORE' as VenueTypeCode,
                 }),
               ],
             },
-            context,
-            { features: ['WIP_EAN_CREATION'] }
-          )
+            contextValue: context,
+            options: { features: ['WIP_EAN_CREATION'] },
+          })
 
           expect(screen.getByText(eanSearchTitle)).toBeInTheDocument()
         })
 
         it('should not render EAN search when the draft offer is non product-based', () => {
           const context = individualOfferContextValuesFactory({
-            categories,
-            subCategories,
+            categories: MOCK_DATA.categories,
+            subCategories: MOCK_DATA.subCategories,
             offer: getIndividualOfferFactory({
               subcategoryId: 'physical' as SubcategoryIdEnum,
             }),
           })
 
-          renderDetailsScreen(
-            {
-              ...props,
+          renderDetailsScreen({
+            props: {
               venues: [
                 venueListItemFactory({
                   venueTypeCode: 'RECORD_STORE' as VenueTypeCode,
                 }),
               ],
             },
-            context,
-            { features: ['WIP_EAN_CREATION'] }
-          )
+            contextValue: context,
+            options: { features: ['WIP_EAN_CREATION'] },
+          })
 
           expect(screen.queryByText(eanSearchTitle)).not.toBeInTheDocument()
         })
@@ -824,19 +859,18 @@ describe('screens:IndividualOffer::Informations', () => {
   describe('on edition', () => {
     it('should not render EAN search', () => {
       const context = individualOfferContextValuesFactory({
-        categories,
-        subCategories,
+        categories: MOCK_DATA.categories,
+        subCategories: MOCK_DATA.subCategories,
         offer: getIndividualOfferFactory({
           subcategoryId: 'physical' as SubcategoryIdEnum,
         }),
       })
 
-      renderDetailsScreen(
-        props,
-        context,
-        { features: ['WIP_EAN_CREATION'] },
-        OFFER_WIZARD_MODE.EDITION
-      )
+      renderDetailsScreen({
+        contextValue: context,
+        options: { features: ['WIP_EAN_CREATION'] },
+        mode: OFFER_WIZARD_MODE.EDITION,
+      })
 
       expect(
         screen.queryByText(/Scanner ou rechercher un produit par EAN/)
@@ -848,21 +882,18 @@ describe('screens:IndividualOffer::Informations', () => {
         SUGGESTED_CATEGORIES: 'true',
       })
       const context = individualOfferContextValuesFactory({
-        categories,
-        subCategories,
+        categories: MOCK_DATA.categories,
+        subCategories: MOCK_DATA.subCategories,
         offer: getIndividualOfferFactory({
           subcategoryId: 'physical' as SubcategoryIdEnum,
         }),
       })
 
-      renderDetailsScreen(
-        props,
-        context,
-        {
-          features: ['WIP_SUGGESTED_SUBCATEGORIES'],
-        },
-        OFFER_WIZARD_MODE.EDITION
-      )
+      renderDetailsScreen({
+        contextValue: context,
+        options: { features: ['WIP_SUGGESTED_SUBCATEGORIES'] },
+        mode: OFFER_WIZARD_MODE.EDITION,
+      })
 
       expect(
         screen.queryByText(/Catégories suggérées pour votre offre/)
@@ -878,21 +909,18 @@ describe('screens:IndividualOffer::Informations', () => {
         SUGGESTED_CATEGORIES: 'true',
       })
       const context = individualOfferContextValuesFactory({
-        categories,
-        subCategories,
+        categories: MOCK_DATA.categories,
+        subCategories: MOCK_DATA.subCategories,
         offer: getIndividualOfferFactory({
           subcategoryId: 'physical' as SubcategoryIdEnum,
         }),
       })
 
-      renderDetailsScreen(
-        props,
-        context,
-        {
-          features: ['WIP_SUGGESTED_SUBCATEGORIES'],
-        },
-        OFFER_WIZARD_MODE.EDITION
-      )
+      renderDetailsScreen({
+        contextValue: context,
+        options: { features: ['WIP_SUGGESTED_SUBCATEGORIES'] },
+        mode: OFFER_WIZARD_MODE.EDITION,
+      })
 
       expect(screen.getByLabelText('Catégorie *')).toBeDisabled()
       expect(screen.getByLabelText('Sous-catégorie *')).toBeDisabled()
@@ -903,10 +931,14 @@ describe('screens:IndividualOffer::Informations', () => {
     vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
       SUGGESTED_CATEGORIES: 'true',
     })
-    props.venues = [venueListItemFactory({ id: 189 })]
 
-    renderDetailsScreen(props, contextValue, {
-      features: ['WIP_SUGGESTED_SUBCATEGORIES'],
+    renderDetailsScreen({
+      props: {
+        venues: [venueListItemFactory({ id: 189 })],
+      },
+      contextValue,
+      // There is no world where WIP_SUGGESTED_SUBCATEGORIES is enabled without WIP_SPLIT_OFFER
+      options: { features: ['WIP_SUGGESTED_SUBCATEGORIES'] },
     })
 
     expect(screen.queryByText(/Lieu/)).not.toBeInTheDocument()

@@ -8,6 +8,7 @@ import {
   CategoryResponseModel,
   SubcategoryResponseModel,
   VenueListItemResponseModel,
+  SuggestedSubcategoriesResponseModel,
 } from 'apiClient/v1'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { CATEGORY_STATUS } from 'commons/core/Offers/constants'
@@ -64,9 +65,9 @@ export const DetailsForm = ({
   const [hasSuggestionsApiBeenCalled, setHasSuggestionsApiBeenCalled] =
     useState(false)
   const [suggestedSubcategories, setSuggestedSubcategories] = useState<
-    string[]
+    SuggestedSubcategoriesResponseModel['subcategoryIds']
   >([])
-  const { values, setValues, handleChange } =
+  const { values, setValues, handleChange, setFieldValue } =
     useFormikContext<DetailsFormValues>()
   const { subcategoryId, description, venueId, name, suggestedSubcategory } =
     values
@@ -95,6 +96,7 @@ export const DetailsForm = ({
         throw new Error('No suggested subcategories')
       }
 
+      await setFieldValue('callId', response.callId)
       setSuggestedSubcategories(response.subcategoryIds)
     } catch {
       if (!suggestedSubcategory) {
