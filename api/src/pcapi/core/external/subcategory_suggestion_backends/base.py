@@ -11,6 +11,7 @@ class SubcategoryProbability(BaseModel):
 
 class MostProbableSubcategories(BaseModel):
     most_probable_subcategories: list[SubcategoryProbability]
+    call_id: str
 
     @pydantic_v1.validator("most_probable_subcategories", pre=True)
     # Sort subcategories by desc probability

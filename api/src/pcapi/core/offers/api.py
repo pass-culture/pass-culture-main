@@ -229,7 +229,7 @@ def create_draft_offer(
     if feature.FeatureToggle.WIP_EAN_CREATION.is_active():
         validation.check_product_for_venue_and_subcategory(product, body.subcategory_id, venue.venueTypeCode)
 
-    fields = {key: value for key, value in body.dict(by_alias=True).items() if key != "venueId"}
+    fields = {key: value for key, value in body.dict(by_alias=True).items() if key not in ("venueId", "callId")}
     fields.update(_get_accessibility_compliance_fields(venue))
     fields.update({"withdrawalDetails": venue.withdrawalDetails})
 
@@ -244,6 +244,18 @@ def create_draft_offer(
         product=product,
     )
     db.session.add(offer)
+
+    if body.call_id:
+        logger.info(
+            "Offer Categorisation Data API",
+            extra={
+                "analyticsSource": "app-pro",
+                "offer_id": offer.id,
+                "offer_data_api_call_id": body.call_id,
+                "offer_subcategory": offer.subcategoryId,
+            },
+            technical_message_id="offer_categorisation",
+        )
 
     update_external_pro(venue.bookingEmail)
 
