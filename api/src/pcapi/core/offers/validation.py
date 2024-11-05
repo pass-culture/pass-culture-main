@@ -544,28 +544,28 @@ def check_booking_limit_datetime(
     stock: educational_models.CollectiveStock | models.Stock | None,
     beginning: datetime.datetime | None,
     booking_limit_datetime: datetime.datetime | None,
-) -> None:
+) -> list[datetime.datetime]:
     if not (beginning and booking_limit_datetime):  # nothing to check
-        return
+        return []
 
     if stock:
         if isinstance(stock, educational_models.CollectiveStock):
             offer = stock.collectiveOffer
         else:
             offer = stock.offer
-        reference_dp_code = offer.venue.departementCode
+        reference_tz = offer.venue.timezone
         if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
-            reference_dp_code = (
-                offer.offererAddress.address.departmentCode
-                if offer.offererAddress and not isinstance(stock, educational_models.CollectiveStock)
-                else offer.venue.offererAddress.address.departmentCode  # type: ignore[union-attr]
-            )
-        if reference_dp_code is not None:  # update to timezone
-            beginning = date.utc_datetime_to_department_timezone(beginning, reference_dp_code)
-            booking_limit_datetime = date.utc_datetime_to_department_timezone(booking_limit_datetime, reference_dp_code)
+            if offer.offererAddress and not isinstance(stock, educational_models.CollectiveStock):
+                reference_tz = offer.offererAddress.address.timezone
+            elif offer.venue.offererAddress:
+                reference_tz = offer.venue.offererAddress.address.timezone
 
+        if reference_tz is not None:  # update to timezone
+            beginning = date.default_timezone_to_local_datetime(beginning, reference_tz)
+            booking_limit_datetime = date.default_timezone_to_local_datetime(booking_limit_datetime, reference_tz)
     if booking_limit_datetime > beginning:
         raise exceptions.BookingLimitDatetimeTooLate()
+    return [beginning, booking_limit_datetime]
 
 
 def check_offer_extra_data(
