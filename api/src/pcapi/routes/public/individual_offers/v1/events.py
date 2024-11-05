@@ -269,6 +269,7 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
                 idAtProvider=get_field(offer, updates, "idAtProvider"),
                 isDuo=get_field(offer, updates, "enableDoubleBookings", col="isDuo"),
                 withdrawalDetails=get_field(offer, updates, "itemCollectionDetails", col="withdrawalDetails"),
+                name=get_field(offer, updates, "name"),
             )  # type: ignore[call-arg]
             offer = offers_api.update_offer(offer, offer_body)
             if body.image:

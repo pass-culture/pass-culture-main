@@ -578,6 +578,11 @@ class EventOfferCreation(OfferCreationBase):
         extra = "forbid"
 
 
+class OfferName(pydantic_v1.ConstrainedStr):
+    min_length = 1
+    max_length = 140
+
+
 class OfferEditionBase(serialization.ConfiguredBaseModel):
     accessibility: accessibility_serialization.PartialAccessibility | None = pydantic_v1.Field(
         description="Accessibility to disabled people. Leave fields undefined to keep current value"
@@ -592,6 +597,7 @@ class OfferEditionBase(serialization.ConfiguredBaseModel):
     image: ImageBody | None
     description: str | None = fields.OFFER_DESCRIPTION_WITH_MAX_LENGTH
     id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
+    name: OfferName | None = fields.OFFER_NAME
 
     class Config:
         extra = "forbid"
@@ -600,11 +606,6 @@ class OfferEditionBase(serialization.ConfiguredBaseModel):
 STOCK_EDITION_FIELD = pydantic_v1.Field(
     description="If stock is set to null, all cancellable bookings (i.e not used) will be cancelled. To prevent from further bookings, you may alternatively set stock.quantity to the bookedQuantity (but not below).",
 )
-
-
-class OfferName(pydantic_v1.ConstrainedStr):
-    min_length = 1
-    max_length = 140
 
 
 class ProductOfferEdition(OfferEditionBase):
