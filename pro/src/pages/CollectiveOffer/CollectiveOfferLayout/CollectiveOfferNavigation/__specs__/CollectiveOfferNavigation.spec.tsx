@@ -18,7 +18,7 @@ import {
 import * as useAnalytics from 'app/App/analytics/firebase'
 import {
   Events,
-  OFFER_FROM_TEMPLATE_ENTRIES,
+  COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
 } from 'commons/core/FirebaseEvents/constants'
 import { SENT_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
 import * as useNotification from 'commons/hooks/useNotification'
@@ -323,7 +323,7 @@ describe('CollectiveOfferNavigation', () => {
       1,
       Events.CLICKED_DUPLICATE_TEMPLATE_OFFER,
       {
-        from: OFFER_FROM_TEMPLATE_ENTRIES.OFFER_TEMPLATE_RECAP,
+        from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFER_RECAP,
         offererId: '1',
         offerId: 1,
         offerType: 'collective',

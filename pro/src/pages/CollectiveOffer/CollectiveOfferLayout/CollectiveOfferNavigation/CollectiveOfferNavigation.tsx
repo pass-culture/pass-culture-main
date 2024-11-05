@@ -20,7 +20,7 @@ import {
 } from 'commons/config/swrQueryKeys'
 import {
   Events,
-  OFFER_FROM_TEMPLATE_ENTRIES,
+  COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
 } from 'commons/core/FirebaseEvents/constants'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'commons/core/Notification/constants'
 import {
@@ -309,7 +309,7 @@ export const CollectiveOfferNavigation = ({
             onClick={() => {
               if (isTemplate) {
                 logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
-                  from: OFFER_FROM_TEMPLATE_ENTRIES.OFFER_TEMPLATE_RECAP,
+                  from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFER_RECAP,
                   offererId: selectedOffererId?.toString(),
                   offerId,
                   offerType: 'collective',

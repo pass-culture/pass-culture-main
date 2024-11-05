@@ -87,10 +87,10 @@ export enum OFFER_FORM_NAVIGATION_IN {
   OFFERS = 'Offers',
 }
 
-export enum OFFER_FROM_TEMPLATE_ENTRIES {
+export enum COLLECTIVE_OFFER_DUPLICATION_ENTRIES {
   OFFERS_MODAL = 'OffersListModal',
   OFFERS = 'OffersList',
-  OFFER_TEMPLATE_RECAP = 'OfferTemplateRecap',
+  OFFER_RECAP = 'OfferRecap',
 }
 
 export enum SynchronizationEvents {

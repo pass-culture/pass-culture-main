@@ -18,7 +18,7 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import {
   CollectiveBookingsEvents,
   Events,
-  OFFER_FROM_TEMPLATE_ENTRIES,
+  COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
 } from 'commons/core/FirebaseEvents/constants'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'commons/core/Notification/constants'
 import { createOfferFromTemplate } from 'commons/core/OfferEducational/utils/createOfferFromTemplate'
@@ -116,7 +116,7 @@ export const CollectiveActionsCells = ({
 
   const onDialogConfirm = async (shouldNotDisplayModalAgain: boolean) => {
     logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
-      from: OFFER_FROM_TEMPLATE_ENTRIES.OFFERS_MODAL,
+      from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFERS_MODAL,
       offererId: selectedOffererId?.toString(),
       offerId: offer.id,
       offerType: 'collective',
@@ -138,7 +138,7 @@ export const CollectiveActionsCells = ({
     if (offer.isShowcase) {
       if (!shouldDisplayModal) {
         logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
-          from: OFFER_FROM_TEMPLATE_ENTRIES.OFFERS,
+          from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFERS,
           offererId: selectedOffererId?.toString(),
           offerId: offer.id,
           offerType: 'collective',
