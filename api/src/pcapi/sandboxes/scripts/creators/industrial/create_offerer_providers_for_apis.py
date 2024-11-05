@@ -84,6 +84,7 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
             subcategoryId=subcategories.CONCERT.id,
             lastProvider=provider,
             withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
+            isDuo=bool(i % 3),
         )
         price_category = offers_factories.PriceCategoryFactory(offer=offer)
 
@@ -98,9 +99,10 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
             )
 
         for _ in range(15):
+            stock = random.choice(stocks)
             booking = bookings_factories.BookingFactory(
-                quantity=random.randint(1, 2),
-                stock=random.choice(stocks),
+                quantity=random.randint(1, 2 if stock.offer.isDuo else 1),
+                stock=stock,
                 dateCreated=now
                 + datetime.timedelta(
                     days=random.randint(0, 10), hours=random.randint(0, 23), minutes=random.randint(0, 59)
