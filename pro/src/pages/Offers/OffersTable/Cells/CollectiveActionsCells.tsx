@@ -154,6 +154,13 @@ export const CollectiveActionsCells = ({
       }
       setIsModalOpen(true)
     } else {
+      logEvent(Events.CLICKED_DUPLICATE_BOOKABLE_OFFER, {
+        from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFERS,
+        offererId: selectedOffererId?.toString(),
+        offerId: offer.id,
+        offerStatus: offer.displayedStatus,
+        offerType: 'collective',
+      })
       await duplicateBookableOffer(navigate, notify, offer.id)
     }
   }

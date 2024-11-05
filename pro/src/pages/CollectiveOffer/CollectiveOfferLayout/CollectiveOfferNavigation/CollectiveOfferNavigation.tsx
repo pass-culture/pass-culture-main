@@ -295,6 +295,13 @@ export const CollectiveOfferNavigation = ({
             variant={ButtonVariant.TERNARY}
             icon={fullCopyIcon}
             onClick={async () => {
+              logEvent(Events.CLICKED_DUPLICATE_BOOKABLE_OFFER, {
+                from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFER_RECAP,
+                offererId: selectedOffererId?.toString(),
+                offerId,
+                offerStatus: offer?.displayedStatus,
+                offerType: 'collective',
+              })
               await duplicateBookableOffer(navigate, notify, offerId)
             }}
           >
