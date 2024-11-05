@@ -11,6 +11,7 @@ export interface Description {
 interface SummaryDescriptionListProps {
   className?: string
   descriptions: Description[]
+  listDataTestId?: string
 }
 
 const DescriptionTextContent = ({ text, title }: Description) => (
@@ -25,6 +26,7 @@ const DescriptionTextContent = ({ text, title }: Description) => (
 export const SummaryDescriptionList = ({
   className,
   descriptions,
+  listDataTestId = '',
 }: SummaryDescriptionListProps) => {
   if (descriptions.length === 0) {
     return null
@@ -42,7 +44,7 @@ export const SummaryDescriptionList = ({
   // dd/dt/dl is more semantic but less supported by assistive technologies
   // we use ul/li instead for now
   return (
-    <ul>
+    <ul data-testid={listDataTestId}>
       {descriptions.map(({ text, title }, index) => (
         <li key={index} className={cn(style['summary-layout-row'], className)}>
           <DescriptionTextContent text={text} title={title} />

@@ -1,10 +1,15 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
+import { expect } from 'vitest'
 
 import { OfferAddressType } from 'apiClient/adage'
 import {
-  defaultCollectiveTemplateOffer,
   defaultCollectiveOffer,
+  defaultCollectiveTemplateOffer,
 } from 'commons/utils/factories/adageFactories'
+import {
+  renderWithProviders,
+  RenderWithProvidersOptions,
+} from 'commons/utils/renderWithProviders'
 
 import {
   AdageOfferInfoSection,
@@ -14,9 +19,10 @@ import {
 function renderAdageOfferInfoSection(
   props: AdageOfferInfoSectionProps = {
     offer: defaultCollectiveTemplateOffer,
-  }
+  },
+  options?: RenderWithProvidersOptions
 ) {
-  return render(<AdageOfferInfoSection {...props} />)
+  return renderWithProviders(<AdageOfferInfoSection {...props} />, options)
 }
 
 describe('AdageOfferInfoSection', () => {
@@ -130,5 +136,26 @@ describe('AdageOfferInfoSection', () => {
     ).toBeInTheDocument()
 
     expect(screen.getByText('Morbihan (56)')).toBeInTheDocument()
+  })
+})
+describe('OA feature flag', () => {
+  it('should display the right wording without the OA FF', () => {
+    renderAdageOfferInfoSection({
+      offer: {
+        ...defaultCollectiveOffer,
+      },
+    })
+    expect(screen.getByText('Lieu où se déroulera l’offre')).toBeInTheDocument()
+  })
+  it('should display the right wording with the OA FF', () => {
+    renderAdageOfferInfoSection(
+      {
+        offer: {
+          ...defaultCollectiveOffer,
+        },
+      },
+      { features: ['WIP_ENABLE_OFFER_ADDRESS'] }
+    )
+    expect(screen.getByText('Localisation de l’offre')).toBeInTheDocument()
   })
 })
