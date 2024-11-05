@@ -1,6 +1,7 @@
 import datetime
 from decimal import Decimal
 import pathlib
+from zoneinfo import ZoneInfo
 
 import pytest
 
@@ -739,10 +740,31 @@ class CheckOfferExtraDataTest:
 
 @pytest.mark.usefixtures("db_session")
 class CheckBookingLimitDatetimeTest:
-    def test_check_booking_limit_datetime_should_raise_because_booking_limit_is_one_hour_after(self):
-        venue = offerers_factories.VenueFactory(departementCode=71)
-        offer = offers_factories.OfferFactory(venueId=venue.id)
-        stock = offers_factories.StockFactory(offerId=offer.id)
+    @pytest.mark.parametrize(
+        "stock_factory, offer_factory, venue_factory",
+        [
+            (
+                educational_factories.CollectiveStockFactory,
+                educational_factories.CollectiveOfferFactory,
+                offerers_factories.VenueFactory,
+            ),
+            (
+                offers_factories.StockFactory,
+                offers_factories.DigitalOfferFactory,
+                offerers_factories.VirtualVenueFactory,
+            ),
+            (offers_factories.StockFactory, offers_factories.OfferFactory, offerers_factories.VenueFactory),
+        ],
+    )
+    def test_check_booking_limit_datetime_should_raise_because_booking_limit_is_one_hour_after(
+        self, stock_factory, offer_factory, venue_factory
+    ):
+        venue = venue_factory(departementCode=71)
+        offer = offer_factory(venueId=venue.id)
+        if stock_factory == educational_factories.CollectiveStockFactory:
+            stock = stock_factory(collectiveOfferId=offer.id)
+        else:
+            stock = stock_factory(offerId=offer.id)
 
         beginning_date = datetime.datetime(2024, 7, 19, 8)
         booking_limit_date = beginning_date + datetime.timedelta(hours=1)
@@ -775,8 +797,11 @@ class CheckBookingLimitDatetimeTest:
                 None, beginning=beginning_date, booking_limit_datetime=booking_limit_date
             )
 
-    def test_check_booking_limit_datetime_should_not_raise_because_a_date_is_missing(self):
-        stock = offers_factories.StockFactory()
+    @pytest.mark.parametrize(
+        "stock_factory", [offers_factories.StockFactory, educational_factories.CollectiveStockFactory]
+    )
+    def test_check_booking_limit_datetime_should_not_raise_because_a_date_is_missing(self, stock_factory):
+        stock = stock_factory()
 
         beginning_date = datetime.datetime(2024, 7, 19, 8)
         booking_limit_date = beginning_date + datetime.timedelta(days=1)
@@ -785,11 +810,14 @@ class CheckBookingLimitDatetimeTest:
         validation.check_booking_limit_datetime(stock, beginning=beginning_date, booking_limit_datetime=None)
 
     @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
-    def test_check_booking_limit_datetime_should_not_raise_with_timezone(self):
-        venue = offerers_factories.VenueFactory(departementCode=71)
-        oa = offerers_factories.OffererAddressFactory(address__departmentCode=974)
-        offer = offers_factories.OfferFactory(venueId=venue.id, offererAddress=oa)
-        stock = offers_factories.StockFactory(offerId=offer.id)
+    @pytest.mark.parametrize(
+        "offer_factory",
+        [offers_factories.OfferFactory, offers_factories.EventOfferFactory, offers_factories.DigitalOfferFactory],
+    )
+    def test_check_booking_limit_datetime_should_not_raise_with_timezone(self, offer_factory):
+        oa = offerers_factories.OffererAddressFactory(address__departmentCode="974")
+        offer = offer_factory(venue__timezone=71, offererAddress=oa)
+        stock = offers_factories.StockFactory(offer=offer)
 
         beginning_date = datetime.datetime(2024, 7, 19, 8, tzinfo=datetime.timezone.utc)
         booking_limit_date = beginning_date - datetime.timedelta(hours=1)
@@ -800,6 +828,37 @@ class CheckBookingLimitDatetimeTest:
             )
         except exceptions.BookingLimitDatetimeTooLate as e:
             assert False, f"Should not raise exception {e}"
+
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.parametrize(
+        "time_zone_expected,",
+        [
+            ZoneInfo("Indian/Reunion"),  # "offer.offerer_address.address.timezone",
+            ZoneInfo("America/Guadeloupe"),  #  "offer.venue.offererAddress.address.timezone",
+            ZoneInfo("Europe/Paris"),  # "offer.venue.timezone",
+        ],
+    )
+    def test_check_booking_limit_datetime_priorisation_order(self, time_zone_expected):
+        oa = (
+            offerers_factories.OffererAddressFactory(address__departmentCode="974")
+            if time_zone_expected == ZoneInfo("Indian/Reunion")
+            else None
+        )
+        if time_zone_expected in [ZoneInfo("Indian/Reunion"), ZoneInfo("America/Guadeloupe")]:
+            venue = offerers_factories.VenueFactory(
+                departementCode=71, offererAddress__address__departmentCode="971"
+            )  # oa guadeloupe venue#france
+        else:
+            venue = offerers_factories.VirtualVenueFactory(departementCode=71)
+        offer = offers_factories.OfferFactory(offererAddress=oa, venue=venue)  # reunion
+        stock = offers_factories.StockFactory(offer=offer)
+        beginning_date = datetime.datetime(2024, 7, 19, 8, tzinfo=datetime.timezone.utc)
+        booking_limit_date = beginning_date - datetime.timedelta(hours=1)
+
+        beginning, booking_limit_datetime = validation.check_booking_limit_datetime(
+            stock, beginning=beginning_date, booking_limit_datetime=booking_limit_date
+        )
+        assert beginning.tzinfo == booking_limit_datetime.tzinfo == time_zone_expected
 
 
 class CheckPublicationDateTest:
