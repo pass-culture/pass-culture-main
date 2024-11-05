@@ -1393,6 +1393,9 @@ def _should_try_to_update_offer_stock_quantity(offer: models.Offer) -> bool:
     if not offer.subcategory.id == subcategories.SEANCE_CINE.id:
         return False
 
+    if not offer.lastProviderId:  # Manual offer
+        return False
+
     offer_venue_providers = offer.venue.venueProviders
     for venue_provider in offer_venue_providers:
         if venue_provider.isFromCinemaProvider:
