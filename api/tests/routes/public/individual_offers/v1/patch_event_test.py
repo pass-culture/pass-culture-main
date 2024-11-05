@@ -168,6 +168,7 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
             extraData={"gtl_id": "02000000"},
         )
 
+        new_name = event_offer.name + "_updated"
         response = client.with_explicit_token(plain_api_key).patch(
             self.endpoint_url.format(event_id=event_offer.id),
             json={
@@ -179,6 +180,7 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
                 "description": "A new description",
                 "image": {"file": image_data.GOOD_IMAGE},
                 "idAtProvider": "oh it has been updated",
+                "name": new_name,
             },
         )
 
@@ -191,6 +193,7 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
         assert event_offer.withdrawalDetails == "Here !"
         assert event_offer.description == "A new description"
         assert event_offer.idAtProvider == "oh it has been updated"
+        assert event_offer.name == new_name
 
         assert offers_models.Mediation.query.one()
         assert (

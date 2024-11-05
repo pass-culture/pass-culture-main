@@ -2979,6 +2979,15 @@
                         "nullable": true,
                         "title": "Itemcollectiondetails",
                         "type": "string"
+                    },
+                    "name": {
+                        "description": "Offer title",
+                        "example": "Le Petit Prince",
+                        "maxLength": 140,
+                        "minLength": 1,
+                        "nullable": true,
+                        "title": "Name",
+                        "type": "string"
                     }
                 },
                 "title": "EventOfferEdition",
