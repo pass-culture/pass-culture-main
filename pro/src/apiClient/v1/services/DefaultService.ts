@@ -101,6 +101,7 @@ import type { SharedCurrentUserResponseModel } from '../models/SharedCurrentUser
 import type { SharedLoginUserResponseModel } from '../models/SharedLoginUserResponseModel';
 import type { SirenInfo } from '../models/SirenInfo';
 import type { SiretInfo } from '../models/SiretInfo';
+import type { StatisticsModel } from '../models/StatisticsModel';
 import type { StockIdResponseModel } from '../models/StockIdResponseModel';
 import type { StocksOrderedBy } from '../models/StocksOrderedBy';
 import type { StocksResponseModel } from '../models/StocksResponseModel';
@@ -1185,6 +1186,27 @@ export class DefaultService {
       url: '/finance/combined-invoices',
       query: {
         'invoiceReferences': invoiceReferences,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * get_statistics <GET>
+   * @param venueIds
+   * @returns StatisticsModel OK
+   * @throws ApiError
+   */
+  public getStatistics(
+    venueIds?: (Array<number> | number),
+  ): CancelablePromise<StatisticsModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/get-statistics',
+      query: {
+        'venue_ids': venueIds,
       },
       errors: {
         403: `Forbidden`,

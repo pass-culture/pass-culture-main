@@ -29,3 +29,9 @@ class MockYearlyAggregatedRevenueQueryResult:
 
 
 YEARLY_AGGREGATED_VENUE_REVENUE = [MockYearlyAggregatedRevenueQueryResult()]
+YEARLY_AGGREGATED_VENUE_REVENUE_MULTIPLE_YEARS = [
+    MockYearlyAggregatedRevenueQueryResult(),
+    MockYearlyAggregatedRevenueQueryResult(
+        2022, Decimal("22.12"), Decimal("22.12"), Decimal("22.12"), Decimal("22.12")
+    ),
+]
