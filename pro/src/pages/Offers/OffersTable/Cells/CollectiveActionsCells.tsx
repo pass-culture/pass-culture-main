@@ -21,8 +21,8 @@ import {
   OFFER_FROM_TEMPLATE_ENTRIES,
 } from 'commons/core/FirebaseEvents/constants'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'commons/core/Notification/constants'
-import { createOfferFromBookableOffer } from 'commons/core/OfferEducational/utils/createOfferFromBookableOffer'
 import { createOfferFromTemplate } from 'commons/core/OfferEducational/utils/createOfferFromTemplate'
+import { duplicateBookableOffer } from 'commons/core/OfferEducational/utils/duplicateBookableOffer'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'commons/core/Offers/constants'
 import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
 import { getCollectiveOffersSwrKeys } from 'commons/core/Offers/utils/getCollectiveOffersSwrKeys'
@@ -154,7 +154,7 @@ export const CollectiveActionsCells = ({
       }
       setIsModalOpen(true)
     } else {
-      await createOfferFromBookableOffer(navigate, notify, offer.id)
+      await duplicateBookableOffer(navigate, notify, offer.id)
     }
   }
 

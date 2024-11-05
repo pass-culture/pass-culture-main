@@ -28,8 +28,8 @@ import {
   isCollectiveOfferTemplate,
 } from 'commons/core/OfferEducational/types'
 import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
-import { createOfferFromBookableOffer } from 'commons/core/OfferEducational/utils/createOfferFromBookableOffer'
 import { createOfferFromTemplate } from 'commons/core/OfferEducational/utils/createOfferFromTemplate'
+import { duplicateBookableOffer } from 'commons/core/OfferEducational/utils/duplicateBookableOffer'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferStockEditionURL } from 'commons/hooks/useOfferEditionURL'
@@ -295,7 +295,7 @@ export const CollectiveOfferNavigation = ({
             variant={ButtonVariant.TERNARY}
             icon={fullCopyIcon}
             onClick={async () => {
-              await createOfferFromBookableOffer(navigate, notify, offerId)
+              await duplicateBookableOffer(navigate, notify, offerId)
             }}
           >
             Dupliquer
