@@ -15,10 +15,24 @@ describe('Create and update venue', () => {
       siren = response.body.siren
     })
     cy.intercept({ method: 'PATCH', url: '/venues/*' }).as('patchVenue')
-    cy.intercept({
-      method: 'GET',
-      url: 'https://api-adresse.data.gouv.fr/search/?limit=*',
-    }).as('searchAddress')
+    cy.intercept(
+      'GET',
+      'https://api-adresse.data.gouv.fr/search/?limit=1&q=*',
+      (req) =>
+        req.reply({
+          statusCode: 200,
+          body: addressInterceptionPayload,
+        })
+    ).as('searchAddress1')
+    cy.intercept(
+      'GET',
+      'https://api-adresse.data.gouv.fr/search/?limit=5&q=*',
+      (req) =>
+        req.reply({
+          statusCode: 200,
+          body: addressInterceptionPayload5,
+        })
+    ).as('searchAddress5')
     cy.intercept({ method: 'POST', url: '/venues' }).as('postVenues')
   })
 
@@ -40,7 +54,7 @@ describe('Create and update venue', () => {
     cy.findByLabelText('Adresse postale *')
 
     cy.findByLabelText('Adresse postale *').type('89 Rue la Boétie 75008 Paris')
-    cy.wait('@searchAddress').its('response.statusCode').should('eq', 200)
+    cy.wait('@searchAddress5').its('response.statusCode').should('eq', 200)
     cy.findByTestId('list').contains('89 Rue la Boétie 75008 Paris').click()
     cy.findByLabelText('Activité principale *').select('Centre culturel')
     cy.findByText('Visuel').click()
@@ -118,7 +132,7 @@ describe('Create and update venue', () => {
 
     cy.stepLog({ message: 'I add a valid Siret' })
     cy.findByLabelText('SIRET du lieu *').type(siret + '{enter}')
-    cy.wait(['@getSiretVenue', '@searchAddress'])
+    cy.wait(['@getSiretVenue', '@searchAddress1'])
     cy.findByTestId('error-siret').should('not.exist')
 
     cy.stepLog({ message: 'I add venue with Siret details' })
@@ -222,3 +236,67 @@ describe('Create and update venue', () => {
     })
   })
 })
+
+const addressInterceptionPayload = {
+  type: 'FeatureCollection',
+  version: 'draft',
+  features: [
+    {
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: [2.337933, 48.863666] },
+      properties: {
+        label: '3 Rue de Valois 75001 Paris',
+        score: 0.8136893939393939,
+        housenumber: '3',
+        id: '75101_9575_00003',
+        name: '3 Rue de Valois',
+        postcode: '75001',
+        citycode: '75101',
+        x: 651428.82,
+        y: 6862829.62,
+        city: 'Paris',
+        district: 'Paris 1er Arrondissement',
+        context: '75, Paris, Île-de-France',
+        type: 'housenumber',
+        importance: 0.6169,
+        street: 'Rue de Valois',
+      },
+    },
+  ],
+  attribution: 'BAN',
+  licence: 'ETALAB-2.0',
+  query: '3 RUE DE VALOIS Paris 75001',
+  limit: 1,
+}
+
+const addressInterceptionPayload5 = {
+  type: 'FeatureCollection',
+  version: 'draft',
+  features: [
+    {
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: [2.308289, 48.87171] },
+      properties: {
+        label: '89 Rue la Boétie 75008 Paris',
+        score: 0.97351,
+        housenumber: '89',
+        id: '75108_5194_00089',
+        name: '89 Rue la Boétie',
+        postcode: '75008',
+        citycode: '75108',
+        x: 649261.94,
+        y: 6863742.69,
+        city: 'Paris',
+        district: 'Paris 8e Arrondissement',
+        context: '75, Paris, Île-de-France',
+        type: 'housenumber',
+        importance: 0.70861,
+        street: 'Rue la Boétie',
+      },
+    },
+  ],
+  attribution: 'BAN',
+  licence: 'ETALAB-2.0',
+  query: '89 Rue la Boétie 75008 Paris',
+  limit: 5,
+}
