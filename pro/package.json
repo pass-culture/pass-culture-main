@@ -84,7 +84,7 @@
     "@bahmutov/cypress-esbuild-preprocessor": "^2.2.3",
     "@storybook/addon-a11y": "^8.4.0",
     "@storybook/addon-controls": "^8.4.0",
-    "@storybook/addon-docs": "^8.3.6",
+    "@storybook/addon-docs": "^8.4.0",
     "@storybook/blocks": "^8.4.0",
     "@storybook/preset-scss": "^1.0.3",
     "@storybook/react": "^8.3.5",
