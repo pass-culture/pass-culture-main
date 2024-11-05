@@ -7,6 +7,8 @@ import { api } from 'apiClient/api'
 import {
   CollectiveOfferDisplayedStatus,
   CollectiveOfferStatus,
+  CollectiveOfferAllowedAction,
+  CollectiveOfferTemplateAllowedAction,
   OfferAddressType,
 } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
@@ -47,7 +49,8 @@ const mockLogEvent = vi.fn()
 const mockDeselectOffer = vi.fn()
 const notifyError = vi.fn()
 const renderCollectiveActionsCell = (
-  props: Partial<CollectiveActionsCellsProps> = {}
+  props: Partial<CollectiveActionsCellsProps> = {},
+  features: string[] = []
 ) => {
   const defaultProps: CollectiveActionsCellsProps = {
     offer: collectiveOfferFactory(),
@@ -65,7 +68,8 @@ const renderCollectiveActionsCell = (
           <CollectiveActionsCells {...defaultProps} />
         </tr>
       </tbody>
-    </table>
+    </table>,
+    { features }
   )
 }
 
@@ -351,5 +355,101 @@ describe('CollectiveActionsCells', () => {
         '/offre/collectif/202/creation?structure=4'
       )
     })
+  })
+
+  it('should allow edition for a template offer when the ENABLE_COLLECTIVE_NEW_STATUSES FF is enabled and the edition of details is allowed', async () => {
+    renderCollectiveActionsCell(
+      {
+        offer: collectiveOfferFactory({
+          isShowcase: true,
+          allowedActions: [
+            CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS,
+          ],
+        }),
+      },
+      ['ENABLE_COLLECTIVE_NEW_STATUSES']
+    )
+
+    await userEvent.click(screen.getByTitle('Action'))
+
+    expect(screen.getByText('Modifier')).toBeInTheDocument()
+  })
+
+  it('should not allow edition for a template offer when the ENABLE_COLLECTIVE_NEW_STATUSES FF is enabled and the edition of details is not allowed', async () => {
+    renderCollectiveActionsCell(
+      {
+        offer: collectiveOfferFactory({
+          isShowcase: true,
+          allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE],
+        }),
+      },
+      ['ENABLE_COLLECTIVE_NEW_STATUSES']
+    )
+
+    await userEvent.click(screen.getByTitle('Action'))
+
+    expect(screen.queryByText('Modifier')).not.toBeInTheDocument()
+  })
+
+  it.each([
+    {
+      actions: [CollectiveOfferAllowedAction.CAN_EDIT_DETAILS],
+      name: 'details',
+    },
+    {
+      actions: [
+        CollectiveOfferAllowedAction.CAN_ARCHIVE,
+        CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+      ],
+      name: 'dates',
+    },
+    {
+      actions: [
+        CollectiveOfferAllowedAction.CAN_CANCEL,
+        CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+        CollectiveOfferAllowedAction.CAN_ARCHIVE,
+      ],
+      name: 'discount',
+    },
+    {
+      actions: [CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION],
+      name: 'institution',
+    },
+  ])(
+    'should allow edition for a bookable offer when the ENABLE_COLLECTIVE_NEW_STATUSES FF is enabled and the edition of $name is allowed',
+    async ({ actions }) => {
+      renderCollectiveActionsCell(
+        {
+          offer: collectiveOfferFactory({
+            isShowcase: false,
+            allowedActions: actions,
+          }),
+        },
+        ['ENABLE_COLLECTIVE_NEW_STATUSES']
+      )
+
+      await userEvent.click(screen.getByTitle('Action'))
+
+      expect(screen.getByText('Modifier')).toBeInTheDocument()
+    }
+  )
+
+  it('should not allow edition for a bookable offer when the ENABLE_COLLECTIVE_NEW_STATUSES FF is enabled and no edition action is allowed', async () => {
+    renderCollectiveActionsCell(
+      {
+        offer: collectiveOfferFactory({
+          isShowcase: false,
+          allowedActions: [
+            CollectiveOfferAllowedAction.CAN_ARCHIVE,
+            CollectiveOfferAllowedAction.CAN_CANCEL,
+          ],
+        }),
+      },
+      ['ENABLE_COLLECTIVE_NEW_STATUSES']
+    )
+
+    await userEvent.click(screen.getByTitle('Action'))
+
+    expect(screen.queryByText('Modifier')).not.toBeInTheDocument()
   })
 })

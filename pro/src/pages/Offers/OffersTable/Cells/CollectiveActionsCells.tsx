@@ -66,6 +66,18 @@ export interface CollectiveActionsCellsProps {
 
 const LOCAL_STORAGE_HAS_SEEN_MODAL_KEY = 'DUPLICATE_OFFER_MODAL_SEEN'
 
+function hasOfferAnyEditionActionAllowed(offer: CollectiveOfferResponseModel) {
+  return offer.allowedActions.some((action) =>
+    [
+      CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS,
+      CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+      CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+      CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+      CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION,
+    ].includes(action)
+  )
+}
+
 export const CollectiveActionsCells = ({
   offer,
   editionOfferLink,
@@ -261,6 +273,12 @@ export const CollectiveActionsCells = ({
     ? offer.allowedActions.length === 0
     : offer.isShowcase && offer.status === CollectiveOfferStatus.ARCHIVED
 
+  const canEditOffer = areCollectiveNewStatusesEnabled
+    ? hasOfferAnyEditionActionAllowed(offer)
+    : offer.isEditable &&
+      !offer.isPublicApi &&
+      offer.status !== CollectiveOfferStatus.ARCHIVED
+
   return (
     <td
       className={cn(styles['offers-table-cell'], styles['actions-column'])}
@@ -345,20 +363,18 @@ export const CollectiveActionsCells = ({
                   </DropdownMenu.Item>
                 )}
 
-                {offer.isEditable &&
-                  !offer.isPublicApi &&
-                  offer.status !== CollectiveOfferStatus.ARCHIVED && (
-                    <DropdownMenu.Item className={styles['menu-item']} asChild>
-                      <ButtonLink
-                        to={editionOfferLink}
-                        icon={fullPenIcon}
-                        className={styles['button']}
-                        onClick={handleEditOfferClick}
-                      >
-                        Modifier
-                      </ButtonLink>
-                    </DropdownMenu.Item>
-                  )}
+                {canEditOffer && (
+                  <DropdownMenu.Item className={styles['menu-item']} asChild>
+                    <ButtonLink
+                      to={editionOfferLink}
+                      icon={fullPenIcon}
+                      className={styles['button']}
+                      onClick={handleEditOfferClick}
+                    >
+                      Modifier
+                    </ButtonLink>
+                  </DropdownMenu.Item>
+                )}
                 {offer.status === CollectiveOfferStatus.SOLD_OUT &&
                   offer.booking &&
                   (offer.booking.booking_status ===
