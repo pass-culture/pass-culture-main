@@ -7,7 +7,6 @@ import typing
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.finance import factories as finance_factories
-from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 
@@ -41,7 +40,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
     offerer = next(offerer_iterator)
     create_venue(
         managingOfferer=offerer,
-        name=f"reimbursementPoint {offerer.name} 56",
+        name=f"Partenaire culturel {offerer.name} 56",
         reimbursement=True,
         adageId="123546",
         adageInscriptionDate=datetime.utcnow() - timedelta(days=3),
@@ -56,7 +55,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
     offerer = next(offerer_iterator)
     create_venue(
         managingOfferer=offerer,
-        name=f"reimbursementPoint {offerer.name} 91",
+        name=f"Partenaire culturel {offerer.name} 91",
         adageId="10837",
         adageInscriptionDate=datetime.utcnow() - timedelta(days=5),
         reimbursement=True,
@@ -77,22 +76,16 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
     )
     # eac_pending_bank_informations
     offerer = next(offerer_iterator)
-    pending_reimbursement_venue = offerers_factories.VenueFactory(
+    offerers_factories.VenueFactory(
         managingOfferer=offerer,
-        name=f"reimbursementPoint {offerer.name}",
+        name=f"Partenaire culturel {offerer.name}",
         adageId="789456",
         adageInscriptionDate=datetime.utcnow() - timedelta(days=30),
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
         siret="55204695506065",
     )
-    pending_reimbursement_venue.bankInformation = finance_factories.BankInformationFactory(
-        status=finance_models.BankInformationStatus.DRAFT
-    )
-    offerers_factories.VenueReimbursementPointLinkFactory(
-        venue=pending_reimbursement_venue,
-        reimbursementPoint=pending_reimbursement_venue,
-    )
+
     # eac_no_cb
     offerer = next(offerer_iterator)
     create_venue(
@@ -108,7 +101,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
     offerer = next(offerer_iterator)
     create_venue(
         managingOfferer=offerer,
-        name=f"reimbursementPoint {offerer.name}",
+        name=f"Partenaire culturel {offerer.name}",
         reimbursement=True,
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,

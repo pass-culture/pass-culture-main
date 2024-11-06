@@ -145,7 +145,6 @@ class Returns200Test:
         )
         venue = offer.venue
         offerer = venue.managingOfferer
-        finance_factories.BankInformationFactory(venue=venue)
 
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id

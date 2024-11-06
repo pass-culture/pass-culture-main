@@ -263,7 +263,6 @@ class InvoiceFactory(BaseFactory):
     class Meta:
         model = models.Invoice
 
-    reimbursementPoint = factory.SubFactory(offerers_factories.VenueFactory)
     amount = 1000
     reference = factory.Sequence("{:09}".format)
     token = factory.LazyFunction(secrets.token_urlsafe)
@@ -284,19 +283,7 @@ class CashflowFactory(BaseFactory):
     amount = -1000
     batch = factory.SubFactory(CashflowBatchFactory)
     status = models.CashflowStatus.ACCEPTED
-    reimbursementPoint = None
-
-    @factory.lazy_attribute
-    def bankInformation(self) -> models.BankInformation | None:
-        if self.reimbursementPoint is not None:
-            return self.reimbursementPoint.bankInformation
-        return None
-
-    @factory.lazy_attribute
-    def bankAccount(self) -> models.BankAccount | None:
-        if self.reimbursementPoint is None:
-            return factory.SubFactory(BankAccountFactory)
-        return None
+    bankAccount = factory.SubFactory(BankAccountFactory)
 
 
 # Factories below are deprecated and should probably NOT BE USED in

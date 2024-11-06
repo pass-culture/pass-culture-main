@@ -496,7 +496,7 @@ def test_with_offer_address_and_venue_address(client, offer_has_oa, len_offerer_
     )
     batch = finance_factories.CashflowBatchFactory(cutoff=cutoff)
 
-    invoice = finance_factories.InvoiceFactory(bankAccount=bank_account, date=cutoff, reimbursementPoint=venue)
+    invoice = finance_factories.InvoiceFactory(bankAccount=bank_account, date=cutoff)
     cashflow = finance_factories.CashflowFactory(
         batch=batch, creationDate=cutoff, bankAccount=bank_account, invoices=[invoice]
     )

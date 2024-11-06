@@ -502,14 +502,6 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
         )
 
     @property
-    def bic(self) -> str | None:
-        return self.bankInformation.bic if self.bankInformation else None
-
-    @property
-    def iban(self) -> str | None:
-        return self.bankInformation.iban if self.bankInformation else None
-
-    @property
     def demarchesSimplifieesApplicationId(self) -> int | None:
         if not self.bankInformation:
             return None
@@ -1023,14 +1015,6 @@ class Offerer(
     @street.expression  # type: ignore[no-redef]
     def street(cls):  # pylint: disable=no-self-argument
         return cls._address
-
-    @property
-    def bic(self) -> str | None:
-        return self.bankInformation.bic if self.bankInformation else None
-
-    @property
-    def iban(self) -> str | None:
-        return self.bankInformation.iban if self.bankInformation else None
 
     @property
     def demarchesSimplifieesApplicationId(self) -> str | None:

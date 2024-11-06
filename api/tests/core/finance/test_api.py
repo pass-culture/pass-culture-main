@@ -1544,12 +1544,11 @@ class GenerateCashflowsTest:
         ],
     )
     def test_basics_with_incident(self, booking_pricing, incident_booking_amount):
-        venue1 = offerers_factories.VenueFactory(pricing_point="self")
-        venue_bank_account_link = offerers_factories.VenueBankAccountLinkFactory(venue=venue1)
+        venue = offerers_factories.VenueFactory(pricing_point="self")
+        venue_bank_account_link = offerers_factories.VenueBankAccountLinkFactory(venue=venue)
         bank_account = venue_bank_account_link.bankAccount
 
-        # creating an incident for another booking in the same reimbursment_point
-        offer = offers_factories.OfferFactory(venue=venue1)
+        offer = offers_factories.OfferFactory(venue=venue)
         _beginningDatetime = datetime.datetime.utcnow().replace(second=0, microsecond=0) - datetime.timedelta(days=30)
         stock = offers_factories.StockFactory(
             offer=offer, price=incident_booking_amount, beginningDatetime=_beginningDatetime
@@ -1575,9 +1574,9 @@ class GenerateCashflowsTest:
             api.price_event(finance_incident_event)
 
         # creating a pricing for a booking
-        pricing11 = factories.PricingFactory(
+        pricing = factories.PricingFactory(
             status=models.PricingStatus.VALIDATED,
-            booking__stock__offer__venue=venue1,
+            booking__stock__offer__venue=venue,
             amount=booking_pricing,
         )
         assert models.Pricing.query.count() == 3
@@ -1594,23 +1593,23 @@ class GenerateCashflowsTest:
             assert len(processed_pricings) == 0
 
             assert len(batch.cashflows) == 0
-            assert len(pricing11.cashflows) == 0
+            assert len(pricing.cashflows) == 0
         elif abs(incident_booking_amount * 100) == abs(booking_pricing):
             assert len(processed_pricings) == 2
 
             assert len(batch.cashflows) == 1
             assert batch.cashflows[0].amount == 0
 
-            assert len(pricing11.cashflows) == 1
-            assert pricing11.cashflows[0].bankAccount == bank_account
+            assert len(pricing.cashflows) == 1
+            assert pricing.cashflows[0].bankAccount == bank_account
         else:
             assert len(processed_pricings) == 2
             assert models.Cashflow.query.count() == 1
             assert len(batch.cashflows) == 1
             assert batch.cashflows[0].amount == booking_pricing + (incident_booking_amount * 100)
 
-            assert len(pricing11.cashflows) == 1
-            assert pricing11.cashflows[0].bankAccount == bank_account
+            assert len(pricing.cashflows) == 1
+            assert pricing.cashflows[0].bankAccount == bank_account
 
         assert queried_batch.id == batch.id
         assert queried_batch.cutoff == cutoff
@@ -2488,7 +2487,7 @@ def test_invoice_pdf_commercial_gesture(monkeypatch):
     assert total_account_table_row["N° de virement"] == batch.label
 
     ####################################
-    # Test reimbursment by venue table #
+    # Test reimbursement by venue table #
     ####################################
     reimbursement_by_venue_table = html_parser.get_tag(invoice_html, class_="reimbursmentByVenueTable", tag="table")
     reimbursement_by_venue_rows = html_parser.extract_table_rows(reimbursement_by_venue_table)
