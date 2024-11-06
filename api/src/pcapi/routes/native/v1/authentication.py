@@ -112,6 +112,8 @@ def reset_password(body: ResetPasswordRequest) -> ResetPasswordResponse:
         user = users_api.reset_password_with_token(body.new_password, body.reset_password_token)
     except password_exceptions.WeakPassword as e:
         raise ApiErrors(e.errors) from e
+    except users_exceptions.InvalidToken as e:
+        raise ApiErrors({"token": ["Le token de changement de mot de passe est invalide."]}) from e
 
     return ResetPasswordResponse(
         access_token=users_api.create_user_access_token(user),

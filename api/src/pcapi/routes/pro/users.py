@@ -29,6 +29,7 @@ from pcapi.domain.password import compute_password_rule_violations
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.api_errors import UnauthorizedError
+from pcapi.repository import atomic
 from pcapi.routes.serialization import users as users_serializers
 from pcapi.routes.shared.cookies_consent import CookieConsentRequest
 from pcapi.serialization.decorator import spectree_serialize
@@ -101,10 +102,9 @@ def patch_user_phone(body: users_serializers.UserPhoneBodyModel) -> users_serial
 
 
 @blueprint.pro_private_api.route("/users/validate_email", methods=["PATCH"])
+@atomic()
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def patch_validate_email(body: users_serializers.ChangeProEmailBody) -> None:
-    errors = ApiErrors()
-    errors.status_code = 400
     try:
         token = token_utils.Token.load_and_check(body.token, token_utils.TokenType.EMAIL_CHANGE_VALIDATION)
         token.expire()
@@ -112,8 +112,7 @@ def patch_validate_email(body: users_serializers.ChangeProEmailBody) -> None:
             current_email=token.data["current_email"], new_email=token.data["new_email"], user_id=token.user_id
         )
     except (users_exceptions.InvalidToken, users_exceptions.UserDoesNotExist) as exc:
-        errors.add_error("global", "Token invalide")
-        raise errors from exc
+        raise ApiErrors({"global": ["Token invalide"]}) from exc
     except users_exceptions.EmailExistsError:
         # Returning an error message might help the end client find
         # existing email addresses.

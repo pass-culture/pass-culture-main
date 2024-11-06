@@ -2,6 +2,7 @@ from dataclasses import asdict
 import datetime
 from decimal import Decimal
 import enum
+from functools import partial
 from io import BytesIO
 import itertools
 import logging
@@ -53,6 +54,7 @@ import pcapi.core.offers.models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription.dms import api as dms_subscription_api
 import pcapi.core.subscription.phone_validation.exceptions as phone_validation_exceptions
+from pcapi.core.users import email as email_api
 import pcapi.core.users.constants as users_constants
 import pcapi.core.users.repository as users_repository
 import pcapi.core.users.utils as users_utils
@@ -60,9 +62,9 @@ from pcapi.domain.password import check_password_strength
 from pcapi.domain.password import random_password
 from pcapi.models import db
 from pcapi.models import feature
-from pcapi.models.api_errors import ApiErrors
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications import push as push_api
+from pcapi.repository import on_commit
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.serialization import users as users_serialization
@@ -366,13 +368,9 @@ def request_password_reset(user: models.User | None, reason: constants.Suspensio
 
 def reset_password_with_token(new_password: str, encoded_reset_password_token: str) -> models.User:
     check_password_strength("newPassword", new_password)
-    token = None
-    try:
-        token = token_utils.Token.load_and_check(encoded_reset_password_token, token_utils.TokenType.RESET_PASSWORD)
-        user = models.User.query.get(token.user_id)
-    except exceptions.InvalidToken:
-        raise ApiErrors({"token": ["Le token de changement de mot de passe est invalide."]})
 
+    token = token_utils.Token.load_and_check(encoded_reset_password_token, token_utils.TokenType.RESET_PASSWORD)
+    user = models.User.query.get(token.user_id)
     user.setPassword(new_password)
 
     if not user.isEmailValidated:
@@ -383,8 +381,8 @@ def reset_password_with_token(new_password: str, encoded_reset_password_token: s
             logger.exception(
                 "An unexpected error occurred while trying to link dms orphan to user", extra={"user_id": user.id}
             )
-    if token:
-        token.expire()
+
+    token.expire()
     return user
 
 
@@ -571,25 +569,17 @@ def change_email(
     current_user: models.User,
     new_email: str,
 ) -> None:
+    email_api.update.check_email_address_does_not_exist(new_email)
+
     email_history = models.UserEmailHistory.build_validation(user=current_user, new_email=new_email, by_admin=False)
 
-    try:
-        current_user.email = new_email
-        repository.save(current_user, email_history)
-    except ApiErrors as error:
-        # The caller might not want to inform the end client that the
-        # email address exists. To do so, raise a specific error and
-        # let the caller handle this specific case as needed.
-        # Note: email addresses are unique (db constraint)
-        if "email" in error.errors:
-            raise exceptions.EmailExistsError() from error
-        raise
+    current_user.email = new_email
+    repository.save(current_user, email_history)
 
     models.UserSession.query.filter_by(userId=current_user.id).delete(synchronize_session=False)
     models.SingleSignOn.query.filter_by(userId=current_user.id).delete(synchronize_session=False)
-    db.session.commit()
 
-    logger.info("User has changed their email", extra={"user": current_user.id})
+    on_commit(partial(logger.info, "User has changed their email", extra={"user": current_user.id}))
 
 
 def change_pro_user_email(

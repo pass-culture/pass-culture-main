@@ -185,6 +185,7 @@ def cancel_email_update(body: serializers.ChangeBeneficiaryEmailBody) -> None:
 
 
 @blueprint.native_route("/profile/email_update/validate", methods=["PUT"])
+@atomic()
 @spectree_serialize(response_model=serializers.ChangeBeneficiaryEmailResponse, on_success_status=200, api=blueprint.api)
 def validate_user_email(body: serializers.ChangeBeneficiaryEmailBody) -> serializers.ChangeBeneficiaryEmailResponse:
     try:

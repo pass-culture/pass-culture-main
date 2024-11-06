@@ -249,7 +249,6 @@ def validate_email_update_request(
 
     email_update_validation_token.check(token_utils.TokenType.EMAIL_CHANGE_VALIDATION)
 
-    check_email_address_does_not_exist(new_email)
     api.change_email(user, new_email)
 
     external_contacts.update_contact_email(user=user, old_email=old_email, new_email=new_email)
