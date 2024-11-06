@@ -266,12 +266,11 @@ def post_draft_offer(
 
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
-    try:
-        with repository.transaction():
+    with atomic():
+        try:
             offer = offers_api.create_draft_offer(body, venue, product)
-    except exceptions.OfferCreationBaseException as error:
-        raise api_errors.ApiErrors(error.errors, status_code=400)
-
+        except exceptions.OfferCreationBaseException as error:
+            raise api_errors.ApiErrors(error.errors, status_code=400)
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
