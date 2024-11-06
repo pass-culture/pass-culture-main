@@ -373,12 +373,9 @@ class GetVenueTest(GetEndpointHelper):
         assert f"Email : {venue.bookingEmail}" in response_text
         assert "Numéro de téléphone :" not in response_text
 
-    def test_get_venue_with_provider(self, authenticated_client, random_venue):
-        venue_provider = providers_factories.AllocineVenueProviderFactory(
-            venue=random_venue,
-            lastSyncDate=datetime(2024, 1, 5, 12, 0),
-        )
-        venue_id = random_venue.id
+    def test_get_venue_with_provider(self, authenticated_client):
+        venue_provider = providers_factories.AllocineVenueProviderFactory(lastSyncDate=datetime(2024, 1, 5, 12, 0))
+        venue_id = venue_provider.venue.id
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
             assert response.status_code == 200
@@ -388,23 +385,24 @@ class GetVenueTest(GetEndpointHelper):
         assert "Dernière synchronisation : 05/01/2024 à 13h00" in content
         assert f"/pro/venue/{venue_id}/delete/{venue_provider.provider.id}".encode() not in response.data
 
-    def test_get_venue_with_provider_not_allocine(self, authenticated_client, random_venue):
-        venue_provider = providers_factories.VenueProviderFactory(venue=random_venue)
-        venue_id = random_venue.id
+    def test_get_venue_with_provider_not_allocine(
+        self,
+        authenticated_client,
+    ):
+        venue_provider = providers_factories.VenueProviderFactory()
+        venue_id = venue_provider.venue.id
 
         response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
         assert response.status_code == 200
         assert f"/pro/venue/{venue_id}/provider/{venue_provider.provider.id}/delete".encode() in response.data
 
-    def test_display_fully_sync_provider_button(self, authenticated_client, random_venue):
-        provider = providers_factories.APIProviderFactory()
-        providers_factories.AllocineVenueProviderFactory(
-            venue=random_venue,
+    def test_display_fully_sync_provider_button(self, authenticated_client):
+        venue_provider = providers_factories.AllocineVenueProviderFactory(
             lastSyncDate=datetime.utcnow() - timedelta(hours=4),
             isActive=True,
-            provider=provider,
+            provider=providers_factories.APIProviderFactory(),
         )
-        venue_id = random_venue.id
+        venue_id = venue_provider.venue.id
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
@@ -413,15 +411,14 @@ class GetVenueTest(GetEndpointHelper):
         buttons = html_parser.extract(response.data, tag="button")
         assert "Resynchroniser les offres" in buttons
 
-    def test_hide_fully_sync_provider_button(self, authenticated_client, random_venue):
+    def test_hide_fully_sync_provider_button(self, authenticated_client):
         provider = providers_factories.APIProviderFactory(name="Praxiel")
-        provider = providers_factories.AllocineVenueProviderFactory(
-            venue=random_venue,
+        venue_provider = providers_factories.AllocineVenueProviderFactory(
             lastSyncDate=datetime.utcnow() - timedelta(hours=4),
             isActive=True,
             provider=provider,
         )
-        venue_id = random_venue.id
+        venue_id = venue_provider.venue.id
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
             assert response.status_code == 200
@@ -739,29 +736,29 @@ class FullySyncVenueTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
     @patch("pcapi.workers.fully_sync_venue_job.fully_sync_venue_job.delay")
-    def test_fully_sync_venue(self, fully_sync_venue_job, authenticated_client, random_venue):
+    def test_fully_sync_venue(self, fully_sync_venue_job, authenticated_client):
         provider = providers_factories.APIProviderFactory()
-        providers_factories.AllocineVenueProviderFactory(
-            venue=random_venue,
+        venue_provider = providers_factories.AllocineVenueProviderFactory(
             lastSyncDate=datetime.utcnow() - timedelta(hours=5),
             isActive=True,
             provider=provider,
         )
+        venue_id = venue_provider.venue.id
 
-        response = self.post_to_endpoint(authenticated_client, venue_id=random_venue.id)
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue_id)
         assert response.status_code == 303
-        fully_sync_venue_job.assert_called_once_with(random_venue.id)
+        fully_sync_venue_job.assert_called_once_with(venue_id)
 
     @patch("pcapi.workers.fully_sync_venue_job.fully_sync_venue_job.delay")
-    def test_fully_sync_venue_disabled_provider(self, fully_sync_venue_job, authenticated_client, random_venue):
+    def test_fully_sync_venue_disabled_provider(self, fully_sync_venue_job, authenticated_client):
         provider = providers_factories.APIProviderFactory()
-        providers_factories.AllocineVenueProviderFactory(
-            venue=random_venue,
+        venue_provider = providers_factories.AllocineVenueProviderFactory(
             lastSyncDate=datetime.utcnow() - timedelta(hours=4),
             isActive=False,
             provider=provider,
         )
-        response = self.post_to_endpoint(authenticated_client, venue_id=random_venue.id)
+        venue_id = venue_provider.venue.id
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue_id)
         assert response.status_code == 404
 
 

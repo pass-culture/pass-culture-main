@@ -306,13 +306,6 @@ def venue_provider_with_last_sync_fixture(venue_with_accepted_bank_account):
     return venue_provider
 
 
-@pytest.fixture(name="random_venue")
-def random_venue_fixture():
-    venue = offerers_factories.VenueFactory(postalCode="46150")
-    finance_factories.BankInformationFactory(venue=venue)
-    return venue
-
-
 @pytest.fixture(name="offerer_active_individual_offers")
 def offerer_active_individual_offers_fixture(offerer, venue_with_accepted_bank_account):
     approved_offers = offers_factories.OfferFactory.create_batch(
