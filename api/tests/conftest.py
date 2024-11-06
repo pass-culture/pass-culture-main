@@ -374,6 +374,12 @@ def cloud_task_client_fixture():
         yield cloud_task_client_mock
 
 
+@pytest.fixture(name="db_session")
+def db_session():
+    yield
+    clean_all_database()
+
+
 class TestClient:
     WITH_DOC = False
 
