@@ -80,6 +80,8 @@ def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
             extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
         )
         raise ApiErrors({"code": "CINEMA_PROVIDER_INACTIVE"})
+    except external_bookings_exceptions.ExternalBookingTimeoutException:
+        raise ApiErrors({"code": "PROVIDER_BOOKING_TIMEOUT"})
     except external_bookings_exceptions.ExternalBookingException as error:
         if stock.offer.lastProvider.hasProviderEnableCharlie:
             logger.info(

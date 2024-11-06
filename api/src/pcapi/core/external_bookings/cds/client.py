@@ -19,6 +19,7 @@ from pcapi.core.bookings.constants import RedisExternalBookingType
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.external_bookings.cds.constants as cds_constants
 import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
+from pcapi.core.external_bookings.decorators import catch_cinema_provider_request_timeout
 import pcapi.core.external_bookings.models as external_bookings_models
 from pcapi.core.external_bookings.models import Ticket
 import pcapi.core.users.models as users_models
@@ -289,6 +290,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
                 f"Error while canceling bookings :{sep}{sep.join([f'{barcode} : {error_msg}' for barcode, error_msg in cancel_errors.__root__.items()])}"
             )
 
+    @catch_cinema_provider_request_timeout
     def book_ticket(
         self, show_id: int, booking: bookings_models.Booking, beneficiary: users_models.User
     ) -> list[Ticket]:
