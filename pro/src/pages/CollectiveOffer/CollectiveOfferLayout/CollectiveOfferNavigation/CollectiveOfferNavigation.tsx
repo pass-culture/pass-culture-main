@@ -330,17 +330,19 @@ export const CollectiveOfferNavigation = ({
         )}
       </div>
       <Divider />
-      <Tabs
-        tabs={tabs}
-        selectedKey={activeStep}
-        className={cn(styles['tabs'], {
-          [styles['tabs-active']]: [
-            CollectiveOfferStep.DETAILS,
-            CollectiveOfferStep.STOCKS,
-            CollectiveOfferStep.VISIBILITY,
-          ].includes(activeStep),
-        })}
-      />
+      {tabs.length > 0 && (
+        <Tabs
+          tabs={tabs}
+          selectedKey={activeStep}
+          className={cn(styles['tabs'], {
+            [styles['tabs-active']]: [
+              CollectiveOfferStep.DETAILS,
+              CollectiveOfferStep.STOCKS,
+              CollectiveOfferStep.VISIBILITY,
+            ].includes(activeStep),
+          })}
+        />
+      )}
       <ArchiveConfirmationModal
         onDismiss={() => setIsArchiveModalOpen(false)}
         onValidate={archiveOffer}

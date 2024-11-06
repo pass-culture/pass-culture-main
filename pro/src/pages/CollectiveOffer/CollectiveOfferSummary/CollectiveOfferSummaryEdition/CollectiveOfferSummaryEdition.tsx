@@ -2,6 +2,7 @@ import {
   GetCollectiveOfferTemplateResponseModel,
   GetCollectiveOfferResponseModel,
 } from 'apiClient/v1'
+import { Layout } from 'app/App/layout/Layout'
 import {
   Mode,
   isCollectiveOfferTemplate,
@@ -10,6 +11,8 @@ import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils
 import { computeCollectiveOffersUrl } from 'commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { OfferEducationalActions } from 'components/OfferEducationalActions/OfferEducationalActions'
+import { withCollectiveOfferFromParams } from 'pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
+import { CollectiveOfferLayout } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
 import { CollectiveOfferSummary } from 'pages/CollectiveOffer/CollectiveOfferSummary/components/CollectiveOfferSummary/CollectiveOfferSummary'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -20,12 +23,10 @@ interface CollectiveOfferSummaryEditionProps {
   offer:
     | GetCollectiveOfferTemplateResponseModel
     | GetCollectiveOfferResponseModel
-  mode: Mode
 }
 
-export const CollectiveOfferSummaryEditionScreen = ({
+export const CollectiveOfferSummaryEdition = ({
   offer,
-  mode,
 }: CollectiveOfferSummaryEditionProps) => {
   const offerEditLink = `/offre/${computeURLCollectiveOfferId(
     offer.id,
@@ -40,35 +41,47 @@ export const CollectiveOfferSummaryEditionScreen = ({
   const visibilityEditLink = `/offre/${offer.id}/collectif/visibilite/edition`
 
   return (
-    <>
-      <OfferEducationalActions
-        className={styles.actions}
-        isBooked={
-          isCollectiveOfferTemplate(offer)
-            ? false
-            : Boolean(offer.collectiveStock?.isBooked)
-        }
+    <Layout layout={'sticky-actions'}>
+      <CollectiveOfferLayout
+        subTitle={offer.name}
+        isTemplate={offer.isTemplate}
         offer={offer}
-        mode={mode}
-      />
+      >
+        <OfferEducationalActions
+          className={styles.actions}
+          isBooked={
+            isCollectiveOfferTemplate(offer)
+              ? false
+              : Boolean(offer.collectiveStock?.isBooked)
+          }
+          offer={offer}
+          mode={Mode.EDITION}
+        />
 
-      <CollectiveOfferSummary
-        offer={offer}
-        offerEditLink={offerEditLink}
-        stockEditLink={stockEditLink}
-        visibilityEditLink={visibilityEditLink}
-      />
+        <CollectiveOfferSummary
+          offer={offer}
+          offerEditLink={offerEditLink}
+          stockEditLink={stockEditLink}
+          visibilityEditLink={visibilityEditLink}
+        />
 
-      <ActionsBarSticky>
-        <ActionsBarSticky.Left>
-          <ButtonLink
-            variant={ButtonVariant.PRIMARY}
-            to={computeCollectiveOffersUrl({})}
-          >
-            Retour à la liste des offres
-          </ButtonLink>
-        </ActionsBarSticky.Left>
-      </ActionsBarSticky>
-    </>
+        <ActionsBarSticky>
+          <ActionsBarSticky.Left>
+            <ButtonLink
+              variant={ButtonVariant.PRIMARY}
+              to={computeCollectiveOffersUrl({})}
+            >
+              Retour à la liste des offres
+            </ButtonLink>
+          </ActionsBarSticky.Left>
+        </ActionsBarSticky>
+      </CollectiveOfferLayout>
+    </Layout>
   )
 }
+
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = withCollectiveOfferFromParams(
+  CollectiveOfferSummaryEdition
+)
