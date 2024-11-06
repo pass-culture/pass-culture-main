@@ -398,6 +398,10 @@ class ActiveCollectiveOfferFactory(CollectiveOfferFactory):
     pass
 
 
+class InactiveCollectiveOfferFactory(CollectiveOfferFactory):
+    isActive = False
+
+
 class ExpiredWithoutBookingCollectiveOfferFactory(CollectiveOfferFactory):
     validation = OfferValidationStatus.APPROVED
 
@@ -493,6 +497,8 @@ def create_collective_offer_by_status(
             return PendingCollectiveOfferFactory(**kwargs)
         case CollectiveOfferDisplayedStatus.ACTIVE:
             return ActiveCollectiveOfferFactory(**kwargs)
+        case CollectiveOfferDisplayedStatus.INACTIVE:
+            return InactiveCollectiveOfferFactory(**kwargs)
         case CollectiveOfferDisplayedStatus.EXPIRED:
             return ExpiredWithBookingCollectiveOfferFactory(**kwargs)
         case CollectiveOfferDisplayedStatus.PREBOOKED:

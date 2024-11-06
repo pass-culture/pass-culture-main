@@ -569,11 +569,19 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
             )
         )
 
+    if DisplayedStatus.INACTIVE.value in statuses and not FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+        on_collective_offer_filters.append(
+            and_(
+                educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+                educational_models.CollectiveOffer.isActive == False,
+            )
+        )
+
     if DisplayedStatus.ACTIVE.value in statuses:
         on_booking_status_filter.append(
             and_(
-                educational_models.CollectiveOffer.isArchived == False,
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+                educational_models.CollectiveOffer.isActive == True,
                 offer_id_with_booking_status_subquery.c.status == None,
                 educational_models.CollectiveOffer.hasBookingLimitDatetimesPassed == False,
             )
@@ -582,8 +590,8 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
             # With the FF activated, those offers will be CANCELLED
             on_booking_status_filter.append(
                 and_(
-                    educational_models.CollectiveOffer.isArchived == False,
                     educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+                    educational_models.CollectiveOffer.isActive == True,
                     offer_id_with_booking_status_subquery.c.status
                     == educational_models.CollectiveBookingStatus.CANCELLED,
                     educational_models.CollectiveOffer.hasBookingLimitDatetimesPassed == False,
@@ -593,8 +601,8 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
     if DisplayedStatus.PREBOOKED.value in statuses:
         on_booking_status_filter.append(
             and_(
-                educational_models.CollectiveOffer.isArchived == False,
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+                educational_models.CollectiveOffer.isActive == True,
                 offer_id_with_booking_status_subquery.c.status == educational_models.CollectiveBookingStatus.PENDING,
                 educational_models.CollectiveOffer.hasBookingLimitDatetimesPassed == False,
             )
@@ -603,8 +611,8 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
     if DisplayedStatus.BOOKED.value in statuses:
         on_booking_status_filter.append(
             and_(
-                educational_models.CollectiveOffer.isArchived == False,
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+                educational_models.CollectiveOffer.isActive == True,
                 offer_id_with_booking_status_subquery.c.status == educational_models.CollectiveBookingStatus.CONFIRMED,
                 educational_models.CollectiveOffer.hasEndDatetimePassed == False,
             )
@@ -613,24 +621,21 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
     if DisplayedStatus.ENDED.value in statuses:
         on_booking_status_filter.append(
             and_(
-                educational_models.CollectiveOffer.isArchived == False,
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
-                offer_id_with_booking_status_subquery.c.status == educational_models.CollectiveBookingStatus.CONFIRMED,
+                educational_models.CollectiveOffer.isActive == True,
+                or_(
+                    offer_id_with_booking_status_subquery.c.status == educational_models.CollectiveBookingStatus.USED,
+                    offer_id_with_booking_status_subquery.c.status
+                    == educational_models.CollectiveBookingStatus.CONFIRMED,
+                ),
                 educational_models.CollectiveOffer.hasEndDatetimePassed == True,
-            )
-        )
-        on_booking_status_filter.append(
-            and_(
-                educational_models.CollectiveOffer.isArchived == False,
-                educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
-                offer_id_with_booking_status_subquery.c.status == educational_models.CollectiveBookingStatus.USED,
             )
         )
         if not FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
             on_booking_status_filter.append(
                 and_(
-                    educational_models.CollectiveOffer.isArchived == False,
                     educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+                    educational_models.CollectiveOffer.isActive == True,
                     offer_id_with_booking_status_subquery.c.status
                     == educational_models.CollectiveBookingStatus.REIMBURSED,
                 )
@@ -639,63 +644,61 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
     if DisplayedStatus.REIMBURSED.value in statuses and FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
         on_booking_status_filter.append(
             and_(
-                educational_models.CollectiveOffer.isArchived == False,
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+                educational_models.CollectiveOffer.isActive == True,
                 offer_id_with_booking_status_subquery.c.status == educational_models.CollectiveBookingStatus.REIMBURSED,
             )
         )
 
     if DisplayedStatus.EXPIRED.value in statuses:
-        on_booking_status_filter.append(
-            and_(
-                educational_models.CollectiveOffer.isArchived == False,
-                educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
-                educational_models.CollectiveOffer.hasBookingLimitDatetimesPassed == True,
-                or_(
-                    offer_id_with_booking_status_subquery.c.status
-                    == educational_models.CollectiveBookingStatus.PENDING,
-                    offer_id_with_booking_status_subquery.c.status == None,
-                ),
-                educational_models.CollectiveOffer.hasStartDatetimePassed == False,
-            ),
-        )
-
         if FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
             on_booking_status_filter.append(
                 and_(
-                    educational_models.CollectiveOffer.isArchived == False,
                     educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+                    educational_models.CollectiveOffer.isActive == True,
+                    educational_models.CollectiveOffer.hasBookingLimitDatetimesPassed == True,
+                    educational_models.CollectiveOffer.hasStartDatetimePassed == False,
+                    or_(
+                        offer_id_with_booking_status_subquery.c.status
+                        == educational_models.CollectiveBookingStatus.PENDING,
+                        offer_id_with_booking_status_subquery.c.status == None,
+                    ),
+                )
+            )
+            on_booking_status_filter.append(
+                and_(
+                    educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+                    educational_models.CollectiveOffer.isActive == True,
+                    educational_models.CollectiveOffer.hasBookingLimitDatetimesPassed == True,
+                    educational_models.CollectiveOffer.hasStartDatetimePassed == False,
                     offer_id_with_booking_status_subquery.c.status
                     == educational_models.CollectiveBookingStatus.CANCELLED,
                     offer_id_with_booking_status_subquery.c.cancellationReason
                     == educational_models.CollectiveBookingCancellationReasons.EXPIRED,
-                    educational_models.CollectiveOffer.hasStartDatetimePassed == False,
                 )
             )
         else:
             on_booking_status_filter.append(
                 and_(
-                    educational_models.CollectiveOffer.isArchived == False,
                     educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
-                    offer_id_with_booking_status_subquery.c.status
-                    == educational_models.CollectiveBookingStatus.CANCELLED,
+                    educational_models.CollectiveOffer.isActive == True,
                     educational_models.CollectiveOffer.hasBookingLimitDatetimesPassed == True,
-                ),
-            )
-            on_booking_status_filter.append(
-                and_(
-                    educational_models.CollectiveOffer.isArchived == False,
-                    educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
-                    offer_id_with_booking_status_subquery.c.status == None,
-                    educational_models.CollectiveOffer.hasStartDatetimePassed == True,
+                    or_(
+                        offer_id_with_booking_status_subquery.c.status
+                        == educational_models.CollectiveBookingStatus.CANCELLED,
+                        offer_id_with_booking_status_subquery.c.status
+                        == educational_models.CollectiveBookingStatus.PENDING,
+                        offer_id_with_booking_status_subquery.c.status == None,
+                    ),
                 ),
             )
 
     if DisplayedStatus.CANCELLED.value in statuses and FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+        # Cancelled due to expired booking
         on_booking_status_filter.append(
             and_(
-                educational_models.CollectiveOffer.isArchived == False,
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+                educational_models.CollectiveOffer.isActive == True,
                 offer_id_with_booking_status_subquery.c.status == educational_models.CollectiveBookingStatus.CANCELLED,
                 offer_id_with_booking_status_subquery.c.cancellationReason
                 == educational_models.CollectiveBookingCancellationReasons.EXPIRED,
@@ -703,28 +706,26 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
             )
         )
 
+        # Cancelled by admin / CA or on ADAGE
         on_booking_status_filter.append(
             and_(
-                educational_models.CollectiveOffer.isArchived == False,
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+                educational_models.CollectiveOffer.isActive == True,
                 offer_id_with_booking_status_subquery.c.status == educational_models.CollectiveBookingStatus.CANCELLED,
                 offer_id_with_booking_status_subquery.c.cancellationReason
                 != educational_models.CollectiveBookingCancellationReasons.EXPIRED,
             ),
         )
 
+        # Cancelled due to no booking when the event has started
         on_booking_status_filter.append(
             and_(
-                educational_models.CollectiveOffer.isArchived == False,
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+                educational_models.CollectiveOffer.isActive == True,
                 offer_id_with_booking_status_subquery.c.status == None,
                 educational_models.CollectiveOffer.hasStartDatetimePassed == True,
             ),
         )
-
-    if DisplayedStatus.INACTIVE.value in statuses:
-        # This case is irrelevant for collective offers
-        on_collective_offer_filters.append(sa.false())
 
     # Add filters on `CollectiveBooking.Status`
     if on_booking_status_filter:

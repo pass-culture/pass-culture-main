@@ -170,13 +170,6 @@ class Returns200Test:
         offer_id = offer.id
 
         expected_num_queries = self.num_queries + 1  # feature flag
-        # session
-        # user
-        # offerer
-        # user_offerer
-        # collective_offer
-        # google_places_info
-        # feature flag
         with testing.assert_num_queries(expected_num_queries):
             with testing.assert_no_duplicated_queries():
                 client.get(f"/collective/offers/{offer_id}")
