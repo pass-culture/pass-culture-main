@@ -117,7 +117,6 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
 
     not_venue_fields = {
         "isAccessibilityAppliedOnAllOffers",
-        "isEmailAppliedOnAllOffers",
         "isManualEdition",
         "contact",
         "openingHours",
@@ -152,7 +151,7 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
         edited_accessibility = {field: getattr(venue, field) for field in accessibility_fields}
         update_all_venue_offers_accessibility_job.delay(venue, edited_accessibility)
 
-    if body.bookingEmail and body.isEmailAppliedOnAllOffers:
+    if body.bookingEmail:
         update_all_venue_offers_email_job.delay(venue, body.bookingEmail)
 
     return venues_serialize.GetVenueResponseModel.from_orm(venue)

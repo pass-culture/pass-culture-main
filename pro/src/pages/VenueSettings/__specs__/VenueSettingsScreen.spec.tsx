@@ -235,7 +235,6 @@ describe('VenueSettingsScreen', () => {
       bookingEmail: 'contact@lieuexemple.com',
       city: 'Ville Exemple',
       comment: 'Un lieu populaire pour les concerts et les événements',
-      isEmailAppliedOnAllOffers: true,
       isManualEdition: undefined,
       latitude: '48.8566',
       longitude: '2.3522',

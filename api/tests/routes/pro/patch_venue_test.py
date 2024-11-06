@@ -39,7 +39,6 @@ def populate_missing_data_from_venue(venue_data: dict, venue: offerers_models.Ve
         "siret": venue.siret,
         "venueLabelId": venue.venueLabelId,
         "withdrawalDetails": venue.withdrawalDetails,
-        "isEmailAppliedOnAllOffers": False,
         "contact": {"email": "no.contact.field@is.mandatory.com"},
         **venue_data,
     }
@@ -421,74 +420,6 @@ class Returns200Test:
         assert venue.mentalDisabilityCompliant == None
         assert venue.motorDisabilityCompliant == None
         assert venue.visualDisabilityCompliant == None
-
-    @patch("pcapi.routes.pro.venues.update_all_venue_offers_email_job.delay")
-    def test_edit_venue_booking_email_with_applied_on_all_offers(
-        self, mocked_update_all_venue_offers_email_job, client
-    ):
-        user_offerer = offerers_factories.UserOffererFactory(
-            user__lastConnectionDate=datetime.utcnow(),
-        )
-        venue = offerers_factories.VenueFactory(
-            name="old name", managingOfferer=user_offerer.offerer, bookingEmail="old.venue@email.com"
-        )
-
-        auth_request = client.with_session_auth(email=user_offerer.user.email)
-
-        venue_data = populate_missing_data_from_venue(
-            {
-                "publicName": "new public name",
-                "bookingEmail": "no.update@email.com",
-                "isEmailAppliedOnAllOffers": False,
-            },
-            venue,
-        )
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
-
-        assert response.status_code == 200
-        assert venue.bookingEmail == "no.update@email.com"
-        mocked_update_all_venue_offers_email_job.assert_not_called()
-
-        venue_data = populate_missing_data_from_venue(
-            {
-                "publicName": "new public name",
-                "bookingEmail": "new.venue@email.com",
-                "isEmailAppliedOnAllOffers": True,
-            },
-            venue,
-        )
-
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
-
-        assert response.status_code == 200
-        assert venue.bookingEmail == "new.venue@email.com"
-
-        mocked_update_all_venue_offers_email_job.assert_called_once_with(venue, "new.venue@email.com")
-
-        assert len(external_testing.sendinblue_requests) == 4  # former and new booking email, changed twice
-        assert {req.get("email") for req in external_testing.sendinblue_requests} == {
-            "old.venue@email.com",
-            "no.update@email.com",
-            "new.venue@email.com",
-        }
-
-        assert external_testing.zendesk_sell_requests == [
-            # Patch API called twice
-            {
-                "action": "update",
-                "type": "Venue",
-                "id": venue.id,
-                "zendesk_id": zendesk_testing.TESTING_ZENDESK_ID_VENUE,
-                "parent_organization_id": zendesk_testing.TESTING_ZENDESK_ID_OFFERER,
-            },
-            {
-                "action": "update",
-                "type": "Venue",
-                "id": venue.id,
-                "zendesk_id": zendesk_testing.TESTING_ZENDESK_ID_VENUE,
-                "parent_organization_id": zendesk_testing.TESTING_ZENDESK_ID_OFFERER,
-            },
-        ]
 
     @patch("pcapi.routes.pro.venues.update_all_venue_offers_accessibility_job.delay")
     def test_edit_venue_accessibility_with_applied_on_all_offers(
