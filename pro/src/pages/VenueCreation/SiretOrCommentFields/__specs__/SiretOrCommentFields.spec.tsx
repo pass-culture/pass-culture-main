@@ -1,9 +1,14 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
+import { expect } from 'vitest'
 
 import * as siretApiValidate from 'commons/core/Venue/siretApiValidate'
+import {
+  renderWithProviders,
+  RenderWithProvidersOptions,
+} from 'commons/utils/renderWithProviders'
 import { VenueCreationFormValues } from 'pages/VenueCreation/types'
 import { VenueEditionFormValues } from 'pages/VenueEdition/types'
 import { Button } from 'ui-kit/Button/Button'
@@ -28,13 +33,15 @@ const renderSiretOrComment = async ({
   onSubmit = vi.fn(),
   props,
   validationSchema,
+  options,
 }: {
   initialValues: Partial<VenueEditionFormValues>
   onSubmit: () => void
   props: SiretOrCommentFieldsProps
   validationSchema: any
+  options?: RenderWithProvidersOptions
 }) => {
-  const rtlReturns = render(
+  const rtlReturns = renderWithProviders(
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}
@@ -48,7 +55,8 @@ const renderSiretOrComment = async ({
           </Button>
         </form>
       )}
-    </Formik>
+    </Formik>,
+    options
   )
 
   return {
@@ -301,6 +309,73 @@ describe('components | SiretOrCommentFields', () => {
 
       expect(
         screen.getByText('Veuillez renseigner un commentaire')
+      ).toBeInTheDocument()
+    })
+  })
+
+  describe('OA feature flag', () => {
+    it('should display the right wording without the OA FF', async () => {
+      await renderSiretOrComment({
+        initialValues,
+        onSubmit,
+        props,
+        validationSchema: generateSiretValidationSchema(false, false, null),
+      })
+
+      expect(
+        screen.getByText(
+          /Le SIRET du lieu doit être lié au SIREN de votre structure. Attention, ce SIRET ne sera plus modifiable et ne pourra plus être utilisé pour un autre lieu/
+        )
+      ).toBeInTheDocument()
+
+      const toggle = screen.getByRole('button', {
+        name: 'Ce lieu possède un SIRET',
+      })
+      expect(toggle).toBeInTheDocument()
+
+      expect(screen.getByLabelText(/SIRET du lieu/)).toBeInTheDocument()
+      await userEvent.click(toggle)
+      expect(
+        screen.getByLabelText(/Commentaire du lieu sans SIRET/)
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          /Par exemple : le lieu est un équipement culturel qui n’appartient pas à ma structure/
+        )
+      ).toBeInTheDocument()
+    })
+
+    it('should display the right wording with the OA FF', async () => {
+      await renderSiretOrComment({
+        initialValues,
+        onSubmit,
+        props,
+        validationSchema: generateSiretValidationSchema(false, false, null),
+        options: {
+          features: ['WIP_ENABLE_OFFER_ADDRESS'],
+        },
+      })
+
+      expect(
+        screen.getByText(
+          /Le SIRET de la structure doit être lié au SIREN de votre entitée juridique. Attention, ce SIRET ne sera plus modifiable et ne pourra plus être utilisé pour une autre structure/
+        )
+      ).toBeInTheDocument()
+
+      const toggle = screen.getByRole('button', {
+        name: 'Cette structure possède un SIRET',
+      })
+      expect(toggle).toBeInTheDocument()
+
+      expect(screen.getByLabelText(/SIRET de la structure/)).toBeInTheDocument()
+      await userEvent.click(toggle)
+      expect(
+        screen.getByLabelText(/Commentaire de la structure sans SIRET/)
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          /Par exemple : la structure est un équipement culturel qui n’appartient pas à mon entitée juridique/
+        )
       ).toBeInTheDocument()
     })
   })

@@ -1,5 +1,6 @@
-import { screen, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { expect } from 'vitest'
 
 import { api } from 'apiClient/api'
 import {
@@ -10,12 +11,15 @@ import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
 } from 'commons/utils/factories/individualApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import {
+  renderWithProviders,
+  RenderWithProvidersOptions,
+} from 'commons/utils/renderWithProviders'
 
 import { HeaderDropdown } from '../HeaderDropdown/HeaderDropdown'
 
-const renderHeaderDropdown = () => {
-  renderWithProviders(<HeaderDropdown />)
+const renderHeaderDropdown = (options?: RenderWithProvidersOptions) => {
+  renderWithProviders(<HeaderDropdown />, options)
 }
 
 describe('App', () => {
@@ -66,5 +70,40 @@ describe('App', () => {
 
     expect(offerers[0].textContent).toEqual('A Structure')
     expect(offerers[1].textContent).toEqual('B Structure')
+  })
+
+  describe('OA feature flag', () => {
+    it('should display the right wording without the OA FF', async () => {
+      renderHeaderDropdown()
+      await userEvent.click(screen.getByTestId('offerer-select'))
+      await waitFor(() => {
+        expect(screen.getByTestId('offerer-header-label')).toBeInTheDocument()
+      })
+
+      const changeButton = screen.getByText('Changer de structure')
+      expect(changeButton).toBeInTheDocument()
+      await userEvent.click(changeButton)
+      await waitFor(() => {
+        expect(screen.getByText('Ajouter une nouvelle structure'))
+      })
+    })
+
+    it('should display the right wording with the OA FF', async () => {
+      renderHeaderDropdown({
+        features: ['WIP_ENABLE_OFFER_ADDRESS'],
+      })
+
+      await userEvent.click(screen.getByTestId('offerer-select'))
+      expect(
+        screen.queryByTestId('offerer-header-label')
+      ).not.toBeInTheDocument()
+
+      const changeButton = screen.getByText('Changer')
+      expect(changeButton).toBeInTheDocument()
+      await userEvent.click(changeButton)
+      await waitFor(() => {
+        expect(screen.getByText('Ajouter'))
+      })
+    })
   })
 })

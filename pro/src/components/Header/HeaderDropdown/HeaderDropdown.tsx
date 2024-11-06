@@ -10,6 +10,7 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_OFFERER_NAMES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { SAVED_OFFERER_ID_KEY } from 'commons/core/shared/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { updateSelectedOffererId } from 'commons/store/user/reducer'
 import {
   selectCurrentOffererId,
@@ -35,6 +36,8 @@ import styles from './HeaderDropdown.module.scss'
 
 export const HeaderDropdown = () => {
   const { logEvent } = useAnalytics()
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+
   const currentUser = useSelector(selectCurrentUser)
   const currentOffererId = useSelector(selectCurrentOffererId)
   const dispatch = useDispatch()
@@ -144,9 +147,14 @@ export const HeaderDropdown = () => {
             </DropdownMenu.Item>
             {offererOptions.length > 1 && (
               <>
-                <DropdownMenu.Label className={styles['menu-title']}>
-                  Structure
-                </DropdownMenu.Label>
+                {!isOfferAddressEnabled && (
+                  <DropdownMenu.Label
+                    data-testid="offerer-header-label"
+                    className={styles['menu-title']}
+                  >
+                    Structure
+                  </DropdownMenu.Label>
+                )}
                 <div className={styles['menu-email']}>
                   {selectedOffererName?.name}
                 </div>
@@ -166,7 +174,7 @@ export const HeaderDropdown = () => {
                       icon={fullSwitchIcon}
                       className={styles['menu-item']}
                     >
-                      Changer de structure
+                      Changer{!isOfferAddressEnabled && ' de structure'}
                     </Button>
                   </DropdownMenu.SubTrigger>
                   <DropdownMenu.Portal>
@@ -233,7 +241,9 @@ export const HeaderDropdown = () => {
                             className={styles['menu-item']}
                             to="/parcours-inscription/structure"
                           >
-                            Ajouter une nouvelle structure
+                            Ajouter
+                            {!isOfferAddressEnabled &&
+                              ' une nouvelle structure'}
                           </ButtonLink>
                         </DropdownMenu.Item>
                       </div>
