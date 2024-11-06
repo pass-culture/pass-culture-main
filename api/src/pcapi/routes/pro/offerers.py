@@ -116,6 +116,7 @@ def invite_member(offerer_id: int, body: offerers_serialize.InviteMemberQueryMod
 
 
 @private_api.route("/offerers/<int:offerer_id>/members", methods=["GET"])
+@atomic()
 @login_required
 @spectree_serialize(response_model=offerers_serialize.GetOffererMembersResponseModel, api=blueprint.pro_private_schema)
 def get_offerer_members(offerer_id: int) -> offerers_serialize.GetOffererMembersResponseModel:
