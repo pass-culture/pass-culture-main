@@ -95,28 +95,6 @@ class CleanStringTest:
         assert result == 1
 
 
-def individual_stock_factory(**kwargs):
-    create_bank_info = False
-    if "offer__venue" not in kwargs:
-        kwargs.setdefault("offer__venue__pricing_point", "self")
-        create_bank_info = True
-    stock = offers_factories.ThingStockFactory(**kwargs)
-    if create_bank_info:
-        factories.BankInformationFactory(venue=stock.offer.venue)
-    return stock
-
-
-def collective_stock_factory(**kwargs):
-    create_bank_info = False
-    if "offer__venue" not in kwargs:
-        kwargs.setdefault("collectiveOffer__venue__pricing_point", "self")
-        create_bank_info = True
-    stock = educational_factories.CollectiveStockFactory(**kwargs)
-    if create_bank_info:
-        factories.BankInformationFactory(venue=stock.collectiveOffer.venue)
-    return stock
-
-
 class PriceEventTest:
     def _make_individual_event(self, used_date=None, price=None, user=None, stock=None, venue=None):
         booking_kwargs = {}
@@ -130,7 +108,9 @@ class PriceEventTest:
                 stock_kwargs["price"] = price
             if venue:
                 stock_kwargs["offer__venue"] = venue
-            booking_kwargs["stock"] = individual_stock_factory(**stock_kwargs)
+            else:
+                stock_kwargs["offer__venue__pricing_point"] = "self"
+            booking_kwargs["stock"] = offers_factories.ThingStockFactory(**stock_kwargs)
         booking = bookings_factories.BookingFactory(**booking_kwargs)
         with time_machine.travel(used_date or datetime.datetime.utcnow()):
             bookings_api.mark_as_used(booking, bookings_models.BookingValidationAuthorType.AUTO)
@@ -148,7 +128,9 @@ class PriceEventTest:
                 stock_kwargs["price"] = price
             if venue:
                 stock_kwargs["collectiveOffer__venue"] = venue
-            booking_kwargs["collectiveStock"] = collective_stock_factory(**stock_kwargs)
+            else:
+                stock_kwargs["collectiveOffer__venue__pricing_point"] = "self"
+            booking_kwargs["collectiveStock"] = educational_factories.CollectiveStockFactory(**stock_kwargs)
         booking = educational_factories.UsedCollectiveBookingFactory(**booking_kwargs)
         api.add_event(models.FinanceEventMotive.BOOKING_USED, booking=booking)
         return models.FinanceEvent.query.filter_by(collectiveBooking=booking).one()
@@ -2829,9 +2811,11 @@ class GenerateInvoicesTest:
     @mock.patch("pcapi.core.finance.api._store_invoice_pdf")
     @pytest.mark.usefixtures("clean_temp_files")
     def test_basics(self, _mocked1, _mocked2):
-        finance_event1 = factories.UsedBookingFinanceEventFactory(booking__stock=individual_stock_factory())
+        stock1 = offers_factories.ThingStockFactory(offer__venue__pricing_point="self")
+        finance_event1 = factories.UsedBookingFinanceEventFactory(booking__stock=stock1)
         booking1 = finance_event1.booking
-        finance_event2 = factories.UsedBookingFinanceEventFactory(booking__stock=individual_stock_factory())
+        stock2 = offers_factories.ThingStockFactory(offer__venue__pricing_point="self")
+        finance_event2 = factories.UsedBookingFinanceEventFactory(booking__stock=stock2)
         booking2 = finance_event2.booking
         for finance_event in (finance_event1, finance_event2):
             b_a = factories.BankAccountFactory()
@@ -2852,7 +2836,8 @@ class GenerateInvoicesTest:
     @mock.patch("pcapi.core.finance.api._generate_invoice_html")
     @mock.patch("pcapi.core.finance.api._store_invoice_pdf")
     def test_invoice_cashflows_with_0_amount(self, _generate_invoice_html, _store_invoice_pdf):
-        finance_event = factories.UsedBookingFinanceEventFactory(booking__stock=individual_stock_factory())
+        stock = offers_factories.ThingStockFactory(offer__venue__pricing_point="self")
+        finance_event = factories.UsedBookingFinanceEventFactory(booking__stock=stock)
         booking = finance_event.booking
         bank_account = factories.BankAccountFactory()
         offerers_factories.VenueBankAccountLinkFactory(venue=finance_event.booking.venue, bankAccount=bank_account)
@@ -2982,7 +2967,6 @@ class GenerateInvoiceTest:
         offerers_factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)
         cashflow1 = factories.CashflowFactory(
             bankAccount=bank_account,
-            bankInformation=None,
             status=models.CashflowStatus.UNDER_REVIEW,
         )
         invoice1 = api._generate_invoice(
@@ -2991,7 +2975,6 @@ class GenerateInvoiceTest:
         )
         cashflow2 = factories.CashflowFactory(
             bankAccount=bank_account,
-            bankInformation=None,
             status=models.CashflowStatus.UNDER_REVIEW,
         )
         invoice2 = api._generate_invoice(
@@ -3356,7 +3339,8 @@ class GenerateInvoiceTest:
         venue = offerers_factories.VenueFactory(pricing_point="self")
         bank_account = factories.BankAccountFactory(offerer=venue.managingOfferer)
         offerers_factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)
-        stock = individual_stock_factory(offer__venue=venue)
+        offer = offers_factories.ThingOfferFactory(venue=venue)
+        stock = offers_factories.ThingStockFactory(offer=offer)
         indiv_finance_event1 = factories.UsedBookingFinanceEventFactory(booking__stock=stock)
         indiv_booking1 = indiv_finance_event1.booking
         indiv_finance_event2 = factories.UsedBookingFinanceEventFactory(booking__stock=stock)
