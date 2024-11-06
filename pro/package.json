@@ -83,7 +83,7 @@
     "@badeball/cypress-cucumber-preprocessor": "^20.1.2",
     "@bahmutov/cypress-esbuild-preprocessor": "^2.2.3",
     "@storybook/addon-a11y": "^8.4.0",
-    "@storybook/addon-controls": "^8.4.0",
+    "@storybook/addon-controls": "^8.4.2",
     "@storybook/addon-docs": "^8.4.0",
     "@storybook/blocks": "^8.4.0",
     "@storybook/preset-scss": "^1.0.3",
