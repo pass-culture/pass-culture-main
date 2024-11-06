@@ -2223,7 +2223,7 @@ def invite_member(offerer: models.Offerer, email: str, current_user: users_model
             inviter_user_id=current_user.id,
             offerer_invitation_id=offerer_invitation.id,
         )
-        db.session.commit()
+        db.session.flush()
         logger.info(
             "Existing user invited to join offerer",
             extra={"offerer": offerer.id, "invited_user": existing_user.id, "invited_by": current_user.id},
@@ -2235,13 +2235,15 @@ def invite_member(offerer: models.Offerer, email: str, current_user: users_model
             offerer=offerer, email=email, user=current_user, status=models.InvitationStatus.PENDING
         )
         db.session.add(offerer_invitation)
-        db.session.commit()
+        db.session.flush()
         logger.info(
             "New user invited to join offerer",
             extra={"offerer": offerer.id, "invited_user": email, "invited_by": current_user.id},
         )
 
-    transactional_mails.send_offerer_attachment_invitation([email], offerer=offerer, user=existing_user)
+    on_commit(
+        functools.partial(transactional_mails.send_offerer_attachment_invitation, [email], offerer, existing_user)
+    )
 
 
 def get_offerer_members(offerer: models.Offerer) -> list[tuple[str, OffererMemberStatus]]:
