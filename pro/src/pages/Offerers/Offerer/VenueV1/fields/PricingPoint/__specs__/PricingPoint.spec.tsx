@@ -6,8 +6,8 @@ import { api } from 'apiClient/api'
 import * as useNotification from 'commons/hooks/useNotification'
 import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
 import {
-  defaultGetOffererVenueResponseModel,
   defaultGetOffererResponseModel,
+  defaultGetOffererVenueResponseModel,
 } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
@@ -41,7 +41,7 @@ describe('PricingPoint', () => {
       screen.getByLabelText(
         'Lieu avec SIRET utilisé pour le calcul de votre barème de remboursement *'
       ),
-      '0'
+      '1'
     )
 
     await userEvent.click(
@@ -79,7 +79,7 @@ describe('PricingPoint', () => {
       screen.getByLabelText(
         'Lieu avec SIRET utilisé pour le calcul de votre barème de remboursement *'
       ),
-      '0'
+      '1'
     )
     await userEvent.click(
       screen.getByRole('button', { name: 'Valider la sélection' })

@@ -1,6 +1,10 @@
 import { screen } from '@testing-library/react'
+import { describe } from 'vitest'
 
-import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
+import {
+  defaultGetOffererResponseModel,
+  defaultGetOffererVenueResponseModel,
+} from 'commons/utils/factories/individualApiFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
@@ -20,7 +24,7 @@ const renderOffererBanners = (
 ) => {
   renderWithProviders(
     <OffererBanners
-      isUserOffererValidated={true}
+      isUserOffererValidated={props.isUserOffererValidated ?? true}
       offerer={defaultGetOffererResponseModel}
       {...props}
     />,
@@ -64,9 +68,43 @@ describe('OffererBanners', () => {
   })
 
   describe('WIP_ENABLE_OFFER_ADDRESS', () => {
-    it('should warn user that offerer is being validated when offerer is not yet validated', () => {
+    describe('user offerer not validated', () => {
+      it('Should display the right wording with the FF enabled', () => {
+        const offerer = {
+          ...defaultGetOffererResponseModel,
+          isValidated: false,
+        }
+        renderOffererBanners(
+          { offerer, isUserOffererValidated: false },
+          { features: ['WIP_ENABLE_OFFER_ADDRESS'] }
+        )
+
+        expect(
+          screen.getByText(
+            'Le rattachement à votre entité juridique est en cours de traitement par les équipes du pass Culture'
+          )
+        ).toBeInTheDocument()
+      })
+
+      it('Should display the right wording without the FF enabled', () => {
+        const offerer = {
+          ...defaultGetOffererResponseModel,
+          isValidated: false,
+        }
+        renderOffererBanners({ offerer, isUserOffererValidated: false })
+
+        expect(
+          screen.getByText(
+            'Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture'
+          )
+        ).toBeInTheDocument()
+      })
+    })
+
+    it('Should display the right wording with the FF enabled', () => {
       const offerer = {
         ...defaultGetOffererResponseModel,
+        managedVenues: [defaultGetOffererVenueResponseModel],
         isValidated: false,
       }
       renderOffererBanners(
@@ -79,17 +117,31 @@ describe('OffererBanners', () => {
           'Votre entité juridique est en cours de traitement par les équipes du pass Culture'
         )
       ).toBeInTheDocument()
-    })
-
-    it('should warn user offerer is being validated when user attachment to offerer is not yet validated', () => {
-      renderOffererBanners(
-        { isUserOffererValidated: false },
-        { features: ['WIP_ENABLE_OFFER_ADDRESS'] }
-      )
 
       expect(
         screen.getByText(
-          'Le rattachement à votre entité juridique est en cours de traitement par les équipes du pass Culture'
+          /Vos offres seront publiées sous réserve de validation de votre structure./
+        )
+      ).toBeInTheDocument()
+    })
+
+    it('Should display the right wording without the FF enabled', () => {
+      const offerer = {
+        ...defaultGetOffererResponseModel,
+        managedVenues: [defaultGetOffererVenueResponseModel],
+        isValidated: false,
+      }
+      renderOffererBanners({ offerer })
+
+      expect(
+        screen.getByText(
+          /Votre structure est en cours de traitement par les équipes du pass Culture/
+        )
+      ).toBeInTheDocument()
+
+      expect(
+        screen.getByText(
+          /Toutes les offres créées à l’échelle de vos lieux seront publiées sous réserve de validation de votre structure./
         )
       ).toBeInTheDocument()
     })
