@@ -819,25 +819,6 @@ class DeleteVenueTest(PostEndpointHelper):
             == "Impossible de supprimer un lieu utilisé comme point de valorisation d'un autre lieu"
         )
 
-    def test_cant_delete_venue_when_reimbursement_point_for_another_venue(self, legit_user, authenticated_client):
-        venue_to_delete = offerers_factories.VenueFactory(pricing_point="self")
-        offerers_factories.VenueFactory(
-            reimbursement_point=venue_to_delete, managingOfferer=venue_to_delete.managingOfferer
-        )
-        venue_to_delete_id = venue_to_delete.id
-
-        response = self.post_to_endpoint(authenticated_client, venue_id=venue_to_delete.id)
-        assert response.status_code == 303
-        assert offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_to_delete_id).count() == 1
-
-        expected_url = url_for("backoffice_web.venue.get", venue_id=venue_to_delete.id, _external=True)
-        assert response.location == expected_url
-        response = authenticated_client.get(expected_url)
-        assert (
-            html_parser.extract_alert(response.data)
-            == "Impossible de supprimer un lieu utilisé comme point de remboursement d'un autre lieu"
-        )
-
     def test_no_script_injection_in_venue_name(self, legit_user, authenticated_client):
         venue_id = offerers_factories.VenueFactory(name="Lieu <script>alert('coucou')</script>").id
 
@@ -2766,37 +2747,6 @@ class RemovePricingPointTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
 
     def test_remove_pricing_point(self, legit_user, authenticated_client, venue_with_no_siret):
-        old_pricing_siret = venue_with_no_siret.current_pricing_point.siret
-
-        response = self.post_to_endpoint(
-            authenticated_client,
-            venue_id=venue_with_no_siret.id,
-            form={
-                "override_revenue_check": False,
-                "comment": "test",
-            },
-        )
-        assert response.status_code == 303
-
-        assert venue_with_no_siret.current_pricing_point is None
-        assert venue_with_no_siret.pricing_point_links[0].timespan.upper <= datetime.utcnow()
-
-        action = history_models.ActionHistory.query.one()
-        assert action.actionType == history_models.ActionType.INFO_MODIFIED
-        assert action.actionDate is not None
-        assert action.authorUserId == legit_user.id
-        assert action.userId is None
-        assert action.offererId == venue_with_no_siret.managingOffererId
-        assert action.venueId == venue_with_no_siret.id
-        assert action.comment == "test"
-        assert action.extraData["modified_info"] == {
-            "pricingPointSiret": {"new_info": None, "old_info": old_pricing_siret},
-        }
-
-    def test_remove_pricing_point_and_reimbursement_point(self, legit_user, authenticated_client, venue_with_no_siret):
-        offerers_factories.VenueBankAccountLinkFactory(
-            venue=venue_with_no_siret, bankAccount=finance_factories.BankAccountFactory()
-        )
         old_pricing_siret = venue_with_no_siret.current_pricing_point.siret
 
         response = self.post_to_endpoint(

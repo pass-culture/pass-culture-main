@@ -38,37 +38,12 @@ def create_data_venues(offerers_by_name: dict) -> dict[str, Venue]:
 
     venue_by_name = {}
     mock_index = 0
-
-    iban_count = 0
-    iban_prefix = "FR7630001007941234567890185"
-    bic_prefix, bic_suffix = "QSDFGH8Z", 556
-    application_id_prefix = "52"
-
     image_venue_counter = 0
 
     for offerer_index, (offerer_name, offerer) in enumerate(offerers_by_name.items()):
         geoloc_match = re.match(r"(.*)lat\:(.*) lon\:(.*)", offerer_name)
 
         venue_name = f"{MOCK_NAMES[mock_index % len(MOCK_NAMES)]} DATA"
-
-        # create all possible cases:
-        # offerer with or without iban / venue with or without iban
-        iban: str | None = None
-        bic: str | None = None
-        if offerer.iban:
-            if iban_count == 0:
-                iban = iban_prefix
-                bic = bic_prefix + str(bic_suffix)
-                iban_count = 1
-            elif iban_count == 2:
-                iban_count = 3
-        else:
-            if iban_count in (0, 1):
-                iban = iban_prefix
-                bic = bic_prefix + str(bic_suffix)
-                iban_count = 2
-            elif iban_count == 3:
-                iban_count = 0
 
         comment = None
         siret = f"{offerer.siren}{random.randint(11111,99999)}"
@@ -94,16 +69,6 @@ def create_data_venues(offerers_by_name: dict) -> dict[str, Venue]:
             image_venue_counter += 1
 
         venue_by_name[venue_name] = venue
-
-        if iban and venue.siret:
-            finance_factories.BankInformationFactory(
-                venue=venue,
-                bic=bic,
-                iban=iban,
-                applicationId=application_id_prefix + str(offerer_index),
-            )
-
-        bic_suffix += 1
         mock_index += 1
 
     logger.info("created %d venues DATA", len(venue_by_name))

@@ -82,7 +82,7 @@ def create_pro_user_with_financial_data() -> dict:
         venue=venue_B,
         pricingPoint=venue_B,
     )
-    finance_factories.InvoiceFactory(bankAccount=bank_account_B, reimbursementPoint=venue_B)
+    finance_factories.InvoiceFactory(bankAccount=bank_account_B)
 
     return {"user": get_pro_user_helper(pro_user)}
 
@@ -109,9 +109,9 @@ def create_pro_user_with_financial_data_and_3_venues() -> dict:
         venue=venue_E,
         pricingPoint=venue_E,
     )
-    finance_factories.InvoiceFactory(bankAccount=bank_account_C, reimbursementPoint=venue_C)
-    finance_factories.InvoiceFactory(bankAccount=bank_account_C, reimbursementPoint=venue_D)
-    finance_factories.InvoiceFactory(bankAccount=bank_account_C, reimbursementPoint=venue_E)
+    finance_factories.InvoiceFactory(bankAccount=bank_account_C)
+    finance_factories.InvoiceFactory(bankAccount=bank_account_C)
+    finance_factories.InvoiceFactory(bankAccount=bank_account_C)
 
     return {"user": get_pro_user_helper(pro_user)}
 

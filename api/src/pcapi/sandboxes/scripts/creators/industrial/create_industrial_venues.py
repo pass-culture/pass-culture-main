@@ -46,9 +46,6 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
     mock_index = 0
     mock_accessibility_index = 0
 
-    iban_count = 0
-    iban_prefix = "FR7630001007941234567890185"
-    bic_prefix, bic_suffix = "QSDFGH8Z", 556
     application_id_prefix = "12"
 
     image_venue_counter = 0
@@ -61,25 +58,6 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
         venue_name = MOCK_NAMES[mock_index % len(MOCK_NAMES)]
         venue_accessibility = ACCESSIBILITY_MOCK[mock_accessibility_index % len(ACCESSIBILITY_MOCK)]
 
-        # create all possible cases:
-        # offerer with or without iban / venue with or without iban
-        iban = None
-        bic = None
-        if offerer.iban:
-            if iban_count == 0:
-                iban = iban_prefix
-                bic = bic_prefix + str(bic_suffix)
-                iban_count = 1
-            elif iban_count == 2:
-                iban_count = 3
-        else:
-            if iban_count in (0, 1):
-                iban = iban_prefix
-                bic = bic_prefix + str(bic_suffix)
-                iban_count = 2
-            elif iban_count == 3:
-                iban_count = 0
-
         if offerer_index % OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO == 0:
             venue = None
         else:
@@ -91,9 +69,9 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
                 siret = None
 
             bank_account = None
-            if iban and siret:
+            if siret:
                 bank_account = finance_factories.BankAccountFactory(
-                    offerer=offerer, iban=iban, bic=bic, dsApplicationId=application_id_prefix + str(offerer_index)
+                    offerer=offerer, dsApplicationId=application_id_prefix + str(offerer_index)
                 )
 
             venue = offerers_factories.VenueFactory(
@@ -138,7 +116,6 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
                 venue_by_name[second_venue_name] = second_venue
             mock_accessibility_index += 1
 
-        bic_suffix += 1
         mock_index += 1
 
         virtual_venue_name = "{} (Offre numérique)"
