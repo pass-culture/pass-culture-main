@@ -36,6 +36,7 @@ logger = logging.getLogger(__name__)
 
 
 @private_api.route("/offerers/names", methods=["GET"])
+@atomic()
 @login_required
 @spectree_serialize(response_model=offerers_serialize.GetOfferersNamesResponseModel, api=blueprint.pro_private_schema)
 def list_offerers_names(
