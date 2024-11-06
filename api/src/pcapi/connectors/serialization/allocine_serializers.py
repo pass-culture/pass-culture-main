@@ -332,6 +332,10 @@ class AllocineMovie(pydantic.BaseModel):
     def convert_none_to_empty_list(cls, nullable_field: list | None) -> list:
         return [] if not nullable_field else nullable_field
 
+    @pydantic.field_validator("synopsis", mode="before")
+    def sanitize_encoded_characters(cls, text: str) -> str:
+        return text.replace("&#039;", "\u2019")
+
 
 class AllocinePageInfo(pydantic.BaseModel):
     hasNextPage: bool
