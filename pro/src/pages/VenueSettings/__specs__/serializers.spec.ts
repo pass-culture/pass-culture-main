@@ -43,7 +43,6 @@ describe('serializeEditVenueBodyModel', () => {
       street: '3 Rue de Valois',
       siret: '41816609600069',
       withdrawalDetails: 'Details for withdraw',
-      isEmailAppliedOnAllOffers: true,
       venueLabelId: !formValues.venueLabel
         ? null
         : Number(formValues.venueLabel),

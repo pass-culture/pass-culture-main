@@ -18,7 +18,6 @@ export const serializeEditVenueBodyModel = (
       website: !formValues.webSite ? null : formValues.webSite,
       socialMedias: null,
     },
-    isEmailAppliedOnAllOffers: true,
     isAccessibilityAppliedOnAllOffers:
       formValues.isAccessibilityAppliedOnAllOffers,
     openingHours: serializeOpeningHours(formValues),
