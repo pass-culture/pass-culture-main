@@ -5,12 +5,11 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
-import { Mode } from 'commons/core/OfferEducational/types'
 import { getCollectiveOfferTemplateFactory } from 'commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { CollectiveOfferSummaryEditionScreen } from './CollectiveOfferSummaryEdition'
+import { CollectiveOfferSummaryEdition } from './CollectiveOfferSummaryEdition'
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
@@ -20,10 +19,9 @@ const renderCollectiveOfferSummaryEdition = (
     | GetCollectiveOfferTemplateResponseModel
     | GetCollectiveOfferResponseModel
 ) => {
-  renderWithProviders(
-    <CollectiveOfferSummaryEditionScreen offer={offer} mode={Mode.EDITION} />,
-    { user: sharedCurrentUserFactory() }
-  )
+  renderWithProviders(<CollectiveOfferSummaryEdition offer={offer} />, {
+    user: sharedCurrentUserFactory(),
+  })
 }
 
 describe('CollectiveOfferSummary', () => {
