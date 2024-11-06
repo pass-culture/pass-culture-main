@@ -3,6 +3,7 @@ from flask_login import login_required
 from sqlalchemy.orm import exc as orm_exc
 from werkzeug.exceptions import NotFound
 
+from pcapi import repository
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.providers import api
 from pcapi.core.providers import exceptions
@@ -26,6 +27,7 @@ def _get_venue_or_404(venue_id: int) -> offerers_models.Venue:
 
 
 @private_api.route("/venueProviders", methods=["GET"])
+@repository.atomic()
 @login_required
 @spectree_serialize(
     on_success_status=200,

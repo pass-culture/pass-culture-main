@@ -124,6 +124,7 @@ def test_venue_does_not_exist(client):
     client = client.with_session_auth(email=user.email)
     num_queries = testing.AUTHENTICATION_QUERIES
     num_queries += 1  # select venue
+    num_queries += 1  # rollback
     with testing.assert_num_queries(num_queries):
         response = client.get("/venueProviders/1234")
         assert response.status_code == 404
