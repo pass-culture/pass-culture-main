@@ -42,9 +42,11 @@ import { CancelCollectiveBookingModal } from 'components/CancelCollectiveBooking
 import fullClearIcon from 'icons/full-clear.svg'
 import fullCopyIcon from 'icons/full-duplicate.svg'
 import fullPenIcon from 'icons/full-edit.svg'
+import fullHideIcon from 'icons/full-hide.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import fullPlusIcon from 'icons/full-plus.svg'
 import fullThreeDotsIcon from 'icons/full-three-dots.svg'
+import strokeCheckIcon from 'icons/stroke-check.svg'
 import strokeThingIcon from 'icons/stroke-thing.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -269,6 +271,20 @@ export const CollectiveActionsCells = ({
       )
     : canArchiveCollectiveOffer(offer)
 
+  const canPublishOffer = areCollectiveNewStatusesEnabled
+    ? isActionAllowedOnCollectiveOffer(
+        offer,
+        CollectiveOfferTemplateAllowedAction.CAN_PUBLISH
+      )
+    : false
+
+  const canHideOffer = areCollectiveNewStatusesEnabled
+    ? isActionAllowedOnCollectiveOffer(
+        offer,
+        CollectiveOfferTemplateAllowedAction.CAN_HIDE
+      )
+    : false
+
   const noActionsAllowed = areCollectiveNewStatusesEnabled
     ? offer.allowedActions.length === 0
     : offer.isShowcase && offer.status === CollectiveOfferStatus.ARCHIVED
@@ -288,6 +304,32 @@ export const CollectiveActionsCells = ({
           CollectiveBookingStatus.PENDING ||
           offer.booking.booking_status ===
             CollectiveBookingStatus.CONFIRMED)
+
+  const offerActivationWording =
+    'Votre offre est maintenant active et visible dans ADAGE'
+  const offerDeactivationWording = `Votre offre est ${areCollectiveNewStatusesEnabled ? 'mise en pause' : 'désactivée'} et n’est plus visible sur ADAGE`
+
+  const activateOffer = async () => {
+    const { isActive, id } = offer
+    try {
+      await api.patchCollectiveOffersTemplateActiveStatus({
+        ids: [id],
+        isActive: !isActive,
+      })
+
+      notify.success(
+        !isActive ? offerActivationWording : offerDeactivationWording
+      )
+    } catch {
+      return notify.error(
+        `Une erreur est survenue lors de ${
+          isActive ? 'l’activation' : 'la désactivation'
+        } de votre offre.`
+      )
+    }
+
+    await mutate(collectiveOffersQueryKeys)
+  }
 
   return (
     <td
@@ -356,7 +398,6 @@ export const CollectiveActionsCells = ({
                       />
                     </>
                   )}
-
                 {canDuplicateOffer && (
                   <DropdownMenu.Item
                     className={styles['menu-item']}
@@ -372,7 +413,6 @@ export const CollectiveActionsCells = ({
                     </Button>
                   </DropdownMenu.Item>
                 )}
-
                 {canEditOffer && (
                   <DropdownMenu.Item className={styles['menu-item']} asChild>
                     <ButtonLink
@@ -383,6 +423,31 @@ export const CollectiveActionsCells = ({
                     >
                       Modifier
                     </ButtonLink>
+                  </DropdownMenu.Item>
+                )}
+                {canPublishOffer && (
+                  <DropdownMenu.Item
+                    className={styles['menu-item']}
+                    onSelect={activateOffer}
+                  >
+                    <Button
+                      icon={strokeCheckIcon}
+                      variant={ButtonVariant.TERNARY}
+                    >
+                      Publier
+                    </Button>
+                  </DropdownMenu.Item>
+                )}
+                {canHideOffer && (
+                  <DropdownMenu.Item
+                    className={styles['menu-item']}
+                    onSelect={activateOffer}
+                  >
+                    <Button icon={fullHideIcon} variant={ButtonVariant.TERNARY}>
+                      {areCollectiveNewStatusesEnabled
+                        ? 'Mettre en pause'
+                        : 'Masquer la publication'}
+                    </Button>
                   </DropdownMenu.Item>
                 )}
                 {isBookingCancellable && (
