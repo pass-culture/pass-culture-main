@@ -234,7 +234,7 @@ export const CollectiveActionsCells = ({
   const handleEditOfferClick = () => {
     logEvent(Events.CLICKED_EDIT_COLLECTIVE_OFFER, {
       from: location.pathname,
-      id: offer.id,
+      offerId: offer.id,
       status: offer.displayedStatus,
     })
   }
