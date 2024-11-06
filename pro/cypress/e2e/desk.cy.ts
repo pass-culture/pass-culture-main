@@ -40,7 +40,7 @@ describe('Desk (Guichet) feature', () => {
     })
   })
 
-  it('Should validate a countermark', () => {
+  it('I should be able to validate a countermark', () => {
     logAndGoToPage(login, '/guichet')
 
     cy.stepLog({ message: 'I add this countermark "2XTM3W"' })
@@ -85,7 +85,7 @@ describe('Desk (Guichet) feature', () => {
     cy.findByText('Valider la contremarque').should('be.disabled')
   })
 
-  it('Should invalidate a already used countermark', () => {
+  it('I should be able to invalidate an already used countermark', () => {
     logAndGoToPage(login, '/guichet')
 
     cy.stepLog({ message: 'I add this countermark "XUSEDX"' })
@@ -100,7 +100,7 @@ describe('Desk (Guichet) feature', () => {
     cy.findByText('Contremarque invalidée !')
   })
 
-  it('Should not be able to validate an other pro countermark', () => {
+  it('I should not be able to validate another pro countermark', () => {
     logAndGoToPage(login, '/guichet')
 
     cy.stepLog({ message: 'I add this countermark "OTHERX"' })
@@ -113,7 +113,7 @@ describe('Desk (Guichet) feature', () => {
     )
   })
 
-  it('Should not be able to validate a cancelled countermark', () => {
+  it('I should not be able to validate a cancelled countermark', () => {
     logAndGoToPage(login, '/guichet')
 
     cy.stepLog({ message: 'I add this countermark "CANCEL"' })
@@ -124,7 +124,7 @@ describe('Desk (Guichet) feature', () => {
     cy.findByText('Cette réservation a été annulée')
   })
 
-  it('Should not be able to validate a reimbursed countermark', () => {
+  it('I should not be able to validate a reimbursed countermark', () => {
     logAndGoToPage(login, '/guichet')
 
     cy.stepLog({ message: 'I add this countermark "REIMBU"' })

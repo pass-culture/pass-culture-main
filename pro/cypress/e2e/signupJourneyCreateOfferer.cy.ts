@@ -41,7 +41,7 @@ describe('Signup journey with new venue', () => {
     )
   })
 
-  it('Should sign up with a new account, create a new offerer with an unknown SIRET', () => {
+  it('I should be able to sign up with a new account, create a new offerer with an unknown SIRET', () => {
     goToOffererCreation(login)
 
     cy.stepLog({ message: 'I specify a venue with a SIRET' })
@@ -161,7 +161,7 @@ describe('Signup journey with known venue', () => {
     cy.intercept({ method: 'POST', url: '/offerers' }).as('postOfferers')
   })
 
-  it('Should sign up with a new account and a known offerer, create a new offerer in the space', () => {
+  it('I should be able to sign up with a new account and a known offerer, create a new offerer in the space', () => {
     goToOffererCreation(login)
 
     cy.stepLog({ message: 'I specify an offerer with a SIRET' })
@@ -249,7 +249,7 @@ describe('Signup journey with known venue', () => {
     ).should('be.visible')
   })
 
-  it('Should sign up with a new account and a known offerer', () => {
+  it('I should be able to sign up with a new account and a known offerer', () => {
     goToOffererCreation(login)
 
     cy.stepLog({ message: 'I specify an offerer with a SIRET' })

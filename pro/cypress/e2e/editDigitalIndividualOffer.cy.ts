@@ -96,7 +96,7 @@ describe('Edit digital individual offers', () => {
       })
     })
 
-    it('It should change date in bookings after I change offer date', function () {
+    it('I should be able to change offer date and it should change date in bookings', function () {
       const newDate = format(addDays(new Date(), 15), 'yyyy-MM-dd')
       logAndGoToPage(login, '/offre/individuelle/2/edition/stocks')
       cy.contains('Modifier l’offre')

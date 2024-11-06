@@ -1,5 +1,5 @@
 describe('Account creation', () => {
-  it('should create an account', () => {
+  it('I should be able to create an account', () => {
     cy.visit('/inscription')
 
     cy.stepLog({

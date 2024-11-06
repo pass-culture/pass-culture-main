@@ -36,7 +36,7 @@ describe('Create and update venue', () => {
     cy.intercept({ method: 'POST', url: '/venues' }).as('postVenues')
   })
 
-  it('A pro user can add a venue without SIRET', () => {
+  it('As a pro user, I should be able to add a venue without SIRET', () => {
     const venueNameWithoutSiret = 'Lieu sans Siret'
     logAndGoToPage(login, '/accueil')
 
@@ -103,7 +103,7 @@ describe('Create and update venue', () => {
     cy.findByText('Modifier l’image').should('be.visible')
   })
 
-  it('A pro user can add a venue with SIRET', () => {
+  it('As a pro user, I should be able to add a venue with SIRET', () => {
     const venueNameWithSiret = 'Lieu avec Siret'
     siret = siren + '12345'
 
@@ -160,7 +160,7 @@ describe('Create and update venue', () => {
     cy.contains(venueNameWithSiret).should('be.visible')
   })
 
-  it('It should update a venue', () => {
+  it('As a pro user, I should be able to update a venue', () => {
     logAndGoToPage(login, '/accueil')
 
     cy.stepLog({ message: 'I go to the venue page in Individual section' })

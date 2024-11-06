@@ -30,7 +30,7 @@ describe('Search individual offers', () => {
     }).as('searchOffers')
   })
 
-  it('A search with a name should display expected results', () => {
+  it('I should be able to search with a name and see expected results', () => {
     logAndGoToPage(login, '/offres')
 
     cy.stepLog({ message: 'I search with the text "Une super offre"' })
@@ -53,7 +53,7 @@ describe('Search individual offers', () => {
     expectOffersOrBookingsAreFound(expectedResults)
   })
 
-  it('A search with a EAN should display expected results', () => {
+  it('I should be able to search with a EAN and see expected results', () => {
     const ean = '1234567891234'
 
     logAndGoToPage(login, '/offres')
@@ -78,7 +78,7 @@ describe('Search individual offers', () => {
     expectOffersOrBookingsAreFound(expectedResults)
   })
 
-  it('A search with "Catégorie" filter should display expected results', () => {
+  it('I should be able to search with "Catégorie" filter and see expected results', () => {
     logAndGoToPage(login, '/offres')
 
     cy.stepLog({ message: 'I select "Instrument de musique" in "Catégorie"' })
@@ -99,7 +99,7 @@ describe('Search individual offers', () => {
     expectOffersOrBookingsAreFound(expectedResults)
   })
 
-  it('A search by offer status should display expected results', () => {
+  it('I should be able to search by offer status and see expected results', () => {
     logAndGoToPage(login, '/offres')
 
     cy.stepLog({ message: 'I select "Publiée" in offer status' })
@@ -127,7 +127,7 @@ describe('Search individual offers', () => {
     expectOffersOrBookingsAreFound(expectedResults)
   })
 
-  it('A search by date should display expected results', () => {
+  it('I should be able to search by date and see expected results', () => {
     logAndGoToPage(login, '/offres')
 
     cy.stepLog({ message: 'I select a date in one month' })
@@ -150,7 +150,7 @@ describe('Search individual offers', () => {
     expectOffersOrBookingsAreFound(expectedResults)
   })
 
-  it('A search combining several filters should display expected results', () => {
+  it('I should be able to search combining several filters and see expected results', () => {
     logAndGoToPage(login, '/offres')
 
     cy.stepLog({ message: 'I search with the text "Livre"' })

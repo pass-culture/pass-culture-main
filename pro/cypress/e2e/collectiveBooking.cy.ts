@@ -18,7 +18,7 @@ describe('Search for collective bookings', () => {
     })
   })
 
-  it('It should find collective bookings by offers', () => {
+  it('I should be able to find collective bookings by offers', () => {
     logAndGoToPage(login, '/reservations/collectives')
 
     cy.stepLog({ message: 'I display bookings' })
@@ -44,7 +44,7 @@ describe('Search for collective bookings', () => {
     expectOffersOrBookingsAreFound(expectedResults)
   })
 
-  it('It should find collective bookings by establishments', () => {
+  it('I should be able to find collective bookings by establishments', () => {
     logAndGoToPage(login, '/reservations/collectives')
 
     cy.stepLog({ message: 'I display bookings' })
@@ -77,7 +77,7 @@ describe('Search for collective bookings', () => {
     expectOffersOrBookingsAreFound(expectedResults)
   })
 
-  it('It should find collective bookings by booking number', () => {
+  it('I should be able to find collective bookings by booking number', () => {
     logAndGoToPage(login, '/reservations/collectives')
 
     cy.stepLog({ message: 'I display bookings' })
@@ -112,7 +112,7 @@ describe('Search for collective bookings', () => {
     expectOffersOrBookingsAreFound(expectedResults)
   })
 
-  it('It should find collective bookings by date and by establishment', () => {
+  it('I should be able to find collective bookings by date and by establishment', () => {
     logAndGoToPage(login, '/reservations/collectives')
 
     const dateSearch = format(addDays(new Date(), 10), 'yyyy-MM-dd')
