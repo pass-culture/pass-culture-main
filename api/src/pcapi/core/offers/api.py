@@ -1645,7 +1645,7 @@ def batch_delete_draft_offers(query: BaseQuery) -> None:
         synchronize_session=False
     )
     models.Offer.query.filter(*filters).delete(synchronize_session=False)
-    db.session.commit()
+    db.session.flush()
 
 
 def batch_delete_stocks(

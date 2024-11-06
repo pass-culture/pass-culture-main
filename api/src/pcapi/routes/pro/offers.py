@@ -227,6 +227,7 @@ def get_stocks_stats(offer_id: int) -> offers_serialize.StockStatsResponseModel:
     on_success_status=204,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
     if not body.ids:
         raise api_errors.ApiErrors(
