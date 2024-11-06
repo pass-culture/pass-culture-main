@@ -37,11 +37,49 @@ class ListCollectiveOffersQueryModel(BaseModel):
 
 
 class OfferVenueModel(BaseModel):
+    addressType: collective_offers_serialize.OfferAddressType = fields.OFFER_VENUE_ADDRESS_TYPE
     venueId: int | None = fields.VENUE_ID
     otherAddress: str | None = fields.OFFER_VENUE_OTHER_ADDRESS
-    addressType: collective_offers_serialize.OfferAddressType = fields.OFFER_VENUE_ADDRESS_TYPE
 
     _validated_venue_id = validator("venueId", pre=True, allow_reuse=True)(validate_venue_id)
+
+    @validator("venueId")
+    def validate_venue_id_using_address_type(cls, venue_id: int | None, values: dict) -> int | None:
+        if "addressType" not in values:
+            return venue_id
+        address_type = values["addressType"]
+        if address_type == collective_offers_serialize.OfferAddressType.OFFERER_VENUE:
+            if venue_id is None:
+                raise ValueError(
+                    "Ce champ est obligatoire si 'addressType' vaut "
+                    f"'{collective_offers_serialize.OfferAddressType.OFFERER_VENUE.value}'"
+                )
+        elif venue_id is not None:
+            raise ValueError(
+                "Ce champ est interdit si 'addressType' ne vaut pas "
+                f"'{collective_offers_serialize.OfferAddressType.OFFERER_VENUE.value}'"
+            )
+
+        return venue_id
+
+    @validator("otherAddress")
+    def validate_other_address(cls, other_address: str | None, values: dict) -> str | None:
+        if "addressType" not in values:
+            return other_address
+        address_type = values["addressType"]
+        if address_type == collective_offers_serialize.OfferAddressType.OTHER:
+            if not other_address:
+                raise ValueError(
+                    "Ce champ est obligatoire si 'addressType' vaut "
+                    f"'{collective_offers_serialize.OfferAddressType.OTHER.value}'"
+                )
+        elif other_address:
+            raise ValueError(
+                "Ce champ est interdit si 'addressType' ne vaut pas "
+                f"'{collective_offers_serialize.OfferAddressType.OTHER.value}'"
+            )
+
+        return other_address
 
     class Config:
         alias_generator = to_camel
