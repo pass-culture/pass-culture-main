@@ -29,7 +29,6 @@ class PhoneNumberValidator:
 class SiretValidator:
     def __init__(self) -> None:
         self.field_flags = {
-            "required": True,
             "minlength": 14,
             "maxlength": 14,
             "pattern": siren_utils.SIRET_OR_RIDET_RE,
@@ -190,7 +189,7 @@ class PCPhoneNumberField(PCStringField):
 
 
 class PCSiretField(PCStringField):
-    validators = [SiretValidator()]
+    validators = [validators.DataRequired("SIRET obligatoire"), SiretValidator()]
 
 
 class PCOptSiretField(PCSiretField):
