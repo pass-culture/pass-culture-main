@@ -279,6 +279,7 @@ def post_draft_offer(
     response_model=offers_serialize.GetIndividualOfferResponseModel,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def patch_draft_offer(
     offer_id: int, body: offers_schemas.PatchDraftOfferBodyModel
 ) -> offers_serialize.GetIndividualOfferResponseModel:
@@ -292,10 +293,9 @@ def patch_draft_offer(
 
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     try:
-        with repository.transaction():
-            if body_extra_data := offers_api.deserialize_extra_data(body.extra_data, offer.subcategoryId):
-                body.extra_data = body_extra_data
-            offer = offers_api.update_draft_offer(offer, body)
+        if body_extra_data := offers_api.deserialize_extra_data(body.extra_data, offer.subcategoryId):
+            body.extra_data = body_extra_data
+        offer = offers_api.update_draft_offer(offer, body)
     except (exceptions.OfferCreationBaseException, exceptions.OfferEditionBaseException) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
