@@ -36,7 +36,6 @@ import type { EducationalInstitutionsResponseModel } from '../models/Educational
 import type { EducationalRedactors } from '../models/EducationalRedactors';
 import type { EventDatesInfos } from '../models/EventDatesInfos';
 import type { FinanceBankAccountListResponseModel } from '../models/FinanceBankAccountListResponseModel';
-import type { GenerateOffererApiKeyResponse } from '../models/GenerateOffererApiKeyResponse';
 import type { GetCollectiveOfferRequestResponseModel } from '../models/GetCollectiveOfferRequestResponseModel';
 import type { GetCollectiveOfferResponseModel } from '../models/GetCollectiveOfferResponseModel';
 import type { GetCollectiveOfferTemplateResponseModel } from '../models/GetCollectiveOfferTemplateResponseModel';
@@ -1406,27 +1405,6 @@ export class DefaultService {
       },
       body: requestBody,
       mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
-   * generate_api_key_route <POST>
-   * @param offererId
-   * @returns GenerateOffererApiKeyResponse OK
-   * @throws ApiError
-   */
-  public generateApiKeyRoute(
-    offererId: number,
-  ): CancelablePromise<GenerateOffererApiKeyResponse> {
-    return this.httpRequest.request({
-      method: 'POST',
-      url: '/offerers/{offerer_id}/api_keys',
-      path: {
-        'offerer_id': offererId,
-      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
