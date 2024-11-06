@@ -376,7 +376,7 @@ def cloud_task_client_fixture():
 
 @pytest.fixture(name="db_session")
 def db_session():
-    yield
+    yield db.session
     clean_all_database()
 
 
