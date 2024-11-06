@@ -309,6 +309,7 @@ def patch_draft_offer(
     on_success_status=201,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.GetIndividualOfferResponseModel:
     venue: offerers_models.Venue = (
         offerers_models.Venue.query.filter(offerers_models.Venue.id == body.venue_id)
@@ -321,16 +322,15 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Ge
     )
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     try:
-        with repository.transaction():
-            fields = body.dict(by_alias=True)
-            fields.pop("venueId")
-            fields.pop("address")
-            fields["extraData"] = offers_api.deserialize_extra_data(fields["extraData"], fields["subcategoryId"])
+        fields = body.dict(by_alias=True)
+        fields.pop("venueId")
+        fields.pop("address")
+        fields["extraData"] = offers_api.deserialize_extra_data(fields["extraData"], fields["subcategoryId"])
 
-            offer_body = offers_schemas.CreateOffer(**fields)
-            offer = offers_api.create_offer(
-                offer_body, venue=venue, offerer_address=offerer_address, is_from_private_api=True
-            )
+        offer_body = offers_schemas.CreateOffer(**fields)
+        offer = offers_api.create_offer(
+            offer_body, venue=venue, offerer_address=offerer_address, is_from_private_api=True
+        )
     except exceptions.OfferCreationBaseException as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
