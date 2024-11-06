@@ -459,6 +459,7 @@ def patch_offer(
     response_model=CreateThumbnailResponseModel,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseModel:
     try:
         offer = offers_repository.get_offer_by_id(form.offer_id)
@@ -473,14 +474,13 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
 
     image_as_bytes = form.get_image_as_bytes(request)
 
-    with transaction():
-        thumbnail = offers_api.create_mediation(
-            user=current_user,
-            offer=offer,
-            credit=form.credit,
-            image_as_bytes=image_as_bytes,
-            crop_params=form.crop_params,
-        )
+    thumbnail = offers_api.create_mediation(
+        user=current_user,
+        offer=offer,
+        credit=form.credit,
+        image_as_bytes=image_as_bytes,
+        crop_params=form.crop_params,
+    )
 
     return CreateThumbnailResponseModel(id=thumbnail.id, url=thumbnail.thumbUrl, credit=thumbnail.credit)  # type: ignore[arg-type]
 
