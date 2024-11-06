@@ -31,7 +31,7 @@ jobs:
     name: "E2E tests and notifications"
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4.2.2
       - uses: technote-space/workflow-conclusion-action@v3
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v2"

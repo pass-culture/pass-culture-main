@@ -28,7 +28,7 @@ jobs:
     name: "Quality checks"
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4.2.2
       - name: "Compute docker image name:tag"
         id: compute-image-name
         run: |
@@ -122,7 +122,7 @@ jobs:
     name: "Pylint"
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4.2.2
       - name: "Compute docker image name:tag"
         id: compute-image-name
         run: echo "image_name=${{ env.registry }}/${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}
@@ -222,7 +222,7 @@ jobs:
           POSTGRES_PASSWORD: pytest
           POSTGRES_DB: pass_culture
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4.2.2
         with:
           # On a feature branch, we must fetch the whole history to
           # find the common ancestor with master (see `git merge-base`
@@ -439,7 +439,7 @@ jobs:
           POSTGRES_PASSWORD: pytest
           POSTGRES_DB: pass_culture
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4.2.2
       - name: "Compute docker image name:tag"
         id: compute-image-name
         run: echo "image_name=${{ env.registry }}/${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}

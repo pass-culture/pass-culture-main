@@ -21,7 +21,7 @@ jobs:
     name: "Type check / Quality check / Style quality check"
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4.2.2
       - uses: actions/setup-node@v4
         with:
           node-version-file: "pro/.nvmrc"
@@ -51,7 +51,7 @@ jobs:
     name: "Unit tests"
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
       - run: |
