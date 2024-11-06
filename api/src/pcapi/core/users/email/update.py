@@ -16,10 +16,8 @@ from pcapi.core.users import models
 from pcapi.core.users import repository as users_repository
 from pcapi.core.users.email.send import send_pro_user_emails_for_email_change
 from pcapi.models import db
-from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import on_commit
 from pcapi.repository import repository
-from pcapi.repository import transaction
 from pcapi.utils.urls import generate_firebase_dynamic_link
 
 
@@ -163,18 +161,15 @@ def confirm_email_update_request_and_send_mail(encoded_token: str) -> None:
     user = models.User.query.get(token.user_id)
     if not user:
         raise exceptions.InvalidToken()
+
     new_email = token.data["new_email"]
     check_email_address_does_not_exist(new_email)
-    try:
-        generate_and_send_beneficiary_validation_email_for_email_change(user, new_email)
-        with transaction():
-            models.UserEmailHistory.build_confirmation(user, new_email)
-        token.expire()
+    generate_and_send_beneficiary_validation_email_for_email_change(user, new_email)
 
-    except Exception as error:
-        raise ApiErrors(
-            errors={"message": f"erreur inattendue: {error}"},
-        )
+    email_history = models.UserEmailHistory.build_confirmation(user, new_email)
+    db.session.add(email_history)
+
+    token.expire()
 
 
 def confirm_new_email_selection_and_send_mail(user: models.User, encoded_new_mail_token: str, new_email: str) -> None:

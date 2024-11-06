@@ -153,6 +153,7 @@ def get_email_update_status(user: users_models.User) -> serializers.EmailUpdateS
 
 
 @blueprint.native_route("/profile/email_update/confirm", methods=["POST"])
+@atomic()
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 def confirm_email_update(body: serializers.ChangeBeneficiaryEmailBody) -> None:
     try:
