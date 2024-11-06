@@ -1,5 +1,6 @@
 from flask_login import login_required
 
+from pcapi import repository
 from pcapi.core.offerers.models import Venue
 import pcapi.core.providers.repository as providers_repository
 from pcapi.routes.serialization.providers_serialize import ListProviderResponse
@@ -10,6 +11,7 @@ from . import blueprint
 
 
 @blueprint.pro_private_api.route("/venueProviders/<int:venue_id>", methods=["GET"])
+@repository.atomic()
 @login_required
 @spectree_serialize(
     response_model=ListProviderResponse,  # type: ignore[arg-type]
