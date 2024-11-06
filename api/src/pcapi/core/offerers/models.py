@@ -546,16 +546,16 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
         )
 
     @property
-    def hasPendingBankInformationApplication(self) -> bool:
-        if not self.bankInformation:
+    def hasPendingBankAccountApplication(self) -> bool:
+        if not self.current_bank_account:
             return False
-        return self.bankInformation.status == finance_models.BankInformationStatus.DRAFT
+        return self.current_bank_account.status == finance_models.BankAccountApplicationStatus.DRAFT
 
     @property
-    def demarchesSimplifieesIsAccepted(self) -> bool:
-        if not self.bankInformation:
+    def hasAcceptedBankAccountApplication(self) -> bool:
+        if not self.current_bank_account:
             return False
-        return self.bankInformation.status == finance_models.BankInformationStatus.ACCEPTED
+        return self.current_bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
 
     @property
     def has_individual_offers(self) -> bool:

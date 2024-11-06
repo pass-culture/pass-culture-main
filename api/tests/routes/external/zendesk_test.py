@@ -5,7 +5,7 @@ import pytest
 
 from pcapi import settings
 import pcapi.core.finance.factories as finance_factories
-from pcapi.core.finance.models import BankInformationStatus
+from pcapi.core.finance.models import BankAccountApplicationStatus
 import pcapi.core.history.factories as history_factories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.users import constants as user_constants
@@ -219,7 +219,10 @@ class ZendeskWebhookTest:
 
     def test_webhook_update_pro_by_booking_email(self, client):
         venue = offerers_factories.VenueFactory(bookingEmail="venue@example.com", postalCode="06600")
-        finance_factories.BankInformationFactory(venue=venue, status=BankInformationStatus.ACCEPTED)
+        offerers_factories.VenueBankAccountLinkFactory(
+            venue=venue,
+            bankAccount=finance_factories.BankAccountFactory(status=BankAccountApplicationStatus.ACCEPTED),
+        )
 
         response = client.post(
             "/webhooks/zendesk/ticket_notification",
