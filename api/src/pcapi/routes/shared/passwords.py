@@ -10,7 +10,7 @@ from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
 from pcapi.core.users.api import update_password_and_external_user
 from pcapi.core.users.repository import find_user_by_email
-from pcapi.domain.password import check_password_strength
+from pcapi.domain.password import compute_password_strength_violations
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.pro import blueprint
@@ -52,7 +52,10 @@ def post_new_password(body: NewPasswordBodyModel) -> None:
     token_value = body.token
     new_password = body.newPassword
 
-    check_password_strength("newPassword", new_password)
+    violations = compute_password_strength_violations("newPassword", new_password)
+    if violations:
+        raise ApiErrors(violations)
+
     try:
         token = token_utils.Token.load_and_check(token_value, token_utils.TokenType.RESET_PASSWORD)
         token.expire()

@@ -26,6 +26,7 @@ from pcapi.core.users.email import repository as email_repository
 import pcapi.core.users.models as users_models
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain import password
+from pcapi.domain import password_exceptions
 from pcapi.models import api_errors
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import atomic
@@ -231,10 +232,13 @@ def create_account(body: serializers.AccountRequest) -> None:
     if FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active():
         try:
             api_recaptcha.check_native_app_recaptcha_token(body.token)
-        except api_recaptcha.ReCaptchaException:
-            raise api_errors.ApiErrors({"token": "The given token is not valid"})
+        except api_recaptcha.ReCaptchaException as e:
+            raise api_errors.ApiErrors({"token": "The given token is not valid"}) from e
 
-    password.check_password_strength("password", body.password)
+    try:
+        password.check_password_strength("password", body.password)
+    except password_exceptions.WeakPassword as e:
+        raise api_errors.ApiErrors(e.errors) from e
 
     try:
         created_user = api.create_account(
@@ -256,8 +260,8 @@ def create_account(body: serializers.AccountRequest) -> None:
         assert user is not None
         api.handle_create_account_with_existing_email(user)
 
-    except exceptions.UnderAgeUserException:
-        raise api_errors.ApiErrors({"dateOfBirth": "The birthdate is invalid"})
+    except exceptions.UnderAgeUserException as e:
+        raise api_errors.ApiErrors({"dateOfBirth": "The birthdate is invalid"}) from e
 
 
 @blueprint.native_route("/oauth/google/account", methods=["POST"])

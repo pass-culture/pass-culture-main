@@ -7,6 +7,7 @@ from pcapi.core.users import exceptions
 from pcapi.core.users import models as users_models
 from pcapi.core.users.email import repository as email_repository
 from pcapi.core.users.email import update as email_api
+from pcapi.domain import password_exceptions
 from pcapi.models import api_errors
 from pcapi.repository import atomic
 from pcapi.routes.native.security import authenticated_and_active_user_required
@@ -98,7 +99,11 @@ def confirm_email_update(
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @atomic()
 def select_new_password(body: authentication_serializers.ResetPasswordRequest) -> None:
-    user = api.reset_password_with_token(body.new_password, body.reset_password_token)
+    try:
+        user = api.reset_password_with_token(body.new_password, body.reset_password_token)
+    except password_exceptions.WeakPassword as e:
+        raise api_errors.ApiErrors(e.errors) from e
+
     api.create_recently_reset_password_token(user)
 
 

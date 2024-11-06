@@ -14,6 +14,7 @@ from pcapi.core.users import models as user_models
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import find_user_by_email
+from pcapi.domain import password_exceptions
 from pcapi.domain.password import check_password_strength
 from pcapi.models import api_errors
 from pcapi.models import db
@@ -107,7 +108,11 @@ def request_password_reset(body: RequestPasswordResetRequest) -> None:
 )
 @atomic()
 def reset_password(body: ResetPasswordRequest) -> ResetPasswordResponse:
-    user = users_api.reset_password_with_token(body.new_password, body.reset_password_token)
+    try:
+        user = users_api.reset_password_with_token(body.new_password, body.reset_password_token)
+    except password_exceptions.WeakPassword as e:
+        raise ApiErrors(e.errors) from e
+
     return ResetPasswordResponse(
         access_token=users_api.create_user_access_token(user),
         refresh_token=users_api.create_user_refresh_token(user, body.device_info),
@@ -130,8 +135,8 @@ def change_password(user: User, body: ChangePasswordRequest) -> None:
 
     try:
         check_password_strength("newPassword", body.new_password)
-    except ApiErrors:
-        raise ApiErrors({"code": "WEAK_PASSWORD", "newPassword": ["Le nouveau mot de passe est trop faible"]})
+    except password_exceptions.WeakPassword as e:
+        raise ApiErrors({"code": "WEAK_PASSWORD"} | e.errors) from e
 
     user.setPassword(body.new_password)
     repository.save(user)

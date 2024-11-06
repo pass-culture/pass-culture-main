@@ -25,7 +25,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.api import update_user_password
 from pcapi.core.users.email import repository as email_repository
-from pcapi.domain.password import check_password_validity
+from pcapi.domain.password import compute_password_rule_violations
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.api_errors import UnauthorizedError
@@ -174,18 +174,25 @@ def check_activation_token_exists(token: str) -> None:
 @login_required
 @spectree_serialize(on_success_status=204, on_error_statuses=[400], api=blueprint.pro_private_schema)
 def post_change_password(body: users_serializers.ChangePasswordBodyModel) -> None:
-    errors = ApiErrors()
-    errors.status_code = 400
     user = current_user._get_current_object()
     if not user.has_pro_role and not user.has_admin_role:
-        errors.add_error(
-            "oldPassword", "Vos modifications ne peuvent pas être acceptées tant que votre compte n’a pas été validé"
+        raise ApiErrors(
+            {
+                "oldPassword": [
+                    "Vos modifications ne peuvent pas être acceptées tant que votre compte n’a pas été validé"
+                ]
+            }
         )
-        raise errors
+
     new_password = body.newPassword
     new_confirmation_password = body.newConfirmationPassword
     old_password = body.oldPassword
-    check_password_validity(new_password, new_confirmation_password, old_password, user)
+    password_rule_violations = compute_password_rule_violations(
+        new_password, new_confirmation_password, old_password, user
+    )
+    if password_rule_violations:
+        raise ApiErrors(password_rule_violations)
+
     update_user_password(user, new_password)
     transactional_mails.send_reset_password_email_to_connected_pro(user)
 

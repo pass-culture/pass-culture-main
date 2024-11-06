@@ -3,7 +3,7 @@ import secrets
 import string
 
 from pcapi.core.users.models import User
-from pcapi.models.api_errors import ApiErrors
+from pcapi.domain import password_exceptions
 
 
 def random_password() -> str:
@@ -18,34 +18,51 @@ def random_password() -> str:
     return "".join(password_chars)
 
 
-def check_password_validity(new_password: str, new_confirmation_password: str, old_password: str, user: User) -> None:
-    api_errors = ApiErrors()
-    _ensure_new_password_is_strong_enough("newPassword", new_password, api_errors)
-    _ensure_given_old_password_is_correct(user, old_password, api_errors)
-    _ensure_new_password_is_different_from_old(user, new_password, api_errors)
-    _ensure_confirmation_password_is_same_as_new_password(new_password, new_confirmation_password, api_errors)
-    if len(api_errors.errors) > 0:
-        raise api_errors
+def compute_password_rule_violations(
+    new_password: str, new_confirmation_password: str, old_password: str, user: User
+) -> dict[str, list[str]]:
+    rule_violations: dict[str, list[str]] = {}
+    rule_violations |= compute_new_password_violations(user, new_password)
+    rule_violations |= compute_old_password_valid_violations(user, old_password)
+    rule_violations |= compute_confirmation_password_violations(new_password, new_confirmation_password)
+    return rule_violations
 
 
-def check_password_strength(key: str, password: str) -> None:
-    api_errors = ApiErrors()
-    _ensure_new_password_is_strong_enough(key, password, api_errors)
-    if len(api_errors.errors) > 0:
-        raise api_errors
+def check_password_strength(field_name: str, password: str) -> None:
+    violations = compute_password_strength_violations(field_name, password)
+    if violations:
+        raise password_exceptions.WeakPassword(violations)
 
 
-def _ensure_new_password_is_different_from_old(user: User, new_password: str, errors: ApiErrors) -> None:
+def compute_new_password_violations(user: User, new_password: str) -> dict[str, list[str]]:
+    violations = []
+
+    password_strength_violations = compute_password_strength_violations("newPassword", new_password)
+    if password_strength_violations:
+        violations += password_strength_violations["newPassword"]
+
+    different_password_violations = compute_different_password_violations(user, new_password)
+    if different_password_violations:
+        violations += different_password_violations["newPassword"]
+
+    if violations:
+        return {"newPassword": violations}
+    return {}
+
+
+def compute_different_password_violations(user: User, new_password: str) -> dict[str, list[str]]:
     if user.checkPassword(new_password):
-        errors.add_error("newPassword", "Le nouveau mot de passe est identique à l’ancien.")
+        return {"newPassword": ["Le nouveau mot de passe est identique à l’ancien."]}
+    return {}
 
 
-def _ensure_given_old_password_is_correct(user: User, old_password: str, errors: ApiErrors) -> None:
+def compute_old_password_valid_violations(user: User, old_password: str) -> dict[str, list[str]]:
     if not user.checkPassword(old_password):
-        errors.add_error("oldPassword", "Le mot de passe actuel est incorrect.")
+        return {"oldPassword": ["Le mot de passe actuel est incorrect."]}
+    return {}
 
 
-def _ensure_new_password_is_strong_enough(field_name: str, field_value: str, errors: ApiErrors) -> None:
+def compute_password_strength_violations(field_name: str, password: str) -> dict[str, list[str]]:
     at_least_one_uppercase = "(?=.*?[A-Z])"
     at_least_one_lowercase = "(?=.*?[a-z])"
     at_least_one_digit = "(?=.*?[0-9])"
@@ -54,21 +71,24 @@ def _ensure_new_password_is_strong_enough(field_name: str, field_value: str, err
     regex = "^" + at_least_one_uppercase + at_least_one_lowercase + at_least_one_digit + min_length + "$"
 
     # Special characters: !"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~
-    at_least_one_special_char = len(set(field_value).intersection(set(string.punctuation))) > 0
+    at_least_one_special_char = len(set(password).intersection(set(string.punctuation))) > 0
 
-    if not re.match(regex, field_value) or not at_least_one_special_char:
-        errors.add_error(
-            field_name,
-            "Le mot de passe doit contenir au moins :\n"
-            "- 12 caractères\n"
-            "- Un chiffre\n"
-            "- Une majuscule et une minuscule\n"
-            "- Un caractère spécial",
-        )
+    if not re.match(regex, password) or not at_least_one_special_char:
+        return {
+            field_name: [
+                "Le mot de passe doit contenir au moins :\n"
+                "- 12 caractères\n"
+                "- Un chiffre\n"
+                "- Une majuscule et une minuscule\n"
+                "- Un caractère spécial"
+            ]
+        }
+    return {}
 
 
-def _ensure_confirmation_password_is_same_as_new_password(
-    new_password_value: str, new_confirmation_password_value: str, errors: ApiErrors
-) -> None:
+def compute_confirmation_password_violations(
+    new_password_value: str, new_confirmation_password_value: str
+) -> dict[str, list[str]]:
     if new_password_value != new_confirmation_password_value:
-        errors.add_error("newConfirmationPassword", "Les deux mots de passe ne sont pas identiques.")
+        return {"newConfirmationPassword": ["Les deux mots de passe ne sont pas identiques."]}
+    return {}

@@ -8,7 +8,9 @@ from pydantic.v1.class_validators import validator
 
 from pcapi.core.history import models as history_models
 from pcapi.core.users import models as users_models
+from pcapi.domain import password_exceptions
 from pcapi.domain.password import check_password_strength
+from pcapi.models import api_errors
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import phone_number as phone_number_utils
@@ -91,7 +93,11 @@ class ProUserCreationBodyV2Model(BaseModel):
 
     @validator("password")
     def validate_password_strength(cls, password: str) -> str:
-        check_password_strength("password", password)
+        try:
+            check_password_strength("password", password)
+        except password_exceptions.WeakPassword as e:
+            raise api_errors.ApiErrors(e.errors) from e
+
         return password
 
     class Config:
