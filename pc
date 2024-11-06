@@ -7,13 +7,16 @@ set -o nounset
 # =============================================
 
 if [[ $# -eq 0 ]] || [[ "$1" == "-h" ]]; then
-  echo "$(basename "$0") [-h] [-e env -b backend -f file c] -- program to deal with Pass Culture ecosystem
+  echo "$(basename "$0") [-h] [-e env -b backend -f file] c [--fast --force-recreate]
+  program to deal with Pass Culture ecosystem
 where:
   -h  show this help text
   -e  specify environment to target (default: development)
   -b  specify backend to connect with local app (default: localhost)
   -f  file to upload to pod
   -t  specify version you want to deploy (create tag with this name)
+  --fast avoid rebuilding the docker images
+  --force-recreate force recreation of the docker images
   c  command that you want to run
 
 Commands:
@@ -80,13 +83,25 @@ else
   FILE_TO_UPLOAD=${FILE_TO_UPLOAD:-'none'}
 fi
 
+if [[ $# -gt 1 ]] && [[ "$2" == '--fast' ]]; then
+  FAST=true
+else
+  FAST=false
+fi
+
+if [[ $# -gt 1 ]] && [[ "$2" == '--force-recreate' ]]; then
+  SLOW=true
+else
+  SLOW=false
+fi
+
 CMD="$1"
 shift
 
 # =============================================
 # Utilities functions
 # =============================================
-
+RUN=""
 PRG="$BASH_SOURCE"
 
 while [ -h "$PRG" ]; do
@@ -191,11 +206,18 @@ elif [[ "$CMD" == "psql-file" ]]; then
 # Restart API after removing the database and files
 elif [[ "$CMD" == "restart-backend" ]]; then
   source "$INFRA_SCRIPTS_PATH"/start_backend.sh
-  restart_backend
+  SLOW=true
+  drop_data
+  build_backend
+  start_backend
+
 
 elif [[ "$CMD" == "restart-proxy-backend" ]]; then
   source "$INFRA_SCRIPTS_PATH"/start_backend.sh
-  restart_proxy_backend
+  SLOW=true
+  drop_data
+  build_proxy_backend
+  start_backend
 
 # Clear all data in postgresql database
 elif [[ "$CMD" == "reset-all-db" ]]; then
@@ -222,16 +244,18 @@ elif [[ "$CMD" == "restore-db" ]]; then
 # Start API server with database and nginx server (builds the images first)
 elif [[ "$CMD" == "start-backend" ]]; then
   source "$INFRA_SCRIPTS_PATH"/start_backend.sh
+  build_backend
   start_backend
 
 elif [[ "$CMD" == "start-proxy-backend" ]]; then
   source "$INFRA_SCRIPTS_PATH"/start_backend.sh
-  start_proxy_backend
+  build_proxy_backend
+  start_backend
 
 # Start API server with database and nginx server (without building the images)
 elif [[ "$CMD" == "up-backend" ]]; then
   source "$INFRA_SCRIPTS_PATH"/start_backend.sh
-  up_backend
+  start_backend
 
 # Commands to start API & Backoffice without docker
 elif [[ "$CMD" == "setup-no-docker" ]]; then
