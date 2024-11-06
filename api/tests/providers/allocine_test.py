@@ -70,7 +70,7 @@ class AllocineMovieListTest:
         assert movie_data["posterUrl"] == expected_data["poster"]["url"]
         assert movie_data["releaseDate"] == expected_data["releases"][0]["releaseDate"]["date"]
         assert movie_data["runtime"] == 21
-        assert movie_data["synopsis"] == expected_data["synopsis"]
+        assert movie_data["synopsis"] == "Sacha Guitry filme la France de l\u2019\u00e9poque."
         assert "theater" not in movie_data
         assert movie_data["title"] == expected_data["title"]
         assert movie_data["type"] == expected_data["type"]

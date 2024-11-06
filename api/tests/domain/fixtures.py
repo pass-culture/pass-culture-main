@@ -20,7 +20,7 @@ ALLOCINE_MOVIE_LIST_PAGE_1 = {
                     "type": "FEATURE_FILM",
                     "runtime": "PT0H21M0S",
                     "poster": {"url": "https://fr.web.img2.acsta.net/medias/nmedia/18/78/15/02/19447537.jpg"},
-                    "synopsis": "Alors que la Premi\u00e8re Guerre Mondiale a \u00e9clat\u00e9, et en r\u00e9ponse aux propos des intellectuels allemands de l'\u00e9poque, Sacha Guitry filme les grands artistes de l'\u00e9poque qui contribuent au rayonnement culturel de la France.",
+                    "synopsis": "Sacha Guitry filme la France de l&#039;\u00e9poque.",
                     "releases": [
                         {
                             "name": "ReRelease",
