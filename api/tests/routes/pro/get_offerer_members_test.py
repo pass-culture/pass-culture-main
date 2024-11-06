@@ -56,6 +56,7 @@ class Returns400Test:
         offerer_id = offerer.id
         queries = testing.AUTHENTICATION_QUERIES
         queries += 1  # check user_offerer exists
+        queries += 1  # rollback
         with testing.assert_num_queries(queries):
             response = client.get(f"/offerers/{offerer_id}/members")
             assert response.status_code == 403
