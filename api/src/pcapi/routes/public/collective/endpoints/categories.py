@@ -12,12 +12,12 @@ from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.validation.routes.users_authentifications import provider_api_key_required
 
 
-@blueprints.public_api.route("/v2/collective/categories", methods=["GET"])
+@blueprints.deprecated_collective_public_api.route("/v2/collective/categories", methods=["GET"])
 @provider_api_key_required
 @spectree_serialize(
-    api=spectree_schemas.public_api_schema,
+    api=spectree_schemas.deprecated_collective_public_api_schema,
     deprecated=True,
-    tags=[tags.COLLECTIVE_CATEGORIES],
+    tags=[tags.DEPRECATED_COLLECTIVE_CATEGORIES],
     resp=SpectreeResponse(
         **(
             {
@@ -45,12 +45,12 @@ def list_categories() -> offers_serialization.CollectiveOffersListCategoriesResp
     )
 
 
-@blueprints.public_api.route("/v2/collective/subcategories", methods=["GET"])
+@blueprints.deprecated_collective_public_api.route("/v2/collective/subcategories", methods=["GET"])
 @provider_api_key_required
 @spectree_serialize(
-    api=spectree_schemas.public_api_schema,
+    api=spectree_schemas.deprecated_collective_public_api_schema,
     deprecated=True,
-    tags=[tags.COLLECTIVE_CATEGORIES],
+    tags=[tags.DEPRECATED_COLLECTIVE_CATEGORIES],
     resp=SpectreeResponse(
         **(
             {
