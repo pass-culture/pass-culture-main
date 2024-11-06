@@ -1312,7 +1312,7 @@ def create_extract_user_gdpr_data(user_id: int) -> utils.BackofficeResponse:
             users_models.User.id == user_id,
         )
         .options(
-            sa.orm.load_only(users_models.User.firstName, users_models.User.lastName),
+            sa.orm.load_only(users_models.User.firstName, users_models.User.lastName, users_models.User.roles),
             sa.orm.joinedload(users_models.User.gdprUserDataExtract),
         )
         .one_or_none()
