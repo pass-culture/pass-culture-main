@@ -2,6 +2,7 @@ from dataclasses import asdict
 from datetime import datetime
 import decimal
 import enum
+import functools
 import logging
 import typing
 from typing import Iterable
@@ -22,6 +23,7 @@ import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.repository import on_commit
 from pcapi.repository import repository
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
 from pcapi.validation.models.entity_validator import validate
@@ -74,10 +76,11 @@ def create_venue_provider(
         and not venue.isPermanent
     ):
         venue.isPermanent = True
-        repository.save(venue)
-        search.async_index_venue_ids(
-            [venue.id],
-            reason=search.IndexationReason.VENUE_PROVIDER_CREATION,
+        db.session.add(venue)
+        on_commit(
+            functools.partial(
+                search.async_index_venue_ids, [venue_id], reason=search.IndexationReason.VENUE_PROVIDER_CREATION
+            )
         )
 
     history_api.add_action(
@@ -86,7 +89,7 @@ def create_venue_provider(
         venue=venue,
         provider_name=provider.name,
     )
-    db.session.commit()
+    db.session.flush()
 
     logger.info(
         "La synchronisation d'offre a été activée",
