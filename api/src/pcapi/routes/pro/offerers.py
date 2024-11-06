@@ -101,6 +101,7 @@ def get_offerer(offerer_id: int) -> offerers_serialize.GetOffererResponseModel:
 
 
 @private_api.route("/offerers/<int:offerer_id>/invite", methods=["POST"])
+@atomic()
 @login_required
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def invite_member(offerer_id: int, body: offerers_serialize.InviteMemberQueryModel) -> None:
