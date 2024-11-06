@@ -429,6 +429,7 @@ def prefill_addresses_choices(autocomplete_field: fields.PCTomSelectField) -> No
 
 
 @blueprint.backoffice_web.route("/autocomplete/addresses", methods=["GET"])
+@atomic()
 @login_required
 @spectree_serialize(response_model=AutocompleteResponse, api=blueprint.backoffice_web_schema)
 def autocomplete_addresses() -> AutocompleteResponse:
