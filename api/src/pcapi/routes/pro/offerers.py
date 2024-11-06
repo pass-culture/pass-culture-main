@@ -130,22 +130,6 @@ def get_offerer_members(offerer_id: int) -> offerers_serialize.GetOffererMembers
     )
 
 
-@private_api.route("/offerers/<int:offerer_id>/api_keys", methods=["POST"])
-@login_required
-@spectree_serialize(response_model=offerers_serialize.GenerateOffererApiKeyResponse, api=blueprint.pro_private_schema)
-def generate_api_key_route(offerer_id: int) -> offerers_serialize.GenerateOffererApiKeyResponse:
-    check_user_has_access_to_offerer(current_user, offerer_id)
-    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
-    try:
-        clear_key = api.generate_and_save_api_key(offerer.id)
-    except offerers_exceptions.ApiKeyCountMaxReached:
-        raise ApiErrors({"api_key_count_max": "Le nombre de clés maximal a été atteint"})
-    except offerers_exceptions.ApiKeyPrefixGenerationError:
-        raise ApiErrors({"api_key": "Could not generate api key"})
-
-    return offerers_serialize.GenerateOffererApiKeyResponse(apiKey=clear_key)
-
-
 @private_api.route("/offerers/api_keys/<api_key_prefix>", methods=["DELETE"])
 @login_required
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
