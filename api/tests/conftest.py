@@ -180,21 +180,21 @@ def clean_database():
     clean_all_database()
 
 
-@pytest.fixture(scope="session")
-def _db(app):
-    """
-    Provide the transactional fixtures with access to the database via a Flask-SQLAlchemy
-    database connection.
-    """
-    mock_db = db
-
-    mock_db.init_app(app)
-    install_database_extensions()
-    run_migrations()
-
-    clean_all_database()
-
-    return mock_db
+#@pytest.fixture(scope="session")
+#def _db(app):
+#    """
+#    Provide the transactional fixtures with access to the database via a Flask-SQLAlchemy
+#    database connection.
+#    """
+#    mock_db = db
+#
+#    mock_db.init_app(app)
+#    install_database_extensions()
+#    run_migrations()
+#
+#    clean_all_database()
+#
+#    return mock_db
 
 
 pcapi.core.testing.register_event_for_query_logger()
@@ -374,10 +374,17 @@ def cloud_task_client_fixture():
         yield cloud_task_client_mock
 
 
-@pytest.fixture(name="db_session")
+@pytest.fixture(scope="function")
 def db_session():
-    yield db.session
-    clean_all_database()
+    #yield db.session
+    #clean_all_database()
+    pcapi.models.db.session.commit = lambda *arg, **kwargs: None
+    transaction = pcapi.models.db.session.begin_nested()
+    try:
+        yield pcapi.models.db.session
+    finally:
+        transaction.rollback()
+        pcapi.models.db.session.close()
 
 
 class TestClient:
