@@ -121,7 +121,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIEndpointBaseHelper):
         assert offer.offerVenue == {
             "venueId": None,
             "addressType": "school",
-            "otherAddress": None,
+            "otherAddress": "",
         }
         assert offer.audioDisabilityCompliant is True
         assert offer.mentalDisabilityCompliant is True
@@ -195,7 +195,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIEndpointBaseHelper):
         assert offer.offerVenue == {
             "venueId": venue2.id,
             "addressType": "offererVenue",
-            "otherAddress": None,
+            "otherAddress": "",
         }
 
     def test_partial_patch_offer(self, client):
@@ -927,22 +927,34 @@ class UpdateOfferVenueTest(PublicAPIVenueEndpointHelper):
 
     def test_change_to_offerer_venue(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
+
+        # we accept None for otherAddress but we store "" as our GET schemas expect a string
+        dst = self.offer_venue_offerer_venue(venue_provider.venueId)
+        expected = {**dst, "otherAddress": ""}
+
         self.assert_offer_venue_has_been_updated(
             client=client,
             api_key=plain_api_key,
             venue_provider=venue_provider,
             src=self.offer_venue_school(),
-            dst=self.offer_venue_offerer_venue(venue_provider.venueId),
+            dst=dst,
+            expected=expected,
         )
 
     def test_change_to_school(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
+
+        # we accept None for otherAddress but we store "" as our GET schemas expect a string
+        dst = self.offer_venue_school()
+        expected = {**dst, "otherAddress": ""}
+
         self.assert_offer_venue_has_been_updated(
             client=client,
             api_key=plain_api_key,
             venue_provider=venue_provider,
             src=self.offer_venue_other(),
-            dst=self.offer_venue_school(),
+            dst=dst,
+            expected=expected,
         )
 
     def test_change_to_other_address(self, client):
@@ -1058,7 +1070,9 @@ class UpdateOfferVenueTest(PublicAPIVenueEndpointHelper):
 
         return response, offer
 
-    def assert_offer_venue_has_been_updated(self, client, api_key, venue_provider, src, dst):
+    def assert_offer_venue_has_been_updated(self, client, api_key, venue_provider, src, dst, expected=None):
+        expected_result = dst if expected is None else expected
+
         response, offer = self.setup_and_send_request(
             client=client,
             api_key=api_key,
@@ -1074,7 +1088,7 @@ class UpdateOfferVenueTest(PublicAPIVenueEndpointHelper):
         # check that offerVenue has been updated with dst values:
         # all common values have been copied and other are null.
         assert dst.keys() <= offer.offerVenue.keys()
-        assert all(offer.offerVenue[key] == value for key, value in dst.items())
+        assert all(offer.offerVenue[key] == value for key, value in expected_result.items())
         assert all(not value for key, value in offer.offerVenue.items() if key not in dst)
 
     def assert_offer_venue_is_not_updated(

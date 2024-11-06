@@ -556,7 +556,7 @@ def edit_collective_offer_public(
         elif key == "offerVenue":
             offer.offerVenue["venueId"] = value.get("venueId")
             offer.offerVenue["addressType"] = value.get("addressType")
-            offer.offerVenue["otherAddress"] = value.get("otherAddress", "")
+            offer.offerVenue["otherAddress"] = value.get("otherAddress") or ""
         elif key == "bookingLimitDatetime" and value is None:
             offer.collectiveStock.bookingLimitDatetime = new_values.get(
                 "beginningDatetime", offer.collectiveStock.beginningDatetime
