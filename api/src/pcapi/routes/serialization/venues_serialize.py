@@ -137,7 +137,6 @@ class VenueResponseModel(BaseModel):
 class GetVenueManagingOffererResponseModel(BaseModel):
     city: str
     dateCreated: datetime
-    demarchesSimplifieesApplicationId: str | None
     id: int
     isValidated: bool
     name: str
@@ -246,7 +245,6 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     banId: str | None
     bookingEmail: str | None
     comment: str | None
-    demarchesSimplifieesApplicationId: str | None
     departementCode: str | None
     dmsToken: str
     managingOfferer: GetVenueManagingOffererResponseModel

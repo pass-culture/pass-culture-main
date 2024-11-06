@@ -9,7 +9,6 @@ export type GetOffererResponseModel = {
   apiKey: OffererApiKey;
   city: string;
   dateCreated: string;
-  demarchesSimplifieesApplicationId?: string | null;
   hasActiveOffer: boolean;
   hasAvailablePricingPoints: boolean;
   hasBankAccountWithPendingCorrections: boolean;

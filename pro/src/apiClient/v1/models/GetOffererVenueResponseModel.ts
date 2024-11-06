@@ -14,7 +14,6 @@ export type GetOffererVenueResponseModel = {
   city?: string | null;
   collectiveDmsApplications: Array<DMSApplicationForEAC>;
   comment?: string | null;
-  demarchesSimplifieesApplicationId?: number | null;
   departementCode?: string | null;
   hasAdageId: boolean;
   hasCreatedOffer: boolean;

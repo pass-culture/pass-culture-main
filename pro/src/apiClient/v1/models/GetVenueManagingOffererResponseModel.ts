@@ -6,7 +6,6 @@ export type GetVenueManagingOffererResponseModel = {
   allowedOnAdage: boolean;
   city: string;
   dateCreated: string;
-  demarchesSimplifieesApplicationId?: string | null;
   id: number;
   isValidated: boolean;
   name: string;

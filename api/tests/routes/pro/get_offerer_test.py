@@ -59,7 +59,7 @@ class GetOffererTest:
         num_queries += 1  # check offerer has non free offers
         num_queries += 1  # select venue_id
         num_queries += 1  # select offerer_address
-        num_queries += 1  # select bank_information
+
         num_queries += 1  # select venue
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
@@ -71,7 +71,6 @@ class GetOffererTest:
             "apiKey": {"maxAllowed": 5, "prefixes": ["testenv_prefix", "testenv_prefix2"]},
             "city": offerer.city,
             "dateCreated": format_into_utc_date(offerer.dateCreated),
-            "demarchesSimplifieesApplicationId": None,
             "hasAvailablePricingPoints": True,
             "hasDigitalVenueAtLeastOneOffer": False,
             "hasValidBankAccount": False,
@@ -112,7 +111,6 @@ class GetOffererTest:
                         for a in venue.collectiveDmsApplications
                     ],
                     "comment": venue.comment,
-                    "demarchesSimplifieesApplicationId": venue.demarchesSimplifieesApplicationId,
                     "departementCode": venue.departementCode,
                     "hasAdageId": bool(venue.adageId),
                     "hasCreatedOffer": venue.has_individual_offers or venue.has_collective_offers,
@@ -191,7 +189,7 @@ class GetOffererTest:
         num_queries += 1  # check offerer has non free offers
         num_queries += 1  # select venue_id
         num_queries += 1  # select offerer_address
-        num_queries += 1  # select bank_information
+
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
             response = client.get(f"/offerers/{offerer_id}")
@@ -223,7 +221,7 @@ class GetOffererTest:
         num_queries += 1  # check offerer has non free offers
         num_queries += 1  # select venue_id
         num_queries += 1  # select offerer_address
-        num_queries += 1  # select bank_information
+
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
             response = client.get(f"/offerers/{offerer_id}")
@@ -252,7 +250,7 @@ class GetOffererTest:
         num_queries += 1  # check offerer has non free offers
         num_queries += 1  # select venue_id
         num_queries += 1  # select offerer_address
-        num_queries += 1  # select bank_information
+
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
             response = client.get(f"/offerers/{offerer_id}")
@@ -283,7 +281,7 @@ class GetOffererTest:
         num_queries += 1  # check offerer has non free offers
         num_queries += 1  # select venue_id
         num_queries += 1  # select offerer_address
-        num_queries += 1  # select bank_information
+
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
             response = client.get(f"/offerers/{offerer_id}")
@@ -315,7 +313,7 @@ class GetOffererTest:
         num_queries += 1  # check offerer has non free offers
         num_queries += 1  # select venue_id
         num_queries += 1  # select offerer_address
-        num_queries += 1  # select bank_information
+
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
             response = client.get(f"/offerers/{offerer_id}")
@@ -345,7 +343,7 @@ class GetOffererTest:
         num_queries += 1  # check offerer has non free offers
         num_queries += 1  # select venue_id
         num_queries += 1  # select offerer_address
-        num_queries += 1  # select bank_information
+
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
             response = client.get(f"/offerers/{offerer_id}")
@@ -377,7 +375,7 @@ class GetOffererTest:
         num_queries += 1  # check offerer has non free offers
         num_queries += 1  # select venue_id
         num_queries += 1  # select offerer_address
-        num_queries += 1  # select bank_information
+
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
             response = client.get(f"/offerers/{offerer_id}")
@@ -403,7 +401,7 @@ class GetOffererTest:
         num_queries += 1  # check offerer has non free offers
         num_queries += 1  # select venue_id
         num_queries += 1  # select offerer_address
-        num_queries += 1  # select bank_information
+
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
             response = http_client.get(f"/offerers/{offerer.id}")
@@ -441,7 +439,7 @@ class GetOffererTest:
         num_queries += 1  # check offerer has non free offers
         num_queries += 1  # select venue_id
         num_queries += 1  # select offerer_address
-        num_queries += 1  # select bank_information
+
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
             response = http_client.get(f"/offerers/{offerer_id}")
@@ -501,7 +499,7 @@ class GetOffererTest:
         num_queries += 1  # check offerer has non free offers
         num_queries += 1  # select venue_id
         num_queries += 1  # select offerer_address
-        num_queries += 1  # select bank_information
+
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
             response = http_client.get(f"/offerers/{offerer_id}")
@@ -535,7 +533,7 @@ class GetOffererTest:
         num_queries += 1  # check offerer has non free offers
         num_queries += 1  # select venue_id
         num_queries += 1  # select offerer_address
-        num_queries += 1  # select bank_information
+
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
             response = http_client.get(f"/offerers/{offerer_id}")
@@ -567,7 +565,7 @@ class GetOffererTest:
         num_queries += 1  # check offerer has non free offers
         num_queries += 1  # select venue_id
         num_queries += 1  # select offerer_address
-        num_queries += 1  # select bank_information
+
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
             response = http_client.get(f"/offerers/{offerer_id}")
@@ -597,7 +595,7 @@ class GetOffererTest:
         num_queries += 1  # check offerer has non free offers
         num_queries += 1  # select venue_id
         num_queries += 1  # select offerer_address
-        num_queries += 1  # select bank_information
+
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
             response = http_client.get(f"/offerers/{offerer_id}")
@@ -643,7 +641,7 @@ class GetOffererTest:
         num_queries += 1  # check offerer has non free offers
         num_queries += 1  # select venue_id
         num_queries += 1  # select offerer_address
-        num_queries += 1  # select bank_information
+
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
             response = http_client.get(f"/offerers/{offerer_id}")
@@ -677,7 +675,7 @@ class GetOffererTest:
         num_queries += 1  # check offerer has non free offers
         num_queries += 1  # select venue_id
         num_queries += 1  # select offerer_address
-        num_queries += 1  # select bank_information
+
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
             response = client.get(f"/offerers/{offerer_id}")
@@ -718,7 +716,7 @@ class GetOffererTest:
         num_queries += 1  # check offerer has non free offers
         num_queries += 1  # select venue_id
         num_queries += 1  # select offerer_address
-        num_queries += 1  # select bank_information
+
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
             response = client.get(f"/offerers/{offerer_id}")
@@ -781,7 +779,6 @@ class GetOffererTest:
         num_queries += 1  # check offerer has non free offers
         num_queries += 1  # select venue_id
         num_queries += 1  # select offerer_address
-        num_queries += 1  # select bank_information
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
             response = http_client.get(f"/offerers/{offerer_id}")

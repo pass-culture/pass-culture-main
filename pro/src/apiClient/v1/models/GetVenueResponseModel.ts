@@ -39,7 +39,6 @@ export type GetVenueResponseModel = {
   comment?: string | null;
   contact?: VenueContactModel | null;
   dateCreated: string;
-  demarchesSimplifieesApplicationId?: string | null;
   departementCode?: string | null;
   description?: string | null;
   dmsToken: string;

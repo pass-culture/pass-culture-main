@@ -30,7 +30,6 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     city: str | None
     comment: str | None
     departementCode: str | None
-    demarchesSimplifieesApplicationId: int | None
     hasCreatedOffer: bool
     hasAdageId: bool
     isVirtual: bool
@@ -84,7 +83,6 @@ class GetOffererResponseModel(BaseModel):
     apiKey: OffererApiKey
     city: str
     dateCreated: datetime
-    demarchesSimplifieesApplicationId: str | None
     hasAvailablePricingPoints: bool
     hasDigitalVenueAtLeastOneOffer: bool
     isValidated: bool
@@ -116,8 +114,6 @@ class GetOffererResponseModel(BaseModel):
         }
         venues = (
             offerers_models.Venue.query.filter_by(managingOffererId=offerer.id)
-            .options(sqla_orm.joinedload(offerers_models.Venue.reimbursement_point_links))
-            .options(sqla_orm.joinedload(offerers_models.Venue.bankInformation))
             .options(sqla_orm.joinedload(offerers_models.Venue.collectiveDmsApplications))
             .options(sqla_orm.joinedload(offerers_models.Venue.venueProviders))
             .options(sqla_orm.joinedload(offerers_models.Venue.googlePlacesInfo))
