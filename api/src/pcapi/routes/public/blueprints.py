@@ -35,6 +35,8 @@ deprecated_v2_prefixed_public_api = Blueprint(
 )
 deprecated_v2_prefixed_public_api.register_blueprint(booking_token_blueprint.deprecated_booking_token_blueprint)
 deprecated_v2_prefixed_public_api.register_blueprint(booking_stocks_blueprint.deprecated_books_stocks_blueprint)
+# Deprecated collective endpoints
+deprecated_collective_public_api = Blueprint("public_api_deprecated", __name__, url_prefix="/")
 
 # Setting CORS
 CORS(
@@ -47,7 +49,13 @@ CORS(
     resources={r"/*": {"origins": "*"}},
     supports_credentials=True,
 )
+CORS(
+    deprecated_collective_public_api,
+    resources={r"/*": {"origins": "*"}},
+    supports_credentials=True,
+)
 
 # Registering spectree schemas
 spectree_schemas.public_api_schema.register(public_api)
 spectree_schemas.deprecated_public_api_schema.register(deprecated_v2_prefixed_public_api)
+spectree_schemas.deprecated_collective_public_api_schema.register(deprecated_collective_public_api)

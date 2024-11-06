@@ -12,11 +12,11 @@ from pcapi.validation.routes.users_authentifications import current_api_key
 from pcapi.validation.routes.users_authentifications import provider_api_key_required
 
 
-@blueprints.public_api.route("/v2/collective/venues", methods=["GET"])
+@blueprints.deprecated_collective_public_api.route("/v2/collective/venues", methods=["GET"])
 @provider_api_key_required
 @spectree_serialize(
-    api=spectree_schemas.public_api_schema,
-    tags=[tags.COLLECTIVE_VENUES],
+    api=spectree_schemas.deprecated_collective_public_api_schema,
+    tags=[tags.DEPRECATED_COLLECTIVE_VENUES],
     deprecated=True,
     resp=SpectreeResponse(
         **(
@@ -43,11 +43,11 @@ def list_venues() -> serialization.CollectiveOffersListVenuesResponseModel:
     )
 
 
-@blueprints.public_api.route("/v2/collective/offerer_venues", methods=["GET"])
+@blueprints.deprecated_collective_public_api.route("/v2/collective/offerer_venues", methods=["GET"])
 @provider_api_key_required
 @spectree_serialize(
-    api=spectree_schemas.public_api_schema,
-    tags=[tags.COLLECTIVE_VENUES],
+    api=spectree_schemas.deprecated_collective_public_api_schema,
+    tags=[tags.DEPRECATED_COLLECTIVE_VENUES],
     deprecated=True,
     resp=SpectreeResponse(
         **(

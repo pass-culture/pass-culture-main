@@ -1701,24 +1701,6 @@
                 "title": "CollectiveOfferStatus",
                 "type": "string"
             },
-            "CollectiveOffersCategoryResponseModel": {
-                "properties": {
-                    "id": {
-                        "title": "Id",
-                        "type": "string"
-                    },
-                    "name": {
-                        "title": "Name",
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "id",
-                    "name"
-                ],
-                "title": "CollectiveOffersCategoryResponseModel",
-                "type": "object"
-            },
             "CollectiveOffersDomainResponseModel": {
                 "properties": {
                     "id": {
@@ -1799,13 +1781,6 @@
                 "title": "CollectiveOffersEducationalInstitutionResponseModel",
                 "type": "object"
             },
-            "CollectiveOffersListCategoriesResponseModel": {
-                "items": {
-                    "$ref": "#/components/schemas/CollectiveOffersCategoryResponseModel"
-                },
-                "title": "CollectiveOffersListCategoriesResponseModel",
-                "type": "array"
-            },
             "CollectiveOffersListDomainsResponseModel": {
                 "items": {
                     "$ref": "#/components/schemas/CollectiveOffersDomainResponseModel"
@@ -1832,20 +1807,6 @@
                     "$ref": "#/components/schemas/CollectiveOffersStudentLevelResponseModel"
                 },
                 "title": "CollectiveOffersListStudentLevelsResponseModel",
-                "type": "array"
-            },
-            "CollectiveOffersListSubCategoriesResponseModel": {
-                "items": {
-                    "$ref": "#/components/schemas/CollectiveOffersSubCategoryResponseModel"
-                },
-                "title": "CollectiveOffersListSubCategoriesResponseModel",
-                "type": "array"
-            },
-            "CollectiveOffersListVenuesResponseModel": {
-                "items": {
-                    "$ref": "#/components/schemas/VenueResponse"
-                },
-                "title": "CollectiveOffersListVenuesResponseModel",
                 "type": "array"
             },
             "CollectiveOffersResponseModel": {
@@ -1926,34 +1887,6 @@
                     "name"
                 ],
                 "title": "CollectiveOffersStudentLevelResponseModel",
-                "type": "object"
-            },
-            "CollectiveOffersSubCategoryResponseModel": {
-                "properties": {
-                    "category": {
-                        "title": "Category",
-                        "type": "string"
-                    },
-                    "categoryId": {
-                        "title": "Categoryid",
-                        "type": "string"
-                    },
-                    "id": {
-                        "title": "Id",
-                        "type": "string"
-                    },
-                    "label": {
-                        "title": "Label",
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "id",
-                    "label",
-                    "category",
-                    "categoryId"
-                ],
-                "title": "CollectiveOffersSubCategoryResponseModel",
                 "type": "object"
             },
             "DECOUVERTE_METIERS_read": {
@@ -11983,51 +11916,6 @@
                 ]
             }
         },
-        "/v2/collective/categories": {
-            "get": {
-                "deprecated": true,
-                "description": "Return categories for collective offers.",
-                "operationId": "ListCategories",
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CollectiveOffersListCategoriesResponseModel"
-                                }
-                            }
-                        },
-                        "description": "Your request was succesful."
-                    },
-                    "401": {
-                        "description": "Authentication is necessary to use this API."
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
-                                }
-                            }
-                        },
-                        "description": "Unprocessable Entity"
-                    },
-                    "429": {
-                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
-                    }
-                },
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "summary": "[LEGACY] Get collective offers categories",
-                "tags": [
-                    "[DEPRECATED] Collective categories"
-                ]
-            }
-        },
         "/v2/collective/educational-domains": {
             "get": {
                 "description": "Return the educational domains that can be linked to a collective offer.",
@@ -12252,65 +12140,6 @@
                 "summary": "Get all known national programs",
                 "tags": [
                     "Collective offer attributes"
-                ]
-            }
-        },
-        "/v2/collective/offerer_venues": {
-            "get": {
-                "deprecated": true,
-                "description": "You should be using [**/public/offer/v1/offerer_venues endpoint**](/rest-api#tag/Venues/operation/GetOffererVenues).",
-                "operationId": "DeprecatedGetOffererVenues",
-                "parameters": [
-                    {
-                        "description": "",
-                        "in": "query",
-                        "name": "siren",
-                        "required": false,
-                        "schema": {
-                            "example": "123456789",
-                            "nullable": true,
-                            "pattern": "^\\d{9}$",
-                            "title": "Siren",
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/GetOfferersVenuesResponse"
-                                }
-                            }
-                        },
-                        "description": "Your request was succesful."
-                    },
-                    "401": {
-                        "description": "Authentication is necessary to use this API."
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
-                                }
-                            }
-                        },
-                        "description": "Unprocessable Entity"
-                    },
-                    "429": {
-                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
-                    }
-                },
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "summary": "[DEPRECATED]",
-                "tags": [
-                    "[DEPRECATED] Collective venues"
                 ]
             }
         },
@@ -12689,96 +12518,6 @@
                     "Collective offer attributes"
                 ]
             }
-        },
-        "/v2/collective/subcategories": {
-            "get": {
-                "deprecated": true,
-                "description": "Return subcategories for collective offers.",
-                "operationId": "ListSubcategories",
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CollectiveOffersListSubCategoriesResponseModel"
-                                }
-                            }
-                        },
-                        "description": "Your request was succesful."
-                    },
-                    "401": {
-                        "description": "Authentication is necessary to use this API."
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
-                                }
-                            }
-                        },
-                        "description": "Unprocessable Entity"
-                    },
-                    "429": {
-                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
-                    }
-                },
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "summary": "[LEGACY] Get collective offers subcatgories",
-                "tags": [
-                    "[DEPRECATED] Collective categories"
-                ]
-            }
-        },
-        "/v2/collective/venues": {
-            "get": {
-                "deprecated": true,
-                "description": "This route is deprecated and should not be used anymore.",
-                "operationId": "ListVenues",
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CollectiveOffersListVenuesResponseModel"
-                                }
-                            }
-                        },
-                        "description": "Your request was succesful."
-                    },
-                    "401": {
-                        "description": "Authentication is necessary to use this API."
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
-                                }
-                            }
-                        },
-                        "description": "Unprocessable Entity"
-                    },
-                    "429": {
-                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
-                    }
-                },
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "summary": "Get all venues",
-                "tags": [
-                    "[DEPRECATED] Collective venues"
-                ]
-            }
         }
     },
     "security": [],
@@ -12862,16 +12601,6 @@
             "description": "",
             "externalDocs": null,
             "name": "Collective offer attributes"
-        },
-        {
-            "description": "",
-            "externalDocs": null,
-            "name": "[DEPRECATED] Collective categories"
-        },
-        {
-            "description": "",
-            "externalDocs": null,
-            "name": "[DEPRECATED] Collective venues"
         }
     ]
 }
