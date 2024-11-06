@@ -1339,7 +1339,7 @@ def hard_delete_filtered_stocks(
     subquery = get_filtered_stocks(offer=offer, venue=venue, date=date, time=time, price_category_id=price_category_id)
     subquery = subquery.with_entities(models.Stock.id)
     models.Stock.query.filter(models.Stock.id.in_(subquery)).delete(synchronize_session=False)
-    db.session.commit()
+    db.session.flush()
 
 
 def get_paginated_stocks(
