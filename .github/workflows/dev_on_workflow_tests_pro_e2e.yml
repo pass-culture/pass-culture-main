@@ -152,12 +152,12 @@ jobs:
           CYPRESS_PROJECT_ID: ${{ steps.secrets.outputs.CYPRESS_CLOUD_PROJECT_ID }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: "Move cypress videos"
-        if: ${{ github.ref != 'refs/heads/master' }} # useless on master bc Cypress Cloud
+        if: always() && failure() && github.ref != 'refs/heads/master' # useless on master bc Cypress Cloud
         run: |
           mkdir -p cypress/videos/${{ github.ref }}/${{ github.sha }} && \
           mv cypress/videos/*.mp4 cypress/videos/${{ github.ref }}/${{ github.sha }}/
       - name: "Archive E2E results"
-        if: ${{ github.ref != 'refs/heads/master' }} # useless on master bc Cypress Cloud
+        if: always() && failure() && github.ref != 'refs/heads/master' # useless on master bc Cypress Cloud
         uses: google-github-actions/upload-cloud-storage@v2
         with:
           path: "pro/cypress/videos"
