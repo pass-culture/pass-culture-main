@@ -74,6 +74,6 @@ class Returns400Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES):
+        with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES + 1):  # Authentication and rollback
             response = auth_request.get("/venueProviders")
             assert response.status_code == 400
