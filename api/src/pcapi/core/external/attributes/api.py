@@ -266,6 +266,13 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
                 offerers_models.Offerer.isValidated,
             ),
         )
+        .outerjoin(
+            offerers_models.VenueBankAccountLink,
+            sa.and_(
+                offerers_models.Venue.id == offerers_models.VenueBankAccountLink.venueId,
+                offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+            ),
+        )
         .options(
             load_only(
                 offerers_models.Venue.publicName,
@@ -283,7 +290,9 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
             .load_only(offerers_models.Offerer.name)
             .joinedload(offerers_models.Offerer.tags)
             .load_only(offerers_models.OffererTag.name),
-            joinedload(offerers_models.Venue.bankInformation).load_only(finance_models.BankInformation.status),
+            contains_eager(offerers_models.Venue.bankAccountLinks)
+            .joinedload(offerers_models.VenueBankAccountLink.bankAccount)
+            .load_only(finance_models.BankAccount.status),
             joinedload(offerers_models.Venue.venueLabel).load_only(offerers_models.VenueLabel.label),
         )
         .all()
@@ -305,8 +314,8 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
 
         attributes.update(
             {
-                "dms_application_submitted": any(venue.hasPendingBankInformationApplication for venue in venues),
-                "dms_application_approved": all(venue.demarchesSimplifieesIsAccepted for venue in venues),
+                "dms_application_submitted": any(venue.hasPendingBankAccountApplication for venue in venues),
+                "dms_application_approved": all(venue.hasAcceptedBankAccountApplication for venue in venues),
                 "isVirtual": any(venue.isVirtual for venue in venues),
                 "isPermanent": any(venue.isPermanent for venue in venues),
                 "has_offers": has_individual_offers or has_collective_offers,

@@ -6,7 +6,7 @@ from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.external.attributes.api import get_pro_attributes
 import pcapi.core.finance.factories as finance_factories
-from pcapi.core.finance.models import BankInformationStatus
+from pcapi.core.finance.models import BankAccountApplicationStatus
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.offers.factories import OfferFactory
@@ -140,8 +140,13 @@ def test_update_external_pro_user_attributes(
     )
 
     if create_dms_accepted:
-        finance_factories.BankInformationFactory(venue=venue1, status=BankInformationStatus.ACCEPTED)
-        finance_factories.BankInformationFactory(venue=venue1b, status=BankInformationStatus.ACCEPTED)
+        offerers_factories.VenueBankAccountLinkFactory(
+            venue=venue1, bankAccount=finance_factories.BankAccountFactory(status=BankAccountApplicationStatus.ACCEPTED)
+        )
+        offerers_factories.VenueBankAccountLinkFactory(
+            venue=venue1b,
+            bankAccount=finance_factories.BankAccountFactory(status=BankAccountApplicationStatus.ACCEPTED),
+        )
 
     if create_virtual:
         offerer2 = offerers_factories.OffererFactory(siren="444555666", name="Culture en ligne")
@@ -158,7 +163,10 @@ def test_update_external_pro_user_attributes(
         )
 
         if create_dms_accepted:
-            finance_factories.BankInformationFactory(venue=venue2, status=BankInformationStatus.ACCEPTED)
+            offerers_factories.VenueBankAccountLinkFactory(
+                venue=venue2,
+                bankAccount=finance_factories.BankAccountFactory(status=BankAccountApplicationStatus.ACCEPTED),
+            )
 
     # Offerer not linked to user email but with the same booking email
     offerer3 = offerers_factories.OffererFactory(
@@ -189,9 +197,13 @@ def test_update_external_pro_user_attributes(
                 BookingFactory(stock=stock1)
 
     if create_dms_draft:
-        finance_factories.BankInformationFactory(venue=venue3, status=BankInformationStatus.DRAFT)
+        offerers_factories.VenueBankAccountLinkFactory(
+            venue=venue3, bankAccount=finance_factories.BankAccountFactory(status=BankAccountApplicationStatus.DRAFT)
+        )
     elif create_dms_accepted:
-        finance_factories.BankInformationFactory(venue=venue3, status=BankInformationStatus.ACCEPTED)
+        offerers_factories.VenueBankAccountLinkFactory(
+            venue=venue3, bankAccount=finance_factories.BankAccountFactory(status=BankAccountApplicationStatus.ACCEPTED)
+        )
     # This offerer is managed by pro user but venue has a different email address
     offerer4 = offerers_factories.OffererFactory(siren="001002003", name="Juste Libraire")
     if attached == "all":
@@ -216,12 +228,18 @@ def test_update_external_pro_user_attributes(
     )
 
     if create_dms_accepted:
-        finance_factories.BankInformationFactory(venue=venue4, status=BankInformationStatus.ACCEPTED)
+        offerers_factories.VenueBankAccountLinkFactory(
+            venue=venue4, bankAccount=finance_factories.BankAccountFactory(status=BankAccountApplicationStatus.ACCEPTED)
+        )
     else:
-        # Bank information which do not make dms attributes return True: on offerer, on venue with other email, rejected
-        finance_factories.BankInformationFactory(offerer=offerer1, status=BankInformationStatus.ACCEPTED)
-        finance_factories.BankInformationFactory(venue=venue4, status=BankInformationStatus.ACCEPTED)
-        finance_factories.BankInformationFactory(venue=venue1, status=BankInformationStatus.REJECTED)
+        # Bank accounts which do not make ds attributes return True: on offerer, on venue with other email, refused
+        finance_factories.BankAccountFactory(offerer=offerer1, status=BankAccountApplicationStatus.ACCEPTED)
+        offerers_factories.VenueBankAccountLinkFactory(
+            venue=venue4, bankAccount=finance_factories.BankAccountFactory(status=BankAccountApplicationStatus.ACCEPTED)
+        )
+        offerers_factories.VenueBankAccountLinkFactory(
+            venue=venue1, bankAccount=finance_factories.BankAccountFactory(status=BankAccountApplicationStatus.REFUSED)
+        )
 
     # Create inactive offerer and its venue, linked to email, which should not be taken into account in any attribute
     inactive_offerer = offerers_factories.OffererFactory(
