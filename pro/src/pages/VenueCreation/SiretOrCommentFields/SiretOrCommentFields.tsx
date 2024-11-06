@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { apiAdresse } from 'apiClient/adresse/apiAdresse'
 import { getSiretData } from 'commons/core/Venue/getSiretData'
 import { humanizeSiret, unhumanizeSiret } from 'commons/core/Venue/utils'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { handleAddressSelect } from 'components/Address/Address'
 import { serializeAdressData } from 'components/Address/serializer'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -36,6 +37,7 @@ export const SiretOrCommentFields = ({
     !isToggleDisabled || initialSiret.length > 0
   )
   const { setFieldValue } = useFormikContext<VenueCreationFormValues>()
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   /* istanbul ignore next: DEBT, TO FIX */
   const handleToggleClick = () => {
@@ -92,9 +94,12 @@ export const SiretOrCommentFields = ({
     setSideComponent(
       isSiretSelected ? (
         <InfoBox>
-          Le SIRET du lieu doit être lié au SIREN de votre structure. Attention,
-          ce SIRET ne sera plus modifiable et ne pourra plus être utilisé pour
-          un autre lieu.
+          Le SIRET {isOfferAddressEnabled ? 'de la structure' : 'du lieu'} doit
+          être lié au SIREN de votre{' '}
+          {isOfferAddressEnabled ? 'entitée juridique' : 'structure'}.
+          Attention, ce SIRET ne sera plus modifiable et ne pourra plus être
+          utilisé pour{' '}
+          {isOfferAddressEnabled ? 'une autre structure' : 'un autre lieu'}.
         </InfoBox>
       ) : (
         <></>
@@ -107,7 +112,7 @@ export const SiretOrCommentFields = ({
       {isCreatedEntity && (
         <FormLayout.Row sideComponent={sideComponent}>
           <Toggle
-            label="Ce lieu possède un SIRET"
+            label={`${isOfferAddressEnabled ? 'Cette structure' : 'Ce lieu'} possède un SIRET`}
             isActiveByDefault={isSiretSelected}
             isDisabled={isToggleDisabled}
             handleClick={handleToggleClick}
@@ -117,15 +122,15 @@ export const SiretOrCommentFields = ({
       {isSiretSelected ? (
         <TextInput
           name="siret"
-          label="SIRET du lieu"
+          label={`SIRET ${isOfferAddressEnabled ? 'de la structure' : 'du lieu'}`}
           type="text"
           onChange={(e) => onSiretChange(e.target.value)}
         />
       ) : (
         <TextArea
-          label="Commentaire du lieu sans SIRET"
+          label={`Commentaire ${isOfferAddressEnabled ? 'de la structure' : 'du lieu'} sans SIRET`}
           name="comment"
-          description="Par exemple : le lieu est un équipement culturel qui n’appartient pas à ma structure."
+          description={`Par exemple : ${isOfferAddressEnabled ? 'la structure' : 'le lieu'} est un équipement culturel qui n’appartient pas à ${isOfferAddressEnabled ? 'mon entitée juridique' : 'ma structure'}.`}
           isOptional={isSiretSelected}
           maxLength={500}
           rows={6}
