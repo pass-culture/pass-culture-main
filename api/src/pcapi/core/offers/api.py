@@ -1024,7 +1024,7 @@ def create_mediation(
         partial(
             search.async_index_offer_ids,
             [offer.id],
-            search.IndexationReason.MEDIATION_CREATION,
+            reason=search.IndexationReason.MEDIATION_CREATION,
         ),
     )
 
@@ -1652,7 +1652,7 @@ def delete_price_category(offer: models.Offer, price_category: models.PriceCateg
     """
     validation.check_price_categories_deletable(offer)
     db.session.delete(price_category)
-    db.session.commit()
+    db.session.flush()
 
 
 def approves_provider_product_and_rejected_offers(ean: str) -> None:
