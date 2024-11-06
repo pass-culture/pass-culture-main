@@ -1,3 +1,5 @@
+import functools
+
 from flask_login import current_user
 from flask_login import login_required
 from sqlalchemy.orm import exc as orm_exc
@@ -50,6 +52,7 @@ def list_venue_providers(
 
 
 @private_api.route("/venueProviders", methods=["POST"])
+@repository.atomic()
 @login_required
 @spectree_serialize(
     on_success_status=201,
@@ -118,7 +121,7 @@ def create_venue_provider(
     # since creating a venue_provider in this case only delegate the right for an
     # offerer to create offers for this venue. (we don't synchronize anything ourselves)
     if not new_venue_provider.provider.hasOffererProvider:
-        venue_provider_job.delay(new_venue_provider.id)
+        repository.on_commit(functools.partial(venue_provider_job.delay, new_venue_provider.id))
 
     return venue_provider_serialize.VenueProviderResponse.from_orm(new_venue_provider)
 
