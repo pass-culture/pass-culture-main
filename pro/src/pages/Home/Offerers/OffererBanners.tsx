@@ -70,7 +70,7 @@ export const OffererBanners = ({
         {hasAtLeastOnePhysicalVenue ? (
           <>
             {isOfferAddressEnabled
-              ? 'Toutes les offres créées seront publiées sous réserve de validation de votre structure'
+              ? 'Vos offres seront publiées sous réserve de validation de votre structure.'
               : 'Toutes les offres créées à l’échelle de vos lieux seront publiées sous réserve de validation de votre structure.'}
           </>
         ) : (

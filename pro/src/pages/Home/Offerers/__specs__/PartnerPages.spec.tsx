@@ -3,8 +3,8 @@ import { userEvent } from '@testing-library/user-event'
 
 import { VenueTypeCode } from 'apiClient/v1'
 import {
-  defaultGetOffererVenueResponseModel,
   defaultGetOffererResponseModel,
+  defaultGetOffererVenueResponseModel,
 } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
@@ -58,7 +58,7 @@ describe('PartnerPages', () => {
         defaultGetOffererVenueResponseModel,
         {
           ...defaultGetOffererVenueResponseModel,
-          id: 1,
+          id: 2,
           name: 'an other venue',
           publicName: 'a really cool name !',
         },
