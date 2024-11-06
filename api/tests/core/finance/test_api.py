@@ -4105,7 +4105,7 @@ class CreateDepositTest:
 
         # Then
         assert models.Deposit.query.filter(models.Deposit.userId == beneficiary.id).count() == 1
-        assert error.value.errors["user"] == ['Cet utilisateur a déjà été crédité de la subvention "GRANT_18".']
+        assert error.value.deposit_type == models.DepositType.GRANT_18
 
 
 class UserRecreditTest:
