@@ -1098,9 +1098,12 @@ def create_mediation(
     )
     _delete_mediations_and_thumbs(previous_mediations)
 
-    search.async_index_offer_ids(
-        [offer.id],
-        reason=search.IndexationReason.MEDIATION_CREATION,
+    on_commit(
+        partial(
+            search.async_index_offer_ids,
+            [offer.id],
+            search.IndexationReason.MEDIATION_CREATION,
+        ),
     )
 
     return mediation
