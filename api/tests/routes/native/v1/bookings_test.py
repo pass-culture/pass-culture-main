@@ -16,6 +16,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.external_bookings.exceptions import ExternalBookingTimeoutException
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.geography.factories import AddressFactory
@@ -123,6 +124,18 @@ class PostBookingTest:
 
         assert response.status_code == 400
         assert response.json["code"] == "CINEMA_PROVIDER_INACTIVE"
+
+    @patch("pcapi.core.bookings.api.book_offer")
+    def test_provider_timeout(self, mocked_book_offer, client):
+        users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        stock = offers_factories.EventStockFactory()
+        mocked_book_offer.side_effect = ExternalBookingTimeoutException()
+
+        client = client.with_token(self.identifier)
+        response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
+
+        assert response.status_code == 400
+        assert response.json["code"] == "PROVIDER_BOOKING_TIMEOUT"
 
     @pytest.mark.parametrize(
         "subcategoryId,price",

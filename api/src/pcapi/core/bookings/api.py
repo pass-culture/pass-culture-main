@@ -412,9 +412,11 @@ def _book_cinema_external_ticket(booking: Booking, stock: Stock, beneficiary: Us
             booking=booking,
             beneficiary=beneficiary,
         )
-    except external_bookings_exceptions.ExternalBookingSoldOutError as exc:
+    except external_bookings_exceptions.ExternalBookingSoldOutError:
         logger.exception("Could not book this offer as it's sold out.")
-        raise exc
+        raise
+    except external_bookings_exceptions.ExternalBookingTimeoutException:
+        raise
     except Exception as exc:
         logger.exception("Could not book external ticket: %s", exc)
         raise external_bookings_exceptions.ExternalBookingException
