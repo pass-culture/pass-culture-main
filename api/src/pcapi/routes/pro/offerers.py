@@ -22,6 +22,7 @@ import pcapi.core.offers.repository as offers_repository
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
+from pcapi.repository import atomic
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offerers_serialize
@@ -86,6 +87,7 @@ def list_educational_offerers(
 
 
 @private_api.route("/offerers/<int:offerer_id>", methods=["GET"])
+@atomic()
 @login_required
 @spectree_serialize(response_model=offerers_serialize.GetOffererResponseModel, api=blueprint.pro_private_schema)
 def get_offerer(offerer_id: int) -> offerers_serialize.GetOffererResponseModel:
