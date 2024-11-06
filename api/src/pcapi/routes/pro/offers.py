@@ -24,6 +24,7 @@ from pcapi.core.offers.validation import check_for_duplicated_price_categories
 from pcapi.core.offers.validation import check_product_cgu_and_offerer
 from pcapi.models import api_errors
 from pcapi.models import db
+from pcapi.repository import atomic
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
@@ -45,6 +46,7 @@ logger = logging.getLogger(__name__)
     response_model=offers_serialize.ListOffersResponseModel,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serialize.ListOffersResponseModel:
     paginated_offers = offers_repository.get_capped_offers_for_filters(
         user_id=current_user.id,
@@ -70,6 +72,7 @@ def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serializ
     response_model=offers_serialize.GetIndividualOfferWithAddressResponseModel,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferWithAddressResponseModel:
 
     load_all: offers_repository.OFFER_LOAD_OPTIONS = [
@@ -103,6 +106,7 @@ def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferWithAddressRe
     response_model=offers_serialize.GetStocksResponseModel,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offers_serialize.GetStocksResponseModel:
     try:
         offer = offers_repository.get_offer_by_id(offer_id, load_options=["offerer_address"])
@@ -195,6 +199,7 @@ def delete_all_filtered_stocks(offer_id: int, body: offers_serialize.DeleteFilte
     response_model=offers_serialize.StockStatsResponseModel,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def get_stocks_stats(offer_id: int) -> offers_serialize.StockStatsResponseModel:
     try:
         offer = offers_repository.get_offer_by_id(offer_id)
@@ -240,6 +245,7 @@ def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
     on_success_status=201,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def post_draft_offer(
     body: offers_schemas.PostDraftOfferBodyModel,
 ) -> offers_serialize.GetIndividualOfferResponseModel:
@@ -500,6 +506,7 @@ def delete_thumbnail(offer_id: int) -> None:
     response_model=offers_serialize.CategoriesResponseModel,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def get_categories() -> offers_serialize.CategoriesResponseModel:
     return offers_serialize.CategoriesResponseModel(
         categories=[
@@ -518,6 +525,7 @@ def get_categories() -> offers_serialize.CategoriesResponseModel:
     response_model=offers_serialize.SuggestedSubcategoriesResponseModel,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def get_suggested_subcategories(
     query: offers_serialize.SuggestedSubcategoriesQueryModel,
 ) -> offers_serialize.SuggestedSubcategoriesResponseModel:
@@ -533,6 +541,7 @@ def get_suggested_subcategories(
     response_model=offers_serialize.GetMusicTypesResponse,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def get_music_types() -> offers_serialize.GetMusicTypesResponse:
     return offers_serialize.GetMusicTypesResponse(
         __root__=[
@@ -639,6 +648,7 @@ def delete_price_category(offer_id: int, price_category_id: int) -> None:
     response_model=offers_serialize.GetProductInformations,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def get_product_by_ean(ean: str, offerer_id: int) -> offers_serialize.GetProductInformations:
     product = (
         models.Product.query.filter(models.Product.extraData["ean"].astext == ean)
