@@ -30,7 +30,7 @@ describe('Create individual offers', () => {
     )
   })
 
-  it('Should create an individual offer (event)', () => {
+  it('I should be able to create an individual offer (event)', () => {
     logAndGoToPage(login, '/offre/creation')
 
     cy.stepLog({
@@ -184,7 +184,7 @@ describe('Create individual offers', () => {
     cy.contains('396 dates')
   })
 
-  it('Should create an individual offer (thing)', () => {
+  it('I should be able to create an individual offer (thing)', () => {
     const offerTitle = 'H2G2 Le Guide du voyageur galactique'
     const offerDesc =
       'Une quête pour obtenir la question ultime sur la vie, l’univers et tout le reste.'

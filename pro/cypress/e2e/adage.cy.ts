@@ -224,7 +224,7 @@ describe('ADAGE discovery', () => {
     )
   })
 
-  it('Should redirect to adage discovery', () => {
+  it('It should redirect to adage discovery', () => {
     cy.stepLog({ message: 'I open adage iframe' })
     const adageToken = Cypress.env('adageToken')
     cy.visit(`/adage-iframe?token=${adageToken}`)
@@ -241,7 +241,7 @@ describe('ADAGE discovery', () => {
     )
   })
 
-  it('Should redirect to a page dedicated to the offer with an active header on the discovery tab', () => {
+  it('It should redirect to a page dedicated to the offer with an active header on the discovery tab', () => {
     // I open adage iframe
     cy.stepLog({ message: 'I open adage iframe' })
     const adageToken = Cypress.env('adageToken')
@@ -257,7 +257,7 @@ describe('ADAGE discovery', () => {
       .should('have.attr', 'aria-current', 'page')
   })
 
-  it('Should redirect to search page with filtered venue on click in venue card', () => {
+  it('It should redirect to search page with filtered venue on click in venue card', () => {
     cy.stepLog({ message: 'I open adage iframe' })
     const adageToken = Cypress.env('adageToken')
     cy.visit(`/adage-iframe?token=${adageToken}`)
@@ -279,7 +279,7 @@ describe('ADAGE discovery', () => {
     cy.findByText('Lieu : Mon lieu collectif').should('be.visible')
   })
 
-  it('Should redirect to search page with filtered domain on click in domain card', () => {
+  it('It should redirect to search page with filtered domain on click in domain card', () => {
     cy.stepLog({ message: 'I open adage iframe' })
     const adageToken = Cypress.env('adageToken')
     cy.visit(`/adage-iframe?token=${adageToken}`)
@@ -301,7 +301,7 @@ describe('ADAGE discovery', () => {
     cy.get('button').contains('Danse')
   })
 
-  it('Should not keep filters after page change', () => {
+  it('It should not keep filters after page change', () => {
     cy.stepLog({ message: 'I open adage iframe' })
     const adageToken = Cypress.env('adageToken')
     cy.visit(`/adage-iframe?token=${adageToken}`)
@@ -328,7 +328,7 @@ describe('ADAGE discovery', () => {
     cy.findByText('Lieu : Mon lieu collectif').should('not.exist')
   })
 
-  it('Should not keep filter venue after page change', () => {
+  it('It should not keep filter venue after page change', () => {
     cy.stepLog({ message: 'I open adage iframe' })
     const adageToken = Cypress.env('adageToken')
     cy.visit(`/adage-iframe?token=${adageToken}`)
@@ -355,7 +355,7 @@ describe('ADAGE discovery', () => {
     cy.findByText('Lieu : Mon lieu collectif').should('not.exist')
   })
 
-  it('Should save view type in search page', () => {
+  it('It should save view type in search page', () => {
     cy.stepLog({ message: 'I open adage iframe at search page' })
     const adageToken = Cypress.env('adageToken')
     cy.visit(`/adage-iframe/recherche?token=${adageToken}`)
@@ -389,7 +389,7 @@ describe('ADAGE discovery', () => {
     cy.findAllByTestId('offer-description').should('not.exist')
   })
 
-  it('Should save filter when page changing', () => {
+  it('It should save filter when page changing', () => {
     cy.stepLog({ message: 'I open adage iframe' })
     const adageToken = Cypress.env('adageToken')
     cy.visit(`/adage-iframe?token=${adageToken}`)
@@ -422,7 +422,7 @@ describe('ADAGE discovery', () => {
     cy.findByText('Lieu : Mon lieu collectif').should('be.visible')
   })
 
-  it('Should save page when navigating the iframe', () => {
+  it('It should save page when navigating the iframe', () => {
     cy.stepLog({ message: 'I open adage iframe at search page' })
     const adageToken = Cypress.env('adageToken')
     cy.visit(`/adage-iframe/recherche?token=${adageToken}`)

@@ -30,7 +30,7 @@ describe('Financial Management - messages, links to external help page, reimburs
       )
     })
 
-    it('Check messages, reimbursement details and offerer selection change', () => {
+    it('I should be able to see messages, reimbursement details and offerer selection change', () => {
       logAndGoToPage(login, '/remboursements')
 
       cy.stepLog({
@@ -174,7 +174,7 @@ describe('Financial Management - messages, links to external help page, reimburs
       })
     })
 
-    it('Attach and unattach a few venues', () => {
+    it('I should be able to attach and unattach a few venues', () => {
       cy.stepLog({
         message: 'Unattach 2 in 4 venues',
       })
@@ -212,7 +212,7 @@ describe('Financial Management - messages, links to external help page, reimburs
         }
       )
     })
-    it('Attach and unattach all venues', () => {
+    it('I should be able to attach and unattach all venues', () => {
       cy.stepLog({
         message: 'Unattach all venues',
       })

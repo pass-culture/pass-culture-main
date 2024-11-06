@@ -21,7 +21,7 @@ describe('Cookie management with no login', () => {
     cy.contains('Respect de votre vie privée').should('be.visible')
   })
 
-  it('The user can accept all, and all the cookies are checked in the dialog', () => {
+  it('I should be able to accept all cookies, and all the cookies are checked in the dialog', () => {
     cy.stepLog({ message: 'the cookie banner should be displayed' })
     cy.contains('Respect de votre vie privée').should('be.visible')
 
@@ -41,7 +41,7 @@ describe('Cookie management with no login', () => {
     )
   })
 
-  it('The user can refuse all, and no cookie is checked in the dialog, except the required', () => {
+  it('I should be able to refuse all cookies, and no cookie is checked in the dialog, except the required', () => {
     cy.stepLog({ message: 'I decline all cookies' })
     cy.findByText('Tout refuser').click()
 
@@ -58,7 +58,7 @@ describe('Cookie management with no login', () => {
     )
   })
 
-  it('The user can choose a specific cookie, save and the status should be the same on modal re display', () => {
+  it('I should be able to choose a specific cookie, save and the status should be the same on modal re display', () => {
     cy.stepLog({ message: 'I open the choose cookies option' })
     cy.findByText('Choisir les cookies').click()
 
@@ -75,7 +75,7 @@ describe('Cookie management with no login', () => {
     cy.get('#orejime-app-item-beamer').should('be.checked')
   })
 
-  it('The user can choose a specific cookie, reload the page and the status should not have been changed', () => {
+  it('I should be able to choose a specific cookie, reload the page and the status should not have been changed', () => {
     cy.stepLog({ message: 'I open the choose cookies option' })
     cy.findByText('Choisir les cookies').click()
 
@@ -92,7 +92,7 @@ describe('Cookie management with no login', () => {
     cy.get('#orejime-app-item-beamer').should('not.be.checked')
   })
 
-  it('The user can choose a specific cookie, close the modal and the status should not have been changed', () => {
+  it('I should be able to choose a specific cookie, close the modal and the status should not have been changed', () => {
     cy.stepLog({ message: 'I open the choose cookies option' })
     cy.findByText('Choisir les cookies').click()
 
@@ -117,7 +117,7 @@ describe('Cookie management with login', () => {
     cy.visit('/connexion')
   })
 
-  it('The user can choose a specific cookie, log in with another account and check that specific cookie is checked', () => {
+  it('I should be able to choose a specific cookie, log in with another account and check that specific cookie is checked', () => {
     cy.stepLog({ message: 'I clear all cookies in Browser' })
     cy.clearCookies()
 
@@ -176,7 +176,7 @@ describe('Cookie management with login', () => {
     cy.get('#orejime-app-item-beamer').should('be.checked')
   })
 
-  it('The user log in, choose a specific cookie, open another browser, log in again and check that specific cookie not checked', () => {
+  it('I should be able to log in, choose a specific cookie, open another browser, log in again and check that specific cookie not checked', () => {
     // Cypress cannot deal with 2 browsers or a tab. So we log out, and log in again with a clean browser
     // See https://docs.cypress.io/guides/references/trade-offs#Multiple-browsers-open-at-the-same-time
     cy.request({

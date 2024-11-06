@@ -21,7 +21,7 @@ describe('Search collective offers', () => {
     )
   })
 
-  it('A search with several filters should display expected results', () => {
+  it('I should be able to search with several filters and see expected results', () => {
     logAndGoToPage(login, '/offres/collectives')
     cy.wait('@collectiveOffers')
 
