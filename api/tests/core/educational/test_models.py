@@ -31,7 +31,8 @@ from pcapi.utils.image_conversion import ImageRatio
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
-ALL_DISPLAYED_STATUSES = set(CollectiveOfferDisplayedStatus) - {CollectiveOfferDisplayedStatus.INACTIVE}
+ALL_DISPLAYED_STATUSES = set(CollectiveOfferDisplayedStatus)
+NEW_DISPLAYED_STATUSES = {CollectiveOfferDisplayedStatus.CANCELLED, CollectiveOfferDisplayedStatus.REIMBURSED}
 
 
 class EducationalDepositTest:
@@ -615,7 +616,7 @@ class EducationalInstitutionProgramTest:
 class CollectiveOfferDisplayedStatusTest:
     @pytest.mark.parametrize(
         "status",
-        ALL_DISPLAYED_STATUSES - {CollectiveOfferDisplayedStatus.CANCELLED, CollectiveOfferDisplayedStatus.REIMBURSED},
+        ALL_DISPLAYED_STATUSES - NEW_DISPLAYED_STATUSES,
     )
     def test_get_offer_displayed_status(self, status):
         offer = factories.create_collective_offer_by_status(status)
@@ -723,7 +724,7 @@ class CollectiveOfferTemplateDisplayedStatusTest:
 class CollectiveOfferAllowedActionsTest:
     @pytest.mark.parametrize(
         "status",
-        ALL_DISPLAYED_STATUSES - {CollectiveOfferDisplayedStatus.CANCELLED, CollectiveOfferDisplayedStatus.REIMBURSED},
+        ALL_DISPLAYED_STATUSES - NEW_DISPLAYED_STATUSES,
     )
     def test_get_offer_allowed_actions(self, status):
         offer = factories.create_collective_offer_by_status(status)
@@ -731,7 +732,7 @@ class CollectiveOfferAllowedActionsTest:
 
     @pytest.mark.parametrize(
         "status",
-        ALL_DISPLAYED_STATUSES - {CollectiveOfferDisplayedStatus.CANCELLED, CollectiveOfferDisplayedStatus.REIMBURSED},
+        ALL_DISPLAYED_STATUSES - NEW_DISPLAYED_STATUSES,
     )
     def test_get_offer_allowed_actions_public_api(self, status):
         offer = factories.create_collective_offer_by_status(status)

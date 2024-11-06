@@ -4,7 +4,7 @@ from datetime import timedelta
 from itertools import count
 from itertools import cycle
 import typing
-from typing import Optional
+from typing import NotRequired
 from typing import Type
 from typing import TypedDict
 
@@ -366,6 +366,15 @@ def add_image_to_offer(offer: educational_models.HasImageMixin, image_name: str)
         offer.set_image(image=file.read(), credit="CC-BY-SA WIKIPEDIA", crop_params=DO_NOT_CROP)
 
 
+class OfferAttributes(TypedDict):
+    bookingLimitDatetime: datetime
+    beginningDatetime: datetime
+    endDatetime: datetime
+    isActive: NotRequired[bool]
+    bookingFactory: NotRequired[Type[educational_factories.CollectiveBookingFactory]]
+    cancellationReason: NotRequired[educational_models.CollectiveBookingCancellationReasons]
+
+
 def create_offers_booking_with_different_displayed_status(
     *,
     provider: providers_models.Provider,
@@ -394,13 +403,6 @@ def create_offers_booking_with_different_displayed_status(
 
     yesterday = today - timedelta(days=1)
     tomorrow = today + timedelta(days=1)
-
-    class OfferAttributes(TypedDict, total=False):
-        bookingLimitDatetime: datetime
-        beginningDatetime: datetime
-        endDatetime: datetime
-        bookingFactory: Optional[Type[educational_factories.CollectiveBookingFactory]]
-        cancellationReason: Optional[educational_models.CollectiveBookingCancellationReasons]
 
     options: dict[str, OfferAttributes] = {
         # no bookings
@@ -519,6 +521,12 @@ def create_offers_booking_with_different_displayed_status(
             "bookingFactory": educational_factories.CancelledCollectiveBookingFactory,
             "cancellationReason": educational_models.CollectiveBookingCancellationReasons.OFFERER,
         },
+        "Londres": {
+            "isActive": False,
+            "bookingLimitDatetime": in_two_weeks,
+            "beginningDatetime": in_four_weeks,
+            "endDatetime": in_four_weeks,
+        },
         # with a different end date than the beginning date
         "Reykjavik": {
             "bookingLimitDatetime": four_weeks_ago,
@@ -533,12 +541,14 @@ def create_offers_booking_with_different_displayed_status(
         beginning_datetime: datetime = attributes["beginningDatetime"]
         end_datetime: datetime = attributes["endDatetime"]
         booking_limit_datetime: datetime = attributes["bookingLimitDatetime"]
+        is_active = attributes.get("isActive", None)
 
         stock = educational_factories.CollectiveStockFactory(
             collectiveOffer__name=f"La culture à {city}",
             collectiveOffer__educational_domains=[next(domains_iterator)],
             collectiveOffer__venue=next(venue_iterator),
             collectiveOffer__validation=OfferValidationStatus.APPROVED,
+            collectiveOffer__isActive=is_active,
             collectiveOffer__bookingEmails=["toto@totoland.com"],
             beginningDatetime=beginning_datetime,
             startDatetime=beginning_datetime,

@@ -814,6 +814,9 @@ class CollectiveOffer(
             case offer_mixin.OfferValidationStatus.REJECTED:
                 return CollectiveOfferDisplayedStatus.REJECTED
             case offer_mixin.OfferValidationStatus.APPROVED:
+                if not self.isActive:
+                    return CollectiveOfferDisplayedStatus.INACTIVE
+
                 last_booking_status = self.lastBookingStatus
                 has_booking_limit_passed = self.hasBookingLimitDatetimesPassed
                 has_started = self.hasBeginningDatetimePassed
@@ -821,9 +824,11 @@ class CollectiveOffer(
 
                 match last_booking_status:
                     case None:
+                        # pylint: disable=using-constant-test
+                        if has_started and feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+                            return CollectiveOfferDisplayedStatus.CANCELLED
+
                         if has_booking_limit_passed:
-                            if has_started and feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
-                                return CollectiveOfferDisplayedStatus.CANCELLED
                             return CollectiveOfferDisplayedStatus.EXPIRED
 
                         return CollectiveOfferDisplayedStatus.ACTIVE
@@ -854,7 +859,7 @@ class CollectiveOffer(
                                 self.lastBookingCancellationReason == CollectiveBookingCancellationReasons.EXPIRED
                                 and not has_started
                             ):
-                                # There is script that set the booking status to EXPIRED when the booking is expired.
+                                # There is a script that set the booking status to CANCELLED with cancellation reason EXPIRED when the booking is expired.
                                 # We need to distinguish between an expired booking and a cancelled booking.
                                 return CollectiveOfferDisplayedStatus.EXPIRED
                             return CollectiveOfferDisplayedStatus.CANCELLED
