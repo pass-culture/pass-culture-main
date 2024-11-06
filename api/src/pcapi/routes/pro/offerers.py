@@ -65,6 +65,7 @@ def list_offerers_names(
 
 
 @private_api.route("/offerers/educational", methods=["GET"])
+@atomic()
 @login_required
 @spectree_serialize(
     response_model=offerers_serialize.GetEducationalOfferersResponseModel, api=blueprint.pro_private_schema
