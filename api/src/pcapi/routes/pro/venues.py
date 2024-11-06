@@ -34,8 +34,7 @@ def get_venue(venue_id: int) -> venues_serialize.GetVenueResponseModel:
     venue = (
         models.Venue.query.filter(models.Venue.id == venue_id)
         .options(sqla_orm.joinedload(models.Venue.contact))
-        .options(sqla_orm.joinedload(models.Venue.bankInformation))
-        .options(sqla_orm.joinedload(models.Venue.managingOfferer).joinedload(models.Offerer.bankInformation))
+        .options(sqla_orm.joinedload(models.Venue.managingOfferer))
         .options(
             sqla_orm.selectinload(models.Venue.pricing_point_links).joinedload(
                 models.VenuePricingPointLink.pricingPoint

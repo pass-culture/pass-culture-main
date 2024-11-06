@@ -101,7 +101,6 @@ class Returns200Test:
             },
             "reimbursementPointId": venue_currently_used_for_reimbursement.id,
             "dateCreated": format_into_utc_date(venue.dateCreated),
-            "demarchesSimplifieesApplicationId": venue.demarchesSimplifieesApplicationId,
             "departementCode": venue.departementCode,
             "description": venue.description,
             "dmsToken": "PRO-" + venue.dmsToken,
@@ -140,7 +139,6 @@ class Returns200Test:
             "managingOfferer": {
                 "city": venue.managingOfferer.city,
                 "dateCreated": format_into_utc_date(venue.managingOfferer.dateCreated),
-                "demarchesSimplifieesApplicationId": venue.managingOfferer.demarchesSimplifieesApplicationId,
                 "id": venue.managingOfferer.id,
                 "isValidated": venue.managingOfferer.isValidated,
                 "name": venue.managingOfferer.name,

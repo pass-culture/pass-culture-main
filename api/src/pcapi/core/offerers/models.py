@@ -502,19 +502,6 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
         )
 
     @property
-    def demarchesSimplifieesApplicationId(self) -> int | None:
-        if not self.bankInformation:
-            return None
-
-        if self.bankInformation.status not in (
-            finance_models.BankInformationStatus.DRAFT,
-            finance_models.BankInformationStatus.ACCEPTED,
-        ):
-            return None
-
-        return self.bankInformation.applicationId
-
-    @property
     def last_collective_dms_application(self) -> educational_models.CollectiveDmsApplication | None:
         if self.collectiveDmsApplications:
             return sorted(
@@ -1015,19 +1002,6 @@ class Offerer(
     @street.expression  # type: ignore[no-redef]
     def street(cls):  # pylint: disable=no-self-argument
         return cls._address
-
-    @property
-    def demarchesSimplifieesApplicationId(self) -> str | None:
-        if not self.bankInformation:
-            return None
-
-        if self.bankInformation.status not in (
-            finance_models.BankInformationStatus.DRAFT,
-            finance_models.BankInformationStatus.ACCEPTED,
-        ):
-            return None
-
-        return self.bankInformation.applicationId
 
     @hybrid_property
     def departementCode(self) -> str:
