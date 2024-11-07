@@ -552,7 +552,7 @@ class ReimbursementRule:
         booking: "bookings_models.Booking",
         custom_total_amount: int | None = None,
     ) -> int:
-        base = custom_total_amount or utils.to_eurocents(booking.total_amount)
+        base = custom_total_amount or utils.to_cents(booking.total_amount)
         return utils.round_to_integer(base * self.rate)  # type: ignore[attr-defined]
 
     @property
@@ -1121,7 +1121,7 @@ class BookingFinanceIncident(PcObject, Base, Model):
         """
         booking = self.booking or self.collectiveBooking
         assert booking  # helps mypy, already ensured by database constraint
-        return utils.to_eurocents(booking.total_amount) - self.newTotalAmount
+        return utils.to_cents(booking.total_amount) - self.newTotalAmount
 
     @property
     def is_partial(self) -> bool:

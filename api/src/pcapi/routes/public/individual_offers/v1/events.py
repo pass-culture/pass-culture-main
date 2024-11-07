@@ -119,7 +119,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
 
             price_categories = body.price_categories or []
             for price_category in price_categories:
-                euro_price = finance_utils.to_euros(price_category.price)
+                euro_price = finance_utils.cents_to_full_unit(price_category.price)
                 offers_api.create_price_category(
                     created_offer,
                     price_category.label,
@@ -309,7 +309,7 @@ def post_event_price_categories(
         raise api_errors.ApiErrors({"event_id": ["The event could not be found"]}, status_code=404)
 
     # We convert the price to euros because the price has different types in different apis
-    new_labels_and_prices = {(p.label, finance_utils.to_euros(p.price)) for p in body.price_categories}
+    new_labels_and_prices = {(p.label, finance_utils.cents_to_full_unit(p.price)) for p in body.price_categories}
     check_for_duplicated_price_categories(new_labels_and_prices, offer.id)
 
     created_price_categories: list[offers_models.PriceCategory] = []
@@ -320,7 +320,7 @@ def post_event_price_categories(
                     offers_api.create_price_category(
                         offer,
                         label=price_category.label,
-                        price=finance_utils.to_euros(price_category.price),
+                        price=finance_utils.cents_to_full_unit(price_category.price),
                         id_at_provider=price_category.id_at_provider,
                     )
                 )
@@ -416,7 +416,7 @@ def patch_event_price_category(
                 price_category=price_category_to_edit,
                 label=update_body.get("label", offers_api.UNCHANGED),
                 price=(
-                    finance_utils.to_euros(eurocent_price)
+                    finance_utils.cents_to_full_unit(eurocent_price)
                     if eurocent_price != offers_api.UNCHANGED
                     else offers_api.UNCHANGED
                 ),

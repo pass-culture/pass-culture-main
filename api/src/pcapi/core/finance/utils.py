@@ -13,14 +13,14 @@ ROUNDING = decimal.ROUND_HALF_UP
 EUR_TO_XPF_RATE = 1000 / 8.38
 
 
-def to_eurocents(amount_in_euros: decimal.Decimal | float) -> int:
+def to_cents(amount_in_euros: decimal.Decimal | float) -> int:
     exponent = decimal.Decimal("0.01")
     # 0.010 to 0.014 -> 0.01
     # 0.015 to 0.019 -> 0.02
     return int(100 * decimal.Decimal(f"{amount_in_euros}").quantize(exponent, ROUNDING))
 
 
-def to_euros(amount_in_cents: int) -> decimal.Decimal:
+def cents_to_full_unit(amount_in_cents: int) -> decimal.Decimal:
     exponent = decimal.Decimal("0.01")
     return decimal.Decimal(amount_in_cents / 100).quantize(exponent)
 
@@ -48,10 +48,9 @@ def fr_percentage_filter(decimal_rate: decimal.Decimal) -> str:
 def fr_currency_filter(cents: int, use_xpf: bool = False) -> str:
     """Returns a localized str without currency symbol"""
     if use_xpf:
-        # to_euros changes cents to main currency unit (euro or xpf)
-        amount = to_euros(euros_to_xpf(cents))
+        amount = cents_to_full_unit(euros_to_xpf(cents))
     else:
-        amount = to_euros(cents)
+        amount = cents_to_full_unit(cents)
     return numbers.format_decimal(amount, format="#,##0.00", locale="fr_FR")
 
 

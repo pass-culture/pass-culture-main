@@ -536,7 +536,7 @@ class ValidateFinanceOverpaymentIncidentTest(PostEndpointHelper):
         total_booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
             booking=booking_reimbursed,
             incident=incident,
-            newTotalAmount=finance_utils.to_eurocents(booking_reimbursed.pricings[0].amount),
+            newTotalAmount=finance_utils.to_cents(booking_reimbursed.pricings[0].amount),
         )  # total incident
 
         partial_booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
@@ -717,7 +717,7 @@ class ValidateFinanceCommercialGestureTest(PostEndpointHelper):
         total_booking_commercial_gesture = finance_factories.IndividualBookingFinanceCommercialGestureFactory(
             booking=cancelled_booking1,
             incident=incident,
-            newTotalAmount=finance_utils.to_eurocents(cancelled_booking1.pricings[0].amount),
+            newTotalAmount=finance_utils.to_cents(cancelled_booking1.pricings[0].amount),
         )  # total commercial gesture
 
         partial_booking_commercial_gesture = finance_factories.IndividualBookingFinanceCommercialGestureFactory(

@@ -189,7 +189,7 @@ class ReimbursementDetails:
         if using_legacy_models:
             self.reimbursed_amount = format_number_as_french(payment_info.amount)
         else:
-            self.reimbursed_amount = format_number_as_french(finance_utils.to_euros(payment_info.amount))
+            self.reimbursed_amount = format_number_as_french(finance_utils.cents_to_full_unit(payment_info.amount))
 
         self.collective_booking_id = payment_info.collective_booking_id or ""
 

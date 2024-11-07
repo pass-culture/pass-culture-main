@@ -37,7 +37,7 @@ class EducationalOffersReimbursement(finance_models.ReimbursementRule):
         return isinstance(booking, CollectiveBooking)
 
     def apply(self, booking: CollectiveBooking, custom_total_amount: int | None = None) -> int:
-        base = custom_total_amount or finance_utils.to_eurocents(booking.collectiveStock.price)
+        base = custom_total_amount or finance_utils.to_cents(booking.collectiveStock.price)
         return int(base * self.rate)
 
 

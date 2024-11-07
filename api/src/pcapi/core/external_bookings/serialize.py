@@ -50,13 +50,13 @@ class ExternalEventBookingRequest(pydantic_v1.BaseModel):
             raise ValueError("lastName is None")
         price_data = (
             {
-                "offer_price": finance_utils.to_eurocents(stock.priceCategory.price),
+                "offer_price": finance_utils.to_cents(stock.priceCategory.price),
                 "price_category_id": stock.priceCategoryId,
                 "price_category_id_at_provider": stock.priceCategory.idAtProvider,
                 "price_category_label": stock.priceCategory.label,
             }
             if stock.priceCategory
-            else {"offer_price": finance_utils.to_eurocents(stock.price)}
+            else {"offer_price": finance_utils.to_cents(stock.price)}
         )
 
         offer_address = get_offer_address(stock.offer)
