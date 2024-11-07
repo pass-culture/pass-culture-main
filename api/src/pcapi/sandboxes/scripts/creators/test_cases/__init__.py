@@ -177,7 +177,7 @@ def create_offer_with_ean(ean: str, venue: offerers_models.Venue, author: str) -
     offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
 
 
-def _create_offer_and_stocks_for_allocine_venues(
+def create_offer_and_stocks_for_cinemas(
     venues: list[offerers_models.Venue], products: list[offers_models.Product]
 ) -> None:
     for venue in venues:
@@ -219,11 +219,11 @@ def _create_offer_and_stocks_for_allocine_venues(
 
 def create_cinema_data() -> None:
     venues = _create_allocine_venues()
-    products = _create_movie_products()
-    _create_offer_and_stocks_for_allocine_venues(venues, products)
+    products = create_movie_products()
+    create_offer_and_stocks_for_cinemas(venues, products)
 
 
-def _create_movie_products() -> list[offers_models.Product]:
+def create_movie_products() -> list[offers_models.Product]:
     return [
         offers_factories.ProductFactory(
             subcategoryId=subcategories_v2.SEANCE_CINE.id,
