@@ -414,6 +414,10 @@ class IndividualOfferResponseGetterDict(GetterDict):
 class IndividualOfferWithAddressResponseGetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
         if key == "address":
+            if self._obj.status == OfferStatus.DRAFT and not self._obj.offererAddressId:
+                # The offer is still in the funnel creation and without any offererAddress defined
+                # We don't want to blindly return venue.offererAddress
+                return None
             if not self._obj.offererAddress:
                 offerer_address = self._obj.venue.offererAddress
             else:
