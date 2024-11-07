@@ -75,7 +75,7 @@
   }
 
   .title {
-    @include fonts.bold;
+    @include fonts.body-exergue;
   }
 }
 

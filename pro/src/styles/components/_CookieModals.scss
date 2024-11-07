@@ -54,7 +54,7 @@ $action-gap: rem.torem(10px);
   }
 
   &-title {
-    @include fonts.body-important;
+    @include fonts.body-exergue;
 
     color: var(--color-input-text-color);
     line-height: fonts.$body-line-height;

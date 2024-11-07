@@ -9,7 +9,7 @@
 }
 
 .block-title {
-  @include fonts.bold;
+  @include fonts-design-system.title3;
 }
 
 .caption {
@@ -28,7 +28,7 @@
   gap: rem.torem(16px);
 
   &-rank {
-    @include fonts.bold;
+    @include fonts.body-exergue;
   }
 
   &-thumbnail {

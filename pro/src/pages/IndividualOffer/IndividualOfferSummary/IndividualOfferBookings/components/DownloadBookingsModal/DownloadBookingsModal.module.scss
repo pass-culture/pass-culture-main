@@ -92,7 +92,7 @@
 .bookings-day {
   width: 4em;
 
-  @include fonts.bold;
+  @include fonts.body-exergue;
 
   text-decoration: none;
   text-transform: capitalize;

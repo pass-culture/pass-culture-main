@@ -19,6 +19,6 @@
   }
 
   &-bold-text {
-    @include fonts.bold;
+    @include fonts.body-exergue;
   }
 }

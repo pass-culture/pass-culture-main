@@ -18,13 +18,13 @@
   cursor: pointer;
 
   &-is-active {
-    @include fonts.bold;
+    @include fonts.button;
 
     line-height: rem.torem(20px);
   }
 
   &-selected {
-    @include fonts.bold;
+    @include fonts.button;
 
     border: rem.torem(2px) solid var(--color-primary);
   }

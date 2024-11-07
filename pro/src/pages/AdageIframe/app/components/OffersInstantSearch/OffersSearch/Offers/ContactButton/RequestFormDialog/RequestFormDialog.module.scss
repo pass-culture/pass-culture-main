@@ -13,19 +13,6 @@
   margin-bottom: rem.torem(16px);
 }
 
-.contact-info-container {
-  display: flex;
-  flex-direction: column;
-  margin-top: rem.torem(32px);
-  border: rem.torem(2px) dashed var(--color-grey-medium);
-  border-radius: rem.torem(3px);
-  width: 100%;
-  padding: rem.torem(32px) 0;
-  gap: rem.torem(8px);
-
-  @include fonts.body-important;
-}
-
 .form {
   &-container {
     width: 100%;
@@ -78,13 +65,11 @@
 
     &-text {
       &-value {
-        @include fonts.body-important;
-
         color: var(--color-primary);
       }
 
       &-contact {
-        @include fonts.body-important;
+        @include fonts.body-exergue;
 
         display: block;
         margin-top: rem.torem(16px);

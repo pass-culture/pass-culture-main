@@ -21,7 +21,7 @@
   }
 
   &-sub-heading {
-    @include fonts.medium;
+    @include fonts-design-system.title2;
 
     max-width: rem.torem(588px);
     display: block;

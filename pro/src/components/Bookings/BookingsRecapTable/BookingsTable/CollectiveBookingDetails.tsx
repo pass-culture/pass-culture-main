@@ -6,6 +6,7 @@ import strokeLocationIcon from 'icons/stroke-location.svg'
 import strokeMailIcon from 'icons/stroke-mail.svg'
 import strokePhoneIcon from 'icons/stroke-phone.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { CollectiveActionButtons } from './CollectiveActionButtons'
@@ -84,14 +85,12 @@ export const CollectiveBookingDetails = ({
                   />
                 </dt>
                 <dd>
-                  <a
-                    className={styles['link-ternary']}
-                    href={`mailto:${educationalRedactor.email}`}
-                    rel="noopener noreferrer"
-                    target="_blank"
+                  <ButtonLink
+                    to={`mailto:${educationalRedactor.email}`}
+                    isExternal
                   >
                     {educationalRedactor.email}
-                  </a>
+                  </ButtonLink>
                 </dd>
               </div>
             </dl>

@@ -92,14 +92,12 @@ export function AdageOfferPartnerPanel({
         {(venue.city || venue.postalCode || distanceToSchool || isPreview) && (
           <Callout variant={CalloutVariant.INFO}>
             Ce partenaire est situé{' '}
-            <b className={styles['partner-panel-location-bold']}>
-              {(venue.city || venue.postalCode) &&
-                `à ${venue.city ?? ''} ${venue.postalCode ?? ''}, `}
-              {(isPreview || distanceToSchool) &&
-                `à ${isPreview ? 'X km' : distanceToSchool} de votre
+            {(venue.city || venue.postalCode) &&
+              `à ${venue.city ?? ''} ${venue.postalCode ?? ''}, `}
+            {(isPreview || distanceToSchool) &&
+              `à ${isPreview ? 'X km' : distanceToSchool} de votre
             établissement scolaire`}
-              .
-            </b>
+            .
           </Callout>
         )}
       </div>

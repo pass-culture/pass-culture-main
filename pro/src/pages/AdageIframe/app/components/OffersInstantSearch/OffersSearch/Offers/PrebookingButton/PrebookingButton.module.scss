@@ -5,7 +5,7 @@
   @include fonts.button;
 
   &-booking-limit {
-    @include fonts.bold;
+    @include fonts.caption;
 
     margin-top: rem.torem(8px);
   }

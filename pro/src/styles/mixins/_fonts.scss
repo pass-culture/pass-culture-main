@@ -1,5 +1,4 @@
 @use "styles/mixins/_rem.scss" as rem;
-@import "./fonts-legacy";
 
 // need to use em for accessibility: when root size is 200% line-height should adjust
 $body-line-height: 1.25em;
@@ -15,11 +14,6 @@ $caption-line-height: rem.torem(16px);
   font-family: Montserrat-Regular, system-ui, sans-serif;
   font-size: $body-font-size;
   line-height: $body-line-height;
-}
-
-@mixin body-important() {
-  font-family: Montserrat-Medium, system-ui, sans-serif;
-  font-size: $body-font-size;
 }
 
 @mixin body-exergue() {

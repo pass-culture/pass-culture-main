@@ -48,11 +48,4 @@
 
 .confirmation-wrapper .confirmation-banner {
   margin-top: rem.torem(45px);
-
-  &-title {
-    @include fonts.bold;
-
-    margin-bottom: rem.torem(4px);
-    line-height: normal;
-  }
 }

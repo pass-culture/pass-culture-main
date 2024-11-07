@@ -47,7 +47,7 @@
   margin-top: rem.torem(16px);
 
   &-name {
-    @include fonts.body-important;
+    @include fonts.body-exergue;
   }
 }
 
@@ -55,7 +55,7 @@
   margin-top: rem.torem(8px);
 
   &-name {
-    @include fonts.body-important;
+    @include fonts.body-exergue;
   }
 }
 

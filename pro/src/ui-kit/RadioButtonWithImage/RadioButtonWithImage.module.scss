@@ -48,7 +48,7 @@ $radio-size: rem.torem(16px);
   }
 
   &.is-selected {
-    @include fonts.bold;
+    @include fonts.body-exergue;
 
     border: $border-size-selected solid var(--color-secondary-light);
     background-color: var(--color-background-secondary);

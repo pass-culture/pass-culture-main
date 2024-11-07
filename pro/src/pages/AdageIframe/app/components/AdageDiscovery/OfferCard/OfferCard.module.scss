@@ -99,7 +99,7 @@ $offer-image-width: rem.torem(216px);
 }
 
 .offer-name {
-  @include fonts.bold;
+  @include fonts.body-exergue;
 
   display: -webkit-box;
   -webkit-box-orient: vertical;
