@@ -39,7 +39,7 @@ class FeatureToggle(enum.Enum):
     DISCORD_ENABLE_NEW_ACCESS = "Activer/Désactiver l'accès au serveur Discord à des nouveaux utilisateurs"
     DISABLE_SIRET_CHECK = "Désactiver la validation de SIRET"
     DISPLAY_DMS_REDIRECTION = "Affiche une redirection vers DMS si ID Check est KO"
-    EMS_CANCEL_PENDING_EXTERNAL_BOOKING = "Annuler les réservations externes EMS qui ont échouées"
+    EMS_CANCEL_PENDING_EXTERNAL_BOOKING = "Annuler les réservations externes EMS qui ont échoué"
     ENABLE_AUTO_VALIDATION_FOR_EXTERNAL_BOOKING = (
         "Valide automatiquement après 48h les offres issues de l'api billeterie cinéma"
     )
@@ -167,49 +167,55 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.DISABLE_EMS_EXTERNAL_BOOKINGS,
     FeatureToggle.DISABLE_ENTERPRISE_API,
     FeatureToggle.DISPLAY_DMS_REDIRECTION,
-    FeatureToggle.EMS_CANCEL_PENDING_EXTERNAL_BOOKING,
+    FeatureToggle.EMS_CANCEL_PENDING_EXTERNAL_BOOKING,  # enabled in production
     FeatureToggle.ENABLE_AUTO_VALIDATION_FOR_EXTERNAL_BOOKING,
-    FeatureToggle.ENABLE_BEAMER,
+    FeatureToggle.ENABLE_BEAMER,  # enabled in production
     FeatureToggle.ENABLE_CODIR_OFFERERS_REPORT,  # only for production
     FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES,
-    FeatureToggle.ENABLE_COLLECTIVE_OFFERS_EXPIRATION,
     FeatureToggle.ENABLE_CRON_TO_UPDATE_OFFERER_STATS,  # only for production
-    FeatureToggle.ENABLE_CULTURAL_SURVEY,
     FeatureToggle.ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18,
     FeatureToggle.ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE,
     FeatureToggle.ENABLE_EAC_FINANCIAL_PROTECTION,
-    FeatureToggle.ENABLE_EMS_INTEGRATION,
-    FeatureToggle.ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION,
+    FeatureToggle.ENABLE_EMS_INTEGRATION,  # enabled in production
+    FeatureToggle.ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION,  # enabled in production
+    FeatureToggle.ENABLE_PHONE_VALIDATION,
     FeatureToggle.ENABLE_PRO_BOOKINGS_V2,
-    FeatureToggle.ENABLE_SWITCH_ALLOCINE_SYNC_TO_EMS_SYNC,
+    FeatureToggle.ENABLE_SWITCH_ALLOCINE_SYNC_TO_EMS_SYNC,  # enabled in production
     FeatureToggle.ENABLE_TITELIVE_MUSIC_TYPES_IN_API_OUTPUT,
     FeatureToggle.ENABLE_UBBLE_SUBSCRIPTION_LIMITATION,
     FeatureToggle.ENABLE_VIRUSTOTAL,
     FeatureToggle.ENABLE_ZENDESK_SELL_CREATION,
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
-    FeatureToggle.LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC,
-    FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,
+    FeatureToggle.LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC,  # enabled in production
+    FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,  # enabled in production
     FeatureToggle.WIP_ENABLE_ALGOLIA_SEARCH_IN_BO,
-    FeatureToggle.WIP_BENEFICIARY_EXTRACT_TOOL,
+    FeatureToggle.WIP_ENABLE_BO_PRO_SEARCH_BY_SIMILARITY,
     FeatureToggle.WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION,
     FeatureToggle.WIP_DISABLE_NOTIFY_USERS_BOOKINGS_NOT_RETRIEVED,
     FeatureToggle.WIP_DISABLE_SEND_NOTIFICATIONS_FAVORITES_NOT_BOOKED,
     FeatureToggle.WIP_DISABLE_TODAY_STOCK_NOTIFICATION,
-    FeatureToggle.WIP_EAN_CREATION,
     FeatureToggle.WIP_ENABLE_BREVO_PRO_SUBACCOUNT,
     FeatureToggle.WIP_ENABLE_MOCK_UBBLE,
     FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE,
-    FeatureToggle.WIP_ENABLE_NEW_HASHING_ALGORITHM,
+    FeatureToggle.WIP_ENABLE_NEW_HASHING_ALGORITHM,  # TODO fix N+1 queries reported by tests and remove
     FeatureToggle.WIP_ENABLE_OFFER_ADDRESS,
     FeatureToggle.WIP_ENABLE_PRO_ONBOARDING,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
     FeatureToggle.WIP_OFFERER_STATS_V2,
-    FeatureToggle.WIP_SPLIT_OFFER,
-    FeatureToggle.WIP_SUGGESTED_SUBCATEGORIES,
     FeatureToggle.WIP_UBBLE_V2,
-    FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE,
+    FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE,  # TODO fix N+1 queries reported by tests and remove
     # Please keep alphabetic order
 )
+
+if settings.IS_E2E_TESTS:
+    # Keep disabled because e2e tests fail (searchCollectiveOffer.cy.ts)
+    FEATURES_DISABLED_BY_DEFAULT += (
+        FeatureToggle.ENABLE_COLLECTIVE_OFFERS_EXPIRATION,
+        FeatureToggle.ENABLE_CULTURAL_SURVEY,
+        FeatureToggle.WIP_EAN_CREATION,
+        FeatureToggle.WIP_SPLIT_OFFER,
+        FeatureToggle.WIP_SUGGESTED_SUBCATEGORIES,
+    )
 
 if settings.IS_PROD or settings.IS_STAGING:
     FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API,)
