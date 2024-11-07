@@ -512,7 +512,7 @@ def _get_current_revenue(event: models.FinanceEvent) -> int:
         .with_entities(sa.func.sum(bookings_models.Booking.amount * bookings_models.Booking.quantity))
         .scalar()
     )
-    return utils.to_eurocents(current_revenue or 0)
+    return utils.to_cents(current_revenue or 0)
 
 
 def _price_event(event: models.FinanceEvent) -> models.Pricing:
@@ -533,7 +533,7 @@ def _price_event(event: models.FinanceEvent) -> models.Pricing:
             models.FinanceEventMotive.BOOKING_USED,
             models.FinanceEventMotive.BOOKING_USED_AFTER_CANCELLATION,
         ):
-            new_revenue += utils.to_eurocents(booking.total_amount)
+            new_revenue += utils.to_cents(booking.total_amount)
         elif event.motive in (
             models.FinanceEventMotive.INCIDENT_NEW_PRICE,
             models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE,
@@ -548,7 +548,7 @@ def _price_event(event: models.FinanceEvent) -> models.Pricing:
         rule_finder = reimbursement.CustomRuleFinder()
         rule = reimbursement.get_reimbursement_rule(booking, rule_finder, new_revenue)
         amount = -rule.apply(booking)  # outgoing, thus negative
-        offerer_revenue_amount = -utils.to_eurocents(booking.total_amount)
+        offerer_revenue_amount = -utils.to_cents(booking.total_amount)
         pricing_booking_id = individual_booking.id if individual_booking else None
         pricing_collective_booking_id = collective_booking.id if collective_booking else None
         lines = [
@@ -1523,7 +1523,7 @@ def _payment_details_row_formatter(sql_row: typing.Any) -> tuple:
         raise ValueError("Unknown booking type (not educational nor individual)")
 
     ministry = getattr(sql_row, "caledonian_label", getattr(sql_row, "ministry", ""))
-    net_amount = utils.to_euros(-sql_row.pricing_amount)
+    net_amount = utils.cents_to_full_unit(-sql_row.pricing_amount)
 
     return (
         human_ids.humanize(sql_row.bank_account_id),
@@ -2399,7 +2399,7 @@ def get_reimbursements_by_venue(
         reimbursements_by_venue[venue_id] = {
             "venue_name": venue_common_name,
             "reimbursed_amount": reimbursed_amount,
-            "validated_booking_amount": -utils.to_eurocents(validated_booking_amount),
+            "validated_booking_amount": -utils.to_cents(validated_booking_amount),
             "individual_amount": individual_amount,
             "finance_incident_amount": 0,
             "finance_incident_contribution": 0,
@@ -2410,7 +2410,7 @@ def get_reimbursements_by_venue(
         venue_id = venue_pricing_info.venue_id
         venue_common_name = venue_pricing_info.common_name
         reimbursed_amount = venue_pricing_info.reimbursed_amount
-        booking_amount = -utils.to_eurocents(venue_pricing_info.booking_amount)
+        booking_amount = -utils.to_cents(venue_pricing_info.booking_amount)
         if venue_id in reimbursements_by_venue:
             reimbursements_by_venue[venue_id]["reimbursed_amount"] += reimbursed_amount
             reimbursements_by_venue[venue_id]["validated_booking_amount"] += booking_amount
@@ -2646,7 +2646,7 @@ def _create_reimbursement_rule(
         offerId=offer_id,
         subcategories=subcategories,
         rate=rate,  # only for offerers and venues
-        amount=utils.to_eurocents(amount) if amount is not None else None,  # only for offers
+        amount=utils.to_cents(amount) if amount is not None else None,  # only for offers
         timespan=(start_date, end_date),
     )
     validation.validate_reimbursement_rule(rule)
@@ -3154,7 +3154,7 @@ def create_overpayment_finance_incident(
                 bookingId=booking.id,
                 incidentId=incident.id,
                 beneficiaryId=booking.userId,
-                newTotalAmount=utils.to_eurocents(new_total_amount),
+                newTotalAmount=utils.to_cents(new_total_amount),
             )
         )
     else:
@@ -3240,8 +3240,8 @@ def create_finance_commercial_gesture(
 
     booking_finance_incidents_to_create = []
     total_bookings_quantity = sum(booking.quantity for booking in bookings)
-    total_amount = sum(utils.to_eurocents(booking.total_amount) for booking in bookings)
-    amount_cents = utils.to_eurocents(amount)
+    total_amount = sum(utils.to_cents(booking.total_amount) for booking in bookings)
+    amount_cents = utils.to_cents(amount)
     # First calculate the partial commercial gesture's amount for each booking in the list except the last one:
     # → (∑<bookings amounts> - <input commercial gesture amount>) * <booking quantity> ÷ ∑<bookings quantity>
     # Then calculate the last booking's commercial gesture amount based on the (n - 1) first amounts to avoid rounding issues:

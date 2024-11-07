@@ -747,7 +747,11 @@ def _initialize_additional_data(bookings: list[bookings_models.Booking]) -> dict
         additional_data["Bénéficiaire"] = booking.user.full_name
         additional_data["Montant de la réservation"] = filters.format_amount(booking.total_amount, target=booking.venue)
         additional_data["Montant remboursé à l'acteur"] = filters.format_amount(
-            -finance_utils.to_euros(booking.reimbursement_pricing.amount) if booking.reimbursement_pricing else 0,
+            (
+                -finance_utils.cents_to_full_unit(booking.reimbursement_pricing.amount)
+                if booking.reimbursement_pricing
+                else 0
+            ),
             target=booking.venue,
         )
     else:
@@ -756,7 +760,7 @@ def _initialize_additional_data(bookings: list[bookings_models.Booking]) -> dict
             sum(booking.total_amount for booking in bookings)
         )
         additional_data["Montant remboursé à l'acteur"] = filters.format_amount(
-            -finance_utils.to_euros(
+            -finance_utils.cents_to_full_unit(
                 sum(booking.reimbursement_pricing.amount for booking in bookings if booking.reimbursement_pricing)
             )
         )
@@ -777,7 +781,7 @@ def _initialize_collective_booking_additional_data(collective_booking: education
 
     if collective_booking.reimbursement_pricing:
         additional_data["Montant remboursé à l'acteur"] = filters.format_amount(
-            -finance_utils.to_euros(collective_booking.reimbursement_pricing.amount)
+            -finance_utils.cents_to_full_unit(collective_booking.reimbursement_pricing.amount)
         )
 
     return additional_data
@@ -814,7 +818,7 @@ def comment_incident(finance_incident_id: int) -> utils.BackofficeResponse:
 def _get_finance_overpayment_incident_validation_form(
     finance_incident: finance_models.FinanceIncident,
 ) -> utils.BackofficeResponse:
-    incident_total_amount_euros = finance_utils.to_euros(finance_incident.due_amount_by_offerer)
+    incident_total_amount_euros = finance_utils.cents_to_full_unit(finance_incident.due_amount_by_offerer)
     bank_account_link = finance_incident.venue.current_bank_account_link
     if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
         bank_account_details_str = (
@@ -844,7 +848,7 @@ def _get_finance_overpayment_incident_validation_form(
 def _get_finance_commercial_gesture_validation_form(
     finance_incident: finance_models.FinanceIncident,
 ) -> utils.BackofficeResponse:
-    commercial_gesture_amount = finance_utils.to_euros(finance_incident.due_amount_by_offerer)
+    commercial_gesture_amount = finance_utils.cents_to_full_unit(finance_incident.due_amount_by_offerer)
     bank_account_link = finance_incident.venue.current_bank_account_link
     if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
         bank_account_details_str = (

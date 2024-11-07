@@ -496,7 +496,7 @@ class ProductsOfferByEanCreation(serialization.ConfiguredBaseModel):
 class DecimalPriceGetterDict(GetterDict):
     def get(self, key: str, default: typing.Any | None = None) -> typing.Any:
         if key == "price" and isinstance(self._obj.price, decimal.Decimal):
-            return finance_utils.to_eurocents(self._obj.price)
+            return finance_utils.to_cents(self._obj.price)
         return super().get(key, default)
 
 
@@ -783,7 +783,7 @@ class ProductStockResponse(BaseStockResponse):
     @classmethod
     def build_product_stock(cls, stock: offers_models.Stock) -> "ProductStockResponse":
         stock_response = BaseStockResponse.build_stock(stock)
-        return cls(price=finance_utils.to_eurocents(stock.price), **stock_response.dict())
+        return cls(price=finance_utils.to_cents(stock.price), **stock_response.dict())
 
 
 class ProductOfferResponse(OfferResponse):

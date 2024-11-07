@@ -78,7 +78,7 @@ def send_commercial_gesture_email(finance_incident: finance_models.FinanceIncide
             params={
                 "OFFER_NAME": offer.name,
                 "VENUE_NAME": venue.common_name,
-                "MONTANT_REMBOURSEMENT": finance_utils.to_euros(
+                "MONTANT_REMBOURSEMENT": finance_utils.cents_to_full_unit(
                     sum((booking_incident.due_amount_by_offerer or 0) for booking_incident in offer_booking_incidents)
                 ),
                 "TOKEN_LIST": ", ".join(

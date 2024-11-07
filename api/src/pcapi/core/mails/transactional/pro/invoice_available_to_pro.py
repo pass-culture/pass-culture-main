@@ -16,7 +16,7 @@ def send_invoice_available_to_pro_email(invoice: finance_models.Invoice, batch: 
     data = models.TransactionalEmailData(
         template=TransactionalEmail.INVOICE_AVAILABLE_TO_PRO.value,
         params={
-            "MONTANT_REMBOURSEMENT": -float(finance_utils.to_euros(invoice.amount)),
+            "MONTANT_REMBOURSEMENT": -float(finance_utils.cents_to_full_unit(invoice.amount)),
             "PERIODE_DEBUT": period_start.strftime("%d-%m-%Y"),
             "PERIODE_FIN": period_end.strftime("%d-%m-%Y"),
         },

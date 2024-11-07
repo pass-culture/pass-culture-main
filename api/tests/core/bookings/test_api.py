@@ -1170,7 +1170,7 @@ class CancelByBeneficiaryTest:
         assert notification.offer_ean == "1234567890123"
         assert notification.offer_id == stock.offer.id
         assert notification.offer_name == stock.offer.name
-        assert notification.offer_price == finance_api.utils.to_eurocents(stock.price)
+        assert notification.offer_price == finance_api.utils.to_cents(stock.price)
         assert notification.stock_id == stock.id
         assert notification.booking_quantity == booking.quantity
         assert notification.booking_creation_date == booking.dateCreated

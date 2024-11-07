@@ -157,7 +157,7 @@ def format_cents(
     if amount_in_cents is None:
         amount_in_cents = 0
 
-    return format_amount(finance_utils.to_euros(amount_in_cents), target=target)
+    return format_amount(finance_utils.cents_to_full_unit(amount_in_cents), target=target)
 
 
 def format_rate(rate: float | None) -> str:

@@ -276,7 +276,7 @@ def _create_stock(product: offers_models.Offer, body: serialization.ProductOffer
     try:
         offers_api.create_stock(
             offer=product,
-            price=finance_utils.to_euros(body.stock.price),
+            price=finance_utils.cents_to_full_unit(body.stock.price),
             quantity=serialization.deserialize_quantity(body.stock.quantity),
             booking_limit_datetime=body.stock.booking_limit_datetime,
             creating_provider=current_api_key.provider,
@@ -481,7 +481,7 @@ def _create_or_update_ean_offers(
                     # It will be done before the release of this API
                     offers_api.create_stock(
                         offer=offer,
-                        price=finance_utils.to_euros(stock_data["price"]),
+                        price=finance_utils.cents_to_full_unit(stock_data["price"]),
                         quantity=serialization.deserialize_quantity(stock_data["quantity"]),
                         booking_limit_datetime=stock_data["booking_limit_datetime"],
                         creating_provider=provider,
@@ -917,7 +917,7 @@ def _upsert_product_stock(
             raise api_errors.ApiErrors({"stock.price": ["Required"]})
         offers_api.create_stock(
             offer=offer,
-            price=finance_utils.to_euros(stock_body.price),
+            price=finance_utils.cents_to_full_unit(stock_body.price),
             quantity=serialization.deserialize_quantity(stock_body.quantity),
             booking_limit_datetime=stock_body.booking_limit_datetime,
             creating_provider=provider,
@@ -930,7 +930,7 @@ def _upsert_product_stock(
     offers_api.edit_stock(
         existing_stock,
         quantity=quantity + existing_stock.dnBookedQuantity if isinstance(quantity, int) else quantity,
-        price=finance_utils.to_euros(price) if price != offers_api.UNCHANGED else offers_api.UNCHANGED,
+        price=finance_utils.cents_to_full_unit(price) if price != offers_api.UNCHANGED else offers_api.UNCHANGED,
         booking_limit_datetime=stock_update_body.get("booking_limit_datetime", offers_api.UNCHANGED),
         editing_provider=provider,
     )
