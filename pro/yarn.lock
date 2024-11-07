@@ -2273,12 +2273,12 @@
   dependencies:
     "@sentry/types" "8.37.1"
 
-"@storybook/addon-a11y@^8.4.0":
-  version "8.4.0"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-a11y/-/addon-a11y-8.4.0.tgz#844df631bc0733f1788d612355316a626a97fc64"
-  integrity sha512-FbvdAnYG5y0l1iBvtwlN8sQL39/FyQefKGK4+0MDmdDvCDq2JpkNU9rDL4HT8aYVAiPfr+M2DmXGJihLxwRyhw==
+"@storybook/addon-a11y@^8.4.2":
+  version "8.4.2"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-a11y/-/addon-a11y-8.4.2.tgz#e827b69ae57dec2b6eeac9835ae125613c32ee34"
+  integrity sha512-v6Tl+qr3Eslf06qmt2hq1ticYi7oRLIFosePQUOlW1+cgdIbV+r1IxsZ7creCDWX4kIMTbUFhbET9LTYGHem1A==
   dependencies:
-    "@storybook/addon-highlight" "8.4.0"
+    "@storybook/addon-highlight" "8.4.2"
     axe-core "^4.2.0"
 
 "@storybook/addon-controls@^8.4.2":
@@ -2303,10 +2303,10 @@
     react-dom "^16.8.0 || ^17.0.0 || ^18.0.0"
     ts-dedent "^2.0.0"
 
-"@storybook/addon-highlight@8.4.0":
-  version "8.4.0"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-highlight/-/addon-highlight-8.4.0.tgz#e19006aa7c2cf47b70cac75473bc7389dbf5e251"
-  integrity sha512-tshX/2HnPzGQ9Kza2DARNfirBRhE/Ts7bldbhMiJu20YhJD1jQzXSDEX1cCgHsDc8HKYOsV/Kuu5WDzp/1i97w==
+"@storybook/addon-highlight@8.4.2":
+  version "8.4.2"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-highlight/-/addon-highlight-8.4.2.tgz#77fae7df40e178d33ff8e0bcf34282768d34dc5a"
+  integrity sha512-vTtwp7nyJ09SXrsMnH+pukCjHjRMjQXgHZHxvbrv09uoH8ldQMv9B7u+X+9Wcy/jYSKFz/ng7pWo4b4a2oXHkg==
   dependencies:
     "@storybook/global" "^5.0.0"
 
