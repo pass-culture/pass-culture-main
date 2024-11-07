@@ -69,7 +69,7 @@ class PcDisplaySelector extends PcAddOn {
   }
 
   unbindEvents = () => {
-    this.selectors.forEach((selector) => {
+    this.$selectors.forEach(($selector) => {
       this.#inputInSelector($selector).forEach(($input) => {
       $input.removeEventListener("change", this.#change)
         })
