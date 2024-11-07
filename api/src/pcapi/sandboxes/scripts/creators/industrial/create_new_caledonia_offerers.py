@@ -17,6 +17,8 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice.finance import validation
+from pcapi.sandboxes.scripts.creators.test_cases import create_movie_products
+from pcapi.sandboxes.scripts.creators.test_cases import create_offer_and_stocks_for_cinemas
 from pcapi.utils import siren as siren_utils
 
 
@@ -29,6 +31,7 @@ def create_new_caledonia_offerers() -> None:
     beneficiary = _create_nc_beneficiary()
     _create_nc_active_offerer(beneficiary)
     _create_nc_new_offerer()
+    _create_nc_cinema()
 
     logger.info("created New Caledonia offerers")
 
@@ -202,6 +205,49 @@ def _create_nc_new_offerer() -> None:
         user__postalCode="98829",
         user__departementCode="988",
     )
+
+
+def _create_nc_cinema() -> None:
+    address = geography_factories.AddressFactory(
+        street="27 Avenue de la VICTOIRE-HENRI LAFLEUR",
+        postalCode="98818",
+        city="Nouméa",
+        latitude=-22.2734285,
+        longitude=166.4430499,
+        inseeCode="98818",
+        banId="98818_18etss_00027",
+        timezone="Pacific/Noumea",
+    )
+    offerer = offerers_factories.CaledonianOffererFactory(
+        name="Le Rex calédonien",
+        street=address.street,
+        postalCode=address.postalCode,
+        city=address.city,
+        siren=siren_utils.rid7_to_siren("1230003"),
+    )
+    venue = offerers_factories.CaledonianVenueFactory(
+        managingOfferer=offerer,
+        pricing_point="self",
+        name=offerer.name,
+        siret=siren_utils.ridet_to_siret("1230003003"),
+        latitude=address.latitude,
+        longitude=address.longitude,
+        bookingEmail="cinema.nc@example.com",
+        street=address.street,
+        postalCode=address.postalCode,
+        city=address.city,
+        banId=address.banId,
+        timezone=address.timezone,
+        venueTypeCode=offerers_models.VenueTypeCode.MOVIE,
+        description="Cinéma de test en Nouvelle-Calédonie",
+        contact__email="cinema.nc@example.com",
+        contact__website="https://nc.example.com/noumea",
+        contact__phone_number="+687263443",
+        contact__social_medias={"instagram": "https://instagram.com/@noumea.nc"},
+        offererAddress__address=address,
+    )
+    movie_products = create_movie_products()
+    create_offer_and_stocks_for_cinemas([venue], movie_products)
 
 
 def _create_nc_invoice() -> None:
