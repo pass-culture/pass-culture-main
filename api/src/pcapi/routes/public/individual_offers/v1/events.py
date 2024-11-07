@@ -16,6 +16,7 @@ from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.offers.validation import check_for_duplicated_price_categories
 from pcapi.models import api_errors
 from pcapi.models import db
+from pcapi.repository import atomic
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.documentation_constants import http_responses
@@ -61,6 +62,7 @@ def _deserialize_has_ticket(
         )
     ),
 )
+@atomic()
 def post_event_offer(body: serialization.EventOfferCreation) -> serialization.EventOfferResponse:
     """
     Create event offer
@@ -76,68 +78,75 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
         )
 
     withdrawal_type = _deserialize_has_ticket(body.has_ticket, body.category_related_fields.subcategory_id)
+
+    offerer_address = venue.offererAddress  # default offerer_address
+
+    if body.location.type == "address":
+        address = utils.get_address_or_raise_404(body.location.address_id)
+        offerer_address = offerers_api.get_or_create_offerer_address(
+            offerer_id=venue.managingOffererId,
+            address_id=address.id,
+            label=body.location.address_label,
+        )
+
+    offer_body = offers_schemas.CreateOffer(
+        name=body.name,
+        subcategoryId=body.category_related_fields.subcategory_id,
+        audioDisabilityCompliant=body.accessibility.audio_disability_compliant,
+        mentalDisabilityCompliant=body.accessibility.mental_disability_compliant,
+        motorDisabilityCompliant=body.accessibility.motor_disability_compliant,
+        visualDisabilityCompliant=body.accessibility.visual_disability_compliant,
+        bookingContact=body.booking_contact,
+        bookingEmail=body.booking_email,
+        description=body.description,
+        durationMinutes=body.event_duration,
+        externalTicketOfficeUrl=body.external_ticket_office_url,
+        extraData=serialization.deserialize_extra_data(body.category_related_fields),
+        idAtProvider=body.id_at_provider,
+        isDuo=body.enable_double_bookings,
+        url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
+        withdrawalDetails=body.withdrawal_details,
+        withdrawalType=withdrawal_type,
+    )  # type: ignore[call-arg]
+
     try:
-        with repository.transaction():
-            offerer_address = venue.offererAddress  # default offerer_address
+        created_offer = offers_api.create_offer(
+            offer_body,
+            venue=venue,
+            venue_provider=venue_provider,
+            provider=current_api_key.provider,
+            offerer_address=offerer_address,
+        )
+    except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as error:
+        raise api_errors.ApiErrors(error.errors, status_code=400)
 
-            if body.location.type == "address":
-                address = utils.get_address_or_raise_404(body.location.address_id)
-                offerer_address = offerers_api.get_or_create_offerer_address(
-                    offerer_id=venue.managingOffererId,
-                    address_id=address.id,
-                    label=body.location.address_label,
-                )
+    # To create the priceCategories, the offer needs to have an id
+    db.session.flush()
+    price_categories = body.price_categories or []
 
-            offer_body = offers_schemas.CreateOffer(
-                name=body.name,
-                subcategoryId=body.category_related_fields.subcategory_id,
-                audioDisabilityCompliant=body.accessibility.audio_disability_compliant,
-                mentalDisabilityCompliant=body.accessibility.mental_disability_compliant,
-                motorDisabilityCompliant=body.accessibility.motor_disability_compliant,
-                visualDisabilityCompliant=body.accessibility.visual_disability_compliant,
-                bookingContact=body.booking_contact,
-                bookingEmail=body.booking_email,
-                description=body.description,
-                durationMinutes=body.event_duration,
-                externalTicketOfficeUrl=body.external_ticket_office_url,
-                extraData=serialization.deserialize_extra_data(body.category_related_fields),
-                idAtProvider=body.id_at_provider,
-                isDuo=body.enable_double_bookings,
-                url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
-                withdrawalDetails=body.withdrawal_details,
-                withdrawalType=withdrawal_type,
-            )  # type: ignore[call-arg]
-            created_offer = offers_api.create_offer(
-                offer_body,
-                venue=venue,
-                venue_provider=venue_provider,
-                provider=current_api_key.provider,
-                offerer_address=offerer_address,
+    try:
+        for price_category in price_categories:
+            euro_price = finance_utils.cents_to_full_unit(price_category.price)
+            offers_api.create_price_category(
+                created_offer,
+                price_category.label,
+                euro_price,
+                id_at_provider=price_category.id_at_provider,
             )
-            # To create the priceCategories, the offer needs to have an id
-            db.session.flush()
+        db.session.flush()
+    except offers_exceptions.PriceCategoryCreationBaseException as error:
+        raise api_errors.ApiErrors(error.errors, status_code=400)
 
-            price_categories = body.price_categories or []
-            for price_category in price_categories:
-                euro_price = finance_utils.cents_to_full_unit(price_category.price)
-                offers_api.create_price_category(
-                    created_offer,
-                    price_category.label,
-                    euro_price,
-                    id_at_provider=price_category.id_at_provider,
-                )
+    if body.image:
+        utils.save_image(body.image, created_offer)
 
-            if body.image:
-                utils.save_image(body.image, created_offer)
-
-            offers_api.publish_offer(created_offer, user=None, publication_date=body.publication_date)
-
-    except (
-        offers_exceptions.OfferCreationBaseException,
-        offers_exceptions.OfferEditionBaseException,
-        offers_exceptions.FutureOfferException,
-        offers_exceptions.PriceCategoryCreationBaseException,
-    ) as error:
+    try:
+        offers_api.publish_offer(
+            created_offer,
+            user=None,
+            publication_date=body.publication_date,
+        )
+    except offers_exceptions.FutureOfferException as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
     return serialization.EventOfferResponse.build_event_offer(created_offer)
@@ -228,6 +237,7 @@ def get_events(query: serialization.GetOffersQueryParams) -> serialization.Event
         )
     ),
 )
+@atomic()
 def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serialization.EventOfferResponse:
     """
     Update event offer
@@ -244,39 +254,41 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
         raise api_errors.ApiErrors({"event_id": ["The event offer could not be found"]}, status_code=404)
     utils.check_offer_subcategory(body, offer.subcategoryId)
 
-    try:
-        with repository.transaction():
-            updates = body.dict(by_alias=True, exclude_unset=True)
-            dc = updates.get("accessibility", {})
-            extra_data = copy.deepcopy(offer.extraData)
-            is_active = get_field(offer, updates, "isActive")
+    updates = body.dict(by_alias=True, exclude_unset=True)
+    dc = updates.get("accessibility", {})
+    extra_data = copy.deepcopy(offer.extraData)
+    is_active = get_field(offer, updates, "isActive")
 
-            offer_body = offers_schemas.UpdateOffer(
-                audioDisabilityCompliant=get_field(offer, dc, "audioDisabilityCompliant"),
-                mentalDisabilityCompliant=get_field(offer, dc, "mentalDisabilityCompliant"),
-                motorDisabilityCompliant=get_field(offer, dc, "motorDisabilityCompliant"),
-                visualDisabilityCompliant=get_field(offer, dc, "visualDisabilityCompliant"),
-                bookingContact=get_field(offer, updates, "bookingContact"),
-                bookingEmail=get_field(offer, updates, "bookingEmail"),
-                description=get_field(offer, updates, "description"),
-                durationMinutes=get_field(offer, updates, "eventDuration", col="durationMinutes"),
-                extraData=(
-                    serialization.deserialize_extra_data(body.category_related_fields, extra_data)
-                    if "categoryRelatedFields" in updates
-                    else extra_data
-                ),
-                isActive=is_active if is_active is not None else offer.isActive,
-                idAtProvider=get_field(offer, updates, "idAtProvider"),
-                isDuo=get_field(offer, updates, "enableDoubleBookings", col="isDuo"),
-                withdrawalDetails=get_field(offer, updates, "itemCollectionDetails", col="withdrawalDetails"),
-                name=get_field(offer, updates, "name"),
-            )  # type: ignore[call-arg]
-            offer = offers_api.update_offer(offer, offer_body)
-            if body.image:
-                utils.save_image(body.image, offer)
+    offer_body = offers_schemas.UpdateOffer(
+        audioDisabilityCompliant=get_field(offer, dc, "audioDisabilityCompliant"),
+        mentalDisabilityCompliant=get_field(offer, dc, "mentalDisabilityCompliant"),
+        motorDisabilityCompliant=get_field(offer, dc, "motorDisabilityCompliant"),
+        visualDisabilityCompliant=get_field(offer, dc, "visualDisabilityCompliant"),
+        bookingContact=get_field(offer, updates, "bookingContact"),
+        bookingEmail=get_field(offer, updates, "bookingEmail"),
+        description=get_field(offer, updates, "description"),
+        durationMinutes=get_field(offer, updates, "eventDuration", col="durationMinutes"),
+        extraData=(
+            serialization.deserialize_extra_data(body.category_related_fields, extra_data)
+            if "categoryRelatedFields" in updates
+            else extra_data
+        ),
+        isActive=is_active if is_active is not None else offer.isActive,
+        idAtProvider=get_field(offer, updates, "idAtProvider"),
+        isDuo=get_field(offer, updates, "enableDoubleBookings", col="isDuo"),
+        withdrawalDetails=get_field(offer, updates, "itemCollectionDetails", col="withdrawalDetails"),
+        name=get_field(offer, updates, "name"),
+    )  # type: ignore[call-arg]
+
+    try:
+        offer = offers_api.update_offer(offer, offer_body)
+
+        if body.image:
+            utils.save_image(body.image, offer)
     except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
+    db.session.flush()
     return serialization.EventOfferResponse.build_event_offer(offer)
 
 
@@ -296,6 +308,7 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
         )
     ),
 )
+@atomic()
 def post_event_price_categories(
     event_id: int, body: serialization.PriceCategoriesCreation
 ) -> serialization.PriceCategoriesResponse:
@@ -314,21 +327,22 @@ def post_event_price_categories(
 
     created_price_categories: list[offers_models.PriceCategory] = []
     try:
-        with repository.transaction():
-            for price_category in body.price_categories:
-                created_price_categories.append(
-                    offers_api.create_price_category(
-                        offer,
-                        label=price_category.label,
-                        price=finance_utils.cents_to_full_unit(price_category.price),
-                        id_at_provider=price_category.id_at_provider,
-                    )
+        for price_category in body.price_categories:
+            created_price_categories.append(
+                offers_api.create_price_category(
+                    offer,
+                    label=price_category.label,
+                    price=finance_utils.cents_to_full_unit(price_category.price),
+                    id_at_provider=price_category.id_at_provider,
                 )
+            )
     except (
         offers_exceptions.OfferEditionBaseException,
         offers_exceptions.PriceCategoryCreationBaseException,
     ) as error:
         raise api_errors.ApiErrors(error.errors)
+
+    db.session.flush()
 
     return serialization.PriceCategoriesResponse.build_price_categories(created_price_categories)
 
@@ -388,6 +402,7 @@ def get_event_price_categories(
         )
     ),
 )
+@atomic()
 def patch_event_price_category(
     event_id: int,
     price_category_id: int,
@@ -408,24 +423,25 @@ def patch_event_price_category(
         raise api_errors.ApiErrors({"price_category_id": ["No price category could be found"]}, status_code=404)
 
     update_body = body.dict(exclude_unset=True)
+    eurocent_price = update_body.get("price", offers_api.UNCHANGED)
+
     try:
-        with repository.transaction():
-            eurocent_price = update_body.get("price", offers_api.UNCHANGED)
-            offers_api.edit_price_category(
-                event_offer,
-                price_category=price_category_to_edit,
-                label=update_body.get("label", offers_api.UNCHANGED),
-                price=(
-                    finance_utils.cents_to_full_unit(eurocent_price)
-                    if eurocent_price != offers_api.UNCHANGED
-                    else offers_api.UNCHANGED
-                ),
-                id_at_provider=update_body.get("id_at_provider", offers_api.UNCHANGED),
-                editing_provider=current_api_key.provider,
-            )
+        offers_api.edit_price_category(
+            event_offer,
+            price_category=price_category_to_edit,
+            label=update_body.get("label", offers_api.UNCHANGED),
+            price=(
+                finance_utils.cents_to_full_unit(eurocent_price)
+                if eurocent_price != offers_api.UNCHANGED
+                else offers_api.UNCHANGED
+            ),
+            id_at_provider=update_body.get("id_at_provider", offers_api.UNCHANGED),
+            editing_provider=current_api_key.provider,
+        )
     except (offers_exceptions.OfferEditionBaseException, offers_exceptions.PriceCategoryCreationBaseException) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
+    db.session.flush()
     return serialization.PriceCategoryResponse.from_orm(price_category_to_edit)
 
 
@@ -445,6 +461,7 @@ def patch_event_price_category(
         )
     ),
 )
+@atomic()
 def post_event_stocks(event_id: int, body: serialization.DatesCreation) -> serialization.PostDatesResponse:
     """
     Add stocks to an event
@@ -465,25 +482,24 @@ def post_event_stocks(event_id: int, body: serialization.DatesCreation) -> seria
 
     new_dates: list[offers_models.Stock] = []
     try:
-        with repository.transaction():
-            for date in body.dates:
-                price_category = next((c for c in offer.priceCategories if c.id == date.price_category_id), None)
-                if not price_category:
-                    raise api_errors.ApiErrors(
-                        {"price_category_id": ["The price category could not be found"]}, status_code=404
-                    )
-
-                new_dates.append(
-                    offers_api.create_stock(
-                        offer=offer,
-                        price_category=price_category,
-                        quantity=serialization.deserialize_quantity(date.quantity),
-                        beginning_datetime=date.beginning_datetime,
-                        booking_limit_datetime=date.booking_limit_datetime,
-                        creating_provider=current_api_key.provider,
-                        id_at_provider=date.id_at_provider,
-                    )
+        for date in body.dates:
+            price_category = next((c for c in offer.priceCategories if c.id == date.price_category_id), None)
+            if not price_category:
+                raise api_errors.ApiErrors(
+                    {"price_category_id": ["The price category could not be found"]}, status_code=404
                 )
+
+            new_dates.append(
+                offers_api.create_stock(
+                    offer=offer,
+                    price_category=price_category,
+                    quantity=serialization.deserialize_quantity(date.quantity),
+                    beginning_datetime=date.beginning_datetime,
+                    booking_limit_datetime=date.booking_limit_datetime,
+                    creating_provider=current_api_key.provider,
+                    id_at_provider=date.id_at_provider,
+                )
+            )
     except (
         offers_exceptions.OfferCreationBaseException,
         offers_exceptions.OfferEditionBaseException,
@@ -491,6 +507,7 @@ def post_event_stocks(event_id: int, body: serialization.DatesCreation) -> seria
     ) as error:
         raise api_errors.ApiErrors(error.errors)
 
+    db.session.flush()
     return serialization.PostDatesResponse(
         dates=[serialization.DateResponse.build_date(new_date) for new_date in new_dates]
     )
@@ -565,6 +582,7 @@ def get_event_stocks(event_id: int, query: serialization.GetEventStocksQueryPara
         )
     ),
 )
+@atomic()
 def delete_event_stock(event_id: int, stock_id: int) -> None:
     """
     Delete event stock
