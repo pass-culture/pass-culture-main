@@ -16,7 +16,7 @@
   }
 
   &-title {
-    @include fonts.body-important;
+    @include fonts.body-exergue;
   }
 }
 
@@ -28,7 +28,7 @@
 }
 
 .sitemap-link {
-  @include fonts.body-important;
+  @include fonts.body-exergue;
 
   text-decoration: underline;
 }

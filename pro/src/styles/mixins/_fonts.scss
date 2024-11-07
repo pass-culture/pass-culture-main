@@ -16,11 +16,6 @@ $caption-line-height: rem.torem(16px);
   line-height: $body-line-height;
 }
 
-@mixin body-important() {
-  font-family: Montserrat-Medium, system-ui, sans-serif;
-  font-size: $body-font-size;
-}
-
 @mixin body-exergue() {
   font-family: Montserrat-SemiBold, system-ui, sans-serif;
   font-size: $body-font-size;

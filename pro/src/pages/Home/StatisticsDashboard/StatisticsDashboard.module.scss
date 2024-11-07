@@ -23,8 +23,6 @@
 }
 
 .no-data {
-  @include fonts.body-important;
-
   color: var(--color-grey-dark);
   display: flex;
   align-items: center;

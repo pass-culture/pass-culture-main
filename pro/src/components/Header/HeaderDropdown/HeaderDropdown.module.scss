@@ -234,7 +234,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
   }
 
   &[data-state="checked"] {
-    @include fonts.bold;
+    @include fonts.body-exergue;
   }
 
   &-name {
@@ -284,10 +284,6 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
   @media (min-width: $sub-popin-full-width-breakpoint) {
     display: none;
   }
-}
-
-.offerer-link {
-  @include fonts.body-important;
 }
 
 .menu-group {

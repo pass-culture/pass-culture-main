@@ -62,6 +62,6 @@
   .card-title {
     margin-bottom: 0;
 
-    @include fonts.bold;
+    @include fonts-design-system.title4;
   }
 }

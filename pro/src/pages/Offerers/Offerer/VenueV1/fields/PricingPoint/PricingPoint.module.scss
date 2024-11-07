@@ -30,8 +30,6 @@
 
   .space-text-left {
     margin-left: rem.torem(10px);
-
-    @include fonts.body-important;
   }
 }
 

@@ -126,7 +126,7 @@
       }
 
       &-category {
-        @include fonts.bold;
+        @include fonts.body-exergue;
 
         color: var(--color-primary);
       }

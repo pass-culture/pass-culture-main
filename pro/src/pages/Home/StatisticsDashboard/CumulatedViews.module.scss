@@ -1,5 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 
 .cumulated-views {
   display: flex;
@@ -8,7 +9,7 @@
 }
 
 .block-title {
-  @include fonts.bold;
+  @include fonts-design-system.title3;
 }
 
 .no-data {
@@ -27,7 +28,7 @@
   }
 
   &-caption {
-    @include fonts.body-important;
+    @include fonts.body-exergue;
   }
 }
 

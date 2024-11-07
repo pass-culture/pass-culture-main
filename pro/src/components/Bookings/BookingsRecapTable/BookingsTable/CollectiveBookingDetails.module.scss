@@ -20,7 +20,7 @@
 }
 
 .contact-details-title {
-  @include fonts.bold;
+  @include fonts.body-exergue;
 
   margin-bottom: rem.torem(8px);
 }
@@ -49,37 +49,6 @@
 
   &-location-icon {
     align-self: flex-start;
-  }
-
-  .link-ternary {
-    @include fonts.button;
-
-    color: var(--color-black);
-    background-color: transparent;
-    padding: 0;
-    border: none;
-    height: auto;
-
-    &:hover,
-    &:focus {
-      text-decoration: underline;
-    }
-
-    &:disabled,
-    &.button-disabled {
-      color: var(--color-grey-dark);
-      text-decoration: none;
-    }
-
-    .button-icon {
-      margin-right: rem.torem(8px);
-    }
-
-    &.button-center {
-      .button-icon {
-        margin-right: 0;
-      }
-    }
   }
 }
 

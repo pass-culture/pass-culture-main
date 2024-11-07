@@ -39,8 +39,6 @@
 }
 
 .venue-type {
-  @include fonts.body-important;
-
   color: var(--color-grey-dark);
   text-transform: uppercase;
 }

@@ -1,8 +1,4 @@
-@use "styles/mixins/_fonts.scss" as fonts;
-
 .banner-email-adress {
-  @include fonts.body-important;
-
   margin-bottom: 0;
   margin-top: 16px;
 }

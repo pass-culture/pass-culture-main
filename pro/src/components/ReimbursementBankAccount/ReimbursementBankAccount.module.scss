@@ -40,8 +40,6 @@
   }
 
   &-content {
-    @include fonts.body-important;
-
     display: flex;
     flex-direction: column;
     gap: rem.torem(8px);
@@ -57,7 +55,7 @@
   }
 
   &-title {
-    @include fonts.body-important;
+    @include fonts.body-exergue;
 
     margin-bottom: rem.torem(16px);
     display: inline-flex;
@@ -118,9 +116,5 @@
 
   &.needs-correction {
     background: var(--color-background-error);
-  }
-
-  .account-status {
-    @include fonts.bold;
   }
 }

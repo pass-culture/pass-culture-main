@@ -84,10 +84,7 @@ export function AdageOfferHeader({
           )}
         </div>
         <div className={styles['offer-header-details-structure']}>
-          Proposée par{' '}
-          <span className={styles['offer-header-details-structure-name']}>
-            {venueAndOffererName}
-          </span>
+          Proposée par {venueAndOffererName}
         </div>
         {isOfferBookable && offer.educationalInstitution && (
           <div className={styles['offer-header-details-institution']}>

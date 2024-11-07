@@ -20,8 +20,6 @@
 }
 
 .venue-type {
-  @include fonts.body-important;
-
   color: var(--color-grey-dark);
   text-transform: uppercase;
   margin-top: rem.torem(16px);
@@ -65,8 +63,6 @@
 }
 
 .details-normal {
-  @include fonts.body-important;
-
   margin-right: rem.torem(8px);
   color: var(--color-grey-dark);
 }

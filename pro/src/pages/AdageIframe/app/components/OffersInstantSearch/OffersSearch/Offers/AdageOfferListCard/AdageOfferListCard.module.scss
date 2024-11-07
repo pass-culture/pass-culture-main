@@ -145,10 +145,6 @@
     margin-bottom: rem.torem(8px);
   }
 
-  .infos {
-    @include fonts.body-important;
-  }
-
   &-button {
     display: flex;
     flex-direction: column;

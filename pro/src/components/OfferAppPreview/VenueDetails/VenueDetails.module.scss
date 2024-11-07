@@ -22,7 +22,7 @@
 }
 
 .title {
-  @include fonts.bold;
+  @include fonts-design-system.title4;
 
   margin-bottom: rem.torem(16px);
 }

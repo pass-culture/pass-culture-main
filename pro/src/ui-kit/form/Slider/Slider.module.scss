@@ -6,10 +6,6 @@
   width: 100%;
 }
 
-.slider-value {
-  @include fonts.bold;
-}
-
 .slider-header {
   display: flex;
   align-items: center;
@@ -18,7 +14,7 @@
   margin-bottom: rem.torem(12px);
 
   .input-value {
-    @include fonts.bold;
+    @include fonts.body-exergue;
   }
 }
 

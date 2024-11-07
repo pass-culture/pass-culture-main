@@ -3,17 +3,17 @@
 
 .timeline {
   &-step-title {
-    @include fonts.bold;
+    @include fonts.body-exergue;
   }
 
   &-step-title-passed {
-    @include fonts.bold;
+    @include fonts.body-exergue;
 
     color: var(--color-grey-dark);
   }
 
   &-step-title-disabled {
-    @include fonts.body-important;
+    @include fonts.body-exergue;
 
     line-height: rem.torem(20px);
     color: var(--color-grey-dark);
@@ -30,7 +30,7 @@
     }
 
     &-accent {
-      @include fonts.body-important;
+      @include fonts.body-exergue;
     }
   }
 

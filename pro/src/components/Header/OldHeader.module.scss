@@ -28,7 +28,7 @@
       }
 
       .nav-item {
-        @include fonts.bold;
+        @include fonts.body-exergue;
 
         align-items: center;
         color: var(--color-white);
