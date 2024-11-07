@@ -14,7 +14,7 @@ class GetYearlyAggregatedOffererRevenueTest:
 
         with mock.patch("pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query") as mock_run_query:
             mock_run_query.return_value = fixtures.YEARLY_AGGREGATED_VENUE_REVENUE
-            result = clickhouse_queries.YearlyAggregatedRevenueQuery().execute(venue_ids)
+            result = clickhouse_queries.YearlyAggregatedRevenueQuery(True, True).execute(venue_ids)
 
         assert result.income_by_year["2024"].revenue.total == Decimal("24.24")
         assert result.income_by_year["2024"].revenue.individual == Decimal("12.12")

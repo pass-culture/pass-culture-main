@@ -16,9 +16,25 @@ class Revenue(pydantic_v1.BaseModel):
         extra = "forbid"
 
 
+class IndividualOnlyRevenue(pydantic_v1.BaseModel):
+    total: Decimal
+    individual: Decimal
+
+    class Config:
+        extra = "forbid"
+
+
+class CollectiveOnlyRevenue(pydantic_v1.BaseModel):
+    total: Decimal
+    collective: Decimal
+
+    class Config:
+        extra = "forbid"
+
+
 class AggregatedRevenue(pydantic_v1.BaseModel):
-    revenue: Revenue
-    expected_revenue: Revenue
+    revenue: Revenue | IndividualOnlyRevenue | CollectiveOnlyRevenue
+    expected_revenue: Revenue | IndividualOnlyRevenue | CollectiveOnlyRevenue
 
     class Config:
         extra = "forbid"
@@ -34,16 +50,25 @@ class YearlyAggregatedRevenueModel(pydantic_v1.BaseModel):
 
 
 class YearlyAggregatedRevenueQuery(BaseQuery[YearlyAggregatedRevenueModel]):
+    def __init__(self, venues_have_individual: bool, venues_have_collective: bool) -> None:
+        self.venues_have_individual = venues_have_individual
+        self.venues_have_collective = venues_have_collective
+        super().__init__()
+
     def _format_result(self, results: list) -> dict:
-        return {
-            "incomeByYear": {
-                result.year: {
-                    "revenue": json.loads(result.revenue),
-                    "expectedRevenue": json.loads(result.expected_revenue),
-                }
-                for result in results
-            }
-        }
+        income_by_year = {}
+        for result in results:
+            revenue = json.loads(result.revenue)
+            expected_revenue = json.loads(result.expected_revenue)
+            if not self.venues_have_individual:
+                revenue.pop("individual", None)
+                expected_revenue.pop("individual", None)
+            if not self.venues_have_collective:
+                revenue.pop("collective", None)
+                expected_revenue.pop("collective", None)
+            income_by_year.update({result.year: {"revenue": revenue, "expectedRevenue": expected_revenue}})
+
+        return {"incomeByYear": income_by_year}
 
     @property
     def raw_query(self) -> str:

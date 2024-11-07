@@ -107,10 +107,9 @@ def has_access_to_venues(user: models.User, venue_ids: list[int]) -> bool:
         offerers_models.UserOfferer.isValidated,
         offerers_models.Venue.id.in_(venue_ids),
     ]
+    have_access_to_all_venues = query.filter(*filters).count() == len(venue_ids)
 
-    query = db.session.query(query.filter(*filters).exists()).scalar()
-
-    return query
+    return have_access_to_all_venues
 
 
 def get_newly_eligible_age_18_users(since: date) -> list[models.User]:
