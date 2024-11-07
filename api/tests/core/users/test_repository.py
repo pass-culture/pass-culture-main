@@ -11,6 +11,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import repository
 from pcapi.core.users.models import UserRole
 from pcapi.core.users.repository import get_users_with_validated_attachment_by_offerer
+from pcapi.core.users.repository import has_access_to_venues
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -59,6 +60,19 @@ class CheckUserAndCredentialsTest:
     def test_user_with_valid_password(self):
         user = users_factories.UserFactory.build(isActive=True)
         repository.check_user_and_credentials(user, settings.TEST_DEFAULT_PASSWORD)
+
+
+class CheckUserHasAccessToOfferersVenues:
+    def test_user_has_access_to_multiple_venues(self):
+        pro_user = users_factories.ProFactory()
+        offerer1 = offerers_factories.OffererFactory()
+        offerer2 = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer1)
+        venues_1 = offerers_factories.VenueFactory.create_batch(3, managingOffererId=offerer1.id)
+        venues_2 = offerers_factories.VenueFactory.create_batch(2, managingOffererId=offerer2.id)
+        assert has_access_to_venues(pro_user, venues_1)
+        assert not has_access_to_venues(pro_user, venues_2)
+        assert not has_access_to_venues(pro_user, venues_1 + venues_2)
 
 
 class GetNewlyEligibleUsersTest:
