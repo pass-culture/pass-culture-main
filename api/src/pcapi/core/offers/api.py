@@ -239,7 +239,6 @@ def create_draft_offer(
     offer = models.Offer(
         **fields,
         venue=venue,
-        offererAddress=venue.offererAddress,
         isActive=False,
         validation=models.OfferValidationStatus.DRAFT,
         product=product,
