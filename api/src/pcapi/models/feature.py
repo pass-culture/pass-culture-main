@@ -108,9 +108,6 @@ class FeatureToggle(enum.Enum):
         "Activer les nouvelles règles de création et d'édition d'offres collecrives pour l'API publique (collective)"
     )
     WIP_ENABLE_NEW_HASHING_ALGORITHM = "Activer le nouveau système de hachage des clés publiques d'API"
-    WIP_ENABLE_BO_PRO_SEARCH_BY_SIMILARITY = (
-        "Activer la recherche par similarité pour les structures et lieux dans le backoffice"
-    )
     WIP_BENEFICIARY_EXTRACT_TOOL = "Activer l'extraction de données personnelles (RGPD)"
     WIP_ENABLE_OFFER_ADDRESS = "Activer l'association des offres à des adresses."
     WIP_SPLIT_OFFER = "Activer le nouveau parcours de création/édition d'offre individuelle"

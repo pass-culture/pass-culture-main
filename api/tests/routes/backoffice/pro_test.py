@@ -333,7 +333,7 @@ class SearchOffererTest:
     # - fetch results
     # - fetch count for pagination
     expected_num_queries = 4
-    # - fetch feature flag: WIP_ENABLE_BO_PRO_SEARCH_BY_SIMILARITY
+    # - fetch feature flag
     expected_num_queries_with_ff = expected_num_queries + 1
 
     def _create_offerers(
@@ -391,23 +391,6 @@ class SearchOffererTest:
             total_items=1,
         )
 
-    @override_features(WIP_ENABLE_BO_PRO_SEARCH_BY_SIMILARITY=True)
-    def test_can_search_offerer_by_name(self, authenticated_client):
-        self._create_offerers()
-
-        with assert_num_queries(self.expected_num_queries_with_ff):
-            response = authenticated_client.get(
-                url_for(self.endpoint, q="Théâtre du Centre", pro_type=TypeOptions.OFFERER.name)
-            )
-            assert response.status_code == 200
-
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert len(cards_text) >= 2  # Results may contain all "Théâtre", "Centre", "Centaure"
-        assert len(cards_text) <= 8  # Results should not contain Libraire/Cinéma + Gare/Plage
-        assert_offerer_equals(cards_text[0], self.offerers[2])  # Théâtre du Centre (most relevant)
-        assert_offerer_equals(cards_text[1], self.offerers[11])  # Théâtre du Centaure (very close to the first one)
-
-    @override_features(WIP_ENABLE_BO_PRO_SEARCH_BY_SIMILARITY=False)
     def test_can_search_offerer_by_name_without_similarity(self, authenticated_client):
         self._create_offerers()
 
@@ -422,11 +405,10 @@ class SearchOffererTest:
         assert_offerer_equals(cards_text[0], self.offerers[6])
         assert_offerer_equals(cards_text[1], self.offerers[3])
 
-    @override_features(WIP_ENABLE_BO_PRO_SEARCH_BY_SIMILARITY=False)
     def test_can_search_offerer_by_words_in_name_without_similarity(self, authenticated_client):
         self._create_offerers()
 
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(self.endpoint, q="cine de plage", pro_type=TypeOptions.OFFERER.name)
             )
@@ -518,7 +500,7 @@ class SearchVenueTest:
     # - fetch results
     # - fetch count for pagination
     expected_num_queries = 4
-    # - fetch feature flag: WIP_ENABLE_BO_PRO_SEARCH_BY_SIMILARITY
+    # - fetch feature flag
     expected_num_queries_with_ff = 5
 
     def _create_venues(
@@ -653,24 +635,7 @@ class SearchVenueTest:
         assert_venue_equals(sorted_cards_text[0], self.venues[1])  # Cinéma Beta
         assert_venue_equals(sorted_cards_text[1], self.venues[7])  # Cinéma Delta
 
-    @override_features(WIP_ENABLE_BO_PRO_SEARCH_BY_SIMILARITY=True)
     def test_can_search_venue_by_public_name(self, authenticated_client):
-        self._create_venues()
-
-        with assert_num_queries(self.expected_num_queries_with_ff):
-            response = authenticated_client.get(
-                url_for(self.endpoint, q="Théâtre du Centre", pro_type=TypeOptions.VENUE.name)
-            )
-            assert response.status_code == 200
-
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert len(cards_text) >= 2  # Results may contain all "Théâtre", "Centre", "Centaure"
-        assert len(cards_text) <= 8  # Results should not contain Libraire/Cinéma + Gare/Plage
-        assert_venue_equals(cards_text[0], self.venues[2])  # Théâtre du Centre (most relevant)
-        assert_venue_equals(cards_text[1], self.venues[11])  # Théâtre du Centaure (very close to the first one)
-
-    @override_features(WIP_ENABLE_BO_PRO_SEARCH_BY_SIMILARITY=False)
-    def test_can_search_venue_by_public_name_without_similarity(self, authenticated_client):
         self._create_venues()
 
         with assert_num_queries(self.expected_num_queries_with_ff):
@@ -681,11 +646,10 @@ class SearchVenueTest:
         assert len(cards_text) == 3
         assert_venue_equals(cards_text[0], self.venues[2])
 
-    @override_features(WIP_ENABLE_BO_PRO_SEARCH_BY_SIMILARITY=False)
-    def test_can_search_venue_by_words_in_public_name_without_similarity(self, authenticated_client):
+    def test_can_search_venue_by_words_in_public_name(self, authenticated_client):
         self._create_venues()
 
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(self.endpoint, q="Librairie Centre", pro_type=TypeOptions.VENUE.name)
             )
