@@ -1,6 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router-dom'
+import { expect } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 
 import { apiAdresse } from 'apiClient/adresse/apiAdresse'
@@ -288,5 +289,31 @@ describe('VenueFormScreen', () => {
     expect(
       screen.getByText('Modalités d’accessibilité via acceslibre')
     ).toBeInTheDocument()
+  })
+
+  describe('OA feature flag', () => {
+    it('should display the right wording without the OA FF', () => {
+      renderForm({ ...baseVenue, isVirtual: true })
+
+      expect(
+        screen.getByText(
+          /Ce lieu vous permet uniquement de créer des offres numériques, il/
+        )
+      ).toBeInTheDocument()
+    })
+    it('should display the right wording with the OA FF', () => {
+      renderForm(
+        { ...baseVenue, isVirtual: true },
+        {
+          features: ['WIP_ENABLE_OFFER_ADDRESS'],
+        }
+      )
+
+      expect(
+        screen.getByText(
+          /Cette structure vous permet uniquement de créer des offres numériques, elle/
+        )
+      ).toBeInTheDocument()
+    })
   })
 })

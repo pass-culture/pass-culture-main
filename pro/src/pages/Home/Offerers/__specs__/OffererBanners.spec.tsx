@@ -81,7 +81,7 @@ describe('OffererBanners', () => {
 
         expect(
           screen.getByText(
-            'Le rattachement à votre entité juridique est en cours de traitement par les équipes du pass Culture'
+            'Votre rattachement est en cours de traitement par les équipes du pass Culture'
           )
         ).toBeInTheDocument()
       })
@@ -114,12 +114,6 @@ describe('OffererBanners', () => {
 
       expect(
         screen.getByText(
-          'Votre entité juridique est en cours de traitement par les équipes du pass Culture'
-        )
-      ).toBeInTheDocument()
-
-      expect(
-        screen.getByText(
           /Vos offres seront publiées sous réserve de validation de votre structure./
         )
       ).toBeInTheDocument()
@@ -132,12 +126,6 @@ describe('OffererBanners', () => {
         isValidated: false,
       }
       renderOffererBanners({ offerer })
-
-      expect(
-        screen.getByText(
-          /Votre structure est en cours de traitement par les équipes du pass Culture/
-        )
-      ).toBeInTheDocument()
 
       expect(
         screen.getByText(

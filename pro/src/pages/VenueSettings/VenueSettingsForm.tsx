@@ -3,8 +3,8 @@ import { useLocation } from 'react-router-dom'
 
 import {
   GetOffererResponseModel,
-  VenueProviderResponse,
   GetVenueResponseModel,
+  VenueProviderResponse,
   VenueTypeResponseModel,
 } from 'apiClient/v1'
 import { SelectOption } from 'commons/custom_types/form'
@@ -23,6 +23,7 @@ import { buildVenueTypesOptions } from 'pages/VenueCreation/buildVenueTypesOptio
 import { SiretOrCommentFields } from 'pages/VenueCreation/SiretOrCommentFields/SiretOrCommentFields'
 import { VenueFormActionBar } from 'pages/VenueCreation/VenueFormActionBar/VenueFormActionBar'
 import { WithdrawalDetails } from 'pages/VenueCreation/WithdrawalDetails/WithdrawalDetails'
+import { OffersSynchronization } from 'pages/VenueSettings/VenueProvidersManager/OffersSynchronization/OffersSynchronization'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Select } from 'ui-kit/form/Select/Select'
@@ -30,7 +31,6 @@ import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import { VenueSettingsFormValues } from './types'
-import { OffersSynchronization } from './VenueProvidersManager/OffersSynchronization'
 
 interface VenueFormProps {
   offerer: GetOffererResponseModel
@@ -157,8 +157,7 @@ export const VenueSettingsForm = ({
                 options={[
                   {
                     value: '',
-                    label:
-                      'Si votre lieu est labellisé précisez-le en le sélectionnant',
+                    label: `Si votre ${isOfferAddressEnabled ? 'structure est labellisée' : 'lieu est labellisé'}  précisez-le en le sélectionnant`,
                   },
                   ...venueLabels,
                 ]}

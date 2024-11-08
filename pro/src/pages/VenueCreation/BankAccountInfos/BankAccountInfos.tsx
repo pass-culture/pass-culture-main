@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { BankAccountResponseModel } from 'apiClient/v1'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -13,6 +14,8 @@ interface BankAccountInfosProps {
 export const BankAccountInfos = ({
   venueBankAccount,
 }: BankAccountInfosProps) => {
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+
   return (
     <FormLayout.Section title="Compte bancaire">
       {venueBankAccount && (
@@ -35,8 +38,8 @@ export const BankAccountInfos = ({
         ]}
       >
         {venueBankAccount
-          ? 'Vous souhaitez modifier le compte bancaire rattaché à ce lieu ?'
-          : 'Aucun compte bancaire n’est rattaché à ce lieu.'}
+          ? `Vous souhaitez modifier le compte bancaire rattaché à ${isOfferAddressEnabled ? 'cette structure' : 'ce lieu'} ?`
+          : `Aucun compte bancaire n’est rattaché à ${isOfferAddressEnabled ? 'cette structure' : 'ce lieu'}.`}
       </Callout>
     </FormLayout.Section>
   )

@@ -134,11 +134,12 @@ export const ReimbursementBankAccount = ({
                 <div className={styles['issue-text']}>
                   {isOfferAddressEnabled
                     ? 'Aucune structure n’est rattachée à ce compte bancaire'
-                    : 'Aucun lieu n’est rattaché à ce compte bancaire.'}
+                    : 'Aucun lieu n’est rattaché à ce compte bancaire'}
+                  {'. '}
                   {venuesNotLinkedToBankAccount === 0 &&
                     (isOfferAddressEnabled
-                      ? ' Désélectionnez une structure déjà rattachée et rattachez-la à ce compte bancaire.'
-                      : ' Désélectionnez un lieu déjà rattaché et rattachez-le à ce compte bancaire.')}
+                      ? 'Désélectionnez une structure déjà rattachée et rattachez-la à ce compte bancaire.'
+                      : 'Désélectionnez un lieu déjà rattaché et rattachez-le à ce compte bancaire.')}
                 </div>
               )}
               {hasLinkedVenues && venuesNotLinkedToBankAccount > 0 && (

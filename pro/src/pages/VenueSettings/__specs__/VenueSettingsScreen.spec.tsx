@@ -248,4 +248,20 @@ describe('VenueSettingsScreen', () => {
         "Les retraits sont autorisés jusqu'à 24 heures avant l'événement.",
     })
   })
+  describe('OA feature flag', () => {
+    it('should display the right wording without the OA FF', async () => {
+      await renderForm()
+      expect(
+        screen.getByText(/Si votre lieu est labellisé/)
+      ).toBeInTheDocument()
+    })
+    it('should display the right wording with the OA FF', async () => {
+      await renderForm({
+        features: ['WIP_ENABLE_OFFER_ADDRESS'],
+      })
+      expect(
+        screen.getByText(/Si votre structure est labellisée/)
+      ).toBeInTheDocument()
+    })
+  })
 })
