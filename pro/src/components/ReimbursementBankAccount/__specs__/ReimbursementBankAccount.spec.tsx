@@ -342,7 +342,7 @@ describe('ReimbursementBankAccount', () => {
     })
 
     expect(
-      screen.getByText('Aucune structure n’est rattachée à ce compte bancaire')
+      screen.getByText(/Aucune structure n’est rattachée à ce compte bancaire./)
     )
     expect(screen.getByRole('button', { name: 'Rattacher une structure' }))
   })

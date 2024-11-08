@@ -37,9 +37,10 @@ export const OffererBanners = ({
         ]}
       >
         <strong>
-          Le rattachement à votre{' '}
-          {isOfferAddressEnabled ? 'entité juridique' : 'structure'} est en
-          cours de traitement par les équipes du pass Culture
+          {isOfferAddressEnabled
+            ? 'Votre rattachement'
+            : 'Le rattachement à votre structure'}{' '}
+          est en cours de traitement par les équipes du pass Culture
         </strong>
         <br />
         Un email vous sera envoyé lors de la validation de votre rattachement.
@@ -63,8 +64,8 @@ export const OffererBanners = ({
         ]}
       >
         <strong>
-          Votre {isOfferAddressEnabled ? 'entité juridique' : 'structure'} est
-          en cours de traitement par les équipes du pass Culture
+          Votre structure est en cours de traitement par les équipes du pass
+          Culture
         </strong>
         <br />
         {hasAtLeastOnePhysicalVenue ? (

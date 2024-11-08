@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react'
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
 import { SENT_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { Callout } from 'components/Callout/Callout'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
@@ -24,6 +25,8 @@ export interface PricingPointProps {
 }
 
 export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+
   const [canSubmit, setCanSubmit] = useState(true)
   const [isInputDisabled, setIsInputDisabled] = useState(false)
   const [isConfirmSiretDialogOpen, setIsConfirmSiretDialogOpen] =
@@ -56,7 +59,10 @@ export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
     }
   }
   const pricingPointOptions = [
-    { value: '', label: 'Sélectionner un lieu dans la liste' },
+    {
+      value: '',
+      label: `Sélectionner ${isOfferAddressEnabled ? 'une structure' : 'un lieu'} dans la liste`,
+    },
   ]
 
   offerer.managedVenues
@@ -75,15 +81,16 @@ export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
           links={[
             {
               href: `https://aide.passculture.app/hc/fr/articles/4413973462929--Acteurs-Culturels-Comment-rattacher-mes-points-de-remboursement-et-mes-coordonn%C3%A9es-bancaires-%C3%A0-un-SIRET-de-r%C3%A9f%C3%A9rence-`,
-              label:
-                'Comment ajouter vos coordonnées bancaires sur un lieu sans SIRET ?',
+              label: `Comment ajouter vos coordonnées bancaires sur ${isOfferAddressEnabled ? 'une structure' : 'un lieu'} sans SIRET ?`,
               isExternal: true,
             },
           ]}
           className={`${styles['desk-callout']}`}
         >
-          Si vous souhaitez vous faire rembourser les offres de votre lieu sans
-          SIRET, vous devez sélectionner un lieu avec SIRET dans votre structure
+          Si vous souhaitez vous faire rembourser les offres de votre{' '}
+          {isOfferAddressEnabled ? 'structure' : 'lieu'} sans SIRET, vous devez
+          sélectionner {isOfferAddressEnabled ? 'une structure' : 'un lieu'}{' '}
+          avec SIRET dans votre {isOfferAddressEnabled ? 'entité' : 'structure'}{' '}
           afin de permettre le calcul de votre barème de remboursement.
           Attention, vous ne pourrez plus modifier votre sélection après
           validation.
@@ -99,13 +106,16 @@ export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
         onConfirm={handleClick}
         icon={strokeValidIcon}
         title="Êtes-vous sûr de vouloir sélectionner"
-        secondTitle={`ce lieu avec SIRET\u00a0?`}
+        secondTitle={`${isOfferAddressEnabled ? 'cette structure' : 'ce lieu'} avec SIRET\u00a0?`}
         isLoading={isSubmitingPricingPoint}
         open={isConfirmSiretDialogOpen}
       >
         <p className={styles['text-dialog']}>
-          Vous avez sélectionné un lieu avec SIRET qui sera utilisé pour le
-          calcul de vos remboursements
+          Vous avez sélectionné{' '}
+          {isOfferAddressEnabled
+            ? 'une structure avec SIRET qui sera utilisée'
+            : 'un lieu avec SIRET qui sera utilisé'}{' '}
+          pour le calcul de vos remboursements
           <br />
           Ce choix ne pourra pas être modifié.
         </p>
@@ -123,7 +133,8 @@ export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
           <span className={styles['text-hightlight']}>
             Sélectionner et valider{' '}
           </span>
-          ci-dessous le lieu avec SIRET :
+          ci-dessous {isOfferAddressEnabled ? 'la structure' : 'le lieu'} avec
+          SIRET :
         </p>
       )}
 
@@ -135,9 +146,7 @@ export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
             name="venueSiret"
             data-testid={'pricingPointSelect'}
             defaultValue={venue.pricingPoint ? venue.pricingPoint.id : ''}
-            label={
-              'Lieu avec SIRET utilisé pour le calcul de votre barème de remboursement'
-            }
+            label={`${isOfferAddressEnabled ? 'Structure avec SIRET utilisée' : 'Lieu avec SIRET utilisé'} pour le calcul de votre barème de remboursement`}
             options={pricingPointOptions}
             hideFooter
           />
