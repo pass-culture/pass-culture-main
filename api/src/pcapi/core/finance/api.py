@@ -76,6 +76,7 @@ from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import on_commit
 from pcapi.repository import transaction
 from pcapi.utils import human_ids
+from pcapi.utils.chunks import get_chunks
 import pcapi.utils.date as date_utils
 import pcapi.utils.db as db_utils
 import pcapi.utils.pdf as pdf_utils
@@ -1634,7 +1635,7 @@ def _mark_free_pricings_as_invoiced() -> None:
             models.Pricing.status == models.PricingStatus.PROCESSED,
             models.CashflowPricing.pricingId.is_(None),
         )
-        .with_entities(models.Pricing.id)
+        .with_entities(models.Pricing.id, models.Pricing.bookingId)
         .all()
     )
     if not free_pricings:
@@ -1667,30 +1668,29 @@ def _mark_free_pricings_as_invoiced() -> None:
 
     # Booking.status: USED -> REIMBURSED (but keep CANCELLED as is)
     with log_elapsed(logger, "Updating status of free individual bookings"):
-        db.session.execute(
-            sa.text(
+        booking_ids = [e[1] for e in free_pricings if e[1]]
+        for chunk in get_chunks(booking_ids, 1000):
+            db.session.execute(
+                sa.text(
+                    """
+                UPDATE booking
+                SET
+                  status =
+                    CASE WHEN booking.status = CAST(:cancelled AS booking_status)
+                    THEN CAST(:cancelled AS booking_status)
+                    ELSE CAST(:reimbursed AS booking_status)
+                    END,
+                  "reimbursementDate" = now()
+                WHERE
+                  booking.id IN :booking_ids
                 """
-            UPDATE booking
-            SET
-              status =
-                CASE WHEN booking.status = CAST(:cancelled AS booking_status)
-                THEN CAST(:cancelled AS booking_status)
-                ELSE CAST(:reimbursed AS booking_status)
-                END,
-              "reimbursementDate" = now()
-            FROM pricing
-            WHERE
-              booking.id = pricing."bookingId"
-              AND pricing.id IN :pricing_ids
-            """
-            ),
-            {
-                "cancelled": bookings_models.BookingStatus.CANCELLED.value,
-                "reimbursed": bookings_models.BookingStatus.REIMBURSED.value,
-                "pricing_ids": tuple(pricing_ids),
-                "reimbursement_date": datetime.datetime.utcnow(),
-            },
-        )
+                ),
+                {
+                    "cancelled": bookings_models.BookingStatus.CANCELLED.value,
+                    "reimbursed": bookings_models.BookingStatus.REIMBURSED.value,
+                    "booking_ids": tuple(chunk),
+                },
+            )
 
     # CollectiveBooking.status: USED -> REIMBURSED (but keep CANCELLED as is)
     with log_elapsed(logger, "Updating status of free collective bookings"):
@@ -2159,31 +2159,37 @@ def _generate_invoice(
 
     # Booking.status: USED -> REIMBURSED (but keep CANCELLED as is)
     with log_elapsed(logger, "Updating status of individual bookings"):
-        db.session.execute(
-            sa.text(
-                """
-            UPDATE booking
-            SET
-              status =
-                CASE WHEN booking.status = CAST(:cancelled AS booking_status)
-                THEN CAST(:cancelled AS booking_status)
-                ELSE CAST(:reimbursed AS booking_status)
-                END,
-              "reimbursementDate" = now()
-            FROM pricing, cashflow_pricing
-            WHERE
-              booking.id = pricing."bookingId"
-              AND pricing.id = cashflow_pricing."pricingId"
-              AND cashflow_pricing."cashflowId" IN :cashflow_ids
-            """
-            ),
-            {
-                "cancelled": bookings_models.BookingStatus.CANCELLED.value,
-                "reimbursed": bookings_models.BookingStatus.REIMBURSED.value,
-                "cashflow_ids": tuple(cashflow_ids),
-                "reimbursement_date": datetime.datetime.utcnow(),
-            },
+        booking_ids = (
+            models.Pricing.query.join(models.Pricing.cashflows)
+            .filter(
+                models.Cashflow.id.in_(cashflow_ids),
+            )
+            .with_entities(models.Pricing.bookingId)
+            .all()
         )
+        booking_ids = [b[0] for b in booking_ids]
+        for chunk in get_chunks(booking_ids, 1000):
+            db.session.execute(
+                sa.text(
+                    """
+                UPDATE booking
+                SET
+                  status =
+                    CASE WHEN booking.status = CAST(:cancelled AS booking_status)
+                    THEN CAST(:cancelled AS booking_status)
+                    ELSE CAST(:reimbursed AS booking_status)
+                    END,
+                  "reimbursementDate" = now()
+                WHERE
+                  booking.id IN :booking_ids
+                """
+                ),
+                {
+                    "cancelled": bookings_models.BookingStatus.CANCELLED.value,
+                    "reimbursed": bookings_models.BookingStatus.REIMBURSED.value,
+                    "booking_ids": tuple(chunk),
+                },
+            )
 
     # CollectiveBooking.status: USED -> REIMBURSED (but keep CANCELLED as is)
     with log_elapsed(logger, "Updating status of collective bookings"):
