@@ -104,6 +104,8 @@ describe('Signup journey with new venue', () => {
 
     // TODO: Find a better way to wait for the offerer to be created
     cy.reload()
+
+    cy.contains('Votre structure est en cours de traitement par les équipes du pass Culture').should('be.visible')
     cy.wait('@getOfferers').its('response.statusCode').should('eq', 200)
     cy.findByText('First Venue').should('be.visible')
   })
