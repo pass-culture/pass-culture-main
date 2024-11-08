@@ -59,6 +59,7 @@ export type { CollectiveOfferTemplateBodyModel } from './models/CollectiveOfferT
 export type { CollectiveOfferTemplateResponseIdModel } from './models/CollectiveOfferTemplateResponseIdModel';
 export { CollectiveOfferType } from './models/CollectiveOfferType';
 export type { CollectiveOfferVenueBodyModel } from './models/CollectiveOfferVenueBodyModel';
+export type { CollectiveOnlyRevenue } from './models/CollectiveOnlyRevenue';
 export type { CollectiveStockCreationBodyModel } from './models/CollectiveStockCreationBodyModel';
 export type { CollectiveStockEditionBodyModel } from './models/CollectiveStockEditionBodyModel';
 export type { CollectiveStockResponseModel } from './models/CollectiveStockResponseModel';
@@ -140,6 +141,7 @@ export type { GetVenueResponseModel } from './models/GetVenueResponseModel';
 export type { GetVenuesOfOffererFromSiretResponseModel } from './models/GetVenuesOfOffererFromSiretResponseModel';
 export type { HasInvoiceQueryModel } from './models/HasInvoiceQueryModel';
 export type { HasInvoiceResponseModel } from './models/HasInvoiceResponseModel';
+export type { IndividualOnlyRevenue } from './models/IndividualOnlyRevenue';
 export type { InviteMemberQueryModel } from './models/InviteMemberQueryModel';
 export type { InvoiceListV2QueryModel } from './models/InvoiceListV2QueryModel';
 export type { InvoiceListV2ResponseModel } from './models/InvoiceListV2ResponseModel';
