@@ -9,7 +9,10 @@ import time_machine
 from pcapi import settings
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.geography.factories import AddressFactory
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.offerers.factories import OffererAddressFactory
+from pcapi.core.offerers.factories import OffererFactory
 from pcapi.core.offerers.factories import VenueFactory
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferReport
@@ -1699,6 +1702,29 @@ class OffersV2Test:
 
         assert response.status_code == 200
         assert response.json["reactionsCount"] == {"likes": 0}
+
+    def test_offers_has_own_address(self, client):
+        address = AddressFactory()
+        oa = OffererAddressFactory(address=address)
+        offer = offers_factories.OfferFactory(offererAddress=oa)
+        offer_id = offer.id
+
+        nb_queries = 1  # select offer
+        nb_queries += 1  # select stocks
+        nb_queries += 1  # select mediations
+        with assert_num_queries(nb_queries):
+            response = client.get(f"/native/v2/offer/{offer_id}/")
+        response_offer = response.json
+
+        assert response.status_code == 200
+        assert response_offer["address"] == {
+            "label": oa.label,
+            "street": address.street,
+            "postalCode": address.postalCode,
+            "city": address.city,
+            "coordinates": {"latitude": 48.87055, "longitude": 2.34765},
+            "timezone": address.timezone,
+        }
 
 
 class OffersStocksTest:

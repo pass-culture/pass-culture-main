@@ -1179,6 +1179,19 @@ def test_public_api(client):
                     "title": "OfferAccessibilityResponse",
                     "type": "object",
                 },
+                "OfferAddressResponse": {
+                    "properties": {
+                        "city": {"title": "City", "type": "string"},
+                        "coordinates": {"$ref": "#/components/schemas/Coordinates"},
+                        "label": {"nullable": True, "title": "Label", "type": "string"},
+                        "postalCode": {"title": "Postalcode", "type": "string"},
+                        "street": {"nullable": True, "title": "Street", "type": "string"},
+                        "timezone": {"title": "Timezone", "type": "string"},
+                    },
+                    "required": ["postalCode", "city", "coordinates", "timezone"],
+                    "title": "OfferAddressResponse",
+                    "type": "object",
+                },
                 "OfferExtraDataResponse": {
                     "properties": {
                         "allocineId": {"nullable": True, "title": "Allocineid", "type": "integer"},
@@ -1271,6 +1284,11 @@ def test_public_api(client):
                 "OfferResponse": {
                     "properties": {
                         "accessibility": {"$ref": "#/components/schemas/OfferAccessibilityResponse"},
+                        "address": {
+                            "anyOf": [{"$ref": "#/components/schemas/OfferAddressResponse"}],
+                            "nullable": True,
+                            "title": "OfferAddressResponse",
+                        },
                         "description": {"nullable": True, "title": "Description", "type": "string"},
                         "expenseDomains": {"items": {"$ref": "#/components/schemas/ExpenseDomain"}, "type": "array"},
                         "externalTicketOfficeUrl": {
@@ -1335,6 +1353,11 @@ def test_public_api(client):
                 "OfferResponseV2": {
                     "properties": {
                         "accessibility": {"$ref": "#/components/schemas/OfferAccessibilityResponse"},
+                        "address": {
+                            "anyOf": [{"$ref": "#/components/schemas/OfferAddressResponse"}],
+                            "nullable": True,
+                            "title": "OfferAddressResponse",
+                        },
                         "description": {"nullable": True, "title": "Description", "type": "string"},
                         "expenseDomains": {"items": {"$ref": "#/components/schemas/ExpenseDomain"}, "type": "array"},
                         "externalTicketOfficeUrl": {
