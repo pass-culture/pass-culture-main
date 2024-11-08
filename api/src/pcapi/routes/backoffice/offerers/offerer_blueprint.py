@@ -854,7 +854,9 @@ def get_offerer_addresses(offerer_id: int) -> utils.BackofficeResponse:
             geography_models.Address.longitude,
             sa.func.array_agg(
                 sa.func.coalesce(
-                    offerers_models.OffererAddress.label, offerers_models.Venue.publicName, offerers_models.Venue.name
+                    sa.func.nullif(offerers_models.OffererAddress.label, ""),
+                    sa.func.nullif(offerers_models.Venue.publicName, ""),
+                    offerers_models.Venue.name,
                 )
             ).label("titles"),
         )

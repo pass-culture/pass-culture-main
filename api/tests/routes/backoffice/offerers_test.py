@@ -1631,7 +1631,7 @@ class GetOffererAddressesTest(GetEndpointHelper):
 
     def test_offerer_addresses_linked_to_venues_should_display_common_name(self, authenticated_client, offerer):
         oa_linked_to_venue = offerers_factories.OffererAddressFactory(
-            offerer=offerer, address__street="3 Bd Poissonnière", label=None
+            offerer=offerer, address__street="3 Bd Poissonnière", label=""
         )
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress=oa_linked_to_venue)
         venue_2 = offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress=oa_linked_to_venue)
