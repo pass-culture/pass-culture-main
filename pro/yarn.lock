@@ -6306,10 +6306,10 @@ levn@^0.4.1:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
 
-libphonenumber-js@^1.11.12:
-  version "1.11.12"
-  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.11.12.tgz#e108a4632048255f30b872bb1abbb3356f290fbb"
-  integrity sha512-QkJn9/D7zZ1ucvT++TQSvZuSA2xAWeUytU+DiEQwbPKLyrDpvbul2AFs1CGbRAPpSCCk47aRAb5DX5mmcayp4g==
+libphonenumber-js@^1.11.13:
+  version "1.11.13"
+  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.11.13.tgz#2d50697a3d6ec77ff10e7344864421ab4ba1f9ae"
+  integrity sha512-LIJmXxgs7o1njVZPcX5fkbtcFgDnXXPvJQQBH5Ho/8+r6BFlJaEbJ+bAiaUGaChWUhFtvawwdmXIOz4wZBANCg==
 
 lines-and-columns@^1.1.6:
   version "1.2.4"
