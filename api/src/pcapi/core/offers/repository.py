@@ -243,6 +243,7 @@ def get_offers_details(offer_ids: list[int]) -> BaseQuery:
             )
         )
         .options(sa_orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.googlePlacesInfo))
+        .options(sa_orm.joinedload(models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address))
         .options(sa_orm.selectinload(models.Offer.mediations))
         .options(sa_orm.with_expression(models.Offer.likesCount, get_offer_reaction_count_subquery()))
         .options(
