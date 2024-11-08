@@ -244,12 +244,63 @@ export function CollectiveOffersActionsBar({
   function openDeactivateOffersDialog() {
     if (!canDeactivateCollectiveOffers(selectedOffers)) {
       notify.error(
-        `Seules les offres au statut publié ou expiré peuvent être ${areNewStatusesEnabled ? 'mises en pause' : 'masquées'}.`
+        `Seules les offres au statut publié ou expiré peuvent être masquées.`
       )
       clearSelectedOfferIds()
       return
     }
     setIsDeactivationDialogOpen(true)
+  }
+
+  function openHideOffersDialog() {
+    selectedOffers.map((offer) => {
+      if (
+        !isActionAllowedOnCollectiveOffer(
+          offer,
+          CollectiveOfferTemplateAllowedAction.CAN_HIDE
+        )
+      ) {
+        notify.error(
+          `Seules les offres vitrines au statut publié peuvent être mises en pause.`
+        )
+        clearSelectedOfferIds()
+        return
+      }
+    })
+
+    setIsDeactivationDialogOpen(true)
+  }
+
+  async function publishOffers() {
+    const offersWithCanPublishAction = selectedOffers.filter((offer) =>
+      isActionAllowedOnCollectiveOffer(
+        offer,
+        CollectiveOfferTemplateAllowedAction.CAN_PUBLISH
+      )
+    )
+
+    if (offersWithCanPublishAction.length < 1) {
+      notify.error(
+        `Seules les offres vitrines au statut en pause peuvent être publiées.`
+      )
+      clearSelectedOfferIds()
+      return
+    }
+
+    if (offersWithCanPublishAction.length > 0) {
+      await api.patchCollectiveOffersTemplateActiveStatus({
+        ids: offersWithCanPublishAction.map((offer) => Number(offer.id)),
+        isActive: true,
+      })
+    }
+
+    await mutate(collectiveOffersQueryKeys)
+
+    notify.success(
+      computeActivationSuccessMessage(offersWithCanPublishAction.length)
+    )
+
+    clearSelectedOfferIds()
   }
 
   const onArchiveOffers = async () => {
@@ -340,7 +391,11 @@ export function CollectiveOffersActionsBar({
             Archiver
           </Button>
           <Button
-            onClick={openDeactivateOffersDialog}
+            onClick={
+              areNewStatusesEnabled
+                ? openHideOffersDialog
+                : openDeactivateOffersDialog
+            }
             icon={fullHideIcon}
             variant={ButtonVariant.SECONDARY}
           >
@@ -348,7 +403,9 @@ export function CollectiveOffersActionsBar({
           </Button>
           <Button
             onClick={() =>
-              updateOfferStatus(CollectiveOfferDisplayedStatus.ACTIVE)
+              areNewStatusesEnabled
+                ? publishOffers()
+                : updateOfferStatus(CollectiveOfferDisplayedStatus.ACTIVE)
             }
             icon={fullValidateIcon}
             variant={ButtonVariant.SECONDARY}
