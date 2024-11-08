@@ -2851,7 +2851,7 @@ def get_or_create_offerer_address(offerer_id: int, address_id: int, label: str |
             models.OffererAddress.addressId == address_id,
         )
         .options(sa_orm.joinedload(models.OffererAddress.address))
-        .first()
+        .one()  # to delete
     )
 
     return offerer_address
