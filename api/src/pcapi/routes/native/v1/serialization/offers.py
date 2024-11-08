@@ -11,6 +11,7 @@ from pydantic.v1.utils import GetterDict
 
 from pcapi.core.bookings.api import compute_booking_cancellation_limit_date
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.geography.models import Address
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import offer_metadata
 from pcapi.core.offers import repository as offers_repository
@@ -279,12 +280,47 @@ class BaseOfferResponseGetterDict(GetterDict):
 
             return extra_data
 
+        if key == "address":
+            offerer_address: offerers_models.OffererAddress | None
+            if self._obj.offererAddress:
+                offerer_address = self._obj.offererAddress
+            else:
+                offerer_address = self._obj.venue.offererAddress
+
+            if not offerer_address:
+                return None
+
+            address: Address = offerer_address.address
+            label = offerer_address.label
+
+            return OfferAddressResponse(
+                street=address.street,
+                postalCode=address.postalCode,
+                city=address.city,
+                label=label,
+                coordinates=Coordinates(latitude=address.latitude, longitude=address.longitude),
+                timezone=address.timezone,
+            )
+
         return super().get(key, default)
+
+
+class OfferAddressResponse(ConfiguredBaseModel):
+    street: str | None
+    postalCode: str
+    city: str
+    label: str | None
+    coordinates: Coordinates
+    timezone: str
+
+    class Config:
+        orm_mode = True
 
 
 class BaseOfferResponse(ConfiguredBaseModel):
     id: int
     accessibility: OfferAccessibilityResponse
+    address: OfferAddressResponse | None
     description: str | None
     expense_domains: list[ExpenseDomain]
     externalTicketOfficeUrl: str | None
