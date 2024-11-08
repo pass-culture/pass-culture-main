@@ -210,9 +210,8 @@ class ProFlagsQueryModel(BaseModel):
 
 
 class SubmitReviewRequestModel(BaseModel):
-    isPleasant: bool
-    isConvenient: bool
-    comment: str
+    userSatisfaction: str
+    userComment: str
     offererId: int
     location: str
 

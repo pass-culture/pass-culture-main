@@ -3,10 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 export type SubmitReviewRequestModel = {
-  comment: string;
-  isConvenient: boolean;
-  isPleasant: boolean;
   location: string;
   offererId: number;
+  userComment: string;
+  userSatisfaction: string;
 };
 

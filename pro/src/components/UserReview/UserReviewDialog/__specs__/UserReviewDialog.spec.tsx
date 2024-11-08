@@ -7,11 +7,11 @@ import * as useNotification from 'commons/hooks/useNotification'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { NewNavReviewDialog } from '../NewNavReviewDialog'
+import { UserReviewDialog } from '../UserReviewDialog'
 
 const notifyError = vi.fn()
 
-const renderNewNavReviewDialog = () => {
+const renderUserReviewDialog = () => {
   const storeOverrides = {
     user: {
       selectedOffererId: 1,
@@ -21,16 +21,16 @@ const renderNewNavReviewDialog = () => {
   return renderWithProviders(
     <Dialog.Root defaultOpen>
       <Dialog.Content aria-describedby={undefined}>
-        <NewNavReviewDialog />
+        <UserReviewDialog />
       </Dialog.Content>
     </Dialog.Root>,
     { storeOverrides }
   )
 }
 
-describe('NewNavReviewDialog', () => {
+describe('UserReviewDialog', () => {
   it('should close dialog on cancel button click', async () => {
-    renderNewNavReviewDialog()
+    renderUserReviewDialog()
 
     const cancelButton = screen.getByRole('button', { name: 'Annuler' })
     await userEvent.click(cancelButton)
@@ -41,7 +41,7 @@ describe('NewNavReviewDialog', () => {
   })
 
   it('should disable submit button when no options selected', () => {
-    renderNewNavReviewDialog()
+    renderUserReviewDialog()
 
     const submitButton = screen.getByRole('button', { name: 'Envoyer' })
 
@@ -49,19 +49,14 @@ describe('NewNavReviewDialog', () => {
   })
 
   it('should submit data when submit button is clicked', async () => {
-    vi.spyOn(api, 'submitNewNavReview').mockResolvedValueOnce()
-    renderNewNavReviewDialog()
-
-    const morePleasantRadioButton = screen.getByRole('radio', {
-      name: /Plus agréable/,
-    })
-    await userEvent.click(morePleasantRadioButton)
-    const moreConvenientRadioButton = screen.getByRole('radio', {
-      name: /Plus pratique/,
-    })
-    await userEvent.click(moreConvenientRadioButton)
+    vi.spyOn(api, 'submitUserReview').mockResolvedValueOnce()
+    renderUserReviewDialog()
 
     const submitButton = screen.getByRole('button', { name: 'Envoyer' })
+    await userEvent.type(
+      screen.getByLabelText('Comment évaluriez-vous votre expérience ? *'),
+      'I am happy'
+    )
     await userEvent.type(
       screen.getByLabelText(
         'Souhaitez-vous préciser ? Nous lisons tous les commentaires. 🙂'
@@ -71,27 +66,22 @@ describe('NewNavReviewDialog', () => {
 
     await userEvent.click(submitButton)
 
-    expect(api.submitNewNavReview).toHaveBeenCalledWith({
-      isPleasant: true,
-      isConvenient: true,
-      comment: 'Commentaire utilisateur',
+    expect(api.submitUserReview).toHaveBeenCalledWith({
+      userSatisfaction: 'I am happy',
+      userComment: 'Commentaire utilisateur',
       location: location.pathname,
       offererId: 1,
     })
   })
 
   it('should show confirmation dialog when submitting data', async () => {
-    vi.spyOn(api, 'submitNewNavReview').mockResolvedValueOnce()
-    renderNewNavReviewDialog()
+    vi.spyOn(api, 'submitUserReview').mockResolvedValueOnce()
+    renderUserReviewDialog()
 
-    const morePleasantRadioButton = screen.getByRole('radio', {
-      name: /Plus agréable/,
-    })
-    await userEvent.click(morePleasantRadioButton)
-    const moreConvenientRadioButton = screen.getByRole('radio', {
-      name: /Plus pratique/,
-    })
-    await userEvent.click(moreConvenientRadioButton)
+    await userEvent.type(
+      screen.getByLabelText('Comment évaluriez-vous votre expérience ? *'),
+      'I am happy'
+    )
 
     const submitButton = screen.getByRole('button', { name: 'Envoyer' })
 
@@ -102,17 +92,13 @@ describe('NewNavReviewDialog', () => {
   })
 
   it('should close confirmation dialog when close button is clicked', async () => {
-    vi.spyOn(api, 'submitNewNavReview').mockResolvedValueOnce()
-    renderNewNavReviewDialog()
+    vi.spyOn(api, 'submitUserReview').mockResolvedValueOnce()
+    renderUserReviewDialog()
 
-    const morePleasantRadioButton = screen.getByRole('radio', {
-      name: /Plus agréable/,
-    })
-    await userEvent.click(morePleasantRadioButton)
-    const moreConvenientRadioButton = screen.getByRole('radio', {
-      name: /Plus pratique/,
-    })
-    await userEvent.click(moreConvenientRadioButton)
+    await userEvent.type(
+      screen.getByLabelText('Comment évaluriez-vous votre expérience ? *'),
+      'I am happy'
+    )
 
     const submitButton = screen.getByRole('button', { name: 'Envoyer' })
     await userEvent.click(submitButton)
@@ -123,7 +109,7 @@ describe('NewNavReviewDialog', () => {
   })
 
   it('should show error message and close dialog on error', async () => {
-    vi.spyOn(api, 'submitNewNavReview').mockRejectedValueOnce(new Error())
+    vi.spyOn(api, 'submitUserReview').mockRejectedValueOnce(new Error())
 
     const notifsImport = (await vi.importActual(
       'commons/hooks/useNotification'
@@ -133,16 +119,12 @@ describe('NewNavReviewDialog', () => {
       error: notifyError,
     }))
 
-    renderNewNavReviewDialog()
+    renderUserReviewDialog()
 
-    const morePleasantRadioButton = screen.getByRole('radio', {
-      name: /Plus agréable/,
-    })
-    await userEvent.click(morePleasantRadioButton)
-    const moreConvenientRadioButton = screen.getByRole('radio', {
-      name: /Plus pratique/,
-    })
-    await userEvent.click(moreConvenientRadioButton)
+    await userEvent.type(
+      screen.getByLabelText('Comment évaluriez-vous votre expérience ? *'),
+      'I am happy'
+    )
 
     const submitButton = screen.getByRole('button', { name: 'Envoyer' })
     await userEvent.click(submitButton)

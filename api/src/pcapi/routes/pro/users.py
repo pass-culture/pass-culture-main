@@ -340,20 +340,19 @@ def connect_as(token: str) -> Response:
     return flask.redirect(token_data.redirect_link, code=302)
 
 
-@blueprint.pro_private_api.route("/users/log-new-nav-review", methods=["POST"])
+@blueprint.pro_private_api.route("/users/log-user-review", methods=["POST"])
 @login_required
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
-def submit_new_nav_review(body: users_serializers.SubmitReviewRequestModel) -> None:
+def submit_user_review(body: users_serializers.SubmitReviewRequestModel) -> None:
     check_user_has_access_to_offerer(current_user, body.offererId)
 
     logger.info(
-        "User with new nav activated submitting review",
+        "User submitting review",
         extra={
             "offerer_id": body.offererId,
-            "isConvenient": body.isConvenient,
-            "isPleasant": body.isPleasant,
-            "comment": body.comment,
+            "user_satisfaction": body.userSatisfaction,
+            "user_comment": body.userComment,
             "source_page": body.location,
         },
-        technical_message_id="new_nav_review",
+        technical_message_id="user_review",
     )

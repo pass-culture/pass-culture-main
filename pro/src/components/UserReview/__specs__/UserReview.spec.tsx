@@ -4,13 +4,13 @@ import React from 'react'
 
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { NewNavReview } from '../NewNavReview'
+import { UserReview } from '../UserReview'
 
-const renderNewNavReview = () => renderWithProviders(<NewNavReview />)
+const renderUserReview = () => renderWithProviders(<UserReview />)
 
-describe('NewNavReview', () => {
+describe('UserReview', () => {
   it('should render review dialog when clicking on the review button', async () => {
-    renderNewNavReview()
+    renderUserReview()
     await userEvent.click(
       screen.getByRole('button', { name: 'Je donne mon avis' })
     )

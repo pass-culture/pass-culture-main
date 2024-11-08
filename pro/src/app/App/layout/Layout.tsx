@@ -6,8 +6,8 @@ import { useMediaQuery } from 'commons/hooks/useMediaQuery'
 import { selectCurrentUser } from 'commons/store/user/selectors'
 import { Footer } from 'components/Footer/Footer'
 import { Header } from 'components/Header/Header'
-import { NewNavReview } from 'components/NewNavReview/NewNavReview'
 import { SkipLinks } from 'components/SkipLinks/SkipLinks'
+import { UserReview } from 'components/UserReview/UserReview'
 import fullGoTop from 'icons/full-go-top.svg'
 import fullInfoIcon from 'icons/full-info.svg'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
@@ -41,8 +41,7 @@ export const Layout = ({
 
   const isMobileScreen = useMediaQuery('(max-width: 46.5rem)')
 
-  const shouldDisplayNewNavReview =
-    layout !== 'funnel' && layout !== 'logged-out'
+  const shouldDisplayUserReview = layout !== 'funnel' && layout !== 'logged-out'
 
   const mainHeaing = mainHeading && (
     <div className={styles['main-heading-wrapper']}>
@@ -121,7 +120,7 @@ export const Layout = ({
               [styles['content-wrapper-side']]: layout === 'logged-out',
             })}
           >
-            {shouldDisplayNewNavReview && <NewNavReview />}
+            {shouldDisplayUserReview && <UserReview />}
             {layout === 'logged-out' && (
               <header className={styles['content-wrapper-side-logo']}>
                 <SvgIcon
