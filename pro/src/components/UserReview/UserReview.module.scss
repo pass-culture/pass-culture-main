@@ -2,7 +2,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_size.scss" as size;
 
-.new-nav-review {
+.user-review {
   &-container {
     display: flex;
     gap: rem.torem(8px);

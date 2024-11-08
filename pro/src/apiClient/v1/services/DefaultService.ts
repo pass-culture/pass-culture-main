@@ -2319,17 +2319,17 @@ export class DefaultService {
     });
   }
   /**
-   * submit_new_nav_review <POST>
+   * submit_user_review <POST>
    * @param requestBody
    * @returns void
    * @throws ApiError
    */
-  public submitNewNavReview(
+  public submitUserReview(
     requestBody?: SubmitReviewRequestModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/users/log-new-nav-review',
+      url: '/users/log-user-review',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
