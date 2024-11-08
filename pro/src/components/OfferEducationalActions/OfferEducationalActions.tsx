@@ -7,6 +7,7 @@ import {
   CollectiveBookingStatus,
   CollectiveOfferDisplayedStatus,
   CollectiveOfferStatus,
+  CollectiveOfferTemplateAllowedAction,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
@@ -30,6 +31,7 @@ import {
   isDateValid,
   toDateStrippedOfTimezone,
 } from 'commons/utils/date'
+import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { CollectiveStatusLabel } from 'components/CollectiveStatusLabel/CollectiveStatusLabel'
 import fullHideIcon from 'icons/full-hide.svg'
 import fullNextIcon from 'icons/full-next.svg'
@@ -58,7 +60,7 @@ export const OfferEducationalActions = ({
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const selectedOffererId = useSelector(selectCurrentOffererId)
-  const areNewStatusesEnabled = useActiveFeature(
+  const areCollectiveNewStatusesEnabled = useActiveFeature(
     'ENABLE_COLLECTIVE_NEW_STATUSES'
   )
   const lastBookingId = isCollectiveOffer(offer) ? offer.lastBookingId : null
@@ -85,7 +87,7 @@ export const OfferEducationalActions = ({
 
   const offerAdageActivated =
     'Votre offre est maintenant active et visible dans ADAGE'
-  const offerAdageDeactivate = `Votre offre est ${areNewStatusesEnabled ? 'mise en pause' : 'désactivée'} et n’est plus visible sur ADAGE`
+  const offerAdageDeactivate = `Votre offre est ${areCollectiveNewStatusesEnabled ? 'mise en pause' : 'désactivée'} et n’est plus visible sur ADAGE`
 
   const setIsOfferActive = async (isActive: boolean) => {
     try {
@@ -160,6 +162,7 @@ export const OfferEducationalActions = ({
     mode === Mode.EDITION || mode === Mode.READ_ONLY
 
   const shouldDisplayAdagePublicationButton =
+    !areCollectiveNewStatusesEnabled &&
     !isBooked &&
     ![
       CollectiveOfferDisplayedStatus.EXPIRED,
@@ -176,10 +179,28 @@ export const OfferEducationalActions = ({
   const shouldDisplayStatusSeparator =
     shouldDisplayAdagePublicationButton || shouldDisplayBookingLink
 
-  const shouldShowHideButton = offer.isActive && !isTemplateOfferExpired
+  const canPublishOffer =
+    areCollectiveNewStatusesEnabled &&
+    isActionAllowedOnCollectiveOffer(
+      offer,
+      CollectiveOfferTemplateAllowedAction.CAN_PUBLISH
+    )
+
+  const canHideOffer =
+    areCollectiveNewStatusesEnabled &&
+    isActionAllowedOnCollectiveOffer(
+      offer,
+      CollectiveOfferTemplateAllowedAction.CAN_HIDE
+    )
+
+  const shouldShowHideButton =
+    !areCollectiveNewStatusesEnabled &&
+    offer.isActive &&
+    !isTemplateOfferExpired
+
   const publishButtonConfig = shouldShowHideButton
     ? {
-        wording: `${areNewStatusesEnabled ? 'Mettre en pause' : 'Masquer la publication'} sur ADAGE`,
+        wording: 'Masquer la publication sur ADAGE',
         icon: fullHideIcon,
       }
     : {
@@ -191,6 +212,26 @@ export const OfferEducationalActions = ({
     <>
       {shouldShowOfferActions && (
         <div className={cn(style['actions'], className)}>
+          {canHideOffer && (
+            <Button
+              icon={fullHideIcon}
+              onClick={activateOffer}
+              variant={ButtonVariant.TERNARY}
+              className={style['button-link']}
+            >
+              Mettre en pause
+            </Button>
+          )}
+          {canPublishOffer && (
+            <Button
+              icon={strokeCheckIcon}
+              onClick={activateOffer}
+              variant={ButtonVariant.TERNARY}
+              className={style['button-link']}
+            >
+              Publier sur ADAGE
+            </Button>
+          )}
           {shouldDisplayAdagePublicationButton && (
             <Button
               icon={publishButtonConfig.icon}
