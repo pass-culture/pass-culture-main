@@ -3044,6 +3044,7 @@ class GenerateInvoiceTest:
         + 1  # insert invoice_cashflows
         + 1  # update Cashflow.status and add CashflowLog
         + 1  # update Pricing.status and add PricingLog
+        + 1  # select Booking.id
         + 1  # update Booking.status
         + 1  # FF is cached in all test due to generate_cashflows call
     )
