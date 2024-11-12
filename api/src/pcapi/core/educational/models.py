@@ -1794,6 +1794,30 @@ class CollectiveBooking(PcObject, Base, Model):
             CollectiveBookingStatus.CANCELLED,
         )
 
+    @hybrid_property
+    def validated_incident_id(self) -> int | None:
+        for booking_incident in self.incidents:
+            if booking_incident.incident.status == finance_models.IncidentStatus.VALIDATED:
+                return booking_incident.incident.id
+        return None
+
+    @validated_incident_id.expression  # type: ignore[no-redef]
+    def validated_incident_id(cls) -> int | None:  # pylint: disable=no-self-argument
+        return (
+            sa.select(finance_models.FinanceIncident.id)
+            .select_from(finance_models.FinanceIncident)
+            .join(finance_models.BookingFinanceIncident)
+            .where(
+                sa.and_(
+                    finance_models.BookingFinanceIncident.collectiveBookingId == CollectiveBooking.id,
+                    finance_models.FinanceIncident.status == finance_models.IncidentStatus.VALIDATED,
+                )
+            )
+            .limit(1)
+            .correlate(CollectiveBooking)
+            .scalar_subquery()
+        )
+
     @property
     def reimbursement_pricing(self) -> finance_models.Pricing | None:
         """Return related pricing if this booking has been reimbursed."""

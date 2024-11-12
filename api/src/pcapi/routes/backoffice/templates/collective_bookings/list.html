@@ -185,15 +185,13 @@
                 <td>{{ collective_booking.total_amount | format_amount }}</td>
                 <td>{{ collective_booking | format_booking_status(with_badge=True) | safe }}</td>
                 <td class="text-center">
-                  {% for booking_incident in collective_booking.incidents %}
-                    {% if booking_incident.incident.status.name == "VALIDATED" %}
-                      <a href="{{ url_for('backoffice_web.finance_incidents.get_incident', finance_incident_id=booking_incident.incident.id) }}"
-                         class=""><i class="bi bi-exclamation-triangle-fill text-danger fs-3"
+                  {% if collective_booking.validated_incident_id %}
+                    <a href="{{ url_for('backoffice_web.finance_incidents.get_incident', finance_incident_id=collective_booking.validated_incident_id) }}"
+                       class=""><i class="bi bi-exclamation-triangle-fill text-danger fs-3"
    data-bs-toggle="tooltip"
    data-bs-placement="top"
    data-bs-title="Visualiser l'incident"></i></a>
-                    {% endif %}
-                  {% endfor %}
+                  {% endif %}
                 </td>
                 <td>{{ collective_booking.dateCreated | format_date_time }}</td>
                 <td>

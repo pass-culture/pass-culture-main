@@ -77,6 +77,10 @@ class BaseBookingListForm(FlaskForm):
         validate_choice=False,
         endpoint="backoffice_web.autocomplete_cashflow_batches",
     )
+    has_incident = fields.PCSelectMultipleField(
+        "Évènement comptable",
+        choices=(("true", "Avec incident"), ("false", "Sans incident")),
+    )
 
     def is_empty(self) -> bool:
         return not any(
@@ -89,6 +93,7 @@ class BaseBookingListForm(FlaskForm):
                 self.event_from_date.data,
                 self.event_to_date.data,
                 self.cashflow_batches.data,
+                self.has_incident.data,
             )
         )
 
@@ -145,6 +150,7 @@ class GetCollectiveBookingListForm(BaseBookingListForm):
         self._fields.move_to_end("formats")
         self._fields.move_to_end("status")
         self._fields.move_to_end("cashflow_batches")
+        self._fields.move_to_end("has_incident")
 
     def is_empty(self) -> bool:
         return super().is_empty() and not self.institution.data and not self.formats.data
@@ -200,6 +206,7 @@ class GetIndividualBookingListForm(BaseBookingListForm):
         self._fields.move_to_end("status")
         self._fields.move_to_end("cancellation_reason")
         self._fields.move_to_end("cashflow_batches")
+        self._fields.move_to_end("has_incident")
         self._fields.move_to_end("is_duo")
 
     def is_empty(self) -> bool:

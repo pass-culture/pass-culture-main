@@ -532,6 +532,41 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
 
         assert rows[0]["ID résa"] == str(target_booking.id)
 
+    @pytest.mark.parametrize(
+        "has_incident, expected_results",
+        [
+            ("true", 1),
+            ("false", 2),
+        ],
+    )
+    def test_list_bookings_with_incidents(self, authenticated_client, has_incident, expected_results):
+        booking_with_incident = finance_factories.CollectiveBookingFinanceIncidentFactory(
+            incident=finance_factories.FinanceIncidentFactory(status=finance_models.IncidentStatus.VALIDATED),
+            collectiveBooking=educational_factories.ReimbursedCollectiveBookingFactory(),
+        ).collectiveBooking
+
+        booking_with_wrong_incident = finance_factories.CollectiveBookingFinanceIncidentFactory(
+            incident=finance_factories.FinanceIncidentFactory(status=finance_models.IncidentStatus.CREATED),
+            collectiveBooking=educational_factories.ReimbursedCollectiveBookingFactory(),
+        ).collectiveBooking
+
+        booking_with_no_incident = educational_factories.ReimbursedCollectiveBookingFactory()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, has_incident=has_incident))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == expected_results
+        if has_incident == "true":
+            assert set(int(row["ID résa"]) for row in rows) == {booking_with_incident.id}
+
+        else:
+            assert set(int(row["ID résa"]) for row in rows) == {
+                booking_with_wrong_incident.id,
+                booking_with_no_incident.id,
+            }
+
     def test_sort_collective_bookings_by_event_date(self, authenticated_client, collective_bookings):
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(

@@ -119,6 +119,12 @@ def _get_individual_bookings(
     if len(form.is_duo.data) == 1:
         base_query = base_query.filter(bookings_models.Booking.quantity == form.is_duo.data[0])
 
+    if form.has_incident.data and len(form.has_incident.data) == 1:
+        if form.has_incident.data[0] == "true":
+            base_query = base_query.filter(bookings_models.Booking.validated_incident_id != None)
+        else:
+            base_query = base_query.filter(bookings_models.Booking.validated_incident_id == None)
+
     or_filters = []
     if form.q.data:
         search_query = form.q.data
