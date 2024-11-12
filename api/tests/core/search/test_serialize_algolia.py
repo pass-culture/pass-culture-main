@@ -39,9 +39,19 @@ def test_serialize_offer():
     ).one()
     macro_section = book_macro_section.macroSection.strip()
 
-    offerer_address = offerers_factories.OffererAddressFactory(
+    venue_offerer_address = offerers_factories.OffererAddressFactory(
+        address__departmentCode="75",
+        address__postalCode="75001",
+        address__latitude=geography_factories.DEFAULT_LATITUDE,
+        address__longitude=geography_factories.DEFAULT_TRUNCATED_LONGITUDE,
+    )
+
+    offer_offerer_address = offerers_factories.OffererAddressFactory(
         address__departmentCode="86",
         address__postalCode="86140",
+        address__city="Cernay",
+        address__latitude=-5.01,
+        address__longitude=-6.02,
     )
 
     offer = offers_factories.OfferFactory(
@@ -58,8 +68,9 @@ def test_serialize_offer():
         },
         rankingWeight=2,
         subcategoryId=subcategories.LIVRE_PAPIER.id,
+        offererAddress=offer_offerer_address,
         venue__id=127,
-        venue__offererAddress=offerer_address,
+        venue__offererAddress=venue_offerer_address,
         venue__name="La Moyenne Librairie SA",
         venue__publicName="La Moyenne Librairie",
         venue__venueTypeCode=VenueTypeCode.LIBRARY,
@@ -104,10 +115,10 @@ def test_serialize_offer():
         },
         "venue": {
             "banner_url": offer.venue.bannerUrl,
-            "address": offer.venue.offererAddress.address.street,
-            "city": offer.venue.offererAddress.address.city,
+            "address": offer.offererAddress.address.street,
+            "city": offer.offererAddress.address.city,
             "departmentCode": "86",
-            "postalCode": offer.venue.offererAddress.address.postalCode,
+            "postalCode": offer.offererAddress.address.postalCode,
             "id": offer.venueId,
             "isAudioDisabilityCompliant": False,
             "isMentalDisabilityCompliant": False,
@@ -119,8 +130,8 @@ def test_serialize_offer():
             "isPermanent": True,
         },
         "_geoloc": {
-            "lat": geography_factories.DEFAULT_LATITUDE,
-            "lng": geography_factories.DEFAULT_TRUNCATED_LONGITUDE,
+            "lat": -5.01,
+            "lng": -6.02,
         },
     }
 
