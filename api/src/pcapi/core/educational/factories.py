@@ -545,4 +545,10 @@ def create_collective_offer_template_by_status(
         case CollectiveOfferDisplayedStatus.ACTIVE.value:
             return CollectiveOfferTemplateFactory(**kwargs)
 
+        case CollectiveOfferDisplayedStatus.ENDED.value:
+            now = datetime.datetime.utcnow()
+            start = now - datetime.timedelta(days=14)
+            date_range = db_utils.make_timerange(start=start, end=now - datetime.timedelta(days=7))
+            return CollectiveOfferTemplateFactory(**kwargs, dateRange=date_range, dateCreated=start)
+
     raise ValueError(f"No factory for collective offer status {status}")

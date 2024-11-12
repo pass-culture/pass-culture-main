@@ -491,7 +491,7 @@ def get_collective_offers_template_by_filters(
         template_statuses = set(statuses) & set(
             st.value for st in educational_models.COLLECTIVE_OFFER_TEMPLATE_STATUSES
         )
-        query = query.filter(educational_models.CollectiveOfferTemplate.status.in_(template_statuses))  # type: ignore[attr-defined]
+        query = query.filter(educational_models.CollectiveOfferTemplate.displayedStatus.in_(template_statuses))  # type: ignore[attr-defined]
 
     if formats:
         query = query.filter(

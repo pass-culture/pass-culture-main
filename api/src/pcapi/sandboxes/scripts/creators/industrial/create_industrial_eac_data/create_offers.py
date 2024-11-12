@@ -20,6 +20,7 @@ from pcapi.core.providers import models as providers_models
 from pcapi.core.users import factories as user_factory
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.utils import db as db_utils
 from pcapi.utils.image_conversion import DO_NOT_CROP
 
 from .create_collective_api_provider import create_collective_api_provider
@@ -100,14 +101,8 @@ def create_offers(
 
     # eac_with_displayed_status_cases
     offerer = next(o for o in offerers if o.name == "eac_with_displayed_status_cases")
-    provider = create_collective_api_provider(offerer.managedVenues)
-    create_offers_booking_with_different_displayed_status(
-        provider=provider,
-        offerer=offerer,
-        institutions=institutions,
-        domains=domains,
-        national_programs=national_programs,
-    )
+    create_offers_booking_with_different_displayed_status(offerer=offerer, institutions=institutions, domains=domains)
+    create_offer_templates_with_different_displayed_status(offerer=offerer, domains=domains)
 
     search.index_all_collective_offers_and_templates()
 
@@ -377,15 +372,10 @@ class OfferAttributes(TypedDict):
 
 def create_offers_booking_with_different_displayed_status(
     *,
-    provider: providers_models.Provider,
     offerer: offerers_models.Offerer,
     institutions: list[educational_models.EducationalInstitution],
     domains: list[educational_models.EducationalDomain],
-    national_programs: list[educational_models.NationalProgram],
-) -> tuple[list[educational_models.CollectiveOffer], list[educational_models.CollectiveBooking]]:
-    offers = []
-    bookings: list[educational_models.CollectiveBooking] = []
-
+) -> None:
     current_ansco = educational_models.EducationalYear.query.filter(
         educational_models.EducationalYear.beginningDate <= datetime.utcnow(),
         educational_models.EducationalYear.expirationDate >= datetime.utcnow(),
@@ -537,11 +527,11 @@ def create_offers_booking_with_different_displayed_status(
     }
 
     for city, attributes in options.items():
-        booking_factory = attributes.get("bookingFactory", None)
+        booking_factory = attributes.get("bookingFactory")
         beginning_datetime: datetime = attributes["beginningDatetime"]
         end_datetime: datetime = attributes["endDatetime"]
         booking_limit_datetime: datetime = attributes["bookingLimitDatetime"]
-        is_active = attributes.get("isActive", None)
+        is_active = attributes.get("isActive")
 
         stock = educational_factories.CollectiveStockFactory(
             collectiveOffer__name=f"La culture à {city}",
@@ -555,10 +545,9 @@ def create_offers_booking_with_different_displayed_status(
             endDatetime=end_datetime,
             bookingLimitDatetime=booking_limit_datetime,
         )
-        offers.append(stock.collectiveOffer)
 
         if booking_factory:
-            cancellation_reason = attributes.get("cancellationReason", None)
+            cancellation_reason = attributes.get("cancellationReason")
             booking_factory(
                 collectiveStock=stock,
                 educationalYear=current_ansco,
@@ -568,7 +557,49 @@ def create_offers_booking_with_different_displayed_status(
                 dateCreated=min(datetime.utcnow(), booking_limit_datetime - timedelta(days=1)),
             )
 
-    return offers, bookings
+
+def create_offer_templates_with_different_displayed_status(
+    *,
+    offerer: offerers_models.Offerer,
+    domains: list[educational_models.EducationalDomain],
+) -> None:
+    domains_iterator = cycle(domains)
+    venue_iterator = cycle(offerer.managedVenues)
+
+    now = datetime.utcnow()
+    two_weeks_ago = now - timedelta(days=14)
+    yesterday = now - timedelta(days=1)
+    in_two_weeks = now + timedelta(days=14)
+
+    options: dict[str, dict[str, typing.Any]] = {
+        "Alabama": {"validation": OfferValidationStatus.PENDING},
+        "Alaska": {"validation": OfferValidationStatus.REJECTED},
+        "Arizona": {"validation": OfferValidationStatus.DRAFT},
+        "Arkansas": {"validation": OfferValidationStatus.APPROVED, "dateArchived": now},
+        "California": {"validation": OfferValidationStatus.APPROVED},
+        "Colorado": {
+            "validation": OfferValidationStatus.APPROVED,
+            "dateRange": db_utils.make_timerange(start=two_weeks_ago, end=in_two_weeks),
+        },
+        "Connecticut": {
+            "validation": OfferValidationStatus.APPROVED,
+            "dateRange": db_utils.make_timerange(start=two_weeks_ago, end=yesterday),
+        },
+        "Delaware": {"validation": OfferValidationStatus.APPROVED, "isActive": False},
+    }
+
+    for state, attributes in options.items():
+        educational_factories.CollectiveOfferTemplateFactory(
+            name=f"The culture in {state}",
+            validation=attributes["validation"],
+            isActive=attributes.get("isActive", True),
+            dateRange=attributes.get("dateRange"),
+            dateArchived=attributes.get("dateArchived"),
+            dateCreated=two_weeks_ago,  # necessary to pass constraint template_dates_non_empty_daterange
+            venue=next(venue_iterator),
+            educational_domains=[next(domains_iterator)],
+            bookingEmails=["toto@totoland.com"],
+        )
 
 
 def create_booking_base_list(

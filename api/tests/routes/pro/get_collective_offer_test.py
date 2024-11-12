@@ -35,7 +35,7 @@ class Returns200Test:
 
         dst = url_for("Private API.get_collective_offers", status=CollectiveOfferDisplayedStatus.PREBOOKED.value)
 
-        with assert_num_queries(4):  #  session + user + collective_offer + collective_offer_template
+        with assert_num_queries(5):  #  session + user + collective_offer + collective_offer_template + feature flag
             response = client.get(dst)
             assert response.status_code == 200
 
