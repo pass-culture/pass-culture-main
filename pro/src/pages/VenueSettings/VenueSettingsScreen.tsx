@@ -216,7 +216,7 @@ export const VenueSettingsScreen = ({
             onCancel={() => setIsAddressChangeDialogOpen(false)}
             onConfirm={handleConfirmAddressChangeDialog}
             icon={strokeErrorIcon}
-            title="Ce changement d'adresse ne va pas s'impacter sur vos offres"
+            title="Ce changement d'adresse ne va pas s’appliquer sur vos offres"
             open={isAddressChangeDialogOpen && venue.hasOffers}
           >
             <p>

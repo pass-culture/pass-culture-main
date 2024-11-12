@@ -304,7 +304,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
 
       expect(
         screen.getByText(
-          /Les changements vont s’impacter à l’ensemble des réservations en cours associées/
+          /Les changements vont s’appliquer à l’ensemble des réservations en cours associées/
         )
       ).toBeInTheDocument()
 
@@ -341,7 +341,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
 
       expect(
         screen.getByText(
-          /Les changements vont s’impacter à l’ensemble des réservations en cours associées/
+          /Les changements vont s’appliquer à l’ensemble des réservations en cours associées/
         )
       ).toBeInTheDocument()
 
@@ -382,7 +382,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
 
       expect(
         screen.getByText(
-          /Les changements vont s’impacter à l’ensemble des réservations en cours associées/
+          /Les changements vont s’appliquer à l’ensemble des réservations en cours associées/
         )
       ).toBeInTheDocument()
 
@@ -418,7 +418,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
 
       expect(
         screen.queryByText(
-          /Les changements vont s’impacter à l’ensemble des réservations en cours associées/
+          /Les changements vont s’appliquer à l’ensemble des réservations en cours associées/
         )
       ).not.toBeInTheDocument()
 

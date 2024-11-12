@@ -268,7 +268,7 @@ export const UsefulInformationScreen = ({
           await formik.submitForm()
         }}
         open={isUpdatesWarningDialogOpen}
-        title="Les changements vont s’impacter à l’ensemble des réservations en cours associées"
+        title="Les changements vont s’appliquer à l’ensemble des réservations en cours associées"
       >
         <div className={styles['update-oa-wrapper']}>
           <div>

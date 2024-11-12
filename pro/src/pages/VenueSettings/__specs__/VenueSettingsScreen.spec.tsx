@@ -212,7 +212,7 @@ describe('VenueSettingsScreen', () => {
 
     expect(
       await screen.findByText(
-        /Ce changement d'adresse ne va pas s'impacter sur vos offres/
+        /Ce changement d'adresse ne va pas s’appliquer sur vos offres/
       )
     ).toBeInTheDocument()
   })
