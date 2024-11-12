@@ -159,6 +159,7 @@ class OfferExtraDataResponse(BaseModel):
     speaker: str | None
     visa: str | None
     releaseDate: date | None
+    certificate: str | None
     cast: list[str] | None
     editeur: str | None
     gtlLabels: GtlLabels | None

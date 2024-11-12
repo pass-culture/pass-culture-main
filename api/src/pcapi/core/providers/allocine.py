@@ -116,6 +116,7 @@ def build_movie_data(movie: allocine_serializers.AllocineMovie) -> OfferExtraDat
         posterUrl=str(movie.poster.url) if movie.poster else None,
         productionYear=movie.data.productionYear,
         releaseDate=get_most_recent_release_date(movie.releases),
+        certificate=get_certificate(movie.releases),
         runtime=movie.runtime,
         stageDirector=build_full_name(movie.credits[0].person) if movie.credits else None,
         synopsis=movie.synopsis,
@@ -139,6 +140,14 @@ def get_most_recent_release_date(releases: list[allocine_serializers.AllocineMov
         reverse=True,
     )
     return sorted_releases[0] if sorted_releases else None
+
+
+def get_certificate(releases: list[allocine_serializers.AllocineMovieRelease]) -> str | None:
+    sorted_certificates = sorted(
+        [release.certificate for release in releases if release.certificate and release.certificate],
+        reverse=True,
+    )
+    return sorted_certificates[0] if sorted_certificates else None
 
 
 def build_description(movie: allocine_serializers.AllocineMovie) -> str:

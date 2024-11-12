@@ -1210,6 +1210,7 @@ def test_public_api(client):
                         "musicType": {"nullable": True, "title": "Musictype", "type": "string"},
                         "performer": {"nullable": True, "title": "Performer", "type": "string"},
                         "releaseDate": {"format": "date", "nullable": True, "title": "Releasedate", "type": "string"},
+                        "certificate": {"nullable": True, "title": "Certificate", "type": "string"},
                         "showSubType": {"nullable": True, "title": "Showsubtype", "type": "string"},
                         "showType": {"nullable": True, "title": "Showtype", "type": "string"},
                         "speaker": {"nullable": True, "title": "Speaker", "type": "string"},

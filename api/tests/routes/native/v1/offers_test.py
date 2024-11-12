@@ -58,6 +58,7 @@ class OffersTest:
             "editeur": "editeur",
             "gtl_id": "01030000",
             "releaseDate": "2020-01-01",
+            "certificate": "Interdit au moins de 18 ans",
         }
         offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.SEANCE_CINE.id,
@@ -224,6 +225,7 @@ class OffersTest:
                 "level04Label": None,
             },
             "releaseDate": "2020-01-01",
+            "certificate": "Interdit au moins de 18 ans",
         }
         assert response.json["image"] == {
             "url": "http://localhost/storage/thumbs/mediations/N4",
@@ -784,6 +786,7 @@ class OffersV2Test:
             "editeur": "editeur",
             "gtl_id": "01030000",
             "releaseDate": "2020-01-01",
+            "certificate": "Interdit aux moins de 18 ans",
         }
         offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.SEANCE_CINE.id,
@@ -950,6 +953,7 @@ class OffersV2Test:
                 "level04Label": None,
             },
             "releaseDate": "2020-01-01",
+            "certificate": "Interdit aux moins de 18 ans",
         }
         assert response.json["images"] == {
             "recto": {
@@ -1759,6 +1763,7 @@ class OffersStocksTest:
             "editeur": "editeur",
             "gtl_id": "01030000",
             "releaseDate": "2020-01-01",
+            "certificate": "Interdit aux moins de 18 ans",
         }
         offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.SEANCE_CINE.id,
@@ -1835,6 +1840,7 @@ class OffersStocksTest:
                 "editeur": "editeur",
                 "gtlLabels": None,
                 "releaseDate": "2020-01-01",
+                "certificate": "Interdit aux moins de 18 ans",
             },
             "id": offer.id,
             "image": {"credit": "street credit", "url": "http://localhost/storage/thumbs/mediations/N4"},
@@ -1944,6 +1950,7 @@ class OffersStocksV2Test:
             "editeur": "editeur",
             "gtl_id": "01030000",
             "releaseDate": "2020-01-01",
+            "certificate": "Interdit aux moins de 18 ans",
         }
         offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.SEANCE_CINE.id,
@@ -2109,6 +2116,7 @@ class OffersStocksV2Test:
                 "level04Label": None,
             },
             "releaseDate": "2020-01-01",
+            "certificate": "Interdit aux moins de 18 ans",
         }
         assert response_offer["images"] == {
             "recto": {
