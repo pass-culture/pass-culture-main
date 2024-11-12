@@ -320,8 +320,9 @@ def render_public_account_details(
     has_changed_email = any(
         email_event.eventType
         not in (
-            users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST,
-            users_models.EmailHistoryEventTypeEnum.NEW_EMAIL_SELECTION,
+            users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST,  # step 1/4
+            users_models.EmailHistoryEventTypeEnum.CONFIRMATION,  # step 2/4
+            users_models.EmailHistoryEventTypeEnum.NEW_EMAIL_SELECTION,  # step 3/4
             users_models.EmailHistoryEventTypeEnum.CANCELLATION,
         )
         for email_event in user.email_history
