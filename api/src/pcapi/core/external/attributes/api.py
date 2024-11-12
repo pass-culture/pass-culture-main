@@ -37,6 +37,7 @@ def update_external_user(
     cultural_survey_answers: dict[str, list[str]] | None = None,
     skip_batch: bool = False,
     skip_sendinblue: bool = False,
+    batch_extra_data: dict[str, datetime] | None = None,
 ) -> None:
     if not user.isActive:
         # suspended users have been removed from Brevo
@@ -54,6 +55,7 @@ def update_external_user(
                     user.id,
                     user_attributes,
                     cultural_survey_answers=cultural_survey_answers,
+                    batch_extra_data=batch_extra_data,
                 ),
             )
         if not skip_sendinblue:

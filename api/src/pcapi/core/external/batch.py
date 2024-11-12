@@ -22,11 +22,14 @@ def update_user_attributes(
     user_id: int,
     user_attributes: attributes_models.UserAttributes,
     cultural_survey_answers: dict[str, list[str]] | None = None,
+    batch_extra_data: dict[str, datetime] | None = None,
 ) -> None:
     if user_attributes.is_pro:
         return
 
-    formatted_attributes = format_user_attributes(user_attributes, cultural_survey_answers=cultural_survey_answers)
+    formatted_attributes = format_user_attributes(
+        user_attributes, cultural_survey_answers=cultural_survey_answers, batch_extra_data=batch_extra_data
+    )
     payload = batch_tasks.UpdateBatchAttributesRequest(attributes=formatted_attributes, user_id=user_id)
 
     batch_tasks.update_user_attributes_android_task.delay(payload)
@@ -34,8 +37,11 @@ def update_user_attributes(
 
 
 def format_user_attributes(
-    user_attributes: attributes_models.UserAttributes, cultural_survey_answers: dict[str, list[str]] | None = None
+    user_attributes: attributes_models.UserAttributes,
+    cultural_survey_answers: dict[str, list[str]] | None = None,
+    batch_extra_data: dict[str, datetime] | None = None,
 ) -> dict:
+    # https://doc.batch.com/api/custom-data-api/set-update/#post-data
     attributes = {
         "date(u.date_created)": _format_date(user_attributes.date_created),
         "date(u.date_of_birth)": _format_date(user_attributes.date_of_birth),
@@ -83,6 +89,9 @@ def format_user_attributes(
                 )
             }
         )
+
+    if batch_extra_data:
+        attributes["date(u.last_status_update_date)"] = _format_date(batch_extra_data["last_status_update_date"])
 
     return attributes
 
