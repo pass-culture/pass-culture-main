@@ -17,7 +17,7 @@ from pcapi.notifications.internal import send_internal_message
 import pcapi.scheduled_tasks.decorators as cron_decorators
 from pcapi.utils.blueprint import Blueprint
 import pcapi.utils.date as date_utils
-from pcapi.workers.export_csv_and_send_notfication_emails_job import export_csv_and_send_notfication_emails_job
+from pcapi.workers.export_csv_and_send_notification_emails_job import export_csv_and_send_notification_emails_job
 
 
 blueprint = Blueprint(__name__, __name__)
@@ -81,7 +81,7 @@ def generate_invoices(batch_id: int) -> None:
             ],
             icon_emoji=":large_green_circle:",
         )
-    export_csv_and_send_notfication_emails_job.delay(batch_id)
+    export_csv_and_send_notification_emails_job.delay(batch_id, batch.label)
 
 
 @blueprint.cli.command("add_custom_offer_reimbursement_rule")
