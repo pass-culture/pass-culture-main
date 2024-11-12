@@ -321,6 +321,7 @@ def render_public_account_details(
         email_event.eventType
         not in (
             users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST,
+            users_models.EmailHistoryEventTypeEnum.NEW_EMAIL_SELECTION,
             users_models.EmailHistoryEventTypeEnum.CANCELLATION,
         )
         for email_event in user.email_history

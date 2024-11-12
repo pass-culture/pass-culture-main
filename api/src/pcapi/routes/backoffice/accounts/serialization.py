@@ -93,6 +93,8 @@ class EmailChangeAction(AccountAction):
         match self._email_change.eventType:
             case users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST:
                 return "Demande de changement d'email"
+            case users_models.EmailHistoryEventTypeEnum.NEW_EMAIL_SELECTION:
+                return "Saisie d'une nouvelle adresse email"
             case users_models.EmailHistoryEventTypeEnum.CONFIRMATION:
                 return "Confirmation de changement d'email"
             case users_models.EmailHistoryEventTypeEnum.CANCELLATION:
