@@ -412,7 +412,8 @@ jobs:
             "tests/core --ignore=tests/core/bookings --ignore=tests/core/offers --ignore=tests/core/finance",
             "tests/routes -m 'not backoffice'",
             "tests --ignore=tests/core --ignore=tests/routes",
-            "tests/routes/backoffice -m 'backoffice'",
+            "tests/routes/backoffice/collective_bookings_test.py tests/routes/backoffice/collective_offers_test.py tests/routes/backoffice/individual_bookings_test.py tests/routes/backoffice/offers_test.py tests/routes/backoffice/offerers_test.py -m 'backoffice'",
+            "tests/routes/backoffice -m 'backoffice' --ignore=tests/routes/backoffice/collective_bookings_test.py --ignore=tests/routes/backoffice/collective_offers_test.py --ignore=tests/routes/backoffice/individual_bookings_test.py --ignore=tests/routes/backoffice/offers_test.py --ignore=tests/routes/backoffice/offerers_test.py",
           ]
     services:
       redis:
