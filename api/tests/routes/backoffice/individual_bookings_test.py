@@ -22,7 +22,6 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
-from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
@@ -200,16 +199,14 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         ],
     )
     def test_display_incident_alert(self, authenticated_client, incident_status, display_alert):
-        booking = bookings_factories.ReimbursedBookingFactory(
-            incidents=[
-                finance_factories.IndividualBookingFinanceIncidentFactory(
-                    incident=finance_factories.FinanceIncidentFactory(status=incident_status)
-                )
-            ]
+        booking_finance_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
+            incident=finance_factories.FinanceIncidentFactory(status=incident_status),
+            booking=bookings_factories.ReimbursedBookingFactory(),
         )
+        booking_id = booking_finance_incident.booking.id
 
-        with assert_no_duplicated_queries():
-            response = authenticated_client.get(url_for(self.endpoint, q=booking.id))
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=booking_id))
             assert response.status_code == 200
 
         if display_alert:
@@ -674,9 +671,36 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert "Total payé par l'utilisateur : 150,00 € (17900 CFP)" in reimbursement_data
         assert "Montant remboursé : 150,00 € (17900 CFP)" in reimbursement_data
 
+    @pytest.mark.parametrize(
+        "has_incident, expected_results",
+        [
+            ("true", ["XXXXXX"]),
+            ("false", ["YYYYYY", "ZZZZZZ"]),
+        ],
+    )
+    def test_list_bookings_with_incidents(self, authenticated_client, has_incident, expected_results):
+        finance_factories.IndividualBookingFinanceIncidentFactory(
+            incident=finance_factories.FinanceIncidentFactory(status=finance_models.IncidentStatus.VALIDATED),
+            booking=bookings_factories.ReimbursedBookingFactory(token="XXXXXX"),
+        )
+
+        finance_factories.IndividualBookingFinanceIncidentFactory(
+            incident=finance_factories.FinanceIncidentFactory(status=finance_models.IncidentStatus.CREATED),
+            booking=bookings_factories.ReimbursedBookingFactory(token="YYYYYY"),
+        )
+
+        bookings_factories.ReimbursedBookingFactory(token="ZZZZZZ")
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, has_incident=has_incident))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(row["Contremarque"] for row in rows) == set(expected_results)
+
     @pytest.mark.parametrize("quantity", [1, 2])
     def test_display_duo_bookings(self, authenticated_client, bookings, quantity):
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, is_duo=[quantity]))
             assert response.status_code == 200
 
