@@ -86,6 +86,7 @@ class OfferExtraData(typing.TypedDict, total=False):
     posterUrl: str | None
     productionYear: int | None
     releaseDate: str | None
+    certificate: str | None
     releases: list[dict] | None
     runtime: int | None
     synopsis: str | None
