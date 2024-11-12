@@ -1144,6 +1144,8 @@ def search_public_account_in_history_email(search_query: str) -> BaseQuery:
             models.UserEmailHistory.oldEmail == sanitized_term,
             models.UserEmailHistory.eventType.in_(
                 {
+                    models.EmailHistoryEventTypeEnum.NEW_EMAIL_SELECTION,
+                    models.EmailHistoryEventTypeEnum.CONFIRMATION,
                     models.EmailHistoryEventTypeEnum.VALIDATION,
                     models.EmailHistoryEventTypeEnum.ADMIN_VALIDATION,
                     models.EmailHistoryEventTypeEnum.ADMIN_UPDATE,
