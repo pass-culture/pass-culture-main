@@ -980,6 +980,7 @@ class UserProfileUpdateTest:
         assert user.postalCode == "38000"
         assert user.city == "Grenoble"
 
+    @time_machine.travel("2022-03-17 09:00:00")
     def test_activity_update(self, client):
         user = users_factories.UserFactory(email=self.identifier)
 
@@ -988,6 +989,14 @@ class UserProfileUpdateTest:
 
         assert response.status_code == 200
         assert user.activity == users_models.ActivityEnum.UNEMPLOYED.value
+
+        android_batch_request = push_testing.requests[0]
+        ios_batch_request = push_testing.requests[1]
+        android_batch_attributes = android_batch_request.get("attribute_values", {})
+        ios_batch_attributes = ios_batch_request.get("attribute_values", {})
+
+        assert android_batch_attributes.get("date(u.last_status_update_date)") == "2022-03-17T09:00:00"
+        assert ios_batch_attributes.get("date(u.last_status_update_date)") == "2022-03-17T09:00:00"
 
     @pytest.mark.parametrize("requested_phone_number", ["0601020304", "+33601020304"])
     def test_phone_number_unchanged(self, client, requested_phone_number):
@@ -1061,6 +1070,14 @@ class UserProfileUpdateTest:
         }
         assert user.phoneNumber == "+33601020304"
         assert user.phoneValidationStatus == users_models.PhoneValidationStatusType.VALIDATED
+
+        android_batch_request = push_testing.requests[0]
+        ios_batch_request = push_testing.requests[1]
+        android_batch_attributes = android_batch_request.get("attribute_values", {})
+        ios_batch_attributes = ios_batch_request.get("attribute_values", {})
+
+        assert "date(u.last_status_update_date)" not in android_batch_attributes
+        assert "date(u.last_status_update_date)" not in ios_batch_attributes
 
 
 class ResetRecreditAmountToShow:

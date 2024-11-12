@@ -638,6 +638,7 @@ def update_user_info(
 ) -> history_api.ObjectUpdateSnapshot:
     old_email = None
     snapshot = history_api.ObjectUpdateSnapshot(user, author)
+    batch_extra_data = {}
 
     if cultural_survey_filled_date is not UNCHANGED:
         user.culturalSurveyFilledDate = cultural_survey_filled_date
@@ -696,6 +697,7 @@ def update_user_info(
     if activity is not UNCHANGED:
         if user.activity != activity.value:
             snapshot.set("activity", old=user.activity, new=activity.value)
+            batch_extra_data["last_status_update_date"] = datetime.datetime.utcnow()
         user.activity = activity.value
 
     # keep using repository as long as user is validated in pcapi.validation.models.user
@@ -708,7 +710,7 @@ def update_user_info(
     # TODO(prouzet) even for young users, we should probably remove contact with former email from sendinblue lists
     if old_email and user.has_pro_role:
         external_attributes_api.update_external_pro(old_email)
-    external_attributes_api.update_external_user(user)
+    external_attributes_api.update_external_user(user, batch_extra_data=batch_extra_data)
 
     return snapshot
 
