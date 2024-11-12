@@ -295,7 +295,6 @@ class Returns200Test:
             "speaker": "",
         }
 
-    @override_features(WIP_SPLIT_OFFER=True)
     @override_features(WIP_ENABLE_OFFER_ADDRESS=False)
     @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     @pytest.mark.parametrize(
@@ -447,7 +446,6 @@ class Returns200Test:
             "label": venue.common_name if is_venue_address else "Librairie des mangas",
         }
 
-    @override_features(WIP_SPLIT_OFFER=True)
     @override_features(WIP_ENABLE_OFFER_ADDRESS=True)
     @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     @pytest.mark.parametrize(
