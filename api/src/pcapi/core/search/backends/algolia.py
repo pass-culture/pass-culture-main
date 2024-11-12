@@ -589,7 +589,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "publicName": venue.publicName,
                 "venue_type": venue.venueTypeCode.name,
             },
-            "_geoloc": position(venue),
+            "_geoloc": position(venue, offer),
         }
 
         if offer.subcategory.category.id == categories.LIVRE.id and gtl:
@@ -785,11 +785,14 @@ class AlgoliaBackend(base.SearchBackend):
         return ids
 
 
-def position(venue: offerers_models.Venue) -> dict[str, float]:
+def position(venue: offerers_models.Venue, offer: offers_models.Offer | None = None) -> dict[str, float]:
     latitude = None
     longitude = None
     if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
-        if venue.offererAddress is not None:
+        if offer and offer.offererAddress:
+            latitude = offer.offererAddress.address.latitude
+            longitude = offer.offererAddress.address.longitude
+        elif venue.offererAddress is not None:
             latitude = venue.offererAddress.address.latitude
             longitude = venue.offererAddress.address.longitude
     else:
