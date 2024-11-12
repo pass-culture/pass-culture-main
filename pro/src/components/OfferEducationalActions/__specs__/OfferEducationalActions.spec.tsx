@@ -6,6 +6,7 @@ import {
   CollectiveBookingStatus,
   CollectiveOfferDisplayedStatus,
   CollectiveOfferStatus,
+  CollectiveOfferTemplateAllowedAction,
 } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY } from 'commons/config/swrQueryKeys'
@@ -41,7 +42,10 @@ vi.mock('swr', async () => ({
   })),
 }))
 
-const renderOfferEducationalActions = (props: OfferEducationalActionsProps) => {
+const renderOfferEducationalActions = (
+  props: OfferEducationalActionsProps,
+  features: string[] = []
+) => {
   return renderWithProviders(<OfferEducationalActions {...props} />, {
     storeOverrides: {
       user: {
@@ -49,6 +53,7 @@ const renderOfferEducationalActions = (props: OfferEducationalActionsProps) => {
         selectedOffererId: 1,
       },
     },
+    features,
   })
 }
 
@@ -59,6 +64,20 @@ describe('OfferEducationalActions', () => {
     offer: getCollectiveOfferFactory(),
     mode: Mode.EDITION,
   }
+  const notifyError = vi.fn()
+  const notifySuccess = vi.fn()
+
+  beforeEach(async () => {
+    const notifsImport = (await vi.importActual(
+      'commons/hooks/useNotification'
+    )) as ReturnType<typeof useNotification.useNotification>
+
+    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
+      ...notifsImport,
+      success: notifySuccess,
+      error: notifyError,
+    }))
+  })
 
   it('should update active status value for template offer', async () => {
     const offer = getCollectiveOfferTemplateFactory({
@@ -85,12 +104,6 @@ describe('OfferEducationalActions', () => {
   })
 
   it('should failed active status value', async () => {
-    const notifyError = vi.fn()
-    // @ts-expect-error
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      success: vi.fn(),
-      error: notifyError,
-    }))
     vi.spyOn(
       api,
       'patchCollectiveOffersTemplateActiveStatus'
@@ -211,14 +224,6 @@ describe('OfferEducationalActions', () => {
   })
 
   it('should display error message when trying to activate offer with booking limit date time in the past', async () => {
-    const notifyError = vi.fn()
-    const notifsImport = (await vi.importActual(
-      'commons/hooks/useNotification'
-    )) as ReturnType<typeof useNotification.useNotification>
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      ...notifsImport,
-      error: notifyError,
-    }))
     renderOfferEducationalActions({
       ...defaultValues,
       offer: getCollectiveOfferFactory({
@@ -237,17 +242,7 @@ describe('OfferEducationalActions', () => {
   })
 
   it('should activate offer with booking limit date time in the future', async () => {
-    const notifyError = vi.fn()
     const offerId = 12
-
-    const notifsImport = (await vi.importActual(
-      'commons/hooks/useNotification'
-    )) as ReturnType<typeof useNotification.useNotification>
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      ...notifsImport,
-      success: vi.fn(),
-      error: notifyError,
-    }))
 
     const bookingLimitDateTomorrow = new Date()
     bookingLimitDateTomorrow.setDate(bookingLimitDateTomorrow.getDate() + 1)
@@ -283,5 +278,53 @@ describe('OfferEducationalActions', () => {
         name: 'Publier sur ADAGE',
       })
     ).not.toBeInTheDocument()
+  })
+
+  it('should display adage publish button if action is allowed', async () => {
+    renderOfferEducationalActions(
+      {
+        ...defaultValues,
+        offer: getCollectiveOfferTemplateFactory({
+          isTemplate: true,
+          status: CollectiveOfferStatus.INACTIVE,
+          allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_PUBLISH],
+        }),
+      },
+      ['ENABLE_COLLECTIVE_NEW_STATUSES']
+    )
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Publier',
+      })
+    )
+
+    expect(notifySuccess).toHaveBeenCalledWith(
+      'Votre offre est maintenant active et visible dans ADAGE'
+    )
+  })
+
+  it('should display adage pause button if action is allowed', async () => {
+    renderOfferEducationalActions(
+      {
+        ...defaultValues,
+        offer: getCollectiveOfferTemplateFactory({
+          isTemplate: true,
+          status: CollectiveOfferStatus.ACTIVE,
+          allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_HIDE],
+        }),
+      },
+      ['ENABLE_COLLECTIVE_NEW_STATUSES']
+    )
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Mettre en pause',
+      })
+    )
+
+    expect(notifySuccess).toHaveBeenCalledWith(
+      'Votre offre est mise en pause et n’est plus visible sur ADAGE'
+    )
   })
 })
