@@ -695,20 +695,20 @@ class CollectiveOfferDisplayedStatusTest:
 
 
 class CollectiveOfferTemplateDisplayedStatusTest:
-    @pytest.mark.parametrize(
-        "status",
-        [
-            CollectiveOfferDisplayedStatus.ACTIVE,
-            CollectiveOfferDisplayedStatus.ARCHIVED,
-            CollectiveOfferDisplayedStatus.DRAFT,
-            CollectiveOfferDisplayedStatus.INACTIVE,
-            CollectiveOfferDisplayedStatus.REJECTED,
-            CollectiveOfferDisplayedStatus.PENDING,
-        ],
-    )
+    @pytest.mark.parametrize("status", set(COLLECTIVE_OFFER_TEMPLATE_STATUSES) - {CollectiveOfferDisplayedStatus.ENDED})
     def test_get_offer_displayed_status(self, status):
         offer = factories.create_collective_offer_template_by_status(status)
+        assert offer.displayedStatus == status
 
+    def test_get_offer_displayed_status_ended(self):
+        # when ENABLE_COLLECTIVE_NEW_STATUSES FF is off, and ended offer is INACTIVE
+        offer = factories.create_collective_offer_template_by_status(CollectiveOfferDisplayedStatus.ENDED)
+        assert offer.displayedStatus == CollectiveOfferDisplayedStatus.INACTIVE
+
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.parametrize("status", COLLECTIVE_OFFER_TEMPLATE_STATUSES)
+    def test_get_offer_displayed_status_new_statuses(self, status):
+        offer = factories.create_collective_offer_template_by_status(status)
         assert offer.displayedStatus == status
 
     def test_get_displayed_status_for_inactive_offer_due_to_end_date_passed(self):
@@ -821,8 +821,21 @@ class CollectiveOfferAllowedActionsTest:
         offer.collectiveStock.endDatetime = datetime.datetime.utcnow() - datetime.timedelta(days=3)
         assert offer.is_two_days_past_end
 
-    @pytest.mark.parametrize("status", COLLECTIVE_OFFER_TEMPLATE_STATUSES)
+    @pytest.mark.parametrize("status", set(COLLECTIVE_OFFER_TEMPLATE_STATUSES) - {CollectiveOfferDisplayedStatus.ENDED})
     def test_get_offer_template_allowed_actions(self, status):
+        offer = factories.create_collective_offer_template_by_status(status)
+        assert offer.allowedActions == list(TEMPLATE_ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[status])
+
+    def test_get_offer_template_allowed_actions_ended(self):
+        # when ENABLE_COLLECTIVE_NEW_STATUSES FF is off, and ended offer is INACTIVE
+        offer = factories.create_collective_offer_template_by_status(CollectiveOfferDisplayedStatus.ENDED)
+        assert offer.allowedActions == list(
+            TEMPLATE_ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[CollectiveOfferDisplayedStatus.INACTIVE]
+        )
+
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.parametrize("status", COLLECTIVE_OFFER_TEMPLATE_STATUSES)
+    def test_get_offer_template_allowed_actions_new_statuses(self, status):
         offer = factories.create_collective_offer_template_by_status(status)
         assert offer.allowedActions == list(TEMPLATE_ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[status])
 

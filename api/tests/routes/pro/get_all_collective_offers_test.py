@@ -377,7 +377,6 @@ class Returns200Test:
         assert response_json[0]["id"] == offer.id
 
     def test_with_status_filters(self, client):
-        # Given
         user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
@@ -412,25 +411,19 @@ class Returns200Test:
 
         client = client.with_session_auth(user.email)
 
-        # When
-
-        with assert_num_queries(4):
-            # Fetch the session
-            # Fetch the user
-            # Select collective_offers
-            # Select collective_offers_templates
+        expected_num_queries = self.expected_num_queries - 1  # - national_program
+        expected_num_queries = expected_num_queries + 1  # feature flag assertion
+        with assert_num_queries(expected_num_queries):
             response_booked = client.get("/collective/offers?status=BOOKED")
 
         response_prebooked = client.get("/collective/offers?status=PREBOOKED")
 
-        # Then
         assert response_booked.status_code == 200
 
         response_booked_json = response_booked.json
         assert isinstance(response_booked_json, list)
         assert [offer["id"] for offer in response_booked_json] == [offer_booked.id]
 
-        # Then
         assert response_prebooked.status_code == 200
 
         response_prebooked_json = response_prebooked.json
@@ -438,7 +431,6 @@ class Returns200Test:
         assert [offer["id"] for offer in response_prebooked_json] == [offer_prebooked.id]
 
     def test_with_multiple_status_filters(self, client):
-        # Given
         user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
@@ -480,16 +472,11 @@ class Returns200Test:
 
         client = client.with_session_auth(user.email)
 
-        # When
-
-        with assert_num_queries(4):
-            # Fetch the session
-            # Fetch the user
-            # Select collective_offers
-            # Select collective_offers_templates
+        expected_num_queries = self.expected_num_queries - 1  # - national_program
+        expected_num_queries = expected_num_queries + 1  # feature flag assertion
+        with assert_num_queries(expected_num_queries):
             response = client.get("/collective/offers?status=BOOKED&status=PREBOOKED")
 
-            # Then
             assert response.status_code == 200
 
             response_json = response.json
