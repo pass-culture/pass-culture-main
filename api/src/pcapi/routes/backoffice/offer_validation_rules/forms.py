@@ -77,7 +77,7 @@ class SearchRuleForm(FlaskForm):
 
     q = fields.PCOptSearchField("Nom de la règle, mots clés")
     offerer = fields.PCTomSelectField(
-        "Structures",
+        "Entités",
         multiple=True,
         choices=[],
         validate_choice=False,
@@ -150,7 +150,7 @@ class OfferValidationSubRuleForm(FlaskForm):
         field_list_compatibility=True,
     )
     offerer = fields.PCTomSelectField(
-        "Structure",
+        "Entité",
         multiple=True,
         choices=[],
         validate_choice=False,

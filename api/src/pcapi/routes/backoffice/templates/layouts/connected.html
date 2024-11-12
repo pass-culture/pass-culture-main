@@ -78,10 +78,10 @@
                 {% call menu_section("Acteurs culturels") %}
                   {% if has_permission("READ_PRO_ENTITY") %}
                     {{ menu_section_item('Liste des acteurs culturels', 'backoffice_web.pro.search_pro') }}
-                    {{ menu_section_item('Structures à valider', 'backoffice_web.validation.list_offerers_to_validate') }}
+                    {{ menu_section_item('Entités à valider', 'backoffice_web.validation.list_offerers_to_validate') }}
                     {{ menu_section_item('Rattachements à valider', 'backoffice_web.validation.list_offerers_attachments_to_validate') }}
                   {% endif %}
-                  {% if has_permission("READ_TAGS") %}{{ menu_section_item('Tags structure', 'backoffice_web.offerer_tag.list_offerer_tags') }}{% endif %}
+                  {% if has_permission("READ_TAGS") %}{{ menu_section_item('Tags entité', 'backoffice_web.offerer_tag.list_offerer_tags') }}{% endif %}
                   {% if has_permission("READ_OFFERS") %}
                     {{ menu_section_item('Offres individuelles', 'backoffice_web.offer.list_offers') }}
                     {{ menu_section_item('Offres collectives', 'backoffice_web.collective_offer.list_collective_offers') }}

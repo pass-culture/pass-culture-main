@@ -38,7 +38,7 @@
   {{ build_status_badge(offerer, "Nouvelle", "En attente", "Validée", "Rejetée", "Supprimée") }}
 {% endmacro %}
 {% macro build_offerer_badges(offerer) %}
-  <span class="me-1 pb-1 badge rounded-pill text-bg-secondary">Structure</span>
+  <span class="me-1 pb-1 badge rounded-pill text-bg-secondary">Entité</span>
   {{ build_offerer_status_badge(offerer) }}
   {% if not offerer.isActive %}
     <span class="me-1 pb-1 badge rounded-pill text-bg-dark">

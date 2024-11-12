@@ -25,25 +25,25 @@
             <div class="d-flex row-reverse justify-content-end flex-grow-1">
               {% if has_permission("MANAGE_PRO_ENTITY") %}
                 {{ build_modal_form("edit-offerer", url_for("backoffice_web.offerer.update_offerer", offerer_id=offerer.id) ,
-                edit_offerer_form, "Modifier les informations", "Modifier les informations de la structure", "Enregistrer") }}
+                edit_offerer_form, "Modifier les informations", "Modifier les informations de l'entité", "Enregistrer") }}
               {% endif %}
               {% if has_permission("ADVANCED_PRO_SUPPORT") %}
                 {{ build_modal_form("generate-api-key", url_for("backoffice_web.offerer.generate_api_key", offerer_id=offerer.id) ,
-                generate_api_key_form, "Générer une clé API", "Générer une clé API pour la structure " + offerer.name, "Confirmer la génération") }}
+                generate_api_key_form, "Générer une clé API", "Générer une clé API pour l'entité " + offerer.name, "Confirmer la génération") }}
               {% endif %}
               {% if has_permission("PRO_FRAUD_ACTIONS") %}
                 {% if offerer.isActive %}
                   {{ build_modal_form("suspend-offerer", url_for("backoffice_web.offerer.suspend_offerer", offerer_id=offerer.id) ,
-                  suspension_form, "Suspendre la structure", "Suspendre la structure", "Confirmer la suspension") }}
+                  suspension_form, "Suspendre l'entité", "Suspendre l'entité", "Confirmer la suspension") }}
                 {% else %}
                   {{ build_modal_form("unsuspend-offerer", url_for("backoffice_web.offerer.unsuspend_offerer", offerer_id=offerer.id) ,
-                  suspension_form, "Réactiver la structure", "Réactiver la structure", "Confirmer la réactivation") }}
+                  suspension_form, "Réactiver l'entité", "Réactiver l'entité", "Confirmer la réactivation") }}
                 {% endif %}
               {% endif %}
               {% if has_permission("DELETE_PRO_ENTITY") %}
-                {% set form_description = "La structure <strong>"|safe + offerer.name + "</strong> ("|safe + offerer.id|string + ") sera définitivement supprimée de la base de données. Veuillez confirmer ce choix." %}
+                {% set form_description = "L'entité <strong>"|safe + offerer.name + "</strong> ("|safe + offerer.id|string + ") sera définitivement supprimée de la base de données. Veuillez confirmer ce choix." %}
                 {{ build_modal_form("delete-offerer", url_for("backoffice_web.offerer.delete_offerer", offerer_id=offerer.id) ,
-                delete_offerer_form, "Supprimer la structure", "Supprimer la structure " + offerer.name,
+                delete_offerer_form, "Supprimer l'entité", "Supprimer l'entité " + offerer.name,
                 "Confirmer", form_description, "bi-trash3-fill") }}
               {% endif %}
             </div>
@@ -75,12 +75,12 @@
             </div>
           {% endif %}
           <p class="card-subtitle text-muted mb-3 h5">
-            Offerer ID : {{ offerer.id }} {{ clipboard.copy_to_clipboard(offerer.id, "Copier l'ID de la structure") }}
+            Offerer ID : {{ offerer.id }} {{ clipboard.copy_to_clipboard(offerer.id, "Copier l'ID de l'entité") }}
           </p>
           <p class="card-subtitle text-muted mb-3 h5">
             {{ offerer.identifier_name }} : {{ links.build_siren_to_external_link(offerer) }}
             {% if offerer.siren %}
-              <span class="ms-1 link-primary">{{ clipboard.copy_to_clipboard(offerer.identifier, "Copier le " + offerer.identifier_name  + " de la structure") }}</span>
+              <span class="ms-1 link-primary">{{ clipboard.copy_to_clipboard(offerer.identifier, "Copier le " + offerer.identifier_name  + " de l'entité") }}</span>
             {% endif %}
           </p>
           <div class="row pt-3">
@@ -148,7 +148,7 @@
                 / {{ bank_information_status.ko }} KO
               </p>
               <p class="mb-1">
-                <span class="fw-bold">Tags structure :</span>
+                <span class="fw-bold">Tags entité :</span>
                 {{ offerer.tags | sort(attribute="label") | format_tag_object_list | safe }}
               </p>
               {% if has_permission("PRO_FRAUD_ACTIONS") %}
@@ -212,7 +212,7 @@
                           {{ zendesk_sell_synchronisation_form.csrf_token }}
                           <div class="modal-header"
                                id="{{ sync_zsell_aria_described_by_id }}">
-                            <h5 class="modal-title">Synchroniser la structure {{ offerer.name }} sur Zendesk Sell</h5>
+                            <h5 class="modal-title">Synchroniser l'entité {{ offerer.name }} sur Zendesk Sell</h5>
                           </div>
                           <div class="modal-body row">
                             <div class="d-flex align-items-center">

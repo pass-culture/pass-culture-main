@@ -112,10 +112,10 @@ class GetOffererTest(GetEndpointHelper):
         assert f"Adresse : {offerer.street} " in content
         assert "Peut créer une offre EAC : Oui" in content
         assert "Présence CB dans les lieux : 0 OK / 0 KO " in content
-        assert "Tags structure : Collectivité Top acteur " in content
+        assert "Tags entité : Collectivité Top acteur " in content
         assert "Validation des offres : Suivre les règles" in content
         badges = html_parser.extract(response.data, tag="span", class_="badge")
-        assert "Structure" in badges
+        assert "Entité" in badges
         assert "Validée" in badges
         assert "Suspendue" not in badges
 
@@ -399,7 +399,7 @@ class SuspendOffererTest(DeactivateOffererHelper):
         assert response.status_code == 303
         assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id, _external=True)
         response = authenticated_client.get(response.location)
-        assert html_parser.extract_alert(response.data) == f"La structure {offerer.name} ({offerer.id}) a été suspendue"
+        assert html_parser.extract_alert(response.data) == f"L'entité {offerer.name} ({offerer.id}) a été suspendue"
 
         updated_offerer = offerers_models.Offerer.query.filter_by(id=offerer.id).one()
         assert not updated_offerer.isActive
@@ -421,7 +421,7 @@ class SuspendOffererTest(DeactivateOffererHelper):
         response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(response.data)
-            == "Impossible de suspendre une structure juridique pour laquelle il existe des réservations"
+            == "Impossible de suspendre une entité pour laquelle il existe des réservations"
         )
 
         not_updated_offerer = offerers_models.Offerer.query.filter_by(id=offerer.id).one()
@@ -445,7 +445,7 @@ class UnsuspendOffererTest(ActivateOffererHelper):
         assert response.status_code == 303
         assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id, _external=True)
         response = authenticated_client.get(response.location)
-        assert html_parser.extract_alert(response.data) == f"La structure {offerer.name} ({offerer.id}) a été réactivée"
+        assert html_parser.extract_alert(response.data) == f"L'entité {offerer.name} ({offerer.id}) a été réactivée"
 
         updated_offerer = offerers_models.Offerer.query.filter_by(id=offerer.id).one()
         assert updated_offerer.isActive
@@ -475,7 +475,7 @@ class DeleteOffererTest(PostEndpointHelper):
         response = authenticated_client.get(expected_url)
         assert (
             html_parser.extract_alert(response.data)
-            == f"La structure {offerer_to_delete_name} ({offerer_to_delete_id}) a été supprimée"
+            == f"L'entité {offerer_to_delete_name} ({offerer_to_delete_id}) a été supprimée"
         )
 
     def test_cant_delete_offerer_with_bookings(self, legit_user, authenticated_client):
@@ -493,7 +493,7 @@ class DeleteOffererTest(PostEndpointHelper):
         response = authenticated_client.get(expected_url)
         assert (
             html_parser.extract_alert(response.data)
-            == "Impossible de supprimer une structure juridique pour laquelle il existe des réservations"
+            == "Impossible de supprimer une entité pour laquelle il existe des réservations"
         )
 
     def test_no_script_injection_in_offerer_name(self, legit_user, authenticated_client):
@@ -503,7 +503,7 @@ class DeleteOffererTest(PostEndpointHelper):
         assert response.status_code == 303
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == f"La structure <script>alert('coucou')</script> ({offerer_id}) a été supprimée"
+            == f"L'entité <script>alert('coucou')</script> ({offerer_id}) a été supprimée"
         )
 
 
@@ -1174,7 +1174,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
             authorUser=admin,
             user=user_offerer.user,
             offerer=offerers_factories.UserOffererFactory(user=user_offerer.user).offerer,
-            comment="Commentaire sur une autre structure",
+            comment="Commentaire sur une autre entité",
         )
 
         url = url_for(self.endpoint, offerer_id=user_offerer.offerer.id)
@@ -1185,7 +1185,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 4
 
-        assert rows[0]["Type"] == "Structure validée"
+        assert rows[0]["Type"] == "Entité validée"
         assert rows[0]["Date/Heure"] == "Le 06/10/2022 à 18h04"  # CET (Paris time)
         assert rows[0]["Commentaire"] == ""
         assert rows[0]["Auteur"] == admin.full_name
@@ -1195,12 +1195,12 @@ class GetOffererHistoryTest(GetEndpointHelper):
         assert rows[1]["Commentaire"] == "Documents reçus"
         assert rows[1]["Auteur"] == legit_user.full_name
 
-        assert rows[2]["Type"] == "Structure mise en attente"
+        assert rows[2]["Type"] == "Entité mise en attente"
         assert rows[2]["Date/Heure"] == "Le 04/10/2022 à 16h02"  # CET (Paris time)
         assert rows[2]["Commentaire"] == "Documents complémentaires demandés"
         assert rows[2]["Auteur"] == admin.full_name
 
-        assert rows[3]["Type"] == "Nouvelle structure"
+        assert rows[3]["Type"] == "Nouvelle entité"
         assert rows[3]["Date/Heure"] == "Le 03/10/2022 à 15h01"  # CET (Paris time)
         assert rows[3]["Commentaire"] == ""
         assert rows[3]["Auteur"] == user_offerer.user.full_name
@@ -1226,7 +1226,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
-        assert rows[0]["Type"] == "Structure rejetée"
+        assert rows[0]["Type"] == "Entité rejetée"
         assert rows[0]["Commentaire"] == "Raison : Non réponse aux questionnaires Relancé 3 fois"
         assert rows[0]["Auteur"] == bo_user.full_name
 
@@ -1948,20 +1948,20 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             rows = html_parser.extract_table_rows(response.data)
             assert len(rows) == 1
             assert rows[0]["ID"] == str(user_offerer.offerer.id)
-            assert rows[0]["Nom de la structure"] == user_offerer.offerer.name
+            assert rows[0]["Nom de l'entité"] == user_offerer.offerer.name
             assert rows[0]["État"] == "Nouvelle"
             if top_acteur_column_expected:
                 assert rows[0]["Top Acteur"] == ""  # no text
             else:
                 assert "Top Acteur" not in rows[0]
-            assert tag.label in rows[0]["Tags structure"]
-            assert other_category_tag.label in rows[0]["Tags structure"]
+            assert tag.label in rows[0]["Tags entité"]
+            assert other_category_tag.label in rows[0]["Tags entité"]
             assert rows[0]["Date de la demande"] == "03/10/2022"
             assert rows[0]["Documents reçus"] == ""
             assert rows[0]["Dernier commentaire"] == "Houlala"
             assert rows[0]["SIREN"] == user_offerer.offerer.siren
             assert rows[0]["Email"] == user_offerer.user.email
-            assert rows[0]["Responsable Structure"] == user_offerer.user.full_name
+            assert rows[0]["Responsable Entité"] == user_offerer.user.full_name
             assert rows[0]["Ville"] == user_offerer.offerer.city
 
             dms_adage_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")
@@ -1986,7 +1986,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             rows = html_parser.extract_table_rows(response.data)
             assert len(rows) == 1
             assert rows[0]["ID"] == str(user_offerer.offerer.id)
-            assert rows[0]["Nom de la structure"] == user_offerer.offerer.name
+            assert rows[0]["Nom de l'entité"] == user_offerer.offerer.name
             assert rows[0]["État"] == "Nouvelle"
             assert rows[0]["Date de la demande"] == "03/10/2022"
             assert rows[0]["Dernier commentaire"] == ""
@@ -2125,7 +2125,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 assert response.status_code == 200
 
             rows = html_parser.extract_table_rows(response.data)
-            assert {row["Nom de la structure"] for row in rows} == expected_offerer_names
+            assert {row["Nom de l'entité"] for row in rows} == expected_offerer_names
 
         @pytest.mark.parametrize(
             "tag_filter, expected_offerer_names",
@@ -2156,7 +2156,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 assert response.status_code == 200
 
             rows = html_parser.extract_table_rows(response.data)
-            assert {row["Nom de la structure"] for row in rows} == expected_offerer_names
+            assert {row["Nom de l'entité"] for row in rows} == expected_offerer_names
 
         def test_list_filtering_by_date(self, authenticated_client):
             # Created before requested range, excluded from results:
@@ -2210,7 +2210,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 assert response.status_code == 200
 
             rows = html_parser.extract_table_rows(response.data)
-            assert {row["Nom de la structure"] for row in rows} == {"D"}
+            assert {row["Nom de l'entité"] for row in rows} == {"D"}
 
         def test_list_search_by_rid7(self, authenticated_client):
             nc_offerer = offerers_factories.NotValidatedCaledonianOffererFactory()
@@ -2223,7 +2223,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 assert response.status_code == 200
 
             rows = html_parser.extract_table_rows(response.data)
-            assert {row["Nom de la structure"] for row in rows} == {nc_offerer.name}
+            assert {row["Nom de l'entité"] for row in rows} == {nc_offerer.name}
 
         @pytest.mark.parametrize("postal_code", ["35400", "35 400"])
         def test_list_search_by_postal_code(self, authenticated_client, offerers_to_be_validated, postal_code):
@@ -2234,7 +2234,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 assert response.status_code == 200
 
             rows = html_parser.extract_table_rows(response.data)
-            assert {row["Nom de la structure"] for row in rows} == {"E"}
+            assert {row["Nom de l'entité"] for row in rows} == {"E"}
 
         def test_list_search_by_department_code(self, authenticated_client, offerers_to_be_validated):
             with assert_num_queries(self.expected_num_queries):
@@ -2244,7 +2244,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 assert response.status_code == 200
 
             rows = html_parser.extract_table_rows(response.data)
-            assert {row["Nom de la structure"] for row in rows} == {"A", "E"}
+            assert {row["Nom de l'entité"] for row in rows} == {"A", "E"}
 
         def test_list_search_by_city(self, authenticated_client, offerers_to_be_validated):
             # Ensure that outerjoin does not cause too many rows returned
@@ -2258,7 +2258,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 assert response.status_code == 200
 
             rows = html_parser.extract_table_rows(response.data)
-            assert {row["Nom de la structure"] for row in rows} == {"B", "D"}
+            assert {row["Nom de l'entité"] for row in rows} == {"B", "D"}
             assert html_parser.extract_pagination_info(response.data) == (1, 1, 2)
 
         @pytest.mark.parametrize("search", ["1", "1234", "123456", "12345678", "12345678912345", "  1234"])
@@ -2284,7 +2284,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 assert response.status_code == 200
 
             rows = html_parser.extract_table_rows(response.data)
-            assert {row["Nom de la structure"] for row in rows} == {"B"}
+            assert {row["Nom de l'entité"] for row in rows} == {"B"}
 
         def test_list_search_by_user_name(self, authenticated_client, offerers_to_be_validated):
             with assert_num_queries(self.expected_num_queries):
@@ -2294,7 +2294,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 assert response.status_code == 200
 
             rows = html_parser.extract_table_rows(response.data)
-            assert {row["Nom de la structure"] for row in rows} == {"C"}
+            assert {row["Nom de l'entité"] for row in rows} == {"C"}
 
         @pytest.mark.parametrize(
             "search_filter, expected_offerer_names",
@@ -2321,7 +2321,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 assert response.status_code == 200
 
             rows = html_parser.extract_table_rows(response.data)
-            assert {row["Nom de la structure"] for row in rows} == expected_offerer_names
+            assert {row["Nom de l'entité"] for row in rows} == expected_offerer_names
 
         @pytest.mark.parametrize(
             "status_filter, expected_status, expected_offerer_names",
@@ -2350,7 +2350,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
 
             if expected_status == 200:
                 rows = html_parser.extract_table_rows(response.data)
-                assert {row["Nom de la structure"] for row in rows} == expected_offerer_names
+                assert {row["Nom de l'entité"] for row in rows} == expected_offerer_names
             else:
                 assert html_parser.count_table_rows(response.data) == 0
 
@@ -2467,7 +2467,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
 
             if expected_status == 200:
                 rows = html_parser.extract_table_rows(response.data)
-                assert {row["Nom de la structure"] for row in rows} == expected_offerer_names
+                assert {row["Nom de l'entité"] for row in rows} == expected_offerer_names
             else:
                 assert html_parser.count_table_rows(response.data) == 0
 
@@ -2523,10 +2523,10 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 assert response.status_code == 200
 
             cards = html_parser.extract_cards_text(response.data)
-            assert "3 nouvelles structures" in cards
-            assert "4 structures en attente" in cards
-            assert "1 structure validée" in cards
-            assert "2 structures rejetées" in cards
+            assert "3 nouvelles entités" in cards
+            assert "4 entités en attente" in cards
+            assert "1 entité validée" in cards
+            assert "2 entités rejetées" in cards
 
         def test_no_offerer(self, authenticated_client):
             with assert_num_queries(self.expected_num_queries):
@@ -2534,10 +2534,10 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 assert response.status_code == 200
 
             cards = html_parser.extract_cards_text(response.data)
-            assert "0 nouvelle structure" in cards
-            assert "0 structure en attente" in cards
-            assert "0 structure validée" in cards
-            assert "0 structure rejetée" in cards
+            assert "0 nouvelle entité" in cards
+            assert "0 entité en attente" in cards
+            assert "0 entité validée" in cards
+            assert "0 entité rejetée" in cards
             assert html_parser.count_table_rows(response.data) == 0
 
 
@@ -2594,7 +2594,7 @@ class ValidateOffererTest(ActivateOffererHelper):
 
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == f"La structure {user_offerer.offerer.name} est déjà validée"
+            == f"L'entité {user_offerer.offerer.name} est déjà validée"
         )
 
 
@@ -2690,7 +2690,7 @@ class RejectOffererTest(DeactivateOffererHelper):
         assert response.status_code == 303
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "La structure Test est déjà rejetée"
+            == "L'entité Test est déjà rejetée"
         )
 
     def test_cannot_reject_offerer_without_reason(self, authenticated_client):
@@ -2713,7 +2713,7 @@ class RejectOffererTest(DeactivateOffererHelper):
         assert response.status_code == 303
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "La structure <script>alert('coucou')</script> a été rejetée"
+            == "L'entité <script>alert('coucou')</script> a été rejetée"
         )
 
 
@@ -2943,9 +2943,9 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         assert rows[0]["Email Compte pro"] == new_user_offerer.user.email
         assert rows[0]["Nom Compte pro"] == new_user_offerer.user.full_name
         assert rows[0]["État"] == "Nouveau"
-        assert rows[0]["Tags Structure"] == offerer_tags[1].label
+        assert rows[0]["Tags Entité"] == offerer_tags[1].label
         assert rows[0]["Date de la demande"] == "03/11/2022"
-        assert rows[0]["Nom Structure"] == owner_user_offerer.offerer.name
+        assert rows[0]["Nom Entité"] == owner_user_offerer.offerer.name
         assert rows[0]["Email Responsable"] == owner_user_offerer.user.email
         assert rows[0]["Dernier commentaire"] == "Bla blabla"
 
@@ -2977,9 +2977,9 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         assert rows[0]["Email Compte pro"] == new_user_offerer.user.email
         assert rows[0]["Nom Compte pro"] == new_user_offerer.user.full_name
         assert rows[0]["État"] == "Nouveau"
-        assert rows[0]["Tags Structure"] == offerer_tags[2].label
+        assert rows[0]["Tags Entité"] == offerer_tags[2].label
         assert rows[0]["Date de la demande"] == "25/11/2022"
-        assert rows[0]["Nom Structure"] == owner_user_offerer.offerer.name
+        assert rows[0]["Nom Entité"] == owner_user_offerer.offerer.name
         assert rows[0]["Email Responsable"] == owner_user_offerer.user.email
         assert rows[0]["Dernier commentaire"] == ""
 
@@ -3465,7 +3465,7 @@ class AddUserOffererAndValidateTest(PostEndpointHelper):
         redirected_response = authenticated_client.get(response.headers["location"])
         assert (
             html_parser.extract_alert(redirected_response.data)
-            == "L'ID ne correspond pas à un ancien rattachement à la structure"
+            == "L'ID ne correspond pas à un ancien rattachement à l'entité"
         )
 
         assert offerers_models.UserOfferer.query.count() == 1  # existing before request
@@ -3484,7 +3484,7 @@ class AddUserOffererAndValidateTest(PostEndpointHelper):
         redirected_response = authenticated_client.get(response.headers["location"])
         assert (
             html_parser.extract_alert(redirected_response.data)
-            == "L'ID ne correspond pas à un ancien rattachement à la structure"
+            == "L'ID ne correspond pas à un ancien rattachement à l'entité"
         )
 
     def test_add_user_empty(self, legit_user, authenticated_client):
@@ -3848,7 +3848,7 @@ class ListOffererTagsTest(GetEndpointHelper):
 
 class CreateTagButtonTest(button_helpers.ButtonHelper):
     needed_permission = perm_models.Permissions.MANAGE_OFFERER_TAG
-    button_label = "Créer un tag structure"
+    button_label = "Créer un tag entité"
 
     @property
     def path(self):

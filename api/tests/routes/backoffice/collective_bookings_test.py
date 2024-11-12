@@ -164,7 +164,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
             f" → {(datetime.date.today() + datetime.timedelta(days=24)).strftime('%d/%m/%Y')}"
             in row["Date de l'évènement"]
         )
-        assert row["Structure"] == collective_bookings[1].offerer.name
+        assert row["Entité"] == collective_bookings[1].offerer.name
         assert row["Lieu"] == collective_bookings[1].venue.name
 
         extra_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[row_index]
@@ -303,7 +303,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         assert row["Date de l'évènement"].startswith(
             (datetime.date.today() + datetime.timedelta(days=7)).strftime("%d/%m/%Y à ")
         )
-        assert row["Structure"] == collective_bookings[2].offerer.name
+        assert row["Entité"] == collective_bookings[2].offerer.name
         assert row["Lieu"] == collective_bookings[2].venue.name
 
         extra_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[row_index]

@@ -7,7 +7,7 @@
 {% if has_permission("VALIDATE_OFFERER") %}
   {% if add_user_form %}
     {% set add_pro_user_modal_label_id = random_hash() %}
-    {{ build_modal_form("add-pro-user", add_user_dst, add_user_form, "Récupérer un compte pro rejeté", "Récupérer un compte pro rejeté", "Valider le rattachement", "Veuillez sélectionner le compte pro à rattacher à cette structure") }}
+    {{ build_modal_form("add-pro-user", add_user_dst, add_user_form, "Récupérer un compte pro rejeté", "Récupérer un compte pro rejeté", "Valider le rattachement", "Veuillez sélectionner le compte pro à rattacher à cette entité") }}
   {% else %}
     <button class="btn lead fw-bold mt-2"
             type="button"

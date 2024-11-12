@@ -80,7 +80,7 @@ class GetIncidentsSearchForm(forms_utils.PCForm):
     )
 
     offerer = fields.PCTomSelectField(
-        "Structures",
+        "Entités",
         multiple=True,
         choices=[],
         validate_choice=False,

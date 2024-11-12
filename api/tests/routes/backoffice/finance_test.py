@@ -176,7 +176,7 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Type de résa"] == "Individuelle"
         assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[0].booking_finance_incidents))
         assert rows[0]["Montant total"] == "11,00 €"
-        assert rows[0]["Structure"] == incidents[0].venue.managingOfferer.name
+        assert rows[0]["Entité"] == incidents[0].venue.managingOfferer.name
         assert rows[0]["Porteur de l'offre (lieu)"] == incidents[0].venue.name
         assert rows[0]["Origine de la demande"] == incidents[0].details["origin"]
 
@@ -196,7 +196,7 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Type de résa"] == "Individuelle"
         assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[0].booking_finance_incidents))
         assert rows[0]["Montant total"] == "11,00 €"
-        assert rows[0]["Structure"] == incidents[0].venue.managingOfferer.name
+        assert rows[0]["Entité"] == incidents[0].venue.managingOfferer.name
         assert rows[0]["Porteur de l'offre (lieu)"] == incidents[0].venue.name
         assert rows[0]["Origine de la demande"] == incidents[0].details["origin"]
 
@@ -225,7 +225,7 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Type de résa"] == "Collective"
         assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[1].booking_finance_incidents))
         assert rows[0]["Montant total"] == "100,00 €"
-        assert rows[0]["Structure"] == incidents[1].venue.managingOfferer.name
+        assert rows[0]["Entité"] == incidents[1].venue.managingOfferer.name
         assert rows[0]["Porteur de l'offre (lieu)"] == incidents[1].venue.name
         assert rows[0]["Origine de la demande"] == incidents[1].details["origin"]
 
@@ -254,7 +254,7 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Type de résa"] == "Individuelle"
         assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[0].booking_finance_incidents))
         assert rows[0]["Montant total"] == "11,00 €"
-        assert rows[0]["Structure"] == incidents[0].venue.managingOfferer.name
+        assert rows[0]["Entité"] == incidents[0].venue.managingOfferer.name
         assert rows[0]["Porteur de l'offre (lieu)"] == incidents[0].venue.name
         assert rows[0]["Origine de la demande"] == incidents[0].details["origin"]
 
@@ -285,7 +285,7 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Type de résa"] == "Individuelle"
         assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[0].booking_finance_incidents))
         assert rows[0]["Montant total"] == "11,00 €"
-        assert rows[0]["Structure"] == incidents[0].venue.managingOfferer.name
+        assert rows[0]["Entité"] == incidents[0].venue.managingOfferer.name
         assert rows[0]["Porteur de l'offre (lieu)"] == incidents[0].venue.name
         assert rows[0]["Origine de la demande"] == incidents[0].details["origin"]
 
