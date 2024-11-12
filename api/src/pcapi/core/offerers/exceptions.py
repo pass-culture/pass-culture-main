@@ -81,7 +81,7 @@ class CannotSuspendOffererWithBookingsException(ClientError):
     def __init__(self) -> None:
         super().__init__(
             "cannotSuspendOffererWithBookingsException",
-            "Structure juridique non désactivable car elle contient des réservations",
+            "Entité non désactivable car elle contient des réservations",
         )
 
 
@@ -89,7 +89,7 @@ class CannotDeleteOffererWithBookingsException(ClientError):
     def __init__(self) -> None:
         super().__init__(
             "cannotDeleteOffererWithBookingsException",
-            "Structure juridique non supprimable car elle contient des réservations",
+            "Entité non supprimable car elle contient des réservations",
         )
 
 
@@ -97,7 +97,7 @@ class CannotDeleteVenueWithBookingsException(ClientError):
     def __init__(self) -> None:
         super().__init__(
             "cannotDeleteVenueWithBookingsException",
-            "Lieu non supprimable car il contient des réservations",
+            "Partenaire culturel non supprimable car il contient des réservations",
         )
 
 
@@ -105,7 +105,7 @@ class CannotDeleteVenueUsedAsPricingPointException(ClientError):
     def __init__(self) -> None:
         super().__init__(
             "cannotDeleteVenueUsedAsPricingPointException",
-            "Lieu non supprimable car il est utilisé comme point de valorisation d'un autre lieu",
+            "Partenaire culturel non supprimable car il est utilisé comme point de valorisation d'un autre partenaire culturel",
         )
 
 
@@ -113,7 +113,7 @@ class CannotDeleteVenueUsedAsReimbursementPointException(ClientError):
     def __init__(self) -> None:
         super().__init__(
             "cannotDeleteVenueUsedAsReimbursementPointException",
-            "Lieu non supprimable car il est utilisé comme point de remboursement d'un autre lieu",
+            "Partenaire culturel non supprimable car il est utilisé comme point de remboursement d'un autre partenaire culturel",
         )
 
 

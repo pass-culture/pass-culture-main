@@ -58,7 +58,7 @@ class IndividualOffersAlgoliaSearchAttributes(enum.Enum):
     DATE = "Date"
     DEPARTMENT = "Département"
     EAN = "EAN-13"
-    VENUE = "Lieu"
+    VENUE = forms_utils.VenueRenaming("Lieu", "Partenaire culturel")
     REGION = "Région"
     SUBCATEGORY = "Sous-catégorie"
     OFFERER = "Entité"
@@ -456,7 +456,7 @@ class OfferAlgoliaSearchSubForm(forms_utils.PCForm):
         ],
     )
     venue = fields.PCTomSelectField(
-        "Lieux",
+        typing.cast(str, forms_utils.VenueRenaming("Lieux", "Partenaires culturels")),
         multiple=True,
         choices=[],
         validate_choice=False,

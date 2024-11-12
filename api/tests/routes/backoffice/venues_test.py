@@ -2892,7 +2892,7 @@ class GetRemoveSiretFormTest(GetEndpointHelper):
         response = authenticated_client.get(url_for(self.endpoint, venue_id=venue.id))
 
         assert response.status_code == 400
-        assert html_parser.extract_alert(response.data) == "La structure gérant ce lieu n'a pas d'autre lieu avec SIRET"
+        assert html_parser.extract_alert(response.data) == "L'entité gérant ce lieu n'a pas d'autre lieu avec SIRET"
 
     def test_venue_with_high_yearly_revenue(self, authenticated_client):
         venue = offerers_factories.VenueFactory()

@@ -237,7 +237,7 @@ def check_can_remove_siret(
             for offerer_venue in venue.managingOfferer.managedVenues
             if offerer_venue.siret and offerer_venue.id != venue.id
         ):
-            raise CheckError(f"La structure gérant ce {venue_label} n'a pas d'autre {venue_label} avec SIRET")
+            raise CheckError(f"L'entité gérant ce {venue_label} n'a pas d'autre {venue_label} avec SIRET")
 
     if not comment:
         raise CheckError("Le commentaire est obligatoire")
@@ -270,6 +270,11 @@ def remove_siret(
     old_siret = venue.siret
     now = datetime.datetime.utcnow()
 
+    if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
+        venue_label = "partenaire culturel"
+    else:
+        venue_label = "lieu"
+
     new_siret: str | None = None
     if new_pricing_point_id:
         new_pricing_point_venue: offerers_models.Venue = offerers_models.Venue.query.filter(
@@ -278,7 +283,9 @@ def remove_siret(
             offerers_models.Venue.siret.is_not(None),
         ).one_or_none()
         if not new_pricing_point_venue:
-            raise CheckError("Le nouveau point de valorisation doit être un lieu avec SIRET sur la même structure")
+            raise CheckError(
+                f"Le nouveau point de valorisation doit être un {venue_label} avec SIRET sur la même entité"
+            )
         new_siret = new_pricing_point_venue.siret
 
     with db.session.no_autoflush:  # do not flush anything before commit
@@ -350,19 +357,24 @@ def check_can_remove_pricing_point(
     venue: offerers_models.Venue,
     override_revenue_check: bool = False,
 ) -> None:
+    if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
+        venue_label = "partenaire culturel"
+    else:
+        venue_label = "lieu"
+
     if venue.siret:
-        raise CheckError("Vous ne pouvez supprimer le point de valorisation d'un lieu avec SIRET")
+        raise CheckError(f"Vous ne pouvez supprimer le point de valorisation d'un {venue_label} avec SIRET")
 
     if not venue.current_pricing_point:
-        raise CheckError("Ce lieu n'a pas de point de valorisation actif")
+        raise CheckError(f"Ce {venue_label} n'a pas de point de valorisation actif")
 
     # Same conditions as in `check_can_remove_siret`
     if has_pending_pricings(venue):
-        raise CheckError("Ce lieu a des valorisations en attente")
+        raise CheckError(f"Ce {venue_label} a des valorisations en attente")
     if not override_revenue_check:
         revenue = get_yearly_revenue(venue.id)
         if revenue and revenue >= YEARLY_REVENUE_THRESHOLD:
-            raise CheckError(f"Ce lieu a un chiffre d'affaires de l'année élevé : {revenue}")
+            raise CheckError(f"Ce {venue_label} a un chiffre d'affaires de l'année élevé : {revenue}")
 
 
 def remove_pricing_point_link(
