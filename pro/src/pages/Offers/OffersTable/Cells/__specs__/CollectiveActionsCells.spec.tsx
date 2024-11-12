@@ -47,7 +47,6 @@ vi.mock('react-router-dom', async () => {
 const mockLogEvent = vi.fn()
 
 const mockDeselectOffer = vi.fn()
-const notifyError = vi.fn()
 const renderCollectiveActionsCell = (
   props: Partial<CollectiveActionsCellsProps> = {},
   features: string[] = []
@@ -82,6 +81,7 @@ vi.mock('apiClient/api', () => ({
     duplicateCollectiveOffer: vi.fn(),
     attachOfferImage: vi.fn(),
     getCollectiveOfferTemplate: vi.fn(),
+    patchCollectiveOffersTemplateActiveStatus: vi.fn(),
   },
 }))
 vi.spyOn(localStorageAvailable, 'localStorageAvailable').mockImplementationOnce(
@@ -89,14 +89,17 @@ vi.spyOn(localStorageAvailable, 'localStorageAvailable').mockImplementationOnce(
 )
 
 describe('CollectiveActionsCells', () => {
+  const notifyError = vi.fn()
+  const notifySuccess = vi.fn()
+
   beforeEach(async () => {
     const notifsImport = (await vi.importActual(
       'commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,
+      success: notifySuccess,
       error: notifyError,
-      success: vi.fn(),
     }))
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
@@ -462,13 +465,35 @@ describe('CollectiveActionsCells', () => {
             CollectiveOfferAllowedAction.CAN_CANCEL,
           ],
         }),
+      }, ['ENABLE_COLLECTIVE_NEW_STATUSES'])
+
+      await userEvent.click(screen.getByTitle('Action'))
+
+      expect(screen.getByText('Annuler la réservation')).toBeInTheDocument()
+    })
+
+  it('should allow to hide template offer when the ENABLE_COLLECTIVE_NEW_STATUSES FF is enabled', async () => {
+    renderCollectiveActionsCell(
+      {
+        offer: collectiveOfferFactory({
+          isShowcase: true,
+          allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_HIDE],
+        }),
       },
       ['ENABLE_COLLECTIVE_NEW_STATUSES']
     )
 
     await userEvent.click(screen.getByTitle('Action'))
 
-    expect(screen.getByText('Annuler la réservation')).toBeInTheDocument()
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Mettre en pause',
+      })
+    )
+
+    expect(notifySuccess).toHaveBeenCalledWith(
+      'Votre offre est mise en pause et n’est plus visible sur ADAGE'
+    )
   })
 
   it('should not show cancel button when ENABLE_COLLECTIVE_NEW_STATUSES and offer has not CAN_CANCEL allowed action', async () => {
@@ -482,8 +507,32 @@ describe('CollectiveActionsCells', () => {
       ['ENABLE_COLLECTIVE_NEW_STATUSES']
     )
 
+      expect(screen.queryByText('Annuler la réservation')).not.toBeInTheDocument()
+  })
+
+  it('should allow to publish template offer when the ENABLE_COLLECTIVE_NEW_STATUSES FF is enabled', async () => {
+    renderCollectiveActionsCell(
+      {
+        offer: collectiveOfferFactory({
+          isShowcase: true,
+          allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_PUBLISH],
+          isActive: false,
+          displayedStatus: CollectiveOfferDisplayedStatus.INACTIVE,
+        }),
+      },
+      ['ENABLE_COLLECTIVE_NEW_STATUSES']
+    )
+
     await userEvent.click(screen.getByTitle('Action'))
 
-    expect(screen.queryByText('Annuler la réservation')).not.toBeInTheDocument()
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Publier',
+      })
+    )
+
+    expect(notifySuccess).toHaveBeenCalledWith(
+      'Votre offre est maintenant active et visible dans ADAGE'
+    )
   })
 })

@@ -215,7 +215,7 @@ export const OfferEducationalActions = ({
           {canHideOffer && (
             <Button
               icon={fullHideIcon}
-              onClick={activateOffer}
+              onClick={() => setIsOfferActive(false)}
               variant={ButtonVariant.TERNARY}
               className={style['button-link']}
             >
@@ -225,11 +225,11 @@ export const OfferEducationalActions = ({
           {canPublishOffer && (
             <Button
               icon={strokeCheckIcon}
-              onClick={activateOffer}
+              onClick={() => setIsOfferActive(true)}
               variant={ButtonVariant.TERNARY}
               className={style['button-link']}
             >
-              Publier sur ADAGE
+              Publier
             </Button>
           )}
           {shouldDisplayAdagePublicationButton && (

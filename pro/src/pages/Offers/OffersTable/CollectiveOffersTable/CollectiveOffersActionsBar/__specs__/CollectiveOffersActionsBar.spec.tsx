@@ -7,6 +7,7 @@ import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   CollectiveOfferStatus,
+  CollectiveOfferTemplateAllowedAction,
   CollectiveOffersStockResponseModel,
 } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
@@ -598,5 +599,57 @@ describe('ActionsBar', () => {
     expect(mockMutate).toHaveBeenCalledWith(
       expect.arrayContaining(['getCollectiveOffersTemplate'])
     )
+  })
+
+  it('should display new wording and allowedAction when the FF ENABLE_COLLECTIVE_NEW_STATUSES is enabled ', async () => {
+    renderActionsBar(
+      {
+        ...props,
+        areTemplateOffers: true,
+        selectedOffers: [
+          collectiveOfferFactory({
+            isShowcase: true,
+            status: CollectiveOfferStatus.INACTIVE,
+            hasBookingLimitDatetimesPassed: false,
+            allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_PUBLISH],
+          }),
+        ],
+      },
+      ['ENABLE_COLLECTIVE_NEW_STATUSES']
+    )
+
+    await userEvent.click(screen.getByText('Publier'))
+
+    expect(api.patchCollectiveOffersTemplateActiveStatus).toHaveBeenCalledTimes(
+      1
+    )
+
+    expect(screen.getByText('1 offre a bien été publiée')).toBeInTheDocument()
+  })
+
+  it('should display error message when trying to publish offer bookable when the FF ENABLE_COLLECTIVE_NEW_STATUSES is enabled', async () => {
+    renderActionsBar(
+      {
+        ...props,
+        areTemplateOffers: true,
+        selectedOffers: [
+          collectiveOfferFactory({
+            isShowcase: false,
+            status: CollectiveOfferStatus.INACTIVE,
+            hasBookingLimitDatetimesPassed: false,
+            allowedActions: [],
+          }),
+        ],
+      },
+      ['ENABLE_COLLECTIVE_NEW_STATUSES']
+    )
+
+    await userEvent.click(screen.getByText('Publier'))
+
+    expect(
+      screen.getByText(
+        'Seules les offres vitrines au statut en pause peuvent être publiées.'
+      )
+    ).toBeInTheDocument()
   })
 })
