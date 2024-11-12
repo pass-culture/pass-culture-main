@@ -16,7 +16,6 @@ from sqlalchemy import Column
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
-from sqlalchemy import Numeric
 from sqlalchemy import String
 from sqlalchemy import TEXT
 from sqlalchemy import Text
@@ -26,8 +25,6 @@ from sqlalchemy import cast
 from sqlalchemy import func
 import sqlalchemy.dialects.postgresql as sa_psql
 from sqlalchemy.dialects.postgresql.json import JSONB
-from sqlalchemy.event import listens_for
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext import mutable as sa_mutable
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
@@ -66,8 +63,6 @@ from pcapi.utils import crypto
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import siren as siren_utils
 from pcapi.utils.date import METROPOLE_TIMEZONE
-from pcapi.utils.date import get_department_timezone
-from pcapi.utils.date import get_postal_code_timezone
 from pcapi.utils.date import numranges_to_timespan_str
 import pcapi.utils.db as db_utils
 from pcapi.utils.human_ids import humanize
@@ -216,10 +211,6 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
 
     departementCode = Column(String(3), nullable=True, index=True)
 
-    latitude: decimal.Decimal | None = Column(Numeric(8, 5), nullable=True)
-
-    longitude: decimal.Decimal | None = Column(Numeric(8, 5), nullable=True)
-
     venueProviders: list["providers_models.VenueProvider"] = relationship("VenueProvider", back_populates="venue")
 
     managingOffererId: int = Column(BigInteger, ForeignKey("offerer.id"), nullable=False, index=True)
@@ -231,19 +222,8 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     bookingEmail = Column(String(120), nullable=True)
     sa.Index("idx_venue_bookingEmail", bookingEmail)
 
-    _address = Column("address", String(200), nullable=True)
-
-    _street = Column("street", Text(), nullable=True)
-
-    postalCode = Column(String(6), nullable=True)
-
-    city = Column(String(50), nullable=True)
-
-    # banId is a unique interoperability key for French addresses registered in the
-    # Base Adresse Nationale. See "cle_interop" here:
-    # https://doc.adresse.data.gouv.fr/mettre-a-jour-sa-base-adresse-locale/le-format-base-adresse-locale
-    banId = Column(Text(), nullable=True)
-
+    # TODO: remove the timezone when the virtual venues are cleaned
+    # This is required to get the digital offer's timezone
     timezone: str = Column(String(50), nullable=False, default=METROPOLE_TIMEZONE, server_default=METROPOLE_TIMEZONE)
 
     publicName = Column(String(255), nullable=True)
@@ -389,24 +369,6 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
         "OffererAddress", foreign_keys=[offererAddressId], back_populates="venues"
     )
 
-    def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:
-        if street:
-            self.street = street  # type: ignore[method-assign]
-        super().__init__(**kwargs)
-
-    @hybrid_property
-    def street(self) -> str | None:
-        return self._address
-
-    @street.setter  # type: ignore[no-redef]
-    def street(self, value: str | None) -> None:
-        self._address = value
-        self._street = value
-
-    @street.expression  # type: ignore[no-redef]
-    def street(cls):  # pylint: disable=no-self-argument
-        return cls._address
-
     def _get_type_banner_url(self) -> str | None:
         elligible_banners: tuple[str, ...] = VENUE_TYPE_DEFAULT_BANNERS.get(self.venueTypeCode, tuple())
         try:
@@ -480,18 +442,6 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     def is_eligible_for_search(self) -> bool:
         not_administrative = self.venueTypeCode != VenueTypeCode.ADMINISTRATIVE
         return bool(self.isPermanent) and self.managingOfferer.isActive and not_administrative
-
-    def store_departement_code(self) -> None:
-        if not self.postalCode:
-            return
-        self.departementCode = postal_code_utils.PostalCode(self.postalCode).get_departement_code()
-
-    def store_timezone(self) -> None:
-        self.timezone = (
-            get_department_timezone(self.departementCode)
-            if self.departementCode
-            else get_postal_code_timezone(self.managingOfferer.postalCode)
-        )
 
     @property
     def last_collective_dms_application(self) -> educational_models.CollectiveDmsApplication | None:
@@ -799,24 +749,6 @@ class VenueContact(PcObject, Base, Model):
         if field not in type(self).__table__.columns:
             raise ValueError(f"Unknown field {field} for model {type(self)}")
         return getattr(self, field) != value
-
-
-@listens_for(Venue, "before_insert")
-def before_insert(mapper: typing.Any, connect: typing.Any, venue: Venue) -> None:
-    _fill_departement_code_and_timezone(venue)
-
-
-@listens_for(Venue, "before_update")
-def before_update(mapper: typing.Any, connect: typing.Any, venue: Venue) -> None:
-    _fill_departement_code_and_timezone(venue)
-
-
-def _fill_departement_code_and_timezone(venue: Venue) -> None:
-    if not venue.isVirtual:
-        if not venue.postalCode:
-            raise IntegrityError(None, None, None)
-        venue.store_departement_code()
-    venue.store_timezone()
 
 
 class VenuePricingPointLink(Base, Model):

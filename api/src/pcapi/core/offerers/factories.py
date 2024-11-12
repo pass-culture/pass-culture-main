@@ -11,7 +11,6 @@ from pcapi.models import feature
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import crypto
 from pcapi.utils import siren as siren_utils
-from pcapi.utils.date import get_department_timezone
 from pcapi.utils.date import timespan_str_to_numrange
 import pcapi.utils.postal_code as postal_code_utils
 
@@ -76,14 +75,7 @@ class VenueFactory(BaseFactory):
         model = models.Venue
 
     name = factory.Sequence("Le Petit Rintintin {}".format)
-    latitude: float | None = 48.87004
-    longitude: float | None = 2.37850
     managingOfferer = factory.SubFactory(OffererFactory)
-    street = factory.LazyAttribute(lambda o: None if o.isVirtual else "1 boulevard Poissonnière")
-    banId = factory.LazyAttribute(lambda o: None if o.isVirtual else "75102_7560_00001")
-    postalCode = factory.LazyAttribute(lambda o: None if o.isVirtual else "75002")
-    departementCode = factory.LazyAttribute(lambda o: None if o.isVirtual else _get_department_code(o.postalCode))
-    city = factory.LazyAttribute(lambda o: None if o.isVirtual else "Paris")
     publicName = factory.SelfAttribute("name")
     siret = factory.LazyAttributeSequence(
         lambda o, n: siren_utils.complete_siren_or_siret(f"{o.managingOfferer.siren}{n:04}")
@@ -99,20 +91,11 @@ class VenueFactory(BaseFactory):
     contact = factory.RelatedFactory("pcapi.core.offerers.factories.VenueContactFactory", factory_related_name="venue")
     bookingEmail = factory.Sequence("venue{}@example.net".format)
     dmsToken = factory.LazyFunction(api.generate_dms_token)
-    timezone = factory.LazyAttribute(lambda venue: get_department_timezone(venue.departementCode))
     _bannerUrl = None
     offererAddress = factory.SubFactory(
         "pcapi.core.offerers.factories.OffererAddressOfVenueFactory",
         address=factory.SubFactory(
             "pcapi.core.geography.factories.AddressFactory",
-            banId=factory.SelfAttribute("...banId"),
-            street=factory.SelfAttribute("...street"),
-            postalCode=factory.SelfAttribute("...postalCode"),
-            city=factory.SelfAttribute("...city"),
-            latitude=factory.SelfAttribute("...latitude"),
-            longitude=factory.SelfAttribute("...longitude"),
-            timezone=factory.SelfAttribute("...timezone"),
-            departmentCode=factory.SelfAttribute("...departementCode"),
         ),
         offerer=factory.SelfAttribute("..managingOfferer"),
     )
@@ -233,12 +216,6 @@ class GooglePlacesInfoFactory(BaseFactory):
 
 class VirtualVenueFactory(VenueFactory):
     isVirtual = True
-    street = None
-    departementCode = None
-    postalCode = None
-    city = None
-    latitude = None
-    longitude = None
     siret = None
     audioDisabilityCompliant = None
     mentalDisabilityCompliant = None
