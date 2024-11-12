@@ -1,5 +1,4 @@
 import csv
-from datetime import date
 import logging
 import pathlib
 import tempfile
@@ -22,10 +21,10 @@ logger = logging.getLogger(__name__)
 
 
 OFFERER_INFORMATION = {
-    settings.CGR_EMAIL: {"parent_folder_id": settings.CGR_GOOGLE_DRIVE_CSV_REIMBURSEMENT_ID, "structure_name": "CGR"},
+    settings.CGR_EMAIL: {"parent_folder_id": settings.CGR_GOOGLE_DRIVE_CSV_REIMBURSEMENT_ID, "offerer_name": "CGR"},
     settings.KINEPOLIS_EMAIL: {
         "parent_folder_id": settings.KINEPOLIS_GOOGLE_DRIVE_CSV_REIMBURSEMENT_ID,
-        "structure_name": "KINEPOLIS",
+        "offerer_name": "KINEPOLIS",
     },
 }
 
@@ -53,16 +52,30 @@ def _get_all_invoices(user_id: int, batch_id: int) -> list:
     return invoices
 
 
-def _get_filename(structure_name: str) -> str:
-    today_date = date.today().strftime("%Y%m%d")
-    return f"{today_date}_{structure_name}_remboursements.csv"
+def _get_filename(offerer_name: str, batch_label: str) -> str:
+    return f"{batch_label}_{offerer_name}_remboursements.csv"
 
 
 def _create_and_get_csv_file(user_id: int, batch_id: int, parent_folder_id: str, filename: str) -> str | None:
     invoices = _get_all_invoices(user_id, batch_id)
+    gdrive_api = googledrive.get_backend()
 
     if len(invoices) == 0:
         logger.info("Zero invoice for user", extra={"user_id": user_id})
+        return None
+    try:
+        file_already_exists_for_this_batch = gdrive_api.search_file(parent_folder_id, filename)
+    except ValueError:
+        logger.exception(
+            "Multiple reimbursement csv files",
+            extra={"user_id": user_id, "batch_id": batch_id, "filename": filename},
+        )
+        return None
+    if file_already_exists_for_this_batch:
+        logger.info(
+            "Reimbursement csv file already exists for this batch and user",
+            extra={"user_id": user_id, "batch_id": batch_id, "filename": filename},
+        )
         return None
 
     reimbursement_details = find_reimbursement_details_by_invoices([invoice.reference for invoice in invoices])
@@ -73,8 +86,6 @@ def _create_and_get_csv_file(user_id: int, batch_id: int, parent_folder_id: str,
         writer = csv.writer(fp, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
         writer.writerow(headers)
         writer.writerows(csv_lines)
-
-    gdrive_api = googledrive.get_backend()
 
     try:
         link_to_csv = gdrive_api.create_file(
@@ -87,13 +98,13 @@ def _create_and_get_csv_file(user_id: int, batch_id: int, parent_folder_id: str,
     return link_to_csv
 
 
-def export_csv_and_send_notfication_emails(batch_id: int) -> None:
+def export_csv_and_send_notification_emails(batch_id: int, batch_label: str) -> None:
     for email, infos in OFFERER_INFORMATION.items():
         try:
             user = user_models.User.query.filter_by(email=email).one()
         except NoResultFound:
             logger.exception("Email is not linked to any user", extra={"email": email})
-        filename = _get_filename(infos["structure_name"])
+        filename = _get_filename(infos["offerer_name"], batch_label)
         link_to_csv = _create_and_get_csv_file(user.id, batch_id, infos["parent_folder_id"], filename)
         if link_to_csv is not None:
             data = _get_csv_reimbursement_email_data(link_to_csv)
