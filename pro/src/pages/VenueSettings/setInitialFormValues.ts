@@ -14,12 +14,14 @@ export const setInitialFormValues = ({
   const addressFields =
     isOfferAddressEnabled && venue.address ? venue.address : venue
 
+  let autoCompleteStreet = addressFields.street ? addressFields.street + ' ' : '';
+
   return {
     street: addressFields.street || '',
     postalCode: addressFields.postalCode || '',
     city: addressFields.city || '',
-    addressAutocomplete: `${addressFields.street} ${addressFields.postalCode} ${addressFields.city}`,
-    'search-addressAutocomplete': `${addressFields.street} ${addressFields.postalCode} ${addressFields.city}`,
+    addressAutocomplete: `${autoCompleteStreet}${addressFields.postalCode} ${addressFields.city}`,
+    'search-addressAutocomplete': `${autoCompleteStreet}${addressFields.postalCode} ${addressFields.city}`,
     coords: `${addressFields.latitude}, ${addressFields.longitude}`,
     latitude: String(addressFields.latitude) || '',
     longitude: String(addressFields.longitude) || '',
