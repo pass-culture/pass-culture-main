@@ -19,6 +19,7 @@ import sqlalchemy.orm as sa_orm
 from sqlalchemy.orm import declared_attr
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.elements import BinaryExpression
+from sqlalchemy.sql.elements import BooleanClauseList
 from sqlalchemy.sql.elements import False_
 from sqlalchemy.sql.elements import UnaryExpression
 from sqlalchemy.sql.functions import func
@@ -1182,8 +1183,11 @@ class CollectiveOfferTemplate(
         return self.end < datetime.utcnow()
 
     @hasEndDatePassed.expression  # type: ignore[no-redef]
-    def hasEndDatePassed(cls) -> Exists:  # pylint: disable=no-self-argument
-        return cls.dateRange.contained_by(psycopg2.extras.DateTimeRange(upper=datetime.utcnow()))
+    def hasEndDatePassed(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
+        return sa.and_(
+            cls.dateRange.is_not(None),
+            cls.dateRange.contained_by(psycopg2.extras.DateTimeRange(upper=datetime.utcnow())),
+        )
 
     @hybrid_property
     def hasBookingLimitDatetimesPassed(self) -> bool:

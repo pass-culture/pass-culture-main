@@ -13,6 +13,7 @@ from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferAllowedAction
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
+from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.models import HasImageMixin
@@ -753,7 +754,7 @@ class CollectiveOfferAllowedActionsTest:
         )
 
     @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
-    def test_get_offer_allowed_actions_for_cancelled_with_booking_with_new_statuses(self):
+    def test_get_offer_allowed_actions_for_cancelled_with_booking(self):
         offer = factories.CancelledWithBookingCollectiveOfferFactory()
         assert offer.allowedActions == list(ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[CollectiveOfferDisplayedStatus.EXPIRED])
 
@@ -824,3 +825,32 @@ class CollectiveOfferAllowedActionsTest:
     def test_get_offer_template_allowed_actions(self, status):
         offer = factories.create_collective_offer_template_by_status(status)
         assert offer.allowedActions == list(TEMPLATE_ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[status])
+
+
+class CollectiveOfferTemplateHasEndDatePassedTest:
+    def test_has_end_date_passed(self):
+        offer_without_range = factories.CollectiveOfferTemplateFactory(dateRange=None)
+        assert offer_without_range.dateRange is None
+        assert not offer_without_range.hasEndDatePassed
+
+        offer_with_range = factories.CollectiveOfferTemplateFactory()
+        assert offer_with_range.dateRange is not None
+        assert not offer_with_range.hasEndDatePassed
+
+        now = datetime.datetime.utcnow()
+        date_range = db_utils.make_timerange(
+            start=now - datetime.timedelta(days=3),
+            end=now - datetime.timedelta(days=1),
+        )
+        offer_passed = factories.CollectiveOfferTemplateFactory(dateRange=date_range)
+        assert offer_passed.dateRange is not None
+        assert offer_passed.hasEndDatePassed
+
+        passed_offer = CollectiveOfferTemplate.query.filter(CollectiveOfferTemplate.hasEndDatePassed.is_(True)).one()
+        assert passed_offer.id == offer_passed.id
+
+        not_passed_offers = CollectiveOfferTemplate.query.filter(
+            CollectiveOfferTemplate.hasEndDatePassed.is_(False)
+        ).all()
+        assert len(not_passed_offers) == 2
+        assert {o.id for o in not_passed_offers} == {offer_without_range.id, offer_with_range.id}
