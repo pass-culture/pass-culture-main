@@ -814,7 +814,7 @@ class ListOffersTest(GetEndpointHelper):
         offers_factories.OfferComplianceFactory(
             offer=offer,
             compliance_score=50,
-            compliance_reasons=["stock_price", "offer_subcategoryid", "offer_description"],
+            compliance_reasons=["stock_price", "offer_subcategory_id", "offer_description"],
         )
 
         query_args = {
@@ -1852,7 +1852,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         offers_factories.OfferComplianceFactory(
             offer=offer,
             compliance_score=55,
-            compliance_reasons=["stock_price", "offer_subcategoryid", "offer_description"],
+            compliance_reasons=["stock_price", "offer_subcategory_id", "offer_description"],
         )
         url = url_for(self.endpoint, offer_id=offer.id, _external=True)
         with assert_num_queries(self.expected_num_queries):

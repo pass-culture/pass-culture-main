@@ -663,7 +663,7 @@ def format_compliance_reason(feature: str) -> str:
             return "Nom de l'offre"
         case "offer_description":
             return "Description de l'offre"
-        case "offer_subcategoryid":
+        case "offer_subcategory_id" | "offer_subcategoryid":
             return "Sous-catégorie"
         case "rayon":
             return "Rayon"
@@ -671,16 +671,10 @@ def format_compliance_reason(feature: str) -> str:
             return "Macro-rayon"
         case "stock_price":
             return "Prix"
-        case "thumb_url":
+        case "image_embedding":
             return "Image de l'offre"
-        case "offer_type_label":
-            return "Genre musical / type de spectacle"
-        case "offer_sub_type_label":
-            return "Sous-genre"
-        case "author":
-            return "Auteur"
-        case "performer":
-            return "Interprète"
+        case "semantic_content_embedding":
+            return "Nom et description de l'offre"
         case _:
             return feature
 

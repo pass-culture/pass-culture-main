@@ -144,11 +144,11 @@ class GetPayloadForComplianceApiTest:
         assert payload.offer_id == str(offer.id)
         assert payload.offer_name == "Un vinyle de Taylor Swift"
         assert payload.offer_description == "C'est une chanteuse, Taylor Swift"
-        assert payload.offer_subcategoryid == "SUPPORT_PHYSIQUE_MUSIQUE_VINYLE"
+        assert payload.offer_subcategory_id == "SUPPORT_PHYSIQUE_MUSIQUE_VINYLE"
         assert payload.rayon is None
         assert payload.macro_rayon is None
         assert payload.stock_price == expensive_stock.price
-        assert payload.thumb_url == mediation.thumbUrl
+        assert payload.image_url == mediation.thumbUrl
         assert payload.offer_type_label == "Country"
         assert payload.offer_sub_type_label == "Country Pop"
         assert payload.author == "Taylor Swift"
