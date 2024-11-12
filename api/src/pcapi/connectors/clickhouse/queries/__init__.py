@@ -1,2 +1,4 @@
+from .yearly_revenue import YearlyAggregatedCollectiveRevenueQuery
+from .yearly_revenue import YearlyAggregatedIndividualRevenueQuery
 from .yearly_revenue import YearlyAggregatedRevenueModel
 from .yearly_revenue import YearlyAggregatedRevenueQuery

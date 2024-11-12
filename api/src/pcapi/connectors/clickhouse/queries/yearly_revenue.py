@@ -7,18 +7,30 @@ from pcapi.connectors.clickhouse.queries.base import BaseQuery
 from pcapi.routes.serialization.offers_serialize import to_camel
 
 
-class Revenue(pydantic_v1.BaseModel):
-    total: Decimal
+class IndividualRevenue(pydantic_v1.BaseModel):
     individual: Decimal
+
+    class Config:
+        extra = "forbid"
+
+
+class CollectiveRevenue(pydantic_v1.BaseModel):
     collective: Decimal
 
     class Config:
         extra = "forbid"
 
 
+class CollectiveAndIndividualRevenue(IndividualRevenue, CollectiveRevenue):
+    total: Decimal
+
+    class Config:
+        extra = "forbid"
+
+
 class AggregatedRevenue(pydantic_v1.BaseModel):
-    revenue: Revenue
-    expected_revenue: Revenue
+    revenue: CollectiveAndIndividualRevenue | CollectiveRevenue | IndividualRevenue
+    expected_revenue: CollectiveAndIndividualRevenue | CollectiveRevenue | IndividualRevenue
 
     class Config:
         extra = "forbid"
@@ -33,7 +45,7 @@ class YearlyAggregatedRevenueModel(pydantic_v1.BaseModel):
         alias_generator = to_camel
 
 
-class YearlyAggregatedRevenueQuery(BaseQuery[YearlyAggregatedRevenueModel]):
+class YearlyAggregatedRevenueQueryMixin:
     def _format_result(self, results: list) -> dict:
         return {
             "incomeByYear": {
@@ -45,6 +57,54 @@ class YearlyAggregatedRevenueQuery(BaseQuery[YearlyAggregatedRevenueModel]):
             }
         }
 
+    @property
+    def model(self) -> type[YearlyAggregatedRevenueModel]:
+        return YearlyAggregatedRevenueModel
+
+
+class YearlyAggregatedCollectiveRevenueQuery(
+    YearlyAggregatedRevenueQueryMixin, BaseQuery[YearlyAggregatedRevenueModel]
+):
+    @property
+    def raw_query(self) -> str:
+        return """
+            SELECT
+                EXTRACT(YEAR FROM creation_year) AS year,
+                toJSONString(map(
+                    'collective', ROUND(SUM(revenue),2),
+                ) as revenue,
+                toJSONString(map(
+                    'collective', ROUND(SUM(expected_revenue),2),
+                ) as expected_revenue
+            FROM analytics.yearly_aggregated_venue_collective_revenue
+            WHERE "venue_id" in %s
+            GROUP BY year
+            ORDER BY year
+        """
+
+
+class YearlyAggregatedIndividualRevenueQuery(
+    YearlyAggregatedRevenueQueryMixin, BaseQuery[YearlyAggregatedRevenueModel]
+):
+    @property
+    def raw_query(self) -> str:
+        return """
+            SELECT
+                EXTRACT(YEAR FROM creation_year) AS year,
+                toJSONString(map(
+                    'individual', ROUND(SUM(revenue),2),
+                ) as revenue,
+                toJSONString(map(
+                    'individual', ROUND(SUM(expected_revenue),2),
+                ) as expected_revenue
+            FROM analytics.yearly_aggregated_venue_individual_revenue
+            WHERE "venue_id" in %s
+            GROUP BY year
+            ORDER BY year
+        """
+
+
+class YearlyAggregatedRevenueQuery(YearlyAggregatedRevenueQueryMixin, BaseQuery[YearlyAggregatedRevenueModel]):
     @property
     def raw_query(self) -> str:
         return """
@@ -65,7 +125,3 @@ class YearlyAggregatedRevenueQuery(BaseQuery[YearlyAggregatedRevenueModel]):
             GROUP BY year
             ORDER BY year
         """
-
-    @property
-    def model(self) -> type[YearlyAggregatedRevenueModel]:
-        return YearlyAggregatedRevenueModel
