@@ -690,6 +690,7 @@ class GetPublicAccountTest(GetEndpointHelper):
     def test_get_public_account_with_unconfirmed_modified_email(self, authenticated_client):
         user = users_factories.UserFactory()
         users_factories.EmailUpdateEntryFactory(user=user)
+        users_factories.EmailConfirmationEntryFactory(user=user)
         users_factories.NewEmailSelectionEntryFactory(user=user)
         user_id = user.id
 
@@ -703,8 +704,9 @@ class GetPublicAccountTest(GetEndpointHelper):
     def test_get_public_account_with_confirmed_modified_email(self, authenticated_client):
         user = users_factories.UserFactory()
         users_factories.EmailUpdateEntryFactory(user=user)
-        users_factories.NewEmailSelectionEntryFactory(user=user)
         users_factories.EmailConfirmationEntryFactory(user=user)
+        users_factories.NewEmailSelectionEntryFactory(user=user)
+        users_factories.EmailValidationEntryFactory(user=user)
         user_id = user.id
 
         with assert_num_queries(self.expected_num_queries):
