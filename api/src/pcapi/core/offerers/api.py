@@ -948,8 +948,8 @@ def create_offerer(
         author = user
 
     if offerer is not None:
-        # The user can have his attachment rejected or deleted to the structure,
-        # in this case it is passed to NEW if the structure is not rejected
+        # The user can have his attachment rejected or deleted to the offerer,
+        # in this case it is passed to NEW if the offerer is not rejected
         user_offerer = offerers_models.UserOfferer.query.filter_by(userId=user.id, offererId=offerer.id).one_or_none()
         if not user_offerer:
             user_offerer = models.UserOfferer(offerer=offerer, user=user, validationStatus=ValidationStatus.NEW)
@@ -1295,7 +1295,7 @@ def reject_offerer(
         reject_offerer_attachment(
             user_offerer,
             author_user,
-            "Compte pro rejeté suite au rejet de la structure",
+            "Compte pro rejeté suite au rejet de l'entité",
             send_email=(user_offerer.user not in applicants),  # do not send a second email
         )
 

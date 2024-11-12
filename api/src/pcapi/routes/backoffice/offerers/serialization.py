@@ -4,7 +4,7 @@ from pcapi.routes.serialization import BaseModel
 
 class OffererBankInformationStatus(BaseModel):
     """
-    le nombre de lieux dont les infos permettent (ok), ou pas (ko), les remboursements
+    le nombre de partenaires culturels dont les infos permettent (ok), ou pas (ko), les remboursements
     """
 
     ko: int

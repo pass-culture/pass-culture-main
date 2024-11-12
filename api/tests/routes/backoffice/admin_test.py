@@ -549,7 +549,9 @@ class GetBoUserTest(GetEndpointHelper):
             perm_models.Roles.SUPPORT_N2.value,
             perm_models.Roles.SUPPORT_PRO.value,
         ]
-        assert "visualiser une structure, un lieu ou un compte pro" in " ".join([row["Permissions"] for row in rows])
+        assert "visualiser une entité, un partenaire culturel ou un compte pro" in " ".join(
+            [row["Permissions"] for row in rows]
+        )
 
     @pytest.mark.parametrize("user_factory", [users_factories.BeneficiaryGrant18Factory, users_factories.ProFactory])
     def test_get_non_bo_user(self, authenticated_client, user_factory):

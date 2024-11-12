@@ -151,7 +151,7 @@ class DeleteVenueTest:
 
         # Then
         assert exception.value.errors["cannotDeleteVenueWithBookingsException"] == [
-            "Lieu non supprimable car il contient des réservations"
+            "Partenaire culturel non supprimable car il contient des réservations"
         ]
         assert offerers_models.Venue.query.count() == 1
         assert offers_models.Stock.query.count() == 1
@@ -168,7 +168,7 @@ class DeleteVenueTest:
 
         # Then
         assert exception.value.errors["cannotDeleteVenueWithBookingsException"] == [
-            "Lieu non supprimable car il contient des réservations"
+            "Partenaire culturel non supprimable car il contient des réservations"
         ]
         assert offerers_models.Venue.query.count() == 1
         assert educational_models.CollectiveStock.query.count() == 1
@@ -185,7 +185,7 @@ class DeleteVenueTest:
 
         # Then
         assert exception.value.errors["cannotDeleteVenueUsedAsPricingPointException"] == [
-            "Lieu non supprimable car il est utilisé comme point de valorisation d'un autre lieu"
+            "Partenaire culturel non supprimable car il est utilisé comme point de valorisation d'un autre partenaire culturel"
         ]
         assert offerers_models.Offerer.query.count() == 1
         assert offerers_models.Venue.query.count() == 2
@@ -242,7 +242,7 @@ class DeleteVenueTest:
 
         # Then
         assert exception.value.errors["cannotDeleteVenueUsedAsReimbursementPointException"] == [
-            "Lieu non supprimable car il est utilisé comme point de remboursement d'un autre lieu"
+            "Partenaire culturel non supprimable car il est utilisé comme point de remboursement d'un autre partenaire culturel"
         ]
         assert offerers_models.Offerer.query.count() == 1
         assert offerers_models.Venue.query.count() == 2
@@ -966,7 +966,7 @@ class DeleteOffererTest:
 
         # Then
         assert exception.value.errors["cannotDeleteOffererWithBookingsException"] == [
-            "Structure juridique non supprimable car elle contient des réservations"
+            "Entité non supprimable car elle contient des réservations"
         ]
         assert offerers_models.Offerer.query.count() == 1
         assert offerers_models.Venue.query.count() == 2
@@ -988,7 +988,7 @@ class DeleteOffererTest:
 
         # Then
         assert exception.value.errors["cannotDeleteOffererWithBookingsException"] == [
-            "Structure juridique non supprimable car elle contient des réservations"
+            "Entité non supprimable car elle contient des réservations"
         ]
         assert offerers_models.Offerer.query.count() == 1
         assert offerers_models.Venue.query.count() == 2
@@ -1654,7 +1654,7 @@ class RejectOffererTest:
         assert action.userId == user.id
         assert action.offererId == offerer.id
         assert action.venueId is None
-        assert action.comment == "Compte pro rejeté suite au rejet de la structure"
+        assert action.comment == "Compte pro rejeté suite au rejet de l'entité"
 
 
 def test_grant_user_offerer_access():
