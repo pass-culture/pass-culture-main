@@ -179,13 +179,13 @@ def _render_get_create_offerer_form(form: pro_forms.CreateOffererForm) -> str:
         venue_label = "lieu"
     return render_template(
         "components/turbo/modal_form.html",
-        information=f"Ce formulaire permet de créer une nouvelle structure et le {venue_label} associé dans la base de données. "
-        f"L'Acteur Culturel doit avoir créé son compte utilisateur sur PC Pro et sera ainsi rattaché à la nouvelle structure. ",
+        information=f"Ce formulaire permet de créer une nouvelle entité et le {venue_label} associé dans la base de données. "
+        f"L'Acteur Culturel doit avoir créé son compte utilisateur sur PC Pro et sera ainsi rattaché à la nouvelle entité. ",
         form=form,
         dst=url_for("backoffice_web.pro.create_offerer"),
         div_id="create-offerer-modal",  # must be consistent with parameter passed to build_lazy_modal
-        title="Créer une structure",
-        button_text="Créer la structure",
+        title="Créer une entité",
+        button_text="Créer l'entité",
         data_turbo=True,
     )
 
@@ -248,7 +248,7 @@ def create_offerer() -> utils.BackofficeResponse:
         offerer_creation_info,
         new_onboarding_info,
         author=current_user,
-        comment="Structure créée depuis le backoffice",
+        comment="Entité créée depuis le backoffice",
         ds_dossier_id=form.ds_id.data,
     )
 
@@ -282,11 +282,11 @@ def create_offerer() -> utils.BackofficeResponse:
 
     if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
         flash(
-            Markup("La structure et le partenaire culturel <b>{name}</b> ont été créés").format(name=venue.common_name),
+            Markup("L'entité et le partenaire culturel <b>{name}</b> ont été créés").format(name=venue.common_name),
             "success",
         )
     else:
-        flash(Markup("La structure et le lieu <b>{name}</b> ont été créés").format(name=venue.common_name), "success")
+        flash(Markup("L'entité et le lieu <b>{name}</b> ont été créés").format(name=venue.common_name), "success")
     return redirect(url_for("backoffice_web.offerer.get", offerer_id=user_offerer.offererId), code=303)
 
 
@@ -366,7 +366,7 @@ def _get_user_id_from_offerer_id(offerer_id: int) -> int:
     query = _get_connect_as_base_query().filter(offerers_models.UserOfferer.offererId == offerer_id)
     user_id = _get_best_user_id_for_connect_as(query)
     if not user_id:
-        raise ValueError("Aucun utilisateur approprié n'a été trouvé pour se connecter à cette structure")
+        raise ValueError("Aucun utilisateur approprié n'a été trouvé pour se connecter à cette entité")
     return user_id
 
 

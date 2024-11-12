@@ -56,7 +56,7 @@ class BaseBookingListForm(FlaskForm):
         validators=(wtforms.validators.Optional(),),
     )
     offerer = fields.PCTomSelectField(
-        "Structures",
+        "Entités",
         multiple=True,
         choices=[],
         validate_choice=False,

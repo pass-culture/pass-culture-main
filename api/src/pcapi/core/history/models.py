@@ -24,12 +24,12 @@ class ActionType(enum.Enum):
     # Update:
     INFO_MODIFIED = "Modification des informations"
     # Validation process for offerers:
-    OFFERER_NEW = "Nouvelle structure"
-    OFFERER_PENDING = "Structure mise en attente"
-    OFFERER_VALIDATED = "Structure validée"
-    OFFERER_REJECTED = "Structure rejetée"
-    OFFERER_SUSPENDED = "Structure désactivée"
-    OFFERER_UNSUSPENDED = "Structure réactivée"
+    OFFERER_NEW = "Nouvelle entité"
+    OFFERER_PENDING = "Entité mise en attente"
+    OFFERER_VALIDATED = "Entité validée"
+    OFFERER_REJECTED = "Entité rejetée"
+    OFFERER_SUSPENDED = "Entité désactivée"
+    OFFERER_UNSUSPENDED = "Entité réactivée"
     OFFERER_ATTESTATION_CHECKED = "Attestation consultée"
     # Validation process for user-offerer relationships:
     USER_OFFERER_NEW = "Nouveau rattachement"

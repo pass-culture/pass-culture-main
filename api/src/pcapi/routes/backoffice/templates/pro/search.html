@@ -7,12 +7,12 @@
       <button class="btn btn-outline-primary lead fw-bold mt-2"
               data-bs-toggle="modal"
               data-bs-target="#create-offerer-modal"
-              type="button">Créer une structure</button>
+              type="button">Créer une entité</button>
       {{ build_lazy_modal(url_for('backoffice_web.pro.get_create_offerer_form') , "create-offerer-modal") }}
     </div>
   {% endif %}
   {% call build_base_search() %}
-    Retrouve une structure ou un
+    Retrouve une entité ou un
     {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
       partenaire culturel
     {% else %}

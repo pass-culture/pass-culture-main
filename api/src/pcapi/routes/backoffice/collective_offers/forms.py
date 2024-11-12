@@ -34,7 +34,7 @@ class CollectiveOffersSearchAttributes(enum.Enum):
     VENUE = typing.cast(str, forms_utils.VenueRenaming("Lieux", "Partenaires culturels"))
     NAME = "Nom de l'offre"
     STATUS = "Statut"
-    OFFERER = "Structure"
+    OFFERER = "Entité"
     PRICE = "Prix"
 
 
@@ -135,7 +135,7 @@ class CollectiveOfferAdvancedSearchSubForm(forms_utils.PCForm):
         ],
     )
     offerer = fields.PCTomSelectField(
-        "Structures",
+        "Entités",
         multiple=True,
         choices=[],
         validate_choice=False,
@@ -206,9 +206,7 @@ class GetCollectiveOfferAdvancedSearchForm(forms.GetOffersBaseFields):
         csrf = False
 
     method = "GET"
-    only_validated_offerers = fields.PCSwitchBooleanField(
-        "Uniquement les offres des structures validées", full_row=True
-    )
+    only_validated_offerers = fields.PCSwitchBooleanField("Uniquement les offres des entités validées", full_row=True)
     search = fields.PCFieldListField(
         fields.PCFormField(CollectiveOfferAdvancedSearchSubForm),
         label="recherches",
@@ -278,10 +276,10 @@ class GetCollectiveOfferTemplatesListForm(forms.GetOffersBaseFields):
     q = fields.PCOptSearchField("ID, nom de l'offre")
     from_date = fields.PCDateField("Créées à partir du", validators=(wtforms.validators.Optional(),))
     to_date = fields.PCDateField("Jusqu'au", validators=(wtforms.validators.Optional(),))
-    only_validated_offerers = fields.PCSwitchBooleanField("Uniquement les offres des structures validées")
+    only_validated_offerers = fields.PCSwitchBooleanField("Uniquement les offres des entités validées")
     formats = fields.PCSelectMultipleField("Formats", choices=forms_utils.choices_from_enum(subcategories.EacFormat))
     offerer = fields.PCTomSelectField(
-        "Structures",
+        "Entités",
         multiple=True,
         choices=[],
         validate_choice=False,

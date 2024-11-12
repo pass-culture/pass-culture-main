@@ -52,7 +52,7 @@ class UpdateOffererOnZendeskSellTest(PostEndpointHelper):
         assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id, _external=True)
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "Cette structure ne gère que des lieux virtuels"
+            == "Cette entité ne gère que des lieux virtuels"
         )
 
         assert not testing.zendesk_sell_requests
@@ -86,7 +86,7 @@ class UpdateOffererOnZendeskSellTest(PostEndpointHelper):
         assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id, _external=True)
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "Plusieurs structures ont été trouvées dans Zendesk Sell, aucune ne peut donc être mise à jour : "
+            == "Plusieurs entités ont été trouvées dans Zendesk Sell, aucune ne peut donc être mise à jour : "
             f"Identifiant Zendesk Sell : 123, Produit Offerer ID : {offerer.id}, SIREN : {offerer.siren} "
             f"Identifiant Zendesk Sell : 456, Produit Offerer ID : {offerer.id}, SIREN :"
         )
@@ -105,7 +105,7 @@ class UpdateOffererOnZendeskSellTest(PostEndpointHelper):
         assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id, _external=True)
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "La structure n'a pas été trouvée dans Zendesk Sell"
+            == "L'entité n'a pas été trouvée dans Zendesk Sell"
         )
 
         assert not testing.zendesk_sell_requests
@@ -183,7 +183,7 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
         assert response.status_code == 303
         assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
         assert html_parser.extract_alerts(authenticated_client.get(response.location).data) == [
-            "Attention : Plusieurs structures parentes possibles ont été trouvées pour ce lieu dans Zendesk Sell. "
+            "Attention : Plusieurs entités parentes possibles ont été trouvées pour ce lieu dans Zendesk Sell. "
             f"Identifiant Zendesk Sell : 123, Produit Offerer ID : {venue.managingOffererId}, SIREN : {venue.managingOfferer.siren} "
             f"Identifiant Zendesk Sell : 456, Produit Offerer ID : {venue.managingOffererId}, SIREN :",
             "Le lieu a été mis à jour sur Zendesk Sell",
@@ -212,7 +212,7 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
         assert response.status_code == 303
         assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
         assert html_parser.extract_alerts(authenticated_client.get(response.location).data) == [
-            "Une erreur 500 s'est produite lors de la recherche de la structure parente : test",
+            "Une erreur 500 s'est produite lors de la recherche de l'entité parente : test",
             "Le lieu a été mis à jour sur Zendesk Sell",
         ]
         assert testing.zendesk_sell_requests == [

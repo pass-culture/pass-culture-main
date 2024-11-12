@@ -170,7 +170,7 @@ class ListRulesTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, offerer=42))
             assert response.status_code == 200
 
-        assert "La structure proposant l'offre est parmi Offerer ID : 42" in html_parser.content_as_text(response.data)
+        assert "L'entité proposant l'offre est parmi Offerer ID : 42" in html_parser.content_as_text(response.data)
 
     def test_search_rule_by_venue(self, authenticated_client):
         venue = offerers_factories.VenueFactory(publicName="Your flowers are beautiful")

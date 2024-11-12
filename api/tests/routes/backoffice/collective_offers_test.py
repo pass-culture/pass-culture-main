@@ -126,7 +126,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         )
         assert rows[0]["Tarif"] == "10,10 €"
         assert rows[0]["Formats"] == ", ".join([fmt.value for fmt in collective_offers[0].formats])
-        assert rows[0]["Structure"] == collective_offers[0].venue.managingOfferer.name
+        assert rows[0]["Entité"] == collective_offers[0].venue.managingOfferer.name
         assert rows[0]["Lieu"] == collective_offers[0].venue.name
 
     def test_list_collective_offers_without_fraud_permission(
@@ -169,7 +169,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             == f"{(datetime.date.today() + datetime.timedelta(days=3)).strftime('%d/%m/%Y')} → {(datetime.date.today() + datetime.timedelta(days=24)).strftime('%d/%m/%Y')}"
         )
         assert rows[0]["Tarif"] == "11,00 €"
-        assert rows[0]["Structure"] == collective_offers[1].venue.managingOfferer.name
+        assert rows[0]["Entité"] == collective_offers[1].venue.managingOfferer.name
         assert rows[0]["Lieu"] == collective_offers[1].venue.name
 
     def test_list_collective_offers_by_several_filters(self, authenticated_client, collective_offers):
@@ -728,7 +728,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert rows[0]["Structure"] == "Offerer Revue manuelle"
+        assert rows[0]["Entité"] == "Offerer Revue manuelle"
         assert rows[0]["Lieu"] == "Venue"
 
     def test_list_offers_with_venue_confidence_rule(self, client, pro_fraud_admin):
@@ -744,7 +744,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert rows[0]["Structure"] == "Offerer"
+        assert rows[0]["Entité"] == "Offerer"
         assert rows[0]["Lieu"] == "Venue Revue manuelle"
 
 

@@ -7,7 +7,7 @@
   {% set edit_offerer_tag_modal_label_id = random_hash() %}
   {% set delete_offerer_tag_modal_label_id = random_hash() %}
   <div class="pt-3 px-5">
-    <h2 class="fw-light">Tags structure</h2>
+    <h2 class="fw-light">Tags entité</h2>
     <div class="mt-4">
       {% call tabs.build_details_tabs_wrapper() %}
         {{ tabs.build_details_tab("tags", "Tags", active_tab == 'tags') }}
@@ -16,7 +16,7 @@
       {% call tabs.build_details_tabs_content_wrapper() %}
         {% call tabs.build_details_tab_content("tags", active_tab == 'tags') %}
           {% if create_tag_form %}
-            {{ build_modal_form("create-offerer-tag", url_for("backoffice_web.offerer_tag.create_offerer_tag") , create_tag_form, "Créer un tag structure", "Créer un tag structure", "Enregistrer") }}
+            {{ build_modal_form("create-offerer-tag", url_for("backoffice_web.offerer_tag.create_offerer_tag") , create_tag_form, "Créer un tag entité", "Créer un tag entité", "Enregistrer") }}
           {% endif %}
           <div>
             <table class="table mb-4">
@@ -47,14 +47,14 @@
                               <li class="dropdown-item p-0">
                                 <a class="btn btn-sm d-block w-100 text-start px-3"
                                    data-bs-toggle="modal"
-                                   data-bs-target=".pc-edit-offerer-tag-modal-{{ offerer_tag.id }}">Modifier le tag structure</a>
+                                   data-bs-target=".pc-edit-offerer-tag-modal-{{ offerer_tag.id }}">Modifier le tag entité</a>
                               </li>
                             {% endif %}
                             {% if delete_tag_form %}
                               <li class="dropdown-item p-0">
                                 <a class="btn btn-sm d-block w-100 text-start px-3"
                                    data-bs-toggle="modal"
-                                   data-bs-target=".pc-delete-offerer-tag-modal-{{ offerer_tag.id }}">Supprimer le tag structure</a>
+                                   data-bs-target=".pc-delete-offerer-tag-modal-{{ offerer_tag.id }}">Supprimer le tag entité</a>
                               </li>
                             {% endif %}
                           </ul>
@@ -104,7 +104,7 @@
                                     <div class="modal-body row">
                                       <p>
                                         Le tag <strong>{{ offerer_tag.label or offerer_tag.name }}</strong> sera définitivement supprimé
-                                        de la base de données et retiré de toutes les structures auxquelles il est associé. Veuillez confirmer ce choix.
+                                        de la base de données et retiré de toutes les entités auxquelles il est associé. Veuillez confirmer ce choix.
                                       </p>
                                       {{ build_form_fields_group(delete_tag_form) }}
                                     </div>

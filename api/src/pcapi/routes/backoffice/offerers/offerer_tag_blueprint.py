@@ -97,7 +97,7 @@ def create_offerer_tag() -> utils.BackofficeResponse:
         )
         db.session.add(tag)
         db.session.flush()
-        flash("Le nouveau tag structure a été créé", "success")
+        flash("Le nouveau tag entité a été créé", "success")
 
     except sa.exc.IntegrityError:
         repository.mark_transaction_as_invalid()

@@ -362,10 +362,10 @@ def suspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
             offerers_api.suspend_offerer(offerer, current_user, form.comment.data)
         except offerers_exceptions.CannotSuspendOffererWithBookingsException:
             repository.mark_transaction_as_invalid()
-            flash("Impossible de suspendre une structure juridique pour laquelle il existe des réservations", "warning")
+            flash("Impossible de suspendre une entité pour laquelle il existe des réservations", "warning")
         else:
             flash(
-                Markup("La structure <b>{offerer_name}</b> ({offerer_id}) a été suspendue").format(
+                Markup("L'entité <b>{offerer_name}</b> ({offerer_id}) a été suspendue").format(
                     offerer_name=offerer.name, offerer_id=offerer_id
                 ),
                 "success",
@@ -394,7 +394,7 @@ def unsuspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
     else:
         offerers_api.unsuspend_offerer(offerer, current_user, form.comment.data)
         flash(
-            Markup("La structure <b>{offerer_name}</b> ({offerer_id}) a été réactivée").format(
+            Markup("L'entité <b>{offerer_name}</b> ({offerer_id}) a été réactivée").format(
                 offerer_name=offerer.name, offerer_id=offerer_id
             ),
             "success",
@@ -421,7 +421,7 @@ def delete_offerer(offerer_id: int) -> utils.BackofficeResponse:
         offerers_api.delete_offerer(offerer.id)
     except offerers_exceptions.CannotDeleteOffererWithBookingsException:
         repository.mark_transaction_as_invalid()
-        flash("Impossible de supprimer une structure juridique pour laquelle il existe des réservations", "warning")
+        flash("Impossible de supprimer une entité pour laquelle il existe des réservations", "warning")
         return _self_redirect(offerer.id)
 
     for email in emails:
@@ -433,7 +433,7 @@ def delete_offerer(offerer_id: int) -> utils.BackofficeResponse:
         )
 
     flash(
-        Markup("La structure <b>{offerer_name}</b> ({offerer_id}) a été supprimée").format(
+        Markup("L'entité <b>{offerer_name}</b> ({offerer_id}) a été supprimée").format(
             offerer_name=offerer_name, offerer_id=offerer_id
         ),
         "success",
@@ -693,7 +693,7 @@ def get_delete_user_offerer_form(offerer_id: int, user_offerer_id: int) -> utils
         div_id=f"delete-modal-{user_offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
         title=f"Supprimer le rattachement à {user_offerer.offerer.name.upper()}",
         button_text="Supprimer le rattachement",
-        information="Cette action entraîne la suppression du lien utilisateur/structure et non le rejet. Cette action n’envoie aucun mail à l’acteur culturel.",
+        information="Cette action entraîne la suppression du lien utilisateur/entité et non le rejet. Cette action n’envoie aucun mail à l’acteur culturel.",
     )
 
 
@@ -733,7 +733,7 @@ def delete_user_offerer(offerer_id: int, user_offerer_id: int) -> utils.Backoffi
     offerers_api.delete_offerer_attachment(user_offerer, current_user, form.comment.data)
 
     flash(
-        f"Le rattachement de {user_email} à la structure {offerer_name} a été supprimé",
+        f"Le rattachement de {user_email} à l'entité {offerer_name} a été supprimé",
         "success",
     )
     return _self_redirect(offerer_id, active_tab="users", anchor="offerer_details_frame")
@@ -778,14 +778,14 @@ def add_user_offerer_and_validate(offerer_id: int) -> utils.BackofficeResponse:
 
     if not user:
         repository.mark_transaction_as_invalid()
-        flash("L'ID ne correspond pas à un ancien rattachement à la structure", "warning")
+        flash("L'ID ne correspond pas à un ancien rattachement à l'entité", "warning")
         return _self_redirect(offerer.id, active_tab="users", anchor="offerer_details_frame")
 
     new_user_offerer = offerers_models.UserOfferer(offerer=offerer, user=user, validationStatus=ValidationStatus.NEW)
     offerers_api.validate_offerer_attachment(new_user_offerer, current_user, form.comment.data)
 
     flash(
-        Markup("Le rattachement de <b>{email}</b> à la structure <b>{offerer_name}</b> a été ajouté").format(
+        Markup("Le rattachement de <b>{email}</b> à l'entité <b>{offerer_name}</b> a été ajouté").format(
             email=user.email, offerer_name=offerer.name
         ),
         "success",

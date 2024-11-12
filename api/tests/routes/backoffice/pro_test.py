@@ -77,7 +77,7 @@ def assert_offerer_equals(result_card_text: str, expected_offerer: offerers_mode
     assert f"SIREN : {expected_offerer.siren} " in result_card_text
     assert f"Ville : {expected_offerer.city}" in result_card_text
     assert f"Code postal : {expected_offerer.postalCode}" in result_card_text
-    assert "Structure " in result_card_text
+    assert "Entité " in result_card_text
     if expected_offerer.isValidated:
         assert " Validée " in result_card_text
     if expected_offerer.isRejected:
@@ -90,7 +90,7 @@ def assert_venue_equals(result_card_text: str, expected_venue: offerers_models.V
     assert f"{expected_venue.name.upper()} " in result_card_text
     assert f"Venue ID : {expected_venue.id} " in result_card_text
     assert f"SIRET : {expected_venue.siret} " in result_card_text
-    assert f"Structure : {expected_venue.managingOfferer.name} " in result_card_text
+    assert f"Entité : {expected_venue.managingOfferer.name} " in result_card_text
     assert f"Email : {expected_venue.bookingEmail} " in result_card_text
     if expected_venue.contact:
         assert f"Tél : {expected_venue.contact.phone_number} " in result_card_text
@@ -827,7 +827,7 @@ class LogsTest:
 
 class CreateOffererButtonTest(button_helpers.ButtonHelper):
     needed_permission = perm_models.Permissions.CREATE_PRO_ENTITY
-    button_label = "Créer une structure"
+    button_label = "Créer une entité"
 
     @property
     def path(self):
@@ -927,7 +927,7 @@ class CreateOffererTest(PostEndpointHelper):
         assert new_offerer_action.offererId == new_offerer.id
         assert new_offerer_action.userId == user.id
         assert new_offerer_action.authorUserId == legit_user.id
-        assert new_offerer_action.comment == "Structure créée depuis le backoffice"
+        assert new_offerer_action.comment == "Entité créée depuis le backoffice"
         assert new_offerer_action.extraData == {
             "target": form_data["target"],
             "venue_type_code": form_data["venue_type_code"],
@@ -1004,7 +1004,7 @@ class CreateOffererTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, form=form_data)
         assert response.status_code == 400
-        assert html_parser.extract_warnings(response.data) == ["Une structure existe déjà avec le SIREN 900000001"]
+        assert html_parser.extract_warnings(response.data) == ["Une entité existe déjà avec le SIREN 900000001"]
 
     @pytest.mark.parametrize(
         "siret,expected_warning",
@@ -1013,7 +1013,7 @@ class CreateOffererTest(PostEndpointHelper):
             ("90009900000001", "L'établissement portant le SIRET 90009900000001 est fermé"),
             (
                 "12345678900001",
-                "L'établissement portant le SIRET 12345678900001 est diffusible, l'acteur culturel peut créer la structure sur PC Pro",
+                "L'établissement portant le SIRET 12345678900001 est diffusible, l'acteur culturel peut créer l'entité sur PC Pro",
             ),
         ],
     )
@@ -1363,7 +1363,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
-            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette structure"
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette entité"
         )
 
     def test_connect_as_offerer_not_found(self, authenticated_client):
@@ -1379,7 +1379,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
-            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette structure"
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette entité"
         )
 
     def test_connect_as_offerer_without_active_user(self, authenticated_client):
@@ -1399,7 +1399,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
-            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette structure"
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette entité"
         )
 
     @pytest.mark.parametrize(
@@ -1426,7 +1426,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
-            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette structure"
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette entité"
         )
 
     def test_connect_as_offerer_user_has_multiple_offerer(self, authenticated_client, legit_user):
