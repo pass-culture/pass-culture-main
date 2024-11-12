@@ -70,7 +70,7 @@ export const OffersRoute = (): JSX.Element => {
     selectedOffererId && isOfferAddressEnabled
       ? [GET_OFFERER_ADDRESS_QUERY_KEY, selectedOffererId]
       : null,
-    ([, offererIdParam]) => api.getOffererAddresses(offererIdParam, false),
+    ([, offererIdParam]) => api.getOffererAddresses(offererIdParam, true),
     { fallbackData: [] }
   )
   const offererAddresses = formatAndOrderAddresses(offererAddressQuery.data)
