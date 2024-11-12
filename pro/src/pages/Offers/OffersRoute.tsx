@@ -28,6 +28,7 @@ import {
   formatAndOrderAddresses,
   formatAndOrderVenues,
 } from 'repository/venuesService'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { IndividualOffersScreen } from './components/IndividualOffersScreen/IndividualOffersScreen'
 
@@ -62,7 +63,13 @@ export const OffersRoute = (): JSX.Element => {
     navigate(computeIndividualOffersUrl(filters), { replace: true })
   }
 
-  const { data } = useSWR([GET_VENUES_QUERY_KEY], () =>
+  const {
+    data,
+    isLoading: isLoadingVenues,
+    //  When the venues are cached for a given offerer, we still need to reset the Screen component.
+    //  SWR isLoading is only true when the data is not cached, while isValidating is always set to true when the key is updated
+    isValidating: isValidatingVenues,
+  } = useSWR([GET_VENUES_QUERY_KEY, selectedOffererId], () =>
     api.getVenues(null, null, selectedOffererId)
   )
   const venues = formatAndOrderVenues(data?.venues ?? [])
@@ -121,18 +128,22 @@ export const OffersRoute = (): JSX.Element => {
 
   return (
     <Layout>
-      <IndividualOffersScreen
-        categories={categoriesOptions}
-        currentPageNumber={currentPageNumber}
-        initialSearchFilters={apiFilters}
-        isLoading={offersQuery.isLoading}
-        offers={offers}
-        redirectWithUrlFilters={redirectWithUrlFilters}
-        urlSearchFilters={urlSearchFilters}
-        venues={venues}
-        offererAddresses={offererAddresses}
-        isRestrictedAsAdmin={isRestrictedAsAdmin}
-      />
+      {isLoadingVenues || isValidatingVenues ? (
+        <Spinner />
+      ) : (
+        <IndividualOffersScreen
+          categories={categoriesOptions}
+          currentPageNumber={currentPageNumber}
+          initialSearchFilters={apiFilters}
+          isLoading={offersQuery.isLoading}
+          offers={offers}
+          redirectWithUrlFilters={redirectWithUrlFilters}
+          urlSearchFilters={urlSearchFilters}
+          venues={venues}
+          offererAddresses={offererAddresses}
+          isRestrictedAsAdmin={isRestrictedAsAdmin}
+        />
+      )}
     </Layout>
   )
 }

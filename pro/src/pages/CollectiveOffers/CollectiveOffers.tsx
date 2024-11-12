@@ -21,6 +21,7 @@ import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { formatAndOrderVenues } from 'repository/venuesService'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { CollectiveOffersScreen } from './components/CollectiveOffersScreen/CollectiveOffersScreen'
 
@@ -125,18 +126,24 @@ export const CollectiveOffers = (): JSX.Element => {
 
   return (
     <Layout>
-      <CollectiveOffersScreen
-        currentPageNumber={currentPageNumber}
-        currentUser={currentUser}
-        initialSearchFilters={apiFilters}
-        isLoading={offersQuery.isLoading}
-        offerer={offerer}
-        offers={offersQuery.data}
-        redirectWithUrlFilters={redirectWithUrlFilters}
-        urlSearchFilters={urlSearchFilters}
-        venues={venues}
-        isRestrictedAsAdmin={isRestrictedAsAdmin}
-      />
+      {/* When the venues are cached for a given offerer, we still need to reset the Screen component.
+      SWR isLoading is only true when the data is not cached, while isValidating is always set to true when the key is updated */}
+      {offererQuery.isLoading || offererQuery.isValidating ? (
+        <Spinner />
+      ) : (
+        <CollectiveOffersScreen
+          currentPageNumber={currentPageNumber}
+          currentUser={currentUser}
+          initialSearchFilters={apiFilters}
+          isLoading={offersQuery.isLoading}
+          offerer={offerer}
+          offers={offersQuery.data}
+          redirectWithUrlFilters={redirectWithUrlFilters}
+          urlSearchFilters={urlSearchFilters}
+          venues={venues}
+          isRestrictedAsAdmin={isRestrictedAsAdmin}
+        />
+      )}
     </Layout>
   )
 }
