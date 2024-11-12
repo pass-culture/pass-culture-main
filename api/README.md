@@ -266,7 +266,7 @@ Afin de passer uniquement par les commandes flask, les dépendances suivantes do
 
 - Postgresql
 
-  Il est préférable de cibler la version utilisée en production. Celle-ci se retrouve dans le fichier `doker-compose-backend`.
+  Il est préférable de cibler la version utilisée en production. Celle-ci se retrouve dans le fichier `docker-compose-backend`.
   À date de rédaction c'est la version `postgresql 15` qui est utilisé. 
 
   Les informations générales sur les étapes d'installation en fonction des OS sont disponibles sur le lien https://www.postgresql.org/download/
@@ -298,8 +298,7 @@ Afin de passer uniquement par les commandes flask, les dépendances suivantes do
   ```
   - Windows: après l'installation de `PostgreSQL`, [Stackbuilder](https://www.bostongis.com/PrinterFriendly.aspx?content_name=postgis_tut01)
     permet d'installer `PostGIS`
-  - MacOS: `PostGIS` est fourni avec la distribution [Postgres.app](https://postgresapp.com/). Si une autre manière
-    d'installer `PostgreSQL` a été choisie, alors la commande d'installation est `brew install postgis`. (*note* a ce jour il n'existe pas de méthode simple pour installer postgis avec postgresql 15 en dehors de l'installation de `posgres.app`)
+  - MacOS: `PostGIS` est fourni avec la distribution [Postgres.app](https://postgresapp.com/). Il n'y a malheureusement pas de paquet officiel de `postgis@15` via brew, cependant il existe une recette personnalisée : `brew install ozeias/postgresql/postgis@15`. En cas d'erreur supplémentaire, voir https://github.com/orgs/Homebrew/discussions/3987
 
 - Redis
 

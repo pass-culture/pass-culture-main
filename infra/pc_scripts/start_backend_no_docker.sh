@@ -22,7 +22,7 @@ recreate_database_test() {
     DROP DATABASE IF EXISTS pass_culture_test;
     CREATE DATABASE pass_culture_test WITH OWNER pytest;
     ALTER DATABASE pass_culture_test SET TIMEZONE TO 'UTC';
-    \c pass_culture
+    \c pass_culture_test
     CREATE EXTENSION IF NOT EXISTS postgis;
 EOF
 }
