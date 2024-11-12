@@ -1326,3 +1326,14 @@ def merge_products(to_keep: models.Product, to_delete: models.Product) -> models
     db.session.delete(to_delete)
 
     return to_keep
+
+
+def venues_have_individual_and_collective_offers(venue_ids: list[int]) -> tuple[bool, bool]:
+    return (
+        db.session.query(offers_model.Offer.query.filter(offers_model.Offer.venueId.in_(venue_ids)).exists()).scalar(),
+        db.session.query(
+            educational_models.CollectiveOffer.query.filter(
+                educational_models.CollectiveOffer.venueId.in_(venue_ids)
+            ).exists()
+        ).scalar(),
+    )

@@ -2,9 +2,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { Revenue } from './Revenue';
+import type { CollectiveAndIndividualRevenue } from './CollectiveAndIndividualRevenue';
+import type { CollectiveRevenue } from './CollectiveRevenue';
+import type { IndividualRevenue } from './IndividualRevenue';
 export type AggregatedRevenue = {
-  expectedRevenue: Revenue;
-  revenue: Revenue;
+  expectedRevenue: (CollectiveAndIndividualRevenue | CollectiveRevenue | IndividualRevenue);
+  revenue: (CollectiveAndIndividualRevenue | CollectiveRevenue | IndividualRevenue);
 };
 
