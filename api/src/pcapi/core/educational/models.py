@@ -946,8 +946,7 @@ class CollectiveOffer(
         if stock is None:
             return None
 
-        bookings = sorted(stock.collectiveBookings, key=lambda booking: booking.dateCreated)
-        return bookings[-1] if bookings else None
+        return stock.lastBooking
 
     @property
     def lastBookingId(self) -> int | None:
@@ -1381,7 +1380,22 @@ class CollectiveStock(PcObject, Base, Model):
     priceDetail = sa.Column(sa.Text, nullable=True)
 
     @property
+    def lastBooking(self) -> "CollectiveBooking | None":
+        bookings = sorted(self.collectiveBookings, key=lambda booking: booking.dateCreated)
+        return bookings[-1] if bookings else None
+
+    @property
+    def lastBookingStatus(self) -> CollectiveBookingStatus | None:
+        booking = self.lastBooking
+        return booking.status if booking else None
+
+    @property
     def isBookable(self) -> bool:
+        if (
+            feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active()
+            and self.lastBookingStatus == CollectiveBookingStatus.CANCELLED
+        ):
+            return False
         return not self.isExpired and self.collectiveOffer.isReleased and not self.isSoldOut
 
     @property

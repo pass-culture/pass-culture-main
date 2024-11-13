@@ -7,6 +7,7 @@ import pytest
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -31,8 +32,15 @@ def redactor_fixture():
 
 
 class CollectiveOfferTest:
-    def test_get_collective_offer_for_my_institution(self, eac_client, redactor):
-        # Given
+    # 1. fetch redactor
+    # 2. fetch collective offer and related data
+    # 3. fetch feature toggle
+    # 4. fetch institutions
+    # 5. fetch the offerVenue's details (Venue)
+    num_queries = 5
+
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    def test_get_collective_offer_for_my_institution_without_feature_toggle(self, eac_client, redactor):
         START_DATE = datetime.today() + timedelta(days=3)
         venue = offerers_factories.VenueFactory()
         institution = educational_factories.EducationalInstitutionFactory(institutionId=UAI)
@@ -47,16 +55,73 @@ class CollectiveOfferTest:
             },
         )
         # this archived offer should not appear in the result
-        stocks[2].collectiveOffer.isActive = False
         stocks[2].collectiveOffer.dateArchived = datetime.utcnow() - timedelta(days=1)
+        stocks[2].collectiveOffer.isActive = False
+
+        # cancelled booking should appear in the result when the feature toggle is disabled
+        stock_with_cancelled_booking = educational_factories.CollectiveStockFactory(
+            beginningDatetime=START_DATE,
+            collectiveOffer__institution=institution,
+            collectiveOffer__offerVenue={
+                "venueId": venue.id,
+                "addressType": "offererVenue",
+                "otherAddress": "",
+            },
+        )
+        educational_factories.CancelledCollectiveBookingFactory(collectiveStock=stock_with_cancelled_booking)
 
         dst = url_for("adage_iframe.get_collective_offers_for_my_institution")
 
-        # When
-        with assert_num_queries(7):
+        with assert_num_queries(self.num_queries):
             response = eac_client.get(dst)
 
-            # Then
+            assert response.status_code == 200
+            response_data = sorted(response.json["collectiveOffers"], key=lambda offer: offer["id"])
+            assert len(response_data) == 3, response_data
+            assert response_data[0]["id"] == stocks[0].collectiveOffer.id
+            assert response_data[0]["educationalInstitution"]["id"] == institution.id
+            assert response_data[0]["stock"]["id"] == stocks[0].id
+            assert response_data[1]["id"] == stocks[1].collectiveOffer.id
+            assert response_data[1]["educationalInstitution"]["id"] == institution.id
+            assert response_data[1]["stock"]["id"] == stocks[1].id
+            assert response_data[2]["id"] == stock_with_cancelled_booking.collectiveOffer.id
+
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    def test_get_collective_offer_for_my_institution_with_feature_toggle(self, eac_client, redactor):
+        START_DATE = datetime.today() + timedelta(days=3)
+        venue = offerers_factories.VenueFactory()
+        institution = educational_factories.EducationalInstitutionFactory(institutionId=UAI)
+        stocks = educational_factories.CollectiveStockFactory.create_batch(
+            3,
+            beginningDatetime=START_DATE,
+            collectiveOffer__institution=institution,
+            collectiveOffer__offerVenue={
+                "venueId": venue.id,
+                "addressType": "offererVenue",
+                "otherAddress": "",
+            },
+        )
+        # this archived offer should not appear in the result
+        stocks[2].collectiveOffer.dateArchived = datetime.utcnow() - timedelta(days=1)
+        stocks[2].collectiveOffer.isActive = False
+
+        # cancelled booking should not appear in the result when the feature toggle is enabled
+        stock_with_cancelled_booking = educational_factories.CollectiveStockFactory(
+            beginningDatetime=START_DATE,
+            collectiveOffer__institution=institution,
+            collectiveOffer__offerVenue={
+                "venueId": venue.id,
+                "addressType": "offererVenue",
+                "otherAddress": "",
+            },
+        )
+        educational_factories.CancelledCollectiveBookingFactory(collectiveStock=stock_with_cancelled_booking)
+
+        dst = url_for("adage_iframe.get_collective_offers_for_my_institution")
+
+        with assert_num_queries(self.num_queries):
+            response = eac_client.get(dst)
+
             assert response.status_code == 200
             response_data = sorted(response.json["collectiveOffers"], key=lambda offer: offer["id"])
             assert len(response_data) == 2, response_data
