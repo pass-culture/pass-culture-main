@@ -223,7 +223,7 @@ def create_cinema_data() -> None:
     create_offer_and_stocks_for_cinemas(venues, products)
 
 
-def create_movie_products() -> list[offers_models.Product]:
+def create_movie_products(offset: int = 0) -> list[offers_models.Product]:
     return [
         offers_factories.ProductFactory(
             subcategoryId=subcategories_v2.SEANCE_CINE.id,
@@ -232,7 +232,7 @@ def create_movie_products() -> list[offers_models.Product]:
             extraData={"allocineId": 100_000 + i},
             durationMinutes=115 + i,
         )
-        for i in range(1, 6)
+        for i in range(1 + offset, 6 + offset)
     ]
 
 
