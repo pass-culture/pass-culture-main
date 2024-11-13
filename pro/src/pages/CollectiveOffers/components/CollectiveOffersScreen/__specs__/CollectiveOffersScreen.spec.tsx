@@ -546,4 +546,41 @@ describe('CollectiveOffersScreen', () => {
       screen.getByRole('columnheader', { name: 'Structure' })
     ).toBeInTheDocument()
   })
+
+  it('should show the cancelled status option if the ENABLE_COLLECTIVE_NEW_STATUSES FF is active', async () => {
+    renderOffers(
+      {
+        ...props,
+      },
+      { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] }
+    )
+
+    await userEvent.click(
+      screen.getByRole('combobox', {
+        name: 'Statut',
+      })
+    )
+
+    expect(
+      screen.getByRole('option', { name: 'Annulée' })
+    ).toBeInTheDocument()
+  })
+
+  it('should not show the cancelled status option if the ENABLE_COLLECTIVE_NEW_STATUSES FF is inactive', async () => {
+    renderOffers(
+      {
+        ...props,
+      }
+    )
+
+    await userEvent.click(
+      screen.getByRole('combobox', {
+        name: 'Statut',
+      })
+    )
+
+    expect(
+      screen.queryByRole('option', { name: 'Annulée' })
+    ).not.toBeInTheDocument()
+  })
 })

@@ -234,7 +234,6 @@ export const OfferEducationalActions = ({
             </>
           )}
           <CollectiveStatusLabel
-            offerStatus={offer.status}
             offerDisplayedStatus={offer.displayedStatus}
           />
         </div>
