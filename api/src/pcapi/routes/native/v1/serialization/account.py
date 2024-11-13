@@ -1,4 +1,5 @@
 import datetime
+from enum import Enum
 import typing
 
 from dateutil.relativedelta import relativedelta
@@ -70,6 +71,11 @@ class Credit(ConfiguredBaseModel):
     _convert_remaining = validator("remaining", pre=True, allow_reuse=True)(convert_to_cent)
 
 
+class CurrencyEnum(Enum):
+    EUR = "EUR"
+    XPF = "XPF"
+
+
 class DomainsCredit(ConfiguredBaseModel):
     all: Credit
     digital: Credit | None
@@ -137,6 +143,8 @@ class UserProfileGetterDict(GetterDict):
             )
 
             return {booking.stock.offer.id: booking.id for booking in not_cancelled_bookings}
+        if key == "currency":
+            return CurrencyEnum.XPF if user.is_caledonian else CurrencyEnum.EUR
         if key == "domainsCredit":
             return users_api.get_domains_credit(user)
         if key == "eligibilityEndDatetime":
@@ -186,6 +194,7 @@ class UserProfileResponse(ConfiguredBaseModel):
     birth_date: datetime.date | None
     booked_offers: dict[str, int]
     city: str | None
+    currency: CurrencyEnum
     deposit_activation_date: datetime.datetime | None
     deposit_expiration_date: datetime.datetime | None
     deposit_type: finance_models.DepositType | None

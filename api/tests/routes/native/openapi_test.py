@@ -646,6 +646,14 @@ def test_public_api(client):
                     "title": "CulturalSurveyUserAnswer",
                     "type": "object",
                 },
+                "CurrencyEnum": {
+                    "description": "An enumeration.",
+                    "enum": [
+                        "EUR",
+                        "XPF",
+                    ],
+                    "title": "CurrencyEnum",
+                },
                 "DepositAmountsByAge": {
                     "properties": {
                         "age_15": {"default": 2000, "title": "Age 15", "type": "integer"},
@@ -2331,6 +2339,9 @@ def test_public_api(client):
                             "type": "object",
                         },
                         "city": {"nullable": True, "title": "City", "type": "string"},
+                        "currency": {
+                            "$ref": "#/components/schemas/CurrencyEnum",
+                        },
                         "depositActivationDate": {
                             "format": "date-time",
                             "nullable": True,
@@ -2395,6 +2406,7 @@ def test_public_api(client):
                     },
                     "required": [
                         "bookedOffers",
+                        "currency",
                         "email",
                         "hasPassword",
                         "id",

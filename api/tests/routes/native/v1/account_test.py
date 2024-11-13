@@ -156,6 +156,7 @@ class AccountTest:
                 "subscriptionStatus": None,
             },
             "activityId": users_models.ActivityEnum.STUDENT.name,
+            "currency": "EUR",
         }
         EXPECTED_DATA.update(USER_DATA)
 
@@ -408,6 +409,16 @@ class AccountTest:
             assert response.status_code == 200, response.json
 
         assert response.json["hasPassword"] == False
+
+    def test_currency_pacific_franc(self, client):
+        user = users_factories.UserFactory(departementCode="988", postalCode="98818")
+
+        expected_num_queries = 5  # user(update) + user + beneficiary_fraud_review + deposit + booking
+        with assert_num_queries(expected_num_queries):
+            response = client.with_token(user.email).get("/native/v1/me")
+
+        assert response.status_code == 200, response.json
+        assert response.json["currency"] == "XPF"
 
 
 class AccountCreationTest:
