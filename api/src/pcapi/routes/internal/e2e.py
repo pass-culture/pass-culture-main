@@ -42,13 +42,20 @@ def get_sandbox(module_name, getter_name):  # type: ignore [no-untyped-def]
         raise errors
 
 
+# The next endpoints must only be used with EMAIL_BACKEND set to `pcapi.core.mails.backends.testing.TestingBackend`
+# otherwise the outbox will be empty
+# The next endpoints is only available if ENABLE_TEST_ROUTES is set to 1
+@private_api.route("/sandboxes/clear_email_list", methods=["GET"])
+def clear_email_list():  # type: ignore [no-untyped-def]
+    if len(mails_testing.outbox) != 0:
+        mails_testing.outbox.clear()
+    return "Outbox cleared"
+
+
 @private_api.route("/sandboxes/get_unique_email", methods=["GET"])
 def get_unique_email():  # type: ignore [no-untyped-def]
-    # This endpoint must only be used with EMAIL_BACKEND set to `pcapi.core.mails.backends.testing.TestingBackend`
-    # otherwise the outbox will be empty
-    # This endpoint is only available if ENABLE_TEST_ROUTES is set to 1
     delay = 0
-    while len(mails_testing.outbox) != 1 and delay <= 60:
+    while len(mails_testing.outbox) == 0 and delay <= 60:
         time.sleep(5)
         delay += 5
     return mails_testing.outbox[0]
