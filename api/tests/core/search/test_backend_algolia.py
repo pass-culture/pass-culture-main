@@ -1,5 +1,6 @@
 import dataclasses
 import datetime
+from unittest import mock
 
 import pytest
 import requests_mock
@@ -382,3 +383,20 @@ class ProcessingQueueTest:
 
         assert redis.smembers(main_queue) == {"1", "2", "3"}
         assert redis.smembers(processing_too_recent) == {"4", "5", "6"}
+
+
+@pytest.mark.parametrize(
+    "raw_ids, clean_ids",
+    [
+        (["1", "5", "3"], [1, 5, 3]),
+        (["BQ", "L4", "B4"], [12, 95, 15]),
+        (["1", "invalid id", "B4"], [1, 15]),
+    ],
+)
+def test_search_offer_ids(raw_ids, clean_ids):
+    backend = get_backend()
+    backend.algolia_offers_client.search = mock.MagicMock(
+        return_value={"hits": [{"objectID": raw} for raw in raw_ids]},
+    )
+    result = backend.search_offer_ids(query="some")
+    assert result == clean_ids

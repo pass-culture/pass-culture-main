@@ -31,6 +31,7 @@ from pcapi.core.search.backends import base
 from pcapi.domain.music_types import MUSIC_TYPES_LABEL_BY_CODE
 from pcapi.domain.show_types import SHOW_TYPES_LABEL_BY_CODE
 from pcapi.models.feature import FeatureToggle
+from pcapi.utils import human_ids
 from pcapi.utils import requests
 import pcapi.utils.date as date_utils
 from pcapi.utils.regions import get_department_code_from_city_code
@@ -778,7 +779,17 @@ class AlgoliaBackend(base.SearchBackend):
                 raise SearchError("Failed to search in algolia")
 
             for result in results.get("hits", []):
-                ids.append(result["objectID"])
+                object_id = result["objectID"]
+                if object_id.isdigit():
+                    ids.append(int(object_id))
+                else:
+                    # Some object id are still humanized.
+                    try:
+                        dehumanized_id = human_ids.dehumanize(object_id)
+                        assert dehumanized_id is not None  # helps mypy
+                        ids.append(dehumanized_id)
+                    except human_ids.NonDehumanizableId:
+                        pass
 
             if len(results.get("hits", [])) < hits_per_page:
                 break
