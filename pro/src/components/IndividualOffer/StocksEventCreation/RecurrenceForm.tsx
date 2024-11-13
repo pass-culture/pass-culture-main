@@ -364,6 +364,7 @@ export const RecurrenceForm = ({
                           className={styles['quantity-input']}
                           hideFooter
                           isOptional
+                          min={1}
                         />
                         <Select
                           label="Tarif"

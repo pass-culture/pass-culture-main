@@ -7,7 +7,7 @@ export const MAX_STOCKS_QUANTITY = 1000000
 export const getValidationSchema = (
   mode: OFFER_WIZARD_MODE,
   /* istanbul ignore next: DEBT, TO FIX */
-  minQuantity: number | null = null
+  minQuantity: number
 ) => {
   const validationSchema = {
     price: yup
@@ -29,7 +29,8 @@ export const getValidationSchema = (
     activationCodes: yup.array(),
     isDuo: yup.boolean(),
   }
-  if (minQuantity !== null) {
+
+  if (minQuantity !== 0) {
     validationSchema.quantity = validationSchema.quantity.min(
       minQuantity,
       'Quantité trop faible'
