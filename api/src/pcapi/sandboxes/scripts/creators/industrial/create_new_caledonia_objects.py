@@ -362,6 +362,36 @@ def _create_nc_invoice() -> None:
     for event in incident_events:
         finance_api.price_event(event)
 
+    # Add non NC data for more realistic down payment and invoice csv files
+    metropolitan_offerer = offerers_factories.OffererFactory(name="Structure métropolitaine avec remboursement")
+    metropolitan_bank_account = finance_factories.BankAccountFactory(
+        label="Coordonnées bancaires métropolitaines avec remboursement", offerer=metropolitan_offerer
+    )
+    offerers_factories.UserOffererFactory(
+        offerer=offerer,
+        user__firstName="Jean-Marc",
+        user__lastName="Métropole",
+        user__email="pro2.fr@example.com",
+    )
+    metropolitan_venue = offerers_factories.CaledonianVenueFactory(
+        name="Lieu métropolitain avec justificatif",
+        managingOfferer=metropolitan_offerer,
+        pricing_point="self",
+        bank_account=metropolitan_bank_account,
+    )
+
+    metropolitan_offer1 = offers_factories.ThingOfferFactory(
+        name="Offre métropolitaine remboursée 1", venue=metropolitan_venue
+    )
+    metropolitan_offer2 = offers_factories.ThingOfferFactory(
+        name="Offre métropolitaine remboursée 2", venue=metropolitan_venue
+    )
+
+    metropolitan_stocks = [
+        offers_factories.StockFactory(offer=metropolitan_offer1, price=30),
+        offers_factories.StockFactory(offer=metropolitan_offer2, price=83.8),
+    ]
+
     bookings = [
         bookings_factories.UsedBookingFactory(
             stock=special_stock,
@@ -369,7 +399,7 @@ def _create_nc_invoice() -> None:
         ),
     ]
 
-    for stock in stocks:
+    for stock in stocks + metropolitan_stocks:
         booking = bookings_factories.UsedBookingFactory(stock=stock, user=rich_user)
         bookings.append(booking)
     for booking in bookings:
@@ -378,15 +408,10 @@ def _create_nc_invoice() -> None:
         event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
         finance_api.price_event(event)
 
-    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
-    cashflows = finance_models.Cashflow.query.filter_by(bankAccount=bank_account).all()
-    cashflow_ids = [c.id for c in cashflows]
+    batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
+    finance_api.generate_invoices_and_debit_notes_legacy(batch)
 
-    finance_api.generate_and_store_invoice(
-        bank_account_id=bank_account.id,
-        cashflow_ids=cashflow_ids,
-    )
-    logger.info("Created caledonian Invoice")
+    logger.info("Created caledonian and metropolitan Invoices")
 
 
 def _create_one_nc_individual_incident(beneficiary: users_models.User) -> None:
