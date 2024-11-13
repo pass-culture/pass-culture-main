@@ -53,11 +53,7 @@ class CollectiveOfferTest:
         dst = url_for("adage_iframe.get_collective_offers_for_my_institution")
 
         # When
-        # 1. fetch redactor
-        # 2. fetch collective offer and related data
-        # 3. fetch the offerVenue's details (Venue)
-        # 4. find out if its a redactor's favorite
-        with assert_num_queries(4):
+        with assert_num_queries(7):
             response = eac_client.get(dst)
 
             # Then

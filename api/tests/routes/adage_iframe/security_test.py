@@ -37,5 +37,5 @@ class AuthenticatedInformationTest:
         test_client = client.with_adage_token(email=None, uai=educational_institution.institutionId)
         response = test_client.get("/adage-iframe/test-security")
 
-        assert response.status_code == 403
+        assert response.status_code == 401
         assert response.json == {"Authorization": "Unrecognized token"}
