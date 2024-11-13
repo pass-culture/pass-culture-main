@@ -74,7 +74,7 @@ def create_free_invoice() -> None:
     cashflows = finance_models.Cashflow.query.filter_by(bankAccount=bank_account).all()
     cashflow_ids = [c.id for c in cashflows]
 
-    finance_api.generate_and_store_invoice(
+    finance_api.generate_and_store_invoice_legacy(
         bank_account_id=bank_account.id,
         cashflow_ids=cashflow_ids,
     )
@@ -200,7 +200,7 @@ def create_specific_invoice() -> None:
     cashflows = finance_models.Cashflow.query.filter_by(bankAccount=bank_account).all()
     cashflow_ids = [c.id for c in cashflows]
 
-    finance_api.generate_and_store_invoice(
+    finance_api.generate_and_store_invoice_legacy(
         bank_account_id=bank_account.id,
         cashflow_ids=cashflow_ids,
     )
