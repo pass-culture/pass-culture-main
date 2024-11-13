@@ -10,26 +10,26 @@ describe('validationSchema', () => {
     description: string
     formValues: Partial<StockThingFormValues>
     expectedErrors: string[]
-    minQuantity: null | number
+    minQuantity: number
   }[] = [
     {
       description: 'valid form',
       formValues: stockThingFormValuesFactory(),
       expectedErrors: [],
-      minQuantity: null,
+      minQuantity: 0,
     },
     {
       description: 'need price',
       formValues: {},
       expectedErrors: ['Veuillez renseigner un prix'],
-      minQuantity: null,
+      minQuantity: 0,
     },
 
     {
       description: 'price above 300',
       formValues: { price: 300.01 },
       expectedErrors: ['Veuillez renseigner un prix inférieur à 300€'],
-      minQuantity: null,
+      minQuantity: 0,
     },
     {
       description: 'bad quantity',

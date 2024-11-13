@@ -4,9 +4,9 @@ import { Formik } from 'formik'
 
 import { QuantityInput, QuantityInputProps } from './QuantityInput'
 
-const renderQuantityInput = (props: QuantityInputProps) => {
+const renderQuantityInput = (props: QuantityInputProps, initialQuantity: number | string = '') => {
   return render(
-    <Formik initialValues={{ quantity: '' }} onSubmit={() => {}}>
+    <Formik initialValues={{ quantity: initialQuantity }} onSubmit={() => {}}>
       <QuantityInput {...props} />
     </Formik>
   )
@@ -66,8 +66,29 @@ describe('QuantityInput', () => {
     expect(checkbox).toBeChecked()
   })
 
-  it('should move focus to the input when the checkbox is unchecked and init the input with 1', async () => {
-    renderQuantityInput({})
+  it('should check the checkbox initially when the input value is an empty string', async () => {
+    renderQuantityInput({}, '')
+
+    let input = screen.getByRole('spinbutton', { name: LABELS.input })
+    let checkbox = screen.getByRole('checkbox', { name: LABELS.checkbox })
+
+    expect(input).toHaveValue(null)
+    expect(checkbox).toBeChecked()
+  })
+
+  it('should uncheck the checkbox when the input value is set', async () => {
+    renderQuantityInput({}, '1')
+
+    let input = screen.getByRole('spinbutton', { name: LABELS.input })
+    let checkbox = screen.getByRole('checkbox', { name: LABELS.checkbox })
+
+    expect(input).toHaveValue(1)
+    expect(checkbox).not.toBeChecked()
+  })
+
+  it('should move focus to the input when the checkbox is unchecked and init the input with the minimum', async () => {
+    const min = 10
+    renderQuantityInput({ min })
 
     const input = screen.getByRole('spinbutton', { name: LABELS.input })
     const checkbox = screen.getByRole('checkbox', { name: LABELS.checkbox })
@@ -75,6 +96,6 @@ describe('QuantityInput', () => {
     await userEvent.click(checkbox)
     expect(checkbox).not.toBeChecked()
     expect(input).toHaveFocus()
-    expect(input).toHaveValue(1)
+    expect(input).toHaveValue(min)
   })
 })

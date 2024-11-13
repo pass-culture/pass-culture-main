@@ -88,7 +88,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   // validation is tested in getValidationSchema
   // and it's not possible as is to test it here
   /* istanbul ignore next: DEBT, TO FIX */
-  const minQuantity = stocks.length > 0 ? stocks[0].bookingsQuantity : null
+  const minQuantity = stocks.length > 0 ? stocks[0].bookingsQuantity : 0
   const isDisabled = isOfferDisabled(offer.status)
   const useOffererAddressAsDataSourceEnabled = useActiveFeature(
     'WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE'
@@ -395,6 +395,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                 className={styles['field-layout-xsmall']}
                 classNameFooter={styles['field-layout-footer']}
                 isOptional
+                min={minQuantity}
               />
               {mode === OFFER_WIZARD_MODE.EDITION && stocks.length > 0 && (
                 <>
