@@ -38,15 +38,12 @@ class SearchAddressesTest(PublicAPIEndpointBaseHelper):
             latitude=48.8669567,
             longitude=2.310144,
         )
-        manual_address = geography_factories.AddressFactory(
-            banId=None,
-            inseeCode=None,
+        manual_address = geography_factories.ManualAddressFactory(
             postalCode="71640",
             city="Saint-Jean-de-Vaux",
             street="Dans le champ derrière chez oim",
             latitude=46.81201,
             longitude=4.70024,
-            isManualEdition=True,
         )
         return ban_address, manual_address
 

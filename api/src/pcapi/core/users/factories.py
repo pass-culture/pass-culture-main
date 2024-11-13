@@ -421,6 +421,14 @@ class UserFactory(BaseFactory):
         return instance
 
 
+class CaledonianUserFactory(UserFactory):
+    address = factory.Sequence("{} route de la Corniche".format)
+    city = "Le Mont-Dore"
+    postalCode = "98809"
+    departementCode = "988"
+    phoneNumber = factory.Sequence(lambda n: f"+68777{n%10000:04}")
+
+
 class DiscordUserFactory(BaseFactory):
 
     class Meta:
@@ -683,6 +691,14 @@ class UnderageBeneficiaryFactory(BeneficiaryGrant18Factory):
             kwargs["dateCreated"] = obj.dateCreated
 
         return DepositGrantFactory(user=obj, **kwargs, type=finance_models.DepositType.GRANT_15_17)
+
+
+class CaledonianUnderageBeneficiaryFactory(UnderageBeneficiaryFactory):
+    address = factory.Sequence("{} route du Mont Mou".format)
+    city = "Païta"
+    postalCode = "98889"
+    departementCode = "988"
+    phoneNumber = factory.Sequence(lambda n: f"+68777{n%10000:04}")
 
 
 class ExUnderageBeneficiaryFactory(UnderageBeneficiaryFactory):

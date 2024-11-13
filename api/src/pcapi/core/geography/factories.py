@@ -22,7 +22,7 @@ class AddressFactory(BaseFactory):
         model = models.Address
         sqlalchemy_get_or_create = ("street", "inseeCode")
 
-    banId = "75102_7560_00001"
+    banId: str | None = "75102_7560_00001"
     inseeCode = factory.LazyAttribute(lambda address: address.banId.split("_")[0] if address.banId else None)
     street = factory.Sequence("1{} boulevard Poissonnière".format)  # sequence avoids UniqueViolation (street+inseeCode)
     postalCode = "75002"
@@ -38,3 +38,9 @@ class AddressFactory(BaseFactory):
     )
     timezone = factory.LazyAttribute(lambda address: get_department_timezone(address.departmentCode))
     isManualEdition = False
+
+
+class ManualAddressFactory(AddressFactory):
+    banId = None
+    inseeCode = None
+    isManualEdition = True
