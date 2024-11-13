@@ -23,6 +23,11 @@ Each time a beneficiary books a product (or an event not linked to a ticketing s
 
 #### JSON payload
 
+:::warning
+For legacy reasons, we are not sending an actual JSON but a stringified JSON in our request payload.
+You may need to parse the request payload to get the actual JSON object.
+:::
+
 ```json
 {
     "action": "BOOK",

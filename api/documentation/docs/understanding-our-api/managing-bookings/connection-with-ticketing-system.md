@@ -36,6 +36,11 @@ As it is a **synchronous process**, we will display an error to the beneficiary 
 
 ### 📩 Our request payload
 
+:::warning
+For legacy reasons, we are not sending an actual JSON but a stringified JSON in our request payload.
+You may need to parse the request payload to get the actual JSON object.
+:::
+
 We will be calling your booking URL with the following payload :
 
 #### JSON payload example
@@ -154,6 +159,11 @@ In those cases, **we expect from you a `HTTP 409` response with the following pa
 If a beneficiary has booked a ticket for your event but decides to cancel it, we will call your **cancellation URL** with the cancelled barcodes.
 
 ### 📩 Our request payload
+
+:::warning
+For legacy reasons, we are not sending an actual JSON but a stringified JSON in our request payload.
+You may need to parse the request payload to get the actual JSON object.
+:::
 
 We will be calling your **cancellation URL** with the following payload :
 
