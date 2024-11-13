@@ -9,6 +9,7 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
+from pcapi.core.finance import utils as finance_utils
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
@@ -25,25 +26,38 @@ from pcapi.utils import siren as siren_utils
 logger = logging.getLogger(__name__)
 
 
-def create_new_caledonia_offerers() -> None:
-    logger.info("create_new_caledonia_offerers")
+def create_new_caledonia_objects() -> None:
+    logger.info("create_new_caledonia_objects")
 
-    beneficiary = _create_nc_beneficiary()
+    beneficiary = _create_nc_beneficiaries()
     _create_nc_active_offerer(beneficiary)
     _create_nc_new_offerer()
     _create_nc_cinema()
 
-    logger.info("created New Caledonia offerers")
+    logger.info("created New Caledonia objects")
 
     _create_nc_invoice()
-    _create_one_nc_individual_incident()
+    _create_one_nc_individual_incident(beneficiary)
 
 
-def _create_nc_beneficiary() -> users_models.User:
+def _create_nc_beneficiaries() -> users_models.User:
+    users_factories.CaledonianUserFactory(
+        email="jeune.nc@example.com",
+        firstName="Jeune",
+        lastName="Calédonien",
+        age=18,
+    )
+
+    users_factories.CaledonianUnderageBeneficiaryFactory(
+        email="mineur.nc@example.com",
+        firstName="Mineur",
+        lastName="Calédonien",
+    )
+
     return users_factories.CaledonianBeneficiaryGrant18Factory(
         email="beneficiaire.nc@example.com",
         firstName="Bénéficiaire",
-        lastName="Néo-Calédonien",
+        lastName="Calédonien",
     )
 
 
@@ -110,7 +124,7 @@ def _create_nc_active_offerer(beneficiary: users_models.User) -> None:
     offerers_factories.UserOffererFactory(
         offerer=offerer,
         user__firstName="Mâ",
-        user__lastName="Néo-Calédonien",
+        user__lastName="Calédonien",
         user__email="pro1.nc@example.com",
         user__phoneNumber="+687263443",
         user__postalCode="98800",
@@ -137,7 +151,7 @@ def _create_nc_active_offerer(beneficiary: users_models.User) -> None:
             offer=event_offer,
             beginningDatetime=ref_date + datetime.timedelta(days=days),
             bookingLimitDatetime=ref_date + datetime.timedelta(days=days - 2),
-            price=decimal.Decimal("15"),
+            price=finance_utils.xpf_to_euros(1790),
             quantity=50,
         )
         for days in range(8, 15)
@@ -148,7 +162,7 @@ def _create_nc_active_offerer(beneficiary: users_models.User) -> None:
     thing_stock = offers_factories.ThingStockFactory(
         offer__name="Offre physique en Nouvelle-Calédonie",
         offer__venue=venue,
-        price=decimal.Decimal("100"),
+        price=finance_utils.xpf_to_euros(12_000),
         quantity=10,
     )
 
@@ -157,14 +171,12 @@ def _create_nc_active_offerer(beneficiary: users_models.User) -> None:
 
 def _create_nc_new_offerer() -> None:
     # No address referenced in Thio, in Base d'Adresses Nationale
-    address = geography_factories.AddressFactory(
+    address = geography_factories.ManualAddressFactory(
         street="Village de Thio Rue rapadzi",
         postalCode="98829",
         city="Thio",
         latitude=-21.612984,
         longitude=166.214720,
-        inseeCode="98829",
-        banId=None,
         timezone="Pacific/Noumea",
     )
     offerer = offerers_factories.NotValidatedCaledonianOffererFactory(
@@ -199,7 +211,7 @@ def _create_nc_new_offerer() -> None:
     offerers_factories.UserOffererFactory(
         offerer=offerer,
         user__firstName="Méréï",
-        user__lastName="Néo-Calédonien",
+        user__lastName="Calédonien",
         user__email="pro3.nc@example.com",
         user__phoneNumber="+687749362",
         user__postalCode="98829",
@@ -210,7 +222,7 @@ def _create_nc_new_offerer() -> None:
 def _create_nc_cinema() -> None:
     address = geography_factories.AddressFactory(
         street="27 Avenue de la VICTOIRE-HENRI LAFLEUR",
-        postalCode="98818",
+        postalCode="98800",
         city="Nouméa",
         latitude=-22.2734285,
         longitude=166.4430499,
@@ -252,8 +264,10 @@ def _create_nc_cinema() -> None:
 
 def _create_nc_invoice() -> None:
     logger.info("_create_nc_invoice")
-    offerer = offerers_factories.CaledonianOffererFactory(name="Structure Néo-calédonienne avec remboursement")
-    bank_account = finance_factories.CaledonianBankAccountFactory(offerer=offerer)
+    offerer = offerers_factories.CaledonianOffererFactory(name="Structure calédonienne avec remboursement")
+    bank_account = finance_factories.CaledonianBankAccountFactory(
+        label="Coordonnées bancaires calédoniennes avec remboursement", offerer=offerer
+    )
     offerers_factories.UserOffererFactory(
         offerer=offerer,
         user__firstName="Jean-Michel",
@@ -300,26 +314,22 @@ def _create_nc_invoice() -> None:
     # This is a quick way to have a Venue reach the revenue threshold to reach the next ReimbursementRule,
     # without generating 60+ Bookings in bulk
     special_stock = offers_factories.StockFactory(offer=thing_offer2, price=19_950)
-    special_user = users_factories.BeneficiaryGrant18Factory(
-        firstName="This caledonian User has voluntarily a large deposit",
+    rich_user = users_factories.CaledonianBeneficiaryGrant18Factory(
+        firstName="Jeune avec un énorme crédit",
+        lastName="Calédonien",
+        email="riche.nc@example.com",
         deposit__source="_create_nc_invoice() in industrial sandbox",
     )
-    special_user.deposit.amount = 20000
-    db.session.add(special_user)
+    rich_user.deposit.amount = 25_000
+    db.session.add(rich_user)
     db.session.commit()
 
     # Add finance incidents to invoice
     booking_with_total_incident = bookings_factories.ReimbursedBookingFactory(
-        stock=offers_factories.StockFactory(offer=thing_offer1, price=30),
-        quantity=1,
-        amount=30,
-        user__deposit__source="_create_nc_invoice() in industrial sandbox",
+        stock=offers_factories.StockFactory(offer=thing_offer1, price=30), quantity=1, amount=30, user=rich_user
     )
     booking_with_partial_incident = bookings_factories.ReimbursedBookingFactory(
-        stock=offers_factories.StockFactory(offer=book_offer1, price=30),
-        quantity=1,
-        amount=30,
-        user__deposit__source="_create_nc_invoice() in industrial sandbox",
+        stock=offers_factories.StockFactory(offer=book_offer1, price=30), quantity=1, amount=30, user=rich_user
     )
     bookings_with_incident = [booking_with_total_incident, booking_with_partial_incident]
 
@@ -355,15 +365,12 @@ def _create_nc_invoice() -> None:
     bookings = [
         bookings_factories.UsedBookingFactory(
             stock=special_stock,
-            user=special_user,
+            user=rich_user,
         ),
     ]
 
     for stock in stocks:
-        booking = bookings_factories.UsedBookingFactory(
-            stock=stock,
-            user__deposit__source="_create_nc_invoice() in industrial sandbox",
-        )
+        booking = bookings_factories.UsedBookingFactory(stock=stock, user=rich_user)
         bookings.append(booking)
     for booking in bookings:
         finance_factories.UsedBookingFinanceEventFactory(booking=booking)
@@ -382,10 +389,12 @@ def _create_nc_invoice() -> None:
     logger.info("Created caledonian Invoice")
 
 
-def _create_one_nc_individual_incident() -> None:
-    offerer = offerers_factories.CaledonianOffererFactory(name="Structure Néo-calédonienne avec note de débit")
+def _create_one_nc_individual_incident(beneficiary: users_models.User) -> None:
+    offerer = offerers_factories.CaledonianOffererFactory(name="Structure calédonienne avec note de débit")
     pro = offerers_factories.UserOffererFactory(offerer=offerer).user
-    bank_account = finance_factories.CaledonianBankAccountFactory(offerer=offerer)
+    bank_account = finance_factories.CaledonianBankAccountFactory(
+        label="Coordonnées bancaires calédoniennes avec note de débit", offerer=offerer
+    )
     venue = offerers_factories.CaledonianVenueFactory(
         name="Lieu calédonien avec note de débit",
         managingOfferer=offerer,
@@ -394,9 +403,10 @@ def _create_one_nc_individual_incident() -> None:
     )
 
     incident_booking = bookings_factories.BookingFactory(
+        stock__offer__name="Offre pour note de débit en Nouvelle-Calédonie",
         stock__offer__venue=venue,
         stock__price=decimal.Decimal("30"),
-        user__deposit__source="_create_one_nc_individual_incident() in industrial sandbox",
+        user=beneficiary,
     )
     bookings_api.mark_as_used(
         booking=incident_booking,
