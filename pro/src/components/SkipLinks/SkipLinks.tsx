@@ -13,7 +13,7 @@ export const SkipLinks = (): JSX.Element => {
 
   return (
     <>
-      <a tabIndex={-1} href="#" id="top-page" className="visually-hidden" />
+      <a tabIndex={-1} href="#" id="top-page" data-testid="top-page" className="visually-hidden" />
       <nav aria-label="Accès rapide" className={styles['skip-links']}>
         <div id="orejime" />
         {buttons.length > 1 ? (

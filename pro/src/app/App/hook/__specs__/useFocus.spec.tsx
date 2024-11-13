@@ -1,10 +1,11 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 import { Link } from 'react-router-dom'
 
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { SkipLinks } from 'components/SkipLinks/SkipLinks'
+import { BackToNavLink } from 'components/BackToNavLink/BackToNavLink'
 
 import { useFocus } from '../useFocus'
 
@@ -22,10 +23,10 @@ const renderUseFocusRoutes = (url = '/accueil') => {
           <>
             <span>Main page</span>
             <Link to="/page-without-back-to-nav">
-              Page Without "Back to Nav" link
+              Go to Page Without "Back to Nav" link
             </Link>
             <Link to="/page-with-back-to-nav">
-              Page With "Back to Nav" link
+              Go to Page With "Back to Nav" link
             </Link>
           </>
         }
@@ -46,7 +47,7 @@ const renderUseFocusRoutes = (url = '/accueil') => {
           <>
             <FocusTopPageOrBackToNavLink />
             <SkipLinks />
-            <a id="back-to-nav-link" href="#" />
+            <BackToNavLink />
             <span>Page With "Back to Nav" link</span>
           </>
         }
@@ -57,27 +58,53 @@ const renderUseFocusRoutes = (url = '/accueil') => {
 }
 
 describe('useFocus', () => {
-  it('should focus on back to nav link when user navigates to another page', async () => {
-    renderUseFocusRoutes()
-    await userEvent.click(
-      screen.getByRole('link', { name: 'Page With "Back to Nav" link' })
-    )
+  it('should focus on back to nav link when user navigates to another page and the link exists', async () => {
+    renderUseFocusRoutes('/accueil')
 
-    screen.debug()
+    await waitFor(async () => {
+      console.log('user navigates to another page and the link exists')
+      const goToPageWithBackToNavLink = screen.getByRole('link', {
+        name: 'Go to Page With "Back to Nav" link',
+      })
 
-    expect(document.activeElement?.id).toEqual('back-to-nav-link')
-    await userEvent.tab()
-    expect(document.activeElement?.id).not.toEqual('back-to-nav-link')
+      await userEvent.click(goToPageWithBackToNavLink)
+    })
+
+    await waitFor(async () => {
+      const backToNavLink = screen.getByRole('link', {
+        name: 'Revenir à la barre de navigation',
+      })
+      expect(backToNavLink).toBeInTheDocument()
+      expect(document.activeElement?.id).toEqual('back-to-nav-link')
+      await userEvent.tab()
+      expect(document.activeElement?.id).not.toEqual('back-to-nav-link')
+    })
   })
 
   it('should focus on top of the page as a fallback', async () => {
     renderUseFocusRoutes()
     await userEvent.click(
-      screen.getByRole('link', { name: 'Page Without "Back to Nav" link' })
+      screen.getByRole('link', { name: 'Go to Page Without "Back to Nav" link' })
     )
 
-    expect(document.activeElement?.id).toEqual('top-page')
-    await userEvent.tab()
-    expect(document.activeElement?.id).not.toEqual('top-page')
+    await waitFor(async () => {
+      const topPageLink = screen.getByTestId('top-page')
+      expect(topPageLink).toBeInTheDocument()
+      expect(document.activeElement?.id).toEqual('top-page')
+      await userEvent.tab()
+      expect(document.activeElement?.id).not.toEqual('top-page')
+    })
+  })
+
+  it('should focus on top of the page when the page is refreshed', async () => {
+    renderUseFocusRoutes('/page-with-back-to-nav')
+
+    await waitFor(async () => {
+      const topPageLink = screen.getByTestId('top-page')
+      expect(topPageLink).toBeInTheDocument()
+      expect(document.activeElement?.id).toEqual('top-page')
+      await userEvent.tab()
+      expect(document.activeElement?.id).not.toEqual('top-page')
+    })
   })
 })

@@ -150,22 +150,12 @@ $connect-as-header-height: rem.torem(52px);
   flex-direction: row;
   align-items: center;
   margin-bottom: rem.torem(32px);
+
+  .back-to-nav-link {
+    margin-left: rem.torem(16px);
+  }
 }
 
 .main-heading {
   @include fonts-design-system.title1;
-}
-
-.back-to-nav-link {
-  margin-left: rem.torem(16px);
-  opacity: 0;
-  height: rem.torem(24px);
-  width: rem.torem(24px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &:active, &:focus {
-    opacity: 1;
-  }
 }

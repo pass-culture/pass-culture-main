@@ -8,11 +8,11 @@ import { Footer } from 'components/Footer/Footer'
 import { Header } from 'components/Header/Header'
 import { NewNavReview } from 'components/NewNavReview/NewNavReview'
 import { SkipLinks } from 'components/SkipLinks/SkipLinks'
-import fullGoTop from 'icons/full-go-top.svg'
 import fullInfoIcon from 'icons/full-info.svg'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
 import logoStyles from 'styles/components/_Logo.module.scss'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { BackToNavLink } from 'components/BackToNavLink/BackToNavLink'
 
 import { LateralPanel } from './LateralPanel/LateralPanel'
 import styles from './Layout.module.scss'
@@ -47,17 +47,9 @@ export const Layout = ({
   const mainHeaing = mainHeading && (
     <div className={styles['main-heading-wrapper']}>
       <h1 className={styles['main-heading']}>{mainHeading}</h1>
-      <a
-        id="back-to-nav-link"
-        href={isMobileScreen ? '#header-nav-toggle' : '#lateral-panel'}
-        className={styles['back-to-nav-link']}
-      >
-        <SvgIcon
-          src={fullGoTop}
-          alt="Revenir à la barre de navigation"
-          width="20"
-        />
-      </a>
+      <BackToNavLink
+        isMobileScreen={isMobileScreen}
+        className={styles['back-to-nav-link']}/>
     </div>
   )
 
