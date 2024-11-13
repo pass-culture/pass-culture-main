@@ -55,7 +55,8 @@ class GetFavoriteOfferTest:
         # fetch collective offer images data (1 query)
         # fetch collective offer template (1 query)
         # fetch collective offer template images data (1 query)
-        with assert_num_queries(5):
+        # fetch feature toggle (1 query)
+        with assert_num_queries(6):
             response = test_client.get(url_for(self.endpoint))
         assert response.status_code == 200
         assert response.json == {
@@ -242,7 +243,8 @@ class GetFavoriteOfferTest:
         # fetch collective offer (1 query)
         # fetch collective offer template (1 query)
         # fetch images data (1 query)
-        with assert_num_queries(4):
+        # fetch feature toggle (1 query)
+        with assert_num_queries(5):
             test_client = get_test_client(client, educational_redactor, educational_institution)
             response = test_client.get(url_for(self.endpoint))
 

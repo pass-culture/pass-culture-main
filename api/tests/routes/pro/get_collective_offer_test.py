@@ -24,7 +24,8 @@ class Returns200Test:
     # user_offerer
     # collective_offer
     # google_places_info
-    num_queries = 6
+    # feature toggle
+    num_queries = 7
 
     def test_filtering(self, client):
         offer = educational_factories.PendingCollectiveBookingFactory().collectiveStock.collectiveOffer
@@ -169,8 +170,7 @@ class Returns200Test:
         client = client.with_session_auth(email="user@example.com")
         offer_id = offer.id
 
-        expected_num_queries = self.num_queries + 1  # feature flag
-        with testing.assert_num_queries(expected_num_queries):
+        with testing.assert_num_queries(self.num_queries):
             with testing.assert_no_duplicated_queries():
                 client.get(f"/collective/offers/{offer_id}")
 
@@ -189,8 +189,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(email="user@example.com")
         offer_id = offer.id
-        expected_num_queries = self.num_queries + 1  # feature flag
-        with assert_num_queries(expected_num_queries):
+        with assert_num_queries(self.num_queries):
             response = client.get(f"/collective/offers/{offer_id}")
             assert response.status_code == 200
 
@@ -235,7 +234,9 @@ class Returns200Test:
 
         client = client.with_session_auth(email="user@example.com")
         offer_id = offer.id
-        with assert_num_queries(self.num_queries):
+        num_queries = self.num_queries
+        num_queries -= 1  # feature toggle
+        with assert_num_queries(num_queries):
             response = client.get(f"/collective/offers/{offer_id}")
             assert response.status_code == 200
 

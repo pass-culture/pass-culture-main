@@ -61,8 +61,9 @@ class CollectiveOfferTest:
         # 2. fetch collective offer and related data
         # 3. fetch the offerVenue's details (Venue)
         # 4. find out if its a redactor's favorite
-        # 5. fetch the venue's images
-        with assert_num_queries(5):
+        # 5. fetch feature toggle
+        # 6. fetch the venue's images
+        with assert_num_queries(6):
             response = eac_client.get(dst)
 
         # Then
@@ -154,8 +155,9 @@ class CollectiveOfferTest:
         # 1. fetch redactor
         # 2. fetch collective offer and related data
         # 3. find out if its a redactor's favorite
-        # 4. fetch the venue's images
-        with assert_num_queries(4):
+        # 4. fetch feature toggle
+        # 5. fetch the venue's images
+        with assert_num_queries(5):
             response = eac_client.get(dst)
 
         # Then
@@ -200,8 +202,9 @@ class CollectiveOfferTest:
 
         # 1. fetch redactor
         # 2. fetch collective offer and related data
-        # 3. fetch the venue's images
-        with assert_num_queries(3):
+        # 3. fetch feature toggle
+        # 4. fetch the venue's images
+        with assert_num_queries(4):
             response = eac_client.get(dst)
 
         assert response.status_code == 200

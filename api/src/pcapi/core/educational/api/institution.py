@@ -240,7 +240,10 @@ def get_offers_for_my_institution(uai: str) -> BaseQuery:
                 educational_models.CollectiveStock.collectiveBookings
             ),
             sa.orm.joinedload(educational_models.CollectiveOffer.venue).joinedload(
-                offerers_models.Venue.managingOfferer
+                offerers_models.Venue.managingOfferer,
+            ),
+            sa.orm.joinedload(educational_models.CollectiveOffer.venue).joinedload(
+                offerers_models.Venue.googlePlacesInfo,
             ),
             sa.orm.joinedload(educational_models.CollectiveOffer.institution),
             sa.orm.joinedload(educational_models.CollectiveOffer.teacher),
