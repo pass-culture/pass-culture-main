@@ -188,11 +188,19 @@ class GetCappedOffersForFiltersTest:
         period_beginning_date = datetime.date(2020, 4, 21)
         period_ending_date = datetime.date(2020, 4, 21)
 
-        offer_in_cayenne = factories.OfferFactory(venue__postalCode="97300")
+        cayenne_offerer_address = offerers_factories.OffererAddressFactory(address__timezone="America/Cayenne")
+        offer_in_cayenne = factories.OfferFactory(
+            venue__postalCode="97300",
+            offererAddress=cayenne_offerer_address,
+        )
         cayenne_event_datetime = datetime.datetime(2020, 4, 22, 2, 0)
         factories.EventStockFactory(offer=offer_in_cayenne, beginningDatetime=cayenne_event_datetime)
 
-        offer_in_mayotte = factories.OfferFactory(venue__postalCode="97600")
+        mayotte_offerer_address = offerers_factories.OffererAddressFactory(address__timezone="Indian/Mayotte")
+        offer_in_mayotte = factories.OfferFactory(
+            venue__postalCode="97600",
+            offererAddress=mayotte_offerer_address,
+        )
         mayotte_event_datetime = datetime.datetime(2020, 4, 20, 22, 0)
         factories.EventStockFactory(offer=offer_in_mayotte, beginningDatetime=mayotte_event_datetime)
 
@@ -211,6 +219,26 @@ class GetCappedOffersForFiltersTest:
         assert offer_in_cayenne.id in offers_id
         assert offer_in_mayotte.id in offers_id
         assert len(offers) == 2
+
+        # Now ensures the offers are filtered out if we begin the search the day after
+        with override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=use_oa):
+            offers = repository.get_capped_offers_for_filters(
+                user_id=admin.id,
+                user_is_admin=admin.has_admin_role,
+                offers_limit=10,
+                period_beginning_date=period_beginning_date + datetime.timedelta(days=1),
+            )
+        assert len(offers) == 0
+
+        # Now ensures the offers are filtered out if we end the search the day before
+        with override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=use_oa):
+            offers = repository.get_capped_offers_for_filters(
+                user_id=admin.id,
+                user_is_admin=admin.has_admin_role,
+                offers_limit=10,
+                period_ending_date=period_ending_date - datetime.timedelta(days=1),
+            )
+        assert len(offers) == 0
 
     class WhenUserIsAdminTest:
         @pytest.mark.usefixtures("db_session")

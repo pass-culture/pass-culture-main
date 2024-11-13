@@ -324,15 +324,10 @@ def get_offers_by_filters(
         )
         target_timezone: sa.orm.Mapped[typing.Any] | sa.sql.functions.Function = offerers_models.Venue.timezone
         if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
-            stock_query = (
-                stock_query.join(offers_model.Offer)
-                .outerjoin(
-                    offerers_models.OffererAddress,
-                    offer_alias.offererAddressId == offerers_models.OffererAddress.id,
-                    isouter=True,
-                )
-                .join(geography_models.Address, offerers_models.OffererAddress.addressId == geography_models.Address.id)
-            )
+            stock_query = stock_query.outerjoin(
+                offerers_models.OffererAddress,
+                offer_alias.offererAddressId == offerers_models.OffererAddress.id,
+            ).join(geography_models.Address, offerers_models.OffererAddress.addressId == geography_models.Address.id)
             target_timezone = sa.func.coalesce(geography_models.Address.timezone, offerers_models.Venue.timezone)
         if period_beginning_date is not None:
             stock_query = stock_query.filter(
