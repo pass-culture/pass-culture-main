@@ -30,7 +30,8 @@ export const computeAddressDisplayName = (
 ): string => {
   return (
     (showLabel && address.label ? `${address.label} - ` : '') +
-    `${address.street} ${address.postalCode} ${address.city}`
+    (address.street ? address.street + ' ' : '') +
+    `${address.postalCode} ${address.city}`
   )
 }
 
