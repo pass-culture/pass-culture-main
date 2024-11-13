@@ -1,10 +1,18 @@
 import { logAndGoToPage } from '../support/helpers.ts'
 
 describe('Account creation', () => {
+  before(() => {
+    cy.visit('/inscription')
+    cy.request({
+      method: 'GET',
+      url: 'http://localhost:5001/sandboxes/clear_email_list',
+    }).then((response) => {
+      expect(response.status).to.eq(200)
+    })
+  })
+
   it('I should be able to create an account', () => {
     const randomEmail = `jean${Math.random()}@example.com`
-    cy.visit('/inscription')
-
     cy.stepLog({
       message: 'I fill required information in create account form',
     })
