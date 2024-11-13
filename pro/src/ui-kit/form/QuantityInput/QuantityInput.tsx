@@ -35,6 +35,11 @@ export type QuantityInputProps = Pick<
    * This is to support custom logic when the quantity changes.
    */
   onChange?: (quantity: Quantity) => void
+  /**
+   * The minimum value allowed for the quantity.
+   * Make sure it matches formik validation schema.
+   */
+  min?: Quantity
 }
 
 export const QuantityInput = ({
@@ -48,16 +53,17 @@ export const QuantityInput = ({
   smallLabel,
   hideFooter,
   isOptional,
+  min = 0,
 }: QuantityInputProps) => {
   const quantityRef = useRef<HTMLInputElement>(null)
   const unlimitedRef = useRef<HTMLInputElement>(null)
 
   const [field] = useField(name)
   const { setFieldValue } = useFormikContext()
-  const [isUnlimited, setIsUnlimited] = useState(!field.value)
+  const [isUnlimited, setIsUnlimited] = useState(field.value === '')
 
   useEffect(() => {
-    setIsUnlimited(!field.value)
+    setIsUnlimited(field.value === '')
   }, [field.value])
 
   useEffect(() => {
@@ -70,15 +76,15 @@ export const QuantityInput = ({
   }, [isUnlimited])
 
   const onQuantityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newQuantity = parseInt(event.target.value)
-    onChange?.(newQuantity)
+    const nextValue = event.target.value ? parseInt(event.target.value) : ''
+    onChange?.(nextValue)
   }
 
   const onCheckboxChange = async () => {
     const nextIsUnlimitedState = !isUnlimited
     setIsUnlimited(nextIsUnlimitedState)
 
-    let nextFieldValue: Quantity = 1
+    let nextFieldValue: Quantity = min
     if (nextIsUnlimitedState) {
       // If the checkbox is going to be checked,
       // we need to clear the quantity field as an empty
@@ -106,7 +112,7 @@ export const QuantityInput = ({
         hasDecimal={false}
         className={className}
         classNameFooter={classNameFooter}
-        min={1}
+        min={min}
         max={1_000_000}
         isLabelHidden={isLabelHidden}
         hideFooter={hideFooter}
