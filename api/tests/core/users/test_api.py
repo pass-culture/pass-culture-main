@@ -53,6 +53,7 @@ from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications.push import testing as batch_testing
 from pcapi.routes.native.v1.serialization import account as account_serialization
 from pcapi.routes.serialization import users as users_serialization
+from pcapi.scripts.deactivate_admin_user.main import deactivate_admin_user_session
 
 import tests
 from tests.test_utils import StorageFolderManager
@@ -2775,6 +2776,24 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
 
         assert len(sendinblue_testing.sendinblue_requests) == 1
         assert user_to_anonymize.firstName != "user_to_anonymize"
+
+
+class DeactivateAdminUserSessionTest:
+    def test_deactivate_admin_user_session(self) -> None:
+        beneficiary_user = users_factories.BeneficiaryFactory()
+        pro_user = users_factories.ProFactory()
+        admin_user = users_factories.AdminFactory()
+
+        users_factories.UserSessionFactory(user=beneficiary_user)
+        users_factories.UserSessionFactory(user=pro_user)
+        users_factories.UserSessionFactory(user=admin_user)
+
+        deactivate_admin_user_session()
+
+        assert users_models.UserSession.query.filter(users_models.UserSession.userId == beneficiary_user.id).one()
+        assert users_models.UserSession.query.filter(users_models.UserSession.userId == pro_user.id).one()
+        # Should have been deleted
+        assert not users_models.UserSession.query.filter(users_models.UserSession.userId == admin_user.id).one_or_none()
 
 
 class AnonymizeUserDepositsTest:
