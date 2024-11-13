@@ -34,6 +34,8 @@ class Permissions(enum.Enum):
     READ_PUBLIC_ACCOUNT = "visualiser un compte bénéficiaire/grand public"
     MANAGE_PUBLIC_ACCOUNT = "gérer un compte bénéficiaire/grand public"
     ANONYMIZE_PUBLIC_ACCOUNT = "anonymiser un compte grand public"
+    READ_CHRONICLE = "visualiser les chroniques"
+    MANAGE_CHRONICLE = "gérer les chroniques"
 
     SUSPEND_USER = "suspendre un compte jeune"
     UNSUSPEND_USER = "réactiver un compte jeune"
