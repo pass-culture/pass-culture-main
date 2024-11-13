@@ -246,7 +246,7 @@ def _create_nc_cinema() -> None:
         contact__social_medias={"instagram": "https://instagram.com/@noumea.nc"},
         offererAddress__address=address,
     )
-    movie_products = create_movie_products()
+    movie_products = create_movie_products(offset=1000)
     create_offer_and_stocks_for_cinemas([venue], movie_products)
 
 
