@@ -28,7 +28,7 @@ There are **two methods to create a product offer** using the pass Culture API :
 :::info
 To be able to create a product offer using an EAN code, **this EAN code must exists in the pass Culture database**.
 
-**It should not be an issue in production**, since we are using a professional service to get EAN codes. In the test in the integration test environment however, we have only a small set of EAN codes available. **[You can find the EAN codes here](/docs/test-data)**.
+**It should not be an issue in production**, since we are using a professional service to get EAN codes. In the test in the integration test environment however, we have only a small set of EAN codes available. **[You can find the EAN codes here](/docs/integrations/test-data)**.
 :::
 
 ### Update rule
