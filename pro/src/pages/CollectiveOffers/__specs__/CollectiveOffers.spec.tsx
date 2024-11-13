@@ -93,7 +93,7 @@ describe('route CollectiveOffers', () => {
 
         await userEvent.click(
           screen.getByText('Statut', {
-            selector: 'span',
+            selector: 'label',
           })
         )
         const list = screen.getByTestId('list')
@@ -130,7 +130,7 @@ describe('route CollectiveOffers', () => {
 
         await userEvent.click(
           screen.getByText('Statut', {
-            selector: 'span',
+            selector: 'label',
           })
         )
         const list = screen.getByTestId('list')
@@ -171,7 +171,7 @@ describe('route CollectiveOffers', () => {
 
         await userEvent.click(
           screen.getByText('Statut', {
-            selector: 'span',
+            selector: 'label',
           })
         )
         const list = screen.getByTestId('list')

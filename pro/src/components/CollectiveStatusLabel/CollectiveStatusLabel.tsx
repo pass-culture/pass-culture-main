@@ -15,17 +15,16 @@ import strokeDoubleCheckIcon from 'icons/stroke-double-check.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
 import strokeHourglassIcon from 'icons/stroke-hourglass.svg'
 import strokeThing from 'icons/stroke-thing.svg'
+import strokeWrongIcon from 'icons/stroke-wrong.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import style from './CollectiveStatusLabel.module.scss'
 
 type CollectiveStatusLabelProps = {
-  offerStatus: CollectiveOfferStatus
   offerDisplayedStatus: CollectiveOfferDisplayedStatus
 }
 
 export const CollectiveStatusLabel = ({
-  offerStatus,
   offerDisplayedStatus,
 }: CollectiveStatusLabelProps) => {
   const areNewStatusesEnabled = useActiveFeature(
@@ -167,31 +166,17 @@ export const CollectiveStatusLabel = ({
         />
       )
     case CollectiveOfferDisplayedStatus.CANCELLED:
-      return offerStatus === CollectiveOfferStatus.ACTIVE ? (
-        <StatusLabel
-          className={style['status-active']}
-          icon={
-            <SvgIcon
-              src={strokeCheckIcon}
-              alt=""
-              className={style['status-label-icon']}
-            />
-          }
-          label="publiée"
+      return <StatusLabel
+      className={style['status-cancelled']}
+      icon={
+        <SvgIcon
+          src={strokeWrongIcon}
+          alt=""
+          className={style['status-label-icon']}
         />
-      ) : (
-        <StatusLabel
-          className={style['status-inactive']}
-          icon={
-            <SvgIcon
-              alt=""
-              src={fullHideIcon}
-              className={style['status-label-icon']}
-            />
-          }
-          label={areNewStatusesEnabled ? 'en pause' : 'masquée'}
-        />
-      )
+      }
+      label="annulée"
+    />
     case CollectiveOfferDisplayedStatus.ARCHIVED:
       return (
         <StatusLabel

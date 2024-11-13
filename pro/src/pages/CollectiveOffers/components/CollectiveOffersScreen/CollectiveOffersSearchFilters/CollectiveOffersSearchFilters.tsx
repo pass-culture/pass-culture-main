@@ -207,6 +207,10 @@ export const CollectiveOffersSearchFilters = ({
             label: 'Remboursée',
             value: CollectiveOfferDisplayedStatus.REIMBURSED,
           },
+          {
+            label: 'Annulée',
+            value: CollectiveOfferDisplayedStatus.CANCELLED,
+          },
         ]
       : []),
   ]
@@ -291,9 +295,7 @@ export const CollectiveOffersSearchFilters = ({
             <SelectAutocomplete
               multi
               name="status"
-              label={
-                <span className={styles['status-filter-label']}>Statut</span>
-              }
+              label="Statut"
               options={statusFilterOptions}
               placeholder="Statuts"
               isOptional

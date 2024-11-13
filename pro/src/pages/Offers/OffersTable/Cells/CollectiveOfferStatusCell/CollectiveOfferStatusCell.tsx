@@ -19,7 +19,6 @@ export const CollectiveOfferStatusCell = ({
     headers={headers}
   >
     <CollectiveStatusLabel
-      offerStatus={offer.status}
       offerDisplayedStatus={offer.displayedStatus}
     />
   </td>

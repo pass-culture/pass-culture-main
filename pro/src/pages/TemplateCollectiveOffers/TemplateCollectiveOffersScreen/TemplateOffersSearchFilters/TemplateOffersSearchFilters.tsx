@@ -209,9 +209,7 @@ export const TemplateOffersSearchFilters = ({
           <SelectAutocomplete
             multi
             name="status"
-            label={
-              <span className={styles['status-filter-label']}>Statut</span>
-            }
+            label="Statut"
             options={collectiveFilterStatus}
             placeholder="Statuts"
             isOptional

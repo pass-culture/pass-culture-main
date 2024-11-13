@@ -9,7 +9,6 @@ import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { CollectiveStatusLabel } from './CollectiveStatusLabel'
 
 interface TestCaseProps {
-  status?: CollectiveOfferStatus
   displayedStatus: CollectiveOfferDisplayedStatus
   expectedLabel: string
 }
@@ -45,15 +44,6 @@ describe('CollectiveStatusLabel', () => {
       expectedLabel: 'expirée',
     },
     {
-      displayedStatus: CollectiveOfferDisplayedStatus.CANCELLED,
-      expectedLabel: 'masquée',
-    },
-    {
-      displayedStatus: CollectiveOfferDisplayedStatus.CANCELLED,
-      status: CollectiveOfferStatus.ACTIVE,
-      expectedLabel: 'publiée',
-    },
-    {
       displayedStatus: CollectiveOfferDisplayedStatus.ARCHIVED,
       expectedLabel: 'archivée',
     },
@@ -73,12 +63,10 @@ describe('CollectiveStatusLabel', () => {
 
   it.each(testCases)(
     'should render %s status',
-    ({ displayedStatus, status, expectedLabel }: TestCaseProps) => {
-      const unrelevantStatus = CollectiveOfferStatus.PENDING
+    ({ displayedStatus, expectedLabel }: TestCaseProps) => {
       renderWithProviders(
         <CollectiveStatusLabel
           offerDisplayedStatus={displayedStatus}
-          offerStatus={status ?? unrelevantStatus}
         />
       )
       expect(screen.getByText(expectedLabel)).toBeInTheDocument()
@@ -86,11 +74,9 @@ describe('CollectiveStatusLabel', () => {
   )
 
   it('should render "remboursée" status when ff is active', () => {
-    const unrelevantStatus = CollectiveOfferStatus.PENDING
     renderWithProviders(
       <CollectiveStatusLabel
         offerDisplayedStatus={CollectiveOfferDisplayedStatus.REIMBURSED}
-        offerStatus={unrelevantStatus}
       />,
       {
         features: ['ENABLE_COLLECTIVE_NEW_STATUSES'],
@@ -100,11 +86,9 @@ describe('CollectiveStatusLabel', () => {
   })
 
   it('should render "non conforme" status when ff is active for REJECTED displayed status', () => {
-    const unrelevantStatus = CollectiveOfferStatus.PENDING
     renderWithProviders(
       <CollectiveStatusLabel
         offerDisplayedStatus={CollectiveOfferDisplayedStatus.REJECTED}
-        offerStatus={unrelevantStatus}
       />,
       {
         features: ['ENABLE_COLLECTIVE_NEW_STATUSES'],
@@ -114,11 +98,9 @@ describe('CollectiveStatusLabel', () => {
   })
 
   it('should render "en pause" status when ff is active for INACTIVE displayed status', () => {
-    const unrelevantStatus = CollectiveOfferStatus.PENDING
     renderWithProviders(
       <CollectiveStatusLabel
         offerDisplayedStatus={CollectiveOfferDisplayedStatus.INACTIVE}
-        offerStatus={unrelevantStatus}
       />,
       {
         features: ['ENABLE_COLLECTIVE_NEW_STATUSES'],
@@ -128,16 +110,26 @@ describe('CollectiveStatusLabel', () => {
   })
 
   it('should render "en instruction" status when ff is active for PENDING displayed status', () => {
-    const unrelevantStatus = CollectiveOfferStatus.PENDING
     renderWithProviders(
       <CollectiveStatusLabel
         offerDisplayedStatus={CollectiveOfferDisplayedStatus.PENDING}
-        offerStatus={unrelevantStatus}
       />,
       {
         features: ['ENABLE_COLLECTIVE_NEW_STATUSES'],
       }
     )
     expect(screen.getByText('en instruction')).toBeInTheDocument()
+  })
+
+  it('should render "annulée" status when the ENABLE_COLLECTIVE_NEW_STATUSES FF is active for a CANCELLED displayed status', () => {
+    renderWithProviders(
+      <CollectiveStatusLabel
+        offerDisplayedStatus={CollectiveOfferDisplayedStatus.CANCELLED}
+      />,
+      {
+        features: ['ENABLE_COLLECTIVE_NEW_STATUSES'],
+      }
+    )
+    expect(screen.getByText('annulée')).toBeInTheDocument()
   })
 })
