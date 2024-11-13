@@ -144,7 +144,7 @@ def get_most_recent_release_date(releases: list[allocine_serializers.AllocineMov
 
 def get_certificate(releases: list[allocine_serializers.AllocineMovieRelease]) -> str | None:
     sorted_certificates = sorted(
-        [release.certificate for release in releases if release.certificate and release.certificate],
+        [release.certificate for release in releases if release.certificate],
         reverse=True,
     )
     return sorted_certificates[0] if sorted_certificates else None
