@@ -85,7 +85,7 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
         assert rows[0]["État"] == "Validée"
         assert rows[0]["Date de création"] == (datetime.date.today() - datetime.timedelta(days=5)).strftime("%d/%m/%Y")
         assert rows[0]["Formats"] == ", ".join([fmt.value for fmt in collective_offer_templates[0].formats])
-        assert rows[0]["Entité"] == collective_offer_templates[0].venue.managingOfferer.name
+        assert rows[0]["Entité juridique"] == collective_offer_templates[0].venue.managingOfferer.name
         assert rows[0]["Lieu"] == collective_offer_templates[0].venue.name
         assert rows[0]["Créateur de l'offre"] == collective_offer_templates[0].author.full_name
 
@@ -101,7 +101,7 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
         assert rows[0]["Nom de l'offre"] == collective_offer_templates[1].name
         assert rows[0]["État"] == "Validée"
         assert rows[0]["Date de création"] == (datetime.date.today() - datetime.timedelta(days=5)).strftime("%d/%m/%Y")
-        assert rows[0]["Entité"] == collective_offer_templates[1].venue.managingOfferer.name
+        assert rows[0]["Entité juridique"] == collective_offer_templates[1].venue.managingOfferer.name
         assert rows[0]["Lieu"] == collective_offer_templates[1].venue.name
 
     def test_list_offers_by_date(self, authenticated_client, collective_offer_templates):
@@ -246,7 +246,7 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert rows[0]["Entité"] == "Offerer Revue manuelle"
+        assert rows[0]["Entité juridique"] == "Offerer Revue manuelle"
         assert rows[0]["Lieu"] == "Venue"
 
     def test_list_collective_offer_templates_with_venue_confidence_rule(self, client, pro_fraud_admin):
@@ -261,7 +261,7 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert rows[0]["Entité"] == "Offerer"
+        assert rows[0]["Entité juridique"] == "Offerer"
         assert rows[0]["Lieu"] == "Venue Revue manuelle"
 
 
@@ -290,7 +290,7 @@ class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
         content_as_text = html_parser.content_as_text(response.data)
         assert f"Date de création : {collectiveOfferTemplate.dateCreated.strftime('%d/%m/%Y')}" in content_as_text
         assert f"Description : {collectiveOfferTemplate.description}" in content_as_text
-        assert f"Entité : {collectiveOfferTemplate.venue.managingOfferer.name}" in content_as_text
+        assert f"Entité juridique : {collectiveOfferTemplate.venue.managingOfferer.name}" in content_as_text
         assert f"Lieu : {collectiveOfferTemplate.venue.name}" in content_as_text
         assert f"Formats : {EacFormat.PROJECTION_AUDIOVISUELLE.value}" in content_as_text
 

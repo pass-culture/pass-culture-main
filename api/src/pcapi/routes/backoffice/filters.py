@@ -369,12 +369,12 @@ def format_booking_cancellation(
         ):
             if author:
                 return Markup(
-                    'Annulée depuis le backoffice par <a class="link-primary" href="{url}">{full_name}</a> pour cause de fermeture d\'entité'
+                    'Annulée depuis le backoffice par <a class="link-primary" href="{url}">{full_name}</a> pour cause de fermeture d\'entité juridique'
                 ).format(
                     url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
                     full_name=author.full_name,
                 )
-            return "Annulée depuis le backoffice pour cause de fermeture d'entité"
+            return "Annulée depuis le backoffice pour cause de fermeture d'entité juridique"
         case (
             bookings_models.BookingCancellationReasons.REFUSED_BY_INSTITUTE
             | educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE
@@ -716,7 +716,9 @@ def format_confidence_level_badge_for_venue(venue: offerers_models.Venue) -> str
     if venue.confidenceLevel:
         return format_confidence_level_badge(venue.confidenceLevel)
 
-    return format_confidence_level_badge(venue.managingOfferer.confidenceLevel, show_no_rule=True, info="(entité)")
+    return format_confidence_level_badge(
+        venue.managingOfferer.confidenceLevel, show_no_rule=True, info="(entité juridique)"
+    )
 
 
 def format_fraud_check_url(id_check_item: serialization_accounts.IdCheckItemModel) -> str:
@@ -978,7 +980,7 @@ def format_offer_validation_sub_rule_field(sub_rule_field: offers_models.OfferVa
         case offers_models.OfferValidationSubRuleField.ID_VENUE:
             return "Le lieu/partenaire culturel proposant l'offre"  # Remove `lieu/` along with WIP_ENABLE_OFFER_ADDRESS
         case offers_models.OfferValidationSubRuleField.ID_OFFERER:
-            return "L'entité proposant l'offre"
+            return "L'entité juridique proposant l'offre"
         case offers_models.OfferValidationSubRuleField.FORMATS_COLLECTIVE_OFFER:
             return "Les formats de l'offre collective"
         case offers_models.OfferValidationSubRuleField.FORMATS_COLLECTIVE_OFFER_TEMPLATE:

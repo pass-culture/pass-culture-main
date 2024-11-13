@@ -237,7 +237,7 @@ def check_can_remove_siret(
             for offerer_venue in venue.managingOfferer.managedVenues
             if offerer_venue.siret and offerer_venue.id != venue.id
         ):
-            raise CheckError(f"L'entité gérant ce {venue_label} n'a pas d'autre {venue_label} avec SIRET")
+            raise CheckError(f"L'entité juridique gérant ce {venue_label} n'a pas d'autre {venue_label} avec SIRET")
 
     if not comment:
         raise CheckError("Le commentaire est obligatoire")
@@ -284,7 +284,7 @@ def remove_siret(
         ).one_or_none()
         if not new_pricing_point_venue:
             raise CheckError(
-                f"Le nouveau point de valorisation doit être un {venue_label} avec SIRET sur la même entité"
+                f"Le nouveau point de valorisation doit être un {venue_label} avec SIRET sur la même entité juridique"
             )
         new_siret = new_pricing_point_venue.siret
 

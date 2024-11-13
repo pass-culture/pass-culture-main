@@ -137,7 +137,10 @@ class DeleteSiretTest:
 
         with pytest.raises(siret_api.CheckError) as err:
             siret_api.remove_siret(venue, comment="xxx", new_pricing_point_id=venue.id + 1000, apply_changes=True)
-        assert str(err.value) == "Le nouveau point de valorisation doit être un lieu avec SIRET sur la même entité"
+        assert (
+            str(err.value)
+            == "Le nouveau point de valorisation doit être un lieu avec SIRET sur la même entité juridique"
+        )
 
     @pytest.mark.usefixtures("clean_database")
     def test_refuse_if_new_pricing_point_has_no_siret(self):
@@ -146,7 +149,10 @@ class DeleteSiretTest:
 
         with pytest.raises(siret_api.CheckError) as err:
             siret_api.remove_siret(venue, comment="xxx", new_pricing_point_id=new_pricing_point.id, apply_changes=True)
-        assert str(err.value) == "Le nouveau point de valorisation doit être un lieu avec SIRET sur la même entité"
+        assert (
+            str(err.value)
+            == "Le nouveau point de valorisation doit être un lieu avec SIRET sur la même entité juridique"
+        )
 
     @pytest.mark.usefixtures("clean_database")
     def test_refuse_if_new_pricing_point_is_managed_by_another_offerer(self):
@@ -155,4 +161,7 @@ class DeleteSiretTest:
 
         with pytest.raises(siret_api.CheckError) as err:
             siret_api.remove_siret(venue, comment="xxx", new_pricing_point_id=new_pricing_point.id, apply_changes=True)
-        assert str(err.value) == "Le nouveau point de valorisation doit être un lieu avec SIRET sur la même entité"
+        assert (
+            str(err.value)
+            == "Le nouveau point de valorisation doit être un lieu avec SIRET sur la même entité juridique"
+        )

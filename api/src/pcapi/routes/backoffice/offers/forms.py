@@ -45,7 +45,7 @@ class IndividualOffersSearchAttributes(enum.Enum):
     PRICE = "Prix"
     PROVIDER = "Fournisseur"
     STATUS = "Statut"
-    OFFERER = "Entité"
+    OFFERER = "Entité juridique"
     TAG = "Tag"
     MUSIC_TYPE_GTL = "Type de musique"
     SHOW_TYPE = "Type de spectacle"
@@ -61,7 +61,7 @@ class IndividualOffersAlgoliaSearchAttributes(enum.Enum):
     VENUE = forms_utils.VenueRenaming("Lieu", "Partenaire culturel")
     REGION = "Région"
     SUBCATEGORY = "Sous-catégorie"
-    OFFERER = "Entité"
+    OFFERER = "Entité juridique"
     PRICE = "Prix"
     SHOW_TYPE = "Type de spectacle"
 
@@ -257,7 +257,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         ],
     )
     offerer = fields.PCTomSelectField(
-        "Entités",
+        "Entités juridiques",
         multiple=True,
         choices=[],
         validate_choice=False,
@@ -433,7 +433,7 @@ class OfferAlgoliaSearchSubForm(forms_utils.PCForm):
         field_list_compatibility=True,
     )
     offerer = fields.PCTomSelectField(
-        "Entités",
+        "Entités juridiques",
         multiple=True,
         choices=[],
         validate_choice=False,
@@ -547,7 +547,9 @@ class BaseOfferAdvancedSearchForm(GetOffersBaseFields):
 
 class GetOfferAdvancedSearchForm(BaseOfferAdvancedSearchForm):
     form_field_configuration = form_field_configuration
-    only_validated_offerers = fields.PCSwitchBooleanField("Uniquement les offres des entités validées", full_row=True)
+    only_validated_offerers = fields.PCSwitchBooleanField(
+        "Uniquement les offres des entités juridiques validées", full_row=True
+    )
 
     def is_empty(self) -> bool:
         empty = not self.only_validated_offerers.data

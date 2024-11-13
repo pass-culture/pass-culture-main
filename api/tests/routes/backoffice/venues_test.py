@@ -125,7 +125,7 @@ class ListVenuesTest(GetEndpointHelper):
         assert int(rows[0]["ID"]) == venues[0].id
         assert rows[0]["Nom"] == venues[0].name
         assert rows[0]["Nom d'usage"] == venues[0].publicName
-        assert rows[0]["Entité"] == venues[0].managingOfferer.name
+        assert rows[0]["Entité juridique"] == venues[0].managingOfferer.name
         assert rows[0]["Permanent"] == "Lieu permanent"
         assert rows[0]["Label"] == venues[0].venueLabel.label
         assert sorted(rows[0]["Tags"].split()) == sorted("Criterion_cinema Criterion_art".split())
@@ -173,7 +173,7 @@ class ListVenuesTest(GetEndpointHelper):
         assert len(rows) == len(matching_venues)
         assert {int(row["ID"]) for row in rows} == {venue.id for venue in matching_venues}
         for row in rows:
-            assert row["Entité"] == offerer.name
+            assert row["Entité juridique"] == offerer.name
 
     def test_list_venues_by_regions(self, authenticated_client, venues):
         venue = offerers_factories.VenueFactory(postalCode="82000")
@@ -268,7 +268,7 @@ class ListVenuesTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
         assert rows[0]["ID"] == str(venue.id)
-        assert rows[0]["Entité"] == offerer.name
+        assert rows[0]["Entité juridique"] == offerer.name
 
 
 class GetVenueTest(GetEndpointHelper):
@@ -339,7 +339,7 @@ class GetVenueTest(GetEndpointHelper):
         assert f"Activité principale : {venue.venueTypeCode.value}" in response_text
         assert f"Label : {venue.venueLabel.label} " in response_text
         assert "Type de lieu" not in response_text
-        assert f"Entité : {venue.managingOfferer.name}" in response_text
+        assert f"Entité juridique : {venue.managingOfferer.name}" in response_text
         assert "Site web : https://www.example.com" in response_text
         assert "Validation des offres : Suivre les règles" in response_text
 
@@ -476,8 +476,8 @@ class GetVenueTest(GetEndpointHelper):
     @pytest.mark.parametrize(
         "factory, expected_text",
         [
-            (offerers_factories.WhitelistedOffererConfidenceRuleFactory, "Validation auto (entité)"),
-            (offerers_factories.ManualReviewOffererConfidenceRuleFactory, "Revue manuelle (entité)"),
+            (offerers_factories.WhitelistedOffererConfidenceRuleFactory, "Validation auto (entité juridique)"),
+            (offerers_factories.ManualReviewOffererConfidenceRuleFactory, "Revue manuelle (entité juridique)"),
         ],
     )
     def test_get_venue_with_offerer_confidence_rule(self, authenticated_client, factory, expected_text):
@@ -2865,7 +2865,7 @@ class GetRemoveSiretFormTest(GetEndpointHelper):
         html_parser.assert_no_alert(response.data)
 
         content = html_parser.content_as_text(response.data)
-        assert f"Entité : {offerer.name}" in content
+        assert f"Entité juridique : {offerer.name}" in content
         assert f"Offerer ID : {offerer.id}" in content
         assert f"Lieu : {venue.name}" in content
         assert f"Venue ID : {venue.id}" in content
@@ -2892,7 +2892,10 @@ class GetRemoveSiretFormTest(GetEndpointHelper):
         response = authenticated_client.get(url_for(self.endpoint, venue_id=venue.id))
 
         assert response.status_code == 400
-        assert html_parser.extract_alert(response.data) == "L'entité gérant ce lieu n'a pas d'autre lieu avec SIRET"
+        assert (
+            html_parser.extract_alert(response.data)
+            == "L'entité juridique gérant ce lieu n'a pas d'autre lieu avec SIRET"
+        )
 
     def test_venue_with_high_yearly_revenue(self, authenticated_client):
         venue = offerers_factories.VenueFactory()

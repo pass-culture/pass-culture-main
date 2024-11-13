@@ -13,7 +13,7 @@
     {% endif %}
     <h6 class="card-subtitle mt-4 mb-3 text-muted">Venue ID : {{ row.id }}</h6>
     <h6 class="card-subtitle mb-3 text-muted">{{ row.identifier_name }} : {{ (row.identifier) | empty_string_if_null }}</h6>
-    <h6 class="card-subtitle mb-4 text-muted">Entité : {{ build_offerer_name_to_details_link(row.managingOfferer) }}</h6>
+    <h6 class="card-subtitle mb-4 text-muted">Entité juridique : {{ build_offerer_name_to_details_link(row.managingOfferer) }}</h6>
     <div class="fs-6">
       <p class="mb-1">
         <span class="fw-bold">Email :</span> {{ row.bookingEmail | empty_string_if_null }}

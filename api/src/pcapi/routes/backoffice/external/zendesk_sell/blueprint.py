@@ -33,11 +33,11 @@ def _get_parent_organization_id(venue: offerers_models.Venue) -> int | None:
     except zendesk_sell.ContactFoundMoreThanOneError as e:
         if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
             message = Markup(
-                "Attention : Plusieurs entités parentes possibles ont été trouvées pour ce partenaire culturel dans Zendesk Sell. <br/> <ul>"
+                "Attention : Plusieurs entités juridiques parentes possibles ont été trouvées pour ce partenaire culturel dans Zendesk Sell. <br/> <ul>"
             )
         else:
             message = Markup(
-                "Attention : Plusieurs entités parentes possibles ont été trouvées pour ce lieu dans Zendesk Sell. <br/> <ul>"
+                "Attention : Plusieurs entités juridiques parentes possibles ont été trouvées pour ce lieu dans Zendesk Sell. <br/> <ul>"
             )
         for item in e.items:
             message += Markup(
@@ -59,9 +59,9 @@ def _get_parent_organization_id(venue: offerers_models.Venue) -> int | None:
         return None
     except requests.exceptions.HTTPError as http_error:
         flash(
-            Markup("Une erreur {status_code} s'est produite lors de la recherche de l'entité parente : {error}").format(
-                status_code=str(http_error.response.status_code), error=str(http_error)
-            ),
+            Markup(
+                "Une erreur {status_code} s'est produite lors de la recherche de l'entité juridique parente : {error}"
+            ).format(status_code=str(http_error.response.status_code), error=str(http_error)),
             "warning",
         )
         return None
@@ -81,16 +81,16 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
     if zendesk_sell.is_offerer_only_virtual(offerer):
         if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-            flash("Cette entité ne gère que des partenaires culturels virtuels", "warning")
+            flash("Cette entité juridique ne gère que des partenaires culturels virtuels", "warning")
         else:
-            flash("Cette entité ne gère que des lieux virtuels", "warning")
+            flash("Cette entité juridique ne gère que des lieux virtuels", "warning")
         return redirect(url, code=303)
 
     try:
         zendesk_offerer_data = zendesk_sell_backend.get_offerer_by_id(offerer)
     except zendesk_sell.ContactFoundMoreThanOneError as e:
         message = Markup(
-            "Plusieurs entités ont été trouvées dans Zendesk Sell, aucune ne peut donc être mise à jour : <br/> <ul>"
+            "Plusieurs entités juridiques ont été trouvées dans Zendesk Sell, aucune ne peut donc être mise à jour : <br/> <ul>"
         )
         for item in e.items:
             message += Markup(
@@ -108,7 +108,7 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
         flash(Markup(message), "warning")  # pylint: disable=markupsafe-uncontrolled-string
         return redirect(url, code=303)
     except zendesk_sell.ContactNotFoundError:
-        flash("L'entité n'a pas été trouvée dans Zendesk Sell", "warning")
+        flash("L'entité juridique n'a pas été trouvée dans Zendesk Sell", "warning")
         return redirect(url, code=303)
     except requests.exceptions.HTTPError as http_error:
         flash(
@@ -131,7 +131,7 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
         )
         return redirect(url, code=303)
 
-    flash("L'entité a été mise à jour sur Zendesk Sell", "success")
+    flash("L'entité juridique a été mise à jour sur Zendesk Sell", "success")
     return redirect(url, code=303)
 
 

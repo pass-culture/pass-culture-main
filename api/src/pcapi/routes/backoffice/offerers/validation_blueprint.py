@@ -125,10 +125,10 @@ def validate_offerer(offerer_id: int) -> utils.BackofficeResponse:
         offerers_api.validate_offerer(offerer, current_user)
     except offerers_exceptions.OffererAlreadyValidatedException:
         repository.mark_transaction_as_invalid()
-        flash(Markup("L'entité <b>{name}</b> est déjà validée").format(name=offerer.name), "warning")
+        flash(Markup("L'entité juridique <b>{name}</b> est déjà validée").format(name=offerer.name), "warning")
         return _redirect_after_offerer_validation_action()
 
-    flash(Markup("L'entité <b>{name}</b> a été validée").format(name=offerer.name), "success")
+    flash(Markup("L'entité juridique <b>{name}</b> a été validée").format(name=offerer.name), "success")
     return _redirect_after_offerer_validation_action()
 
 
@@ -152,8 +152,8 @@ def get_reject_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
         form=form,
         dst=url_for("backoffice_web.validation.reject_offerer", offerer_id=offerer.id),
         div_id=f"reject-modal-{offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
-        title=f"Rejeter l'entité {offerer.name.upper()}",
-        button_text="Rejeter l'entité",
+        title=f"Rejeter l'entité juridique {offerer.name.upper()}",
+        button_text="Rejeter l'entité juridique",
     )
 
 
@@ -185,10 +185,10 @@ def reject_offerer(offerer_id: int) -> utils.BackofficeResponse:
         )
     except offerers_exceptions.OffererAlreadyRejectedException:
         repository.mark_transaction_as_invalid()
-        flash(Markup("L'entité <b>{name}</b> est déjà rejetée").format(name=offerer.name), "warning")
+        flash(Markup("L'entité juridique <b>{name}</b> est déjà rejetée").format(name=offerer.name), "warning")
         return _redirect_after_offerer_validation_action()
 
-    flash(Markup("L'entité <b>{name}</b> a été rejetée").format(name=offerer.name), "success")
+    flash(Markup("L'entité juridique <b>{name}</b> a été rejetée").format(name=offerer.name), "success")
     return _redirect_after_offerer_validation_action()
 
 
@@ -215,7 +215,7 @@ def get_offerer_pending_form(offerer_id: int) -> utils.BackofficeResponse:
         form=form,
         dst=url_for("backoffice_web.validation.set_offerer_pending", offerer_id=offerer.id),
         div_id=f"pending-modal-{offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
-        title=f"Mettre en attente l'entité {offerer.name.upper()}",
+        title=f"Mettre en attente l'entité juridique {offerer.name.upper()}",
         button_text="Mettre en attente",
     )
 
@@ -248,7 +248,7 @@ def set_offerer_pending(offerer_id: int) -> utils.BackofficeResponse:
         offerer, current_user, comment=form.comment.data, tags_to_add=tags_to_add, tags_to_remove=tags_to_remove
     )
 
-    flash(Markup("L'entité <b>{name}</b> a été mise en attente").format(name=offerer.name), "success")
+    flash(Markup("L'entité juridique <b>{name}</b> a été mise en attente").format(name=offerer.name), "success")
     return _redirect_after_offerer_validation_action()
 
 
@@ -345,12 +345,12 @@ def batch_validate_offerer() -> utils.BackofficeResponse:
     try:
         return _offerer_batch_action(
             offerers_api.validate_offerer,
-            "Les entités sélectionnées ont été validées",
+            "Les entités juridiques sélectionnées ont été validées",
             BatchForm,
         )
     except offerers_exceptions.OffererAlreadyValidatedException:
         repository.mark_transaction_as_invalid()
-        flash("Au moins une des entités a déjà été validée", "warning")
+        flash("Au moins une des entités juridiques a déjà été validée", "warning")
         return _redirect_after_offerer_validation_action()
 
 
@@ -385,8 +385,8 @@ def get_batch_offerer_pending_form() -> utils.BackofficeResponse:
         form=form,
         dst=url_for("backoffice_web.validation.batch_set_offerer_pending"),
         div_id="batch-pending-modal",
-        title="Mettre en attente les entités",
-        button_text="Mettre en attente les entités",
+        title="Mettre en attente les entités juridiques",
+        button_text="Mettre en attente les entités juridiques",
     )
 
 
@@ -396,7 +396,7 @@ def get_batch_offerer_pending_form() -> utils.BackofficeResponse:
 def batch_set_offerer_pending() -> utils.BackofficeResponse:
     return _offerer_batch_action(
         offerers_api.set_offerer_pending,
-        "Les entités sélectionnées ont été mises en attente",
+        "Les entités juridiques sélectionnées ont été mises en attente",
         offerer_forms.BatchCommentAndTagOffererForm,
     )
 
@@ -411,8 +411,8 @@ def get_batch_reject_offerer_form() -> utils.BackofficeResponse:
         form=form,
         dst=url_for("backoffice_web.validation.batch_reject_offerer"),
         div_id="batch-reject-modal",
-        title="Rejeter les entités",
-        button_text="Rejeter les entités",
+        title="Rejeter les entités juridiques",
+        button_text="Rejeter les entités juridiques",
     )
 
 
@@ -423,12 +423,12 @@ def batch_reject_offerer() -> utils.BackofficeResponse:
     try:
         return _offerer_batch_action(
             offerers_api.reject_offerer,
-            "Les entités sélectionnées ont été rejetées",
+            "Les entités juridiques sélectionnées ont été rejetées",
             offerer_forms.BatchOffererRejectionForm,
         )
     except offerers_exceptions.OffererAlreadyRejectedException:
         repository.mark_transaction_as_invalid()
-        flash("Une des entités a déjà été rejetée", "warning")
+        flash("Une des entités juridiques a déjà été rejetée", "warning")
         return _redirect_after_offerer_validation_action()
 
 
@@ -575,15 +575,15 @@ def validate_user_offerer(user_offerer_id: int) -> utils.BackofficeResponse:
     except offerers_exceptions.UserOffererAlreadyValidatedException:
         repository.mark_transaction_as_invalid()
         flash(
-            Markup("Le rattachement de <b>{email}</b> à l'entité <b>{offerer_name}</b> est déjà validé").format(
-                email=user_offerer.user.email, offerer_name=user_offerer.offerer.name
-            ),
+            Markup(
+                "Le rattachement de <b>{email}</b> à l'entité juridique <b>{offerer_name}</b> est déjà validé"
+            ).format(email=user_offerer.user.email, offerer_name=user_offerer.offerer.name),
             "warning",
         )
         return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id)
 
     flash(
-        Markup("Le rattachement de <b>{email}</b> à l'entité <b>{offerer_name}</b> a été validé").format(
+        Markup("Le rattachement de <b>{email}</b> à l'entité juridique <b>{offerer_name}</b> a été validé").format(
             email=user_offerer.user.email, offerer_name=user_offerer.offerer.name
         ),
         "success",
@@ -654,7 +654,7 @@ def reject_user_offerer(user_offerer_id: int) -> utils.BackofficeResponse:
     offerers_api.reject_offerer_attachment(user_offerer, current_user, form.comment.data)
 
     flash(
-        Markup("Le rattachement de <b>{email}</b> à l'entité <b>{offerer_name}</b> a été rejeté").format(
+        Markup("Le rattachement de <b>{email}</b> à l'entité juridique <b>{offerer_name}</b> a été rejeté").format(
             email=user_offerer.user.email, offerer_name=user_offerer.offerer.name
         ),
         "success",
@@ -694,9 +694,9 @@ def set_user_offerer_pending(user_offerer_id: int) -> utils.BackofficeResponse:
 
     offerers_api.set_offerer_attachment_pending(user_offerer, current_user, form.comment.data)
     flash(
-        Markup("Le rattachement de <b>{email}</b> à l'entité <b>{offerer_name}</b> a été mis en attente").format(
-            email=user_offerer.user.email, offerer_name=user_offerer.offerer.name
-        ),
+        Markup(
+            "Le rattachement de <b>{email}</b> à l'entité juridique <b>{offerer_name}</b> a été mis en attente"
+        ).format(email=user_offerer.user.email, offerer_name=user_offerer.offerer.name),
         "success",
     )
 

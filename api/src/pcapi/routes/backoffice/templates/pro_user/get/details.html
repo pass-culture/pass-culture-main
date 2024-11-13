@@ -5,7 +5,7 @@
 <turbo-frame data-turbo="false" id="pro_user_details_frame">
 {% call build_details_tabs_wrapper() %}
   {{ build_details_tab("history", "Historique du compte", active_tab == 'history') }}
-  {{ build_details_tab("user_offerers", "Rattachements aux entités", active_tab == 'user_offerers') }}
+  {{ build_details_tab("user_offerers", "Rattachements aux entités juridiques", active_tab == 'user_offerers') }}
 {% endcall %}
 {% call build_details_tabs_content_wrapper() %}
   {% call build_details_tab_content("history", active_tab == 'history') %}

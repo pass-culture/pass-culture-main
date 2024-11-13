@@ -966,7 +966,7 @@ class DeleteOffererTest:
 
         # Then
         assert exception.value.errors["cannotDeleteOffererWithBookingsException"] == [
-            "Entité non supprimable car elle contient des réservations"
+            "Entité juridique non supprimable car elle contient des réservations"
         ]
         assert offerers_models.Offerer.query.count() == 1
         assert offerers_models.Venue.query.count() == 2
@@ -988,7 +988,7 @@ class DeleteOffererTest:
 
         # Then
         assert exception.value.errors["cannotDeleteOffererWithBookingsException"] == [
-            "Entité non supprimable car elle contient des réservations"
+            "Entité juridique non supprimable car elle contient des réservations"
         ]
         assert offerers_models.Offerer.query.count() == 1
         assert offerers_models.Venue.query.count() == 2
@@ -1654,7 +1654,7 @@ class RejectOffererTest:
         assert action.userId == user.id
         assert action.offererId == offerer.id
         assert action.venueId is None
-        assert action.comment == "Compte pro rejeté suite au rejet de l'entité"
+        assert action.comment == "Compte pro rejeté suite au rejet de l'entité juridique"
 
 
 def test_grant_user_offerer_access():

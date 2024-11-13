@@ -112,7 +112,7 @@ class EditVenueForm(EditVirtualVenueForm):
 
             if siret.data[:9] != self.venue.managingOfferer.siren:
                 raise validators.ValidationError(
-                    "Les 9 premiers caractères du SIRET doivent correspondre au SIREN de l'entité"
+                    "Les 9 premiers caractères du SIRET doivent correspondre au SIREN de l'entité juridique"
                 )
 
         return siret
@@ -234,7 +234,7 @@ class GetVenuesListForm(utils.PCForm):
         "Tags", multiple=True, choices=[], validate_choice=False, endpoint="backoffice_web.autocomplete_criteria"
     )
     offerer = fields.PCTomSelectField(
-        "Entités",
+        "Entités juridiques",
         multiple=True,
         choices=[],
         validate_choice=False,
@@ -242,7 +242,7 @@ class GetVenuesListForm(utils.PCForm):
     )
     regions = fields.PCSelectMultipleField("Régions", choices=get_regions_choices())
     department = fields.PCSelectMultipleField("Départements", choices=area_choices)
-    only_validated_offerers = fields.PCSwitchBooleanField("Uniquement les entités validées")
+    only_validated_offerers = fields.PCSwitchBooleanField("Uniquement les entités juridiques validées")
     limit = fields.PCSelectField(
         "Nombre maximum",
         choices=((100, "100"), (500, "500"), (1000, "1000"), (3000, "3000")),

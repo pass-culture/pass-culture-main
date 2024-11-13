@@ -186,7 +186,7 @@ def delete(user_id: int) -> utils.BackofficeResponse:
 
     if not _user_can_be_deleted(user):
         mark_transaction_as_invalid()
-        flash("Le compte est rattaché à une entité", "warning")
+        flash("Le compte est rattaché à une entité juridique", "warning")
         return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
 
     form = pro_users_forms.DeleteProUser()

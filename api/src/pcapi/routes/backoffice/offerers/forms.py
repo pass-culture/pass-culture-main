@@ -45,7 +45,7 @@ class EditOffererForm(FlaskForm):
         get_label=lambda tag: tag.label or tag.name,
     )
     name = fields.PCStringField(
-        "Nom de l'entité",
+        "Nom de l'entité juridique",
         validators=(
             wtforms.validators.DataRequired("Le nom est obligatoire"),
             wtforms.validators.Length(max=140, message="doit contenir moins de %(max)d caractères"),
@@ -102,7 +102,7 @@ class OffererValidationListForm(utils.PCForm):
     class Meta:
         csrf = False
 
-    q = fields.PCOptSearchField("Nom d'entité, SIREN, code postal, dép., ville, email, nom de compte pro, ID DMS CB")
+    q = fields.PCOptSearchField("Nom, SIREN, code postal, dép., ville, email, nom de compte pro, ID DMS CB")
     regions = fields.PCSelectMultipleField("Régions", choices=get_regions_choices())
     tags = fields.PCQuerySelectMultipleField(
         "Tags",
@@ -174,7 +174,9 @@ class UserOffererValidationListForm(utils.PCForm):
     class Meta:
         csrf = False
 
-    q = fields.PCOptSearchField("Nom d'entité, SIREN, code postal, département, ville, email, nom de compte pro")
+    q = fields.PCOptSearchField(
+        "Nom d'entité juridique, SIREN, code postal, département, ville, email, nom de compte pro"
+    )
     regions = fields.PCSelectMultipleField("Régions", choices=get_regions_choices())
     tags = fields.PCQuerySelectMultipleField(
         "Tags",
@@ -194,7 +196,8 @@ class UserOffererValidationListForm(utils.PCForm):
         endpoint="backoffice_web.autocomplete_bo_users",
     )
     offerer_status = fields.PCSelectMultipleField(
-        "États de l'entité", choices=utils.choices_from_enum(ValidationStatus, filters.format_validation_status)
+        "États de l'entité juridique",
+        choices=utils.choices_from_enum(ValidationStatus, filters.format_validation_status),
     )
     from_date = fields.PCDateField("Demande à partir du", validators=(wtforms.validators.Optional(),))
     to_date = fields.PCDateField("Demande jusqu'au", validators=(wtforms.validators.Optional(),))
@@ -228,7 +231,7 @@ class UserOffererValidationListForm(utils.PCForm):
 
 
 class CommentForm(FlaskForm):
-    comment = fields.PCCommentField("Commentaire interne pour l'entité")
+    comment = fields.PCCommentField("Commentaire interne pour l'entité juridique")
 
 
 class OptionalCommentForm(FlaskForm):

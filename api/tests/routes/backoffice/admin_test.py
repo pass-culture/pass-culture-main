@@ -549,7 +549,7 @@ class GetBoUserTest(GetEndpointHelper):
             perm_models.Roles.SUPPORT_N2.value,
             perm_models.Roles.SUPPORT_PRO.value,
         ]
-        assert "visualiser une entité, un partenaire culturel ou un compte pro" in " ".join(
+        assert "visualiser une entité juridique, un partenaire culturel ou un compte pro" in " ".join(
             [row["Permissions"] for row in rows]
         )
 
