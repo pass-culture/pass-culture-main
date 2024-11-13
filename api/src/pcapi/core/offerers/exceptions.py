@@ -81,7 +81,7 @@ class CannotSuspendOffererWithBookingsException(ClientError):
     def __init__(self) -> None:
         super().__init__(
             "cannotSuspendOffererWithBookingsException",
-            "Entité non désactivable car elle contient des réservations",
+            "Entité juridique non désactivable car elle contient des réservations",
         )
 
 
@@ -89,7 +89,7 @@ class CannotDeleteOffererWithBookingsException(ClientError):
     def __init__(self) -> None:
         super().__init__(
             "cannotDeleteOffererWithBookingsException",
-            "Entité non supprimable car elle contient des réservations",
+            "Entité juridique non supprimable car elle contient des réservations",
         )
 
 

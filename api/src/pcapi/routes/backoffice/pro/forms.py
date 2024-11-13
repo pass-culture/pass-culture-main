@@ -34,7 +34,7 @@ class TypeOptions(enum.Enum):
 def format_search_type_options(type_option: TypeOptions) -> str:
     match type_option:
         case TypeOptions.OFFERER:
-            return "Entité"
+            return "Entité juridique"
         case TypeOptions.VENUE:
             return typing.cast(str, utils.VenueRenaming("Lieu", "Partenaire culturel"))
         case TypeOptions.USER:
@@ -121,7 +121,7 @@ class CreateOffererForm(FlaskForm):
         if siret.data and len(siret.data) == siren_utils.SIRET_LENGTH and siret.data.isnumeric():
             siren = siret.data[:9]
             if find_offerer_by_siren(siren):
-                raise wtforms.validators.ValidationError(f"Une entité existe déjà avec le SIREN {siren}")
+                raise wtforms.validators.ValidationError(f"Une entité juridique existe déjà avec le SIREN {siren}")
 
             try:
                 siret_info = sirene.get_siret(siret.data, raise_if_non_public=False)
@@ -134,7 +134,7 @@ class CreateOffererForm(FlaskForm):
                 raise wtforms.validators.ValidationError(f"L'établissement portant le SIRET {siret.data} est fermé")
             if siret_info.diffusible:
                 raise wtforms.validators.ValidationError(
-                    f"L'établissement portant le SIRET {siret.data} est diffusible, l'acteur culturel peut créer l'entité sur PC Pro"
+                    f"L'établissement portant le SIRET {siret.data} est diffusible, l'acteur culturel peut créer l'entité juridique sur PC Pro"
                 )
             self._siret_info = siret_info
 

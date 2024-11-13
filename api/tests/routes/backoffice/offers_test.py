@@ -172,7 +172,7 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Date de création"] == (datetime.date.today()).strftime("%d/%m/%Y")
         assert rows[0]["Dernière validation"] == ""
         assert rows[0]["Dép."] == offers[0].venue.departementCode
-        assert rows[0]["Entité"] == offers[0].venue.managingOfferer.name
+        assert rows[0]["Entité juridique"] == offers[0].venue.managingOfferer.name
         assert rows[0]["Lieu"] == offers[0].venue.name
 
         if stock_data_expected:
@@ -231,7 +231,7 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Date de création"] == (datetime.date.today()).strftime("%d/%m/%Y")
         assert rows[0]["Dernière validation"] == "22/02/2022"
         assert rows[0]["Dép."] == offers[1].venue.departementCode
-        assert rows[0]["Entité"] == offers[1].venue.managingOfferer.name
+        assert rows[0]["Entité juridique"] == offers[1].venue.managingOfferer.name
         assert rows[0]["Lieu"] == offers[1].venue.name
         assert rows[1]["ID"] == str(offers[2].id)
         assert rows[1]["Nom de l'offre"] == offers[2].name
@@ -1220,7 +1220,7 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert rows[0]["Entité"] == "Offerer Revue manuelle"
+        assert rows[0]["Entité juridique"] == "Offerer Revue manuelle"
         assert rows[0]["Lieu"] == "Venue"
 
     def test_list_offers_with_venue_confidence_rule(self, client, pro_fraud_admin):
@@ -1236,7 +1236,7 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert rows[0]["Entité"] == "Offerer"
+        assert rows[0]["Entité juridique"] == "Offerer"
         assert rows[0]["Lieu"] == "Venue Revue manuelle"
 
 
@@ -1869,7 +1869,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert "État : Validée" in card_text
         assert "Score data : 55 " in card_text
         assert "Raison de score faible : Prix Sous-catégorie Description de l'offre " in card_text
-        assert "Entité : Le Petit Rintintin Management" in card_text
+        assert "Entité juridique : Le Petit Rintintin Management" in card_text
         assert "Lieu : Le Petit Rintintin" in card_text
         assert "Utilisateur de la dernière validation" not in card_text
         assert "Date de dernière validation" not in card_text
@@ -1976,7 +1976,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert "Genres : ADVENTURE, ANIMATION, DRAMA " in card_text
         assert "Statut : Épuisée" in card_text
         assert "État : Validée" in card_text
-        assert "Entité : Le Petit Rintintin Management" in card_text
+        assert "Entité juridique : Le Petit Rintintin Management" in card_text
         assert "Lieu : Le Petit Rintintin" in card_text
         assert "Adresse :" not in card_text  # no offererAddress
         assert "Utilisateur de la dernière validation" not in card_text

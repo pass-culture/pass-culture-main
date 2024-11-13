@@ -59,7 +59,7 @@ class ListCustomReimbursementRulesTest(GetEndpointHelper):
         rows = sorted(rows, key=lambda row: int(row["ID règle"]))
 
         assert rows[0]["ID règle"] == str(offer_rule.id)
-        assert rows[0]["Entité"] == offer_rule.offer.venue.managingOfferer.name
+        assert rows[0]["Entité juridique"] == offer_rule.offer.venue.managingOfferer.name
         assert rows[0]["SIREN"] == offer_rule.offer.venue.managingOfferer.siren
         assert rows[0]["Lieu"] == offer_rule.offer.venue.name
         assert rows[0]["Offre"] == offer_rule.offer.name
@@ -69,7 +69,7 @@ class ListCustomReimbursementRulesTest(GetEndpointHelper):
         assert rows[0]["Date d'application"] == start.strftime("%d/%m/%Y") + " → ∞"
 
         assert rows[1]["ID règle"] == str(venue_rule.id)
-        assert rows[1]["Entité"] == venue_rule.venue.managingOfferer.name
+        assert rows[1]["Entité juridique"] == venue_rule.venue.managingOfferer.name
         assert rows[1]["SIREN"] == venue_rule.venue.managingOfferer.siren
         assert rows[1]["Lieu"] == f"{venue_rule.venue.name} - {venue_rule.venue.siret}"
         assert rows[1]["Offre"] == ""
@@ -79,7 +79,7 @@ class ListCustomReimbursementRulesTest(GetEndpointHelper):
         assert rows[1]["Date d'application"] == start.strftime("%d/%m/%Y") + " → ∞"
 
         assert rows[2]["ID règle"] == str(offerer_rule.id)
-        assert rows[2]["Entité"] == offerer_rule.offerer.name
+        assert rows[2]["Entité juridique"] == offerer_rule.offerer.name
         assert rows[2]["SIREN"] == offerer_rule.offerer.siren
         assert rows[2]["Lieu"] == ""
         assert rows[2]["Offre"] == ""
@@ -300,7 +300,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
         assert response.status_code == 303
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "Un tarif dérogatoire ne peut pas concerner un lieu et une entité en même temps"
+            == "Un tarif dérogatoire ne peut pas concerner un lieu et une entité juridique en même temps"
         )
 
         assert finance_models.CustomReimbursementRule.query.count() == 0

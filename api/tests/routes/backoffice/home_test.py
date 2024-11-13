@@ -70,7 +70,7 @@ class HomePageTest:
             "3 offres collectives en attente CONSULTER",
             "4 offres collectives vitrine en attente CONSULTER",
         ]
-        # No card for "entité en attente de conformité" because tag "conformité" does not exist
+        # No card for "entité juridique en attente de conformité" because tag "conformité" does not exist
 
     def test_view_home_page_pending_offerers_conformite(self, authenticated_client):
         tag = offerers_factories.OffererTagFactory(name="conformité", label="En attente de conformité")
@@ -92,5 +92,5 @@ class HomePageTest:
             "0 offre individuelle en attente CONSULTER",
             "0 offre collective en attente CONSULTER",
             "0 offre collective vitrine en attente CONSULTER",
-            "1 entité en attente de conformité CONSULTER",
+            "1 entité juridique en attente de conformité CONSULTER",
         ]

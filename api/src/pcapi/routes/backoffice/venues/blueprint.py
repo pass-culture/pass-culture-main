@@ -1194,7 +1194,7 @@ def _render_remove_siret_content(
             }
         )
     additional_data = {
-        "Entité": venue.managingOfferer.name,
+        "Entité juridique": venue.managingOfferer.name,
         "Offerer ID": venue.managingOfferer.id,
     }
     if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():

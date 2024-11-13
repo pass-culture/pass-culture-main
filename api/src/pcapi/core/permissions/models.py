@@ -38,12 +38,12 @@ class Permissions(enum.Enum):
     SUSPEND_USER = "suspendre un compte jeune"
     UNSUSPEND_USER = "réactiver un compte jeune"
 
-    READ_PRO_ENTITY = "visualiser une entité, un partenaire culturel ou un compte pro"
-    MANAGE_PRO_ENTITY = "gérer une entité, un partenaire culturel ou un compte pro"
-    DELETE_PRO_ENTITY = "supprimer une entité ou un partenaire culturel"
-    CREATE_PRO_ENTITY = "créer une entité"
-    READ_PRO_ENTREPRISE_INFO = "visualiser les données INSEE/RCS d'une entité"
-    READ_PRO_SENSITIVE_INFO = "vérifier les attestations URSSAF/DGFIP d'une entité"
+    READ_PRO_ENTITY = "visualiser une entité juridique, un partenaire culturel ou un compte pro"
+    MANAGE_PRO_ENTITY = "gérer une entité juridique, un partenaire culturel ou un compte pro"
+    DELETE_PRO_ENTITY = "supprimer une entité juridique ou un partenaire culturel"
+    CREATE_PRO_ENTITY = "créer une entité juridique"
+    READ_PRO_ENTREPRISE_INFO = "visualiser les données INSEE/RCS d'une entité juridique"
+    READ_PRO_SENSITIVE_INFO = "vérifier les attestations URSSAF/DGFIP d'une entité juridique"
     READ_PRO_AE_INFO = "consulter le suivi de l'inscription d'un Auto-Entrepreneur"
     CONNECT_AS_PRO = "se connecter sur PC Pro en tant qu'AC (connect-as)"
 
@@ -57,11 +57,11 @@ class Permissions(enum.Enum):
     MANAGE_OFFERS = "gérer les offres"
     MULTIPLE_OFFERS_ACTIONS = "opérations sur plusieurs offres"
 
-    VALIDATE_OFFERER = "gérer la validation des entités et des rattachements"
+    VALIDATE_OFFERER = "gérer la validation des entités juridiques et des rattachements"
 
-    READ_TAGS = "visualiser les tags entités, offres et partenaires culturels"
-    MANAGE_OFFERER_TAG = "gérer les tags entité"
-    MANAGE_TAGS_N2 = "supprimer un tag (entité, offre, partenaire culturel) et créer des catégories"
+    READ_TAGS = "visualiser les tags entités juridiques, offres et partenaires culturels"
+    MANAGE_OFFERER_TAG = "gérer les tags entité juridique"
+    MANAGE_TAGS_N2 = "supprimer un tag (entité juridique, offre, partenaire culturel) et créer des catégories"
     MANAGE_OFFERS_AND_VENUES_TAGS = "gérer les tags offres et partenaires culturels"
 
     READ_REIMBURSEMENT_RULES = "visualiser les tarifs dérogatoires"

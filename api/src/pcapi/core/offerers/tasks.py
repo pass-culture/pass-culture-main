@@ -76,7 +76,7 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
                     offerers_api.reject_offerer(
                         offerer=offerer,
                         author_user=None,
-                        comment="L'entité est détectée comme inactive via l'API Sirene (INSEE)",
+                        comment="L'entité juridique est détectée comme inactive via l'API Sirene (INSEE)",
                         modified_info={"tags": {"new_info": tag.label}},
                         rejection_reason=offerers_models.OffererRejectionReason.CLOSED_BUSINESS,
                     )
@@ -85,7 +85,7 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
                         history_models.ActionType.INFO_MODIFIED,
                         author=None,
                         offerer=offerer,
-                        comment="L'entité est détectée comme inactive via l'API Sirene (INSEE)",
+                        comment="L'entité juridique est détectée comme inactive via l'API Sirene (INSEE)",
                         modified_info={"tags": {"new_info": tag.label}},
                     )
 

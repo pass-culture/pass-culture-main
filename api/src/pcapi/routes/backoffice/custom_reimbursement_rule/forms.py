@@ -18,7 +18,7 @@ class GetCustomReimbursementRulesListForm(FlaskForm):
 
     q = fields.PCOptSearchField("Nom d'offre, ID offre")
     offerer = fields.PCTomSelectField(
-        "Entités",
+        "Entités juridiques",
         multiple=True,
         choices=[],
         validate_choice=False,
@@ -64,7 +64,7 @@ class CreateCustomReimbursementRuleForm(FlaskForm):
         locales = ["fr_FR", "fr"]
 
     offerer = fields.PCTomSelectField(
-        "Entité",
+        "Entité juridique",
         multiple=False,
         choices=[],
         validate_choice=False,
@@ -116,19 +116,22 @@ class CreateCustomReimbursementRuleForm(FlaskForm):
 
         if not offerer_id and not venue_id:
             if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-                flash("Il faut obligatoirement renseigner une entité ou un partenaire culturel", "warning")
+                flash("Il faut obligatoirement renseigner une entité juridique ou un partenaire culturel", "warning")
             else:
-                flash("Il faut obligatoirement renseigner une entité ou un lieu", "warning")
+                flash("Il faut obligatoirement renseigner une entité juridique ou un lieu", "warning")
             return False
 
         if offerer_id and venue_id:
             if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
                 flash(
-                    "Un tarif dérogatoire ne peut pas concerner un partenaire culturel et une entité en même temps",
+                    "Un tarif dérogatoire ne peut pas concerner un partenaire culturel et une entité juridique en même temps",
                     "warning",
                 )
             else:
-                flash("Un tarif dérogatoire ne peut pas concerner un lieu et une entité en même temps", "warning")
+                flash(
+                    "Un tarif dérogatoire ne peut pas concerner un lieu et une entité juridique en même temps",
+                    "warning",
+                )
             return False
         return super().validate(extra_validators)
 

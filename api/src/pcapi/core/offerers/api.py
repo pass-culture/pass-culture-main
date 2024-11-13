@@ -1295,7 +1295,7 @@ def reject_offerer(
         reject_offerer_attachment(
             user_offerer,
             author_user,
-            "Compte pro rejeté suite au rejet de l'entité",
+            "Compte pro rejeté suite au rejet de l'entité juridique",
             send_email=(user_offerer.user not in applicants),  # do not send a second email
         )
 
