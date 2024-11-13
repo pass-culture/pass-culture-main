@@ -88,6 +88,8 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_OFFERS,
         perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS,
         perm_models.Permissions.READ_TAGS,
+        perm_models.Permissions.READ_CHRONICLE,
+        perm_models.Permissions.MANAGE_CHRONICLE,
     ],
     "homologation": [
         perm_models.Permissions.READ_PRO_ENTITY,
@@ -112,6 +114,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_BOOKINGS,
         perm_models.Permissions.READ_OFFERS,
         perm_models.Permissions.READ_TAGS,
+        perm_models.Permissions.READ_CHRONICLE,
     ],
     "qa": [
         perm_models.Permissions.READ_PERMISSIONS,
@@ -150,6 +153,8 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_INCIDENTS,
         perm_models.Permissions.MANAGE_INCIDENTS,
         perm_models.Permissions.MANAGE_TECH_PARTNERS,
+        perm_models.Permissions.READ_CHRONICLE,
+        perm_models.Permissions.MANAGE_CHRONICLE,
     ],
     "global_access": [
         perm_models.Permissions.READ_ADMIN_ACCOUNTS,
@@ -186,6 +191,8 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_INCIDENTS,
         perm_models.Permissions.MANAGE_INCIDENTS,
         perm_models.Permissions.MANAGE_TECH_PARTNERS,
+        perm_models.Permissions.READ_CHRONICLE,
+        perm_models.Permissions.MANAGE_CHRONICLE,
     ],
     "dpo": [
         perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT,
