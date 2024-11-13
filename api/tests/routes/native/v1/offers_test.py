@@ -1730,6 +1730,40 @@ class OffersV2Test:
             "timezone": address.timezone,
         }
 
+    def test_offer_with_no_extra_data(self, client):
+        extra_data = {}
+        offer = offers_factories.OfferFactory(
+            extraData=extra_data,
+        )
+
+        offer_id = offer.id
+        nb_queries = 1  # select offer
+        nb_queries += 1  # select stocks
+        nb_queries += 1  # select mediations
+        with assert_num_queries(nb_queries):
+            response = client.get(f"/native/v2/offer/{offer_id}")
+        assert response.status_code == 200
+        assert response.json["extraData"] == {
+            "allocineId": None,
+            "author": None,
+            "ean": None,
+            "durationMinutes": None,
+            "musicSubType": None,
+            "musicType": None,
+            "performer": None,
+            "showSubType": None,
+            "showType": None,
+            "speaker": None,
+            "stageDirector": None,
+            "visa": None,
+            "genres": None,
+            "cast": None,
+            "editeur": None,
+            "gtlLabels": None,
+            "releaseDate": None,
+            "certificate": None,
+        }
+
 
 class OffersStocksTest:
     def test_return_empty_on_empty_request(self, client):
@@ -1950,7 +1984,7 @@ class OffersStocksV2Test:
             "editeur": "editeur",
             "gtl_id": "01030000",
             "releaseDate": "2020-01-01",
-            "certificate": "Interdit aux moins de 18 ans",
+            "certificate": "Déconseillé -12 ans",
         }
         offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.SEANCE_CINE.id,
@@ -2116,7 +2150,7 @@ class OffersStocksV2Test:
                 "level04Label": None,
             },
             "releaseDate": "2020-01-01",
-            "certificate": "Interdit aux moins de 18 ans",
+            "certificate": "Déconseillé -12 ans",
         }
         assert response_offer["images"] == {
             "recto": {
