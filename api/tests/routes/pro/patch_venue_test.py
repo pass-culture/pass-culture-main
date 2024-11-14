@@ -31,8 +31,6 @@ def populate_missing_data_from_venue(venue_data: dict, venue: offerers_models.Ve
         "banId": venue.banId,
         "bookingEmail": venue.bookingEmail,
         "city": venue.city,
-        "latitude": venue.latitude,
-        "longitude": venue.longitude,
         "name": venue.name,
         "postalCode": venue.postalCode,
         "publicName": venue.publicName,
@@ -229,10 +227,12 @@ class Returns200Test:
         # then
         assert response.status_code == 200
         venue = offerers_models.Venue.query.one()
-        offerer_address = offerers_models.OffererAddress.query.order_by(
+        offerer_addresses = offerers_models.OffererAddress.query.order_by(
             offerers_models.OffererAddress.id.desc()
-        ).first()
+        ).all()
+        offerer_address = offerer_addresses[0]
         address = offerer_address.address
+        assert len(offerer_addresses) == 2
         assert venue.offererAddressId == offerer_address.id
         assert address.street == venue.street == "3 Rue de Valois"
         assert address.city == venue.city == "Paris"
@@ -273,6 +273,119 @@ class Returns200Test:
             "new_info": "75001",
             "old_info": "75000",
         }
+
+    @patch("pcapi.connectors.api_adresse.get_address")
+    @pytest.mark.parametrize(
+        "is_manual_edition,old_manual_edition", [(True, False), (False, True), (True, True), (False, False)]
+    )
+    @pytest.mark.parametrize(
+        "has_longitude, has_latitude", [(True, False), (False, True), (False, False), (True, True)]
+    )
+    def test_update_location_only_coordinate(
+        self, mock_get_address, client, has_longitude, has_latitude, is_manual_edition, old_manual_edition
+    ) -> None:
+        user_offerer = offerers_factories.UserOffererFactory()
+        address = geography_factories.AddressFactory(
+            street="1 boulevard Poissonnière",
+            postalCode="75000",
+            inseeCode="75000",
+            city="Paris",
+            isManualEdition=old_manual_edition,
+        )
+        offerer_address = offerers_factories.OffererAddressFactory(
+            offerer=user_offerer.offerer, address=address, label=None
+        )
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+            street=address.street,
+            postalCode=address.postalCode,
+            city=address.city,
+            offererAddress=offerer_address,
+            longitude=offerer_address.address.longitude,
+            latitude=offerer_address.address.latitude,
+        )
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        venue_id = venue.id
+
+        venue_data = {
+            "isManualEdition": is_manual_edition,
+        }
+        if has_longitude:
+            venue_data["longitude"] = 1.308289
+            mock_get_address.return_value = AddressInfo(
+                longitude=1.308289,
+                latitude=48.87171,
+                id="75101_9575_00003",
+                label="1 boulevard Poissonnière",
+                postcode="75000",
+                citycode="75101",
+                score=0.9384945454545454,
+                city="Paris",
+                street="1 boulevard Poissonnière",
+            )
+        if has_latitude:
+            venue_data["latitude"] = 5.87171
+            mock_get_address.return_value = AddressInfo(
+                longitude=2.34765,
+                latitude=5.871711,
+                id="75101_9575_00003",
+                label="1 boulevard Poissonnière",
+                postcode="75000",
+                citycode="75101",
+                score=0.9384945454545454,
+                city="Paris",
+                street="1 boulevard Poissonnière",
+            )
+        response = auth_request.patch("/venues/%s" % venue_id, json=venue_data)
+        # then
+        assert response.status_code == 200
+        venue = offerers_models.Venue.query.one()
+        offerer_addresses = offerers_models.OffererAddress.query.order_by(
+            offerers_models.OffererAddress.id.desc()
+        ).all()
+        is_coordinate_updated = has_latitude or has_longitude
+        is_manual_edition_updated = is_manual_edition != old_manual_edition
+        if is_coordinate_updated and not is_manual_edition:
+            mock_get_address.assert_not_called()
+            assert len(offerer_addresses) == 1
+            assert venue.offererAddressId == offerer_address.id
+
+        elif is_coordinate_updated or is_manual_edition_updated:
+            assert len(offerer_addresses) == 2
+            assert venue.offererAddressId != offerer_address.id
+            assert venue.offererAddressId != address.id
+            assert venue.offererAddress == offerer_addresses[0]
+            new_offerer_address = offerer_addresses[0]
+            assert venue.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
+            assert len(venue.action_history) == 1
+            if has_latitude:
+                assert new_offerer_address.address.latitude == Decimal("5.87171")
+                assert venue.action_history[0].extraData["modified_info"]["latitude"] == {
+                    "new_info": "5.87171",
+                    "old_info": "48.87055",
+                }
+            if has_longitude:
+                assert new_offerer_address.address.longitude == Decimal("1.30829")
+                assert venue.action_history[0].extraData["modified_info"]["longitude"] == {
+                    "new_info": "1.30829",
+                    "old_info": "2.34765",
+                }
+            assert offerer_address.label == venue.publicName
+            if is_manual_edition_updated:
+                assert venue.action_history[0].extraData["modified_info"]["offererAddress.address.isManualEdition"] == {
+                    "new_info": is_manual_edition,
+                    "old_info": old_manual_edition,
+                }
+        else:
+            assert len(offerer_addresses) == 1
+            assert address.longitude == venue.longitude == Decimal("2.34765")
+            assert address.latitude == venue.latitude == Decimal("48.87055")
+
+            assert len(offerer_addresses) == 1
+            assert venue.offererAddressId == offerer_address.id
+            assert venue.offererAddress.addressId == address.id
+            assert offerer_address.label is None
 
     @patch("pcapi.connectors.api_adresse.get_address")
     def test_update_should_be_able_to_update_venue_even_if_only_centroid_found(
