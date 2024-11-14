@@ -5,6 +5,7 @@ import typing
 
 from sqlalchemy.ext.mutable import MutableDict
 
+from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import models
 from pcapi.core.offerers import models as offerers_models
@@ -24,6 +25,7 @@ def add_action(
     finance_incident: finance_models.FinanceIncident | None = None,
     bank_account: finance_models.BankAccount | None = None,
     rule: offers_models.OfferValidationRule | None = None,
+    chronicle: chronicles_models.Chronicle | None = None,
     comment: str | None = None,
     **extra_data: typing.Any,
 ) -> models.ActionHistory:
@@ -32,7 +34,9 @@ def add_action(
         models.ActionType.REMOVE_BLACKLISTED_DOMAIN_NAME,
         models.ActionType.ROLE_PERMISSIONS_CHANGED,
     )
-    if not any((user, offerer, venue, finance_incident, bank_account, rule)) and (action_type not in legit_actions):
+    if not any((user, offerer, venue, finance_incident, bank_account, rule, chronicle)) and (
+        action_type not in legit_actions
+    ):
         raise ValueError("No resource (user, offerer, venue, finance incident, bank account, rule)")
 
     # author/user/offerer/venue/bank_account object and its would may not be associated before flush() or commit()
@@ -53,6 +57,9 @@ def add_action(
     if rule is not None and rule.id is None:
         raise RuntimeError("Unsaved rule would be saved with action %s" % rule.name)
 
+    if chronicle is not None and chronicle.id is None:
+        raise RuntimeError("Unsaved chronicle would be saved with action %s" % chronicle.id)
+
     if not isinstance(author, users_models.User):
         # None or AnonymousUserMixin
         # Examples: offerer validated by token (without authentication), offerer created by script
@@ -65,9 +72,10 @@ def add_action(
         # FIXME remove type ignores when upgrading to sqlalchemy 2.0
         offerer=offerer,  # type: ignore[arg-type]
         venue=venue,  # type: ignore[arg-type]
-        financeIncident=finance_incident,  # type: ignore[arg-type]
-        bankAccount=bank_account,  # type: ignore[arg-type]
+        financeIncident=finance_incident,
+        bankAccount=bank_account,
         rule=rule,  # type: ignore[arg-type]
+        chronicle=chronicle,
         comment=comment or None,  # do not store empty string
         extraData=extra_data,
     )
