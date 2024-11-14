@@ -68,7 +68,7 @@ jobs:
           teleport_kubernetes_cluster: ${{ inputs.teleport_kubernetes_cluster }}
 
       - name: "Play pre-migrations"
-        uses: pass-culture/common-workflows/actions/pcapi-migration@pcapi-migration/v0.2.1
+        uses: pass-culture/common-workflows/actions/pcapi-migration@pcapi-migration/v0.2.2
         with:
           environment: ${{ inputs.environment }}
           app_version: ${{ inputs.app_version }}
@@ -123,7 +123,7 @@ jobs:
         with:
           app_name: pcapi-${{ inputs.environment }}
       - name: "Play post-migrations"
-        uses: pass-culture/common-workflows/actions/pcapi-migration@pcapi-migration/v0.2.1
+        uses: pass-culture/common-workflows/actions/pcapi-migration@pcapi-migration/v0.2.2
         with:
           environment: ${{ inputs.environment }}
           app_version: ${{ inputs.app_version }}
