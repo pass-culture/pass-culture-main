@@ -116,17 +116,44 @@ def update_venue(
     is_manual_edition: bool = False,
 ) -> models.Venue:
     new_permanent = not venue.isPermanent and modifications.get("isPermanent")
-
     venue_snapshot = history_api.ObjectUpdateSnapshot(venue, author)
     if not venue.isVirtual:
-        is_venue_location_updated = any(field in modifications for field in ("street", "city", "postalCode"))
-        assert venue.offererAddress is not None
+        assert venue.offererAddress is not None  # helps mypy
+        assert venue.offererAddress.address is not None  # helps mypy
+        is_venue_location_updated = any(
+            field in modifications
+            for field in (
+                "street",
+                "city",
+                "postalCode",
+            )
+        )
+        coordinates_updated = any(field in modifications for field in ("latitude", "longitude"))
+        is_manual_edition_updated = is_manual_edition != venue.offererAddress.address.isManualEdition
+        if coordinates_updated and not is_manual_edition and not is_venue_location_updated:
+            if "latitude" in modifications:
+                del modifications["latitude"]
+            if "longitude" in modifications:
+                del modifications["longitude"]
+            coordinates_updated = False
+            is_manual_edition_updated = False
+            logger.error("Coordinates updated without manual edition or location update, ignoring them")
+
         old_oa = venue.offererAddress
         new_oa = models.OffererAddress(offerer=venue.managingOfferer)
-        if is_venue_location_updated:
+        if is_venue_location_updated or coordinates_updated:
             update_venue_location(
                 venue, modifications, venue_snapshot=venue_snapshot, new_oa=new_oa, is_manual_edition=is_manual_edition
             )
+        elif is_manual_edition_updated:
+            duplicate_oa(
+                venue=venue,
+                old_oa=old_oa,
+                new_oa=new_oa,
+                is_manual_edition=is_manual_edition,
+                venue_snapshot=venue_snapshot,
+            )
+        if is_manual_edition_updated or is_venue_location_updated or coordinates_updated:
             switch_old_oa_label(old_oa=old_oa, label=venue.common_name, venue_snapshot=venue_snapshot)
 
     if contact_data:
@@ -232,7 +259,7 @@ def update_venue_location(
     On the other side, BO users might want to force a location to a venue, for example if the address is unknown
     for the API.
     """
-    if not any(field in modifications for field in ("street", "city", "postalCode")):
+    if not any(field in modifications for field in ("street", "city", "postalCode", "latitude", "longitude")):
         return
     assert venue.offererAddress is not None
     street = modifications.get("street") or venue.offererAddress.address.street
@@ -284,6 +311,7 @@ def update_venue_location(
         "longitude": address.longitude,
         "street": address.street,
         "inseeCode": address.inseeCode,
+        "isManualEdition": is_manual_edition,
     }
     # Trace banId modification only if edition is not manual
     # In case of manual edition, banId is emptied with any action user
@@ -2840,6 +2868,46 @@ def switch_old_oa_label(
     )
     old_oa.label = label
     db.session.add(old_oa)
+    db.session.flush()
+
+
+def duplicate_oa(
+    venue: models.Venue,
+    old_oa: models.OffererAddress,
+    new_oa: models.OffererAddress,
+    is_manual_edition: bool,
+    venue_snapshot: history_api.ObjectUpdateSnapshot,
+) -> None:
+    new_oa.label = old_oa.label
+    if old_oa.address.isManualEdition != is_manual_edition:
+        new_oa.address = get_or_create_address(
+            {
+                "street": old_oa.address.street,
+                "city": old_oa.address.city,
+                "postal_code": old_oa.address.postalCode,
+                "insee_code": old_oa.address.inseeCode,
+                "latitude": typing.cast(float, old_oa.address.latitude),
+                "longitude": typing.cast(float, old_oa.address.longitude),
+                "ban_id": old_oa.address.banId,
+            },
+            is_manual_edition,
+        )
+        venue_snapshot.trace_update(
+            {"isManualEdition": is_manual_edition},
+            target=old_oa.address,
+            field_name_template="offererAddress.address.isManualEdition",
+        )
+    else:
+        new_oa.address = old_oa.address
+    venue_snapshot.trace_update(
+        {"id": new_oa.id, "addressId": new_oa.addressId, "label": new_oa.label},
+        old_oa,
+        "offererAddress.{}",
+    )
+    db.session.add(new_oa)
+    db.session.flush()
+    venue.offererAddressId = new_oa.id
+    db.session.add(venue)
     db.session.flush()
 
 

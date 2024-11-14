@@ -921,6 +921,8 @@ def format_modified_info_name(info_name: str) -> str:
             return "Adresse - Latitude"
         case "offererAddress.address.longitude":
             return "Adresse - Longitude"
+        case "offererAddress.address.isManualEdition":
+            return "Adresse - Edition manuelle"
         case "old_oa_label":
             return "Ancien label OA"
         case "isActive":
