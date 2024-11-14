@@ -19,6 +19,7 @@ def install_routes(app: Flask) -> None:
     from .bank_account import blueprint as bank_account_blueprint
     from .bookings import collective_bookings_blueprint
     from .bookings import individual_bookings_blueprint
+    from .chronicles import blueprint as chronicles_blueprint
     from .collective_offers import collective_offer_templates_blueprint
     from .collective_offers import collective_offers_blueprint
     from .criteria import blueprint as criteria_blueprint

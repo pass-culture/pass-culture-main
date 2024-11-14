@@ -71,6 +71,7 @@
                   {% if has_permission("MANAGE_SPECIAL_EVENTS") %}
                     {{ menu_section_item('Opérations spéciales', 'backoffice_web.operations.list_events') }}
                   {% endif %}
+                  {% if has_permission("READ_CHRONICLE") %}{{ menu_section_item('Chroniques', 'backoffice_web.chronicles.list_chronicles') }}{% endif %}
                 {% endcall %}
               </div>
               <hr />
