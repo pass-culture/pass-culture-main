@@ -229,7 +229,7 @@ class Returns403Test:
             "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."
         ]
 
-    def test_get_statistics_with_unvalidated_offereruser_should_fail(self, client):
+    def test_get_statistics_with_unvalidated_userofferer_should_fail(self, client):
         user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer, validationStatus=ValidationStatus.NEW)
