@@ -6,6 +6,7 @@ from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext import mutable as sa_mutable
 import sqlalchemy.orm as sa_orm
 
+from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.users import models as users_models
 from pcapi.models import Base
 from pcapi.models import Model
@@ -79,6 +80,9 @@ class ActionType(enum.Enum):
     # Pivot changes
     PIVOT_DELETED = "Suppression d'un pivot"
     PIVOT_CREATED = "Création d'un pivot"
+    # Chronicles
+    CHRONICLE_PUBLISHED = "Publication d'une chronique"
+    CHRONICLE_UNPUBLISHED = "Dépublication d'une chronique"
 
 
 ACTION_HISTORY_ORDER_BY = "ActionHistory.actionDate.asc().nulls_first()"
@@ -178,12 +182,20 @@ class ActionHistory(PcObject, Base, Model):
         backref=sa.orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
     )
 
+    chronicleId: int | None = sa.Column(sa.BigInteger, sa.ForeignKey("chronicle.id", ondelete="CASCADE"), nullable=True)
+
+    chronicle: sa.orm.Mapped[chronicles_models.Chronicle | None] = sa.orm.relationship(
+        "Chronicle",
+        foreign_keys=[chronicleId],
+        backref=sa.orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
+    )
+
     comment = sa.Column(sa.Text(), nullable=True)
 
     __table_args__ = (
         sa.CheckConstraint(
             (
-                'num_nonnulls("userId", "offererId", "venueId", "financeIncidentId", "bankAccountId", "ruleId") >= 1 '
+                'num_nonnulls("userId", "offererId", "venueId", "financeIncidentId", "bankAccountId", "ruleId", "chronicleId") >= 1 '
                 'OR actionType = "BLACKLIST_DOMAIN_NAME" OR actionType = "REMOVE_BLACKLISTED_DOMAIN_NAME" '
                 'OR actionType = "ROLE_PERMISSIONS_CHANGED"'
             ),
@@ -195,4 +207,5 @@ class ActionHistory(PcObject, Base, Model):
         ),
         sa.Index("ix_action_history_bankAccountId", bankAccountId, postgresql_where=bankAccountId.is_not(None)),
         sa.Index("ix_action_history_ruleId", ruleId, postgresql_where=ruleId.is_not(None)),
+        sa.Index("ix_action_history_chronicleId", chronicleId, postgresql_where=chronicleId.is_not(None)),
     )
