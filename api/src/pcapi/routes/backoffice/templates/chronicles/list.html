@@ -1,0 +1,47 @@
+{% extends "layouts/connected.html" %}
+{% from "components/forms.html" import build_filters_form with context %}
+{% from "components/collapsable_text.html" import collapsable_text with context %}
+{% block page %}
+  <div class="pt-3 px-5">
+    <h2 class="fw-light">Chroniques</h2>
+    <div class="filters">{{ build_filters_form(form, dst) }}</div>
+    <div>
+      {% if rows %}
+        <div class="d-flex justify-content-between">
+          <p class="lead num-results d-inline">{{ rows.total }} résultat{{ rows.total | pluralize }}</p>
+          <div>{% include "components/search/pagination.html" %}</div>
+        </div>
+        <table class="table mb-4">
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">ID</th>
+              <th scope="col">Titres des œuvres</th>
+              <th scope="col">Contenu</th>
+              <th scope="col">Date de création</th>
+              <th scope="col">Publiée</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for chronicle in rows.items %}
+              <tr>
+                <td></td>
+                <td>
+                  <a href="">{{ chronicle.id }}</a>
+                </td>
+                <td>
+                  {% if chronicle.products %}
+                    {% for product in chronicle.products %}<div>{{ product }}</div>{% endfor %}
+                  {% endif %}
+                </td>
+                <td class="pc-mw-50-vw">{{ collapsable_text(chronicle.id, chronicle.short_content, chronicle.content) }}</td>
+                <td>{{ chronicle.dateCreated  | format_date }}</td>
+                <td>{{ chronicle.isActive | format_bool_badge }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+    </div>
+  </div>
+{% endblock page %}

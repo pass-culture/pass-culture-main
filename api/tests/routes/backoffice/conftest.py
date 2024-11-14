@@ -111,6 +111,8 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS,
         perm_models.Permissions.READ_TAGS,
         perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS,
+        perm_models.Permissions.READ_CHRONICLE,
+        perm_models.Permissions.MANAGE_CHRONICLE,
     ],
     "homologation": [
         perm_models.Permissions.READ_PRO_ENTITY,

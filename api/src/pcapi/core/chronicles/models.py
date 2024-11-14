@@ -43,7 +43,7 @@ class Chronicle(PcObject, Base, Model, DeactivableMixin):
         "Product", backref="chronicles", secondary="product_chronicle"
     )
     offers: sa_orm.Mapped["Offer"] = sa.orm.relationship("Offer", backref="chronicles", secondary="offer_chronicle")
-    userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), nullable=True)
+    userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), nullable=True, index=True)
     user: sa_orm.Mapped["User"] = sa.orm.relationship("User", foreign_keys=[userId], backref="chronicles")
 
     __content_ts_vector__ = db.Column(
