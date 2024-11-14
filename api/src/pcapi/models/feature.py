@@ -135,6 +135,7 @@ class FeatureToggle(enum.Enum):
         "Désactiver la notification push Batch pour les réservations se déroulant le jour même"
     )
     WIP_ENABLE_PRO_ONBOARDING = "Activer le parcours d'onboarding didactique des acteurs culturels"
+    WIP_ENABLE_CHRONICLES_IN_BO = "Activer les chroniques du book club dans le BO"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -197,6 +198,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_DISABLE_TODAY_STOCK_NOTIFICATION,
     FeatureToggle.WIP_EAN_CREATION,
     FeatureToggle.WIP_ENABLE_BREVO_PRO_SUBACCOUNT,
+    FeatureToggle.WIP_ENABLE_CHRONICLES_IN_BO,
     FeatureToggle.WIP_ENABLE_MOCK_UBBLE,
     FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE,
     FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW,
