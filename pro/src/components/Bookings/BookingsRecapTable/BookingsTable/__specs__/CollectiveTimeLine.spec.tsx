@@ -149,6 +149,23 @@ describe('collective timeline', () => {
     ).toBeInTheDocument()
   })
 
+  it('should return defautl cancellation message when reason is unknown', () => {
+    const bookingRecap = collectiveBookingFactory({
+      bookingStatus: BOOKING_STATUS.CANCELLED,
+      bookingConfirmationDate: null,
+      bookingConfirmationLimitDate: '01/01/2023',
+      bookingCancellationReason: 'UNKNOWN_CANCELLATION_REASON' as CollectiveBookingCancellationReasons,
+      bookingStatusHistory: [
+        { date: new Date().toISOString(), status: BOOKING_STATUS.PENDING },
+        { date: new Date().toISOString(), status: BOOKING_STATUS.CANCELLED },
+      ],
+    })
+    renderCollectiveTimeLine(bookingRecap, bookingDetails)
+    expect(
+      screen.getByText('Le pass Culture a annulé la réservation')
+    ).toBeInTheDocument()
+  })
+
   it('should log event when clicking modify booking limit date', async () => {
     const mockLogEvent = vi.fn()
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
