@@ -54,11 +54,13 @@ def search_educational_institution(
 
 
 def import_deposit_institution_data(
+    *,
     data: dict[str, Decimal],
     educational_year: educational_models.EducationalYear,
     ministry: educational_models.Ministry,
     final: bool,
     conflict: str,
+    commit: bool,
 ) -> None:
     adage_institutions = {
         i.uai: i for i in adage_client.get_adage_educational_institutions(ansco=educational_year.adageId)
@@ -123,7 +125,8 @@ def import_deposit_institution_data(
             )
             db.session.add(deposit)
 
-    db.session.commit()
+    if commit:
+        db.session.commit()
 
 
 def get_current_year_remaining_credit(institution: educational_models.EducationalInstitution) -> Decimal:

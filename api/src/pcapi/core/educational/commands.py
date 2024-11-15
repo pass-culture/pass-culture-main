@@ -68,7 +68,8 @@ def generate_fake_adage_token(readonly: bool) -> None:
     help="Overide previous ministry if needed.",
 )
 @click.option("--final", type=bool, is_flag=True, default=False, help="Flag deposits as final.")
-def import_deposit_csv(path: str, year: int, ministry: str, conflict: str, final: bool) -> None:
+@click.option("--dry-run", type=bool, default=True, help="Do not commit the changes.")
+def import_deposit_csv(*, path: str, year: int, ministry: str, conflict: str, final: bool, dry_run: bool) -> None:
     """
     import CSV deposits and update institution according to adage data.
 
@@ -116,6 +117,7 @@ def import_deposit_csv(path: str, year: int, ministry: str, conflict: str, final
             ministry=educational_models.Ministry[ministry],
             conflict=conflict,
             final=final,
+            commit=not dry_run,
         )
 
 
