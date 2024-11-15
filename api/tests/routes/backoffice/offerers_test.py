@@ -264,6 +264,33 @@ class GetOffererTest(GetEndpointHelper):
         assert f"Adresse : {nc_offerer.street} " in content
         assert "Peut créer une offre EAC : Non" in content
 
+    @pytest.mark.parametrize(
+        "role,has_offers_links,has_bookings_links,adjust_num_queries",
+        [
+            (perm_models.Roles.SUPPORT_PRO, True, True, 0),
+            (perm_models.Roles.PROGRAMMATION_MARKET, True, False, 0),
+            (perm_models.Roles.CHARGE_DEVELOPPEMENT, False, False, -1),  # -1 because no edition (list of tags)
+        ],
+    )
+    def test_links_depending_on_permissions(
+        self, client, roles_with_permissions, role, has_offers_links, has_bookings_links, adjust_num_queries
+    ):
+        bo_user = users_factories.AdminFactory(
+            backoffice_profile__roles=[r for r in roles_with_permissions if r.name == role.value]
+        )
+
+        offerer = offerers_factories.OffererFactory()
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+        client = client.with_bo_session_auth(bo_user)
+
+        with assert_num_queries(self.expected_num_queries + adjust_num_queries):
+            response = client.get(url)
+            assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert ("Offres BO" in response_text) is has_offers_links
+        assert ("Réservations BO" in response_text) is has_bookings_links
+
     def test_get_offerer_which_does_not_exist(self, authenticated_client):
         response = authenticated_client.get(url_for(self.endpoint, offerer_id=12345))
         assert response.status_code == 404

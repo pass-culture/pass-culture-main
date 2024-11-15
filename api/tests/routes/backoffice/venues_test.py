@@ -22,6 +22,7 @@ from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.permissions import factories as perm_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
@@ -512,6 +513,33 @@ class GetVenueTest(GetEndpointHelper):
         assert "Peut créer une offre EAC : Non" in response_text
         assert "Cartographié sur ADAGE" not in response_text
         assert "ID ADAGE" not in response_text
+
+    @pytest.mark.parametrize(
+        "role,has_offers_links,has_bookings_links",
+        [
+            (perm_models.Roles.SUPPORT_PRO, True, True),
+            (perm_models.Roles.PROGRAMMATION_MARKET, True, False),
+            (perm_models.Roles.CHARGE_DEVELOPPEMENT, False, False),
+        ],
+    )
+    def test_links_depending_on_permissions(
+        self, client, roles_with_permissions, role, has_offers_links, has_bookings_links
+    ):
+        bo_user = users_factories.AdminFactory(
+            backoffice_profile__roles=[r for r in roles_with_permissions if r.name == role.value]
+        )
+
+        venue = offerers_factories.VenueFactory()
+        url = url_for(self.endpoint, venue_id=venue.id)
+        client = client.with_bo_session_auth(bo_user)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(url)
+            assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert ("Offres BO" in response_text) is has_offers_links
+        assert ("Réservations BO" in response_text) is has_bookings_links
 
 
 class GetVenueStatsDataTest:
