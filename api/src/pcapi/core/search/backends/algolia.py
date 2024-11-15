@@ -559,6 +559,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "prices": sorted(prices),
                 "rankingWeight": offer.rankingWeight,
                 "releaseDate": extra_data.get("releaseDate"),
+                "bookFormat": extra_data.get("bookFormat"),
                 # TODO(thconte, 2024-08-23): keep searchGroups and remove
                 # remove searchGroupNamev2 once app minimal version has been bumped
                 "searchGroupNamev2": search_groups,

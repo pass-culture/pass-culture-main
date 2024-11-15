@@ -17,6 +17,7 @@ from pcapi.core.offerers.factories import VenueFactory
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferReport
 from pcapi.core.offers.models import TiteliveImageType
+from pcapi.core.providers.constants import BookFormat
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.reactions.factories import ReactionFactory
@@ -226,6 +227,7 @@ class OffersTest:
             },
             "releaseDate": "2020-01-01",
             "certificate": "Interdit au moins de 18 ans",
+            "bookFormat": None,
         }
         assert response.json["image"] == {
             "url": "http://localhost/storage/thumbs/mediations/N4",
@@ -954,6 +956,7 @@ class OffersV2Test:
             },
             "releaseDate": "2020-01-01",
             "certificate": "Interdit aux moins de 18 ans",
+            "bookFormat": None,
         }
         assert response.json["images"] == {
             "recto": {
@@ -1762,7 +1765,43 @@ class OffersV2Test:
             "gtlLabels": None,
             "releaseDate": None,
             "certificate": None,
+            "bookFormat": None,
         }
+
+    def test_offer_extra_data_book_format_from_product(self, client):
+        extra_data = {"bookFormat": BookFormat.POCHE}
+        product = offers_factories.ProductFactory(
+            thumbCount=1,
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            extraData=extra_data,
+        )
+        offer = offers_factories.OfferFactory(
+            product=product,
+            venue__isPermanent=True,
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+        )
+
+        offer_id = offer.id
+        nb_queries = 1  # select offer
+        nb_queries += 1  # select stocks
+        nb_queries += 1  # select mediations
+        with assert_num_queries(nb_queries):
+            response = client.get(f"/native/v2/offer/{offer_id}")
+        assert response.status_code == 200
+        assert response.json["extraData"]["bookFormat"] == "POCHE"
+
+    def test_offer_extra_data_book_format(self, client):
+        extra_data = {"bookFormat": BookFormat.MOYEN_FORMAT}
+        offer = offers_factories.OfferFactory(extraData=extra_data)
+
+        offer_id = offer.id
+        nb_queries = 1  # select offer
+        nb_queries += 1  # select stocks
+        nb_queries += 1  # select mediations
+        with assert_num_queries(nb_queries):
+            response = client.get(f"/native/v2/offer/{offer_id}")
+        assert response.status_code == 200
+        assert response.json["extraData"]["bookFormat"] == "MOYEN_FORMAT"
 
 
 class OffersStocksTest:
@@ -1875,6 +1914,7 @@ class OffersStocksTest:
                 "gtlLabels": None,
                 "releaseDate": "2020-01-01",
                 "certificate": "Interdit aux moins de 18 ans",
+                "bookFormat": None,
             },
             "id": offer.id,
             "image": {"credit": "street credit", "url": "http://localhost/storage/thumbs/mediations/N4"},
@@ -2151,6 +2191,7 @@ class OffersStocksV2Test:
             },
             "releaseDate": "2020-01-01",
             "certificate": "Déconseillé -12 ans",
+            "bookFormat": None,
         }
         assert response_offer["images"] == {
             "recto": {
