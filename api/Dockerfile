@@ -152,6 +152,9 @@ RUN pip install \
 
 ENTRYPOINT exec ./entrypoint.sh
 
+RUN cp https://cacerts.digicert.com/DigiCertGlobalRootG2.crt.pem /usr/local/share/ca-certificates
+RUN update-ca-certificates
+
 ######### CONSOLE #########
 
 FROM lib-dev AS pcapi-console-proxy
