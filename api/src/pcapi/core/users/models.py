@@ -23,6 +23,7 @@ from sqlalchemy.sql import expression
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import BooleanClauseList
 
+from pcapi.connectors.dms import models as dms_models
 from pcapi.core.finance.enum import DepositType
 from pcapi.core.geography.models import IrisFrance
 from pcapi.core.users import constants
@@ -35,6 +36,7 @@ from pcapi.models.pc_object import PcObject
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import crypto
 from pcapi.utils import regions as regions_utils
+from pcapi.utils.db import MagicEnum
 from pcapi.utils.phone_number import ParsedPhoneNumber
 
 
@@ -921,6 +923,43 @@ class UserEmailHistory(PcObject, Base, Model):
             ),
             else_=None,
         )
+
+
+class UserAccountUpdateRequest(PcObject, Base, Model):
+    __tablename__ = "user_account_update_request"
+    dsApplicationId: int = sa.Column(sa.BigInteger, nullable=False, index=True, unique=True)
+    status: dms_models.GraphQLApplicationStates = sa.Column(
+        MagicEnum(dms_models.GraphQLApplicationStates), nullable=False
+    )
+    dateCreated: datetime = sa.Column(
+        sa.DateTime, nullable=False, default=datetime.utcnow, server_default=sa.func.now()
+    )
+    dateLastStatusUpdate: datetime = sa.Column(
+        sa.DateTime, nullable=True, default=datetime.utcnow, server_default=sa.func.now()
+    )
+    # Information about applicant, used to match with a single user
+    firstName: str = sa.Column(sa.Text, nullable=True)
+    lastName: str = sa.Column(sa.Text, nullable=True)
+    email: str = sa.Column(sa.Text, nullable=False)
+    birthDate = sa.Column(sa.Date, nullable=True)
+    # User found from his/her email - may be null in case of wrong email
+    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=True)
+    user: orm.Mapped[User] = orm.relationship(User, foreign_keys=[userId], backref="accountUpdateRequests")
+    # One or several changes may be requested
+    newEmail: str = sa.Column(sa.Text, nullable=True)
+    newPhoneNumber: str = sa.Column(sa.Text, nullable=True)
+    newFirstName: str = sa.Column(sa.Text, nullable=True)
+    newLastName: str = sa.Column(sa.Text, nullable=True)
+    # Ensures that all checkboxes are checked (GCU, sworn statement)
+    allConditionsChecked: bool = sa.Column(sa.Boolean, nullable=False, default=False)
+    lastInstructorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=True)
+    lastInstructor: orm.Mapped[User] = orm.relationship(User, foreign_keys=[lastInstructorId])
+    dateLastUserMessage: datetime = sa.Column(sa.DateTime, nullable=True)
+    dateLastInstructorMessage: datetime = sa.Column(sa.DateTime, nullable=True)
+
+    @property
+    def applicant_age(self) -> int | None:
+        return users_utils.get_age_from_birth_date(self.birthDate) if self.birthDate else None
 
 
 class UserSession(PcObject, Base, Model):

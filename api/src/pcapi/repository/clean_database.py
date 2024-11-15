@@ -114,6 +114,7 @@ tables_to_clean: list[flask_sqlalchemy.Model] = [
     users_models.GdprUserAnonymization,
     users_models.GdprUserDataExtract,
     users_models.SingleSignOn,
+    users_models.UserAccountUpdateRequest,
     users_models.User,
     users_models.UserSession,
     geography_models.IrisFrance,

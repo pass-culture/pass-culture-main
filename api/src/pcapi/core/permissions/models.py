@@ -79,6 +79,8 @@ class Permissions(enum.Enum):
 
     MANAGE_SPECIAL_EVENTS = "gérer les opérations spéciales"
 
+    MANAGE_ACCOUNT_UPDATE_REQUEST = "instruire les demandes de modification de compte (DS)"
+
     @classmethod
     def exists(cls, name: str) -> bool:
         try:
