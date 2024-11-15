@@ -71,10 +71,10 @@ class YearlyAggregatedCollectiveRevenueQuery(
             SELECT
                 EXTRACT(YEAR FROM creation_year) AS year,
                 toJSONString(map(
-                    'collective', ROUND(SUM(revenue),2),
+                    'collective', ROUND(SUM(revenue),2))
                 ) as revenue,
                 toJSONString(map(
-                    'collective', ROUND(SUM(expected_revenue),2),
+                    'collective', ROUND(SUM(expected_revenue),2))
                 ) as expected_revenue
             FROM analytics.yearly_aggregated_venue_collective_revenue
             WHERE "venue_id" in %s
@@ -92,10 +92,10 @@ class YearlyAggregatedIndividualRevenueQuery(
             SELECT
                 EXTRACT(YEAR FROM creation_year) AS year,
                 toJSONString(map(
-                    'individual', ROUND(SUM(revenue),2),
+                    'individual', ROUND(SUM(revenue),2))
                 ) as revenue,
                 toJSONString(map(
-                    'individual', ROUND(SUM(expected_revenue),2),
+                    'individual', ROUND(SUM(expected_revenue),2))
                 ) as expected_revenue
             FROM analytics.yearly_aggregated_venue_individual_revenue
             WHERE "venue_id" in %s
