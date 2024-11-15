@@ -56,6 +56,8 @@ describe('FormStock', () => {
   beforeEach(() => {
     props = {
       mode: Mode.CREATION,
+      canEditDiscount: false,
+      canEditDates: false,
       preventPriceIncrease: false,
     }
     initialValues = {
@@ -101,7 +103,7 @@ describe('FormStock', () => {
       onSubmit,
       props: {
         mode: Mode.EDITION,
-        canEditDiscount: false,
+        canEditDiscount: true,
         canEditDates: true,
         preventPriceIncrease: false,
       },
@@ -141,7 +143,7 @@ describe('FormStock', () => {
       props: {
         mode: Mode.READ_ONLY,
         canEditDiscount: true,
-        canEditDates: true,
+        canEditDates: false,
         preventPriceIncrease: true,
       },
     })
@@ -165,7 +167,8 @@ describe('FormStock', () => {
       onSubmit,
       props: {
         mode: Mode.READ_ONLY,
-        disablePriceAndParticipantInputs: false,
+        canEditDiscount: false,
+        canEditDates: false,
         preventPriceIncrease: false,
       },
     })
@@ -179,13 +182,13 @@ describe('FormStock', () => {
     expect(eventTimeInput).toBeDisabled()
   })
 
-  it('should disable start datetime, end datetime and event time inputs when allowedAction CAN_EDIT_DATES exist and ENABLE_COLLECTIVE_NEW_STATUSES is enabled', () => {
+  it('should disable start datetime, end datetime, price and place and event time inputs when allowedAction CAN_EDIT_DATES and CAN_EDIT_DISCOUNT doesnt exists and ENABLE_COLLECTIVE_NEW_STATUSES is enabled', () => {
     renderFormStock({
       initialValues: initialValues,
       onSubmit,
       props: {
         mode: Mode.READ_ONLY,
-        canEditDiscount: true,
+        canEditDiscount: false,
         canEditDates: false,
         preventPriceIncrease: false,
       },
@@ -197,20 +200,24 @@ describe('FormStock', () => {
     const startDatetimeInput = screen.getByLabelText('Date de début *')
     const endDatetimeInput = screen.getByLabelText('Date de fin *')
     const eventTimeInput = screen.getByLabelText('Horaire *')
+    const placeInput = screen.getByLabelText('Nombre de participants *')
+    const priceInput = screen.getByLabelText('Prix total TTC *')
 
+    expect(placeInput).toBeDisabled()
+    expect(priceInput).toBeDisabled()
     expect(startDatetimeInput).toBeDisabled()
     expect(endDatetimeInput).toBeDisabled()
     expect(eventTimeInput).toBeDisabled()
   })
 
-  it('should not disable price and place number when allowedAction CAN_EDIT_DISCOUNT exist and ENABLE_COLLECTIVE_NEW_STATUSES is enabled', () => {
+  it('should not disable price, place number, start datetime, end datetime and event time when allowedAction CAN_EDIT_DISCOUNT and CAN_EDIT_DATES exists and ENABLE_COLLECTIVE_NEW_STATUSES is enabled', () => {
     renderFormStock({
       initialValues: initialValues,
       onSubmit,
       props: {
         mode: Mode.READ_ONLY,
         canEditDiscount: true,
-        canEditDates: false,
+        canEditDates: true,
         preventPriceIncrease: false,
       },
       options: {
@@ -218,10 +225,16 @@ describe('FormStock', () => {
       }
     })
 
+    const startDatetimeInput = screen.getByLabelText('Date de début *')
+    const endDatetimeInput = screen.getByLabelText('Date de fin *')
+    const eventTimeInput = screen.getByLabelText('Horaire *')
     const placeInput = screen.getByLabelText('Nombre de participants *')
     const priceInput = screen.getByLabelText('Prix total TTC *')
 
     expect(placeInput).not.toBeDisabled()
     expect(priceInput).not.toBeDisabled()
+    expect(startDatetimeInput).not.toBeDisabled()
+    expect(endDatetimeInput).not.toBeDisabled()
+    expect(eventTimeInput).not.toBeDisabled()
   })
 })
