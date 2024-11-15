@@ -1,12 +1,13 @@
 import { useState } from 'react'
-import { useSWRConfig } from 'swr'
+import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { getErrorCode, isErrorAPIError } from 'apiClient/helpers'
-import { CollectiveBookingResponseModel } from 'apiClient/v1'
+import { CollectiveBookingResponseModel, CollectiveOfferAllowedAction } from 'apiClient/v1'
 import {
   GET_BOOKINGS_QUERY_KEY,
   GET_COLLECTIVE_BOOKING_BY_ID_QUERY_KEY,
+  GET_COLLECTIVE_OFFER_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
 import { BOOKING_STATUS } from 'commons/core/Bookings/constants'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'commons/core/Notification/constants'
@@ -18,6 +19,8 @@ import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './CollectiveActionButtons.module.scss'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 
 export interface CollectiveActionButtonsProps {
   bookingRecap: CollectiveBookingResponseModel
@@ -30,6 +33,9 @@ export const CollectiveActionButtons = ({
 }: CollectiveActionButtonsProps) => {
   const { mutate } = useSWRConfig()
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const areNewStatusesEnabled = useActiveFeature(
+    'ENABLE_COLLECTIVE_NEW_STATUSES'
+  )
 
   const notify = useNotification()
 
@@ -39,6 +45,13 @@ export const CollectiveActionButtons = ({
     offerId,
     isShowcase: false,
   })
+
+  const { data: offer} = useSWR(
+    [GET_COLLECTIVE_OFFER_QUERY_KEY, Number(bookingRecap.stock.offerId)],
+    ([, offerIdParam]) => api.getCollectiveOffer(offerIdParam)
+  )
+
+  const bookingIsCancellable = areNewStatusesEnabled ? offer && isActionAllowedOnCollectiveOffer(offer, CollectiveOfferAllowedAction.CAN_CANCEL) : isCancellable
 
   const cancelBooking = async () => {
     setIsModalOpen(false)
@@ -80,7 +93,7 @@ export const CollectiveActionButtons = ({
   return (
     <>
       <div className={styles['action-buttons']}>
-        {isCancellable && (
+        {bookingIsCancellable && (
           <Button
             variant={ButtonVariant.SECONDARY}
             onClick={() => setIsModalOpen(true)}

@@ -452,4 +452,38 @@ describe('CollectiveActionsCells', () => {
 
     expect(screen.queryByText('Modifier')).not.toBeInTheDocument()
   })
+
+  it('should show cancel button when ENABLE_COLLECTIVE_NEW_STATUSES and offer has CAN_CANCEL allowed action', async () => {
+    renderCollectiveActionsCell(
+      {
+        offer: collectiveOfferFactory({
+          isShowcase: false,
+          allowedActions: [
+            CollectiveOfferAllowedAction.CAN_CANCEL,
+          ],
+        }),
+      },
+      ['ENABLE_COLLECTIVE_NEW_STATUSES']
+    )
+
+    await userEvent.click(screen.getByTitle('Action'))
+
+    expect(screen.getByText('Annuler la réservation')).toBeInTheDocument()
+  })
+
+  it('should not show cancel button when ENABLE_COLLECTIVE_NEW_STATUSES and offer has not CAN_CANCEL allowed action', async () => {
+    renderCollectiveActionsCell(
+      {
+        offer: collectiveOfferFactory({
+          isShowcase: false,
+          allowedActions: [],
+        }),
+      },
+      ['ENABLE_COLLECTIVE_NEW_STATUSES']
+    )
+
+    await userEvent.click(screen.getByTitle('Action'))
+
+    expect(screen.queryByText('Annuler la réservation')).not.toBeInTheDocument()
+  })
 })

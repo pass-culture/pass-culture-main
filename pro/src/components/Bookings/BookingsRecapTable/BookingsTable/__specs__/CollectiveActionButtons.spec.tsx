@@ -1,10 +1,10 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { addDays } from 'date-fns'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { ApiError } from 'apiClient/v1'
+import { ApiError, CollectiveOfferAllowedAction } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { BOOKING_STATUS } from 'commons/core/Bookings/constants'
@@ -13,6 +13,7 @@ import * as useNotification from 'commons/hooks/useNotification'
 import {
   collectiveBookingCollectiveStockFactory,
   collectiveBookingFactory,
+  getCollectiveOfferFactory,
 } from 'commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
@@ -21,8 +22,9 @@ import {
   CollectiveActionButtonsProps,
 } from '../CollectiveActionButtons'
 
-const renderCollectiveActionButtons = (props: CollectiveActionButtonsProps) => {
-  renderWithProviders(<CollectiveActionButtons {...props} />)
+const renderCollectiveActionButtons = (props: CollectiveActionButtonsProps, features: string[] = []
+) => {
+  renderWithProviders(<CollectiveActionButtons {...props} />, { features })
 }
 
 describe('CollectiveActionButtons', () => {
@@ -184,4 +186,52 @@ describe('collectiveActionButton api call', () => {
       { duration: NOTIFICATION_LONG_SHOW_DURATION }
     )
   })
+
+
+  it('should show cancel button when ENABLE_COLLECTIVE_NEW_STATUSES is on and offer has CAN_CANCEL allowed action', async () => {
+    const offer = getCollectiveOfferFactory({
+      allowedActions: [CollectiveOfferAllowedAction.CAN_CANCEL],
+      id: 1,
+    })
+    vi.spyOn(api, 'getCollectiveOffer').mockResolvedValueOnce(offer)
+
+    const bookingRecap = collectiveBookingFactory({
+      bookingStatus: BOOKING_STATUS.PENDING,
+      stock: collectiveBookingCollectiveStockFactory({
+        offerId: 1,
+      }),
+    })
+
+    renderCollectiveActionButtons({
+      bookingRecap,
+      isCancellable: false,
+    },['ENABLE_COLLECTIVE_NEW_STATUSES'])
+
+    expect(await screen.findByText('Annuler la préréservation')).toBeInTheDocument()
+  })
+
+  it('should not show cancel button when ENABLE_COLLECTIVE_NEW_STATUSES is and offer has not CAN_CANCEL allowed action', async () => {
+    const offer = getCollectiveOfferFactory({
+      allowedActions: [],
+      id: 1,
+    })
+    vi.spyOn(api, 'getCollectiveOffer').mockResolvedValueOnce(offer)
+
+    const bookingRecap = collectiveBookingFactory({
+      bookingStatus: BOOKING_STATUS.PENDING,
+      stock: collectiveBookingCollectiveStockFactory({
+        offerId: 1,
+      }),
+    })
+
+    renderCollectiveActionButtons({
+      bookingRecap,
+      isCancellable: false,
+    },['ENABLE_COLLECTIVE_NEW_STATUSES'])
+
+    await waitFor(() => {
+      expect(screen.queryByText('Annuler la préréservation')).not.toBeInTheDocument()
+    })
+  })
+
 })
