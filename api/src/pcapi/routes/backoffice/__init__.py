@@ -14,6 +14,7 @@ def install_routes(app: Flask) -> None:
     from . import pro
     from . import redirect
     from .accounts import blueprint as accounts_blueprint
+    from .accounts import update_request_blueprint
     from .admin import blueprint as admin_blueprint
     from .admin import bo_users_blueprint
     from .bank_account import blueprint as bank_account_blueprint

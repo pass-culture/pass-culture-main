@@ -69,3 +69,17 @@ class ManualReviewForm(FlaskForm):
 
 class CommentForm(FlaskForm):
     comment = fields.PCCommentField("Commentaire interne pour le compte jeune")
+
+
+class AccountUpdateRequestSearchForm(utils.PCForm):
+    class Meta:
+        csrf = False
+
+    q = fields.PCOptSearchField("Numéro de dossier")
+    page = wtforms.HiddenField("page", default="1", validators=(wtforms.validators.Optional(),))
+    per_page = fields.PCSelectField(
+        "Par page",
+        choices=(("10", "10"), ("25", "25"), ("50", "50"), ("100", "100")),
+        default="100",
+        validators=(wtforms.validators.Optional(),),
+    )

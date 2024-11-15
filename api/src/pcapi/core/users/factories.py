@@ -14,6 +14,7 @@ import time_machine
 
 from pcapi import settings
 from pcapi.connectors.beneficiaries.educonnect import models as educonnect_models
+from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.factories import BaseFactory
 import pcapi.core.finance.api as finance_api
@@ -1064,6 +1065,37 @@ class EmailValidationEntryFactory(UserEmailHistoryFactory):
 
 class EmailAdminUpdateEntryFactory(UserEmailHistoryFactory):
     eventType = models.EmailHistoryEventTypeEnum.ADMIN_UPDATE
+
+
+class UserAccountUpdateRequestFactory(BaseFactory):
+    class Meta:
+        model = models.UserAccountUpdateRequest
+
+    dsApplicationId = factory.Sequence(lambda n: 1230000 + n + 1)
+    status = dms_models.GraphQLApplicationStates.on_going
+    firstName = "Jeune"
+    lastName = "Changeant d'Email"
+    email = factory.Sequence(lambda n: f"ancien_email_{n+1}@example.com")
+    birthDate = factory.Sequence(lambda n: date.today() - timedelta(days=18 * 366 + 10 * n))
+    user = factory.SubFactory(
+        BeneficiaryGrant18Factory,
+        firstName=factory.SelfAttribute("..firstName"),
+        lastName=factory.SelfAttribute("..lastName"),
+        email=factory.SelfAttribute("..email"),
+        dateOfBirth=factory.SelfAttribute("..birthDate"),
+    )
+    newEmail = factory.Sequence(lambda n: f"nouvel_email_{n+1}@example.com")
+    newPhoneNumber = None
+    newFirstName = None
+    newLastName = None
+    allConditionsChecked = True
+    lastInstructor = factory.SubFactory(
+        AdminFactory,
+        firstName="Instructeur",
+        lastName="du Backoffice",
+    )
+    dateLastUserMessage = LazyAttribute(lambda _: datetime.utcnow() - relativedelta(days=1))
+    dateLastInstructorMessage = factory.LazyAttribute(lambda _: datetime.utcnow() - relativedelta(days=3))
 
 
 class UserProFlagsFactory(BaseFactory):
