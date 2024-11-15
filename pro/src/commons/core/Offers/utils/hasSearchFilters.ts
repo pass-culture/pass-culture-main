@@ -7,12 +7,10 @@ export const hasSearchFilters = (
     searchFilters
   ) as (keyof SearchFiltersParams)[]
 ): boolean => {
-  return filterNames
-    .map(
-      (filterName) =>
-        searchFilters[filterName] !== { ...DEFAULT_SEARCH_FILTERS }[filterName]
-    )
-    .includes(true)
+  return filterNames.some(
+    (filterName) =>
+      searchFilters[filterName] !== { ...DEFAULT_SEARCH_FILTERS }[filterName]
+  )
 }
 
 export const hasCollectiveSearchFilters = (
@@ -22,10 +20,8 @@ export const hasCollectiveSearchFilters = (
     searchFilters
   ) as (keyof CollectiveSearchFiltersParams)[]
 ): boolean => {
-  return filterNames
-    .map(
-      (filterName) =>
-        searchFilters[filterName] !== { ...defaultFilters }[filterName]
-    )
-    .includes(true)
+  return filterNames.some(
+    (filterName) =>
+      searchFilters[filterName] !== { ...defaultFilters }[filterName]
+  )
 }
