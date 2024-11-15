@@ -266,6 +266,12 @@ def _update_educational_booking_educational_year_id(
 def _update_educational_booking_cancellation_limit_date(
     booking: educational_models.CollectiveBooking, new_beginning_datetime: datetime.datetime
 ) -> None:
+    # if the input date has a timezone (resp. does not have one), we need to compare it with an aware datetime (resp. a naive datetime)
+    now = (
+        datetime.datetime.utcnow()
+        if new_beginning_datetime.tzinfo is None
+        else datetime.datetime.now(datetime.timezone.utc)  # pylint: disable=datetime-now
+    )
     booking.cancellationLimitDate = educational_utils.compute_educational_booking_cancellation_limit_date(
-        new_beginning_datetime, datetime.datetime.utcnow()
+        new_beginning_datetime, now
     )
