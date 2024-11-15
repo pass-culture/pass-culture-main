@@ -130,6 +130,7 @@ export const QuantityInput = ({
           [styles['quantity-input-checkbox-for-small-label']]: smallLabel,
           [styles['quantity-input-checkbox-for-hidden-label']]: isLabelHidden,
         })}
+        disabled={disabled}
       />
     </div>
   )

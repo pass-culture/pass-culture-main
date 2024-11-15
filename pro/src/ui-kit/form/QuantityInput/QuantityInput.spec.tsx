@@ -29,6 +29,16 @@ describe('QuantityInput', () => {
     ).toBeInTheDocument()
   })
 
+  it('should display the checkbox disabled when the input is disabled', () => {
+    renderQuantityInput({ disabled: true })
+
+    const input = screen.getByRole('spinbutton', { name: LABELS.input })
+    expect(input).toBeDisabled()
+
+    const checkbox = screen.getByRole('checkbox', { name: LABELS.checkbox })
+    expect(checkbox).toBeDisabled()
+  })
+
   it('should execute the onChange callback when the input value changes', async () => {
     const onChange = vi.fn()
     renderQuantityInput({ onChange })
