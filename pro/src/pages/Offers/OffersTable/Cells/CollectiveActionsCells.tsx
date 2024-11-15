@@ -279,6 +279,16 @@ export const CollectiveActionsCells = ({
       !offer.isPublicApi &&
       offer.status !== CollectiveOfferStatus.ARCHIVED
 
+  const isBookingCancellable =
+    areCollectiveNewStatusesEnabled ?
+      isActionAllowedOnCollectiveOffer(offer,CollectiveOfferAllowedAction.CAN_CANCEL)
+      : offer.status === CollectiveOfferStatus.SOLD_OUT &&
+        offer.booking &&
+        (offer.booking.booking_status ===
+          CollectiveBookingStatus.PENDING ||
+          offer.booking.booking_status ===
+            CollectiveBookingStatus.CONFIRMED)
+
   return (
     <td
       className={cn(styles['offers-table-cell'], styles['actions-column'])}
@@ -375,12 +385,7 @@ export const CollectiveActionsCells = ({
                     </ButtonLink>
                   </DropdownMenu.Item>
                 )}
-                {offer.status === CollectiveOfferStatus.SOLD_OUT &&
-                  offer.booking &&
-                  (offer.booking.booking_status ===
-                    CollectiveBookingStatus.PENDING ||
-                    offer.booking.booking_status ===
-                      CollectiveBookingStatus.CONFIRMED) && (
+                {isBookingCancellable && (
                     <>
                       <DropdownMenu.Separator
                         className={cn(
