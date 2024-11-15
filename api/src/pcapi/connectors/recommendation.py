@@ -78,10 +78,12 @@ class HttpBackend:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore", urllib_execptions.InsecureRequestWarning)
                 if method == "get":
-                    response = requests.get(url, params=params, disable_synchronous_retry=True, verify=False)
+                    response = requests.get(
+                        url, params=params, disable_synchronous_retry=True, verify=False, log_info=False
+                    )
                 elif method == "post":
                     response = requests.post(
-                        url, params=params, json=body, disable_synchronous_retry=True, verify=False
+                        url, params=params, json=body, disable_synchronous_retry=True, verify=False, log_info=False
                     )
                 else:
                     raise ValueError(f"Unexpected method: {method}")
