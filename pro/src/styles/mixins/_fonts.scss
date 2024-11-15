@@ -1,5 +1,4 @@
 @use "styles/mixins/_rem.scss" as rem;
-@import "./fonts-legacy";
 
 // need to use em for accessibility: when root size is 200% line-height should adjust
 $body-line-height: 1.25em;
@@ -41,4 +40,20 @@ $caption-line-height: rem.torem(16px);
 @mixin body-italic() {
   font-family: Montserrat-RegularItalic, system-ui, sans-serif;
   font-size: $body-font-size;
+}
+
+//  Legacy fonts to cover the typos weights and styles that do not fit in the new design system
+//  These should be progresively replaced with DS fonts
+//  Try not to use these !
+
+@mixin bold() {
+  font-family: Montserrat-Bold, system-ui, sans-serif;
+}
+
+@mixin semi-bold() {
+  font-family: Montserrat-SemiBold, system-ui, sans-serif;
+}
+
+@mixin medium() {
+  font-family: Montserrat-Medium, system-ui, sans-serif;
 }

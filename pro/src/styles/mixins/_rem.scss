@@ -1,3 +1,5 @@
+@use "sass:map";
+@use "sass:meta";
 @use "sass:math";
 @use "sass:list";
 
@@ -10,8 +12,8 @@ $rem-px-only: false !default;
     @return list.append($list, null, $separator);
   }
 
-  @if function-exists("list-separator") == true {
-    @return list-separator($list);
+  @if meta.function-exists("list-separator") == true {
+    @return list.separator($list);
   }
 
   // list-separator polyfill by Hugo Giraudel (https://sass-compatibility.github.io/#list_separator_function)
@@ -34,16 +36,16 @@ $rem-px-only: false !default;
   $separator: rem-separator($values);
 
   @each $value in $values {
-    @if type-of($value) == "number" and unit($value) == "rem" and $to == "px" {
+    @if meta.type-of($value) == "number" and math.unit($value) == "rem" and $to == "px" {
       $result: list.append(
         $result,
         math.div($value, 1rem) * $rem-baseline,
         $separator
       );
     } @else if
-      type-of($value) ==
+      meta.type-of($value) ==
       "number" and
-      unit($value) ==
+      math.unit($value) ==
       "px" and
       $to ==
       "rem"
@@ -53,7 +55,7 @@ $rem-px-only: false !default;
         math.div($value, $rem-baseline) * 1rem,
         $separator
       );
-    } @else if type-of($value) == "list" {
+    } @else if meta.type-of($value) == "list" {
       $value-separator: rem-separator($value);
       $value: rem-convert($to, $value...);
       $value: rem-separator($value, $value-separator);
@@ -63,7 +65,7 @@ $rem-px-only: false !default;
     }
   }
 
-  @return if(length($result) == 1, nth($result, 1), $result);
+  @return if(list.length($result) == 1, list.nth($result, 1), $result);
 }
 
 @function torem($values...) {
@@ -75,9 +77,9 @@ $rem-px-only: false !default;
 }
 
 @mixin torem($properties, $values...) {
-  @if type-of($properties) == "map" {
-    @each $property in map-keys($properties) {
-      @include rem.torem($property, map-get($properties, $property));
+  @if meta.type-of($properties) == "map" {
+    @each $property in map.keys($properties) {
+      @include rem.torem($property, map.get($properties, $property));
     }
   } @else {
     @each $property in $properties {
