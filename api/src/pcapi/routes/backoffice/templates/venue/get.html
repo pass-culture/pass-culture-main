@@ -352,26 +352,30 @@
                               "search-0-operator": "IN",
                               "search-0-venue": venue.id,
                             } %}
-              <p class="mb-1">
-                <span class="fw-bold">Offres BO :</span>
-                <a href="{{ url_for('backoffice_web.offer.list_offers', **search_params) }}"
-                   class="link-primary">individuelles</a>
-                {% if not venue.managingOfferer.is_caledonian %}
-                  | <a href="{{ url_for('backoffice_web.collective_offer.list_collective_offers', **search_params) }}"
+              {% if has_permission("READ_OFFERS") %}
+                <p class="mb-1">
+                  <span class="fw-bold">Offres BO :</span>
+                  <a href="{{ url_for('backoffice_web.offer.list_offers', **search_params) }}"
+                     class="link-primary">individuelles</a>
+                  {% if not venue.managingOfferer.is_caledonian %}
+                    | <a href="{{ url_for('backoffice_web.collective_offer.list_collective_offers', **search_params) }}"
     class="link-primary">collectives</a>
-                  | <a href="{{ url_for('backoffice_web.collective_offer_template.list_collective_offer_templates', venue=venue.id) }}"
+                    | <a href="{{ url_for('backoffice_web.collective_offer_template.list_collective_offer_templates', venue=venue.id) }}"
     class="link-primary">vitrine</a>
-                {% endif %}
-              </p>
-              <p class="mb-1">
-                <span class="fw-bold">Réservations BO :</span>
-                <a href="{{ url_for('backoffice_web.individual_bookings.list_individual_bookings', venue=venue.id) }}"
-                   class="link-primary">individuelles</a>
-                {% if not venue.managingOfferer.is_caledonian %}
-                  | <a href="{{ url_for('backoffice_web.collective_bookings.list_collective_bookings', venue=venue.id) }}"
+                  {% endif %}
+                </p>
+              {% endif %}
+              {% if has_permission("READ_BOOKINGS") %}
+                <p class="mb-1">
+                  <span class="fw-bold">Réservations BO :</span>
+                  <a href="{{ url_for('backoffice_web.individual_bookings.list_individual_bookings', venue=venue.id) }}"
+                     class="link-primary">individuelles</a>
+                  {% if not venue.managingOfferer.is_caledonian %}
+                    | <a href="{{ url_for('backoffice_web.collective_bookings.list_collective_bookings', venue=venue.id) }}"
     class="link-primary">collectives</a>
-                {% endif %}
-              </p>
+                  {% endif %}
+                </p>
+              {% endif %}
               <div>
                 {% if zendesk_sell_synchronisation_form %}
                   <button class="btn btn-outline-primary btn-sm"
