@@ -16,6 +16,7 @@ export interface ImageUploaderProps {
   mode: UploaderModeEnum
   onClickButtonImageAdd?: () => void
   hideActionButtons?: boolean
+  disableForm?: boolean
 }
 
 export const ImageUploader = ({
@@ -26,6 +27,7 @@ export const ImageUploader = ({
   mode,
   onClickButtonImageAdd,
   hideActionButtons = false,
+  disableForm = false
 }: ImageUploaderProps) => {
   const { imageUrl, originalImageUrl, credit, cropParams } = initialValues
 
@@ -58,6 +60,7 @@ export const ImageUploader = ({
                   onImageUpload={onImageUpload}
                   onImageDelete={onImageDelete}
                   onClickButtonImage={onClickButtonImageAdd}
+                  disableForm={disableForm}
                 />
                 {mode !== UploaderModeEnum.OFFER_COLLECTIVE && (
                   <ButtonAppPreview imageUrl={imageUrl} mode={mode} />
@@ -73,6 +76,7 @@ export const ImageUploader = ({
           onImageUpload={onImageUpload}
           onImageDelete={onImageDelete}
           onClickButtonImage={onClickButtonImageAdd}
+          disableForm={disableForm}
         />
       )}
     </div>

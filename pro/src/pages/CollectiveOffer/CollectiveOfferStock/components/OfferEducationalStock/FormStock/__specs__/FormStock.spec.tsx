@@ -14,7 +14,6 @@ import { Button } from 'ui-kit/Button/Button'
 
 import { generateValidationSchema } from '../../validationSchema'
 import { FormStock, FormStockProps } from '../FormStock'
-import { renderWithProviders, RenderWithProvidersOptions } from 'commons/utils/renderWithProviders'
 
 const renderFormStock = ({
   initialValues,

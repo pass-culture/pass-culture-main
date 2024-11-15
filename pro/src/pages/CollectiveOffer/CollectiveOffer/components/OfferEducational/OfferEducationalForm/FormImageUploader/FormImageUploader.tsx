@@ -11,6 +11,7 @@ export interface ImageUploaderOfferProps {
   onImageUpload: (values: OnImageUploadArgs) => void
   onImageDelete: () => void
   imageOffer: OfferCollectiveImage | null
+  disableForm: boolean
 }
 
 const buildInitialValues = (
@@ -25,6 +26,7 @@ export const FormImageUploader = ({
   onImageUpload,
   onImageDelete,
   imageOffer,
+  disableForm
 }: ImageUploaderOfferProps) => (
   <FormLayout.Section title="Image de l’offre">
     <FormLayout.Row>
@@ -33,6 +35,7 @@ export const FormImageUploader = ({
         onImageDelete={onImageDelete}
         initialValues={buildInitialValues(imageOffer)}
         mode={UploaderModeEnum.OFFER_COLLECTIVE}
+        disableForm={disableForm}
       />
     </FormLayout.Row>
   </FormLayout.Section>

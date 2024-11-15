@@ -24,6 +24,7 @@ export type ButtonImageEditProps = {
   mode: UploaderModeEnum
   onClickButtonImage?: () => void
   children?: React.ReactNode
+  disableForm?: boolean
 }
 
 export const ButtonImageEdit = ({
@@ -33,6 +34,7 @@ export const ButtonImageEdit = ({
   onImageDelete,
   onClickButtonImage,
   children,
+  disableForm
 }: ButtonImageEditProps): JSX.Element => {
   const { imageUrl, originalImageUrl } = initialValues
 
@@ -78,6 +80,7 @@ export const ButtonImageEdit = ({
               })}
               onClick={onClickButtonImageAdd}
               type="button"
+              disabled={disableForm}
             >
               <>
                 <SvgIcon
