@@ -1,4 +1,3 @@
-import time
 import typing
 
 import sib_api_v3_sdk.rest
@@ -19,7 +18,6 @@ def custom_restclient_request(
     """Wrapper around ``RESTClientObject.request()`` from SendindBlue SDK
     that sets a default timeout and logs the request.
     """
-    start = time.perf_counter()
     if kwargs.get("_request_timeout") is None:
         kwargs["_request_timeout"] = SENDINBLUE_REQUEST_TIMEOUT
     try:
@@ -35,15 +33,6 @@ def custom_restclient_request(
             },
         )
         raise
-    elapsed = time.perf_counter() - start
-    logger.info(
-        "External service called",
-        extra={
-            "url": url,
-            "statusCode": response.status,
-            "duration": elapsed,
-        },
-    )
     return response
 
 
