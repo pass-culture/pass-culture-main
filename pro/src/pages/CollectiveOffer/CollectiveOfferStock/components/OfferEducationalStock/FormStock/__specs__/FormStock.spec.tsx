@@ -2,7 +2,6 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { addDays, format } from 'date-fns'
 import { Form, Formik } from 'formik'
-import React from 'react'
 
 import {
   OfferEducationalStockFormValues,
@@ -15,17 +14,20 @@ import { Button } from 'ui-kit/Button/Button'
 
 import { generateValidationSchema } from '../../validationSchema'
 import { FormStock, FormStockProps } from '../FormStock'
+import { renderWithProviders, RenderWithProvidersOptions } from 'commons/utils/renderWithProviders'
 
 const renderFormStock = ({
   initialValues,
   onSubmit = vi.fn(),
   props,
+  options
 }: {
   initialValues: OfferEducationalStockFormValues
   onSubmit: () => void
   props: FormStockProps
+  options?: RenderWithProvidersOptions
 }) => {
-  return render(
+  return renderWithProviders(
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}
@@ -41,7 +43,8 @@ const renderFormStock = ({
           Enregistrer
         </Button>
       </Form>
-    </Formik>
+    </Formik>, 
+    options
   )
 }
 
@@ -53,7 +56,6 @@ describe('FormStock', () => {
   beforeEach(() => {
     props = {
       mode: Mode.CREATION,
-      disablePriceAndParticipantInputs: false,
       preventPriceIncrease: false,
     }
     initialValues = {
@@ -99,7 +101,8 @@ describe('FormStock', () => {
       onSubmit,
       props: {
         mode: Mode.EDITION,
-        disablePriceAndParticipantInputs: false,
+        canEditDiscount: false,
+        canEditDates: true,
         preventPriceIncrease: false,
       },
     })
@@ -118,7 +121,8 @@ describe('FormStock', () => {
       onSubmit,
       props: {
         mode: Mode.READ_ONLY,
-        disablePriceAndParticipantInputs: true,
+        canEditDiscount: false,
+        canEditDates: false,
         preventPriceIncrease: true,
       },
     })
@@ -136,7 +140,8 @@ describe('FormStock', () => {
       onSubmit,
       props: {
         mode: Mode.READ_ONLY,
-        disablePriceAndParticipantInputs: false,
+        canEditDiscount: true,
+        canEditDates: true,
         preventPriceIncrease: true,
       },
     })
@@ -172,5 +177,51 @@ describe('FormStock', () => {
     expect(startDatetimeInput).toBeDisabled()
     expect(endDatetimeInput).toBeDisabled()
     expect(eventTimeInput).toBeDisabled()
+  })
+
+  it('should disable start datetime, end datetime and event time inputs when allowedAction CAN_EDIT_DATES exist and ENABLE_COLLECTIVE_NEW_STATUSES is enabled', () => {
+    renderFormStock({
+      initialValues: initialValues,
+      onSubmit,
+      props: {
+        mode: Mode.READ_ONLY,
+        canEditDiscount: true,
+        canEditDates: false,
+        preventPriceIncrease: false,
+      },
+      options: {
+        features: ['ENABLE_COLLECTIVE_NEW_STATUSES'],
+      }
+    })
+
+    const startDatetimeInput = screen.getByLabelText('Date de début *')
+    const endDatetimeInput = screen.getByLabelText('Date de fin *')
+    const eventTimeInput = screen.getByLabelText('Horaire *')
+
+    expect(startDatetimeInput).toBeDisabled()
+    expect(endDatetimeInput).toBeDisabled()
+    expect(eventTimeInput).toBeDisabled()
+  })
+
+  it('should not disable price and place number when allowedAction CAN_EDIT_DISCOUNT exist and ENABLE_COLLECTIVE_NEW_STATUSES is enabled', () => {
+    renderFormStock({
+      initialValues: initialValues,
+      onSubmit,
+      props: {
+        mode: Mode.READ_ONLY,
+        canEditDiscount: true,
+        canEditDates: false,
+        preventPriceIncrease: false,
+      },
+      options: {
+        features: ['ENABLE_COLLECTIVE_NEW_STATUSES'],
+      }
+    })
+
+    const placeInput = screen.getByLabelText('Nombre de participants *')
+    const priceInput = screen.getByLabelText('Prix total TTC *')
+
+    expect(placeInput).not.toBeDisabled()
+    expect(priceInput).not.toBeDisabled()
   })
 })

@@ -25,13 +25,15 @@ import styles from './FormStock.module.scss'
 
 export interface FormStockProps {
   mode: Mode
-  disablePriceAndParticipantInputs: boolean
+  canEditDiscount: boolean
+  canEditDates: boolean
   preventPriceIncrease: boolean
 }
 
 export const FormStock = ({
   mode,
-  disablePriceAndParticipantInputs,
+  canEditDiscount,
+  canEditDates
 }: FormStockProps): JSX.Element => {
   const { values, setFieldValue } =
     useFormikContext<OfferEducationalStockFormValues>()
@@ -56,7 +58,7 @@ export const FormStock = ({
   return (
     <FormLayout.Row inline className={styles['layout-row']}>
       <DatePicker
-        disabled={mode === Mode.READ_ONLY}
+        disabled={!canEditDates}
         label={START_DATE_LABEL}
         minDate={new Date()}
         name="startDatetime"
@@ -64,20 +66,20 @@ export const FormStock = ({
         className={styles['input-date']}
       />
       <DatePicker
-        disabled={mode === Mode.READ_ONLY}
+        disabled={!canEditDates}
         label={END_DATE_LABEL}
         minDate={minEndDatetime}
         name="endDatetime"
         className={styles['input-date']}
       />
       <TimePicker
-        disabled={mode === Mode.READ_ONLY}
+        disabled={!canEditDates}
         label={EVENT_TIME_LABEL}
         name="eventTime"
         className={styles['custom-field-layout']}
       />
       <TextInput
-        disabled={disablePriceAndParticipantInputs}
+        disabled={!canEditDiscount}
         label={NUMBER_OF_PLACES_LABEL}
         name="numberOfPlaces"
         type="number"
@@ -86,7 +88,7 @@ export const FormStock = ({
         classNameInput={styles['input-custom-width']}
       />
       <TextInput
-        disabled={disablePriceAndParticipantInputs}
+        disabled={!canEditDiscount}
         label={TOTAL_PRICE_LABEL}
         name="totalPrice"
         step={0.01} // allow user to enter a price with cents

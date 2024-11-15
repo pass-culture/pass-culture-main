@@ -180,9 +180,10 @@ export const OfferEducationalStock = <
                 </p>
                 <FormStock
                   mode={mode}
-                  disablePriceAndParticipantInputs={
-                    disablePriceAndParticipantInputs
+                  canEditDiscount={
+                    canEditDiscount
                   }
+                  canEditDates={canEditDates}
                   preventPriceIncrease={preventPriceIncrease}
                 />
               </>
@@ -190,7 +191,7 @@ export const OfferEducationalStock = <
               <FormLayout.Row>
                 <TextArea
                   className={styles['price-details']}
-                  disabled={disablePriceAndParticipantInputs}
+                  disabled={!canEditDiscount}
                   label={DETAILS_PRICE_LABEL}
                   maxLength={MAX_DETAILS_LENGTH}
                   name="priceDetail"
@@ -207,7 +208,7 @@ export const OfferEducationalStock = <
                 </p>
                 <FormLayout.Row>
                   <DatePicker
-                    disabled={mode === Mode.READ_ONLY}
+                    disabled={!canEditDates}
                     label={BOOKING_LIMIT_DATETIME_LABEL}
                     hasLabelLineBreak={false}
                     minDate={new Date(offer.dateCreated)}
