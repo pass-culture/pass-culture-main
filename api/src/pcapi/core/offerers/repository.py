@@ -428,6 +428,7 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
         - hasPendingBankAccount
         - hasNonFreeOffers
         - hasBankAccountWithPendingCorrections
+        - isOnboarded
     """
     has_non_free_offers_subquery = (
         sqla.select(1)
@@ -513,6 +514,7 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
         .correlate(models.Offerer)
         .exists()
     )
+
     has_bank_account_with_pending_corrections_subquery = (
         sqla.select(1)
         .select_from(finance_models.BankAccount)
@@ -527,6 +529,31 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
         .correlate(models.Offerer)
         .exists()
     )
+
+    has_non_draft_offers = (
+        sqla.select(1)
+        .select_from(offers_models.Offer)
+        .join(models.Venue, models.Venue.managingOffererId == models.Offerer.id)
+        .where(
+            sqla.and_(
+                offers_models.Offer.venueId == models.Venue.id,
+                offers_models.Offer.validation != OfferValidationStatus.DRAFT,
+            )
+        )
+        .correlate(models.Offerer)
+        .exists()
+    )
+
+    has_adage_ds_application = (
+        sqla.select(1)
+        .select_from(models.Venue)
+        .where(
+            sqla.and_(models.Venue.managingOffererId == models.Offerer.id, sqla.not_(models.Venue.adageId.is_(None)))
+        )
+        .correlate(models.Offerer)
+        .exists()
+    )
+
     return (
         db.session.query(
             models.Offerer,
@@ -535,6 +562,7 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
             has_pending_bank_account_subquery.label("hasPendingBankAccount"),
             has_active_offers_subquery.label("hasActiveOffer"),
             has_bank_account_with_pending_corrections_subquery.label("hasBankAccountWithPendingCorrections"),
+            sqla.or_(has_adage_ds_application, has_non_draft_offers).label("isOnboarded"),
         )
         .filter(models.Offerer.id == offerer_id)
         .options(sqla_orm.load_only(models.Offerer.id, models.Offerer.name))
