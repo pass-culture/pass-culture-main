@@ -222,6 +222,35 @@ class EditCollectiveOfferStocksTest:
         booking_updated = CollectiveBooking.query.filter_by(id=booking.id).one()
         assert booking_updated.cancellationLimitDate == datetime.datetime(2021, 11, 12, 20)
 
+    def test_update_cancellation_limit_date_naive(self) -> None:
+        now = datetime.datetime.utcnow()
+        start = now + datetime.timedelta(days=35)
+        stock = educational_factories.CollectiveStockFactory(beginningDatetime=start)
+        booking = educational_factories.CollectiveBookingFactory(collectiveStock=stock)
+        assert booking.cancellationLimitDate == start - datetime.timedelta(days=30)
+
+        new_start_naive = now + datetime.timedelta(days=34)
+        assert new_start_naive.tzinfo is None
+        educational_api_stock._update_educational_booking_cancellation_limit_date(booking, new_start_naive)
+
+        booking = CollectiveBooking.query.filter(CollectiveBooking.id == booking.id).one()
+        assert booking.cancellationLimitDate == new_start_naive - datetime.timedelta(days=30)
+
+    def test_update_cancellation_limit_date_aware(self) -> None:
+        now_aware = datetime.datetime.now(datetime.timezone.utc)  # pylint: disable=datetime-now
+        now_naive = now_aware.replace(tzinfo=None)
+        start = now_naive + datetime.timedelta(days=35)
+        stock = educational_factories.CollectiveStockFactory(beginningDatetime=start)
+        booking = educational_factories.CollectiveBookingFactory(collectiveStock=stock)
+        assert booking.cancellationLimitDate == start - datetime.timedelta(days=30)
+
+        new_start_aware = now_aware + datetime.timedelta(days=34)
+        assert new_start_aware.tzinfo is datetime.timezone.utc
+        educational_api_stock._update_educational_booking_cancellation_limit_date(booking, new_start_aware)
+
+        booking = CollectiveBooking.query.filter(CollectiveBooking.id == booking.id).one()
+        assert booking.cancellationLimitDate == new_start_aware - datetime.timedelta(days=30)
+
     @time_machine.travel("2020-11-17 15:00:00", tick=False)
     def should_update_bookings_cancellation_limit_date_if_beginningDatetime_earlier(self) -> None:
         # Given
