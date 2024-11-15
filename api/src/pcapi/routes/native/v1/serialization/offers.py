@@ -160,6 +160,7 @@ class OfferExtraDataResponse(BaseModel):
     visa: str | None
     releaseDate: date | None
     certificate: str | None
+    bookFormat: str | None
     cast: list[str] | None
     editeur: str | None
     gtlLabels: GtlLabels | None

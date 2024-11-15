@@ -13,6 +13,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
+from pcapi.core.providers.constants import BookFormat
 from pcapi.core.search.backends import algolia
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
@@ -388,6 +389,13 @@ def test_serialize_offer_release_date():
     offer = offers_factories.OfferFactory(product=product)
     serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
     assert serialized["offer"]["releaseDate"] == "2024-01-01"
+
+
+def test_serialize_offer_book_format():
+    product = offers_factories.ProductFactory(extraData={"bookFormat": BookFormat.BEAUX_LIVRES})
+    offer = offers_factories.OfferFactory(product=product)
+    serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
+    assert serialized["offer"]["bookFormat"] == "BEAUX LIVRES"
 
 
 def test_serialize_venue():
