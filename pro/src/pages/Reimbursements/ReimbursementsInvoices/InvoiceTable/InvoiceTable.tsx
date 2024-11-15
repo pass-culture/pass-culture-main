@@ -144,6 +144,12 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
   }
 
   async function downloadCSVFiles(references: string[]) {
+    if (references.length > 24) {
+      notify.error(
+        'Vous ne pouvez pas télécharger plus de 24 documents en une fois.'
+      )
+      return
+    }
     try {
       logEvent(Events.CLICKED_INVOICES_DOWNLOAD, {
         fileType: 'details',
