@@ -7,6 +7,7 @@ import pcapi.core.educational.factories as collective_factories
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offers import models as offers_models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
@@ -137,6 +138,7 @@ class GetOffererTest:
             "siren": offerer.siren,
             "street": offerer.street,
             "allowedOnAdage": offerer.allowedOnAdage,
+            "isOnboarded": True,
         }
         assert response.json == expected_serialized_offerer
 
@@ -232,6 +234,52 @@ class GetOffererTest:
         assert response.json["hasPendingBankAccount"] is False
         assert response.json["venuesWithNonFreeOffersWithoutBankAccounts"] == [venue_with_offer.id]
         assert response.json["hasNonFreeOffer"] is True
+
+    @pytest.mark.parametrize(
+        "offers_status,count_offer,adage_ds_application",
+        [
+            (offers_models.OfferValidationStatus.DRAFT, 1, None),
+            (offers_models.OfferValidationStatus.DRAFT, 3, None),
+            (offers_models.OfferValidationStatus.APPROVED, 1, None),
+            (offers_models.OfferValidationStatus.APPROVED, 3, None),
+            (None, 0, None),
+            (None, 0, "1"),
+            (offers_models.OfferValidationStatus.DRAFT, 1, "1"),
+            (offers_models.OfferValidationStatus.DRAFT, 3, "1"),
+        ],
+    )
+    def test_offerer_onboarding_status(self, client, offers_status, count_offer, adage_ds_application):
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        adage_id = None
+        if adage_ds_application:
+            adage_id = adage_ds_application
+
+        venue_with_offer = offerers_factories.VenueFactory(managingOfferer=offerer, adageId=adage_id)
+        if count_offer:
+            offers_factories.OfferFactory.create_batch(count_offer, venue=venue_with_offer, validation=offers_status)
+
+        offerer_id = offerer.id
+        client = client.with_session_auth(pro.email)
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # check user_offerer exists
+        num_queries += 1  # select offerer
+        num_queries += 1  # select api_key
+        num_queries += 1  # select venue
+        num_queries += 1  # check offerer has non free offers
+        num_queries += 1  # select venue_id
+        num_queries += 1  # select offerer_address
+
+        num_queries += 1  # select venues_id with active offers
+        with testing.assert_num_queries(num_queries):
+            response = client.get(f"/offerers/{offerer_id}")
+            assert response.status_code == 200
+        is_onboarded = (offers_status is not None and offers_status != offers_models.OfferValidationStatus.DRAFT) or (
+            adage_ds_application is not None
+        )
+        assert response.json["isOnboarded"] is is_onboarded
 
     def test_offerer_has_inactive_non_free_offer(self, client):
         pro = users_factories.ProFactory()
