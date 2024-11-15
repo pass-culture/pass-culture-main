@@ -600,8 +600,8 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     sa.Index("offer_visa_idx", extraData["visa"].astext)
     sa.Index(
         "offer_music_subcategory_with_gtl_id_substr_idx",
-        sa.func.substr(extraData["gtl_id"].astext, 1, 2),
-        postgresql_where=extraData["gtl_id"] is not None,
+        sa.func.substr(extraData["gtlId"].astext, 1, 2),
+        postgresql_where=extraData["gtlId"] is not None,
     )
     sa.Index("offer_show_type_idx", extraData["showType"].astext, postgresql_where=extraData["showType"] is not None)
     sa.Index(

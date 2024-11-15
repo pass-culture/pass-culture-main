@@ -180,7 +180,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             "author": "Ray Charles",
             "musicType": "880",
             "musicSubType": "894",
-            "gtl_id": "04000000",
+            "gtlId": "04000000",
             "performer": "Nicolas Jaar",
         }
         assert created_offer.bookingEmail == "nicoj@example.com"
@@ -276,7 +276,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert created_offer.subcategoryId == "CONCERT"
         assert created_offer.extraData == {
             "author": "Ray Charles",
-            "gtl_id": "01000000",
+            "gtlId": "01000000",
             "musicType": "600",
             "musicSubType": "-1",
             "performer": "Nicolas Jaar",
@@ -325,7 +325,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert created_offer.subcategoryId == "CONCERT"
         assert created_offer.extraData == {
             "author": "Ray Charles",
-            "gtl_id": "02000000",
+            "gtlId": "02000000",
             "musicType": "501",
             "musicSubType": "-1",
             "performer": "Nicolas Jaar",
@@ -359,7 +359,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 200
         created_offer = offers_models.Offer.query.one()
-        assert created_offer.extraData == {"musicType": "-1", "musicSubType": "-1", "gtl_id": "19000000"}
+        assert created_offer.extraData == {"musicType": "-1", "musicSubType": "-1", "gtlId": "19000000"}
 
         assert response.json["categoryRelatedFields"] == {
             "author": None,
@@ -574,7 +574,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
                     "author": "Ray Charles",
                     "category": "CONCERT",
                     "musicType": "ELECTRO-HOUSE",
-                    "gtl_id": "04030000",
+                    "gtlId": "04030000",
                     "performer": "Nicolas Jaar",
                     "stageDirector": "Alfred",  # field not applicable
                 },

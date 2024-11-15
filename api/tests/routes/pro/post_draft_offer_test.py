@@ -20,10 +20,9 @@ class Returns201Test:
             "name": "Celeste",
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
             "venueId": venue.id,
-            "extraData": {"gtl_id": "07000000"},
+            "extraData": {"gtlId": "07000000"},
         }
         response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
-
         assert response.status_code == 201
 
         response_dict = response.json
@@ -34,7 +33,7 @@ class Returns201Test:
         assert response_dict["name"] == "Celeste"
         assert response_dict["id"] == offer.id
         assert response_dict["productId"] == None
-        assert response_dict["extraData"] == {"gtl_id": "07000000"}
+        assert response_dict["extraData"] == {"gtlId": "07000000"}
         assert response_dict["isDuo"] == False
         assert not offer.product
 

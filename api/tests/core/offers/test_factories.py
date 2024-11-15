@@ -30,7 +30,7 @@ class OfferFactoryTest:
 
     def test_generate_book_extra_data_does_not_set_gtl_id(self):
         book_offer = OfferFactory(subcategoryId=subcategories.LIVRE_PAPIER.id, set_all_fields=True)
-        assert book_offer.extraData.get("gtl_id") is None
+        assert book_offer.extraData.get("gtlId") is None
 
     def test_generate_cinema_extra_data(self):
         cinema_offer = OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id, set_all_fields=True)
@@ -113,7 +113,7 @@ class ProductFactoryTest:
         assert book_product.extraData is not None
         assert isinstance(book_product.extraData.get("author"), str)
         assert re.match(r"\d{13}", book_product.extraData.get("ean"))
-        assert book_product.extraData.get("gtl_id") in GTLS
+        assert book_product.extraData.get("gtlId") in GTLS
 
     def test_generate_CDs_extra_data(self):
         concert_product = ProductFactory(

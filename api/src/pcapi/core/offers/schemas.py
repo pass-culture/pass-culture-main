@@ -20,7 +20,7 @@ class PostDraftOfferBodyModel(BaseModel):
     call_id: str | None
     venue_id: int
     description: str | None = None
-    extra_data: typing.Any = None
+    extra_data: offers_models.OfferExtraData | None = None
     duration_minutes: int | None = None
     product_id: int | None
 
@@ -38,7 +38,7 @@ class PatchDraftOfferBodyModel(BaseModel):
     name: str | None = None
     subcategory_id: str | None = None
     description: str | None = None
-    extra_data: dict[str, typing.Any] | None = None
+    extra_data: offers_models.OfferExtraData | None = None
     duration_minutes: int | None = None
 
     @validator("name", pre=True)
@@ -69,7 +69,7 @@ class CreateOffer(BaseModel):
     description: str | None = None
     duration_minutes: int | None = None
     external_ticket_office_url: HttpUrl | None = None
-    extra_data: typing.Any = None
+    extra_data: offers_models.OfferExtraData | None = None
     id_at_provider: str | None = None
     is_duo: bool | None = None
     url: HttpUrl | None = None

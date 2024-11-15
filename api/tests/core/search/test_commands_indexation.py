@@ -199,7 +199,7 @@ class StagingIndexationTest:
 
     def test_get_offers_with_gtl(self):
         stock_with_gtl = offers_factories.StockFactory.create_batch(
-            size=20, offer__isActive=True, offer__extraData={"gtl_id": random.choice(list(GTLS.keys()))}
+            size=20, offer__isActive=True, offer__extraData={"gtlId": random.choice(list(GTLS.keys()))}
         )
         offers_factories.StockFactory.create_batch(size=20, offer__isActive=True)
 
@@ -240,7 +240,7 @@ class StagingIndexationTest:
                 len(
                     list(
                         filter(
-                            lambda offer, gtl_id_prefix=gtl_id_prefix: offer.extraData.get("gtl_id").startswith(
+                            lambda offer, gtl_id_prefix=gtl_id_prefix: offer.extraData.get("gtlId").startswith(
                                 gtl_id_prefix
                             ),
                             offers,

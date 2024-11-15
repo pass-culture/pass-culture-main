@@ -184,6 +184,7 @@ export { OffererMemberStatus } from './models/OffererMemberStatus';
 export type { OffererStatsDataModel } from './models/OffererStatsDataModel';
 export type { OffererStatsResponseModel } from './models/OffererStatsResponseModel';
 export type { OffererViewsModel } from './models/OffererViewsModel';
+export type { OfferExtraData } from './models/OfferExtraData';
 export type { OfferImage } from './models/OfferImage';
 export { OfferStatus } from './models/OfferStatus';
 export type { OpeningHoursModel } from './models/OpeningHoursModel';
@@ -193,7 +194,6 @@ export type { PatchCollectiveOfferArchiveBodyModel } from './models/PatchCollect
 export type { PatchCollectiveOfferBodyModel } from './models/PatchCollectiveOfferBodyModel';
 export type { PatchCollectiveOfferEducationalInstitution } from './models/PatchCollectiveOfferEducationalInstitution';
 export type { PatchCollectiveOfferTemplateBodyModel } from './models/PatchCollectiveOfferTemplateBodyModel';
-export type { PatchDraftOfferBodyModel } from './models/PatchDraftOfferBodyModel';
 export type { PatchOfferActiveStatusBodyModel } from './models/PatchOfferActiveStatusBodyModel';
 export type { PatchOfferBodyModel } from './models/PatchOfferBodyModel';
 export type { PatchOfferPublishBodyModel } from './models/PatchOfferPublishBodyModel';

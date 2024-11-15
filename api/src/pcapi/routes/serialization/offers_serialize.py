@@ -121,21 +121,21 @@ class OfferAddressType(enum.Enum):
 
 class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     address: offerers_schemas.AddressBodyModel | None
-    bookingContact: EmailStr | None
-    bookingEmail: EmailStr | None
+    booking_contact: EmailStr | None
+    booking_email: EmailStr | None
     description: str | None
-    isNational: bool | None
+    is_national: bool | None
     name: str | None
-    extraData: Any
-    externalTicketOfficeUrl: HttpUrl | None
+    extra_data: offers_models.OfferExtraData | None
+    external_ticket_office_url: HttpUrl | None
     url: HttpUrl | None
-    withdrawalDetails: str | None
-    withdrawalType: offers_models.WithdrawalTypeEnum | None
-    withdrawalDelay: int | None
-    isActive: bool | None
-    isDuo: bool | None
-    durationMinutes: int | None
-    shouldSendMail: bool | None
+    withdrawal_details: str | None
+    withdrawal_type: offers_models.WithdrawalTypeEnum | None
+    withdrawal_delay: int | None
+    is_active: bool | None
+    is_duo: bool | None
+    duration_minutes: int | None
+    should_send_mail: bool | None
 
     @validator("name", pre=True, allow_reuse=True)
     def validate_name(cls, name: str) -> str:
@@ -454,7 +454,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     publicationDate: datetime.datetime | None
     description: str | None
     durationMinutes: int | None
-    extraData: Any
+    extraData: offers_models.OfferExtraData
     hasBookingLimitDatetimesPassed: bool
     hasStocks: bool
     isActive: bool
@@ -629,7 +629,7 @@ class GetProductInformations(BaseModel):
 
     @classmethod
     def from_orm(cls, product: offers_models.Product) -> "GetProductInformations":
-        product.gtl_id = product.extraData.get("gtl_id", "") if product.extraData else ""
+        product.gtl_id = product.extraData.get("gtlId", "") if product.extraData else ""
         product.author = product.extraData.get("author", "") if product.extraData else ""
         product.performer = product.extraData.get("performer", "") if product.extraData else ""
         return super().from_orm(product)

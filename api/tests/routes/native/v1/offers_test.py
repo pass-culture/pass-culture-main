@@ -56,7 +56,7 @@ class OffersTest:
             "genres": ["ACTION", "DRAMA"],
             "cast": ["cast1", "cast2"],
             "editeur": "editeur",
-            "gtl_id": "01030000",
+            "gtlId": "01030000",
             "releaseDate": "2020-01-01",
             "certificate": "Interdit au moins de 18 ans",
         }
@@ -784,7 +784,7 @@ class OffersV2Test:
             "genres": ["ACTION", "DRAMA"],
             "cast": ["cast1", "cast2"],
             "editeur": "editeur",
-            "gtl_id": "01030000",
+            "gtlId": "01030000",
             "releaseDate": "2020-01-01",
             "certificate": "Interdit aux moins de 18 ans",
         }
@@ -1795,7 +1795,7 @@ class OffersStocksTest:
             "genres": ["ACTION", "DRAMA"],
             "cast": ["cast1", "cast2"],
             "editeur": "editeur",
-            "gtl_id": "01030000",
+            "gtlId": "01030000",
             "releaseDate": "2020-01-01",
             "certificate": "Interdit aux moins de 18 ans",
         }
@@ -1982,7 +1982,7 @@ class OffersStocksV2Test:
             "genres": ["ACTION", "DRAMA"],
             "cast": ["cast1", "cast2"],
             "editeur": "editeur",
-            "gtl_id": "01030000",
+            "gtlId": "01030000",
             "releaseDate": "2020-01-01",
             "certificate": "Déconseillé -12 ans",
         }

@@ -616,7 +616,7 @@ class ExtraDataFieldEnum(Enum):
     SPEAKER = "speaker"
     STAGE_DIRECTOR = "stageDirector"
     VISA = "visa"
-    GTL_ID = "gtl_id"
+    GTL_ID = "gtlId"
 
 
 @dataclass

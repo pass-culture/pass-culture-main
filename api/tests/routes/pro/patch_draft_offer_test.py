@@ -20,6 +20,8 @@ from pcapi.utils.date import format_into_utc_date
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
+
+    @override_features(WIP_PATCH_OFFER_UNIQUE_ENDPOINT=True)
     def test_patch_draft_offer(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
@@ -34,8 +36,7 @@ class Returns200Test:
         data = {
             "name": "New name",
             "description": "New description",
-            "subcategoryId": subcategories.ABO_PLATEFORME_VIDEO.id,
-            "extraData": {"gtl_id": "07000000"},
+            "extraData": {"gtlId": "07000000"},
         }
         response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
         assert response.status_code == 200
@@ -50,6 +51,7 @@ class Returns200Test:
         assert not updated_offer.product
 
     @override_features(WIP_EAN_CREATION=True)
+    @override_features(WIP_PATCH_OFFER_UNIQUE_ENDPOINT=True)
     def test_patch_draft_offer_without_product_with_new_ean_should_succeed(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
@@ -71,15 +73,15 @@ class Returns200Test:
         assert updated_offer.extraData["ean"] == "2222222222222"
 
     @override_features(WIP_EAN_CREATION=True)
+    @override_features(WIP_PATCH_OFFER_UNIQUE_ENDPOINT=True)
     def test_patch_draft_offer_without_product(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
-        venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         offer = offers_factories.OfferFactory(
             name="Name",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             venue=venue,
             description="description",
-            url="http://example.com/offer",
         )
 
         data = {
@@ -99,7 +101,9 @@ class Returns200Test:
         assert updated_offer.description == "New description"
         assert not updated_offer.product
 
+    @override_features(WIP_PATCH_OFFER_UNIQUE_ENDPOINT=True)
     def test_patch_draft_with_extra_data(self, client):
+
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         offer = offers_factories.EventOfferFactory(
@@ -114,7 +118,6 @@ class Returns200Test:
         data = {
             "name": "Film",
             "description": "description",
-            "subcategoryId": subcategories.SEANCE_CINE.id,
             "extraData": {"stageDirector": "Greta Gerwig"},
         }
         response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
@@ -124,6 +127,7 @@ class Returns200Test:
         updated_offer = Offer.query.get(offer.id)
         assert updated_offer.extraData == {"stageDirector": "Greta Gerwig"}
 
+    @override_features(WIP_PATCH_OFFER_UNIQUE_ENDPOINT=True)
     def test_patch_draft_offer_with_empty_extra_data(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
@@ -179,24 +183,25 @@ class Returns200Test:
             name="Name",
             description="description",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
-            extraData={"gtl_id": "07000000", "ean": "1111111111111"},
+            extraData={"gtlId": "07000000", "ean": "1111111111111"},
         )
         offer = offers_factories.OfferFactory(
             venue=venue,
-            url="http://example.com/offer",
             product=product,
         )
 
         data = {
-            "extraData": {"gtl_id": "07000000", "ean": "1111111111111"},
+            "extraData": {"gtlId": "07000000", "ean": "1111111111111"},
         }
         response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
+        print(response.json)
         assert response.status_code == 200
         assert response.json["id"] == offer.id
 
         updated_offer = Offer.query.get(offer.id)
-        assert updated_offer.extraData == {"gtl_id": "07000000", "ean": "1111111111111"}
+        assert updated_offer.extraData == {"gtlId": "07000000", "ean": "1111111111111"}
 
+    @override_features(WIP_PATCH_OFFER_UNIQUE_ENDPOINT=True)
     def test_patch_draft_offer_with_existing_extra_data_with_new_extra_data(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
@@ -233,10 +238,8 @@ class Returns200Test:
         data = {
             "name": "Film",
             "description": "description",
-            "subcategoryId": subcategories.SEANCE_CINE.id,
             "extraData": {
                 "author": "",
-                "gtl_id": "",
                 "performer": "",
                 "showType": "",
                 "showSubType": "",
@@ -288,13 +291,13 @@ class Returns200Test:
             "stageDirector": "Greta Gerwig",
             "productionYear": 1970,
             "author": "",
-            "gtl_id": "",
             "performer": "",
             "showType": "",
             "showSubType": "",
             "speaker": "",
         }
 
+    @override_features(WIP_PATCH_OFFER_UNIQUE_ENDPOINT=True)
     @override_features(WIP_ENABLE_OFFER_ADDRESS=False)
     @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     @pytest.mark.parametrize(
@@ -388,7 +391,6 @@ class Returns200Test:
             "extraData": {
                 "author": "",
                 "ean": "",
-                "gtl_id": "",
                 "performer": "",
                 "showSubType": 1202,
                 "showType": 1200,
@@ -404,6 +406,7 @@ class Returns200Test:
         draft_offer = Offer.query.one()
         offer_id = draft_offer.id
         response = client.with_session_auth(user_email).get(f"/offers/{offer_id}")
+
         assert response.status_code == 200
         assert response.json["status"] == OfferStatus.DRAFT.value
         assert response.json["id"] == draft_offer.id
@@ -430,10 +433,11 @@ class Returns200Test:
         }
 
         with patch("pcapi.connectors.api_adresse.get_address", return_value=return_value):
-            response = client.with_session_auth(user_email).patch(f"/offers/{offer_id}", json=data)
+            response = client.with_session_auth(user_email).patch(f"/offers/draft/{offer_id}", json=data)
 
         updated_draft_offer = Offer.query.one()
         created_address = geography_models.Address.query.order_by(geography_models.Address.id.desc()).first()
+
         assert response.status_code == 200
         assert response.json["status"] == OfferStatus.DRAFT.value
 
@@ -446,6 +450,7 @@ class Returns200Test:
             "label": venue.common_name if is_venue_address else "Librairie des mangas",
         }
 
+    @override_features(WIP_PATCH_OFFER_UNIQUE_ENDPOINT=True)
     @override_features(WIP_ENABLE_OFFER_ADDRESS=True)
     @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     @pytest.mark.parametrize(
@@ -539,7 +544,6 @@ class Returns200Test:
             "extraData": {
                 "author": "",
                 "ean": "",
-                "gtl_id": "",
                 "performer": "",
                 "showSubType": 1202,
                 "showType": 1200,
@@ -580,7 +584,7 @@ class Returns200Test:
             },
         }
         with patch("pcapi.connectors.api_adresse.get_address", return_value=return_value):
-            response = client.with_session_auth(user_email).patch(f"/offers/{offer_id}", json=data)
+            response = client.with_session_auth(user_email).patch(f"/offers/draft/{offer_id}", json=data)
         updated_draft_offer = Offer.query.one()
         created_address = geography_models.Address.query.order_by(geography_models.Address.id.desc()).first()
         assert response.status_code == 200
@@ -599,6 +603,7 @@ class Returns200Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
+    @override_features(WIP_PATCH_OFFER_UNIQUE_ENDPOINT=True)
     def when_trying_to_patch_forbidden_attributes(self, client):
         offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.CARTE_MUSEE.id,
@@ -635,6 +640,7 @@ class Returns400Test:
         for key in forbidden_keys:
             assert key in response.json
 
+    @override_features(WIP_PATCH_OFFER_UNIQUE_ENDPOINT=True)
     @override_features(WIP_EAN_CREATION=True)
     def when_trying_to_patch_offer_with_product_with_new_ean(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
@@ -658,6 +664,7 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["global"] == ["Les extraData des offres avec produit ne sont pas modifialbles"]
 
+    @override_features(WIP_PATCH_OFFER_UNIQUE_ENDPOINT=True)
     def when_trying_to_patch_product(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(
@@ -680,6 +687,7 @@ class Returns400Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
+    @override_features(WIP_PATCH_OFFER_UNIQUE_ENDPOINT=True)
     def when_user_is_not_attached_to_offerer(self, client):
         email = "user@example.com"
         offer = offers_factories.OfferFactory(
@@ -701,6 +709,7 @@ class Returns403Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns404Test:
+    @override_features(WIP_PATCH_OFFER_UNIQUE_ENDPOINT=True)
     def test_returns_404_if_offer_does_not_exist(self, client):
         email = "user@example.com"
         users_factories.UserFactory(email=email)

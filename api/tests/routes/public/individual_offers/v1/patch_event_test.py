@@ -28,7 +28,7 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
             bookingContact="contact@example.com",
             bookingEmail="notify@example.com",
             lastProvider=provider,
-            extraData={"gtl_id": "02000000"},
+            extraData={"gtlId": "02000000", "musicType": "-1", "musicSubType": "-1"},
         )
 
     def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
@@ -67,7 +67,7 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
             bookingContact="contact@example.com",
             bookingEmail="notify@example.com",
             lastProvider=venue_provider.provider,
-            extraData={"gtl_id": "03000000"},
+            extraData={"gtlId": "03000000", "musicType": "-1", "musicSubType": "-1"},
         )
 
         response = client.with_explicit_token(plain_api_key).patch(
@@ -165,7 +165,7 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
             withdrawalDelay=86400,
             withdrawalDetails="Around there",
             description="A description",
-            extraData={"gtl_id": "02000000"},
+            extraData={"gtlId": "02000000", "musicType": "-1", "musicSubType": "-1"},
         )
 
         new_name = event_offer.name + "_updated"

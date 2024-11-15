@@ -143,13 +143,13 @@ def deserialize_extra_data(initial_extra_data: typing.Any, subcategoryId: str) -
 
     if subcategoryId in subcategories.MUSIC_SUBCATEGORIES:
         # FIXME (ghaliela, 2024-02-16): If gtl id is sent in the extra data, musicType and musicSubType are not sent
-        gtl_id = extra_data.get("gtl_id")
+        gtl_id = extra_data.get("gtlId")
         if gtl_id and gtl_id in TITELIVE_MUSIC_GENRES_BY_GTL_ID:
             extra_data["musicType"] = str(music_types.MUSIC_TYPES_BY_SLUG[MUSIC_SLUG_BY_GTL_ID[gtl_id]].code)
             extra_data["musicSubType"] = str(music_types.MUSIC_SUB_TYPES_BY_SLUG[MUSIC_SLUG_BY_GTL_ID[gtl_id]].code)
         # FIXME (ghaliela, 2024-02-16): If musicType is sent in the extra data, gtl id is not sent
         elif extra_data.get("musicType"):
-            extra_data["gtl_id"] = GTL_IDS_BY_MUSIC_GENRE_CODE[int(extra_data["musicType"])]
+            extra_data["gtlId"] = GTL_IDS_BY_MUSIC_GENRE_CODE[int(extra_data["musicType"])]
     return extra_data
 
 
@@ -164,7 +164,7 @@ def _format_extra_data(subcategory_id: str, extra_data: dict[str, typing.Any] | 
         if extra_data.get(field_name):
             # FIXME (2023-03-16): Currently not supported by mypy https://github.com/python/mypy/issues/7178
             formatted_extra_data[field_name] = extra_data.get(field_name)  # type: ignore[literal-required]
-
+    
     return formatted_extra_data
 
 
@@ -222,10 +222,10 @@ def create_draft_offer(
     validation.check_offer_subcategory_is_valid(body.subcategory_id)
     if feature.FeatureToggle.WIP_SUGGESTED_SUBCATEGORIES.is_active():
         venue = _get_coherent_venue_with_subcategory(venue, body.subcategory_id)
-
+    
     body.extra_data = _format_extra_data(body.subcategory_id, body.extra_data) or {}
+    
     validation.check_offer_extra_data(body.subcategory_id, body.extra_data, venue, is_from_private_api)
-
     if feature.FeatureToggle.WIP_EAN_CREATION.is_active():
         validation.check_product_for_venue_and_subcategory(product, body.subcategory_id, venue.venueTypeCode)
 
@@ -274,7 +274,6 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
         validation.check_offer_extra_data(
             offer.subcategoryId, formatted_extra_data, offer.venue, is_from_private_api=True, offer=offer
         )
-
     for key, value in updates.items():
         setattr(offer, key, value)
     db.session.add(offer)
@@ -352,7 +351,6 @@ def update_offer(
 ) -> models.Offer:
     aliases = set(body.dict(by_alias=True))
     fields = body.dict(by_alias=True, exclude_unset=True)
-
     if address := body.address:
         if address.isVenueAddress:
             fields["offererAddress"] = offer.venue.offererAddress

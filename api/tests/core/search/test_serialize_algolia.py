@@ -236,7 +236,7 @@ def test_serialize_offer_legacy():
         ({"musicType": "600"}, ["Classique"], None, None, None),
         ({"musicType": "-1"}, ["Autre"], None, None, None),
         ({"musicType": " "}, [], None, None, None),
-        ({"gtl_id": "04000000", "musicType": "880"}, ["ELECTRO", "Electro"], None, None, None),
+        ({"gtlId": "04000000", "musicType": "880"}, ["ELECTRO", "Electro"], None, None, None),
         ({"showType": "100"}, [], "Arts de la rue", None, None),
         ({"showType": "1200"}, [], "Spectacle Jeunesse", None, None),
         ({"showType": "-1"}, [], "Autre", None, None),
@@ -343,7 +343,7 @@ def test_serialize_offer_thumb_url():
 
 
 def test_serialize_offer_gtl():
-    product = offers_factories.ProductFactory(extraData={"gtl_id": "01030100"})
+    product = offers_factories.ProductFactory(extraData={"gtlId": "01030100"})
     offer = offers_factories.OfferFactory(
         product=product,
         subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -361,7 +361,7 @@ def test_serialize_offer_gtl():
 
 def test_use_titelive_music_type_if_offer_is_music():
     product = offers_factories.ProductFactory(
-        extraData={"gtl_id": "01000000"}, subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id
+        extraData={"gtlId": "01000000"}, subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id
     )
     offer = offers_factories.OfferFactory(product=product)
     serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
