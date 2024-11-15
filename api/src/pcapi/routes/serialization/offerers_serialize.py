@@ -124,7 +124,7 @@ class GetOffererResponseModel(BaseModel):
         offerer.hasDigitalVenueAtLeastOneOffer = offerers_repository.has_digital_venue_with_at_least_one_offer(
             offerer.id
         )
-        offerer.hasAvailablePricingPoints = any(venue.siret for venue in offerer.managedVenues)
+        offerer.hasAvailablePricingPoints = any(venue.siret for venue in venues)
         offerer.venuesWithNonFreeOffersWithoutBankAccounts = (
             offerers_repository.get_venues_with_non_free_offers_without_bank_accounts(offerer.id)
         )

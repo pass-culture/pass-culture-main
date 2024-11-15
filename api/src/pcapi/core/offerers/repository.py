@@ -537,12 +537,6 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
             has_bank_account_with_pending_corrections_subquery.label("hasBankAccountWithPendingCorrections"),
         )
         .filter(models.Offerer.id == offerer_id)
-        .outerjoin(models.Venue, models.Venue.managingOffererId == models.Offerer.id)
-        .options(
-            sqla_orm.contains_eager(models.Offerer.managedVenues).load_only(
-                models.Venue.id, models.Venue.siret, models.Venue.publicName, models.Venue.name
-            )
-        )
         .options(sqla_orm.load_only(models.Offerer.id, models.Offerer.name))
         .one_or_none()
     )
