@@ -1,12 +1,17 @@
 import datetime
 from functools import partial
 
+from flask import flash
+from flask import redirect
 from flask import render_template
 from flask import url_for
+from flask_login import current_user
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.chronicles import models as chronicles_models
+from pcapi.core.history import api as history_api
+from pcapi.core.history import models as history_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
@@ -14,6 +19,8 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.repository import atomic
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice.forms.empty import EmptyForm
+from pcapi.routes.backoffice.utils import permission_required
 from pcapi.utils import string as string_utils
 
 from . import forms
@@ -100,4 +107,45 @@ def list_chronicles() -> utils.BackofficeResponse:
         rows=paginated_chronicles,
         form=form,
         next_pages_urls=next_pages_urls,
+        chronicle_publication_form=EmptyForm(),
     )
+
+
+@chronicles_blueprint.route("/<int:chronicle_id>/pubish", methods=["POST"])
+@atomic()
+@permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
+def publish_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
+    if not FeatureToggle.WIP_ENABLE_CHRONICLES_IN_BO.is_active():
+        raise NotFound()
+
+    chronicle = chronicles_models.Chronicle.query.get_or_404(chronicle_id)
+    chronicle.isActive = True
+    db.session.add(chronicle)
+    db.session.flush()
+    history_api.add_action(
+        history_models.ActionType.CHRONICLE_PUBLISHED,
+        author=current_user,
+        chronicle=chronicle,
+    )
+    flash(f"La chronique {chronicle_id} à été publiée", "success")
+    return redirect(url_for("backoffice_web.chronicles.list_chronicles"), code=303)
+
+
+@chronicles_blueprint.route("/<int:chronicle_id>/unpublish", methods=["POST"])
+@atomic()
+@permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
+def unpublish_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
+    if not FeatureToggle.WIP_ENABLE_CHRONICLES_IN_BO.is_active():
+        raise NotFound()
+
+    chronicle = chronicles_models.Chronicle.query.get_or_404(chronicle_id)
+    chronicle.isActive = False
+    db.session.add(chronicle)
+    db.session.flush()
+    history_api.add_action(
+        history_models.ActionType.CHRONICLE_UNPUBLISHED,
+        author=current_user,
+        chronicle=chronicle,
+    )
+    flash(f"La chronique {chronicle_id} à été dépubliée", "success")
+    return redirect(url_for("backoffice_web.chronicles.list_chronicles"), code=303)
