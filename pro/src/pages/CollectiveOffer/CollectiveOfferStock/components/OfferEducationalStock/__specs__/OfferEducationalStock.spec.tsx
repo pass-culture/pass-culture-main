@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { addDays, addMinutes, format, subDays } from 'date-fns'
 import * as router from 'react-router-dom'
 
-import { CollectiveBookingStatus } from 'apiClient/v1'
+import { CollectiveBookingStatus, CollectiveOfferAllowedAction } from 'apiClient/v1'
 import { DEFAULT_EAC_STOCK_FORM_VALUES } from 'commons/core/OfferEducational/constants'
 import { Mode, EducationalOfferType } from 'commons/core/OfferEducational/types'
 import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
@@ -210,4 +210,48 @@ it('should display saved information in the action bar', () => {
   expect(screen.getByText('Brouillon enregistré')).toBeInTheDocument()
 
   expect(screen.getByText('Enregistrer et continuer')).toBeInTheDocument()
+})
+
+it('should not disable description, price and places when allowedAction CAN_EDIT_DISCOUNT exist and FF ENABLE_COLLECTIVE_NEW_STATUSES enable ', () => {
+  const testProps: OfferEducationalStockProps = {
+    ...defaultProps,
+    mode: Mode.EDITION,
+    offer: getCollectiveOfferFactory({
+      allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT]
+    }),
+  }
+
+  renderWithProviders(<OfferEducationalStock {...testProps} />, {features: ['ENABLE_COLLECTIVE_NEW_STATUSES']})
+
+  const descriptionInput = screen.getByRole('textbox', {
+    name: `${DETAILS_PRICE_LABEL} *`,
+  })
+  const priceInput = screen.getByLabelText('Prix total TTC *')
+  const placeInput = screen.getByLabelText('Nombre de participants *')
+
+  expect(descriptionInput).not.toBeDisabled()
+  expect(priceInput).not.toBeDisabled()
+  expect(placeInput).not.toBeDisabled()
+})
+
+it('should disable description, price and places when allowedAction CAN_EDIT_DISCOUNT doesnt exist and FF ENABLE_COLLECTIVE_NEW_STATUSES enable', () => {
+  const testProps: OfferEducationalStockProps = {
+    ...defaultProps,
+    mode: Mode.EDITION,
+    offer: getCollectiveOfferFactory({
+      allowedActions: []
+    }),
+  }
+
+  renderWithProviders(<OfferEducationalStock {...testProps} />, {features: ['ENABLE_COLLECTIVE_NEW_STATUSES']})
+
+  const descriptionInput = screen.getByRole('textbox', {
+    name: `${DETAILS_PRICE_LABEL} *`,
+  })
+  const priceInput = screen.getByLabelText('Prix total TTC *')
+  const placeInput = screen.getByLabelText('Nombre de participants *')
+
+  expect(descriptionInput).toBeDisabled()
+  expect(priceInput).toBeDisabled()
+  expect(placeInput).toBeDisabled()
 })

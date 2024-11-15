@@ -5,6 +5,7 @@ import { it } from 'vitest'
 import { api } from 'apiClient/api'
 import {
   CollectiveBookingStatus,
+  CollectiveOfferAllowedAction,
   CollectiveOfferStatus,
   EducationalInstitutionResponseModel,
 } from 'apiClient/v1'
@@ -22,6 +23,7 @@ import {
   CollectiveOfferVisibilityScreen,
   CollectiveOfferVisibilityProps,
 } from '../CollectiveOfferVisibility'
+import { features } from 'process'
 
 vi.mock('apiClient/api', () => ({
   api: {
@@ -492,5 +494,35 @@ describe('CollectiveOfferVisibility', () => {
     expect(
       await screen.findByRole('button', { name: 'Enregistrer et continuer' })
     ).toBeInTheDocument()
+  })
+
+  it('should not disable institution input when allowedAction CAN_EDIT_INSTITUTION exist and FF ENABLE_COLLECTIVE_NEW_STATUSES enable', async () => {
+    props.initialValues = {
+      ...props.initialValues,
+      institution: '12',
+      
+    }
+    renderVisibilityStep({ ...props, mode: Mode.READ_ONLY, offer: {...props.offer, allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION]} }, {features: ['ENABLE_COLLECTIVE_NEW_STATUSES']})
+    expect(
+      await screen.findByLabelText(
+        /Nom de l’établissement scolaire ou code UAI/
+      )
+    ).not.toBeDisabled()
+    expect(screen.getByText(/Enregistrer et continuer/)).not.toBeDisabled()
+  })
+
+  it('should disable institution input when allowedAction CAN_EDIT_INSTITUTION  doesnt exist and FF ENABLE_COLLECTIVE_NEW_STATUSES enable', async () => {
+    props.initialValues = {
+      ...props.initialValues,
+      institution: '12',
+      
+    }
+    renderVisibilityStep({ ...props, mode: Mode.READ_ONLY, offer: {...props.offer, allowedActions: []} }, {features: ['ENABLE_COLLECTIVE_NEW_STATUSES']})
+    expect(
+      await screen.findByLabelText(
+        /Nom de l’établissement scolaire ou code UAI/
+      )
+    ).toBeDisabled()
+    expect(screen.getByText(/Enregistrer et continuer/)).toBeDisabled()
   })
 })
