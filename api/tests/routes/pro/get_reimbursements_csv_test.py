@@ -13,6 +13,7 @@ import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offers import models as offers_models
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementDetails
 from pcapi.utils.date import utc_datetime_to_department_timezone
@@ -139,6 +140,7 @@ def test_with_venue_filter_with_pricings(client, cutoff, fortnight):
     assert row["Montant remboursé"] == "{:.2f}".format(-pricing.amount / 100).replace(".", ",")
 
 
+@override_features(WIP_ENABLE_OFFER_ADDRESS=False)
 @pytest.mark.usefixtures("db_session")
 @pytest.mark.parametrize(
     "cutoff,fortnight",
@@ -239,6 +241,128 @@ def test_with_reimbursement_period_filter_with_pricings(client, cutoff, fortnigh
         assert row["Raison sociale du lieu"] == venue.name
         assert row["Adresse du lieu"] == f"{venue.street} {venue.postalCode} {venue.city}"
         assert row["SIRET du lieu"] == venue.siret
+        assert row["Nom de l'offre"] == offer.name
+        assert row["N° de réservation (offre collective)"] == ""
+        assert row["Nom (offre collective)"] == ""
+        assert row["Prénom (offre collective)"] == ""
+        assert row["Nom de l'établissement (offre collective)"] == ""
+        assert row["Date de l'évènement (offre collective)"] == ""
+        assert row["Contremarque"] == booking.token
+        assert row["Date de validation de la réservation"] == booking.dateUsed.strftime("%Y-%m-%d %H:%M:%S")
+        assert row["Intitulé du tarif"] == ""
+        assert row["Montant de la réservation"] == str(booking.amount).replace(".", ",")
+        assert row["Barème"].replace("\xa0", " ") == "100 %"
+        assert row["Montant remboursé"] == "{:.2f}".format(-pricing.amount / 100).replace(".", ",")
+
+
+@override_features(WIP_ENABLE_OFFER_ADDRESS=True)
+@pytest.mark.usefixtures("db_session")
+@pytest.mark.parametrize(
+    "cutoff,fortnight",
+    [(datetime.date(year=2023, month=1, day=16), "1ère"), (datetime.date(year=2023, month=1, day=1), "2nde")],
+)
+def test_with_reimbursement_period_filter_with_pricings(client, cutoff, fortnight):
+    beginning_date_iso_format = (cutoff - datetime.timedelta(days=2)).isoformat()
+    ending_date_iso_format = (cutoff + datetime.timedelta(days=2)).isoformat()
+    offerer = offerers_factories.OffererFactory()
+    venue = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
+    bank_account = finance_factories.BankAccountFactory(offerer=offerer)
+    offerers_factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)
+    batch = finance_factories.CashflowBatchFactory(cutoff=cutoff)
+    pro = users_factories.ProFactory()
+    offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+    # Within the reimbursement period filter
+    invoice_1 = finance_factories.InvoiceFactory(bankAccount=bank_account, date=cutoff)
+    cashflow_1 = finance_factories.CashflowFactory(
+        batch=batch, creationDate=cutoff, bankAccount=bank_account, invoices=[invoice_1]
+    )
+    finance_factories.PricingFactory(
+        booking__stock__offer__venue=venue,
+        booking__dateUsed=datetime.date.today() - datetime.timedelta(days=1),
+        status=finance_models.PricingStatus.INVOICED,
+        cashflows=[cashflow_1],
+    )
+    finance_factories.PricingFactory(
+        booking__stock__offer__venue=venue,
+        booking__dateUsed=datetime.date.today() - datetime.timedelta(days=1),
+        status=finance_models.PricingStatus.INVOICED,
+        cashflows=[cashflow_1],
+    )
+
+    # Outside the reimbursement period filter
+    invoice_2 = finance_factories.InvoiceFactory(
+        bankAccount=bank_account, date=datetime.date.today() - datetime.timedelta(days=5)
+    )
+    cashflow_2 = finance_factories.CashflowFactory(
+        batch=batch,
+        creationDate=datetime.date.today() - datetime.timedelta(days=5),
+        bankAccount=bank_account,
+        invoices=[invoice_2],
+    )
+    finance_factories.PricingFactory(
+        booking__stock__offer__venue=venue,
+        booking__dateUsed=datetime.date.today() - datetime.timedelta(days=4),
+        status=finance_models.PricingStatus.INVOICED,
+        cashflows=[cashflow_2],
+    )
+    finance_factories.PricingFactory(
+        booking__stock__offer__venue=venue,
+        booking__dateUsed=datetime.date.today() - datetime.timedelta(days=4),
+        status=finance_models.PricingStatus.INVOICED,
+        cashflows=[cashflow_2],
+    )
+
+    client = client.with_session_auth(pro.email)
+    bank_account_id = bank_account.id  # avoid extra SQL query below
+    queries = testing.AUTHENTICATION_QUERIES
+    queries += 1  # check user has access to offerer
+    queries += 1  # select booking and related items
+    queries += 1  # select educational redactor
+    queries += 1  # FF retrieving
+    with testing.assert_num_queries(queries):
+        response = client.get(
+            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&bankAccountId={bank_account_id}&offererId={offerer.id}"
+        )
+        assert response.status_code == 200
+
+    assert response.headers["Content-type"] == "text/csv; charset=utf-8;"
+    assert response.headers["Content-Disposition"] == "attachment; filename=remboursements_pass_culture.csv"
+    reader = csv.DictReader(StringIO(response.data.decode("utf-8-sig")), delimiter=";")
+    assert reader.fieldnames[:6] == ReimbursementDetails.CSV_HEADER[:6]
+    assert reader.fieldnames[6:10] == [
+        "SIRET du partenaire culturel",
+        "Raison sociale du partenaire culturel",
+        "Nom de l'offre",
+        "Adresse de l'offre",
+    ]
+    assert reader.fieldnames[10:] == ReimbursementDetails.CSV_HEADER[10:]
+    rows = list(reader)
+    assert len(rows) == 2
+
+    bookings = (
+        bookings_models.Booking.query.filter(bookings_models.Booking.venueId == venue.id)
+        .order_by(bookings_models.Booking.dateUsed.desc(), bookings_models.Booking.id.desc())
+        .all()
+    )
+
+    for row, booking in zip(rows, bookings):
+        pricing = finance_models.Pricing.query.filter(finance_models.Pricing.bookingId == booking.id).one()
+        cashflow = pricing.cashflows[0]
+        invoice = cashflow.invoices[0]
+        offer = booking.stock.offer
+        batch = finance_models.CashflowBatch.query.one()
+
+        assert f"{fortnight} quinzaine" in row["Réservations concernées par le remboursement"]
+        assert row["Date du justificatif"] == invoice.date.strftime("%Y-%m-%d")
+        assert row["N° du justificatif"] == invoice.reference
+        assert row["N° de virement"] == batch.label
+        assert row["Intitulé du compte bancaire"] == bank_account.label
+        assert row["SIRET du partenaire culturel"] == venue.siret
+        assert row["IBAN"] == bank_account.iban
+        assert row["Raison sociale du partenaire culturel"] == venue.name
+        assert row["Adresse de l'offre"] == f"{venue.street} {venue.postalCode} {venue.city}"
+        assert row["SIRET du partenaire culturel"] == venue.siret
         assert row["Nom de l'offre"] == offer.name
         assert row["N° de réservation (offre collective)"] == ""
         assert row["Nom (offre collective)"] == ""
