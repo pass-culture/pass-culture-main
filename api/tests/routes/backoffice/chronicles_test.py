@@ -4,13 +4,16 @@ from flask import url_for
 import pytest
 
 from pcapi.core.chronicles import factories as chronicles_factories
+from pcapi.core.history import models as history_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
+from pcapi.models import db
 
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
+from .helpers.post import PostEndpointHelper
 
 
 pytestmark = [
@@ -116,3 +119,93 @@ class ListChroniclesTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
         assert rows[0]["ID"] == str(chronicle_to_find.id)
+
+
+class PublishChronicleTest(PostEndpointHelper):
+    endpoint = "backoffice_web.chronicles.publish_chronicle"
+    endpoint_kwargs = {"chronicle_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_CHRONICLE
+    # session
+    # current user
+    # FF WIP_BO_CHRONICLES
+    # get chronicle
+    # update chronicle
+    # reload chronicle
+    # ListChroniclesTest.expected_num_queries (follow redirect)
+    expected_num_queries = 6 + ListChroniclesTest.expected_num_queries
+
+    @override_features(WIP_ENABLE_CHRONICLES_IN_BO=True)
+    def test_publish_chronicle(self, authenticated_client, legit_user):
+        chronicle = chronicles_factories.ChronicleFactory(
+            isActive=False,
+        )
+
+        response = self.post_to_endpoint(
+            follow_redirects=True,
+            expected_num_queries=self.expected_num_queries,
+            chronicle_id=chronicle.id,
+            client=authenticated_client,
+        )
+        db.session.refresh(chronicle)
+
+        assert response.status_code == 200
+        assert chronicle.isActive
+        action_log = history_models.ActionHistory.query.one()
+        assert action_log.actionType == history_models.ActionType.CHRONICLE_PUBLISHED
+        assert action_log.chronicle is chronicle
+        assert action_log.authorUser is legit_user
+
+    @override_features(WIP_ENABLE_CHRONICLES_IN_BO=True)
+    def test_publish_chronicle_does_not_exist(self, authenticated_client):
+        response = self.post_to_endpoint(
+            follow_redirects=True,
+            expected_num_queries=self.expected_num_queries - (1 + ListChroniclesTest.expected_num_queries),
+            chronicle_id=0,
+            client=authenticated_client,
+        )
+        assert response.status_code == 404
+
+
+class UnpublishChronicleTest(PostEndpointHelper):
+    endpoint = "backoffice_web.chronicles.unpublish_chronicle"
+    endpoint_kwargs = {"chronicle_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_CHRONICLE
+    # session
+    # current user
+    # FF WIP_BO_CHRONICLES
+    # get chronicle
+    # update chronicle
+    # reload chronicle
+    # ListChroniclesTest.expected_num_queries (follow redirect)
+    expected_num_queries = 6 + ListChroniclesTest.expected_num_queries
+
+    @override_features(WIP_ENABLE_CHRONICLES_IN_BO=True)
+    def test_unpublish_chronicle(self, authenticated_client, legit_user):
+        chronicle = chronicles_factories.ChronicleFactory(
+            isActive=True,
+        )
+
+        response = self.post_to_endpoint(
+            follow_redirects=True,
+            expected_num_queries=self.expected_num_queries,
+            chronicle_id=chronicle.id,
+            client=authenticated_client,
+        )
+        db.session.refresh(chronicle)
+
+        assert response.status_code == 200
+        assert not chronicle.isActive
+        action_log = history_models.ActionHistory.query.one()
+        assert action_log.actionType == history_models.ActionType.CHRONICLE_UNPUBLISHED
+        assert action_log.chronicle is chronicle
+        assert action_log.authorUser is legit_user
+
+    @override_features(WIP_ENABLE_CHRONICLES_IN_BO=True)
+    def test_unpublish_chronicle_does_not_exist(self, authenticated_client):
+        response = self.post_to_endpoint(
+            follow_redirects=True,
+            expected_num_queries=self.expected_num_queries - (1 + ListChroniclesTest.expected_num_queries),
+            chronicle_id=0,
+            client=authenticated_client,
+        )
+        assert response.status_code == 404

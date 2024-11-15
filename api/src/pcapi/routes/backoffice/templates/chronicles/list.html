@@ -1,5 +1,7 @@
 {% extends "layouts/connected.html" %}
 {% from "components/forms.html" import build_filters_form with context %}
+{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
+{% from "components/generic_modal.html" import build_modal_form with context %}
 {% from "components/collapsable_text.html" import collapsable_text with context %}
 {% block page %}
   <div class="pt-3 px-5">
@@ -25,7 +27,33 @@
           <tbody>
             {% for chronicle in rows.items %}
               <tr>
-                <td></td>
+                <td>
+                  {% if has_permission("MANAGE_CHRONICLE") %}
+                    <div class="dropdown">
+                      <button type="button"
+                              data-bs-toggle="dropdown"
+                              aria-expanded="false"
+                              class="btn p-0">
+                        <i class="bi bi-three-dots-vertical"></i>
+                      </button>
+                      <ul class="dropdown-menu">
+                        {% if chronicle.isActive %}
+                          <li class="dropdown-item">
+                            <a class="btn btn-sm d-block w-100 text-start px-3"
+                               data-bs-toggle="modal"
+                               data-bs-target="#unpublish-chronicle-modal-{{ chronicle.id }}-modal">Dépublier</a>
+                          </li>
+                        {% else %}
+                          <li class="dropdown-item">
+                            <a class="btn btn-sm d-block w-100 text-start px-3"
+                               data-bs-toggle="modal"
+                               data-bs-target="#publish-chronicle-modal-{{ chronicle.id }}-modal">Publier</a>
+                          </li>
+                        {% endif %}
+                      </ul>
+                    </div>
+                  {% endif %}
+                </td>
                 <td>
                   <a href="">{{ chronicle.id }}</a>
                 </td>
@@ -44,4 +72,8 @@
       {% endif %}
     </div>
   </div>
+  {% for chronicle in rows.items %}
+    {{ build_modal_form("publish-chronicle-modal-" + chronicle.id|string, url_for('backoffice_web.chronicles.publish_chronicle', chronicle_id=chronicle.id) , chronicle_publication_form, "", "Publier la chronique " + chronicle.id|string, "Publier") }}
+    {{ build_modal_form("unpublish-chronicle-modal-" + chronicle.id|string, url_for('backoffice_web.chronicles.unpublish_chronicle', chronicle_id=chronicle.id) , chronicle_publication_form, "", "Dépublier la chronique " + chronicle.id|string, "Dépublier") }}
+  {% endfor %}
 {% endblock page %}
