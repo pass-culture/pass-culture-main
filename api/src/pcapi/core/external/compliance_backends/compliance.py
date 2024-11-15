@@ -27,6 +27,7 @@ class ComplianceBackend(BaseBackend):
                     "accept": "application/json",
                 },
                 json=data,
+                log_info=False,
             )
 
         except requests.exceptions.RequestException as exc:
