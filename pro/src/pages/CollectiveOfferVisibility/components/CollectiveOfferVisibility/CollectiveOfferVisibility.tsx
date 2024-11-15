@@ -284,7 +284,7 @@ export const CollectiveOfferVisibilityScreen = ({
                         }
                       }}
                       resetOnOpen={false}
-                      disabled={mode === Mode.READ_ONLY}
+                      disabled={!canEditInstitution}
                       searchInOptions={(options, pattern) =>
                         searchPatternInOptions(options, pattern, 300)
                       }
@@ -303,7 +303,7 @@ export const CollectiveOfferVisibilityScreen = ({
                   isOptional
                   placeholder="Ex: Camille Dupont"
                   hideArrow
-                  disabled={mode === Mode.READ_ONLY || !selectedInstitution}
+                  disabled={!canEditInstitution || !selectedInstitution}
                   onSearch={async () => {
                     await onChangeTeacher()
                   }}
@@ -333,7 +333,7 @@ export const CollectiveOfferVisibilityScreen = ({
                   disabled={
                     buttonPressed ||
                     !formik.values.institution ||
-                    mode === Mode.READ_ONLY
+                    !canEditInstitution
                   }
                 >
                   Enregistrer et continuer
