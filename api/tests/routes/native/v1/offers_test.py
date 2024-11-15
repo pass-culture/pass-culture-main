@@ -1801,7 +1801,7 @@ class OffersV2Test:
         with assert_num_queries(nb_queries):
             response = client.get(f"/native/v2/offer/{offer_id}")
         assert response.status_code == 200
-        assert response.json["extraData"]["bookFormat"] == "MOYEN_FORMAT"
+        assert response.json["extraData"]["bookFormat"] == "MOYEN FORMAT"
 
 
 class OffersStocksTest:
