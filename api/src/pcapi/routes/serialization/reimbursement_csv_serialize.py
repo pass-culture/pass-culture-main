@@ -225,7 +225,7 @@ class ReimbursementDetails:
             self.offer_type,
         ]
         if FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-            rows[6:11] = [
+            rows[6:10] = [
                 self.venue_siret,
                 self.venue_name,
                 self.offer_name,
