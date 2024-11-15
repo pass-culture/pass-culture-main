@@ -40,7 +40,9 @@ class GetTokenValidationAndScoreTest:
 
         # Then
         request_post.assert_called_once_with(
-            settings.RECAPTCHA_API_URL, data={"secret": "recaptcha-secret", "response": token}
+            settings.RECAPTCHA_API_URL,
+            data={"secret": "recaptcha-secret", "response": token},
+            log_info=False,
         )
 
     @override_settings(RECAPTCHA_SECRET="recaptcha-secret")
