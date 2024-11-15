@@ -527,7 +527,7 @@ class AcceslibreBackend(BaseBackend):
     def _fetch_request(
         url: str, headers: dict | None = None, params: dict[str, str | int] | None = None
     ) -> requests.Response:
-        return requests.get(url, headers=headers, params=params, timeout=ACCESLIBRE_REQUEST_TIMEOUT)
+        return requests.get(url, headers=headers, params=params, timeout=ACCESLIBRE_REQUEST_TIMEOUT, log_info=False)
 
     def _send_request(
         self,
