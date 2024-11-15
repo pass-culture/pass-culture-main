@@ -46,7 +46,7 @@ export const FormNotifications = ({
               onClick={() => {
                 push('')
               }}
-              disabled={values.notificationEmails.length >= 5}
+              disabled={values.notificationEmails.length >= 5 || disableForm}
               className={styles['add-notification-button']}
             >
               Ajouter un email de notification

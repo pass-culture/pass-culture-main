@@ -39,6 +39,7 @@ export const EmailInputRow = ({
             icon={fullTrashIcon}
             iconPosition={IconPositionEnum.CENTER}
             variant={ButtonVariant.TERNARY}
+            disabled={disableForm}
             hasTooltip
           >
             Supprimer l’email

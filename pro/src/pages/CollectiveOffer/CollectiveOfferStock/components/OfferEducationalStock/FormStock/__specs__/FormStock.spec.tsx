@@ -10,6 +10,7 @@ import {
   EducationalOfferType,
 } from 'commons/core/OfferEducational/types'
 import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
+import { renderWithProviders, RenderWithProvidersOptions } from 'commons/utils/renderWithProviders'
 import { Button } from 'ui-kit/Button/Button'
 
 import { generateValidationSchema } from '../../validationSchema'

@@ -2,6 +2,8 @@ import { useFormikContext } from 'formik'
 import { useEffect, useState } from 'react'
 
 import {
+  CollectiveOfferAllowedAction,
+  CollectiveOfferTemplateAllowedAction,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   GetEducationalOffererResponseModel,
@@ -14,6 +16,7 @@ import {
 import { computeCollectiveOffersUrl } from 'commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { sortByLabel } from 'commons/utils/strings'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { BannerPublicApi } from 'components/BannerPublicApi/BannerPublicApi'
@@ -78,6 +81,12 @@ export const OfferEducationalForm = ({
 
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
+  const areCollectiveNewStatusesEnabled = useActiveFeature(
+    'ENABLE_COLLECTIVE_NEW_STATUSES'
+  )
+
+  const canEditDetails = areCollectiveNewStatusesEnabled && offer ? isActionAllowedOnCollectiveOffer(offer, isCollectiveOffer(offer) ? CollectiveOfferAllowedAction.CAN_EDIT_DETAILS : CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS) : mode !== Mode.READ_ONLY
+
   useEffect(() => {
     async function handleOffererValues() {
       if (userOfferer) {
@@ -133,7 +142,7 @@ export const OfferEducationalForm = ({
         <FormLayout.MandatoryInfo />
         <FormVenue
           isEligible={isEligible}
-          mode={mode}
+          disableForm={!canEditDetails}
           isOfferCreated={isOfferCreated}
           userOfferer={userOfferer}
           venuesOptions={venuesOptions}
@@ -144,38 +153,39 @@ export const OfferEducationalForm = ({
             <FormOfferType
               domainsOptions={domainsOptions}
               nationalPrograms={nationalPrograms}
-              disableForm={mode === Mode.READ_ONLY}
+              disableForm={!canEditDetails}
             />
             <FormImageUploader
               onImageDelete={onImageDelete}
               onImageUpload={onImageUpload}
               imageOffer={imageOffer}
+              disableForm={!canEditDetails}
             />
             {isTemplate && (
               <FormDates
-                disableForm={mode === Mode.READ_ONLY}
+                disableForm={!canEditDetails}
                 dateCreated={offer?.dateCreated}
               />
             )}
             <FormPracticalInformation
               currentOfferer={userOfferer}
               venuesOptions={venuesOptions}
-              disableForm={mode === Mode.READ_ONLY}
+              disableForm={!canEditDetails}
             />
             {isTemplate && (
-              <FormPriceDetails disableForm={mode === Mode.READ_ONLY} />
+              <FormPriceDetails disableForm={!canEditDetails} />
             )}
             <FormParticipants
-              disableForm={mode === Mode.READ_ONLY}
+              disableForm={!canEditDetails}
               isTemplate={isTemplate}
             />
-            <FormAccessibility disableForm={mode === Mode.READ_ONLY} />
+            <FormAccessibility disableForm={!canEditDetails} />
             {isTemplate ? (
-              <FormContactTemplate disableForm={mode === Mode.READ_ONLY} />
+              <FormContactTemplate disableForm={!canEditDetails} />
             ) : (
-              <FormContact disableForm={mode === Mode.READ_ONLY} />
+              <FormContact disableForm={!canEditDetails} />
             )}
-            <FormNotifications disableForm={mode === Mode.READ_ONLY} />
+            <FormNotifications disableForm={!canEditDetails} />
           </>
         ) : null}
       </FormLayout>
@@ -191,7 +201,7 @@ export const OfferEducationalForm = ({
         <ActionsBarSticky.Right dirtyForm={dirty || !offer} mode={mode}>
           <Button
             type="submit"
-            disabled={!isEligible || mode === Mode.READ_ONLY || isSubmitting}
+            disabled={!isEligible || !canEditDetails || isSubmitting}
           >
             Enregistrer et continuer
           </Button>
