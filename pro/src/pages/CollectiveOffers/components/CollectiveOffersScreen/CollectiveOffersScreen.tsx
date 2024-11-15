@@ -80,7 +80,10 @@ export const CollectiveOffersScreen = ({
   const userHasNoOffers =
     !isLoading &&
     !hasOffers &&
-    !hasCollectiveSearchFilters(urlSearchFilters, defaultCollectiveFilters)
+    !hasCollectiveSearchFilters(
+      { ...urlSearchFilters, offererId: 'all' },
+      { ...defaultCollectiveFilters, offererId: 'all' }
+    )
 
   const areAllOffersSelected =
     selectedOffers.length > 0 &&
