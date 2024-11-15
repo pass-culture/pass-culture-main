@@ -46,6 +46,7 @@ export const FormDates = ({
   return (
     <FormLayout.Section title="Date et heure">
       <RadioGroup
+        disabled={disableForm}
         group={[
           {
             label: 'Tout au long de l’année scolaire, l’offre est permanente',

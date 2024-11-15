@@ -27,7 +27,7 @@ interface FormVenueProps {
   userOfferer: GetEducationalOffererResponseModel | null
   venuesOptions: SelectOption[]
   isEligible: boolean | undefined
-  mode: Mode
+  disableForm: boolean
   isOfferCreated: boolean
   offer?:
     | GetCollectiveOfferResponseModel
@@ -38,7 +38,7 @@ export const FormVenue = ({
   userOfferer,
   venuesOptions,
   isEligible,
-  mode,
+  disableForm,
   isOfferCreated,
   offer,
 }: FormVenueProps): JSX.Element => {
@@ -46,13 +46,14 @@ export const FormVenue = ({
   const lastBookingStatus = isCollectiveOffer(offer)
     ? offer.lastBookingStatus
     : null
-  const disableOfferSelection = mode !== Mode.CREATION || isOfferCreated
+  const disableOfferSelection = disableForm || isOfferCreated
   const disabledBookingStatus = [
     CollectiveBookingStatus.USED,
     CollectiveBookingStatus.REIMBURSED,
   ]
+
   const disableVenueSelection =
-    mode === Mode.READ_ONLY ||
+  disableForm ||
     (lastBookingStatus !== undefined &&
       lastBookingStatus !== null &&
       disableOfferSelection &&
@@ -105,7 +106,7 @@ export const FormVenue = ({
             name="venueId"
             options={venuesOptions}
             onChange={async (event) => {
-              if (mode === Mode.CREATION) {
+              if (!disableForm) {
                 await setValues(
                   applyVenueDefaultsToFormValues(
                     { ...values, venueId: event.target.value },

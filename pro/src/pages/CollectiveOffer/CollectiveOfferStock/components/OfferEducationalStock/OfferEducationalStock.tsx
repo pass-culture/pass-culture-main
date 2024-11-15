@@ -6,6 +6,7 @@ import * as yup from 'yup'
 
 import {
   CollectiveBookingStatus,
+  CollectiveOfferAllowedAction,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
@@ -18,7 +19,9 @@ import {
   isCollectiveOfferTemplate,
 } from 'commons/core/OfferEducational/types'
 import { NBSP } from 'commons/core/shared/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { isDateValid } from 'commons/utils/date'
+import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { BannerPublicApi } from 'components/Banner/BannerPublicApi'
 import { Callout } from 'components/Callout/Callout'
@@ -87,6 +90,14 @@ export const OfferEducationalStock = <
           startDatetime &&
           isAfter(new Date(), addDays(new Date(startDatetime), 2)))
     )
+
+  const areCollectiveNewStatusesEnabled = useActiveFeature(
+    'ENABLE_COLLECTIVE_NEW_STATUSES'
+  )
+  
+  const canEditDiscount = areCollectiveNewStatusesEnabled ? isActionAllowedOnCollectiveOffer(offer, CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT) : !disablePriceAndParticipantInputs
+
+  const canEditDates = areCollectiveNewStatusesEnabled ? isActionAllowedOnCollectiveOffer(offer, CollectiveOfferAllowedAction.CAN_EDIT_DATES) : mode === Mode.CREATION
 
   const postForm = async (values: OfferEducationalStockFormValues) => {
     setIsLoading(true)
@@ -231,7 +242,7 @@ export const OfferEducationalStock = <
                 <Button
                   type="submit"
                   disabled={
-                    mode === Mode.READ_ONLY && disablePriceAndParticipantInputs
+                    areCollectiveNewStatusesEnabled ? !(canEditDiscount || canEditDates) : disablePriceAndParticipantInputs
                   }
                   isLoading={isLoading}
                 >
