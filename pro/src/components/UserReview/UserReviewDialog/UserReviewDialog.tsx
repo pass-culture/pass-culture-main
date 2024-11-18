@@ -16,6 +16,10 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './UserReviewDialog.module.scss'
 import { validationSchema } from './validationSchema'
+import {
+  IconRadioGroup,
+  IconRadioGroupValues,
+} from 'ui-kit/form/IconRadioGroup/IconRadioGroup'
 
 interface UserReviewDialogFormValues {
   userSatisfaction: string
@@ -54,6 +58,34 @@ export const UserReviewDialog = () => {
   const selectedOffererId = useSelector(selectCurrentOffererId)
   const location = useLocation()
 
+  const group: IconRadioGroupValues[] = [
+    {
+      label: 'Très mauvaise',
+      icon: '😡',
+      value: 'Très mauvaise',
+    },
+    {
+      label: 'Mauvaise',
+      icon: '🙁',
+      value: 'Mauvaise',
+    },
+    {
+      label: 'Correcte',
+      icon: '😐',
+      value: 'Correcte',
+    },
+    {
+      label: 'Bonne',
+      icon: '🙂',
+      value: 'Bonne',
+    },
+    {
+      label: 'Excellente',
+      icon: '😍',
+      value: 'Excellente',
+    },
+  ]
+
   return (
     <div className={styles.dialog}>
       {!displayConfirmation ? (
@@ -63,16 +95,22 @@ export const UserReviewDialog = () => {
               <h1 className={styles['dialog-title']}>Votre avis compte !</h1>
             </Dialog.Title>
 
-            {/* TODO: replece with  */}
-            <TextArea
+            <IconRadioGroup
               name="userSatisfaction"
-              label={'Comment évaluriez-vous votre expérience ?'}
-            />
+              legend="Comment évalueriez-vous votre expérience avec le pass Culture Pro ?"
+              group={group}
+            >
+              <span>Très mauvaise</span>
+              <span>Excellente</span>
+            </IconRadioGroup>
 
             <TextArea
               name="userComment"
               label={
-                'Souhaitez-vous préciser ? Nous lisons tous les commentaires. 🙂'
+                <span>
+                  Souhaitez-vous préciser ? Nous lisons tous les commentaires.
+                  <span aria-hidden="true"> 🙂</span>
+                </span>
               }
               maxLength={500}
               isOptional
