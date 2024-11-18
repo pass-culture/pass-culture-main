@@ -171,12 +171,16 @@ class VenuesTest:
     def test_get_non_permanent_venue(self, client):
         venue = offerers_factories.VenueFactory(isPermanent=False)
         venue_id = venue.id
-        with assert_num_queries(1):  # venue
+        num_queries = 1  # venue
+        num_queries += 1  # atomic rollback to savepoint
+        with assert_num_queries(num_queries):
             response = client.get(f"/native/v1/venue/{venue_id}")
             assert response.status_code == 404
 
     def test_get_non_existing_venue(self, client):
-        with assert_num_queries(1):  # venue
+        num_queries = 1  # venue
+        num_queries += 1  # atomic rollback to savepoint
+        with assert_num_queries(num_queries):
             response = client.get("/native/v1/venue/123456789")
             assert response.status_code == 404
 

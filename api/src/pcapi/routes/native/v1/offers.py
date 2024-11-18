@@ -97,6 +97,7 @@ def report_offer(user: User, offer_id: int, body: serializers.OfferReportRequest
 @blueprint.native_route("/offer/report/reasons", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=serializers.OfferReportReasons)
 @authenticated_and_active_user_required
+@atomic()
 def report_offer_reasons(user: User) -> serializers.OfferReportReasons:
     return serializers.OfferReportReasons(reasons=Reason.get_full_meta())
 
@@ -104,6 +105,7 @@ def report_offer_reasons(user: User) -> serializers.OfferReportReasons:
 @blueprint.native_route("/offers/reports", methods=["GET"])
 @spectree_serialize(on_success_status=200, api=blueprint.api, response_model=serializers.UserReportedOffersResponse)
 @authenticated_and_active_user_required
+@atomic()
 def user_reported_offers(user: User) -> serializers.UserReportedOffersResponse:
     return serializers.UserReportedOffersResponse(reportedOffers=user.reported_offers)  # type: ignore[call-arg]
 
@@ -111,6 +113,7 @@ def user_reported_offers(user: User) -> serializers.UserReportedOffersResponse:
 @blueprint.native_route("/send_offer_webapp_link_by_email/<int:offer_id>", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required
+@atomic()
 def send_offer_app_link(user: User, offer_id: int) -> None:
     """
     On iOS native app, users cannot book numeric offers with price > 0, so
@@ -127,6 +130,7 @@ def send_offer_app_link(user: User, offer_id: int) -> None:
 @blueprint.native_route("/send_offer_link_by_push/<int:offer_id>", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required
+@atomic()
 def send_offer_link_by_push(user: User, offer_id: int) -> None:
     offer = Offer.query.get_or_404(offer_id)
     if offer.validation != OfferValidationStatus.APPROVED:
@@ -136,6 +140,7 @@ def send_offer_link_by_push(user: User, offer_id: int) -> None:
 
 @blueprint.native_route("/subcategories/v2", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=subcategories_v2_serializers.SubcategoriesResponseModelv2)
+@atomic()
 def get_subcategories_v2() -> subcategories_v2_serializers.SubcategoriesResponseModelv2:
     return subcategories_v2_serializers.SubcategoriesResponseModelv2(
         subcategories=[
@@ -163,6 +168,7 @@ def get_subcategories_v2() -> subcategories_v2_serializers.SubcategoriesResponse
 
 @blueprint.native_route("/categories", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=subcategories_v2_serializers.CategoriesResponseModel)
+@atomic()
 def get_categories() -> subcategories_v2_serializers.CategoriesResponseModel:
     return subcategories_v2_serializers.CategoriesResponseModel(
         categories=[

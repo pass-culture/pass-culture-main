@@ -25,6 +25,7 @@ from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
+from pcapi.repository import atomic
 from pcapi.repository import transaction
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
@@ -81,6 +82,7 @@ def _fill_favorite_offer(
 @blueprint.native_route("/me/favorites/count", methods=["GET"])
 @spectree_serialize(response_model=serializers.FavoritesCountResponse, api=blueprint.api)
 @authenticated_and_active_user_required
+@atomic()
 def get_favorites_count(user: User) -> serializers.FavoritesCountResponse:
     return serializers.FavoritesCountResponse(count=Favorite.query.filter_by(user=user).count())
 

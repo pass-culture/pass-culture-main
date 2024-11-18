@@ -4,6 +4,7 @@ import pcapi.connectors.recommendation as recommendation_api
 import pcapi.core.users.models as users_models
 import pcapi.core.users.repository as users_repository
 from pcapi.models.api_errors import ApiErrors
+from pcapi.repository import atomic
 from pcapi.routes.native import blueprint
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
@@ -14,6 +15,7 @@ from .serialization import recommendation as serializers
 @blueprint.native_route("/recommendation/similar_offers/<int:offer_id>", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=serializers.SimilarOffersResponse)
 @flask_jwt_extended.jwt_required(optional=True)
+@atomic()
 def similar_offers(
     offer_id: int,
     query: serializers.SimilarOffersRequestQuery,

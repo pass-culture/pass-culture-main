@@ -1,5 +1,6 @@
 from pcapi.core.users import constants
 from pcapi.models.feature import FeatureToggle
+from pcapi.repository import atomic
 from pcapi.repository import feature_queries
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.settings import OBJECT_STORAGE_URL
@@ -19,6 +20,7 @@ def _get_features(*requested_features: FeatureToggle) -> dict[FeatureToggle, boo
 
 @blueprint.native_route("/settings", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=serializers.SettingsResponse)
+@atomic()
 def get_settings() -> serializers.SettingsResponse:
     features = _get_features(
         FeatureToggle.DISPLAY_DMS_REDIRECTION,
