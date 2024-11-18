@@ -46,7 +46,6 @@ tables_to_clean: list[flask_sqlalchemy.Model] = [
     finance_models.PaymentStatus,
     finance_models.Payment,
     finance_models.PaymentMessage,
-    finance_models.CashflowPricing,
     finance_models.CashflowLog,
     finance_models.InvoiceCashflow,
     finance_models.Cashflow,
@@ -55,6 +54,7 @@ tables_to_clean: list[flask_sqlalchemy.Model] = [
     finance_models.PricingLog,
     finance_models.Pricing,
     finance_models.InvoiceLine,
+    finance_models.CashflowPricing,
     finance_models.Invoice,
     finance_models.FinanceEvent,
     finance_models.CustomReimbursementRule,
@@ -149,7 +149,7 @@ def clean_all_database(*args: typing.Any, reset_ids: bool = False, **kwargs: typ
 
     for table in tables_to_clean:
         try:
-            table.query.delete()
+            db.session.query(table).delete()
             if reset_ids:
                 # Reset sequence id to 1 to have consistent ids in testing environment
                 # This is mandatory for EAC bookings which are used by Adage (external partner)

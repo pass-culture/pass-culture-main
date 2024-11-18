@@ -25,6 +25,7 @@ from pcapi import settings
 import pcapi.core.bookings.constants as bookings_constants
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2
+from pcapi.core.offers.base_models import OfferValidationRule
 from pcapi.core.providers.models import VenueProvider
 from pcapi.models import Base
 from pcapi.models import Model
@@ -1147,7 +1148,7 @@ class OfferValidationSubRule(PcObject, Base, Model):
     validationRule: sa.orm.Mapped["OfferValidationRule"] = sa.orm.relationship(
         "OfferValidationRule", backref="subRules", order_by="OfferValidationSubRule.id.asc()"
     )
-    validationRuleId = sa.Column(sa.BigInteger, sa.ForeignKey("offer_validation_rule.id"), index=True, nullable=False)
+    validationRuleId = sa.Column(sa.BigInteger, sa.ForeignKey(OfferValidationRule.id), index=True, nullable=False)
     model: OfferValidationModel = sa.Column(sa.Enum(OfferValidationModel), nullable=True)
     __table_args__ = (
         sa.CheckConstraint(
@@ -1160,28 +1161,12 @@ class OfferValidationSubRule(PcObject, Base, Model):
     comparated: dict = sa.Column("comparated", MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)
 
 
-class OfferValidationRule(PcObject, Base, Model, DeactivableMixin):
-    __tablename__ = "offer_validation_rule"
-    name: str = sa.Column(sa.Text, nullable=False)
-    offers: list["Offer"] = sa.orm.relationship(
-        "Offer", secondary="validation_rule_offer_link", back_populates="flaggingValidationRules"
-    )
-    collectiveOffers: list["CollectiveOffer"] = sa.orm.relationship(
-        "CollectiveOffer", secondary="validation_rule_collective_offer_link", back_populates="flaggingValidationRules"
-    )
-    collectiveOfferTemplates: list["CollectiveOfferTemplate"] = sa.orm.relationship(
-        "CollectiveOfferTemplate",
-        secondary="validation_rule_collective_offer_template_link",
-        back_populates="flaggingValidationRules",
-    )
-
-
-class ValidationRuleOfferLink(PcObject, Base, Model):
-    __tablename__ = "validation_rule_offer_link"
-    ruleId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("offer_validation_rule.id", ondelete="CASCADE"), nullable=False
-    )
-    offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False)
+ValidationRuleOfferLink = sa.Table(
+    "validation_rule_offer_link",
+    Base.metadata,
+    sa.Column("ruleId", sa.ForeignKey(OfferValidationRule.id, ondelete="CASCADE"), nullable=False),
+    sa.Column("offerId", sa.ForeignKey(Offer.id, ondelete="CASCADE"), index=True, nullable=False),
+)
 
 
 class OfferPriceLimitationRule(PcObject, Base, Model):
