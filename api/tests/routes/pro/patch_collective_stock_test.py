@@ -688,24 +688,26 @@ class Return400Test:
 
         stock_id = stock.id
 
-        with assert_num_queries(8):
+        with assert_num_queries(9):
             # query += 1 -> load session
             # query += 1 -> load user
             # query += 1 -> load existing stock
-            # query += 1 -> load FF
             # query += 1 -> ensure the offerer is VALIDATED
+            # query += 1 -> load FF
             # query += 1 -> check the number of existing stock for the offer id
             # query += 1 -> find education year for start date
             # query += 1 -> find education year for end date
+            # query += 1 -> rollback
 
             response = client.patch(f"/collective/stocks/{stock_id}", json=stock_edition_payload)
 
             # Then
             assert response.status_code == 400
             assert response.json == {"code": "START_AND_END_EDUCATIONAL_YEAR_DIFFERENT"}
-            edited_stock = CollectiveStock.query.get(stock.id)
-            assert edited_stock.startDatetime == startDatetime
-            assert edited_stock.endDatetime == endDatetime
+
+        edited_stock = CollectiveStock.query.get(stock.id)
+        assert edited_stock.startDatetime == startDatetime
+        assert edited_stock.endDatetime == endDatetime
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_accept_payload_with_startDatetime_with_no_educational_year(self, client):
@@ -735,7 +737,7 @@ class Return400Test:
 
         stock_id = stock.id
 
-        with assert_num_queries(7):
+        with assert_num_queries(9):
             # query += 1 -> load session
             # query += 1 -> load user
             # query += 1 -> load existing stock
@@ -743,6 +745,8 @@ class Return400Test:
             # query += 1 -> ensure the offerer is VALIDATED
             # query += 1 -> check the number of existing stock for the offer id
             # query += 1 -> find education year for start date
+            # query += 1 -> rollback
+            # query += 1 -> load existing stock after rollback
 
             response = client.patch(f"/collective/stocks/{stock_id}", json=stock_edition_payload)
 
@@ -784,7 +788,7 @@ class Return400Test:
 
         stock_id = stock.id
 
-        with assert_num_queries(8):
+        with assert_num_queries(10):
             # query += 1 -> load session
             # query += 1 -> load user
             # query += 1 -> load existing stock
@@ -793,6 +797,8 @@ class Return400Test:
             # query += 1 -> check the number of existing stock for the offer id
             # query += 1 -> find education year for start date
             # query += 1 -> find education year for end date
+            # query += 1 -> rollback
+            # query += 1 -> load existing stock after rollback
 
             response = client.patch(f"/collective/stocks/{stock_id}", json=stock_edition_payload)
 
