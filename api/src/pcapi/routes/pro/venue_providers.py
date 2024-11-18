@@ -127,6 +127,7 @@ def create_venue_provider(
 
 
 @private_api.route("/venueProviders", methods=["PUT"])
+@repository.atomic()
 @login_required
 @spectree_serialize(
     on_success_status=200,
