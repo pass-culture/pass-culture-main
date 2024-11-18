@@ -206,12 +206,6 @@ class CashflowStatus(enum.Enum):
     ACCEPTED = "accepted"
 
 
-class BankInformationStatus(enum.Enum):
-    REJECTED = "REJECTED"
-    DRAFT = "DRAFT"
-    ACCEPTED = "ACCEPTED"
-
-
 class BankAccountApplicationStatus(enum.Enum):
     DRAFT = "en_construction"
     ON_GOING = "en_instruction"
@@ -219,22 +213,6 @@ class BankAccountApplicationStatus(enum.Enum):
     REFUSED = "refuse"
     WITHOUT_CONTINUATION = "sans_suite"
     WITH_PENDING_CORRECTIONS = "a_corriger"
-
-
-class BankInformation(PcObject, Base, Model):
-    offererId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("offerer.id"), index=True, nullable=True)
-    offerer: sqla_orm.Mapped["offerers_models.Offerer | None"] = sqla_orm.relationship(
-        "Offerer", foreign_keys=[offererId], backref=sqla_orm.backref("bankInformation", uselist=False)
-    )
-    venueId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=True, unique=True)
-    venue: sqla_orm.Mapped["offerers_models.Venue | None"] = sqla_orm.relationship(
-        "Venue", foreign_keys=[venueId], back_populates="bankInformation", uselist=False
-    )
-    iban = sqla.Column(sqla.String(27), nullable=True)
-    bic = sqla.Column(sqla.String(11), nullable=True)
-    applicationId: int | None = sqla.Column(sqla.Integer, nullable=True, index=True, unique=True)
-    status: BankInformationStatus = sqla.Column(sqla.Enum(BankInformationStatus), nullable=False)
-    dateModified = sqla.Column(sqla.DateTime, nullable=True)
 
 
 class BankAccount(PcObject, Base, Model, DeactivableMixin):
@@ -703,21 +681,10 @@ class Cashflow(PcObject, Base, Model):
     creationDate: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
     status: CashflowStatus = sqla.Column(db_utils.MagicEnum(CashflowStatus), index=True, nullable=False)
 
-    # We denormalize `reimbursementPoint.bankInformationId` here because it may
-    # change. Here we want to store the bank account that was used at
-    # the time the cashflow was created.
-    bankInformationId: int = sqla.Column(
-        "bankInformationId", sqla.BigInteger, sqla.ForeignKey("bank_information.id"), index=True, nullable=True
-    )
-    bankInformation: BankInformation = sqla_orm.relationship(BankInformation, foreign_keys=[bankInformationId])
     bankAccountId: int = sqla.Column(
         "bankAccountId", sqla.BigInteger, sqla.ForeignKey("bank_account.id"), index=True, nullable=True
     )
     bankAccount: BankAccount = sqla_orm.relationship(BankAccount, foreign_keys=[bankAccountId])
-    reimbursementPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=True)
-    reimbursementPoint: sqla_orm.Mapped["offerers_models.Venue"] = sqla_orm.relationship(
-        "Venue", foreign_keys=[reimbursementPointId]
-    )
 
     batchId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("cashflow_batch.id"), index=True, nullable=False)
     batch: "CashflowBatch" = sqla_orm.relationship("CashflowBatch", foreign_keys=[batchId], backref="cashflows")
@@ -829,10 +796,6 @@ class Invoice(PcObject, Base, Model):
 
     date: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
     reference: str = sqla.Column(sqla.Text, nullable=False, unique=True)
-    reimbursementPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=True)
-    reimbursementPoint: sqla_orm.Mapped["offerers_models.Venue"] = sqla_orm.relationship(
-        "Venue", foreign_keys=[reimbursementPointId]
-    )
     bankAccountId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("bank_account.id"), index=True, nullable=True)
     bankAccount: BankAccount = sqla_orm.relationship("BankAccount", foreign_keys=[bankAccountId])
     # See the note about `amount` at the beginning of this module.

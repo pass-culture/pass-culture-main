@@ -82,9 +82,9 @@ BEGIN;
   ALTER TABLE booking ENABLE TRIGGER stock_update_cancellation_date;
 COMMIT;
 
--- Set fake IBAN and BIC in `bank_information` and `payment` table.
-UPDATE bank_information SET iban = pg_temp.fake_iban_from_id(id) WHERE iban is not null;
-UPDATE bank_information SET bic = pg_temp.fake_bic_from_id(id) WHERE bic is not null;
+-- Set fake IBAN and BIC in `bank_account` and `payment` table.
+UPDATE bank_account SET iban = pg_temp.fake_iban_from_id(id);
+UPDATE bank_account SET bic = pg_temp.fake_bic_from_id(id);
 UPDATE payment
 SET iban = pg_temp.fake_iban_from_id(id), bic = pg_temp.fake_bic_from_id(id)
 WHERE payment.iban IS NOT NULL

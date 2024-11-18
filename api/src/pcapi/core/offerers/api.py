@@ -512,16 +512,6 @@ def delete_venue(venue_id: int) -> None:
             offerers_models.VenuePricingPointLink.pricingPointId == venue_id,
         ).delete(synchronize_session=False)
 
-    venue_used_as_reimbursement_point = db.session.query(
-        offerers_models.VenueReimbursementPointLink.query.filter(
-            offerers_models.VenueReimbursementPointLink.venueId != venue_id,
-            offerers_models.VenueReimbursementPointLink.reimbursementPointId == venue_id,
-        ).exists()
-    ).scalar()
-
-    if venue_used_as_reimbursement_point:
-        raise exceptions.CannotDeleteVenueUsedAsReimbursementPointException()
-
     offer_ids_to_delete = _delete_objects_linked_to_venue(venue_id)
 
     # Warning: we should only delete rows where the "venueId" is the
@@ -534,7 +524,6 @@ def delete_venue(venue_id: int) -> None:
     offerers_models.VenuePricingPointLink.query.filter_by(
         venueId=venue_id,
     ).delete(synchronize_session=False)
-    offerers_models.VenueReimbursementPointLink.query.filter_by(venueId=venue_id).delete(synchronize_session=False)
 
     offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id).delete(synchronize_session=False)
 
@@ -674,9 +663,6 @@ def _delete_objects_linked_to_venue(venue_id: int) -> dict:
         educational_models.CollectiveOfferTemplate.venueId == venue_id
     ).delete(synchronize_session=False)
 
-    finance_models.BankInformation.query.filter(finance_models.BankInformation.venueId == venue_id).delete(
-        synchronize_session=False
-    )
     return offer_ids_to_delete
 
 
@@ -2136,17 +2122,9 @@ def delete_offerer(offerer_id: int) -> None:
             "collective_offer_template_ids_to_delete"
         ]
 
-    finance_models.BankInformation.query.filter(finance_models.BankInformation.offererId == offerer_id).delete(
-        synchronize_session=False
-    )
-
     offerers_models.VenuePricingPointLink.query.filter(
         offerers_models.VenuePricingPointLink.venueId.in_(venue_ids)
         | offerers_models.VenuePricingPointLink.pricingPointId.in_(venue_ids),
-    ).delete(synchronize_session=False)
-    offerers_models.VenueReimbursementPointLink.query.filter(
-        offerers_models.VenueReimbursementPointLink.venueId.in_(venue_ids)
-        | offerers_models.VenueReimbursementPointLink.reimbursementPointId.in_(venue_ids),
     ).delete(synchronize_session=False)
     offerers_models.Venue.query.filter(offerers_models.Venue.managingOffererId == offerer_id).delete(
         synchronize_session=False

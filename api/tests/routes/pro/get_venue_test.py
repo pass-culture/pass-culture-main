@@ -39,11 +39,7 @@ class Returns200Test:
             venue=venue,
             timespan=[now - datetime.timedelta(days=7), None],
         )
-        offerers_factories.VenueReimbursementPointLinkFactory(
-            venue=venue,
-            timespan=[now - datetime.timedelta(days=90), now - datetime.timedelta(days=14)],
-        )
-        venue_currently_used_for_reimbursement = offerers_factories.VenueFactory(
+        offerers_factories.VenueFactory(
             name="Le nouveau lieu de remboursement",
             publicName="Le Palais de Midas",
             managingOfferer=user_offerer.offerer,
@@ -66,11 +62,6 @@ class Returns200Test:
                 "trained_personnel": [acceslibre_enum.PERSONNEL_UNTRAINED],
                 "transport_modality": [acceslibre_enum.PARKING_NEARBY],
             },
-        )
-        offerers_factories.VenueReimbursementPointLinkFactory(
-            reimbursementPoint=venue_currently_used_for_reimbursement,
-            venue=venue,
-            timespan=[now - datetime.timedelta(days=14), None],
         )
         bank_account_link = offerers_factories.VenueBankAccountLinkFactory(
             venue=venue,
@@ -99,7 +90,6 @@ class Returns200Test:
                 "venueName": venue_currently_used_for_pricing.publicName,
                 "siret": venue_currently_used_for_pricing.siret,
             },
-            "reimbursementPointId": venue_currently_used_for_reimbursement.id,
             "dateCreated": format_into_utc_date(venue.dateCreated),
             "departementCode": venue.departementCode,
             "description": venue.description,
@@ -234,7 +224,6 @@ class Returns200Test:
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_reimbursement_link
         num_queries += 1  # select venue_pricing_point_link
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select google_places_info
@@ -264,7 +253,6 @@ class Returns200Test:
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_reimbursement_link
         num_queries += 1  # select venue_pricing_point_link
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select google_places_info
@@ -301,7 +289,6 @@ class Returns200Test:
         venue_id = venue.id
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_reimbursement_link
         num_queries += 1  # select venue_pricing_point_link
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select accessibility_provider
@@ -333,7 +320,6 @@ class Returns200Test:
         venue_id = venue.id
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_reimbursement_link
         num_queries += 1  # select venue_pricing_point_link
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select google_places_info
@@ -359,7 +345,6 @@ class Returns200Test:
         venue_id = venue.id
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_reimbursement_link
         num_queries += 1  # select venue_pricing_point_link
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select google_places_info
@@ -389,7 +374,6 @@ class Returns200Test:
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_reimbursement_link
         num_queries += 1  # select venue_pricing_point_link
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select accessibility_provider
@@ -432,7 +416,6 @@ class Returns200Test:
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_reimbursement_link
         num_queries += 1  # select venue_pricing_point_link
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select accessibility_provider
@@ -466,7 +449,6 @@ class Returns200Test:
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_reimbursement_link
         num_queries += 1  # select venue_pricing_point_link
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select accessibility_provider
@@ -504,7 +486,6 @@ class Returns200Test:
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_reimbursement_link
         num_queries += 1  # select venue_pricing_point_link
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select accessibility_provider
@@ -534,7 +515,6 @@ class Returns200Test:
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_reimbursement_link
         num_queries += 1  # select venue_pricing_point_link
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select accessibility_provider
@@ -565,7 +545,6 @@ class Returns200Test:
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_reimbursement_link
         num_queries += 1  # select venue_pricing_point_link
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select google_places_info
@@ -596,7 +575,6 @@ class Returns200Test:
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_reimbursement_link
         num_queries += 1  # select venue_pricing_point_link
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select google_places_info
@@ -624,7 +602,6 @@ class Returns200Test:
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_reimbursement_link
         num_queries += 1  # select venue_pricing_point_link
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select google_places_info
@@ -653,7 +630,6 @@ class Returns200Test:
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_reimbursement_link
         num_queries += 1  # select venue_pricing_point_link
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select google_places_info
@@ -680,7 +656,6 @@ class Returns200Test:
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_reimbursement_link
         num_queries += 1  # select venue_pricing_point_link
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select google_places_info
@@ -736,7 +711,6 @@ class Returns200Test:
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_reimbursement_link
         num_queries += 1  # select venue_pricing_point_link
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select google_places_info
@@ -785,7 +759,6 @@ class Returns200Test:
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_reimbursement_link
         num_queries += 1  # select venue_pricing_point_link
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select google_places_info
@@ -809,7 +782,6 @@ class Returns403Test:
         auth_request = client.with_session_auth(email=pro.email)
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_reimbursement_link
         num_queries += 1  # select venue_pricing_point_link
         num_queries += 1  # check user has rignts on venue
         venue_id = venue.id

@@ -25,19 +25,7 @@ class GetOffererTest:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
         venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer, withdrawalDetails="Venue withdrawal details")
         offers_factories.OfferFactory(venue=venue_1)
-        offerers_factories.VenueReimbursementPointLinkFactory(venue=venue_1, reimbursementPoint=venue_1)
-        venue_2 = offerers_factories.VenueFactory(
-            managingOfferer=offerer, withdrawalDetails="Other venue withdrawal details"
-        )
-        offerers_factories.VenueReimbursementPointLinkFactory(
-            venue=venue_2,
-            reimbursementPoint=venue_2,
-            # old, inactive link
-            timespan=[
-                datetime.datetime.utcnow() - datetime.timedelta(days=10),
-                datetime.datetime.utcnow() - datetime.timedelta(days=9),
-            ],
-        )
+        offerers_factories.VenueFactory(managingOfferer=offerer, withdrawalDetails="Other venue withdrawal details")
         venue = offerers_factories.VenueFactory(
             managingOfferer=offerer,
             withdrawalDetails="More venue withdrawal details",
@@ -60,7 +48,6 @@ class GetOffererTest:
         num_queries += 1  # check offerer has non free offers
         num_queries += 1  # select venue_id
         num_queries += 1  # select offerer_address
-
         num_queries += 1  # select venue
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):

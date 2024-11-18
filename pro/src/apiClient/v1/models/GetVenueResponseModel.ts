@@ -61,7 +61,6 @@ export type GetVenueResponseModel = {
   postalCode?: string | null;
   pricingPoint?: GetVenuePricingPointResponseModel | null;
   publicName?: string | null;
-  reimbursementPointId?: number | null;
   siret?: string | null;
   street?: string | null;
   timezone: string;

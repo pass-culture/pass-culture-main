@@ -132,25 +132,6 @@ class VenueFactory(BaseFactory):
         return VenuePricingPointLinkFactory(venue=venue, pricingPoint=pricing_point)
 
     @factory.post_generation
-    def reimbursement_point(  # pylint: disable=no-self-argument
-        venue: models.Venue,
-        create: bool,
-        extracted: typing.Callable | None,
-        **kwargs: typing.Any,
-    ) -> models.VenueReimbursementPointLink | None:
-        if not create:
-            return None
-        reimbursement_point = extracted
-        if not reimbursement_point:
-            return None
-        if reimbursement_point == "self":
-            reimbursement_point = venue
-        return VenueReimbursementPointLinkFactory(
-            venue=venue,
-            reimbursementPoint=reimbursement_point,
-        )
-
-    @factory.post_generation
     def bank_account(
         self: models.Venue, create: bool, extracted: "BankAccount | None", **kwargs: typing.Any
     ) -> models.VenueBankAccountLink | None:
@@ -276,23 +257,6 @@ class VenuePricingPointLinkFactory(BaseFactory):
 
     venue = factory.SubFactory(VenueFactory)
     pricingPoint = factory.SubFactory(
-        VenueFactory,
-        managingOfferer=factory.SelfAttribute("..venue.managingOfferer"),
-    )
-    timespan = factory.LazyFunction(
-        lambda: [
-            datetime.datetime.utcnow() - datetime.timedelta(days=365),
-            None,
-        ]
-    )
-
-
-class VenueReimbursementPointLinkFactory(BaseFactory):
-    class Meta:
-        model = models.VenueReimbursementPointLink
-
-    venue = factory.SubFactory(VenueFactory)
-    reimbursementPoint = factory.SubFactory(
         VenueFactory,
         managingOfferer=factory.SelfAttribute("..venue.managingOfferer"),
     )
