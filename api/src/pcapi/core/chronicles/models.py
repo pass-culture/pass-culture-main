@@ -54,35 +54,19 @@ class Chronicle(PcObject, Base, Model, DeactivableMixin):
     __table_args__ = (sa.Index("ix_chronicle_content___ts_vector__", __content_ts_vector__, postgresql_using="gin"),)
 
 
-class ProductChronicle(PcObject, Base, Model):
-    __table_name__ = "product_chronicle"
-    productId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("product.id", ondelete="CASCADE"), index=True, nullable=False
-    )
-    chronicleId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("chronicle.id", ondelete="CASCADE"), index=True, nullable=False
-    )
-
-    __table_args__ = (
-        sa.UniqueConstraint(
-            "productId",
-            "chronicleId",
-            name="unique_product_chronicle_constraint",
-        ),
-    )
+ProductChronicle = sa.Table(
+    "product_chronicle",
+    Base.metadata,
+    sa.Column("productId", sa.ForeignKey("Product.id", ondelete="CASCADE"), index=True, nullable=False),
+    sa.Column("chronicleId", sa.ForeignKey(Chronicle.id, ondelete="CASCADE"), index=True, nullable=False),
+    sa.UniqueConstraint("productId", "chronicleId", name="unique_product_chronicle_constraint"),
+)
 
 
-class OfferChronicle(PcObject, Base, Model):
-    __table_name__ = "offer_chronicle"
-    offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False)
-    chronicleId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("chronicle.id", ondelete="CASCADE"), index=True, nullable=False
-    )
-
-    __table_args__ = (
-        sa.UniqueConstraint(
-            "offerId",
-            "chronicleId",
-            name="unique_offer_chronicle_constraint",
-        ),
-    )
+OfferChronicle = sa.Table(
+    "offer_chronicle",
+    Base.metadata,
+    sa.Column("offerId", sa.ForeignKey("Offer.id", ondelete="CASCADE"), index=True, nullable=False),
+    sa.Column("chronicleId", sa.ForeignKey(Chronicle.id, ondelete="CASCADE"), index=True, nullable=False),
+    sa.UniqueConstraint("offerId", "chronicleId", name="unique_offer_chronicle_constraint"),
+)

@@ -1115,24 +1115,22 @@ class OffererTagCategory(PcObject, Base, Model):
         return self.label or self.name
 
 
-class OffererTagCategoryMapping(PcObject, Base, Model):
-    __tablename__ = "offerer_tag_category_mapping"
-
-    tagId: int = Column(BigInteger, ForeignKey("offerer_tag.id", ondelete="CASCADE"), index=True, nullable=False)
-    categoryId: int = Column(
-        BigInteger, ForeignKey("offerer_tag_category.id", ondelete="CASCADE"), index=True, nullable=False
-    )
-
-    __table_args__ = (UniqueConstraint("tagId", "categoryId", name="unique_offerer_tag_category"),)
+OffererTagCategoryMapping = sa.Table(
+    "offerer_tag_category_mapping",
+    Base.metadata,
+    sa.Column("tagId", sa.ForeignKey(OffererTag.id, ondelete="CASCADE"), index=True, nullable=False),
+    sa.Column("categoryId", sa.ForeignKey(OffererTagCategory.id, ondelete="CASCADE"), index=True, nullable=False),
+    sa.UniqueConstraint("tagId", "categoryId", name="unique_offerer_tag_category"),
+)
 
 
-class OffererTagMapping(PcObject, Base, Model):
-    __tablename__ = "offerer_tag_mapping"
-
-    offererId: int = Column(BigInteger, ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False)
-    tagId: int = Column(BigInteger, ForeignKey("offerer_tag.id", ondelete="CASCADE"), index=True, nullable=False)
-
-    __table_args__ = (UniqueConstraint("offererId", "tagId", name="unique_offerer_tag"),)
+OffererTagMapping = sa.Table(
+    "offerer_tag_mapping",
+    Base.metadata,
+    sa.Column("offererId", sa.ForeignKey(Offerer.id, ondelete="CASCADE"), index=True, nullable=False),
+    sa.Column("tagId", sa.ForeignKey(OffererTag.id, ondelete="CASCADE"), index=True, nullable=False),
+    sa.UniqueConstraint("offererId", "tagId", name="unique_offerer_tag"),
+)
 
 
 class OffererProvider(PcObject, Base, Model):

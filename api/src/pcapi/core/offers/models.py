@@ -1172,12 +1172,12 @@ class OfferValidationRule(PcObject, Base, Model, DeactivableMixin):
     )
 
 
-class ValidationRuleOfferLink(PcObject, Base, Model):
-    __tablename__ = "validation_rule_offer_link"
-    ruleId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("offer_validation_rule.id", ondelete="CASCADE"), nullable=False
-    )
-    offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False)
+ValidationRuleOfferLink = sa.Table(
+    "validation_rule_offer_link",
+    Base.metadata,
+    sa.Column("ruleId", sa.ForeignKey(OfferValidationRule.id, ondelete="CASCADE"), nullable=False),
+    sa.Column("offerId", sa.ForeignKey(Offer.id, ondelete="CASCADE"), index=True, nullable=False),
+)
 
 
 class OfferPriceLimitationRule(PcObject, Base, Model):
