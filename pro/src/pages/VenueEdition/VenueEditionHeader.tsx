@@ -23,6 +23,8 @@ import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './VenueEditionHeader.module.scss'
+import { GET_VENUE_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import { useSWRConfig } from 'swr'
 
 export interface VenueEditionHeaderProps {
   venue: GetVenueResponseModel
@@ -58,6 +60,7 @@ export const VenueEditionHeader = ({
   venueTypes,
 }: VenueEditionHeaderProps) => {
   const { logEvent } = useAnalytics()
+  const { mutate } = useSWRConfig()
   const notify = useNotification()
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
@@ -87,7 +90,7 @@ export const VenueEditionHeader = ({
       setImageValues(
         buildInitialValues(editedVenue.bannerUrl, editedVenue.bannerMeta)
       )
-
+      await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
       notify.success('Vos modifications ont bien été prises en compte')
     } catch {
       notify.error(
@@ -100,6 +103,7 @@ export const VenueEditionHeader = ({
     await api.deleteVenueBanner(venue.id)
 
     setImageValues(buildInitialValues(null, null))
+    await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
     notify.success('Votre image a bien été supprimée')
   }
 
