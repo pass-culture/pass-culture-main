@@ -5,14 +5,11 @@ import uuid
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
+from pcapi.core.offers.models import Product
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 from pcapi.utils.db import MagicEnum
-
-
-if typing.TYPE_CHECKING:
-    from pcapi.core.offers.models import Product
 
 
 class ArtistType(enum.Enum):
@@ -55,10 +52,11 @@ class ArtistAlias(PcObject, Base, Model):
     offer_category_id = sa.Column(sa.Text)
 
 
-class ArtistProductLink(PcObject, Base, Model):
-    __tablename__ = "artist_product_link"
-
-    artist_id = sa.Column(sa.Text, sa.ForeignKey("artist.id", ondelete="CASCADE"), nullable=False, index=True)
-    product_id = sa.Column(sa.BigInteger, sa.ForeignKey("product.id", ondelete="CASCADE"), nullable=False, index=True)
-
-    artist_type = sa.Column(MagicEnum(ArtistType))
+ArtistProductLink = sa.Table(
+    "artist_product_link",
+    Base.metadata,
+    sa.Column("id", sa.BigInteger, primary_key=True, autoincrement=True),
+    sa.Column("artist_id", sa.ForeignKey(Artist.id, ondelete="CASCADE"), nullable=False, index=True),
+    sa.Column("product_id", sa.ForeignKey(Product.id, ondelete="CASCADE"), nullable=False, index=True),
+    sa.Column("artist_type", sa.Text(MagicEnum(ArtistType))),
+)

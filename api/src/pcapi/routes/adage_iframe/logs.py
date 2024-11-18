@@ -2,7 +2,7 @@ import hashlib
 
 from flask import current_app as app
 
-from pcapi.core.educational.models import AdageFrontRoles
+from pcapi.core.educational.enum import AdageFrontRoles
 from pcapi.core.educational.repository import find_educational_institution_by_uai_code
 import pcapi.core.educational.utils as educational_utils
 from pcapi.routes.adage_iframe import blueprint

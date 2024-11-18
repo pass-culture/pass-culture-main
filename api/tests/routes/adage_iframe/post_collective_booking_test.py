@@ -5,7 +5,7 @@ import pytest
 import time_machine
 
 from pcapi.core.educational import factories as educational_factories
-from pcapi.core.educational.models import AdageFrontRoles
+from pcapi.core.educational.enum import AdageFrontRoles
 from pcapi.core.educational.models import CollectiveBooking
 import pcapi.core.educational.testing as adage_api_testing
 from pcapi.core.educational.utils import get_hashed_user_id

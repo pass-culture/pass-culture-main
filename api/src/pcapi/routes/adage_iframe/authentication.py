@@ -4,7 +4,7 @@ from pcapi.core.educational.api import favorites as educational_api_favorite
 from pcapi.core.educational.api.institution import get_educational_institution_department_code
 from pcapi.core.educational.api.institution import get_offers_count_for_my_institution
 from pcapi.core.educational.exceptions import MissingRequiredRedactorInformation
-from pcapi.core.educational.models import AdageFrontRoles
+from pcapi.core.educational.enum import AdageFrontRoles
 from pcapi.core.educational.repository import find_educational_institution_by_uai_code
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required

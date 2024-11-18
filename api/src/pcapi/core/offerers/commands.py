@@ -52,10 +52,10 @@ def check_active_offerers(dry_run: bool = False, day: int | None = None) -> None
         offerers_query = offerers_query.outerjoin(
             offerers_models.OffererTagMapping,
             sa.and_(
-                offerers_models.OffererTagMapping.offererId == offerers_models.Offerer.id,
-                offerers_models.OffererTagMapping.tagId == siren_caduc_tag_id_subquery,
+                offerers_models.OffererTagMapping.c.offererId == offerers_models.Offerer.id,
+                offerers_models.OffererTagMapping.c.tagId == siren_caduc_tag_id_subquery,
             ),
-        ).filter(offerers_models.OffererTagMapping.id.is_(None))
+        ).filter(offerers_models.OffererTagMapping.c.id.is_(None))
 
     offerers = offerers_query.all()
 

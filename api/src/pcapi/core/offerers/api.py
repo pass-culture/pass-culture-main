@@ -628,9 +628,9 @@ def _delete_objects_linked_to_venue(venue_id: int) -> dict:
         users_models.Favorite.query.filter(users_models.Favorite.offerId.in_(offers_id_chunk)).delete(
             synchronize_session=False
         )
-        criteria_models.OfferCriterion.query.filter(criteria_models.OfferCriterion.offerId.in_(offers_id_chunk)).delete(
-            synchronize_session=False
-        )
+        db.session.query(criteria_models.OfferCriterion).filter(
+            criteria_models.OfferCriterion.c.offerId.in_(offers_id_chunk)
+        ).delete(synchronize_session=False)
         offers_models.Mediation.query.filter(offers_models.Mediation.offerId.in_(offers_id_chunk)).delete(
             synchronize_session=False
         )
@@ -662,8 +662,8 @@ def _delete_objects_linked_to_venue(venue_id: int) -> dict:
         educational_models.CollectiveStock.query.filter(
             educational_models.CollectiveStock.collectiveOfferId.in_(collective_offers_id_chunk)
         ).delete(synchronize_session=False)
-        educational_models.CollectiveOfferEducationalRedactor.query.filter(
-            educational_models.CollectiveOfferEducationalRedactor.collectiveOfferId.in_(collective_offers_id_chunk)
+        db.session.query(educational_models.CollectiveOfferEducationalRedactor).filter(
+            educational_models.CollectiveOfferEducationalRedactor.c.collectiveOfferId.in_(collective_offers_id_chunk)
         ).delete(synchronize_session=False)
 
     educational_models.CollectiveOffer.query.filter(educational_models.CollectiveOffer.venueId == venue_id).delete(
@@ -683,8 +683,8 @@ def _delete_objects_linked_to_venue(venue_id: int) -> dict:
         educational_models.CollectiveOffer.query.filter(
             educational_models.CollectiveOffer.templateId.in_(collective_offer_templates_id_chunk)
         ).update({"templateId": None}, synchronize_session=False)
-        educational_models.CollectiveOfferTemplateEducationalRedactor.query.filter(
-            educational_models.CollectiveOfferTemplateEducationalRedactor.collectiveOfferTemplateId.in_(
+        db.session.query(educational_models.CollectiveOfferTemplateEducationalRedactor).filter(
+            educational_models.CollectiveOfferTemplateEducationalRedactor.c.collectiveOfferTemplateId.in_(
                 collective_offer_templates_id_chunk
             )
         ).delete(synchronize_session=False)

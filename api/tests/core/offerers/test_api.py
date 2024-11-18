@@ -334,7 +334,7 @@ class DeleteVenueTest:
         assert offers_models.Offer.query.count() == 1
         assert users_models.Favorite.query.count() == 1
 
-    def test_delete_cascade_venue_should_remove_criterions(self):
+    def test_delete_cascade_venue_should_remove_criterions(self, db_session):
         # Given
         offers_factories.OfferFactory(
             venue=offerers_factories.VenueFactory(), criteria=[criteria_factories.CriterionFactory()]
@@ -349,7 +349,7 @@ class DeleteVenueTest:
         # Then
         assert offerers_models.Venue.query.count() == 1
         assert offers_models.Offer.query.count() == 1
-        assert criteria_models.OfferCriterion.query.count() == 1
+        assert db_session.query(criteria_models.OfferCriterion).count() == 1
         assert criteria_models.Criterion.query.count() == 2
 
     def test_delete_cascade_venue_should_remove_synchronization_to_provider(self):
@@ -1113,7 +1113,7 @@ class DeleteOffererTest:
         assert offers_models.Offer.query.count() == 1
         assert users_models.Favorite.query.count() == 1
 
-    def test_delete_cascade_offerer_should_remove_criterion_attachment_of_managed_offers(self):
+    def test_delete_cascade_offerer_should_remove_criterion_attachment_of_managed_offers(self, db_session):
         # Given
         offerer_to_delete = offerers_factories.OffererFactory()
         offers_factories.OfferFactory(
@@ -1128,7 +1128,7 @@ class DeleteOffererTest:
         assert offerers_models.Offerer.query.count() == 1
         assert offerers_models.Venue.query.count() == 1
         assert offers_models.Offer.query.count() == 1
-        assert criteria_models.OfferCriterion.query.count() == 1
+        assert db_session.query(criteria_models.OfferCriterion).count() == 1
         assert criteria_models.Criterion.query.count() == 2
 
     def test_delete_cascade_offerer_should_remove_venue_synchronization_to_provider(self):

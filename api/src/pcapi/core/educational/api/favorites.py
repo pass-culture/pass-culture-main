@@ -68,26 +68,28 @@ def get_redactor_all_favorites_count(redactor_id: int) -> int:
     # TODO(jeremieb): make CollectiveOfferTemplate's is_eligible_for_search
     # a hybrid_property to allow filtering (not sure this is possible however)
     # lots of joinedload because of is_eligible_for_search
-    favorite_offer_templates_query = educational_models.CollectiveOfferTemplateEducationalRedactor.query.filter_by(
-        educationalRedactorId=redactor_id
-    ).options(
-        # load the favorite's collective offer template...
-        sa.orm.joinedload(educational_models.CollectiveOfferTemplateEducationalRedactor.collectiveOfferTemplate)
-        .load_only(
-            educational_models.CollectiveOfferTemplate.id,
-            educational_models.CollectiveOfferTemplate.venueId,
-            educational_models.CollectiveOfferTemplate.validation,
-            educational_models.CollectiveOfferTemplate.isActive,
+    favorite_offer_templates_query = (
+        db.session.query(educational_models.CollectiveOfferTemplateEducationalRedactor)
+        .filter_by(educationalRedactorId=redactor_id)
+        .options(
+            # load the favorite's collective offer template...
+            sa.orm.joinedload(educational_models.CollectiveOfferTemplateEducationalRedactor.c.collectiveOfferTemplate)
+            .load_only(
+                educational_models.CollectiveOfferTemplate.id,
+                educational_models.CollectiveOfferTemplate.venueId,
+                educational_models.CollectiveOfferTemplate.validation,
+                educational_models.CollectiveOfferTemplate.isActive,
+            )
+            # ... to fetch its venue...
+            .joinedload(educational_models.CollectiveOfferTemplate.venue)
+            .load_only(
+                offerers_models.Venue.managingOffererId,
+                offerers_models.Venue.isVirtual,
+            )
+            # ... to fetch its managing offerer...
+            .joinedload(offerers_models.Venue.managingOfferer)
+            .load_only(offerers_models.Offerer.isActive, offerers_models.Offerer.validationStatus)
         )
-        # ... to fetch its venue...
-        .joinedload(educational_models.CollectiveOfferTemplate.venue)
-        .load_only(
-            offerers_models.Venue.managingOffererId,
-            offerers_models.Venue.isVirtual,
-        )
-        # ... to fetch its managing offerer...
-        .joinedload(offerers_models.Venue.managingOfferer)
-        .load_only(offerers_models.Offerer.isActive, offerers_models.Offerer.validationStatus)
     )
 
     favorite_offer_templates = [

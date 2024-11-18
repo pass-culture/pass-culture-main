@@ -3,7 +3,7 @@ import logging
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational.api import booking as educational_api_booking
-from pcapi.core.educational.models import AdageFrontRoles
+from pcapi.core.educational.enum import AdageFrontRoles
 from pcapi.core.educational.repository import find_educational_institution_by_uai_code
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models.api_errors import ApiErrors

@@ -75,24 +75,25 @@ def import_all_artists() -> None:
 
 def import_all_artist_product_links() -> None:
     logger.info("Importing artist product links from BigQuery")
-    imported_product_links: list[artist_models.ArtistProductLink] = []
+    imported_product_links: list[str] = []
 
     for raw_product_link in get_all_artist_product_links():
-        existing_product_link = artist_models.ArtistProductLink.query.filter_by(
+        existing_product_link = db.session.query(artist_models.ArtistProductLink).filter_by(
             artist_id=raw_product_link.artist_id,
             product_id=raw_product_link.product_id,
         ).first()
         if existing_product_link:
             continue
 
-        new_product_link = artist_models.ArtistProductLink(
-            artist_id=raw_product_link.artist_id,
-            product_id=raw_product_link.product_id,
-            artist_type=get_artist_type(raw_product_link.artist_type),
-        )
-        imported_product_links.append(new_product_link)
+        imported_product_links.append({
+            "artist_id": raw_product_link.artist_id,
+            "product_id": raw_product_link.product_id,
+            "artist_type": get_artist_type(raw_product_link.artist_type).value,
+        })
 
-    bulk_update_database(imported_product_links)
+    if imported_product_links:
+        db.session.execute(artist_models.ArtistProductLink.insert(), imported_product_links)
+        logger.info("Successfully imported %s ArtistProductLink", len(imported_product_links))
 
 
 def import_all_artist_aliases() -> None:

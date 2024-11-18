@@ -896,7 +896,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
         models.Pricing.valueDate < batch.cutoff,
         # We should not have any validated pricing with a cashflow,
         # this is a safety belt.
-        models.CashflowPricing.pricingId.is_(None),
+        models.CashflowPricing.c.pricingId.is_(None),
         # Bookings can now be priced even if BankAccount is not ACCEPTED,
         # but to generate cashflows we definitely need it.
         models.BankAccount.status == models.BankAccountApplicationStatus.ACCEPTED,
@@ -1108,14 +1108,12 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                 )
                 db.session.add(cashflow)
                 db.session.flush()
-                links = [
-                    models.CashflowPricing(
-                        cashflowId=cashflow.id,
-                        pricingId=pricing.id,
-                    )
-                    for pricing in pricings
-                ]
-                db.session.bulk_save_objects(links)
+
+                db.session.execute(
+                    models.CashflowPricing.insert(),
+                    [{"pricingId": pricing.id, "cashflowId": cashflow.id} for pricing in pricings],
+                )
+
                 # It's possible (but unlikely) that new pricings have
                 # been added (1) between the calculation of `total`
                 # and the creation of the `CashflowPricing`s; or (2)
@@ -1127,9 +1125,12 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                 # that are not linked to any `CashflowPricing`. These
                 # pricings would then stay "processed" and never move
                 # to "invoiced".
-                cashflowed_pricings = models.CashflowPricing.query.filter_by(cashflowId=cashflow.id)
+                cashflowed_pricings = db.session.query(models.CashflowPricing).filter_by(cashflowId=cashflow.id)
                 _mark_as_processed(
-                    {pricing_id for pricing_id, in cashflowed_pricings.with_entities(models.CashflowPricing.pricingId)}
+                    {
+                        pricing_id
+                        for pricing_id, in cashflowed_pricings.with_entities(models.CashflowPricing.c.pricingId)
+                    }
                 )
                 total_from_pricings = (
                     cashflowed_pricings.join(models.Pricing).with_entities(sa.func.sum(models.Pricing.amount)).scalar()
@@ -1722,11 +1723,11 @@ def _filter_invoiceable_cashflows(query: BaseQuery) -> BaseQuery:
     return (
         query.filter(models.Cashflow.status == models.CashflowStatus.UNDER_REVIEW).outerjoin(
             models.InvoiceCashflow,
-            models.InvoiceCashflow.cashflowId == models.Cashflow.id,
+            models.InvoiceCashflow.c.cashflowId == models.Cashflow.id,
         )
         # There should not be any invoice linked to a cashflow that is
         # UNDER_REVIEW, but having a safety belt here is almost free.
-        .filter(models.InvoiceCashflow.invoiceId.is_(None))
+        .filter(models.InvoiceCashflow.c.invoiceId.is_(None))
     )
 
 
@@ -1736,7 +1737,7 @@ def _mark_free_pricings_as_invoiced() -> None:
         # All the PROCESSED pricings without any Cashflow are free pricings
         .filter(
             models.Pricing.status == models.PricingStatus.PROCESSED,
-            models.CashflowPricing.pricingId.is_(None),
+            models.CashflowPricing.c.pricingId.is_(None),
         )
         .with_entities(models.Pricing.id, models.Pricing.bookingId)
         .all()
@@ -2258,8 +2259,11 @@ def _generate_invoice_legacy(
     for line in invoice_lines:
         line.invoiceId = invoice.id
     db.session.bulk_save_objects(invoice_lines)
-    cf_links = [models.InvoiceCashflow(invoiceId=invoice.id, cashflowId=cashflow.id) for cashflow in cashflows]
-    db.session.bulk_save_objects(cf_links)
+
+    db.session.execute(
+        models.InvoiceCashflow.insert(),
+        [{"invoiceId": invoice.id, "cashflowId": cashflow.id} for cashflow in cashflows],
+    )
 
     # Cashflow.status: UNDER_REVIEW -> ACCEPTED
     with log_elapsed(logger, "Updating status of cashflows"):
@@ -2445,8 +2449,13 @@ def _generate_invoice(
     for line in invoice_lines:
         line.invoiceId = invoice.id
     db.session.bulk_save_objects(invoice_lines)
-    cf_links = [models.InvoiceCashflow(invoiceId=invoice.id, cashflowId=cashflow.id) for cashflow in cashflows]
-    db.session.bulk_save_objects(cf_links)
+
+    db.session.execute(
+        models.InvoiceCashflow.insert(),
+        [{"invoiceId": invoice.id, "cashflowId": cashflow.id} for cashflow in cashflows],
+    )
+
+    db.session.flush()
 
     # Cashflow.status: UNDER_REVIEW → PENDING_ACCEPTANCE for new workflow
     with log_elapsed(logger, "Updating status of cashflows"):
@@ -2805,7 +2814,9 @@ def merge_cashflow_batches(
                 .with_entities(sqla_func.sum(models.Cashflow.amount))
                 .scalar()
             )
-            models.CashflowPricing.query.filter(models.CashflowPricing.cashflowId.in_(cashflow_ids_to_remove)).update(
+            db.session.query(models.CashflowPricing).filter(
+                models.CashflowPricing.c.cashflowId.in_(cashflow_ids_to_remove)
+            ).update(
                 {"cashflowId": cashflow_to_keep.id},
                 synchronize_session=False,
             )

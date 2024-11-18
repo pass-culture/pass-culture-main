@@ -13,6 +13,7 @@ from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational.enum import OfferAddressType
 from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational import validation
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
@@ -186,13 +187,13 @@ def get_educational_domains_from_ids(
 
 
 def _get_location_type_and_oa_id(
-    address_type: educational_models.OfferAddressType, venue_id: int | None, user: User
+    address_type: OfferAddressType, venue_id: int | None, user: User
 ) -> tuple[educational_models.CollectiveLocationType | None, int | None]:
     match address_type:
-        case educational_models.OfferAddressType.SCHOOL:
+        case OfferAddressType.SCHOOL:
             return (educational_models.CollectiveLocationType.SCHOOL, None)
 
-        case educational_models.OfferAddressType.OFFERER_VENUE:
+        case OfferAddressType.OFFERER_VENUE:
             assert venue_id is not None  # for mypy - venue_id is present when address_type is venue
             location_venue = offerers_repository.get_venue_by_id(venue_id)
             rest.check_user_has_access_to_offerer(user, offerer_id=location_venue.managingOffererId)

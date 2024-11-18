@@ -4,7 +4,7 @@ from flask import url_for
 import pytest
 
 from pcapi.core.educational import utils
-from pcapi.core.educational.models import AdageFrontRoles
+from pcapi.core.educational.enum import AdageFrontRoles
 from pcapi.core.educational.utils import get_hashed_user_id
 from pcapi.routes.adage_iframe.serialization.logs import PaginationType
 

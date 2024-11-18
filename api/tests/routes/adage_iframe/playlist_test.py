@@ -5,7 +5,7 @@ import pytest
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
-from pcapi.core.educational.models import OfferAddressType
+from pcapi.core.educational.enum import OfferAddressType
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
 

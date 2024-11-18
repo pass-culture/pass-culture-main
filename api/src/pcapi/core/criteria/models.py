@@ -1,5 +1,7 @@
 import sqlalchemy as sqla
 
+from pcapi.core.offerers.base_models import Venue
+from pcapi.core.offers.models import Offer
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
@@ -19,39 +21,22 @@ class Criterion(PcObject, Base, Model):
         return self.name
 
 
-class VenueCriterion(PcObject, Base, Model):
-    venueId: int = sqla.Column(
-        sqla.BigInteger, sqla.ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=False
-    )
-    criterionId: int = sqla.Column(
-        sqla.BigInteger, sqla.ForeignKey("criterion.id", ondelete="CASCADE"), nullable=False, index=True
-    )
-
-    __table_args__ = (
-        sqla.UniqueConstraint(
-            "venueId",
-            "criterionId",
-            name="unique_venue_criterion",
-        ),
-    )
+VenueCriterion = sqla.Table(
+    "venue_criterion",
+    Base.metadata,
+    sqla.Column("venueId", sqla.ForeignKey(Venue.id, ondelete="CASCADE"), index=True, nullable=False),
+    sqla.Column("criterionId", sqla.ForeignKey(Criterion.id, ondelete="CASCADE"), nullable=False, index=True),
+    sqla.UniqueConstraint("venueId", "criterionId", name="unique_venue_criterion"),
+)
 
 
-class OfferCriterion(PcObject, Base, Model):
-    __table_name__ = "offer_criterion"
-    offerId: int = sqla.Column(
-        sqla.BigInteger, sqla.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False
-    )
-    criterionId: int = sqla.Column(
-        sqla.BigInteger, sqla.ForeignKey("criterion.id", ondelete="CASCADE"), index=True, nullable=False
-    )
-
-    __table_args__ = (
-        sqla.UniqueConstraint(
-            "offerId",
-            "criterionId",
-            name="unique_offer_criterion",
-        ),
-    )
+OfferCriterion = sqla.Table(
+    "offer_criterion",
+    Base.metadata,
+    sqla.Column("offerId", sqla.ForeignKey(Offer.id, ondelete="CASCADE"), index=True, nullable=False),
+    sqla.Column("criterionId", sqla.ForeignKey(Criterion.id, ondelete="CASCADE"), index=True, nullable=False),
+    sqla.UniqueConstraint("offerId", "criterionId", name="unique_offer_criterion"),
+)
 
 
 class CriterionCategory(PcObject, Base, Model):
@@ -67,14 +52,10 @@ class CriterionCategory(PcObject, Base, Model):
         return self.label
 
 
-class CriterionCategoryMapping(PcObject, Base, Model):
-    __tablename__ = "criterion_category_mapping"
-
-    criterionId: int = sqla.Column(
-        sqla.BigInteger, sqla.ForeignKey("criterion.id", ondelete="CASCADE"), index=True, nullable=False
-    )
-    categoryId: int = sqla.Column(
-        sqla.BigInteger, sqla.ForeignKey("criterion_category.id", ondelete="CASCADE"), index=True, nullable=False
-    )
-
-    __table_args__ = (sqla.UniqueConstraint("criterionId", "categoryId", name="unique_criterion_category"),)
+CriterionCategoryMapping = sqla.Table(
+    "criterion_category_mapping",
+    Base.metadata,
+    sqla.Column("criterionId", sqla.ForeignKey(Criterion.id, ondelete="CASCADE"), index=True, nullable=False),
+    sqla.Column("categoryId", sqla.ForeignKey(CriterionCategory.id, ondelete="CASCADE"), index=True, nullable=False),
+    sqla.UniqueConstraint("criterionId", "categoryId", name="unique_criterion_category"),
+)

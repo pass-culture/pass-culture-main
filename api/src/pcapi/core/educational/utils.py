@@ -7,7 +7,7 @@ import jwt
 from psycopg2.extras import DateTimeRange
 
 from pcapi.core.educational import exceptions as educational_exceptions
-from pcapi.core.educational.models import AdageFrontRoles
+from pcapi.core.educational.enum import AdageFrontRoles
 from pcapi.core.users.utils import ALGORITHM_RS_256
 from pcapi.utils import requests
 

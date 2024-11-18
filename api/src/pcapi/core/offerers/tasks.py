@@ -71,7 +71,10 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
             ).one()
 
             with transaction():
-                db.session.add(offerers_models.OffererTagMapping(offererId=offerer.id, tagId=tag.id))
+                db.session.execute(
+                    offerers_models.OffererTagMapping.insert(),
+                    [{"offererId": offerer.id, "tagId": tag.id}],
+                )
                 if offerer.isWaitingForValidation:
                     offerers_api.reject_offerer(
                         offerer=offerer,

@@ -6,7 +6,7 @@ from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import validation as educational_validation
 from pcapi.core.educational.api import national_program as np_api
 from pcapi.core.educational.api import offer as educational_api_offer
-from pcapi.core.educational.models import OfferAddressType
+from pcapi.core.educational.enum import OfferAddressType
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import exceptions as offers_exceptions

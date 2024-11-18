@@ -5,7 +5,7 @@ import pytest
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
-from pcapi.core.educational.models import AdageFrontRoles
+from pcapi.core.educational.enum import AdageFrontRoles
 import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.educational.utils as educational_utils
 

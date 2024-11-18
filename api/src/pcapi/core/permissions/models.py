@@ -127,17 +127,6 @@ def sync_db_permissions(session: sa.orm.Session) -> None:
     return sync_enum_with_db_field(session, Permissions, "name", Permission)
 
 
-class RolePermission(PcObject, Base, Model):
-    """
-    An association table between roles and permission for their
-    many-to-many relationship
-    """
-
-    roleId: int = sa.Column(sa.BigInteger, sa.ForeignKey("role.id", ondelete="CASCADE"))
-    permissionId: int = sa.Column(sa.BigInteger, sa.ForeignKey("permission.id", ondelete="CASCADE"))
-    __table_args__ = (sa.UniqueConstraint("roleId", "permissionId", name="role_permission_roleId_permissionId_key"),)
-
-
 class Permission(PcObject, Base, Model):
     __tablename__ = "permission"
 
@@ -187,16 +176,6 @@ def sync_db_roles(session: sa.orm.Session) -> None:
     return sync_enum_with_db_field(session, Roles, "value", Role)
 
 
-role_backoffice_profile_table = sa.Table(
-    "role_backoffice_profile",
-    Base.metadata,
-    sa.Column("roleId", sa.ForeignKey("role.id", ondelete="CASCADE"), nullable=False, primary_key=True),
-    sa.Column(
-        "profileId", sa.ForeignKey("backoffice_user_profile.id", ondelete="CASCADE"), nullable=False, primary_key=True
-    ),
-)
-
-
 class Role(PcObject, Base, Model):
     __tablename__ = "role"
 
@@ -205,7 +184,7 @@ class Role(PcObject, Base, Model):
         Permission, secondary="role_permission", back_populates="roles"
     )
     profiles: sa.orm.Mapped["BackOfficeUserProfile"] = sa.orm.relationship(
-        "BackOfficeUserProfile", secondary=role_backoffice_profile_table, back_populates="roles"
+        "BackOfficeUserProfile", secondary="role_backoffice_profile", back_populates="roles"
     )
 
     def has_permission(self, needed_permission: Permissions) -> bool:
@@ -213,6 +192,18 @@ class Role(PcObject, Base, Model):
             if permission.name == needed_permission.name:
                 return True
         return False
+
+
+RolePermission = sa.Table(
+    # An association table between roles and permission for their
+    # many-to-many relationship
+    "role_permission",
+    Base.metadata,
+    sa.Column("id", sa.BigInteger, primary_key=True, autoincrement=True),
+    sa.Column("roleId", sa.ForeignKey(Role.id, ondelete="CASCADE")),
+    sa.Column("permissionId", sa.ForeignKey(Permission.id, ondelete="CASCADE")),
+    sa.UniqueConstraint("roleId", "permissionId", name="role_permission_roleId_permissionId_key"),
+)
 
 
 class BackOfficeUserProfile(Base, Model):
@@ -227,7 +218,7 @@ class BackOfficeUserProfile(Base, Model):
         "User", foreign_keys=[userId], uselist=False, back_populates="backoffice_profile"
     )
     roles: sa.orm.Mapped["list[Role]"] = sa.orm.relationship(
-        "Role", secondary=role_backoffice_profile_table, back_populates="profiles"
+        "Role", secondary="role_backoffice_profile", back_populates="profiles"
     )
 
     preferences: sa.orm.Mapped[dict] = sa.Column(
@@ -249,3 +240,14 @@ class BackOfficeUserProfile(Base, Model):
             for perm in role.permissions
             if perm.name in permissions_members
         ]
+
+
+RoleBackofficeProfile = sa.Table(
+    "role_backoffice_profile",
+    Base.metadata,
+    sa.Column("id", sa.BigInteger, primary_key=True, autoincrement=True),
+    sa.Column("roleId", sa.ForeignKey(Role.id, ondelete="CASCADE"), nullable=False, primary_key=True),
+    sa.Column(
+        "profileId", sa.ForeignKey(BackOfficeUserProfile.id, ondelete="CASCADE"), nullable=False, primary_key=True
+    ),
+)

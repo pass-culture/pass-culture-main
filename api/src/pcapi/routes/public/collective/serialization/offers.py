@@ -12,7 +12,7 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import validation as educational_validation
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
-from pcapi.core.educational.models import OfferAddressType
+from pcapi.core.educational.enum import OfferAddressType
 from pcapi.core.educational.models import StudentLevels
 from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.routes.public.documentation_constants.fields import fields

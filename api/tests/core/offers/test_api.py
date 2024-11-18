@@ -2592,14 +2592,14 @@ def offer_matching_one_validation_rule_fixture():
 
 @pytest.mark.usefixtures("db_session")
 class ResolveOfferValidationRuleTest:
-    def test_offer_validation_with_one_rule_with_in(self, offer_matching_one_validation_rule):
+    def test_offer_validation_with_one_rule_with_in(self, offer_matching_one_validation_rule, db_session):
         assert (
             api.set_offer_status_based_on_fraud_criteria(offer_matching_one_validation_rule)
             == models.OfferValidationStatus.PENDING
         )
-        assert models.ValidationRuleOfferLink.query.count() == 1
+        assert db_session.query(models.ValidationRuleOfferLink).count() == 1
 
-    def test_offer_validation_with_unrelated_rule(self):
+    def test_offer_validation_with_unrelated_rule(self, db_session):
         collective_offer = educational_factories.CollectiveOfferFactory(name="REJECTED")
         factories.OfferValidationSubRuleFactory(
             model=models.OfferValidationModel.OFFER,
@@ -2609,7 +2609,7 @@ class ResolveOfferValidationRuleTest:
         )
 
         assert api.set_offer_status_based_on_fraud_criteria(collective_offer) == models.OfferValidationStatus.APPROVED
-        assert models.ValidationRuleOfferLink.query.count() == 0
+        assert db_session.query(models.ValidationRuleOfferLink).count() == 0
 
     @pytest.mark.parametrize(
         "price, expected_status",
@@ -2747,7 +2747,7 @@ class ResolveOfferValidationRuleTest:
         assert api.set_offer_status_based_on_fraud_criteria(offer_to_approve) == models.OfferValidationStatus.APPROVED
         assert api.set_offer_status_based_on_fraud_criteria(offer_to_flag) == models.OfferValidationStatus.PENDING
 
-    def test_offer_validation_with_contains_rule(self):
+    def test_offer_validation_with_contains_rule(self, db_session):
         offer_to_flag = factories.OfferFactory(name="Sapristi, un lot interdit")
         offer_to_flag_too = factories.OfferFactory(name="Les complots de la théorie")
         offer_name_rule = factories.OfferValidationRuleFactory(name="Règle sur le nom des offres")
@@ -2761,9 +2761,9 @@ class ResolveOfferValidationRuleTest:
 
         assert api.set_offer_status_based_on_fraud_criteria(offer_to_flag) == models.OfferValidationStatus.PENDING
         assert api.set_offer_status_based_on_fraud_criteria(offer_to_flag_too) == models.OfferValidationStatus.PENDING
-        assert models.ValidationRuleOfferLink.query.count() == 2
+        assert db_session.query(models.ValidationRuleOfferLink).count() == 2
 
-    def test_offer_validation_rule_with_offer_type(self):
+    def test_offer_validation_rule_with_offer_type(self, db_session):
         offer = factories.OfferFactory()
         collective_offer = educational_factories.CollectiveOfferFactory()
         offer_validation_rule = factories.OfferValidationRuleFactory(name="Règle sur les types d'offres")
@@ -2776,10 +2776,10 @@ class ResolveOfferValidationRuleTest:
         )
         assert api.set_offer_status_based_on_fraud_criteria(offer) == models.OfferValidationStatus.APPROVED
         assert api.set_offer_status_based_on_fraud_criteria(collective_offer) == models.OfferValidationStatus.PENDING
-        assert models.ValidationRuleOfferLink.query.count() == 0
-        assert educational_models.ValidationRuleCollectiveOfferLink.query.count() == 1
+        assert db_session.query(models.ValidationRuleOfferLink).count() == 0
+        assert db_session.query(educational_models.ValidationRuleCollectiveOfferLink).count() == 1
 
-    def test_offer_validation_rule_with_venue_id(self):
+    def test_offer_validation_rule_with_venue_id(self, db_session):
         venue = offerers_factories.VenueFactory()
 
         offer = factories.OfferFactory(venue=venue)
@@ -2794,10 +2794,10 @@ class ResolveOfferValidationRuleTest:
         )
         assert api.set_offer_status_based_on_fraud_criteria(offer) == models.OfferValidationStatus.PENDING
         assert api.set_offer_status_based_on_fraud_criteria(collective_offer) == models.OfferValidationStatus.PENDING
-        assert models.ValidationRuleOfferLink.query.count() == 1
-        assert educational_models.ValidationRuleCollectiveOfferLink.query.count() == 1
+        assert db_session.query(models.ValidationRuleOfferLink).count() == 1
+        assert db_session.query(educational_models.ValidationRuleCollectiveOfferLink).count() == 1
 
-    def test_offer_validation_rule_with_offerer_id(self):
+    def test_offer_validation_rule_with_offerer_id(self, db_session):
         offerer = offerers_factories.OffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
@@ -2813,8 +2813,8 @@ class ResolveOfferValidationRuleTest:
         )
         assert api.set_offer_status_based_on_fraud_criteria(offer) == models.OfferValidationStatus.PENDING
         assert api.set_offer_status_based_on_fraud_criteria(collective_offer) == models.OfferValidationStatus.PENDING
-        assert models.ValidationRuleOfferLink.query.count() == 1
-        assert educational_models.ValidationRuleCollectiveOfferLink.query.count() == 1
+        assert db_session.query(models.ValidationRuleOfferLink).count() == 1
+        assert db_session.query(educational_models.ValidationRuleCollectiveOfferLink).count() == 1
 
     @pytest.mark.parametrize(
         "offer_kwargs, expected_status",
@@ -2881,7 +2881,7 @@ class ResolveOfferValidationRuleTest:
         )
         assert api.set_offer_status_based_on_fraud_criteria(offer) == expected_status
 
-    def test_offer_validation_with_multiple_rules(self):
+    def test_offer_validation_with_multiple_rules(self, db_session):
         offer = factories.OfferFactory(name="offer with a verboten name")
         factories.StockFactory(offer=offer, price=15)
         offer_name_rule = factories.OfferValidationRuleFactory(name="Règle sur le nom des offres")
@@ -2902,9 +2902,9 @@ class ResolveOfferValidationRuleTest:
         )
 
         assert api.set_offer_status_based_on_fraud_criteria(offer) == models.OfferValidationStatus.PENDING
-        assert models.ValidationRuleOfferLink.query.count() == 1
+        assert db_session.query(models.ValidationRuleOfferLink).count() == 1
 
-    def test_offer_validation_rule_with_multiple_sub_rules(self):
+    def test_offer_validation_rule_with_multiple_sub_rules(self, db_session):
         offer_to_approve = factories.OfferFactory(name="offer with a verboten name")
         factories.StockFactory(offer=offer_to_approve, price=15)
         offer_to_flag = factories.OfferFactory(name="offer with a verboten name")
@@ -2926,9 +2926,9 @@ class ResolveOfferValidationRuleTest:
         )
         assert api.set_offer_status_based_on_fraud_criteria(offer_to_approve) == models.OfferValidationStatus.APPROVED
         assert api.set_offer_status_based_on_fraud_criteria(offer_to_flag) == models.OfferValidationStatus.PENDING
-        assert models.ValidationRuleOfferLink.query.count() == 1
+        assert db_session.query(models.ValidationRuleOfferLink).count() == 1
 
-    def test_offer_validation_rule_with_unrelated_rules(self):
+    def test_offer_validation_rule_with_unrelated_rules(self, db_session):
         offer_to_flag = factories.OfferFactory(name="offer with a verboten name")
         factories.StockFactory(offer=offer_to_flag, price=15)
         collective_offer_to_flag = educational_factories.CollectiveOfferFactory(name="offer with a nice name")
@@ -2956,8 +2956,8 @@ class ResolveOfferValidationRuleTest:
             api.set_offer_status_based_on_fraud_criteria(collective_offer_to_flag)
             == models.OfferValidationStatus.PENDING
         )
-        assert models.ValidationRuleOfferLink.query.count() == 1
-        assert educational_models.ValidationRuleCollectiveOfferLink.query.count() == 1
+        assert db_session.query(models.ValidationRuleOfferLink).count() == 1
+        assert db_session.query(educational_models.ValidationRuleCollectiveOfferLink).count() == 1
 
     def test_offer_validation_with_description_rule_and_offer_without_description(self):
         offer = factories.OfferFactory(description=None)
@@ -2970,7 +2970,7 @@ class ResolveOfferValidationRuleTest:
 
         assert api.set_offer_status_based_on_fraud_criteria(offer) == models.OfferValidationStatus.APPROVED
 
-    def test_validation_rule_offer_link_data(self):
+    def test_validation_rule_offer_link_data(self, db_session):
         offer_to_flag = factories.OfferFactory(name="Sapristi, un lot interdit")
         factories.StockFactory(offer=offer_to_flag, price=300)
         offer_to_flag_too = factories.OfferFactory(name="Les complots de la théorie")
@@ -2995,11 +2995,11 @@ class ResolveOfferValidationRuleTest:
         assert api.set_offer_status_based_on_fraud_criteria(offer_to_flag) == models.OfferValidationStatus.PENDING
         assert api.set_offer_status_based_on_fraud_criteria(offer_to_flag_too) == models.OfferValidationStatus.PENDING
 
-        assert models.ValidationRuleOfferLink.query.filter_by(offerId=offer_to_flag.id).count() == 2
-        assert models.ValidationRuleOfferLink.query.filter_by(offerId=offer_to_flag_too.id).count() == 1
-        assert models.ValidationRuleOfferLink.query.filter_by(ruleId=offer_name_rule.id).count() == 2
-        assert models.ValidationRuleOfferLink.query.filter_by(ruleId=offer_price_rule.id).count() == 1
-        assert models.ValidationRuleOfferLink.query.count() == 3
+        assert db_session.query(models.ValidationRuleOfferLink).filter_by(offerId=offer_to_flag.id).count() == 2
+        assert db_session.query(models.ValidationRuleOfferLink).filter_by(offerId=offer_to_flag_too.id).count() == 1
+        assert db_session.query(models.ValidationRuleOfferLink).filter_by(ruleId=offer_name_rule.id).count() == 2
+        assert db_session.query(models.ValidationRuleOfferLink).filter_by(ruleId=offer_price_rule.id).count() == 1
+        assert db_session.query(models.ValidationRuleOfferLink).count() == 3
 
     @pytest.mark.parametrize(
         "formats, excluded_formats, expected_status",
@@ -3057,7 +3057,7 @@ class ResolveOfferValidationRuleTest:
 
         assert api.set_offer_status_based_on_fraud_criteria(collective_offer) == expected_status
 
-    def test_offer_validation_when_offerer_whitelisted(self, offer_matching_one_validation_rule):
+    def test_offer_validation_when_offerer_whitelisted(self, offer_matching_one_validation_rule, db_session):
         offerers_factories.WhitelistedOffererConfidenceRuleFactory(
             offerer=offer_matching_one_validation_rule.venue.managingOfferer
         )
@@ -3065,18 +3065,18 @@ class ResolveOfferValidationRuleTest:
         status = api.set_offer_status_based_on_fraud_criteria(offer_matching_one_validation_rule)
 
         assert status == models.OfferValidationStatus.APPROVED
-        assert models.ValidationRuleOfferLink.query.count() == 0
+        assert db_session.query(models.ValidationRuleOfferLink).count() == 0
 
-    def test_offer_validation_when_offerer_on_manual_review(self):
+    def test_offer_validation_when_offerer_on_manual_review(self, db_session):
         collective_offer = educational_factories.CollectiveOfferFactory()
         offerers_factories.ManualReviewOffererConfidenceRuleFactory(offerer=collective_offer.venue.managingOfferer)
 
         status = api.set_offer_status_based_on_fraud_criteria(collective_offer)
 
         assert status == models.OfferValidationStatus.PENDING
-        assert models.ValidationRuleOfferLink.query.count() == 0
+        assert db_session.query(models.ValidationRuleOfferLink).count() == 0
 
-    def test_offer_validation_when_offerer_on_manual_review_with_rules(self, offer_matching_one_validation_rule):
+    def test_offer_validation_when_offerer_on_manual_review_with_rules(self, offer_matching_one_validation_rule, db_session):
         offerers_factories.ManualReviewOffererConfidenceRuleFactory(
             offerer=offer_matching_one_validation_rule.venue.managingOfferer
         )
@@ -3084,24 +3084,24 @@ class ResolveOfferValidationRuleTest:
         status = api.set_offer_status_based_on_fraud_criteria(offer_matching_one_validation_rule)
 
         assert status == models.OfferValidationStatus.PENDING
-        assert models.ValidationRuleOfferLink.query.count() == 1
+        assert db_session.query(models.ValidationRuleOfferLink).count() == 1
 
-    def test_offer_validation_when_venue_whitelisted(self, offer_matching_one_validation_rule):
+    def test_offer_validation_when_venue_whitelisted(self, offer_matching_one_validation_rule, db_session):
         offerers_factories.WhitelistedVenueConfidenceRuleFactory(venue=offer_matching_one_validation_rule.venue)
 
         status = api.set_offer_status_based_on_fraud_criteria(offer_matching_one_validation_rule)
 
         assert status == models.OfferValidationStatus.APPROVED
-        assert models.ValidationRuleOfferLink.query.count() == 0
+        assert db_session.query(models.ValidationRuleOfferLink).count() == 0
 
-    def test_offer_validation_when_venue_on_manual_review(self):
+    def test_offer_validation_when_venue_on_manual_review(self, db_session):
         collective_offer = educational_factories.CollectiveOfferFactory()
         offerers_factories.ManualReviewVenueConfidenceRuleFactory(venue=collective_offer.venue)
 
         status = api.set_offer_status_based_on_fraud_criteria(collective_offer)
 
         assert status == models.OfferValidationStatus.PENDING
-        assert models.ValidationRuleOfferLink.query.count() == 0
+        assert db_session.query(models.ValidationRuleOfferLink).count() == 0
 
 
 @pytest.mark.usefixtures("db_session")
@@ -3224,7 +3224,7 @@ class WhitelistExistingProductTest:
 
 @pytest.mark.usefixtures("db_session")
 class DeleteDraftOffersTest:
-    def test_delete_draft_with_mediation_offer_criterion_activation_code_and_stocks(self, client):
+    def test_delete_draft_with_mediation_offer_criterion_activation_code_and_stocks(self, client, db_session):
         criterion = criteria_factories.CriterionFactory()
         draft_offer = factories.OfferFactory(validation=OfferValidationStatus.DRAFT, criteria=[criterion])
         factories.MediationFactory(offer=draft_offer)
@@ -3234,9 +3234,9 @@ class DeleteDraftOffersTest:
 
         offer_ids = [draft_offer.id, other_draft_offer.id]
 
-        api.batch_delete_draft_offers(models.Offer.query.filter(models.Offer.id.in_(offer_ids)))
+        api.batch_delete_draft_offers(db_session.query(models.Offer).filter(models.Offer.id.in_(offer_ids)))
 
-        assert criteria_models.OfferCriterion.query.count() == 0
+        assert db_session.query(criteria_models.OfferCriterion).count() == 0
         assert models.Mediation.query.count() == 0
         assert models.Stock.query.count() == 0
         assert models.Offer.query.count() == 0

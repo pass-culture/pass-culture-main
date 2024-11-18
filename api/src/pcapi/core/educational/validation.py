@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
+from pcapi.core.educational.enum import OfferAddressType
 from pcapi.core.educational import repository
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation as offers_validation
@@ -19,24 +20,24 @@ def validate_offer_venue(offer_venue: "OfferVenueModel | None") -> None:
     if offer_venue is None:
         return
     errors = {}
-    if offer_venue.addressType == models.OfferAddressType.OFFERER_VENUE:
+    if offer_venue.addressType == OfferAddressType.OFFERER_VENUE:
         if offer_venue.venueId is None:
             errors["offerVenue.venueId"] = (
-                "Ce champ est obligatoire si 'addressType' vaut " f"'{models.OfferAddressType.OFFERER_VENUE.value}'"
+                f"Ce champ est obligatoire si 'addressType' vaut '{OfferAddressType.OFFERER_VENUE.value}'"
             )
     elif offer_venue.venueId is not None:
         errors["offerVenue.venueId"] = (
-            "Ce champ est interdit si 'addressType' ne vaut pas " f"'{models.OfferAddressType.OFFERER_VENUE.value}'"
+            f"Ce champ est interdit si 'addressType' ne vaut pas '{OfferAddressType.OFFERER_VENUE.value}'"
         )
 
-    if offer_venue.addressType == models.OfferAddressType.OTHER:
+    if offer_venue.addressType == OfferAddressType.OTHER:
         if not offer_venue.otherAddress:
             errors["offerVenue.otherAddress"] = (
-                "Ce champ est obligatoire si 'addressType' vaut " f"'{models.OfferAddressType.OTHER.value}'"
+                f"Ce champ est obligatoire si 'addressType' vaut '{OfferAddressType.OTHER.value}'"
             )
     elif offer_venue.otherAddress:
         errors["offerVenue.otherAddress"] = (
-            "Ce champ est interdit si 'addressType' ne vaut pas " f"'{models.OfferAddressType.OTHER.value}'"
+            f"Ce champ est interdit si 'addressType' ne vaut pas '{OfferAddressType.OTHER.value}'"
         )
     if errors:
         raise api_errors.ApiErrors(errors=errors, status_code=404)

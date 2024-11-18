@@ -5,7 +5,7 @@ from pydantic.v1 import ValidationError
 
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.exceptions import MissingRequiredRedactorInformation
-from pcapi.core.educational.models import AdageFrontRoles
+from pcapi.core.educational.enum import AdageFrontRoles
 from pcapi.core.educational.schemas import RedactorInformation
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel

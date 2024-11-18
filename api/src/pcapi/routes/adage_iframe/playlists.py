@@ -11,7 +11,7 @@ from pcapi.core.educational import repository
 import pcapi.core.educational.api.favorites as favorites_api
 import pcapi.core.educational.api.institution as institution_api
 import pcapi.core.educational.api.playlists as playlists_api
-from pcapi.core.educational.models import OfferAddressType
+from pcapi.core.educational.enum import OfferAddressType
 from pcapi.core.offerers.repository import get_venue_by_id
 from pcapi.models import Model
 from pcapi.models.api_errors import ApiErrors

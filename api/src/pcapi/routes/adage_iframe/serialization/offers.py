@@ -11,7 +11,7 @@ from pydantic.v1.class_validators import validator
 import pcapi.core.categories.subcategories_v2 as subcategories
 from pcapi.core.categories.subcategories_v2 import EacFormat
 from pcapi.core.educational import models as educational_models
-from pcapi.core.educational.models import OfferAddressType
+from pcapi.core.educational.enum import OfferAddressType
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.native.v1.serialization import common_models
 from pcapi.routes.serialization import BaseModel

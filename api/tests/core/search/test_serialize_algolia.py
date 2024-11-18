@@ -7,7 +7,7 @@ import time_machine
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.educational.factories as educational_factories
-from pcapi.core.educational.models import OfferAddressType
+from pcapi.core.educational.enum import OfferAddressType
 from pcapi.core.educational.models import StudentLevels
 import pcapi.core.geography.factories as geography_factories
 import pcapi.core.offerers.factories as offerers_factories
