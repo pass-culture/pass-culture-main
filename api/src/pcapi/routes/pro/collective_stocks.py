@@ -9,6 +9,7 @@ from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models.api_errors import ApiErrors
+from pcapi.repository import atomic
 from pcapi.routes.apis import private_api
 from pcapi.routes.pro import blueprint
 from pcapi.routes.serialization import collective_stock_serialize
@@ -20,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 @private_api.route("/collective/stocks", methods=["POST"])
+@atomic()
 @login_required
 @spectree_serialize(
     on_success_status=201,
@@ -52,6 +54,7 @@ def create_collective_stock(
 
 
 @private_api.route("/collective/stocks/<int:collective_stock_id>", methods=["PATCH"])
+@atomic()
 @login_required
 @spectree_serialize(
     on_success_status=200,
