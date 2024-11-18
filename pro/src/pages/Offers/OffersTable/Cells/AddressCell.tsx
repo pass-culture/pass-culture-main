@@ -8,7 +8,7 @@ import styles from './Cells.module.scss'
 export function AddressCell({
   address,
 }: {
-  address: AddressResponseIsLinkedToVenueModel
+  address: AddressResponseIsLinkedToVenueModel | null | undefined
 }) {
   return (
     <td
@@ -17,7 +17,7 @@ export function AddressCell({
         styles['venue-column']
       )}
     >
-      {computeAddressDisplayName(address)}
+      {address && computeAddressDisplayName(address)}
     </td>
   )
 }
