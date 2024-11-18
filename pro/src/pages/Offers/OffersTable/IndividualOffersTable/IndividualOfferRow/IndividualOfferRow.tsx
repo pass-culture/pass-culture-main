@@ -68,7 +68,7 @@ export const IndividualOfferRow = ({
 
       <OfferNameCell offer={offer} editionOfferLink={editionOfferLink} />
 
-      {offerAddressEnabled && offer.address ? (
+      {offerAddressEnabled ? (
         <AddressCell address={offer.address} />
       ) : (
         <OfferVenueCell venue={offer.venue} />
