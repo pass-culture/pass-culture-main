@@ -14,10 +14,30 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
     endpoint_url = "/public/offers/v1/products"
     endpoint_method = "get"
 
-    num_queries_400 = 1  # select api_key, offerer and provider
-    num_queries_400 += 1  # select features
-    num_queries_404 = num_queries_400 + 1  # check venue_provider exists
-    num_queries_success = num_queries_404 + 1  # select offer
+    # base_num_queries = 1  # select api_key, offerer and provider
+    # base_num_queries += 1  # select features
+
+    # num_queries_400 = base_num_queries
+
+    # base_num_queries += 1  # check venue_provider exists
+    # num_queries_404 = base_num_queries + 1  # rollback
+    # num_queries_success = base_num_queries + 1  # select offer
+
+    # select api key
+    # select offerer
+    num_queries_400 = 2
+
+    # select api key
+    # select offerer
+    # select provider
+    # rollback
+    num_queries_404 = 4
+
+    # select api key
+    # select offerer
+    # select provider
+    # select offer
+    num_queries_success = 4
 
     def test_should_raise_404_because_has_no_access_to_venue(self, client):
         plain_api_key, _ = self.setup_provider()
@@ -45,8 +65,8 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
                 self.endpoint_url, params={"venueId": venue_id, "limit": 5}
             )
 
-            assert response.status_code == 200
-            assert [product["id"] for product in response.json["products"]] == [offer.id for offer in offers[0:5]]
+        assert response.status_code == 200
+        assert [product["id"] for product in response.json["products"]] == [offer.id for offer in offers[0:5]]
 
     def test_should_return_all_offers(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -61,8 +81,8 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
         with testing.assert_num_queries(no_check_on_venue_num_queries):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
 
-            assert response.status_code == 200
-            assert [product["id"] for product in response.json["products"]] == [offer.id for offer in offers]
+        assert response.status_code == 200
+        assert [product["id"] for product in response.json["products"]] == [offer.id for offer in offers]
 
     def test_should_return_offers_linked_to_address_id(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -78,9 +98,9 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
                 self.endpoint_url, {"addressId": offerer_address_1.addressId}
             )
 
-            assert response.status_code == 200
-            assert len(response.json["products"]) == 1
-            assert response.json["products"][0]["id"] == offer1.id
+        assert response.status_code == 200
+        assert len(response.json["products"]) == 1
+        assert response.json["products"][0]["id"] == offer1.id
 
     def test_get_last_page(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -94,8 +114,8 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
                 params={"venueId": venue_id, "limit": 5, "firstIndex": first_index},
             )
 
-            assert response.status_code == 200
-            assert [product["id"] for product in response.json["products"]] == [offer.id for offer in offers[10:12]]
+        assert response.status_code == 200
+        assert [product["id"] for product in response.json["products"]] == [offer.id for offer in offers[10:12]]
 
     def test_get_product_using_ids_at_provider(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -114,8 +134,8 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
                 params={"venueId": venue_id, "limit": 5, "idsAtProvider": f"{id_at_provider_1},{id_at_provider_2}"},
             )
 
-            assert response.status_code == 200
-            assert [product["id"] for product in response.json["products"]] == [offer_1.id, offer_2.id]
+        assert response.status_code == 200
+        assert [product["id"] for product in response.json["products"]] == [offer_1.id, offer_2.id]
 
     def test_should_return_200_even_if_the_offer_name_is_longer_than_90_signs_long(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -186,8 +206,8 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
         with testing.assert_num_queries(self.num_queries_success):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params={"venueId": venue_id})
 
-            assert response.status_code == 200
-            assert [product["id"] for product in response.json["products"]] == [offer.id]
+        assert response.status_code == 200
+        assert [product["id"] for product in response.json["products"]] == [offer.id]
 
     def test_get_offer_with_more_than_1000_description(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()

@@ -16,7 +16,8 @@ from pcapi.tasks.serialization.compliance_tasks import GetComplianceScoreRequest
 logger = logging.getLogger(__name__)
 
 
-def update_offer_compliance_score(offer: offers_models.Offer, is_primary: bool) -> None:
+def update_offer_compliance_score(offer_id: int, is_primary: bool) -> None:
+    offer = offers_models.Offer.query.get(offer_id)
     payload = _get_payload_for_compliance_api(offer)
     if is_primary:
         compliance_tasks.update_offer_compliance_score_primary_task.delay(payload)

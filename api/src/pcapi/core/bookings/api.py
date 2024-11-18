@@ -560,7 +560,10 @@ def _cancel_booking(
         technical_message_id="booking.cancelled",
     )
     batch.track_booking_cancellation(booking)
-    external_bookings_api.send_booking_notification_to_external_service(booking, BookingAction.CANCEL)
+
+    on_commit(
+        partial(external_bookings_api.send_booking_notification_to_external_service, booking, BookingAction.CANCEL)
+    )
 
     update_external_user(booking.user)
     update_external_pro(booking.venue.bookingEmail)

@@ -1,6 +1,7 @@
 from collections import abc
 import datetime
 import enum
+from functools import partial
 import logging
 import typing
 
@@ -19,6 +20,7 @@ import pcapi.core.offers.repository as offers_repository
 from pcapi.core.search.backends import base
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
+from pcapi.repository import on_commit
 from pcapi.utils import requests
 from pcapi.utils.module_loading import import_string
 
@@ -132,14 +134,22 @@ def async_index_offer_ids(
     This function returns quickly. The "real" reindexation will be
     done later through a cron job.
     """
-    _log_async_request("offers", offer_ids, reason, log_extra)
-    backend = _get_backend()
-    try:
-        backend.enqueue_offer_ids(offer_ids)
-    except Exception:  # pylint: disable=broad-except
-        if not settings.CATCH_INDEXATION_EXCEPTIONS:
-            raise
-        logger.exception("Could not enqueue offer ids to index", extra={"offers": offer_ids})
+
+    def enqueue(
+        offer_ids: abc.Collection[int],
+        reason: IndexationReason,
+        log_extra: dict | None = None,
+    ) -> None:
+        _log_async_request("offers", offer_ids, reason, log_extra)
+        backend = _get_backend()
+        try:
+            backend.enqueue_offer_ids(offer_ids)
+        except Exception:  # pylint: disable=broad-except
+            if not settings.CATCH_INDEXATION_EXCEPTIONS:
+                raise
+            logger.exception("Could not enqueue offer ids to index", extra={"offers": offer_ids})
+
+    on_commit(partial(enqueue, offer_ids, reason, log_extra))
 
 
 def async_index_collective_offer_template_ids(

@@ -3,6 +3,7 @@ import logging
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import api_errors
+from pcapi.repository import atomic
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.documentation_constants import http_responses
@@ -34,6 +35,7 @@ logger = logging.getLogger(__name__)
         )
     ),
 )
+@atomic()
 def get_offerer_venues(
     query: venues_serialization.GetOfferersVenuesQuery,
 ) -> venues_serialization.GetOfferersVenuesResponse:

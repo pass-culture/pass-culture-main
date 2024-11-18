@@ -1,5 +1,6 @@
 import copy
 import datetime
+from functools import partial
 import logging
 
 from flask import request
@@ -26,6 +27,8 @@ from pcapi.domain import show_types
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
+from pcapi.repository import atomic
+from pcapi.repository import on_commit
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.documentation_constants import http_responses
@@ -62,6 +65,7 @@ logger = logging.getLogger(__name__)
         )
     ),
 )
+@atomic()
 def get_show_types() -> serialization.GetShowTypesResponse:
     """
     Get Show Types
@@ -93,6 +97,7 @@ def get_show_types() -> serialization.GetShowTypesResponse:
         )
     ),
 )
+@atomic()
 def get_music_types() -> serialization.GetMusicTypesResponse:
     """
     [LEGACY] Get music types
@@ -124,6 +129,7 @@ def get_music_types() -> serialization.GetMusicTypesResponse:
         )
     ),
 )
+@atomic()
 def get_all_titelive_music_types() -> serialization.GetTiteliveMusicTypesResponse:
     """
     Get Music Types
@@ -155,6 +161,7 @@ def get_all_titelive_music_types() -> serialization.GetTiteliveMusicTypesRespons
         )
     ),
 )
+@atomic()
 def get_event_titelive_music_types() -> serialization.GetTiteliveEventMusicTypesResponse:
     """
     Get Events Music Types
@@ -276,6 +283,7 @@ def _create_stock(product: offers_models.Offer, body: serialization.ProductOffer
         )
     ),
 )
+@atomic()
 def post_product_offer(body: serialization.ProductOfferCreation) -> serialization.ProductOfferResponse:
     """
     Create Product Offer
@@ -333,6 +341,7 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
         )
     ),
 )
+@atomic()
 def post_product_offer_by_ean(body: serialization.ProductsOfferByEanCreation) -> None:
     """
     Batch Upsert Product Offers by EAN
@@ -362,12 +371,15 @@ def post_product_offer_by_ean(body: serialization.ProductsOfferByEanCreation) ->
         address_label = body.location.address_label
 
     serialized_products_stocks = _serialize_products_from_body(body.products)
-    _create_or_update_ean_offers.delay(
-        serialized_products_stocks=serialized_products_stocks,
-        venue_id=venue.id,
-        provider_id=current_api_key.provider.id,
-        address_id=address_id,
-        address_label=address_label,
+    on_commit(
+        partial(
+            _create_or_update_ean_offers.delay,
+            serialized_products_stocks=serialized_products_stocks,
+            venue_id=venue.id,
+            provider_id=current_api_key.provider.id,
+            address_id=address_id,
+            address_label=address_label,
+        )
     )
 
 
@@ -615,6 +627,7 @@ def _create_offer_from_product(
         )
     ),
 )
+@atomic()
 def get_product(product_id: int) -> serialization.ProductOfferResponse:
     """
     Get Product Offer
@@ -646,6 +659,7 @@ def get_product(product_id: int) -> serialization.ProductOfferResponse:
         )
     ),
 )
+@atomic()
 def get_product_by_ean(
     query: serialization.GetProductsListByEansQuery,
 ) -> serialization.ProductOffersByEanResponse:
@@ -683,6 +697,7 @@ def get_product_by_ean(
         )
     ),
 )
+@atomic()
 def check_eans_availability(
     query: serialization.GetAvailableEANsListQuery,
 ) -> serialization.AvailableEANsResponse:
@@ -763,6 +778,7 @@ def _retrieve_offer_by_eans_query(eans: list[str], venueId: int) -> sqla.orm.Que
         )
     ),
 )
+@atomic()
 def get_products(
     query: serialization.GetOffersQueryParams,
 ) -> serialization.ProductOffersResponse:
@@ -813,6 +829,7 @@ def _check_offer_can_be_edited(offer: offers_models.Offer) -> None:
         )
     ),
 )
+@atomic()
 def edit_product(body: serialization.ProductOfferEdition) -> serialization.ProductOfferResponse:
     """
     Update Product Offer
@@ -833,45 +850,52 @@ def edit_product(body: serialization.ProductOfferEdition) -> serialization.Produ
     _check_offer_can_be_edited(offer)
     utils.check_offer_subcategory(body, offer.subcategoryId)
 
-    venue, offerer_address = utils.extract_venue_and_offerer_address_from_location(body)
-
     try:
-        with repository.transaction():
-            updates = body.dict(by_alias=True, exclude_unset=True)
-            dc = updates.get("accessibility", {})
-            extra_data = copy.deepcopy(offer.extraData)
-            offer_body = offers_schemas.UpdateOffer(
-                name=get_field(offer, updates, "name"),
-                audioDisabilityCompliant=get_field(offer, dc, "audioDisabilityCompliant"),
-                mentalDisabilityCompliant=get_field(offer, dc, "mentalDisabilityCompliant"),
-                motorDisabilityCompliant=get_field(offer, dc, "motorDisabilityCompliant"),
-                visualDisabilityCompliant=get_field(offer, dc, "visualDisabilityCompliant"),
-                bookingContact=get_field(offer, updates, "bookingContact"),
-                bookingEmail=get_field(offer, updates, "bookingEmail"),
-                description=get_field(offer, updates, "description"),
-                extraData=(
-                    serialization.deserialize_extra_data(body.category_related_fields, extra_data)
-                    if "categoryRelatedFields" in updates
-                    else extra_data
-                ),
-                isActive=get_field(offer, updates, "isActive"),
-                idAtProvider=get_field(offer, updates, "idAtProvider"),
-                isDuo=get_field(offer, updates, "enableDoubleBookings", col="isDuo"),
-                withdrawalDetails=get_field(offer, updates, "itemCollectionDetails", col="withdrawalDetails"),
-            )  # type: ignore[call-arg]
-            updated_offer = offers_api.update_offer(offer, offer_body, venue=venue, offerer_address=offerer_address)
-            if body.image:
-                utils.save_image(body.image, updated_offer)
-            if "stock" in updates:
-                _upsert_product_stock(updated_offer, body.stock, current_api_key.provider)
+        venue, offerer_address = utils.extract_venue_and_offerer_address_from_location(body)
+
+        updates = body.dict(by_alias=True, exclude_unset=True)
+        dc = updates.get("accessibility", {})
+        extra_data = copy.deepcopy(offer.extraData)
+        offer_body = offers_schemas.UpdateOffer(
+            name=get_field(offer, updates, "name"),
+            audioDisabilityCompliant=get_field(offer, dc, "audioDisabilityCompliant"),
+            mentalDisabilityCompliant=get_field(offer, dc, "mentalDisabilityCompliant"),
+            motorDisabilityCompliant=get_field(offer, dc, "motorDisabilityCompliant"),
+            visualDisabilityCompliant=get_field(offer, dc, "visualDisabilityCompliant"),
+            bookingContact=get_field(offer, updates, "bookingContact"),
+            bookingEmail=get_field(offer, updates, "bookingEmail"),
+            description=get_field(offer, updates, "description"),
+            extraData=(
+                serialization.deserialize_extra_data(body.category_related_fields, extra_data)
+                if "categoryRelatedFields" in updates
+                else extra_data
+            ),
+            isActive=get_field(offer, updates, "isActive"),
+            idAtProvider=get_field(offer, updates, "idAtProvider"),
+            isDuo=get_field(offer, updates, "enableDoubleBookings", col="isDuo"),
+            withdrawalDetails=get_field(offer, updates, "itemCollectionDetails", col="withdrawalDetails"),
+        )  # type: ignore[call-arg]
+        updated_offer = offers_api.update_offer(offer, offer_body, venue=venue, offerer_address=offerer_address)
+        db.session.flush()
+
+        if body.image:
+            utils.save_image(body.image, updated_offer)
+        if "stock" in updates:
+            stock = _upsert_product_stock(updated_offer, body.stock, current_api_key.provider)
+
+            # TODO(jeremieb): this should not be needed. BUT since datetime from
+            # db are not timezone aware and those from the request are...
+            # things get complicated during serialization (which does not
+            # know how to serialize timezone-aware datetime). So... reload
+            # everything and use data from the db.
+            db.session.flush()
+            if stock:
+                db.session.refresh(stock)
     except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as e:
         raise api_errors.ApiErrors(e.errors, status_code=400)
 
-    # TODO(jeremieb): this should not be needed. BUT since datetime from
-    # db are not timezone aware and those from the request are...
-    # things get complicated during serialization (which does not
-    # know how to serialize timezone-aware datetime). So... reload
-    # everything and use data from the db.
+    db.session.refresh(offer)
+
     offer = query.one_or_none()
     return serialization.ProductOfferResponse.build_product_offer(offer)
 
@@ -880,24 +904,23 @@ def _upsert_product_stock(
     offer: offers_models.Offer,
     stock_body: serialization.StockEdition | None,
     provider: providers_models.Provider,
-) -> None:
+) -> offers_models.Stock | None:
     existing_stock = next((stock for stock in offer.activeStocks), None)
     if not stock_body:
         if existing_stock:
             offers_api.delete_stock(existing_stock)
-        return
+        return None
 
     if not existing_stock:
         if stock_body.price is None:
             raise api_errors.ApiErrors({"stock.price": ["Required"]})
-        offers_api.create_stock(
+        return offers_api.create_stock(
             offer=offer,
             price=finance_utils.cents_to_full_unit(stock_body.price),
             quantity=serialization.deserialize_quantity(stock_body.quantity),
             booking_limit_datetime=stock_body.booking_limit_datetime,
             creating_provider=provider,
         )
-        return
 
     stock_update_body = stock_body.dict(exclude_unset=True)
     price = stock_update_body.get("price", offers_api.UNCHANGED)
@@ -909,6 +932,8 @@ def _upsert_product_stock(
         booking_limit_datetime=stock_update_body.get("booking_limit_datetime", offers_api.UNCHANGED),
         editing_provider=provider,
     )
+
+    return existing_stock
 
 
 @blueprints.public_api.route("/public/offers/v1/products/categories", methods=["GET"])
@@ -925,6 +950,7 @@ def _upsert_product_stock(
         )
     ),
 )
+@atomic()
 def get_product_categories() -> serialization.GetProductCategoriesResponse:
     """
     Get Product Categories
@@ -950,6 +976,7 @@ def get_product_categories() -> serialization.GetProductCategoriesResponse:
         **({"HTTP_204": (None, "Image updated successfully")} | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS),
     ),
 )
+@atomic()
 def upload_image(offer_id: int, form: serialization.ImageUploadFile) -> None:
     """
     Upload an Image

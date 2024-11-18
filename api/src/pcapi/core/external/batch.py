@@ -1,4 +1,5 @@
 from datetime import datetime
+from functools import partial
 import logging
 import textwrap
 
@@ -9,6 +10,7 @@ import pcapi.core.finance.models as finance_models
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.offers.models as offers_models
 import pcapi.notifications.push as push_notifications
+from pcapi.repository import on_commit
 from pcapi.tasks import batch_tasks
 
 
@@ -167,7 +169,8 @@ def track_booking_cancellation(booking: bookings_models.Booking) -> None:
         "offer_price": booking.total_amount,
     }
     payload = batch_tasks.TrackBatchEventRequest(event_name=event_name, event_payload=event_payload, user_id=user.id)
-    batch_tasks.track_event_task.delay(payload)
+
+    on_commit(partial(batch_tasks.track_event_task.delay, payload))
 
 
 def format_offer_attributes(offer: offers_models.Offer) -> dict:

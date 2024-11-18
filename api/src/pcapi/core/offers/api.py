@@ -443,9 +443,10 @@ def update_offer(
     withdrawal_updated = updates_set & withdrawal_fields
     oa_updated = "offererAddress" in updates
     if should_send_mail and (withdrawal_updated or oa_updated):
-        transactional_mails.send_email_for_each_ongoing_booking(offer)
+        on_commit(partial(transactional_mails.send_email_for_each_ongoing_booking, offer.id))
 
     reason = search.IndexationReason.OFFER_UPDATE
+
     search.async_index_offer_ids([offer.id], reason=reason, log_extra={"changes": updates_set})
 
     return offer
@@ -591,13 +592,10 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
         else:
             db.session.commit()
 
-        on_commit(
-            partial(
-                search.async_index_offer_ids,
-                offer_ids_batch,
-                reason=search.IndexationReason.OFFER_BATCH_UPDATE,
-                log_extra={"changes": set(update_fields.keys())},
-            ),
+        search.async_index_offer_ids(
+            offer_ids_batch,
+            reason=search.IndexationReason.OFFER_BATCH_UPDATE,
+            log_extra={"changes": set(update_fields.keys())},
         )
 
         withdrawal_updated = {"withdrawalDetails", "withdrawalType", "withdrawalDelay"}.intersection(
@@ -608,7 +606,7 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
                 on_commit(
                     partial(
                         transactional_mails.send_email_for_each_ongoing_booking,
-                        offer,
+                        offer.id,
                     ),
                 )
 
@@ -825,10 +823,8 @@ def create_stock(
         offer.lastValidationPrice = price
     repository.add_to_session(created_stock, *created_activation_codes, offer)
     db.session.flush()
-    search.async_index_offer_ids(
-        [offer.id],
-        reason=search.IndexationReason.STOCK_CREATION,
-    )
+
+    search.async_index_offer_ids([offer.id], reason=search.IndexationReason.STOCK_CREATION)
 
     return created_stock
 
@@ -916,6 +912,7 @@ def edit_stock(
         finance_api.update_finance_event_pricing_date(stock)
 
     repository.add_to_session(stock)
+
     search.async_index_offer_ids(
         [stock.offerId],
         reason=search.IndexationReason.STOCK_UPDATE,
@@ -976,10 +973,7 @@ def publish_offer(
     else:
         if offer.publicationDate:
             offers_repository.delete_future_offer(offer.id)
-        search.async_index_offer_ids(
-            [offer.id],
-            reason=search.IndexationReason.OFFER_PUBLICATION,
-        )
+        search.async_index_offer_ids([offer.id], reason=search.IndexationReason.OFFER_PUBLICATION)
         logger.info(
             "Offer has been published",
             extra={"offer_id": offer.id, "venue_id": offer.venueId, "offer_status": offer.status},
@@ -1037,6 +1031,7 @@ def _delete_stock(stock: models.Stock, author_id: int | None = None, user_connec
     if cancelled_bookings:
         for booking in cancelled_bookings:
             transactional_mails.send_booking_cancellation_by_pro_to_beneficiary_email(booking)
+
         transactional_mails.send_booking_cancellation_confirmation_by_pro_email(cancelled_bookings)
         if not FeatureToggle.WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION.is_active():
             on_commit(
@@ -1046,13 +1041,7 @@ def _delete_stock(stock: models.Stock, author_id: int | None = None, user_connec
                 )
             )
 
-    on_commit(
-        partial(
-            search.async_index_offer_ids,
-            [stock.offerId],
-            reason=search.IndexationReason.STOCK_DELETION,
-        )
-    )
+    search.async_index_offer_ids([stock.offerId], reason=search.IndexationReason.STOCK_DELETION)
 
 
 def delete_stock(stock: models.Stock, author_id: int | None = None, user_connect_as: bool | None = None) -> None:
@@ -1106,13 +1095,7 @@ def create_mediation(
     )
     _delete_mediations_and_thumbs(previous_mediations)
 
-    on_commit(
-        partial(
-            search.async_index_offer_ids,
-            [offer.id],
-            reason=search.IndexationReason.MEDIATION_CREATION,
-        ),
-    )
+    search.async_index_offer_ids([offer.id], reason=search.IndexationReason.MEDIATION_CREATION)
 
     return mediation
 
@@ -1204,13 +1187,8 @@ def add_criteria_to_offers(
     db.session.bulk_save_objects(offer_criteria)
     db.session.flush()
 
-    on_commit(
-        partial(
-            search.async_index_offer_ids,
-            offer_ids,
-            reason=search.IndexationReason.CRITERIA_LINK,
-            log_extra={"criterion_ids": criterion_ids},
-        ),
+    search.async_index_offer_ids(
+        offer_ids, reason=search.IndexationReason.CRITERIA_LINK, log_extra={"criterion_ids": criterion_ids}
     )
 
     return True
@@ -1310,13 +1288,10 @@ def reject_inappropriate_products(
         users_models.Favorite.query.filter(users_models.Favorite.offerId.in_(offer_ids)).delete(
             synchronize_session=False
         )
-        on_commit(
-            partial(
-                search.async_index_offer_ids,
-                offer_ids,
-                reason=search.IndexationReason.PRODUCT_REJECTION,
-                log_extra={"eans": eans},
-            ),
+        search.async_index_offer_ids(
+            offer_ids,
+            reason=search.IndexationReason.PRODUCT_REJECTION,
+            log_extra={"eans": eans},
         )
 
     return True
@@ -1384,10 +1359,10 @@ def set_offer_status_based_on_fraud_criteria(offer: AnyOffer) -> models.OfferVal
         status = models.OfferValidationStatus.PENDING
         offer.flaggingValidationRules = flagging_rules
         if isinstance(offer, models.Offer):
-            compliance.update_offer_compliance_score(offer, is_primary=True)
+            on_commit(partial(compliance.update_offer_compliance_score, offer.id, is_primary=True))
     else:
         if isinstance(offer, models.Offer):
-            compliance.update_offer_compliance_score(offer, is_primary=False)
+            on_commit(partial(compliance.update_offer_compliance_score, offer.id, is_primary=False))
 
     logger.info("Computed offer validation", extra={"offer": offer.id, "status": status.value})
     return status
@@ -2022,17 +1997,12 @@ def move_event_offer(
 
             db.session.add(booking)
 
-    on_commit(
-        partial(
-            search.async_index_offer_ids,
-            {offer_id},
-            reason=search.IndexationReason.OFFER_UPDATE,
-            log_extra={"changes": {"venueId"}},
-        )
+    search.async_index_offer_ids(
+        {offer_id}, reason=search.IndexationReason.OFFER_UPDATE, log_extra={"changes": {"venueId"}}
     )
 
     if notify_beneficiary:
-        on_commit(partial(transactional_mails.send_email_for_each_ongoing_booking, offer))
+        on_commit(partial(transactional_mails.send_email_for_each_ongoing_booking, offer.id))
 
 
 def move_collective_offer_venue(
