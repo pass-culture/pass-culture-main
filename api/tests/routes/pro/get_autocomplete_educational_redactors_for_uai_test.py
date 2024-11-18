@@ -117,12 +117,10 @@ class Returns200Test:
 @pytest.mark.usefixtures("db_session")
 class Returns404Test:
     def test_uai_not_found(self, client):
-        # Given
         user = users_factories.UserFactory()
 
-        # When
         client = client.with_session_auth(email=user.email)
-        with assert_num_queries(2):  #  session + user
+        with assert_num_queries(3):  #  session + user + rollback
             response = client.get("/collective/offers/redactors?uai=NO_UAI&candidate=sklodowska")
             assert response.status_code == 404
 
@@ -130,22 +128,18 @@ class Returns404Test:
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
     def test_uai_too_short(self, client):
-        # Given
         user = users_factories.UserFactory()
 
-        # When
         client = client.with_session_auth(email=user.email)
-        with assert_num_queries(2):  #  session + user
+        with assert_num_queries(3):  #  session + user + rollback
             response = client.get("/collective/offers/redactors?uai=X&candidate=sklodowska")
             assert response.status_code == 400
 
     def test_candidate_too_short(self, client):
-        # Given
         user = users_factories.UserFactory()
 
-        # When
         client = client.with_session_auth(email=user.email)
-        with assert_num_queries(2):  #  session + user
+        with assert_num_queries(3):  #  session + user + rollback
             response = client.get(f"/collective/offers/redactors?uai={VALID_UAI}&candidate=sk")
             assert response.status_code == 400
 

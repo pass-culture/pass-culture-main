@@ -65,7 +65,6 @@ from pcapi.models import pc_object
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationType
-from pcapi.repository import atomic
 from pcapi.repository import is_managed_transaction
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import on_commit
@@ -459,21 +458,27 @@ def update_collective_offer(
 
     nationalProgramId = new_values.pop("nationalProgramId", None)
     try:
-        national_program_api.link_or_unlink_offer_to_program(nationalProgramId, offer_to_update, commit=False)
+        national_program_api.link_or_unlink_offer_to_program(nationalProgramId, offer_to_update)
+        db.session.flush()
     except Exception:
-        db.session.rollback()
+        mark_transaction_as_invalid()
         raise
 
-    with atomic():
-        updated_fields = _update_collective_offer(offer=offer_to_update, new_values=new_values, commit=False)
-        if new_venue:
-            educational_models.CollectiveBooking.query.filter(
-                educational_models.CollectiveBooking.collectiveStockId == offer_to_update.collectiveStock.id
-            ).update({"venueId": new_venue.id}, synchronize_session="fetch")
+    updated_fields = _update_collective_offer(offer=offer_to_update, new_values=new_values)
+    db.session.flush()
 
-    educational_api_offer.notify_educational_redactor_on_collective_offer_or_stock_edit(
-        offer_to_update.id,
-        updated_fields,
+    if new_venue:
+        educational_models.CollectiveBooking.query.filter(
+            educational_models.CollectiveBooking.collectiveStockId == offer_to_update.collectiveStock.id
+        ).update({"venueId": new_venue.id}, synchronize_session="fetch")
+        db.session.flush()
+
+    on_commit(
+        partial(
+            educational_api_offer.notify_educational_redactor_on_collective_offer_or_stock_edit,
+            offer_to_update.id,
+            updated_fields,
+        )
     )
 
 
@@ -502,18 +507,21 @@ def update_collective_offer_template(offer_id: int, new_values: dict) -> None:
             offer_to_update.dateRange = DateTimeRange(start, end)
         else:
             offer_to_update.dateRange = None
+        db.session.flush()
 
     _update_collective_offer(offer=offer_to_update, new_values=new_values)
+    db.session.flush()
 
-    search.async_index_collective_offer_template_ids(
-        [offer_to_update.id],
-        reason=search.IndexationReason.OFFER_UPDATE,
+    on_commit(
+        partial(
+            search.async_index_collective_offer_template_ids,
+            [offer_to_update.id],
+            reason=search.IndexationReason.OFFER_UPDATE,
+        )
     )
 
 
-def _update_collective_offer(
-    offer: educational_api_offer.AnyCollectiveOffer, new_values: dict, commit: bool = True
-) -> list[str]:
+def _update_collective_offer(offer: educational_api_offer.AnyCollectiveOffer, new_values: dict) -> list[str]:
     validation.check_validation_status(offer)
     validation.check_contact_request(offer, new_values)
     # This variable is meant for Adage mailing
@@ -534,9 +542,6 @@ def _update_collective_offer(
         setattr(offer, key, value)
 
     db.session.add(offer)
-
-    if commit:
-        db.session.commit()
 
     return updated_fields
 
@@ -598,7 +603,7 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
                 )
 
 
-def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> None:
+def batch_update_collective_offers(query: BaseQuery, update_fields: dict, commit: bool = True) -> None:
     allowed_validation_status = {models.OfferValidationStatus.APPROVED}
     if "dateArchived" in update_fields:
         allowed_validation_status.update((models.OfferValidationStatus.DRAFT, models.OfferValidationStatus.REJECTED))
@@ -620,10 +625,14 @@ def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> Non
             educational_models.CollectiveOffer.id.in_(collective_offer_ids_batch)
         )
         query_to_update.update(update_fields, synchronize_session=False)
-        db.session.commit()
+
+        if commit:
+            db.session.commit()
+        else:
+            db.session.flush()
 
 
-def batch_update_collective_offers_template(query: BaseQuery, update_fields: dict) -> None:
+def batch_update_collective_offers_template(query: BaseQuery, update_fields: dict, commit: bool = True) -> None:
     allowed_validation_status = {models.OfferValidationStatus.APPROVED}
     if "dateArchived" in update_fields:
         allowed_validation_status.update((models.OfferValidationStatus.DRAFT, models.OfferValidationStatus.REJECTED))
@@ -645,12 +654,18 @@ def batch_update_collective_offers_template(query: BaseQuery, update_fields: dic
             educational_models.CollectiveOfferTemplate.id.in_(collective_offer_template_ids_batch)
         )
         query_to_update.update(update_fields, synchronize_session=False)
-        db.session.commit()
+        if commit:
+            db.session.commit()
+        else:
+            db.session.flush()
 
-        search.async_index_collective_offer_template_ids(
-            collective_offer_template_ids_batch,
-            reason=search.IndexationReason.OFFER_BATCH_UPDATE,
-            log_extra={"changes": set(update_fields.keys())},
+        on_commit(
+            partial(
+                search.async_index_collective_offer_template_ids,
+                collective_offer_template_ids_batch,
+                reason=search.IndexationReason.OFFER_BATCH_UPDATE,
+                log_extra={"changes": set(update_fields.keys())},
+            )
         )
 
 
@@ -936,7 +951,7 @@ def update_offer_fraud_information(offer: AnyOffer, user: users_models.User | No
         and not venue_already_has_validated_offer
         and isinstance(offer, models.Offer)
     ):
-        transactional_mails.send_first_venue_approved_offer_email_to_pro(offer)
+        on_commit(partial(transactional_mails.send_first_venue_approved_offer_email_to_pro, offer))
 
 
 def _invalidate_bookings(bookings: list[bookings_models.Booking]) -> list[bookings_models.Booking]:
@@ -1294,11 +1309,12 @@ def set_offer_status_based_on_fraud_criteria(offer: AnyOffer) -> models.OfferVal
     if flagging_rules:
         status = models.OfferValidationStatus.PENDING
         offer.flaggingValidationRules = flagging_rules
+
         if isinstance(offer, models.Offer):
-            compliance.update_offer_compliance_score(offer, is_primary=True)
+            on_commit(partial(compliance.update_offer_compliance_score, offer, is_primary=True))
     else:
         if isinstance(offer, models.Offer):
-            compliance.update_offer_compliance_score(offer, is_primary=False)
+            on_commit(partial(compliance.update_offer_compliance_score, offer, is_primary=False))
 
     logger.info("Computed offer validation", extra={"offer": offer.id, "status": status.value})
     return status
