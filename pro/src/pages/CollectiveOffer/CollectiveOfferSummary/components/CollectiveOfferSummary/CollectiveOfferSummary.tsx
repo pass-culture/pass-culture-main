@@ -1,5 +1,7 @@
 import {
+  CollectiveOfferAllowedAction,
   CollectiveOfferStatus,
+  CollectiveOfferTemplateAllowedAction,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
@@ -25,6 +27,8 @@ import { CollectiveOfferStockSection } from './components/CollectiveOfferStockSe
 import { CollectiveOfferTypeSection } from './components/CollectiveOfferTypeSection'
 import { CollectiveOfferVenueSection } from './components/CollectiveOfferVenueSection'
 import { CollectiveOfferVisibilitySection } from './components/CollectiveOfferVisibilitySection'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 
 export interface CollectiveOfferSummaryProps {
   offer:
@@ -43,9 +47,39 @@ export const CollectiveOfferSummary = ({
 }: CollectiveOfferSummaryProps) => {
   const offerManuallyCreated = isCollectiveOffer(offer) && !offer.isPublicApi
 
+  const areNewStatusesEnabled = useActiveFeature(
+    'ENABLE_COLLECTIVE_NEW_STATUSES'
+  )
+
   const isOfferTemplate = isCollectiveOfferTemplate(offer)
 
-  const canEditOffer = offer.status !== CollectiveOfferStatus.ARCHIVED
+  const canEditOfferWithoutStatusFF =
+    offer.status !== CollectiveOfferStatus.ARCHIVED &&
+    (offerManuallyCreated || offer.isTemplate)
+
+  const canEditDetails = areNewStatusesEnabled
+    ? isActionAllowedOnCollectiveOffer(
+        offer,
+        offer.isTemplate
+          ? CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS
+          : CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
+      )
+    : canEditOfferWithoutStatusFF
+
+  const canEditDatesAndPrice = areNewStatusesEnabled
+    ? [
+        CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+        CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+      ].some((action) => isActionAllowedOnCollectiveOffer(offer, action))
+    : canEditOfferWithoutStatusFF
+
+  const canEditInstitution = areNewStatusesEnabled
+    ? isActionAllowedOnCollectiveOffer(
+        offer,
+        CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION
+      )
+    : canEditOfferWithoutStatusFF
+
   return (
     <>
       <SummaryLayout>
@@ -59,11 +93,7 @@ export const CollectiveOfferSummary = ({
           )}
           <SummarySection
             title="Détails de l’offre"
-            editLink={
-              canEditOffer && (offerManuallyCreated || offer.isTemplate)
-                ? offerEditLink
-                : null
-            }
+            editLink={canEditDetails ? offerEditLink : null}
           >
             <CollectiveOfferVenueSection venue={offer.venue} />
             <CollectiveOfferTypeSection offer={offer} />
@@ -90,11 +120,7 @@ export const CollectiveOfferSummary = ({
           {!isOfferTemplate && (
             <SummarySection
               title="Dates & Prix"
-              editLink={
-                canEditOffer && (offerManuallyCreated || offer.isTemplate)
-                  ? stockEditLink
-                  : null
-              }
+              editLink={canEditDatesAndPrice ? stockEditLink : null}
             >
               <CollectiveOfferStockSection
                 stock={offer.collectiveStock}
@@ -105,11 +131,7 @@ export const CollectiveOfferSummary = ({
           {!isOfferTemplate && (
             <SummarySection
               title={'Établissement et enseignant'}
-              editLink={
-                canEditOffer && (offerManuallyCreated || offer.isTemplate)
-                  ? visibilityEditLink
-                  : null
-              }
+              editLink={canEditInstitution ? visibilityEditLink : null}
             >
               <CollectiveOfferVisibilitySection
                 institution={offer.institution}
