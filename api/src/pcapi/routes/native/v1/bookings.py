@@ -93,6 +93,8 @@ def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
             extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
         )
         raise ApiErrors({"code": "CINEMA_PROVIDER_BOOKING_FAILED"})
+    except external_bookings_exceptions.ExternalBookingTimeoutException:
+        raise ApiErrors({"code": "PROVIDER_RESPONSE_TIMEOUT"})
     except external_bookings_exceptions.ExternalBookingSoldOutError:
         raise ApiErrors({"code": "PROVIDER_STOCK_SOLD_OUT"})
     except external_bookings_exceptions.ExternalBookingNotEnoughSeatsError:

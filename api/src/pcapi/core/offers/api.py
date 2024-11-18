@@ -40,6 +40,7 @@ import pcapi.core.external_bookings.api as external_bookings_api
 from pcapi.core.external_bookings.boost.exceptions import BoostAPIException
 from pcapi.core.external_bookings.cds.exceptions import CineDigitalServiceAPIException
 from pcapi.core.external_bookings.cgr.exceptions import CGRAPIException
+from pcapi.core.external_bookings.exceptions import ExternalBookingTimeoutException
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
 import pcapi.core.finance.conf as finance_conf
@@ -1441,7 +1442,13 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
 
     try:
         shows_remaining_places = get_shows_remaining_places_from_provider(venue_provider.provider.localClass, offer)
-    except (EMSAPIException, BoostAPIException, CineDigitalServiceAPIException, CGRAPIException) as e:
+    except (
+        EMSAPIException,
+        BoostAPIException,
+        CineDigitalServiceAPIException,
+        CGRAPIException,
+        ExternalBookingTimeoutException,
+    ) as e:
         # If we can't retrieve the stocks from the provider, we stop here to avoid breaking the code following this function
         # This is not ideal, I believe this function should be called on its own, or asynchronously
         # However this means frontend code (probably) so this temporarily fixes crashes for end users

@@ -37,6 +37,7 @@ from pcapi.models import db
 import pcapi.notifications.push.testing as push_testing
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 from pcapi.utils.human_ids import humanize
+from pcapi.utils.requests import exceptions as requests_exceptions
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -503,6 +504,33 @@ class PostBookingTest:
 
         assert response.status_code == 400
         assert response.json["code"] == "PROVIDER_STOCK_SOLD_OUT"
+
+    @override_features(ENABLE_EMS_INTEGRATION=True)
+    def test_handle_ems_timeout(self, client, requests_mock):
+        users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        ems_provider = get_provider_by_local_class("EMSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider)
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
+        offer = offers_factories.EventOfferFactory(
+            name="Film",
+            venue=venue_provider.venue,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            lastProviderId=cinema_provider_pivot.provider.id,
+        )
+        stock = offers_factories.EventStockFactory(offer=offer, idAtProviders="1111%2222%EMS#3333")
+
+        requests_mock.post(
+            url=re.compile(r"https://fake_url.com/VENTE/*"),
+            exc=requests_exceptions.Timeout,
+        )
+
+        response = client.with_token(self.identifier).post(
+            "/native/v1/bookings",
+            json={"stockId": stock.id, "quantity": 1},
+        )
+
+        assert response.status_code == 400
+        assert response.json["code"] == "PROVIDER_RESPONSE_TIMEOUT"
 
     @time_machine.travel("2022-10-12 17:09:25")
     def test_bookings_with_external_event_api_return_less_tickets_than_quantity(self, client, requests_mock):
