@@ -14,7 +14,7 @@ export type UsefulInformationFormValues = {
   isVenueVirtual?: boolean
   bookingContact?: string
 
-  offerlocation?: string | undefined
+  offerLocation?: string | undefined
   manuallySetAddress?: boolean
   'search-addressAutocomplete'?: string
   addressAutocomplete?: string

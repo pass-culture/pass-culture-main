@@ -4,7 +4,7 @@ import { checkCoords } from 'commons/utils/coords'
 import { OFFER_LOCATION } from 'pages/IndividualOffer/commons/constants'
 
 const locationSchema = {
-  offerlocation: yup
+  offerLocation: yup
     .string()
     .trim()
     .when('isVenueVirtual', {
@@ -14,7 +14,7 @@ const locationSchema = {
   addressAutocomplete: yup
     .string()
     .trim()
-    .when(['offerlocation', 'manuallySetAddress', 'isVenueVirtual'], {
+    .when(['offerLocation', 'manuallySetAddress', 'isVenueVirtual'], {
       is: (
         offerLocation: string,
         manuallySetAddress: boolean,
@@ -31,7 +31,7 @@ const locationSchema = {
   street: yup
     .string()
     .trim()
-    .when(['offerlocation', 'isVenueVirtual'], {
+    .when(['offerLocation', 'isVenueVirtual'], {
       is: (offerLocation: string, isVenueVirtual: boolean) =>
         !isVenueVirtual && offerLocation === OFFER_LOCATION.OTHER_ADDRESS,
       then: (schema) =>
@@ -40,7 +40,7 @@ const locationSchema = {
   postalCode: yup
     .string()
     .trim()
-    .when(['offerlocation', 'isVenueVirtual'], {
+    .when(['offerLocation', 'isVenueVirtual'], {
       is: (offerLocation: string, isVenueVirtual: boolean) =>
         !isVenueVirtual && offerLocation === OFFER_LOCATION.OTHER_ADDRESS,
       then: (schema) => schema.required('Veuillez renseigner un code postal'),
@@ -48,7 +48,7 @@ const locationSchema = {
   city: yup
     .string()
     .trim()
-    .when(['offerlocation', 'isVenueVirtual'], {
+    .when(['offerLocation', 'isVenueVirtual'], {
       is: (offerLocation: string, isVenueVirtual: boolean) =>
         !isVenueVirtual && offerLocation === OFFER_LOCATION.OTHER_ADDRESS,
       then: (schema) => schema.required('Veuillez renseigner une ville'),
@@ -56,7 +56,7 @@ const locationSchema = {
   coords: yup
     .string()
     .trim()
-    .when(['offerlocation', 'manuallySetAddress', 'isVenueVirtual'], {
+    .when(['offerLocation', 'manuallySetAddress', 'isVenueVirtual'], {
       is: (
         offerLocation: string,
         manuallySetAddress: boolean,

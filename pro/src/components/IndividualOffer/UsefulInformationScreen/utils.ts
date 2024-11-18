@@ -20,6 +20,7 @@ interface SetDefaultInitialValuesFromOfferProps {
   offer: GetIndividualOfferWithAddressResponseModel
   selectedVenue?: VenueListItemResponseModel | undefined
 }
+
 export function setDefaultInitialValuesFromOffer({
   offer,
   selectedVenue = undefined,
@@ -44,14 +45,14 @@ export function setDefaultInitialValuesFromOffer({
     // If the venue's OA selected at step 1 is the same than the one we have saved in offer draft,
     //  then set this OA id in formik field (so it will be checked by default)
     //  Else, we can assume it's an "other" address
-    const offerlocation =
+    const offerLocation =
       selectedVenue?.address &&
       selectedVenue.address.id_oa === offer.address.id_oa
         ? offer.address.id_oa
         : OFFER_LOCATION.OTHER_ADDRESS
 
     addressFields = {
-      offerlocation: String(offerlocation),
+      offerLocation: String(offerLocation),
       manuallySetAddress: offer.address.isManualEdition,
       'search-addressAutocomplete': addressAutocomplete,
       addressAutocomplete,
@@ -63,6 +64,18 @@ export function setDefaultInitialValuesFromOffer({
       city: offer.address.city,
       latitude: String(offer.address.latitude),
       longitude: String(offer.address.longitude),
+    }
+  } else if (selectedVenue && selectedVenue.address) {
+    addressFields = {
+      offerLocation: String(selectedVenue.address.id_oa),
+      coords: `${selectedVenue.address.latitude}, ${selectedVenue.address.longitude}`,
+      banId: selectedVenue.address.banId,
+      locationLabel: selectedVenue.address.label ?? '',
+      street: selectedVenue.address.street,
+      postalCode: selectedVenue.address.postalCode,
+      city: selectedVenue.address.city,
+      latitude: String(selectedVenue.address.latitude),
+      longitude: String(selectedVenue.address.longitude),
     }
   }
 

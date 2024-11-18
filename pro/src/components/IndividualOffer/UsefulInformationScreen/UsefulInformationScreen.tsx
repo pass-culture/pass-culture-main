@@ -99,7 +99,7 @@ export const UsefulInformationScreen = ({
       ])
 
       const hasAddressChanged = someFormFieldsChanged([
-        'offerlocation',
+        'offerLocation',
         'search-addressAutocomplete',
         'street',
         'postalCode',

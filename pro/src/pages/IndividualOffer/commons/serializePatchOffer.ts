@@ -47,6 +47,7 @@ export const serializeDurationMinutes = (
 
   return minutes + hours * 60
 }
+
 interface SerializePatchOffer {
   offer: GetIndividualOfferResponseModel
   formValues: Partial<IndividualOfferFormValues>
@@ -99,7 +100,7 @@ export const serializePatchOffer = ({
         label: sentValues.locationLabel,
         isManualEdition: sentValues.manuallySetAddress,
         isVenueAddress:
-          sentValues.offerlocation === OFFER_LOCATION.OTHER_ADDRESS
+          sentValues.offerLocation === OFFER_LOCATION.OTHER_ADDRESS
             ? false
             : true,
       },
