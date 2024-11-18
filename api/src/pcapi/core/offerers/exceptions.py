@@ -109,14 +109,6 @@ class CannotDeleteVenueUsedAsPricingPointException(ClientError):
         )
 
 
-class CannotDeleteVenueUsedAsReimbursementPointException(ClientError):
-    def __init__(self) -> None:
-        super().__init__(
-            "cannotDeleteVenueUsedAsReimbursementPointException",
-            "Partenaire culturel non supprimable car il est utilisé comme point de remboursement d'un autre partenaire culturel",
-        )
-
-
 class EmailAlreadyInvitedException(ClientError):
     def __init__(self) -> None:
         super().__init__("EmailAlreadyInvitedException", "Une invitation a déjà été envoyée à ce collaborateur")

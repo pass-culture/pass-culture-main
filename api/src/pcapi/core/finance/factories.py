@@ -29,17 +29,6 @@ class RecreditFactory(BaseFactory):
     recreditType = models.RecreditType.RECREDIT_16
 
 
-class BankInformationFactory(BaseFactory):
-    class Meta:
-        model = models.BankInformation
-
-    bic = "BDFEFRPP"
-    iban = factory.LazyAttributeSequence(
-        lambda o, n: schwifty.IBAN.generate("FR", bank_code="10010", account_code=f"{n:010}").compact
-    )
-    status = models.BankInformationStatus.ACCEPTED
-
-
 class BankAccountFactory(BaseFactory):
     class Meta:
         model = models.BankAccount

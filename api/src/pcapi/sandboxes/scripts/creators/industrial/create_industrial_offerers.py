@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 import logging
 
-import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import VenueTypeCode
@@ -12,9 +11,6 @@ from pcapi.sandboxes.scripts.mocks.offerer_mocks import MOCK_NAMES
 
 
 logger = logging.getLogger(__name__)
-
-
-OFFERERS_WITH_IBAN_REMOVE_MODULO = 2
 
 
 # Declare locations in various timezones: metropolitan France
@@ -73,9 +69,6 @@ def create_industrial_offerers() -> dict[str, Offerer]:
     # loop on locations to create offerers
     incremented_siren = 222222222
     starting_index = 0
-    iban_prefix = "FR7630001007941234567890185"
-    bic_prefix, bic_suffix = "QSDFGH8Z", 555
-    application_id_prefix = "23"
 
     for location_index, location in enumerate(OFFERER_LOCATIONS):
         create_educational_offerer = location_index == 0
@@ -106,19 +99,9 @@ def create_industrial_offerers() -> dict[str, Offerer]:
                 venueTypeCode=VenueTypeCode.MOVIE,
             )
 
-        # create every OFFERERS_WITH_IBAN_REMOVE_MODULO an offerer with no iban
-        if location_index % OFFERERS_WITH_IBAN_REMOVE_MODULO:
-            finance_factories.BankInformationFactory(
-                bic=bic_prefix + str(bic_suffix),
-                iban=iban_prefix,
-                offerer=offerer,
-                applicationId=application_id_prefix + str(location_index),
-            )
-
         offerers_by_name[offerer_name] = offerer
 
         incremented_siren += 1
-        bic_suffix += 1
 
     objects_to_save = list(offerers_by_name.values())
 

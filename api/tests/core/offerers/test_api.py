@@ -229,25 +229,6 @@ class DeleteVenueTest:
         with pytest.raises(offerers_exceptions.CannotDeleteVenueUsedAsPricingPointException):
             offerers_api.delete_venue(venue_to_delete.id)
 
-    def test_delete_cascade_venue_should_abort_when_reimbursement_point_for_another_venue(self):
-        # Given
-        venue_to_delete = offerers_factories.VenueFactory(reimbursement_point="self")
-        offerers_factories.VenueFactory(
-            reimbursement_point=venue_to_delete, managingOfferer=venue_to_delete.managingOfferer
-        )
-
-        # When
-        with pytest.raises(offerers_exceptions.CannotDeleteVenueUsedAsReimbursementPointException) as exception:
-            offerers_api.delete_venue(venue_to_delete.id)
-
-        # Then
-        assert exception.value.errors["cannotDeleteVenueUsedAsReimbursementPointException"] == [
-            "Partenaire culturel non supprimable car il est utilisé comme point de remboursement d'un autre partenaire culturel"
-        ]
-        assert offerers_models.Offerer.query.count() == 1
-        assert offerers_models.Venue.query.count() == 2
-        assert offerers_models.VenueReimbursementPointLink.query.count() == 2
-
     def test_delete_cascade_venue_should_remove_offers_stocks_and_activation_codes(self):
         # Given
         venue_to_delete = offerers_factories.VenueFactory()
@@ -300,20 +281,6 @@ class DeleteVenueTest:
         assert educational_models.CollectiveStock.query.count() == 1
         assert educational_models.CollectiveOfferRequest.query.count() == 0
 
-    def test_delete_cascade_venue_should_remove_bank_informations_of_venue(self):
-        # Given
-        venue_to_delete = offerers_factories.VenueFactory()
-        finance_factories.BankInformationFactory(venue=venue_to_delete)
-        finance_factories.BankInformationFactory()
-
-        # When
-        offerers_api.delete_venue(venue_to_delete.id)
-
-        # Then
-        assert offerers_models.Venue.query.count() == 0
-        assert offerers_models.Offerer.query.count() == 1
-        assert finance_models.BankInformation.query.count() == 1
-
     def test_delete_cascade_venue_should_remove_pricing_point_links(self):
         venue = offerers_factories.VenueFactory(pricing_point="self")
 
@@ -321,14 +288,6 @@ class DeleteVenueTest:
 
         assert offerers_models.Venue.query.count() == 0
         assert offerers_models.VenuePricingPointLink.query.count() == 0
-
-    def test_delete_cascade_venue_should_remove_reimbursement_point_links(self):
-        venue = offerers_factories.VenueFactory(reimbursement_point="self")
-
-        offerers_api.delete_venue(venue.id)
-
-        assert offerers_models.Venue.query.count() == 0
-        assert offerers_models.VenueReimbursementPointLink.query.count() == 0
 
     def test_delete_cascade_venue_should_remove_mediations_of_managed_offers(self):
         # Given
@@ -1049,19 +1008,6 @@ class DeleteOffererTest:
         assert offerers_models.Offerer.query.count() == 1
         assert offerers_models.ApiKey.query.count() == 1
 
-    def test_delete_cascade_offerer_should_remove_bank_informations_of_offerer(self):
-        # Given
-        offerer_to_delete = offerers_factories.OffererFactory()
-        finance_factories.BankInformationFactory(offerer=offerer_to_delete)
-        finance_factories.BankInformationFactory()
-
-        # When
-        offerers_api.delete_offerer(offerer_to_delete.id)
-
-        # Then
-        assert offerers_models.Offerer.query.count() == 0
-        assert finance_models.BankInformation.query.count() == 1
-
     def test_delete_cascade_offerer_should_remove_offers_of_offerer(self):
         # Given
         offerer_to_delete = offerers_factories.OffererFactory()
@@ -1086,32 +1032,6 @@ class DeleteOffererTest:
         assert offerers_models.Offerer.query.count() == 0
         assert offerers_models.Venue.query.count() == 0
         assert offerers_models.VenuePricingPointLink.query.count() == 0
-
-    def test_delete_cascade_offerer_should_remove_reimbursement_point_links(self):
-        venue = offerers_factories.VenueFactory(reimbursement_point="self")
-        offerer = venue.managingOfferer
-
-        offerers_api.delete_offerer(offerer.id)
-
-        assert offerers_models.Offerer.query.count() == 0
-        assert offerers_models.Venue.query.count() == 0
-        assert offerers_models.VenueReimbursementPointLink.query.count() == 0
-
-    def test_delete_cascade_offerer_should_remove_bank_informations_of_managed_venue(self):
-        # Given
-        venue = offerers_factories.VenueFactory(reimbursement_point="self")
-        finance_factories.BankInformationFactory(venue=venue)
-        offerer_to_delete = venue.managingOfferer
-        finance_factories.BankInformationFactory()
-        assert finance_models.BankInformation.query.count() == 2
-
-        # When
-        offerers_api.delete_offerer(offerer_to_delete.id)
-
-        # Then
-        assert offerers_models.Offerer.query.count() == 0
-        assert offerers_models.Venue.query.count() == 0
-        assert finance_models.BankInformation.query.count() == 1
 
     def test_delete_cascade_offerer_should_remove_mediations_of_managed_offers(self):
         # Given

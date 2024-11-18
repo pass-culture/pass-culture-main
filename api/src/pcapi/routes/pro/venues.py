@@ -40,7 +40,6 @@ def get_venue(venue_id: int) -> venues_serialize.GetVenueResponseModel:
                 models.VenuePricingPointLink.pricingPoint
             )
         )
-        .options(sqla_orm.selectinload(models.Venue.reimbursement_point_links))
         .options(sqla_orm.joinedload(models.Venue.collectiveDomains))
         .options(sqla_orm.joinedload(models.Venue.collectiveDmsApplications))
         .options(sqla_orm.joinedload(models.Venue.bankAccountLinks).joinedload(models.VenueBankAccountLink.bankAccount))

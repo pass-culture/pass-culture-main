@@ -595,15 +595,6 @@ def delete_venue(venue_id: int) -> utils.BackofficeResponse:
         else:
             flash("Impossible de supprimer un lieu utilisé comme point de valorisation d'un autre lieu", "warning")
         return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
-    except offerers_exceptions.CannotDeleteVenueUsedAsReimbursementPointException:
-        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-            flash(
-                "Impossible de supprimer un partenaire culturel utilisé comme point de remboursement d'un autre partenaire culturel",
-                "warning",
-            )
-        else:
-            flash("Impossible de supprimer un lieu utilisé comme point de remboursement d'un autre lieu", "warning")
-        return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
 
     for email in emails:
         external_attributes_api.update_external_pro(email)

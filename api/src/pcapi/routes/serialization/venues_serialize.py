@@ -218,14 +218,6 @@ class GetVenueResponseGetterDict(base.VenueResponseGetterDict):
                 ):
                     return pricing_link.pricingPoint
             return None
-        if key == "reimbursementPointId":
-            now = datetime.utcnow()
-            for reimbursement_link in venue.reimbursement_point_links:
-                if reimbursement_link.timespan.lower <= now and (
-                    not reimbursement_link.timespan.upper or reimbursement_link.timespan.upper > now
-                ):
-                    return reimbursement_link.reimbursementPointId
-            return None
         if key == "address":
             offerer_address = self._obj.offererAddress
             if not offerer_address:
@@ -249,7 +241,6 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     dmsToken: str
     managingOfferer: GetVenueManagingOffererResponseModel
     pricingPoint: GetVenuePricingPointResponseModel | None
-    reimbursementPointId: int | None
     siret: str | None
     timezone: str
     venueLabelId: int | None

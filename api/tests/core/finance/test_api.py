@@ -2513,7 +2513,7 @@ def test_invoice_pdf_commercial_gesture(monkeypatch):
     #####################################
     # Test reimbursement by venue table #
     #####################################
-    reimbursement_by_venue_table = html_parser.get_tag(invoice_html, class_="reimbursmentByVenueTable", tag="table")
+    reimbursement_by_venue_table = html_parser.get_tag(invoice_html, class_="reimbursementByVenueTable", tag="table")
     reimbursement_by_venue_rows = html_parser.extract_table_rows(reimbursement_by_venue_table)
     assert len(reimbursement_by_venue_rows) == 1
     reimbursement_by_venue_row = reimbursement_by_venue_rows[0]

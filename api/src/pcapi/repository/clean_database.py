@@ -8,7 +8,6 @@ from pcapi.core.chronicles import models as chronicles_models
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.educational.models as educational_models
 import pcapi.core.finance.models as finance_models
-from pcapi.core.finance.models import BankInformation
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.geography.models as geography_models
 import pcapi.core.history.models as history_models
@@ -77,7 +76,6 @@ tables_to_clean: list[flask_sqlalchemy.Model] = [
     offers_models.PriceCategory,
     offers_models.PriceCategoryLabel,
     offers_models.Product,
-    BankInformation,
     providers_models.CDSCinemaDetails,
     providers_models.BoostCinemaDetails,
     providers_models.CGRCinemaDetails,
@@ -87,7 +85,6 @@ tables_to_clean: list[flask_sqlalchemy.Model] = [
     providers_models.AllocineTheater,
     offerers_models.OffererConfidenceRule,
     offerers_models.VenuePricingPointLink,
-    offerers_models.VenueReimbursementPointLink,
     offerers_models.Venue,
     offerers_models.VenueEducationalStatus,
     offerers_models.UserOfferer,

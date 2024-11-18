@@ -315,12 +315,6 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     venueEducationalStatus: Mapped["VenueEducationalStatus"] = relationship(
         "VenueEducationalStatus", back_populates="venues", foreign_keys=[venueEducationalStatusId]
     )
-    reimbursement_point_links: Mapped[list["VenueReimbursementPointLink"]] = relationship(
-        "VenueReimbursementPointLink",
-        back_populates="venue",
-        foreign_keys="VenueReimbursementPointLink.venueId",
-        uselist=True,
-    )
 
     pricing_point_links: Mapped[list["VenuePricingPointLink"]] = relationship(
         "VenuePricingPointLink",
@@ -360,10 +354,6 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
 
     collective_playlists: list[educational_models.CollectivePlaylist] = relationship(
         "CollectivePlaylist", back_populates="venue"
-    )
-
-    bankInformation: finance_models.BankInformation | None = relationship(
-        "BankInformation", back_populates="venue", uselist=False
     )
 
     priceCategoriesLabel: sa_orm.Mapped[list["offers_models.PriceCategoryLabel"]] = relationship(
@@ -850,38 +840,6 @@ class VenuePricingPointLink(Base, Model):
     __table_args__ = (
         # A venue cannot be linked to multiple pricing points at the
         # same time.
-        sa_psql.ExcludeConstraint(("venueId", "="), ("timespan", "&&")),
-    )
-
-    def __init__(self, **kwargs: typing.Any) -> None:
-        kwargs["timespan"] = db_utils.make_timerange(*kwargs["timespan"])
-        super().__init__(**kwargs)
-
-
-class VenueReimbursementPointLink(Base, Model):
-    """At any given time, all bookings of a venue are reimbursed to a bank
-    account that is attached to a particular venue that we call the
-    "reimbursement point" of the venue. It may be the venue itself or
-    any other venue (that has a related bank account) of the same offerer.
-    """
-
-    id: int = Column(BigInteger, primary_key=True, autoincrement=True)
-    venueId: int = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
-    venue: sa_orm.Mapped[Venue] = relationship(
-        Venue, foreign_keys=[venueId], back_populates="reimbursement_point_links"
-    )
-    reimbursementPointId: int = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
-    reimbursementPoint: sa_orm.Mapped[Venue] = relationship(Venue, foreign_keys=[reimbursementPointId])
-    # The lower bound is inclusive and required. The upper bound is
-    # exclusive and optional. If there is no upper bound, it means
-    # that the venue is still linked to the reimbursement point. For links
-    # that existed before this table was introduced, the lower bound
-    # is set to the Epoch.
-    timespan: psycopg2.extras.DateTimeRange = Column(sa_psql.TSRANGE, nullable=False)
-
-    __table_args__ = (
-        # A venue cannot be linked to multiple reimbursement points at
-        # the same time.
         sa_psql.ExcludeConstraint(("venueId", "="), ("timespan", "&&")),
     )
 
