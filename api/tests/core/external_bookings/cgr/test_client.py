@@ -1,13 +1,16 @@
 import json
+import logging
 
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.external_bookings.cgr.client as cgr_client
 from pcapi.core.external_bookings.cgr.exceptions import CGRAPIException
+from pcapi.core.external_bookings.exceptions import ExternalBookingTimeoutException
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.utils.requests import exceptions as requests_exception
 
 from tests.connectors.cgr import soap_definitions
 from tests.local_providers.cinema_providers.cgr import fixtures
@@ -55,6 +58,37 @@ class BookTicketTest:
         assert external_booking_info["barcode"] == "CINE999508637111"
         assert external_booking_info["venue_id"] == venue_id
         assert external_booking_info["timestamp"]
+
+    def test_should_raise_a_timeout_error(self, requests_mock, caplog):
+        beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiary@example.com")
+        showtime_stock = offers_factories.EventStockFactory()
+        booking = bookings_factories.BookingFactory(user=beneficiary, quantity=1, amount=5.5, stock=showtime_stock)
+        cinema_details = providers_factories.CGRCinemaDetailsFactory(
+            cinemaUrl="http://cgr-cinema-0.example.com/web_service"
+        )
+        cinema_id = cinema_details.cinemaProviderPivot.idAtProvider
+
+        requests_mock.get(
+            "http://cgr-cinema-0.example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION
+        )
+        requests_mock.post("http://cgr-cinema-0.example.com/web_service", exc=requests_exception.Timeout)
+
+        with caplog.at_level(logging.WARNING):
+            with pytest.raises(ExternalBookingTimeoutException):
+                cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id)
+                cgr.book_ticket(show_id=177182, booking=booking, beneficiary=beneficiary)
+
+        assert caplog.messages[1] == "Cinema Provider API Request Timeout"
+        assert caplog.records[1].extra == {
+            "cinema_id": cinema_id,
+            "client": "CGRClientAPI",
+            "method": "book_ticket",
+            "method_params": {
+                "beneficiary": str(beneficiary),
+                "booking": str(booking),
+                "show_id": "177182",
+            },
+        }
 
     def test_should_book_one_ticket_when_placement_is_disabled(self, requests_mock):
         beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiary@example.com")
@@ -188,6 +222,27 @@ class CancelBookingTest:
         assert requests_mock.request_history[-1].timeout == 12
         assert post_adapter.call_count == 1
         assert "<pQrCode>CINE-123456789</pQrCode>" in post_adapter.last_request.text
+
+    def test_should_raise_timeout_error_when_cancelling_booking(self, requests_mock, caplog):
+        cinema_details = providers_factories.CGRCinemaDetailsFactory(
+            cinemaUrl="https://cinema-0.example.com/web_service"
+        )
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+        requests_mock.get("https://cinema-0.example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION)
+        requests_mock.post("https://cinema-0.example.com/web_service", exc=requests_exception.ReadTimeout)
+
+        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_str_id)
+        with caplog.at_level(logging.WARNING):
+            with pytest.raises(ExternalBookingTimeoutException):
+                cgr.cancel_booking(barcodes=["CINE-123456789"])
+
+        assert caplog.messages[2] == "Cinema Provider API Request Timeout"
+        assert caplog.records[2].extra == {
+            "cinema_id": cinema_str_id,
+            "client": "CGRClientAPI",
+            "method": "cancel_booking",
+            "method_params": {"barcodes": "['CINE-123456789']"},
+        }
 
     def test_when_cgr_returns_element_not_found(self, requests_mock):
         cinema_details = providers_factories.CGRCinemaDetailsFactory(

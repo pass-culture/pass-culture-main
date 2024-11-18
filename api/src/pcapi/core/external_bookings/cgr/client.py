@@ -9,6 +9,7 @@ from pcapi.connectors.serialization import cgr_serializers
 from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
 from pcapi.core.bookings.constants import RedisExternalBookingType
 import pcapi.core.bookings.models as bookings_models
+from pcapi.core.external_bookings.decorators import catch_cinema_provider_request_timeout
 import pcapi.core.external_bookings.models as external_bookings_models
 from pcapi.core.providers.repository import get_cgr_cinema_details
 import pcapi.core.users.models as users_models
@@ -25,11 +26,13 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         super().__init__(cinema_id=cinema_id, request_timeout=request_timeout)
         self.cgr_cinema_details = get_cgr_cinema_details(cinema_id)
 
+    @catch_cinema_provider_request_timeout
     def get_films(self) -> list[cgr_serializers.Film]:
         logger.info("Fetching CGR movies", extra={"cinema_id": self.cinema_id})
         response = get_seances_pass_culture(self.cgr_cinema_details)
         return response.ObjetRetour.Films
 
+    @catch_cinema_provider_request_timeout
     @external_bookings_models.cache_external_call(
         key_template=constants.CGR_SHOWTIMES_STOCKS_CACHE_KEY, expire=constants.CGR_SHOWTIMES_STOCKS_CACHE_TIMEOUT
     )
@@ -49,6 +52,7 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             return json.dumps({})
         return json.dumps({show.IDSeance: show.NbPlacesRestantes for show in film.Seances})
 
+    @catch_cinema_provider_request_timeout
     def book_ticket(
         self, show_id: int, booking: bookings_models.Booking, beneficiary: users_models.User
     ) -> list[external_bookings_models.Ticket]:
@@ -110,6 +114,7 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             ]
         return tickets
 
+    @catch_cinema_provider_request_timeout
     def cancel_booking(self, barcodes: list[str]) -> None:
         barcodes_set = set(barcodes)
         for barcode in barcodes_set:
