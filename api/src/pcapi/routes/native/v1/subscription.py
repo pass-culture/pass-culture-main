@@ -13,6 +13,7 @@ from pcapi.core.subscription import profile_options
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.users import models as users_models
 from pcapi.models import api_errors
+from pcapi.repository import atomic
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import requests as requests_utils
@@ -32,6 +33,7 @@ logger = logging.getLogger(__name__)
     deprecated=True,
 )
 @authenticated_and_active_user_required
+@atomic()
 def next_subscription_step(
     user: users_models.User,
 ) -> serializers.NextSubscriptionStepResponse | None:
@@ -61,6 +63,7 @@ def next_subscription_step(
     deprecated=True,
 )
 @authenticated_and_active_user_required
+@atomic()
 def get_subscription_stepper_deprecated(user: users_models.User) -> serializers.SubscriptionStepperResponse:
     user_subscription_state = subscription_api.get_user_subscription_state(user)
     stepper_header = subscription_api.get_stepper_title_and_subtitle(user, user_subscription_state)
@@ -95,6 +98,7 @@ def get_subscription_stepper_deprecated(user: users_models.User) -> serializers.
     api=blueprint.api,
 )
 @authenticated_and_active_user_required
+@atomic()
 def get_subscription_stepper(user: users_models.User) -> serializers.SubscriptionStepperResponseV2:
     user_subscription_state = subscription_api.get_user_subscription_state(user)
     stepper_header = subscription_api.get_stepper_title_and_subtitle(user, user_subscription_state)
@@ -123,6 +127,7 @@ def get_subscription_stepper(user: users_models.User) -> serializers.Subscriptio
 @blueprint.native_route("/subscription/profile", methods=["GET"])
 @spectree_serialize(on_success_status=200, on_error_statuses=[404], api=blueprint.api)
 @authenticated_and_active_user_required
+@atomic()
 def get_profile(user: users_models.User) -> serializers.ProfileResponse | None:
     if (profile_data := subscription_api.get_profile_data(user)) is not None:
         try:
@@ -161,6 +166,7 @@ def complete_profile(user: users_models.User, body: serializers.ProfileUpdateReq
     api=blueprint.api,
 )
 @authenticated_and_active_user_required
+@atomic()
 def get_activity_types(user: users_models.User) -> serializers.ActivityTypesResponse:
     activities = [serializers.ActivityResponseModel.from_orm(activity) for activity in profile_options.ALL_ACTIVITIES]
     middle_school = serializers.ActivityResponseModel.from_orm(profile_options.MIDDLE_SCHOOL_STUDENT)

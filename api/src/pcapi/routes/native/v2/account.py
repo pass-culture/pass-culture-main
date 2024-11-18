@@ -22,6 +22,7 @@ from .serialization import account as serializers
 @blueprint.native_route("/profile/email_update/status", version="v2", methods=["GET"])
 @spectree_serialize(on_success_status=200, api=blueprint.api, response_model=serializers.EmailUpdateStatusResponse)
 @authenticated_and_active_user_required
+@atomic()
 def get_email_update_status(user: users_models.User) -> serializers.EmailUpdateStatusResponse:
     latest_email_update_event = email_repository.get_email_update_latest_event(user)
     if not latest_email_update_event:

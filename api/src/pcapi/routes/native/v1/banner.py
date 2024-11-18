@@ -4,6 +4,7 @@ import pcapi.core.banner.api as banner_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import models as users_models
+from pcapi.repository import atomic
 from pcapi.routes.native import blueprint
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.v1.serialization import banner as serializers
@@ -13,6 +14,7 @@ from pcapi.serialization.decorator import spectree_serialize
 @blueprint.native_route("/banner", methods=["GET"])
 @spectree_serialize(on_success_status=200, api=blueprint.api, response_model=serializers.BannerResponse)
 @authenticated_and_active_user_required
+@atomic()
 def get_banner(user: users_models.User, query: serializers.BannerQueryParams) -> serializers.BannerResponse | None:
     joined_user = (
         users_models.User.query.filter_by(id=user.id)

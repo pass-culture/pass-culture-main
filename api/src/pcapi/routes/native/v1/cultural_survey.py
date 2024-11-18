@@ -4,6 +4,7 @@ import logging
 from pcapi.core.cultural_survey import cultural_survey
 from pcapi.core.external.attributes.api import update_external_user
 from pcapi.core.users import models as users_models
+from pcapi.repository import atomic
 from pcapi.repository import transaction
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
@@ -24,6 +25,7 @@ logger = logging.getLogger(__name__)
     api=blueprint.api,
 )
 @authenticated_and_active_user_required
+@atomic()
 def get_cultural_survey_questions(user: users_models.User) -> serializers.CulturalSurveyQuestionsResponse:
     return serializers.CulturalSurveyQuestionsResponse(
         questions=cultural_survey.ALL_CULTURAL_SURVEY_QUESTIONS,
