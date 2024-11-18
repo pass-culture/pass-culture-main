@@ -114,9 +114,18 @@ def reset_stock_quantity(venue: offerers_models.Venue) -> None:
 def delete_venue_provider(
     venue_provider: providers_models.VenueProvider, author: users_models.User, send_email: bool = True
 ) -> None:
-    update_venue_synchronized_offers_active_status_job.delay(venue_provider.venueId, venue_provider.providerId, False)
+    on_commit(
+        functools.partial(
+            update_venue_synchronized_offers_active_status_job.delay,
+            venue_provider.venueId,
+            venue_provider.providerId,
+            False,
+        )
+    )
     if send_email and venue_provider.venue.bookingEmail:
-        transactional_mails.send_venue_provider_deleted_email(venue_provider.venue.bookingEmail)
+        on_commit(
+            functools.partial(transactional_mails.send_venue_provider_deleted_email, venue_provider.venue.bookingEmail)
+        )
 
     # Save data now: it won't be available after we have deleted the object.
     venue_id = venue_provider.venueId
@@ -129,7 +138,7 @@ def delete_venue_provider(
         provider_name=venue_provider.provider.name,
     )
     db.session.delete(venue_provider)
-    db.session.commit()
+    db.session.flush()
     logger.info(
         "Deleted VenueProvider for venue %d",
         venue_id,
