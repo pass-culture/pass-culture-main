@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import {
   generatePath,
@@ -36,12 +35,11 @@ export const VenueEdition = (): JSX.Element | null => {
     venueId: string
   }>()
   const navigate = useNavigate()
-  const [selectedVenueId, setSelectedVenueId] = useState(venueId ?? '')
   const location = useLocation()
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const venueQuery = useSWR(
-    [GET_VENUE_QUERY_KEY, selectedVenueId || venueId],
+    [GET_VENUE_QUERY_KEY, venueId],
     ([, venueIdParam]) => api.getVenue(Number(venueIdParam))
   )
   const venue = venueQuery.data
@@ -132,9 +130,11 @@ export const VenueEdition = (): JSX.Element | null => {
                   <SelectInput
                     name="venues"
                     options={venuesOptions}
-                    value={selectedVenueId}
+                    value={venueId ?? ''}
                     onChange={(e) => {
-                      setSelectedVenueId(e.target.value)
+                      navigate(
+                        `/structures/${offererId}/lieux/${e.target.value}`
+                      )
                     }}
                   />
                 </FieldLayout>
@@ -147,6 +147,7 @@ export const VenueEdition = (): JSX.Element | null => {
           venue={venue}
           offerer={offerer}
           venueTypes={venueTypes}
+          key={venueId}
         />
 
         {!venue.isPermanent && (

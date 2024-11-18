@@ -43,7 +43,7 @@ vi.mock('react-router-dom', async () => ({
   useParams: () => ({
     venueId: defaultGetVenue.id,
   }),
-  useNavigate: vi.fn(),
+  useNavigate: () => vi.fn(),
 }))
 
 const baseVenue: GetVenueResponseModel = {
