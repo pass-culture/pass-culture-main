@@ -9,6 +9,7 @@ from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models.api_errors import ApiErrors
+from pcapi.repository import atomic
 from pcapi.routes.apis import private_api
 from pcapi.routes.pro import blueprint
 from pcapi.routes.serialization import collective_stock_serialize
@@ -27,6 +28,7 @@ logger = logging.getLogger(__name__)
     response_model=collective_stock_serialize.CollectiveStockResponseModel,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def create_collective_stock(
     body: collective_stock_serialize.CollectiveStockCreationBodyModel,
 ) -> collective_stock_serialize.CollectiveStockResponseModel:
@@ -59,6 +61,7 @@ def create_collective_stock(
     api=blueprint.pro_private_schema,
     response_model=collective_stock_serialize.CollectiveStockResponseModel,
 )
+@atomic()
 def edit_collective_stock(
     collective_stock_id: int, body: collective_stock_serialize.CollectiveStockEditionBodyModel
 ) -> collective_stock_serialize.CollectiveStockResponseModel:
