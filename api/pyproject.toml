@@ -52,7 +52,7 @@ py7zr = "^0.22.0"
 # required by schwifty, upgraded manually because of setuptools
 pycountry = "24.6.1"
 pydantic = { version = "==2.*", extras = ["email"] }
-pyjwt = { version = "2.9.0", extras = ["crypto"] }
+pyjwt = { version = "2.10.0", extras = ["crypto"] }
 pypdf = "^5.1.0"
 pyproj = "^3.7.0"
 pysaml2 = "^7.5.0"
