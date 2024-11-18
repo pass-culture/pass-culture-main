@@ -127,7 +127,7 @@ class Returns404Test:
         user = users_factories.ProFactory()
 
         client = client.with_session_auth(user.email)
-        with assert_num_queries(3):  #  session + user + collective_booking
+        with assert_num_queries(4):  #  session + user + collective_booking + rollback
             response = client.get("collective/bookings/0")
             assert response.status_code == 404
 
@@ -140,7 +140,7 @@ class Returns403Test:
 
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(
-            5
-        ):  #  collective_booking + session + user + collective_booking + SELECT EXISTS user_offerer
+            6
+        ):  #  collective_booking + session + user + collective_booking + SELECT EXISTS user_offerer + rollback
             response = client.get(f"collective/bookings/{booking.id}")
             assert response.status_code == 403

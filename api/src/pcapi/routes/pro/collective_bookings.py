@@ -14,6 +14,7 @@ from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.models.api_errors import ApiErrors
+from pcapi.repository import atomic
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import collective_bookings_serialize
 from pcapi.routes.serialization.bookings_recap_serialize import UserHasBookingResponse
@@ -33,6 +34,7 @@ logger = logging.getLogger(__name__)
     response_model=collective_bookings_serialize.ListCollectiveBookingsResponseModel,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def get_collective_bookings_pro(
     query: collective_bookings_serialize.ListCollectiveBookingsQueryModel,
 ) -> collective_bookings_serialize.ListCollectiveBookingsResponseModel:
@@ -71,6 +73,7 @@ def get_collective_bookings_pro(
     response_model=collective_bookings_serialize.CollectiveBookingByIdResponseModel,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def get_collective_booking_by_id(booking_id: int) -> collective_bookings_serialize.CollectiveBookingByIdResponseModel:
     try:
         booking = educational_api_booking.get_collective_booking_by_id(booking_id)
@@ -90,6 +93,7 @@ def get_collective_booking_by_id(booking_id: int) -> collective_bookings_seriali
     },
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def get_collective_bookings_csv(
     query: collective_bookings_serialize.ListCollectiveBookingsQueryModel,
 ) -> bytes:
@@ -106,6 +110,7 @@ def get_collective_bookings_csv(
     },
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def get_collective_bookings_excel(
     query: collective_bookings_serialize.ListCollectiveBookingsQueryModel,
 ) -> bytes:
@@ -141,6 +146,7 @@ def _create_collective_bookings_export_file(
 @blueprint.pro_private_api.route("/collective/bookings/pro/userHasBookings", methods=["GET"])
 @login_required
 @spectree_serialize(response_model=UserHasBookingResponse, api=blueprint.pro_private_schema)
+@atomic()
 def get_user_has_collective_bookings() -> UserHasBookingResponse:
     user = current_user._get_current_object()
     return UserHasBookingResponse(hasBookings=collective_repository.user_has_bookings(user))
@@ -153,6 +159,7 @@ def get_user_has_collective_bookings() -> UserHasBookingResponse:
     on_error_statuses=[400, 403, 404],
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def cancel_collective_offer_booking(offer_id: int) -> None:
     try:
         offerer = offerers_api.get_offerer_by_collective_offer_id(offer_id)

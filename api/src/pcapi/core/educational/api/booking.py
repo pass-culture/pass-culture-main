@@ -1,5 +1,6 @@
 import datetime
 import decimal
+from functools import partial
 import logging
 
 from pydantic.v1.error_wrappers import ValidationError
@@ -23,6 +24,8 @@ from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import atomic
+from pcapi.repository import mark_transaction_as_invalid
+from pcapi.repository import on_commit
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.adage.v1.serialization import prebooking
@@ -314,8 +317,8 @@ def cancel_collective_offer_booking(offer_id: int, author_id: int, user_connect_
         extra={"collective_stock": collective_stock.id, "collective_booking": cancelled_booking.id},
     )
 
-    notify_redactor_that_booking_has_been_cancelled(cancelled_booking)
-    notify_pro_that_booking_has_been_cancelled(cancelled_booking)
+    on_commit(partial(notify_redactor_that_booking_has_been_cancelled, cancelled_booking))
+    on_commit(partial(notify_pro_that_booking_has_been_cancelled, cancelled_booking))
 
 
 def notify_pro_users_one_day_before() -> None:
@@ -341,19 +344,19 @@ def _cancel_collective_booking(
     reason: educational_models.CollectiveBookingCancellationReasons,
     author_id: int,
 ) -> None:
-    with transaction():
-        educational_repository.get_and_lock_collective_stock(stock_id=collective_booking.collectiveStock.id)
-        db.session.refresh(collective_booking)
+    educational_repository.get_and_lock_collective_stock(stock_id=collective_booking.collectiveStock.id)
+    db.session.refresh(collective_booking)
 
-        try:
-            # The booking cannot be used nor reimbursed yet, otherwise
-            # `cancel_booking` will fail. Thus, there is no finance
-            # event to cancel here.
-            collective_booking.cancel_booking(reason, author_id=author_id)
-        except exceptions.CollectiveBookingAlreadyCancelled:
-            return
+    try:
+        # The booking cannot be used nor reimbursed yet, otherwise
+        # `cancel_booking` will fail. Thus, there is no finance
+        # event to cancel here.
+        collective_booking.cancel_booking(reason, author_id=author_id)
+    except exceptions.CollectiveBookingAlreadyCancelled:
+        mark_transaction_as_invalid()
+        return
 
-        db.session.commit()
+    db.session.flush()
 
     logger.info(
         "CollectiveBooking has been cancelled",
