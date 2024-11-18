@@ -470,6 +470,7 @@ def phone_validation_remaining_attempts(user: users_models.User) -> serializers.
 @blueprint.native_route("/account/suspend", methods=["POST"])
 @spectree_serialize(api=blueprint.api, on_success_status=204)
 @authenticated_and_active_user_required
+@atomic()
 def suspend_account(user: users_models.User) -> None:
     try:
         api.suspend_account(user, reason=constants.SuspensionReason.UPON_USER_REQUEST, actor=user)
@@ -477,7 +478,7 @@ def suspend_account(user: users_models.User) -> None:
         raise api_errors.ResourceGoneError()
     except bookings_exceptions.BookingIsAlreadyRefunded:
         raise api_errors.ForbiddenError()
-    transactional_mails.send_user_request_to_delete_account_reception_email(user)
+    on_commit(partial(transactional_mails.send_user_request_to_delete_account_reception_email, user))
 
 
 @blueprint.native_route("/account/suspend_for_hack_suspicion", methods=["POST"])
