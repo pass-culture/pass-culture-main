@@ -1,5 +1,6 @@
 import datetime
 from decimal import Decimal
+from functools import partial
 import logging
 import typing
 
@@ -32,6 +33,8 @@ from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
+from pcapi.repository import mark_transaction_as_invalid
+from pcapi.repository import on_commit
 from pcapi.routes.adage.v1.serialization import prebooking
 from pcapi.routes.adage_iframe.serialization.offers import PostCollectiveRequestBodyModel
 from pcapi.routes.public.collective.serialization import offers as public_api_collective_offers_serialize
@@ -223,10 +226,11 @@ def create_collective_offer_template(
 
     collective_offer_template.bookingEmails = offer_data.booking_emails
     db.session.add(collective_offer_template)
-    db.session.commit()
+    db.session.flush()
 
     if offer_data.nationalProgramId:
         national_program_api.link_or_unlink_offer_to_program(offer_data.nationalProgramId, collective_offer_template)
+        db.session.flush()
 
     logger.info(
         "Collective offer template has been created",
@@ -278,10 +282,11 @@ def create_collective_offer(
         update_external_pro(email)
 
     db.session.add(collective_offer)
-    db.session.commit()
+    db.session.flush()
 
     if offer_data.nationalProgramId:
         national_program_api.link_or_unlink_offer_to_program(offer_data.nationalProgramId, collective_offer)
+        db.session.flush()
 
     logger.info(
         "Collective offer has been created",
@@ -308,7 +313,7 @@ def get_venue_and_check_access_for_offer_creation(
 
 
 def create_collective_offer_template_from_collective_offer(
-    price_detail: str | None, user: User, offer_id: int
+    price_detail: str | None, offer_id: int
 ) -> educational_models.CollectiveOfferTemplate:
     offer = educational_repository.get_collective_offer_by_id(offer_id)
     if offer.collectiveStock is not None:
@@ -319,7 +324,7 @@ def create_collective_offer_template_from_collective_offer(
     )
     db.session.delete(offer)
     db.session.add(collective_offer_template)
-    db.session.commit()
+    db.session.flush()
 
     logger.info(
         "Collective offer template has been created and regular collective offer deleted",
@@ -399,10 +404,10 @@ def update_collective_offer_educational_institution(
         else:
             raise exceptions.EducationalRedactorNotFound()
 
-    db.session.commit()
+    db.session.flush()
 
     if educational_institution_id is not None and offer.validation == offer_mixin.OfferValidationStatus.APPROVED:
-        adage_client.notify_institution_association(serialize_collective_offer(offer))
+        on_commit(partial(adage_client.notify_institution_association, serialize_collective_offer(offer)))
 
     return offer
 
@@ -606,18 +611,24 @@ def publish_collective_offer_template(
 
     if offer_template.validation == offer_mixin.OfferValidationStatus.DRAFT:
         update_offer_fraud_information(offer_template, user)
-        search.async_index_collective_offer_template_ids(
-            [offer_template.id],
-            reason=search.IndexationReason.OFFER_PUBLICATION,
+        on_commit(
+            partial(
+                search.async_index_collective_offer_template_ids,
+                [offer_template.id],
+                reason=search.IndexationReason.OFFER_PUBLICATION,
+            )
         )
-        db.session.commit()
 
     return offer_template
 
 
-def delete_image(obj: educational_models.HasImageMixin) -> None:
+def delete_image(obj: educational_models.HasImageMixin, commit: bool = True) -> None:
     obj.delete_image()
-    db.session.commit()
+
+    if commit:
+        db.session.commit()
+    else:
+        db.session.flush()
 
 
 def attach_image(
@@ -625,6 +636,7 @@ def attach_image(
     image: bytes,
     crop_params: image_conversion.CropParams,
     credit: str,
+    commit: bool = True,
 ) -> None:
     try:
         obj.set_image(
@@ -635,9 +647,16 @@ def attach_image(
             keep_original=False,
         )
     except:
-        db.session.rollback()
+        if commit:
+            db.session.rollback()
+        else:
+            mark_transaction_as_invalid()
         raise
-    db.session.commit()
+
+    if commit:
+        db.session.commit()
+    else:
+        db.session.flush()
 
 
 def _get_expired_collective_offer_template_ids(
@@ -698,7 +717,7 @@ def duplicate_offer_and_stock(
     )
 
     db.session.add(offer)
-    db.session.commit()
+    db.session.flush()
 
     if original_offer.imageUrl:
         image_file = get_image_from_url(original_offer.imageUrl)
@@ -712,7 +731,8 @@ def duplicate_offer_and_stock(
             content_type="image/jpeg",
         )
 
-        db.session.commit()
+        db.session.flush()
+
     return offer
 
 
