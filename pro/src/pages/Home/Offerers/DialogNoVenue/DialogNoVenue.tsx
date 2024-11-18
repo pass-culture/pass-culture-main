@@ -5,7 +5,8 @@ import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
-import offerCreationWithAddressImage from './assets/offer-creation-with-address.gif'
+import offerCreationWithAddressImage from './assets/offer-creation-with-address-2x.gif'
+
 import styles from './DialogNoVenue.module.scss'
 
 interface DialogNoVenueProps {
