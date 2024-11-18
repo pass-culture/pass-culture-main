@@ -153,9 +153,19 @@ def activate_or_deactivate_venue_provider(
 
         venue_provider.isActive = set_active
         if send_email and not venue_provider.isActive and venue_provider.venue.bookingEmail:
-            transactional_mails.send_venue_provider_disabled_email(venue_provider.venue.bookingEmail)
-        update_venue_synchronized_offers_active_status_job.delay(
-            venue_provider.venueId, venue_provider.providerId, venue_provider.isActive
+            on_commit(
+                functools.partial(
+                    transactional_mails.send_venue_provider_disabled_email, venue_provider.venue.bookingEmail
+                )
+            )
+
+        on_commit(
+            functools.partial(
+                update_venue_synchronized_offers_active_status_job.delay,
+                venue_provider.venueId,
+                venue_provider.providerId,
+                venue_provider.isActive,
+            )
         )
 
         logger.info(
