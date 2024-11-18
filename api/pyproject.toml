@@ -22,12 +22,12 @@ cryptography = "43.0.3"
 email-validator = "2.2.0"
 factory-boy = "^3.3.1"
 fiona = "^1.10.1"
-flask = "==2.0.*"
+flask = "2.2.*"
 flask-cors = "5.0.0"
 flask-jwt-extended = "4.6.0"
-flask-login = "0.5.0"
+flask-login = "0.6.*"
 flask-shell-ipython = "^0.5.3"
-flask-sqlalchemy = "==2.5.*"
+flask-sqlalchemy = "3.0.*"
 flask-wtf = "1.2.2"
 geoalchemy2 = "^0.16.0"
 google-api-python-client = "2.153.0"
@@ -74,7 +74,7 @@ spectree = "1.2.1"
 sqlalchemy = { version = "1.4.54", extras = ["mypy"] }
 time-machine = "^2.16.0"
 weasyprint = "62.1"
-werkzeug = "2.0.3"
+werkzeug = "2.2.*"
 wtforms = "3.2.1"
 wtforms-sqlalchemy = "0.4.2"
 xlsxwriter = "^3.2.0"
@@ -252,6 +252,10 @@ filterwarnings = [
     # Warning on SELECT with IN. Fix: pass a select() construct explicitly
     "ignore:Coercing Subquery object into a select\\(\\) for use in IN\\(\\):sqlalchemy.exc.SAWarning",
     # ---------------------------- #
+    # TODO: remove this once we move to flask-sqlalchemy 3.1
+    "ignore:'BaseQuery' has been moved and renamed to 'query.Query'. The top-level import is deprecated and will be removed in Flask-SQLAlchemy 3.1",
+    "ignore:'Model' has been moved to 'model.Model'. The top-level import is deprecated and will be removed in Flask-SQLAlchemy 3.1.",
+    # "ignore:'_request_ctx_stack' is deprecated and will be removed in Flask 2.3",
 
     # FIXME (francois-seguin, 2023-10-17): zeep uses cgi, which is deprecated. When this commit (https://github.com/mvantellingen/python-zeep/commit/d0d737adbcd68213b940a5cc4f1da6cd43dfca81)
     # is in a release, we'll be able to bump zeep and remove this filter.

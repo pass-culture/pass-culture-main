@@ -305,9 +305,9 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
 
     thumb_path_component = "venues"
 
-    criteria: list["criteria_models.Criterion"] = sa_orm.relationship(
-        "Criterion", backref=db.backref("venue_criteria", lazy="dynamic"), secondary="venue_criterion"
-    )
+    # criteria: list["criteria_models.Criterion"] = sa_orm.relationship(
+    #     "Criterion", backref=db.backref("venue_criteria", lazy="dynamic"), secondary="venue_criterion"
+    # )
 
     dmsToken: str = Column(Text, nullable=False, unique=True)
 
@@ -336,12 +336,12 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
         server_default="{}",
     )
     collectiveWebsite = Column(Text, nullable=True)
-    collectiveDomains: Mapped[list[educational_models.EducationalDomain]] = relationship(
-        educational_models.EducationalDomain,
-        back_populates="venues",
-        secondary="educational_domain_venue",
-        uselist=True,
-    )
+    # CollectiveDomains: Mapped[list[educational_models.EducationalDomain]] = relationship(
+    #     educational_models.EducationalDomain,
+    #     back_populates="venues",
+    #     secondary="educational_domain_venue",
+    #     uselist=True,
+    # )
     collectiveDmsApplications: Mapped[list[educational_models.CollectiveDmsApplication]] = relationship(
         educational_models.CollectiveDmsApplication,
         backref=backref("venue"),
@@ -966,7 +966,7 @@ class Offerer(
 
     dateValidated = Column(DateTime, nullable=True, default=None)
 
-    tags: list["OffererTag"] = sa_orm.relationship("OffererTag", secondary="offerer_tag_mapping")
+    # tags: list["OffererTag"] = sa_orm.relationship("OffererTag", secondary="offerer_tag_mapping")
 
     offererProviders: list["OffererProvider"] = sa_orm.relationship("OffererProvider", back_populates="offerer")
     thumb_path_component = "offerers"
@@ -1125,9 +1125,9 @@ class OffererTag(PcObject, Base, Model):
     label: str = Column(String(140))
     description: str = Column(Text)
 
-    categories: list["OffererTagCategory"] = sa_orm.relationship(
-        "OffererTagCategory", secondary="offerer_tag_category_mapping"
-    )
+    # categories: list["OffererTagCategory"] = sa_orm.relationship(
+    #     "OffererTagCategory", secondary="offerer_tag_category_mapping"
+    # )
 
     def __str__(self) -> str:
         return self.label or self.name

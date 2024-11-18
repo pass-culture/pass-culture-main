@@ -57,7 +57,7 @@ class FeatureToggleTest:
         feature = Feature.query.filter_by(name=FeatureToggle.SYNCHRONIZE_ALLOCINE.name).first()
         feature.isActive = True
         repository.save(feature)
-        context = flask._request_ctx_stack.pop()
+        context = flask.g.pop()
 
         # we don't cache yet outside the scope of a request so it'll be 3 DB queries
         try:
@@ -67,7 +67,7 @@ class FeatureToggleTest:
                 FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
 
         finally:
-            flask._request_ctx_stack.push(context)
+            flask.g.push(context)
 
     def test_one_request_for_all_flags(self):
         with assert_num_queries(1):

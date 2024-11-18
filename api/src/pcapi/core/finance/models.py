@@ -752,22 +752,12 @@ class CashflowLog(PcObject, Base, Model):
     )
 
 
-class CashflowPricing(Base, Model):
-    """An association table between cashflows and pricings for their
-    many-to-many relationship.
-
-    A cashflow is "naturally" linked to multiple pricings of the same
-    pricing point: we build a cashflow based on all pricings of a
-    given period (e.g. two weeks).
-
-    A pricing may also be linked to multiple cashflows: for example,
-    if a cashflow is rejected by the bank because the bank information
-    are wrong, we will create another cashflow and the pricing will
-    thus be linked to two cashflows.
-    """
-
-    cashflowId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("cashflow.id"), index=True, primary_key=True)
-    pricingId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("pricing.id"), index=True, primary_key=True)
+CashflowPricing = sqla.Table(
+    "cashflow_pricing",
+    Base.metadata,
+    sqla.Column("cashflowId", sqla.ForeignKey(Cashflow.id), index=True, primary_key=True),
+    sqla.Column("pricingId", sqla.ForeignKey(Pricing.id), index=True, primary_key=True),
+)
 
 
 class CashflowBatch(PcObject, Base, Model):
@@ -858,19 +848,12 @@ class Invoice(PcObject, Base, Model):
         return f"{settings.OBJECT_STORAGE_URL}/invoices/{self.storage_object_id}"
 
 
-class InvoiceCashflow(Base, Model):
-    """An association table between invoices and cashflows for their many-to-many relationship."""
-
-    invoiceId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("invoice.id"), index=True, primary_key=True)
-    cashflowId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("cashflow.id"), index=True, primary_key=True)
-
-    __table_args__ = (
-        sqla.PrimaryKeyConstraint(
-            "invoiceId",
-            "cashflowId",
-            name="unique_invoice_cashflow_association",
-        ),
-    )
+InvoiceCashflow = sqla.Table(
+    "invoice_cashflow",
+    Base.metadata,
+    sqla.Column("invoiceId", sqla.ForeignKey(Invoice.id), index=True, primary_key=True),
+    sqla.Column("cashflowId", sqla.ForeignKey(Cashflow.id), index=True, primary_key=True),
+)
 
 
 # "Payment", "PaymentStatus" and "PaymentMessage" are deprecated. They

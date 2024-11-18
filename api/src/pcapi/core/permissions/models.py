@@ -138,9 +138,9 @@ class Permission(PcObject, Base, Model):
 
     name: str = sa.Column(sa.String(length=140), nullable=False, unique=True)
     category = sa.Column(sa.String(140), nullable=True, default=None)
-    roles: sa.orm.Mapped["Role"] = sa.orm.relationship(
-        "Role", secondary="role_permission", back_populates="permissions"
-    )
+    # roles: sa.orm.Mapped["Role"] = sa.orm.relationship(
+    #     "Role", secondary="role_permission", back_populates="permissions"
+    # )
 
 
 class Roles(enum.Enum):
@@ -195,12 +195,12 @@ class Role(PcObject, Base, Model):
     __tablename__ = "role"
 
     name: str = sa.Column(sa.String(140), nullable=False, unique=True)
-    permissions: sa.orm.Mapped["Permission"] = sa.orm.relationship(
-        Permission, secondary="role_permission", back_populates="roles"
-    )
-    profiles: sa.orm.Mapped["BackOfficeUserProfile"] = sa.orm.relationship(
-        "BackOfficeUserProfile", secondary=role_backoffice_profile_table, back_populates="roles"
-    )
+    # permissions: sa.orm.Mapped["Permission"] = sa.orm.relationship(
+    #     Permission, secondary="role_permission", back_populates="roles"
+    # )
+    # profiles: sa.orm.Mapped["BackOfficeUserProfile"] = sa.orm.relationship(
+    #     "BackOfficeUserProfile", secondary=role_backoffice_profile_table, back_populates="roles"
+    # )
 
     def has_permission(self, needed_permission: Permissions) -> bool:
         for permission in self.permissions:
@@ -220,9 +220,9 @@ class BackOfficeUserProfile(Base, Model):
     user: sa.orm.Mapped["User"] = sa.orm.relationship(
         "User", foreign_keys=[userId], uselist=False, back_populates="backoffice_profile"
     )
-    roles: sa.orm.Mapped["list[Role]"] = sa.orm.relationship(
-        "Role", secondary=role_backoffice_profile_table, back_populates="profiles"
-    )
+    # roles: sa.orm.Mapped["list[Role]"] = sa.orm.relationship(
+    #     "Role", secondary=role_backoffice_profile_table, back_populates="profiles"
+    # )
 
     preferences: sa.orm.Mapped[dict] = sa.Column(
         sa.ext.mutable.MutableDict.as_mutable(sa.dialects.postgresql.JSONB),

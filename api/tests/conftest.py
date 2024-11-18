@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 from pprint import pprint
 import sys
+from threading import get_ident as _get_ident
 import typing
 from unittest.mock import MagicMock
 from unittest.mock import patch
@@ -15,6 +16,7 @@ from flask import Flask
 from flask import g
 from flask.testing import FlaskClient
 from flask_jwt_extended.utils import create_access_token
+import flask_sqlalchemy
 import pytest
 from requests.auth import _basic_auth_str  # pylint: disable=wrong-requests-import
 import requests_mock
@@ -190,6 +192,7 @@ def _db(app):
     """
     mock_db = db
 
+    del app.extensions["sqlalchemy"]
     mock_db.init_app(app)
     install_database_extensions()
     run_migrations()
@@ -606,6 +609,17 @@ def _transaction(request, _db):
     """
     Create a transactional context for tests to run in.
     """
+
+    def create_session(local_db, options):
+        return sa.orm.sessionmaker(class_=flask_sqlalchemy.session.Session, db=local_db, **options)
+
+    def create_scoped_session(local_db, options=None):
+        scopefunc = _get_ident
+        options = {
+            "query_cls": flask_sqlalchemy.query.Query,
+        }
+        return sa.orm.scoped_session(create_session(local_db, options), scopefunc=scopefunc)
+
     # Start a transaction
     connection = _db.engine.connect()
     transaction = connection.begin()
@@ -613,7 +627,7 @@ def _transaction(request, _db):
     # Bind a session to the transaction. The empty `binds` dict is necessary
     # when specifying a `bind` option, or else Flask-SQLAlchemy won't scope
     # the connection properly
-    session = _db.create_scoped_session(options={"bind": connection, "binds": {}})
+    session = create_scoped_session(_db, options={"bind": connection, "binds": {}})
 
     # Make sure the session, connection, and transaction can't be closed by accident in
     # the codebase

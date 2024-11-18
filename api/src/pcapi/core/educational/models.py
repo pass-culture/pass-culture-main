@@ -516,9 +516,9 @@ class CollectiveOffer(
         MutableList.as_mutable(postgresql.ARRAY(sa.Text())), nullable=False, server_default="{}"
     )
 
-    domains: list["EducationalDomain"] = relationship(
-        "EducationalDomain", secondary="collective_offer_domain", back_populates="collectiveOffers"
-    )
+    # domains: list["EducationalDomain"] = relationship(
+    #     "EducationalDomain", secondary="collective_offer_domain", back_populates="collectiveOffers"
+    # )
 
     institutionId = sa.Column(sa.BigInteger, sa.ForeignKey("educational_institution.id"), index=True, nullable=True)
 
@@ -558,15 +558,15 @@ class CollectiveOffer(
         "Provider", foreign_keys=providerId, back_populates="collectiveOffers"
     )
 
-    flaggingValidationRules: list["OfferValidationRule"] = sa.orm.relationship(
-        "OfferValidationRule", secondary="validation_rule_collective_offer_link", back_populates="collectiveOffers"
-    )
+    # flaggingValidationRules: list["OfferValidationRule"] = sa.orm.relationship(
+    #     "OfferValidationRule", secondary="validation_rule_collective_offer_link", back_populates="collectiveOffers"
+    # )
 
-    educationalRedactorsFavorite: sa.orm.Mapped["EducationalRedactor"] = relationship(
-        "EducationalRedactor",
-        secondary="collective_offer_educational_redactor",
-        back_populates="favoriteCollectiveOffers",
-    )
+    # educationalRedactorsFavorite: sa.orm.Mapped["EducationalRedactor"] = relationship(
+    #     "EducationalRedactor",
+    #     secondary="collective_offer_educational_redactor",
+    #     back_populates="favoriteCollectiveOffers",
+    # )
 
     formats: list[subcategories.EacFormat] | None = sa.Column(
         postgresql.ARRAY(sa.Enum(subcategories.EacFormat, create_constraint=False, native_enum=False)), nullable=True
@@ -1023,9 +1023,9 @@ class CollectiveOfferTemplate(
         MutableList.as_mutable(postgresql.ARRAY(sa.Text())), nullable=False, server_default="{}"
     )
 
-    domains: list["EducationalDomain"] = relationship(
-        "EducationalDomain", secondary="collective_offer_template_domain", back_populates="collectiveOfferTemplates"
-    )
+    # domains: list["EducationalDomain"] = relationship(
+    #     "EducationalDomain", secondary="collective_offer_template_domain", back_populates="collectiveOfferTemplates"
+    # )
 
     collectiveOffers: sa_orm.Mapped["CollectiveOffer"] = relationship("CollectiveOffer", back_populates="template")
 
@@ -1044,11 +1044,11 @@ class CollectiveOfferTemplate(
         "CollectiveOfferRequest", back_populates="collectiveOfferTemplate"
     )
 
-    flaggingValidationRules: list["OfferValidationRule"] = sa.orm.relationship(
-        "OfferValidationRule",
-        secondary="validation_rule_collective_offer_template_link",
-        back_populates="collectiveOfferTemplates",
-    )
+    # flaggingValidationRules: list["OfferValidationRule"] = sa.orm.relationship(
+    #     "OfferValidationRule",
+    #     secondary="validation_rule_collective_offer_template_link",
+    #     back_populates="collectiveOfferTemplates",
+    # )
 
     # does the collective offer belongs to a national program
     nationalProgramId: int | None = sa.Column(
@@ -1060,11 +1060,11 @@ class CollectiveOfferTemplate(
 
     nationalProgram: sa_orm.Mapped["NationalProgram"] = relationship("NationalProgram", foreign_keys=nationalProgramId)
 
-    educationalRedactorsFavorite: sa.orm.Mapped["EducationalRedactor"] = relationship(
-        "EducationalRedactor",
-        secondary="collective_offer_template_educational_redactor",
-        back_populates="favoriteCollectiveOfferTemplates",
-    )
+    # educationalRedactorsFavorite: sa.orm.Mapped["EducationalRedactor"] = relationship(
+    #     "EducationalRedactor",
+    #     secondary="collective_offer_template_educational_redactor",
+    #     back_populates="favoriteCollectiveOfferTemplates",
+    # )
 
     dateRange: psycopg2.extras.DateTimeRange = sa.Column(postgresql.TSRANGE)
 
@@ -1501,11 +1501,11 @@ class EducationalInstitution(PcObject, Base, Model):
         "CollectiveOfferRequest", back_populates="educationalInstitution"
     )
 
-    programs: list["EducationalInstitutionProgram"] = relationship(
-        "EducationalInstitutionProgram",
-        secondary="educational_institution_program_association",
-        back_populates="institutions",
-    )
+    # programs: list["EducationalInstitutionProgram"] = relationship(
+    #     "EducationalInstitutionProgram",
+    #     secondary="educational_institution_program_association",
+    #     back_populates="institutions",
+    # )
 
     ruralLevel: InstitutionRuralLevel = sa.Column(MagicEnum(InstitutionRuralLevel), nullable=True, default=None)
 
@@ -1608,17 +1608,17 @@ class EducationalRedactor(PcObject, Base, Model):
         "CollectiveOfferRequest", back_populates="educationalRedactor"
     )
 
-    favoriteCollectiveOffers: sa.orm.Mapped["CollectiveOffer"] = relationship(
-        "CollectiveOffer",
-        secondary="collective_offer_educational_redactor",
-        back_populates="educationalRedactorsFavorite",
-    )
+    # favoriteCollectiveOffers: sa.orm.Mapped["CollectiveOffer"] = relationship(
+    #     "CollectiveOffer",
+    #     secondary="collective_offer_educational_redactor",
+    #     back_populates="educationalRedactorsFavorite",
+    # )
 
-    favoriteCollectiveOfferTemplates: sa.orm.Mapped["CollectiveOfferTemplate"] = relationship(
-        "CollectiveOfferTemplate",
-        secondary="collective_offer_template_educational_redactor",
-        back_populates="educationalRedactorsFavorite",
-    )
+    # favoriteCollectiveOfferTemplates: sa.orm.Mapped["CollectiveOfferTemplate"] = relationship(
+    #     "CollectiveOfferTemplate",
+    #     secondary="collective_offer_template_educational_redactor",
+    #     back_populates="educationalRedactorsFavorite",
+    # )
 
     @property
     def full_name(self) -> str:
@@ -1941,19 +1941,19 @@ class EducationalDomain(PcObject, Base, Model):
     __tablename__ = "educational_domain"
 
     name: str = sa.Column(sa.Text, nullable=False)
-    venues: sa_orm.Mapped[list["Venue"]] = sa.orm.relationship(
-        "Venue", back_populates="collectiveDomains", secondary="educational_domain_venue"
-    )
-    collectiveOffers: list["CollectiveOffer"] = relationship(
-        "CollectiveOffer", secondary="collective_offer_domain", back_populates="domains"
-    )
+    # venues: sa_orm.Mapped[list["Venue"]] = sa.orm.relationship(
+    #     "Venue", back_populates="collectiveDomains", secondary="educational_domain_venue"
+    # )
+    # collectiveOffers: list["CollectiveOffer"] = relationship(
+    #     "CollectiveOffer", secondary="collective_offer_domain", back_populates="domains"
+    # )
 
-    collectiveOfferTemplates: list["CollectiveOfferTemplate"] = relationship(
-        "CollectiveOfferTemplate", secondary="collective_offer_template_domain", back_populates="domains"
-    )
-    nationalPrograms: sa_orm.Mapped[list["NationalProgram"]] = sa.orm.relationship(
-        "NationalProgram", back_populates="domains", secondary="domain_to_national_program"
-    )
+    # collectiveOfferTemplates: list["CollectiveOfferTemplate"] = relationship(
+    #     "CollectiveOfferTemplate", secondary="collective_offer_template_domain", back_populates="domains"
+    # )
+    # nationalPrograms: sa_orm.Mapped[list["NationalProgram"]] = sa.orm.relationship(
+    #     "NationalProgram", back_populates="domains", secondary="domain_to_national_program"
+    # )
 
 
 class CollectiveDmsApplication(PcObject, Base, Model):
@@ -2078,9 +2078,9 @@ class NationalProgram(PcObject, Base, Model):
 
     name: str = sa.Column(sa.Text, unique=True)
     dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
-    domains: sa_orm.Mapped[list["EducationalDomain"]] = sa.orm.relationship(
-        "EducationalDomain", back_populates="nationalPrograms", secondary="domain_to_national_program"
-    )
+    # domains: sa_orm.Mapped[list["EducationalDomain"]] = sa.orm.relationship(
+    #     "EducationalDomain", back_populates="nationalPrograms", secondary="domain_to_national_program"
+    # )
 
 
 class NationalProgramOfferLinkHistory(PcObject, Base, Model):
@@ -2180,9 +2180,9 @@ class EducationalInstitutionProgram(PcObject, Base, Model):
     label: str | None = sa.Column(sa.Text, nullable=True)
     description: str | None = sa.Column(sa.Text, nullable=True)
 
-    institutions: list["EducationalInstitution"] = relationship(
-        "EducationalInstitution", secondary="educational_institution_program_association", back_populates="programs"
-    )
+    # institutions: list["EducationalInstitution"] = relationship(
+    #     "EducationalInstitution", secondary="educational_institution_program_association", back_populates="programs"
+    # )
 
 
 class CollectivePlaylist(PcObject, Base, Model):

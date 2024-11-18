@@ -539,9 +539,9 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     compliance: sa_orm.Mapped["OfferCompliance | None"] = sa_orm.relationship(
         "OfferCompliance", back_populates="offer", uselist=False
     )
-    criteria: sa_orm.Mapped["Criterion"] = sa.orm.relationship(
-        "Criterion", backref=db.backref("criteria", lazy="dynamic"), secondary="offer_criterion"
-    )
+    # criteria: sa_orm.Mapped["Criterion"] = sa.orm.relationship(
+    #     "Criterion", backref=db.backref("criteria", lazy="dynamic"), secondary="offer_criterion"
+    # )
     dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
     dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
     dateUpdated: datetime.datetime = sa.Column(
@@ -554,9 +554,9 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     fieldsUpdated: list[str] = sa.Column(
         postgresql.ARRAY(sa.String(100)), nullable=False, default=[], server_default="{}"
     )
-    flaggingValidationRules: list["OfferValidationRule"] = sa.orm.relationship(
-        "OfferValidationRule", secondary="validation_rule_offer_link", back_populates="offers"
-    )
+    # flaggingValidationRules: list["OfferValidationRule"] = sa.orm.relationship(
+    #     "OfferValidationRule", secondary="validation_rule_offer_link", back_populates="offers"
+    # )
 
     lastProviderId = sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True)
     lastProvider: "Provider|None" = sa.orm.relationship("Provider", foreign_keys=[lastProviderId])
@@ -1146,17 +1146,17 @@ class OfferValidationSubRule(PcObject, Base, Model):
 class OfferValidationRule(PcObject, Base, Model, DeactivableMixin):
     __tablename__ = "offer_validation_rule"
     name: str = sa.Column(sa.Text, nullable=False)
-    offers: list["Offer"] = sa.orm.relationship(
-        "Offer", secondary="validation_rule_offer_link", back_populates="flaggingValidationRules"
-    )
-    collectiveOffers: list["CollectiveOffer"] = sa.orm.relationship(
-        "CollectiveOffer", secondary="validation_rule_collective_offer_link", back_populates="flaggingValidationRules"
-    )
-    collectiveOfferTemplates: list["CollectiveOfferTemplate"] = sa.orm.relationship(
-        "CollectiveOfferTemplate",
-        secondary="validation_rule_collective_offer_template_link",
-        back_populates="flaggingValidationRules",
-    )
+    # offers: list["Offer"] = sa.orm.relationship(
+    #     "Offer", secondary="validation_rule_offer_link", back_populates="flaggingValidationRules"
+    # )
+    # collectiveOffers: list["CollectiveOffer"] = sa.orm.relationship(
+    #     "CollectiveOffer", secondary="validation_rule_collective_offer_link", back_populates="flaggingValidationRules"
+    # )
+    # collectiveOfferTemplates: list["CollectiveOfferTemplate"] = sa.orm.relationship(
+    #     "CollectiveOfferTemplate",
+    #     secondary="validation_rule_collective_offer_template_link",
+    #     back_populates="flaggingValidationRules",
+    # )
 
 
 class ValidationRuleOfferLink(PcObject, Base, Model):
