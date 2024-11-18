@@ -25,13 +25,15 @@ import { computeSelectedOffersLabel } from '../../../utils/computeSelectedOffers
 import { DeleteConfirmDialog } from './DeleteConfirmDialog'
 import { IndividualDeactivationConfirmDialog } from './IndividualDeactivationConfirmDialog'
 
-export interface IndividualOffersActionsBarProps {
+export type IndividualOffersActionsBarProps = {
   areAllOffersSelected: boolean
   clearSelectedOffers: () => void
   selectedOffers: { id: number; status: OfferStatus }[]
   toggleSelectAllCheckboxes: () => void
   getUpdateOffersStatusMessage: (selectedOfferIds: number[]) => string
-  canDeleteOffers: boolean
+  canDelete: boolean
+  canPublish: boolean
+  canDeactivate: boolean
 }
 
 const computeAllActivationSuccessMessage = (nbSelectedOffers: number) => {
@@ -127,7 +129,9 @@ export const IndividualOffersActionsBar = ({
   toggleSelectAllCheckboxes,
   areAllOffersSelected,
   getUpdateOffersStatusMessage,
-  canDeleteOffers,
+  canDelete,
+  canPublish,
+  canDeactivate,
 }: IndividualOffersActionsBarProps): JSX.Element => {
   const urlSearchFilters = useQuerySearchFilters()
   const { mutate } = useSWRConfig()
@@ -207,10 +211,6 @@ export const IndividualOffersActionsBar = ({
   }
 
   const handleOpenDeleteDialog = () => {
-    if (!canDeleteOffers) {
-      notify.error('Seuls les brouillons peuvent être supprimés')
-      return
-    }
     setIsDeleteDialogOpen(true)
   }
 
@@ -245,27 +245,33 @@ export const IndividualOffersActionsBar = ({
           <Button onClick={handleClose} variant={ButtonVariant.SECONDARY}>
             Annuler
           </Button>
-          <Button
-            onClick={() => setIsDeactivationDialogOpen(true)}
-            icon={fullHideIcon}
-            variant={ButtonVariant.SECONDARY}
-          >
-            {areNewStatusesEnabled ? 'Mettre en pause' : 'Désactiver'}
-          </Button>
-          <Button
-            onClick={handleOpenDeleteDialog}
-            icon={fullTrashIcon}
-            variant={ButtonVariant.SECONDARY}
-          >
-            Supprimer
-          </Button>
-          <Button
-            onClick={handleActivate}
-            icon={fullValidateIcon}
-            variant={ButtonVariant.SECONDARY}
-          >
-            Publier
-          </Button>
+          {canDeactivate && (
+            <Button
+              onClick={() => setIsDeactivationDialogOpen(true)}
+              icon={fullHideIcon}
+              variant={ButtonVariant.SECONDARY}
+            >
+              {areNewStatusesEnabled ? 'Mettre en pause' : 'Désactiver'}
+            </Button>
+          )}
+          {canDelete && (
+            <Button
+              onClick={handleOpenDeleteDialog}
+              icon={fullTrashIcon}
+              variant={ButtonVariant.SECONDARY}
+            >
+              Supprimer
+            </Button>
+          )}
+          {canPublish && (
+            <Button
+              onClick={handleActivate}
+              icon={fullValidateIcon}
+              variant={ButtonVariant.SECONDARY}
+            >
+              Publier
+            </Button>
+          )}
         </ActionsBarSticky.Right>
       </ActionsBarSticky>
     </>

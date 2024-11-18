@@ -44,7 +44,9 @@ describe('ActionsBar', () => {
   beforeEach(() => {
     props = {
       getUpdateOffersStatusMessage: mockGetUpdateOffersStatusMessage,
-      canDeleteOffers: true,
+      canDelete: true,
+      canPublish: true,
+      canDeactivate: true,
       selectedOffers: offerIds,
       clearSelectedOffers: vi.fn(),
       toggleSelectAllCheckboxes: vi.fn(),
@@ -159,20 +161,6 @@ describe('ActionsBar', () => {
     expect(props.clearSelectedOffers).toHaveBeenCalledTimes(1)
     expect(
       screen.getByText('2 brouillons ont bien été supprimés')
-    ).toBeInTheDocument()
-  })
-
-  it('should not delete offers when a non draft is selected upon deletion', async () => {
-    props.canDeleteOffers = false
-
-    renderActionsBar(props)
-
-    await userEvent.click(screen.getByText('Supprimer'))
-
-    expect(api.patchOffersActiveStatus).not.toHaveBeenCalled()
-    expect(props.clearSelectedOffers).not.toHaveBeenCalled()
-    expect(
-      screen.getByText('Seuls les brouillons peuvent être supprimés')
     ).toBeInTheDocument()
   })
 
@@ -340,5 +328,17 @@ describe('ActionsBar', () => {
         'Une erreur est survenue lors de la suppression des brouillon'
       )
     )
+  })
+
+  it('should not display actions when selected offers have the wrong status', () => {
+    props.canDeactivate = false
+    props.canPublish = false
+    props.canDelete = false
+
+    renderActionsBar(props)
+
+    expect(screen.queryByText('Supprimer')).not.toBeInTheDocument()
+    expect(screen.queryByText('Publier')).not.toBeInTheDocument()
+    expect(screen.queryByText('Désactiver')).not.toBeInTheDocument()
   })
 })

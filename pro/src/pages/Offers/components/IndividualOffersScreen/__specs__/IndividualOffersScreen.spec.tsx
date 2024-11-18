@@ -545,6 +545,14 @@ describe('IndividualOffersScreen', () => {
           isActive: false,
           status: OfferStatus.DRAFT,
         }),
+        listOffersOfferFactory({
+          isActive: false,
+          status: OfferStatus.ACTIVE,
+        }),
+        listOffersOfferFactory({
+          isActive: false,
+          status: OfferStatus.INACTIVE,
+        }),
       ]
 
       renderOffers({
@@ -610,20 +618,6 @@ describe('IndividualOffersScreen', () => {
         'C’est nouveau ! Vous pouvez désormais archiver vos offres collectives.'
       )
     ).not.toBeInTheDocument()
-  })
-
-  it('should notify when deleting offers there are not draft', async () => {
-    renderOffers({
-      ...props,
-      offers: [listOffersOfferFactory({ status: OfferStatus.ACTIVE })],
-    })
-
-    await userEvent.click(screen.getByText('Tout sélectionner'))
-    await userEvent.click(screen.getByText('Supprimer'))
-
-    expect(mockNotifyError).toHaveBeenCalledWith(
-      'Seuls les brouillons peuvent être supprimés'
-    )
   })
 
   it('should delete anyway even with active status', async () => {

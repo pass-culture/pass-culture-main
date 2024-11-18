@@ -106,10 +106,6 @@ export const IndividualOffersScreen = ({
     return ''
   }
 
-  const canDeleteOffers = selectedOffers.some(
-    (offer) => offer.status === OfferStatus.DRAFT
-  )
-
   function onSetSelectedOffer(offer: ListOffersOfferResponseModel) {
     const matchingOffer = selectedOffers.find((selectedOffer) =>
       isSameOffer(offer, selectedOffer)
@@ -125,7 +121,18 @@ export const IndividualOffersScreen = ({
       })
     }
   }
-
+  const canDelete = selectedOffers.some(
+    (offer) => offer.status === OfferStatus.DRAFT
+  )
+  const canPublish = selectedOffers.some(
+    (offer) => offer.status === OfferStatus.INACTIVE
+  )
+  const canDeactivate = selectedOffers.some(
+    (offer) =>
+      offer.status === OfferStatus.ACTIVE ||
+      offer.status === OfferStatus.EXPIRED ||
+      offer.status === OfferStatus.SOLD_OUT
+  )
   return (
     <div>
       <div className={styles['title-container']}>
@@ -174,7 +181,9 @@ export const IndividualOffersScreen = ({
                 }))}
                 toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
                 getUpdateOffersStatusMessage={getUpdateOffersStatusMessage}
-                canDeleteOffers={canDeleteOffers}
+                canDelete={canDelete}
+                canDeactivate={canDeactivate}
+                canPublish={canPublish}
               />
             )}
           </div>
