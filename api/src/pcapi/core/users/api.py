@@ -2,6 +2,7 @@ from dataclasses import asdict
 import datetime
 from decimal import Decimal
 import enum
+from functools import partial
 from io import BytesIO
 import itertools
 import logging
@@ -65,6 +66,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications import push as push_api
 from pcapi.repository import is_managed_transaction
+from pcapi.repository import on_commit
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.serialization import users as users_serialization
@@ -208,7 +210,7 @@ def create_account(
         external_attributes_api.update_external_user(user)
 
     if not user.isEmailValidated and send_activation_mail:
-        request_email_confirmation(user)
+        on_commit(partial(request_email_confirmation, user))
 
     return user
 

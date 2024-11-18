@@ -477,7 +477,6 @@ class AccountCreationTest:
         expected_num_queries += 1  # user
         expected_num_queries += 1  # user
         expected_num_queries += 1  # user (insert)
-        expected_num_queries += 1  # user
         expected_num_queries += 1  # bookings
         expected_num_queries += 1  # favorites
         expected_num_queries += 1  # deposit
@@ -1518,7 +1517,9 @@ class GetEMailUpdateStatusTest:
         user = users_factories.UserFactory(email=self.old_email)
 
         client = client.with_token(user.email)
-        expected_num_queries = 2  # user + user_email_history
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # user_email_history
+        expected_num_queries += 1  # atomic rollback to savepoint
         with assert_num_queries(expected_num_queries):
             response = client.get("/native/v1/profile/email_update/status")
             assert response.status_code == 404
@@ -2684,6 +2685,7 @@ class GetAccountSuspendedDateTest:
             client.with_token(email=user.email)
 
             expected_num_queries = 2  # user + action_history
+            expected_num_queries += 1  # atomic rollback to savepoint
             with assert_num_queries(expected_num_queries):
                 response = client.get("/native/v1/account/suspension_date")
                 assert response.status_code == 403

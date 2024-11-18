@@ -229,6 +229,7 @@ def get_email_update_token_expiration_date(user: users_models.User) -> serialize
 
 @blueprint.native_route("/account", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
+@atomic()
 def create_account(body: serializers.AccountRequest) -> None:
     if FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active():
         try:
