@@ -262,7 +262,7 @@ def create_draft_offer(
     return offer
 
 
-def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOfferBodyModel) -> models.Offer:
+def update_draft_offer(offer: models.Offer, body: offers_schemas.UpdateOffer) -> models.Offer:
     fields = body.dict(by_alias=True, exclude_unset=True)
 
     updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}

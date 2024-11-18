@@ -193,7 +193,6 @@ export type { PatchCollectiveOfferArchiveBodyModel } from './models/PatchCollect
 export type { PatchCollectiveOfferBodyModel } from './models/PatchCollectiveOfferBodyModel';
 export type { PatchCollectiveOfferEducationalInstitution } from './models/PatchCollectiveOfferEducationalInstitution';
 export type { PatchCollectiveOfferTemplateBodyModel } from './models/PatchCollectiveOfferTemplateBodyModel';
-export type { PatchDraftOfferBodyModel } from './models/PatchDraftOfferBodyModel';
 export type { PatchOfferActiveStatusBodyModel } from './models/PatchOfferActiveStatusBodyModel';
 export type { PatchOfferBodyModel } from './models/PatchOfferBodyModel';
 export type { PatchOfferPublishBodyModel } from './models/PatchOfferPublishBodyModel';

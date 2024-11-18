@@ -24,6 +24,7 @@ from pcapi.core.offers.validation import check_for_duplicated_price_categories
 from pcapi.core.offers.validation import check_product_cgu_and_offerer
 from pcapi.models import api_errors
 from pcapi.models import db
+from pcapi.models import feature
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
@@ -273,22 +274,34 @@ def post_draft_offer(
     api=blueprint.pro_private_schema,
 )
 def patch_draft_offer(
-    offer_id: int, body: offers_schemas.PatchDraftOfferBodyModel
+    offer_id: int, body: offers_serialize.PatchOfferBodyModel
 ) -> offers_serialize.GetIndividualOfferResponseModel:
-    offer = models.Offer.query.options(
-        sqla.orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings),
-        sqla.orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer),
-        sqla.orm.joinedload(models.Offer.product),
-    ).get(offer_id)
+    offer = (
+        models.Offer.query.options(
+            sqla.orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings),
+            sqla.orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer),
+            sqla.orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.offererAddress),
+            sqla.orm.joinedload(models.Offer.product),
+        )
+        .filter_by(id=offer_id)
+        .one_or_none()
+    )
     if not offer:
         raise api_errors.ResourceNotFoundError
 
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     try:
         with repository.transaction():
-            if body_extra_data := offers_api.deserialize_extra_data(body.extra_data, offer.subcategoryId):
-                body.extra_data = body_extra_data
-            offer = offers_api.update_draft_offer(offer, body)
+            updates = body.dict(by_alias=True, exclude_unset=True)
+            if body_extra_data := offers_api.deserialize_extra_data(body.extraData, offer.subcategoryId):
+                updates["extraData"] = body_extra_data
+
+            offer_body = offers_schemas.UpdateOffer(**updates)
+
+            if feature.FeatureToggle.WIP_PATCH_OFFER_UNIQUE_ENDPOINT.is_active():
+                offer = offers_api.update_offer(offer, offer_body, is_from_private_api=True)
+            else:
+                offer = offers_api.update_draft_offer(offer, offer_body)
     except (exceptions.OfferCreationBaseException, exceptions.OfferEditionBaseException) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
