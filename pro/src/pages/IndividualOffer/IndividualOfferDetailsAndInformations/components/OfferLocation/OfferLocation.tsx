@@ -14,7 +14,6 @@ import { computeAddressDisplayName } from 'repository/venuesService'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { RadioButton } from 'ui-kit/form/RadioButton/RadioButton'
-import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import styles from './OfferLocation.module.scss'
@@ -27,12 +26,12 @@ export const OfferLocation = ({ venue }: OfferLocationProps): JSX.Element => {
   const formik = useFormikContext<IndividualOfferFormValues>()
 
   const [showOtherAddress, setShowOtherAddress] = useState(
-    formik.values.offerlocation === OFFER_LOCATION.OTHER_ADDRESS
+    formik.values.offerLocation === OFFER_LOCATION.OTHER_ADDRESS
   )
 
   useEffect(() => {
-    setShowOtherAddress(formik.values.offerlocation === 'other')
-  }, [formik.values.offerlocation])
+    setShowOtherAddress(formik.values.offerLocation === 'other')
+  }, [formik.values.offerLocation])
 
   const [manuallySetAddress, , { setValue: setManuallySetAddress }] =
     useField('manuallySetAddress')
@@ -84,12 +83,10 @@ export const OfferLocation = ({ venue }: OfferLocationProps): JSX.Element => {
     : ''
   const venueFullText = `${venue?.publicName || venue?.name} – ${venueAddress}`
 
-  const [, offerlocationMeta] = useField<string>('offerlocation')
-
   return (
     <FormLayout.Section
       title="Localisation de l’offre"
-      className={styles['offerlocation-wrapper']}
+      className={styles['offer-location-wrapper']}
     >
       <p className={styles['infotext']}>
         Il s’agit de l’adresse à laquelle les jeunes devront se présenter.
@@ -98,7 +95,7 @@ export const OfferLocation = ({ venue }: OfferLocationProps): JSX.Element => {
         <RadioButton
           withBorder
           label={venueFullText}
-          name="offerlocation"
+          name="offerLocation"
           value={venue?.address?.id_oa.toString() ?? ''}
           required
           onChange={onChangeOfferLocation}
@@ -108,15 +105,12 @@ export const OfferLocation = ({ venue }: OfferLocationProps): JSX.Element => {
         <RadioButton
           withBorder
           label="À une autre adresse"
-          name="offerlocation"
+          name="offerLocation"
           value={OFFER_LOCATION.OTHER_ADDRESS}
           required
           onChange={onChangeOfferLocation}
         />
       </FormLayout.Row>
-      {offerlocationMeta.error && !offerlocationMeta.value && (
-        <FieldError name="offerlocation">{offerlocationMeta.error}</FieldError>
-      )}
 
       {showOtherAddress && (
         <div className={styles['other-address-wrapper']}>

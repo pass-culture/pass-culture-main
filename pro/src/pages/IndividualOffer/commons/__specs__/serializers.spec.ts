@@ -1,16 +1,12 @@
 /* istanbul ignore file: DEBT, TO FIX */
 
-import { PatchOfferBodyModel, PostOfferBodyModel } from 'apiClient/v1'
-import { AccessibilityEnum } from 'commons/core/shared/types'
-import { getIndividualOfferFactory } from 'commons/utils/factories/individualApiFactories'
-import { OFFER_LOCATION } from 'pages/IndividualOffer/commons/constants'
-import { IndividualOfferFormValues } from 'pages/IndividualOffer/commons/types'
+import { PatchOfferBodyModel, PostOfferBodyModel } from "apiClient/v1";
+import { AccessibilityEnum } from "commons/core/shared/types";
+import { getIndividualOfferFactory } from "commons/utils/factories/individualApiFactories";
+import { OFFER_LOCATION } from "pages/IndividualOffer/commons/constants";
+import { IndividualOfferFormValues } from "pages/IndividualOffer/commons/types";
 
-import {
-  serializeDurationMinutes,
-  serializeExtraData,
-  serializePatchOffer,
-} from '../serializePatchOffer'
+import { serializeDurationMinutes, serializeExtraData, serializePatchOffer } from "../serializePatchOffer";
 
 describe('test updateIndividualOffer::serializers', () => {
   it('test serializeDurationMinutes', () => {
@@ -97,7 +93,7 @@ describe('test updateIndividualOffer::serializers', () => {
         street: '3 Rue de Valois',
         locationLabel: 'Ville lumière',
         manuallySetAddress: false,
-        offerlocation: OFFER_LOCATION.OTHER_ADDRESS,
+        offerLocation: OFFER_LOCATION.OTHER_ADDRESS,
       }
       patchBody = {
         audioDisabilityCompliant: true,
@@ -185,7 +181,7 @@ describe('test updateIndividualOffer::serializers', () => {
     it('should send isVenueAddress flag set to true when user select the venue location', () => {
       formValues = {
         ...formValues,
-        offerlocation: '1', // any ID that represents the venue OA location
+        offerLocation: '1', // any ID that represents the venue OA location
       }
       patchBody = {
         ...patchBody,
@@ -205,7 +201,7 @@ describe('test updateIndividualOffer::serializers', () => {
     it('should send isVenueAddress flag set to false when user select another location (WIP_ENABLE_OFFER_ADDRESS)', () => {
       formValues = {
         ...formValues,
-        offerlocation: OFFER_LOCATION.OTHER_ADDRESS, // user choosed to set another address
+        offerLocation: OFFER_LOCATION.OTHER_ADDRESS, // user choosed to set another address
       }
       patchBody = {
         ...patchBody,
@@ -226,7 +222,7 @@ describe('test updateIndividualOffer::serializers', () => {
         ...formValues,
         locationLabel: '',
         manuallySetAddress: false,
-        offerlocation: OFFER_LOCATION.OTHER_ADDRESS,
+        offerLocation: OFFER_LOCATION.OTHER_ADDRESS,
       }
       patchBody = {
         ...patchBody,

@@ -183,7 +183,7 @@ describe('setDefaultInitialValuesFromOffer', () => {
       receiveNotificationEmails: true,
       url: 'http://example.com',
 
-      offerlocation: OFFER_LOCATION.OTHER_ADDRESS,
+      offerLocation: OFFER_LOCATION.OTHER_ADDRESS,
       manuallySetAddress: true,
       'search-addressAutocomplete': addressAutocomplete,
       addressAutocomplete,
