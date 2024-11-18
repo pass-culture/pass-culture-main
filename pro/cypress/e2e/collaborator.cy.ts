@@ -3,7 +3,7 @@ import { logAndGoToPage } from '../support/helpers.ts'
 describe('Collaborator list feature', () => {
   let login: string
 
-  before(() => {
+  beforeEach(() => {
     cy.visit('/connexion')
     cy.request({
       method: 'GET',
@@ -24,8 +24,12 @@ describe('Collaborator list feature', () => {
     const randomEmail = `collaborator${Math.random()}@example.com`
     logAndGoToPage(login, '/')
 
-    cy.stepLog({ message: 'open collaborator Page' })
+    cy.stepLog({ message: 'open collaborator page' })
     cy.findAllByText('Collaborateurs').click()
+
+    cy.stepLog({ message: 'wait for collaborator page display' })
+    cy.url().should('include', '/collaborateurs')
+    cy.contains(login)
 
     cy.stepLog({ message: 'add a collaborator in the list' })
     cy.findByText('Ajouter un collaborateur').click()
@@ -38,7 +42,9 @@ describe('Collaborator list feature', () => {
       `L'invitation a bien été envoyée.`
     )
 
-    cy.stepLog({ message: 'check login validated and new collaborator waiting status' })
+    cy.stepLog({
+      message: 'check login validated and new collaborator waiting status',
+    })
     cy.contains(randomEmail).next().should('have.text', 'En attente')
     cy.contains(login).next().should('have.text', 'Validé')
 
@@ -49,7 +55,9 @@ describe('Collaborator list feature', () => {
     }).then((response) => {
       expect(response.status).to.eq(200)
       expect(response.body.To).to.eq(randomEmail)
-      expect(response.body.params.OFFERER_NAME).to.contain('Le Petit Rintintin Management')
+      expect(response.body.params.OFFERER_NAME).to.contain(
+        'Le Petit Rintintin Management'
+      )
     })
   })
 })
