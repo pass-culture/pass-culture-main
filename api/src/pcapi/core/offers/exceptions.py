@@ -1,12 +1,12 @@
 import typing
 
-from pcapi.domain.client_exceptions import ClientError
 from pcapi.models.api_errors import ApiErrors
 
 
-class TooLateToDeleteStock(ClientError):
+class TooLateToDeleteStock(ApiErrors):
     def __init__(self) -> None:
-        super().__init__(
+        super().__init__()
+        self.add_error(
             "global",
             "L'évènement s'est terminé il y a plus de deux jours, la suppression est impossible.",
         )
@@ -100,26 +100,28 @@ class MissingImage(ImageValidationError):
         super().__init__("Nous n'avons pas réceptionné l'image, merci d'essayer à nouveau.")
 
 
-class OfferCreationBaseException(ClientError):
+class OfferCreationBaseException(ApiErrors):
     pass
 
 
-class PriceCategoryCreationBaseException(ClientError):
+class PriceCategoryCreationBaseException(ApiErrors):
     pass
 
 
-class StockEditBaseException(ClientError):
+class StockEditBaseException(ApiErrors):
     pass
 
 
 class OfferCannotBeDuo(OfferCreationBaseException):
     def __init__(self) -> None:
-        super().__init__("enableDoubleBookings", "the category chosen does not allow double bookings")
+        super().__init__()
+        self.add_error("enableDoubleBookings", "the category chosen does not allow double bookings")
 
 
 class SubcategoryNotEligibleForEducationalOffer(OfferCreationBaseException):
     def __init__(self) -> None:
-        super().__init__(
+        super().__init__()
+        self.add_error(
             "offer",
             "Cette catégorie d'offre n'est pas éligible aux offres éducationnelles",
         )
@@ -127,7 +129,8 @@ class SubcategoryNotEligibleForEducationalOffer(OfferCreationBaseException):
 
 class UnknownOfferSubCategory(OfferCreationBaseException):
     def __init__(self) -> None:
-        super().__init__(
+        super().__init__()
+        self.add_error(
             "subcategory",
             "La sous-catégorie de cette offre est inconnue",
         )
@@ -135,7 +138,8 @@ class UnknownOfferSubCategory(OfferCreationBaseException):
 
 class SubCategoryIsInactive(OfferCreationBaseException):
     def __init__(self) -> None:
-        super().__init__(
+        super().__init__()
+        self.add_error(
             "subcategory",
             "Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie",
         )
@@ -143,7 +147,8 @@ class SubCategoryIsInactive(OfferCreationBaseException):
 
 class CannotSetIdAtProviderWithoutAProvider(OfferCreationBaseException):
     def __init__(self) -> None:
-        super().__init__(
+        super().__init__()
+        self.add_error(
             "idAtProvider",
             "Une offre ne peut être créée ou éditée avec un idAtProvider si elle n'a pas de provider",
         )
@@ -151,7 +156,8 @@ class CannotSetIdAtProviderWithoutAProvider(OfferCreationBaseException):
 
 class IdAtProviderAlreadyTakenByAnotherVenueOffer(OfferCreationBaseException):
     def __init__(self, id_at_provider: str) -> None:
-        super().__init__(
+        super().__init__()
+        self.add_error(
             "idAtProvider",
             f"`{id_at_provider}` is already taken by another venue offer",
         )
@@ -159,7 +165,8 @@ class IdAtProviderAlreadyTakenByAnotherVenueOffer(OfferCreationBaseException):
 
 class IdAtProviderAlreadyTakenByAnotherOfferPriceCategory(PriceCategoryCreationBaseException):
     def __init__(self, id_at_provider: str) -> None:
-        super().__init__(
+        super().__init__()
+        self.add_error(
             "idAtProvider",
             f"`{id_at_provider}` is already taken by another offer price category",
         )
@@ -167,7 +174,8 @@ class IdAtProviderAlreadyTakenByAnotherOfferPriceCategory(PriceCategoryCreationB
 
 class IdAtProviderAlreadyTakenByAnotherOfferStock(StockEditBaseException):
     def __init__(self, id_at_provider: str) -> None:
-        super().__init__(
+        super().__init__()
+        self.add_error(
             "idAtProvider",
             f"`{id_at_provider}` is already taken by another offer stock",
         )
@@ -175,7 +183,8 @@ class IdAtProviderAlreadyTakenByAnotherOfferStock(StockEditBaseException):
 
 class NoDelayWhenEventWithdrawalTypeHasNoTicket(OfferCreationBaseException):
     def __init__(self) -> None:
-        super().__init__(
+        super().__init__()
+        self.add_error(
             "offer",
             "Il ne peut pas y avoir de délai de retrait lorsqu'il s'agit d'un évènement sans ticket",
         )
@@ -183,7 +192,8 @@ class NoDelayWhenEventWithdrawalTypeHasNoTicket(OfferCreationBaseException):
 
 class EventWithTicketMustHaveDelay(OfferCreationBaseException):
     def __init__(self) -> None:
-        super().__init__(
+        super().__init__()
+        self.add_error(
             "offer",
             "Un évènement avec ticket doit avoir un délai de renseigné",
         )
@@ -191,7 +201,8 @@ class EventWithTicketMustHaveDelay(OfferCreationBaseException):
 
 class NonLinkedProviderCannotHaveInAppTicket(OfferCreationBaseException):
     def __init__(self) -> None:
-        super().__init__(
+        super().__init__()
+        self.add_error(
             "offer",
             "Vous devez supporter l'interface de billeterie pour créer des offres avec billet",
         )
@@ -199,7 +210,8 @@ class NonLinkedProviderCannotHaveInAppTicket(OfferCreationBaseException):
 
 class WithdrawableEventOfferMustHaveWithdrawal(OfferCreationBaseException):
     def __init__(self) -> None:
-        super().__init__(
+        super().__init__()
+        self.add_error(
             "offer",
             "Une offre qui a un ticket retirable doit avoir un type de retrait renseigné",
         )
@@ -207,33 +219,43 @@ class WithdrawableEventOfferMustHaveWithdrawal(OfferCreationBaseException):
 
 class WithdrawableEventOfferMustHaveBookingContact(OfferCreationBaseException):
     def __init__(self) -> None:
-        super().__init__(
+        super().__init__()
+        self.add_error(
             "offer",
             "Une offre qui a un ticket retirable doit avoir l'email du contact de réservation",
         )
 
 
 class ExtraDataValueNotAllowed(OfferCreationBaseException):
-    pass
+    def __init__(self, field: str, msg: str) -> None:
+        super().__init__()
+        self.add_error(field, msg)
 
 
 class OfferAlreadyExists(OfferCreationBaseException):
     def __init__(self, field: str) -> None:
-        super().__init__(
+        super().__init__()
+        self.add_error(
             field, f"Une offre avec cet {field.upper()} existe déjà. Vous pouvez la retrouver dans l’onglet Offres."
         )
 
 
 class EanFormatException(OfferCreationBaseException):
-    pass
+    def __init__(self, field: str, msg: str) -> None:
+        super().__init__()
+        self.add_error(field, msg)
 
 
 class ProductNotFoundForOfferCreation(OfferCreationBaseException):
-    pass
+    def __init__(self, field: str, msg: str) -> None:
+        super().__init__()
+        self.add_error(field, msg)
 
 
 class FutureOfferException(OfferCreationBaseException):
-    pass
+    def __init__(self, field: str, msg: str) -> None:
+        super().__init__()
+        self.add_error(field, msg)
 
 
 class ThumbnailStorageError(ApiErrors):
@@ -258,7 +280,8 @@ class ReportMalformed(OfferReportError):
 
 class BookingLimitDatetimeTooLate(OfferCreationBaseException):
     def __init__(self) -> None:
-        super().__init__(
+        super().__init__()
+        self.add_error(
             "bookingLimitDatetime",
             "The bookingLimitDatetime must be before the beginning of the event",
         )
@@ -296,23 +319,26 @@ class NotUpdateProductOrOffers(Exception):
     pass
 
 
-class OfferEditionBaseException(ClientError):
+class OfferEditionBaseException(ApiErrors):
     pass
 
 
 class RejectedOrPendingOfferNotEditable(OfferEditionBaseException):
     def __init__(self) -> None:
-        super().__init__("global", "Les offres refusées ou en attente de validation ne sont pas modifiables")
+        super().__init__()
+        self.add_error("global", "Les offres refusées ou en attente de validation ne sont pas modifiables")
 
 
 class OfferMustHaveAccessibility(OfferEditionBaseException):
     def __init__(self) -> None:
-        super().__init__("global", "L’accessibilité de l’offre doit être définie")
+        super().__init__()
+        self.add_error("global", "L’accessibilité de l’offre doit être définie")
 
 
 class OfferWithProductShouldNotUpdateExtraData(OfferEditionBaseException):
     def __init__(self) -> None:
-        super().__init__("global", "Les extraData des offres avec produit ne sont pas modifialbles")
+        super().__init__()
+        self.add_error("global", "Les extraData des offres avec produit ne sont pas modifialbles")
 
 
 class MoveOfferBaseException(Exception):

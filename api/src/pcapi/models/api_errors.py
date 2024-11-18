@@ -1,8 +1,6 @@
 import json
 import typing
 
-from pcapi.domain.client_exceptions import ClientError
-
 
 class ApiErrors(Exception):
     status_code: int = 400
@@ -19,8 +17,8 @@ class ApiErrors(Exception):
         else:
             self.errors[field] = [error]
 
-    def add_client_error(self, client_error: ClientError) -> None:
-        self.errors |= client_error.errors
+    def combine_error(self, api_errors: "ApiErrors") -> None:
+        self.errors |= api_errors.errors
 
     def check_min_length(self, field: str, value: str, length: int) -> None:
         if len(value) < length:

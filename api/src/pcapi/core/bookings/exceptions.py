@@ -1,58 +1,67 @@
 from decimal import Decimal
 
-from pcapi.domain.client_exceptions import ClientError
+from pcapi.models.api_errors import ApiErrors
 
 
-class OfferIsAlreadyBooked(ClientError):
+class OfferIsAlreadyBooked(ApiErrors):
     def __init__(self) -> None:
-        super().__init__("offerId", "Cette offre a déja été reservée par l'utilisateur")
+        super().__init__()
+        self.add_error("offerId", "Cette offre a déja été reservée par l'utilisateur")
 
 
-class QuantityIsInvalid(ClientError):
+class QuantityIsInvalid(ApiErrors):
     def __init__(self, message: str) -> None:
-        super().__init__("quantity", message)
+        super().__init__()
+        self.add_error("quantity", message)
 
 
-class StockIsNotBookable(ClientError):
+class StockIsNotBookable(ApiErrors):
     def __init__(self) -> None:
-        super().__init__("stock", "Ce stock n'est pas réservable")
+        super().__init__()
+        self.add_error("stock", "Ce stock n'est pas réservable")
 
 
-class PhysicalExpenseLimitHasBeenReached(ClientError):
+class PhysicalExpenseLimitHasBeenReached(ApiErrors):
     def __init__(self, celling_amount: int) -> None:
-        super().__init__(
+        super().__init__()
+        self.add_error(
             "global",
             f"Le plafond de {celling_amount} € pour les biens culturels ne vous permet pas " "de réserver cette offre.",
         )
 
 
-class DigitalExpenseLimitHasBeenReached(ClientError):
+class DigitalExpenseLimitHasBeenReached(ApiErrors):
     def __init__(self, celling_amount: Decimal) -> None:
-        super().__init__(
+        super().__init__()
+        self.add_error(
             "global",
             f"Le plafond de {celling_amount} € pour les offres numériques ne vous permet pas "
             "de réserver cette offre.",
         )
 
 
-class CannotBookFreeOffers(ClientError):
+class CannotBookFreeOffers(ApiErrors):
     def __init__(self) -> None:
-        super().__init__("cannotBookFreeOffers", "Votre compte ne vous permet pas de faire de réservation.")
+        super().__init__()
+        self.add_error("cannotBookFreeOffers", "Votre compte ne vous permet pas de faire de réservation.")
 
 
-class NoActivationCodeAvailable(ClientError):
+class NoActivationCodeAvailable(ApiErrors):
     def __init__(self) -> None:
-        super().__init__("noActivationCodeAvailable", "Ce stock ne contient plus de code d'activation disponible.")
+        super().__init__()
+        self.add_error("noActivationCodeAvailable", "Ce stock ne contient plus de code d'activation disponible.")
 
 
-class OfferCategoryNotBookableByUser(ClientError):
+class OfferCategoryNotBookableByUser(ApiErrors):
     def __init__(self) -> None:
-        super().__init__("offerCategory", "Vous n'êtes pas autorisé à réserver cette catégorie d'offre")
+        super().__init__()
+        self.add_error("offerCategory", "Vous n'êtes pas autorisé à réserver cette catégorie d'offre")
 
 
-class UserHasInsufficientFunds(ClientError):
+class UserHasInsufficientFunds(ApiErrors):
     def __init__(self) -> None:
-        super().__init__("insufficientFunds", "Le solde de votre pass est insuffisant pour réserver cette offre.")
+        super().__init__()
+        self.add_error("insufficientFunds", "Le solde de votre pass est insuffisant pour réserver cette offre.")
 
 
 class BookingIsAlreadyUsed(Exception):
@@ -67,9 +76,10 @@ class BookingHasActivationCode(Exception):
     pass
 
 
-class BookingHasAlreadyBeenUsed(ClientError):
+class BookingHasAlreadyBeenUsed(ApiErrors):
     def __init__(self) -> None:
-        super().__init__("booking", "Cette offre a déjà été utilisée")
+        super().__init__()
+        self.add_error("booking", "Cette offre a déjà été utilisée")
 
 
 class BookingIsAlreadyRefunded(Exception):
@@ -80,14 +90,16 @@ class BookingIsAlreadyCancelled(Exception):
     pass
 
 
-class BookingIsNotCancelledCannotBeUncancelled(ClientError):
+class BookingIsNotCancelledCannotBeUncancelled(ApiErrors):
     def __init__(self) -> None:
-        super().__init__("booking", "Cette réservation n'est pas annulée et ne peut pas être dés-annulée")
+        super().__init__()
+        self.add_error("booking", "Cette réservation n'est pas annulée et ne peut pas être dés-annulée")
 
 
-class BookingIsCancelled(ClientError):
+class BookingIsCancelled(ApiErrors):
     def __init__(self) -> None:
-        super().__init__("booking", "Cette réservation a été annulée et ne peut être marquée comme étant utilisée")
+        super().__init__()
+        self.add_error("booking", "Cette réservation a été annulée et ne peut être marquée comme étant utilisée")
 
 
 class BookingRefused(Exception):
@@ -98,19 +110,22 @@ class BookingIsNotConfirmed(Exception):
     pass
 
 
-class CannotCancelConfirmedBooking(ClientError):
+class CannotCancelConfirmedBooking(ApiErrors):
     def __init__(self, after_creation: str, before_event: str) -> None:
-        super().__init__("booking", f"Impossible d'annuler une réservation {after_creation}{before_event}")
+        super().__init__()
+        self.add_error("booking", f"Impossible d'annuler une réservation {after_creation}{before_event}")
 
 
-class BookingDoesntExist(ClientError):
+class BookingDoesntExist(ApiErrors):
     def __init__(self) -> None:
-        super().__init__("bookingId", "bookingId ne correspond à aucune réservation")
+        super().__init__()
+        self.add_error("bookingId", "bookingId ne correspond à aucune réservation")
 
 
-class CannotDeleteBookingWithReimbursementException(ClientError):
+class CannotDeleteBookingWithReimbursementException(ApiErrors):
     def __init__(self) -> None:
-        super().__init__(
+        super().__init__()
+        self.add_error(
             "cannotDeleteBookingWithReimbursementException",
             "Réservation non supprimable car elle est liée à un remboursement",
         )

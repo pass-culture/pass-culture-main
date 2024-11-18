@@ -1,4 +1,4 @@
-from pcapi.domain.client_exceptions import ClientError
+from pcapi.models.api_errors import ApiErrors
 
 
 class ApiKeyCountMaxReached(Exception):
@@ -77,51 +77,58 @@ class OffererAddressCreationError(Exception):
     pass
 
 
-class CannotSuspendOffererWithBookingsException(ClientError):
+class CannotSuspendOffererWithBookingsException(ApiErrors):
     def __init__(self) -> None:
-        super().__init__(
+        super().__init__()
+        self.add_error(
             "cannotSuspendOffererWithBookingsException",
             "Entité juridique non désactivable car elle contient des réservations",
         )
 
 
-class CannotDeleteOffererWithBookingsException(ClientError):
+class CannotDeleteOffererWithBookingsException(ApiErrors):
     def __init__(self) -> None:
-        super().__init__(
+        super().__init__()
+        self.add_error(
             "cannotDeleteOffererWithBookingsException",
             "Entité juridique non supprimable car elle contient des réservations",
         )
 
 
-class CannotDeleteVenueWithBookingsException(ClientError):
+class CannotDeleteVenueWithBookingsException(ApiErrors):
     def __init__(self) -> None:
-        super().__init__(
+        super().__init__()
+        self.add_error(
             "cannotDeleteVenueWithBookingsException",
             "Partenaire culturel non supprimable car il contient des réservations",
         )
 
 
-class CannotDeleteVenueUsedAsPricingPointException(ClientError):
+class CannotDeleteVenueUsedAsPricingPointException(ApiErrors):
     def __init__(self) -> None:
-        super().__init__(
+        super().__init__()
+        self.add_error(
             "cannotDeleteVenueUsedAsPricingPointException",
             "Partenaire culturel non supprimable car il est utilisé comme point de valorisation d'un autre partenaire culturel",
         )
 
 
-class CannotDeleteVenueUsedAsReimbursementPointException(ClientError):
+class CannotDeleteVenueUsedAsReimbursementPointException(ApiErrors):
     def __init__(self) -> None:
-        super().__init__(
+        super().__init__()
+        self.add_error(
             "cannotDeleteVenueUsedAsReimbursementPointException",
             "Partenaire culturel non supprimable car il est utilisé comme point de remboursement d'un autre partenaire culturel",
         )
 
 
-class EmailAlreadyInvitedException(ClientError):
+class EmailAlreadyInvitedException(ApiErrors):
     def __init__(self) -> None:
-        super().__init__("EmailAlreadyInvitedException", "Une invitation a déjà été envoyée à ce collaborateur")
+        super().__init__()
+        self.add_error("EmailAlreadyInvitedException", "Une invitation a déjà été envoyée à ce collaborateur")
 
 
-class UserAlreadyAttachedToOffererException(ClientError):
+class UserAlreadyAttachedToOffererException(ApiErrors):
     def __init__(self) -> None:
-        super().__init__("UserAlreadyAttachedToOffererException", "Ce collaborateur est déjà membre de votre structure")
+        super().__init__()
+        self.add_error("UserAlreadyAttachedToOffererException", "Ce collaborateur est déjà membre de votre structure")

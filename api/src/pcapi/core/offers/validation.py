@@ -594,7 +594,7 @@ def check_offer_extra_data(
     try:
         _check_offer_has_product(offer)
     except exceptions.OfferWithProductShouldNotUpdateExtraData as e:
-        errors.add_client_error(e)
+        errors.combine_error(e)
 
     try:
         ean = extra_data.get(ExtraDataFieldEnum.EAN.value)
@@ -602,7 +602,7 @@ def check_offer_extra_data(
             _check_ean_field(extra_data, ExtraDataFieldEnum.EAN.value)
             check_ean_does_not_exist(ean, venue)
     except (exceptions.EanFormatException, exceptions.OfferAlreadyExists) as e:
-        errors.add_client_error(e)
+        errors.combine_error(e)
 
     try:
         _check_value_is_allowed(extra_data, ExtraDataFieldEnum.MUSIC_TYPE, music_types.MUSIC_TYPES_LABEL_BY_CODE)
@@ -610,7 +610,7 @@ def check_offer_extra_data(
         _check_value_is_allowed(extra_data, ExtraDataFieldEnum.SHOW_TYPE, show_types.SHOW_TYPES_LABEL_BY_CODE)
         _check_value_is_allowed(extra_data, ExtraDataFieldEnum.SHOW_SUB_TYPE, show_types.SHOW_SUB_TYPES_BY_CODE)
     except exceptions.ExtraDataValueNotAllowed as e:
-        errors.add_client_error(e)
+        errors.combine_error(e)
 
     if errors.errors:
         raise errors

@@ -2,8 +2,8 @@ from flask import Response
 from flask import current_app as app
 
 from pcapi.core.bookings import exceptions
-from pcapi.domain.client_exceptions import ClientError
 from pcapi.models import api_errors
+from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import mark_transaction_as_invalid
 
 
@@ -19,13 +19,13 @@ JsonResponse = tuple[Response, int]
 @app.errorhandler(exceptions.PhysicalExpenseLimitHasBeenReached)
 @app.errorhandler(exceptions.DigitalExpenseLimitHasBeenReached)
 @app.errorhandler(exceptions.OfferCategoryNotBookableByUser)
-def handle_book_an_offer(exception: ClientError) -> JsonResponse:
+def handle_book_an_offer(exception: ApiErrors) -> JsonResponse:
     mark_transaction_as_invalid()
     return app.generate_error_response(exception.errors), 400
 
 
 @app.errorhandler(exceptions.CannotCancelConfirmedBooking)
-def handle_cancel_a_booking(exception: ClientError) -> JsonResponse:
+def handle_cancel_a_booking(exception: ApiErrors) -> JsonResponse:
     mark_transaction_as_invalid()
     return app.generate_error_response(exception.errors), 400
 
