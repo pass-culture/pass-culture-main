@@ -181,6 +181,7 @@ def get_favorites_for(user: User, favorite_id: int | None = None) -> list[Favori
 @blueprint.native_route("/me/favorites", methods=["GET"])
 @spectree_serialize(response_model=serializers.PaginatedFavoritesResponse, api=blueprint.api)
 @authenticated_and_active_user_required
+@atomic()
 def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
     favorites = get_favorites_for(user)
 
