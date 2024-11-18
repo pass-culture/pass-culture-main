@@ -12,6 +12,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.models import db
+from pcapi.repository import is_managed_transaction
 
 from tests.conftest import TestClient
 
@@ -23,6 +24,9 @@ class PublicAPIEndpointBaseHelper:
     """
     For Public API endpoints that require authentication
     """
+
+    expected_401_queries_count = 1  # Select API key
+    expected_401_queries_count += 1  # select feature
 
     @property
     def endpoint_url(self):
@@ -70,7 +74,8 @@ class PublicAPIEndpointBaseHelper:
 
         if self.default_path_params:
             url = url.format(**self.default_path_params)
-        with testing.assert_num_queries(2):  # Select API key + select provider
+
+        with testing.assert_num_queries(self.expected_401_queries_count):
             response = client_method(url)
             assert response.status_code == 401
 

@@ -354,7 +354,8 @@ def update_venue_provider_external_urls(
     )
 
     if is_deletion:
-        repository.delete(venue_provider_external_urls)
+        db.session.delete(venue_provider_external_urls)
+        db.session.flush()
         return
 
     if is_creation:
@@ -372,8 +373,8 @@ def update_venue_provider_external_urls(
     if cancel_external_url != UNCHANGED:
         venue_provider_external_urls.cancelExternalUrl = cancel_external_url
 
-    repository.save(venue_provider_external_urls)
-
+    db.session.add(venue_provider_external_urls)
+    db.session.flush()
     return
 
 
