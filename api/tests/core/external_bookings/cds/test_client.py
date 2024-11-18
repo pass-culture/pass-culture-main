@@ -1,5 +1,6 @@
 import datetime
 import json
+import logging
 from unittest.mock import patch
 
 import pytest
@@ -9,7 +10,9 @@ import pcapi.connectors.serialization.cine_digital_service_serializers as cds_se
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
+from pcapi.core.external_bookings.exceptions import ExternalBookingTimeoutException
 import pcapi.core.users.factories as users_factories
+from pcapi.utils.requests import exceptions as requests_exceptions
 
 
 def create_show_cds(
@@ -143,6 +146,29 @@ class CineDigitalServiceGetShowTest:
         mocked_get_resource.assert_called_once_with(api_url, account_id, token, resource, request_timeout=14)
 
         assert show.id == 2
+
+    @patch("pcapi.core.external_bookings.cds.client.get_resource")
+    def test_should_log_error_when_there_is_a_timeout_exception(self, mocked_get_resource, caplog):
+
+        mocked_get_resource.side_effect = requests_exceptions.Timeout
+
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="cinemaid_test",
+            account_id="accountid_test",
+            cinema_api_token="token_test",
+            api_url="apiUrl_test/",
+        )
+        with caplog.at_level(logging.WARNING):
+            with pytest.raises(ExternalBookingTimeoutException):
+                cine_digital_service.get_show(2)
+
+        assert caplog.messages[0] == "Cinema Provider API Request Timeout"
+        assert caplog.records[0].extra == {
+            "cinema_id": "cinemaid_test",
+            "client": "CineDigitalServiceAPI",
+            "method": "get_show",
+            "method_params": {"show_id": "2"},
+        }
 
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
     def test_should_raise_exception_if_show_not_found(self, mocked_get_resource):
@@ -877,9 +903,7 @@ class CineDigitalServiceCancelBookingTest:
     @patch("pcapi.core.external_bookings.cds.client.put_resource")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_voucher_payment_type")
     def test_should_cancel_booking_with_success(self, mocked_get_voucher_payment_type, mocked_put_resource):
-        # Given
-        json_response = {}
-        mocked_put_resource.return_value = json_response
+        mocked_put_resource.return_value = {}
         mocked_get_voucher_payment_type.return_value = cds_serializers.PaymentTypeCDS(
             id=12, internal_code="VCH", is_active=True
         )
@@ -891,8 +915,6 @@ class CineDigitalServiceCancelBookingTest:
             request_timeout=12,
         )
 
-        # When
-
         cine_digital_service.cancel_booking(["3107362853729", "1312079646868"])
         mocked_put_resource.assert_called_with(
             "test_url",
@@ -902,6 +924,31 @@ class CineDigitalServiceCancelBookingTest:
             cds_serializers.CancelBookingCDS(barcodes=[3107362853729, 1312079646868], paiement_type_id=12),
             request_timeout=12,
         )
+
+    @patch("pcapi.core.external_bookings.cds.client.put_resource")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_voucher_payment_type")
+    def test_should_log_error_when_there_is_timeout_error(
+        self, mocked_get_voucher_payment_type, mocked_put_resource, caplog
+    ):
+        mocked_put_resource.side_effect = requests_exceptions.Timeout
+        mocked_get_voucher_payment_type.return_value = cds_serializers.PaymentTypeCDS(
+            id=12, internal_code="VCH", is_active=True
+        )
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
+        )
+
+        with caplog.at_level(logging.WARNING):
+            with pytest.raises(ExternalBookingTimeoutException):
+                cine_digital_service.cancel_booking(["3107362853729", "1312079646868"])
+
+        assert caplog.messages[0] == "Cinema Provider API Request Timeout"
+        assert caplog.records[0].extra == {
+            "cinema_id": "test_id",
+            "client": "CineDigitalServiceAPI",
+            "method": "cancel_booking",
+            "method_params": {"barcodes": str(["3107362853729", "1312079646868"])},
+        }
 
     @patch("pcapi.core.external_bookings.cds.client.put_resource")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_voucher_payment_type")
@@ -1119,6 +1166,73 @@ class CineDigitalServiceBookTicketTest:
         assert len(tickets) == 1
         assert tickets[0].barcode == "141414141414"
         assert tickets[0].seat_number == "A_1"
+
+    @patch("pcapi.core.external_bookings.cds.client.post_resource")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_show")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_screen")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_available_seat")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_pc_voucher_types")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_voucher_payment_type")
+    def test_should_log_error_when_there_is_a_timeout_error(
+        self,
+        mocked_get_voucher_payment_type,
+        mocked_get_pc_voucher_types,
+        mocked_get_available_seat,
+        mocked_get_screen,
+        mocked_get_show,
+        mocked_post_resource,
+        caplog,
+    ):
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        booking = bookings_factories.BookingFactory(user=beneficiary, quantity=1)
+        mocked_get_voucher_payment_type.return_value = cds_serializers.PaymentTypeCDS(
+            id=12, internal_code="VCH", is_active=True
+        )
+        mocked_get_pc_voucher_types.return_value = [
+            cds_serializers.VoucherTypeCDS(
+                id=3,
+                code="PSCULTURE",
+                tariff=cds_serializers.TariffCDS(id=42, price=5, is_active=True, label="pass Culture"),
+            )
+        ]
+
+        mocked_get_available_seat.return_value = [
+            cds_serializers.SeatCDS(
+                (0, 0),
+                create_screen_cds(),
+                seat_map=cds_serializers.SeatmapCDS(__root__=[[1, 1, 1], [1, 1, 1], [1, 1, 1]]),
+                hardcoded_seatmap=[],
+            ),
+        ]
+
+        mocked_get_show.return_value = create_show_cds(
+            id_=181,
+            shows_tariff_pos_type_ids=[42],
+            is_empty_seatmap='["1", "1", "1"], ["1", "1", "1"], ["1", "1", "1"]]',
+        )
+        mocked_get_screen.return_value = create_screen_cds()
+
+        mocked_post_resource.side_effect = requests_exceptions.ReadTimeout
+
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
+        )
+
+        with caplog.at_level(logging.WARNING):
+            with pytest.raises(ExternalBookingTimeoutException):
+                cine_digital_service.book_ticket(show_id=14, booking=booking, beneficiary=beneficiary)
+
+        assert caplog.messages[0] == "Cinema Provider API Request Timeout"
+        assert caplog.records[0].extra == {
+            "cinema_id": "test_id",
+            "client": "CineDigitalServiceAPI",
+            "method": "book_ticket",
+            "method_params": {
+                "show_id": "14",
+                "booking": str(booking),
+                "beneficiary": str(beneficiary),
+            },
+        }
 
     @patch("pcapi.core.external_bookings.cds.client.post_resource")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_show")
