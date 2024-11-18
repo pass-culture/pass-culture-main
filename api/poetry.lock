@@ -3165,13 +3165,13 @@ sqlparse = ">=0.1.19"
 
 [[package]]
 name = "phonenumberslite"
-version = "8.13.49"
+version = "8.13.50"
 description = "Python version of Google's common library for parsing, formatting, storing and validating international phone numbers."
 optional = false
 python-versions = "*"
 files = [
-    {file = "phonenumberslite-8.13.49-py2.py3-none-any.whl", hash = "sha256:a1472732f7d18a1b3a44d131120d5ce185a2f647d01e47ffd3350a0d1b513fcf"},
-    {file = "phonenumberslite-8.13.49.tar.gz", hash = "sha256:5bb29a8dd016e098e217994cdf06d7e557846d92e8e050c484c8407a439b674c"},
+    {file = "phonenumberslite-8.13.50-py2.py3-none-any.whl", hash = "sha256:d1968068a7c79486090325e4dd09801aace7ee81fbb5c78a4ec993d51e993797"},
+    {file = "phonenumberslite-8.13.50.tar.gz", hash = "sha256:464df2af4b8d4fe96ff83e184c27440a896adc3cc0c64f17231926ee3ce6e100"},
 ]
 
 [[package]]
