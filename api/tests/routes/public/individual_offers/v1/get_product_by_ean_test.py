@@ -12,10 +12,16 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
     endpoint_url = "/public/offers/v1/products/ean"
     endpoint_method = "get"
 
-    num_queries_400 = 1  # select api_key, offerer and provider
-    num_queries_400 += 1  # select features
-    num_queries_404 = num_queries_400 + 1  # check venue_provider exists
-    num_queries_success = num_queries_404 + 1  # select offers
+    num_queries_base = 1  # select api_key, offerer and provider
+    num_queries_base += 1  # select features
+
+    num_queries_400 = num_queries_base
+
+    num_queries_404 = num_queries_base + 1  # check venue_provider exists
+    num_queries_404 += 1  # rollback to savepoint
+
+    num_queries_success = num_queries_base + 1  # check venue_provider exists
+    num_queries_success += 1  # select offers
 
     def test_should_raise_404_because_has_no_access_to_venue(self, client):
         plain_api_key, _ = self.setup_provider()
