@@ -7,7 +7,7 @@ import * as useNotification from 'commons/hooks/useNotification'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { UserReviewDialog } from '../UserReviewDialog'
+import { UserReviewDialog } from 'components/UserReview/UserReviewDialog/UserReviewDialog'
 
 const notifyError = vi.fn()
 
@@ -53,10 +53,7 @@ describe('UserReviewDialog', () => {
     renderUserReviewDialog()
 
     const submitButton = screen.getByRole('button', { name: 'Envoyer' })
-    await userEvent.type(
-      screen.getByLabelText('Comment évaluriez-vous votre expérience ? *'),
-      'I am happy'
-    )
+    await userEvent.click(screen.getByRole('radio', { name: 'Excellente' }))
     await userEvent.type(
       screen.getByLabelText(
         'Souhaitez-vous préciser ? Nous lisons tous les commentaires. 🙂'
@@ -67,7 +64,7 @@ describe('UserReviewDialog', () => {
     await userEvent.click(submitButton)
 
     expect(api.submitUserReview).toHaveBeenCalledWith({
-      userSatisfaction: 'I am happy',
+      userSatisfaction: 'Excellente',
       userComment: 'Commentaire utilisateur',
       location: location.pathname,
       offererId: 1,
@@ -78,10 +75,7 @@ describe('UserReviewDialog', () => {
     vi.spyOn(api, 'submitUserReview').mockResolvedValueOnce()
     renderUserReviewDialog()
 
-    await userEvent.type(
-      screen.getByLabelText('Comment évaluriez-vous votre expérience ? *'),
-      'I am happy'
-    )
+    await userEvent.click(screen.getByRole('radio', { name: 'Excellente' }))
 
     const submitButton = screen.getByRole('button', { name: 'Envoyer' })
 
@@ -95,10 +89,7 @@ describe('UserReviewDialog', () => {
     vi.spyOn(api, 'submitUserReview').mockResolvedValueOnce()
     renderUserReviewDialog()
 
-    await userEvent.type(
-      screen.getByLabelText('Comment évaluriez-vous votre expérience ? *'),
-      'I am happy'
-    )
+    await userEvent.click(screen.getByRole('radio', { name: 'Excellente' }))
 
     const submitButton = screen.getByRole('button', { name: 'Envoyer' })
     await userEvent.click(submitButton)
@@ -121,10 +112,7 @@ describe('UserReviewDialog', () => {
 
     renderUserReviewDialog()
 
-    await userEvent.type(
-      screen.getByLabelText('Comment évaluriez-vous votre expérience ? *'),
-      'I am happy'
-    )
+    await userEvent.click(screen.getByRole('radio', { name: 'Excellente' }))
 
     const submitButton = screen.getByRole('button', { name: 'Envoyer' })
     await userEvent.click(submitButton)

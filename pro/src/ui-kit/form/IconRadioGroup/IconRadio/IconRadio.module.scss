@@ -1,0 +1,53 @@
+@use "styles/variables/_forms.scss" as forms;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_a11y.scss" as a11y;
+@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
+
+.icon-radio-label {
+  @include fonts-design-system.body;
+
+  display: inline-flex;
+  align-items: center;
+  width: rem.torem(40px);
+  height: rem.torem(40px);
+  border-radius: 100px;
+  border: 1px solid var(--color-grey-dark, #696a6f);
+  cursor: pointer;
+  margin: 0 auto;
+
+  &-tooltip {
+    flex-grow: 1;
+  }
+
+  &-icon {
+    padding: rem.torem(8px);
+  }
+
+  &:hover {
+    box-shadow: 0 3px 4px 0 rgb(from var(--color-medium-shadow) r g b / 16%);
+  }
+
+  &:focus-within {
+    outline: rem.torem(1px) solid var(--color-black);
+    outline-offset: rem.torem(3px);
+  }
+
+  &-disabled {
+    @include fonts-design-system.button;
+
+    background: var(--color-grey-light);
+    border-color: var(--color-grey-light);
+    color: var(--color-grey-dark);
+  }
+
+  &-checked {
+    @include fonts-design-system.button;
+
+    border: 2px solid var(--color-secondary);
+  }
+}
+
+.icon-radio-input {
+  @include a11y.visually-hidden;
+}
