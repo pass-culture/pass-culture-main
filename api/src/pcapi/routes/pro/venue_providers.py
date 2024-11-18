@@ -150,6 +150,7 @@ def update_venue_provider(
 
 
 @private_api.route("/venueProviders/<int:venue_provider_id>", methods=["DELETE"])
+@repository.atomic()
 @login_required
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def delete_venue_provider(venue_provider_id: int) -> None:
