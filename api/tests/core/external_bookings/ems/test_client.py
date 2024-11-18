@@ -1,5 +1,6 @@
 import hmac
 import json
+import logging
 import re
 from urllib.parse import urljoin
 
@@ -9,9 +10,11 @@ from pcapi import settings
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.external_bookings.ems.client import EMSClientAPI
 from pcapi.core.external_bookings.exceptions import ExternalBookingSoldOutError
+from pcapi.core.external_bookings.exceptions import ExternalBookingTimeoutException
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.utils.requests import exceptions as requests_exceptions
 
 
 @pytest.mark.usefixtures("db_session")
@@ -82,6 +85,48 @@ class EMSBookTicketTest:
         ticket = ticket.pop()
         assert ticket.barcode == "000000144659"
         assert ticket.seat_number == ""
+
+    def test_should_log_error_when_there_is_a_timeout_exception(self, requests_mock, caplog):
+        token = "AAAAAA"
+        beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiary@example.com")
+        showtime_stock = offers_factories.EventStockFactory()
+        booking = bookings_factories.BookingFactory(
+            user=beneficiary, quantity=1, amount=7.15, stock=showtime_stock, token="AAAAAA"
+        )
+        cinema_pivot = providers_factories.EMSCinemaProviderPivotFactory(idAtProvider="9997")
+        cinema_details = providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=cinema_pivot)
+        cinema_id = cinema_details.cinemaProviderPivot.idAtProvider
+
+        payload_reservation = {
+            "num_cine": "9997",
+            "id_seance": "999700079979",
+            "qte_place": 1,
+            "pass_culture_price": 7.15,
+            "total_price": 7.15,
+            "email": beneficiary.email,
+            "num_pass_culture": str(beneficiary.id),
+            "num_cmde": token,
+        }
+        url = self._build_url("VENTE/", payload_reservation)
+
+        requests_mock.post(url, exc=requests_exceptions.Timeout)
+        client = EMSClientAPI(cinema_id=cinema_id)
+
+        with caplog.at_level(logging.WARNING):
+            with pytest.raises(ExternalBookingTimeoutException):
+                client.book_ticket(show_id="999700079979", booking=booking, beneficiary=beneficiary)
+
+        assert caplog.messages[1] == "Cinema Provider API Request Timeout"
+        assert caplog.records[1].extra == {
+            "cinema_id": cinema_id,
+            "client": "EMSClientAPI",
+            "method": "book_ticket",
+            "method_params": {
+                "show_id": "999700079979",
+                "booking": str(booking),
+                "beneficiary": str(beneficiary),
+            },
+        }
 
     def test_we_can_book_two_tickets_at_once(self, requests_mock):
         token = "AAAAAA"
@@ -215,3 +260,25 @@ class EMSGetFilmShowtimesStocksTest:
         assert requests_mock.request_history[-1].timeout == 14
         assert len(stocks) == 2
         assert stocks == {"999000111": 100, "998880001": 100}
+
+    def test_should_log_error_when_there_is_a_timeout_exception(self, requests_mock, caplog):
+        cinema_pivot = providers_factories.EMSCinemaProviderPivotFactory(idAtProvider="0003")
+        cinema_details = providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=cinema_pivot)
+        cinema_id = cinema_details.cinemaProviderPivot.idAtProvider
+
+        url_matcher = re.compile("https://fake_url.com/SEANCE/*")
+        requests_mock.post(url=url_matcher, exc=requests_exceptions.ReadTimeout)
+
+        client = EMSClientAPI(cinema_id=cinema_id)
+
+        with caplog.at_level(logging.WARNING):
+            with pytest.raises(ExternalBookingTimeoutException):
+                client.get_film_showtimes_stocks("12345")
+
+        assert caplog.messages[1] == "Cinema Provider API Request Timeout"
+        assert caplog.records[1].extra == {
+            "cinema_id": cinema_id,
+            "client": "EMSClientAPI",
+            "method": "get_film_showtimes_stocks",
+            "method_params": {"film_id": "12345"},
+        }
