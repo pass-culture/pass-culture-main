@@ -239,6 +239,22 @@ class GdprUserSerializer(BaseModel):
         orm_mode = True
 
 
+class GdprChronicleData(BaseModel):
+    age: int | None
+    city: str | None
+    content: str
+    dateCreated: datetime
+    ean: str | None
+    email: str
+    firstName: str | None
+    isIdentityDiffusible: bool
+    isSocialMediaDiffusible: bool
+    productName: str | None = None
+
+    class Config:
+        orm_mode = True
+
+
 class GdprMarketing(BaseModel):
     marketingEmails: bool
     marketingNotifications: bool
@@ -307,6 +323,7 @@ class GdprInternal(BaseModel):
     beneficiaryValidations: list[GdprBeneficiaryValidation]
     deposits: list[GdprDepositSerializer]
     bookings: list[GdprBookingSerializer]
+    chronicles: list[GdprChronicleData]
 
 
 class GdprExternal(BaseModel):

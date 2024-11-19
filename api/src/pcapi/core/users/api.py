@@ -1892,6 +1892,40 @@ def delete_gdpr_extract(extract_id: int) -> None:
     models.GdprUserDataExtract.query.filter(models.GdprUserDataExtract.id == extract_id).delete()
 
 
+def _extract_gdpr_chronicles(user: models.User) -> list[users_serialization.GdprChronicleData]:
+    chronicles_data = chronicles_models.Chronicle.query.filter(
+        chronicles_models.Chronicle.userId == user.id,
+    ).options(
+        joinedload(chronicles_models.Chronicle.products).load_only(
+            offers_models.Product.extraData,
+            offers_models.Product.name,
+        )
+    )
+
+    chronicles = []
+    for chronicle in chronicles_data:
+        product_name = None
+        for product in chronicle.products:
+            if chronicle.ean and product.extraData.get("ean") == chronicle.ean:
+                product_name = product.name
+                break
+        chronicles.append(
+            users_serialization.GdprChronicleData(
+                age=chronicle.age,
+                city=chronicle.city,
+                content=chronicle.content,
+                dateCreated=chronicle.dateCreated,
+                ean=chronicle.ean,
+                email=chronicle.email,
+                firstName=chronicle.firstName,
+                isIdentityDiffusible=chronicle.isIdentityDiffusible,
+                isSocialMediaDiffusible=chronicle.isSocialMediaDiffusible,
+                productName=product_name,
+            )
+        )
+    return chronicles
+
+
 def _extract_gdpr_marketing_data(user: models.User) -> users_serialization.GdprMarketing:
     notification_subscriptions = user.notificationSubscriptions or {}
     return users_serialization.GdprMarketing(
@@ -2127,6 +2161,7 @@ def extract_beneficiary_data(extract: models.GdprUserDataExtract) -> None:
             beneficiaryValidations=_extract_gdpr_beneficiary_validation(user),
             deposits=_extract_gdpr_deposits(user),
             bookings=_extract_gdpr_booking_data(user),
+            chronicles=_extract_gdpr_chronicles(user),
         ),
         external=users_serialization.GdprExternal(
             brevo=_extract_gdpr_brevo_data(user),
@@ -2137,7 +2172,6 @@ def extract_beneficiary_data(extract: models.GdprUserDataExtract) -> None:
         name=f"{extract.id}.zip",
         archive=archive.getvalue(),
     )
-
     add_action(ActionType.USER_EXTRACT_DATA, author=extract.authorUser, user=extract.user)
     db.session.flush()
 
