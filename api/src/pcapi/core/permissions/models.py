@@ -169,6 +169,7 @@ class Roles(enum.Enum):
     GLOBAL_ACCESS = "global_access"
     DPO = "dpo"
     PERMISSION_MANAGER = "gestionnaire_des_droits"
+    CONNECT_AS_PRO = "connect_as_pro"
 
 
 def sync_db_roles(session: sa.orm.Session) -> None:
