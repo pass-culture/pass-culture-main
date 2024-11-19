@@ -46,9 +46,11 @@ def get_resource(
     cinema_api_token: str | None,
     resource: ResourceCDS,
     path_params: dict[str, Any] | None = None,
+    *,
+    request_timeout: int | None = None,
 ) -> dict | list[dict] | list:
     url = _build_url(api_url, account_id, cinema_api_token, resource, path_params)
-    response = requests.get(url)
+    response = requests.get(url, timeout=request_timeout)
 
     _check_response_is_ok(response, cinema_api_token, f"GET {resource}")
 
@@ -56,11 +58,17 @@ def get_resource(
 
 
 def put_resource(
-    api_url: str, account_id: str, cinema_api_token: str | None, resource: ResourceCDS, body: BaseModel
+    api_url: str,
+    account_id: str,
+    cinema_api_token: str | None,
+    resource: ResourceCDS,
+    body: BaseModel,
+    *,
+    request_timeout: int | None = None,
 ) -> dict | list[dict] | list | None:
     url = _build_url(api_url, account_id, cinema_api_token, resource)
     headers = {"Content-Type": "application/json"}
-    response = requests.put(url, headers=headers, data=body.json(by_alias=True))
+    response = requests.put(url, headers=headers, data=body.json(by_alias=True), timeout=request_timeout)
 
     _check_response_is_ok(response, cinema_api_token, f"PUT {resource}")
 
@@ -71,11 +79,17 @@ def put_resource(
 
 
 def post_resource(
-    api_url: str, account_id: str, cinema_api_token: str | None, resource: ResourceCDS, body: BaseModel
+    api_url: str,
+    account_id: str,
+    cinema_api_token: str | None,
+    resource: ResourceCDS,
+    body: BaseModel,
+    *,
+    request_timeout: int | None = None,
 ) -> dict:
     url = _build_url(api_url, account_id, cinema_api_token, resource)
     headers = {"Content-Type": "application/json"}
-    response = requests.post(url, headers=headers, data=body.json(by_alias=True))
+    response = requests.post(url, headers=headers, data=body.json(by_alias=True), timeout=request_timeout)
 
     _check_response_is_ok(response, cinema_api_token, f"POST {resource}")
 

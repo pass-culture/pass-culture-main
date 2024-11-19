@@ -21,8 +21,8 @@ logger = logging.getLogger(__name__)
 
 
 class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
-    def __init__(self, cinema_id: str):
-        super().__init__(cinema_id=cinema_id)
+    def __init__(self, cinema_id: str, request_timeout: None | int = None):
+        super().__init__(cinema_id=cinema_id, request_timeout=request_timeout)
         self.cgr_cinema_details = get_cgr_cinema_details(cinema_id)
 
     def get_films(self) -> list[cgr_serializers.Film]:
@@ -64,7 +64,11 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             pToken=booking.token,
             pDateLimiteAnnul=booking.cancellationLimitDate.isoformat(),
         )
-        response = reservation_pass_culture(self.cgr_cinema_details, book_show_body)
+        response = reservation_pass_culture(
+            self.cgr_cinema_details,
+            book_show_body,
+            request_timeout=self.request_timeout,
+        )
         logger.info(
             "Booked CGR Ticket",
             extra={
@@ -106,7 +110,7 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         barcodes_set = set(barcodes)
         for barcode in barcodes_set:
             logger.info("Cancelling CGR external booking", extra={"barcode": barcode, "cinema_id": self.cinema_id})
-            annulation_pass_culture(self.cgr_cinema_details, barcode)
+            annulation_pass_culture(self.cgr_cinema_details, barcode, request_timeout=self.request_timeout)
             logger.info("CGR Booking Cancelled", extra={"barcode": barcode})
 
     def get_shows_remaining_places(self, shows_id: list[int]) -> dict[str, int]:

@@ -19,10 +19,11 @@ logger = logging.getLogger(__name__)
 CGR_TIMEOUT = 10
 
 
-def get_cgr_service_proxy(cinema_url: str) -> ServiceProxy:
+def get_cgr_service_proxy(cinema_url: str, request_timeout: int | None = None) -> ServiceProxy:
     # https://docs.python-zeep.org/en/master/transport.html#caching
+    timeout = request_timeout or CGR_TIMEOUT
     cache = InMemoryCache()
-    transport = requests.CustomZeepTransport(cache=cache, timeout=CGR_TIMEOUT, operation_timeout=CGR_TIMEOUT)
+    transport = requests.CustomZeepTransport(cache=cache, timeout=timeout, operation_timeout=timeout)
     client = Client(wsdl=f"{cinema_url}?wsdl", transport=transport)
     service = client.create_service(binding_name="{urn:GestionCinemaWS}GestionCinemaWSSOAPBinding", address=cinema_url)
     return service
@@ -46,18 +47,21 @@ def get_seances_pass_culture(
 
 
 def reservation_pass_culture(
-    cinema_details: providers_models.CGRCinemaDetails, body: cgr_serializers.ReservationPassCultureBody
+    cinema_details: providers_models.CGRCinemaDetails,
+    body: cgr_serializers.ReservationPassCultureBody,
+    request_timeout: int | None = None,
 ) -> cgr_serializers.ReservationPassCultureResponse:
+    timeout = request_timeout or CGR_TIMEOUT
     user = settings.CGR_API_USER
     password = decrypt(cinema_details.password)
     cinema_url = cinema_details.cinemaUrl
-    service = get_cgr_service_proxy(cinema_url)
+    service = get_cgr_service_proxy(cinema_url, request_timeout=timeout)
     # We need to wait a little longer than the value we send them
-    # Otherwise, for attempts very (very) close to the value of `CGR_TIMEOUT`
+    # Otherwise, for attempts very (very) close to the value of `timeout`
     # they might consider the booking as valid on their side
     # while on ours, the duration of the attempt + delay of the HTTP request + delay of HTTP response
-    # could exceed the `CGR_TIMEOUT` value
-    timeout = CGR_TIMEOUT - 2
+    # could exceed the `timeout` value
+    timeout -= 2
     params = {
         "User": user,
         "mdp": password,
@@ -79,11 +83,15 @@ def reservation_pass_culture(
     return parse_obj_as(cgr_serializers.ReservationPassCultureResponse, response)
 
 
-def annulation_pass_culture(cinema_details: providers_models.CGRCinemaDetails, qr_code: str) -> None:
+def annulation_pass_culture(
+    cinema_details: providers_models.CGRCinemaDetails,
+    qr_code: str,
+    request_timeout: int | None = None,
+) -> None:
     user = settings.CGR_API_USER
     password = decrypt(cinema_details.password)
     cinema_url = cinema_details.cinemaUrl
-    service = get_cgr_service_proxy(cinema_url)
+    service = get_cgr_service_proxy(cinema_url, request_timeout=request_timeout)
     response = service.AnnulationPassCulture(User=user, mdp=password, pQrCode=qr_code)
     response = json.loads(response)
     _check_response_is_ok(response, "AnnulationPassCulture")

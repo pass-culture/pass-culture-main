@@ -164,8 +164,15 @@ class BookTicketTest:
             headers={"Content-Type": "application/json"},
             additional_matcher=lambda request: bool(request.json().get("idsBeforeSale")),
         )
-        boost = boost_client.BoostClientAPI(cinema_str_id)
+        boost = boost_client.BoostClientAPI(cinema_str_id, request_timeout=12)
         tickets = boost.book_ticket(show_id=36684, booking=booking, beneficiary=beneficiary)
+
+        assert requests_mock.request_history[-3].method == "GET"
+        assert requests_mock.request_history[-3].timeout == 12
+        assert requests_mock.request_history[-2].method == "POST"
+        assert requests_mock.request_history[-2].timeout == 12
+        assert requests_mock.request_history[-1].method == "POST"
+        assert requests_mock.request_history[-1].timeout == 12
         assert pre_sale_post_adapter.last_request.json() == {
             "basketItems": [{"idShowtimePricing": 1114163, "quantity": 2}],
             "codePayment": "PCU",
@@ -205,12 +212,12 @@ class CancelBookingTest:
             json=fixtures.CANCEL_ORDER_SALE_90577,
             headers={"Content-Type": "application/json"},
         )
-        boost = boost_client.BoostClientAPI(cinema_str_id)
+        boost = boost_client.BoostClientAPI(cinema_str_id, request_timeout=12)
 
-        try:
-            boost.cancel_booking(barcodes=[barcode])
-        except Exception:  # pylint: disable=broad-except
-            assert False, "Should not raise exception"
+        boost.cancel_booking(barcodes=[barcode])
+
+        assert requests_mock.request_history[-1].method == "PUT"
+        assert requests_mock.request_history[-1].timeout == 12
         assert put_adapter.last_request.json() == {"sales": [{"code": barcode, "refundType": "pcu"}]}
 
     def test_when_boost_return_element_not_found(self, requests_mock):

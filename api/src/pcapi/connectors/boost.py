@@ -28,6 +28,7 @@ def invalid_token_handler(
     cinema_details: BoostCinemaDetails,
     pattern_values: dict | None = None,
     params: dict | None = None,
+    **kwargs: Any,
 ) -> None:
     """
     `retry` decorator handler. Get rid of the Boost API token if not valid anymore.
@@ -127,10 +128,11 @@ def get_resource(
     resource: ResourceBoost,
     params: dict[str, Any] | None = None,
     pattern_values: dict[str, Any] | None = None,
+    request_timeout: int | None = None,
 ) -> dict | list[dict] | list:
     cinema_details = providers_repository.get_boost_cinema_details(cinema_str_id)
 
-    return _perform_get_resource(resource, cinema_details, pattern_values, params)
+    return _perform_get_resource(resource, cinema_details, pattern_values, params, request_timeout=request_timeout)
 
 
 @retry(
@@ -144,22 +146,28 @@ def _perform_get_resource(
     cinema_details: BoostCinemaDetails,
     pattern_values: dict[str, Any] | None = None,
     params: dict[str, Any] | None = None,
+    request_timeout: int | None = None,
 ) -> dict | list[dict] | list:
     """
     Actually get the resource, and retrying in case the token has been invalidated too earlier
     """
     token = get_token(cinema_details)
     response = requests.get(
-        url=build_url(cinema_details.cinemaUrl, resource, pattern_values), headers=headers(token), params=params
+        url=build_url(cinema_details.cinemaUrl, resource, pattern_values),
+        headers=headers(token),
+        params=params,
+        timeout=request_timeout,
     )
     _check_response_is_ok(response, token, f"GET {resource}")
     return response.json()
 
 
-def put_resource(cinema_str_id: str, resource: ResourceBoost, body: BaseModel) -> dict | list[dict] | list | None:
+def put_resource(
+    cinema_str_id: str, resource: ResourceBoost, body: BaseModel, request_timeout: int | None = None
+) -> dict | list[dict] | list | None:
     cinema_details = providers_repository.get_boost_cinema_details(cinema_str_id)
 
-    return _perform_put_resource(resource, cinema_details, body)
+    return _perform_put_resource(resource, cinema_details, body, request_timeout=request_timeout)
 
 
 @retry(
@@ -169,14 +177,17 @@ def put_resource(cinema_str_id: str, resource: ResourceBoost, body: BaseModel) -
     logger=logger,
 )
 def _perform_put_resource(
-    resource: ResourceBoost, cinema_details: BoostCinemaDetails, body: BaseModel
+    resource: ResourceBoost, cinema_details: BoostCinemaDetails, body: BaseModel, request_timeout: int | None = None
 ) -> dict | list[dict] | list | None:
     """
     Actually put the resource, and retrying in case the token has been invalidated too early.
     """
     token = get_token(cinema_details)
     response = requests.put(
-        url=build_url(cinema_details.cinemaUrl, resource), headers=headers(token), data=body.json(by_alias=True)
+        url=build_url(cinema_details.cinemaUrl, resource),
+        headers=headers(token),
+        data=body.json(by_alias=True),
+        timeout=request_timeout,
     )
     _check_response_is_ok(response, token, f"PUT {resource}")
     response_headers = response.headers.get("Content-Type")
@@ -186,10 +197,15 @@ def _perform_put_resource(
     return content
 
 
-def post_resource(cinema_str_id: str, resource: ResourceBoost, body: BaseModel) -> dict | list[dict] | list | None:
+def post_resource(
+    cinema_str_id: str,
+    resource: ResourceBoost,
+    body: BaseModel,
+    request_timeout: int | None = None,
+) -> dict | list[dict] | list | None:
     cinema_details = providers_repository.get_boost_cinema_details(cinema_str_id)
 
-    return _perform_post_resource(resource, cinema_details, body)
+    return _perform_post_resource(resource, cinema_details, body, request_timeout=request_timeout)
 
 
 @retry(
@@ -199,11 +215,17 @@ def post_resource(cinema_str_id: str, resource: ResourceBoost, body: BaseModel) 
     logger=logger,
 )
 def _perform_post_resource(
-    resource: ResourceBoost, cinema_details: BoostCinemaDetails, body: BaseModel
+    resource: ResourceBoost,
+    cinema_details: BoostCinemaDetails,
+    body: BaseModel,
+    request_timeout: int | None = None,
 ) -> dict | list[dict] | list | None:
     token = get_token(cinema_details)
     response = requests.post(
-        url=build_url(cinema_details.cinemaUrl, resource), headers=headers(token), data=body.json(by_alias=True)
+        url=build_url(cinema_details.cinemaUrl, resource),
+        headers=headers(token),
+        data=body.json(by_alias=True),
+        timeout=request_timeout,
     )
     _check_response_is_ok(response, token, f"POST {resource}")
     response_headers = response.headers.get("Content-Type")
