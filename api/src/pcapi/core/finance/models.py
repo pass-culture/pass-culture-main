@@ -805,7 +805,7 @@ class Invoice(PcObject, Base, Model):
     cashflows: list[Cashflow] = sqla_orm.relationship(
         "Cashflow", secondary="invoice_cashflow", back_populates="invoices"
     )
-    status: InvoiceStatus = sqla.Column(db_utils.MagicEnum(InvoiceStatus), nullable=True)
+    status: InvoiceStatus = sqla.Column(db_utils.MagicEnum(InvoiceStatus), nullable=False)
 
     @property
     def storage_object_id(self) -> str:

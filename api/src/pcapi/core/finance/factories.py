@@ -255,6 +255,7 @@ class InvoiceFactory(BaseFactory):
     amount = 1000
     reference = factory.Sequence("{:09}".format)
     token = factory.LazyFunction(secrets.token_urlsafe)
+    status = models.InvoiceStatus.PAID
 
 
 class CashflowBatchFactory(BaseFactory):
