@@ -3,6 +3,7 @@ import logging
 import click
 
 from pcapi import settings
+import pcapi.core.chronicles.api as chronicles_api
 from pcapi.core.mails.transactional.users import online_event_reminder
 import pcapi.core.users.api as user_api
 import pcapi.core.users.constants as users_constants
@@ -60,6 +61,7 @@ def anonymize_inactive_users(category: str, force: bool) -> None:
         print("Anonymize beneficiary users after 5 years")
         user_api.anonymize_beneficiary_users(force=force)
         user_api.anonymize_user_deposits()
+        chronicles_api.anonymize_unlinked_chronicles()
     if category in ("neither", "all"):
         print("Anonymizing users that are neither beneficiaries nor pro 3 years after their last connection")
         user_api.anonymize_non_pro_non_beneficiary_users(force=force)
