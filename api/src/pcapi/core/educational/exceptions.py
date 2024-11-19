@@ -1,22 +1,24 @@
-from pcapi.domain.client_exceptions import ClientError
 from pcapi.models.api_errors import ApiErrors
 
 from . import models
 
 
-class EducationalInstitutionUnknown(ClientError):
+class EducationalInstitutionUnknown(ApiErrors):
     def __init__(self) -> None:
-        super().__init__("educationalInstitution", "Cette institution est inconnue")
+        super().__init__()
+        self.add_error("educationalInstitution", "Cette institution est inconnue")
 
 
-class StockNotBookable(ClientError):
+class StockNotBookable(ApiErrors):
     def __init__(self, stock_id: int) -> None:
-        super().__init__("stock", f"Le stock {stock_id} n'est pas réservable")
+        super().__init__()
+        self.add_error("stock", f"Le stock {stock_id} n'est pas réservable")
 
 
-class EducationalYearNotFound(ClientError):
+class EducationalYearNotFound(ApiErrors):
     def __init__(self) -> None:
-        super().__init__(
+        super().__init__()
+        self.add_error(
             "educationalYear", "Aucune année scolaire correspondant à la réservation demandée n'a été trouvée"
         )
 
