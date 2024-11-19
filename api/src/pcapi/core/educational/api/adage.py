@@ -91,7 +91,7 @@ def get_venue_by_id_for_adage_iframe(
     relative = []
     venue = None
     if search_relative:
-        venues = offerers_repository.find_relative_venue_by_id(venue_id, permanent_only=False)
+        venues = offerers_repository.find_relative_venue_by_id(venue_id)
         for candidate in venues:
             if candidate.id == venue_id:
                 venue = candidate
