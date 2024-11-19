@@ -442,24 +442,15 @@ class FindByProUserTest:
 
 
 class FilterCollectiveOfferByStatusesTest:
-    ALL_STATUS = {
-        CollectiveOfferDisplayedStatus.PENDING,
-        CollectiveOfferDisplayedStatus.REJECTED,
-        CollectiveOfferDisplayedStatus.PREBOOKED,
-        CollectiveOfferDisplayedStatus.BOOKED,
-        CollectiveOfferDisplayedStatus.EXPIRED,
-        CollectiveOfferDisplayedStatus.ENDED,
-        CollectiveOfferDisplayedStatus.ARCHIVED,
-        CollectiveOfferDisplayedStatus.ACTIVE,
-        CollectiveOfferDisplayedStatus.REIMBURSED,
-        CollectiveOfferDisplayedStatus.CANCELLED,
-        CollectiveOfferDisplayedStatus.DRAFT,
-    }
+    ALL_STATUS = set(CollectiveOfferDisplayedStatus)
 
     ALL_STATUS_WITHOUT_NEW = ALL_STATUS - {
         CollectiveOfferDisplayedStatus.CANCELLED,
         CollectiveOfferDisplayedStatus.REIMBURSED,
     }
+
+    # The INACTIVE filter is not relevant with new statuses for CollectiveOffer.
+    ALL_STATUS_WITHOUT_INACTIVE = ALL_STATUS - {CollectiveOfferDisplayedStatus.INACTIVE}
 
     def test_filter_by_booked_status(self, app):
         # Given
@@ -517,23 +508,18 @@ class FilterCollectiveOfferByStatusesTest:
         assert filtered_booked_query.one() == offer
 
     @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
-    @pytest.mark.parametrize("status", ALL_STATUS - set([CollectiveOfferDisplayedStatus.PENDING]))
+    @pytest.mark.parametrize("status", ALL_STATUS_WITHOUT_INACTIVE - set([CollectiveOfferDisplayedStatus.PENDING]))
     def test_filter_by_status_with_new_status(self, app, status):
-        # Given
         offer = create_collective_offer_by_status(status)
-        _pending_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.PENDING)
 
-        base_query = CollectiveOffer.query
-
-        # When
-        filtered_booked_query = _filter_collective_offers_by_statuses(base_query, [status.value])
+        filtered_booked_query = _filter_collective_offers_by_statuses(CollectiveOffer.query, [status.value])
 
         # Then
         assert filtered_booked_query.count() == 1
         assert filtered_booked_query.first() == offer
 
     @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
-    @pytest.mark.parametrize("status", ALL_STATUS - {CollectiveOfferDisplayedStatus.PENDING})
+    @pytest.mark.parametrize("status", ALL_STATUS_WITHOUT_INACTIVE - set([CollectiveOfferDisplayedStatus.PENDING]))
     def test_filter_pending(self, app, status):
         _other_offer = create_collective_offer_by_status(status)
         pending_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.PENDING)
@@ -545,7 +531,7 @@ class FilterCollectiveOfferByStatusesTest:
         assert filtered_booked_query.first() == pending_offer
 
     @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
-    @pytest.mark.parametrize("status", ALL_STATUS - {CollectiveOfferDisplayedStatus.ACTIVE})
+    @pytest.mark.parametrize("status", ALL_STATUS_WITHOUT_INACTIVE - set([CollectiveOfferDisplayedStatus.ACTIVE]))
     def test_filter_active(self, app, status):
         other_offer = create_collective_offer_by_status(status)
         active_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.ACTIVE)
@@ -562,10 +548,10 @@ class FilterCollectiveOfferByStatusesTest:
 
     @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_all_filters(self, app):
-        all_offers_by_status = {s.value: create_collective_offer_by_status(s) for s in self.ALL_STATUS}
+        all_offers_by_status = {s.value: create_collective_offer_by_status(s) for s in self.ALL_STATUS_WITHOUT_INACTIVE}
 
         base_query = CollectiveOffer.query
-        all_status_values = [enum.value for enum in self.ALL_STATUS]
+        all_status_values = [enum.value for enum in self.ALL_STATUS_WITHOUT_INACTIVE]
 
         # When
         filtered_query = _filter_collective_offers_by_statuses(base_query, all_status_values)
@@ -574,7 +560,7 @@ class FilterCollectiveOfferByStatusesTest:
         filtered_query_ids = {offer.id for offer in filtered_query}
         assert filtered_query_ids == {offer.id for offer in all_offers_by_status.values()}
 
-        assert filtered_query.count() == len(self.ALL_STATUS)
+        assert filtered_query.count() == len(self.ALL_STATUS_WITHOUT_INACTIVE)
 
     @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_filter_expired_do_not_retrieve_ended(self, app):
@@ -614,25 +600,29 @@ class FilterCollectiveOfferByStatusesTest:
         }
         assert filtered_query.count() == len(self.ALL_STATUS_WITHOUT_NEW) - 1
 
-    @pytest.mark.parametrize("status", ALL_STATUS)
+    @pytest.mark.parametrize("status", ALL_STATUS_WITHOUT_INACTIVE)
     @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_filter_statuses_but_one(self, app, status):
-        all_offers_status_by_id = {create_collective_offer_by_status(s).id: s.value for s in self.ALL_STATUS}
+        all_offers_status_by_id = {
+            create_collective_offer_by_status(s).id: s.value for s in self.ALL_STATUS_WITHOUT_INACTIVE
+        }
 
-        filtered_status = [status_enum.value for status_enum in self.ALL_STATUS if status_enum != status]
+        filtered_status = [
+            status_enum.value for status_enum in self.ALL_STATUS_WITHOUT_INACTIVE if status_enum != status
+        ]
 
         base_query = CollectiveOffer.query
 
         filtered_query = _filter_collective_offers_by_statuses(base_query, filtered_status)
 
-        assert base_query.count() == len(self.ALL_STATUS)
+        assert base_query.count() == len(self.ALL_STATUS_WITHOUT_INACTIVE)
 
         filtered_query_status = {all_offers_status_by_id[offer.id] for offer in filtered_query}
 
         assert filtered_query_status == {
             offer_status for offer_status in all_offers_status_by_id.values() if status.value != offer_status
         }
-        assert filtered_query.count() == len(self.ALL_STATUS) - 1
+        assert filtered_query.count() == len(self.ALL_STATUS_WITHOUT_INACTIVE) - 1
 
     def test_filter_with_no_statuses(self, app):
         # Given
@@ -732,6 +722,32 @@ class FilterCollectiveOfferByStatusesTest:
 
         assert filtered_query.count() == 1
         assert set(filtered_query.all()) == {booked_offer}
+
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    def test_inactive_statuses_without_new_statuses(self, app):
+        inactive_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.INACTIVE)
+        _pending_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.PENDING)
+
+        filtered_query = _filter_collective_offers_by_statuses(
+            CollectiveOffer.query, [CollectiveOfferDisplayedStatus.INACTIVE.value]
+        )
+
+        assert filtered_query.count() == 1
+        assert filtered_query.one() == inactive_offer
+
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    def test_inactive_statuses_with_new_statuses(self, app):
+        _inactive_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.INACTIVE)
+        _pending_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.PENDING)
+        base_query = CollectiveOffer.query
+
+        filtered_query = _filter_collective_offers_by_statuses(
+            base_query, [CollectiveOfferDisplayedStatus.INACTIVE.value]
+        )
+
+        # The INACTIVE filter is not relevant with new statuses for CollectiveOffer.
+        # It is only used for CollectiveOfferTemplate.
+        assert filtered_query.count() == 0
 
 
 class HasCollectiveOffersForProgramAndVenueIdsTest:
