@@ -141,6 +141,7 @@ class ProductMediation(PcObject, Base, Model):
         sa.BigInteger, sa.ForeignKey("product.id", ondelete="CASCADE"), index=True, nullable=False
     )
     url: str = sa.Column(sa.String(255), nullable=False, unique=True)
+    uuid: str = sa.Column(sa.Text, nullable=True)  # This field is nullable until fully populated
 
 
 class GcuCompatibilityType(enum.Enum):
