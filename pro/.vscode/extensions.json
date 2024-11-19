@@ -3,7 +3,6 @@
     "esbenp.prettier-vscode",
     "dbaeumer.vscode-eslint",
     "vitest.explorer",
-    "stylelint.vscode-stylelint",
-    "Huuums.vscode-fast-folder-structure"
+    "stylelint.vscode-stylelint"
   ]
 }
