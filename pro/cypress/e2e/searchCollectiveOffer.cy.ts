@@ -8,7 +8,7 @@ describe('Search collective offers', () => {
   const venueName = 'Mon Lieu'
   const offerName = 'Mon offre collective'
 
-  before(() => {
+  beforeEach(() => {
     cy.visit('/connexion')
     cy.request({
       method: 'GET',

@@ -5,7 +5,7 @@ import { logAndGoToPage } from '../support/helpers.ts'
 describe('Desk (Guichet) feature', () => {
   let login: string
 
-  before(() => {
+  beforeEach(() => {
     cy.visit('/connexion')
     cy.request({
       method: 'GET',

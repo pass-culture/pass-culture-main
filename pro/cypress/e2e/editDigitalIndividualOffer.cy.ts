@@ -6,7 +6,7 @@ describe('Edit digital individual offers', () => {
   let login: string
 
   describe('Display and url modification', () => {
-    before(() => {
+    beforeEach(() => {
       cy.visit('/connexion')
       cy.request({
         method: 'GET',
@@ -84,7 +84,7 @@ describe('Edit digital individual offers', () => {
   })
 
   describe('Modification of date event offer with bookings', () => {
-    before(() => {
+    beforeEach(() => {
       cy.visit('/connexion')
       cy.request({
         method: 'GET',
