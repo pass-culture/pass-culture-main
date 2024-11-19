@@ -22,6 +22,8 @@ from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories_v2
+from pcapi.core.chronicles import factories as chronicles_factories
+from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import enum as finance_enum
 from pcapi.core.finance import factories as finance_factories
@@ -2533,6 +2535,24 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
             assert len(user_to_anonymize.action_history) == 1
             assert user_to_anonymize.action_history[0].actionType == history_models.ActionType.USER_ANONYMIZED
             assert user_to_anonymize.action_history[0].authorUserId == None
+
+    def test_clean_chronicle_on_anonymize_beneficiary_user(self) -> None:
+        user_to_anonymize = users_factories.BeneficiaryFactory(
+            firstName="user_to_anonymize",
+            age=18,
+            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+        )
+        chronicle = chronicles_factories.ChronicleFactory(
+            user=user_to_anonymize,
+            email="radomemail@example.com",
+        )
+
+        users_api.anonymize_beneficiary_users(force=True)
+        db.session.refresh(chronicle)
+
+        assert chronicle.userId == None
+        assert chronicle.email == "anonymized_email@anonymized.passculture"
 
     def test_anonymize_beneficiary_user_force_iris_not_found(self) -> None:
         user_to_anonymize = users_factories.BeneficiaryFactory(
