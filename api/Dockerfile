@@ -144,6 +144,15 @@ RUN pip install --no-cache-dir --user -e .
 
 FROM lib-prod AS pcapi
 
+USER root
+
+RUN apt update && apt --no-install-recommends -y install curl
+
+RUN curl -o /usr/local/share/ca-certificates/DigiCertGlobalRootG2.crt.pem https://cacerts.digicert.com/DigiCertGlobalRootG2.crt.pem && \
+    update-ca-certificates
+
+USER pcapi
+
 WORKDIR /usr/src/app
 
 RUN pip install \
