@@ -187,6 +187,24 @@
                 </table>
             {% endfor %}
         {% endif %}
+
+        {% if container.internal.chronicles %}
+            <h3>Historique des chroniques pour le « Book Club »</h3>
+            {% for chronicle in container.internal.chronicles %}
+                <table class="borderless">
+                    <tr><td>Date</td><td>{{chronicle.dateCreated.strftime('%d/%m/%Y')}}</td></tr>
+                    {% if chronicle.age %}<tr><td>Age</td><td>{{chronicle.age}} ans</td></tr>{% endif %}
+                    {% if chronicle.city %}<tr><td>Ville</td><td>{{chronicle.city}}</td></tr>{% endif %}
+                    {% if chronicle.firstName %}<tr><td>Prénom</td><td>{{chronicle.firstName}}</td></tr>{% endif %}
+                    <tr><td>Adresse de messagerie</td><td>{{chronicle.email}}</td></tr>
+                    {% if chronicle.productName %}<tr><td>Titre du livre</td><td>{{chronicle.productName}}</td></tr>
+                    {% elif chronicle.ean %}<tr><td>EAN du livre</td><td>{{chronicle.ean}}</td></tr>{% endif %}
+                    <tr><td>Chronique</td><td>{{chronicle.content |replace('\n', '<br/>' | safe)}}</td></tr>
+                    <tr><td>Accepte la diffusion sur les médias sociaux</td><td>{%if chronicle.isSocialMediaDiffusible%}oui{%else%}non{%endif%}</td></tr>
+                    <tr><td>Accepte la diffusion d'identité</td><td>{%if chronicle.isIdentityDiffusible%}oui{%else%}non{%endif%}</td></tr>
+                </table>
+            {% endfor %}
+        {% endif %}
     <div class="purple-background">
         Bon à savoir : si tu souhaites récupérer ces données dans un format « interopérable » (fichier « .json »), lisible par une machine, tu peux contacter le DPO (dpo@passculture.app) afin d’exercer ton droit à la portabilité.
     </div>
