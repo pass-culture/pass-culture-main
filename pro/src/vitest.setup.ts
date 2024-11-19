@@ -48,6 +48,36 @@ const acceptableErrors = [
       "Warning: ReactDOM.render is no longer supported in React 18. Use createRoot instead. Until you switch to the new API, your app will behave as if it's running React 17. Learn more: https://reactjs.org/link/switch-to-createroot",
     files: [''],
   },
+  {
+    error:
+      '⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.',
+    files: [''],
+  },
+  {
+    error:
+      '⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.',
+    files: [''],
+  },
+  {
+    error:
+      '⚠️ React Router Future Flag Warning: The persistence behavior of fetchers is changing in v7. You can use the `v7_fetcherPersist` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_fetcherpersist.',
+    files: [''],
+  },
+  {
+    error:
+      '⚠️ React Router Future Flag Warning: Casing of `formMethod` fields is being normalized to uppercase in v7. You can use the `v7_normalizeFormMethod` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_normalizeformmethod.',
+    files: [''],
+  },
+  {
+    error:
+      '⚠️ React Router Future Flag Warning: `RouterProvider` hydration behavior is changing in v7. You can use the `v7_partialHydration` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_partialhydration.',
+    files: [''],
+  },
+  {
+    error:
+      '⚠️ React Router Future Flag Warning: The revalidation behavior after 4xx/5xx `action` responses is changing in v7. You can use the `v7_skipActionErrorRevalidation` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_skipactionerrorrevalidation.',
+    files: [''],
+  },
   // Radix-ui updates wants us to use `DialogTitle` that always adds a `h2`
   // RGAA requires the title to be a `h1`
   // All our dilogs have titles
