@@ -32,8 +32,16 @@ CDS_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
 
 
 class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
-    def __init__(self, cinema_id: str, account_id: str, api_url: str, cinema_api_token: str | None):
-        super().__init__(cinema_id=cinema_id)
+    def __init__(
+        self,
+        cinema_id: str,
+        account_id: str,
+        api_url: str,
+        cinema_api_token: str | None,
+        *,
+        request_timeout: int | None = None,
+    ):
+        super().__init__(cinema_id=cinema_id, request_timeout=request_timeout)
         if not cinema_api_token:
             raise ValueError(f"Missing token for {cinema_id}")
         self.token = cinema_api_token
@@ -81,7 +89,9 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
         )
 
     def get_show(self, show_id: int) -> cds_serializers.ShowCDS:
-        data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.SHOWS)
+        data = get_resource(
+            self.api_url, self.account_id, self.token, ResourceCDS.SHOWS, request_timeout=self.request_timeout
+        )
         shows = parse_obj_as(list[cds_serializers.ShowCDS], data)
         for show in shows:
             if show.id == show_id:
@@ -108,7 +118,13 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
             return bytes()
 
     def get_voucher_payment_type(self) -> cds_serializers.PaymentTypeCDS:
-        data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.PAYMENT_TYPE)
+        data = get_resource(
+            self.api_url,
+            self.account_id,
+            self.token,
+            ResourceCDS.PAYMENT_TYPE,
+            request_timeout=self.request_timeout,
+        )
         payment_types = parse_obj_as(list[cds_serializers.PaymentTypeCDS], data)
         for payment_type in payment_types:
             if payment_type.internal_code == cds_constants.VOUCHER_PAYMENT_TYPE_CDS:
@@ -121,7 +137,13 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
 
     @lru_cache
     def get_pc_voucher_types(self) -> list[cds_serializers.VoucherTypeCDS]:
-        data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.VOUCHER_TYPE)
+        data = get_resource(
+            self.api_url,
+            self.account_id,
+            self.token,
+            ResourceCDS.VOUCHER_TYPE,
+            request_timeout=self.request_timeout,
+        )
         voucher_types = parse_obj_as(list[cds_serializers.VoucherTypeCDS], data)
         return [
             voucher_type
@@ -130,7 +152,13 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
         ]
 
     def get_screen(self, screen_id: int) -> cds_serializers.ScreenCDS:
-        data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.SCREENS)
+        data = get_resource(
+            self.api_url,
+            self.account_id,
+            self.token,
+            ResourceCDS.SCREENS,
+            request_timeout=self.request_timeout,
+        )
         screens = parse_obj_as(list[cds_serializers.ScreenCDS], data)
 
         for screen in screens:
@@ -231,7 +259,14 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
             barcodes_int.append(int(barcode))
 
         cancel_body = cds_serializers.CancelBookingCDS(barcodes=barcodes_int, paiement_type_id=paiement_type_id)  # type: ignore[call-arg]
-        api_response = put_resource(self.api_url, self.account_id, self.token, ResourceCDS.CANCEL_BOOKING, cancel_body)
+        api_response = put_resource(
+            self.api_url,
+            self.account_id,
+            self.token,
+            ResourceCDS.CANCEL_BOOKING,
+            cancel_body,
+            request_timeout=self.request_timeout,
+        )
 
         if api_response:
             cancel_errors = parse_obj_as(cds_serializers.CancelBookingsErrorsCDS, api_response)
@@ -267,7 +302,12 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
         )
 
         json_response = post_resource(
-            self.api_url, self.account_id, self.token, ResourceCDS.CREATE_TRANSACTION, create_transaction_body
+            self.api_url,
+            self.account_id,
+            self.token,
+            ResourceCDS.CREATE_TRANSACTION,
+            create_transaction_body,
+            request_timeout=self.request_timeout,
         )
         create_transaction_response = parse_obj_as(cds_serializers.CreateTransactionResponseCDS, json_response)
 

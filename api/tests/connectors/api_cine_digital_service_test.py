@@ -64,10 +64,10 @@ class CineDigitalServiceGetResourceTest:
         request_get.return_value = response_return_value
 
         # When
-        json_data = get_resource(api_url, cinema_id, token, resource)
+        json_data = get_resource(api_url, cinema_id, token, resource, request_timeout=14)
 
         # Then
-        request_get.assert_called_once_with("https://test_id.test_url/tariffs?api_token=test_token")
+        request_get.assert_called_once_with("https://test_id.test_url/tariffs?api_token=test_token", timeout=14)
         assert json_data == shows_json
 
     @mock.patch("pcapi.connectors.cine_digital_service.requests.get")
@@ -81,9 +81,9 @@ class CineDigitalServiceGetResourceTest:
         request_get.return_value = mock.MagicMock(status_code=400, reason="the test token test_token is wrong")
 
         with pytest.raises(cds_exceptions.CineDigitalServiceAPIException) as exc_info:
-            get_resource(api_url, cinema_id, token, resource)
+            get_resource(api_url, cinema_id, token, resource, request_timeout=14)
 
-        request_get.assert_called_once_with("https://test_id.test_url/tariffs?api_token=test_token")
+        request_get.assert_called_once_with("https://test_id.test_url/tariffs?api_token=test_token", timeout=14)
 
         assert isinstance(exc_info.value, cds_exceptions.CineDigitalServiceAPIException)
         assert token not in str(exc_info.value)
@@ -100,9 +100,9 @@ class CineDigitalServiceGetResourceTest:
         request_get.return_value = mock.MagicMock(status_code=200)
 
         # When
-        get_resource(api_url, cinema_id, token, resource, path_params)
+        get_resource(api_url, cinema_id, token, resource, path_params, request_timeout=14)
         # Then
-        request_get.assert_called_once_with("https://test_id.test_url/shows/1/seatmap?api_token=test_token")
+        request_get.assert_called_once_with("https://test_id.test_url/shows/1/seatmap?api_token=test_token", timeout=14)
 
 
 class CineDigitalServicePutResourceTest:
@@ -122,13 +122,14 @@ class CineDigitalServicePutResourceTest:
         request_put.return_value = response_return_value
 
         # When
-        json_data = put_resource(api_url, cinema_id, token, resource, body)
+        json_data = put_resource(api_url, cinema_id, token, resource, body, request_timeout=14)
 
         # Then
         request_put.assert_called_once_with(
             "https://test_id.test_url/transaction/cancel?api_token=test_token",
             headers={"Content-Type": "application/json"},
             data='{"barcodes": [111111111111], "paiementtypeid": 5}',
+            timeout=14,
         )
         assert json_data == response_json
 

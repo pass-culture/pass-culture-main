@@ -66,7 +66,12 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             sale_cancel_items.append(sale_cancel_item)
 
         sale_cancel = boost_serializers.SaleCancel(sales=sale_cancel_items)
-        boost.put_resource(self.cinema_id, boost.ResourceBoost.CANCEL_ORDER_SALE, sale_cancel)
+        boost.put_resource(
+            self.cinema_id,
+            boost.ResourceBoost.CANCEL_ORDER_SALE,
+            sale_cancel,
+            request_timeout=self.request_timeout,
+        )
 
     def book_ticket(
         self, show_id: int, booking: bookings_models.Booking, beneficiary: users_models.User
@@ -81,11 +86,21 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         sale_body = boost_serializers.SaleRequest(
             codePayment=constants.BOOST_PASS_CULTURE_CODE_PAYMENT, basketItems=basket_items, idsBeforeSale=None
         )
-        sale_preparation_response = boost.post_resource(self.cinema_id, boost.ResourceBoost.COMPLETE_SALE, sale_body)
+        sale_preparation_response = boost.post_resource(
+            self.cinema_id,
+            boost.ResourceBoost.COMPLETE_SALE,
+            sale_body,
+            request_timeout=self.request_timeout,
+        )
         sale_preparation = parse_obj_as(boost_serializers.SalePreparationResponse, sale_preparation_response)
 
         sale_body.idsBeforeSale = str(sale_preparation.data[0].id)
-        sale_response = boost.post_resource(self.cinema_id, boost.ResourceBoost.COMPLETE_SALE, sale_body)
+        sale_response = boost.post_resource(
+            self.cinema_id,
+            boost.ResourceBoost.COMPLETE_SALE,
+            sale_body,
+            request_timeout=self.request_timeout,
+        )
         sale_confirmation_response = parse_obj_as(boost_serializers.SaleConfirmationResponse, sale_response)
         add_to_queue(
             bookings_constants.REDIS_EXTERNAL_BOOKINGS_NAME,
@@ -174,6 +189,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             self.cinema_id,
             boost.ResourceBoost.SHOWTIME,
             pattern_values={"id": showtime_id},
+            request_timeout=self.request_timeout,
         )
         showtime_details = parse_obj_as(boost_serializers.ShowTimeDetails, json_data)
         return showtime_details.data

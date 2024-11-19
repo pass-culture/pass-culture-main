@@ -95,7 +95,7 @@ class EMSBookingConnector:
     shows_availability_endpoint = "SEANCE"
     cancelation_endpoint = "ANNULATION"
 
-    def do_request(self, endpoint: str, payload: dict) -> requests.Response:
+    def do_request(self, endpoint: str, payload: dict, request_timeout: int | None = None) -> requests.Response:
         """
         Perform the actual request, using mandatory headers
         and hashed payload.
@@ -104,7 +104,7 @@ class EMSBookingConnector:
 
         headers = self._build_headers()
         url = self._build_url(endpoint, payload)
-        return requests.post(url, headers=headers, json=payload)
+        return requests.post(url, headers=headers, json=payload, timeout=request_timeout)
 
     def raise_for_status(self, response: requests.Response) -> None:
         response.raise_for_status()

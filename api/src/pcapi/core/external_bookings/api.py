@@ -83,13 +83,15 @@ def _get_external_bookings_client_api(venue_id: int) -> external_bookings_models
             cds_cinema_details = providers_repository.get_cds_cinema_details(cinema_id)
             cinema_api_token = cds_cinema_details.cinemaApiToken
             account_id = cds_cinema_details.accountId
-            return CineDigitalServiceAPI(cinema_id, account_id, api_url, cinema_api_token)
+            return CineDigitalServiceAPI(
+                cinema_id, account_id, api_url, cinema_api_token, request_timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS
+            )
         case "BoostStocks":
-            return BoostClientAPI(cinema_id)
+            return BoostClientAPI(cinema_id, request_timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS)
         case "CGRStocks":
-            return CGRClientAPI(cinema_id)
+            return CGRClientAPI(cinema_id, request_timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS)
         case "EMSStocks":
-            return EMSClientAPI(cinema_id)
+            return EMSClientAPI(cinema_id, request_timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS)
         case _:
             raise ValueError(f"Unknown Provider: {cinema_venue_provider.provider.localClass}")
 

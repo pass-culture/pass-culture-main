@@ -23,8 +23,8 @@ logger = logging.getLogger(__name__)
 class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
     EMS_FAKE_REMAINING_PLACES = 100
 
-    def __init__(self, cinema_id: str):
-        super().__init__(cinema_id=cinema_id)
+    def __init__(self, cinema_id: str, request_timeout: None | int = None):
+        super().__init__(cinema_id=cinema_id, request_timeout=request_timeout)
         self.connector = EMSBookingConnector()
 
     def get_ticket(self, token: str) -> list[external_bookings_models.Ticket]:
@@ -60,7 +60,11 @@ class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             num_cmde=booking.token,
         )
         try:
-            response = self.connector.do_request(self.connector.booking_endpoint, payload=payload.dict())
+            response = self.connector.do_request(
+                self.connector.booking_endpoint,
+                payload=payload.dict(),
+                request_timeout=self.request_timeout,
+            )
         except (requests_exception.ReadTimeout, requests_exception.Timeout):
             if FeatureToggle.EMS_CANCEL_PENDING_EXTERNAL_BOOKING.is_active():
                 booking_to_cancel = json.dumps(
@@ -105,7 +109,11 @@ class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             num_trans=external_booking.additional_information["num_trans"],
             num_ope=external_booking.additional_information["num_ope"],
         )
-        response = self.connector.do_request(self.connector.cancelation_endpoint, payload=payload.dict())
+        response = self.connector.do_request(
+            self.connector.cancelation_endpoint,
+            payload=payload.dict(),
+            request_timeout=self.request_timeout,
+        )
         self.connector.raise_for_status(response)
 
         logger.info(

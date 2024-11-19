@@ -73,9 +73,11 @@ class EMSBookTicketTest:
 
         requests_mock.post(url, json=expected_data, headers={"Source": settings.EMS_API_BOOKING_HEADER})
 
-        client = EMSClientAPI(cinema_id=cinema_id)
+        client = EMSClientAPI(cinema_id=cinema_id, request_timeout=12)
         ticket = client.book_ticket(show_id="999700079979", booking=booking, beneficiary=beneficiary)
 
+        assert requests_mock.request_history[-1].method == "POST"
+        assert requests_mock.request_history[-1].timeout == 12
         assert len(ticket) == 1
         ticket = ticket.pop()
         assert ticket.barcode == "000000144659"
@@ -140,9 +142,11 @@ class EMSBookTicketTest:
 
         requests_mock.post(url, json=expected_data, headers={"Source": settings.EMS_API_BOOKING_HEADER})
 
-        client = EMSClientAPI(cinema_id=cinema_id)
+        client = EMSClientAPI(cinema_id=cinema_id, request_timeout=12)
         tickets = client.book_ticket(show_id="999700079979", booking=booking, beneficiary=beneficiary)
 
+        assert requests_mock.request_history[-1].method == "POST"
+        assert requests_mock.request_history[-1].timeout == 12
         assert len(tickets) == 2
         assert tickets[0].barcode == "000000144659"
         assert tickets[0].seat_number == ""

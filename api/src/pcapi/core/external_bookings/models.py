@@ -28,8 +28,9 @@ class Movie:
 
 
 class ExternalBookingsClientAPI:
-    def __init__(self, cinema_id: str) -> None:
+    def __init__(self, cinema_id: str, request_timeout: None | int = None) -> None:
         self.cinema_id = cinema_id
+        self.request_timeout = request_timeout
 
     # Fixme (yacine, 2022-12-19) remove this method from ExternalBookingsClientAPI. Unlike CDS, on Boost API
     #  we can't get shows remaining places from list of shows ids

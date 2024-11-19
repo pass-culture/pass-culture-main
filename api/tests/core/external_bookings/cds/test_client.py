@@ -135,11 +135,12 @@ class CineDigitalServiceGetShowTest:
             account_id="accountid_test",
             cinema_api_token="token_test",
             api_url="apiUrl_test/",
+            request_timeout=14,
         )
         show = cine_digital_service.get_show(2)
 
         # then
-        mocked_get_resource.assert_called_once_with(api_url, account_id, token, resource)
+        mocked_get_resource.assert_called_once_with(api_url, account_id, token, resource, request_timeout=14)
 
         assert show.id == 2
 
@@ -886,14 +887,24 @@ class CineDigitalServiceCancelBookingTest:
             id=12, internal_code="VCH", is_active=True
         )
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
+            cinema_id="test_id",
+            account_id="accountid_test",
+            cinema_api_token="token_test",
+            api_url="test_url",
+            request_timeout=12,
         )
 
         # When
-        try:
-            cine_digital_service.cancel_booking(["3107362853729", "1312079646868"])
-        except cds_exceptions.CineDigitalServiceAPIException:
-            assert False, "Should not raise exception"
+
+        cine_digital_service.cancel_booking(["3107362853729", "1312079646868"])
+        mocked_put_resource.assert_called_with(
+            "test_url",
+            "accountid_test",
+            "token_test",
+            ResourceCDS.CANCEL_BOOKING,
+            cds_serializers.CancelBookingCDS(barcodes=[3107362853729, 1312079646868], paiement_type_id=12),
+            request_timeout=12,
+        )
 
     @patch("pcapi.core.external_bookings.cds.client.put_resource")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_voucher_payment_type")
@@ -1090,7 +1101,11 @@ class CineDigitalServiceBookTicketTest:
         mocked_post_resource.return_value = json_create_transaction
 
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
+            cinema_id="test_id",
+            account_id="accountid_test",
+            cinema_api_token="token_test",
+            api_url="test_url",
+            request_timeout=12,
         )
 
         tickets = cine_digital_service.book_ticket(show_id=14, booking=booking, beneficiary=beneficiary)

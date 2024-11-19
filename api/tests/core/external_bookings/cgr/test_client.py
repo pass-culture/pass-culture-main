@@ -32,9 +32,11 @@ class BookTicketTest:
             "http://cgr-cinema-0.example.com/web_service",
             text=fixtures.cgr_reservation_response_template(fixtures.ONE_TICKET_RESPONSE),
         )
-        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id)
+        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id, request_timeout=12)
         tickets = cgr.book_ticket(show_id=177182, booking=booking, beneficiary=beneficiary)
 
+        assert requests_mock.request_history[-1].method == "POST"
+        assert requests_mock.request_history[-1].timeout == 12
         assert len(tickets) == 1
         assert tickets[0].barcode == "CINE999508637111"
         assert tickets[0].seat_number == "D8"
@@ -71,9 +73,11 @@ class BookTicketTest:
             text=fixtures.cgr_reservation_response_template(fixtures.ONE_TICKET_RESPONSE_WITHOUT_PLACEMENT),
         )
 
-        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id)
+        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id, request_timeout=12)
         tickets = cgr.book_ticket(show_id=177182, booking=booking, beneficiary=beneficiary)
 
+        assert requests_mock.request_history[-1].method == "POST"
+        assert requests_mock.request_history[-1].timeout == 12
         assert len(tickets) == 1
         assert tickets[0].barcode == "CINE999508637111"
         assert not tickets[0].seat_number
@@ -104,9 +108,11 @@ class BookTicketTest:
             text=fixtures.cgr_reservation_response_template(fixtures.TWO_TICKETS_RESPONSE),
         )
 
-        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id)
+        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id, request_timeout=12)
         tickets = cgr.book_ticket(show_id=177182, booking=booking, beneficiary=beneficiary)
 
+        assert requests_mock.request_history[-1].method == "POST"
+        assert requests_mock.request_history[-1].timeout == 12
         assert len(tickets) == 2
         assert tickets[0].barcode == "CINE999508637111"
         assert tickets[0].seat_number == "F7"
@@ -140,9 +146,11 @@ class BookTicketTest:
             text=fixtures.cgr_reservation_response_template(fixtures.TWO_TICKETS_RESPONSE_WITHOUT_PLACEMENT),
         )
 
-        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id)
+        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id, request_timeout=12)
         tickets = cgr.book_ticket(show_id=177182, booking=booking, beneficiary=beneficiary)
 
+        assert requests_mock.request_history[-1].method == "POST"
+        assert requests_mock.request_history[-1].timeout == 12
         assert len(tickets) == 2
         assert tickets[0].barcode == "CINE999508637111"
         assert not tickets[0].seat_number
@@ -172,12 +180,12 @@ class CancelBookingTest:
             text=fixtures.cgr_annulation_response_template(),
         )
 
-        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_str_id)
-        try:
-            cgr.cancel_booking(barcodes=["CINE-123456789"])
-        except CGRAPIException:
-            assert False, "Should not raise exception"
+        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_str_id, request_timeout=12)
 
+        cgr.cancel_booking(barcodes=["CINE-123456789"])
+
+        assert requests_mock.request_history[-1].method == "POST"
+        assert requests_mock.request_history[-1].timeout == 12
         assert post_adapter.call_count == 1
         assert "<pQrCode>CINE-123456789</pQrCode>" in post_adapter.last_request.text
 
