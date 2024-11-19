@@ -24,6 +24,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.routes.backoffice.finance import validation
@@ -1124,7 +1125,8 @@ def test_invoices_csv_commercial_gesture():
 
 
 @pytest.mark.usefixtures("clean_temp_files", "css_font_http_request_mock")
-def test_invoice_pdf_commercial_gesture(monkeypatch):
+@pytest.mark.parametrize("with_oa", [True, False])
+def test_invoice_pdf_commercial_gesture(monkeypatch, with_oa):
     invoice_htmls = []
 
     def _store_invoice_pdf(invoice_storage_id, invoice_html) -> None:
@@ -1203,7 +1205,8 @@ def test_invoice_pdf_commercial_gesture(monkeypatch):
 
     cutoff = datetime.datetime.utcnow() + datetime.timedelta(days=1)
     batch = api.generate_cashflows_and_payment_files(cutoff)
-    api.generate_invoices_and_debit_notes_legacy(batch)
+    with override_features(WIP_ENABLE_OFFER_ADDRESS=with_oa):
+        api.generate_invoices_and_debit_notes_legacy(batch)
 
     invoices = models.Invoice.query.all()
     assert len(invoices) == 1
@@ -1296,7 +1299,7 @@ def test_invoice_pdf_commercial_gesture(monkeypatch):
     assert reimbursement_by_venue_row["Dont offres collectives (TTC)"] == "0,00 €"
     assert reimbursement_by_venue_row["Dont offres individuelles (TTC)"] == "308,40 €"
     assert reimbursement_by_venue_row["Incidents (TTC)"] == "10,10 €"
-    assert reimbursement_by_venue_row["Lieux"] == venue.name
+    assert reimbursement_by_venue_row["Structures" if with_oa else "Lieux"] == venue.name
     assert reimbursement_by_venue_row["Montant de la contribution offreur (TTC)"] == "0,00 €"
     assert reimbursement_by_venue_row["Montant des réservations validées (TTC)"] == "298,30 €"
     assert reimbursement_by_venue_row["Montant remboursé (TTC)"] == "308,40 €"
@@ -2363,7 +2366,7 @@ class PrepareInvoiceContextTest:
 class GenerateDebitNoteHtmlTest:
     TEST_FILES_PATH = pathlib.Path(tests.__path__[0]) / "files"
 
-    def generate_and_compare_invoice(self, bank_account, venue, expected_generated_file_name):
+    def generate_and_compare_invoice(self, bank_account, venue, expected_generated_file_name, with_oa):
         user = users_factories.RichBeneficiaryFactory()
         book_offer = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
         factories.CustomReimbursementRuleFactory(amount=2850, offer=book_offer)
@@ -2427,7 +2430,8 @@ class GenerateDebitNoteHtmlTest:
             is_debit_note=True,
         )
         batch = models.CashflowBatch.query.get(batch.id)
-        invoice_html = api._generate_debit_note_html(invoice, batch)
+        with override_features(WIP_ENABLE_OFFER_ADDRESS=with_oa):
+            invoice_html = api._generate_debit_note_html(invoice, batch)
 
         with open(self.TEST_FILES_PATH / "invoice" / expected_generated_file_name, "r", encoding="utf-8") as f:
             expected_invoice_html = f.read()
@@ -2444,20 +2448,34 @@ class GenerateDebitNoteHtmlTest:
 
         del stocks  # we don't need it
 
-        self.generate_and_compare_invoice(bank_account, venue, "rendered_debit_note.html")
+        self.generate_and_compare_invoice(bank_account, venue, "rendered_debit_note.html", False)
+
+    def test_basics_with_oa(self, invoice_data):
+        bank_account, stocks, venue = invoice_data
+
+        del stocks  # we don't need it
+
+        self.generate_and_compare_invoice(bank_account, venue, "rendered_debit_note_with_oa.html", True)
 
     def test_nc_invoice(self, invoice_nc_data):
         bank_account, stocks, venue = invoice_nc_data
 
         del stocks  # we don't need it
 
-        self.generate_and_compare_invoice(bank_account, venue, "rendered_nc_debit_note.html")
+        self.generate_and_compare_invoice(bank_account, venue, "rendered_nc_debit_note.html", False)
+
+    def test_nc_invoice_with_oa(self, invoice_nc_data):
+        bank_account, stocks, venue = invoice_nc_data
+
+        del stocks  # we don't need it
+
+        self.generate_and_compare_invoice(bank_account, venue, "rendered_nc_debit_note_with_oa.html", True)
 
 
 class GenerateInvoiceHtmlTest:
     TEST_FILES_PATH = pathlib.Path(tests.__path__[0]) / "files"
 
-    def generate_and_compare_invoice(self, stocks, bank_account, venue, is_caledonian):
+    def generate_and_compare_invoice(self, stocks, bank_account, venue, is_caledonian, with_oa):
         user = users_factories.RichBeneficiaryFactory()
         book_offer = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
         factories.CustomReimbursementRuleFactory(amount=2850, offer=book_offer)
@@ -2549,8 +2567,16 @@ class GenerateInvoiceHtmlTest:
         )
 
         batch = models.CashflowBatch.query.get(batch.id)
-        invoice_html = api._generate_invoice_html(invoice, batch)
-        expected_generated_file_name = "rendered_nc_invoice.html" if is_caledonian else "rendered_invoice.html"
+        with override_features(WIP_ENABLE_OFFER_ADDRESS=with_oa):
+            invoice_html = api._generate_invoice_html(invoice, batch)
+
+        if with_oa:
+            expected_generated_file_name = (
+                "rendered_nc_invoice_with_oa.html" if is_caledonian else "rendered_invoice_with_oa.html"
+            )
+        else:
+            expected_generated_file_name = "rendered_nc_invoice.html" if is_caledonian else "rendered_invoice.html"
+
         with open(self.TEST_FILES_PATH / "invoice" / expected_generated_file_name, "r", encoding="utf-8") as f:
             expected_invoice_html = f.read()
 
@@ -2574,7 +2600,7 @@ class GenerateInvoiceHtmlTest:
         )
         assert expected_invoice_html == invoice_html
 
-    def test_basics(self, invoice_data):
+    def basics(self, invoice_data, with_oa):
         bank_account, stocks, venue = invoice_data
         pricing_point = offerers_models.Venue.query.get(venue.current_pricing_point_id)
         only_educational_venue = offerers_factories.VenueFactory(
@@ -2607,9 +2633,21 @@ class GenerateInvoiceHtmlTest:
         api.price_event(collective_booking_finance_event1)
         api.price_event(collective_booking_finance_event2)
 
-        self.generate_and_compare_invoice(stocks, bank_account, venue, False)
+        self.generate_and_compare_invoice(stocks, bank_account, venue, False, with_oa)
 
-    def test_nc_invoice(self, invoice_nc_data):
+    def test_basics(self, invoice_data):
+        self.basics(invoice_data, False)
+
+    def test_basics_with_oa(self, invoice_data):
+        self.basics(invoice_data, True)
+
+    def nc_invoice(self, invoice_nc_data, with_oa):
         bank_account, stocks, venue = invoice_nc_data
 
-        self.generate_and_compare_invoice(stocks, bank_account, venue, True)
+        self.generate_and_compare_invoice(stocks, bank_account, venue, True, with_oa)
+
+    def test_nc_invoice(self, invoice_nc_data):
+        self.nc_invoice(invoice_nc_data, False)
+
+    def test_nc_invoice_with_oa(self, invoice_nc_data):
+        self.nc_invoice(invoice_nc_data, True)
