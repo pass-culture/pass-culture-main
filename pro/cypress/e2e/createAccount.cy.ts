@@ -1,7 +1,7 @@
 import { logAndGoToPage } from '../support/helpers.ts'
 
 describe('Account creation', () => {
-  before(() => {
+  beforeEach(() => {
     cy.visit('/inscription')
     cy.request({
       method: 'GET',
