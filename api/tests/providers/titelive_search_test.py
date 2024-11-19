@@ -269,6 +269,7 @@ class TiteliveSearchTest:
         new_mediations = offers_models.ProductMediation.query.all()
         assert len(new_mediations) == 6
         assert all(old_mediation not in new_mediations for old_mediation in old_mediations)
+        assert all(mediation.uuid is not None for mediation in new_mediations)
 
     def test_sync_thumbnails_network_failure_is_silent(self, requests_mock):
         _configure_login_and_images(requests_mock)
