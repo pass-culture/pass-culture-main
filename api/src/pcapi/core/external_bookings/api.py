@@ -42,6 +42,8 @@ EXTERNAL_BOOKINGS_FF = (
     feature.FeatureToggle.DISABLE_EMS_EXTERNAL_BOOKINGS,
 )
 
+EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS = 12
+
 
 def get_shows_stock(venue_id: int, shows_id: list[int]) -> dict[str, int]:
     client = _get_external_bookings_client_api(venue_id)
@@ -127,6 +129,7 @@ def book_event_ticket(
         json=json_payload,
         hmac=hmac_signature,
         headers={"Content-Type": "application/json"},
+        timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
     )
     _check_external_booking_response_is_ok(response)
 
@@ -214,7 +217,13 @@ def cancel_event_ticket(
     if venue_provider and venue_provider.externalUrls and venue_provider.externalUrls.cancelExternalUrl:
         cancel_url = venue_provider.externalUrls.cancelExternalUrl
 
-    response = requests.post(cancel_url, json=json_payload, headers=headers, hmac=hmac_signature)
+    response = requests.post(
+        cancel_url,
+        json=json_payload,
+        headers=headers,
+        hmac=hmac_signature,
+        timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
+    )
     _check_external_booking_response_is_ok(response)
 
     try:
