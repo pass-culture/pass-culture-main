@@ -249,13 +249,15 @@ class TransactionalEmail(Enum):
 
     # Finance incidents
     RETRIEVE_INCIDENT_AMOUNT_ON_INDIVIDUAL_BOOKINGS = models.TemplatePro(
-        id_prod=1111, id_not_prod=150, subaccount_id_prod=0, subaccount_id_not_prod=0
+        id_prod=1111, id_not_prod=150, subaccount_id_prod=77, subaccount_id_not_prod=54
     )
     RETRIEVE_INCIDENT_AMOUNT_ON_COLLECTIVE_BOOKINGS = models.TemplatePro(
-        id_prod=1112, id_not_prod=151, subaccount_id_prod=0, subaccount_id_not_prod=0
+        id_prod=1112, id_not_prod=151, subaccount_id_prod=78, subaccount_id_not_prod=55
     )
     COMMERCIAL_GESTURE_REIMBURSEMENT = models.TemplatePro(
-        id_prod=1187, id_not_prod=157, subaccount_id_prod=0, subaccount_id_not_prod=0
+        id_prod=1187, id_not_prod=157, subaccount_id_prod=80, subaccount_id_not_prod=56
     )
 
-    CSV_REIMBURSEMENT = models.Template(id_prod=1392, id_not_prod=167)
+    PROVIDER_REIMBURSEMENT_CSV = models.TemplatePro(
+        id_prod=1392, id_not_prod=167, subaccount_id_prod=81, subaccount_id_not_prod=57
+    )

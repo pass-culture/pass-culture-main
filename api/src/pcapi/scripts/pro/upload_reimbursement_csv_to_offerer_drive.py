@@ -31,7 +31,7 @@ OFFERER_INFORMATION = {
 
 def _get_csv_reimbursement_email_data(link_to_csv: str) -> models.TransactionalEmailData:
     return models.TransactionalEmailData(
-        template=TransactionalEmail.CSV_REIMBURSEMENT.value, params={"LINK_TO_CSV": link_to_csv}
+        template=TransactionalEmail.PROVIDER_REIMBURSEMENT_CSV.value, params={"LINK_TO_CSV": link_to_csv}
     )
 
 
