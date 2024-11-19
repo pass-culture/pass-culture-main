@@ -162,7 +162,7 @@ class TiteliveSearchTest:
 
         TiteliveMusicSearch().synchronize_products()
 
-        assert requests_mock.last_request.qs["dateminm"] == ["05/05/2022"]
+        assert requests_mock.last_request.qs["dateminm"] == ["04/05/2022"]
 
         stop_event, start_event = providers_models.LocalProviderEvent.query.order_by(
             providers_models.LocalProviderEvent.id.desc()

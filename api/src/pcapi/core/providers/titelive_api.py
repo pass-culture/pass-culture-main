@@ -96,7 +96,7 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveWorkType]):
         )
         if last_sync_event is None:
             raise TiteliveDatabaseNotInitializedException()
-        return last_sync_event.date.date()
+        return last_sync_event.date.date() - datetime.timedelta(days=1)
 
     def log_sync_status(
         self, provider_event_type: providers_models.LocalProviderEventType, message: str | None = None
