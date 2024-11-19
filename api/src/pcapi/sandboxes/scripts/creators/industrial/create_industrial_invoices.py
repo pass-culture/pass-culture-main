@@ -1,7 +1,10 @@
 from datetime import datetime
 from datetime import timedelta
+from datetime import timezone
 import logging
 import random
+import typing
+from unittest.mock import patch
 
 from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
 from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
@@ -12,10 +15,13 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
+from pcapi.core.finance import utils as finance_utils
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
+import pcapi.core.offers.models as offers_models
 import pcapi.core.users.factories as users_factories
+import pcapi.core.users.models as users_models
 from pcapi.models import db
 
 
@@ -205,6 +211,145 @@ def create_specific_invoice() -> None:
         cashflow_ids=cashflow_ids,
     )
     logger.info("Created specific Invoice")
+
+
+def build_many_extra_invoices(count: int = 32) -> None:
+    """Build a bank account, a venue and many invoices.
+
+    Those invoices will be created in the past in order to be
+    more or less meaningful. This needs some dirty tricks since all this
+    process has never meant to be done in the past.
+
+    The process builds invoices for every invoice-period (twice a
+    month), starting from the past and moving forward.
+
+    Warning: this function should not be called many times unless one
+    wants to add many bank accounts and venue to an existing offerer. It
+    might also not work because of the whole cutoff build process.
+
+    Warning (important!): this function should be the first to build
+    invoices or the last one. Otherwise, invoices generation will break
+    for various reasons.
+    """
+
+    def get_latest_cashflow_batch_id() -> int:
+        cashflow_parsed_labels = [
+            int(row.label[len(finance_api.CASHFLOW_BATCH_LABEL_PREFIX) :])
+            for row in finance_models.CashflowBatch.query.all()
+        ]
+        return max(cashflow_parsed_labels)
+
+    def cashflow_batch_label_generator(start: int, count: int) -> typing.Generator:
+        return (finance_api.CASHFLOW_BATCH_LABEL_PREFIX + str(start + x) for x in range(1, count + 1))
+
+    def book_offer_and_build_invoices(
+        current_idx: int,
+        start: datetime,
+        offer: offers_models.Offer,
+        beneficiary: users_models.User | None,
+        bank_account: finance_models.BankAccount,
+    ) -> bookings_models.Booking:
+        stock_start = start + timedelta(days=15 * current_idx)
+
+        booking_beneficiary = {"user": beneficiary} if beneficiary else {}
+        booking = bookings_factories.UsedBookingFactory(
+            **booking_beneficiary,
+            dateCreated=stock_start + timedelta(days=1),
+            dateUsed=stock_start + timedelta(days=2),
+            stock__quantity=2,
+            stock__price=1,
+            stock__offer=offer,
+        )
+
+        finance_factories.UsedBookingFinanceEventFactory(booking=booking)
+        event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
+        finance_api.price_event(event)
+
+        last_day = stock_start - timedelta(days=1)
+        cutoff = finance_utils.get_cutoff_as_datetime(last_day)
+
+        finance_api.generate_cashflows_and_payment_files(cutoff=cutoff)
+
+        bank_account = venue.current_bank_account
+        cashflows = finance_models.Cashflow.query.filter_by(bankAccount=bank_account).all()
+        cashflow_ids = [c.id for c in cashflows]
+
+        finance_api.generate_and_store_invoice_legacy(
+            bank_account_id=bank_account.id,
+            cashflow_ids=cashflow_ids,
+        )
+
+        # the default date is used when built, which is now()
+        # but... we would like something more realistic: an invoice
+        # built in the past.
+        invoice = finance_models.Invoice.query.order_by(finance_models.Invoice.id.desc()).first()
+        invoice.date = last_day
+
+        db.session.add(invoice)
+
+        return booking
+
+    # start in the past, move on to today
+    start = datetime.now(timezone.utc) - timedelta(days=15 * count)  # pylint: disable=datetime-now
+
+    beneficiary = None
+    latest_cashflow_batch_id = get_latest_cashflow_batch_id()
+
+    # since invoices and cashflow batches are built in the past,
+    # the batch label generation will not work: the label is
+    # incremented based on the most recent one's.
+    mock_path = "pcapi.core.finance.api._get_next_cashflow_batch_label"
+    with patch(mock_path) as mock_cashflow_label:
+        mock_cashflow_label.side_effect = cashflow_batch_label_generator(latest_cashflow_batch_id, count)
+
+        try:
+            user = users_models.User.query.filter_by(email="activation@example.com").one_or_none()
+            if not user:
+                user = users_factories.ProFactory(
+                    lastName="PRO",
+                    firstName="Activation",
+                    email="activation@example.com",
+                )
+
+            offerer = offerers_factories.OffererFactory(name="Structure avec de nombreux remboursements")
+            offerers_factories.UserOffererFactory(offerer=offerer, user=user)
+
+            current_timestamp = int(datetime.now().timestamp())  # pylint: disable=datetime-now
+            bank_account = finance_factories.BankAccountFactory(
+                label=f"Compte bancaire avec plein de remboursements #{current_timestamp}",
+                offerer=offerer,
+                dsApplicationId=current_timestamp,
+            )
+            venue = offerers_factories.VenueFactory(
+                name="Lieu avec plein de remboursements",
+                managingOfferer=offerer,
+                pricing_point="self",
+                bank_account=bank_account,
+            )
+            offer = offers_factories.OfferFactory(venue=venue, dateCreated=start)
+
+            for idx in range(1, count + 1):
+                booking = book_offer_and_build_invoices(
+                    current_idx=idx,
+                    start=start,
+                    beneficiary=beneficiary,
+                    offer=offer,
+                    bank_account=bank_account,
+                )
+
+                # first booking will create a beneficiary,
+                # no need to create a new one for each booking
+                if not beneficiary and booking:
+                    beneficiary = booking.user
+
+                db.session.commit()
+        except Exception:
+            db.session.rollback()
+            raise
+
+        logger.info(  # pylint: disable=logging-fstring-interpolation
+            f"Created {count} invoices for venue #{venue.id}/{venue.name} and offer #{offer.id}/{offer.name}"
+        )
 
 
 def create_specific_cashflow_batch_without_invoice() -> None:

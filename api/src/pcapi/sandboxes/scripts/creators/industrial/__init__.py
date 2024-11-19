@@ -169,5 +169,8 @@ def save_industrial_sandbox() -> None:
 
     create_user_account_update_requests()
 
+    # should be the last function called to create invoices
+    build_many_extra_invoices()
+
     # run this last as we fill out missing user offerers
     create_user_offerers()
