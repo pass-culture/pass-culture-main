@@ -7,6 +7,7 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.utils import generate_hmac_signature
+from pcapi.core.external_bookings.api import EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS
 from pcapi.core.external_bookings.api import _get_external_bookings_client_api
 from pcapi.core.external_bookings.api import book_event_ticket
 from pcapi.core.external_bookings.api import cancel_event_ticket
@@ -187,6 +188,7 @@ class BookEventTicketTest:
             json=expected_json_string,
             hmac=expected_hmac_signature,
             headers={"Content-Type": "application/json"},
+            timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
         )
         assert remaining_quantity == 12
         assert [ticket.barcode for ticket in tickets] == ["1234567AJSQ", "1234567AJSA"]
@@ -322,6 +324,7 @@ class BookEventTicketTest:
             json=expected_json_string,
             hmac=expected_hmac_signature,
             headers={"Content-Type": "application/json"},
+            timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
         )
 
     @patch("pcapi.core.external_bookings.api.requests.post")
@@ -525,6 +528,7 @@ class CancelEventTicketTest:
             json=expected_json_string,
             hmac=expected_hmac_signature,
             headers={"Content-Type": "application/json"},
+            timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
         )
 
     @patch("pcapi.core.external_bookings.api.requests.post")
@@ -572,6 +576,7 @@ class CancelEventTicketTest:
             json=expected_json_string,
             hmac=expected_hmac_signature,
             headers={"Content-Type": "application/json"},
+            timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
         )
 
 
