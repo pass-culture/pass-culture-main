@@ -32,6 +32,8 @@ from pcapi.core import object_storage
 from pcapi.core import token as token_utils
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
+from pcapi.core.chronicles import constants as chronicles_constants
+from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.external.sendinblue import update_contact_attributes
 from pcapi.core.finance import models as finance_models
@@ -1543,6 +1545,13 @@ def anonymize_user(user: models.User, *, author: models.User | None = None, forc
         delete_gdpr_extract(extract.id)
 
     models.GdprUserAnonymization.query.filter(models.GdprUserAnonymization.userId == user.id).delete()
+    chronicles_models.Chronicle.query.filter(chronicles_models.Chronicle.userId == user.id).update(
+        {
+            "userId": None,
+            "email": chronicles_constants.ANONYMIZED_EMAIL,
+        },
+        synchronize_session=False,
+    )
 
     user.password = b"Anonymized"  # ggignore
     user.firstName = f"Anonymous_{user.id}"
