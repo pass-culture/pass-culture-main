@@ -72,6 +72,7 @@ import pcapi.core.users.models as users_models
 from pcapi.domain import reimbursement
 from pcapi.models import db
 from pcapi.models import feature
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository import is_managed_transaction
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import on_commit
@@ -2431,7 +2432,14 @@ def _prepare_invoice_context(invoice: models.Invoice, batch: models.CashflowBatc
 
     period_start, period_end = get_invoice_period(batch.cutoff)
 
+    ff_wording = {
+        "venue": "structure" if FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active() else "lieu",
+        "venues": "Structures" if FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active() else "Lieux",
+        "offerer": "Entité juridique" if FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active() else "Structure",
+    }
+
     return dict(
+        ff_wording=ff_wording,
         invoice=invoice,
         is_caledonian_invoice=is_caledonian_invoice,
         cashflows=cashflows,

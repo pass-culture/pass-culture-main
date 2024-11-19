@@ -36,6 +36,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import api as users_api
 from pcapi.core.users import factories as users_factories
@@ -2350,7 +2351,8 @@ def test_invoices_csv_commercial_gesture():
 
 
 @pytest.mark.usefixtures("clean_temp_files", "css_font_http_request_mock")
-def test_invoice_pdf_commercial_gesture(monkeypatch):
+@pytest.mark.parametrize("with_oa", [True, False])
+def test_invoice_pdf_commercial_gesture(monkeypatch, with_oa):
     invoice_htmls = []
 
     def _store_invoice_pdf(invoice_storage_id, invoice_html) -> None:
@@ -2429,7 +2431,8 @@ def test_invoice_pdf_commercial_gesture(monkeypatch):
 
     cutoff = datetime.datetime.utcnow() + datetime.timedelta(days=1)
     batch = api.generate_cashflows_and_payment_files(cutoff)
-    api.generate_invoices_and_debit_notes(batch)
+    with override_features(WIP_ENABLE_OFFER_ADDRESS=with_oa):
+        api.generate_invoices_and_debit_notes(batch)
 
     invoices = models.Invoice.query.all()
     assert len(invoices) == 1
@@ -2522,7 +2525,7 @@ def test_invoice_pdf_commercial_gesture(monkeypatch):
     assert reimbursement_by_venue_row["Dont offres collectives (TTC)"] == "0,00 €"
     assert reimbursement_by_venue_row["Dont offres individuelles (TTC)"] == "308,40 €"
     assert reimbursement_by_venue_row["Incidents (TTC)"] == "10,10 €"
-    assert reimbursement_by_venue_row["Lieux"] == venue.name
+    assert reimbursement_by_venue_row["Structures" if with_oa else "Lieux"] == venue.name
     assert reimbursement_by_venue_row["Montant de la contribution offreur (TTC)"] == "0,00 €"
     assert reimbursement_by_venue_row["Montant des réservations validées (TTC)"] == "298,30 €"
     assert reimbursement_by_venue_row["Montant remboursé (TTC)"] == "308,40 €"
