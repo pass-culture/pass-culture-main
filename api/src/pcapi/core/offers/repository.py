@@ -106,6 +106,7 @@ def get_capped_offers_for_filters(
                 models.Offer.validation,
                 models.Offer.extraData,
                 models.Offer.lastProviderId,
+                models.Offer.offererAddressId,
             )
         )
         .options(

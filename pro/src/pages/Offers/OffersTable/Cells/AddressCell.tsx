@@ -17,7 +17,7 @@ export function AddressCell({
         styles['venue-column']
       )}
     >
-      {address && computeAddressDisplayName(address)}
+      {address ? computeAddressDisplayName(address) : '-'}
     </td>
   )
 }
