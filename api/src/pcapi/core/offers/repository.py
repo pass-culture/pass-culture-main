@@ -565,13 +565,19 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
             )
         )
 
-    if DisplayedStatus.INACTIVE.value in statuses and not FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
-        on_collective_offer_filters.append(
-            and_(
-                educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
-                educational_models.CollectiveOffer.isActive == False,
+    if DisplayedStatus.INACTIVE.value in statuses:
+        if FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+            # If the filter is only on INACTIVE, we need to return no collective_offer
+            # otherwise we return offers for others filtered statuses
+            on_collective_offer_filters.append(sa.false())
+        else:
+            on_collective_offer_filters.append(
+                and_(
+                    educational_models.CollectiveOffer.isArchived == False,
+                    educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+                    educational_models.CollectiveOffer.isActive == False,
+                )
             )
-        )
 
     if DisplayedStatus.ACTIVE.value in statuses:
         on_booking_status_filter.append(
