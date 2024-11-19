@@ -4,7 +4,6 @@
     "dbaeumer.vscode-eslint",
     "vitest.explorer",
     "stylelint.vscode-stylelint",
-    "alexkrechik.cucumberautocomplete",
     "Huuums.vscode-fast-folder-structure"
   ]
 }

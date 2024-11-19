@@ -5,7 +5,8 @@
     "source.fixAll.eslint": "explicit",
     "source.addMissingImports": "always"
   },
-  "stylelint.validate": ["css", "scss"],
-  "cucumberautocomplete.steps": ["cypress/e2e/step-definitions/*.cy.ts"],
-  "cucumberautocomplete.strictGherkinCompletion": true
+  "stylelint.validate": [
+    "css",
+    "scss"
+  ]
 }

@@ -34,9 +34,6 @@
     "storybook": "NODE_PATH=src storybook dev -p 6006",
     "build-storybook": "NODE_PATH=src storybook build -o docs-build"
   },
-  "cypress-cucumber-preprocessor": {
-    "stepDefinitions": "cypress/e2e/step-definitions/**/*.ts"
-  },
   "dependencies": {
     "@algolia/autocomplete-plugin-query-suggestions": "^1.17.7",
     "@algolia/autocomplete-plugin-recent-searches": "^1.17.7",
@@ -80,8 +77,6 @@
     "yup": "^1.4.0"
   },
   "devDependencies": {
-    "@badeball/cypress-cucumber-preprocessor": "^20.1.2",
-    "@bahmutov/cypress-esbuild-preprocessor": "^2.2.3",
     "@storybook/addon-a11y": "^8.4.2",
     "@storybook/addon-controls": "^8.4.2",
     "@storybook/addon-docs": "^8.4.0",
