@@ -55,6 +55,7 @@
     "design-system": "https://github.com/pass-culture/design-system.git#v0.0.12",
     "dompurify": "^3.1.7",
     "downshift": "^9.0.8",
+    "eslint-plugin-cypress": "^4.1.0",
     "formik": "^2.4.6",
     "libphonenumber-js": "^1.11.15",
     "lodash.isequal": "^4.5.0",

@@ -83,6 +83,7 @@ describe('Create and update venue', () => {
     cy.get('input[type=file]').selectFile('cypress/data/dog.jpg', {
       force: true,
     })
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000) // todo: pas réussi à attendre l'image chargée
     cy.contains(
       'En utilisant ce contenu, je certifie que je suis propriétaire ou que je dispose des autorisations nécessaires pour l’utilisation de celui-ci'
@@ -161,21 +162,23 @@ describe('Create and update venue', () => {
   })
 
   it('As a pro user, I should be able to update a venue', () => {
+    const textRetrait = 'En main bien propres'
+    const textDesc = 'On peut ajouter des choses'
     logAndGoToPage(login, '/accueil')
 
     cy.stepLog({ message: 'I go to the venue page in Individual section' })
-    cy.findByText('Votre page partenaire', { timeout: 60 * 1000 })
-      .scrollIntoView()
-      .should('be.visible')
-    cy.findByText('Vos adresses').scrollIntoView().should('be.visible')
+    cy.findByText('Votre page partenaire', {
+      timeout: 60 * 1000,
+    }).scrollIntoView()
+    cy.findByText('Votre page partenaire').should('be.visible')
+    cy.findByText('Vos adresses').scrollIntoView()
+    cy.findByText('Vos adresses').should('be.visible')
     cy.findByText('Gérer votre page pour le grand public').click()
     cy.findByText('À propos de votre activité').should('be.visible')
     cy.findByText('Modifier').click()
 
     cy.stepLog({ message: 'I update Individual section data' })
-    cy.findAllByLabelText('Description')
-      .clear()
-      .type('On peut ajouter des choses, vraiment fantastique !!!')
+    cy.findAllByLabelText('Description').type('{selectall}{del}' + textDesc)
     cy.findByText('Non accessible').click()
     cy.findByText('Psychique ou cognitif').click()
     cy.findByText('Auditif').click()
@@ -185,9 +188,7 @@ describe('Create and update venue', () => {
     cy.stepLog({ message: 'Individual section data should be updated' })
     cy.url().should('include', '/structures').and('include', '/lieux')
     cy.findByText('Vos informations pour le grand public').should('be.visible')
-    cy.findByText(
-      'On peut ajouter des choses, vraiment fantastique !!!'
-    ).should('be.visible')
+    cy.findByText(textDesc).should('be.visible')
 
     cy.stepLog({ message: 'I go to the venue page in Paramètres généraux' })
     cy.findAllByTestId('spinner').should('not.exist')
@@ -202,11 +203,9 @@ describe('Create and update venue', () => {
     cy.findByLabelText(
       'Label du ministère de la Culture ou du Centre national du cinéma et de l’image animée'
     ).select('Musée de France')
-    cy.findByLabelText('Informations de retrait')
-      .clear()
-      .type(
-        'En main bien propres, avec un masque et un gel hydroalcoolique, didiou !'
-      )
+    cy.findByLabelText('Informations de retrait').type(
+      '{selectall}{del}' + textRetrait
+    )
     cy.findByText('Enregistrer').click()
     cy.wait('@patchVenue')
     cy.findAllByTestId('spinner').should('not.exist')
@@ -218,11 +217,8 @@ describe('Create and update venue', () => {
     cy.findAllByTestId('spinner').should('not.exist')
 
     cy.stepLog({ message: 'paramètres généraux data should be updated' })
-    cy.findByText(
-      'En main bien propres, avec un masque et un gel hydroalcoolique, didiou !'
-    )
-      .scrollIntoView()
-      .should('be.visible')
+    cy.findByText(textRetrait).scrollIntoView()
+    cy.findByText(textRetrait).should('be.visible')
 
     cy.findByTestId('wrapper-venueLabel').within(() => {
       cy.get('select')

@@ -402,6 +402,7 @@ describe('ADAGE discovery', () => {
     cy.stepLog({ message: 'I choose my filters' })
     cy.findByText('Mon lieu collectif').parent().click()
 
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(500) // Click on "Domaine artistique" is too fast waiting api is not enough
     cy.findByRole('button', { name: 'Domaine artistique' }).click()
     cy.findByLabelText('Danse').click()

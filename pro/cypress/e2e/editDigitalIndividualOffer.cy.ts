@@ -53,7 +53,7 @@ describe('Edit digital individual offers', () => {
 
       cy.stepLog({ message: 'I update the url link' })
       const randomUrl = `http://myrandomurl.fr/`
-      cy.get('input#url').clear().type(randomUrl)
+      cy.get('input#url').type('{selectall}{del}' + randomUrl)
       cy.findByText('Enregistrer les modifications').click()
       cy.findAllByTestId('global-notification-success').should(
         'contain',
@@ -109,7 +109,7 @@ describe('Edit digital individual offers', () => {
             message:
               '=> Type new date of event: ' + format(newDate, 'yyyy-MM-dd'),
           })
-          cy.wrap($elt).clear().type(format(newDate, 'yyyy-MM-dd'))
+          cy.wrap($elt).type('{selectall}{del}' + format(newDate, 'yyyy-MM-dd'))
         })
       })
       cy.findByTestId('wrapper-stocks[0]bookingLimitDatetime').within(() => {
@@ -121,7 +121,7 @@ describe('Edit digital individual offers', () => {
               '=> Type new date of booking limit: ' +
               format(newDate, 'yyyy-MM-dd'),
           })
-          cy.wrap($elt).clear().type(format(newDate, 'yyyy-MM-dd'))
+          cy.wrap($elt).type('{selectall}{del}' + format(newDate, 'yyyy-MM-dd'))
         })
       })
 
