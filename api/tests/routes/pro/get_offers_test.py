@@ -7,6 +7,7 @@ from pcapi.core import testing
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.models.offer_mixin import OfferStatus
@@ -347,6 +348,65 @@ class Returns200Test:
                     "postalCode": "75002",
                     "street": "8 Boulevard de Bercy",
                 },
+            }
+        ]
+
+    def test_list_draft_offers_should_not_blindly_return_venue_offerer_address(self, client):
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        offerer_address1 = offerers_factories.OffererAddressFactory(
+            label="Accor Arena",
+            offerer=offerer,
+            address__street="8 Boulevard de Bercy",
+            address__banId="75112_0877_00008",
+        )
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress=offerer_address1)
+        event_offer = offers_factories.EventOfferFactory(
+            venue=venue, offererAddress=None, validation=OfferValidationStatus.DRAFT
+        )
+        event_stock = offers_factories.EventStockFactory(
+            offer=event_offer, beginningDatetime=datetime.datetime(2022, 9, 21, 13, 19)
+        )
+        authenticated_client = client.with_session_auth(email=pro.email)
+        with testing.assert_num_queries(self.number_of_queries):
+            response = authenticated_client.get("/offers")
+            assert response.status_code == 200
+
+        assert response.json == [
+            {
+                "hasBookingLimitDatetimesPassed": True,
+                "id": event_offer.id,
+                "isActive": True,
+                "isEditable": True,
+                "isEvent": True,
+                "isThing": False,
+                "isEducational": False,
+                "name": event_offer.name,
+                "stocks": [
+                    {
+                        "id": event_stock.id,
+                        "hasBookingLimitDatetimePassed": True,
+                        "remainingQuantity": 1000,
+                        "beginningDatetime": "2022-09-21T13:19:00Z",
+                        "bookingQuantity": 0,
+                    }
+                ],
+                "thumbUrl": None,
+                "productIsbn": None,
+                "subcategoryId": "SEANCE_CINE",
+                "venue": {
+                    "id": venue.id,
+                    "isVirtual": False,
+                    "name": venue.name,
+                    "offererName": venue.managingOfferer.name,
+                    "publicName": venue.publicName,
+                    "departementCode": "75",
+                },
+                "status": "DRAFT",
+                "isShowcase": False,
+                "address": None,
             }
         ]
 

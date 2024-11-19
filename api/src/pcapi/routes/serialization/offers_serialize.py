@@ -26,7 +26,6 @@ from pcapi.routes.serialization import base as base_serializers
 from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.routes.serialization.address_serialize import AddressResponseIsLinkedToVenueModel
 from pcapi.routes.serialization.address_serialize import retrieve_address_info_from_oa
-from pcapi.routes.serialization.offerers_serialize import GetOffererAddressResponseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
@@ -197,6 +196,24 @@ class ListOffersStockResponseModel(BaseModel):
         return remainingQuantity
 
 
+def offer_address_getter_dict_helper(offer: offers_models.Offer) -> AddressResponseIsLinkedToVenueModel | None:
+    if offer.status == OfferStatus.DRAFT and not offer.offererAddressId:
+        # The offer is still in the funnel creation and without any offererAddress defined
+        # We don't want to blindly return venue.offererAddress
+        return None
+    offerer_address = None
+    if offer.offererAddress:
+        offerer_address = offer.offererAddress
+    elif offer.venue.offererAddress:
+        offerer_address = offer.venue.offererAddress
+    if not offerer_address:  # The only offers without oa neither in themselves nor in venues are the numerics ones.
+        return None
+    label = offer.venue.common_name if offerer_address._isLinkedToVenue else offerer_address.label
+    return AddressResponseIsLinkedToVenueModel(
+        **retrieve_address_info_from_oa(offerer_address), label=label, isLinkedToVenue=offerer_address._isLinkedToVenue
+    )
+
+
 class ListOffersOfferResponseModelsGetterDict(GetterDict):
 
     def get(self, key: str, default: Any | None = None) -> Any:
@@ -210,30 +227,7 @@ class ListOffersOfferResponseModelsGetterDict(GetterDict):
         if key == "isShowcase":
             return False
         if key == "address":
-            offerer_address = None
-            if self._obj.offererAddress:
-                offerer_address = self._obj.offererAddress
-            elif self._obj.venue.offererAddress:
-                offerer_address = self._obj.venue.offererAddress
-            if (
-                not offerer_address
-            ):  # The only offers without oa neither in themselves nor in venues are the numerics ones.
-                return None
-            offererAddress = GetOffererAddressResponseModel(
-                id=offerer_address.id,
-                label=offerer_address.label,
-                street=offerer_address.address.street,
-                postalCode=offerer_address.address.postalCode,
-                city=offerer_address.address.city,
-                isLinkedToVenue=offerer_address._isLinkedToVenue,
-                departmentCode=offerer_address.address.departmentCode,
-            )
-            label = self._obj.venue.common_name if offererAddress.isLinkedToVenue else offererAddress.label
-            return AddressResponseIsLinkedToVenueModel(
-                **retrieve_address_info_from_oa(offerer_address),
-                label=label,
-                isLinkedToVenue=offererAddress.isLinkedToVenue,
-            )
+            return offer_address_getter_dict_helper(self._obj)
         return super().get(key, default)
 
 
@@ -414,34 +408,7 @@ class IndividualOfferResponseGetterDict(GetterDict):
 class IndividualOfferWithAddressResponseGetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
         if key == "address":
-            if self._obj.status == OfferStatus.DRAFT and not self._obj.offererAddressId:
-                # The offer is still in the funnel creation and without any offererAddress defined
-                # We don't want to blindly return venue.offererAddress
-                return None
-            if not self._obj.offererAddress:
-                offerer_address = self._obj.venue.offererAddress
-            else:
-                offerer_address = self._obj.offererAddress
-            # TODO(xordoquy): the following code should be removed once the
-            # migration of offerer_address from venues is performed.
-            # Alternatively, might be a good idea to keep it and log a warning too
-            if not offerer_address:
-                return None
-            offererAddress = GetOffererAddressResponseModel(
-                id=offerer_address.id,
-                label=offerer_address.label,
-                street=offerer_address.address.street,
-                postalCode=offerer_address.address.postalCode,
-                city=offerer_address.address.city,
-                isLinkedToVenue=offerer_address._isLinkedToVenue,
-                departmentCode=offerer_address.address.departmentCode,
-            )
-            label = self._obj.venue.common_name if offererAddress.isLinkedToVenue else offererAddress.label
-            return AddressResponseIsLinkedToVenueModel(
-                **retrieve_address_info_from_oa(offerer_address),
-                label=label,
-                isLinkedToVenue=offererAddress.isLinkedToVenue,
-            )
+            return offer_address_getter_dict_helper(self._obj)
         return super().get(key, default)
 
 
