@@ -29,7 +29,8 @@ describe('Collaborator list feature', () => {
 
     cy.stepLog({ message: 'wait for collaborator page display' })
     cy.url().should('include', '/collaborateurs')
-    cy.contains(login)
+    cy.findAllByTestId('spinner').should('not.exist')
+    cy.contains(login, { timeout: 60000 })
 
     cy.stepLog({ message: 'add a collaborator in the list' })
     cy.findByText('Ajouter un collaborateur').click()
@@ -45,7 +46,10 @@ describe('Collaborator list feature', () => {
     cy.stepLog({
       message: 'check login validated and new collaborator waiting status',
     })
-    cy.contains(randomEmail).next().should('have.text', 'En attente')
+    cy.findAllByTestId('spinner').should('not.exist')
+    cy.contains(randomEmail, { timeout: 60000 })
+      .next()
+      .should('have.text', 'En attente')
     cy.contains(login).next().should('have.text', 'Validé')
 
     cy.stepLog({ message: 'check email received by email' })
