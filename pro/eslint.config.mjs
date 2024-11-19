@@ -8,6 +8,7 @@ import importPlugin from 'eslint-plugin-import';
 import reactHook from 'eslint-plugin-react-hooks';
 import react from 'eslint-plugin-react';
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
+import pluginCypress from 'eslint-plugin-cypress/flat'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,6 +16,7 @@ const __dirname = path.dirname(__filename);
 export default [  js.configs.recommended,
     importPlugin.flatConfigs.recommended,
     eslintPluginPrettierRecommended,
+    pluginCypress.configs.recommended,
     { 
         ignores: [
         "src/api/v1/gen/*",
@@ -35,6 +37,7 @@ export default [  js.configs.recommended,
         "react": react, 
         "react-hooks": reactHook, 
         "@typescript-eslint": typescriptEslint,
+        "cypress": pluginCypress
     },
 
     languageOptions: {
