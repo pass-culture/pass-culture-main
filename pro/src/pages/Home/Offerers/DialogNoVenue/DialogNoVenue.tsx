@@ -22,19 +22,15 @@ export const DialogNoVenue = ({
   return (
     <div className={cn(styles['dialog-content'], className)}>
       <div className={styles['dialog-image-wrapper']}>
-        {prefersReducedMotion ? (
-          <img
-            src={offerCreationWithAddressImageStatic}
-            alt="Sélection d’une adresse lors de la création d’offre"
-            className={styles['dialog-image']}
-          />
-        ) : (
-          <img
-            src={offerCreationWithAddressImage}
-            alt="Sélection d’une adresse lors de la création d’offre"
-            className={styles['dialog-image']}
-          />
-        )}
+        <img
+          src={
+            prefersReducedMotion
+              ? offerCreationWithAddressImageStatic
+              : offerCreationWithAddressImage
+          }
+          alt="Sélection d’une adresse lors de la création d’offre"
+          className={styles['dialog-image']}
+        />
       </div>
 
       <Tag variant={TagVariant.BLUE} className={styles['dialog-tag']}>
