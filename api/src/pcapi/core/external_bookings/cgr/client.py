@@ -35,7 +35,11 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
     )
     def get_film_showtimes_stocks(self, film_id: str) -> str:
         logger.info("Fetching CGR showtimes", extra={"cinema_id": self.cinema_id})
-        response = get_seances_pass_culture(self.cgr_cinema_details, allocine_film_id=int(film_id))
+        response = get_seances_pass_culture(
+            self.cgr_cinema_details,
+            allocine_film_id=int(film_id),
+            request_timeout=self.request_timeout,
+        )
 
         try:
             film = response.ObjetRetour.Films[0]

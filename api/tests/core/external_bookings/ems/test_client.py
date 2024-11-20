@@ -208,8 +208,10 @@ class EMSGetFilmShowtimesStocksTest:
         url_matcher = re.compile("https://fake_url.com/SEANCE/*")
         requests_mock.post(url=url_matcher, json=response_json)
 
-        client = EMSClientAPI(cinema_id=cinema_id)
+        client = EMSClientAPI(cinema_id=cinema_id, request_timeout=14)
         stocks = client.get_film_showtimes_stocks("12345")
 
+        assert requests_mock.request_history[-1].method == "POST"
+        assert requests_mock.request_history[-1].timeout == 14
         assert len(stocks) == 2
         assert stocks == {"999000111": 100, "998880001": 100}

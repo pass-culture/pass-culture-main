@@ -64,7 +64,10 @@ class CGRGetSeancesPassCultureTest:
         )
         cgr_cinema_details = providers_factories.CGRCinemaDetailsFactory(cinemaUrl="http://example.com/web_service")
 
-        result = get_seances_pass_culture(cinema_details=cgr_cinema_details)
+        result = get_seances_pass_culture(cinema_details=cgr_cinema_details, request_timeout=14)
+
+        assert requests_mock.request_history[-1].method == "POST"
+        assert requests_mock.request_history[-1].timeout == 14
 
         assert result.CodeErreur == 0
         assert result.IntituleErreur == ""

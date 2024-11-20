@@ -303,17 +303,16 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
         ]
         mocked_get_resource.return_value = json_shows
 
-        # when
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="cinemaid_test",
             account_id="accountid_test",
             cinema_api_token="token_test",
             api_url="apiUrl_test/",
+            request_timeout=14,
         )
         shows_remaining_places = cine_digital_service.get_shows_remaining_places([2, 3])
 
-        # then
-        mocked_get_resource.assert_called_once_with(api_url, account_id, token, resource)
+        mocked_get_resource.assert_called_once_with(api_url, account_id, token, resource, request_timeout=14)
 
         assert shows_remaining_places == {"2": 30, "3": 100}
 
@@ -325,7 +324,6 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
     def test_should_return_shows_id_with_corresponding_remaining_places(
         self, mocked_internet_sale_gauge_active, mocked_get_resource
     ):
-        # Given
         account_id = "accountid_test"
         token = "token_test"
         api_url = "apiUrl_test/"
@@ -389,17 +387,16 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
         ]
         mocked_get_resource.return_value = json_shows
 
-        # when
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="cinemaid_test",
             account_id="accountid_test",
             cinema_api_token="token_test",
             api_url="apiUrl_test/",
+            request_timeout=14,
         )
         shows_remaining_places = cine_digital_service.get_shows_remaining_places([2, 3])
 
-        # then
-        mocked_get_resource.assert_called_once_with(api_url, account_id, token, resource)
+        mocked_get_resource.assert_called_once_with(api_url, account_id, token, resource, request_timeout=14)
 
         assert shows_remaining_places == {"2": 88, "3": 88}
 
