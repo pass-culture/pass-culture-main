@@ -387,8 +387,10 @@ Then, as a beneficiary, try to cancel the ticket you booked. If your integration
 
 ## Phase 4: Deploy your integration in production
 
-If your integration is working properly in the integration test environment, you can [**contact our support team**](mailto:partenaires.techniques@passculture.app) to **request your provider account in production**. When you contact them, don't forget to give them **the booking URL** and **the cancellation URL** in **your production environment**.
+If your integration is working properly in the integration test environment, you can [**contact our support team**](mailto:partenaires.techniques@passculture.app) to **request your provider account in production**.
 
 They will send you an email with **your API Key** and **your HMAC key** for the **production environment**. 
 
-Deploy your code in production using those new keys and it's done : **the pass Culture is now connected to your ticketing system !**
+Deploy your code in production using those new keys. Do not forget to set the booking URL(s) and the cancellation URL(s) in production (cf. [**Phase 1 - Step 2**](/docs/tutorials/create-an-event-linked-to-an-external-ticketing-systems#step-2-provide-us-with-your-booking-url-and-your-cancellation-url)).
+
+It's done : **the pass Culture is now connected to your ticketing system !**
