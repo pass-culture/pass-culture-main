@@ -22,7 +22,7 @@ describe('Collaborator list feature', () => {
 
   it('I can add a new collaborator and he receives an email invitation', () => {
     const randomEmail = `collaborator${Math.random()}@example.com`
-    logAndGoToPage(login, '/')
+    logAndGoToPage(login, '/accueil')
 
     cy.stepLog({ message: 'open collaborator page' })
     cy.findAllByText('Collaborateurs').click()
@@ -30,7 +30,7 @@ describe('Collaborator list feature', () => {
     cy.stepLog({ message: 'wait for collaborator page display' })
     cy.url().should('include', '/collaborateurs')
     cy.findAllByTestId('spinner').should('not.exist')
-    cy.contains(login, { timeout: 60000 })
+    cy.contains(login)
 
     cy.stepLog({ message: 'add a collaborator in the list' })
     cy.findByText('Ajouter un collaborateur').click()
@@ -47,7 +47,7 @@ describe('Collaborator list feature', () => {
       message: 'check login validated and new collaborator waiting status',
     })
     cy.findAllByTestId('spinner').should('not.exist')
-    cy.contains(randomEmail, { timeout: 60000 })
+    cy.contains(randomEmail)
       .next()
       .should('have.text', 'En attente')
     cy.contains(login).next().should('have.text', 'Validé')
