@@ -109,45 +109,6 @@ def test_too_many_bookings_postgresql_exception_not_executed():
     assert booking2.quantity == 2
 
 
-@pytest.mark.parametrize(
-    "booking_date_created, email_at_booking_created_date",
-    [
-        (datetime.utcnow() - relativedelta(days=7), "first@example.com"),
-        (datetime.utcnow() - relativedelta(days=5), "second@example.fr"),
-        (datetime.utcnow() - relativedelta(days=3), "third@example.team"),
-        (datetime.utcnow() - relativedelta(days=1), "fourth@example.app"),
-    ],
-)
-def test_email_at_booking_date_with_mail_history(booking_date_created, email_at_booking_created_date):
-    user = users_factories.BeneficiaryGrant18Factory(
-        dateCreated=datetime.utcnow() - relativedelta(days=8), email="fourth@example.app"
-    )
-    users_factories.EmailValidationEntryFactory(
-        user=user,
-        oldUserEmail="first",
-        oldDomainEmail="example.com",
-        newUserEmail="second",
-        newDomainEmail="example.fr",
-        creationDate=datetime.utcnow() - relativedelta(days=6),
-    )
-    users_factories.EmailValidationEntryFactory(
-        user=user,
-        oldUserEmail="second",
-        oldDomainEmail="example.fr",
-        newUserEmail="third",
-        newDomainEmail="example.team",
-        creationDate=datetime.utcnow() - relativedelta(days=4),
-    )
-    users_factories.EmailValidationEntryFactory(
-        user=user,
-        oldUserEmail="third",
-        oldDomainEmail="example.team",
-        newUserEmail="fourth",
-        newDomainEmail="example.app",
-        creationDate=datetime.utcnow() - relativedelta(days=2),
-    )
-
-
 class BookingIsConfirmedPropertyTest:
     def test_booking_is_confirmed_when_cancellation_limit_date_is_in_the_past(self):
         yesterday = datetime.utcnow() - timedelta(days=1)
