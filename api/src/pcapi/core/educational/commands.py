@@ -76,19 +76,22 @@ def import_deposit_csv(*, path: str, year: int, ministry: str, conflict: str, fi
     CSV format change every time we try to work with it.
     """
     if not os.path.exists(path):
-        print("\033[91mERROR: The given file does not exists.\033[0m")
+        # print("\033[91mERROR: The given file does not exists.\033[0m")
+        logger.info("ERROR: The given file does not exist")
         return
 
     try:
         educational_year = educational_repository.get_educational_year_beginning_at_given_year(year)
     except educational_exceptions.EducationalYearNotFound:
-        print(f"\033[91mERROR: Educational year not found for year {year}.\033[0m")
+        # print(f"\033[91mERROR: Educational year not found for year {year}.\033[0m")
+        logger.info("ERROR: Educational year not found for year %s", year)
         return
     with open(path, "r", encoding="utf-8") as csv_file:
         csv_rows = csv.DictReader(csv_file, delimiter=";")
         headers = csv_rows.fieldnames
         if not headers or ("UAICode" not in headers and "UAI" not in headers):
-            print("\033[91mERROR: UAICode or depositAmount missing in CSV headers\033[0m")
+            # print("\033[91mERROR: UAICode or depositAmount missing in CSV headers\033[0m")
+            logger.info("ERROR: UAICode or depositAmount missing in CSV headers")
             return
         data: dict[str, Decimal] = {}
         # sometimes we get 1 row per institution and sometimes 1 row per class.
@@ -103,7 +106,8 @@ def import_deposit_csv(*, path: str, year: int, ministry: str, conflict: str, fi
             elif "montant par élève" in headers and "Effectif" in headers:
                 amount = Decimal(row["Effectif"]) * Decimal(row["montant par élève"])
             else:
-                print("\033[91mERROR: Now way to get the amount found\033[0m")
+                # print("\033[91mERROR: Now way to get the amount found\033[0m")
+                logger.info("ERROR: Now way to get the amount found")
                 return
 
             if uai in data:
@@ -111,6 +115,7 @@ def import_deposit_csv(*, path: str, year: int, ministry: str, conflict: str, fi
             else:
                 data[uai] = amount
 
+        logger.info("Finished reading CSV file, starting import deposit")
         institution_api.import_deposit_institution_data(
             data=data,
             educational_year=educational_year,

@@ -1,5 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
+import logging
 
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
@@ -18,6 +19,9 @@ import pcapi.core.offerers.models as offerers_models
 from pcapi.models import db
 from pcapi.repository import repository
 import pcapi.utils.postal_code as postal_code_utils
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_all_educational_institutions(page: int, per_page_limit: int) -> tuple[tuple, int]:
@@ -72,7 +76,8 @@ def import_deposit_institution_data(
         created = False
         adage_institution = adage_institutions.get(uai)
         if not adage_institution:
-            print(f"\033[91mERROR: UAI:{uai} not found in adage.\033[0m")
+            # print(f"\033[91mERROR: UAI:{uai} not found in adage.\033[0m")
+            logger.info("ERROR: UAI not found in adage.")
             return
 
         db_institution = db_institutions.get(uai, None)
@@ -87,7 +92,8 @@ def import_deposit_institution_data(
             db_institution.isActive = True
         else:
             created = True
-            print(f"\033[33mWARNING: UAI:{uai} not found in db, creating institution.\033[0m")
+            # print(f"\033[33mWARNING: UAI:{uai} not found in db, creating institution.\033[0m")
+            logger.info("WARNING: UAI not found in db, creating institution.")
             db_institution = educational_models.EducationalInstitution(
                 institutionId=uai,
                 institutionType=institution_type,
@@ -109,9 +115,10 @@ def import_deposit_institution_data(
 
         if deposit:
             if deposit.ministry != ministry and conflict == "replace":
-                print(
-                    f"\033[33mWARNING: Ministry changed from '{deposit.ministry.name}' to '{ministry.name}' for deposit {deposit.id}.\033[0m"
-                )
+                # print(
+                #     f"\033[33mWARNING: Ministry changed from '{deposit.ministry.name}' to '{ministry.name}' for deposit {deposit.id}.\033[0m"
+                # )
+                logger.info("WARNING: Ministry changed.")
                 deposit.ministry = ministry
             deposit.amount = amount
             deposit.isFinal = final
@@ -126,6 +133,7 @@ def import_deposit_institution_data(
             db.session.add(deposit)
 
     if commit:
+        logger.info("Import deposit: commiting changes")
         db.session.commit()
 
 
