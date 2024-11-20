@@ -388,7 +388,7 @@ def test_serialize_offer_release_date():
     product = offers_factories.ProductFactory(extraData={"releaseDate": "2024-01-01"})
     offer = offers_factories.OfferFactory(product=product)
     serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
-    assert serialized["offer"]["releaseDate"] == "2024-01-01"
+    assert serialized["offer"]["releaseDate"] == 1704067200
 
 
 def test_serialize_offer_book_format():
