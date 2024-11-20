@@ -36,11 +36,13 @@ export const IndivualOfferLayout = ({
   const shouldDisplayActionOnStatus =
     mode !== OFFER_WIZARD_MODE.CREATION && offer && withStepper
 
+  // This is used to not be able to go to next step in creation mode
   const isUsefulInformationSubmitted =
-    localStorageAvailable() &&
-    !!localStorage.getItem(
-      `${LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED}_${offer?.id}`
-    )
+    (localStorageAvailable() &&
+      !!localStorage.getItem(
+        `${LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED}_${offer?.id}`
+      )) ||
+    mode !== OFFER_WIZARD_MODE.CREATION
 
   return (
     <>
