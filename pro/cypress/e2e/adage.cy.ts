@@ -190,6 +190,10 @@ describe('ADAGE discovery', () => {
       method: 'POST',
       url: '/adage-iframe/logs/fav-offer/',
     }).as('fav-offer')
+    cy.intercept({
+      method: 'POST',
+      url: '/adage-iframe/logs/catalog-view',
+    }).as('catalogView')
   })
 
   it('It should put an offer in favorite', () => {
@@ -197,8 +201,9 @@ describe('ADAGE discovery', () => {
     const adageToken = Cypress.env('adageToken')
 
     cy.visit(`/adage-iframe/recherche?token=${adageToken}`)
-
+    cy.wait('@catalogView').its('response.statusCode').should('eq', 204)
     cy.findAllByTestId('spinner').should('not.exist')
+    cy.findByTestId('offer-listitem').contains('Mon offre collective')
 
     cy.stepLog({ message: 'I add first offer to favorites' })
     cy.findByText(offerName).parent().click()
