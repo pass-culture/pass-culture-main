@@ -13,7 +13,7 @@ import { OFFER_LOCATION } from 'pages/IndividualOffer/commons/constants'
 import { FORM_DEFAULT_VALUES } from 'pages/IndividualOffer/IndividualOfferDetailsAndInformations/commons/constants'
 import { computeAddressDisplayName } from 'repository/venuesService'
 
-import { DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES } from './constants'
+import { DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES } from './constants'
 import { UsefulInformationFormValues } from './types'
 
 interface SetDefaultInitialValuesFromOfferProps {
@@ -84,7 +84,7 @@ export function setDefaultInitialValuesFromOffer({
     isNational: offer.isNational,
     withdrawalDetails:
       offer.withdrawalDetails ||
-      DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES['withdrawalDetails'],
+      DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES['withdrawalDetails'],
     withdrawalDelay:
       offer.withdrawalDelay === null ? undefined : offer.withdrawalDelay,
     withdrawalType: offer.withdrawalType || undefined,
@@ -98,7 +98,7 @@ export function setDefaultInitialValuesFromOffer({
     bookingEmail: offer.bookingEmail || '',
     bookingContact: offer.bookingContact || undefined,
     receiveNotificationEmails: !!offer.bookingEmail,
-    url: offer.url || DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES['url'],
+    url: offer.url || DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES['url'],
     isVenueVirtual: offer.venue.isVirtual || false,
     ...addressFields,
   }
@@ -109,7 +109,7 @@ export function setFormReadOnlyFields(
 ): string[] {
   const readOnlyField: string[] = []
   if ([OFFER_STATUS_REJECTED, OFFER_STATUS_PENDING].includes(offer.status)) {
-    return Object.keys(DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES)
+    return Object.keys(DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES)
   }
 
   if (isOfferSynchronized(offer)) {

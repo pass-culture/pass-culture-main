@@ -3,7 +3,7 @@ import { AccessibilityEnum } from 'commons/core/shared/types'
 import { getIndividualOfferFactory } from 'commons/utils/factories/individualApiFactories'
 import { OFFER_LOCATION } from 'pages/IndividualOffer/commons/constants'
 
-import { DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES } from '../constants'
+import { DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES } from '../constants'
 import {
   setDefaultInitialValuesFromOffer,
   setFormReadOnlyFields,
@@ -66,7 +66,7 @@ describe('setDefaultInitialValuesFromOffer', () => {
       isNational: true,
       isVenueVirtual: false,
       withdrawalDetails:
-        DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES['withdrawalDetails'],
+        DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES['withdrawalDetails'],
       withdrawalDelay: undefined,
       withdrawalType: undefined,
       accessibility: {
@@ -79,7 +79,7 @@ describe('setDefaultInitialValuesFromOffer', () => {
       bookingEmail: '',
       bookingContact: undefined,
       receiveNotificationEmails: false,
-      url: DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES['url'],
+      url: DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES['url'],
     }
 
     const result = setDefaultInitialValuesFromOffer({
@@ -104,7 +104,7 @@ describe('setDefaultInitialValuesFromOffer', () => {
       isNational: true,
       isVenueVirtual: false,
       withdrawalDetails:
-        DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES['withdrawalDetails'],
+        DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES['withdrawalDetails'],
       withdrawalDelay: undefined,
       withdrawalType: undefined,
       accessibility: {
@@ -117,7 +117,7 @@ describe('setDefaultInitialValuesFromOffer', () => {
       bookingEmail: '',
       bookingContact: undefined,
       receiveNotificationEmails: false,
-      url: DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES['url'],
+      url: DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES['url'],
     }
 
     const result = setDefaultInitialValuesFromOffer({
@@ -212,7 +212,7 @@ describe('setFormReadOnlyFields', () => {
     const result = setFormReadOnlyFields(offer)
 
     expect(result).toEqual(
-      Object.keys(DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES)
+      Object.keys(DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES)
     )
   })
 
@@ -224,7 +224,7 @@ describe('setFormReadOnlyFields', () => {
     const result = setFormReadOnlyFields(offer)
 
     expect(result).toEqual(
-      Object.keys(DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES)
+      Object.keys(DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES)
     )
   })
 

@@ -23,7 +23,13 @@ export interface AddressFormValues {
   longitude: string
 }
 
-export const AddressManual = (): JSX.Element => {
+interface AddressManualProps {
+  readOnlyFields?: string[]
+}
+
+export const AddressManual = ({
+  readOnlyFields = [],
+}: AddressManualProps): JSX.Element => {
   const [coords, coordsMeta] = useField<string>('coords')
 
   const formik = useFormikContext<AddressFormValues>()
@@ -53,7 +59,11 @@ export const AddressManual = (): JSX.Element => {
   return (
     <div className={styles['address-manual-wrapper']}>
       <FormLayout.Row>
-        <TextInput label="Adresse postale" name="street" />
+        <TextInput
+          label="Adresse postale"
+          name="street"
+          disabled={readOnlyFields.includes('street')}
+        />
       </FormLayout.Row>
       <FormLayout.Row inline className={styles['inline-fields']}>
         <TextInput
@@ -61,8 +71,14 @@ export const AddressManual = (): JSX.Element => {
           name="postalCode"
           maxLength={5}
           className={styles['field-cp']}
+          disabled={readOnlyFields.includes('postalCode')}
         />
-        <TextInput label="Ville" name="city" className={styles['field-city']} />
+        <TextInput
+          label="Ville"
+          name="city"
+          className={styles['field-city']}
+          disabled={readOnlyFields.includes('city')}
+        />
       </FormLayout.Row>
       <FormLayout.Row>
         <TextInput
@@ -71,6 +87,7 @@ export const AddressManual = (): JSX.Element => {
           onBlur={onCoordsBlur}
           type="text"
           description={`Exemple : 48.853320, 2.348979 ou 48°51'12.0"N 2°20'56.3"E`}
+          disabled={readOnlyFields.includes('coords')}
         />
       </FormLayout.Row>
 

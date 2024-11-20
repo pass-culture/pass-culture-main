@@ -24,7 +24,7 @@ import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import {
-  DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES,
+  DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES,
   providedTicketWithdrawalTypeRadios,
   ticketSentDateOptions,
   ticketWithdrawalHourOptions,
@@ -99,7 +99,7 @@ export const UsefulInformationForm = ({
   return (
     <>
       {isOfferAddressEnabled && !isVenueVirtual && (
-        <OfferLocation venue={selectedVenue} />
+        <OfferLocation venue={selectedVenue} offer={offer} />
       )}
       <FormLayout.Section title="Retrait de l’offre">
         {displayNoRefundWarning && (
@@ -271,7 +271,7 @@ export const UsefulInformationForm = ({
               if (
                 e.target.checked &&
                 bookingEmail ===
-                  DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES.bookingEmail
+                  DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES.bookingEmail
               ) {
                 await setFieldValue('bookingEmail', venue.bookingEmail ?? email)
               }

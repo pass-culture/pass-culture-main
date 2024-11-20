@@ -4,7 +4,7 @@ import { SUBCATEGORIES_FIELDS_DEFAULT_VALUES } from 'pages/IndividualOffer/Indiv
 
 import { UsefulInformationFormValues } from './types'
 
-export const DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES: UsefulInformationFormValues =
+export const DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES: UsefulInformationFormValues =
   {
     isNational: false,
     bookingContact: '',
@@ -21,6 +21,14 @@ export const DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES: UsefulInformationFormV
       [AccessibilityEnum.MOTOR]: false,
       [AccessibilityEnum.NONE]: false,
     },
+    locationLabel: '',
+    offerLocation: '',
+    addressAutocomplete: '',
+    manuallySetAddress: false,
+    street: '',
+    city: '',
+    postalCode: '',
+    coords: '',
   }
 
 export const ticketWithdrawalTypeRadios = [
