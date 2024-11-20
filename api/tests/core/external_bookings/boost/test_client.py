@@ -70,8 +70,14 @@ class GetShowtimesTest:
             f"https://cinema-0.example.com/api/showtimes/between/{start_date.strftime('%Y-%m-%d')}/{end_date}?paymentMethod=external%3Acredit%3Apassculture&hideFullReservation=1&page=2&per_page=2",
             json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_2_JSON_DATA,
         )
-        boost = boost_client.BoostClientAPI(cinema_str_id)
+        boost = boost_client.BoostClientAPI(cinema_str_id, request_timeout=14)
         showtimes = boost.get_showtimes(per_page=2, start_date=start_date, interval_days=10)
+
+        assert requests_mock.request_history[-1].method == "GET"
+        assert requests_mock.request_history[-1].timeout == 14
+        assert requests_mock.request_history[-2].method == "GET"
+        assert requests_mock.request_history[-2].timeout == 14
+
         assert len(showtimes) == 3
         assert showtimes[0].id == 15971
         assert showtimes[0].numberSeatsRemaining == 147
@@ -114,8 +120,11 @@ class GetShowtimesTest:
             "https://cinema-0.example.com/api/showtimes/between/2022-10-10/2022-10-20?film=207&paymentMethod=external:credit:passculture&hideFullReservation=1&page=1&per_page=2",
             json=fixtures.ShowtimesWithFilmIdAndPaymentMethodFilterEndpointResponse.PAGE_1_JSON_DATA,
         )
-        boost = boost_client.BoostClientAPI(cinema_str_id)
+        boost = boost_client.BoostClientAPI(cinema_str_id, request_timeout=14)
         showtimes = boost.get_showtimes(per_page=2, start_date=date.date(2022, 10, 10), interval_days=10, film=207)
+
+        assert requests_mock.request_history[-1].method == "GET"
+        assert requests_mock.request_history[-1].timeout == 14
 
         assert len(showtimes) == 2
         assert showtimes[0].id == 16277

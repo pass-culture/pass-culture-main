@@ -30,7 +30,9 @@ def get_cgr_service_proxy(cinema_url: str, request_timeout: int | None = None) -
 
 
 def get_seances_pass_culture(
-    cinema_details: providers_models.CGRCinemaDetails, allocine_film_id: int = 0
+    cinema_details: providers_models.CGRCinemaDetails,
+    allocine_film_id: int = 0,
+    request_timeout: int | None = None,
 ) -> cgr_serializers.GetSancesPassCultureResponse:
     """
     if allocine_film_id is 0 CGR API will return all future shows
@@ -39,7 +41,7 @@ def get_seances_pass_culture(
     user = settings.CGR_API_USER
     password = decrypt(cinema_details.password)
     cinema_url = cinema_details.cinemaUrl
-    service = get_cgr_service_proxy(cinema_url)
+    service = get_cgr_service_proxy(cinema_url, request_timeout=request_timeout)
     response = service.GetSeancesPassCulture(User=user, mdp=password, IDFilmAllocine=str(allocine_film_id))
     response = json.loads(response)
     _check_response_is_ok(response, "GetSeancesPassCulture")

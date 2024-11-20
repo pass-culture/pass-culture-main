@@ -149,7 +149,13 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
                 params["per_page"] = per_page
             else:
                 params = {"page": current_page, "per_page": per_page}
-            json_data = boost.get_resource(self.cinema_id, resource, params=params, pattern_values=pattern_values)
+            json_data = boost.get_resource(
+                self.cinema_id,
+                resource,
+                params=params,
+                pattern_values=pattern_values,
+                request_timeout=self.request_timeout,
+            )
             collection = parse_obj_as(collection_class, json_data)
             items.extend(collection.data)
             total_pages = collection.totalPages

@@ -147,7 +147,11 @@ class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
     )
     def get_film_showtimes_stocks(self, film_id: str) -> str:
         payload = ems_serializers.AvailableShowsRequest(num_cine=self.cinema_id, id_film=film_id)
-        response = self.connector.do_request(self.connector.shows_availability_endpoint, payload.dict())
+        response = self.connector.do_request(
+            self.connector.shows_availability_endpoint,
+            payload.dict(),
+            request_timeout=self.request_timeout,
+        )
         try:
             self.connector.raise_for_status(response)
         except ExternalBookingSoldOutError:

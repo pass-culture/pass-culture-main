@@ -58,7 +58,13 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
         lru_cache is a feature in Python that can significantly improve the performance of functions
         by caching their results based on their input arguments, thus avoiding costly recomputations.
         """
-        data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.CINEMAS)
+        data = get_resource(
+            self.api_url,
+            self.account_id,
+            self.token,
+            ResourceCDS.CINEMAS,
+            request_timeout=self.request_timeout,
+        )
         cinemas = parse_obj_as(list[cds_serializers.CinemaCDS], data)
         for cinema in cinemas:
             if cinema.id == self.cinema_id:
@@ -72,7 +78,13 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
         key_template=constants.CDS_SHOWTIMES_STOCKS_CACHE_KEY, expire=cds_constants.CDS_SHOWTIMES_STOCKS_CACHE_TIMEOUT
     )
     def get_shows_remaining_places(self, show_ids: list[int]) -> str:
-        data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.SHOWS)
+        data = get_resource(
+            self.api_url,
+            self.account_id,
+            self.token,
+            ResourceCDS.SHOWS,
+            request_timeout=self.request_timeout,
+        )
         shows = parse_obj_as(list[cds_serializers.ShowCDS], data)
         if self.get_internet_sale_gauge_active():
             return json.dumps({show.id: show.internet_remaining_place for show in shows if show.id in show_ids})
