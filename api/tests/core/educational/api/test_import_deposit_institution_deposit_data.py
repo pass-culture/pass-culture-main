@@ -80,17 +80,19 @@ class ImportDepositInstitutionDataTest:
         ansco = educational_factories.EducationalYearFactory()
         data = {"pouet": 1250}
 
-        import_deposit_institution_data(
-            data=data,
-            educational_year=ansco,
-            ministry=educational_models.Ministry.EDUCATION_NATIONALE,
-            final=False,
-            conflict="crash",
-            commit=True,
-        )
+        with pytest.raises(ValueError) as exception:
+            import_deposit_institution_data(
+                data=data,
+                educational_year=ansco,
+                ministry=educational_models.Ministry.EDUCATION_NATIONALE,
+                final=False,
+                conflict="crash",
+                commit=True,
+            )
 
         assert educational_models.EducationalInstitution.query.count() == 0
         assert educational_models.EducationalDeposit.query.count() == 0
+        assert str(exception.value) == "UAIs not found in adage: ['pouet']"
 
     def test_deposit_alread_in_ministry_replace(self) -> None:
         ansco = educational_factories.EducationalYearFactory()

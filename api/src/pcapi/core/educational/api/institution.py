@@ -1,5 +1,8 @@
+import csv
 from datetime import datetime
 from decimal import Decimal
+import logging
+import os
 
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
@@ -18,6 +21,9 @@ import pcapi.core.offerers.models as offerers_models
 from pcapi.models import db
 from pcapi.repository import repository
 import pcapi.utils.postal_code as postal_code_utils
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_all_educational_institutions(page: int, per_page_limit: int) -> tuple[tuple, int]:
@@ -53,6 +59,60 @@ def search_educational_institution(
     )
 
 
+def import_deposit_institution_csv(
+    *, path: str, year: int, ministry: str, conflict: str, final: bool, commit: bool
+) -> Decimal:
+    """
+    Import deposits from csv file and update institutions according to adage data
+    Return the total imported amount
+    """
+
+    if not os.path.exists(path):
+        raise ValueError("The given file does not exist")
+
+    try:
+        educational_year = educational_repository.get_educational_year_beginning_at_given_year(year)
+    except educational_exceptions.EducationalYearNotFound:
+        raise ValueError(f"Educational year not found for year {year}")
+
+    with open(path, "r", encoding="utf-8") as csv_file:
+        csv_rows = csv.DictReader(csv_file, delimiter=";")
+        headers = csv_rows.fieldnames
+        if not headers or ("UAICode" not in headers and "UAI" not in headers):
+            raise ValueError("UAICode or depositAmount missing in CSV headers")
+
+        data: dict[str, Decimal] = {}
+        # sometimes we get 1 row per institution and sometimes 1 row per class.
+        for row in csv_rows:
+            # try to get the UAI
+            uai_header = "UAI" if "UAI" in headers else "UAICode"
+            uai = row[uai_header].strip()
+            # try to get the amount
+            if "Crédits de dépenses" in headers or "depositAmount" in headers:
+                amount_header = "depositAmount" if "depositAmount" in headers else "Crédits de dépenses"
+                amount = Decimal(row[amount_header])
+            elif "montant par élève" in headers and "Effectif" in headers:
+                amount = Decimal(row["Effectif"]) * Decimal(row["montant par élève"])
+            else:
+                raise ValueError("Now way to get the amount found")
+
+            if uai in data:
+                data[uai] += amount
+            else:
+                data[uai] = amount
+
+        logger.info("Finished reading data from csv, starting deposit import")
+        total_amount = import_deposit_institution_data(
+            data=data,
+            educational_year=educational_year,
+            ministry=educational_models.Ministry[ministry],
+            conflict=conflict,
+            final=final,
+            commit=commit,
+        )
+        return total_amount
+
+
 def import_deposit_institution_data(
     *,
     data: dict[str, Decimal],
@@ -61,20 +121,22 @@ def import_deposit_institution_data(
     final: bool,
     conflict: str,
     commit: bool,
-) -> None:
+) -> Decimal:
     adage_institutions = {
         i.uai: i for i in adage_client.get_adage_educational_institutions(ansco=educational_year.adageId)
     }
     db_institutions = {
         institution.institutionId: institution for institution in educational_models.EducationalInstitution.query.all()
     }
+
+    not_found_uais = [uai for uai in data if uai not in adage_institutions]
+    if not_found_uais:
+        raise ValueError(f"UAIs not found in adage: {not_found_uais}")
+
+    total_amount = Decimal(0)
     for uai, amount in data.items():
         created = False
-        adage_institution = adage_institutions.get(uai)
-        if not adage_institution:
-            print(f"\033[91mERROR: UAI:{uai} not found in adage.\033[0m")
-            return
-
+        adage_institution = adage_institutions[uai]
         db_institution = db_institutions.get(uai, None)
         institution_type = INSTITUTION_TYPES.get(adage_institution.sigle, adage_institution.sigle)
         if db_institution:
@@ -87,7 +149,7 @@ def import_deposit_institution_data(
             db_institution.isActive = True
         else:
             created = True
-            print(f"\033[33mWARNING: UAI:{uai} not found in db, creating institution.\033[0m")
+            logger.warning("UAI:%s not found in db, creating institution", uai)
             db_institution = educational_models.EducationalInstitution(
                 institutionId=uai,
                 institutionType=institution_type,
@@ -109,8 +171,11 @@ def import_deposit_institution_data(
 
         if deposit:
             if deposit.ministry != ministry and conflict == "replace":
-                print(
-                    f"\033[33mWARNING: Ministry changed from '{deposit.ministry.name}' to '{ministry.name}' for deposit {deposit.id}.\033[0m"
+                logger.warning(
+                    "Ministry changed from '%s' to '%s' for deposit %s",
+                    deposit.ministry.name,
+                    ministry.name,
+                    deposit.id,
                 )
                 deposit.ministry = ministry
             deposit.amount = amount
@@ -125,8 +190,14 @@ def import_deposit_institution_data(
             )
             db.session.add(deposit)
 
+        total_amount += amount
+
     if commit:
         db.session.commit()
+    else:
+        db.session.flush()
+
+    return total_amount
 
 
 def get_current_year_remaining_credit(institution: educational_models.EducationalInstitution) -> Decimal:
