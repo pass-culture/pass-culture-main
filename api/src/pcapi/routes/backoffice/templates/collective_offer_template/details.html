@@ -52,6 +52,9 @@
                   <span class="fw-bold">Statut :</span> {{ collective_offer_template.status | format_offer_status }}
                 </p>
                 <p class="mb-1">
+                  <span class="fw-bold">Statut PC Pro :</span> {{ collective_offer_template.displayedStatus | format_collective_offer_displayed_status }}
+                </p>
+                <p class="mb-1">
                   <span class="fw-bold">État :</span> {{ collective_offer_template.validation | format_offer_validation_status }}
                 </p>
                 {% if collective_offer_template.lastValidationAuthor %}
