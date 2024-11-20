@@ -304,7 +304,7 @@ def reimburse_collective_booking(booking_id: int) -> None:
     resp=SpectreeResponse(
         **(
             http_responses.HTTP_200_REQUEST_SUCCESSFUL
-            | http_responses.HTTP_403_UNTHAUTHORIZED
+            | http_responses.HTTP_403_UNAUTHORIZED
             | http_responses.HTTP_404_COLLECTIVE_OFFER_NOT_FOUND
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
         )

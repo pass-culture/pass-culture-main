@@ -30,7 +30,7 @@ HTTP_400_BAD_REQUEST = {
 HTTP_401_UNAUTHENTICATED = {
     "HTTP_401": (None, "Authentication is necessary to use this API."),
 }
-HTTP_403_UNTHAUTHORIZED = {
+HTTP_403_UNAUTHORIZED = {
     "HTTP_403": (None, "You do not have the necessary rights to use this API."),
 }
 HTTP_429_TOO_MANY_REQUESTS = {
