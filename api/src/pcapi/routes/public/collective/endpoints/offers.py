@@ -46,10 +46,10 @@ def get_collective_offers_public(
     query: offers_serialization.ListCollectiveOffersQueryModel,
 ) -> offers_serialization.CollectiveOffersListResponseModel:
     """
-    Get collective offers
+    Get Collective Offers
 
     Return collective offers. It will only return collective offers created by API
-    (collective offers created manually in the pro interface won't show up).
+    (collective offers created manually in the pro interface will not show up).
     """
 
     offers = educational_api_offer.list_public_collective_offers(
@@ -85,7 +85,7 @@ def get_collective_offer_public(
     offer_id: int,
 ) -> offers_serialization.GetPublicCollectiveOfferResponseModel:
     """
-    Get a collective offer
+    Get Collective Offer
 
     Return one collective offer using provided id.
     """
@@ -140,7 +140,7 @@ def post_collective_offer_public(
     body: offers_serialization.PostCollectiveOfferBodyModel,
 ) -> offers_serialization.GetPublicCollectiveOfferResponseModel:
     """
-    Create collective offer
+    Create Collective Offer
     """
     image_as_bytes = None
 
@@ -275,7 +275,7 @@ def patch_collective_offer_public(
     body: offers_serialization.PatchCollectiveOfferBodyModel,
 ) -> offers_serialization.GetPublicCollectiveOfferResponseModel:
     """
-    Update collective offer
+    Update Collective Offer
     """
     new_values = body.dict(exclude_unset=True)
     image_as_bytes = None
@@ -541,12 +541,12 @@ def patch_collective_offer_public(
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.COLLECTIVE_OFFERS],
+    tags=[tags.COLLECTIVE_OFFER_ATTRIBUTES],
     resp=SpectreeResponse(**(http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS)),
 )
 def get_offers_formats() -> offers_serialization.GetCollectiveFormatListModel:
     """
-    Get collectice offer formats
+    Get Collectice Offer Formats
     """
     return offers_serialization.GetCollectiveFormatListModel(
         __root__=[

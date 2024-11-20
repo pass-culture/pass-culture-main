@@ -1740,7 +1740,7 @@
                         "type": "string"
                     },
                     "id": {
-                        "description": "Educational institution id in the pass Culture application, should be `null` if an educational institution UAI is set. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-offer-attributes/operation/ListEducationalInstitutions)**",
+                        "description": "Educational institution id in the pass Culture application, should be `null` if an educational institution UAI is set. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-Offer-Attributes/operation/ListEducationalInstitutions)**",
                         "example": null,
                         "title": "Id",
                         "type": "integer"
@@ -1764,7 +1764,7 @@
                         "type": "string"
                     },
                     "uai": {
-                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-offer-attributes/operation/ListEducationalInstitutions)**",
+                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-Offer-Attributes/operation/ListEducationalInstitutions)**",
                         "example": "0010008D",
                         "title": "Uai",
                         "type": "string"
@@ -3906,7 +3906,7 @@
                         "type": "string"
                     },
                     "id": {
-                        "description": "Educational institution id in the pass Culture application, should be `null` if an educational institution UAI is set. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-offer-attributes/operation/ListEducationalInstitutions)**",
+                        "description": "Educational institution id in the pass Culture application, should be `null` if an educational institution UAI is set. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-Offer-Attributes/operation/ListEducationalInstitutions)**",
                         "example": null,
                         "nullable": true,
                         "title": "Id",
@@ -3941,7 +3941,7 @@
                         "type": "string"
                     },
                     "uai": {
-                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-offer-attributes/operation/ListEducationalInstitutions)**",
+                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-Offer-Attributes/operation/ListEducationalInstitutions)**",
                         "example": "0010008D",
                         "nullable": true,
                         "title": "Uai",
@@ -4165,7 +4165,7 @@
                         "type": "string"
                     },
                     "domains": {
-                        "description": "Educational domains ids linked to the offer. Those domains are available on **[this endpoint (`Get the eductional domains`)](#tag/Collective-offer-attributes/operation/ListEducationalDomains)**",
+                        "description": "Educational domains ids linked to the offer. Those domains are available on **[this endpoint (`Get the eductional domains`)](#tag/Collective-Offer-Attributes/operation/ListEducationalDomains)**",
                         "example": [
                             1,
                             2
@@ -4184,14 +4184,14 @@
                         "type": "integer"
                     },
                     "educationalInstitution": {
-                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-offer-attributes/operation/ListEducationalInstitutions)**",
+                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-Offer-Attributes/operation/ListEducationalInstitutions)**",
                         "example": "0010008D",
                         "nullable": true,
                         "title": "Educationalinstitution",
                         "type": "string"
                     },
                     "educationalInstitutionId": {
-                        "description": "Educational institution id in the pass Culture application, should be `null` if an educational institution UAI is set. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-offer-attributes/operation/ListEducationalInstitutions)**",
+                        "description": "Educational institution id in the pass Culture application, should be `null` if an educational institution UAI is set. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-Offer-Attributes/operation/ListEducationalInstitutions)**",
                         "example": null,
                         "nullable": true,
                         "title": "Educationalinstitutionid",
@@ -5759,7 +5759,7 @@
                         "type": "string"
                     },
                     "domains": {
-                        "description": "Educational domains ids linked to the offer. Those domains are available on **[this endpoint (`Get the eductional domains`)](#tag/Collective-offer-attributes/operation/ListEducationalDomains)**",
+                        "description": "Educational domains ids linked to the offer. Those domains are available on **[this endpoint (`Get the eductional domains`)](#tag/Collective-Offer-Attributes/operation/ListEducationalDomains)**",
                         "example": [
                             1,
                             2
@@ -5779,14 +5779,14 @@
                         "type": "integer"
                     },
                     "educationalInstitution": {
-                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-offer-attributes/operation/ListEducationalInstitutions)**",
+                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-Offer-Attributes/operation/ListEducationalInstitutions)**",
                         "example": "0010008D",
                         "nullable": true,
                         "title": "Educationalinstitution",
                         "type": "string"
                     },
                     "educationalInstitutionId": {
-                        "description": "Educational institution id in the pass Culture application, should be `null` if an educational institution UAI is set. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-offer-attributes/operation/ListEducationalInstitutions)**",
+                        "description": "Educational institution id in the pass Culture application, should be `null` if an educational institution UAI is set. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-Offer-Attributes/operation/ListEducationalInstitutions)**",
                         "example": null,
                         "nullable": true,
                         "title": "Educationalinstitutionid",
@@ -5870,7 +5870,7 @@
                         "type": "string"
                     },
                     "nationalProgramId": {
-                        "description": "Id of the national program linked to your offer. The national programs list can be found on **[this endpoint (`Get all known national programs`)](#tag/Collective-offer-attributes/operation/GetNationalPrograms)**",
+                        "description": "Id of the national program linked to your offer. The national programs list can be found on **[this endpoint (`Get all known national programs`)](#tag/Collective-Offer-Attributes/operation/GetNationalPrograms)**",
                         "nullable": true,
                         "title": "Nationalprogramid",
                         "type": "integer"
@@ -5900,7 +5900,7 @@
                         "type": "string"
                     },
                     "students": {
-                        "description": "Student levels that can take pat to the collective offer. The student levels are available on [**this endpoint (`Get student levels eligible for collective offers`)**](#tag/Collective-offer-attributes/operation/ListStudentsLevels)",
+                        "description": "Student levels that can take pat to the collective offer. The student levels are available on [**this endpoint (`Get student levels eligible for collective offers`)**](#tag/Collective-Offer-Attributes/operation/ListStudentsLevels)",
                         "example": [
                             "GENERAL2",
                             "GENERAL1",
@@ -6024,7 +6024,7 @@
                         "type": "string"
                     },
                     "domains": {
-                        "description": "Educational domains ids linked to the offer. Those domains are available on **[this endpoint (`Get the eductional domains`)](#tag/Collective-offer-attributes/operation/ListEducationalDomains)**",
+                        "description": "Educational domains ids linked to the offer. Those domains are available on **[this endpoint (`Get the eductional domains`)](#tag/Collective-Offer-Attributes/operation/ListEducationalDomains)**",
                         "example": [
                             1,
                             2
@@ -6043,14 +6043,14 @@
                         "type": "integer"
                     },
                     "educationalInstitution": {
-                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-offer-attributes/operation/ListEducationalInstitutions)**",
+                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-Offer-Attributes/operation/ListEducationalInstitutions)**",
                         "example": "0010008D",
                         "nullable": true,
                         "title": "Educationalinstitution",
                         "type": "string"
                     },
                     "educationalInstitutionId": {
-                        "description": "Educational institution id in the pass Culture application, should be `null` if an educational institution UAI is set. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-offer-attributes/operation/ListEducationalInstitutions)**",
+                        "description": "Educational institution id in the pass Culture application, should be `null` if an educational institution UAI is set. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-Offer-Attributes/operation/ListEducationalInstitutions)**",
                         "example": null,
                         "nullable": true,
                         "title": "Educationalinstitutionid",
@@ -6122,7 +6122,7 @@
                         "type": "string"
                     },
                     "nationalProgramId": {
-                        "description": "Id of the national program linked to your offer. The national programs list can be found on **[this endpoint (`Get all known national programs`)](#tag/Collective-offer-attributes/operation/GetNationalPrograms)**",
+                        "description": "Id of the national program linked to your offer. The national programs list can be found on **[this endpoint (`Get all known national programs`)](#tag/Collective-Offer-Attributes/operation/GetNationalPrograms)**",
                         "nullable": true,
                         "title": "Nationalprogramid",
                         "type": "integer"
@@ -6145,7 +6145,7 @@
                         "type": "string"
                     },
                     "students": {
-                        "description": "Student levels that can take pat to the collective offer. The student levels are available on [**this endpoint (`Get student levels eligible for collective offers`)**](#tag/Collective-offer-attributes/operation/ListStudentsLevels)",
+                        "description": "Student levels that can take pat to the collective offer. The student levels are available on [**this endpoint (`Get student levels eligible for collective offers`)**](#tag/Collective-Offer-Attributes/operation/ListStudentsLevels)",
                         "example": [
                             "GENERAL2",
                             "GENERAL1",
@@ -9224,7 +9224,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get bookings for a given offer",
+                "summary": "Get Offer Bookings",
                 "tags": [
                     "Bookings"
                 ]
@@ -9283,7 +9283,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Delete a booking",
+                "summary": "Delete Booking",
                 "tags": [
                     "Bookings"
                 ]
@@ -9339,7 +9339,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Revert booking validation",
+                "summary": "Revert Booking Validation",
                 "tags": [
                     "Bookings"
                 ]
@@ -9402,7 +9402,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get a booking",
+                "summary": "Get Booking",
                 "tags": [
                     "Bookings"
                 ]
@@ -9458,7 +9458,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Validate booking",
+                "summary": "Validate Booking",
                 "tags": [
                     "Bookings"
                 ]
@@ -9803,9 +9803,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get events",
+                "summary": "Get Venue Event Offers",
                 "tags": [
-                    "Event offers"
+                    "Event Offers"
                 ]
             },
             "post": {
@@ -9860,9 +9860,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Create event offer",
+                "summary": "Create Event Offer",
                 "tags": [
-                    "Event offers"
+                    "Event Offers"
                 ]
             }
         },
@@ -9904,9 +9904,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get event categories",
+                "summary": "Get Event Categories",
                 "tags": [
-                    "Offer attributes"
+                    "Offer Attributes"
                 ]
             }
         },
@@ -9962,9 +9962,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get event offer",
+                "summary": "Get Event Offer",
                 "tags": [
-                    "Event offers"
+                    "Event Offers"
                 ]
             },
             "patch": {
@@ -10030,9 +10030,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Update event offer",
+                "summary": "Update Event Offer",
                 "tags": [
-                    "Event offers"
+                    "Event Offers"
                 ]
             }
         },
@@ -10131,9 +10131,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get event stocks",
+                "summary": "Get Event Stocks",
                 "tags": [
-                    "Event offer stocks"
+                    "Event Offer Stocks"
                 ]
             },
             "post": {
@@ -10199,9 +10199,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Add stocks to an event",
+                "summary": "Add Stocks to an Event",
                 "tags": [
-                    "Event offer stocks"
+                    "Event Offer Stocks"
                 ]
             }
         },
@@ -10263,9 +10263,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Delete event stock",
+                "summary": "Delete Event Stock",
                 "tags": [
-                    "Event offer stocks"
+                    "Event Offer Stocks"
                 ]
             },
             "patch": {
@@ -10341,9 +10341,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Update event stock",
+                "summary": "Update Event Stock",
                 "tags": [
-                    "Event offer stocks"
+                    "Event Offer Stocks"
                 ]
             }
         },
@@ -10442,9 +10442,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get price categories",
+                "summary": "Get Price Categories",
                 "tags": [
-                    "Event offer prices"
+                    "Event Offer Price Categories"
                 ]
             },
             "post": {
@@ -10510,9 +10510,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Create price categories",
+                "summary": "Create Price Categories",
                 "tags": [
-                    "Event offer prices"
+                    "Event Offer Price Categories"
                 ]
             }
         },
@@ -10590,9 +10590,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Update price category",
+                "summary": "Update Price Category",
                 "tags": [
-                    "Event offer prices"
+                    "Event Offer Price Categories"
                 ]
             }
         },
@@ -10637,13 +10637,13 @@
                 ],
                 "summary": "[LEGACY] Get music types",
                 "tags": [
-                    "Offer attributes"
+                    "Offer Attributes"
                 ]
             }
         },
         "/public/offers/v1/music_types/all": {
             "get": {
-                "description": "Return music types. Not all the music types returned by this endpoint are suitable for events. For events, use the [Get events music types endpoint](/rest-api#tag/Offer-attributes/operation/GetEventTiteliveMusicTypes).",
+                "description": "Return music types. Not all the music types returned by this endpoint are suitable for events. For events, use the [Get events music types endpoint](/rest-api#tag/Offer-Attributes/operation/GetEventTiteliveMusicTypes).",
                 "operationId": "GetAllTiteliveMusicTypes",
                 "parameters": [],
                 "responses": {
@@ -10679,9 +10679,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get all music types",
+                "summary": "Get Music Types",
                 "tags": [
-                    "Offer attributes"
+                    "Offer Attributes"
                 ]
             }
         },
@@ -10723,9 +10723,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get events music types",
+                "summary": "Get Events Music Types",
                 "tags": [
-                    "Offer attributes"
+                    "Offer Attributes"
                 ]
             }
         },
@@ -10781,7 +10781,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get offerer venues",
+                "summary": "Get Offerer Venues",
                 "tags": [
                     "Venues"
                 ]
@@ -10881,9 +10881,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get venue products",
+                "summary": "Get Venue Products",
                 "tags": [
-                    "Product offers"
+                    "Product Offers"
                 ]
             },
             "patch": {
@@ -10938,9 +10938,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Update product offer",
+                "summary": "Update Product Offer",
                 "tags": [
-                    "Product offers"
+                    "Product Offers"
                 ]
             },
             "post": {
@@ -10995,9 +10995,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Create product",
+                "summary": "Create Product Offer",
                 "tags": [
-                    "Product offers"
+                    "Product Offers"
                 ]
             }
         },
@@ -11039,9 +11039,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get product categories",
+                "summary": "Get Product Categories",
                 "tags": [
-                    "Product offers"
+                    "Product Offers"
                 ]
             }
         },
@@ -11108,13 +11108,13 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get product offers by EAN",
+                "summary": "Get Product Offers by EANs",
                 "tags": [
-                    "Product offer bulk operations"
+                    "Product Offer Bulk Operations"
                 ]
             },
             "post": {
-                "description": "This endpoint allows for the batch upsert (update or insert) of product offers and their corresponding stock levels using the **European Article Number (EAN-13)**. It performs the following operations:\n\n1. **Create Offers:** If a venue does not have an existing offer for a product identified by its EAN, the endpoint creates a new offer.\n\n2. **Update Offer Stocks:** It updates the stock levels for the product offers. If the stock quantity is set to `0`, the product offer stock is deleted.\n\nThe upsert process is **asynchronous**, meaning the operation may take some time to complete. The success response from this endpoint indicates only that the upsert job has been successfully added to the queue.\n\n**WARNING:** As it is an asynchronous you won't be given any feedback if one or more EANs is rejected. To make sure that your EANs won't be rejected please use [**this endpoint**](/rest-api#tag/Product-offer-bulk-operations/operation/CheckEansAvailability)",
+                "description": "This endpoint allows for the batch upsert (update or insert) of product offers and their corresponding stock levels using the **European Article Number (EAN-13)**. It performs the following operations:\n\n1. **Create Offers:** If a venue does not have an existing offer for a product identified by its EAN, the endpoint creates a new offer.\n\n2. **Update Offer Stocks:** It updates the stock levels for the product offers. If the stock quantity is set to `0`, the product offer stock is deleted.\n\nThe upsert process is **asynchronous**, meaning the operation may take some time to complete. The success response from this endpoint indicates only that the upsert job has been successfully added to the queue.\n\n**WARNING:** As it is an asynchronous you won't be given any feedback if one or more EANs is rejected. To make sure that your EANs won't be rejected please use [**this endpoint**](/rest-api#tag/Product-Offer-Bulk-Operations/operation/CheckEansAvailability)",
                 "operationId": "PostProductOfferByEan",
                 "parameters": [],
                 "requestBody": {
@@ -11160,7 +11160,7 @@
                 ],
                 "summary": "Batch Upsert Product Offers by EAN",
                 "tags": [
-                    "Product offer bulk operations"
+                    "Product Offer Bulk Operations"
                 ]
             }
         },
@@ -11217,7 +11217,7 @@
                 ],
                 "summary": "Check EAN Availability for Bulk Upsert",
                 "tags": [
-                    "Product offer bulk operations"
+                    "Product Offer Bulk Operations"
                 ]
             }
         },
@@ -11273,9 +11273,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get product offer",
+                "summary": "Get Product Offer",
                 "tags": [
-                    "Product offers"
+                    "Product Offers"
                 ]
             }
         },
@@ -11317,9 +11317,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get show types",
+                "summary": "Get Show Types",
                 "tags": [
-                    "Offer attributes"
+                    "Offer Attributes"
                 ]
             }
         },
@@ -11374,7 +11374,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Upload an image",
+                "summary": "Upload an Image",
                 "tags": [
                     "Images"
                 ]
@@ -11418,7 +11418,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get my provider",
+                "summary": "Get my Provider",
                 "tags": [
                     "Providers"
                 ]
@@ -11472,7 +11472,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Update my provider",
+                "summary": "Update my Provider",
                 "tags": [
                     "Providers"
                 ]
@@ -11535,7 +11535,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Update external urls for specific venues",
+                "summary": "Update Venue External Urls",
                 "tags": [
                     "Providers"
                 ]
@@ -11591,7 +11591,7 @@
                 ],
                 "summary": "Mock collective booking cancellation",
                 "tags": [
-                    "Collective bookings Adage mock"
+                    "Adage Mock (Collective Bookings)"
                 ]
             }
         },
@@ -11645,7 +11645,7 @@
                 ],
                 "summary": "Mock collective booking confirmation",
                 "tags": [
-                    "Collective bookings Adage mock"
+                    "Adage Mock (Collective Bookings)"
                 ]
             }
         },
@@ -11699,7 +11699,7 @@
                 ],
                 "summary": "Adage mock: reset collective booking back to pending state.",
                 "tags": [
-                    "Collective bookings Adage mock"
+                    "Adage Mock (Collective Bookings)"
                 ]
             }
         },
@@ -11753,7 +11753,7 @@
                 ],
                 "summary": "Mock collective booking reimbursement.",
                 "tags": [
-                    "Collective bookings Adage mock"
+                    "Adage Mock (Collective Bookings)"
                 ]
             }
         },
@@ -11807,13 +11807,13 @@
                 ],
                 "summary": "Mock collective offer booking",
                 "tags": [
-                    "Collective bookings Adage mock"
+                    "Adage Mock (Collective Bookings)"
                 ]
             }
         },
         "/v2/collective/bookings/{booking_id}": {
             "patch": {
-                "description": "Cancel an collective event booking.",
+                "description": "Cancel a collective event booking.",
                 "operationId": "CancelCollectiveBooking",
                 "parameters": [
                     {
@@ -11856,9 +11856,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Cancel collective booking",
+                "summary": "Cancel Collective Booking",
                 "tags": [
-                    "Collective bookings"
+                    "Collective Bookings"
                 ]
             }
         },
@@ -11912,7 +11912,7 @@
                 ],
                 "summary": "Mock collective booking use",
                 "tags": [
-                    "Collective bookings Adage mock"
+                    "Adage Mock (Collective Bookings)"
                 ]
             }
         },
@@ -11954,9 +11954,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get the educational domains",
+                "summary": "Get Educational Domains",
                 "tags": [
-                    "Collective offer attributes"
+                    "Collective Offer Attributes"
                 ]
             }
         },
@@ -11966,12 +11966,12 @@
                 "operationId": "ListEducationalInstitutions",
                 "parameters": [
                     {
-                        "description": "Educational institution id in the pass Culture application, should be `null` if an educational institution UAI is set. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-offer-attributes/operation/ListEducationalInstitutions)**",
+                        "description": "Educational institution id in the pass Culture application, should be `null` if an educational institution UAI is set. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-Offer-Attributes/operation/ListEducationalInstitutions)**",
                         "in": "query",
                         "name": "id",
                         "required": false,
                         "schema": {
-                            "description": "Educational institution id in the pass Culture application, should be `null` if an educational institution UAI is set. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-offer-attributes/operation/ListEducationalInstitutions)**",
+                            "description": "Educational institution id in the pass Culture application, should be `null` if an educational institution UAI is set. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-Offer-Attributes/operation/ListEducationalInstitutions)**",
                             "example": null,
                             "nullable": true,
                             "title": "Id",
@@ -12031,12 +12031,12 @@
                         }
                     },
                     {
-                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-offer-attributes/operation/ListEducationalInstitutions)**",
+                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-Offer-Attributes/operation/ListEducationalInstitutions)**",
                         "in": "query",
                         "name": "uai",
                         "required": false,
                         "schema": {
-                            "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-offer-attributes/operation/ListEducationalInstitutions)**",
+                            "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-Offer-Attributes/operation/ListEducationalInstitutions)**",
                             "example": "0010008D",
                             "nullable": true,
                             "title": "Uai",
@@ -12093,15 +12093,15 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get all educational institutions",
+                "summary": "Get Educational Institutions",
                 "tags": [
-                    "Collective offer attributes"
+                    "Collective Offer Attributes"
                 ]
             }
         },
         "/v2/collective/national-programs/": {
             "get": {
-                "description": "",
+                "description": "List national programs (for instance: `Coll\u00e8ge au cin\u00e9ma`, `Jeunes en librairie`...)",
                 "operationId": "GetNationalPrograms",
                 "parameters": [],
                 "responses": {
@@ -12137,15 +12137,15 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get all known national programs",
+                "summary": "Get National Programs",
                 "tags": [
-                    "Collective offer attributes"
+                    "Collective Offer Attributes"
                 ]
             }
         },
         "/v2/collective/offers/": {
             "get": {
-                "description": "Return collective offers. It will only return collective offers created by API (collective offers created manually in the pro interface won't show up).",
+                "description": "Return collective offers. It will only return collective offers created by API (collective offers created manually in the pro interface will not show up).",
                 "operationId": "GetCollectiveOffersPublic",
                 "parameters": [
                     {
@@ -12240,9 +12240,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get collective offers",
+                "summary": "Get Collective Offers",
                 "tags": [
-                    "Collective offers"
+                    "Collective Offers"
                 ]
             },
             "post": {
@@ -12300,9 +12300,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Create collective offer",
+                "summary": "Create Collective Offer",
                 "tags": [
-                    "Collective offers"
+                    "Collective Offers"
                 ]
             }
         },
@@ -12334,9 +12334,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get collectice offer formats",
+                "summary": "Get Collectice Offer Formats",
                 "tags": [
-                    "Collective offers"
+                    "Collective Offer Attributes"
                 ]
             }
         },
@@ -12398,9 +12398,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get a collective offer",
+                "summary": "Get Collective Offer",
                 "tags": [
-                    "Collective offers"
+                    "Collective Offers"
                 ]
             },
             "patch": {
@@ -12469,15 +12469,15 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Update collective offer",
+                "summary": "Update Collective Offer",
                 "tags": [
-                    "Collective offers"
+                    "Collective Offers"
                 ]
             }
         },
         "/v2/collective/student-levels": {
             "get": {
-                "description": "",
+                "description": "List student levels eligible for collective offers (for instance: `\"Coll\u00e8ge - 6e\"`).",
                 "operationId": "ListStudentsLevels",
                 "parameters": [],
                 "responses": {
@@ -12513,9 +12513,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get student levels eligible for collective offers",
+                "summary": "Get Student Levels",
                 "tags": [
-                    "Collective offer attributes"
+                    "Collective Offer Attributes"
                 ]
             }
         }
@@ -12550,27 +12550,27 @@
         {
             "description": "Endpoints to create and get products usings European Article Number (EAN-13).",
             "externalDocs": null,
-            "name": "Product offer bulk operations"
+            "name": "Product Offer Bulk Operations"
         },
         {
             "description": "Endpoints to manage product offers of a venue.",
             "externalDocs": null,
-            "name": "Product offers"
+            "name": "Product Offers"
         },
         {
             "description": "Endpoints to manage event offers data of a venue (except prices and dates).",
             "externalDocs": null,
-            "name": "Event offers"
+            "name": "Event Offers"
         },
         {
             "description": "Endpoints to create and update price categories of an event.",
             "externalDocs": null,
-            "name": "Event offer prices"
+            "name": "Event Offer Price Categories"
         },
         {
             "description": "Endpoints to manage events stocks. An event stock has a price category, a date and a quantity.         Hence for a given performance date, you might have several stocks (one per category).",
             "externalDocs": null,
-            "name": "Event offer stocks"
+            "name": "Event Offer Stocks"
         },
         {
             "description": "",
@@ -12580,7 +12580,7 @@
         {
             "description": "",
             "externalDocs": null,
-            "name": "Offer attributes"
+            "name": "Offer Attributes"
         },
         {
             "description": "Endpoints to manage the bookings of an offer (event and product).",
@@ -12590,17 +12590,17 @@
         {
             "description": "Endpoints to manage collective offers that are \"bookable\", not those that are displayed in the showcase.",
             "externalDocs": null,
-            "name": "Collective offers"
+            "name": "Collective Offers"
         },
         {
             "description": "",
             "externalDocs": null,
-            "name": "Collective bookings"
+            "name": "Collective Bookings"
         },
         {
             "description": "",
             "externalDocs": null,
-            "name": "Collective offer attributes"
+            "name": "Collective Offer Attributes"
         }
     ]
 }

@@ -63,7 +63,7 @@ def _deserialize_has_ticket(
 )
 def post_event_offer(body: serialization.EventOfferCreation) -> serialization.EventOfferResponse:
     """
-    Create event offer
+    Create Event Offer
     """
     venue_provider = authorization.get_venue_provider_or_raise_404(body.location.venue_id)
     venue = utils.get_venue_with_offerer_address(body.location.venue_id)
@@ -160,7 +160,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
 )
 def get_event(event_id: int) -> serialization.EventOfferResponse:
     """
-    Get event offer
+    Get Event Offer
 
     Return event offer by id.
     """
@@ -193,7 +193,7 @@ def get_event(event_id: int) -> serialization.EventOfferResponse:
 )
 def get_events(query: serialization.GetOffersQueryParams) -> serialization.EventOffersResponse:
     """
-    Get events
+    Get Venue Event Offers
 
     Return all the events linked to given venue.
     Results are paginated (by default there are `50` events per page).
@@ -230,7 +230,7 @@ def get_events(query: serialization.GetOffersQueryParams) -> serialization.Event
 )
 def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serialization.EventOfferResponse:
     """
-    Update event offer
+    Update Event Offer
 
     Will update only the non-blank fields. If you some fields to keep their current values, leave them `undefined`.
     """
@@ -300,7 +300,7 @@ def post_event_price_categories(
     event_id: int, body: serialization.PriceCategoriesCreation
 ) -> serialization.PriceCategoriesResponse:
     """
-    Create price categories
+    Create Price Categories
 
     Batch create price categories for given event.
     """
@@ -353,7 +353,7 @@ def get_event_price_categories(
     event_id: int, query: serialization.GetPriceCategoriesQueryParams
 ) -> serialization.PriceCategoriesResponse:
     """
-    Get price categories
+    Get Price Categories
 
     Get existing price categories for given event
     """
@@ -394,7 +394,7 @@ def patch_event_price_category(
     body: serialization.PriceCategoryEdition,
 ) -> serialization.PriceCategoryResponse:
     """
-    Update price category
+    Update Price Category
 
     Will update only the non-blank field.
     If you want one of the field to remain unchanged, leave it `undefined`.
@@ -447,7 +447,7 @@ def patch_event_price_category(
 )
 def post_event_stocks(event_id: int, body: serialization.DatesCreation) -> serialization.PostDatesResponse:
     """
-    Add stocks to an event
+    Add Stocks to an Event
 
     Add stocks to given event. Each stock is attached to a price category and to a date.
     For a given date, you will have one stock per price category.
@@ -514,7 +514,7 @@ def post_event_stocks(event_id: int, body: serialization.DatesCreation) -> seria
 )
 def get_event_stocks(event_id: int, query: serialization.GetEventStocksQueryParams) -> serialization.GetDatesResponse:
     """
-    Get event stocks
+    Get Event Stocks
 
     Return all stocks for given event. Results are paginated (by default there are `50` date per page).
     """
@@ -567,7 +567,7 @@ def get_event_stocks(event_id: int, query: serialization.GetEventStocksQueryPara
 )
 def delete_event_stock(event_id: int, stock_id: int) -> None:
     """
-    Delete event stock
+    Delete Event Stock
 
     When an event stock is deleted, all cancellable bookings (i.e not used) are cancelled.
     To prevent from further bookings, you may alternatively update the stock's quantity to the bookedQuantity (but not below).
@@ -611,7 +611,7 @@ def patch_event_stock(
     body: serialization.DateEdition,
 ) -> serialization.DateResponse:
     """
-    Update event stock
+    Update Event Stock
 
     Update the price category and the beginning time of an event stock.
     """
@@ -686,7 +686,7 @@ def patch_event_stock(
 @provider_api_key_required
 def get_event_categories() -> serialization.GetEventCategoriesResponse:
     """
-    Get event categories
+    Get Event Categories
 
     Return all the categories available, with their conditional fields, and whether they are required.
     """

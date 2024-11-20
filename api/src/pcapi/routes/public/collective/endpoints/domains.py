@@ -30,7 +30,7 @@ from pcapi.validation.routes.users_authentifications import provider_api_key_req
 @cached_view(prefix="pro_public_api_v2")
 def list_educational_domains() -> domains_serialization.CollectiveOffersListDomainsResponseModel:
     """
-    Get the educational domains
+    Get Educational Domains
 
     Return the educational domains that can be linked to a collective offer.
     """

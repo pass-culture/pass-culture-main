@@ -30,7 +30,7 @@ from pcapi.validation.routes.users_authentifications import provider_api_key_req
 )
 def get_provider() -> providers_serialization.ProviderResponse:
     """
-    Get my provider
+    Get my Provider
 
     Return your provider information.
     """
@@ -54,7 +54,7 @@ def get_provider() -> providers_serialization.ProviderResponse:
 )
 def update_provider(body: providers_serialization.ProviderUpdate) -> providers_serialization.ProviderResponse:
     """
-    Update my provider
+    Update my Provider
 
     Endpoint to set the urls used by our notification system to notify/request your solution.
     """
@@ -107,7 +107,7 @@ def update_venue_external_urls(
     body: providers_serialization.VenueProviderExternalUrlsUpdate,
 ) -> None:
     """
-    Update external urls for specific venues
+    Update Venue External Urls
 
     Endpoint to set the urls used by our messaging system to notify/request your solution.
     """

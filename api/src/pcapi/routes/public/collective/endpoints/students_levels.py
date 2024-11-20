@@ -28,7 +28,9 @@ from pcapi.validation.routes.users_authentifications import provider_api_key_req
 )
 def list_students_levels() -> students_levels_serialization.CollectiveOffersListStudentLevelsResponseModel:
     """
-    Get student levels eligible for collective offers
+    Get Student Levels
+
+    List student levels eligible for collective offers (for instance: `"Collège - 6e"`).
     """
     return students_levels_serialization.CollectiveOffersListStudentLevelsResponseModel(
         __root__=[

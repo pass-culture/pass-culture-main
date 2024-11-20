@@ -83,7 +83,7 @@ def get_bookings_by_offer(
     query: serialization.GetFilteredBookingsRequest,
 ) -> serialization.GetFilteredBookingsResponse:
     """
-    Get bookings for a given offer
+    Get Offer Bookings
 
     Return all the bookings for a given offer. Results are paginated (by default, there are `50` bookings per page)
     """
@@ -138,7 +138,7 @@ def _get_booking_by_token(token: str) -> booking_models.Booking | None:
 )
 def get_booking_by_token(token: str) -> serialization.GetBookingResponse:
     """
-    Get a booking
+    Get Booking
 
     The countermark or token code is a character string that identifies the reservation and serves as proof of booking.
     This unique code is generated for each user's booking on the application and is transmitted to them on that occasion.
@@ -180,7 +180,7 @@ def get_booking_by_token(token: str) -> serialization.GetBookingResponse:
 )
 def validate_booking_by_token(token: str) -> None:
     """
-    Validate booking
+    Validate Booking
 
     Confirm that the booking has been used by the beneficiary.
     """
@@ -221,7 +221,7 @@ def validate_booking_by_token(token: str) -> None:
 )
 def cancel_booking_validation_by_token(token: str) -> None:
     """
-    Revert booking validation
+    Revert Booking Validation
 
     This operation reverses the status of a booking from `USED` back to `CONFIRMED`.
     As a result, the pass Culture application will treat the booking as if the beneficiary has not retrieved it,
@@ -269,7 +269,7 @@ def cancel_booking_validation_by_token(token: str) -> None:
 )
 def cancel_booking_by_token(token: str) -> None:
     """
-    Delete a booking
+    Delete Booking
 
     Delete a booking that has not been used or refunded. For events, a booking can only be deleted if it is in a pending state.
 

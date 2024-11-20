@@ -9,39 +9,39 @@ ADDRESSES = Tag(name="Addresses", description="[Beta] Endpoints to manage offers
 
 # EVENT OFFERS
 EVENT_OFFERS = Tag(
-    name="Event offers", description="Endpoints to manage event offers data of a venue (except prices and dates)."
+    name="Event Offers", description="Endpoints to manage event offers data of a venue (except prices and dates)."
 )
 EVENT_OFFER_PRICES = Tag(
-    name="Event offer prices", description="Endpoints to create and update price categories of an event."
+    name="Event Offer Price Categories", description="Endpoints to create and update price categories of an event."
 )
 EVENT_OFFER_STOCKS = Tag(
-    name="Event offer stocks",
+    name="Event Offer Stocks",
     description="Endpoints to manage events stocks. An event stock has a price category, a date and a quantity. \
         Hence for a given performance date, you might have several stocks (one per category).",
 )
 
 # PRODUCT OFFERS
-PRODUCT_OFFERS = Tag(name="Product offers", description="Endpoints to manage product offers of a venue.")
+PRODUCT_OFFERS = Tag(name="Product Offers", description="Endpoints to manage product offers of a venue.")
 IMAGE = Tag(name="Images")
 PRODUCT_EAN_OFFERS = Tag(
-    name="Product offer bulk operations",
+    name="Product Offer Bulk Operations",
     description="Endpoints to create and get products usings European Article Number (EAN-13).",
 )
 PROVIDERS = Tag(name="Providers")
 VENUES = Tag(name="Venues")
-OFFER_ATTRIBUTES = Tag(name="Offer attributes")
+OFFER_ATTRIBUTES = Tag(name="Offer Attributes")
 
 
 # COLLECTIVE OFFERS
 COLLECTIVE_OFFERS = Tag(
-    name="Collective offers",
+    name="Collective Offers",
     description='Endpoints to manage collective offers that are "bookable", not those that are displayed in the showcase.',
 )
-COLLECTIVE_BOOKINGS = Tag(name="Collective bookings")
-COLLECTIVE_OFFER_ATTRIBUTES = Tag(name="Collective offer attributes")
+COLLECTIVE_BOOKINGS = Tag(name="Collective Bookings")
+COLLECTIVE_OFFER_ATTRIBUTES = Tag(name="Collective Offer Attributes")
 
 # COLLECTIVE BOOKINGS ADAGE MOCK
-COLLECTIVE_ADAGE_MOCK = Tag(name="Collective bookings Adage mock")
+COLLECTIVE_ADAGE_MOCK = Tag(name="Adage Mock (Collective Bookings)")
 
 # COLLECTIVE OFFERS --- Deprecated
 DEPRECATED_COLLECTIVE_CATEGORIES = Tag(name="[DEPRECATED] Collective categories")
