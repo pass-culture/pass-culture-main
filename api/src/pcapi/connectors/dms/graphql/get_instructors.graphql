@@ -1,0 +1,16 @@
+query getDemarche(
+  $demarcheNumber: Int!
+) {
+  demarche(number: $demarcheNumber) {
+    groupeInstructeurs {
+      ...GroupeInstructeurFragment
+    }
+  }
+}
+
+fragment GroupeInstructeurFragment on GroupeInstructeur {
+  instructeurs {
+    id
+    email
+  }
+}

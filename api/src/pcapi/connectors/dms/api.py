@@ -32,6 +32,7 @@ SEND_USER_MESSAGE_QUERY_NAME = "send_user_message"
 UPDATE_TEXT_ANNOTATION_QUERY_NAME = "update_text_annotation"
 GET_EAC_APPLICATIONS_STATE_SIRET = "eac/get_applications_state_siret"
 GET_BANK_INFO_APPLICATIONS_QUERY_NAME = "pro/get_bank_info_applications"
+GET_INSTRUCTORS_QUERY_NAME = "get_instructors"
 
 
 class DmsStats(BaseModel):
@@ -281,6 +282,20 @@ class DMSGraphQLClient:
                 state=state,
                 page_token=dossiers["pageInfo"]["endCursor"],
             )
+
+    def get_instructors(self, *, procedure_number: int) -> dict[str, str]:
+        variables: dict[str, int | str] = {
+            "demarcheNumber": procedure_number,
+        }
+        results = self.execute_query(GET_INSTRUCTORS_QUERY_NAME, variables=variables)
+        groups = results["demarche"]["groupeInstructeurs"]
+
+        instructor_ids_by_email = {}
+        for group in groups:
+            for item in group["instructeurs"]:
+                instructor_ids_by_email[item["email"]] = item["id"]
+
+        return instructor_ids_by_email
 
 
 def get_dms_stats(dms_application_id: int | None, api_v4: bool = False) -> DmsStats | None:

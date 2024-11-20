@@ -232,6 +232,9 @@ class BackOfficeUserProfile(Base, Model):
         server_default="{}",
     )
 
+    # instructor id on Démarches Simplifiées, used to change application status
+    dsInstructorId: str = sa.Column(sa.Text, nullable=True, index=True, unique=True)
+
     @property
     def permissions(self) -> typing.Collection[Permissions]:
         permissions_members = Permissions.__members__

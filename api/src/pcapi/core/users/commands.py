@@ -4,9 +4,11 @@ import click
 
 from pcapi import settings
 from pcapi.core.mails.transactional.users import online_event_reminder
+from pcapi.core.users import ds as users_ds
 import pcapi.core.users.api as user_api
 import pcapi.core.users.constants as users_constants
 from pcapi.models import db
+from pcapi.repository import atomic
 import pcapi.scheduled_tasks.decorators as cron_decorators
 from pcapi.utils.blueprint import Blueprint
 
@@ -80,3 +82,14 @@ def execute_gdpr_extract() -> None:
 def clean_gdpr_extracts() -> None:
     user_api.clean_gdpr_extracts()
     db.session.commit()
+
+
+@blueprint.cli.command("sync_instructor_ids")
+@cron_decorators.log_cron_with_transaction
+def sync_instructor_ids() -> None:
+    procedure_ids = [
+        settings.DS_USER_ACCOUNT_UPDATE_PROCEDURE_ID,
+    ]
+    for procedure_id in procedure_ids:
+        with atomic():
+            users_ds.sync_instructor_ids(int(procedure_id))
