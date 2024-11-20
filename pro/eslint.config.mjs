@@ -4,21 +4,17 @@ import tsParser from "@typescript-eslint/parser";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
-import { FlatCompat } from "@eslint/eslintrc";
 import importPlugin from 'eslint-plugin-import';
 import reactHook from 'eslint-plugin-react-hooks';
 import react from 'eslint-plugin-react';
+import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-    baseDirectory: __dirname,
-    recommendedConfig: js.configs.recommended,
-    allConfig: js.configs.all
-});
 
 export default [  js.configs.recommended,
     importPlugin.flatConfigs.recommended,
+    eslintPluginPrettierRecommended,
     { 
         ignores: [
         "src/api/v1/gen/*",
@@ -34,6 +30,7 @@ export default [  js.configs.recommended,
         "src/**/*.gif",
     ],
   }, {
+    
     plugins: {
         "react": react, 
         "react-hooks": reactHook, 
@@ -133,6 +130,12 @@ export default [  js.configs.recommended,
         }],
 
         "react-hooks/exhaustive-deps": "warn",
+        "prettier/prettier": [
+            "error",
+            {
+                "usePrettierrc": true
+              }
+          ]
     },
 }, {
     files: ["**/*.stories.tsx"],
