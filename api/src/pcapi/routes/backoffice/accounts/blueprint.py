@@ -950,22 +950,38 @@ def update_public_account(user_id: int) -> utils.BackofficeResponse:
         return render_public_account_details(user_id, form), 400
 
     try:
-        snapshot = users_api.update_user_info(
-            user,
-            author=current_user,
-            first_name=form.first_name.data,
-            last_name=form.last_name.data,
-            validated_birth_date=form.birth_date.data,
-            phone_number=form.phone_number.data,
-            id_piece_number=form.id_piece_number.data,
-            address=form.street.data,
-            postal_code=form.postal_code.data,
-            city=form.city.data,
-            commit=False,
-            marketing_email_subscription=form.marketing_email_subscription.data,
-        )
+        # Use atomic because render_public_account_details makes select queries in exceptions after rollback which
+        # returns to savepoint.
+        with atomic():
+            snapshot = users_api.update_user_info(
+                user,
+                author=current_user,
+                first_name=form.first_name.data,
+                last_name=form.last_name.data,
+                validated_birth_date=form.birth_date.data,
+                phone_number=form.phone_number.data,
+                id_piece_number=form.id_piece_number.data,
+                address=form.street.data,
+                postal_code=form.postal_code.data,
+                city=form.city.data,
+                commit=False,
+                marketing_email_subscription=form.marketing_email_subscription.data,
+            )
+            db.session.flush()
     except phone_validation_exceptions.InvalidPhoneNumber:
         flash("Le numéro de téléphone est invalide", "warning")
+        return render_public_account_details(user_id, form), 400
+    except sa.exc.IntegrityError as exc:
+        message = str(exc)
+        if "user_idPieceNumber_key" in message:
+            flash(
+                Markup(
+                    "Le numéro de pièce d'identité <b>{id_piece_number}</b> est déja associé à un autre compte utilisateur."
+                ).format(id_piece_number=form.id_piece_number.data),
+                "warning",
+            )
+        else:
+            flash(Markup("Une erreur s'est produite : {message}").format(message=message), "warning")
         return render_public_account_details(user_id, form), 400
 
     email_changed = bool(form.email.data and form.email.data != email_utils.sanitize_email(user.email))

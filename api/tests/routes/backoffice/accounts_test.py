@@ -1318,6 +1318,34 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user_to_edit.id, form=base_form)
         assert response.status_code == 400
 
+    def test_id_piece_number_already_exists(self, legit_user, authenticated_client):
+        user = users_factories.BeneficiaryGrant18Factory(idPieceNumber="123456")
+        other_user = users_factories.BeneficiaryGrant18Factory(idPieceNumber="ABCDEF")
+
+        form_data = {
+            "first_name": user.firstName,
+            "last_name": user.lastName,
+            "email": user.email,
+            "birth_date": user.birth_date,
+            "phone_number": user.phoneNumber,
+            "id_piece_number": other_user.idPieceNumber,
+            "street": user.address,
+            "postal_code": user.postalCode,
+            "city": user.city,
+            "marketing_email_subscription": "on",
+        }
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=form_data)
+        assert response.status_code == 400
+
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Le numéro de pièce d'identité ABCDEF est déja associé à un autre compte utilisateur."
+        )
+
+        assert user.idPieceNumber == "123456"
+        assert history_models.ActionHistory.query.count() == 0
+
     def test_empty_id_piece_number(self, authenticated_client):
         user_to_edit = users_factories.BeneficiaryGrant18Factory()
 
