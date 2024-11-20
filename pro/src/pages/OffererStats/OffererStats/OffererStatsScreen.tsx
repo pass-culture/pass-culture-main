@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
+import { Navigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { SelectOption } from 'commons/custom_types/form'
@@ -14,11 +15,21 @@ import styles from './OffererStatsScreen.module.scss'
 
 export const OffererStatsScreen = () => {
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+  const isOffererStatsV2Active = useActiveFeature('WIP_OFFERER_STATS_V2')
   const targetOffererId = useSelector(selectCurrentOffererId)
 
   const [iframeUrl, setIframeUrl] = useState('')
   const [selectedVenueId, setSelectedVenueId] = useState('all')
   const [venueOptions, setVenueOptions] = useState<SelectOption[]>([])
+
+  if (isOffererStatsV2Active) {
+    return <Navigate
+      to='/remboursements/revenus'
+      replace={true}
+      relative="path"
+    />
+  }
+
   const ALL_VENUES_OPTION = {
     value: 'all',
     label: isOfferAddressEnabled ? 'Tous' : 'Tous les lieux',
