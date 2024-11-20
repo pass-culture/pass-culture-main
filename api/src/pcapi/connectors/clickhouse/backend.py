@@ -1,3 +1,4 @@
+import logging
 import typing
 
 from sqlalchemy import create_engine
@@ -7,6 +8,9 @@ from pcapi import settings
 from pcapi.models.api_errors import ApiErrors
 from pcapi.utils import requests
 from pcapi.utils.module_loading import import_string
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_backend() -> "BaseBackend":
@@ -31,6 +35,7 @@ class BaseBackend:
         try:
             results = self.engine.execute(query, params).fetchall()
         except Exception as err:
+            logger.error("%s when querying Clickhouse: %s", type(err), str(err))
             if isinstance(err, requests.exceptions.ConnectionError):
                 raise ApiErrors(errors={"clickhouse": "Can not connect to clickhouse server"}, status_code=422)
             raise ApiErrors(errors={"clickhouse": f"Error : {err}"}, status_code=400)

@@ -1,4 +1,5 @@
 from datetime import datetime
+import decimal
 from functools import partial
 import typing
 
@@ -12,6 +13,7 @@ from markupsafe import Markup
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
+from pcapi.connectors.clickhouse import queries as clickhouse_queries
 from pcapi.connectors.entreprise import api as entreprise_api
 from pcapi.connectors.entreprise import exceptions as entreprise_exceptions
 from pcapi.connectors.entreprise import sirene
@@ -35,6 +37,7 @@ from pcapi.core.providers import models as providers_models
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository import atomic
 from pcapi.repository import on_commit
 from pcapi.routes.backoffice import autocomplete
@@ -335,6 +338,14 @@ def get_stats_data(venue_id: int) -> dict:
     if not (is_collective_too_big or is_individual_too_big):
         stats["active"]["total"] = stats["active"]["collective"] + stats["active"]["individual"]
         stats["inactive"]["total"] = stats["inactive"]["collective"] + stats["inactive"]["individual"]
+
+    if FeatureToggle.WIP_ENABLE_CLICKHOUSE_IN_BO.is_active():
+        try:
+            clickhouse_result = clickhouse_queries.TotalAggregatedRevenueQuery().execute((venue_id,))
+            stats["total_revenue"] = clickhouse_result.expected_revenue
+        except ApiErrors:
+            stats["total_revenue"] = PLACEHOLDER
+    elif not (is_collective_too_big or is_individual_too_big):
         stats["total_revenue"] = offerers_api.get_venue_total_revenue(venue_id)
 
     return stats
@@ -398,7 +409,31 @@ def get_revenue_details(venue_id: int) -> utils.BackofficeResponse:
     if not venue:
         raise NotFound()
 
-    details = offerers_repository.get_revenues_per_year(venueId=venue_id)
+    if FeatureToggle.WIP_ENABLE_CLICKHOUSE_IN_BO.is_active():
+        try:
+            clickhouse_result = clickhouse_queries.YearlyAggregatedRevenueQuery().execute((venue_id,))
+            details: dict[str, dict] = {}
+            future = {"individual": decimal.Decimal(0.0), "collective": decimal.Decimal(0.0)}
+            for year, yearly_data in clickhouse_result.income_by_year.items():
+                details[year] = {
+                    "individual": yearly_data.revenue.individual,  # type: ignore[union-attr]
+                    "collective": yearly_data.revenue.collective,  # type: ignore[union-attr]
+                }
+                future["individual"] += yearly_data.expected_revenue.individual - yearly_data.revenue.individual  # type: ignore[union-attr]
+                future["collective"] += yearly_data.expected_revenue.collective - yearly_data.revenue.collective  # type: ignore[union-attr]
+            if sum(future.values()) > 0:
+                details["En cours"] = future
+        except ApiErrors as api_error:
+            return render_template(
+                "components/revenue_details.html",
+                information=Markup(
+                    "Une erreur s'est produite lors de la lecture des données sur Clickhouse : {error}"
+                ).format(error=api_error.errors["clickhouse"]),
+                target=venue,
+            )
+    else:
+        details = offerers_repository.get_revenues_per_year(venueId=venue_id)
+
     return render_template(
         "components/revenue_details.html",
         details=details,

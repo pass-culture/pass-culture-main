@@ -1,4 +1,5 @@
 import datetime
+import decimal
 from functools import partial
 import typing
 
@@ -13,6 +14,7 @@ import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
 from pcapi import repository
+from pcapi.connectors.clickhouse import queries as clickhouse_queries
 from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.connectors.entreprise import api as entreprise_api
 from pcapi.connectors.entreprise import exceptions as entreprise_exceptions
@@ -30,6 +32,8 @@ from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.models.api_errors import ApiErrors
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.utils import regions as regions_utils
@@ -247,9 +251,9 @@ def get(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @typing.no_type_check
-def get_stats_data(offerer_id: int) -> dict:
+def get_stats_data(offerer: offerers_models.Offerer) -> dict:
     PLACEHOLDER = -1
-    offers_stats = offerers_api.get_offerer_offers_stats(offerer_id, max_offer_count=1000)
+    offers_stats = offerers_api.get_offerer_offers_stats(offerer.id, max_offer_count=1000)
     is_collective_too_big = offers_stats["collective_offer"]["active"] == -1
     is_collective_too_big = is_collective_too_big or offers_stats["collective_offer_template"]["active"] == -1
     is_individual_too_big = offers_stats["offer"]["active"] == -1
@@ -285,7 +289,17 @@ def get_stats_data(offerer_id: int) -> dict:
     if not (is_collective_too_big or is_individual_too_big):
         stats["active"]["total"] = stats["active"]["collective"] + stats["active"]["individual"]
         stats["inactive"]["total"] = stats["inactive"]["collective"] + stats["inactive"]["individual"]
-        stats["total_revenue"] = offerers_api.get_offerer_total_revenue(offerer_id)
+
+    if FeatureToggle.WIP_ENABLE_CLICKHOUSE_IN_BO.is_active():
+        try:
+            clickhouse_result = clickhouse_queries.TotalAggregatedRevenueQuery().execute(
+                tuple(venue.id for venue in offerer.managedVenues)
+            )
+            stats["total_revenue"] = clickhouse_result.expected_revenue
+        except ApiErrors:
+            stats["total_revenue"] = PLACEHOLDER
+    elif not (is_collective_too_big or is_individual_too_big):
+        stats["total_revenue"] = offerers_api.get_offerer_total_revenue(offerer.id)
 
     return stats
 
@@ -293,8 +307,14 @@ def get_stats_data(offerer_id: int) -> dict:
 @offerer_blueprint.route("/stats", methods=["GET"])
 @repository.atomic()
 def get_stats(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
-    data = get_stats_data(offerer_id)
+    offerer = (
+        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        .options(sa.orm.joinedload(offerers_models.Offerer.managedVenues).load_only(offerers_models.Venue.id))
+        .one_or_none()
+    )
+    if not offerer:
+        raise NotFound()
+    data = get_stats_data(offerer)
     return render_template(
         "offerer/get/stats.html",
         stats=data,
@@ -305,8 +325,41 @@ def get_stats(offerer_id: int) -> utils.BackofficeResponse:
 @offerer_blueprint.route("/revenue-details", methods=["GET"])
 @repository.atomic()
 def get_revenue_details(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
-    details = offerers_repository.get_revenues_per_year(offererId=offerer_id)
+    offerer = (
+        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        .options(sa.orm.joinedload(offerers_models.Offerer.managedVenues).load_only(offerers_models.Venue.id))
+        .one_or_none()
+    )
+    if not offerer:
+        raise NotFound()
+
+    if FeatureToggle.WIP_ENABLE_CLICKHOUSE_IN_BO.is_active():
+        try:
+            clickhouse_result = clickhouse_queries.YearlyAggregatedRevenueQuery().execute(
+                tuple(venue.id for venue in offerer.managedVenues)
+            )
+            details: dict[str, dict] = {}
+            future = {"individual": decimal.Decimal(0.0), "collective": decimal.Decimal(0.0)}
+            for year, yearly_data in clickhouse_result.income_by_year.items():
+                details[year] = {
+                    "individual": yearly_data.revenue.individual,  # type: ignore[union-attr]
+                    "collective": yearly_data.revenue.collective,  # type: ignore[union-attr]
+                }
+                future["individual"] += yearly_data.expected_revenue.individual - yearly_data.revenue.individual  # type: ignore[union-attr]
+                future["collective"] += yearly_data.expected_revenue.collective - yearly_data.revenue.collective  # type: ignore[union-attr]
+            if sum(future.values()) > 0:
+                details["En cours"] = future
+        except ApiErrors as api_error:
+            return render_template(
+                "components/revenue_details.html",
+                information=Markup(
+                    "Une erreur s'est produite lors de la lecture des données sur Clickhouse : {error}"
+                ).format(error=api_error.errors["clickhouse"]),
+                target=offerer,
+            )
+    else:
+        details = offerers_repository.get_revenues_per_year(offererId=offerer_id)
+
     return render_template(
         "components/revenue_details.html",
         details=details,

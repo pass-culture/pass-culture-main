@@ -7,33 +7,42 @@
           aria-label="Fermer"></button>
 </div>
 <div class="modal-body row">
-  <div class="d-flex flex-column">
-    <table>
-      <thead>
-        <tr>
-          <th>Année</th>
-          <th class="text-end">CA offres IND</th>
-          <th class="text-end">CA offres EAC</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for year, year_stats in details | dictsort(reverse=true) %}
+  {% if information %}<div class="my-3">{{ information }}</div>{% endif %}
+  {% if details is not none %}
+    <div class="d-flex flex-column">
+      <table>
+        <thead>
           <tr>
-            <td class="text-start">{{ year }}</td>
-            <td class="text-end">{{ year_stats.individual | format_amount(target=target) }}</td>
-            <td class="text-end">{{ year_stats.collective | format_amount }}</td>
+            <th>Année</th>
+            <th class="text-end">CA offres IND</th>
+            <th class="text-end">CA offres EAC</th>
           </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {% if "En cours" in details %}
-      <div class="my-3 small">
-        Note : Le CA « En cours » correspond aux réservations qui n'ont pas encore été validées.
-        Ce chiffre d'affaires en cours n'est pas certain (annulations possibles), chaque réservation
-        sera comptabilisée sur l'année du jour de sa validation.
-      </div>
-    {% endif %}
-  </div>
+        </thead>
+        <tbody>
+          {% for year, year_stats in details | dictsort(reverse=true) %}
+            <tr>
+              <td class="text-start">{{ year }}</td>
+              <td class="text-end">{{ year_stats.individual | format_amount(target=target) }}</td>
+              <td class="text-end">{{ year_stats.collective | format_amount }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% if "En cours" in details %}
+        <div class="my-3 small">
+          Note : Le CA « En cours » correspond aux réservations qui n'ont pas encore été validées.
+          Ce chiffre d'affaires en cours n'est pas certain (annulations possibles), chaque réservation
+          sera comptabilisée sur l'année du jour de sa validation.
+        </div>
+      {% endif %}
+      {% if is_feature_active("WIP_ENABLE_CLICKHOUSE_IN_BO") %}
+        <div class="my-3 small">
+          Le chiffre d'affaires est mis à jour chaque nuit, les nouvelles réservations et les changements d'état
+          du jour ne sont pas encore pris en compte dans ce tableau.
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
 </div>
 <div class="modal-footer">
   <button type="button"
