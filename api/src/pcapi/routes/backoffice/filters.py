@@ -806,7 +806,11 @@ def format_modified_info_values(modified_info: typing.Any, name: str | None = No
 
 def format_music_gtl_id(music_gtl_id: str) -> str:
     return next(
-        (music_genre.label for music_genre in categories.TITELIVE_MUSIC_TYPES if music_genre.gtl_id == music_gtl_id),
+        (
+            music_genre.label
+            for music_genre in categories.TITELIVE_MUSIC_TYPES
+            if music_genre.gtl_id[:2] == music_gtl_id[:2]
+        ),
         f"Gtl inconnu [{music_gtl_id}]",
     )
 

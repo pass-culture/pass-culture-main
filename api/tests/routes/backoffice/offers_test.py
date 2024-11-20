@@ -1843,11 +1843,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
     def test_get_detail_offer(self, authenticated_client):
         offer = offers_factories.OfferFactory(
             withdrawalDetails="Demander à la caisse",
-            extraData={
-                "ean": "1234567891234",
-                "author": "Author",
-                "editeur": "Editor",
-            },
+            extraData={"ean": "1234567891234", "author": "Author", "editeur": "Editor", "gtl_id": "08010000"},
         )
         offers_factories.OfferComplianceFactory(
             offer=offer,
@@ -1865,6 +1861,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert f"Offer ID : {offer.id}" in card_text
         assert "Catégorie : Films, vidéos" in card_text
         assert "Sous-catégorie : Support physique (DVD, Blu-ray...)" in card_text
+        assert "Type de musique : Alternatif" in card_text
         assert "Statut : Épuisée" in card_text
         assert "État : Validée" in card_text
         assert "Score data : 55 " in card_text
