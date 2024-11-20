@@ -624,15 +624,10 @@ class AlgoliaBackend(base.SearchBackend):
         address = None
         city = None
         postalCode = None
-        if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
-            if venue.offererAddress is not None:
-                address = venue.offererAddress.address.street
-                city = venue.offererAddress.address.city
-                postalCode = venue.offererAddress.address.postalCode
-        else:
-            address = venue.street
-            city = venue.city
-            postalCode = venue.postalCode
+        if venue.offererAddress is not None:
+            address = venue.offererAddress.address.street
+            city = venue.offererAddress.address.city
+            postalCode = venue.offererAddress.address.postalCode
 
         return {
             "_geoloc": position(venue),
@@ -669,10 +664,7 @@ class AlgoliaBackend(base.SearchBackend):
         offerer = venue.managingOfferer
         date_created = collective_offer_template.dateCreated.timestamp()
 
-        if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
-            postalCode = venue.offererAddress.address.postalCode if venue.offererAddress else None
-        else:
-            postalCode = venue.postalCode
+        postalCode = venue.offererAddress.address.postalCode if venue.offererAddress else None
         assert postalCode  # helps mypy, it would crash below if None
         # TODO(activation): why don't we just use venue.offererAddress.address.departmentCode ?
         department_code = get_department_code_from_city_code(postalCode)
@@ -800,16 +792,12 @@ class AlgoliaBackend(base.SearchBackend):
 def position(venue: offerers_models.Venue, offer: offers_models.Offer | None = None) -> dict[str, float]:
     latitude = None
     longitude = None
-    if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
-        if offer and offer.offererAddress:
-            latitude = offer.offererAddress.address.latitude
-            longitude = offer.offererAddress.address.longitude
-        elif venue.offererAddress is not None:
-            latitude = venue.offererAddress.address.latitude
-            longitude = venue.offererAddress.address.longitude
-    else:
-        latitude = venue.latitude
-        longitude = venue.longitude
+    if offer and offer.offererAddress:
+        latitude = offer.offererAddress.address.latitude
+        longitude = offer.offererAddress.address.longitude
+    elif venue.offererAddress is not None:
+        latitude = venue.offererAddress.address.latitude
+        longitude = venue.offererAddress.address.longitude
     return format_coordinates(latitude, longitude)
 
 

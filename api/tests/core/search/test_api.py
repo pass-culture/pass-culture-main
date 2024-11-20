@@ -135,7 +135,11 @@ class ReindexOfferIdsTest:
     def test_no_unexpected_query_made(self):
         offer_ids = [make_bookable_offer().id for _ in range(3)]
 
-        with assert_no_duplicated_queries():
+        num_queries = 1  # 1 - get the 3 offers + related data
+        num_queries += 1  # 1 - get FF
+        num_queries += 1  # 1 - get bookings count for the 3 offers
+        num_queries += 1  # list the venue ids
+        with assert_num_queries(4):
             search.reindex_offer_ids(offer_ids)
 
     def test_unindex_unbookable_offer(self, app):

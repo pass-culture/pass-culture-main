@@ -26,7 +26,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 @override_settings(ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS=[1, 2, 3, 4])
-@override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
 @time_machine.travel("2024-01-01T00:00:00", tick=False)
 def test_serialize_offer():
     rayon = "Policier / Thriller format poche"  # fetched from provider
@@ -138,7 +137,6 @@ def test_serialize_offer():
 
 
 @override_settings(ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS=[1, 2, 3, 4])
-@override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
 @time_machine.travel("2024-01-01T00:00:00", tick=False)
 def test_serialize_offer_legacy():
     rayon = "Policier / Thriller format poche"  # fetched from provider
@@ -456,7 +454,6 @@ def test_serialize_venue_with_one_bookable_offer():
     assert serialized["has_at_least_one_bookable_offer"]
 
 
-@override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
 def test_serialize_collective_offer_template():
     domain1 = educational_factories.EducationalDomainFactory(name="Danse")
     domain2 = educational_factories.EducationalDomainFactory(name="Architecture")
@@ -516,66 +513,6 @@ def test_serialize_collective_offer_template():
         "_geoloc": {
             "lat": 47.15846,
             "lng": 2.40929,
-        },
-        "isTemplate": True,
-        "formats": [fmt.value for fmt in subcategories.CONCERT.formats],
-    }
-
-
-@override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
-def test_serialize_collective_offer_template_legacy():
-    # Same as test_serialize_collective_offer_template
-    domain1 = educational_factories.EducationalDomainFactory(name="Danse")
-    domain2 = educational_factories.EducationalDomainFactory(name="Architecture")
-    venue = offerers_factories.VenueFactory(latitude=algolia.DEFAULT_LATITUDE, longitude=algolia.DEFAULT_LONGITUDE)
-
-    collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
-        dateCreated=datetime.datetime(2022, 1, 1, 10, 0, 0),
-        name="Titre formidable",
-        description="description formidable",
-        students=[StudentLevels.CAP1, StudentLevels.CAP2],
-        subcategoryId=subcategories.CONCERT.id,
-        venue__postalCode="86140",
-        venue__name="La Moyenne Librairie SA",
-        venue__publicName="La Moyenne Librairie",
-        venue__managingOfferer__name="Les Librairies Associées",
-        venue__departementCode="86",
-        venue__adageId="123456",
-        educational_domains=[domain1, domain2],
-        interventionArea=None,
-        offerVenue={"addressType": OfferAddressType.OFFERER_VENUE, "venueId": venue.id, "otherAddress": ""},
-    )
-
-    serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
-    assert serialized == {
-        "objectID": f"T-{collective_offer_template.id}",
-        "offer": {
-            "dateCreated": 1641031200.0,
-            "name": "Titre formidable",
-            "students": ["CAP - 1re année", "CAP - 2e année"],
-            "subcategoryId": subcategories.CONCERT.id,
-            "domains": [domain1.id, domain2.id],
-            "educationalInstitutionUAICode": "all",
-            "interventionArea": [],
-            "schoolInterventionArea": None,
-            "eventAddressType": OfferAddressType.OFFERER_VENUE.value,
-            "beginningDatetime": 1641031200.0,
-            "description": collective_offer_template.description,
-        },
-        "offerer": {
-            "name": "Les Librairies Associées",
-        },
-        "venue": {
-            "academy": "Poitiers",
-            "departmentCode": "86",
-            "id": collective_offer_template.venue.id,
-            "name": "La Moyenne Librairie SA",
-            "publicName": "La Moyenne Librairie",
-            "adageId": collective_offer_template.venue.adageId,
-        },
-        "_geoloc": {
-            "lat": float(venue.latitude),
-            "lng": float(venue.longitude),
         },
         "isTemplate": True,
         "formats": [fmt.value for fmt in subcategories.CONCERT.formats],

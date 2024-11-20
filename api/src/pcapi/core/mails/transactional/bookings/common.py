@@ -27,5 +27,7 @@ def get_offerer_name(booking: Booking) -> str:
     return booking.stock.offer.venue.managingOfferer.name
 
 
-def get_venue_street(booking: Booking) -> str:
-    return booking.stock.offer.venue.street
+def get_venue_street(booking: Booking) -> str | None:
+    if booking.stock.offer.venue.offererAddress:
+        return booking.stock.offer.venue.offererAddress.address.street
+    return None
