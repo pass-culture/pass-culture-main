@@ -1,7 +1,10 @@
 import { useField, useFormikContext } from 'formik'
 import React, { useEffect, useState } from 'react'
 
-import { VenueListItemResponseModel } from 'apiClient/v1'
+import {
+  GetIndividualOfferWithAddressResponseModel,
+  VenueListItemResponseModel,
+} from 'apiClient/v1'
 import { resetAddressFields } from 'commons/utils/resetAddressFields'
 import { AddressSelect } from 'components/Address/Address'
 import { AddressManual } from 'components/AddressManual/AddressManual'
@@ -16,13 +19,18 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { RadioButton } from 'ui-kit/form/RadioButton/RadioButton'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
+import { setFormReadOnlyFields } from 'components/IndividualOffer/UsefulInformationScreen/utils'
 import styles from './OfferLocation.module.scss'
 
 interface OfferLocationProps {
   venue: VenueListItemResponseModel | undefined
+  offer: GetIndividualOfferWithAddressResponseModel
 }
 
-export const OfferLocation = ({ venue }: OfferLocationProps): JSX.Element => {
+export const OfferLocation = ({
+  venue,
+  offer,
+}: OfferLocationProps): JSX.Element => {
   const formik = useFormikContext<IndividualOfferFormValues>()
 
   const [showOtherAddress, setShowOtherAddress] = useState(
@@ -78,6 +86,8 @@ export const OfferLocation = ({ venue }: OfferLocationProps): JSX.Element => {
     }
   }
 
+  const readOnlyFields = setFormReadOnlyFields(offer)
+
   const venueAddress = venue?.address
     ? computeAddressDisplayName(venue.address, false)
     : ''
@@ -99,6 +109,7 @@ export const OfferLocation = ({ venue }: OfferLocationProps): JSX.Element => {
           value={venue?.address?.id_oa.toString() ?? ''}
           required
           onChange={onChangeOfferLocation}
+          disabled={readOnlyFields.includes('offerLocation')}
         />
       </FormLayout.Row>
       <FormLayout.Row className={styles['location-row']}>
@@ -109,6 +120,7 @@ export const OfferLocation = ({ venue }: OfferLocationProps): JSX.Element => {
           value={OFFER_LOCATION.OTHER_ADDRESS}
           required
           onChange={onChangeOfferLocation}
+          disabled={readOnlyFields.includes('offerLocation')}
         />
       </FormLayout.Row>
 
@@ -119,12 +131,16 @@ export const OfferLocation = ({ venue }: OfferLocationProps): JSX.Element => {
               label="Intitulé de la localisation"
               name="locationLabel"
               isOptional
+              disabled={readOnlyFields.includes('locationLabel')}
             />
           </FormLayout.Row>
 
           <FormLayout.Row>
             <AddressSelect
-              disabled={manuallySetAddress.value}
+              disabled={
+                manuallySetAddress.value ||
+                readOnlyFields.includes('addressAutocomplete')
+              }
               className={styles['location-field']}
             />
           </FormLayout.Row>
@@ -135,6 +151,7 @@ export const OfferLocation = ({ venue }: OfferLocationProps): JSX.Element => {
               title="Renseignez l’adresse manuellement"
               icon={manuallySetAddress.value ? fullBackIcon : fullNextIcon}
               onClick={toggleManuallySetAddress}
+              disabled={readOnlyFields.includes('manuallySetAddress')}
             >
               {manuallySetAddress.value ? (
                 <>Revenir à la sélection automatique</>
@@ -143,7 +160,9 @@ export const OfferLocation = ({ venue }: OfferLocationProps): JSX.Element => {
               )}
             </Button>
           </FormLayout.Row>
-          {manuallySetAddress.value && <AddressManual />}
+          {manuallySetAddress.value && (
+            <AddressManual readOnlyFields={readOnlyFields} />
+          )}
         </div>
       )}
     </FormLayout.Section>
