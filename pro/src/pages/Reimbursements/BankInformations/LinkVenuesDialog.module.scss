@@ -47,21 +47,6 @@ $banner-height: rem.torem(124px);
     }
   }
 
-  &-checkbox-button {
-    margin: 0;
-  }
-
-  &-checkbox-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: rem.torem(24px);
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-
   &-actions {
     display: flex;
     justify-content: flex-end;

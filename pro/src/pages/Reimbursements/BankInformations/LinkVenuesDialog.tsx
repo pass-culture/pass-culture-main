@@ -14,15 +14,14 @@ import { pluralizeString } from 'commons/utils/pluralize'
 import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
-import fullEditIcon from 'icons/full-edit.svg'
 import strokeWarningIcon from 'icons/stroke-warning.svg'
 import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 
 import styles from './LinkVenuesDialog.module.scss'
-import { PricingPointDialog } from './PricingPointDialog/PricingPointDialog'
+import { ManadgedVenueItem } from './ManagedVenueItem/ManagedVenueItem'
 
 interface LinkVenuesDialogProps {
   offererId: number
@@ -42,9 +41,6 @@ export const LinkVenuesDialog = ({
   const [showDiscardChangesDialog, setShowDiscardChangesDialog] =
     useState<boolean>(false)
   const [showUnlinkVenuesDialog, setShowUnlinkVenuesDialog] =
-    useState<boolean>(false)
-  const [selectedVenue, setSelectedVenue] = useState<ManagedVenues | null>(null)
-  const [isPricingPointDialogOpen, setIsPricingPointDialogOpen] =
     useState<boolean>(false)
 
   const availableManagedVenuesIds = managedVenues
@@ -105,23 +101,12 @@ export const LinkVenuesDialog = ({
       }
     },
   })
-
-  function handleVenueChange(event: any) {
-    if (event.target.checked) {
-      setSelectedVenuesIds([...selectedVenuesIds, parseInt(event.target.value)])
-    } else {
-      setSelectedVenuesIds(
-        selectedVenuesIds.filter(
-          (venueId) => venueId !== parseInt(event.target.value)
-        )
-      )
-    }
-  }
-
-  const venuesForPricingPoint = managedVenues.filter((x) => Boolean(x.siret))
   const hasVenuesWithoutPricingPoint = managedVenues.some(
     (venue) => !venue.hasPricingPoint
   )
+
+  const venuesForPricingPoint = managedVenues.filter((x) => Boolean(x.siret))
+
   return (
     <>
       <DialogBuilder
@@ -198,54 +183,17 @@ export const LinkVenuesDialog = ({
 
                 {managedVenues.map((venue) => {
                   return (
-                    <div
+                    <ManadgedVenueItem
+                      venue={venue}
                       key={venue.id}
-                      className={styles['dialog-checkbox-container']}
-                    >
-                      <BaseCheckbox
-                        disabled={
-                          (Boolean(venue.bankAccountId) &&
-                            venue.bankAccountId !== selectedBankAccount.id) ||
-                          !venue.hasPricingPoint
-                        }
-                        label={venue.commonName}
-                        name={venue.id.toString()}
-                        value={venue.id}
-                        checked={selectedVenuesIds.indexOf(venue.id) >= 0}
-                        onChange={handleVenueChange}
-                      />
-                      {!venue.hasPricingPoint && (
-                        <DialogBuilder
-                          open={isPricingPointDialogOpen}
-                          onOpenChange={setIsPricingPointDialogOpen}
-                          trigger={
-                            <Button
-                              variant={ButtonVariant.QUATERNARY}
-                              icon={fullEditIcon}
-                              iconPosition={IconPositionEnum.LEFT}
-                              onClick={() => {
-                                setSelectedVenue(venue)
-                              }}
-                              className={styles['dialog-checkbox-button']}
-                            >
-                              Sélectionner un SIRET
-                            </Button>
-                          }
-                        >
-                          <PricingPointDialog
-                            selectedVenue={selectedVenue}
-                            venues={venuesForPricingPoint}
-                            closeDialog={() => {
-                              setSelectedVenue(null)
-                              setIsPricingPointDialogOpen(false)
-                            }}
-                            updateVenuePricingPoint={
-                              updateBankAccountVenuePricingPoint
-                            }
-                          />
-                        </DialogBuilder>
-                      )}
-                    </div>
+                      updateBankAccountVenuePricingPoint={
+                        updateBankAccountVenuePricingPoint
+                      }
+                      selectedBankAccount={selectedBankAccount}
+                      selectedVenuesIds={selectedVenuesIds}
+                      setSelectedVenuesIds={setSelectedVenuesIds}
+                      venuesForPricingPoint={venuesForPricingPoint}
+                    />
                   )
                 })}
               </div>
