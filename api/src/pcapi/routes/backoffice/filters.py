@@ -33,6 +33,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.domain import show_types
+from pcapi.models import feature as feature_model
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
 from pcapi.routes.backoffice.accounts import serialization as serialization_accounts
@@ -488,22 +489,62 @@ def format_offer_validation_status(status: offer_mixin.OfferValidationStatus) ->
 
 def format_offer_status(status: offer_mixin.OfferStatus) -> str:
     match status:
-        case offer_mixin.OfferStatus.DRAFT:
+        case offer_mixin.OfferStatus.DRAFT | offer_mixin.CollectiveOfferStatus.DRAFT:
             return "Brouillon"
-        case offer_mixin.OfferStatus.ACTIVE:
+        case offer_mixin.OfferStatus.ACTIVE | offer_mixin.CollectiveOfferStatus.ACTIVE:
             return "Active"
-        case offer_mixin.OfferStatus.PENDING:
+        case offer_mixin.OfferStatus.PENDING | offer_mixin.CollectiveOfferStatus.PENDING:
             return "Pré-réservée"
-        case offer_mixin.OfferStatus.EXPIRED:
+        case offer_mixin.OfferStatus.EXPIRED | offer_mixin.CollectiveOfferStatus.EXPIRED:
             return "Expirée"
-        case offer_mixin.OfferStatus.REJECTED:
+        case offer_mixin.OfferStatus.REJECTED | offer_mixin.CollectiveOfferStatus.REJECTED:
             return "Rejetée"
-        case offer_mixin.OfferStatus.SOLD_OUT:
+        case offer_mixin.OfferStatus.SOLD_OUT | offer_mixin.CollectiveOfferStatus.SOLD_OUT:
             return "Épuisée"
-        case offer_mixin.OfferStatus.INACTIVE:
+        case offer_mixin.OfferStatus.INACTIVE | offer_mixin.CollectiveOfferStatus.INACTIVE:
             return "Inactive"
+        case offer_mixin.CollectiveOfferStatus.ARCHIVED:
+            return "Archivée"
         case _:
             return status.value
+
+
+def format_collective_offer_displayed_status(
+    displayed_status: educational_models.CollectiveOfferDisplayedStatus,
+) -> str:
+    match displayed_status:
+        case educational_models.CollectiveOfferDisplayedStatus.ACTIVE:
+            return "Publiée"
+        case educational_models.CollectiveOfferDisplayedStatus.PENDING:
+            if feature_model.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+                return "En instruction"
+            return "En attente"
+        case educational_models.CollectiveOfferDisplayedStatus.REJECTED:
+            if feature_model.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+                return "Non conforme"
+            return "Refusée"
+        case educational_models.CollectiveOfferDisplayedStatus.PREBOOKED:
+            return "Préréservée"
+        case educational_models.CollectiveOfferDisplayedStatus.BOOKED:
+            return "Réservée"
+        case educational_models.CollectiveOfferDisplayedStatus.INACTIVE:
+            if feature_model.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+                return "En pause"
+            return "Masquée"
+        case educational_models.CollectiveOfferDisplayedStatus.EXPIRED:
+            return "Expirée"
+        case educational_models.CollectiveOfferDisplayedStatus.ENDED:
+            return "Terminée"
+        case educational_models.CollectiveOfferDisplayedStatus.CANCELLED:
+            return "Annulée"
+        case educational_models.CollectiveOfferDisplayedStatus.REIMBURSED:
+            return "Remboursée"
+        case educational_models.CollectiveOfferDisplayedStatus.ARCHIVED:
+            return "Archivée"
+        case educational_models.CollectiveOfferDisplayedStatus.DRAFT:
+            return "Brouillon"
+        case _:
+            return displayed_status.value
 
 
 def format_offer_category(subcategory_id: str) -> str:
@@ -1395,6 +1436,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_validation_status"] = format_validation_status
     app.jinja_env.filters["format_offer_validation_status"] = format_offer_validation_status
     app.jinja_env.filters["format_offer_status"] = format_offer_status
+    app.jinja_env.filters["format_collective_offer_displayed_status"] = format_collective_offer_displayed_status
     app.jinja_env.filters["format_offer_category"] = format_offer_category
     app.jinja_env.filters["format_offer_subcategory"] = format_offer_subcategory
     app.jinja_env.filters["format_offerer_rejection_reason"] = format_offerer_rejection_reason
