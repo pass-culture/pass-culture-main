@@ -1,5 +1,5 @@
 {% set field_id = random_hash() %}
-<div class="d-flex flex-column justify-content-center w-100"
+<div class="d-flex flex-column justify-content-center w-100 d-none"
      data-field-list-container="{{ field.name }}-{{ field_id }}">
   <ul {% if field.max_entries %}data-max-entries="{{ field.max_entries }}"{% endif %}
       {% if field.min_entries %}data-min-entries="{{ field.min_entries }}"{% endif %}
