@@ -348,11 +348,16 @@ def get_offerer_address_from_address(
 
 
 def update_offer(
-    offer: models.Offer, body: offers_schemas.UpdateOffer, is_from_private_api: bool = False
+    offer: models.Offer,
+    body: offers_schemas.UpdateOffer,
+    venue: offerers_models.Venue | None = None,
+    offerer_address: offerers_models.OffererAddress | None = None,
+    is_from_private_api: bool = False,
 ) -> models.Offer:
     aliases = set(body.dict(by_alias=True))
     fields = body.dict(by_alias=True, exclude_unset=True)
 
+    # updated using the pro interface
     if address := body.address:
         if address.isVenueAddress:
             fields["offererAddress"] = offer.venue.offererAddress
@@ -361,6 +366,12 @@ def update_offer(
         fields.pop("address", None)
 
     should_send_mail = fields.pop("shouldSendMail", False)
+
+    if venue:
+        fields["venue"] = venue
+
+    if offerer_address:
+        fields["offererAddress"] = offerer_address
 
     updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}
     updates_set = set(updates)
