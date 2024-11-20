@@ -34,9 +34,9 @@ from pcapi.validation.routes.users_authentifications import provider_api_key_req
 )
 def cancel_collective_booking(booking_id: int) -> None:
     """
-    Cancel collective booking
+    Cancel Collective Booking
 
-    Cancel an collective event booking.
+    Cancel a collective event booking.
     """
     booking = _get_booking(booking_id)
     if not booking:

@@ -67,7 +67,7 @@ def get_offerer_venues(
     query: venues_serialization.GetOfferersVenuesQuery,
 ) -> venues_serialization.GetOfferersVenuesResponse:
     """
-    Get offerer venues
+    Get Offerer Venues
 
     Return all the venues attached to the API key for given offerer.
     """
@@ -91,7 +91,7 @@ def get_offerer_venues(
 )
 def get_show_types() -> serialization.GetShowTypesResponse:
     """
-    Get show types
+    Get Show Types
 
     Return show types.
     """
@@ -153,10 +153,10 @@ def get_music_types() -> serialization.GetMusicTypesResponse:
 )
 def get_all_titelive_music_types() -> serialization.GetTiteliveMusicTypesResponse:
     """
-    Get all music types
+    Get Music Types
 
     Return music types. Not all the music types returned by this endpoint are suitable
-    for events. For events, use the [Get events music types endpoint](/rest-api#tag/Offer-attributes/operation/GetEventTiteliveMusicTypes).
+    for events. For events, use the [Get events music types endpoint](/rest-api#tag/Offer-Attributes/operation/GetEventTiteliveMusicTypes).
     """
     return serialization.GetTiteliveMusicTypesResponse(
         __root__=[
@@ -184,7 +184,7 @@ def get_all_titelive_music_types() -> serialization.GetTiteliveMusicTypesRespons
 )
 def get_event_titelive_music_types() -> serialization.GetTiteliveEventMusicTypesResponse:
     """
-    Get events music types
+    Get Events Music Types
 
     Return eligible music types for events.
     """
@@ -305,7 +305,7 @@ def _create_stock(product: offers_models.Offer, body: serialization.ProductOffer
 )
 def post_product_offer(body: serialization.ProductOfferCreation) -> serialization.ProductOfferResponse:
     """
-    Create product
+    Create Product Offer
 
     Create a product in authorized categories.
     """
@@ -373,7 +373,7 @@ def post_product_offer_by_ean(body: serialization.ProductsOfferByEanCreation) ->
     The upsert process is **asynchronous**, meaning the operation may take some time to complete. The success response from this endpoint indicates only that the upsert job has been successfully added to the queue.
 
     **WARNING:** As it is an asynchronous you won't be given any feedback if one or more EANs is rejected.
-    To make sure that your EANs won't be rejected please use [**this endpoint**](/rest-api#tag/Product-offer-bulk-operations/operation/CheckEansAvailability)
+    To make sure that your EANs won't be rejected please use [**this endpoint**](/rest-api#tag/Product-Offer-Bulk-Operations/operation/CheckEansAvailability)
     """
     venue_provider = authorization.get_venue_provider_or_raise_404(body.location.venue_id)
     venue = utils.get_venue_with_offerer_address(venue_provider.venueId)
@@ -644,7 +644,7 @@ def _create_offer_from_product(
 )
 def get_product(product_id: int) -> serialization.ProductOfferResponse:
     """
-    Get product offer
+    Get Product Offer
 
     Return a product offer by id.
     """
@@ -677,7 +677,7 @@ def get_product_by_ean(
     query: serialization.GetProductsListByEansQuery,
 ) -> serialization.ProductOffersByEanResponse:
     """
-    Get product offers by EAN
+    Get Product Offers by EANs
 
     Return all the product offers of a given venue matching given EANs (European Article Number, EAN-13).
     """
@@ -794,7 +794,7 @@ def get_products(
     query: serialization.GetOffersQueryParams,
 ) -> serialization.ProductOffersResponse:
     """
-    Get venue products
+    Get Venue Products
 
     Return all products linked to a venue. Results are paginated (by default `50` products by page).
     """
@@ -843,7 +843,7 @@ def _check_offer_can_be_edited(offer: offers_models.Offer) -> None:
 )
 def edit_product(body: serialization.ProductOfferEdition) -> serialization.ProductOfferResponse:
     """
-    Update product offer
+    Update Product Offer
 
     Will update only the non-blank fields.
     If you want to keep the current value of certains fields, leave them `undefined`.
@@ -952,7 +952,7 @@ def _upsert_product_stock(
 )
 def get_product_categories() -> serialization.GetProductCategoriesResponse:
     """
-    Get product categories
+    Get Product Categories
 
     Return all product categories with their conditional fields, and whether they are required for product creation.
     """
@@ -977,7 +977,7 @@ def get_product_categories() -> serialization.GetProductCategoriesResponse:
 )
 def upload_image(offer_id: int, form: serialization.ImageUploadFile) -> None:
     """
-    Upload an image
+    Upload an Image
 
     Upload an image for given offer.
     """

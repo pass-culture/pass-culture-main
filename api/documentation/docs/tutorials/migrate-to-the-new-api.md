@@ -36,7 +36,7 @@ Using the `/public/bookings/v1/keep/token/<token>` endpoint can lead to integrat
 
  ## Migrating to the new stocks endpoint
 
-To migrate your existing integration to the [**new stocks management endpoint**](/rest-api#tag/Product-offer-bulk-operations/operation/PostProductOfferByEan), you need:
+To migrate your existing integration to the [**new stocks management endpoint**](/rest-api#tag/Product-Offer-Bulk-Operations/operation/PostProductOfferByEan), you need:
 
 First, **to authenticate your calls using your provider API key**, instead of the old API key given by the offerer.
 

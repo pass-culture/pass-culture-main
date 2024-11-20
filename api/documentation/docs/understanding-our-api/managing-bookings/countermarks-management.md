@@ -65,7 +65,7 @@ You may need to parse the request payload to get the actual JSON object.
 | **booking_quantity** | Integer | **`false`** | The number of items booked |
 | **offer_ean** | String | `true` | Offer EAN code |
 | **offer_id** | Integer | **`false`** | Offer id |
-| **offer_id_at_provider** | String | `true` | Your own offer id that you gave us using the [**creation**](/rest-api#tag/Product-offers/operation/PostProductOffer) or [**update**](/rest-api#tag/Product-offers/operation/EditProduct) endpoints |
+| **offer_id_at_provider** | String | `true` | Your own offer id that you gave us using the [**creation**](/rest-api#tag/Product-Offers/operation/PostProductOffer) or [**update**](/rest-api#tag/Product-Offers/operation/EditProduct) endpoints |
 | **offer_name** | String | **`false`** | Offer name |
 | **offer_price** | Integer | **`false`** | Offer price in euro and in cents (*for instance 1000 = 10 €*) |
 | **price_category_id** | Integer | `true` | Not relevant for products (used for events) |

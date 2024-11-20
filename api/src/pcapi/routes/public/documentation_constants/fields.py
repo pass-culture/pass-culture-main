@@ -14,10 +14,10 @@ LIMIT_DESCRIPTION = "Number of items per page"
 CURSOR_PAGINATION_PAGE = "/docs/understanding-our-api/resources/cursor-pagination"
 # Anchors
 GET_OFFERER_VENUES_ANCHOR = "#tag/Venues/operation/GetOffererVenues"
-LIST_EDUCATIONAL_DOMAINS_ANCHOR = "#tag/Collective-offer-attributes/operation/ListEducationalDomains"
-LIST_STUDENTS_LEVELS_ANCHOR = "#tag/Collective-offer-attributes/operation/ListStudentsLevels"
-GET_NATIONAL_PROGRAMS_ANCHOR = "#tag/Collective-offer-attributes/operation/GetNationalPrograms"
-LIST_EDUCATIONAL_INSTITUTIONS_ANCHOR = "#tag/Collective-offer-attributes/operation/ListEducationalInstitutions"
+LIST_EDUCATIONAL_DOMAINS_ANCHOR = "#tag/Collective-Offer-Attributes/operation/ListEducationalDomains"
+LIST_STUDENTS_LEVELS_ANCHOR = "#tag/Collective-Offer-Attributes/operation/ListStudentsLevels"
+GET_NATIONAL_PROGRAMS_ANCHOR = "#tag/Collective-Offer-Attributes/operation/GetNationalPrograms"
+LIST_EDUCATIONAL_INSTITUTIONS_ANCHOR = "#tag/Collective-Offer-Attributes/operation/ListEducationalInstitutions"
 
 
 class _FIELDS:

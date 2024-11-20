@@ -9,7 +9,7 @@ sidebar_position: 1
 ## 📚 `Products` 
 
 :::tip
-To manage those offers you will be mainly using the **[product offers endpoints](/rest-api/#tag/Product-offers)**.
+To manage those offers you will be mainly using the **[product offers endpoints](/rest-api/#tag/Product-Offers)**.
 :::
 
 ### General description
@@ -22,8 +22,8 @@ To manage those offers you will be mainly using the **[product offers endpoints]
 
 There are **two methods to create a product offer** using the pass Culture API :
 
-- **if your product is a book, a CD or a Vinyl**, you must create your product offer by indicating an **[European Article Numbering code (EAN)](https://en.wikipedia.org/wiki/International_Article_Number)**, a price and a quantity. We will fill the other offer fields using external databases (provided by our partner Titelive). The dedicated endpoint to upsert (create or update) product using EANs is **[this one](/rest-api/#tag/Product-offer-bulk-operations/operation/PostProductOfferByEan)**. The EAN must exist in our product database ; you can verify its availability using **[the dedicated endpoint](/rest-api#tag/Product-offer-bulk-operations/operation/CheckEansAvailability)**.
-- **for others products**, you create your product offer by providing all the data. The dedicated endpoint for this kind of creation is **[this one](/rest-api/#tag/Product-offers/operation/PostProductOffer)**.
+- **if your product is a book, a CD or a Vinyl**, you must create your product offer by indicating an **[European Article Numbering code (EAN)](https://en.wikipedia.org/wiki/International_Article_Number)**, a price and a quantity. We will fill the other offer fields using external databases (provided by our partner Titelive). The dedicated endpoint to upsert (create or update) product using EANs is **[this one](/rest-api/#tag/Product-offer-bulk-operations/operation/PostProductOfferByEan)**. The EAN must exist in our product database ; you can verify its availability using **[the dedicated endpoint](/rest-api#tag/Product-Offer-Bulk-Operations/operation/CheckEansAvailability)**.
+- **for others products**, you create your product offer by providing all the data. The dedicated endpoint for this kind of creation is **[this one](/rest-api/#tag/Product-Offers/operation/PostProductOffer)**.
 
 :::info
 To be able to create a product offer using an EAN code, **this EAN code must exists in the pass Culture database**.
@@ -33,7 +33,7 @@ To be able to create a product offer using an EAN code, **this EAN code must exi
 
 ### Update rule
 
-Regardless of how your product offer was created, you can update it using **[this endpoint](/rest-api/#tag/Product-offers/operation/EditProduct)**. However, if you only need to update the product offer stock for a book, CD, or vinyl, you should use the **[batch upsert endpoint](/rest-api/#tag/Product-offer-bulk-operations/operation/PostProductOfferByEan)**.
+Regardless of how your product offer was created, you can update it using **[this endpoint](/rest-api/#tag/Product-Offers/operation/EditProduct)**. However, if you only need to update the product offer stock for a book, CD, or vinyl, you should use the **[batch upsert endpoint](/rest-api/#tag/Product-Offer-Bulk-Operations/operation/PostProductOfferByEan)**.
 
 ### Concurrent access rules: Pro interface users vs. API users
 
@@ -58,7 +58,7 @@ If a product offer has been created by a user on the pro interface, then it is n
 ## 🎭 `Events`
 
 :::tip
-To manage those offers you will be mainly using the **[event offers endpoints](/rest-api/#tag/Event-offers)**.
+To manage those offers you will be mainly using the **[event offers endpoints](/rest-api/#tag/Event-Offers)**.
 :::
 
 ### General description
@@ -81,7 +81,7 @@ Therefore, you will have **`(number of performances)*(number of categories)`** s
 ### Creation rules
 
 Creating a `event` offer with its stocks is a three steps process.
-You will need to first **[create the event](/rest-api/#tag/Event-offers/operation/PostEventOffer)**, then to **[create its price categories](/rest-api/#tag/Event-offer-prices/operation/PostEventPriceCategories)** and finally to **[create its stocks](/rest-api/#tag/Event-offer-stocks/operation/PostEventStocks)**.
+You will need to first **[create the event](/rest-api/#tag/Event-Offers/operation/PostEventOffer)**, then to **[create its price categories](/rest-api/#tag/Event-Offer-Prices/operation/PostEventPriceCategories)** and finally to **[create its stocks](/rest-api/#tag/Event-Offer-Stocks/operation/PostEventStocks)**.
 
 Here are the rules you should be aware of when creating an event:
 - the **number of price categories for an event** is limited to **`10`**

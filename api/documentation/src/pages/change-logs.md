@@ -7,7 +7,7 @@ title: Pass Culture API change logs
 :::warning
 💡 Important notice some old resources are going to be removed in the coming months.
 
-- If you were using `/v2/venue/<venue_id>/stocks` to manage stocks, you will have to migrate to this endpoint : [/public/offers/v1/products/ean](/rest-api#tag/Product-offer-bulk-operations/operation/PostProductOfferByEan). The endpoint `/v2/stock` will not be available anymore starting from September, the 31st 2024.
+- If you were using `/v2/venue/<venue_id>/stocks` to manage stocks, you will have to migrate to this endpoint : [/public/offers/v1/products/ean](/rest-api#tag/Product-Offer-Bulk-Operations/operation/PostProductOfferByEan). The endpoint `/v2/stock` will not be available anymore starting from September, the 31st 2024.
 - If you were using `/v2/bookings` to manage bookings, you will have to migrate to those endpoints [/public/bookings/v1/bookings](/rest-api#tag/Bookings).  The endpoint `/v2/bookings` will not be available anymore starting from March, the 31st 2025.
 
 **You can find a migration tutorial [here](/docs/tutorials/migrate-to-the-new-api).**
@@ -21,20 +21,20 @@ title: Pass Culture API change logs
 - **Create Address:** You can add an address to the pass Culture database with the [**Create Address endpoint**](/rest-api#tag/Addresses/operation/CreateAddress)
 
 ### Stocks endpoints
-- The [**"Get event stocks" endpoint**](/rest-api#tag/Event-offer-stocks/operation/GetEventStocks) now supports filtering results by the `idsAtProvider` parameter (ie. by your own ids)
+- The [**"Get event stocks" endpoint**](/rest-api#tag/Event-Offer-Stocks/operation/GetEventStocks) now supports filtering results by the `idsAtProvider` parameter (ie. by your own ids)
 
 ## September 2024
 
 ### `idAtProvider` in price category
-- You can now specify your own id when you [**create price categories**](/rest-api#tag/Event-offer-prices/operation/PostEventPriceCategories), or when you [**update a price category**](/rest-api#tag/Event-offer-prices/operation/PatchEventPriceCategory), by adding an `idAtProvider` to your JSON payload.
-- You can now access your event price categories using [**this endpoint**](/rest-api#tag/Event-offer-prices/operation/GetEventPriceCategories) and filter them using the `idsAtProvider` parameter
+- You can now specify your own id when you [**create price categories**](/rest-api#tag/Event-Offer-Price-Categories/operation/PostEventPriceCategories), or when you [**update a price category**](/rest-api#tag/Event-Offer-Price-Categories/operation/PatchEventPriceCategory), by adding an `idAtProvider` to your JSON payload.
+- You can now access your event price categories using [**this endpoint**](/rest-api#tag/Event-Offer-Price-Categories/operation/GetEventPriceCategories) and filter them using the `idsAtProvider` parameter
 - Your price category id is now sent in [**our ticket request message**](/docs/understanding-our-api/managing-bookings/connection-with-ticketing-system#-our-request-payload) in the `price_category_id_at_provider` key
 
 ### EANs availability check
 - You can now check if your EANs are available for bulk upsert using [**this endpoint**](/rest-api#tag/Product-offer-bulk-operations/operation/CheckEansAvailability)
 
 ### Collective booking status (integration only) 
-It is possible to change the status of collective booking into the **integration** environment. We have created new endpoints to modify these statuses and simulate the booking timeline on the Adage side. Please check [rest api documentation](/rest-api#tag/Collective-bookings-Adage-mock)
+It is possible to change the status of collective booking into the **integration** environment. We have created new endpoints to modify these statuses and simulate the booking timeline on the Adage side. Please check [rest api documentation](/rest-api#tag/Adage-Mock-(Collective-Bookings))
 
 :::warning
 These routes are not available from the **production** environment, they only exists because there no Adage platform available from the **integration** environment.
@@ -48,8 +48,8 @@ These routes are not available from the **production** environment, they only ex
 
 ## June 2024
 
-- You can now specify your own id when you [**create an individual event offe**r](/rest-api#tag/Event-offers/operation/PostEventOffer) and/or [**create stock for this event**](/rest-api#tag/Event-offer-stocks/operation/PostEventStocks). This id is called `idAtProvider` and will be sent to your ticketing system when a beneficiary books a ticket ; in the message payload, it is called `offer_id_at_provider`.
-- You can now specify you own id when you [**create stocks for an event offer**](/rest-api#tag/Event-offer-stocks/operation/PostEventStocks). This id called `idAtProvider` and will be sent to your ticketing system when a beneficiary books a ticket ; in the message payload, it is called `stock_id_at_provider`.
+- You can now specify your own id when you [**create an individual event offe**r](/rest-api#tag/Event-Offers/operation/PostEventOffer) and/or [**create stock for this event**](/rest-api#tag/Event-Offer-Stocks/operation/PostEventStocks). This id is called `idAtProvider` and will be sent to your ticketing system when a beneficiary books a ticket ; in the message payload, it is called `offer_id_at_provider`.
+- You can now specify you own id when you [**create stocks for an event offer**](/rest-api#tag/Event-Offer-Stocks/operation/PostEventStocks). This id called `idAtProvider` and will be sent to your ticketing system when a beneficiary books a ticket ; in the message payload, it is called `stock_id_at_provider`.
 
 ## March 2024
 

@@ -15,7 +15,7 @@ We chose this type of pagination to **ensure efficient data retrieval** (using i
 :::info
 In our API, **the cursor is always a resource `id`**.
 
-_For instance, the `firstIndex` in the [**Get events endpoint**](/rest-api#tag/Event-offers/operation/GetEvents) is an event `id`_.
+_For instance, the `firstIndex` in the [**Get events endpoint**](/rest-api#tag/Event-Offers/operation/GetEvents) is an event `id`_.
 :::
 
 :::note

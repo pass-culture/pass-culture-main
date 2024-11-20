@@ -35,9 +35,9 @@ Go to the venue settings page (the URL of this settings page has the following p
 
 ## Phase 2: Build your integration
 
-To build your integration you will be using the [**Create collective offer endpoint**](/rest-api#tag/Collective-offers/operation/PostCollectiveOfferPublic).
+To build your integration you will be using the [**Create collective offer endpoint**](/rest-api#tag/Collective-Offers/operation/PostCollectiveOfferPublic).
 
-Data necessary to the creation of a collective offer can be found in this section : [**Collective offer attributes**](/rest-api#tag/Collective-offer-attributes).
+Data necessary to the creation of a collective offer can be found in this section : [**Collective offer attributes**](/rest-api#tag/Collective-Offer-Attributes).
 
 ## Phase 3: Deploy your integration in production
 

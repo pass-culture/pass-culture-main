@@ -23,7 +23,9 @@ from pcapi.validation.routes.users_authentifications import provider_api_key_req
 )
 def get_national_programs() -> serialization.ListNationalProgramsResponseModel:
     """
-    Get all known national programs
+    Get National Programs
+
+    List national programs (for instance: `Collège au cinéma`, `Jeunes en librairie`...)
     """
     query = educational_models.NationalProgram.query
     return serialization.ListNationalProgramsResponseModel(

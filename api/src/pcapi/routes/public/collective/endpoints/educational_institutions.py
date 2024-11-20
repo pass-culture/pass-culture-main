@@ -31,7 +31,7 @@ def list_educational_institutions(
     query: institutions_serialization.GetListEducationalInstitutionsQueryModel,
 ) -> institutions_serialization.CollectiveOffersListEducationalInstitutionResponseModel:
     """
-    Get all educational institutions
+    Get Educational Institutions
     """
 
     institutions = search_educational_institution(

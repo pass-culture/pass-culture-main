@@ -3,7 +3,7 @@ sidebar_position: 2
 ---
 # Collective offers
 
-**Collectives offers** are **events meant for scholar groups**. They can be managed using the **[collective offers endpoints](/rest-api#tag/Collective-offers)**. These offers will be displayed by the Adage platform (which is not run by the pass Culture team).
+**Collectives offers** are **events meant for scholar groups**. They can be managed using the **[collective offers endpoints](/rest-api#tag/Collective-Offers)**. These offers will be displayed by the Adage platform (which is not run by the pass Culture team).
 
 This public API offers some (basic) functionality in order to handle collective offers and their bookings.
 
@@ -65,7 +65,7 @@ One cannot create a collective offer template using the public API (for now).
 
 ### Bookable offers
 
-A bookable offer can be created using the `post_collective_offer_public` endpoint [described here](/rest-api#tag/Collective-offers/operation/PostCollectiveOfferPublic)
+A bookable offer can be created using the `post_collective_offer_public` endpoint [described here](/rest-api#tag/Collective-Offers/operation/PostCollectiveOfferPublic)
 
 There are two requirements to meet in order to create a collective offer:
 
