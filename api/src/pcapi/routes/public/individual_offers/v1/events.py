@@ -244,6 +244,23 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
         raise api_errors.ApiErrors({"event_id": ["The event offer could not be found"]}, status_code=404)
     utils.check_offer_subcategory(body, offer.subcategoryId)
 
+    venue = None
+    offerer_address = None
+
+    location = body.location
+    if location:
+        venue = utils.get_venue_with_offerer_address(location.venue_id)
+
+        if location.type == "address":
+            address = utils.get_address_or_raise_404(location.address_id)
+            offerer_address = offerers_api.get_or_create_offerer_address(
+                offerer_id=venue.managingOffererId,
+                address_id=address.id,
+                label=location.address_label,
+            )
+        else:
+            offerer_address = venue.offererAddress
+
     try:
         with repository.transaction():
             updates = body.dict(by_alias=True, exclude_unset=True)
@@ -270,8 +287,9 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
                 isDuo=get_field(offer, updates, "enableDoubleBookings", col="isDuo"),
                 withdrawalDetails=get_field(offer, updates, "itemCollectionDetails", col="withdrawalDetails"),
                 name=get_field(offer, updates, "name"),
+                url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
             )  # type: ignore[call-arg]
-            offer = offers_api.update_offer(offer, offer_body)
+            offer = offers_api.update_offer(offer, offer_body, venue=venue, offerer_address=offerer_address)
             if body.image:
                 utils.save_image(body.image, offer)
     except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as error:

@@ -1,8 +1,11 @@
 import pytest
 
 from pcapi import settings
+from pcapi.core.geography import factories as geography_factories
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.core.providers import factories as providers_factories
 from pcapi.models import db
 from pcapi.utils import human_ids
 
@@ -17,17 +20,26 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
     endpoint_method = "patch"
     default_path_params = {"event_id": 1}
 
-    def setup_base_resource(self, venue=None, provider=None) -> offers_models.Offer:
+    def setup_base_resource(self, venue=None, provider=None, digital=False) -> offers_models.Offer:
         venue = venue or self.setup_venue()
+        shared_data = {
+            "venue": venue,
+            "withdrawalDetails": "Des conditions de retrait sur la sellette",
+            "withdrawalType": offers_models.WithdrawalTypeEnum.BY_EMAIL,
+            "withdrawalDelay": 86400,
+            "bookingContact": "contact@example.com",
+            "bookingEmail": "notify@example.com",
+            "lastProvider": provider,
+        }
+
+        if digital:
+            return offers_factories.DigitalOfferFactory(
+                **shared_data,
+                subcategoryId="LIVESTREAM_MUSIQUE",
+            )
         return offers_factories.EventOfferFactory(
+            **shared_data,
             subcategoryId="CONCERT",
-            venue=venue,
-            withdrawalDetails="Des conditions de retrait sur la sellette",
-            withdrawalType=offers_models.WithdrawalTypeEnum.BY_EMAIL,
-            withdrawalDelay=86400,
-            bookingContact="contact@example.com",
-            bookingEmail="notify@example.com",
-            lastProvider=provider,
             extraData={"gtl_id": "02000000"},
         )
 
@@ -256,3 +268,71 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
 
         db.session.refresh(event_offer)
         assert event_offer.isActive
+
+    def test_update_location_with_physical_location(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+
+        other_venue = providers_factories.VenueProviderFactory(provider=venue_provider.provider).venue
+        json_data = {"location": {"type": "physical", "venueId": other_venue.id}}
+
+        response = self.send_update_request(client, plain_api_key, event, json_data)
+        assert response.status_code == 200
+
+        db.session.refresh(event)
+
+        assert event.venueId == other_venue.id
+        assert event.venue.offererAddress.id == other_venue.offererAddress.id
+
+    def test_update_location_with_digital_location(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
+        venue = venue_provider.venue
+        event = self.setup_base_resource(venue=venue, provider=venue_provider.provider, digital=True)
+
+        other_venue = offerers_factories.VirtualVenueFactory(managingOfferer=venue.managingOfferer)
+        providers_factories.VenueProviderFactory(provider=venue_provider.provider, venue=other_venue)
+        json_data = {"location": {"type": "digital", "venueId": other_venue.id, "url": "https://oops.fr"}}
+
+        response = self.send_update_request(client, plain_api_key, event, json_data)
+        assert response.status_code == 200
+
+        db.session.refresh(event)
+
+        assert event.url == "https://oops.fr"
+        assert event.venueId == other_venue.id
+        assert not event.offererAddress
+
+    def test_update_location_with_address(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
+        venue = venue_provider.venue
+        event = self.setup_base_resource(venue=venue, provider=venue_provider.provider)
+
+        other_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        address = geography_factories.AddressFactory(
+            latitude=50.63153,
+            longitude=3.06089,
+            postalCode=59000,
+            city="Lille",
+        )
+
+        providers_factories.VenueProviderFactory(provider=venue_provider.provider, venue=other_venue)
+        json_data = {
+            "location": {
+                "type": "address",
+                "venueId": other_venue.id,
+                "addressId": address.id,
+            }
+        }
+
+        response = self.send_update_request(client, plain_api_key, event, json_data)
+        assert response.status_code == 200
+
+        db.session.refresh(event)
+        assert event.offererAddress.addressId == address.id
+
+    def send_update_request(self, client, plain_api_key, event, json_data):
+        url = self.endpoint_url.format(event_id=event.id)
+        return client.with_explicit_token(plain_api_key).patch(
+            url,
+            json=json_data,
+        )

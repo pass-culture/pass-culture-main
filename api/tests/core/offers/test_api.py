@@ -1916,6 +1916,58 @@ class UpdateOfferTest:
             offer = models.Offer.query.one()
             assert offer.offererAddress == offerer_address
 
+    def test_update_venue(self):
+        offer = factories.OfferFactory(offererAddress=None)
+        new_venue = offerers_factories.VenueFactory(managingOfferer=offer.venue.managingOfferer)
+        body = offers_schemas.UpdateOffer()
+
+        updated_offer = api.update_offer(offer, body, venue=new_venue)
+
+        db.session.commit()
+        db.session.refresh(updated_offer)
+
+        assert updated_offer
+        assert updated_offer.venueId == new_venue.id
+        assert not updated_offer.offererAddress
+
+    def test_update_offerer_address(self):
+        new_offerer_address = offerers_factories.OffererAddressFactory(
+            address__latitude=50.63153,
+            address__longitude=3.06089,
+            address__postalCode=59000,
+            address__city="Lille",
+        )
+        offer = factories.OfferFactory()
+        body = offers_schemas.UpdateOffer()
+
+        updated_offer = api.update_offer(offer, body, offerer_address=new_offerer_address)
+
+        db.session.commit()
+        db.session.refresh(updated_offer)
+
+        assert updated_offer
+        assert updated_offer.offererAddressId == new_offerer_address.id
+
+    def test_update_both_venue_and_offerer_address(self):
+        new_offerer_address = offerers_factories.OffererAddressFactory(
+            address__latitude=50.63153,
+            address__longitude=3.06089,
+            address__postalCode=59000,
+            address__city="Lille",
+        )
+        offer = factories.OfferFactory()
+        new_venue = offerers_factories.VenueFactory(managingOfferer=offer.venue.managingOfferer)
+        body = offers_schemas.UpdateOffer()
+
+        updated_offer = api.update_offer(offer, body, venue=new_venue, offerer_address=new_offerer_address)
+
+        db.session.commit()
+        db.session.refresh(updated_offer)
+
+        assert updated_offer
+        assert updated_offer.offererAddressId == new_offerer_address.id
+        assert updated_offer.venueId == new_venue.id
+
 
 @pytest.mark.usefixtures("db_session")
 class BatchUpdateOffersTest:

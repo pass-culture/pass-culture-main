@@ -653,6 +653,7 @@ class EventOfferEdition(OfferEditionBase):
         description="To override category related fields, the category must be specified, even if it cannot be changed. Other category related fields may be left undefined to keep their current value.",
     )
     event_duration: int | None = fields.EVENT_DURATION
+    location: PhysicalLocation | DigitalLocation | AddressLocation | None = fields.OFFER_LOCATION
 
 
 class DateCreation(BaseStockCreation):
