@@ -1,3 +1,5 @@
+from .total_revenue import TotalAggregatedRevenueModel
+from .total_revenue import TotalAggregatedRevenueQuery
 from .yearly_revenue import YearlyAggregatedCollectiveRevenueQuery
 from .yearly_revenue import YearlyAggregatedIndividualRevenueQuery
 from .yearly_revenue import YearlyAggregatedRevenueModel

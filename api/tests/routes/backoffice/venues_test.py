@@ -9,6 +9,7 @@ from flask import url_for
 import pytest
 
 from pcapi.connectors import api_adresse
+from pcapi.connectors.clickhouse import queries as clickhouse_queries
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.criteria import models as criteria_models
@@ -22,11 +23,11 @@ from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.permissions import factories as perm_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.backoffice import api as backoffice_api
@@ -34,6 +35,8 @@ from pcapi.models import db
 from pcapi.routes.backoffice.pro.forms import TypeOptions
 from pcapi.routes.backoffice.venues import blueprint as venues_blueprint
 from pcapi.utils import urls
+
+from tests.connectors.clickhouse import fixtures as clickhouse_fixtures
 
 from .helpers import button as button_helpers
 from .helpers import html_parser
@@ -555,7 +558,7 @@ class GetVenueStatsDataTest:
     ):
         venue_id = venue_with_accepted_bank_account.id
 
-        with assert_num_queries(7):
+        with assert_num_queries(8):
             stats = venues_blueprint.get_stats_data(venue_id)
 
         assert stats["active"]["individual"] == 2
@@ -566,7 +569,7 @@ class GetVenueStatsDataTest:
     def test_no_offers(self, venue):
         venue_id = venue.id
 
-        with assert_num_queries(7):
+        with assert_num_queries(8):
             stats = venues_blueprint.get_stats_data(venue_id)
 
         assert stats["active"]["individual"] == 0
@@ -585,7 +588,10 @@ class GetVenueStatsTest(GetEndpointHelper):
     # get venue with pricing point (1 query)
     # get total revenue (1 query)
     # get venue stats (6 query)
-    expected_num_queries = 10
+    # check feature flag: WIP_ENABLE_CLICKHOUSE_IN_BO
+    expected_num_queries = 11
+    # -1 sql query replaced with clickhouse query
+    expected_num_queries_when_clickhouse_enabled = expected_num_queries - 1
 
     def test_get_venue_with_no_siret(self, authenticated_client, venue_with_no_siret):
         venue_id = venue_with_no_siret.id
@@ -626,17 +632,6 @@ class GetVenueStatsTest(GetEndpointHelper):
             f"Compte bancaire : {bank_account.label} ({(datetime.utcnow() - timedelta(days=1)).strftime('%d/%m/%Y')})"
             in cards_content[2]
         )
-
-    def test_get_stats(self, authenticated_client, venue):
-        booking = bookings_factories.BookingFactory(stock__offer__venue=venue)
-        url = url_for(self.endpoint, venue_id=venue.id)
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url)
-            assert response.status_code == 200
-
-        # cast to integer to avoid errors due to amount formatting
-        assert str(int(booking.amount)) in response.data.decode("utf-8")
 
     def test_venue_total_revenue(
         self,
@@ -683,6 +678,21 @@ class GetVenueStatsTest(GetEndpointHelper):
 
         assert "0,00 € de CA" in html_parser.extract_cards_text(response.data)
 
+    @override_features(WIP_ENABLE_CLICKHOUSE_IN_BO=True)
+    @patch(
+        "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
+        return_value=[clickhouse_queries.TotalAggregatedRevenueModel(expectedRevenue=70.48)],
+    )
+    def test_venue_total_revenue_from_clickhouse(self, mock_run_query, authenticated_client):
+        venue_id = offerers_factories.VenueFactory().id
+
+        with assert_num_queries(self.expected_num_queries_when_clickhouse_enabled):
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
+
+        mock_run_query.assert_called_once()
+        assert "70,48 € de CA" in html_parser.extract_cards_text(response.data)[0]
+
     def test_venue_offers_stats(
         self,
         authenticated_client,
@@ -726,7 +736,9 @@ class GetVenueRevenueDetailsTest(GetEndpointHelper):
     # venue and offerer (to check is_caledonian)
     # bookings revenue stats
     # collective bookings revenue stats
-    expected_num_queries = 5
+    # check feature flag: WIP_ENABLE_CLICKHOUSE_IN_BO
+    expected_num_queries = 6
+    expected_num_queries_when_clickhouse_enabled = expected_num_queries - 2
 
     def test_venue_revenue_details(
         self,
@@ -755,6 +767,47 @@ class GetVenueRevenueDetailsTest(GetEndpointHelper):
         current_revenues = [row for row in table_rows if row["Année"] == "En cours"][0]
         assert current_revenues["CA offres IND"] == "20,00 €"
         assert current_revenues["CA offres EAC"] == "0,00 €"
+
+    @override_features(WIP_ENABLE_CLICKHOUSE_IN_BO=True)
+    @patch(
+        "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
+        return_value=[
+            clickhouse_fixtures.MockYearlyAggregatedRevenueQueryResult(
+                2024,
+                individual=Decimal("246.80"),
+                expected_individual=Decimal("357.90"),
+                collective=Decimal("750"),
+                expected_collective=Decimal("1250"),
+            ),
+            clickhouse_fixtures.MockYearlyAggregatedRevenueQueryResult(
+                2022,
+                individual=Decimal("123.40"),
+                expected_individual=Decimal("123.40"),
+                collective=Decimal("1500"),
+                expected_collective=Decimal("1500"),
+            ),
+        ],
+    )
+    def test_venue_revenue_details_from_clickhouse(self, mock_run_query, authenticated_client):
+        venue_id = offerers_factories.VenueFactory().id
+
+        with assert_num_queries(self.expected_num_queries_when_clickhouse_enabled):
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
+
+        mock_run_query.assert_called_once()
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 3
+        assert rows[0]["Année"] == "En cours"
+        assert rows[0]["CA offres IND"] == "111,10 €"
+        assert rows[0]["CA offres EAC"] == "500,00 €"
+        assert rows[1]["Année"] == "2024"
+        assert rows[1]["CA offres IND"] == "246,80 €"
+        assert rows[1]["CA offres EAC"] == "750,00 €"
+        assert rows[2]["Année"] == "2022"
+        assert rows[2]["CA offres IND"] == "123,40 €"
+        assert rows[2]["CA offres EAC"] == "1 500,00 €"
 
 
 class FullySyncVenueTest(PostEndpointHelper):
