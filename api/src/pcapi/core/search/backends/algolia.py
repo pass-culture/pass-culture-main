@@ -463,6 +463,12 @@ class AlgoliaBackend(base.SearchBackend):
 
         extra_data = offer.product.extraData if offer.product and offer.product.extraData else offer.extraData or {}
         artist = " ".join(str(extra_data.get(key, "")) for key in ("author", "performer", "speaker", "stageDirector"))
+        release_date = None
+        if extra_data.get("releaseDate"):
+            try:
+                release_date = datetime.datetime.fromisoformat(extra_data.get("releaseDate") or "").timestamp()
+            except ValueError as exc:
+                logger.error("Release date could not be parsed %s", exc)
 
         # Field used by Algolia (not the frontend) to deduplicate results
         # https://www.algolia.com/doc/api-reference/api-parameters/distinct/
@@ -558,7 +564,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "nativeCategoryId": offer.subcategory.native_category_id,
                 "prices": sorted(prices),
                 "rankingWeight": offer.rankingWeight,
-                "releaseDate": extra_data.get("releaseDate"),
+                "releaseDate": release_date,
                 "bookFormat": extra_data.get("bookFormat"),
                 # TODO(thconte, 2024-08-23): keep searchGroups and remove
                 # remove searchGroupNamev2 once app minimal version has been bumped
