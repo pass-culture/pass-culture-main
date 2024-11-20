@@ -29,6 +29,7 @@ class PcFieldList extends PcAddOn {
       this.#getButtonsFromContainer($fieldListContainer).forEach(($button) => {
         $button.dataset.fieldListContainerId = $fieldListContainer.dataset.fieldListContainer
       })
+      $fieldListContainer.classList.remove('d-none')
     })
   }
 
