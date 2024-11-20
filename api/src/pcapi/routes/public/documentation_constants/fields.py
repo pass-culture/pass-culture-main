@@ -24,7 +24,7 @@ class _FIELDS:
 
     def __getattribute__(self, name):  # type: ignore [no-untyped-def]
         """
-        This is maint to avoid side-effects between classes that share a field.
+        This is meant to avoid side-effects between classes that share a field.
 
         Without this, here what happens :
 
@@ -40,7 +40,7 @@ class _FIELDS:
                 class Config:
                     alias_generator = to_camel  # this will add an alias `nameOfTheField` to `MY_FIELD_CONSANT`
 
-            class SomeOtheResponseModel(BaseModel):
+            class SomeOtherResponseModel(BaseModel):
                 # now this model expects a field `nameOfTheField` instead of `another_field_name`
                 # because of the `SomeResponseModel` class definition
                 another_field_name: str = MY_FIELD_CONSTANT

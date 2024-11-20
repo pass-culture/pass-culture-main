@@ -186,7 +186,7 @@ def get_event(event_id: int) -> serialization.EventOfferResponse:
             {"HTTP_200": (serialization.EventOffersResponse, "The event offers have been returned")}
             # errors
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
-            | http_responses.HTTP_403_UNTHAUTHORIZED
+            | http_responses.HTTP_403_UNAUTHORIZED
             | http_responses.HTTP_404_VENUE_NOT_FOUND
         )
     ),
