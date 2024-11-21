@@ -3,7 +3,10 @@ import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { getErrorCode, isErrorAPIError } from 'apiClient/helpers'
-import { CollectiveBookingResponseModel, CollectiveOfferAllowedAction } from 'apiClient/v1'
+import {
+  CollectiveBookingResponseModel,
+  CollectiveOfferAllowedAction,
+} from 'apiClient/v1'
 import {
   GET_BOOKINGS_QUERY_KEY,
   GET_COLLECTIVE_BOOKING_BY_ID_QUERY_KEY,
@@ -11,16 +14,16 @@ import {
 } from 'commons/config/swrQueryKeys'
 import { BOOKING_STATUS } from 'commons/core/Bookings/constants'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'commons/core/Notification/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferEditionURL } from 'commons/hooks/useOfferEditionURL'
+import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { CancelCollectiveBookingModal } from 'components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './CollectiveActionButtons.module.scss'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 
 export interface CollectiveActionButtonsProps {
   bookingRecap: CollectiveBookingResponseModel
@@ -46,12 +49,18 @@ export const CollectiveActionButtons = ({
     isShowcase: false,
   })
 
-  const { data: offer} = useSWR(
+  const { data: offer } = useSWR(
     [GET_COLLECTIVE_OFFER_QUERY_KEY, Number(bookingRecap.stock.offerId)],
     ([, offerIdParam]) => api.getCollectiveOffer(offerIdParam)
   )
 
-  const bookingIsCancellable = areNewStatusesEnabled ? offer && isActionAllowedOnCollectiveOffer(offer, CollectiveOfferAllowedAction.CAN_CANCEL) : isCancellable
+  const bookingIsCancellable = areNewStatusesEnabled
+    ? offer &&
+      isActionAllowedOnCollectiveOffer(
+        offer,
+        CollectiveOfferAllowedAction.CAN_CANCEL
+      )
+    : isCancellable
 
   const cancelBooking = async () => {
     setIsModalOpen(false)
@@ -68,12 +77,14 @@ export const CollectiveActionButtons = ({
         GET_COLLECTIVE_BOOKING_BY_ID_QUERY_KEY,
         Number(bookingRecap.bookingId),
       ])
-      notify.success(
-        'La réservation sur cette offre a été annulée avec succès, votre offre sera à nouveau visible sur ADAGE.',
-        {
-          duration: NOTIFICATION_LONG_SHOW_DURATION,
-        }
-      )
+
+      const cancelSucessNotification = areNewStatusesEnabled
+        ? 'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.'
+        : 'La réservation sur cette offre a été annulée avec succès, votre offre sera à nouveau visible sur ADAGE.'
+
+      notify.success(cancelSucessNotification, {
+        duration: NOTIFICATION_LONG_SHOW_DURATION,
+      })
     } catch (error) {
       if (isErrorAPIError(error) && getErrorCode(error) === 'NO_BOOKING') {
         notify.error(

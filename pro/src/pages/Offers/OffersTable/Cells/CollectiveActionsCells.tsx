@@ -197,12 +197,13 @@ export const CollectiveActionsCells = ({
         deselectOffer(offer)
       }
       setIsCancelledBookingModalOpen(false)
-      notify.success(
-        'La réservation sur cette offre a été annulée avec succès, votre offre sera à nouveau visible sur ADAGE.',
-        {
-          duration: NOTIFICATION_LONG_SHOW_DURATION,
-        }
-      )
+
+      const cancelSucessNotification = areCollectiveNewStatusesEnabled
+        ? 'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.'
+        : 'La réservation sur cette offre a été annulée avec succès, votre offre sera à nouveau visible sur ADAGE.'
+      notify.success(cancelSucessNotification, {
+        duration: NOTIFICATION_LONG_SHOW_DURATION,
+      })
     } catch (error) {
       if (isErrorAPIError(error) && getErrorCode(error) === 'NO_BOOKING') {
         notify.error(
@@ -295,15 +296,15 @@ export const CollectiveActionsCells = ({
       !offer.isPublicApi &&
       offer.status !== CollectiveOfferStatus.ARCHIVED
 
-  const isBookingCancellable =
-    areCollectiveNewStatusesEnabled ?
-      isActionAllowedOnCollectiveOffer(offer,CollectiveOfferAllowedAction.CAN_CANCEL)
-      : offer.status === CollectiveOfferStatus.SOLD_OUT &&
-        offer.booking &&
-        (offer.booking.booking_status ===
-          CollectiveBookingStatus.PENDING ||
-          offer.booking.booking_status ===
-            CollectiveBookingStatus.CONFIRMED)
+  const isBookingCancellable = areCollectiveNewStatusesEnabled
+    ? isActionAllowedOnCollectiveOffer(
+        offer,
+        CollectiveOfferAllowedAction.CAN_CANCEL
+      )
+    : offer.status === CollectiveOfferStatus.SOLD_OUT &&
+      offer.booking &&
+      (offer.booking.booking_status === CollectiveBookingStatus.PENDING ||
+        offer.booking.booking_status === CollectiveBookingStatus.CONFIRMED)
 
   const offerActivationWording =
     'Votre offre est maintenant active et visible dans ADAGE'
@@ -451,28 +452,25 @@ export const CollectiveActionsCells = ({
                   </DropdownMenu.Item>
                 )}
                 {isBookingCancellable && (
-                    <>
-                      <DropdownMenu.Separator
-                        className={cn(
-                          styles['separator'],
-                          styles['tablet-only']
-                        )}
-                      />
-                      <DropdownMenu.Item
-                        className={cn(styles['menu-item'])}
-                        onSelect={() => setIsCancelledBookingModalOpen(true)}
-                        asChild
+                  <>
+                    <DropdownMenu.Separator
+                      className={cn(styles['separator'], styles['tablet-only'])}
+                    />
+                    <DropdownMenu.Item
+                      className={cn(styles['menu-item'])}
+                      onSelect={() => setIsCancelledBookingModalOpen(true)}
+                      asChild
+                    >
+                      <Button
+                        icon={fullClearIcon}
+                        variant={ButtonVariant.QUATERNARYPINK}
+                        className={styles['button-cancel-booking']}
                       >
-                        <Button
-                          icon={fullClearIcon}
-                          variant={ButtonVariant.QUATERNARYPINK}
-                          className={styles['button-cancel-booking']}
-                        >
-                          Annuler la réservation
-                        </Button>
-                      </DropdownMenu.Item>
-                    </>
-                  )}
+                        Annuler la réservation
+                      </Button>
+                    </DropdownMenu.Item>
+                  </>
+                )}
                 {canArchiveOffer && (
                   <>
                     <DropdownMenu.Separator
