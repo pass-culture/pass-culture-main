@@ -1551,13 +1551,13 @@ Flask = ">=0.9"
 
 [[package]]
 name = "flask-jwt-extended"
-version = "4.7.0"
+version = "4.7.1"
 description = "Extended JWT integration with Flask"
 optional = false
 python-versions = "<4,>=3.9"
 files = [
-    {file = "Flask_JWT_Extended-4.7.0-py2.py3-none-any.whl", hash = "sha256:4d8939ca006c92209fad82e591471db897f33b6a85561f8e792c5aa6816ef39c"},
-    {file = "flask_jwt_extended-4.7.0.tar.gz", hash = "sha256:be5785e2e3ef4d8773ba6d10247e78827dcf0b111efbfcd7a0794b5f7c750d90"},
+    {file = "Flask_JWT_Extended-4.7.1-py2.py3-none-any.whl", hash = "sha256:52f35bf0985354d7fb7b876e2eb0e0b141aaff865a22ff6cc33d9a18aa987978"},
+    {file = "flask_jwt_extended-4.7.1.tar.gz", hash = "sha256:8085d6757505b6f3291a2638c84d207e8f0ad0de662d1f46aa2f77e658a0c976"},
 ]
 
 [package.dependencies]
@@ -6163,4 +6163,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "d5674b33f4c8b6f2d017662fe0233c542f29e263d277ad5ca5f00c618287a2d4"
+content-hash = "798d6ccb136ba79744f677ad4b9922e0ff9cc35ec46c3d1cad52df60c0d2f748"
