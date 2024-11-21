@@ -38,7 +38,7 @@ class AggregatedRevenue(pydantic_v1.BaseModel):
 
 
 class YearlyAggregatedRevenueModel(pydantic_v1.BaseModel):
-    income_by_year: dict[str, AggregatedRevenue | dict]
+    income_by_year: dict[str, AggregatedRevenue | dict[None, None]]
 
     class Config:
         extra = "forbid"
