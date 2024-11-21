@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { Step } from './Stepper'
 import styles from './Stepper.module.scss'
 
-interface StepContent {
+interface StepContentProps {
   step: Step
   stepIndex: number
   stepsCount: number
@@ -16,7 +16,7 @@ export const StepContent = ({
   stepIndex,
   stepsCount,
   stepperWidth,
-}: StepContent): JSX.Element => {
+}: StepContentProps): JSX.Element => {
   const stepContent = (
     <>
       <div className={styles['number']}>

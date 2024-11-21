@@ -1,12 +1,10 @@
-import React from 'react'
-
 import { CollectiveOfferOfferVenue, OfferAddressType } from 'apiClient/adage'
 
-interface OfferVenue {
+interface OfferVenueProps {
   offerVenue: CollectiveOfferOfferVenue
 }
 
-export const OfferVenue = ({ offerVenue }: OfferVenue): JSX.Element => {
+export const OfferVenue = ({ offerVenue }: OfferVenueProps): JSX.Element => {
   if (offerVenue.addressType === OfferAddressType.OTHER) {
     return <div>{offerVenue.otherAddress}</div>
   }

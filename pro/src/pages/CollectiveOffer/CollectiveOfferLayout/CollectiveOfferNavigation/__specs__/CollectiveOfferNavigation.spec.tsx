@@ -456,6 +456,7 @@ describe('CollectiveOfferNavigation', () => {
   })
 
   it('should return an error when trying to get offerer image', async () => {
+    // eslint-disable-next-line no-undef
     fetchMock.mockResponse('Service Unavailable', { status: 503 })
 
     renderCollectiveOfferNavigation({

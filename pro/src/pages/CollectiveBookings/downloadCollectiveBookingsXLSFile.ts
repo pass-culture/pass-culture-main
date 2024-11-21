@@ -18,6 +18,7 @@ export const downloadCollectiveBookingsXLSFile = async (
       : null,
     // TODO fix PreFiltersParams type to use CollectiveBookingStatusFilter type
     // @ts-expect-error
+    // eslint-disable-next-line no-undef
     filters.bookingStatusFilter as CollectiveBookingStatusFilter,
     isDateValid(filters.bookingBeginningDate)
       ? filters.bookingBeginningDate

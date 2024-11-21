@@ -9,6 +9,15 @@ type OpeningHours = {
   openingHours: GetVenueResponseModel['openingHours']
 }
 
+type OpenClose = {
+  open: string
+  close: string
+}
+
+type HoursProps = {
+  hours: Array<OpenClose>
+}
+
 export function OpeningHoursReadOnly({ openingHours }: OpeningHours) {
   const filledDays = Object.entries(openingHours ?? {}).filter((dateAndHour) =>
     Boolean(dateAndHour[1])
@@ -41,7 +50,7 @@ export function OpeningHoursReadOnly({ openingHours }: OpeningHours) {
   )
 }
 
-export function Hours({ hours }: Hours) {
+export function Hours({ hours }: HoursProps) {
   return (
     <>
       {hours.length === 1 ? (
@@ -59,13 +68,4 @@ export function Hours({ hours }: Hours) {
       )}
     </>
   )
-}
-
-type OpenClose = {
-  open: string
-  close: string
-}
-
-type Hours = {
-  hours: Array<OpenClose>
 }
