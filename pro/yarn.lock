@@ -5602,10 +5602,10 @@ levn@^0.4.1:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
 
-libphonenumber-js@^1.11.14:
-  version "1.11.14"
-  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.11.14.tgz#d753524fd30e6433834a1464baf7efed4a06b593"
-  integrity sha512-sexvAfwcW1Lqws4zFp8heAtAEXbEDnvkYCEGzvOoMgZR7JhXo/IkE9MkkGACgBed5fWqh3ShBGnJBdDnU9N8EQ==
+libphonenumber-js@^1.11.15:
+  version "1.11.15"
+  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.11.15.tgz#0947ba02208cf6c44fdf3b07e097a98b3ec945f4"
+  integrity sha512-M7+rtYi9l5RvMmHyjyoF3BHHUpXTYdJ0PezZGHNs0GyW1lO+K7jxlXpbdIb7a56h0nqLYdjIw+E+z0ciGaJP7g==
 
 lines-and-columns@^1.1.6:
   version "1.2.4"
