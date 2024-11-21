@@ -340,7 +340,7 @@ NATIVE_CATEGORY_ABONNEMENTS_SPECTACLE = NativeCategory(
 )
 NATIVE_CATEGORY_ACHAT_LOCATION_INSTRUMENT = NativeCategory(
     technical_name="ACHAT_LOCATION_INSTRUMENT",
-    label="Achat & location d'instrument",
+    label="Achat et location d'instruments",
     parents=[SEARCH_GROUP_INSTRUMENTS.id, SEARCH_GROUP_MUSIQUE.id],
 )
 NATIVE_CATEGORY_ARTS_VISUELS = NativeCategory(
@@ -365,7 +365,7 @@ NATIVE_CATEGORY_CARTES_CINEMA = NativeCategory(
 )
 NATIVE_CATEGORY_CD = NativeCategory(
     technical_name="CD",
-    label="CD",
+    label="CDs",
     parents=[SEARCH_GROUP_CD_VINYLE_MUSIQUE_EN_LIGNE.id, SEARCH_GROUP_MUSIQUE.id],
     genre_type=GenreType.MUSIC,
 )
@@ -377,7 +377,7 @@ NATIVE_CATEGORY_CONCERTS_EN_LIGNE = NativeCategory(
 )
 NATIVE_CATEGORY_CONCERTS_EVENEMENTS = NativeCategory(
     technical_name="CONCERTS_EVENEMENTS",
-    label="Concerts, évènements",
+    label="Concerts",
     parents=[SEARCH_GROUP_CONCERTS_FESTIVALS.id, SEARCH_GROUP_MUSIQUE.id],
     genre_type=GenreType.MUSIC,
 )
@@ -546,7 +546,7 @@ NATIVE_CATEGORY_VIDEOS_ET_DOCUMENTAIRES = NativeCategory(
 )
 NATIVE_CATEGORY_VINYLES = NativeCategory(
     technical_name="VINYLES",
-    label="Vinyles et autres supports",
+    label="Vinyles",
     parents=[SEARCH_GROUP_CD_VINYLE_MUSIQUE_EN_LIGNE.id, SEARCH_GROUP_MUSIQUE.id],
     genre_type=GenreType.MUSIC,
 )
