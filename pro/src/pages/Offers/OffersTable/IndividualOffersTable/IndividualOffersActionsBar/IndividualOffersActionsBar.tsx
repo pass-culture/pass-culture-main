@@ -165,7 +165,9 @@ export const IndividualOffersActionsBar = ({
         .filter((offer) =>
           isActivating
             ? offer.status === OfferStatus.INACTIVE
-            : offer.status === OfferStatus.ACTIVE
+            : offer.status === OfferStatus.ACTIVE ||
+              offer.status === OfferStatus.SOLD_OUT ||
+              offer.status === OfferStatus.EXPIRED
         )
         .map((offer) => offer.id),
       notify,
@@ -219,8 +221,12 @@ export const IndividualOffersActionsBar = ({
       <IndividualDeactivationConfirmDialog
         areAllOffersSelected={areAllOffersSelected}
         nbSelectedOffers={
-          selectedOffers.filter((offer) => offer.status === OfferStatus.ACTIVE)
-            .length
+          selectedOffers.filter(
+            (offer) =>
+              offer.status === OfferStatus.ACTIVE ||
+              offer.status === OfferStatus.SOLD_OUT ||
+              offer.status === OfferStatus.EXPIRED
+          ).length
         }
         onConfirm={handleDeactivateOffers}
         onCancel={() => setIsDeactivationDialogOpen(false)}
