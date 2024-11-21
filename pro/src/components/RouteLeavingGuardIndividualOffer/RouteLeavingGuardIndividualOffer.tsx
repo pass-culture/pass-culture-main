@@ -5,13 +5,13 @@ import {
   BlockerFunction,
 } from 'components/RouteLeavingGuard/RouteLeavingGuard'
 
-interface RouteLeavingGuardIndividualOffer {
+interface RouteLeavingGuardIndividualOfferProps {
   when: boolean
 }
 
 export const RouteLeavingGuardIndividualOffer = ({
   when,
-}: RouteLeavingGuardIndividualOffer): JSX.Element => {
+}: RouteLeavingGuardIndividualOfferProps): JSX.Element => {
   const shouldBlockNavigation: BlockerFunction = ({
     currentLocation,
     nextLocation,

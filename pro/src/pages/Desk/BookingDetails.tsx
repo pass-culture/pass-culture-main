@@ -1,5 +1,4 @@
 import cx from 'classnames'
-import React from 'react'
 
 import { GetBookingResponse } from 'apiClient/v2'
 import { formatLocalTimeDateString } from 'commons/utils/timezone'
@@ -8,12 +7,12 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './BookingDetails.module.scss'
 
-interface BookingDetailsLine {
+interface BookingProps {
   label: string
   value: number | string
 }
 
-const BookingDetailsLine = ({ label, value }: BookingDetailsLine) => (
+const BookingDetailsLine = ({ label, value }: BookingProps) => (
   <div>
     <div className={styles['desk-label']}>{label}</div>
     <div className={styles['desk-value']}>{value}</div>

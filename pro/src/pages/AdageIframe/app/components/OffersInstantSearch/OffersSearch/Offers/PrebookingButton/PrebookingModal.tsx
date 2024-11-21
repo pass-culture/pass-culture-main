@@ -1,7 +1,7 @@
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import strokePassIcon from 'icons/stroke-pass.svg'
 
-interface PrebookingModal {
+interface PrebookingModalProps {
   closeModal: () => void
   preBookCurrentStock: () => Promise<void>
   isPreview?: boolean
@@ -13,7 +13,7 @@ export const PrebookingModal = ({
   preBookCurrentStock,
   isPreview = false,
   isDialogOpen,
-}: PrebookingModal): JSX.Element => {
+}: PrebookingModalProps): JSX.Element => {
   return (
     <ConfirmDialog
       icon={strokePassIcon}

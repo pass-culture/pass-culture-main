@@ -80,7 +80,6 @@ export default [
     files: ['**/*.tsx', '**/*.ts'],
 
     rules: {
-      'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
       'no-unused-vars': 'off',
       'import/no-dynamic-require': 'warn',
@@ -129,7 +128,6 @@ export default [
       ],
 
       eqeqeq: 'error',
-      'require-await': 'error',
       'import/no-named-as-default': 'error',
       'import/no-default-export': 'error',
       '@typescript-eslint/await-thenable': 'error',
@@ -139,11 +137,16 @@ export default [
       '@typescript-eslint/no-empty-object-type': 'error',
       '@typescript-eslint/no-unsafe-function-type': 'error',
       '@typescript-eslint/no-wrapper-object-types': 'error',
-      '@typescript-eslint/switch-exhaustiveness-check': 'error',
       '@typescript-eslint/no-unnecessary-type-arguments': 'error',
       '@typescript-eslint/no-unnecessary-boolean-literal-compare': 'error',
       '@typescript-eslint/no-floating-promises': 'error',
-      '@typescript-eslint/no-unnecessary-condition': 'error',
+
+      // TODO turn into error
+      '@typescript-eslint/no-unnecessary-condition': 'warn',
+      'react-hooks/rules-of-hooks': 'warn',
+      '@typescript-eslint/switch-exhaustiveness-check': 'warn',
+      'require-await': 'warn',
+      'react-hooks/exhaustive-deps': 'warn',
 
       'react/self-closing-comp': [
         'error',

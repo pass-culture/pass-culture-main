@@ -1,10 +1,10 @@
 import styles from './LabelBooking.module.scss'
 
-type LabelBooking = {
+type LabelBookingProps = {
   bookingsCount: number
 }
 
-export function LabelBooking({ bookingsCount }: LabelBooking) {
+export function LabelBooking({ bookingsCount }: LabelBookingProps) {
   return (
     <>
       Réservations
