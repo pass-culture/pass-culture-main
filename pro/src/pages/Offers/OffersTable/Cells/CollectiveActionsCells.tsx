@@ -198,12 +198,13 @@ export const CollectiveActionsCells = ({
         deselectOffer(offer)
       }
       setIsCancelledBookingModalOpen(false)
-      notify.success(
-        'La réservation sur cette offre a été annulée avec succès, votre offre sera à nouveau visible sur ADAGE.',
-        {
-          duration: NOTIFICATION_LONG_SHOW_DURATION,
-        }
-      )
+
+      const cancelSucessNotification = areCollectiveNewStatusesEnabled
+        ? 'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.'
+        : 'La réservation sur cette offre a été annulée avec succès, votre offre sera à nouveau visible sur ADAGE.'
+      notify.success(cancelSucessNotification, {
+        duration: NOTIFICATION_LONG_SHOW_DURATION,
+      })
     } catch (error) {
       if (isErrorAPIError(error) && getErrorCode(error) === 'NO_BOOKING') {
         notify.error(
