@@ -37,3 +37,8 @@ $caption-line-height: rem.torem(16px);
   font-family: Montserrat-RegularItalic, system-ui, sans-serif;
   font-size: rem.torem(15px);
 }
+
+@mixin body-italic() {
+  font-family: Montserrat-RegularItalic, system-ui, sans-serif;
+  font-size: $body-font-size;
+}

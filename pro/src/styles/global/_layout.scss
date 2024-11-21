@@ -15,3 +15,11 @@ p,
 textarea {
   @include fonts.body;
 }
+
+strong {
+  @include fonts.body-exergue;
+}
+
+em {
+  @include fonts.body-italic;
+}
