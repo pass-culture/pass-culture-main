@@ -106,6 +106,7 @@ describe('ActionsBar', () => {
       selectedOffers: [
         { id: 1, status: OfferStatus.INACTIVE },
         { id: 2, status: OfferStatus.INACTIVE },
+        { id: 3, status: OfferStatus.DRAFT },
       ],
     })
 
@@ -165,8 +166,17 @@ describe('ActionsBar', () => {
   })
 
   it('should deactivate selected offers', async () => {
-    props.areAllOffersSelected = false
-    renderActionsBar(props)
+    renderActionsBar({
+      ...props,
+      areAllOffersSelected: false,
+      selectedOffers: [
+        { id: 1, status: OfferStatus.ACTIVE },
+        { id: 2, status: OfferStatus.SOLD_OUT },
+        { id: 3, status: OfferStatus.EXPIRED },
+        { id: 4, status: OfferStatus.DRAFT },
+        { id: 5, status: OfferStatus.INACTIVE },
+      ],
+    })
 
     await userEvent.click(screen.getByText('Désactiver'))
     const confirmDeactivateButton = screen.getAllByText('Désactiver')[1]
@@ -182,13 +192,13 @@ describe('ActionsBar', () => {
       }
     )
     expect(api.patchOffersActiveStatus).toHaveBeenLastCalledWith({
-      ids: [1, 2],
+      ids: [1, 2, 3],
       isActive: false,
     })
     expect(props.clearSelectedOffers).toHaveBeenCalledTimes(1)
 
     expect(
-      screen.getByText('2 offres ont bien été désactivées')
+      screen.getByText('3 offres ont bien été désactivées')
     ).toBeInTheDocument()
   })
 
