@@ -1,4 +1,4 @@
-@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
+@use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
 
 .app-link {
@@ -7,14 +7,14 @@
 }
 
 .title-container {
-  @include fonts-design-system.title2;
+  @include fonts.title2;
 
   margin-bottom: rem.torem(16px);
   display: flex;
 }
 
 .title {
-  @include fonts-design-system.title4;
+  @include fonts.title4;
 }
 
 .icon-info-phone {

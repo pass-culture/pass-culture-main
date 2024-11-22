@@ -161,7 +161,7 @@
   }
 
   &-quaternary {
-    @include fonts.caption;
+    @include fonts.body-semi-bold-xs;
 
     margin-top: rem.torem(6px);
     margin-bottom: rem.torem(6px);

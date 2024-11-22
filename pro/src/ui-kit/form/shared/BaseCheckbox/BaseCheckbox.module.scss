@@ -27,7 +27,7 @@
   }
 
   &-description {
-    @include fonts.caption;
+    @include fonts.body-semi-bold-xs;
 
     color: var(--color-grey-dark);
     margin-top: rem.torem(4px);

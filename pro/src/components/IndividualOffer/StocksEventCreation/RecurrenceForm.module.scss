@@ -3,12 +3,11 @@
 @use "styles/variables/_size.scss" as size;
 @use "styles/mixins/_forms.scss" as formsM;
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 
 .title {
   margin-bottom: rem.torem(24px);
 
-  @include fonts-design-system.title3;
+  @include fonts.title3;
 
   @media (max-width: size.$tablet) {
     margin-top: rem.torem(32px);
@@ -23,7 +22,7 @@
 }
 
 .legend {
-  @include fonts-design-system.title4;
+  @include fonts.title4;
 
   display: flex;
   align-items: center;
@@ -129,7 +128,7 @@
 }
 
 .mandatory {
-  @include fonts.caption;
+  @include fonts.body-semi-bold-xs;
 
   color: var(--color-grey-dark);
   margin-bottom: rem.torem(16px);

@@ -3,7 +3,7 @@
 @use "styles/mixins/_rem.scss" as rem;
 
 .field-success {
-  @include fonts.caption;
+  @include fonts.body-semi-bold-xs;
 
   color: var(--color-valid);
   display: flex;

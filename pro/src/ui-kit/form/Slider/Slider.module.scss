@@ -14,12 +14,12 @@
   margin-bottom: rem.torem(12px);
 
   .input-value {
-    @include fonts.body-exergue;
+    @include fonts.body-semi-bold;
   }
 }
 
 .min-max-container {
-  @include fonts.caption;
+  @include fonts.body-semi-bold-xs;
 
   color: var(--color-grey-dark);
   display: flex;
