@@ -81,7 +81,7 @@ $connect-as-header-height: rem.torem(52px);
 .content-container {
   width: 100%;
   flex-grow: 1;
-  padding: rem.torem(24px) rem.torem(24px) 0;
+  padding: size.$main-content-padding-xs size.$main-content-padding-xs 0;
   background-color: var(--color-white);
   display: flex;
   flex-direction: column;

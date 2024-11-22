@@ -5,6 +5,7 @@
 $dropdown-icon-size: rem.torem(20px);
 
 .dropdown-indicator {
+  cursor: pointer;
   background: none;
   border: none;
   fill: var(--color-grey-light);
