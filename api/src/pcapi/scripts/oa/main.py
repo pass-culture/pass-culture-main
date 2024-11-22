@@ -30,25 +30,28 @@ def get_inconsistent_venue_addresses() -> list[offerers_models.Venue]:
     )
 
 
-def create_venue_address_as_manual(venues: list[offerers_models.Venue]):
+def create_venue_address_as_manual(existing_venues: list[offerers_models.Venue]) -> None:
     incorrect_oa_label = "Localisation erronée - Structure "
-    for venue in venues:
+    for venue in existing_venues:
+        if venue.offererAddress is None:
+            return
         # Duplicate OA to keep the informations
-        offerers_api.create_offerer_address(
-            offerer_id=venue.offererAddress.offererId,
-            address_id=venue.offererAddress.addressId,
-            label=f"{incorrect_oa_label}{venue.id}",
-        )
+        if venue.offererAddress.offererId is not None and venue.offererAddress.addressId is not None:
+            offerers_api.create_offerer_address(
+                offerer_id=venue.offererAddress.offererId,
+                address_id=venue.offererAddress.addressId,
+                label=f"{incorrect_oa_label}{venue.id}",
+            )
         # Create new address
         address = offerers_api.get_or_create_address(
             offerers_api.LocationData(
-                postal_code=venue.postalCode,
-                city=venue.city,
-                latitude=venue.latitude,
-                longitude=venue.longitude,
+                postal_code=str(venue.postalCode),
+                city=str(venue.city),
+                latitude=float(venue.latitude) if venue.latitude is not None else 0,
+                longitude=float(venue.longitude) if venue.longitude is not None else 0,
                 street=venue.street,
-                # insee_code=venue.citycode,
-                # ban_id=venue.banId,
+                insee_code=None,
+                ban_id=None,
             ),
             is_manual_edition=True,
         )
@@ -70,8 +73,8 @@ if __name__ == "__main__":
     except:
         db.session.rollback()
         raise
+
+    if args.dry_run:
+        db.session.rollback()
     else:
-        if args.dry_run:
-            db.session.rollback()
-        else:
-            db.session.commit()
+        db.session.commit()
