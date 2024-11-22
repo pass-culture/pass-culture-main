@@ -37,6 +37,6 @@ def sync_instructor_ids(procedure_number: int) -> None:
         ds_instructor_id = instructors[user.email]
         if user.backoffice_profile.dsInstructorId != ds_instructor_id:
             user.backoffice_profile.dsInstructorId = ds_instructor_id
-            db.session.add(user)
+            db.session.add(user.backoffice_profile)
 
     db.session.flush()
