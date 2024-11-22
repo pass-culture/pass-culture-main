@@ -80,7 +80,6 @@ import type { PatchCollectiveOfferArchiveBodyModel } from '../models/PatchCollec
 import type { PatchCollectiveOfferBodyModel } from '../models/PatchCollectiveOfferBodyModel';
 import type { PatchCollectiveOfferEducationalInstitution } from '../models/PatchCollectiveOfferEducationalInstitution';
 import type { PatchCollectiveOfferTemplateBodyModel } from '../models/PatchCollectiveOfferTemplateBodyModel';
-import type { PatchDraftOfferBodyModel } from '../models/PatchDraftOfferBodyModel';
 import type { PatchOfferActiveStatusBodyModel } from '../models/PatchOfferActiveStatusBodyModel';
 import type { PatchOfferBodyModel } from '../models/PatchOfferBodyModel';
 import type { PatchOfferPublishBodyModel } from '../models/PatchOfferPublishBodyModel';
@@ -1763,7 +1762,7 @@ export class DefaultService {
    */
   public patchDraftOffer(
     offerId: number,
-    requestBody?: PatchDraftOfferBodyModel,
+    requestBody?: PatchOfferBodyModel,
   ): CancelablePromise<GetIndividualOfferResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
