@@ -141,11 +141,11 @@ export default [
       '@typescript-eslint/no-unnecessary-boolean-literal-compare': 'error',
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-unnecessary-condition': 'error',
+      'require-await': 'error',
 
       // TODO turn into error
       'react-hooks/rules-of-hooks': 'warn',
       '@typescript-eslint/switch-exhaustiveness-check': 'warn',
-      'require-await': 'warn',
       'react-hooks/exhaustive-deps': 'warn',
 
       'react/self-closing-comp': [
