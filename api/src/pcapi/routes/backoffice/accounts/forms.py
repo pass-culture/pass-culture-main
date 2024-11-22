@@ -1,8 +1,10 @@
+import datetime
 import enum
 
 from flask_wtf import FlaskForm
 import wtforms
 
+from pcapi.connectors.dms import models as dms_models
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import models as users_models
 from pcapi.routes.backoffice import filters
@@ -76,10 +78,37 @@ class AccountUpdateRequestSearchForm(utils.PCForm):
         csrf = False
 
     q = fields.PCOptSearchField("Numéro de dossier")
+    from_to_date = fields.PCDateRangeField(
+        "Modifiés entre",
+        validators=(wtforms.validators.Optional(),),
+        max_date=datetime.date.today(),
+        reset_to_blank=True,
+    )
     page = wtforms.HiddenField("page", default="1", validators=(wtforms.validators.Optional(),))
     per_page = fields.PCSelectField(
         "Par page",
         choices=(("10", "10"), ("25", "25"), ("50", "50"), ("100", "100")),
         default="100",
         validators=(wtforms.validators.Optional(),),
+    )
+    has_found_user = fields.PCSelectMultipleField(
+        "Compte jeune",
+        choices=(("true", "Avec compte jeune"), ("false", "Sans compte jeune")),
+    )
+    status = fields.PCSelectMultipleField(
+        "État",
+        choices=utils.choices_from_enum(
+            dms_models.GraphQLApplicationStates, formatter=filters.format_dms_application_status
+        ),
+    )
+    update_type = fields.PCSelectMultipleField(
+        "Type de demande",
+        choices=(("first_name", "Prénom"), ("last_name", "Nom"), ("email", "Email"), ("phone_number", "Téléphone")),
+    )
+    last_instructor = fields.PCTomSelectField(
+        "Dernier instructeur",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_bo_users",
     )
