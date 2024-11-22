@@ -74,7 +74,7 @@ pc restart-backend
 Afin de naviguer/tester différentes situations de données, il existe dans api des scripts permettant d'engendrer des
 bases de données "sandbox".
 
-La plus conséquente est `industrial`, elle se créée depuis via l'une de ces deux commandes:
+La plus conséquente est `industrial`, elle se créée avec cette commande:
 
 ```bash
 pc sandbox -n industrial
