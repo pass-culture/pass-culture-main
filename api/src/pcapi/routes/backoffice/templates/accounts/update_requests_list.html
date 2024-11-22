@@ -24,6 +24,7 @@
               <th scope="col"></th>
               <th scope="col">Dossier</th>
               <th scope="col">État</th>
+              <th scope="col">Date de dernière MàJ</th>
               <th scope="col">Date des derniers messages</th>
               <th scope="col">Demandeur</th>
               <th scope="col">Jeune</th>
@@ -43,6 +44,7 @@
                      title="Ouvrir le dossier DS">{{ update_request.dsApplicationId }} <i class="bi bi-box-arrow-up-right"></i></a>
                 </td>
                 <td>{{ update_request.status | format_dms_application_status }}</td>
+                <td>{{ update_request.dateLastStatusUpdate | format_date_time }}</td>
                 <td>
                   {% if update_request.dateLastUserMessage %}
                     <span class="fw-bold">Demandeur :</span>

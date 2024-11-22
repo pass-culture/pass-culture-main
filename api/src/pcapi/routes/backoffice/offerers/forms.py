@@ -121,7 +121,7 @@ class OffererValidationListForm(utils.PCForm):
         choices=[("yes", "Oui"), ("no", "Non")],
     )
     instructors = fields.PCTomSelectField(
-        "Auteur de la dernière action",
+        "Dernier instructeur",
         multiple=True,
         choices=[],
         validate_choice=False,
@@ -189,7 +189,7 @@ class UserOffererValidationListForm(utils.PCForm):
         choices=utils.choices_from_enum(ValidationStatus, filters.format_validation_status),
     )
     instructors = fields.PCTomSelectField(
-        "Auteur de la dernière action",
+        "Dernier instructeur",
         multiple=True,
         choices=[],
         validate_choice=False,
