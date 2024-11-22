@@ -140,9 +140,9 @@ export default [
       '@typescript-eslint/no-unnecessary-type-arguments': 'error',
       '@typescript-eslint/no-unnecessary-boolean-literal-compare': 'error',
       '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/no-unnecessary-condition': 'error',
 
       // TODO turn into error
-      '@typescript-eslint/no-unnecessary-condition': 'warn',
       'react-hooks/rules-of-hooks': 'warn',
       '@typescript-eslint/switch-exhaustiveness-check': 'warn',
       'require-await': 'warn',
