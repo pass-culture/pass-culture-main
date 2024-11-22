@@ -46,7 +46,6 @@ export const OfferFavoriteButton = ({
 
       notify.success('Supprimé de vos favoris')
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       apiAdage.logFavOfferButtonClick({
         offerId: offer.id,
         queryId: queryId,
@@ -73,7 +72,6 @@ export const OfferFavoriteButton = ({
 
       notify.success('Ajouté à vos favoris')
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       apiAdage.logFavOfferButtonClick({
         offerId: offer.id,
         queryId: queryId,

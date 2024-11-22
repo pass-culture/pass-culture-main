@@ -41,7 +41,6 @@ export const ContactButton = ({
     setIsModalOpen(true)
 
     if (!isPreview) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       apiAdage.logContactModalButtonClick({
         iframeFrom: location.pathname,
         offerId,

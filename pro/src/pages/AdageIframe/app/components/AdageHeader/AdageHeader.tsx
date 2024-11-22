@@ -25,7 +25,6 @@ export const AdageHeader = () => {
   const isDiscoveryPage = pathname === '/adage-iframe/decouverte'
 
   function logAdageLinkClick(headerLinkName: AdageHeaderLink) {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     apiAdage.logHeaderLinkClick({
       iframeFrom: location.pathname,
       header_link_name: headerLinkName,
