@@ -184,6 +184,7 @@ def create_account(
         phoneNumber=phone_number,
         lastConnectionDate=datetime.datetime.utcnow(),
     )
+    db.session.add(user)
 
     if not user.age or user.age < constants.ACCOUNT_CREATION_MINIMUM_AGE:
         raise exceptions.UnderAgeUserException()
@@ -199,14 +200,15 @@ def create_account(
     if firebase_pseudo_id:
         user.externalIds["firebase_pseudo_id"] = firebase_pseudo_id
 
-    repository.save(user)
-    logger.info("Created user account", extra={"user": user.id})
+    db.session.flush()
 
     if remote_updates:
         external_attributes_api.update_external_user(user)
 
     if not user.isEmailValidated and send_activation_mail:
         request_email_confirmation(user)
+
+    logger.info("Created user account", extra={"user": user.id})
 
     return user
 
