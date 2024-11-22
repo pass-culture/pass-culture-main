@@ -2,12 +2,14 @@ import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 import { Layout } from 'app/App/layout/Layout'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
 
 import styles from './Sitemap.module.scss'
 
 export const Sitemap = () => {
   const selectedOffererId = useSelector(selectCurrentOffererId)
+  const isOffererStatsV2Active = useActiveFeature('WIP_OFFERER_STATS_V2')
 
   return (
     <Layout>
@@ -65,11 +67,11 @@ export const Sitemap = () => {
             </li>
           </ul>
         </li>
-        <li className={styles['sitemap-list-item']}>
+        {!isOffererStatsV2Active && <li className={styles['sitemap-list-item']}>
           <Link to="/statistiques" className={styles['sitemap-link']}>
             Statistiques
           </Link>
-        </li>
+        </li>}
         <li className={styles['sitemap-list-item']}>
           <span className={styles['sitemap-list-title']}>
             Gestion financière
@@ -88,6 +90,14 @@ export const Sitemap = () => {
                 Informations bancaires
               </Link>
             </li>
+            {isOffererStatsV2Active && <li className={styles['sitemap-list-item']}>
+              <Link
+                to="/remboursements/revenus"
+                className={styles['sitemap-link']}
+              >
+                Chiffre d’affaires
+              </Link>
+            </li>}
           </ul>
         </li>
         <li className={styles['sitemap-list-item']}>

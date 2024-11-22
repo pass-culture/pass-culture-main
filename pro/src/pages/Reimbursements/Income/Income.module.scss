@@ -25,6 +25,29 @@
       }
     }
 
+    &-by-venue {
+      max-width: rem.torem(300px);
+
+      // Selected tags must be displayed to occupy available width.
+      // Width must be calculated based on the viewport width minus
+      // various padding values since they belong to a component that
+      // is not a direct child of the main content container and
+      // has a restricted width.
+      &-selected-tags {
+        width: calc(100vw - size.$main-content-padding-xs * 2);
+
+        @media (min-width: size.$mobile) {
+          width: calc(100vw - (size.$main-content-padding) * 2)
+        }
+
+        @media (min-width: size.$laptop) {
+          // On very large screens the layout does not exceed 90rem.
+          width: calc(100vw - (size.$main-content-padding * 2) - size.$side-nav-width);
+          max-width: calc(size.$desktop - (size.$main-content-padding * 2) - size.$side-nav-width);
+        }
+      }
+    }
+
     &-by-year {
       display: flex;
       flex-flow: row wrap;
@@ -37,6 +60,7 @@
         align-items: end;
 
         &-is-only-filter {
+          height: auto;
           margin-left: 0;
         }
       }

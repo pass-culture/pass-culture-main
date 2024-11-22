@@ -1,9 +1,10 @@
+import type { AggregatedRevenue, CollectiveAndIndividualRevenue,  CollectiveRevenue, IndividualRevenue } from 'apiClient/v1'
 import fullHelpIcon from 'icons/full-help.svg'
 import { BoxRounded } from 'ui-kit/BoxRounded/BoxRounded'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import { IncomeType, IncomeResults } from '../types'
+import { isCollectiveAndIndividualRevenue, isCollectiveRevenue } from '../utils'
 
 import styles from './IncomeResultsBox.module.scss'
 
@@ -42,24 +43,22 @@ const IncomeResultsSubBox = ({ title, number, help }: IncomeSubBoxProps) => {
 }
 
 type IncomeResultsBoxProps = {
-  type: IncomeType
-  income?: IncomeResults
+  type: keyof AggregatedRevenue
+  income: CollectiveAndIndividualRevenue |  CollectiveRevenue | IndividualRevenue 
 }
 
 export const IncomeResultsBox = ({ type, income }: IncomeResultsBoxProps) => {
-  if (!income) {
-    return null
-  }
-
   const totalLabel =
-    type === 'aggregatedRevenue'
+    type === 'revenue'
       ? 'Chiffre d’affaires total réalisé'
       : 'Chiffre d’affaires total prévisionnel'
   const totalHelp =
-    type === 'aggregatedRevenue'
+    type === 'revenue'
       ? 'Montant des réservations validées et remboursées.'
       : 'Montant des réservations en cours, validées et remboursées.'
-  const shouldDisplayIncomeDetails = income.individual && income.group
+  const shouldDisplayIncomeDetails = isCollectiveAndIndividualRevenue(income)
+  const total = isCollectiveAndIndividualRevenue(income) ? income.total :
+    isCollectiveRevenue(income) ? income.collective : income.individual
 
   return (
     <BoxRounded
@@ -68,23 +67,19 @@ export const IncomeResultsBox = ({ type, income }: IncomeResultsBoxProps) => {
     >
       <IncomeResultsSubBox
         title={totalLabel}
-        number={income.total}
+        number={total}
         help={totalHelp}
       />
       {shouldDisplayIncomeDetails && (
         <div className={styles['income-results-box-subbox']}>
-          {income.individual && (
-            <IncomeResultsSubBox
-              title="Part individuelle"
-              number={income.individual}
-            />
-          )}
-          {income.group && (
-            <IncomeResultsSubBox
-              title="Part collective"
-              number={income.group}
-            />
-          )}
+          <IncomeResultsSubBox
+            title="Part individuelle"
+            number={income.individual}
+          />
+          <IncomeResultsSubBox
+            title="Part collective"
+            number={income.collective}
+          />
         </div>
       )}
     </BoxRounded>

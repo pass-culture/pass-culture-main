@@ -1,27 +1,24 @@
 import { screen, within } from '@testing-library/react'
-import * as reactRedux from 'react-redux'
 
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+import { renderWithProviders, RenderWithProvidersOptions } from 'commons/utils/renderWithProviders'
 
 import { Sitemap } from '../Sitemap'
 
-vi.mock('react-redux', async () => {
-  const originalModule = await vi.importActual('react-redux')
-  return {
-    ...originalModule,
-    useSelector: vi.fn(),
-  }
-})
-
-const renderSitemap = () => {
-  return renderWithProviders(<Sitemap />)
+const renderSitemap = (options: RenderWithProvidersOptions = {}) => {
+  return renderWithProviders(<Sitemap />, {
+    ...options,
+    user: sharedCurrentUserFactory(),
+    storeOverrides: {
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedOffererId: 42,
+      }
+    }
+  })
 }
 
 describe('Sitemap', () => {
-  beforeEach(() => {
-    vi.spyOn(reactRedux, 'useSelector').mockReturnValue(42)
-  })
-
   it('should render the sitemap heading', () => {
     renderSitemap()
     expect(
@@ -114,6 +111,36 @@ describe('Sitemap', () => {
         expect(nestedElement).toBeInTheDocument()
         expect(nestedElement).toHaveAttribute('href', link.href)
       }
+    })
+  })
+
+  // FIXME: This should be removed when the feature is permanently enabled.
+  // https://passculture.atlassian.net/browse/PC-32280
+  describe('when the offerer stats v2 feature is active', () => {
+    it('should not render the statistics link', () => {
+      renderSitemap({
+        features: ['WIP_OFFERER_STATS_V2'],
+      })
+
+      const sitemapElement = screen.getByTestId('sitemap')
+      const element = within(sitemapElement).queryByRole('link', {
+        name: 'Statistiques',
+      })
+      expect(element).not.toBeInTheDocument()
+    })
+
+    it('should render the revenue page nested link in "Gestion financière" list', () => {
+      renderSitemap({
+        features: ['WIP_OFFERER_STATS_V2'],
+      })
+
+      const sitemapElement = screen.getByTestId('sitemap')
+      const element = within(sitemapElement).getByRole('link', {
+        name: 'Chiffre d’affaires',
+      })
+
+      expect(element).toBeInTheDocument()
+      expect(element).toHaveAttribute('href', '/remboursements/revenus')
     })
   })
 })

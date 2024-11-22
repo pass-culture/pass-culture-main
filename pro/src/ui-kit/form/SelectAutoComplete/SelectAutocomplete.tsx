@@ -1,6 +1,12 @@
 import cx from 'classnames'
 import { useField, useFormikContext } from 'formik'
-import { KeyboardEventHandler, useEffect, useRef, useState } from 'react'
+import {
+  ForwardedRef,
+  KeyboardEventHandler,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 
 import { SelectOption } from 'commons/custom_types/form'
 
@@ -32,6 +38,16 @@ export type SelectAutocompleteProps = FieldLayoutBaseProps & {
   leftIcon?: string
   maxDisplayedOptions?: number
   selectedValuesTagsClassName?: string
+  /**
+   * A flag to automatically focus the input when the component mounts.
+   */
+  shouldFocusOnMount?: boolean
+  /**
+   * A flag to prevent the dropdown from opening on the first focus.
+   * This is useful when the input is automatically focused. The user
+   * is then expected to open the dropdown by clicking on the input.
+   */
+  preventOpenOnFirstFocus?: boolean
 }
 
 export const SelectAutocomplete = ({
@@ -61,6 +77,8 @@ export const SelectAutocomplete = ({
   leftIcon,
   maxDisplayedOptions,
   isLabelHidden,
+  shouldFocusOnMount,
+  preventOpenOnFirstFocus,
 }: SelectAutocompleteProps): JSX.Element => {
   const { setFieldTouched, setFieldValue } = useFormikContext<any>()
 
@@ -78,6 +96,17 @@ export const SelectAutocomplete = ({
   const inputRef = useRef<HTMLInputElement>(null)
   const [isOpen, setIsOpen] = useState(false)
   const [filteredOptions, setFilteredOptions] = useState(options)
+
+  useEffect(() => {
+    const focusOnMount = async () => {
+      if (shouldFocusOnMount) {
+        inputRef.current?.focus()
+        await setFieldTouched(`search-${name}`, true)
+      }
+    }
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    focusOnMount()
+  }, [])
 
   useEffect(() => {
     const resetSearchField = async () => {
@@ -214,10 +243,24 @@ export const SelectAutocomplete = ({
     await setFieldValue(name, updatedSelection)
   }
 
-  const openField = async () => {
+  const openFieldOnFocus = async () => {
+    const focusedOnce = meta.touched
+    const shouldOpen = (preventOpenOnFirstFocus
+      ? focusedOnce && !isOpen
+      : !isOpen)
+
+    if (shouldOpen) {
+      setIsOpen(true)
+    }
+
+    await setFieldTouched(name, true)
+  }
+
+  const openFieldOnClick = async () => {
     if (!isOpen) {
       setIsOpen(true)
     }
+
     await setFieldTouched(name, true)
   }
 
@@ -243,7 +286,7 @@ export const SelectAutocomplete = ({
       isOptional={isOptional}
       label={label}
       name={`search-${name}`}
-      showError={meta.touched && !!meta.error}
+      showError={searchMeta.touched && !!meta.error}
       smallLabel={smallLabel}
       inline={inline}
       description={description}
@@ -258,7 +301,8 @@ export const SelectAutocomplete = ({
           {...(hoveredOptionIndex !== null && {
             'aria-activedescendant': `option-display-${filteredOptions[hoveredOptionIndex]?.value}`,
           })}
-          onFocus={openField}
+          onClick={openFieldOnClick}
+          onFocus={openFieldOnFocus}
           placeholder={finalPlaceholder}
           style={{
             paddingLeft:
