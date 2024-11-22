@@ -363,11 +363,25 @@ describe('CollectiveOfferNavigation', () => {
       isCreatingOffer: false,
     })
 
-    const duplicateOffer = screen.getByRole('button', {
+    const duplicateOfferButton = screen.getByRole('button', {
       name: 'Créer une offre réservable',
     })
 
-    expect(duplicateOffer).toBeInTheDocument()
+    expect(duplicateOfferButton).toBeInTheDocument()
+  })
+
+  it('should not show create bookable offer button if template offer has pending status', () => {
+    renderCollectiveOfferNavigation({
+      ...props,
+      isTemplate: true,
+      offer: { ...offer, displayedStatus: CollectiveOfferDisplayedStatus.PENDING }
+    })
+
+    const duplicateOffer = screen.queryByRole('button', {
+      name: 'Créer une offre réservable',
+    })
+
+    expect(duplicateOffer).not.toBeInTheDocument()
   })
 
   it('should show create bookable offer if offer is template and ff is active', () => {

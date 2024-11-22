@@ -171,7 +171,22 @@ describe('CollectiveActionsCells', () => {
     renderCollectiveActionsCell({
       offer: collectiveOfferFactory({
         isShowcase: true,
-        status: CollectiveOfferStatus.DRAFT,
+        displayedStatus: CollectiveOfferDisplayedStatus.DRAFT,
+      }),
+    })
+
+    await userEvent.click(screen.getByTitle('Action'))
+
+    expect(
+      screen.queryByText('Créer une offre réservable')
+    ).not.toBeInTheDocument()
+  })
+
+  it('should not display duplicate button for pending template offer', async () => {
+    renderCollectiveActionsCell({
+      offer: collectiveOfferFactory({
+        isShowcase: true,
+        displayedStatus: CollectiveOfferDisplayedStatus.PENDING,
       }),
     })
 
@@ -185,7 +200,7 @@ describe('CollectiveActionsCells', () => {
   it('should not display duplicate button for draft bookable offer', async () => {
     renderCollectiveActionsCell({
       offer: collectiveOfferFactory({
-        status: CollectiveOfferStatus.DRAFT,
+        displayedStatus: CollectiveOfferDisplayedStatus.DRAFT,
       }),
     })
 

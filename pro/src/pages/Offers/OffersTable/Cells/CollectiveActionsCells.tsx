@@ -10,6 +10,7 @@ import { getErrorCode, isErrorAPIError } from 'apiClient/helpers'
 import {
   CollectiveBookingStatus,
   CollectiveOfferAllowedAction,
+  CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
   CollectiveOfferStatus,
   CollectiveOfferTemplateAllowedAction,
@@ -256,11 +257,20 @@ export const CollectiveActionsCells = ({
   const canDuplicateOffer = areCollectiveNewStatusesEnabled
     ? isActionAllowedOnCollectiveOffer(
         offer,
-        offer.isShowcase
-          ? CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER
-          : CollectiveOfferAllowedAction.CAN_DUPLICATE
+        CollectiveOfferAllowedAction.CAN_DUPLICATE
       )
-    : offer.status !== CollectiveOfferStatus.DRAFT
+    : offer.displayedStatus !== CollectiveOfferDisplayedStatus.DRAFT
+
+  const canCreateBookableOffer = areCollectiveNewStatusesEnabled
+    ? isActionAllowedOnCollectiveOffer(
+        offer,
+        CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER
+      )
+    : offer.isShowcase &&
+      ![
+        CollectiveOfferDisplayedStatus.DRAFT,
+        CollectiveOfferDisplayedStatus.PENDING,
+      ].includes(offer.displayedStatus)
 
   const canArchiveOffer = areCollectiveNewStatusesEnabled
     ? isActionAllowedOnCollectiveOffer(
@@ -287,7 +297,11 @@ export const CollectiveActionsCells = ({
 
   const noActionsAllowed = areCollectiveNewStatusesEnabled
     ? offer.allowedActions.length === 0
-    : offer.isShowcase && offer.status === CollectiveOfferStatus.ARCHIVED
+    : offer.isShowcase &&
+      [
+        CollectiveOfferDisplayedStatus.ARCHIVED,
+        CollectiveOfferDisplayedStatus.PENDING,
+      ].includes(offer.displayedStatus)
 
   const canEditOffer = areCollectiveNewStatusesEnabled
     ? hasOfferAnyEditionActionAllowed(offer)
@@ -295,15 +309,15 @@ export const CollectiveActionsCells = ({
       !offer.isPublicApi &&
       offer.status !== CollectiveOfferStatus.ARCHIVED
 
-  const isBookingCancellable =
-    areCollectiveNewStatusesEnabled ?
-      isActionAllowedOnCollectiveOffer(offer,CollectiveOfferAllowedAction.CAN_CANCEL)
-      : offer.status === CollectiveOfferStatus.SOLD_OUT &&
-        offer.booking &&
-        (offer.booking.booking_status ===
-          CollectiveBookingStatus.PENDING ||
-          offer.booking.booking_status ===
-            CollectiveBookingStatus.CONFIRMED)
+  const isBookingCancellable = areCollectiveNewStatusesEnabled
+    ? isActionAllowedOnCollectiveOffer(
+        offer,
+        CollectiveOfferAllowedAction.CAN_CANCEL
+      )
+    : offer.status === CollectiveOfferStatus.SOLD_OUT &&
+      offer.booking &&
+      (offer.booking.booking_status === CollectiveBookingStatus.PENDING ||
+        offer.booking.booking_status === CollectiveBookingStatus.CONFIRMED)
 
   const offerActivationWording =
     'Votre offre est maintenant active et visible dans ADAGE'
@@ -403,13 +417,18 @@ export const CollectiveActionsCells = ({
                     className={styles['menu-item']}
                     onSelect={handleCreateOfferClick}
                   >
-                    <Button
-                      icon={offer.isShowcase ? fullPlusIcon : fullCopyIcon}
-                      variant={ButtonVariant.TERNARY}
-                    >
-                      {offer.isShowcase
-                        ? 'Créer une offre réservable'
-                        : 'Dupliquer'}
+                    <Button icon={fullCopyIcon} variant={ButtonVariant.TERNARY}>
+                      Dupliquer
+                    </Button>
+                  </DropdownMenu.Item>
+                )}
+                {canCreateBookableOffer && (
+                  <DropdownMenu.Item
+                    className={styles['menu-item']}
+                    onSelect={handleCreateOfferClick}
+                  >
+                    <Button icon={fullPlusIcon} variant={ButtonVariant.TERNARY}>
+                      Créer une offre réservable
                     </Button>
                   </DropdownMenu.Item>
                 )}
@@ -451,28 +470,25 @@ export const CollectiveActionsCells = ({
                   </DropdownMenu.Item>
                 )}
                 {isBookingCancellable && (
-                    <>
-                      <DropdownMenu.Separator
-                        className={cn(
-                          styles['separator'],
-                          styles['tablet-only']
-                        )}
-                      />
-                      <DropdownMenu.Item
-                        className={cn(styles['menu-item'])}
-                        onSelect={() => setIsCancelledBookingModalOpen(true)}
-                        asChild
+                  <>
+                    <DropdownMenu.Separator
+                      className={cn(styles['separator'], styles['tablet-only'])}
+                    />
+                    <DropdownMenu.Item
+                      className={cn(styles['menu-item'])}
+                      onSelect={() => setIsCancelledBookingModalOpen(true)}
+                      asChild
+                    >
+                      <Button
+                        icon={fullClearIcon}
+                        variant={ButtonVariant.QUATERNARYPINK}
+                        className={styles['button-cancel-booking']}
                       >
-                        <Button
-                          icon={fullClearIcon}
-                          variant={ButtonVariant.QUATERNARYPINK}
-                          className={styles['button-cancel-booking']}
-                        >
-                          Annuler la réservation
-                        </Button>
-                      </DropdownMenu.Item>
-                    </>
-                  )}
+                        Annuler la réservation
+                      </Button>
+                    </DropdownMenu.Item>
+                  </>
+                )}
                 {canArchiveOffer && (
                   <>
                     <DropdownMenu.Separator
