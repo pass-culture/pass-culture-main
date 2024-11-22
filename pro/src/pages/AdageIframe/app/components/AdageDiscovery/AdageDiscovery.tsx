@@ -44,7 +44,6 @@ export const AdageDiscovery = () => {
   const discoveryRef = useRef<HTMLDivElement>(null)
 
   if (isFooterSuggestionVisible && !hasSeenAllPlaylist.current) {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     apiAdage.logHasSeenAllPlaylist({ iframeFrom: location.pathname })
     hasSeenAllPlaylist.current = true
   }
@@ -70,7 +69,6 @@ export const AdageDiscovery = () => {
     playlistId,
     playlistType,
   }: TrackerElementArg) {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     apiAdage.logHasSeenWholePlaylist({
       iframeFrom: location.pathname,
       playlistId,
@@ -98,7 +96,6 @@ export const AdageDiscovery = () => {
     elementId?: number
     index?: number
   }) => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     apiAdage.logConsultPlaylistElement({
       iframeFrom: location.pathname,
       playlistId,

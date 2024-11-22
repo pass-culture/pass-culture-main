@@ -108,7 +108,6 @@ export const Offers = ({
 
   useEffect(() => {
     if (isMobileScreen !== undefined) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       apiAdage.logOfferListViewSwitch({
         iframeFrom: location.pathname,
         source: adageViewType,
@@ -144,7 +143,6 @@ export const Offers = ({
     const source = button.id === 'list' ? 'grid' : 'list'
     dispatch(setSearchView(viewType))
     if (adageViewType !== viewType) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       apiAdage.logOfferListViewSwitch({
         iframeFrom: location.pathname,
         source,
@@ -160,7 +158,6 @@ export const Offers = ({
       return
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     apiAdage.logOfferTemplateDetailsButtonClick({
       iframeFrom: location.pathname,
       offerId: isCollectiveOfferTemplate(offer) ? offer.id : offer.stock.id,

@@ -50,7 +50,6 @@ export const PrebookingButton = ({
 
   const handleBookingModalButtonClick = (stockId: number) => {
     if (LOGS_DATA && !isPreview) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       apiAdage.logBookingModalButtonClick({
         iframeFrom: location.pathname,
         stockId,

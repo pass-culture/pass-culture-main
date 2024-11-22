@@ -88,7 +88,6 @@ export const RequestFormDialog = ({
   })
 
   const logContactUrl = () => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     apiAdage.logContactUrlClick({
       iframeFrom: location.pathname,
       offerId: offerId,

@@ -28,7 +28,6 @@ Bonjour, \n\nJe partage avec vous l’offre pass Culture “${offer.name}”. \n
 
   function handleShareButtonClicked(event: MouseEvent) {
     if (LOGS_DATA) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       apiAdage.logTrackingCtaShare({
         iframeFrom: location.pathname,
         offerId: offer.id,

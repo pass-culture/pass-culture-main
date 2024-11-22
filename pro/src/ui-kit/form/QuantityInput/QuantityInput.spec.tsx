@@ -4,7 +4,10 @@ import { Formik } from 'formik'
 
 import { QuantityInput, QuantityInputProps } from './QuantityInput'
 
-const renderQuantityInput = (props: QuantityInputProps, initialQuantity: number | string = '') => {
+const renderQuantityInput = (
+  props: QuantityInputProps,
+  initialQuantity: number | string = ''
+) => {
   return render(
     <Formik initialValues={{ quantity: initialQuantity }} onSubmit={() => {}}>
       <QuantityInput {...props} />
