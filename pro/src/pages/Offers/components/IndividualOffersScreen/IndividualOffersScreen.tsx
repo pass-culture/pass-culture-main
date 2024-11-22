@@ -184,6 +184,7 @@ export const IndividualOffersScreen = ({
                 canDelete={canDelete}
                 canDeactivate={canDeactivate}
                 canPublish={canPublish}
+                isRestrictedAsAdmin={Boolean(isRestrictedAsAdmin)}
               />
             )}
           </div>

@@ -112,6 +112,7 @@ export const IndividualOffersTable = ({
                   offers={currentPageOffersSubset}
                   selectOffer={setSelectedOffer}
                   selectedOffers={selectedOffers}
+                  isRestrictedAsAdmin={isRestrictedAsAdmin}
                 />
               </table>
             </>

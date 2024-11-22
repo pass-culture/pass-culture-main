@@ -21,12 +21,20 @@ import { computeDeletionSuccessMessage } from 'pages/Offers/utils/computeDeletio
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 
 import styles from './Cells.module.scss'
+import { computeIndividualApiFilters } from 'pages/Offers/utils/computeIndividualApiFilters'
+import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { useSelector } from 'react-redux'
 
 interface DeleteDraftOffersProps {
   offer: ListOffersOfferResponseModel
+  isRestrictedAsAdmin: boolean
 }
 
-export const DeleteDraftCell = ({ offer }: DeleteDraftOffersProps) => {
+export const DeleteDraftCell = ({
+  offer,
+  isRestrictedAsAdmin,
+}: DeleteDraftOffersProps) => {
+  const selectedOffererId = useSelector(selectCurrentOffererId)?.toString()
   const urlSearchFilters = useQuerySearchFilters()
   const { mutate } = useSWRConfig()
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
@@ -37,11 +45,11 @@ export const DeleteDraftCell = ({ offer }: DeleteDraftOffersProps) => {
     setIsConfirmDialogOpen(false)
   }, [])
 
-  const apiFilters = {
-    ...DEFAULT_SEARCH_FILTERS,
-    ...urlSearchFilters,
-  }
-  delete apiFilters.page
+  const apiFilters = computeIndividualApiFilters(
+    urlSearchFilters,
+    selectedOffererId?.toString(),
+    isRestrictedAsAdmin
+  )
 
   const onConfirmDeleteDraftOffer = async () => {
     try {

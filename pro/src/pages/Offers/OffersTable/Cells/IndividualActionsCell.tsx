@@ -12,12 +12,14 @@ interface IndividualActionsCellsProps {
   offer: ListOffersOfferResponseModel
   editionOfferLink: string
   editionStockLink: string
+  isRestrictedAsAdmin: boolean
 }
 
 export const IndividualActionsCells = ({
   offer,
   editionOfferLink,
   editionStockLink,
+  isRestrictedAsAdmin,
 }: IndividualActionsCellsProps) => {
   return (
     <td
@@ -28,7 +30,10 @@ export const IndividualActionsCells = ({
     >
       <div className={styles['actions-column-container']}>
         {offer.status === OFFER_STATUS_DRAFT ? (
-          <DeleteDraftCell offer={offer} />
+          <DeleteDraftCell
+            offer={offer}
+            isRestrictedAsAdmin={isRestrictedAsAdmin}
+          />
         ) : (
           <EditStocksCell offer={offer} editionStockLink={editionStockLink} />
         )}

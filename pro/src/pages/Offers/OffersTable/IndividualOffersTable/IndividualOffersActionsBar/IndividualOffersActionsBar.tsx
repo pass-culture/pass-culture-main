@@ -3,7 +3,6 @@ import { mutate, useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
-import { DEFAULT_SEARCH_FILTERS } from 'commons/core/Offers/constants'
 import { useQuerySearchFilters } from 'commons/core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from 'commons/core/Offers/types'
 import { serializeApiFilters } from 'commons/core/Offers/utils/serializer'
@@ -24,6 +23,9 @@ import { computeSelectedOffersLabel } from '../../../utils/computeSelectedOffers
 
 import { DeleteConfirmDialog } from './DeleteConfirmDialog'
 import { IndividualDeactivationConfirmDialog } from './IndividualDeactivationConfirmDialog'
+import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { useSelector } from 'react-redux'
+import { computeIndividualApiFilters } from 'pages/Offers/utils/computeIndividualApiFilters'
 
 export type IndividualOffersActionsBarProps = {
   areAllOffersSelected: boolean
@@ -34,6 +36,7 @@ export type IndividualOffersActionsBarProps = {
   canDelete: boolean
   canPublish: boolean
   canDeactivate: boolean
+  isRestrictedAsAdmin: boolean
 }
 
 const computeAllActivationSuccessMessage = (nbSelectedOffers: number) => {
@@ -119,7 +122,6 @@ const updateIndividualOffersStatus = async (
       )
     }
   }
-
   await mutate([GET_OFFERS_QUERY_KEY, apiFilters])
 }
 
@@ -132,9 +134,11 @@ export const IndividualOffersActionsBar = ({
   canDelete,
   canPublish,
   canDeactivate,
+  isRestrictedAsAdmin,
 }: IndividualOffersActionsBarProps): JSX.Element => {
   const urlSearchFilters = useQuerySearchFilters()
   const { mutate } = useSWRConfig()
+  const selectedOffererId = useSelector(selectCurrentOffererId)?.toString()
 
   const notify = useNotification()
   const [isDeactivationDialogOpen, setIsDeactivationDialogOpen] =
@@ -144,11 +148,11 @@ export const IndividualOffersActionsBar = ({
     'ENABLE_COLLECTIVE_NEW_STATUSES'
   )
 
-  const apiFilters = {
-    ...DEFAULT_SEARCH_FILTERS,
-    ...urlSearchFilters,
-  }
-  delete apiFilters.page
+  const apiFilters = computeIndividualApiFilters(
+    urlSearchFilters,
+    selectedOffererId,
+    isRestrictedAsAdmin
+  )
 
   const handleClose = () => {
     clearSelectedOffers()

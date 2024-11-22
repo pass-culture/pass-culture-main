@@ -31,6 +31,7 @@ import {
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { IndividualOffersScreen } from './components/IndividualOffersScreen/IndividualOffersScreen'
+import { computeIndividualApiFilters } from './utils/computeIndividualApiFilters'
 
 export const GET_OFFERS_QUERY_KEY = 'listOffers'
 
@@ -88,13 +89,11 @@ export const OffersRoute = (): JSX.Element => {
   //  Admin users are not allowed to check all offers at once or to use the status filter for performance reasons. Unless there is a venue or offerer filter active.
   const isRestrictedAsAdmin = currentUser.isAdmin && !isFilterByVenueOrOfferer
 
-  const apiFilters: SearchFiltersParams = {
-    ...DEFAULT_SEARCH_FILTERS,
-    ...urlSearchFilters,
-    ...(isRestrictedAsAdmin ? { status: ALL_STATUS } : {}),
-    ...{ offererId: selectedOffererId?.toString() ?? '' },
-  }
-  delete apiFilters.page
+  const apiFilters = computeIndividualApiFilters(
+    urlSearchFilters,
+    selectedOffererId?.toString(),
+    isRestrictedAsAdmin
+  )
 
   const offersQuery = useSWR([GET_OFFERS_QUERY_KEY, apiFilters], () => {
     const {

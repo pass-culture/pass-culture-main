@@ -9,12 +9,14 @@ type IndividualOffersTableBodyProps = {
   offers: ListOffersOfferResponseModel[]
   selectOffer: (offer: ListOffersOfferResponseModel) => void
   selectedOffers: ListOffersOfferResponseModel[]
+  isRestrictedAsAdmin: boolean
 }
 
 export const IndividualOffersTableBody = ({
   offers,
   selectOffer,
   selectedOffers,
+  isRestrictedAsAdmin,
 }: IndividualOffersTableBodyProps) => {
   return (
     <tbody className={styles['individual-tbody']}>
@@ -30,6 +32,7 @@ export const IndividualOffersTableBody = ({
             offer={offer}
             selectOffer={selectOffer}
             isFirstRow={index === 0}
+            isRestrictedAsAdmin={isRestrictedAsAdmin}
           />
         )
       })}
