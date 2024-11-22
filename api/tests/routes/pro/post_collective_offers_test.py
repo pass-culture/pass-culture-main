@@ -150,103 +150,6 @@ class Returns200Test:
         # Then
         assert response.status_code == 201
 
-    def test_create_offer_from_template_no_domains_nor_intervention_area_nor_booking_emails(self, client):
-        """Ensure that if a template id is set, domains, intervention
-        area and booking emails can be missing
-        Also ensures the contact mail/phone can be missing
-        """
-        # Given
-        venue = offerers_factories.VenueFactory()
-        template = educational_factories.CollectiveOfferTemplateFactory(venue=venue)
-        offerer = venue.managingOfferer
-        user = offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com").user
-
-        # When
-        data = {
-            **base_offer_payload(venue=venue, domains=[], template_id=template.id),
-            "interventionArea": [],
-            "bookingEmails": [],
-        }
-
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
-
-        # Then
-        assert response.status_code == 201, response.json
-
-        offer_id = response.json["id"]
-        offer = CollectiveOffer.query.get(offer_id)
-
-        assert_offer_values(offer, data, user, offerer)
-
-    def test_create_offer_from_template_no_contact_email(self, client):
-        """Ensure that if a template id is set, domains, intervention
-        area and booking emails can be missing
-        Also ensures the contact mail/phone can be missing
-        """
-        # Given
-        venue = offerers_factories.VenueFactory()
-        template = educational_factories.CollectiveOfferTemplateFactory(
-            venue=venue, contactEmail=None, contactPhone=None
-        )
-        offerer = venue.managingOfferer
-        user = offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com").user
-
-        # When
-        data = {
-            **base_offer_payload(venue=venue, domains=[], template_id=template.id),
-            "contactEmail": "",
-            "contactPhone": "",
-        }
-
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
-
-        # Then
-        assert response.status_code == 201, response.json
-
-        offer_id = response.json["id"]
-        offer = CollectiveOffer.query.get(offer_id)
-
-        # Alter contactEmail because we expect None although we sent ""
-        data["contactEmail"] = None
-        assert_offer_values(offer, data, user, offerer)
-
-    def test_create_offer_from_template_no_contact_email_nor_booking_emails(self, client):
-        """Ensure that if a template id is set, domains, intervention
-        area and booking emails can be missing
-        Also ensures the contact mail/phone can be missing
-        """
-        # Given
-        venue = offerers_factories.VenueFactory()
-        template = educational_factories.CollectiveOfferTemplateFactory(
-            venue=venue, contactEmail=None, contactPhone=None
-        )
-        offerer = venue.managingOfferer
-        user = offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com").user
-
-        # When
-        data = {
-            **base_offer_payload(venue=venue, domains=[], template_id=template.id),
-            "interventionArea": [],
-            "bookingEmails": [],
-            "contactEmail": "",
-            "contactPhone": "",
-        }
-
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
-
-        # Then
-        assert response.status_code == 201, response.json
-
-        offer_id = response.json["id"]
-        offer = CollectiveOffer.query.get(offer_id)
-
-        # Alter contactEmail because we expect None although we sent ""
-        data["contactEmail"] = None
-        assert_offer_values(offer, data, user, offerer)
-
     @override_features(WIP_ENABLE_MARSEILLE=True)
     def test_create_collective_offer_primary_level(self, client):
         venue = offerers_factories.VenueFactory()
@@ -396,6 +299,42 @@ class Returns400Test:
         }
         assert CollectiveOffer.query.count() == 0
 
+    def test_create_collective_offer_no_booking_email(self, client):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
+
+        data = {**base_offer_payload(venue=venue), "bookingEmails": []}
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"bookingEmails": ["Un email doit etre renseigné."]}
+        assert CollectiveOffer.query.count() == 0
+
+    def test_create_collective_offer_no_intervention_area(self, client):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
+
+        data = {**base_offer_payload(venue=venue), "interventionArea": []}
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"interventionArea": ["intervention_area must have at least one value"]}
+        assert CollectiveOffer.query.count() == 0
+
+    def test_create_collective_offer_no_domains(self, client):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
+
+        data = {**base_offer_payload(venue=venue), "domains": []}
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"domains": ["domains must have at least one value"]}
+        assert CollectiveOffer.query.count() == 0
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns404Test:
@@ -447,19 +386,3 @@ class Returns404Test:
         # Then
         assert response.status_code == 404
         assert response.json == {"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"}
-
-    def test_create_collective_offer_no_booking_email(self, client):
-        # Given
-        venue = offerers_factories.VenueFactory()
-        educational_factories.CollectiveOfferTemplateFactory(venue=venue)
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-
-        # When
-        data = {**base_offer_payload(venue=venue), "bookingEmails": []}
-
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
-
-        # Then
-        assert response.status_code == 400
