@@ -1,10 +1,11 @@
 import cn from 'classnames'
+import { useField } from 'formik'
 import React, { useId } from 'react'
 
-import styles from './IconRadio.module.scss'
-import { useTooltipProps } from 'ui-kit/Tooltip/useTooltipProps'
 import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
-import { useField } from 'formik'
+import { useTooltipProps } from 'ui-kit/Tooltip/useTooltipProps'
+
+import styles from './IconRadio.module.scss'
 
 interface IconRadioProps
   extends Partial<React.InputHTMLAttributes<HTMLInputElement>> {

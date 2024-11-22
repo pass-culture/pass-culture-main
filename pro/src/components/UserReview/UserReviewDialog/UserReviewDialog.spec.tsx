@@ -6,7 +6,6 @@ import { api } from 'apiClient/api'
 import * as useNotification from 'commons/hooks/useNotification'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-
 import { UserReviewDialog } from 'components/UserReview/UserReviewDialog/UserReviewDialog'
 
 const notifyError = vi.fn()

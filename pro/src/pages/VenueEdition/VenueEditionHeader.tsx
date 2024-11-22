@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
+import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import {
@@ -9,6 +10,7 @@ import {
   VenueTypeResponseModel,
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
+import { GET_VENUE_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
@@ -23,8 +25,6 @@ import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './VenueEditionHeader.module.scss'
-import { GET_VENUE_QUERY_KEY } from 'commons/config/swrQueryKeys'
-import { useSWRConfig } from 'swr'
 
 export interface VenueEditionHeaderProps {
   venue: GetVenueResponseModel

@@ -23,7 +23,7 @@ if (!isAdageIframe) {
     h.hj =
       h.hj ||
       function () {
-        // eslint-disable-next-line prefer-rest-params
+         
         ;(h.hj.q = h.hj.q || []).push(arguments)
       }
     h._hjSettings = {

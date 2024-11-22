@@ -1,4 +1,4 @@
-/* eslint-disable */
+ 
 type Error = {
   status: number
   code: string
