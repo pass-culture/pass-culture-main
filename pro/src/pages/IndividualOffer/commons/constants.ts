@@ -18,6 +18,7 @@ export const SUBCATEGORIES_FIELDS_DEFAULT_VALUES = {
 }
 
 const OFFER_LOCATION_DEFAULT_VALUES = {
+  offerLocation: '',
   locationLabel: '',
   manuallySetAddress: false,
   street: '',
