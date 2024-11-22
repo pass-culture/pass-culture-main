@@ -6,11 +6,11 @@ import { formatDateTimeParts, isDateValid } from 'commons/utils/date'
 import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
 import { IndividualOfferNavigation } from 'components/IndividualOfferNavigation/IndividualOfferNavigation'
 import fullWaitIcon from 'icons/full-wait.svg'
+import { LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED } from 'pages/IndividualOffer/IndividualOfferInformations/components/IndividualOfferInformationsScreen'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { Status } from '../Status/Status'
 import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos/SynchronizedProviderInformation'
-import { LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED } from '../UsefulInformationScreen/UsefulInformationScreen'
 
 import styles from './IndivualOfferLayout.module.scss'
 import { OfferStatusBanner } from './OfferStatusBanner/OfferStatusBanner'

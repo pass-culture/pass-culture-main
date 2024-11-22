@@ -6,46 +6,56 @@ import { getIndividualOfferFactory } from "commons/utils/factories/individualApi
 import { OFFER_LOCATION } from "pages/IndividualOffer/commons/constants";
 import { IndividualOfferFormValues } from "pages/IndividualOffer/commons/types";
 
-import { serializeDurationMinutes, serializeExtraData, serializePatchOffer } from "../serializePatchOffer";
+import { serializeDurationMinutes, serializeExtraDataForPatch, serializePatchOffer } from "../serializers"
 
-describe('test updateIndividualOffer::serializers', () => {
-  it('test serializeDurationMinutes', () => {
-    expect(serializeDurationMinutes('2:15')).toEqual(135)
-  })
-  it('test serializeDurationMinutes with empty input', () => {
-    expect(serializeDurationMinutes('  ')).toBeUndefined()
-  })
-  it('test serializeExtraData', () => {
-    const formValues: IndividualOfferFormValues = {
-      author: 'author value',
-      ean: 'ean value',
-      gtl_id: '',
-      performer: 'performer value',
-      showType: 'showType value',
-      showSubType: 'showSubType value',
-      speaker: 'speaker value',
-      stageDirector: 'stageDirector value',
-      visa: 'visa value',
-      // some not extra data fields
-      name: 'Test name',
-      description: 'Test description',
-    } as IndividualOfferFormValues
+describe('IndividualOffer:commons:serializers', () => {
+  describe('serializeDurationMinutes', () => {
+    it('should return undefined when durationHour is empty', () => {
+      expect(serializeDurationMinutes('')).toStrictEqual(undefined)
+    })
 
-    const extraData: PostOfferBodyModel['extraData'] = {
-      author: 'author value',
-      ean: 'ean value',
-      gtl_id: '',
-      performer: 'performer value',
-      showType: 'showType value',
-      showSubType: 'showSubType value',
-      speaker: 'speaker value',
-      stageDirector: 'stageDirector value',
-      visa: 'visa value',
-    }
-    expect(serializeExtraData(formValues)).toEqual(extraData)
+    it('should transform string duration into int minutes', () => {
+      expect(serializeDurationMinutes('0:00')).toStrictEqual(0)
+      expect(serializeDurationMinutes('0:21')).toStrictEqual(21)
+      expect(serializeDurationMinutes('3:03')).toStrictEqual(183)
+      expect(serializeDurationMinutes('30:38')).toStrictEqual(1838)
+    })
   })
 
-  describe('test serializePatchOffer', () => {
+  describe('serializeExtraDataForPatch', () => {
+    it('should filter out properties that are not in the extraData', () => {
+      const formValues: IndividualOfferFormValues = {
+        author: 'author value',
+        ean: 'ean value',
+        gtl_id: '',
+        performer: 'performer value',
+        showType: 'showType value',
+        showSubType: 'showSubType value',
+        speaker: 'speaker value',
+        stageDirector: 'stageDirector value',
+        visa: 'visa value',
+        // some not extra data fields
+        name: 'Test name',
+        description: 'Test description',
+      } as IndividualOfferFormValues
+  
+      const extraData: PostOfferBodyModel['extraData'] = {
+        author: 'author value',
+        ean: 'ean value',
+        gtl_id: '',
+        performer: 'performer value',
+        showType: 'showType value',
+        showSubType: 'showSubType value',
+        speaker: 'speaker value',
+        stageDirector: 'stageDirector value',
+        visa: 'visa value',
+      }
+
+      expect(serializeExtraDataForPatch(formValues)).toEqual(extraData)
+    })
+  })
+
+  describe('serializePatchOffer', () => {
     let formValues: IndividualOfferFormValues
     let patchBody: PatchOfferBodyModel
 
@@ -98,7 +108,7 @@ describe('test updateIndividualOffer::serializers', () => {
       patchBody = {
         audioDisabilityCompliant: true,
         description: 'test description',
-        extraData: serializeExtraData(formValues),
+        extraData: serializeExtraDataForPatch(formValues),
         isNational: false,
         isDuo: false,
         mentalDisabilityCompliant: true,
