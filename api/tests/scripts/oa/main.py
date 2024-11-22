@@ -31,12 +31,13 @@ def get_inconsistent_venue_addresses() -> list[offerers_models.Venue]:
 
 
 def create_venue_address_as_manual(venues: list[offerers_models.Venue]):
+    incorrect_oa_label = "Localisation erronée - Structure "
     for venue in venues:
         # Duplicate OA to keep the informations
         offerers_api.create_offerer_address(
             offerer_id=venue.offererAddress.offererId,
             address_id=venue.offererAddress.addressId,
-            label=None,
+            label=f"{incorrect_oa_label}{venue.id}",
         )
         # Create new address
         address = offerers_api.get_or_create_address(
@@ -47,7 +48,7 @@ def create_venue_address_as_manual(venues: list[offerers_models.Venue]):
                 longitude=venue.longitude,
                 street=venue.street,
                 # insee_code=venue.citycode,
-                ban_id=venue.banId,
+                # ban_id=venue.banId,
             ),
             is_manual_edition=True,
         )
