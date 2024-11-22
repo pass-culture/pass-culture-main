@@ -379,6 +379,23 @@ class Returns400Test:
         assert response.status_code == 400
         assert CollectiveOffer.query.count() == 0
 
+    def test_create_collective_offer_booking_emails_invalid(self, client):
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user=user)
+
+        data = base_offer_payload(venue=venue)
+        data["bookingEmails"] = ["test@testmail.com", "test@test", "test"]
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_session_auth(user.email).post("/collective/offers", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "bookingEmails.1": ["Le format d'email est incorrect."],
+            "bookingEmails.2": ["Le format d'email est incorrect."],
+        }
+        assert CollectiveOffer.query.count() == 0
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns404Test:
