@@ -203,32 +203,6 @@ class Returns200Test:
         assert response.status_code == 200
         assert offer.interventionArea == []
 
-    def test_patch_collective_offer_update_legacy_template(self, client):
-        # Given
-        template = educational_factories.CollectiveOfferTemplateFactory(domains=[], interventionArea=[])
-        offer = educational_factories.CollectiveOfferFactory(templateId=template.id)
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
-        domain = educational_factories.EducationalDomainFactory(name="Architecture")
-        data = {
-            "domains": [domain.id],
-            "interventionArea": ["01", "2A"],
-        }
-
-        # WHEN
-        client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
-            response = client.patch(f"/collective/offers/{offer.id}", json=data)
-
-        # Then
-        assert response.status_code == 200
-        assert template.domains == [domain]
-        assert template.interventionArea == ["01", "2A"]
-
     def test_patch_collective_offer_update_student_level_college_6(self, client):
         # Given
         offer = educational_factories.CollectiveOfferFactory()

@@ -539,7 +539,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     name: str
     booking_emails: list[EmailStr]
     description: str
-    domains: list[int] | None
+    domains: list[int]
     duration_minutes: int | None
     audio_disability_compliant: bool = False
     mental_disability_compliant: bool = False
@@ -591,37 +591,28 @@ class PostCollectiveOfferBodyModel(BaseModel):
         check_collective_offer_name_length_is_valid(name)
         return name
 
-    @root_validator
-    def validate_domains(cls, values: dict) -> dict:
-        domains = values.get("domains")
-        is_from_template = bool(values.get("template_id", None))
-        if not domains and not is_from_template:
+    @validator("domains")
+    def validate_domains(cls, domains: list[str]) -> list[str]:
+        if not domains:
             raise ValueError("domains must have at least one value")
-        return values
+        return domains
 
-    @root_validator
-    def validate_intervention_area(cls, values: dict) -> dict:
-        intervention_area = values.get("intervention_area", None)
-        is_from_template = bool(values.get("template_id", None))
+    @validator("intervention_area")
+    def validate_intervention_area(
+        cls,
+        intervention_area: list[str] | None,
+        values: dict,
+    ) -> list[str] | None:
         offer_venue = values.get("offer_venue", None)
-        if not is_intervention_area_valid(intervention_area, offer_venue) and not is_from_template:
+        if not is_intervention_area_valid(intervention_area, offer_venue):
             raise ValueError("intervention_area must have at least one value")
-        return values
+        return intervention_area
 
-    @root_validator(skip_on_failure=True)
-    def validate_booking_emails(cls, values: dict) -> dict:
-        booking_emails = values.get("booking_emails", [])
-        is_from_template = bool(values.get("template_id", None))
+    @validator("booking_emails")
+    def validate_booking_emails(cls, booking_emails: list[str]) -> list[str]:
         if not booking_emails:
-            if is_from_template:
-                contact_email = values.get("contact_email", None)
-                if contact_email:
-                    values["booking_emails"] = [contact_email]
-                else:
-                    values["booking_emails"] = []
-            else:
-                raise ValueError("Un email doit être renseigné")
-        return values
+            raise ValueError("Un email doit etre renseigné.")
+        return booking_emails
 
     class Config:
         alias_generator = to_camel

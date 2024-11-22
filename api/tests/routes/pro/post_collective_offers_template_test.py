@@ -243,7 +243,7 @@ class Returns400Test:
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"__root__": ["domains must have at least one value"]}
+        assert response.json == {"domains": ["domains must have at least one value"]}
 
         assert CollectiveOfferTemplate.query.count() == 0
 

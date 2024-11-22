@@ -16,7 +16,7 @@ export type PostCollectiveOfferTemplateBodyModel = {
   contactUrl?: string | null;
   dates?: DateRangeOnCreateModel | null;
   description: string;
-  domains?: Array<number> | null;
+  domains: Array<number>;
   durationMinutes?: number | null;
   formats?: Array<EacFormat> | null;
   interventionArea?: Array<string> | null;

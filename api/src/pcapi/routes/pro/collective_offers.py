@@ -292,11 +292,6 @@ def edit_collective_offer(
         raise ApiErrors(error.errors, status_code=400)
 
     offer = educational_repository.get_collective_offer_by_id(offer_id)
-    if offer.template and (not offer.template.domains or not offer.template.interventionArea):
-        offers_api.update_collective_offer_template(
-            offer_id=offer.template.id,
-            new_values={"domains": [domain.id for domain in offer.domains], "interventionArea": offer.interventionArea},
-        )
     return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
 
 
