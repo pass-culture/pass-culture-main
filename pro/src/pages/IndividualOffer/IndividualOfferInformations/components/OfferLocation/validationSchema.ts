@@ -44,7 +44,9 @@ const locationSchema = {
       is: (offerLocation: string, isVenueVirtual: boolean) =>
         !isVenueVirtual && offerLocation === OFFER_LOCATION.OTHER_ADDRESS,
       then: (schema) => schema.required('Veuillez renseigner un code postal'),
-    }),
+    })
+    .min(5, 'Veuillez renseigner un code postal valide')
+    .max(5, 'Veuillez renseigner un code postal valide'),
   city: yup
     .string()
     .trim()
