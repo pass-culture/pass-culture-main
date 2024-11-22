@@ -20,6 +20,7 @@ export default [
   pluginJs.configs.flat['jsx-runtime'], // Add this if you are using React 17+
   {
     ignores: [
+      'src/apiClient/*',
       'src/api/v1/gen/*',
       'src/api/v2/gen/*',
       '**/*.svg',
