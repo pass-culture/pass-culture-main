@@ -8,16 +8,22 @@ import styles from './Spinner.module.scss'
 interface SpinnerProps {
   message?: string
   className?: string
+  /**
+   * A custom test id to target the component
+   * when running tests.
+   */
+  testId?: string
 }
 
 export const Spinner = ({
   message = 'Chargement en cours',
   className,
+  testId = 'spinner'
 }: SpinnerProps): JSX.Element => {
   return (
     <div
       className={cn(styles['loading-spinner'], className)}
-      data-testid="spinner"
+      data-testid={testId}
     >
       <SvgIcon
         src={strokePass}

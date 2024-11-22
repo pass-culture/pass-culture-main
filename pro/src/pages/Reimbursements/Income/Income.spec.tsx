@@ -1,23 +1,34 @@
 import {
   screen,
   waitFor,
-  waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
+import type {
+  StatisticsModel,
+  GetOffererResponseModel,
+  GetOffererVenueResponseModel,
+  AggregatedRevenue,
+} from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
 } from 'commons/utils/factories/individualApiFactories'
+import { statisticsFactory } from 'commons/utils/factories/statisticsFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { Income, MOCK_INCOME_BY_YEAR } from './Income'
-import { IncomeResults, IncomeType } from './types'
+import { Income } from './Income'
+import { isCollectiveAndIndividualRevenue, isCollectiveRevenue } from './utils'
 
-const MOCK_DATA = {
+const MOCK_DATA: {
+  selectedOffererId: number
+  offerer: GetOffererResponseModel & {
+    managedVenues: Array<GetOffererVenueResponseModel>
+  }
+} & StatisticsModel = {
   selectedOffererId: 100,
   offerer: {
     ...defaultGetOffererResponseModel,
@@ -39,11 +50,18 @@ const MOCK_DATA = {
       },
     ],
   },
+  ...statisticsFactory({
+    emptyYear: '1994',
+    individualRevenueOnlyYear: '1995',
+    collectiveRevenueOnlyYear: '1996',
+    collectiveAndIndividualRevenueYear: '1997',
+  }),
 }
 
 const LABELS = {
   error: /Erreur dans le chargement des données./,
   venuesSelector: /Partenaire/,
+  venuesSelectorError: /Vous devez sélectionner au moins un partenaire/,
   incomeResultsLabel: /Chiffre d’affaires total/,
   emptyScreen: /Vous n’avez aucune réservation/,
   mandatoryHelper: /\* sont obligatoires/,
@@ -64,6 +82,7 @@ const renderIncome = () => {
 vi.mock('apiClient/api', () => ({
   api: {
     getOfferer: vi.fn(),
+    getStatistics: vi.fn(),
   },
 }))
 
@@ -77,19 +96,20 @@ describe('Income', () => {
 
     it('should attempt to fetch venues data and display a loading spinner meanwhile', async () => {
       vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
+      vi.spyOn(api, 'getStatistics').mockResolvedValue({ incomeByYear: MOCK_DATA.incomeByYear })
       renderIncome()
 
-      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-      expect(api.getOfferer).toHaveBeenCalledWith(MOCK_DATA.selectedOffererId)
+      await waitFor(() => expect(screen.getByTestId('venues-spinner')).toBeInTheDocument())
+      expect(api.getOfferer).toHaveBeenNthCalledWith(1, MOCK_DATA.selectedOffererId)
     })
 
     it('should display an error message if venues couldnt be fetched', async () => {
       vi.spyOn(api, 'getOfferer').mockRejectedValue(new Error('error'))
+      vi.spyOn(api, 'getStatistics').mockResolvedValue({ incomeByYear: MOCK_DATA.incomeByYear })
       renderIncome()
 
-      await waitFor(() => {
-        expect(screen.getByText(LABELS.error)).toBeInTheDocument()
-      })
+      await waitFor(() => expect(screen.getByText(LABELS.error)).toBeInTheDocument())
+      expect(api.getOfferer).toHaveBeenNthCalledWith(1, MOCK_DATA.selectedOffererId)
     })
 
     it('should display an empty screen if no venues were found', async () => {
@@ -97,113 +117,209 @@ describe('Income', () => {
         ...MOCK_DATA.offerer,
         managedVenues: [],
       })
+      vi.spyOn(api, 'getStatistics').mockResolvedValue({ incomeByYear: MOCK_DATA.incomeByYear })
       renderIncome()
 
-      await waitFor(() => {
-        expect(screen.getByText(LABELS.emptyScreen)).toBeInTheDocument()
-      })
+      await waitFor(() => expect(screen.getByText(LABELS.emptyScreen)).toBeInTheDocument())
+      expect(api.getOfferer).toHaveBeenNthCalledWith(1, MOCK_DATA.selectedOffererId)
     })
 
-    // TODO : https://passculture.atlassian.net/browse/PC-32278
-    it('should attempt to fetch income data with all venues and display a loading spinner meanwhile', () => {})
-    it('should display an error message if income couldnt be fetched', () => {})
-    it('should display an empty screen if no income data was found', () => {})
-
-    it('should display a venue selector with all venues selected by default', async () => {
+    it('should attempt to fetch income data with all venues and display a loading spinner meanwhile', async () => {
       vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
+      vi.spyOn(api, 'getStatistics').mockResolvedValue({ incomeByYear: MOCK_DATA.incomeByYear })
+      renderIncome()
+
+      await waitFor(() => expect(screen.getByTestId('income-spinner')).toBeInTheDocument())
+      expect(api.getStatistics).toHaveBeenNthCalledWith(1, MOCK_DATA.offerer.managedVenues.map((venue) => venue.id))
+    })
+
+    it('should display an error message if income couldnt be fetched', async () => {
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
+      vi.spyOn(api, 'getStatistics').mockRejectedValue(new Error('error'))
+      renderIncome()
+
+      await waitFor(() => expect(screen.getByText(LABELS.error)).toBeInTheDocument())
+    })
+
+    it('should display an empty screen if no income data was found', async () => {
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
+      vi.spyOn(api, 'getStatistics').mockResolvedValue({ incomeByYear: {} })
+      renderIncome()
+
+      await waitFor(() => expect(screen.getByText(LABELS.emptyScreen)).toBeInTheDocument())
+    })
+
+    it('should display an auto-focused venue selector with all venues selected by default', async () => {
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
+      vi.spyOn(api, 'getStatistics').mockResolvedValue({ incomeByYear: MOCK_DATA.incomeByYear })
       renderIncome()
 
       await waitFor(() => {
-        expect(
-          screen.getByRole('combobox', {
-            name: LABELS.venuesSelector,
-          })
-        ).toBeInTheDocument()
-
-        MOCK_DATA.offerer.managedVenues.forEach((venue) => {
-          expect(
-            screen.getByRole('button', {
-              name: `Supprimer ${venue.name}`,
-            })
-          ).toBeInTheDocument()
-        })
+        expect(screen.getByRole('combobox', {
+          name: LABELS.venuesSelector,
+        })).toBeInTheDocument()
       })
+
+      // When venues are selected, delete tag buttons are displayed.
+      await waitFor(() => {
+        expect(screen.getAllByRole('button', {
+          name: /Supprimer/,
+        }).length).toBe(MOCK_DATA.offerer.managedVenues.length)
+      })
+
+      expect(document.activeElement?.id).toBe('search-selectedVenues')
     })
 
     it('should not display a venue selector, nor the mandatory input helper if there is only one venue', async () => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
+      vi.spyOn(api, 'getOfferer').mockResolvedValue({
+        ...MOCK_DATA.offerer,
+        managedVenues: [MOCK_DATA.offerer.managedVenues[0]],
+      })
+      vi.spyOn(api, 'getStatistics').mockResolvedValue({ incomeByYear: MOCK_DATA.incomeByYear })
       renderIncome()
 
+      // This is a check to avoid a false positive by testing existence
+      // of element to prove conjoined non-existence of another.
       await waitFor(() => {
-        expect(
-          screen.queryByRole('combobox', {
-            name: LABELS.venuesSelector,
-          })
-        ).not.toBeInTheDocument()
-
-        expect(
-          screen.queryByText(LABELS.mandatoryHelper)
-        ).not.toBeInTheDocument()
+        expect(screen.getAllByRole('button', {
+          name: /Afficher les revenus de l'année/,
+        }).length).toBeGreaterThan(0)
       })
+
+      expect(
+        screen.queryByRole('combobox', {
+          name: LABELS.venuesSelector,
+        })
+      ).not.toBeInTheDocument()
+
+      expect(
+        screen.queryByText(LABELS.mandatoryHelper)
+      ).not.toBeInTheDocument()
     })
 
     it('should display a set of year filters with the last year selected by default', async () => {
       vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
+      vi.spyOn(api, 'getStatistics').mockResolvedValue({ incomeByYear: MOCK_DATA.incomeByYear })
+      renderIncome()
+
+      const years = [...Object.keys(MOCK_DATA.incomeByYear)]
+      await waitFor(() => {
+        expect(screen.getAllByRole('button', {
+          name: /Afficher les revenus de l'année/,
+        }).length).toBe(years.length)
+      })
+
+      // Years are sorted in descending order, so the last/most recent year
+      // is the first item of the list of filters.
+      const mostRecentYear = years.sort((a, b) => parseInt(b) - parseInt(a))[0]
+      expect(screen.getByRole('button', {
+        name: `Afficher les revenus de l'année ${mostRecentYear}`,
+      })).toHaveAttribute('aria-current', 'true')
+    })
+
+    it('should auto-focus the last year filter if there is only one venue', async () => {
+      vi.spyOn(api, 'getOfferer').mockResolvedValue({
+        ...MOCK_DATA.offerer,
+        managedVenues: [MOCK_DATA.offerer.managedVenues[0]],
+      })
+      vi.spyOn(api, 'getStatistics').mockResolvedValue({ incomeByYear: MOCK_DATA.incomeByYear })
       renderIncome()
 
       await waitFor(() => {
-        const years = Object.keys(MOCK_INCOME_BY_YEAR)
-        years.forEach((year) => {
-          expect(
-            screen.getByRole('button', {
-              name: `Afficher les revenus de l'année ${year}`,
-            })
-          ).toBeInTheDocument()
-        })
+        expect(screen.getAllByRole('button', {
+          name: /Afficher les revenus de l'année/,
+        }).length).toBeGreaterThan(0)
       })
+
+      const years = [...Object.keys(MOCK_DATA.incomeByYear)]
+      // Years are sorted in descending order, so the last/most recent year
+      // is the first item of the list of filters.
+      const mostRecentYear = years.sort((a, b) => parseInt(b) - parseInt(a))[0]
+      expect(screen.getByRole('button', {
+        name: `Afficher les revenus de l'année ${mostRecentYear}`,
+      })).toHaveFocus()
     })
 
     it('should display the income results', async () => {
       vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
+      vi.spyOn(api, 'getStatistics').mockResolvedValue({ incomeByYear: MOCK_DATA.incomeByYear })
       renderIncome()
 
-      await waitFor(() => {
-        const resultTitles = screen.getAllByText(LABELS.incomeResultsLabel)
-        expect(resultTitles.length).toBeGreaterThan(0)
-      })
+      await waitFor(() => expect(screen.getAllByText(LABELS.incomeResultsLabel).length).toBeGreaterThan(0))
     })
   })
 
   describe('when the user changes venue selection', () => {
     beforeEach(() => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
       vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
         logEvent: vi.fn(),
       }))
     })
 
-    // TODO : https://passculture.atlassian.net/browse/PC-32278
-    it('should display an error if no venues are selected', () => {})
-    it('should attempt to fetch income data with the selected venues and display a loading spinner meanwhile', () => {})
+    it('should display an error if no venues are selected and avoid fetching income data', async () => {
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
+      vi.spyOn(api, 'getStatistics').mockResolvedValue({ incomeByYear: MOCK_DATA.incomeByYear })
+      renderIncome()
+
+      await waitFor(() => {
+        expect(screen.getByRole('combobox', {
+          name: LABELS.venuesSelector,
+        })).toBeInTheDocument()
+      })
+
+      const deleteVenueButtons = screen.getAllByRole('button', { name: /Supprimer/ })
+      for (const button of deleteVenueButtons) {
+        await userEvent.click(button)
+      }
+
+      await waitFor(() => expect(screen.getByText(LABELS.venuesSelectorError)).toBeInTheDocument(), {
+        timeout: 3000,
+      })
+
+      // It should not attempt to fetch income data if no venues are selected.
+      expect(api.getStatistics).toHaveBeenCalledTimes(1)
+    })
+
+    it('should attempt to fetch income data with the selected venues and display a loading spinner meanwhile', async () => {
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
+      vi.spyOn(api, 'getStatistics').mockResolvedValue({ incomeByYear: MOCK_DATA.incomeByYear })
+      renderIncome()
+
+      await waitFor(() => {
+        expect(screen.getByRole('combobox', {
+          name: LABELS.venuesSelector,
+        })).toBeInTheDocument()
+      })
+
+      const deleteVenueButtons = screen.getAllByRole('button', { name: /Supprimer/ })
+      const unselectedVenue = deleteVenueButtons[0]
+      await userEvent.click(unselectedVenue)
+
+      await waitFor(() => expect(screen.getByTestId('income-spinner')).toBeInTheDocument())
+      const expectedLeftVenueIds = MOCK_DATA.offerer.managedVenues
+        .filter(v => v.name !== unselectedVenue.textContent)
+        .map(v => v.id)
+      expect(api.getStatistics).toHaveBeenNthCalledWith(2, expectedLeftVenueIds)
+    })
   })
 
   describe('when the user changes year selection', () => {
     beforeEach(() => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
       vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
         logEvent: vi.fn(),
       }))
     })
 
     it('should display the income results for the selected year', async () => {
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
+      vi.spyOn(api, 'getStatistics').mockResolvedValue({ incomeByYear: MOCK_DATA.incomeByYear })
       renderIncome()
       const toFloatStr = (number: number): string =>
         number.toString().replace('.', ',') + '€'
 
       await waitFor(() => screen.getAllByText(LABELS.incomeResultsLabel))
-      const yearsWithData = Object.keys(MOCK_INCOME_BY_YEAR).filter(
-        (year) =>
-          Object.keys(MOCK_INCOME_BY_YEAR[year as unknown as number]).length > 0
+      const yearsWithData = Object.keys(MOCK_DATA.incomeByYear).filter(
+        (year) => Object.keys(MOCK_DATA.incomeByYear[year]).length > 0
       )
 
       for (const y of yearsWithData) {
@@ -213,20 +329,27 @@ describe('Income', () => {
           })
         )
 
-        const income = MOCK_INCOME_BY_YEAR[y as unknown as number]
-        const incomeTypes = Object.keys(income) as IncomeType[]
+        const income = MOCK_DATA.incomeByYear[y]
+        const incomeTypes = Object.keys(income) as (keyof AggregatedRevenue)[]
         for (const t of incomeTypes) {
           await waitFor(() => {
-            const incomeResults = income[t] as IncomeResults
-            const { total, individual, group } = incomeResults
-            expect(screen.getByText(toFloatStr(total))).toBeInTheDocument()
-            if (individual && group) {
+            const incomeResults = income[t]
+            const { total, individual, collective } = incomeResults
+
+            if (isCollectiveAndIndividualRevenue(incomeResults)) {
+              expect(screen.getByText(toFloatStr(total))).toBeInTheDocument()
               expect(
-                screen.getAllByText(toFloatStr(individual)).length
-              ).toBeGreaterThan(0)
+                screen.getByText(toFloatStr(individual))
+              ).toBeInTheDocument()
               expect(
-                screen.getAllByText(toFloatStr(group)).length
-              ).toBeGreaterThan(0)
+                screen.getByText(toFloatStr(collective))
+              ).toBeInTheDocument()
+            } else if (isCollectiveRevenue(incomeResults)) {
+              expect(
+                screen.getByText(toFloatStr(collective))
+              ).toBeInTheDocument()
+            } else {
+              expect(screen.getByText(toFloatStr(individual))).toBeInTheDocument()
             }
           })
         }
@@ -234,18 +357,22 @@ describe('Income', () => {
     })
 
     it('should display en empty screen if no data is available for the selected year', async () => {
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
+      vi.spyOn(api, 'getStatistics').mockResolvedValue({ incomeByYear: MOCK_DATA.incomeByYear })
       renderIncome()
 
       await waitFor(() => screen.getAllByText(LABELS.incomeResultsLabel))
-      const emptyYear = 2021
+
+      const emptyYear = Object.keys(MOCK_DATA.incomeByYear).find(
+        year => Object.keys(MOCK_DATA.incomeByYear[year]).length === 0
+      )
       await userEvent.click(
         screen.getByRole('button', {
           name: `Afficher les revenus de l'année ${emptyYear}`,
         })
       )
-      await waitFor(() => {
-        expect(screen.getByText(LABELS.emptyScreen)).toBeInTheDocument()
-      })
+
+      await waitFor(() => expect(screen.getByText(LABELS.emptyScreen)).toBeInTheDocument())
     })
   })
 })
