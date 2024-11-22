@@ -382,6 +382,24 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {"__root__": ["error: url and form are both not null"]}
 
+    def test_booking_emails_invalid(self, client):
+        offer_ctx = build_offer_context()
+        payload_ctx = build_payload_context()
+
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+        payload = payload_ctx.payload
+
+        payload["bookingEmails"] = ["test@testmail.com", "test@test", "test"]
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "bookingEmails.1": ["Le format d'email est incorrect."],
+            "bookingEmails.2": ["Le format d'email est incorrect."],
+        }
+
 
 class InvalidDatesTest:
     def test_missing_start(self, client):

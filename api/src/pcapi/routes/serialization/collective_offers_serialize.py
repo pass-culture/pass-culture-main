@@ -537,7 +537,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     # TODO(jeremieb): remove subcategory_id (replaced by formats)
     subcategory_id: str | None
     name: str
-    booking_emails: list[str]
+    booking_emails: list[EmailStr]
     description: str
     domains: list[int] | None
     duration_minutes: int | None
@@ -608,7 +608,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
             raise ValueError("intervention_area must have at least one value")
         return values
 
-    @root_validator
+    @root_validator(skip_on_failure=True)
     def validate_booking_emails(cls, values: dict) -> dict:
         booking_emails = values.get("booking_emails", [])
         is_from_template = bool(values.get("template_id", None))
@@ -662,7 +662,7 @@ class CollectiveOfferTemplateResponseIdModel(BaseModel):
 
 
 class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
-    bookingEmails: list[str] | None
+    bookingEmails: list[EmailStr] | None
     description: str | None
     name: str | None
     students: list[educational_models.StudentLevels] | None

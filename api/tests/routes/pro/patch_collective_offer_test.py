@@ -511,6 +511,23 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {"global": ["National program not found"]}
 
+    def test_update_collective_offer_booking_emails_invalid(self, client):
+        offer = educational_factories.CollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        data = {"bookingEmails": ["test@testmail.com", "test@test", "test"]}
+        client = client.with_session_auth("user@example.com")
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "bookingEmails.1": ["Le format d'email est incorrect."],
+            "bookingEmails.2": ["Le format d'email est incorrect."],
+        }
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:

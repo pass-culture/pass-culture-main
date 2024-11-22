@@ -288,6 +288,17 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {"code": "COLLECTIVE_OFFER_URL_AND_FORM_BOTH_SET"}
 
+    def test_booking_emails_invalid(self, pro_client, payload):
+        data = {**payload, "bookingEmails": ["test@testmail.com", "test@test", "test"]}
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "bookingEmails.1": ["Le format d'email est incorrect."],
+            "bookingEmails.2": ["Le format d'email est incorrect."],
+        }
+
 
 class InvalidDatesTest:
     def test_missing_start(self, pro_client, payload, template_end):
