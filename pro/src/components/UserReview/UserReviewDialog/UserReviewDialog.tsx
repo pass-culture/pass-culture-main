@@ -11,15 +11,15 @@ import { sendSentryCustomError } from 'commons/utils/sendSentryCustomError'
 import strokeValidIcon from 'icons/stroke-valid.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import {
+  IconRadioGroup,
+  IconRadioGroupValues,
+} from 'ui-kit/form/IconRadioGroup/IconRadioGroup'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './UserReviewDialog.module.scss'
 import { validationSchema } from './validationSchema'
-import {
-  IconRadioGroup,
-  IconRadioGroupValues,
-} from 'ui-kit/form/IconRadioGroup/IconRadioGroup'
 
 interface UserReviewDialogFormValues {
   userSatisfaction: string

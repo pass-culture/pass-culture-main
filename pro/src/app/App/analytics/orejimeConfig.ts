@@ -59,7 +59,7 @@ export const orejimeConfig = {
     }
 
     // l’api orejime n’est pas asynchrone
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+     
     api.cookiesConsent(cookieConsent)
 
     return JSON.stringify(contents)

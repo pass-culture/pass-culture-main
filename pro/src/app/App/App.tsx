@@ -63,7 +63,7 @@ export const App = (): JSX.Element | null => {
 
   useEffect(() => {
     if (location.search.includes('logout')) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+       
       api.signout()
       if (localStorageAvailable()) {
         localStorage.removeItem(SAVED_OFFERER_ID_KEY)

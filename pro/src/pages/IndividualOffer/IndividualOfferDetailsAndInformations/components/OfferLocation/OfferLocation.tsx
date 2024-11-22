@@ -9,6 +9,7 @@ import { resetAddressFields } from 'commons/utils/resetAddressFields'
 import { AddressSelect } from 'components/Address/Address'
 import { AddressManual } from 'components/AddressManual/AddressManual'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { setFormReadOnlyFields } from 'components/IndividualOffer/UsefulInformationScreen/utils'
 import fullBackIcon from 'icons/full-back.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import { OFFER_LOCATION } from 'pages/IndividualOffer/commons/constants'
@@ -19,7 +20,6 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { RadioButton } from 'ui-kit/form/RadioButton/RadioButton'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
-import { setFormReadOnlyFields } from 'components/IndividualOffer/UsefulInformationScreen/utils'
 import styles from './OfferLocation.module.scss'
 
 interface OfferLocationProps {

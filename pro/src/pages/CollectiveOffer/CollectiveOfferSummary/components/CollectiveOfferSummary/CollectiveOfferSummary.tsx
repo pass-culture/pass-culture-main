@@ -9,6 +9,8 @@ import {
   isCollectiveOffer,
   isCollectiveOfferTemplate,
 } from 'commons/core/OfferEducational/types'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { SynchronizedProviderInformation } from 'components/IndividualOffer/SynchronisedProviderInfos/SynchronizedProviderInformation'
 import { SummaryContent } from 'components/SummaryLayout/SummaryContent'
@@ -27,8 +29,6 @@ import { CollectiveOfferStockSection } from './components/CollectiveOfferStockSe
 import { CollectiveOfferTypeSection } from './components/CollectiveOfferTypeSection'
 import { CollectiveOfferVenueSection } from './components/CollectiveOfferVenueSection'
 import { CollectiveOfferVisibilitySection } from './components/CollectiveOfferVisibilitySection'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 
 export interface CollectiveOfferSummaryProps {
   offer:

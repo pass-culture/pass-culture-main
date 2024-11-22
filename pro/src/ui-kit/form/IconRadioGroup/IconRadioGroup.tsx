@@ -1,10 +1,12 @@
 import { useField } from 'formik'
+import React from 'react'
+
+import { IconRadio } from 'ui-kit/form/IconRadioGroup/IconRadio/IconRadio'
+import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
+
 import { FieldSetLayout } from '../shared/FieldSetLayout/FieldSetLayout'
 
 import styles from './IconRadioGroup.module.scss'
-import React from 'react'
-import { IconRadio } from 'ui-kit/form/IconRadioGroup/IconRadio/IconRadio'
-import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
 
 export type IconRadioGroupValues = {
   label: string
