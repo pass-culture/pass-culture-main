@@ -56,7 +56,7 @@ export default [
       sourceType: 'module',
 
       parserOptions: {
-        project: ['./tsconfig.json'],
+        project: ['./tsconfig.json', './cypress/tsconfig.json'],
         tsconfigRootDir: __dirname,
         ecmaFeatures: {
           jsx: true,
