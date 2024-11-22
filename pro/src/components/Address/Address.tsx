@@ -114,7 +114,6 @@ export const AddressSelect = ({
     <SelectAutocomplete
       name="addressAutocomplete"
       label="Adresse postale"
-      placeholder="Entrez votre adresse et sélectionnez une suggestion"
       options={options}
       hideArrow={true}
       resetOnOpen={false}
