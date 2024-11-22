@@ -4,7 +4,10 @@ import { Formik } from 'formik'
 
 import { QuantityInput, QuantityInputProps } from './QuantityInput'
 
-const renderQuantityInput = (props: QuantityInputProps, initialQuantity: number | string = '') => {
+const renderQuantityInput = (
+  props: QuantityInputProps,
+  initialQuantity: number | string = ''
+) => {
   return render(
     <Formik initialValues={{ quantity: initialQuantity }} onSubmit={() => {}}>
       <QuantityInput {...props} />
@@ -76,7 +79,7 @@ describe('QuantityInput', () => {
     expect(checkbox).toBeChecked()
   })
 
-  it('should check the checkbox initially when the input value is an empty string', async () => {
+  it('should check the checkbox initially when the input value is an empty string', () => {
     renderQuantityInput({}, '')
 
     let input = screen.getByRole('spinbutton', { name: LABELS.input })
@@ -86,7 +89,7 @@ describe('QuantityInput', () => {
     expect(checkbox).toBeChecked()
   })
 
-  it('should uncheck the checkbox when the input value is set', async () => {
+  it('should uncheck the checkbox when the input value is set', () => {
     renderQuantityInput({}, '1')
 
     let input = screen.getByRole('spinbutton', { name: LABELS.input })
