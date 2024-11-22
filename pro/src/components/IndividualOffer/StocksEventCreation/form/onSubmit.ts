@@ -1,6 +1,8 @@
 import { format, sub } from 'date-fns'
 
 import { api } from 'apiClient/api'
+import { getHumanReadableApiError } from 'apiClient/helpers'
+import { ApiError } from 'apiClient/v1'
 import { useNotification } from 'commons/hooks/useNotification'
 import {
   FORMAT_ISO_DATE_ONLY,
@@ -56,14 +58,12 @@ export const onSubmit = async (
       notify.success(
         stocks_count > 1
           ? `${new Intl.NumberFormat('fr-FR').format(
-              stocks_count
-            )} nouvelles dates ont été ajoutées`
+            stocks_count
+          )} nouvelles dates ont été ajoutées`
           : `${stocks_count} nouvelle date a été ajoutée`
       )
-    } catch {
-      notify.error(
-        'Une erreur est survenue lors de l’enregistrement de vos stocks.'
-      )
+    } catch (error) {
+      notify.error(getHumanReadableApiError(error, 'Une erreur est survenue lors de l’enregistrement de vos stocks.'))
     }
   }
 }
