@@ -268,7 +268,7 @@ export const CollectiveOfferNavigation = ({
           offer,
           CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER
         )
-      : isTemplate
+      : isTemplate && offer.displayedStatus !== CollectiveOfferDisplayedStatus.PENDING
     : false
 
   return isEditingExistingOffer ? (
