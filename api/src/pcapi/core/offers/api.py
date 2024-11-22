@@ -430,9 +430,10 @@ def update_offer(
     withdrawal_updated = updates_set & withdrawal_fields
     oa_updated = "offererAddress" in updates
     if should_send_mail and (withdrawal_updated or oa_updated):
-        transactional_mails.send_email_for_each_ongoing_booking(offer)
+        on_commit(partial(transactional_mails.send_email_for_each_ongoing_booking, offer))
 
     reason = search.IndexationReason.OFFER_UPDATE
+
     search.async_index_offer_ids([offer.id], reason=reason, log_extra={"changes": updates_set})
 
     return offer
@@ -748,10 +749,8 @@ def create_stock(
         offer.lastValidationPrice = price
     repository.add_to_session(created_stock, *created_activation_codes, offer)
     db.session.flush()
-    search.async_index_offer_ids(
-        [offer.id],
-        reason=search.IndexationReason.STOCK_CREATION,
-    )
+
+    search.async_index_offer_ids([offer.id], reason=search.IndexationReason.STOCK_CREATION)
 
     return created_stock
 
@@ -839,6 +838,7 @@ def edit_stock(
         finance_api.update_finance_event_pricing_date(stock)
 
     repository.add_to_session(stock)
+
     search.async_index_offer_ids(
         [stock.offerId],
         reason=search.IndexationReason.STOCK_UPDATE,
@@ -899,10 +899,7 @@ def publish_offer(
     else:
         if offer.publicationDate:
             offers_repository.delete_future_offer(offer.id)
-        search.async_index_offer_ids(
-            [offer.id],
-            reason=search.IndexationReason.OFFER_PUBLICATION,
-        )
+        search.async_index_offer_ids([offer.id], reason=search.IndexationReason.OFFER_PUBLICATION)
         logger.info(
             "Offer has been published",
             extra={"offer_id": offer.id, "venue_id": offer.venueId, "offer_status": offer.status},
@@ -936,7 +933,7 @@ def update_offer_fraud_information(offer: AnyOffer, user: users_models.User | No
         and not venue_already_has_validated_offer
         and isinstance(offer, models.Offer)
     ):
-        transactional_mails.send_first_venue_approved_offer_email_to_pro(offer)
+        on_commit(partial(transactional_mails.send_first_venue_approved_offer_email_to_pro, offer))
 
 
 def _invalidate_bookings(bookings: list[bookings_models.Booking]) -> list[bookings_models.Booking]:
@@ -959,10 +956,17 @@ def _delete_stock(stock: models.Stock, author_id: int | None = None, user_connec
     )
     if cancelled_bookings:
         for booking in cancelled_bookings:
-            transactional_mails.send_booking_cancellation_by_pro_to_beneficiary_email(booking)
-        transactional_mails.send_booking_cancellation_confirmation_by_pro_email(cancelled_bookings)
+            on_commit(partial(transactional_mails.send_booking_cancellation_by_pro_to_beneficiary_email, booking))
+
+        on_commit(partial(transactional_mails.send_booking_cancellation_confirmation_by_pro_email, cancelled_bookings))
         if not FeatureToggle.WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION.is_active():
-            push_notification_job.send_cancel_booking_notification.delay([booking.id for booking in cancelled_bookings])
+            on_commit(
+                partial(
+                    push_notification_job.send_cancel_booking_notification.delay,
+                    [booking.id for booking in cancelled_bookings],
+                )
+            )
+
     search.async_index_offer_ids(
         [stock.offerId],
         reason=search.IndexationReason.STOCK_DELETION,
@@ -1020,10 +1024,7 @@ def create_mediation(
     )
     _delete_mediations_and_thumbs(previous_mediations)
 
-    search.async_index_offer_ids(
-        [offer.id],
-        reason=search.IndexationReason.MEDIATION_CREATION,
-    )
+    search.async_index_offer_ids([offer.id], reason=search.IndexationReason.MEDIATION_CREATION)
 
     return mediation
 
@@ -1295,10 +1296,10 @@ def set_offer_status_based_on_fraud_criteria(offer: AnyOffer) -> models.OfferVal
         status = models.OfferValidationStatus.PENDING
         offer.flaggingValidationRules = flagging_rules
         if isinstance(offer, models.Offer):
-            compliance.update_offer_compliance_score(offer, is_primary=True)
+            on_commit(partial(compliance.update_offer_compliance_score, offer, is_primary=True))
     else:
         if isinstance(offer, models.Offer):
-            compliance.update_offer_compliance_score(offer, is_primary=False)
+            on_commit(partial(compliance.update_offer_compliance_score, offer, is_primary=False))
 
     logger.info("Computed offer validation", extra={"offer": offer.id, "status": status.value})
     return status
