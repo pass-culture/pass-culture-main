@@ -7,7 +7,7 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferDetails/IndividualOfferDetails'
+        'pages/IndividualOffer/IndividualOfferDetails/IndividualOfferDetails'
       ),
     path: '/offre/individuelle/creation/details',
     title: 'Détails de l’offre - Créer une offre individuelle',
@@ -15,7 +15,7 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferDetails/IndividualOfferDetails'
+        'pages/IndividualOffer/IndividualOfferDetails/IndividualOfferDetails'
       ),
     path: '/offre/individuelle/:offerId/creation/details',
     title: 'Détails de l’offre - Créer une offre individuelle',
@@ -29,7 +29,7 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/IndividualOffer/IndividualOfferDetailsAndInformations/IndividualOfferDetails/IndividualOfferDetails'
+        'pages/IndividualOffer/IndividualOfferDetails/IndividualOfferDetails'
       ),
     path: '/offre/individuelle/:offerId/edition/details',
     title: 'Détails de l’offre - Modifier une offre individuelle',
@@ -45,13 +45,13 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
   },
   {
     lazy: () =>
-      import('pages/IndividualOfferWizard/UsefulInformation/UsefulInformation'),
+      import('pages/IndividualOffer/IndividualOfferInformations/IndividualOfferInformations'),
     path: '/offre/individuelle/:offerId/creation/pratiques',
     title: 'Informations pratiques - Créer une offre individuelle',
   },
   {
     lazy: () =>
-      import('pages/IndividualOfferWizard/UsefulInformation/UsefulInformation'),
+      import('pages/IndividualOffer/IndividualOfferInformations/IndividualOfferInformations'),
     path: '/offre/individuelle/:offerId/edition/pratiques',
     title: 'Informations pratiques - Modifier une offre individuelle',
   },
