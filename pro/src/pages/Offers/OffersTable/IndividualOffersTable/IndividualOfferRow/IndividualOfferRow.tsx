@@ -25,6 +25,7 @@ export type IndividualOfferRowProps = {
   offer: ListOffersOfferResponseModel
   selectOffer: (offer: ListOffersOfferResponseModel) => void
   isFirstRow: boolean
+  isRestrictedAsAdmin: boolean
 }
 
 export const IndividualOfferRow = ({
@@ -32,6 +33,7 @@ export const IndividualOfferRow = ({
   isSelected,
   selectOffer,
   isFirstRow,
+  isRestrictedAsAdmin,
 }: IndividualOfferRowProps) => {
   const offerAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
@@ -82,6 +84,7 @@ export const IndividualOfferRow = ({
         offer={offer}
         editionOfferLink={editionOfferLink}
         editionStockLink={editionStockLink}
+        isRestrictedAsAdmin={isRestrictedAsAdmin}
       />
     </tr>
   )
