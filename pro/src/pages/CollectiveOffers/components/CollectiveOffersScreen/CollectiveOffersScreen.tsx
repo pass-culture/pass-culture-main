@@ -5,6 +5,7 @@ import {
   GetOffererResponseModel,
   UserRole,
 } from 'apiClient/v1'
+import { CollectiveOffersSortingColumn } from 'commons/core/OfferEducational/types'
 import {
   DEFAULT_PAGE,
   MAX_TOTAL_PAGES,
@@ -45,10 +46,6 @@ export type CollectiveOffersScreenProps = {
   categories?: SelectOption[]
   isRestrictedAsAdmin?: boolean
   offers: CollectiveOfferResponseModel[]
-}
-
-export enum CollectiveOffersSortingColumn {
-  EVENT_DATE = 'EVENT_DATE',
 }
 
 export const CollectiveOffersScreen = ({

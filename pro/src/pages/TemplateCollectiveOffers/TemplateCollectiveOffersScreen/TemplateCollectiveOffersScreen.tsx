@@ -5,6 +5,7 @@ import {
   GetOffererResponseModel,
   UserRole,
 } from 'apiClient/v1'
+import { CollectiveOffersSortingColumn } from 'commons/core/OfferEducational/types'
 import {
   DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
   DEFAULT_PAGE,
@@ -18,7 +19,6 @@ import { useColumnSorting } from 'commons/hooks/useColumnSorting'
 import { usePagination } from 'commons/hooks/usePagination'
 import { sortCollectiveOffers } from 'commons/utils/sortCollectiveOffers'
 import { NoData } from 'components/NoData/NoData'
-import { CollectiveOffersSortingColumn } from 'pages/CollectiveOffers/components/CollectiveOffersScreen/CollectiveOffersScreen'
 import { CollectiveOffersActionsBar } from 'pages/Offers/OffersTable/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
 import { CollectiveOffersTable } from 'pages/Offers/OffersTable/CollectiveOffersTable/CollectiveOffersTable'
 import { isSameOffer } from 'pages/Offers/utils/isSameOffer'

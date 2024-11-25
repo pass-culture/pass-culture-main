@@ -1,4 +1,5 @@
 import { CollectiveOfferResponseModel } from 'apiClient/v1'
+import { CollectiveOffersSortingColumn } from 'commons/core/OfferEducational/types'
 import { MAX_OFFERS_TO_DISPLAY } from 'commons/core/Offers/constants'
 import { useDefaultCollectiveSearchFilters } from 'commons/core/Offers/hooks/useDefaultCollectiveSearchFilters'
 import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
@@ -6,7 +7,6 @@ import { hasCollectiveSearchFilters } from 'commons/core/Offers/utils/hasSearchF
 import { SortingMode } from 'commons/hooks/useColumnSorting'
 import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
-import { CollectiveOffersSortingColumn } from 'pages/CollectiveOffers/components/CollectiveOffersScreen/CollectiveOffersScreen'
 import { NoResults } from 'pages/Offers/components/IndividualOffersScreen/NoResults/NoResults'
 import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
