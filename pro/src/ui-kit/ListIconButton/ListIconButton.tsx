@@ -14,19 +14,70 @@ export enum ListIconButtonVariant {
   PRIMARY = 'primary',
 }
 
+/**
+ * Props for the ListIconButton component.
+ */
 interface ListIconButtonProps extends React.HTMLProps<HTMLButtonElement> {
+  /**
+   * The icon to display inside the button.
+   */
   icon: string
+  /**
+   * The variant of the button.
+   * @default ListIconButtonVariant.DEFAULT
+   */
   variant?: ListIconButtonVariant
+  /**
+   * Custom CSS class for additional styling of the button.
+   */
   className?: string
+  /**
+   * Custom CSS class for the tooltip content.
+   */
   tooltipContentClassName?: string
+  /**
+   * Callback function triggered when the button is clicked.
+   */
   onClick?: (event: MouseEvent) => void
+  /**
+   * The URL to navigate to when the button is clicked.
+   */
   url?: string
+  /**
+   * Indicates if the link is external.
+   * @default true
+   */
   isExternal?: boolean
+  /**
+   * Custom test ID for targeting the component in tests.
+   */
   dataTestid?: string
 }
 
 const LIST_ICON_SIZE = '16'
 
+/**
+ * The ListIconButton component is used to render an icon button that can be used as a link or a button.
+ * It supports tooltips, external/internal links, and different button variants.
+ *
+ * ---
+ * **Important: Use the `url` prop to create a link button, and the `onClick` prop to handle button actions.**
+ * ---
+ *
+ * @param {ListIconButtonProps} props - The props for the ListIconButton component.
+ * @returns {JSX.Element} The rendered ListIconButton component.
+ *
+ * @example
+ * <ListIconButton
+ *   icon="/icons/edit.svg"
+ *   variant={ListIconButtonVariant.PRIMARY}
+ *   onClick={() => console.log('Button clicked')}
+ * />
+ *
+ * @accessibility
+ * - **Tooltip**: The button includes a tooltip for additional context, which is hidden when not needed.
+ * - **Keyboard Navigation**: The button and link can be focused and activated using the keyboard, ensuring accessibility.
+ */
 export const ListIconButton = forwardRef(
   (
     {

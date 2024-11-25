@@ -8,20 +8,77 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import styles from './Button.module.scss'
 import { ButtonVariant, IconPositionEnum, SharedButtonProps } from './types'
 
+/**
+ * Props for the ButtonLink component.
+ *
+ * @extends SharedButtonProps, React.HTMLProps<HTMLAnchorElement>
+ */
 export type LinkProps = {
+  /**
+   * Indicates if the link is external.
+   */
   isExternal?: boolean
+  /**
+   * Indicates if the link is a section link within the page.
+   */
   isSectionLink?: boolean
+  /**
+   * The destination URL for the link.
+   */
   to: string
+  /**
+   * Indicates if the link should open in a new tab.
+   */
   opensInNewTab?: boolean
+  /**
+   * ARIA label for the link, providing additional accessibility information.
+   */
   'aria-label'?: string
+  /**
+   * The type of link.
+   */
   type?: string
+  /**
+   * Indicates if the link should prompt for download.
+   */
   download?: boolean
 }
 
+/**
+ * Props for the ButtonLink component that extends LinkProps and SharedButtonProps.
+ */
 type ButtonLinkProps = LinkProps &
   SharedButtonProps &
   React.HTMLProps<HTMLAnchorElement>
 
+/**
+ * The ButtonLink component provides a button-like anchor link that supports internal and external navigation.
+ * It integrates with React Router for internal links and supports a variety of styles and icons.
+ *
+ * ---
+ * **Important: Use `aria-label` for button links that have no visible text to ensure accessibility.**
+ * For external links, use `rel="noopener noreferrer"` to enhance security.
+ * ---
+ *
+ * @param {ButtonLinkProps} props - The props for the ButtonLink component.
+ * @returns {JSX.Element} The rendered ButtonLink component.
+ *
+ * @example
+ * <ButtonLink
+ *   to="/about"
+ *   variant={ButtonVariant.PRIMARY}
+ *   icon={fullLinkIcon}
+ *   iconAlt="Navigate to About Page"
+ *   opensInNewTab={true}
+ * >
+ *   Learn More
+ * </ButtonLink>
+ *
+ * @accessibility
+ * - **External Links**: When `isExternal` is true, the link includes `rel="noopener noreferrer"` to ensure security.
+ * - **Keyboard Navigation**: The link can be focused and activated using the keyboard, ensuring accessibility for interactive elements.
+ * - **ARIA Labels**: Provide meaningful ARIA labels for links without visible text to assist screen reader users.
+ */
 export const ButtonLink = forwardRef(
   (
     {
@@ -76,11 +133,7 @@ export const ButtonLink = forwardRef(
       </>
     )
 
-    // react-router v6 accepts relative links
-    // That is, if you use "offers" as link, it will be relative to the current path
-    // If you want a link to be absolute you must start it with a slash
-    // As this behavior can be quite confusing, we decided to enforce absolute links
-    // for internal links so that developers can't make mistakes/forget to add the slash
+    // Enforce absolute links for internal navigation to avoid mistakes.
     const absoluteUrl =
       isSectionLink || isExternal || to.startsWith('/') ? to : `/${to}`
 

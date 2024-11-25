@@ -12,11 +12,47 @@ import { PHONE_CODE_COUNTRY_CODE_OPTIONS, PLACEHOLDER_MAP } from './constants'
 import styles from './PhoneNumberInput.module.scss'
 import { getPhoneNumberInputAndCountryCode } from './utils/getPhoneNumberInputAndCountryCode'
 
+/**
+ * Props for the PhoneNumberInput component.
+ *
+ * @extends FieldLayoutBaseProps
+ */
 type PhoneNumberInputProps = FieldLayoutBaseProps & {
+  /**
+   * Whether the phone number input is disabled.
+   */
   disabled?: boolean
+  /**
+   * Maximum length for the phone number input.
+   * @default 25
+   */
   maxLength?: number
 }
 
+/**
+ * The PhoneNumberInput component allows users to input and validate a phone number.
+ * It integrates with Formik for form state management and supports country code selection.
+ *
+ * ---
+ * **Important: Avoid using placeholders to indicate phone number format.**
+ * Instead, use labels or helper text to ensure accessibility and clarity for all users.
+ * ---
+ *
+ * @param {PhoneNumberInputProps} props - The props for the PhoneNumberInput component.
+ * @returns {JSX.Element} The rendered PhoneNumberInput component.
+ *
+ * @example
+ * <PhoneNumberInput
+ *   name="phoneNumber"
+ *   label="Your Phone Number"
+ *   maxLength={15}
+ * />
+ *
+ * @accessibility
+ * - **Labels**: Always provide a meaningful label for the phone number input to assist users with screen readers.
+ * - **Country Code Selection**: The `CountryCodeSelect` component allows users to choose the correct country code, improving accuracy and reducing input errors.
+ * - **Error Handling**: Validation errors are displayed in an accessible manner to ensure that all users are informed of any issues.
+ */
 export const PhoneNumberInput = ({
   name,
   label,
@@ -40,7 +76,7 @@ export const PhoneNumberInput = ({
       currentCountryCode
     )
 
-    // save formatted phone number i.e +33639980101 even if user types 0639980101 or 639980101
+    // Save formatted phone number i.e +33639980101 even if user types 0639980101 or 639980101
     if (phoneNumber) {
       await helpers.setValue(phoneNumber.number, false)
     }
@@ -54,7 +90,7 @@ export const PhoneNumberInput = ({
     }
 
     if (!phoneNumber || !phoneNumber.isValid()) {
-      // input optional -> if optional we want to value formik field with incorrect phone number to raise error on form validation
+      // If optional, value the formik field with incorrect phone number to raise an error on form validation
       if (isOptional) {
         await helpers.setValue(phoneNumberInputValue)
       }
