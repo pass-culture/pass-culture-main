@@ -6,6 +6,7 @@ from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import models as booking_models
 from pcapi.core.bookings import validation as bookings_validation
+from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import models as providers_models
@@ -25,18 +26,25 @@ from . import bookings_serialization as serialization
 def _get_base_booking_query() -> sqla_orm.Query:
     return (
         booking_models.Booking.query.join(offerers_models.Venue)
+        .outerjoin(offerers_models.Venue.offererAddress)
+        .outerjoin(offerers_models.OffererAddress.address)
         .join(providers_models.VenueProvider)
         .filter(providers_models.VenueProvider.providerId == current_api_key.providerId)
         .filter(providers_models.VenueProvider.isActive == True)
         .join(offers_models.Stock)
         .join(offers_models.Offer)
         .options(
-            sqla_orm.contains_eager(booking_models.Booking.venue).load_only(
+            sqla_orm.contains_eager(booking_models.Booking.venue)
+            .load_only(
                 offerers_models.Venue.id,
                 offerers_models.Venue.name,
                 offerers_models.Venue.street,
                 offerers_models.Venue.departementCode,
             )
+            .contains_eager(offerers_models.Venue.offererAddress)
+            .load_only(offerers_models.OffererAddress.id)
+            .contains_eager(offerers_models.OffererAddress.address)
+            .load_only(geography_models.Address.street, geography_models.Address.departmentCode)
         )
         .options(
             sqla_orm.contains_eager(booking_models.Booking.stock)

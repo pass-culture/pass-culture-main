@@ -6,7 +6,9 @@ import pytest
 from pcapi.core import testing
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.finance import utils as finance_utils
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.providers import factories as providers_factories
 from pcapi.utils import date as date_utils
 
 from tests.conftest import TestClient
@@ -41,6 +43,59 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         )
 
         return offer, stock, booking
+
+    def test_should_get_booking_by_token_with_venue_street_null(self, client: TestClient):
+        plain_api_key, provider = self.setup_provider()
+        offerer_address = offerers_factories.OffererAddressFactory()
+        venue = offerers_factories.VenueFactory(street=None, offererAddress=offerer_address)
+        providers_factories.VenueProviderFactory(venue=venue, provider=provider)
+
+        _, _, booking = self.setup_base_resource(venue=venue)
+        token = booking.token
+        num_queries = 1  # select api_key
+        num_queries += 1  # select features
+        num_queries += 1  # select booking
+        num_queries += 1  # check pricing exists
+        num_queries += 1  # select user
+        with testing.assert_num_queries(num_queries):
+            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=token))
+        assert response.status_code == 200
+        assert response.json["venueAddress"] == venue.offererAddress.address.street
+        assert response.json["venueDepartementCode"] == venue.offererAddress.address.departmentCode
+
+    def test_should_get_booking_of_virtual_offer_by_token_with_venue_street_null(self, client: TestClient):
+        plain_api_key, provider = self.setup_provider()
+        venue = offerers_factories.VirtualVenueFactory()
+        providers_factories.VenueProviderFactory(venue=venue, provider=provider)
+
+        offer = offers_factories.DigitalOfferFactory(
+            venue=venue,
+            description="Ceci est une offre numérique",
+            name="Offre numérique",
+        )
+        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        stock = offers_factories.StockFactory(offer=offer, beginningDatetime=past)
+        booking = bookings_factories.BookingFactory(
+            dateCreated=past - datetime.timedelta(days=2),
+            user__email="beneficiary@example.com",
+            user__phoneNumber="0101010101",
+            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2),
+            user__postalCode="75001",
+            stock=stock,
+        )
+
+        token = booking.token
+        num_queries = 1  # select api_key
+        num_queries += 1  # select features
+        num_queries += 1  # select booking
+        num_queries += 1  # check pricing exists
+        num_queries += 1  # select user
+        with testing.assert_num_queries(num_queries):
+            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=token))
+        assert response.status_code == 200
+        assert venue.street is None
+        assert response.json["venueAddress"] is None
+        assert response.json["venueDepartementCode"] is None
 
     def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
         plain_api_key, _ = self.setup_provider()

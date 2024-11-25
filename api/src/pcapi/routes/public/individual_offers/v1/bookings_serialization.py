@@ -36,8 +36,8 @@ class GetBookingResponse(serialization.ConfiguredBaseModel):
 
     venue_id: int
     venue_name: str
-    venue_address: str
-    venue_departement_code: str
+    venue_address: str | None
+    venue_departement_code: str | None
 
     user_email: str
     user_phone_number: str | None
@@ -50,6 +50,11 @@ class GetBookingResponse(serialization.ConfiguredBaseModel):
     def build_booking(cls, booking: booking_models.Booking) -> "GetBookingResponse":
         extra_data = booking.stock.offer.extraData or {}
         birth_date = booking.user.birth_date.isoformat() if booking.user.birth_date else None
+        street = None
+        departmentCode = None
+        if booking.venue.offererAddress:
+            street = booking.venue.offererAddress.address.street
+            departmentCode = booking.venue.offererAddress.address.departmentCode
         return cls(
             id=booking.id,
             creation_date=date_utils.format_into_utc_date(booking.dateCreated),
@@ -69,8 +74,8 @@ class GetBookingResponse(serialization.ConfiguredBaseModel):
             offer_ean=extra_data.get("ean"),
             venue_id=booking.venue.id,
             venue_name=booking.venue.name,
-            venue_address=booking.venue.street,
-            venue_departement_code=booking.venue.departementCode,  # type: ignore[arg-type]
+            venue_address=street,
+            venue_departement_code=departmentCode,
             user_email=booking.email,
             user_birth_date=birth_date,
             user_first_name=booking.user.firstName,
