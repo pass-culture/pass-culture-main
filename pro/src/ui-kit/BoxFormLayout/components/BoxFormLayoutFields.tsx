@@ -1,7 +1,6 @@
 import cn from 'classnames'
-import React from 'react'
 
-import style from './BoxFormLayout.module.scss'
+import style from '../BoxFormLayout.module.scss'
 
 interface BoxFormLayoutFields {
   className?: string
