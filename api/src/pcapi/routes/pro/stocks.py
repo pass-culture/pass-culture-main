@@ -13,6 +13,7 @@ import pcapi.core.offerers.repository as offerers_repository
 from pcapi.core.offers import exceptions as offers_exceptions
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.models as offers_models
+import pcapi.core.offers.repository as offers_repository
 import pcapi.core.offers.validation as offers_validation
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
@@ -73,12 +74,6 @@ def _get_existing_stocks_by_id(
     return {existing_stocks.id: existing_stocks for existing_stocks in existing_stocks}
 
 
-def _get_number_of_existing_stocks(offer_id: int) -> int:
-    return (
-        offers_models.Stock.query.filter_by(offerId=offer_id).filter(offers_models.Stock.isSoftDeleted == False).count()
-    )
-
-
 @private_api.route("/stocks/bulk", methods=["POST"])
 @login_required
 @spectree_serialize(
@@ -121,7 +116,7 @@ def upsert_stocks(
     offers_validation.check_stocks_price(stocks_to_edit, offer)
     offers_validation.check_stocks_price(stocks_to_create, offer)
     if stocks_to_create:
-        number_of_existing_stocks = _get_number_of_existing_stocks(body.offer_id)
+        number_of_existing_stocks = offers_repository.get_offer_existing_stocks_count(body.offer_id)
         if number_of_existing_stocks + len(stocks_to_create) > offers_models.Offer.MAX_STOCKS_PER_OFFER:
             raise ApiErrors(
                 {
@@ -129,7 +124,6 @@ def upsert_stocks(
                         "Le nombre maximum de stocks par offre est de %s" % offers_models.Offer.MAX_STOCKS_PER_OFFER
                     ]
                 },
-                status_code=400,
             )
 
     price_categories = {price_category.id: price_category for price_category in offer.priceCategories}

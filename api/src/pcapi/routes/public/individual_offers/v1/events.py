@@ -463,14 +463,14 @@ def patch_event_price_category(
         )
     ),
 )
-def post_event_stocks(event_id: int, body: serialization.DatesCreation) -> serialization.PostDatesResponse:
+def post_event_stocks(event_id: int, body: serialization.EventStocksCreation) -> serialization.PostDatesResponse:
     """
     Add Stocks to an Event
 
     Add stocks to given event. Each stock is attached to a price category and to a date.
     For a given date, you will have one stock per price category.
 
-    **⚠️ Event must have less than 1 000 stocks** otherwise they will not be published.
+    **⚠️ Event must have less than 2 500 stocks** otherwise they will not be published.
     """
     offer = (
         utils.retrieve_offer_query(event_id)
@@ -479,16 +479,27 @@ def post_event_stocks(event_id: int, body: serialization.DatesCreation) -> seria
         .one_or_none()
     )
     if not offer:
-        raise api_errors.ApiErrors({"event_id": ["The event could not be found"]}, status_code=404)
+        raise api_errors.ResourceNotFoundError({"event_id": ["The event could not be found"]})
 
     new_dates: list[offers_models.Stock] = []
+    existing_stocks_count = offers_repository.get_offer_existing_stocks_count(offer.id)
+
+    if len(body.dates) + existing_stocks_count > offers_models.Offer.MAX_STOCKS_PER_OFFER:
+        raise api_errors.ApiErrors(
+            {
+                "dates": [
+                    f"The maximum number of stock entries allowed per offer is {offers_models.Offer.MAX_STOCKS_PER_OFFER}"
+                ]
+            }
+        )
+
     try:
         with repository.transaction():
             for date in body.dates:
                 price_category = next((c for c in offer.priceCategories if c.id == date.price_category_id), None)
                 if not price_category:
-                    raise api_errors.ApiErrors(
-                        {"price_category_id": ["The price category could not be found"]}, status_code=404
+                    raise api_errors.ResourceNotFoundError(
+                        {"price_category_id": ["The price category could not be found"]}
                     )
 
                 new_dates.append(
@@ -626,7 +637,7 @@ def delete_event_stock(event_id: int, stock_id: int) -> None:
 def patch_event_stock(
     event_id: int,
     stock_id: int,
-    body: serialization.DateEdition,
+    body: serialization.EventStockEdition,
 ) -> serialization.DateResponse:
     """
     Update Event Stock

@@ -641,7 +641,7 @@ class PriceCategoryEdition(serialization.ConfiguredBaseModel):
         extra = "forbid"
 
 
-class DateEdition(BaseStockEdition):
+class EventStockEdition(BaseStockEdition):
     beginning_datetime: datetime.datetime | None = fields.BEGINNING_DATETIME
     price_category_id: int | None = fields.PRICE_CATEGORY_ID
     id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
@@ -656,7 +656,7 @@ class EventOfferEdition(OfferEditionBase):
     location: PhysicalLocation | DigitalLocation | AddressLocation | None = fields.OFFER_LOCATION
 
 
-class DateCreation(BaseStockCreation):
+class EventStockCreation(BaseStockCreation):
     beginning_datetime: datetime.datetime = fields.BEGINNING_DATETIME
     booking_limit_datetime: datetime.datetime = fields.BOOKING_LIMIT_DATETIME
     price_category_id: int = fields.PRICE_CATEGORY_ID
@@ -666,10 +666,8 @@ class DateCreation(BaseStockCreation):
     _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
 
 
-class DatesCreation(serialization.ConfiguredBaseModel):
-    dates: list[DateCreation] = pydantic_v1.Field(
-        description="Dates to add to the event. If there are different prices and quantity for the same date, you must add several date objects",
-    )
+class EventStocksCreation(serialization.ConfiguredBaseModel):
+    dates: list[EventStockCreation] = fields.EVENT_STOCKS
 
     class Config:
         extra = "forbid"

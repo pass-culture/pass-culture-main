@@ -2,6 +2,7 @@ import copy
 
 from pydantic.v1 import Field
 
+from pcapi.core.offers.models import Offer
 from pcapi.routes.public.documentation_constants import descriptions
 
 
@@ -209,6 +210,10 @@ class _FIELDS:
         example=False,
     )
     EVENT_DURATION = Field(description="Event duration in minutes", example=60)
+    EVENT_STOCKS = Field(
+        description="A list of stocks to associate with an event. Each stock represents a unique combination of a date and a price category. To add stocks for multiple price categories on the same date, you must create a separate stock entry for each category.",
+        max_items=Offer.MAX_STOCKS_PER_OFFER,
+    )
 
     # Booking fields
     BOOKING_STATUS = Field(description=descriptions.BOOKING_STATUS_DESCRIPTION, example="CONFIRMED")
