@@ -4,9 +4,6 @@ from datetime import timedelta
 from itertools import count
 from itertools import cycle
 import typing
-from typing import NotRequired
-from typing import Type
-from typing import TypedDict
 
 from pcapi import settings
 from pcapi.core import search
@@ -361,15 +358,6 @@ def add_image_to_offer(offer: educational_models.HasImageMixin, image_name: str)
         offer.set_image(image=file.read(), credit="CC-BY-SA WIKIPEDIA", crop_params=DO_NOT_CROP)
 
 
-class OfferAttributes(TypedDict):
-    bookingLimitDatetime: datetime
-    beginningDatetime: datetime
-    endDatetime: datetime
-    isActive: NotRequired[bool]
-    bookingFactory: NotRequired[Type[educational_factories.CollectiveBookingFactory]]
-    cancellationReason: NotRequired[educational_models.CollectiveBookingCancellationReasons]
-
-
 def create_offers_booking_with_different_displayed_status(
     *,
     offerer: offerers_models.Offerer,
@@ -394,7 +382,7 @@ def create_offers_booking_with_different_displayed_status(
     yesterday = today - timedelta(days=1)
     tomorrow = today + timedelta(days=1)
 
-    options: dict[str, OfferAttributes] = {
+    options: dict[str, dict[str, typing.Any]] = {
         # no bookings
         "Amsterdam": {
             "bookingLimitDatetime": in_two_weeks,
@@ -436,6 +424,7 @@ def create_offers_booking_with_different_displayed_status(
             "endDatetime": in_two_weeks,
             "bookingFactory": educational_factories.CancelledCollectiveBookingFactory,
             "cancellationReason": educational_models.CollectiveBookingCancellationReasons.EXPIRED,
+            "confirmationDate": None,
         },
         "Copenhague": {
             "bookingLimitDatetime": four_weeks_ago,
@@ -443,6 +432,7 @@ def create_offers_booking_with_different_displayed_status(
             "endDatetime": in_two_weeks,
             "bookingFactory": educational_factories.CancelledCollectiveBookingFactory,
             "cancellationReason": educational_models.CollectiveBookingCancellationReasons.EXPIRED,
+            "confirmationDate": None,
         },
         # with a confirmed booking
         "Dublin": {
@@ -528,18 +518,20 @@ def create_offers_booking_with_different_displayed_status(
 
     for city, attributes in options.items():
         booking_factory = attributes.get("bookingFactory")
-        beginning_datetime: datetime = attributes["beginningDatetime"]
-        end_datetime: datetime = attributes["endDatetime"]
-        booking_limit_datetime: datetime = attributes["bookingLimitDatetime"]
-        is_active = attributes.get("isActive")
+        beginning_datetime = attributes["beginningDatetime"]
+        end_datetime = attributes["endDatetime"]
+        booking_limit_datetime = attributes["bookingLimitDatetime"]
+        institution = next(institution_iterator)
 
         stock = educational_factories.CollectiveStockFactory(
             collectiveOffer__name=f"La culture à {city}",
             collectiveOffer__educational_domains=[next(domains_iterator)],
             collectiveOffer__venue=next(venue_iterator),
             collectiveOffer__validation=OfferValidationStatus.APPROVED,
-            collectiveOffer__isActive=is_active,
+            collectiveOffer__isActive=attributes.get("isActive", True),
             collectiveOffer__bookingEmails=["toto@totoland.com"],
+            collectiveOffer__institution=institution,
+            collectiveOffer__formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
             beginningDatetime=beginning_datetime,
             startDatetime=beginning_datetime,
             endDatetime=end_datetime,
@@ -547,14 +539,17 @@ def create_offers_booking_with_different_displayed_status(
         )
 
         if booking_factory:
-            cancellation_reason = attributes.get("cancellationReason")
+            booking_attributes = {
+                key: attributes[key] for key in ("cancellationReason", "confirmationDate") if key in attributes
+            }
+
             booking_factory(
                 collectiveStock=stock,
                 educationalYear=current_ansco,
-                educationalInstitution=next(institution_iterator),
+                educationalInstitution=institution,
                 confirmationLimitDate=booking_limit_datetime,
-                cancellationReason=cancellation_reason,
                 dateCreated=min(datetime.utcnow(), booking_limit_datetime - timedelta(days=1)),
+                **booking_attributes,
             )
 
 
