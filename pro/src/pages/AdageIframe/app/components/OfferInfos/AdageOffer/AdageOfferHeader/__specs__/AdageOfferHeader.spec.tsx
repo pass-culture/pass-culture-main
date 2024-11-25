@@ -10,11 +10,10 @@ import {
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 
-import { AdageOfferProps } from '../../AdageOffer'
-import { AdageOfferHeader } from '../AdageOfferHeader'
+import { AdageOfferHeader, AdageOfferHeaderProps } from '../AdageOfferHeader'
 
 function renderAdageOfferHeader(
-  props: AdageOfferProps = {
+  props: AdageOfferHeaderProps = {
     offer: defaultCollectiveTemplateOffer,
     adageUser: defaultAdageUser,
     isPreview: false,

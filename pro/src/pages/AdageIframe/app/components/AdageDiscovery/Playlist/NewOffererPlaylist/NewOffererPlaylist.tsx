@@ -5,9 +5,9 @@ import { AdagePlaylistType } from 'apiClient/adage/models/AdagePlaylistType'
 import { apiAdage } from 'apiClient/api'
 import { GET_NEW_OFFERERS_PLAYLIST_QUERY_KEY } from 'commons/config/swrQueryKeys'
 
-import { TrackerElementArg } from '../../AdageDiscovery'
 import { Carousel } from '../../Carousel/Carousel'
 import { VENUE_PLAYLIST } from '../../constant'
+import { TrackerElementArg } from '../../types'
 import { VenueCard } from '../../VenueCard/VenueCard'
 
 import styles from './NewOffererPlaylist.module.scss'

@@ -22,13 +22,7 @@ import { ClassroomPlaylist } from './Playlist/ClassroomPlaylist/ClassroomPlaylis
 import { NewOffererPlaylist } from './Playlist/NewOffererPlaylist/NewOffererPlaylist'
 import { NewOfferPlaylist } from './Playlist/NewOfferPlaylist/NewOfferPlaylist'
 import { VenuePlaylist } from './Playlist/VenuePlaylist/VenuePlaylist'
-
-export type TrackerElementArg = {
-  playlistId: number
-  playlistType: AdagePlaylistType
-  elementId?: number
-  index?: number
-}
+import { TrackerElementArg } from './types'
 
 export const AdageDiscovery = () => {
   const hasSeenAllPlaylist = useRef<boolean>(false)

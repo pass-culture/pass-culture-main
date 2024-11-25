@@ -5,10 +5,10 @@ import { AdagePlaylistType } from 'apiClient/adage/models/AdagePlaylistType'
 import { apiAdage } from 'apiClient/api'
 import { GET_CLASSROOM_PLAYLIST_QUERY_KEY } from 'commons/config/swrQueryKeys'
 
-import { TrackerElementArg } from '../../AdageDiscovery'
 import { Carousel } from '../../Carousel/Carousel'
 import { CLASSROOM_PLAYLIST } from '../../constant'
 import { OfferCardComponent } from '../../OfferCard/OfferCard'
+import { TrackerElementArg } from '../../types'
 
 import styles from './ClassroomPlaylist.module.scss'
 
