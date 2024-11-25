@@ -1,11 +1,11 @@
 import { useState } from 'react'
 
 import { UserPhoneBodyModel } from 'apiClient/v1'
-import { BannerRGS } from 'components/Banner/BannerRGS'
+import { BannerRGS } from 'components/BannerRGS/BannerRGS'
 import { UserIdentityFormValues } from 'components/UserIdentityForm/types'
 
 import { Forms } from './constants'
-import { UserEmail, UserEmailInitialValues } from './UserEmail'
+import { UserEmail, UserEmailInitialValues } from './UserEmail/UserEmail'
 import { UserIdentity } from './UserIdentity'
 import { UserPassword } from './UserPassword'
 import { UserPhone } from './UserPhone'

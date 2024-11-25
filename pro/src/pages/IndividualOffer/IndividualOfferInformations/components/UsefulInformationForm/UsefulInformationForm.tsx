@@ -10,8 +10,6 @@ import { REIMBURSEMENT_RULES } from 'commons/core/Finances/constants'
 import { useAccessibilityOptions } from 'commons/hooks/useAccessibilityOptions'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
-import { OfferRefundWarning } from 'components/Banner/OfferRefundWarning'
-import { WithdrawalReminder } from 'components/Banner/WithdrawalReminder'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
 import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
@@ -33,6 +31,8 @@ import { UsefulInformationFormValues } from '../../commons/types'
 import { setFormReadOnlyFields } from '../../commons/utils'
 import { OfferLocation } from '../OfferLocation/OfferLocation'
 
+import { OfferRefundWarning } from './components/OfferRefundWarning'
+import { WithdrawalReminder } from './components/WithdrawalReminder'
 import styles from './UsefulInformationForm.module.scss'
 
 interface UsefulInformationFormProps {

@@ -13,11 +13,11 @@ import {
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { FORMAT_ISO_DATE_ONLY, getToday } from 'commons/utils/date'
 import { sortByLabel } from 'commons/utils/strings'
-import { BannerReimbursementsInfo } from 'components/Banner/BannerReimbursementsInfo'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { DEFAULT_INVOICES_FILTERS } from '../_constants'
 
+import { BannerReimbursementsInfo } from './BannerReimbursementsInfo'
 import { InvoicesFilters } from './InvoicesFilters'
 import { InvoicesNoResult } from './InvoicesNoResult'
 import { InvoicesServerError } from './InvoicesServerError'

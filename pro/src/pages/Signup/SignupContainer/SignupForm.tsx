@@ -1,9 +1,9 @@
 import { useFormikContext } from 'formik'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { ProUserCreationBodyV2Model } from 'apiClient/v1'
-import { BannerRGS } from 'components/Banner/BannerRGS'
+import { BannerRGS } from 'components/BannerRGS/BannerRGS'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { LegalInfos } from 'components/LegalInfos/LegalInfos'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'

@@ -16,7 +16,6 @@ import {
   GetSiretDataResponse,
 } from 'commons/core/Venue/getSiretData'
 import { useNotification } from 'commons/hooks/useNotification'
-import { BannerInvisibleSiren } from 'components/Banner/BannerInvisibleSiren'
 import { Callout } from 'components/Callout/Callout'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
@@ -26,6 +25,7 @@ import { MaybeAppUserDialog } from 'pages/Signup/SignupContainer/MaybeAppUserDia
 
 import { ActionBar } from '../ActionBar/ActionBar'
 
+import { BannerInvisibleSiren } from './BannerInvisibleSiren/BannerInvisibleSiren'
 import { DEFAULT_OFFERER_FORM_VALUES } from './constants'
 import styles from './Offerer.module.scss'
 import { OffererForm, OffererFormValues } from './OffererForm'

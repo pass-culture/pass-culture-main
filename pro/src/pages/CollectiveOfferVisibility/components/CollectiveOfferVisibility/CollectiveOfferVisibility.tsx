@@ -30,7 +30,7 @@ import {
   SelectOptionNormalized,
 } from 'commons/utils/searchPatternInOptions'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
-import { BannerPublicApi } from 'components/Banner/BannerPublicApi'
+import { BannerPublicApi } from 'components/BannerPublicApi/BannerPublicApi'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OfferEducationalActions } from 'components/OfferEducationalActions/OfferEducationalActions'
 import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
