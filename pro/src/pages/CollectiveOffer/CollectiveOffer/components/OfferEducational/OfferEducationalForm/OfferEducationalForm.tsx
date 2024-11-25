@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
+  GetEducationalOffererResponseModel,
 } from 'apiClient/v1'
 import {
   isCollectiveOffer,
@@ -40,15 +41,11 @@ import { FormPriceDetails } from './FormPriceDetails/FormPriceDetails'
 import { FormVenue } from './FormVenue/FormVenue'
 import styles from './OfferEducationalForm.module.scss'
 
-export type OfferEducationalFormProps = Omit<
-  OfferEducationalProps,
-  | 'offer'
-  | 'setOffer'
-  | 'initialValues'
-  | 'isEdition'
-  | 'isOfferCancellable'
-  | 'useOfferForFormValues'
-> & {
+export type OfferEducationalFormProps = {
+  userOfferer: GetEducationalOffererResponseModel | null
+  domainsOptions: SelectOption[]
+  nationalPrograms: SelectOption<number>[]
+  isTemplate: boolean
   mode: Mode
   imageOffer: ImageUploaderOfferProps['imageOffer']
   onImageUpload: ImageUploaderOfferProps['onImageUpload']
