@@ -9,9 +9,29 @@ import pytest
 from tests.conftest import TestClient
 
 
+# This list must be sync with the configmap from deployment repo
+ALLOWED_ORIGIN_BY_ENV = {
+    "testing": {
+        "CORS_ALLOWED_ORIGINS_NATIVE": "https://app.testing.passculture.team,https://adage.testing.passculture.team",
+        "CORS_ALLOWED_ORIGINS": "https://web.testing.passculture.team,https://pro.testing.passculture.team,https://app.passculture-testing.beta.gouv.fr,https://pro.passculture-testing.beta.gouv.fr,https://pro-test.testing.passculture.team,https://.*.web.app",
+    },
+    "staging": {
+        "CORS_ALLOWED_ORIGINS_NATIVE": "https://app.staging.passculture.team,https://adage.staging.passculture.team",
+        "CORS_ALLOWED_ORIGINS": "https://web.staging.passculture.team,https://pro.staging.passculture.team,https://app.passculture-staging.beta.gouv.fr,https://pro.passculture-staging.beta.gouv.fr",
+    },
+    "production": {
+        "CORS_ALLOWED_ORIGINS_NATIVE": "https://passculture.app,https://adage.passculture.app",
+        "CORS_ALLOWED_ORIGINS": "https://web.passculture.app,https://passculture.pro,https://app.passculture.beta.gouv.fr,https://pro.passculture.beta.gouv.fr",
+    },
+    "integration": {
+        "CORS_ALLOWED_ORIGINS_NATIVE": "https://integration.passculture.app",
+        "CORS_ALLOWED_ORIGINS": "https://web.integration.passculture.app,https://integration.passculture.app,https://integration.passculture.pro,https://app.passculture-integration.beta.gouv.fr,https://pro.passculture-integration.beta.gouv.fr",
+    },
+}
+
+
 def get_cors_allowed_origins(env, settings_key):
-    dotenv_file = dotenv.find_dotenv(f".env.{env}")
-    return dotenv.dotenv_values(dotenv_file)[settings_key].split(",")
+    return ALLOWED_ORIGIN_BY_ENV[env][settings_key].split(",")
 
 
 def build_permutations(request_origins):
