@@ -1,4 +1,3 @@
-import React from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -7,7 +6,7 @@ import { Layout } from 'app/App/layout/Layout'
 import { PreFiltersParams } from 'commons/core/Bookings/types'
 import { buildBookingsRecapQuery } from 'commons/core/Bookings/utils'
 import { Audience } from 'commons/core/shared/types'
-import { BookingsScreen } from 'components/Bookings/Bookings'
+import { BookingsContainer } from 'components/Bookings/Bookings'
 
 const MAX_LOADED_PAGES = 5
 
@@ -65,7 +64,7 @@ const CollectiveBookings = (): JSX.Element => {
 
   return (
     <Layout>
-      <BookingsScreen
+      <BookingsContainer
         audience={Audience.COLLECTIVE}
         getFilteredBookingsAdapter={getFilteredCollectiveBookingsAdapter}
         getUserHasBookingsAdapter={getUserHasCollectiveBookingsAdapter}

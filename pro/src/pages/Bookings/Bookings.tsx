@@ -1,9 +1,8 @@
-import React from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { Layout } from 'app/App/layout/Layout'
 import { Audience } from 'commons/core/shared/types'
-import { BookingsScreen } from 'components/Bookings/Bookings'
+import { BookingsContainer } from 'components/Bookings/Bookings'
 
 import { getFilteredIndividualBookingsAdapter } from './adapters/getFilteredIndividualBookingsAdapter'
 import { getUserHasIndividualBookingsAdapter } from './adapters/getUserHasIndividualBookingsAdapter'
@@ -13,7 +12,7 @@ export const Bookings = (): JSX.Element => {
 
   return (
     <Layout>
-      <BookingsScreen
+      <BookingsContainer
         audience={Audience.INDIVIDUAL}
         getFilteredBookingsAdapter={getFilteredIndividualBookingsAdapter}
         getUserHasBookingsAdapter={getUserHasIndividualBookingsAdapter}

@@ -53,7 +53,7 @@ type BookingsProps<T> = {
 
 const MAX_LOADED_PAGES = 5
 
-export const BookingsScreen = <
+export const BookingsContainer = <
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 >({
   locationState,
