@@ -1,6 +1,6 @@
 import { UserPhoneBodyModel } from 'apiClient/v1'
-import { BoxFormLayout } from 'components/BoxFormLayout/BoxFormLayout'
 import { UserPhoneForm } from 'components/UserPhoneForm/UserPhoneForm'
+import { BoxFormLayout } from 'ui-kit/BoxFormLayout/BoxFormLayout'
 import { BoxRounded } from 'ui-kit/BoxRounded/BoxRounded'
 
 import { Forms } from './constants'

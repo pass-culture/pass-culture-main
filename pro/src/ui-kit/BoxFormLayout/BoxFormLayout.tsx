@@ -2,11 +2,11 @@ import cn from 'classnames'
 import React from 'react'
 
 import style from './BoxFormLayout.module.scss'
-import { Banner } from './BoxFormLayoutBanner'
-import { Fields } from './BoxFormLayoutFields'
-import { FormHeader } from './BoxFormLayoutFormHeader'
-import { Header } from './BoxFormLayoutHeader'
-import { RequiredMessage } from './BoxFormLayoutRequiredMessage'
+import { Banner } from './components/BoxFormLayoutBanner'
+import { Fields } from './components/BoxFormLayoutFields'
+import { FormHeader } from './components/BoxFormLayoutFormHeader'
+import { Header } from './components/BoxFormLayoutHeader'
+import { RequiredMessage } from './components/BoxFormLayoutRequiredMessage'
 
 export interface BoxFormLayoutProps {
   children?: React.ReactNode | React.ReactNode[]
