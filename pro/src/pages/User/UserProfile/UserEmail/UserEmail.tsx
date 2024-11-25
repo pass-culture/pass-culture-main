@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
-import { BannerPendingEmailValidation } from 'components/Banner/BannerPendingEmailValidation'
 import { BoxFormLayout } from 'components/BoxFormLayout/BoxFormLayout'
 import { UserEmailForm } from 'components/UserEmailForm/UserEmailForm'
 import { BoxRounded } from 'ui-kit/BoxRounded/BoxRounded'
 
-import { Forms } from './constants'
+import { Forms } from '../constants'
+
+import { BannerPendingEmailValidation } from './BannerPendingEmailValidation/BannerPendingEmailValidation'
 
 export interface UserEmailInitialValues {
   email: string

@@ -1,12 +1,11 @@
 import { Form, useFormikContext } from 'formik'
-import React from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { UNAVAILABLE_ERROR_PAGE } from 'commons/utils/routes'
-import { BannerRGS } from 'components/Banner/BannerRGS'
+import { BannerRGS } from 'components/BannerRGS/BannerRGS'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import fullKeyIcon from 'icons/full-key.svg'
