@@ -48,7 +48,7 @@ import { OfferEducationalForm } from './OfferEducationalForm/OfferEducationalFor
 import { useCollectiveOfferImageUpload } from './useCollectiveOfferImageUpload'
 import { getOfferEducationalValidationSchema } from './validationSchema'
 
-export interface OfferEducationalProps {
+interface OfferEducationalProps {
   offer?:
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel
