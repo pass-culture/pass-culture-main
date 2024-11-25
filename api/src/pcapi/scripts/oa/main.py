@@ -138,6 +138,8 @@ def get_inconsistent_venue_addresses() -> list[offerers_models.Venue]:
             offerers_models.Venue.postalCode != geography_models.Address.postalCode,
             # ignore venues with low quality address that are correct in the address table
             offerers_models.Venue.id.not_in((6884,)),
+            # and some outside France
+            offerers_models.Venue.id.not_in((43100, 43102, 43104)),
         )
     )
 
