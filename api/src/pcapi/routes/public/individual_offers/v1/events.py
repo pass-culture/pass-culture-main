@@ -244,22 +244,7 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
         raise api_errors.ApiErrors({"event_id": ["The event offer could not be found"]}, status_code=404)
     utils.check_offer_subcategory(body, offer.subcategoryId)
 
-    venue = None
-    offerer_address = None
-
-    location = body.location
-    if location:
-        venue = utils.get_venue_with_offerer_address(location.venue_id)
-
-        if location.type == "address":
-            address = utils.get_address_or_raise_404(location.address_id)
-            offerer_address = offerers_api.get_or_create_offerer_address(
-                offerer_id=venue.managingOffererId,
-                address_id=address.id,
-                label=location.address_label,
-            )
-        else:
-            offerer_address = venue.offererAddress
+    venue, offerer_address = utils.extract_venue_and_offerer_address_from_location(body)
 
     try:
         with repository.transaction():

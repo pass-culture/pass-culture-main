@@ -1,4 +1,5 @@
 import contextlib
+import typing
 import uuid
 
 import pytest
@@ -207,16 +208,18 @@ class PublicAPIRestrictedEnvEndpointHelper(PublicAPIVenueEndpointHelper):
 class ProductEndpointHelper:
     @staticmethod
     def create_base_product(
-        venue: offerers_models.Venue, provider: providers_models.Provider | None = None
+        venue: offerers_models.Venue, provider: providers_models.Provider | None = None, **extra: typing.Any
     ) -> offers_models.Offer:
-        return offers_factories.ThingOfferFactory(
-            venue=venue,
-            lastProviderId=provider and provider.id,
-            subcategoryId=subcategories.LIVRE_PAPIER.id,
-            description="Un livre de contrepèterie",
-            name="Vieux motard que jamais",
-            extraData={"ean": "1234567890123"},
-        )
+        base_kwargs = {
+            "venue": venue,
+            "lastProviderId": provider and provider.id,
+            "subcategoryId": subcategories.LIVRE_PAPIER.id,
+            "description": "Un livre de contrepèterie",
+            "name": "Vieux motard que jamais",
+            "extraData": {"ean": "1234567890123"},
+        }
+
+        return offers_factories.ThingOfferFactory(**{**base_kwargs, **extra})
 
 
 @contextlib.contextmanager
