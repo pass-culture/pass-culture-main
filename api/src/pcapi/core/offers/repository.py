@@ -1409,3 +1409,7 @@ def venues_have_individual_and_collective_offers(venue_ids: list[int]) -> tuple[
             ).exists()
         ).scalar(),
     )
+
+
+def get_offer_existing_stocks_count(offer_id: int) -> int:
+    return models.Stock.query.filter_by(offerId=offer_id).filter(models.Stock.isSoftDeleted == False).count()
