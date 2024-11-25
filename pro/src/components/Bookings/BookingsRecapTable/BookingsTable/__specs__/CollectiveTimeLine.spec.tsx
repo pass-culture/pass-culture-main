@@ -6,9 +6,9 @@ import React from 'react'
 import {
   CollectiveBookingBankAccountStatus,
   CollectiveBookingByIdResponseModel,
+  CollectiveBookingCancellationReasons,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
-import { CollectiveBookingCancellationReasons } from 'apiClient/v1/models/CollectiveBookingCancellationReasons'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { BOOKING_STATUS } from 'commons/core/Bookings/constants'
 import { CollectiveBookingsEvents } from 'commons/core/FirebaseEvents/constants'
@@ -18,8 +18,8 @@ import {
   collectiveBookingFactory,
 } from 'commons/utils/factories/collectiveApiFactories'
 import {
-  RenderWithProvidersOptions,
   renderWithProviders,
+  RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
 
 import { CollectiveTimeLine } from '../CollectiveTimeLine'
@@ -154,7 +154,8 @@ describe('collective timeline', () => {
       bookingStatus: BOOKING_STATUS.CANCELLED,
       bookingConfirmationDate: null,
       bookingConfirmationLimitDate: '01/01/2023',
-      bookingCancellationReason: 'UNKNOWN_CANCELLATION_REASON' as CollectiveBookingCancellationReasons,
+      bookingCancellationReason:
+        'UNKNOWN_CANCELLATION_REASON' as CollectiveBookingCancellationReasons,
       bookingStatusHistory: [
         { date: new Date().toISOString(), status: BOOKING_STATUS.PENDING },
         { date: new Date().toISOString(), status: BOOKING_STATUS.CANCELLED },

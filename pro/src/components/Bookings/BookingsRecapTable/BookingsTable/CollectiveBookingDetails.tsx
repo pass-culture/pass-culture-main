@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
-import { CollectiveBookingByIdResponseModel } from 'apiClient/v1/models/CollectiveBookingByIdResponseModel'
+import { CollectiveBookingByIdResponseModel } from 'apiClient/v1/api'
 import strokeLocationIcon from 'icons/stroke-location.svg'
 import strokeMailIcon from 'icons/stroke-mail.svg'
 import strokePhoneIcon from 'icons/stroke-phone.svg'

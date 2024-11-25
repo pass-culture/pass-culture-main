@@ -3,14 +3,13 @@ import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
 import {
-  ApiError,
   CollectiveBookingStatus,
   CollectiveOfferResponseModel,
   CollectiveOfferStatus,
   ListOffersStockResponseModel,
 } from 'apiClient/v1'
-import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import { ApiRequestOptions } from 'apiClient/core/ApiRequestOptions'
+import { ApiResult } from 'apiClient/core/ApiResult'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { CollectiveBookingsEvents } from 'commons/core/FirebaseEvents/constants'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'commons/core/Offers/constants'
@@ -21,8 +20,8 @@ import {
 } from 'commons/utils/factories/collectiveApiFactories'
 import { listOffersStockFactory } from 'commons/utils/factories/individualApiFactories'
 import {
-  RenderWithProvidersOptions,
   renderWithProviders,
+  RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
 import { Notification } from 'components/Notification/Notification'
 
@@ -30,6 +29,7 @@ import {
   CollectiveOfferRow,
   CollectiveOfferRowProps,
 } from '../CollectiveOfferRow'
+import { ApiError } from 'apiClient/core/ApiError'
 
 vi.mock('apiClient/api', () => ({
   api: {

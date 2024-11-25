@@ -1,6 +1,6 @@
-import { PostVenueBodyModel } from 'apiClient/v1/models/PostVenueBodyModel'
 import { unhumanizeSiret } from 'commons/core/Venue/utils'
 import { VenueCreationFormValues } from 'pages/VenueCreation/types'
+import { PostVenueBodyModel } from 'apiClient/v1'
 
 export const serializePostVenueBodyModel = (
   formValues: VenueCreationFormValues,

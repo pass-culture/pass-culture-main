@@ -1,0 +1,7 @@
+{
+  "modelPropertyNaming": "original",
+  "supportsES6": true,
+  "typeMappings": {
+    "DateTime": "string"
+  }
+}

@@ -6,7 +6,6 @@ import * as instantSearch from 'react-instantsearch'
 import {
   AdageFrontRoles,
   AuthenticatedResponse,
-  CancelablePromise,
   CollectiveOfferResponseModel,
   ListCollectiveOfferTemplateResponseModel,
   OfferAddressType,
@@ -26,6 +25,7 @@ import {
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 
 import { Offers, OffersProps } from '../Offers'
+import { CancelablePromise } from 'apiClient/core/CancelablePromise'
 
 vi.mock('react-router-dom', async () => ({
   ...(await vi.importActual('react-router-dom')),

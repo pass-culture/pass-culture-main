@@ -3,10 +3,11 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
-import { ApiRequestOptions } from 'apiClient/adage/core/ApiRequestOptions'
+import { ApiRequestOptions } from 'apiClient/core/ApiRequestOptions'
 import { api } from 'apiClient/api'
-import { ApiError, VenueOfOffererFromSiretResponseModel } from 'apiClient/v1'
-import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import { ApiError } from 'apiClient/core/ApiError'
+import { VenueOfOffererFromSiretResponseModel } from 'apiClient/v1'
+import { ApiResult } from 'apiClient/core/ApiResult'
 import {
   SignupJourneyContext,
   SignupJourneyContextValues,

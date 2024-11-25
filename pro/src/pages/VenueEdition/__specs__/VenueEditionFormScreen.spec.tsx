@@ -6,9 +6,9 @@ import createFetchMock from 'vitest-fetch-mock'
 
 import { apiAdresse } from 'apiClient/adresse/apiAdresse'
 import { api } from 'apiClient/api'
-import { ApiError, GetVenueResponseModel } from 'apiClient/v1'
-import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import { ApiError } from 'apiClient/core/ApiError'
+import { GetVenueResponseModel } from 'apiClient/v1'
+import { ApiRequestOptions } from 'apiClient/core/ApiRequestOptions'
 import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
@@ -18,6 +18,7 @@ import {
 import { Notification } from 'components/Notification/Notification'
 
 import { VenueEditionFormScreen } from '../VenueEditionFormScreen'
+import { ApiResult } from 'apiClient/core/ApiResult'
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()

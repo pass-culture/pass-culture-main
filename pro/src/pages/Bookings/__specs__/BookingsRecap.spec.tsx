@@ -3,9 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { ApiError } from 'apiClient/v2'
-import { ApiRequestOptions } from 'apiClient/v2/core/ApiRequestOptions'
-import { ApiResult } from 'apiClient/v2/core/ApiResult'
+import { ApiRequestOptions } from 'apiClient/core/ApiRequestOptions'
 import { DEFAULT_PRE_FILTERS } from 'commons/core/Bookings/constants'
 import { GET_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
 import {
@@ -21,6 +19,8 @@ import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { Notification } from 'components/Notification/Notification'
 
 import { Bookings } from '../Bookings'
+import { ApiResult } from 'apiClient/core/ApiResult'
+import { ApiError } from 'apiClient/core/ApiError'
 
 vi.mock('apiClient/api', () => ({
   api: {

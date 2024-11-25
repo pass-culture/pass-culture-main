@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { CancelablePromise, GetOffererResponseModel } from 'apiClient/v1'
+import { GetOffererResponseModel } from 'apiClient/v1'
 import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
@@ -12,6 +12,7 @@ import {
 } from 'commons/utils/renderWithProviders'
 
 import { OffererStatsScreen } from '../OffererStatsScreen'
+import { CancelablePromise } from 'apiClient/core/CancelablePromise'
 
 vi.mock('apiClient/api', () => ({
   api: {
