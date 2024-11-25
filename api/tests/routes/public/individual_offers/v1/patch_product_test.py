@@ -6,9 +6,11 @@ from pcapi import settings
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.utils import human_ids
@@ -386,3 +388,76 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         db.session.refresh(product_offer)
         assert product_offer.name == new_name
         assert product_offer.description == new_desc
+
+    def test_update_location_with_physical_location(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
+        product = self.create_base_product(
+            venue=venue_provider.venue, provider=venue_provider.provider, subcategoryId=subcategories.PARTITION.id
+        )
+
+        other_venue = providers_factories.VenueProviderFactory(provider=venue_provider.provider).venue
+        json_data = {"location": {"type": "physical", "venueId": other_venue.id}}
+
+        response = self.send_update_request(client, plain_api_key, product, json_data)
+        assert response.status_code == 200
+
+        db.session.refresh(product)
+
+        assert product.venueId == other_venue.id
+        assert product.venue.offererAddress.id == other_venue.offererAddress.id
+
+    def test_update_location_for_digital_product(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
+        venue = venue_provider.venue
+        product = self.create_base_product(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            subcategoryId=subcategories.LIVRE_NUMERIQUE.id,
+            url="https://ebook.download",
+        )
+
+        other_venue = offerers_factories.VirtualVenueFactory(managingOfferer=venue.managingOfferer)
+        providers_factories.VenueProviderFactory(provider=venue_provider.provider, venue=other_venue)
+        json_data = {"location": {"type": "digital", "venueId": other_venue.id, "url": "https://oops.fr"}}
+
+        response = self.send_update_request(client, plain_api_key, product, json_data)
+        assert response.status_code == 400
+        assert response.json == {"offererAddress": ["Une offre numérique ne peut pas avoir d'adresse"]}
+
+    def test_update_location_with_address(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
+        venue = venue_provider.venue
+        product = self.create_base_product(venue=venue, provider=venue_provider.provider)
+        product = self.create_base_product(
+            venue=venue_provider.venue, provider=venue_provider.provider, subcategoryId=subcategories.PARTITION.id
+        )
+
+        other_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        address = geography_factories.AddressFactory(
+            latitude=50.63153,
+            longitude=3.06089,
+            postalCode=59000,
+            city="Lille",
+        )
+
+        providers_factories.VenueProviderFactory(provider=venue_provider.provider, venue=other_venue)
+        json_data = {
+            "location": {
+                "type": "address",
+                "venueId": other_venue.id,
+                "addressId": address.id,
+            }
+        }
+
+        response = self.send_update_request(client, plain_api_key, product, json_data)
+        assert response.status_code == 200
+
+        db.session.refresh(product)
+        assert product.offererAddress.addressId == address.id
+
+    def send_update_request(self, client, plain_api_key, product, json_data):
+        url = self.endpoint_url
+        return client.with_explicit_token(plain_api_key).patch(
+            url,
+            json={"offerId": product.id, **json_data},
+        )

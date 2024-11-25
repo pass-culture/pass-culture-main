@@ -860,6 +860,9 @@ def edit_product(body: serialization.ProductOfferEdition) -> serialization.Produ
 
     _check_offer_can_be_edited(offer)
     utils.check_offer_subcategory(body, offer.subcategoryId)
+
+    venue, offerer_address = utils.extract_venue_and_offerer_address_from_location(body)
+
     try:
         with repository.transaction():
             updates = body.dict(by_alias=True, exclude_unset=True)
@@ -884,7 +887,7 @@ def edit_product(body: serialization.ProductOfferEdition) -> serialization.Produ
                 isDuo=get_field(offer, updates, "enableDoubleBookings", col="isDuo"),
                 withdrawalDetails=get_field(offer, updates, "itemCollectionDetails", col="withdrawalDetails"),
             )  # type: ignore[call-arg]
-            updated_offer = offers_api.update_offer(offer, offer_body)
+            updated_offer = offers_api.update_offer(offer, offer_body, venue=venue, offerer_address=offerer_address)
             if body.image:
                 utils.save_image(body.image, updated_offer)
             if "stock" in updates:

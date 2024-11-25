@@ -598,6 +598,7 @@ class OfferEditionBase(serialization.ConfiguredBaseModel):
     description: str | None = fields.OFFER_DESCRIPTION_WITH_MAX_LENGTH
     id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
     name: OfferName | None = fields.OFFER_NAME
+    location: PhysicalLocation | DigitalLocation | AddressLocation | None = fields.OFFER_LOCATION
 
     class Config:
         extra = "forbid"
@@ -653,7 +654,6 @@ class EventOfferEdition(OfferEditionBase):
         description="To override category related fields, the category must be specified, even if it cannot be changed. Other category related fields may be left undefined to keep their current value.",
     )
     event_duration: int | None = fields.EVENT_DURATION
-    location: PhysicalLocation | DigitalLocation | AddressLocation | None = fields.OFFER_LOCATION
 
 
 class EventStockCreation(BaseStockCreation):
