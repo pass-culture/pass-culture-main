@@ -35,6 +35,10 @@ def create_venue_address_as_manual(existing_venues: list[offerers_models.Venue])
     for venue in existing_venues:
         if venue.offererAddress is None:
             return
+        print(
+            "Altering OA #%s for venue #%s (%s) with offerer #%s"
+            % (venue.offererAddressId, venue.id, venue.common_name, venue.managingOffererId)
+        )
         # Duplicate OA to keep the informations
         if venue.offererAddress.offererId is not None and venue.offererAddress.addressId is not None:
             offerers_api.create_offerer_address(
