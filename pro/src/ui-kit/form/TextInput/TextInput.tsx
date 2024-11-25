@@ -9,27 +9,32 @@ import {
 
 import styles from './TextInput.module.scss'
 
+/**
+ * Props for the TextInput component.
+ *
+ * @extends FieldLayoutBaseProps
+ * @extends BaseInputProps
+ */
 export type TextInputProps = FieldLayoutBaseProps &
   BaseInputProps & {
     /**
      * A flag to make the input read-only.
      * It becomes a span element with the value displayed.
-     * Only FieldLayout props, refForInput & value will then
-     * be used.
+     * Only FieldLayout props, refForInput & value will then be used.
      */
     readOnly?: boolean
     /**
-     * Allows to display input characters count.
-     * Must be provided with maxLength to be effective,
-     * Adds `field-characters-count-description-${name}`
-     * to the aria-describedby attribute of the input.
-     * Used for FieldLayout count prop.
+     * Allows displaying input characters count.
+     * Must be provided with `maxLength` to be effective.
+     * Adds `field-characters-count-description-${name}` to the `aria-describedby` attribute of the input.
+     * Used for `FieldLayout` count prop.
      */
     countCharacters?: boolean
     /**
      * Allows decimal numbers in the input.
-     * Must be provided with type="number" to be effective.
-     * Unused when readOnly is true.
+     * Must be provided with `type="number"` to be effective.
+     * Unused when `readOnly` is true.
+     * @default true
      */
     hasDecimal?: boolean
     /**
@@ -39,13 +44,47 @@ export type TextInputProps = FieldLayoutBaseProps &
     /**
      * A custom error message to be displayed.
      * If this prop is provided, the error message will be displayed
-     * and the field will be marked as errored
-     * regardless of the field's formik state.
-     * Used for error & showError FieldLayout props.
+     * and the field will be marked as errored regardless of the field's Formik state.
+     * Used for `error` & `showError` `FieldLayout` props.
      */
     externalError?: string
+    /**
+     * The placeholder text for the input field.
+     *
+     * **Important: Do not use the `placeholder` to indicate the format of the field.**
+     * Use the `label` or `description` props instead to provide instructions on the expected format.
+     */
+    placeholder?: string
   }
 
+/**
+ * The TextInput component is a customizable input field that integrates with Formik for form state management.
+ * It supports features like character counting, read-only mode, decimal number input, and accessibility enhancements.
+ *
+ * ---
+ * ** Important: Do not use the `placeholder` to indicate the format of the field.**
+ * Use the `label` or `description` props instead to provide instructions on the expected format.
+ * ---
+ *
+ * @param {TextInputProps} props - The props for the TextInput component.
+ * @returns {JSX.Element} The rendered TextInput component.
+ *
+ * @example
+ * <TextInput
+ *   name="email"
+ *   label="Email Address"
+ *   description="Please enter a valid email address."
+ *   isOptional
+ * />
+ *
+ * @accessibility
+ * - **Do not use the `placeholder` to indicate the format**: Placeholders are not always announced by screen readers and disappear once the user starts typing. Use `label` or `description` to provide information about the expected format.
+ * - **Labels and ARIA**: Always provide the `label` prop so the field is correctly identified by assistive technologies. The component uses `aria-required` to indicate if the field is optional or required.
+ * - **Descriptions**: If you use the `description` prop, it will be linked to the input via `aria-describedby`, providing additional information to users.
+ * - **Character Counting**: When `countCharacters` is enabled, the number of characters entered is displayed, and a description is added for assistive technologies.
+ * - **Error Handling**: Error messages are handled and displayed in an accessible manner, informing users of issues with their input.
+ * - **Keyboard Navigation**: Users can navigate and interact with the field using the keyboard, in compliance with accessibility standards.
+ */
 export const TextInput = ({
   name,
   type = 'text',
@@ -83,12 +122,13 @@ export const TextInput = ({
     type,
   })
 
-  // think to add step="0.01" for decimal fields
+  // Regex patterns for input validation
   const regexHasDecimal = /[0-9,.]/
   const regexHasNotDecimal = /[0-9]/
   const regexIsNavigationKey = /Tab|Backspace|Enter/
   const showError = !!externalError || (meta.touched && !!meta.error)
 
+  // Constructing aria-describedby attribute
   const describedBy = []
 
   if (description) {
@@ -141,6 +181,7 @@ export const TextInput = ({
           aria-required={!isOptional}
           aria-describedby={describedBy.join(' ') || undefined}
           onKeyDown={(event) => {
+            // Restrict input for number types
             if (type === 'number') {
               if (regexIsNavigationKey.test(event.key)) {
                 return
@@ -156,8 +197,7 @@ export const TextInput = ({
           // Disable changing input value on scroll over a number input
           onWheel={(event) => {
             if (type === 'number') {
-              // We blur so that the input loses focus and the scroll still happens on the page
-              // otherwise the user can't scroll the page if the cursor is over the input
+              // Blur the input to prevent value change on scroll
               event.currentTarget.blur()
             }
           }}

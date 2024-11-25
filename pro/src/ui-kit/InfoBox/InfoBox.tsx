@@ -7,15 +7,52 @@ import { ShadowTipsHelpIcon } from 'ui-kit/Icons/SVGs/ShadowTipsHelpIcon'
 
 import styles from './InfoBox.module.scss'
 
+/**
+ * Props for the link inside the InfoBox component.
+ *
+ * @extends LinkProps
+ */
 interface InfoBoxLinkProps extends LinkProps {
+  /**
+   * The text to display for the link.
+   */
   text: string
 }
 
+/**
+ * Props for the InfoBox component.
+ */
 interface InfoBoxProps {
+  /**
+   * The content to display inside the InfoBox.
+   */
   children: ReactNode
+  /**
+   * An optional link to include in the InfoBox.
+   */
   link?: InfoBoxLinkProps
 }
 
+/**
+ * The InfoBox component is used to present key information or tips to users, optionally including a link for further action.
+ * It contains a title, text content, and can also include a button link.
+ *
+ * ---
+ * **Important: Use the `link` prop to provide additional resources or actions for the information presented.**
+ * ---
+ *
+ * @param {InfoBoxProps} props - The props for the InfoBox component.
+ * @returns {JSX.Element} The rendered InfoBox component.
+ *
+ * @example
+ * <InfoBox link={{ to: '/learn-more', text: 'Learn More' }}>
+ *   This is some important information you should know.
+ * </InfoBox>
+ *
+ * @accessibility
+ * - **Consistent Styling**: Ensure the InfoBox styling maintains a good color contrast ratio for accessibility.
+ * - **Icon Usage**: The `ShadowTipsHelpIcon` is used to visually emphasize the content's informative nature. Provide meaningful ARIA labels if needed.
+ */
 export const InfoBox = ({ children, link }: InfoBoxProps): JSX.Element => {
   return (
     <div className={cn(styles['info-box'])}>

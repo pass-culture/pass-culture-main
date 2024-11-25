@@ -1,5 +1,8 @@
 import React from 'react'
 
+/**
+ * Props for the SvgIcon component.
+ */
 export interface SvgIconProps {
   /**
    * The SVG src path.
@@ -14,22 +17,48 @@ export interface SvgIconProps {
    * decorative icon.
    */
   alt?: string
+  /**
+   * Custom CSS class for additional styling of the SVG.
+   */
   className?: string
   /**
    * The SVG viewBox attribute.
    * This must be provided if the SVG viewBox is known to be different from 0 0 48 48.
-   * Otherwise, the SVG wont be displayed correctly.
+   * Otherwise, the SVG won't be displayed correctly.
+   * @default '0 0 48 48'
    */
   viewBox?: string
+  /**
+   * The width of the SVG icon.
+   */
   width?: string
+  /**
+   * Inline styles for the SVG icon.
+   */
   style?: React.CSSProperties
 }
 
-// This is component is used to display svg icons that can change color and have a text alternative
-// To use it, the SVG must:
-// - have an id="icon" on the path/group that you want to display
-// - have fill="currentColor" on the elements that use the CSS color of the parent
-// - if the viewBox is different from 0 0 48 48, you must pass it as a prop
+/**
+ * The SvgIcon component is used to display SVG icons that can change color and have a text alternative.
+ * To use this component, the SVG must:
+ * - Have an `id="icon"` on the path/group that you want to display.
+ * - Have `fill="currentColor"` on the elements that use the CSS color of the parent.
+ * - If the viewBox is different from `0 0 48 48`, you must pass it as a prop.
+ *
+ * ---
+ * **Important: Always provide an `alt` attribute for meaningful icons to ensure accessibility.**
+ * If the icon is purely decorative, leave the `alt` attribute empty or undefined.
+ * ---
+ *
+ * @param {SvgIconProps} props - The props for the SvgIcon component.
+ * @returns {JSX.Element} The rendered SvgIcon component.
+ *
+ * @example
+ * <SvgIcon src="/icons/check.svg" alt="Checkmark" width="24" />
+ *
+ * @accessibility
+ * - **Alt Text**: Provide meaningful alt text for screen readers when the icon conveys important information. Use `aria-hidden` for decorative icons.
+ */
 export const SvgIcon = ({
   src,
   alt = '',

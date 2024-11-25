@@ -10,18 +10,45 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Notification.module.scss'
 
+/**
+ * Represents a notification with text, type, and optional duration.
+ */
 interface Notification {
+  /**
+   * The text content of the notification.
+   */
   text: string | null
+  /**
+   * The type of the notification, indicating its purpose.
+   */
   type: NotificationTypeEnum
+  /**
+   * The duration for which the notification is displayed.
+   */
   duration?: number
 }
 
+/**
+ * Props for the NotificationToaster component.
+ */
 interface NotificationToasterProps {
+  /**
+   * The notification to display.
+   */
   notification: Notification | null
+  /**
+   * Indicates if the notification toaster is visible.
+   */
   isVisible: boolean
+  /**
+   * Indicates if the sticky action bar is open.
+   */
   isStickyBarOpen: boolean
 }
 
+/**
+ * Additional attributes for notifications based on their type.
+ */
 export const notificationAdditionalAttributes: {
   [key in NotificationTypeEnum]: Partial<React.HTMLAttributes<HTMLDivElement>>
 } = {
@@ -31,7 +58,13 @@ export const notificationAdditionalAttributes: {
   [NotificationTypeEnum.INFORMATION]: { role: 'status' },
 }
 
-function getNotificationContent(notification: Notification) {
+/**
+ * Gets the content for a notification based on its type.
+ *
+ * @param {Notification} notification - The notification to get content for.
+ * @returns {JSX.Element} The notification content.
+ */
+function getNotificationContent(notification: Notification): JSX.Element {
   const type = notification.type
 
   let icon = fullValidateIcon
@@ -52,6 +85,28 @@ function getNotificationContent(notification: Notification) {
   )
 }
 
+/**
+ * The NotificationToaster component is used to display notifications of different types.
+ * It supports displaying notifications such as errors, information, success, or pending messages.
+ *
+ * ---
+ * **Important: Use `notification` prop to provide the information to be displayed.**
+ * ---
+ *
+ * @param {NotificationToasterProps} props - The props for the NotificationToaster component.
+ * @returns {JSX.Element} The rendered NotificationToaster component.
+ *
+ * @example
+ * <NotificationToaster
+ *   notification={{ text: 'Operation successful', type: NotificationTypeEnum.SUCCESS }}
+ *   isVisible={true}
+ *   isStickyBarOpen={false}
+ * />
+ *
+ * @accessibility
+ * - **Role and Aria Attributes**: The component uses roles such as `alert` or `status` to convey the nature of the notification to screen readers.
+ * - **Icons**: Icons are included to provide visual representation of the notification type, making it easier for users to understand.
+ */
 export const NotificationToaster = ({
   notification,
   isVisible,

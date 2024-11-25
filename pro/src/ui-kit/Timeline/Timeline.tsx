@@ -9,6 +9,9 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import emptyCircle from './empty-circle.svg'
 import styles from './Timeline.module.scss'
 
+/**
+ * Enum for the types of steps in the timeline.
+ */
 export enum TimelineStepType {
   SUCCESS = 'SUCCESS',
   ERROR = 'ERROR',
@@ -18,15 +21,37 @@ export enum TimelineStepType {
   REFUSED = 'REFUSED',
 }
 
+/**
+ * Represents a single step in the timeline.
+ */
 export interface TimelineStep {
+  /**
+   * The type of the timeline step.
+   */
   type: TimelineStepType
+  /**
+   * The content to be displayed inside the timeline step.
+   */
   content: ReactNode
 }
 
+/**
+ * Props for the Timeline component.
+ */
 interface TimelineProps {
+  /**
+   * An array of timeline steps to be displayed.
+   */
   steps: TimelineStep[]
 }
 
+/**
+ * Gets the appropriate icon component for a given timeline step type.
+ *
+ * @param {TimelineStepType} type - The type of the timeline step.
+ * @param {boolean} hasErrorSteps - Indicates if there are error steps in the timeline.
+ * @returns {JSX.Element} The icon component for the timeline step.
+ */
 const getIconComponent = (type: TimelineStepType, hasErrorSteps: boolean) => {
   switch (type) {
     case TimelineStepType.SUCCESS:
@@ -89,6 +114,14 @@ const getIconComponent = (type: TimelineStepType, hasErrorSteps: boolean) => {
   }
 }
 
+/**
+ * Gets the appropriate line style for the timeline based on the step type and the next step type.
+ *
+ * @param {TimelineStepType} stepType - The type of the current step.
+ * @param {TimelineStepType} [nextStepType] - The type of the next step.
+ * @param {boolean} [hasErrorSteps] - Indicates if there are error steps in the timeline.
+ * @returns {string | null} The line style for the timeline step.
+ */
 const getLineStyle = (
   stepType: TimelineStepType,
   nextStepType?: TimelineStepType,
@@ -119,6 +152,30 @@ const getLineStyle = (
   }
 }
 
+/**
+ * The Timeline component is used to display a sequence of steps in a timeline.
+ * Each step can represent different statuses such as success, error, waiting, etc.
+ *
+ * ---
+ * **Important: Use the `steps` prop to provide the list of steps in the timeline.**
+ * ---
+ *
+ * @param {TimelineProps} props - The props for the Timeline component.
+ * @returns {JSX.Element} The rendered Timeline component.
+ *
+ * @example
+ * <Timeline
+ *   steps={[
+ *     { type: TimelineStepType.SUCCESS, content: 'Step 1 completed' },
+ *     { type: TimelineStepType.ERROR, content: 'Step 2 failed' },
+ *     { type: TimelineStepType.WAITING, content: 'Step 3 pending' }
+ *   ]}
+ * />
+ *
+ * @accessibility
+ * - **Icons and Labels**: Icons are used to represent the status of each step, with appropriate `alt` attributes for context.
+ * - **Visual Indicators**: The component uses different colors and icons to indicate the status of each step, making it easy to understand at a glance.
+ */
 export const Timeline = ({ steps }: TimelineProps): JSX.Element => {
   const hasErrorSteps =
     steps.filter((x) => x.type === TimelineStepType.ERROR).length > 0
