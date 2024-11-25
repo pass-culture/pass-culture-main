@@ -12,7 +12,8 @@ import {
 } from 'commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { CollectiveOfferFromRequest } from '../CollectiveOfferFromRequest'
+import { CollectiveOfferFromRequest } from './CollectiveOfferFromRequest'
+
 
 const offererId = 666
 const mockLogEvent = vi.fn()
