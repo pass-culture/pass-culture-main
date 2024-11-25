@@ -2849,13 +2849,17 @@ def get_or_create_offerer_address(offerer_id: int, address_id: int, label: str |
 
 
 def create_offerer_address(offerer_id: int, address_id: int | None, label: str | None = None) -> models.OffererAddress:
-    try:
-        offerer_address = models.OffererAddress(offererId=offerer_id, addressId=address_id, label=label)
-        db.session.add(offerer_address)
-        db.session.flush()
-    except sa.exc.IntegrityError:
-        db.session.rollback()
-        raise (exceptions.OffererAddressCreationError())
+    with transaction():
+        try:
+            offerer_address = models.OffererAddress(offererId=offerer_id, addressId=address_id, label=label)
+            db.session.add(offerer_address)
+            db.session.flush()
+        except sa.exc.IntegrityError:
+            if is_managed_transaction():
+                mark_transaction_as_invalid()
+            else:
+                db.session.rollback()
+            raise (exceptions.OffererAddressCreationError())
     return offerer_address
 
 

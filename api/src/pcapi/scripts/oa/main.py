@@ -5,6 +5,8 @@ import pcapi.core.geography.models as geography_models
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
 from pcapi.models import db
+from pcapi.repository import atomic
+from pcapi.repository import mark_transaction_as_invalid
 
 
 app.app_context().push()
@@ -71,14 +73,10 @@ if __name__ == "__main__":
     parser.add_argument("--dry-run", action=argparse.BooleanOptionalAction, default=True)
     args = parser.parse_args()
 
-    try:
+    with atomic():
         venues = get_inconsistent_venue_addresses()
+        print("Venues to correct: %s" % [venue.id for venue in venues])
         create_venue_address_as_manual(venues)
-    except:
-        db.session.rollback()
-        raise
 
-    if args.dry_run:
-        db.session.rollback()
-    else:
-        db.session.commit()
+        if args.dry_run:
+            mark_transaction_as_invalid()
