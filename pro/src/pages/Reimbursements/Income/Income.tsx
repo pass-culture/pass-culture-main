@@ -1,12 +1,12 @@
-import isEqual from 'lodash.isequal'
 import classnames from 'classnames'
-import { useState, useEffect, useRef } from 'react'
 import { FormikProvider, useFormik } from 'formik'
+import isEqual from 'lodash.isequal'
+import { useState, useEffect, useRef } from 'react'
 import * as yup from 'yup'
 
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { useVenues, useIncome } from './hooks'
 import styles from './Income.module.scss'
@@ -89,7 +89,7 @@ export const Income = () => {
   } = useIncome(debouncedSelectedVenues)
   const finalActiveYear = activeYear || years[0]
   const activeYearIncome = incomeByYear?.[finalActiveYear] || {}
-  const activeYearHasData = Object.keys(activeYearIncome).length > 0
+  const activeYearHasData = activeYearIncome.revenue || activeYearIncome.expectedRevenue
 
   useEffect(() => {
     if (hasSingleVenue && incomeDataReady && firstYearFilterRef.current) {
@@ -190,14 +190,14 @@ export const Income = () => {
                   <IncomeNoData type="income-year" />
                 ) : (
                   <div className={styles['income-results']}>
-                    <IncomeResultsBox
+                    {activeYearIncome.revenue && <IncomeResultsBox
                       type="revenue"
                       income={activeYearIncome.revenue}
-                    />
-                    <IncomeResultsBox
+                    />}
+                    {activeYearIncome.expectedRevenue && <IncomeResultsBox
                       type="expectedRevenue"
                       income={activeYearIncome.expectedRevenue}
-                    />
+                    />}
                   </div>
                 )}
               </>

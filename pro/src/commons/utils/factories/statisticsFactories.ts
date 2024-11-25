@@ -7,7 +7,10 @@ export const statisticsFactory = ({
   collectiveAndIndividualRevenueYear = '2024',
 }): StatisticsModel => {
   const incomeByYear = {
-    ...(emptyYear && {[emptyYear]: {}}),
+    ...(emptyYear && {[emptyYear]: {
+      revenue: null,
+      expectedRevenue: null,
+    }}),
     ...(individualRevenueOnlyYear && {
       [individualRevenueOnlyYear]: {
         revenue: {
