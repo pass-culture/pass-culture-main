@@ -334,22 +334,22 @@ describe('Income', () => {
         for (const t of incomeTypes) {
           await waitFor(() => {
             const incomeResults = income[t]
-            const { total, individual, collective } = incomeResults
-
-            if (isCollectiveAndIndividualRevenue(incomeResults)) {
-              expect(screen.getByText(toFloatStr(total))).toBeInTheDocument()
-              expect(
-                screen.getByText(toFloatStr(individual))
-              ).toBeInTheDocument()
-              expect(
-                screen.getByText(toFloatStr(collective))
-              ).toBeInTheDocument()
-            } else if (isCollectiveRevenue(incomeResults)) {
-              expect(
-                screen.getByText(toFloatStr(collective))
-              ).toBeInTheDocument()
-            } else {
-              expect(screen.getByText(toFloatStr(individual))).toBeInTheDocument()
+            if (incomeResults) {
+              if (isCollectiveAndIndividualRevenue(incomeResults)) {
+                expect(screen.getByText(toFloatStr(incomeResults.total))).toBeInTheDocument()
+                expect(
+                  screen.getByText(toFloatStr(incomeResults.individual))
+                ).toBeInTheDocument()
+                expect(
+                  screen.getByText(toFloatStr(incomeResults.collective))
+                ).toBeInTheDocument()
+              } else if (isCollectiveRevenue(incomeResults)) {
+                expect(
+                  screen.getByText(toFloatStr(incomeResults.collective))
+                ).toBeInTheDocument()
+              } else {
+                expect(screen.getByText(toFloatStr(incomeResults.individual))).toBeInTheDocument()
+              }
             }
           })
         }
@@ -364,7 +364,7 @@ describe('Income', () => {
       await waitFor(() => screen.getAllByText(LABELS.incomeResultsLabel))
 
       const emptyYear = Object.keys(MOCK_DATA.incomeByYear).find(
-        year => Object.keys(MOCK_DATA.incomeByYear[year]).length === 0
+        year => MOCK_DATA.incomeByYear[year].revenue === null && MOCK_DATA.incomeByYear[year].expectedRevenue === null
       )
       await userEvent.click(
         screen.getByRole('button', {
