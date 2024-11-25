@@ -1,6 +1,4 @@
-import React from 'react'
-
-import { Callout } from 'components/Callout/Callout'
+import { Callout } from 'ui-kit/Callout/Callout'
 
 interface Props {
   closable?: boolean

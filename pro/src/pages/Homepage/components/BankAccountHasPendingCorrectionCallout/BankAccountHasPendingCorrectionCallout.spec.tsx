@@ -1,15 +1,15 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { BankAccountEvents } from 'commons/core/FirebaseEvents/constants'
 import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+
 import {
-  BankAccountHasPendingCorrectionCallout,
   BankAccountHasPendingCorrectionCalloutProps,
-} from 'components/Callout/BankAccountHasPendingCorrectionCallout'
+  BankAccountHasPendingCorrectionCallout,
+} from './BankAccountHasPendingCorrectionCallout'
 
 const mockLogEvent = vi.fn()
 

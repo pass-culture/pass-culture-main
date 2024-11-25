@@ -7,8 +7,6 @@ import { showOptionsTree } from 'commons/core/Offers/categoriesSubTypes'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { IndividualOfferImage } from 'commons/core/Offers/types'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
-import { Callout } from 'components/Callout/Callout'
-import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { DEFAULT_DETAILS_FORM_VALUES } from 'pages/IndividualOffer/IndividualOfferDetails/commons/constants'
@@ -17,6 +15,8 @@ import {
   buildShowSubTypeOptions,
   hasMusicType,
 } from 'pages/IndividualOffer/IndividualOfferDetails/commons/utils'
+import { Callout } from 'ui-kit/Callout/Callout'
+import { CalloutVariant } from 'ui-kit/Callout/types'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'

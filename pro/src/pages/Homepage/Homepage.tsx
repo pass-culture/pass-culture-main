@@ -13,13 +13,13 @@ import {
 import { hasStatusCode } from 'commons/core/OfferEducational/utils/hasStatusCode'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { sortByLabel } from 'commons/utils/strings'
-import { AddBankAccountCallout } from 'components/Callout/AddBankAccountCallout'
-import { BankAccountHasPendingCorrectionCallout } from 'components/Callout/BankAccountHasPendingCorrectionCallout'
-import { LinkVenueCallout } from 'components/Callout/LinkVenueCallout'
 import { Newsletter } from 'components/Newsletter/Newsletter'
+import { AddBankAccountCallout } from 'pages/Homepage/components/AddBankAccountCallout/AddBankAccountCallout'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
+import { BankAccountHasPendingCorrectionCallout } from './components/BankAccountHasPendingCorrectionCallout/BankAccountHasPendingCorrectionCallout'
+import { LinkVenueCallout } from './components/LinkVenueCallout/LinkVenueCallout'
 import { OffererBanners } from './components/Offerers/components/OffererBanners/OffererBanners'
 import {
   getPhysicalVenuesFromOfferer,

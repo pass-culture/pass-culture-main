@@ -5,10 +5,10 @@ import { useDefaultCollectiveSearchFilters } from 'commons/core/Offers/hooks/use
 import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
 import { hasCollectiveSearchFilters } from 'commons/core/Offers/utils/hasSearchFilters'
 import { SortingMode } from 'commons/hooks/useColumnSorting'
-import { Callout } from 'components/Callout/Callout'
-import { CalloutVariant } from 'components/Callout/types'
 import { NoResults } from 'pages/Offers/components/IndividualOffersScreen/NoResults/NoResults'
 import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
+import { Callout } from 'ui-kit/Callout/Callout'
+import { CalloutVariant } from 'ui-kit/Callout/types'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 

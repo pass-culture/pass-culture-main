@@ -6,8 +6,6 @@ import { GetOffererResponseModel, VenueTypeResponseModel } from 'apiClient/v1'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { AddressSelect } from 'components/Address/Address'
-import { Callout } from 'components/Callout/Callout'
-import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import {
   BlockerFunction,
@@ -17,6 +15,8 @@ import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfte
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { Callout } from 'ui-kit/Callout/Callout'
+import { CalloutVariant } from 'ui-kit/Callout/types'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'

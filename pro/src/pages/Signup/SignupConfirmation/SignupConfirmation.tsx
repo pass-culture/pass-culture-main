@@ -1,8 +1,8 @@
 import React from 'react'
 
 import { useRedirectLoggedUser } from 'commons/hooks/useRedirectLoggedUser'
-import { Callout } from 'components/Callout/Callout'
 import fullMailIcon from 'icons/full-mail.svg'
+import { Callout } from 'ui-kit/Callout/Callout'
 
 import styles from './SignupConfirmation.module.scss'
 

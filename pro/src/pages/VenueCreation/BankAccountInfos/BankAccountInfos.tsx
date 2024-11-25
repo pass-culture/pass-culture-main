@@ -2,9 +2,9 @@ import React from 'react'
 
 import { BankAccountResponseModel } from 'apiClient/v1'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { Callout } from 'components/Callout/Callout'
-import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { Callout } from 'ui-kit/Callout/Callout'
+import { CalloutVariant } from 'ui-kit/Callout/types'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 interface BankAccountInfosProps {
