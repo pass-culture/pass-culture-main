@@ -19,6 +19,7 @@ export type GetOffererResponseModel = {
   id: number;
   isActive: boolean;
   isOnboarded: boolean;
+  isOnboardingOngoing: boolean;
   isValidated: boolean;
   managedVenues?: Array<GetOffererVenueResponseModel>;
   name: string;

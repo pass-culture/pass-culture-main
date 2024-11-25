@@ -542,6 +542,19 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
         .exists()
     )
 
+    has_offer = (
+        sqla.select(1)
+        .select_from(offers_models.Offer)
+        .join(models.Venue, models.Venue.managingOffererId == models.Offerer.id)
+        .where(
+            sqla.and_(
+                offers_models.Offer.venueId == models.Venue.id,
+            )
+        )
+        .correlate(models.Offerer)
+        .exists()
+    )
+
     has_adage_ds_application = (
         sqla.select(1)
         .select_from(models.Venue)
@@ -561,6 +574,7 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
             has_active_offers_subquery.label("hasActiveOffer"),
             has_bank_account_with_pending_corrections_subquery.label("hasBankAccountWithPendingCorrections"),
             sqla.or_(has_adage_ds_application, has_non_draft_offers).label("isOnboarded"),
+            sqla.and_(has_offer, ~has_adage_ds_application, ~has_non_draft_offers).label("isOnboardingOngoing"),
         )
         .filter(models.Offerer.id == offerer_id)
         .options(sqla_orm.load_only(models.Offerer.id, models.Offerer.name))

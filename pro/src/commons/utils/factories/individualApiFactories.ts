@@ -347,6 +347,7 @@ export const defaultGetOffererResponseModel: GetOffererResponseModel = {
   street: 'Fake Address',
   allowedOnAdage: true,
   isOnboarded: true,
+  isOnboardingOngoing: false,
 }
 
 export const defaultGetOffererVenueResponseModel: GetOffererVenueResponseModel =
