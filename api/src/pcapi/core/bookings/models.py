@@ -46,6 +46,7 @@ from pcapi.utils.human_ids import humanize
 
 
 if TYPE_CHECKING:
+    from pcapi.core.achievements import models as achievements_models
     from pcapi.core.offerers import models as offerers_models
     from pcapi.core.users import models as users_models
 
@@ -122,6 +123,10 @@ class ExternalBooking(PcObject, Base, Model):
 
 class Booking(PcObject, Base, Model):
     __tablename__ = "booking"
+
+    achievements: Mapped["achievements_models.Achievement"] = relationship(
+        "achievements_models.Achievement", back_populates="booking", uselist=False
+    )
 
     dateCreated: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
     Index("ix_booking_date_created", dateCreated)

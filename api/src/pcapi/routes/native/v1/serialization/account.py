@@ -12,6 +12,7 @@ from pydantic.v1.class_validators import validator
 from pydantic.v1.utils import GetterDict
 from sqlalchemy.orm import joinedload
 
+from pcapi.core.achievements import models as achievements_models
 from pcapi.core.bookings import models as bookings_models
 import pcapi.core.finance.models as finance_models
 from pcapi.core.offers import models as offers_models
@@ -129,6 +130,12 @@ class YoungStatusResponse(ConfiguredBaseModel):
     subscription_status: young_status.SubscriptionStatus | None
 
 
+class AchievementResponse(ConfiguredBaseModel):
+    name: achievements_models.AchievementEnum
+    seenDate: datetime.datetime | None
+    unlockedDate: datetime.datetime
+
+
 class UserProfileGetterDict(GetterDict):
     def get(self, key: str, default: typing.Any | None = None) -> typing.Any:
         user = self._obj
@@ -190,6 +197,7 @@ class UserProfileGetterDict(GetterDict):
 
 
 class UserProfileResponse(ConfiguredBaseModel):
+    achievements: list[AchievementResponse]
     activity_id: profile_options.ActivityIdEnum | None
     birth_date: datetime.date | None
     booked_offers: dict[str, int]

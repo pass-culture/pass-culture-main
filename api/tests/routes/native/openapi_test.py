@@ -47,6 +47,31 @@ def test_public_api(client):
                     ],
                     "title": "AccountState",
                 },
+                "AchievementEnum": {
+                    "description": "An enumeration.",
+                    "enum": [
+                        "FIRST_MOVIE_BOOKING",
+                        "FIRST_BOOK_BOOKING",
+                        "FIRST_RECORDED_MUSIC_BOOKING",
+                        "FIRST_SHOW_BOOKING",
+                        "FIRST_MUSEUM_BOOKING",
+                        "FIRST_LIVE_MUSIC_BOOKING",
+                        "FIRST_NEWS_BOOKING",
+                        "FIRST_INSTRUMENT_BOOKING",
+                        "FIRST_ART_LESSON_BOOKING",
+                    ],
+                    "title": "AchievementEnum",
+                },
+                "AchievementResponse": {
+                    "properties": {
+                        "name": {"$ref": "#/components/schemas/AchievementEnum"},
+                        "seenDate": {"format": "date-time", "nullable": True, "title": "Seendate", "type": "string"},
+                        "unlockedDate": {"format": "date-time", "title": "Unlockeddate", "type": "string"},
+                    },
+                    "required": ["name", "unlockedDate"],
+                    "title": "AchievementResponse",
+                    "type": "object",
+                },
                 "ActivityIdEnum": {
                     "description": "An enumeration.",
                     "enum": [
@@ -2333,6 +2358,11 @@ def test_public_api(client):
                 },
                 "UserProfileResponse": {
                     "properties": {
+                        "achievements": {
+                            "items": {"$ref": "#/components/schemas/AchievementResponse"},
+                            "title": "Achievements",
+                            "type": "array",
+                        },
                         "activityId": {"anyOf": [{"$ref": "#/components/schemas/ActivityIdEnum"}], "nullable": True},
                         "birthDate": {"format": "date", "nullable": True, "title": "Birthdate", "type": "string"},
                         "bookedOffers": {
@@ -2407,6 +2437,7 @@ def test_public_api(client):
                         "subscriptions": {"$ref": "#/components/schemas/NotificationSubscriptions"},
                     },
                     "required": [
+                        "achievements",
                         "bookedOffers",
                         "currency",
                         "email",
