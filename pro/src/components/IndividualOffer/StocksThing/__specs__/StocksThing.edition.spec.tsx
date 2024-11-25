@@ -11,8 +11,8 @@ import {
   OfferStatus,
   SubcategoryIdEnum,
 } from 'apiClient/v1'
-import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import { ApiRequestOptions } from 'apiClient/core/ApiRequestOptions'
+import { ApiResult } from 'apiClient/core/ApiResult'
 import { IndividualOfferContextProvider } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import {

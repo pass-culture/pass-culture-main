@@ -2,11 +2,10 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router-dom'
 
-import { ApiRequestOptions } from 'apiClient/adage/core/ApiRequestOptions'
+import { ApiRequestOptions } from 'apiClient/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/adage/core/ApiResult'
 import { api } from 'apiClient/api'
 import {
-  ApiError,
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseIdModel,
@@ -17,20 +16,20 @@ import {
 } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import {
-  Events,
   COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
+  Events,
 } from 'commons/core/FirebaseEvents/constants'
 import { SENT_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
 import * as useNotification from 'commons/hooks/useNotification'
 import {
-  getCollectiveOfferTemplateFactory,
   defaultGetVenue,
   getCollectiveOfferFactory,
+  getCollectiveOfferTemplateFactory,
 } from 'commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
-  RenderWithProvidersOptions,
   renderWithProviders,
+  RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
 
 import {
@@ -38,6 +37,7 @@ import {
   CollectiveOfferNavigationProps,
   CollectiveOfferStep,
 } from '../CollectiveOfferNavigation'
+import { ApiError } from 'apiClient/core/ApiError'
 
 const renderCollectiveOfferNavigation = (
   props: CollectiveOfferNavigationProps,
@@ -374,7 +374,10 @@ describe('CollectiveOfferNavigation', () => {
     renderCollectiveOfferNavigation({
       ...props,
       isTemplate: true,
-      offer: { ...offer, displayedStatus: CollectiveOfferDisplayedStatus.PENDING }
+      offer: {
+        ...offer,
+        displayedStatus: CollectiveOfferDisplayedStatus.PENDING,
+      },
     })
 
     const duplicateOffer = screen.queryByRole('button', {

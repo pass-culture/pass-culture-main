@@ -3,13 +3,12 @@ import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
 import {
-  ApiError,
   ListOffersOfferResponseModel,
   ListOffersStockResponseModel,
   OfferStatus,
 } from 'apiClient/v1'
-import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import { ApiRequestOptions } from 'apiClient/core/ApiRequestOptions'
+import { ApiResult } from 'apiClient/core/ApiResult'
 import { listOffersVenueFactory } from 'commons/utils/factories/collectiveApiFactories'
 import {
   listOffersOfferFactory,
@@ -22,6 +21,7 @@ import {
   IndividualOfferRow,
   IndividualOfferRowProps,
 } from '../IndividualOfferRow'
+import { ApiError } from 'apiClient/core/ApiError'
 
 vi.mock('apiClient/api', () => ({
   api: {

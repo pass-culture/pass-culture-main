@@ -11,8 +11,8 @@ import {
   GetOfferStockResponseModel,
   SubcategoryIdEnum,
 } from 'apiClient/v1'
-import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import { ApiRequestOptions } from 'apiClient/core/ApiRequestOptions'
+import { ApiResult } from 'apiClient/core/ApiResult'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,

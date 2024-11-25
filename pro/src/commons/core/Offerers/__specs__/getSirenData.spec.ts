@@ -1,6 +1,6 @@
 import { api } from 'apiClient/api'
 import { isError } from 'apiClient/helpers'
-import { ApiError } from 'apiClient/v1'
+import { ApiError } from 'apiClient/core/ApiError'
 import { getSirenData } from 'commons/core/Offerers/getSirenData'
 
 describe('getSirenData', () => {

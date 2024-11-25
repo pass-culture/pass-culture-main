@@ -4,9 +4,10 @@ import { addDays } from 'date-fns'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { ApiError, CollectiveOfferAllowedAction } from 'apiClient/v1'
-import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from 'apiClient/v1/core/ApiResult'
+
+import { CollectiveOfferAllowedAction } from 'apiClient/v1'
+import { ApiRequestOptions } from 'apiClient/core/ApiRequestOptions'
+import { ApiResult } from 'apiClient/core/ApiResult'
 import { BOOKING_STATUS } from 'commons/core/Bookings/constants'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'commons/core/Notification/constants'
 import * as useNotification from 'commons/hooks/useNotification'
@@ -21,8 +22,11 @@ import {
   CollectiveActionButtons,
   CollectiveActionButtonsProps,
 } from '../CollectiveActionButtons'
+import { ApiError } from 'apiClient/core/ApiError'
 
-const renderCollectiveActionButtons = (props: CollectiveActionButtonsProps, features: string[] = []
+const renderCollectiveActionButtons = (
+  props: CollectiveActionButtonsProps,
+  features: string[] = []
 ) => {
   renderWithProviders(<CollectiveActionButtons {...props} />, { features })
 }
@@ -187,7 +191,6 @@ describe('collectiveActionButton api call', () => {
     )
   })
 
-
   it('should show cancel button when ENABLE_COLLECTIVE_NEW_STATUSES is on and offer has CAN_CANCEL allowed action', async () => {
     const offer = getCollectiveOfferFactory({
       allowedActions: [CollectiveOfferAllowedAction.CAN_CANCEL],
@@ -202,12 +205,17 @@ describe('collectiveActionButton api call', () => {
       }),
     })
 
-    renderCollectiveActionButtons({
-      bookingRecap,
-      isCancellable: false,
-    },['ENABLE_COLLECTIVE_NEW_STATUSES'])
+    renderCollectiveActionButtons(
+      {
+        bookingRecap,
+        isCancellable: false,
+      },
+      ['ENABLE_COLLECTIVE_NEW_STATUSES']
+    )
 
-    expect(await screen.findByText('Annuler la préréservation')).toBeInTheDocument()
+    expect(
+      await screen.findByText('Annuler la préréservation')
+    ).toBeInTheDocument()
   })
 
   it('should not show cancel button when ENABLE_COLLECTIVE_NEW_STATUSES is and offer has not CAN_CANCEL allowed action', async () => {
@@ -224,14 +232,18 @@ describe('collectiveActionButton api call', () => {
       }),
     })
 
-    renderCollectiveActionButtons({
-      bookingRecap,
-      isCancellable: false,
-    },['ENABLE_COLLECTIVE_NEW_STATUSES'])
+    renderCollectiveActionButtons(
+      {
+        bookingRecap,
+        isCancellable: false,
+      },
+      ['ENABLE_COLLECTIVE_NEW_STATUSES']
+    )
 
     await waitFor(() => {
-      expect(screen.queryByText('Annuler la préréservation')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Annuler la préréservation')
+      ).not.toBeInTheDocument()
     })
   })
-
 })

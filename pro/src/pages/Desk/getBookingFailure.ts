@@ -1,5 +1,5 @@
 import { HTTP_STATUS } from 'apiClient/helpers'
-import { ApiError } from 'apiClient/v2'
+import { ApiError } from 'apiClient/core/ApiError'
 
 type DeskGetFailure = {
   isTokenValidated: boolean

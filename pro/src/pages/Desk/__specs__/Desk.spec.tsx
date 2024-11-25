@@ -2,13 +2,13 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { apiContremarque } from 'apiClient/api'
-import { ApiError } from 'apiClient/v1'
-import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import { ApiRequestOptions } from 'apiClient/core/ApiRequestOptions'
+import { ApiResult } from 'apiClient/core/ApiResult'
 import { defaultGetBookingResponse } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { Desk } from '../Desk'
+import { ApiError } from 'apiClient/core/ApiError'
 
 const renderDesk = () => {
   renderWithProviders(<Desk />)

@@ -6,17 +6,18 @@ import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'apiClient/helpers'
-import { ApiError, SharedLoginUserResponseModel } from 'apiClient/v1'
-import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import { ApiError } from 'apiClient/core/ApiError'
+import { SharedLoginUserResponseModel } from 'apiClient/v1'
+import { ApiRequestOptions } from 'apiClient/core/ApiRequestOptions'
+import { ApiResult } from 'apiClient/core/ApiResult'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { getOffererNameFactory } from 'commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import * as utils from 'commons/utils/recaptcha'
 import {
-  RenderWithProvidersOptions,
   renderWithProviders,
+  RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
 import { Notification } from 'components/Notification/Notification'
 

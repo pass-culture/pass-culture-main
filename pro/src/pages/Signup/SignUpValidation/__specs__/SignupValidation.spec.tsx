@@ -3,15 +3,15 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { ApiError } from 'apiClient/v1'
-import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import { ApiError } from 'apiClient/core/ApiError'
+import { ApiRequestOptions } from 'apiClient/core/ApiRequestOptions'
+import { ApiResult } from 'apiClient/core/ApiResult'
 import * as useCurrentUser from 'commons/hooks/useCurrentUser'
 import * as useNotification from 'commons/hooks/useNotification'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
-  RenderWithProvidersOptions,
   renderWithProviders,
+  RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
 
 import { SignupValidation } from '../SignUpValidation'
