@@ -19,6 +19,7 @@ from pcapi.core.bookings.constants import RedisExternalBookingType
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.external_bookings.cds.constants as cds_constants
 import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
+from pcapi.core.external_bookings.decorators import catch_cinema_provider_request_timeout
 import pcapi.core.external_bookings.models as external_bookings_models
 from pcapi.core.external_bookings.models import Ticket
 import pcapi.core.users.models as users_models
@@ -52,6 +53,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
     def get_film_showtimes_stocks(self, film_id: str) -> dict:
         return {}
 
+    @catch_cinema_provider_request_timeout
     @lru_cache
     def get_internet_sale_gauge_active(self) -> bool:
         """
@@ -74,6 +76,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
             f"for cinemaId={self.cinema_id} & url={self.api_url}"
         )
 
+    @catch_cinema_provider_request_timeout
     @external_bookings_models.cache_external_call(
         key_template=constants.CDS_SHOWTIMES_STOCKS_CACHE_KEY, expire=cds_constants.CDS_SHOWTIMES_STOCKS_CACHE_TIMEOUT
     )
@@ -90,6 +93,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
             return json.dumps({show.id: show.internet_remaining_place for show in shows if show.id in show_ids})
         return json.dumps({show.id: show.remaining_place for show in shows if show.id in show_ids})
 
+    @catch_cinema_provider_request_timeout
     def get_shows(self) -> list[cds_serializers.ShowCDS]:
         data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.SHOWS)
         shows = parse_obj_as(list[cds_serializers.ShowCDS], data)
@@ -100,6 +104,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
             f"Shows not found in Cine Digital Service API for cinemaId={self.cinema_id} & url={self.api_url}"
         )
 
+    @catch_cinema_provider_request_timeout
     def get_show(self, show_id: int) -> cds_serializers.ShowCDS:
         data = get_resource(
             self.api_url, self.account_id, self.token, ResourceCDS.SHOWS, request_timeout=self.request_timeout
@@ -112,10 +117,12 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
             f"Show #{show_id} not found in Cine Digital Service API for cinemaId={self.cinema_id} & url={self.api_url}"
         )
 
+    @catch_cinema_provider_request_timeout
     def get_venue_movies(self) -> list[cds_serializers.MediaCDS]:
         data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.MEDIA)
         return parse_obj_as(list[cds_serializers.MediaCDS], data)
 
+    @catch_cinema_provider_request_timeout
     def get_movie_poster(self, image_url: str) -> bytes:
         try:
             return get_movie_poster_from_api(image_url)
@@ -129,6 +136,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
             )
             return bytes()
 
+    @catch_cinema_provider_request_timeout
     def get_voucher_payment_type(self) -> cds_serializers.PaymentTypeCDS:
         data = get_resource(
             self.api_url,
@@ -147,6 +155,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
             f" & url={self.api_url}"
         )
 
+    @catch_cinema_provider_request_timeout
     @lru_cache
     def get_pc_voucher_types(self) -> list[cds_serializers.VoucherTypeCDS]:
         data = get_resource(
@@ -163,6 +172,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
             if voucher_type.code == cds_constants.PASS_CULTURE_VOUCHER_CODE and voucher_type.tariff
         ]
 
+    @catch_cinema_provider_request_timeout
     def get_screen(self, screen_id: int) -> cds_serializers.ScreenCDS:
         data = get_resource(
             self.api_url,
@@ -244,6 +254,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
             cds_serializers.SeatCDS(second_seat, screen, seatmap, hardcoded_seatmap),
         ]
 
+    @catch_cinema_provider_request_timeout
     def get_seatmap(self, show_id: int) -> cds_serializers.SeatmapCDS:
         data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.SEATMAP, {"show_id": show_id})
         seatmap_cds = parse_obj_as(cds_serializers.SeatmapCDS, data)
@@ -262,6 +273,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
         index_min_distance = distances_to_center.index(min_distance)
         return seats_index[index_min_distance]
 
+    @catch_cinema_provider_request_timeout
     def cancel_booking(self, barcodes: list[str]) -> None:
         paiement_type_id = self.get_voucher_payment_type().id
         barcodes_int: list[int] = []
@@ -289,6 +301,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
                 f"Error while canceling bookings :{sep}{sep.join([f'{barcode} : {error_msg}' for barcode, error_msg in cancel_errors.__root__.items()])}"
             )
 
+    @catch_cinema_provider_request_timeout
     def book_ticket(
         self, show_id: int, booking: bookings_models.Booking, beneficiary: users_models.User
     ) -> list[Ticket]:
@@ -414,6 +427,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
         min_price_voucher = min(show_pc_vouchers, key=attrgetter("tariff.price"))
         return min_price_voucher
 
+    @catch_cinema_provider_request_timeout
     def get_cinema_infos(self) -> cds_serializers.CinemaCDS:
         data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.CINEMAS)
         cinemas = parse_obj_as(list[cds_serializers.CinemaCDS], data)

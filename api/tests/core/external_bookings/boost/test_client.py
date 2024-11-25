@@ -1,6 +1,7 @@
 import datetime
 from decimal import Decimal
 import json
+import logging
 
 import pytest
 
@@ -8,10 +9,12 @@ from pcapi.connectors.serialization import boost_serializers
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.external_bookings.boost import client as boost_client
 import pcapi.core.external_bookings.boost.exceptions as boost_exceptions
+from pcapi.core.external_bookings.exceptions import ExternalBookingTimeoutException
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.utils import date
+from pcapi.utils.requests import exceptions as requests_exceptions
 
 from tests.local_providers.cinema_providers.boost import fixtures
 
@@ -113,6 +116,36 @@ class GetShowtimesTest:
         ]
         assert showtimes[2].attributs == [24, 1, 29, 40]
 
+    def test_should_raise_a_timeout_error(self, requests_mock, caplog):
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+        start_date = datetime.date.today()
+        end_date = (start_date + datetime.timedelta(days=10)).strftime("%Y-%m-%d")
+        requests_mock.get(
+            f"https://cinema-0.example.com/api/showtimes/between/{start_date.strftime('%Y-%m-%d')}/{end_date}?paymentMethod=external%3Acredit%3Apassculture&hideFullReservation=1&page=1&per_page=2",
+            exc=requests_exceptions.ReadTimeout,
+        )
+
+        with caplog.at_level(logging.WARNING):
+            with pytest.raises(ExternalBookingTimeoutException):
+                boost = boost_client.BoostClientAPI(cinema_str_id)
+                boost.get_showtimes(per_page=2, start_date=start_date, interval_days=10)
+
+        assert caplog.messages[1] == "Cinema Provider API Request Timeout"
+        assert caplog.records[1].extra == {
+            "cinema_id": "idProvider1",
+            "client": "BoostClientAPI",
+            "method": "get_collection_items",
+            "method_params": {
+                "collection_class": "<class " "'pcapi.connectors.serialization.boost_serializers.ShowTimeCollection'>",
+                "params": "{'paymentMethod': 'external:credit:passculture', "
+                "'hideFullReservation': 1, 'film': None, 'page': 1, 'per_page': 2}",
+                "pattern_values": "{'dateStart': '2024-11-18', 'dateEnd': '2024-11-28'}",
+                "per_page": "2",
+                "resource": "ResourceBoost.SHOWTIMES",
+            },
+        }
+
     def test_should_return_a_movie_showtimes(self, requests_mock):
         cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
@@ -209,6 +242,40 @@ class BookTicketTest:
         assert external_bookings_infos["timestamp"]
         assert external_bookings_infos["venue_id"] == booking.venueId
 
+    def test_should_log_error_when_there_is_a_timeout_exception(self, requests_mock, caplog):
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        booking = bookings_factories.BookingFactory(user=beneficiary, quantity=2)
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+        requests_mock.get(
+            "https://cinema-0.example.com/api/showtimes/36684",
+            json=fixtures.ShowtimeDetailsEndpointResponse.PC2_AND_FULL_PRICINGS_SHOWTIME_36684_DATA,
+        )
+        requests_mock.post(
+            "https://cinema-0.example.com/api/sale/complete",
+            json=fixtures.CompleteSaleEndpointResponse.PRE_SALE_CONFIRMATION,
+            headers={"Content-Type": "application/json"},
+            additional_matcher=lambda request: not request.json().get("idsBeforeSale"),
+        )
+        requests_mock.post("https://cinema-0.example.com/api/sale/complete", exc=requests_exceptions.Timeout)
+
+        with caplog.at_level(logging.WARNING):
+            with pytest.raises(ExternalBookingTimeoutException):
+                boost = boost_client.BoostClientAPI(cinema_str_id)
+                boost.book_ticket(show_id=36684, booking=booking, beneficiary=beneficiary)
+
+        assert caplog.messages[1] == "Cinema Provider API Request Timeout"
+        assert caplog.records[1].extra == {
+            "cinema_id": cinema_str_id,
+            "client": "BoostClientAPI",
+            "method": "book_ticket",
+            "method_params": {
+                "beneficiary": str(beneficiary),
+                "booking": str(booking),
+                "show_id": "36684",
+            },
+        }
+
 
 class CancelBookingTest:
 
@@ -228,6 +295,28 @@ class CancelBookingTest:
         assert requests_mock.request_history[-1].method == "PUT"
         assert requests_mock.request_history[-1].timeout == 12
         assert put_adapter.last_request.json() == {"sales": [{"code": barcode, "refundType": "pcu"}]}
+
+    def test_should_log_error_when_there_is_a_timeout_exception(self, requests_mock, caplog):
+        barcode = "sale-90577"
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+        requests_mock.put(
+            "https://cinema-0.example.com/api/sale/orderCancel",
+            exc=requests_exceptions.Timeout,
+        )
+        boost = boost_client.BoostClientAPI(cinema_str_id)
+
+        with caplog.at_level(logging.WARNING):
+            with pytest.raises(ExternalBookingTimeoutException):
+                boost.cancel_booking(barcodes=[barcode])
+
+        assert caplog.messages[1] == "Cinema Provider API Request Timeout"
+        assert caplog.records[1].extra == {
+            "cinema_id": cinema_str_id,
+            "client": "BoostClientAPI",
+            "method": "cancel_booking",
+            "method_params": {"barcodes": str([barcode])},
+        }
 
     def test_when_boost_return_element_not_found(self, requests_mock):
         cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")

@@ -9,6 +9,7 @@ from pcapi.connectors.serialization import ems_serializers
 from pcapi.core.bookings import models as booking_models
 from pcapi.core.bookings import repository as bookings_repository
 from pcapi.core.external_bookings import models as external_bookings_models
+from pcapi.core.external_bookings.decorators import catch_cinema_provider_request_timeout
 from pcapi.core.external_bookings.exceptions import ExternalBookingSoldOutError
 from pcapi.core.users import models as users_models
 from pcapi.models.feature import FeatureToggle
@@ -27,6 +28,7 @@ class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         super().__init__(cinema_id=cinema_id, request_timeout=request_timeout)
         self.connector = EMSBookingConnector()
 
+    @catch_cinema_provider_request_timeout
     def get_ticket(self, token: str) -> list[external_bookings_models.Ticket]:
         payload = ems_serializers.GetTicketRequest(num_cine=self.cinema_id, num_cmde=token)
         response = self.connector.do_request(self.connector.get_ticket_endpoint, payload=payload.dict())
@@ -46,6 +48,7 @@ class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             for ticket in content.billets
         ]
 
+    @catch_cinema_provider_request_timeout
     def book_ticket(
         self, show_id: int, booking: booking_models.Booking, beneficiary: users_models.User
     ) -> list[external_bookings_models.Ticket]:
@@ -95,6 +98,7 @@ class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             for ticket in content.billets
         ]
 
+    @catch_cinema_provider_request_timeout
     def cancel_booking(self, barcodes: list[str]) -> None:
         external_bookings = bookings_repository.get_external_bookings_by_cinema_id_and_barcodes(
             self.cinema_id, barcodes
@@ -121,6 +125,7 @@ class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             extra={"barcodes": [external_booking.barcode for external_booking in external_bookings]},
         )
 
+    @catch_cinema_provider_request_timeout
     def cancel_booking_with_tickets(self, tickets: list[external_bookings_models.Ticket]) -> None:
         # There's no partial cancelling and only one ticket is enough to cancel a duo booking
         ticket = tickets[0]
@@ -142,6 +147,7 @@ class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
     def get_shows_remaining_places(self, shows_id: list[int]) -> dict[str, int]:
         raise NotImplementedError()
 
+    @catch_cinema_provider_request_timeout
     @external_bookings_models.cache_external_call(
         key_template=constants.EMS_SHOWTIMES_STOCKS_CACHE_KEY, expire=constants.EMS_SHOWTIMES_STOCKS_CACHE_TIMEOUT
     )

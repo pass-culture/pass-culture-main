@@ -9,6 +9,7 @@ from pcapi.connectors import boost
 from pcapi.connectors.serialization import boost_serializers
 import pcapi.core.bookings.constants as bookings_constants
 import pcapi.core.bookings.models as bookings_models
+from pcapi.core.external_bookings.decorators import catch_cinema_provider_request_timeout
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.users.models as users_models
 from pcapi.utils.queue import add_to_queue
@@ -49,6 +50,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
     def get_shows_remaining_places(self, shows_id: list[int]) -> dict[str, int]:
         raise NotImplementedError()
 
+    @catch_cinema_provider_request_timeout
     @external_bookings_models.cache_external_call(
         key_template=constants.BOOST_SHOWTIMES_STOCKS_CACHE_KEY, expire=constants.BOOST_SHOWTIMES_STOCKS_CACHE_TIMEOUT
     )
@@ -56,6 +58,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         showtimes = self.get_showtimes(film=int(film_id))
         return json.dumps({showtime.id: showtime.numberSeatsRemaining for showtime in showtimes})
 
+    @catch_cinema_provider_request_timeout
     def cancel_booking(self, barcodes: list[str]) -> None:
         barcodes = list(set(barcodes))
         sale_cancel_items = []
@@ -73,6 +76,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             request_timeout=self.request_timeout,
         )
 
+    @catch_cinema_provider_request_timeout
     def book_ticket(
         self, show_id: int, booking: bookings_models.Booking, beneficiary: users_models.User
     ) -> list[external_bookings_models.Ticket]:
@@ -130,6 +134,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
 
         return tickets
 
+    @catch_cinema_provider_request_timeout
     def get_collection_items(
         self,
         *,
@@ -190,6 +195,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             params=params,
         )
 
+    @catch_cinema_provider_request_timeout
     def get_showtime(self, showtime_id: int) -> boost_serializers.ShowTime4:
         json_data = boost.get_resource(
             self.cinema_id,
@@ -200,6 +206,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         showtime_details = parse_obj_as(boost_serializers.ShowTimeDetails, json_data)
         return showtime_details.data
 
+    @catch_cinema_provider_request_timeout
     def get_movie_poster(self, image_url: str) -> bytes:
         try:
             return boost.get_movie_poster_from_api(image_url)
@@ -213,6 +220,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             )
             return bytes()
 
+    @catch_cinema_provider_request_timeout
     def get_cinemas_attributs(self) -> list[boost_serializers.CinemaAttribut]:
         json_data = boost.get_resource(
             self.cinema_id,
