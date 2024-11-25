@@ -14,9 +14,9 @@ import {
 import { applyVenueDefaultsToFormValues } from 'commons/core/OfferEducational/utils/applyVenueDefaultsToFormValues'
 import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { Callout } from 'components/Callout/Callout'
-import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { Callout } from 'ui-kit/Callout/Callout'
+import { CalloutVariant } from 'ui-kit/Callout/types'
 import { Select } from 'ui-kit/form/Select/Select'
 
 import { STRUCTURE_LABEL, VENUE_LABEL } from '../../constants/labels'

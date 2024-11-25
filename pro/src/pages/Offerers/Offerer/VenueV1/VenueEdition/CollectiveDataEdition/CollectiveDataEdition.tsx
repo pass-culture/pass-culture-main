@@ -11,9 +11,9 @@ import {
 } from 'commons/config/swrQueryKeys'
 import { SelectOption } from 'commons/custom_types/form'
 import { getLastCollectiveDmsApplication } from 'commons/utils/getLastCollectiveDmsApplication'
-import { Callout } from 'components/Callout/Callout'
 import { PartnerPageCollectiveSection } from 'pages/Homepage/components/Offerers/components/PartnerPages/components/PartnerPageCollectiveSection'
 import { CollectiveDmsTimeline } from 'pages/VenueCreation/CollectiveDmsTimeline/CollectiveDmsTimeline'
+import { Callout } from 'ui-kit/Callout/Callout'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import styles from './CollectiveDataEdition.module.scss'

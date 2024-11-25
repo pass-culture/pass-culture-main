@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { CGU_URL } from 'commons/utils/config'
-import { Callout } from 'components/Callout/Callout'
+import { Callout } from 'ui-kit/Callout/Callout'
 
 export const WithdrawalReminder = () => {
   return (

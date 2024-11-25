@@ -16,12 +16,12 @@ import {
   GetSiretDataResponse,
 } from 'commons/core/Venue/getSiretData'
 import { useNotification } from 'commons/hooks/useNotification'
-import { Callout } from 'components/Callout/Callout'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
 import { MAYBE_APP_USER_APE_CODE } from 'pages/Signup/SignupContainer/constants'
 import { MaybeAppUserDialog } from 'pages/Signup/SignupContainer/MaybeAppUserDialog/MaybeAppUserDialog'
+import { Callout } from 'ui-kit/Callout/Callout'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 

@@ -1,11 +1,10 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { CalloutVariant } from 'components/Callout/types'
+import { CalloutVariant } from 'ui-kit/Callout/types'
 
-import { Callout, CalloutProps } from '../Callout'
+import { Callout, CalloutProps } from './Callout'
 
 describe('Callout', () => {
   const props: CalloutProps = {

@@ -3,10 +3,10 @@ import isEqual from 'lodash.isequal'
 import React, { useMemo } from 'react'
 
 import { useAccessibilityOptions } from 'commons/hooks/useAccessibilityOptions'
-import { Callout } from 'components/Callout/Callout'
-import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { VenueEditionFormValues } from 'pages/VenueEdition/types'
+import { Callout } from 'ui-kit/Callout/Callout'
+import { CalloutVariant } from 'ui-kit/Callout/types'
 import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
 import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
 

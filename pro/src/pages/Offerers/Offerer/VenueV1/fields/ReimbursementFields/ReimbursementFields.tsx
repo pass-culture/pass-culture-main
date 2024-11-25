@@ -1,8 +1,8 @@
 import { useCallback } from 'react'
 
 import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
-import { Callout } from 'components/Callout/Callout'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { Callout } from 'ui-kit/Callout/Callout'
 
 import { PricingPoint } from '../PricingPoint/PricingPoint'
 

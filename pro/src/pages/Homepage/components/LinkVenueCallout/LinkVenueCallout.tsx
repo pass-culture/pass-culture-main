@@ -4,8 +4,8 @@ import { GetOffererResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { BankAccountEvents } from 'commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { Callout } from 'components/Callout/Callout'
-import { CalloutVariant } from 'components/Callout/types'
+import { Callout } from 'ui-kit/Callout/Callout'
+import { CalloutVariant } from 'ui-kit/Callout/types'
 
 export interface LinkVenueCalloutProps {
   offerer?: GetOffererResponseModel | null

@@ -2,11 +2,11 @@ import cn from 'classnames'
 import React from 'react'
 
 import { CollectiveOfferStatus } from 'apiClient/v1'
-import { Callout } from 'components/Callout/Callout'
 import fullValidateIcon from 'icons/full-validate.svg'
 import fullWaitIcon from 'icons/full-wait.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { Callout } from 'ui-kit/Callout/Callout'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './CollectiveOfferConfirmation.module.scss'

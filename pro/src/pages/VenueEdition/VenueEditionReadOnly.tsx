@@ -1,11 +1,11 @@
 import { GetVenueResponseModel } from 'apiClient/v1'
 import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
-import { Callout } from 'components/Callout/Callout'
-import { CalloutVariant } from 'components/Callout/types'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import { OpeningHoursReadOnly } from 'pages/VenueEdition/OpeningHoursReadOnly/OpeningHoursReadOnly'
+import { Callout } from 'ui-kit/Callout/Callout'
+import { CalloutVariant } from 'ui-kit/Callout/types'
 
 interface VenueEditionReadOnlyProps {
   venue: GetVenueResponseModel

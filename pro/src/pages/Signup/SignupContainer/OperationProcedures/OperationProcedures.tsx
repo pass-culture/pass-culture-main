@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
-import { Callout } from 'components/Callout/Callout'
+import { Callout } from 'ui-kit/Callout/Callout'
 
 import styles from './OperationProcedures.module.scss'
 
