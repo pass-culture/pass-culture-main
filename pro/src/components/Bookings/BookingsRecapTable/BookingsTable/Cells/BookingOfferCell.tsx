@@ -13,12 +13,12 @@ import {
 } from 'commons/utils/date'
 import { formatPrice } from 'commons/utils/formatPrice'
 import { pluralize } from 'commons/utils/pluralize'
-import fullErrorIcon from 'icons/full-error.svg'
 import {
   getDate,
   getRemainingTime,
   shouldDisplayWarning,
-} from 'pages/Offers/OffersTable/Cells/OfferNameCell/utils'
+} from 'components/OffersTable/Cells/OfferNameCell/utils'
+import fullErrorIcon from 'icons/full-error.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './BookingOfferCell.module.scss'

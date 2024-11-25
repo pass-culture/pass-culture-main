@@ -2,8 +2,8 @@ import classNames from 'classnames'
 
 import { ListOffersVenueResponseModel } from 'apiClient/v1'
 import { computeVenueDisplayName } from 'repository/venuesService'
+import styles from 'styles/components/Cells.module.scss'
 
-import styles from './Cells.module.scss'
 
 interface OfferVenueCellProps {
   venue: ListOffersVenueResponseModel

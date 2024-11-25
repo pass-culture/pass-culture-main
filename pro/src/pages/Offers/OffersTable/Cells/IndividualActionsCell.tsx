@@ -2,8 +2,8 @@ import classNames from 'classnames'
 
 import { ListOffersOfferResponseModel } from 'apiClient/v1'
 import { OFFER_STATUS_DRAFT } from 'commons/core/Offers/constants'
+import styles from 'styles/components/Cells.module.scss'
 
-import styles from './Cells.module.scss'
 import { DeleteDraftCell } from './DeleteDraftCell'
 import { EditOfferCell } from './EditOfferCell'
 import { EditStocksCell } from './EditStocksCell'
