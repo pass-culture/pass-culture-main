@@ -11,7 +11,7 @@ import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import {
   getPhysicalVenuesFromOfferer,
   getVirtualVenueFromOfferer,
-} from 'pages/Home/venueUtils'
+} from 'pages/Homepage/components/Offerers/components/VenueList/venueUtils'
 import { formatAndOrderVenues } from 'repository/venuesService'
 
 export const useVenues = () => {
@@ -22,7 +22,7 @@ export const useVenues = () => {
     isLoading: areVenuesLoading,
   } = useSWR<GetOffererResponseModel | null, string, [string, number] | null>(
     selectedOffererId ? [GET_OFFERER_QUERY_KEY, selectedOffererId] : null,
-    ([, offererIdParam]) => api.getOfferer(offererIdParam),
+    ([, offererIdParam]) => api.getOfferer(offererIdParam)
   )
 
   const physicalVenues = getPhysicalVenuesFromOfferer(selectedOfferer)
@@ -51,7 +51,9 @@ export const useIncome = (selectedVenues: string[]) => {
     error: incomeApiError,
     isLoading: isIncomeLoading,
   } = useSWR<StatisticsModel | null, string, [string, number[]] | null>(
-    selectedVenuesAsNumbers.length > 0 ? [GET_STATISTICS_QUERY_KEY, selectedVenuesAsNumbers] : null,
+    selectedVenuesAsNumbers.length > 0
+      ? [GET_STATISTICS_QUERY_KEY, selectedVenuesAsNumbers]
+      : null,
     ([, selectedVenuesParam]) => api.getStatistics(selectedVenuesParam),
     { revalidateOnMount: true }
   )
