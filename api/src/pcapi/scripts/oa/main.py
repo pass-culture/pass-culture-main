@@ -27,14 +27,17 @@ logger = logging.getLogger(__name__)
 def patched_get_or_create_address(
     location_data: offerers_api.LocationData, is_manual_edition: bool = False
 ) -> geography_models.Address:
+    assert location_data["city"]
     department_code = None
     timezone = None
+    # Workaround mypy :(
     insee_code = location_data.get("insee_code")
-    postal_code = location_data["postal_code"]
+    insee_code = insee_code.strip() if insee_code is not None else insee_code
+    postal_code = location_data["postal_code"].strip()
     latitude = decimal.Decimal(location_data["latitude"]).quantize(decimal.Decimal("1.00000"))
     longitude = decimal.Decimal(location_data["longitude"]).quantize(decimal.Decimal("1.00000"))
     street = location_data.get("street")
-    city = location_data["city"]
+    city = location_data["city"].strip()
     ban_id = None if is_manual_edition else location_data.get("ban_id")
     city_code = insee_code or postal_code
 
