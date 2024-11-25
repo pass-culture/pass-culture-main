@@ -16,10 +16,6 @@ import { isDateValid } from 'commons/utils/date'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { MultiDownloadButtonsModal } from 'components/MultiDownloadButtonsModal/MultiDownloadButtonsModal'
 import fullRefreshIcon from 'icons/full-refresh.svg'
-import { downloadIndividualBookingsCSVFile } from 'pages/Bookings/downloadIndividualBookingsCSVFile'
-import { downloadIndividualBookingsXLSFile } from 'pages/Bookings/downloadIndividualBookingsXLSFile'
-import { downloadCollectiveBookingsCSVFile } from 'pages/CollectiveBookings/downloadCollectiveBookingsCSVFile'
-import { downloadCollectiveBookingsXLSFile } from 'pages/CollectiveBookings/downloadCollectiveBookingsXLSFile'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
@@ -29,6 +25,10 @@ import { FilterByBookingStatusPeriod } from './FilterByBookingStatusPeriod/Filte
 import { FilterByEventDate } from './FilterByEventDate'
 import { FilterByVenue } from './FilterByVenue'
 import styles from './PreFilters.module.scss'
+import { downloadCollectiveBookingsCSVFile } from './utils/downloadCollectiveBookingsCSVFile'
+import { downloadCollectiveBookingsXLSFile } from './utils/downloadCollectiveBookingsXLSFile'
+import { downloadIndividualBookingsCSVFile } from './utils/downloadIndividualBookingsCSVFile'
+import { downloadIndividualBookingsXLSFile } from './utils/downloadIndividualBookingsXLSFile'
 
 export interface PreFiltersProps {
   appliedPreFilters: PreFiltersParams
