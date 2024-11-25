@@ -19,7 +19,7 @@ import { AdageOfferHeader } from './AdageOfferHeader/AdageOfferHeader'
 import { AdageOfferInstitutionPanel } from './AdageOfferInstitutionPanel/AdageOfferInstitutionPanel'
 import { AdageOfferPartnerPanel } from './AdageOfferPartnerPanel/AdageOfferPartnerPanel'
 
-export type AdageOfferProps = {
+type AdageOfferProps = {
   offer: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
   adageUser?: AuthenticatedResponse
   isPreview?: boolean

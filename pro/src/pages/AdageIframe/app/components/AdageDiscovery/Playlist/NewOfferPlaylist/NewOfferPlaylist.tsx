@@ -7,10 +7,10 @@ import { apiAdage } from 'apiClient/api'
 import { GET_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
 import { useNotification } from 'commons/hooks/useNotification'
 
-import { TrackerElementArg } from '../../AdageDiscovery'
 import { Carousel } from '../../Carousel/Carousel'
 import { NEW_OFFER_PLAYLIST } from '../../constant'
 import { OfferCardComponent } from '../../OfferCard/OfferCard'
+import { TrackerElementArg } from '../../types'
 
 import styles from './NewOfferPlaylist.module.scss'
 
