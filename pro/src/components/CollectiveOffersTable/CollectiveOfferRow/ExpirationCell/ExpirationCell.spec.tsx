@@ -6,7 +6,7 @@ import {
 } from 'apiClient/v1'
 import { collectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
 
-import { ExpirationCell } from '../ExpirationCell'
+import { ExpirationCell } from './ExpirationCell'
 
 describe('ExpirationCell', () => {
   const offer: CollectiveOfferResponseModel = collectiveOfferFactory({

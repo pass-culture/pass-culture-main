@@ -8,18 +8,17 @@ import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useOfferEditionURL } from 'commons/hooks/useOfferEditionURL'
+import { CheckboxCell } from 'components/OffersTable/Cells/CheckboxCell'
+import { OfferNameCell } from 'components/OffersTable/Cells/OfferNameCell/OfferNameCell'
+import { OfferVenueCell } from 'components/OffersTable/Cells/OfferVenueCell'
+import { ThumbCell } from 'components/OffersTable/Cells/ThumbCell'
 
-import { CheckboxCell } from '../../Cells/CheckboxCell'
-import { CollectiveActionsCells } from '../../Cells/CollectiveActionsCells'
-import { CollectiveOfferStatusCell } from '../../Cells/CollectiveOfferStatusCell/CollectiveOfferStatusCell'
-import { ExpirationCell } from '../../Cells/ExpirationCell/ExpirationCell'
-import { OfferEventDateCell } from '../../Cells/OfferEventDateCell/OfferEventDateCell'
-import { OfferInstitutionCell } from '../../Cells/OfferInstitutionCell'
-import { OfferNameCell } from '../../Cells/OfferNameCell/OfferNameCell'
-import { OfferVenueCell } from '../../Cells/OfferVenueCell'
-import { ThumbCell } from '../../Cells/ThumbCell'
-
+import { CollectiveActionsCells } from './CollectiveActionsCells/CollectiveActionsCells'
 import styles from './CollectiveOfferRow.module.scss'
+import { CollectiveOfferStatusCell } from './CollectiveOfferStatusCell/CollectiveOfferStatusCell'
+import { ExpirationCell } from './ExpirationCell/ExpirationCell'
+import { OfferEventDateCell } from './OfferEventDateCell/OfferEventDateCell'
+import { OfferInstitutionCell } from './OfferInstitutionCell/OfferInstitutionCell'
 
 export type CollectiveOfferRowProps = {
   isSelected: boolean

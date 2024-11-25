@@ -8,15 +8,17 @@ import {
   useOfferEditionURL,
   useOfferStockEditionURL,
 } from 'commons/hooks/useOfferEditionURL'
+import { CheckboxCell } from 'components/OffersTable/Cells/CheckboxCell'
+import { OfferNameCell } from 'components/OffersTable/Cells/OfferNameCell/OfferNameCell'
+import { OfferVenueCell } from 'components/OffersTable/Cells/OfferVenueCell'
+import { ThumbCell } from 'components/OffersTable/Cells/ThumbCell'
+
+
 
 import { AddressCell } from '../../Cells/AddressCell'
-import { CheckboxCell } from '../../Cells/CheckboxCell'
 import { IndividualActionsCells } from '../../Cells/IndividualActionsCell'
-import { OfferNameCell } from '../../Cells/OfferNameCell/OfferNameCell'
 import { OfferRemainingStockCell } from '../../Cells/OfferRemainingStockCell'
 import { OfferStatusCell } from '../../Cells/OfferStatusCell'
-import { OfferVenueCell } from '../../Cells/OfferVenueCell'
-import { ThumbCell } from '../../Cells/ThumbCell'
 
 import styles from './IndividualOfferRow.module.scss'
 

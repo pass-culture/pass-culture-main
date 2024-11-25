@@ -16,11 +16,11 @@ import { pluralize } from 'commons/utils/pluralize'
 import { formatLocalTimeDateString } from 'commons/utils/timezone'
 import { getDepartmentCode } from 'components/IndividualOffer/utils/getDepartmentCode'
 import fullErrorIcon from 'icons/full-error.svg'
+import styles from 'styles/components/Cells.module.scss'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 import { useTooltipProps } from 'ui-kit/Tooltip/useTooltipProps'
 
-import styles from '../Cells.module.scss'
 
 import { getDate, getRemainingTime, shouldDisplayWarning } from './utils'
 

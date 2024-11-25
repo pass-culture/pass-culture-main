@@ -21,14 +21,14 @@ import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedO
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { canArchiveCollectiveOffer } from 'components/ArchiveConfirmationModal/utils/canArchiveCollectiveOffer'
+import { computeActivationSuccessMessage } from 'components/OffersTable/utils/computeActivationSuccessMessage'
+import { computeSelectedOffersLabel } from 'components/OffersTable/utils/computeSelectedOffersLabel'
 import fullHideIcon from 'icons/full-hide.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
 import strokeThingIcon from 'icons/stroke-thing.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import { computeActivationSuccessMessage } from '../../../utils/computeActivationSuccessMessage'
-import { computeSelectedOffersLabel } from '../../../utils/computeSelectedOffersLabel'
 
 import { CollectiveDeactivationConfirmDialog } from './CollectiveDeactivationConfirmDialog'
 

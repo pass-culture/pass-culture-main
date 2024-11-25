@@ -6,9 +6,9 @@ import {
   ListOffersOfferResponseModel,
 } from 'apiClient/v1'
 import { isOfferEducational } from 'commons/core/OfferEducational/types'
+import styles from 'styles/components/Cells.module.scss'
 import { Thumb } from 'ui-kit/Thumb/Thumb'
 
-import styles from './Cells.module.scss'
 
 export const ThumbCell = ({
   offer,

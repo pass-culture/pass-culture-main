@@ -30,7 +30,7 @@ import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import {
   CollectiveActionsCells,
   CollectiveActionsCellsProps,
-} from '../CollectiveActionsCells'
+} from './CollectiveActionsCells'
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()

@@ -1,8 +1,8 @@
 import classNames from 'classnames'
 
+import styles from 'styles/components/Cells.module.scss'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 
-import styles from './Cells.module.scss'
 
 interface CheckboxCellProps {
   offerName: string
