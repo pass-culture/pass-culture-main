@@ -60,7 +60,7 @@ export const routes: RouteConfig[] = [
     meta: { public: true },
   },
   {
-    lazy: () => import('pages/Home/Homepage'),
+    lazy: () => import('pages/Homepage/Homepage'),
     path: '/accueil',
     title: 'Espace acteurs culturels',
   },

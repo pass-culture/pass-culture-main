@@ -12,7 +12,7 @@ import {
 import { SelectOption } from 'commons/custom_types/form'
 import { getLastCollectiveDmsApplication } from 'commons/utils/getLastCollectiveDmsApplication'
 import { Callout } from 'components/Callout/Callout'
-import { PartnerPageCollectiveSection } from 'pages/Home/Offerers/PartnerPageCollectiveSection'
+import { PartnerPageCollectiveSection } from 'pages/Homepage/components/Offerers/components/PartnerPages/components/PartnerPageCollectiveSection'
 import { CollectiveDmsTimeline } from 'pages/VenueCreation/CollectiveDmsTimeline/CollectiveDmsTimeline'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 

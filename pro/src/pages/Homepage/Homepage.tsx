@@ -1,0 +1,168 @@
+import { useEffect, useMemo, useRef } from 'react'
+import { useSelector } from 'react-redux'
+import useSWR from 'swr'
+
+import { api } from 'apiClient/api'
+import { useRemoteConfigParams } from 'app/App/analytics/firebase'
+import { Layout } from 'app/App/layout/Layout'
+import {
+  GET_OFFERER_NAMES_QUERY_KEY,
+  GET_OFFERER_QUERY_KEY,
+  GET_VENUE_TYPES_QUERY_KEY,
+} from 'commons/config/swrQueryKeys'
+import { hasStatusCode } from 'commons/core/OfferEducational/utils/hasStatusCode'
+import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { sortByLabel } from 'commons/utils/strings'
+import { AddBankAccountCallout } from 'components/Callout/AddBankAccountCallout'
+import { BankAccountHasPendingCorrectionCallout } from 'components/Callout/BankAccountHasPendingCorrectionCallout'
+import { LinkVenueCallout } from 'components/Callout/LinkVenueCallout'
+import { Newsletter } from 'components/Newsletter/Newsletter'
+import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
+
+import { OffererBanners } from './components/Offerers/components/OffererBanners/OffererBanners'
+import {
+  getPhysicalVenuesFromOfferer,
+  getVirtualVenueFromOfferer,
+} from './components/Offerers/components/VenueList/venueUtils'
+import { Offerers } from './components/Offerers/Offerers'
+import { StatisticsDashboard } from './components/StatisticsDashboard/StatisticsDashboard'
+import { VenueOfferSteps } from './components/VenueOfferSteps/VenueOfferSteps'
+import styles from './Homepage.module.scss'
+
+export const Homepage = (): JSX.Element => {
+  const profileRef = useRef<HTMLElement>(null)
+  const offerersRef = useRef<HTMLElement>(null)
+  const remoteConfigData = useRemoteConfigParams()
+
+  useEffect(() => {
+    const callApi = async () => {
+      await api.postProFlags({
+        firebase: remoteConfigData,
+      })
+    }
+    if (Object.keys(remoteConfigData).length > 0) {
+      void callApi()
+    }
+  }, [remoteConfigData])
+
+  const offererNamesQuery = useSWR([GET_OFFERER_NAMES_QUERY_KEY], () =>
+    api.listOfferersNames()
+  )
+  const offererNames = offererNamesQuery.data?.offerersNames
+
+  const venueTypesQuery = useSWR([GET_VENUE_TYPES_QUERY_KEY], () =>
+    api.getVenueTypes()
+  )
+  const venueTypes = venueTypesQuery.data
+
+  const offererOptions = sortByLabel(
+    offererNames?.map((item) => ({
+      value: item['id'].toString(),
+      label: item['name'],
+    })) ?? []
+  )
+
+  const selectedOffererId =
+    useSelector(selectCurrentOffererId)?.toString() ?? ''
+
+  // TODO: this may need to be in the store, as it is loaded in the header dropdown
+  const selectedOffererQuery = useSWR(
+    selectedOffererId ? [GET_OFFERER_QUERY_KEY, selectedOffererId] : null,
+    async ([, offererIdParam]) => {
+      try {
+        return await api.getOfferer(Number(offererIdParam))
+      } catch (error) {
+        if (hasStatusCode(error) && error.status === HTTP_STATUS.FORBIDDEN) {
+          throw error
+        }
+        return null
+      }
+    },
+    {
+      fallbackData: null,
+      shouldRetryOnError: false,
+      onError: () => {},
+    }
+  )
+  const selectedOfferer = selectedOffererQuery.data
+  const isUserOffererValidated = !selectedOffererQuery.error
+
+  const hasNoVenueVisible = useMemo(() => {
+    const physicalVenues = getPhysicalVenuesFromOfferer(selectedOfferer)
+    const virtualVenue = getVirtualVenueFromOfferer(selectedOfferer)
+
+    return physicalVenues.length === 0 && !virtualVenue
+  }, [selectedOfferer])
+
+  if (
+    offererNamesQuery.isLoading ||
+    venueTypesQuery.isLoading ||
+    !offererNames ||
+    !venueTypes
+  ) {
+    return (
+      <Layout>
+        <Spinner />
+      </Layout>
+    )
+  }
+
+  return (
+    <Layout>
+      <h1 className={styles['title']}>
+        Bienvenue dans l’espace acteurs culturels
+      </h1>
+
+      <div className={styles['reimbursements-banners']}>
+        <AddBankAccountCallout offerer={selectedOfferer} />
+        <LinkVenueCallout offerer={selectedOfferer} />
+        <BankAccountHasPendingCorrectionCallout offerer={selectedOfferer} />
+      </div>
+      {!selectedOffererQuery.isValidating &&
+        (selectedOffererQuery.data || selectedOffererQuery.error) && (
+          <OffererBanners
+            isUserOffererValidated={isUserOffererValidated}
+            offerer={selectedOfferer}
+          />
+        )}
+
+      {selectedOfferer?.isValidated && selectedOfferer.isActive && (
+        <section className={styles['section']}>
+          <StatisticsDashboard offerer={selectedOfferer} />
+        </section>
+      )}
+
+      <section className={styles['section']} ref={offerersRef}>
+        <Offerers
+          selectedOfferer={selectedOfferer}
+          isLoading={selectedOffererQuery.isLoading}
+          offererOptions={offererOptions}
+          isUserOffererValidated={isUserOffererValidated}
+          venueTypes={venueTypes}
+        />
+      </section>
+
+      {isUserOffererValidated &&
+        hasNoVenueVisible &&
+        selectedOfferer !== null && (
+          <section className={styles['step-section']}>
+            <VenueOfferSteps
+              hasVenue={!hasNoVenueVisible}
+              offerer={selectedOfferer}
+            />
+          </section>
+        )}
+
+      <section className={styles['section']} ref={profileRef}>
+        <div className={styles['newsletter']}>
+          <Newsletter />
+        </div>
+      </section>
+    </Layout>
+  )
+}
+
+// Below exports are used by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = Homepage

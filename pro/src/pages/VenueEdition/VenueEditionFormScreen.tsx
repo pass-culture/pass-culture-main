@@ -3,7 +3,7 @@ import { Route, Routes } from 'react-router-dom'
 import { GetVenueResponseModel } from 'apiClient/v1'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { Callout } from 'components/Callout/Callout'
-import { PartnerPageIndividualSection } from 'pages/Home/Offerers/PartnerPageIndividualSection'
+import { PartnerPageIndividualSection } from 'pages/Homepage/components/Offerers/components/PartnerPages/components/PartnerPageIndividualSection'
 
 import { AccesLibreSection } from './AccesLibreSection/AccesLibreSection'
 import { VenueEditionForm } from './VenueEditionForm'

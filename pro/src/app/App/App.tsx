@@ -22,7 +22,7 @@ import { updateSelectedOffererId, updateUser } from 'commons/store/user/reducer'
 import { selectCurrentUser } from 'commons/store/user/selectors'
 import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
 import { Notification } from 'components/Notification/Notification'
-import { SAVED_VENUE_ID_KEY } from 'pages/Home/Offerers/PartnerPages'
+import { SAVED_VENUE_ID_KEY } from 'pages/Homepage/components/Offerers/components/PartnerPages/PartnerPages'
 
 import { useBeamer } from './analytics/beamer'
 import { useFirebase } from './analytics/firebase'
@@ -63,7 +63,6 @@ export const App = (): JSX.Element | null => {
 
   useEffect(() => {
     if (location.search.includes('logout')) {
-       
       api.signout()
       if (localStorageAvailable()) {
         localStorage.removeItem(SAVED_OFFERER_ID_KEY)
