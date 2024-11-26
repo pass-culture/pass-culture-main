@@ -21,22 +21,7 @@ def timed():
 @timed()
 def get_cine_offer_ids() -> typing.Generator[int, None, None]:
     query = Offer.query.filter(
-        Offer.subcategoryId.in_(
-            (
-                subcategories_v2.SUPPORT_PHYSIQUE_FILM.id,
-                subcategories_v2.VOD.id,
-                subcategories_v2.ABO_PLATEFORME_VIDEO.id,
-                subcategories_v2.AUTRE_SUPPORT_NUMERIQUE.id,
-                subcategories_v2.CARTE_CINE_MULTISEANCES.id,
-                subcategories_v2.CARTE_CINE_ILLIMITE.id,
-                subcategories_v2.SEANCE_CINE.id,
-                subcategories_v2.EVENEMENT_CINE.id,
-                subcategories_v2.FESTIVAL_CINE.id,
-                subcategories_v2.CINE_VENTE_DISTANCE.id,
-                subcategories_v2.CINE_PLEIN_AIR.id,
-            )
-        ),
-        Offer.isActive.is_(True),
+        Offer.subcategoryId == subcategories_v2.SEANCE_CINE.id, Offer.isActive.is_(True)
     ).with_entities(Offer.id)
     yield from query.yield_per(BATCH_SIZE)
 
