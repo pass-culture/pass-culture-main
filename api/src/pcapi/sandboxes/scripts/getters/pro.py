@@ -216,12 +216,50 @@ def create_pro_user_with_collective_offers() -> dict:
     pro_user = users_factories.ProFactory()
     offerer = offerers_factories.OffererFactory()
     offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
-    venue = offerers_factories.VenueFactory(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
+    venue1 = offerers_factories.CollectiveVenueFactory(name="Mon Lieu 1", managingOfferer=offerer)
+    venue2 = offerers_factories.CollectiveVenueFactory(name="Mon Lieu 2", managingOfferer=offerer)
     offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
 
     educational_factories.CollectiveOfferTemplateFactory(
-        name="Mon offre collective",
-        venue=venue,
+        name="Mon offre collective publiée vitrine",
+        venue=venue1,
+        subcategoryId=subcategories.CONCERT.id,
+        formats=[subcategories.EacFormat.CONCERT],
+    )
+
+    educational_factories.CollectiveStockFactory(
+        collectiveOffer__name="Mon offre collective publiée réservable",
+        collectiveOffer__venue=venue1,
+        collectiveOffer__subcategoryId=subcategories.CONCERT.id,
+        collectiveOffer__formats=[subcategories.EacFormat.CONCERT],
+        beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(weeks=2),
+        endDatetime=datetime.datetime.utcnow() + datetime.timedelta(weeks=2),
+    )
+
+    educational_factories.DraftCollectiveOfferFactory(
+        name="Mon offre collective en brouillon réservable",
+        venue=venue1,
+        subcategoryId=subcategories.CONCERT.id,
+        formats=[subcategories.EacFormat.REPRESENTATION],
+    )
+
+    educational_factories.PendingCollectiveOfferFactory(
+        name="Mon offre collective en instruction réservable",
+        venue=venue2,
+        subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id,
+        formats=[subcategories.EacFormat.REPRESENTATION],
+    )
+
+    educational_factories.RejectedCollectiveOfferFactory(
+        name="Mon offre collective non conforme réservable",
+        venue=venue2,
+        subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id,
+        formats=[subcategories.EacFormat.REPRESENTATION],
+    )
+
+    educational_factories.ArchivedCollectiveOfferFactory(
+        name="Mon offre collective archivée réservable",
+        venue=venue2,
         subcategoryId=subcategories.SEANCE_CINE.id,
         formats=[subcategories.EacFormat.PROJECTION_AUDIOVISUELLE],
     )
