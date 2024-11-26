@@ -41,7 +41,10 @@ export const formatBrowserTimezonedDateAsUTC = (
   date: Date | number,
   dateFormat = FORMAT_ISO
 ) => {
-  return format(date, dateFormat, { timeZone: 'UTC' })
+  return format(date, dateFormat, {
+    timeZone: 'UTC',
+    locale: fr,
+  })
 }
 
 export const toDateStrippedOfTimezone = (dateIsoString: string) => {
