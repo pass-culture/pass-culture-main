@@ -29,6 +29,10 @@ def create_offers_with_ean() -> None:
                 extraData={"ean": f"9780000000{i:03}"},
             )
         )
+        if i == 1:
+            product = products[0]
+            product.name = f"Livre {i} avec EAN et image"
+            offers_factories.ProductMediationFactory(product=product)
 
     user_offerer = offerers_factories.UserOffererFactory(
         user__firstName="Super",
