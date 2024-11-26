@@ -24,7 +24,7 @@ export type DetailsEanSearchProps = {
   initialEan?: string
   eanSubmitError?: string
   onEanSearch: (ean: string, product: Product) => Promise<void>
-  resetForm: () => void
+  onEanReset: () => void
 }
 
 export const DetailsEanSearch = ({
@@ -34,7 +34,7 @@ export const DetailsEanSearch = ({
   initialEan,
   eanSubmitError,
   onEanSearch,
-  resetForm,
+  onEanReset,
 }: DetailsEanSearchProps): JSX.Element => {
   const selectedOffererId = useSelector(selectCurrentOffererId)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -101,7 +101,7 @@ export const DetailsEanSearch = ({
 
   const onEanClear = () => {
     formik.resetForm()
-    resetForm()
+    onEanReset()
     setWasCleared(true)
   }
 

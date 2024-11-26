@@ -46,7 +46,7 @@ const EanSearchWrappedWithFormik = ({
   initialEan = '',
   eanSubmitError = '',
   onEanSearch = vi.fn(),
-  resetForm = vi.fn(),
+  onEanReset = vi.fn(),
 }: DetailsEanSearchTestProps): JSX.Element => {
   const formik = useFormik({
     initialValues: {
@@ -72,7 +72,7 @@ const EanSearchWrappedWithFormik = ({
         initialEan={initialEan}
         eanSubmitError={eanSubmitError}
         onEanSearch={onEanSearch}
-        resetForm={resetForm}
+        onEanReset={onEanReset}
       />
     </FormikProvider>
   )
@@ -217,11 +217,11 @@ describe('DetailsEanSearch', () => {
       })
 
       it('should clear the form when the clear button is clicked', async () => {
-        const resetForm = vi.fn()
+        const onEanReset = vi.fn()
         renderDetailsEanSearch({
           isDirtyDraftOffer: true,
           wasEanSearchPerformedSuccessfully: true,
-          resetForm,
+          onEanReset,
         })
 
         const clearButton = screen.getByRole('button', {
@@ -231,7 +231,7 @@ describe('DetailsEanSearch', () => {
         expect(clearButton).toBeInTheDocument()
 
         await userEvent.click(clearButton)
-        expect(resetForm.mock.calls.length).toBe(1)
+        expect(onEanReset.mock.calls.length).toBe(1)
       })
 
       it('should display an error message if POST API ends with an EAN err', () => {

@@ -277,6 +277,11 @@ export const IndividualOfferDetailsScreen = ({
     })
   }
 
+  const onEanReset = () => {
+    setImageOffer(undefined)
+    formik.resetForm()
+  }
+
   return (
     <>
       <FormLayout.MandatoryInfo />
@@ -288,7 +293,7 @@ export const IndividualOfferDetailsScreen = ({
           initialEan={offer?.extraData?.ean}
           eanSubmitError={formik.status === 'apiError' ? formik.errors.ean : ''}
           onEanSearch={onEanSearch}
-          resetForm={formik.resetForm}
+          onEanReset={onEanReset}
         />
       )}
       {isEanSearchCalloutAloneDisplayed && <EanSearchCallout />}

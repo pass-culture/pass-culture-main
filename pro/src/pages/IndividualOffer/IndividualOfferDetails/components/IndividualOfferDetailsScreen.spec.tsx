@@ -254,7 +254,7 @@ const userFillsEverything = async ({
   )
 }
 
-describe('screens:IndividualOffer::Informations', () => {
+describe('IndividualOfferDetails', () => {
   let contextValue: IndividualOfferContextValues
 
   beforeEach(() => {
@@ -696,7 +696,8 @@ describe('screens:IndividualOffer::Informations', () => {
     describe('about EAN search', () => {
       const eanSearchTitle = /Scanner ou rechercher un produit par EAN/
       const eanInputLabel = /Nouveau Scanner ou rechercher un produit par EAN/
-      const eanButtonLabel = /Rechercher/
+      const eanSearchButtonLabel = /Rechercher/
+      const eanResetButtonLabel = /Effacer/
 
       it('should render EAN search for record stores as a venue', () => {
         const context = individualOfferContextValuesFactory({
@@ -777,7 +778,7 @@ describe('screens:IndividualOffer::Informations', () => {
             options: { features: ['WIP_EAN_CREATION'] },
           })
 
-          const button = screen.getByRole('button', { name: eanButtonLabel })
+          const button = screen.getByRole('button', { name: eanSearchButtonLabel })
           const input = screen.getByRole('textbox', { name: eanInputLabel })
 
           await userEvent.type(input, ean)
@@ -799,6 +800,59 @@ describe('screens:IndividualOffer::Informations', () => {
             name: imageEditLabel,
           })
           expect(imageEditButton).not.toBeInTheDocument()
+        })
+
+        it('should reset the prefilled form when EAN search is cleared', async () => {
+          const ean = '9781234567897'
+          const productData = {
+            id: 0,
+            name: 'Music has the right to children',
+            description: 'An album by Boards of Canada',
+            subcategoryId: 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE',
+            gtlId: '08000000',
+            author: 'Boards of Canada',
+            performer: 'Boards of Canada',
+            images: {
+              recto: 'https://www.example.com/image.jpg',
+            },
+          }
+
+          const context = individualOfferContextValuesFactory({
+            categories: MOCK_DATA.categories,
+            subCategories: MOCK_DATA.subCategories,
+            offer: null,
+          })
+
+          vi.spyOn(api, 'getProductByEan').mockResolvedValue(productData)
+          renderDetailsScreen({
+            props: {
+              venues: [
+                venueListItemFactory({
+                  venueTypeCode: 'RECORD_STORE' as VenueTypeCode,
+                }),
+              ],
+            },
+            contextValue: context,
+            options: { features: ['WIP_EAN_CREATION'] },
+          })
+
+          const button = screen.getByRole('button', { name: eanSearchButtonLabel })
+          const input = screen.getByRole('textbox', { name: eanInputLabel })
+
+          await userEvent.type(input, ean)
+          await userEvent.click(button)
+
+          const resetButton = screen.getByRole('button', { name: eanResetButtonLabel })
+          await userEvent.click(resetButton)
+
+          // Inputs and image should be cleared.
+          const nameInputLabel = /Titre de l’offre/
+          const inputName = screen.getByRole('textbox', {
+            name: nameInputLabel,
+          })
+          const image = screen.queryByTestId('image-preview')
+          expect(inputName).toHaveValue('')
+          expect(image).not.toBeInTheDocument()
         })
       })
 
