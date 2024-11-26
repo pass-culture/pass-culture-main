@@ -1148,7 +1148,7 @@ def reject_inappropriate_products(
         models.Product.extraData["ean"].astext.in_(eans),
         models.Product.idAtProviders.is_not(None),
         models.Product.gcuCompatibilityType != models.GcuCompatibilityType.FRAUD_INCOMPATIBLE,
-    )
+    ).all()
 
     if not products:
         return False
