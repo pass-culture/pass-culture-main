@@ -20,6 +20,14 @@ To manage those offers you will be mainly using the **[product offers endpoints]
 
 ### Creation rules
 
+:::info
+Event and product offers are geotagged on the application thanks to their location. This location can be physical for example, it can be a physical selling point owned by the offerer.  
+
+It can be an address : a product or an event offer can stand at a different location than your venue. 
+
+it can be digital : a digital offer can be used on a url link
+:::
+
 There are **two methods to create a product offer** using the pass Culture API :
 
 - **if your product is a book, a CD or a Vinyl**, you must create your product offer by indicating an **[European Article Numbering code (EAN)](https://en.wikipedia.org/wiki/International_Article_Number)**, a price and a quantity. We will fill the other offer fields using external databases (provided by our partner Titelive). The dedicated endpoint to upsert (create or update) product using EANs is **[this one](/rest-api/#tag/Product-offer-bulk-operations/operation/PostProductOfferByEan)**. The EAN must exist in our product database ; you can verify its availability using **[the dedicated endpoint](/rest-api#tag/Product-Offer-Bulk-Operations/operation/CheckEansAvailability)**.

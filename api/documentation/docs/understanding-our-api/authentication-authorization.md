@@ -75,7 +75,17 @@ A `venue` is the offer location. It can be:
 * an address when the offer is a festival located in a field,
 * a digital address when the offer is digital.
 
-For instance, the shop Pass Culture Office is a `venue` (SIRET: *853 318 459 00049*), owned by the offerer Pass Culture (SIREN: *853 318 459*).
+A "venue" can refer to a place where a cultural activity takes place and it is linked to an offerer. For instance, the shop Pass Culture Office is a `venue` (SIRET: *853 318 459 00049*), owned by the offerer Pass Culture (SIREN: *853 318 459*).
+
+This can be a physical location such as a theater, concert hall, museum, bookshop, or even a cinema, which offers events or cultural offerings that Culture Pass beneficiaries can access. 
+
+:::info 
+Only the cultural partner has the option of modifying certain information on his or her pro space. 
+:::
+
+:::info 
+If you want to know all the venue’s fields, you can make a call to [this endpoint](/rest-api#tag/Venues/operation/GetOffererVenues)
+:::
 
 ### Gaining access to a `venue`
 
