@@ -637,6 +637,27 @@ def format_dms_application_status(
             return status.value
 
 
+def format_dms_application_status_badge(
+    status: GraphQLApplicationStates | finance_models.BankAccountApplicationStatus,
+) -> str:
+    match status:
+        case GraphQLApplicationStates.accepted | finance_models.BankAccountApplicationStatus.ACCEPTED:
+            return Markup('<span class="badge text-bg-success">Accepté</span>')
+        case GraphQLApplicationStates.on_going | finance_models.BankAccountApplicationStatus.ON_GOING:
+            return Markup('<span class="badge text-bg-secondary">En instruction</span>')
+        case GraphQLApplicationStates.draft | finance_models.BankAccountApplicationStatus.DRAFT:
+            return Markup('<span class="badge text-bg-info">En construction</span>')
+        case GraphQLApplicationStates.refused | finance_models.BankAccountApplicationStatus.REFUSED:
+            return Markup('<span class="badge text-bg-danger">Refusé</span>')
+        case (
+            GraphQLApplicationStates.without_continuation
+            | finance_models.BankAccountApplicationStatus.WITHOUT_CONTINUATION
+        ):
+            return Markup('<span class="badge text-bg-warning">Classé sans suite</span>')
+        case _:
+            return status.value
+
+
 def format_registration_step_description(description: str) -> str:
     description = format_subscription_step(description)
     description = format_eligibility_value(description)
@@ -1466,6 +1487,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_fraud_review_status"] = format_fraud_review_status
     app.jinja_env.filters["format_dms_status"] = format_dms_status
     app.jinja_env.filters["format_dms_application_status"] = format_dms_application_status
+    app.jinja_env.filters["format_dms_application_status_badge"] = format_dms_application_status_badge
     app.jinja_env.filters["format_registration_step_description"] = format_registration_step_description
     app.jinja_env.filters["format_subscription_step"] = format_subscription_step
     app.jinja_env.filters["format_eligibility_value"] = format_eligibility_value
