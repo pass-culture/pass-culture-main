@@ -274,6 +274,46 @@ class Returns200Test:
             "old_info": "75000",
         }
 
+    @override_features(WIP_ENABLE_OFFER_ADDRESS=True)
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def test_update_venue_location_with_manual_edition_and_oa(self, client) -> None:
+        user_offerer = offerers_factories.UserOffererFactory()
+        address = geography_factories.AddressFactory(
+            street="1 boulevard Poissonnière", postalCode="75000", inseeCode="75000", city="Paris"
+        )
+        offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer, address=address)
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+            street=address.street,
+            postalCode=address.postalCode,
+            city=address.city,
+            offererAddress=offerer_address,
+        )
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        venue_id = venue.id
+
+        venue_data = populate_missing_data_from_venue(
+            {
+                # Default data from api adresse TestingBackend
+                "street": "3 Rue de Valois",
+                "banId": "75101_9575_00003",
+                "city": "Paris",
+                "latitude": 48.87171,
+                "longitude": 2.308289,
+                "postalCode": "75001",
+                "isManualEdition": True,
+            },
+            venue,
+        )
+
+        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        assert response.status_code == 200
+
+        # Ensures we can edit another time the venue just fine
+        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        assert response.status_code == 200
+
     @patch("pcapi.connectors.api_adresse.get_address")
     @pytest.mark.parametrize(
         "is_manual_edition,old_manual_edition", [(True, False), (False, True), (True, True), (False, False)]
