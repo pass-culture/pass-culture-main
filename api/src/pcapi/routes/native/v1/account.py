@@ -227,6 +227,7 @@ def get_email_update_token_expiration_date(user: users_models.User) -> serialize
 
 @blueprint.native_route("/account", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
+@atomic()
 def create_account(body: serializers.AccountRequest) -> None:
     if FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active():
         try:
@@ -262,6 +263,7 @@ def create_account(body: serializers.AccountRequest) -> None:
 
 @blueprint.native_route("/oauth/google/account", methods=["POST"])
 @spectree_serialize(response_model=auth_serializers.SigninResponse, api=blueprint.api, on_error_statuses=[400])
+@atomic()
 def create_account_with_google_sso(body: serializers.GoogleAccountRequest) -> auth_serializers.SigninResponse:
     if FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active():
         try:
