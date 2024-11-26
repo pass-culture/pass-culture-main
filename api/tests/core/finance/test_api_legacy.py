@@ -638,7 +638,8 @@ def test_generate_bank_accounts_file(clean_temp_files):
             "Lieux liés au compte bancaire": ", ".join(
                 map(str, sorted(link.venueId for link in bank_account.venueLinks))
             ),
-            "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account.id),
+            "Identifiant des coordonnées bancaires": str(bank_account.id),
+            "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account.id),
             "SIREN de la structure": bank_account.offerer.siren,
             "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account.offerer.name} - {bank_account.label}",
             "IBAN": bank_account.iban,
@@ -911,7 +912,8 @@ def test_generate_payments_file(clean_temp_files):
 
     assert len(rows) == 8
     assert {
-        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
+        "Identifiant des coordonnées bancaires": str(bank_account_1.id),
+        "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "SIREN de la structure": bank_account_1.offerer.siren,
         "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account_1.offerer.name} - {bank_account_1.label}",
         "Type de réservation": "PC",
@@ -919,7 +921,8 @@ def test_generate_payments_file(clean_temp_files):
         "Montant net offreur": 10 - 1,  # 10 from pricing + [9 - 10 = -1] from incident
     } in rows
     assert {
-        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
+        "Identifiant des coordonnées bancaires": str(bank_account_1.id),
+        "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "SIREN de la structure": bank_account_1.offerer.siren,
         "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account_1.offerer.name} - {bank_account_1.label}",
         "Type de réservation": "EACC",
@@ -927,7 +930,8 @@ def test_generate_payments_file(clean_temp_files):
         "Montant net offreur": 3 + 7,
     } in rows
     assert {
-        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
+        "Identifiant des coordonnées bancaires": str(bank_account_1.id),
+        "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "SIREN de la structure": bank_account_1.offerer.siren,
         "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account_1.offerer.name} - {bank_account_1.label}",
         "Type de réservation": "EACC",
@@ -935,7 +939,8 @@ def test_generate_payments_file(clean_temp_files):
         "Montant net offreur": 3,
     } in rows
     assert {
-        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
+        "Identifiant des coordonnées bancaires": str(bank_account_1.id),
+        "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "SIREN de la structure": bank_account_1.offerer.siren,
         "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account_1.offerer.name} - {bank_account_1.label}",
         "Type de réservation": "EACC",
@@ -943,7 +948,8 @@ def test_generate_payments_file(clean_temp_files):
         "Montant net offreur": 5,
     } in rows
     assert {
-        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_3.id),
+        "Identifiant des coordonnées bancaires": str(bank_account_3.id),
+        "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account_3.id),
         "SIREN de la structure": bank_account_3.offerer.siren,
         "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account_3.offerer.name} - {bank_account_3.label}",
         "Type de réservation": "PC",
@@ -951,7 +957,8 @@ def test_generate_payments_file(clean_temp_files):
         "Montant net offreur": 7 + 7,
     } in rows
     assert {
-        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_3.id),
+        "Identifiant des coordonnées bancaires": str(bank_account_3.id),
+        "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account_3.id),
         "SIREN de la structure": bank_account_3.offerer.siren,
         "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account_3.offerer.name} - {bank_account_3.label}",
         "Type de réservation": "EACI",
@@ -959,7 +966,8 @@ def test_generate_payments_file(clean_temp_files):
         "Montant net offreur": 4 + 4,
     } in rows
     assert {
-        "Identifiant des coordonnées bancaires": human_ids.humanize(nc_bank_account.id),
+        "Identifiant des coordonnées bancaires": str(nc_bank_account.id),
+        "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(nc_bank_account.id),
         "SIREN de la structure": nc_bank_account.offerer.rid7,
         "Nom de la structure - Libellé des coordonnées bancaires": f"{nc_bank_account.offerer.name} - {nc_bank_account.label}",
         "Type de réservation": "PC",
@@ -967,7 +975,8 @@ def test_generate_payments_file(clean_temp_files):
         "Montant net offreur": 10,  # not in XPF
     } in rows
     assert {
-        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_3.id),
+        "Identifiant des coordonnées bancaires": str(bank_account_3.id),
+        "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account_3.id),
         "SIREN de la structure": bank_account_3.offerer.siren,
         "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account_3.offerer.name} - {bank_account_3.label}",
         "Type de réservation": "EACC",
@@ -985,7 +994,8 @@ def test_generate_payments_file(clean_temp_files):
 
     assert len(rows) == 1
     assert {
-        "Identifiant des coordonnées bancaires": human_ids.humanize(nc_bank_account.id),
+        "Identifiant des coordonnées bancaires": str(nc_bank_account.id),
+        "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(nc_bank_account.id),
         "SIREN de la structure": nc_bank_account.offerer.rid7,
         "Nom de la structure - Libellé des coordonnées bancaires": f"{nc_bank_account.offerer.name} - {nc_bank_account.label}",
         "Type de réservation": "PC",
@@ -1494,7 +1504,8 @@ def test_generate_invoice_file(clean_temp_files):
 
     assert len(rows) == 7
     assert rows[0] == {
-        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
+        "Identifiant des coordonnées bancaires": str(bank_account_1.id),
+        "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
         "Type de ticket de facturation": pline11.category.value,
@@ -1506,7 +1517,8 @@ def test_generate_invoice_file(clean_temp_files):
         + 200,  # 200 is the incident amount
     }
     assert rows[1] == {
-        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
+        "Identifiant des coordonnées bancaires": str(bank_account_1.id),
+        "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
         "Type de ticket de facturation": pline12.category.value,
@@ -1516,7 +1528,8 @@ def test_generate_invoice_file(clean_temp_files):
     }
     # New Caledonia
     assert rows[2] == {
-        "Identifiant des coordonnées bancaires": human_ids.humanize(nc_bank_account.id),
+        "Identifiant des coordonnées bancaires": str(nc_bank_account.id),
+        "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(nc_bank_account.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": nc_invoice.reference,
         "Type de ticket de facturation": nc_pline_1.category.value,
@@ -1525,7 +1538,8 @@ def test_generate_invoice_file(clean_temp_files):
         "Somme des tickets de facturation": nc_pline_1.amount,
     }
     assert rows[3] == {
-        "Identifiant des coordonnées bancaires": human_ids.humanize(nc_bank_account.id),
+        "Identifiant des coordonnées bancaires": str(nc_bank_account.id),
+        "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(nc_bank_account.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": nc_invoice.reference,
         "Type de ticket de facturation": nc_pline_2.category.value,
@@ -1535,7 +1549,8 @@ def test_generate_invoice_file(clean_temp_files):
     }
     # collective pricing lines
     assert rows[4] == {
-        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
+        "Identifiant des coordonnées bancaires": str(bank_account_1.id),
+        "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
         "Type de ticket de facturation": pline31.category.value,
@@ -1544,7 +1559,8 @@ def test_generate_invoice_file(clean_temp_files):
         "Somme des tickets de facturation": pline31.amount,
     }
     assert rows[5] == {
-        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
+        "Identifiant des coordonnées bancaires": str(bank_account_1.id),
+        "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
         "Type de ticket de facturation": pline32.category.value,
@@ -1553,7 +1569,8 @@ def test_generate_invoice_file(clean_temp_files):
         "Somme des tickets de facturation": pline32.amount,
     }
     assert rows[6] == {
-        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
+        "Identifiant des coordonnées bancaires": str(bank_account_1.id),
+        "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
         "Type de ticket de facturation": pline4.category.value,
