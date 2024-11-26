@@ -30,6 +30,22 @@ def _get_base_booking_query() -> sqla_orm.Query:
         .filter(providers_models.VenueProvider.isActive == True)
         .join(offers_models.Stock)
         .join(offers_models.Offer)
+        .options(
+            sqla_orm.contains_eager(booking_models.Booking.venue).load_only(
+                offerers_models.Venue.id,
+                offerers_models.Venue.name,
+                offerers_models.Venue.street,
+                offerers_models.Venue.departementCode,
+            )
+        )
+        .options(
+            sqla_orm.contains_eager(booking_models.Booking.stock)
+            .load_only(
+                offers_models.Stock.id, offers_models.Stock.beginningDatetime, offers_models.Stock.priceCategoryId
+            )
+            .contains_eager(offers_models.Stock.offer)
+            .load_only(offers_models.Offer.id, offers_models.Offer.name, offers_models.Offer.extraData)
+        )
     )
 
 
