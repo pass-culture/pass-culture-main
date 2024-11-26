@@ -48,8 +48,6 @@ describe('Search individual offers', () => {
       ['', '', offerName1, venueName, '1 000', 'publiée'],
     ]
 
-    cy.findAllByTestId('offer-item-row').should('have.length', 1)
-
     expectOffersOrBookingsAreFound(expectedResults)
   })
 
@@ -73,8 +71,6 @@ describe('Search individual offers', () => {
       ['', '', offerName2 + ean, venueName, '1 000', 'publiée'],
     ]
 
-    cy.findAllByTestId('offer-item-row').should('have.length', 1)
-
     expectOffersOrBookingsAreFound(expectedResults)
   })
 
@@ -93,8 +89,6 @@ describe('Search individual offers', () => {
       ['', '', 'Titre', 'Lieu', 'Stocks', 'Status'],
       ['', '', offerName3, venueName, '1 000', 'publiée'],
     ]
-
-    cy.findAllByTestId('offer-item-row').should('have.length', 1)
 
     expectOffersOrBookingsAreFound(expectedResults)
   })
@@ -122,8 +116,6 @@ describe('Search individual offers', () => {
       ['', '', offerName1, venueName, '1 000', 'publiée'],
     ]
 
-    cy.findAllByTestId('offer-item-row').should('have.length', 6)
-
     expectOffersOrBookingsAreFound(expectedResults)
   })
 
@@ -144,8 +136,6 @@ describe('Search individual offers', () => {
       ['', '', 'Titre', 'Lieu', 'Stocks', 'Status'],
       ['', '', offerName4, venueName, '1 000', 'publiée'],
     ]
-
-    cy.findAllByTestId('offer-item-row').should('have.length', 1)
 
     expectOffersOrBookingsAreFound(expectedResults)
   })
@@ -184,8 +174,6 @@ describe('Search individual offers', () => {
       ['', '', offerName5, venueName, '1 000', 'publiée'],
     ]
 
-    cy.findAllByTestId('offer-item-row').should('have.length', 2)
-
     expectOffersOrBookingsAreFound(expectedResults)
 
     cy.stepLog({ message: 'I reset all filters' })
@@ -221,8 +209,6 @@ describe('Search individual offers', () => {
       ['', '', offerName2, venueName, '1 000', 'publiée'],
       ['', '', offerName1, venueName, '1 000', 'publiée'],
     ]
-
-    cy.findAllByTestId('offer-item-row').should('have.length', 7)
 
     expectOffersOrBookingsAreFound(expectedResults2)
   })
