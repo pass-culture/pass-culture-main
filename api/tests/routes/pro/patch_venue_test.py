@@ -191,6 +191,71 @@ class Returns200Test:
         assert offerer_address.addressId == address.id
         assert offerer_address.label is None
 
+    @patch(
+        "pcapi.connectors.api_adresse.get_address",
+        return_value=AddressInfo(
+            id="09160_0350_00011",
+            street="11 Rue Jean Jaurès",
+            postcode="09300",
+            citycode="09160",
+            city="Lavelanet",
+            score=0.801001652892562,
+            longitude=1.847675,
+            latitude=42.932433,
+        ),
+    )
+    def test_updating_venue_location_should_rely_on_address_table_data(self, mocked_get_address, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        address = geography_factories.AddressFactory(
+            banId="12145_1540_0001",
+            street="11 Avenue Jean Jaurès",
+            postalCode="12100",
+            city="Millau",
+            latitude=44.10061,
+            longitude=3.07889,
+            departmentCode="12",
+            inseeCode="12145",
+        )
+        offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer, address=address)
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+            street="11 RUE JEAN JAURÈS",
+            city="LAVELANET",
+            postalCode="09300",
+            banId=None,
+            latitude=None,
+            longitude=None,
+        )
+
+        venue_data = populate_missing_data_from_venue(
+            {
+                "banId": "09160_0350_00011",
+                "city": "Lavelanet",
+                "latitude": 42.932433,
+                "longitude": 1.847675,
+                "postalCode": "09300",
+                "street": "11 Rue Jean Jaurès",
+                "isManualEdition": False,
+            },
+            venue,
+        )
+        client_http = client.with_session_auth(email=user_offerer.user.email)
+
+        # At this point, the user is displayed the address contained in the address table, i.e. the "wrong" address
+        response = client_http.get(f"/venues/{venue.id}")
+        assert response.json["address"]["street"] == "11 Avenue Jean Jaurès"
+        assert response.json["address"]["city"] == "Millau"
+        assert response.json["address"]["postalCode"] == "12100"
+
+        response = client_http.patch(f"/venues/{venue.id}", json=venue_data)
+        mocked_get_address.assert_called_once_with(address="11 Rue Jean Jaurès", postcode="09300", city="Lavelanet")
+        assert response.status_code == 200
+
+        response = client_http.get(f"/venues/{venue.id}")
+        assert response.json["address"]["street"] == "11 Rue Jean Jaurès"
+        assert response.json["address"]["city"] == "Lavelanet"
+        assert response.json["address"]["postalCode"] == "09300"
+
     def test_update_venue_location_with_manual_edition(self, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
         address = geography_factories.AddressFactory(
@@ -479,7 +544,7 @@ class Returns200Test:
 
         assert len(offerer_addresses) == 2
         assert venue.offererAddressId == offerer_address.id
-        assert address.street == venue.street == None  # Centroid found only, nothing to fill in street column
+        assert address.street == None  # Centroid found only, nothing to fill in street column
         assert address.city == venue.city == "Château-Chinon (Ville)"
         assert address.postalCode == venue.postalCode == "58120"
         assert address.inseeCode.startswith(address.departmentCode)

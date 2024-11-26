@@ -137,8 +137,9 @@ class ObjectUpdateSnapshotTest:
         venue = offerers_factories.VenueFactory()
 
         modifications = {}
+        locations_modifications = {}
 
-        offerers_api.update_venue(venue, modifications, author=author, contact_data=None)
+        offerers_api.update_venue(venue, modifications, locations_modifications, author=author, contact_data=None)
 
         assert history_models.ActionHistory.query.count() == 0
 
