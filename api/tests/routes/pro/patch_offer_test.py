@@ -57,6 +57,56 @@ class Returns200Test:
         assert updated_offer.subcategoryId == subcategories.ABO_PLATEFORME_VIDEO.id
         assert not updated_offer.product
 
+    @override_features(WIP_ENABLE_OFFER_ADDRESS=True)
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def test_patch_offer_with_manually_edited_oa(self, client):
+        LONGITUDE = "1.55"
+        LATITUDE = "47.16995"
+        # Due to the convertion between base 10 and binary, floats are an approximation.
+        # Those numbers should be equal but aren't exactly.
+        # This assert ensures the number were amoung those causing issues, please, don't remove them.
+        assert Decimal(float(LONGITUDE)) != Decimal(LONGITUDE)
+        assert Decimal(float(LATITUDE)) != Decimal(LATITUDE)
+
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+        )
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.CONFERENCE.id,
+            venue=venue,
+            name="New name",
+            description="description",
+            offererAddress=venue.offererAddress,
+        )
+
+        data = {
+            "address": {
+                "city": "Rio",
+                "latitude": LATITUDE,
+                "longitude": LONGITUDE,
+                "postalCode": "12345",
+                "street": "666 rue du bug",
+                "label": "",
+                "isManualEdition": True,
+                "isVenueAddress": False,
+            }
+        }
+        client_session = client.with_session_auth("user@example.com")
+
+        # First call to create the address
+        response = client_session.patch(f"/offers/{offer.id}", json=data)
+
+        assert response.status_code == 200, response.json
+
+        # Second should not fail
+        # this was once a bug as the address could not be recreated (constraint)
+        # nor fetched (because float<->decimal approximation made the match on coords fails)
+        response = client_session.patch(f"/offers/{offer.id}", json=data)
+
+        assert response.status_code == 200, response.json
+        assert response.json["id"] == offer.id
+
     def test_patch_offer_with_extra_data_should_not_remove_extra_data(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
