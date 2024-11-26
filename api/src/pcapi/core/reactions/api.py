@@ -1,11 +1,6 @@
-import datetime
-
-from sqlalchemy.orm import aliased
 from sqlalchemy.orm import joinedload
 
-from pcapi import settings
 from pcapi.core.bookings import models as bookings_models
-from pcapi.core.categories.subcategories_v2 import SEANCE_CINE
 from pcapi.core.offers import models as offers_models
 from pcapi.core.reactions import models as reactions_models
 from pcapi.core.users.models import User
@@ -48,42 +43,29 @@ def update_or_create_reaction(
     return reaction
 
 
-SUBCATEGORY_IDS_WITH_REACTION_AVAILABLE = [SEANCE_CINE.id]
-
-
-def get_booking_with_available_reactions(user_id: int) -> list[bookings_models.Booking]:
-    cooldown_datetime = datetime.datetime.utcnow() - datetime.timedelta(
-        seconds=settings.SUGGEST_REACTION_COOLDOWN_IN_SECONDS
-    )
-
-    offer_reaction = aliased(reactions_models.Reaction)
-    product_reaction = aliased(reactions_models.Reaction)
+def get_bookings_with_available_reactions(user_id: int) -> list[bookings_models.Booking]:
 
     bookings_loaded_query = bookings_models.Booking.query.options(
         joinedload(bookings_models.Booking.stock)
+        .load_only(
+            offers_models.Stock.id,
+        )
         .joinedload(offers_models.Stock.offer)
-        .load_only(offers_models.Offer.name)
-        .joinedload(offers_models.Offer.product)
-        .joinedload(offers_models.Product.productMediations)
-    ).options(
-        joinedload(bookings_models.Booking.stock)
-        .joinedload(offers_models.Stock.offer)
-        .joinedload(offers_models.Offer.mediations)
+        .load_only(
+            offers_models.Offer.id,
+            offers_models.Offer.productId,
+            offers_models.Offer.subcategoryId,
+            offers_models.Offer.name,
+        )
+        .joinedload(offers_models.Offer.mediations),
+        joinedload(bookings_models.Booking.user).joinedload(User.reactions),
     )
 
-    return (
+    bookings: list[bookings_models.Booking] = (
         bookings_loaded_query.filter(
             bookings_models.Booking.userId == user_id,
             bookings_models.Booking.status == bookings_models.BookingStatus.USED,
-            bookings_models.Booking.dateUsed <= cooldown_datetime,
-        )
-        # Only include available subcategories
-        .join(bookings_models.Booking.stock)
-        .join(offers_models.Stock.offer)
-        .filter(offers_models.Offer.subcategoryId.in_(SUBCATEGORY_IDS_WITH_REACTION_AVAILABLE))
-        # Exclude bookings with reactions
-        .join(offer_reaction, offer_reaction.offerId == offers_models.Offer.id, isouter=True)
-        .join(product_reaction, product_reaction.productId == offers_models.Offer.productId, isouter=True)
-        .filter(offer_reaction.id.is_(None), product_reaction.id.is_(None))
-        .order_by(bookings_models.Booking.dateUsed.desc())
+        ).order_by(bookings_models.Booking.dateUsed.desc())
     ).all()
+
+    return [booking for booking in bookings if booking.enable_pop_up_reaction]

@@ -169,6 +169,7 @@ class BookingReponse(BaseModel):
     stock: BookingStockResponse
     total_amount: int
     token: str | None
+    enable_pop_up_reaction: bool
     userReaction: ReactionTypeEnum | None
     activationCode: BookingActivationCodeResponse | None
     externalBookings: list[ExternalBookingResponse] | None

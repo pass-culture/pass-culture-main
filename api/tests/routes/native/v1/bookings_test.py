@@ -761,6 +761,7 @@ class GetBookingsTest:
 
         used2_json = next(booking for booking in response.json["ended_bookings"] if booking["id"] == used2.id)
         assert used2_json == {
+            "enablePopUpReaction": False,
             "userReaction": None,
             "activationCode": None,
             "cancellationDate": None,
@@ -869,6 +870,22 @@ class GetBookingsTest:
 
         assert response.status_code == 200
         assert response.json["ongoing_bookings"][0]["userReaction"] == "LIKE"
+
+    def test_get_bookings_returns_enable_pop_up_reaction(self, client):
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.SEANCE_CINE.id,
+        )
+        booking = booking_factories.UsedBookingFactory(
+            stock__offer=offer,
+            dateUsed=datetime.utcnow() - timedelta(seconds=60 * 24 * 3600),
+        )
+        client = client.with_token(booking.user.email)
+        with assert_num_queries(2):
+            # select user, booking, offer
+            response = client.get("/native/v1/bookings")
+
+        assert response.status_code == 200
+        assert response.json["ongoing_bookings"][0]["enablePopUpReaction"] == True
 
     def test_get_bookings_returns_stock_price_and_price_category_label(self, client):
         now = datetime.utcnow()
