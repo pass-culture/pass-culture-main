@@ -88,7 +88,9 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   // validation is tested in getValidationSchema
   // and it's not possible as is to test it here
   /* istanbul ignore next: DEBT, TO FIX */
-  const minQuantity = stocks.length > 0 ? stocks[0].bookingsQuantity : 0
+  const bookingsQuantity = stocks.length > 0 ? stocks[0].bookingsQuantity : 0
+  const hasBookings = bookingsQuantity > 0
+  const minQuantity = mode === OFFER_WIZARD_MODE.EDITION ? (hasBookings ? bookingsQuantity : 0) : 1
   const isDisabled = isOfferDisabled(offer.status)
   const useOffererAddressAsDataSourceEnabled = useActiveFeature(
     'WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE'
@@ -151,6 +153,11 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     }
   }
 
+  // TODO: for some reasons we cant use yup to make validation
+  // happen or not - see conditions to support stock deletion.
+  // No matter what, yup.when() always returns stockId as undefined
+  // so this is a workaround to pass its value.
+  const stockId = stocks.length > 0 ? stocks[0].id : undefined
   const formik = useFormik({
     initialValues: buildInitialValues(
       offer,
@@ -158,7 +165,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       useOffererAddressAsDataSourceEnabled
     ),
     onSubmit,
-    validationSchema: getValidationSchema(mode, minQuantity),
+    validationSchema: getValidationSchema(mode, bookingsQuantity, stockId),
   })
 
   useNotifyFormError({
@@ -196,6 +203,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       await api.deleteStock(formik.values.stockId)
       await mutate([GET_OFFER_QUERY_KEY, offer.id])
       formik.resetForm({ values: STOCK_THING_FORM_DEFAULT_VALUES })
+      setStocks([])
       notify.success('Le stock a été supprimé.')
     } catch {
       notify.error('Une erreur est survenue lors de la suppression du stock.')

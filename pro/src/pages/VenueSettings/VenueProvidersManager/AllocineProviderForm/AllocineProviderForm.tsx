@@ -101,6 +101,7 @@ export const AllocineProviderForm = ({
               label="Nombre de places/séance"
               className={styles['nb-places-input']}
               isOptional
+              min={1}
             />
           </FormLayout.Row>
           <FormLayout.Row>

@@ -7,7 +7,8 @@ export const MAX_STOCKS_QUANTITY = 1000000
 export const getValidationSchema = (
   mode: OFFER_WIZARD_MODE,
   /* istanbul ignore next: DEBT, TO FIX */
-  minQuantity: number
+  bookingsQuantity: number,
+  stockId?: number,
 ) => {
   const validationSchema = {
     price: yup
@@ -21,7 +22,10 @@ export const getValidationSchema = (
       .number()
       .nullable()
       .typeError('Doit être un nombre')
-      .min(0, 'Doit être positif')
+      .min(
+        mode === OFFER_WIZARD_MODE.EDITION ? 0 : 1,
+        mode === OFFER_WIZARD_MODE.EDITION ? 'Doit être positif' : 'Veuillez indiquer un nombre supérieur à 0'
+      )
       .max(
         MAX_STOCKS_QUANTITY,
         'Veuillez modifier la quantité. Celle-ci ne peut pas être supérieure à 1 million'
@@ -30,18 +34,15 @@ export const getValidationSchema = (
     isDuo: yup.boolean(),
   }
 
-  if (minQuantity !== 0) {
+  if (mode === OFFER_WIZARD_MODE.EDITION && bookingsQuantity > 0) {
     validationSchema.quantity = validationSchema.quantity.min(
-      minQuantity,
-      'Quantité trop faible'
+      bookingsQuantity,
+      'Veuillez indiquer un nombre supérieur ou égal au nombre de réservations'
     )
   }
 
-  return yup.object().when('stockId', {
-    // Do not validate if there is no stock in edition
-    // (so you can delete the last stock of a published offer)
-    is: (stockId: string | undefined) =>
-      mode === OFFER_WIZARD_MODE.CREATION || stockId !== undefined,
-    then: (schema) => schema.shape(validationSchema),
-  })
+  // Do not validate if there is no stock in edition
+  // (so you can delete the last stock of a published offer)
+  const shouldApplyValidationSchema = mode === OFFER_WIZARD_MODE.CREATION || stockId !== undefined
+  return yup.object().shape(shouldApplyValidationSchema ? validationSchema : {})
 }
