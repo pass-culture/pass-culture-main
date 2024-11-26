@@ -1,4 +1,5 @@
 from decimal import Decimal
+import typing
 
 from geoalchemy2 import Geometry
 import sqlalchemy as sa
@@ -35,6 +36,13 @@ class Address(PcObject, Base, Model):
     @property
     def fullAddress(self) -> str:
         return f"{self.street} {self.postalCode} {self.city}" if self.street else f"{self.postalCode} {self.city}"
+
+    def field_exists_and_has_changed(self, field: str, value: typing.Any) -> typing.Any:
+        if field not in type(self).__table__.columns:
+            raise ValueError(f"Unknown field {field} for model {type(self)}")
+        if isinstance(getattr(self, field), Decimal):
+            return str(getattr(self, field)) != value
+        return getattr(self, field) != value
 
     __table_args__ = (
         sa.Index(
