@@ -43,7 +43,7 @@
                      target="_blank"
                      title="Ouvrir le dossier DS">{{ update_request.dsApplicationId }} <i class="bi bi-box-arrow-up-right"></i></a>
                 </td>
-                <td>{{ update_request.status | format_dms_application_status }}</td>
+                <td>{{ update_request.status | format_dms_application_status_badge }}</td>
                 <td>{{ update_request.dateLastStatusUpdate | format_date_time }}</td>
                 <td>
                   {% if update_request.dateLastUserMessage %}
