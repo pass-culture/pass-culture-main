@@ -75,10 +75,10 @@ Pour récupérer les ids de certaines offres en local, on peut utiliser un index
 
 - Créer un fichier `.env.development.local` dans le dossier `pro/src` et renseigner le nom de l’index dans la variable `VITE_ALGOLIA_COLLECTIVE_OFFERS_INDEX`
 
-- Créer un fichier `.env.local.secret`
+- Créer un fichier `.env.local.secret` dans le dossier `api` et renseigner les variables suivantes :
 
 ```
-ALGOLIA_COLLECTIVE_OFFERS_INDEX_NAME=<votre_nom>-collective-offers
+ALGOLIA_COLLECTIVE_OFFER_TEMPLATES_INDEX_NAME=<votre_nom>-collective-offers
 ALGOLIA_TRIGGER_INDEXATION=1
 ALGOLIA_API_KEY=<demander l’api key>
 ALGOLIA_APPLICATION_ID=testingHXXTDUE7H0
