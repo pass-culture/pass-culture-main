@@ -1,6 +1,7 @@
 {% macro display_selector(name, options, class) %}
   <div class="pc-display-selector {{ class }}"
-       data-pc-input-name="{{ name }}">
+       data-pc-input-name="{{ name }}"
+       data-pc-save-state="true">
     {% for text, tooltip, value in options %}
       <div class="form-check form-check-inline">
         <input class="form-check-input"
