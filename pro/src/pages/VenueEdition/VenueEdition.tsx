@@ -61,10 +61,8 @@ export const VenueEdition = (): JSX.Element | null => {
   }
 
   if (
-    venueQuery.isLoading ||
     venueTypesQuery.isLoading ||
     offererQuery.isLoading ||
-    !venue ||
     !offerer ||
     !venueTypes
   ) {
@@ -80,16 +78,16 @@ export const VenueEdition = (): JSX.Element | null => {
       key: 'individual',
       label: 'Pour le grand public',
       url: generatePath('/structures/:offererId/lieux/:venueId', {
-        offererId: String(venue.managingOfferer.id),
-        venueId: String(venue.id),
+        offererId: String(venue?.managingOfferer.id),
+        venueId: String(venue?.id),
       }),
     },
     {
       key: 'collective',
       label: 'Pour les enseignants',
       url: generatePath('/structures/:offererId/lieux/:venueId/collectif', {
-        offererId: String(venue.managingOfferer.id),
-        venueId: String(venue.id),
+        offererId: String(venue?.managingOfferer.id),
+        venueId: String(venue?.id),
       }),
     },
   ]
@@ -109,7 +107,7 @@ export const VenueEdition = (): JSX.Element | null => {
   const titleText =
     activeStep === 'collective'
       ? 'Page dans ADAGE'
-      : !venue.isPermanent
+      : !venue?.isPermanent
         ? 'Page adresse'
         : 'Page sur l’application'
 
@@ -118,7 +116,7 @@ export const VenueEdition = (): JSX.Element | null => {
       <div>
         <FormLayout>
           <h1 className={styles['header']}>{titleText}</h1>
-          {venuesOptions.length > 1 && venue.isPermanent && (
+          {venuesOptions.length > 1 && venue?.isPermanent && (
             <>
               <FormLayout.Row>
                 <FieldLayout
@@ -143,14 +141,16 @@ export const VenueEdition = (): JSX.Element | null => {
             </>
           )}
         </FormLayout>
-        <VenueEditionHeader
-          venue={venue}
-          offerer={offerer}
-          venueTypes={venueTypes}
-          key={venueId}
-        />
+        {venue && (
+          <VenueEditionHeader
+            venue={venue}
+            offerer={offerer}
+            venueTypes={venueTypes}
+            key={venueId}
+          />
+        )}
 
-        {!venue.isPermanent && (
+        {!venue?.isPermanent && (
           <Tabs
             tabs={tabs}
             selectedKey={activeStep}
@@ -163,7 +163,12 @@ export const VenueEdition = (): JSX.Element | null => {
             path="collectif/*"
             element={<CollectiveDataEdition venue={venue} />}
           />
-          <Route path="*" element={<VenueEditionFormScreen venue={venue} />} />
+          {venue && (
+            <Route
+              path="*"
+              element={<VenueEditionFormScreen venue={venue} />}
+            />
+          )}
         </Routes>
       </div>
     </Layout>
