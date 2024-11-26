@@ -78,10 +78,7 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # select features
         num_queries += 1  # select booking
         num_queries += 1  # check pricing exists
-        num_queries += 1  # select stock
-        num_queries += 1  # select offer
         num_queries += 1  # select user
-        num_queries += 1  # select venue
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=token))
             assert response.status_code == 200
@@ -133,12 +130,9 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # select features
         num_queries += 1  # select booking
         num_queries += 1  # check pricing exists
-        num_queries += 1  # select stock
-        num_queries += 1  # select offer
         num_queries += 1  # select user
         num_queries += 1  # select price_category
         num_queries += 1  # select price_category_label
-        num_queries += 1  # select venue
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=booking_token))
             assert response.status_code == 200
@@ -181,8 +175,6 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # select features
         num_queries += 1  # select booking
         num_queries += 1  # check pricing exists
-        num_queries += 1  # select stock
-        num_queries += 1  # select venue
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=booking_token))
             assert response.status_code == 403
