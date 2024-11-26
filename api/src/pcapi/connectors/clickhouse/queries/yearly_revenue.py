@@ -30,7 +30,7 @@ class CollectiveAndIndividualRevenue(IndividualRevenue, CollectiveRevenue):
 
 class AggregatedRevenue(pydantic_v1.BaseModel):
     revenue: CollectiveAndIndividualRevenue | CollectiveRevenue | IndividualRevenue
-    expected_revenue: CollectiveAndIndividualRevenue | CollectiveRevenue | IndividualRevenue
+    expected_revenue: CollectiveAndIndividualRevenue | CollectiveRevenue | IndividualRevenue | None
 
     class Config:
         extra = "forbid"
