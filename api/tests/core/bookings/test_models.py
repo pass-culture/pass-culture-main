@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+from datetime import timezone
 from decimal import Decimal
 
 from dateutil.relativedelta import relativedelta
@@ -13,6 +14,9 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
+from pcapi.core.offers.factories import OfferFactory
+from pcapi.core.offers.factories import ProductFactory
+import pcapi.core.reactions.factories as reactions_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.models import db
@@ -107,6 +111,92 @@ def test_too_many_bookings_postgresql_exception_not_executed():
     # → Shouldn't raise an error as the new status is reimbursed and the check shouldn't take place
     repository.save(booking2)
     assert booking2.quantity == 2
+
+
+class BookingPopUpReactionTest:
+    @pytest.mark.parametrize(
+        "subcategory_id",
+        [
+            (subcategories.SEANCE_CINE.id),
+            (subcategories.LIVRE_PAPIER.id),
+            (subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id),
+            (subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id),
+        ],
+    )
+    def test_enable_pop_up_reaction_product_subcategories(self, subcategory_id):
+        offer = OfferFactory(
+            product=ProductFactory(subcategoryId=subcategory_id),
+        )
+        booking = factories.UsedBookingFactory(
+            stock__offer=offer,
+            dateUsed=datetime.utcnow() - timedelta(seconds=60 * 24 * 3600),
+        )
+        assert booking.enable_pop_up_reaction == True
+
+    @pytest.mark.parametrize(
+        "subcategory_id, pop_up_enabled",
+        [
+            (subcategories.SEANCE_CINE.id, True),
+            (subcategories.LIVRE_PAPIER.id, True),
+            (subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, True),
+            (subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id, True),
+            (subcategories.ACHAT_INSTRUMENT.id, False),
+        ],
+    )
+    def test_enable_pop_up_reaction_offer_subcategories(self, subcategory_id, pop_up_enabled):
+        offer = OfferFactory(
+            subcategoryId=subcategory_id,
+        )
+        booking = factories.UsedBookingFactory(
+            stock__offer=offer,
+            dateUsed=datetime.utcnow() - timedelta(seconds=60 * 24 * 3600),
+        )
+        assert booking.enable_pop_up_reaction == pop_up_enabled
+
+    @pytest.mark.parametrize(
+        "subcategory_id, date_used_seconds, pop_up_enabled",
+        [
+            (subcategories.SEANCE_CINE.id, 24 * 3600, True),
+            (subcategories.SEANCE_CINE.id, 23 * 3600, False),
+            (subcategories.LIVRE_PAPIER.id, 24 * 3600, False),
+            (subcategories.LIVRE_PAPIER.id, 31 * 24 * 3600, True),
+        ],
+    )
+    def test_enable_pop_up_reaction_in_time(self, subcategory_id, date_used_seconds, pop_up_enabled):
+        # Test pop up enabled
+        offer = OfferFactory(
+            product=ProductFactory(subcategoryId=subcategory_id),
+        )
+        booking = factories.UsedBookingFactory(
+            stock__offer=offer,
+            dateUsed=datetime.utcnow() - timedelta(seconds=date_used_seconds),
+        )
+        assert booking.enable_pop_up_reaction == pop_up_enabled
+
+    def test_enable_pop_up_reaction_product_with_user_reaction(self):
+        user = users_factories.BeneficiaryFactory()
+        product = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id)
+        reactions_factories.ReactionFactory(product=product, user=user)
+        offer = OfferFactory(product=product)
+        booking = factories.UsedBookingFactory(
+            user=user,
+            stock__offer=offer,
+            dateUsed=datetime.utcnow() - timedelta(seconds=31 * 24 * 3600),
+        )
+        assert booking.enable_pop_up_reaction == False
+
+    def test_enable_pop_up_reaction_offer_with_user_reaction(self):
+        user = users_factories.BeneficiaryFactory()
+        offer = OfferFactory(
+            subcategoryId=subcategories.SEANCE_CINE.id,
+        )
+        reactions_factories.ReactionFactory(offer=offer, user=user)
+        booking = factories.UsedBookingFactory(
+            user=user,
+            stock__offer=offer,
+            dateUsed=datetime.utcnow() - timedelta(seconds=24 * 3600),
+        )
+        assert booking.enable_pop_up_reaction == False
 
 
 class BookingIsConfirmedPropertyTest:
