@@ -22,7 +22,7 @@ import { useDispatch } from 'react-redux'
 
 import { SuggestionType } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import { setAdageQuery } from 'commons/store/adageFilter/reducer'
+import { setAdagePageSaved, setAdageQuery } from 'commons/store/adageFilter/reducer'
 import {
   ALGOLIA_API_KEY,
   ALGOLIA_APP_ID,
@@ -278,6 +278,7 @@ export const Autocomplete = ({
         onSubmit: ({ state }) => {
           refine(state.query)
           dispatch(setAdageQuery(state.query))
+          dispatch(setAdagePageSaved(0))
         },
         placeholder,
         plugins: [
