@@ -234,7 +234,9 @@ export const OfferSection = ({
                 },
                 {
                   title: 'Adresse',
-                  text: computeAddressDisplayName(offerData.address!, false),
+                  text: offerData.address
+                    ? computeAddressDisplayName(offerData.address, false)
+                    : '-',
                 },
               ]}
             />
