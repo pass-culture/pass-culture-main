@@ -6,7 +6,7 @@ import type { CollectiveAndIndividualRevenue } from './CollectiveAndIndividualRe
 import type { CollectiveRevenue } from './CollectiveRevenue';
 import type { IndividualRevenue } from './IndividualRevenue';
 export type AggregatedRevenue = {
-  expectedRevenue: (CollectiveAndIndividualRevenue | CollectiveRevenue | IndividualRevenue);
+  expectedRevenue?: (CollectiveAndIndividualRevenue | CollectiveRevenue | IndividualRevenue);
   revenue: (CollectiveAndIndividualRevenue | CollectiveRevenue | IndividualRevenue);
 };
 

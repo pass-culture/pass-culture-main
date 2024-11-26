@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 import pytest
+import time_machine
 
 from pcapi.core import testing
 import pcapi.core.educational.factories as educational_factories
@@ -14,7 +15,9 @@ from tests.connectors.clickhouse import fixtures
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
+
     @patch("pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query")
+    @time_machine.travel("2024-01-01")
     def test_get_statistics_from_one_venue(self, run_query, client):
         user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
@@ -43,6 +46,7 @@ class Returns200Test:
         }
 
     @patch("pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query")
+    @time_machine.travel("2024-01-01")
     def test_get_statistics_from_multiple_venues(self, run_query, client):
         user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
@@ -73,6 +77,7 @@ class Returns200Test:
         }
 
     @patch("pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query")
+    @time_machine.travel("2024-01-01")
     def test_get_statistics_multiple_years(self, run_query, client):
         user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
@@ -96,7 +101,6 @@ class Returns200Test:
         assert response.json == {
             "incomeByYear": {
                 "2022": {
-                    "expectedRevenue": {"collective": 22.12, "individual": 22.12, "total": 44.24},
                     "revenue": {"collective": 22.12, "individual": 22.12, "total": 44.24},
                 },
                 "2023": {},
@@ -108,6 +112,7 @@ class Returns200Test:
         }
 
     @patch("pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query")
+    @time_machine.travel("2024-01-01")
     def test_get_statistics_only_collective(self, run_query, client):
         user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
@@ -128,7 +133,6 @@ class Returns200Test:
         assert response.json == {
             "incomeByYear": {
                 "2022": {
-                    "expectedRevenue": {"collective": 22.12},
                     "revenue": {"collective": 22.12},
                 },
                 "2023": {},
@@ -140,6 +144,7 @@ class Returns200Test:
         }
 
     @patch("pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query")
+    @time_machine.travel("2024-01-01")
     def test_get_statistics_only_individual(self, run_query, client):
         user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
@@ -160,7 +165,6 @@ class Returns200Test:
         assert response.json == {
             "incomeByYear": {
                 "2022": {
-                    "expectedRevenue": {"individual": 22.12},
                     "revenue": {"individual": 22.12},
                 },
                 "2023": {},
