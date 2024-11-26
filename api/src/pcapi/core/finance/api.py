@@ -1297,6 +1297,7 @@ def _write_csv(
 def _generate_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Path:
     header = (
         "Lieux liés au compte bancaire",
+        "Identifiant humanisé des coordonnées bancaires",
         "Identifiant des coordonnées bancaires",
         "SIREN de la structure",
         "Nom de la structure - Libellé des coordonnées bancaires",
@@ -1335,6 +1336,7 @@ def _generate_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Path:
     row_formatter = lambda row: (
         ", ".join(str(venue_id) for venue_id in sorted(row.venue_ids)),
         human_ids.humanize(row.id),
+        str(row.id),
         _clean_for_accounting(row.offerer_siren),
         _clean_for_accounting(f"{row.offerer_name} - {row.label}"),
         _clean_for_accounting(row.iban),
@@ -1353,6 +1355,7 @@ def _clean_for_accounting(value: str) -> str:
 def _generate_payments_file(batch: models.CashflowBatch, only_caledonian: bool = False) -> pathlib.Path:
     batch_id = batch.id
     header = [
+        "Identifiant humanisé des coordonnées bancaires",
         "Identifiant des coordonnées bancaires",
         "SIREN de la structure",
         "Nom de la structure - Libellé des coordonnées bancaires",
@@ -1530,6 +1533,7 @@ def _payment_details_row_formatter(sql_row: typing.Any) -> tuple:
 
     return (
         human_ids.humanize(sql_row.bank_account_id),
+        str(sql_row.bank_account_id),
         _clean_for_accounting(sql_row.offerer_siren),
         _clean_for_accounting(f"{sql_row.offerer_name} - {sql_row.bank_account_label}"),
         booking_type,
@@ -1817,6 +1821,7 @@ def generate_invoices_and_debit_notes_legacy(batch: models.CashflowBatch) -> Non
 
 def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
     header = [
+        "Identifiant humanisé des coordonnées bancaires",
         "Identifiant des coordonnées bancaires",
         "Date du justificatif",
         "Référence du justificatif",
@@ -2019,10 +2024,9 @@ def _invoice_row_formatter(sql_row: typing.Any) -> tuple:
 
     ministry = getattr(sql_row, "ministry", "")
 
-    accounting_humanized_id = human_ids.humanize(sql_row.bank_account_id)
-
     return (
-        accounting_humanized_id,
+        human_ids.humanize(sql_row.bank_account_id),
+        str(sql_row.bank_account_id),
         sql_row.invoice_date.date().isoformat(),
         sql_row.invoice_reference,
         sql_row.pricing_line_category,
