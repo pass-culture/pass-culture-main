@@ -174,7 +174,7 @@ export const CollectiveOffersScreen = ({
             setSelectedOffer={onSetSelectedOffer}
             toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
             urlSearchFilters={urlSearchFilters}
-            isAtLeastOneOfferChecked={selectedOffers.length > 1}
+            isAtLeastOneOfferChecked={selectedOffers.length >= 1}
             isRestrictedAsAdmin={isRestrictedAsAdmin}
             offers={sortedOffers}
             onColumnHeaderClick={onColumnHeaderClick}

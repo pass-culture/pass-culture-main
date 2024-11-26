@@ -69,7 +69,7 @@ export const BaseCheckbox = forwardRef(
           })}
         >
           <input
-            ref={partialCheck ? innerRef : forwardedRef}
+            ref={forwardedRef ?? innerRef}
             aria-invalid={hasError}
             {...(ariaDescribedBy
               ? { 'aria-describedby': ariaDescribedBy }
