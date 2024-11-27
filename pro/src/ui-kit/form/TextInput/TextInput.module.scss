@@ -1,9 +1,22 @@
 // @use 'styles/mixins/_forms.scss' as forms;
 @use "styles/mixins/_rem.scss" as rem;
 
-.text-input-readonly {
-  display: flex;
-  align-items: center;
-  min-height: rem.torem(40px);
-  line-height: 1.3;
+.text-input {
+  &-readonly {
+    display: flex;
+    align-items: center;
+    min-height: rem.torem(40px);
+    line-height: 1.3;
+  }
+
+  &-group {
+    display: flex;
+    align-items: center;
+
+    &-extension {
+      display: flex;
+      margin-left: 1rem;
+    }
+  }
 }
+

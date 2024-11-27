@@ -32,6 +32,10 @@ export interface ButtonProps
    * Custom class name for the tooltip content.
    */
   tooltipContentClassName?: string
+  /**
+   * Custom class name for the icon.
+   */
+  iconClassName?: string
 }
 
 /**
@@ -68,6 +72,7 @@ export const Button = forwardRef(
       className,
       children,
       icon,
+      iconClassName,
       iconAlt,
       iconPosition = IconPositionEnum.LEFT,
       variant = ButtonVariant.PRIMARY,
@@ -93,7 +98,7 @@ export const Button = forwardRef(
           <SvgIcon
             src={icon}
             alt={iconAlt}
-            className={cn(styles['button-icon'], {
+            className={cn(styles['button-icon'], iconClassName, {
               [styles['has-tooltip']]: hasTooltip,
             })}
             width="20"
@@ -112,7 +117,7 @@ export const Button = forwardRef(
           <SvgIcon
             src={icon}
             alt={iconAlt}
-            className={styles['button-icon']}
+            className={cn(styles['button-icon'], iconClassName)}
             width="20"
           />
         )}
