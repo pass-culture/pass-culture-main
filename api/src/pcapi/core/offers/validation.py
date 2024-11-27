@@ -224,6 +224,28 @@ def check_stock_price(
             setattr(flask.request, cache_attribute, True)
 
 
+def _get_number_of_existing_stocks(offer_id: int) -> int:
+    return models.Stock.query.filter_by(offerId=offer_id).filter(models.Stock.isSoftDeleted == False).count()
+
+
+def check_stocks_quantity(quantity: int) -> None:
+    if quantity > models.Offer.MAX_STOCKS_PER_OFFER:
+        raise api_errors.ApiErrors(
+            {"stocks": [f"Le nombre maximum de stocks par offre est de {models.Offer.MAX_STOCKS_PER_OFFER}"]},
+            status_code=400,
+        )
+
+
+def check_stocks_quantity_with_previous_offer_stock(
+    stocks_to_create: list[serialization.StockCreationBodyModel] | list[serialization.StockEditionBodyModel],
+    offer: models.Offer,
+) -> None:
+    if stocks_to_create:
+        number_of_existing_stocks = _get_number_of_existing_stocks(offer.id)
+        quantity = number_of_existing_stocks + len(stocks_to_create)
+        check_stocks_quantity(quantity)
+
+
 def check_required_dates_for_stock(
     offer: models.Offer,
     beginning: datetime.datetime | None,

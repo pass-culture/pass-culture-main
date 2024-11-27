@@ -13,7 +13,6 @@ import pcapi.core.offerers.repository as offerers_repository
 from pcapi.core.offers import exceptions as offers_exceptions
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.models as offers_models
-import pcapi.core.offers.repository as offers_repository
 import pcapi.core.offers.validation as offers_validation
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
@@ -21,6 +20,7 @@ from pcapi.models.api_errors import ResourceGoneError
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
 from pcapi.routes.public.books_stocks import serialization
+from pcapi.routes.serialization import stock_serialize
 from pcapi.serialization import utils as serialization_utils
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.rest import check_user_has_access_to_offerer
@@ -78,12 +78,10 @@ def _get_existing_stocks_by_id(
 @login_required
 @spectree_serialize(
     on_success_status=201,
-    response_model=serialization.StocksResponseModel,
+    response_model=stock_serialize.StocksResponseModel,
     api=blueprint.pro_private_schema,
 )
-def upsert_stocks(
-    body: serialization.StocksUpsertBodyModel,
-) -> serialization.StocksResponseModel:
+def upsert_stocks(body: stock_serialize.StocksUpsertBodyModel) -> stock_serialize.StocksResponseModel:
     try:
         offerer = offerers_repository.get_by_offer_id(body.offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
@@ -115,16 +113,7 @@ def upsert_stocks(
 
     offers_validation.check_stocks_price(stocks_to_edit, offer)
     offers_validation.check_stocks_price(stocks_to_create, offer)
-    if stocks_to_create:
-        number_of_existing_stocks = offers_repository.get_offer_existing_stocks_count(body.offer_id)
-        if number_of_existing_stocks + len(stocks_to_create) > offers_models.Offer.MAX_STOCKS_PER_OFFER:
-            raise ApiErrors(
-                {
-                    "stocks": [
-                        "Le nombre maximum de stocks par offre est de %s" % offers_models.Offer.MAX_STOCKS_PER_OFFER
-                    ]
-                },
-            )
+    offers_validation.check_stocks_quantity_with_previous_offer_stock(stocks_to_create, offer)
 
     price_categories = {price_category.id: price_category for price_category in offer.priceCategories}
 
@@ -197,13 +186,13 @@ def upsert_stocks(
     except booking_exceptions.BookingIsNotUsed:
         raise ResourceGoneError({"booking": ["Cette contremarque n'a pas encore été validée"]})
 
-    return serialization.StocksResponseModel(stocks_count=len(upserted_stocks))
+    return stock_serialize.StocksResponseModel(stocks_count=len(upserted_stocks))
 
 
 @private_api.route("/stocks/<int:stock_id>", methods=["DELETE"])
 @login_required
-@spectree_serialize(response_model=serialization.StockIdResponseModel, api=blueprint.pro_private_schema)
-def delete_stock(stock_id: int) -> serialization.StockIdResponseModel:
+@spectree_serialize(response_model=stock_serialize.StockIdResponseModel, api=blueprint.pro_private_schema)
+def delete_stock(stock_id: int) -> stock_serialize.StockIdResponseModel:
     # fmt: off
     stock = (
         offers_models.Stock.queryNotSoftDeleted()
@@ -219,4 +208,4 @@ def delete_stock(stock_id: int) -> serialization.StockIdResponseModel:
         offers_api.delete_stock(stock, current_user.real_user.id, current_user.is_impersonated)
     except offers_exceptions.OfferEditionBaseException as error:
         raise ApiErrors(error.errors, status_code=400)
-    return serialization.StockIdResponseModel.from_orm(stock)
+    return stock_serialize.StockIdResponseModel.from_orm(stock)

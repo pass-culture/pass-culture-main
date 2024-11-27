@@ -843,6 +843,34 @@ class Returns400Test:
             ],
         }
 
+    @patch("pcapi.core.search.async_index_offer_ids")
+    @patch("pcapi.core.offers.models.Offer.MAX_STOCKS_PER_OFFER", 2)
+    def test_create_event_exceed_max_stock_quantity(self, mocked_async_index_offer_ids, client):
+        offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        shared_label = offers_factories.PriceCategoryLabelFactory(label="Shared", venue=offer.venue)
+        price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=shared_label, price=20)
+        beginning = datetime.datetime.utcnow() + relativedelta(days=10)
+
+        stock_data = {
+            "offerId": offer.id,
+            "stocks": [
+                {
+                    "priceCategoryId": price_cat.id,
+                    "beginningDatetime": format_into_utc_date(beginning),
+                    "bookingLimitDatetime": format_into_utc_date(beginning),
+                }
+                for _ in range(3)
+            ],
+        }
+
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        assert response.status_code == 400
+        assert response.json["stocks"] == ["Le nombre maximum de stocks par offre est de 2"]
+
     def test_update_thing_stock_without_price(self, client):
         offer = offers_factories.ThingOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
         existing_stock = offers_factories.StockFactory(offer=offer)

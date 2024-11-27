@@ -3,7 +3,6 @@ import decimal
 import logging
 import typing
 
-import pydantic.v1 as pydantic_v1
 from pydantic.v1 import Field
 from pydantic.v1 import condecimal
 from pydantic.v1.types import NonNegativeInt
@@ -15,13 +14,6 @@ from pcapi.utils.date import format_into_utc_date
 
 
 logger = logging.getLogger(__name__)
-
-
-class StocksResponseModel(BaseModel):
-    stocks_count: int
-
-    class Config:
-        json_encoders = {datetime: format_into_utc_date}
 
 
 class StockCreationBodyModel(BaseModel):
@@ -50,28 +42,6 @@ class StockEditionBodyModel(BaseModel):
     class Config:
         alias_generator = to_camel
         extra = "forbid"
-
-
-class StockIdResponseModel(BaseModel):
-    id: int
-
-    class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = True
-
-
-class StocksUpsertBodyModel(BaseModel):
-    offer_id: int
-    if typing.TYPE_CHECKING:
-        stocks: list[StockCreationBodyModel | StockEditionBodyModel]
-    else:
-        stocks: pydantic_v1.conlist(
-            StockCreationBodyModel | StockEditionBodyModel, min_items=1, max_items=models.Offer.MAX_STOCKS_PER_OFFER
-        )
-
-    class Config:
-        alias_generator = to_camel
 
 
 class UpdateVenueStockBodyModel(BaseModel):
