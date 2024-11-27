@@ -1,25 +1,19 @@
-@use "styles/mixins/_rem.scss" as rem;
-
-$body-line-height: var(--typography-body-line-height);
-$body-font-size: var(--typography-body-font-size);
-$caption-line-height: var(--typography-body-accent-xs-line-height);
-
 @mixin body() {
   font-family: var(--typography-body-font-family), system-ui, sans-serif;
   font-size: var(--typography-body-font-size);
   line-height: var(--typography-body-line-height);
 }
 
-@mixin body-italic() {
-  font-family: var(--typography-body-italic-font-family), system-ui, sans-serif;
-  font-size: var(--typography-body-italic-font-size);
-  line-height: var(--typography-body-italic-line-height);
-}
-
 @mixin body-accent() {
   font-family: var(--typography-body-accent-font-family), system-ui, sans-serif;
   font-size: var(--typography-body-accent-font-size);
   line-height: var(--typography-body-accent-line-height);
+}
+
+@mixin body-italic() {
+  font-family: var(--typography-body-italic-font-family), system-ui, sans-serif;
+  font-size: var(--typography-body-italic-font-size);
+  line-height: var(--typography-body-italic-line-height);
 }
 
 @mixin body-italic-semi-bold() {
@@ -56,9 +50,9 @@ $caption-line-height: var(--typography-body-accent-xs-line-height);
 }
 
 @mixin button() {
-  font-family: var(--typography-button-font-family), system-ui, sans-serif;
-  font-size: var(--typography-button-font-size);
-  line-height: var(--typography-button-line-height);
+  font-family: var(--typography-body-font-family), system-ui, sans-serif;
+  font-size: var(--typography-body-font-size);
+  line-height: var(--typography-body-line-height);
 }
 
 @mixin title1() {

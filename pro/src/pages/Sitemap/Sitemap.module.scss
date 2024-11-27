@@ -15,7 +15,7 @@
   }
 
   &-title {
-    @include fonts.body-semi-bold;
+    @include fonts.body-accent;
   }
 }
 
@@ -27,7 +27,7 @@
 }
 
 .sitemap-link {
-  @include fonts.body-semi-bold;
+  @include fonts.body-accent;
 
   text-decoration: underline;
 }

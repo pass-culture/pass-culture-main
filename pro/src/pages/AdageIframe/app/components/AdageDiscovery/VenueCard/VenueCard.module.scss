@@ -68,13 +68,13 @@ $venue-image-width: rem.torem(276px);
   word-break: break-word;
 
   &-name {
-    @include fonts.body-semi-bold;
+    @include fonts.body-accent;
 
     overflow: hidden;
   }
 
   &-distance {
-    @include fonts.body-semi-bold-xs;
+    @include fonts.body-accent-xs;
 
     color: var(--color-grey-dark);
     text-transform: uppercase;

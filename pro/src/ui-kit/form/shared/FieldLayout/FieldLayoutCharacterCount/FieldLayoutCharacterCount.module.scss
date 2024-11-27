@@ -1,7 +1,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .field-layout-character-count {
-  @include fonts.body-semi-bold-xs;
+  @include fonts.body-accent-xs;
 
   color: var(--color-grey-dark);
 }

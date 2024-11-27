@@ -56,7 +56,7 @@
   }
 
   &-count {
-    @include fonts.body-semi-bold;
+    @include fonts.body-accent;
 
     font-size: rem.torem(24px);
     line-height: rem.torem(22px);

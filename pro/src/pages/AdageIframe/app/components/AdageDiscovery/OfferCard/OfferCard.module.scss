@@ -99,7 +99,7 @@ $offer-image-width: rem.torem(216px);
 }
 
 .offer-name {
-  @include fonts.body-semi-bold;
+  @include fonts.body-accent;
 
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -113,11 +113,11 @@ $offer-image-width: rem.torem(216px);
   margin-bottom: rem.torem(8px);
 
   &-name {
-    @include fonts.body-semi-bold-xs;
+    @include fonts.body-accent-xs;
   }
 
   &-distance {
-    @include fonts.body-semi-bold-xs;
+    @include fonts.body-accent-xs;
 
     color: var(--color-grey-dark);
     text-transform: uppercase;

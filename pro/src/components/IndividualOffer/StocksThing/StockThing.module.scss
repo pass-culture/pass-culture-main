@@ -17,7 +17,7 @@
 }
 
 .mandatory {
-  @include fonts.body-semi-bold-xs;
+  @include fonts.body-accent-xs;
 
   color: var(--color-grey-dark);
 }

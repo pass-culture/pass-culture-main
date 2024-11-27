@@ -23,7 +23,7 @@
   }
 
   &-small-label &-label {
-    @include fonts.body-semi-bold-xs;
+    @include fonts.body-accent-xs;
 
     margin-bottom: forms.$label-small-space-before-input;
   }
@@ -61,7 +61,7 @@
   }
 
   &-input-description {
-    @include fonts.body-semi-bold-xs;
+    @include fonts.body-accent-xs;
 
     color: var(--color-grey-dark);
   }

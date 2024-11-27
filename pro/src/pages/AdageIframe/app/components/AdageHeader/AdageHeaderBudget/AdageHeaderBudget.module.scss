@@ -9,7 +9,7 @@
   width: 100%;
 
   &-link {
-    @include fonts.body-semi-bold-xs;
+    @include fonts.body-accent-xs;
 
     display: block;
     margin-bottom: rem.torem(4px);

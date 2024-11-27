@@ -47,7 +47,7 @@
 .bookings-date-count {
   margin: rem.torem(16px) 0;
 
-  @include fonts.body-semi-bold-xs;
+  @include fonts.body-accent-xs;
 }
 
 .date-select-table {
@@ -58,7 +58,7 @@
   overflow: scroll;
 
   &-header {
-    @include fonts.body-semi-bold-xs;
+    @include fonts.body-accent-xs;
   }
 }
 
@@ -73,7 +73,7 @@
 }
 
 .table-header {
-  @include fonts.body-semi-bold-xs;
+  @include fonts.body-accent-xs;
 
   &:first-child {
     padding-left: rem.torem(28px);
@@ -91,7 +91,7 @@
 .bookings-day {
   width: 4em;
 
-  @include fonts.body-semi-bold;
+  @include fonts.body-accent;
 
   text-decoration: none;
   text-transform: capitalize;

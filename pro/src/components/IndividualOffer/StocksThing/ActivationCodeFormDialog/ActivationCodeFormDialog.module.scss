@@ -24,7 +24,7 @@
   }
 
   .activation-codes-upload-button-caption {
-    @include fonts.body-semi-bold-xs;
+    @include fonts.body-accent-xs;
 
     margin-top: rem.torem(16px);
     color: var(--color-grey-dark);

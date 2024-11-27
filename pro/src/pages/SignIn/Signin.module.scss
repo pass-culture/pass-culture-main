@@ -4,7 +4,7 @@
 @use "styles/variables/_size.scss" as size;
 
 .mandatory {
-  @include fonts.body-semi-bold-xs;
+  @include fonts.body-accent-xs;
 
   color: var(--color-grey-dark);
   margin-bottom: rem.torem(16px);

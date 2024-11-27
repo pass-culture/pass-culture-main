@@ -53,7 +53,7 @@ $action-gap: rem.torem(10px);
   }
 
   &-title {
-    @include fonts.body-semi-bold;
+    @include fonts.body-accent;
 
     color: var(--color-input-text-color);
     line-height: fonts.$body-line-height;
@@ -198,13 +198,13 @@ $action-gap: rem.torem(10px);
     }
 
     &-switchLabel {
-      @include fonts.body-semi-bold-xs;
+      @include fonts.body-accent-xs;
 
       margin-top: rem.torem(8px);
     }
 
     &-required {
-      @include fonts.body-semi-bold-xs;
+      @include fonts.body-accent-xs;
     }
 
     &-label {

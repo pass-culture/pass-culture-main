@@ -42,7 +42,7 @@ $banner-height: rem.torem(124px);
     align-items: center;
 
     &-count {
-      @include fonts.body-semi-bold-xs;
+      @include fonts.body-accent-xs;
     }
   }
 

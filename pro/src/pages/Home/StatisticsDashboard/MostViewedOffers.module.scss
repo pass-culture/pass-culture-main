@@ -12,7 +12,7 @@
 }
 
 .caption {
-  @include fonts.body-semi-bold-xs;
+  @include fonts.body-accent-xs;
 }
 
 .top-offers {
@@ -27,7 +27,7 @@
   gap: rem.torem(16px);
 
   &-rank {
-    @include fonts.body-semi-bold;
+    @include fonts.body-accent;
   }
 
   &-thumbnail {
@@ -48,5 +48,5 @@
 }
 
 .offer-title {
-  @include fonts.body-semi-bold-xs;
+  @include fonts.body-accent-xs;
 }

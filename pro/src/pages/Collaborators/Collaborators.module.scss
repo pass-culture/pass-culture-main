@@ -75,7 +75,7 @@
     min-width: rem.torem(365px);
 
     th {
-      @include fonts.body-semi-bold-xs;
+      @include fonts.body-accent-xs;
 
       padding-bottom: rem.torem(16px);
       vertical-align: middle;

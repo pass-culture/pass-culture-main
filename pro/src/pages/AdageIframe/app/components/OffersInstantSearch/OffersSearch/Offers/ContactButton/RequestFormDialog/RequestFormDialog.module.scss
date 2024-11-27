@@ -68,7 +68,7 @@
       }
 
       &-contact {
-        @include fonts.body-semi-bold;
+        @include fonts.body-accent;
 
         display: block;
         margin-top: rem.torem(16px);

@@ -12,7 +12,7 @@
 }
 
 .adage-tag {
-  @include fonts.body-semi-bold-xs;
+  @include fonts.body-accent-xs;
 
   background-color: var(--color-background-secondary);
   border: none;

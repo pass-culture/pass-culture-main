@@ -19,6 +19,6 @@
   }
 
   &-bold-text {
-    @include fonts.body-semi-bold;
+    @include fonts.body-accent;
   }
 }
