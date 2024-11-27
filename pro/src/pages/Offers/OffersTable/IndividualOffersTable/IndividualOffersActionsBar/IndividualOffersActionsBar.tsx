@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSelector } from 'react-redux'
 import { mutate, useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -8,6 +9,7 @@ import { SearchFiltersParams } from 'commons/core/Offers/types'
 import { serializeApiFilters } from 'commons/core/Offers/utils/serializer'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
+import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { computeActivationSuccessMessage } from 'components/OffersTable/utils/computeActivationSuccessMessage'
 import { computeSelectedOffersLabel } from 'components/OffersTable/utils/computeSelectedOffersLabel'
@@ -17,22 +19,19 @@ import fullValidateIcon from 'icons/full-validate.svg'
 import { GET_OFFERS_QUERY_KEY } from 'pages/Offers/OffersRoute'
 import { computeDeletionErrorMessage } from 'pages/Offers/utils/computeDeletionErrorMessage'
 import { computeDeletionSuccessMessage } from 'pages/Offers/utils/computeDeletionSuccessMessage'
+import { computeIndividualApiFilters } from 'pages/Offers/utils/computeIndividualApiFilters'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 
 import { DeleteConfirmDialog } from './DeleteConfirmDialog'
 import { IndividualDeactivationConfirmDialog } from './IndividualDeactivationConfirmDialog'
-import { selectCurrentOffererId } from 'commons/store/user/selectors'
-import { useSelector } from 'react-redux'
-import { computeIndividualApiFilters } from 'pages/Offers/utils/computeIndividualApiFilters'
 
 export type IndividualOffersActionsBarProps = {
   areAllOffersSelected: boolean
   clearSelectedOffers: () => void
   selectedOffers: { id: number; status: OfferStatus }[]
   toggleSelectAllCheckboxes: () => void
-  getUpdateOffersStatusMessage: (selectedOfferIds: number[]) => string
   canDelete: boolean
   canPublish: boolean
   canDeactivate: boolean
@@ -130,7 +129,6 @@ export const IndividualOffersActionsBar = ({
   clearSelectedOffers,
   toggleSelectAllCheckboxes,
   areAllOffersSelected,
-  getUpdateOffersStatusMessage,
   canDelete,
   canPublish,
   canDeactivate,
@@ -183,14 +181,7 @@ export const IndividualOffersActionsBar = ({
   }
 
   const handleActivate = async () => {
-    const updateOfferStatusMessage = getUpdateOffersStatusMessage(
-      selectedOffers.map((offer) => offer.id)
-    )
-    if (!updateOfferStatusMessage) {
-      await handleUpdateOffersStatus(true)
-    } else {
-      notify.error(updateOfferStatusMessage)
-    }
+    await handleUpdateOffersStatus(true)
   }
 
   const handleDeactivateOffers = async () => {

@@ -101,6 +101,7 @@ vi.mock('apiClient/api', () => ({
   api: {
     listOfferersNames: vi.fn().mockReturnValue({}),
     deleteDraftOffers: vi.fn(),
+    patchAllOffersActiveStatus: vi.fn(),
   },
 }))
 
@@ -539,14 +540,14 @@ describe('IndividualOffersScreen', () => {
   })
 
   describe('on click on select all offers checkbox', () => {
-    it('should display display error message when trying to activate draft offers', async () => {
+    it('should activate only inactive offers when trying to activate draft or active offers', async () => {
       const offers = [
         listOffersOfferFactory({
           isActive: false,
           status: OfferStatus.DRAFT,
         }),
         listOffersOfferFactory({
-          isActive: false,
+          isActive: true,
           status: OfferStatus.ACTIVE,
         }),
         listOffersOfferFactory({
@@ -563,9 +564,13 @@ describe('IndividualOffersScreen', () => {
       await userEvent.click(screen.getByLabelText('Tout sélectionner'))
       await userEvent.click(screen.getByText('Publier'))
 
-      expect(mockNotifyError).toHaveBeenCalledWith(
-        'Vous ne pouvez pas publier des brouillons depuis cette liste'
+      expect(mockNotifyPending).toHaveBeenCalledWith(
+        'Une offre est en cours d’activation, veuillez rafraichir dans quelques instants'
       )
+      expect(api.patchAllOffersActiveStatus).toHaveBeenCalledWith({
+        isActive: true,
+        offererId: '1',
+      })
     })
 
     it('should check all validated offers checkboxes', async () => {

@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -11,18 +12,16 @@ import {
 } from 'commons/core/FirebaseEvents/constants'
 import { useQuerySearchFilters } from 'commons/core/Offers/hooks/useQuerySearchFilters'
 import { useNotification } from 'commons/hooks/useNotification'
+import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import fullTrashIcon from 'icons/full-trash.svg'
 import strokeTrashIcon from 'icons/stroke-trash.svg'
 import { GET_OFFERS_QUERY_KEY } from 'pages/Offers/OffersRoute'
 import { computeDeletionErrorMessage } from 'pages/Offers/utils/computeDeletionErrorMessage'
 import { computeDeletionSuccessMessage } from 'pages/Offers/utils/computeDeletionSuccessMessage'
-import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
-
-import styles from 'styles/components/Cells.module.scss'
 import { computeIndividualApiFilters } from 'pages/Offers/utils/computeIndividualApiFilters'
-import { selectCurrentOffererId } from 'commons/store/user/selectors'
-import { useSelector } from 'react-redux'
+import styles from 'styles/components/Cells.module.scss'
+import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 
 interface DeleteDraftOffersProps {
   offer: ListOffersOfferResponseModel
