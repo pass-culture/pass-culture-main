@@ -32,7 +32,6 @@ vi.mock('apiClient/api', () => ({
 }))
 
 const mockLogEvent = vi.fn()
-const mockGetUpdateOffersStatusMessage = vi.fn()
 
 describe('ActionsBar', () => {
   let props: IndividualOffersActionsBarProps
@@ -43,7 +42,6 @@ describe('ActionsBar', () => {
 
   beforeEach(() => {
     props = {
-      getUpdateOffersStatusMessage: mockGetUpdateOffersStatusMessage,
       canDelete: true,
       canPublish: true,
       canDeactivate: true,
@@ -120,24 +118,6 @@ describe('ActionsBar', () => {
     expect(props.clearSelectedOffers).toHaveBeenCalledTimes(1)
     expect(
       screen.getByText('2 offres ont bien été publiées')
-    ).toBeInTheDocument()
-  })
-
-  it('should not activate offers when a draft is selected', async () => {
-    mockGetUpdateOffersStatusMessage.mockReturnValueOnce(
-      'Vous ne pouvez pas publier des brouillons depuis cette liste'
-    )
-
-    renderActionsBar(props)
-
-    await userEvent.click(screen.getByText('Publier'))
-
-    expect(api.patchOffersActiveStatus).not.toHaveBeenCalled()
-    expect(props.clearSelectedOffers).not.toHaveBeenCalled()
-    expect(
-      screen.getByText(
-        'Vous ne pouvez pas publier des brouillons depuis cette liste'
-      )
     ).toBeInTheDocument()
   })
 

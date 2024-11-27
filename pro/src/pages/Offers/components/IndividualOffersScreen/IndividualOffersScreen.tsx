@@ -96,16 +96,6 @@ export const IndividualOffersScreen = ({
     applyUrlFiltersAndRedirect({ ...filters, page: DEFAULT_PAGE })
   }
 
-  const getUpdateOffersStatusMessage = (tmpSelectedOfferIds: number[]) => {
-    const selectedOffers = offers.filter((offer) =>
-      tmpSelectedOfferIds.includes(offer.id)
-    )
-    if (selectedOffers.some((offer) => offer.status === OFFER_STATUS_DRAFT)) {
-      return 'Vous ne pouvez pas publier des brouillons depuis cette liste'
-    }
-    return ''
-  }
-
   function onSetSelectedOffer(offer: ListOffersOfferResponseModel) {
     const matchingOffer = selectedOffers.find((selectedOffer) =>
       isSameOffer(offer, selectedOffer)
@@ -180,7 +170,6 @@ export const IndividualOffersScreen = ({
                   status: offer.status,
                 }))}
                 toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
-                getUpdateOffersStatusMessage={getUpdateOffersStatusMessage}
                 canDelete={canDelete}
                 canDeactivate={canDeactivate}
                 canPublish={canPublish}
