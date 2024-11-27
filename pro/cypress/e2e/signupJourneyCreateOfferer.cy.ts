@@ -1,3 +1,9 @@
+import { interceptSearch5Adresses } from '../support/helpers.ts'
+import {
+  MOCKED_BACK_ADDRESS_LABEL,
+  MOCKED_BACK_ADDRESS_STREET,
+} from '../support/constants.ts'
+
 describe('Signup journey with new venue', () => {
   let login = ''
   const mySiret = '12345678912345'
@@ -105,7 +111,9 @@ describe('Signup journey with new venue', () => {
     // TODO: Find a better way to wait for the offerer to be created
     cy.reload()
 
-    cy.contains('Votre structure est en cours de traitement par les équipes du pass Culture').should('be.visible')
+    cy.contains(
+      'Votre structure est en cours de traitement par les équipes du pass Culture'
+    ).should('be.visible')
     cy.wait('@getOfferers').its('response.statusCode').should('eq', 200)
     cy.findByText('First Venue').should('be.visible')
   })
@@ -144,15 +152,7 @@ describe('Signup journey with known venue', () => {
           body: addressInterceptionPayload,
         })
     ).as('search1Address')
-    cy.intercept(
-      'GET',
-      'https://api-adresse.data.gouv.fr/search/?limit=5&q=*',
-      (req) =>
-        req.reply({
-          statusCode: 200,
-          body: addressInterceptionPayload5,
-        })
-    ).as('search5Address')
+    interceptSearch5Adresses()
     cy.intercept({ method: 'GET', url: '/offerers/names' }).as('getOfferers')
     cy.intercept({
       method: 'GET',
@@ -195,12 +195,12 @@ describe('Signup journey with known venue', () => {
     cy.findByLabelText('Adresse postale *').clear()
     cy.findByLabelText('Adresse postale *').invoke(
       'val',
-      '89 Rue la Boétie 75008 Pari'
+      MOCKED_BACK_ADDRESS_LABEL.slice(0, MOCKED_BACK_ADDRESS_LABEL.length - 1)
     ) // To avoid being spammed by address search on each chars typed
 
     cy.findByLabelText('Adresse postale *').type('s') // previous search was too fast, this one raises suggestions
     cy.wait('@search5Address')
-    cy.findByRole('option', { name: '89 Rue la Boétie 75008 Paris' }).click()
+    cy.findByRole('option', { name: MOCKED_BACK_ADDRESS_LABEL }).click()
 
     cy.findByText('Étape suivante').click()
     cy.wait('@venue-types').its('response.statusCode').should('eq', 200)
@@ -314,7 +314,7 @@ function siretInterceptionPayload(mySiret: string, venueName: string) {
     name: venueName,
     active: true,
     address: {
-      street: '3 RUE DE VALOIS',
+      street: MOCKED_BACK_ADDRESS_STREET,
       postalCode: '75001',
       city: 'Paris',
     },
@@ -331,11 +331,11 @@ const addressInterceptionPayload = {
       type: 'Feature',
       geometry: { type: 'Point', coordinates: [2.337933, 48.863666] },
       properties: {
-        label: '3 Rue de Valois 75001 Paris',
+        label: MOCKED_BACK_ADDRESS_LABEL,
         score: 0.8136893939393939,
         housenumber: '3',
         id: '75101_9575_00003',
-        name: '3 Rue de Valois',
+        name: MOCKED_BACK_ADDRESS_STREET,
         postcode: '75001',
         citycode: '75101',
         x: 651428.82,
@@ -351,38 +351,6 @@ const addressInterceptionPayload = {
   ],
   attribution: 'BAN',
   licence: 'ETALAB-2.0',
-  query: '3 RUE DE VALOIS Paris 75001',
+  query: MOCKED_BACK_ADDRESS_LABEL,
   limit: 1,
-}
-
-const addressInterceptionPayload5 = {
-  type: 'FeatureCollection',
-  version: 'draft',
-  features: [
-    {
-      type: 'Feature',
-      geometry: { type: 'Point', coordinates: [2.308289, 48.87171] },
-      properties: {
-        label: '89 Rue la Boétie 75008 Paris',
-        score: 0.97351,
-        housenumber: '89',
-        id: '75108_5194_00089',
-        name: '89 Rue la Boétie',
-        postcode: '75008',
-        citycode: '75108',
-        x: 649261.94,
-        y: 6863742.69,
-        city: 'Paris',
-        district: 'Paris 8e Arrondissement',
-        context: '75, Paris, Île-de-France',
-        type: 'housenumber',
-        importance: 0.70861,
-        street: 'Rue la Boétie',
-      },
-    },
-  ],
-  attribution: 'BAN',
-  licence: 'ETALAB-2.0',
-  query: '89 Rue la Boétie 75008 Paris',
-  limit: 5,
 }
