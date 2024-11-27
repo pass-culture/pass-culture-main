@@ -41,10 +41,8 @@ from pcapi.utils.phone_number import ParsedPhoneNumber
 
 
 if typing.TYPE_CHECKING:
-    from pcapi.core.achievements.models import Achievement
     from pcapi.core.finance.models import Deposit
     from pcapi.core.offerers.models import UserOfferer
-    from pcapi.core.offers.models import Mediation
     from pcapi.core.offers.models import Offer
     from pcapi.core.permissions.models import BackOfficeUserProfile
     from pcapi.core.reactions.models import Reaction
@@ -154,7 +152,6 @@ class AccountState(enum.Enum):
 class User(PcObject, Base, Model, DeactivableMixin):
     __tablename__ = "user"
 
-    achievements: list["Achievement"] = orm.relationship("Achievement", back_populates="user")
     activity = sa.Column(sa.String(128), nullable=True)
     address = sa.Column(sa.Text, nullable=True)
     city = sa.Column(sa.String(100), nullable=True)

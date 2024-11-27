@@ -1,5 +1,6 @@
 from datetime import datetime
 import enum
+import typing
 
 import sqlalchemy as sa
 from sqlalchemy import Column
@@ -9,12 +10,15 @@ from sqlalchemy import UniqueConstraint
 from sqlalchemy import func
 from sqlalchemy import orm
 
-from pcapi.core.bookings import models as bookings_models
-from pcapi.core.users import models as users_models
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 import pcapi.utils.db as db_utils
+
+
+if typing.TYPE_CHECKING:
+    from pcapi.core.bookings.models import Booking
+    from pcapi.core.users.models import User
 
 
 class AchievementEnum(enum.Enum):
@@ -33,14 +37,10 @@ class Achievement(PcObject, Base, Model):
     __tablename__ = "achievement"
 
     userId: int = Column(sa.BigInteger, ForeignKey("user.id"), index=True, nullable=False)
-    user: orm.Mapped["users_models.User"] = orm.relationship(
-        "users_models.User", back_populates="achievements", foreign_keys=[userId]
-    )
+    user: orm.Mapped["User"] = orm.relationship("User", foreign_keys=[userId], backref="achievements")
 
     bookingId: int = Column(sa.BigInteger, ForeignKey("booking.id"), nullable=False)
-    booking: orm.Mapped["bookings_models.Booking"] = orm.relationship(
-        "bookings_models.Booking", back_populates="achievements", foreign_keys=[bookingId]
-    )
+    booking: orm.Mapped["Booking"] = orm.relationship("Booking", foreign_keys=[bookingId], backref="achievements")
 
     name: AchievementEnum = Column(db_utils.MagicEnum(AchievementEnum), nullable=False)
     unlockedDate: datetime = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
