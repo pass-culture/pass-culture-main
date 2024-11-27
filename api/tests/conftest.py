@@ -11,6 +11,7 @@ import urllib.parse
 
 from alembic import command
 from alembic.config import Config
+from faker import Faker
 from flask import Flask
 from flask import g
 from flask.testing import FlaskClient
@@ -156,6 +157,11 @@ def clear_redis(app):
         yield
     finally:
         app.redis_client.flushdb()
+
+
+@pytest.fixture
+def faker():
+    return Faker()
 
 
 @pytest.fixture()

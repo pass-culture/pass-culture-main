@@ -59,7 +59,7 @@ def _redact_url(url: str | None) -> str | None:
 
 def _wrapper(
     request_send_func: Callable,
-    request: requests.PreparedRequest,
+    request: requests.PreparedRequest,  # pylint: disable=redefined-outer-name
     log_info: bool,
     **kwargs: Any,
 ) -> requests.Response:
@@ -115,6 +115,13 @@ def delete(
         return session.request(method="DELETE", url=url, **kwargs)
 
 
+def request(
+    method: str, url: str, disable_synchronous_retry: bool = False, log_info: bool = True, **kwargs: Any
+) -> requests.Response:
+    with Session(disable_synchronous_retry=disable_synchronous_retry, log_info=log_info) as session:
+        return session.request(method=method, url=url, **kwargs)
+
+
 class Session(requests.Session):
     def __init__(
         self, *args: Any, disable_synchronous_retry: bool = False, log_info: bool = True, **kwargs: Any
@@ -130,7 +137,9 @@ class Session(requests.Session):
         self.mount("https://", adapter)
         self.mount("http://", adapter)
 
-    def send(self, request: requests.PreparedRequest, **kwargs: Any) -> requests.Response:
+    def send(
+        self, request: requests.PreparedRequest, **kwargs: Any  # pylint: disable=redefined-outer-name
+    ) -> requests.Response:
         return _wrapper(super().send, request, self.log_info, **kwargs)
 
 
