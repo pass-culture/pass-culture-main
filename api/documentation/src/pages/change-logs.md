@@ -20,6 +20,12 @@ title: Pass Culture API change logs
 ## October 2024
 
 ### Addresses endpoints
+
+:::info
+New endpoints allow you to specify that your offer is available at a location different from your venue. Learn how to use them in [**our documentation**](/rest-api#tag/Addresses).
+:::
+
+
 - **Search Addresses:** You can now search for addresses in the pass Culture database using the [**Search Addresses endpoint**](/rest-api#tag/Addresses/operation/SearchAddresses)
 - **Get Address:** You can now retrieve an existing address from the pass Culture database with the [**Get Address endpoint**](/rest-api#tag/Addresses/operation/GetAddress)
 - **Create Address:** You can add an address to the pass Culture database with the [**Create Address endpoint**](/rest-api#tag/Addresses/operation/CreateAddress)
