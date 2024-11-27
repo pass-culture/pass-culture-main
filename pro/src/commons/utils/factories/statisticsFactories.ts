@@ -4,7 +4,8 @@ export const statisticsFactory = ({
   emptyYear = '',
   individualRevenueOnlyYear = '',
   collectiveRevenueOnlyYear = '',
-  collectiveAndIndividualRevenueYear = '2024',
+  collectiveAndIndividualRevenueYear = '',
+  lastYear = '',
 }): StatisticsModel => {
   const incomeByYear = {
     ...(emptyYear && {[emptyYear]: {
@@ -16,20 +17,24 @@ export const statisticsFactory = ({
         revenue: {
           individual: 1000,
         },
-        expectedRevenue: {
-          individual: 2000,
-        }
-      }
+        ...(lastYear === individualRevenueOnlyYear && {
+          expectedRevenue: {
+            individual: 2000,
+          },
+        }),
+      },
     }),
     ...(collectiveRevenueOnlyYear && {
       [collectiveRevenueOnlyYear]: {
         revenue: {
           collective: 3000,
         },
-        expectedRevenue: {
-          collective: 4000,
-        },
-      }
+        ...(lastYear === collectiveRevenueOnlyYear && {
+          expectedRevenue: {
+            collective: 4000,
+          },
+        }),
+      },
     }),
     [collectiveAndIndividualRevenueYear]: {
       revenue: {
@@ -37,13 +42,14 @@ export const statisticsFactory = ({
         individual: 510.23,
         collective: 10_920,
       },
-      expectedRevenue: {
-        total: 18_389.20,
-        individual: 7_832.10,
-        collective: 10_557.10,
-      },
+      ...(lastYear === collectiveAndIndividualRevenueYear && {
+        expectedRevenue: {
+          total: 18_389.2,
+          individual: 7_832.1,
+          collective: 10_557.1,
+        },
+      }),
     },
   }
-
   return { incomeByYear }
 }

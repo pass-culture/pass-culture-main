@@ -55,6 +55,7 @@ const MOCK_DATA: {
     individualRevenueOnlyYear: '1995',
     collectiveRevenueOnlyYear: '1996',
     collectiveAndIndividualRevenueYear: '1997',
+    lastYear: '1997',
   }),
 }
 
@@ -63,6 +64,7 @@ const LABELS = {
   venuesSelector: /Partenaire/,
   venuesSelectorError: /Vous devez sélectionner au moins un partenaire/,
   incomeResultsLabel: /Chiffre d’affaires total/,
+  forecastIncomeResultLabel: /Chiffre d’affaires total prévisionnel/,
   emptyScreen: /Vous n’avez aucune réservation/,
   mandatoryHelper: /\* sont obligatoires/,
 }
@@ -364,6 +366,37 @@ describe('Income', () => {
       )
 
       await waitFor(() => expect(screen.getByText(LABELS.emptyScreen)).toBeInTheDocument())
+    })
+
+    it('should display previsionnal income only for current year', async () => {
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
+      vi.spyOn(api, 'getStatistics').mockResolvedValue({
+        incomeByYear: MOCK_DATA.incomeByYear,
+      })
+
+      renderIncome()
+
+      await waitFor(() => screen.getAllByText(LABELS.incomeResultsLabel))
+
+      await userEvent.click(
+        screen.getByRole('button', {
+          name: `Afficher les revenus de l'année 1997`,
+        })
+      )
+
+      expect(
+        screen.getByText(LABELS.forecastIncomeResultLabel)
+      ).toBeInTheDocument()
+
+      await userEvent.click(
+        screen.getByRole('button', {
+          name: `Afficher les revenus de l'année 1996`,
+        })
+      )
+
+      expect(
+        screen.queryByText(LABELS.forecastIncomeResultLabel)
+      ).not.toBeInTheDocument()
     })
   })
 })
