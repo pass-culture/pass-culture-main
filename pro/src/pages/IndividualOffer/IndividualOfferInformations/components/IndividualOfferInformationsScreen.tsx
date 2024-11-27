@@ -126,15 +126,14 @@ export const IndividualOfferInformationsScreen = ({
 
     try {
       const shouldNotSendExtraData = isSearchByEanEnabled && !!offer.productId
-      const response = await api.patchOffer(
-        offer.id,
-        serializePatchOffer({
-          offer,
-          formValues,
-          shouldSendMail: sendWithdrawalMail,
-          shouldNotSendExtraData,
-        })
-      )
+      const requestBody = serializePatchOffer({
+        offer,
+        formValues,
+        shouldSendMail: sendWithdrawalMail,
+        shouldNotSendExtraData,
+      })
+      console.log('req ', { requestBody })
+      const response = await api.patchOffer(offer.id, requestBody)
 
       const receivedOfferId = response.id
       await mutate([GET_OFFER_QUERY_KEY, receivedOfferId])

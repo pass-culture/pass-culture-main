@@ -1,0 +1,2 @@
+export const MOCKED_BACK_ADDRESS_STREET = '3 RUE DE VALOIS'
+export const MOCKED_BACK_ADDRESS_LABEL = '3 Rue de Valois 75001 Paris'

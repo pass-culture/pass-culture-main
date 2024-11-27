@@ -1,6 +1,7 @@
 import { interceptSearch5Adresses, logAndGoToPage } from '../support/helpers.ts'
+import { MOCKED_BACK_ADDRESS_LABEL } from '../support/constants.ts'
 
-describe('Create individual offers', () => {
+describe('Create individual offers with OA', () => {
   let login = ''
 
   beforeEach(() => {
@@ -27,7 +28,7 @@ describe('Create individual offers', () => {
       'getVenuesForOfferer'
     )
     interceptSearch5Adresses()
-    cy.setFeatureFlags([{ name: 'WIP_ENABLE_OFFER_ADDRESS', isActive: false }])
+    cy.setFeatureFlags([{ name: 'WIP_ENABLE_OFFER_ADDRESS', isActive: true }])
   })
 
   it('I should be able to create an individual offer (event)', () => {
@@ -41,7 +42,7 @@ describe('Create individual offers', () => {
     cy.findByText('Étape suivante').click()
 
     cy.stepLog({ message: 'I fill in event details' })
-    cy.findByLabelText('Titre de l’offre *').type('Le Diner de Devs')
+    cy.findByLabelText('Titre de l’offre *').type('Event with OA')
     cy.findByLabelText('Description').type(
       'Une PO invite des développeurs à dîner...'
     )
@@ -67,35 +68,8 @@ describe('Create individual offers', () => {
       'have.value',
       'Tarif unique'
     )
-    cy.findByText('Ajouter un tarif').click()
-    cy.findByText('Ajouter un tarif').click()
 
-    cy.findByTestId('wrapper-priceCategories[0].label').within(() => {
-      // trouve le premier champ avec le label:
-      cy.findByLabelText('Intitulé du tarif *').type('Carré Or')
-    })
-    cy.findByTestId('wrapper-priceCategories[0].price').within(() => {
-      // trouve le premier champ avec le label:
-      cy.findByLabelText('Prix par personne *').type('100')
-    })
-
-    cy.findByTestId('wrapper-priceCategories[1].label').within(() => {
-      // trouve le deuxième champ avec le label:
-      cy.findByLabelText('Intitulé du tarif *').type('Fosse Debout')
-    })
-    cy.findByTestId('wrapper-priceCategories[1].price').within(() => {
-      // trouve le deuxième champ avec le label:
-      cy.findByLabelText('Prix par personne *').type('10')
-    })
-
-    cy.findByTestId('wrapper-priceCategories[2].label').within(() => {
-      // trouve le troisième champ avec le label:
-      cy.findByLabelText('Intitulé du tarif *').type('Fosse Sceptique')
-    })
-    // manque un data-testid ou un accessibility label
-    cy.get('[name="priceCategories[2].free"]').click()
-
-    cy.findByText('Accepter les réservations “Duo“').should('exist')
+    cy.findByLabelText('Prix par personne *').type('100')
 
     cy.stepLog({ message: 'I validate prices step' })
     cy.findByText('Enregistrer et continuer').click()
@@ -103,56 +77,19 @@ describe('Create individual offers', () => {
       responseTimeout: 60 * 1000 * 3,
     })
 
+    const fromDate = new Date()
+    fromDate.setDate(fromDate.getDate() + 2)
+    const fromDateStr = fromDate.toISOString().split('T')[0]
+    const toDate = new Date()
+    toDate.setDate(toDate.getDate() + 12)
+    const toDateStr = toDate.toISOString().split('T')[0]
     cy.stepLog({ message: 'I fill in recurrence' })
     cy.findByText('Ajouter une ou plusieurs dates').click()
-
-    cy.findByText('Toutes les semaines').click()
-    cy.findByLabelText('Vendredi').click()
-    cy.findByLabelText('Samedi').click()
-    cy.findByLabelText('Dimanche').click()
-    cy.findByLabelText('Du *').type('2030-05-01')
-    cy.findByLabelText('Au *').type('2030-09-30')
+    cy.findByText('Tous les jours').click()
+    cy.findByLabelText('Du *').type(fromDateStr)
+    cy.findByLabelText('Au *').type(toDateStr)
     cy.findByLabelText('Horaire 1 *').type('18:30')
-    cy.findByText('Ajouter un créneau').click()
-    cy.findByLabelText('Horaire 2 *').type('21:00')
-    cy.findByText('Ajouter d’autres places et tarifs').click()
-    cy.findByText('Ajouter d’autres places et tarifs').click()
-
-    cy.findByTestId(
-      'wrapper-quantityPerPriceCategories[0].priceCategory'
-    ).within(() => {
-      // trouve la première liste déroulante avec le label:
-      cy.findByLabelText('Tarif *').select('0,00\xa0€ - Fosse Sceptique')
-    })
-
-    cy.findByTestId('wrapper-quantityPerPriceCategories[1].quantity').within(
-      () => {
-        // trouve le deuxième champ avec le label:
-        cy.findByLabelText('Nombre de places').type('100')
-      }
-    )
-    cy.findByTestId(
-      'wrapper-quantityPerPriceCategories[1].priceCategory'
-    ).within(() => {
-      // trouve la euxième liste déroulante avec le label:
-      cy.findByLabelText('Tarif *').select('10,00\xa0€ - Fosse Debout')
-    })
-
-    cy.findByTestId('wrapper-quantityPerPriceCategories[2].quantity').within(
-      () => {
-        // trouve le troisième champ avec le label:
-        cy.findByLabelText('Nombre de places').type('20')
-      }
-    )
-    cy.findByTestId(
-      'wrapper-quantityPerPriceCategories[2].priceCategory'
-    ).within(() => {
-      // trouve la troisième liste déroulante avec le label:
-      cy.findByLabelText('Tarif *').select('100,00\xa0€ - Carré Or')
-    })
-
-    // manque un data-testid ou un placeholder ou un label accessible
-    cy.get('[name="bookingLimitDateInterval"]').type('3')
+    cy.findByLabelText('Tarif *').select('100,00\xa0€ - Tarif unique')
 
     cy.stepLog({ message: 'I validate recurrence step' })
     cy.findByText('Valider').click()
@@ -180,8 +117,35 @@ describe('Create individual offers', () => {
 
     cy.stepLog({ message: 'my new offer should be displayed' })
     cy.url().should('contain', '/offres')
-    cy.contains('Le Diner de Devs')
-    cy.contains('396 dates')
+    cy.contains('Event with OA')
+    cy.contains('11 dates')
+
+    cy.stepLog({ message: 'I want to update my offer' })
+    cy.findByRole('link', { name: 'Event with OA - éditer l’offre' }).click()
+    cy.findByText('Informations pratiques').click()
+    cy.url().should('contain', '/pratiques')
+    cy.contains('Adresse : 1 boulevard Poissonnière 75002 Paris')
+    cy.findByText('Modifier').click()
+    cy.url().should('contain', '/edition/pratiques')
+
+    cy.stepLog({ message: 'I update the OA' })
+    cy.findByLabelText(
+      'Mon Lieu – 1 boulevard Poissonnière 75002 Paris'
+    ).should('be.checked')
+    cy.findByLabelText('À une autre adresse').click()
+    cy.findByLabelText('Intitulé de la localisation').type(
+      'Libellé de mon adresse'
+    )
+
+    cy.findByLabelText('Adresse postale *').type(MOCKED_BACK_ADDRESS_LABEL)
+    cy.wait('@search5Address').its('response.statusCode').should('eq', 200)
+    cy.findByTestId('list').contains(MOCKED_BACK_ADDRESS_LABEL).click()
+    cy.findByText('Enregistrer les modifications').click()
+    cy.wait(['@getOffer', '@patchOffer'], {
+      responseTimeout: 60 * 1000 * 2,
+    })
+    cy.contains('Intitulé : Libellé de mon adresse')
+    cy.contains(`Adresse : ${MOCKED_BACK_ADDRESS_LABEL}`)
   })
 
   it('I should be able to create an individual offer (thing)', () => {
@@ -292,5 +256,40 @@ describe('Create individual offers', () => {
     cy.get('@ean').then((ean) => {
       cy.contains(ean.toString())
     })
+
+    cy.stepLog({ message: 'I want to update my offer' })
+    cy.findByRole('link', { name: offerTitle }).click()
+    cy.findByText('Informations pratiques').click()
+    cy.url().should('contain', '/pratiques')
+    cy.contains('Adresse : 1 boulevard Poissonnière 75002 Paris')
+    cy.findByText('Modifier').click()
+    cy.url().should('contain', '/edition/pratiques')
+
+    cy.stepLog({ message: 'I update the OA' })
+    cy.findByLabelText(
+      'Mon Lieu – 1 boulevard Poissonnière 75002 Paris'
+    ).should('be.checked')
+    cy.findByLabelText('À une autre adresse').click()
+    cy.findByLabelText('Intitulé de la localisation').type(
+      'Libellé de mon adresse custom'
+    )
+    cy.findByText('Vous ne trouvez pas votre adresse ?').click()
+
+    cy.stepLog({ message: 'I want to put a custom address' })
+    cy.findAllByLabelText('Adresse postale *').last().type('Place de la gare')
+    cy.findAllByLabelText('Code postal *').type('123123')
+    cy.findAllByLabelText('Ville *').type('Y')
+    cy.findAllByLabelText('Coordonnées GPS *')
+      .type('48.853320, 2.348979')
+      .blur()
+    cy.findByText('Vérifiez la localisation en cliquant ici').should(
+      'be.visible'
+    )
+    cy.findByText('Enregistrer les modifications').click()
+    cy.wait(['@getOffer', '@patchOffer'], {
+      responseTimeout: 60 * 1000 * 2,
+    })
+    cy.contains('Intitulé : Libellé de mon adresse custom')
+    cy.contains('Adresse : Place de la gare 12312 Y')
   })
 })

@@ -1,4 +1,8 @@
-import { logAndGoToPage } from '../support/helpers.ts'
+import { interceptSearch5Adresses, logAndGoToPage } from '../support/helpers.ts'
+import {
+  MOCKED_BACK_ADDRESS_LABEL,
+  MOCKED_BACK_ADDRESS_STREET,
+} from '../support/constants.ts'
 
 describe('Create and update venue', () => {
   let login: string
@@ -24,15 +28,7 @@ describe('Create and update venue', () => {
           body: addressInterceptionPayload,
         })
     ).as('searchAddress1')
-    cy.intercept(
-      'GET',
-      'https://api-adresse.data.gouv.fr/search/?limit=5&q=*',
-      (req) =>
-        req.reply({
-          statusCode: 200,
-          body: addressInterceptionPayload5,
-        })
-    ).as('searchAddress5')
+    interceptSearch5Adresses()
     cy.intercept({ method: 'POST', url: '/venues' }).as('postVenues')
   })
 
@@ -53,9 +49,9 @@ describe('Create and update venue', () => {
     cy.findByLabelText('Raison sociale *').type(venueNameWithoutSiret)
     cy.findByLabelText('Adresse postale *')
 
-    cy.findByLabelText('Adresse postale *').type('89 Rue la Boétie 75008 Paris')
-    cy.wait('@searchAddress5').its('response.statusCode').should('eq', 200)
-    cy.findByTestId('list').contains('89 Rue la Boétie 75008 Paris').click()
+    cy.findByLabelText('Adresse postale *').type(MOCKED_BACK_ADDRESS_LABEL)
+    cy.wait('@search5Address').its('response.statusCode').should('eq', 200)
+    cy.findByTestId('list').contains(MOCKED_BACK_ADDRESS_LABEL).click()
     cy.findByLabelText('Activité principale *').select('Centre culturel')
     cy.findByText('Visuel').click()
     cy.findByLabelText('Adresse email *').type('email@example.com')
@@ -116,7 +112,7 @@ describe('Create and update venue', () => {
           name: 'Ministère de la Culture',
           active: true,
           address: {
-            street: '3 RUE DE VALOIS',
+            street: MOCKED_BACK_ADDRESS_STREET,
             postalCode: '75001',
             city: 'Paris',
           },
@@ -241,11 +237,11 @@ const addressInterceptionPayload = {
       type: 'Feature',
       geometry: { type: 'Point', coordinates: [2.337933, 48.863666] },
       properties: {
-        label: '3 Rue de Valois 75001 Paris',
+        label: MOCKED_BACK_ADDRESS_LABEL,
         score: 0.8136893939393939,
         housenumber: '3',
         id: '75101_9575_00003',
-        name: '3 Rue de Valois',
+        name: MOCKED_BACK_ADDRESS_STREET,
         postcode: '75001',
         citycode: '75101',
         x: 651428.82,
@@ -261,38 +257,6 @@ const addressInterceptionPayload = {
   ],
   attribution: 'BAN',
   licence: 'ETALAB-2.0',
-  query: '3 RUE DE VALOIS Paris 75001',
+  query: MOCKED_BACK_ADDRESS_LABEL,
   limit: 1,
-}
-
-const addressInterceptionPayload5 = {
-  type: 'FeatureCollection',
-  version: 'draft',
-  features: [
-    {
-      type: 'Feature',
-      geometry: { type: 'Point', coordinates: [2.308289, 48.87171] },
-      properties: {
-        label: '89 Rue la Boétie 75008 Paris',
-        score: 0.97351,
-        housenumber: '89',
-        id: '75108_5194_00089',
-        name: '89 Rue la Boétie',
-        postcode: '75008',
-        citycode: '75108',
-        x: 649261.94,
-        y: 6863742.69,
-        city: 'Paris',
-        district: 'Paris 8e Arrondissement',
-        context: '75, Paris, Île-de-France',
-        type: 'housenumber',
-        importance: 0.70861,
-        street: 'Rue la Boétie',
-      },
-    },
-  ],
-  attribution: 'BAN',
-  licence: 'ETALAB-2.0',
-  query: '89 Rue la Boétie 75008 Paris',
-  limit: 5,
 }
