@@ -632,4 +632,17 @@ jobs:
           run: |
             cd /tests/coverage/api/tests/
             coverage combine .coverage.*
-            coverage report -m
+            coverage report -m > /tests/coverage_report.txt
+      - name: Post coverage report as PR comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const coverageReport = fs.readFileSync('${{ github.workspace }}/pass-culture-main/api/tests/coverage_report.txt', 'utf8');
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `### Rapport de Couverture\n\n\`\`\`\n${coverageReport}\n\`\`\``
+            });
