@@ -7049,10 +7049,10 @@ std-env@^3.7.0:
   resolved "https://registry.yarnpkg.com/std-env/-/std-env-3.7.0.tgz#c9f7386ced6ecf13360b6c6c55b8aaa4ef7481d2"
   integrity sha512-JPbdCEQLj1w5GilpiHAx3qJvFndqybBysA3qUOnznweH4QbNYUsW/ea8QzSrnh0vNsezMMw5bcVool8lM0gwzg==
 
-storybook-addon-remix-react-router@^3.0.0:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/storybook-addon-remix-react-router/-/storybook-addon-remix-react-router-3.0.1.tgz#e646c06592a5f00d5344ce96e4cd0b4df6300690"
-  integrity sha512-3tXvjDXFEZCfhGcoX6zdx6jRGH+QciDtSjmc0M8M4DlgEpwhflHwbS4J2NqaFmFTlsRXuh2+qjLfVzp4bkCixg==
+storybook-addon-remix-react-router@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/storybook-addon-remix-react-router/-/storybook-addon-remix-react-router-3.0.2.tgz#1bf9ea71af2f0af837d322c678d082d0c16b2f26"
+  integrity sha512-vSr7o+TYs2JY4m/elZm28UnLKeK/GQwmNnXWEnR5FyZ8Kcz1S1fPhsdWUjMEU9wRiAMjJwmEHiTtpjbZ4/b0mg==
   dependencies:
     compare-versions "^6.0.0"
     react-inspector "6.0.2"
