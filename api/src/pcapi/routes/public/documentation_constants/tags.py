@@ -5,7 +5,10 @@ from spectree import Tag
 BOOKINGS = Tag(name="Bookings", description="Endpoints to manage the bookings of an offer (event and product).")
 
 # ADDRESSES
-ADDRESSES = Tag(name="Addresses", description="[Beta] Endpoints to manage offers addresses")
+ADDRESSES = Tag(
+    name="Addresses",
+    description="Endpoints for managing addresses, allowing you to specify an offer location that differs from the venue's location.",
+)
 
 # EVENT OFFERS
 EVENT_OFFERS = Tag(

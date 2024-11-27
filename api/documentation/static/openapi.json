@@ -12592,7 +12592,7 @@
             "name": "Venues"
         },
         {
-            "description": "[Beta] Endpoints to manage offers addresses",
+            "description": "Endpoints for managing addresses, allowing you to specify an offer location that differs from the venue's location.",
             "externalDocs": null,
             "name": "Addresses"
         },
