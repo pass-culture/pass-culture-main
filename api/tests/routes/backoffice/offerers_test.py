@@ -116,7 +116,7 @@ class GetOffererTest(GetEndpointHelper):
         assert f"Code postal : {offerer.postalCode} " in content
         assert f"Adresse : {offerer.street} " in content
         assert "Peut créer une offre EAC : Oui" in content
-        assert "Présence CB dans les lieux : 0 OK / 0 KO " in content
+        assert "Présence CB dans les partenaires culturels : 0 OK / 0 KO " in content
         assert "Tags : Collectivité Top acteur " in content
         assert "Validation des offres : Suivre les règles" in content
         badges = html_parser.extract(response.data, tag="span", class_="badge")
@@ -168,7 +168,7 @@ class GetOffererTest(GetEndpointHelper):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        assert "Présence CB dans les lieux : 2 OK / 1 KO " in html_parser.content_as_text(response.data)
+        assert "Présence CB dans les partenaires culturels : 2 OK / 1 KO " in html_parser.content_as_text(response.data)
 
     def test_offerer_with_adage_venue_has_adage_data(self, authenticated_client):
         offerer = offerers_factories.OffererFactory(allowedOnAdage=True)
@@ -183,7 +183,7 @@ class GetOffererTest(GetEndpointHelper):
 
         assert "Peut créer une offre EAC : Oui" in html_parser.content_as_text(response.data)
         # One venue with adageId out of two physical venues
-        assert "Lieux cartographiés sur ADAGE : 1/2" in html_parser.content_as_text(response.data)
+        assert "Partenaires culturels cartographiés sur ADAGE : 1/2" in html_parser.content_as_text(response.data)
 
     def test_offerer_with_no_adage_venue_has_adage_data(self, authenticated_client, offerer):
         offerer = offerers_factories.OffererFactory(allowedOnAdage=True)
@@ -195,7 +195,7 @@ class GetOffererTest(GetEndpointHelper):
             assert response.status_code == 200
 
         assert "Peut créer une offre EAC : Oui" in html_parser.content_as_text(response.data)
-        assert "Lieux cartographiés sur ADAGE : 0/1" in html_parser.content_as_text(response.data)
+        assert "Partenaires culturels cartographiés sur ADAGE : 0/1" in html_parser.content_as_text(response.data)
 
     def test_offerer_with_no_individual_subscription_tab(self, authenticated_client, offerer):
         offerer_id = offerer.id
@@ -1658,17 +1658,17 @@ class GetOffererVenuesTest(GetEndpointHelper):
         assert rows[0]["Permanent"] == ""
         assert rows[0]["Nom"] == venue_2.name
         assert rows[0]["Activité principale"] == venue_2.venueTypeCode.value
-        assert not rows[0].get("Type de lieu")
+        assert not rows[0].get("Type de partenaire culturel")
         assert rows[0]["Présence web"] == "https://example.com https://pass.culture.fr"
         assert rows[0]["Offres cibles"] == "Indiv. et coll."
         assert rows[0]["Compte bancaire associé"] == ""
 
         assert rows[1]["ID"] == str(venue_1.id)
         assert rows[1]["SIRET"] == venue_1.siret
-        assert rows[1]["Permanent"] == "Lieu permanent"
+        assert rows[1]["Permanent"] == "Partenaire culturel permanent"
         assert rows[1]["Nom"] == venue_1.publicName
         assert rows[1]["Activité principale"] == venue_1.venueTypeCode.value
-        assert not rows[0].get("Type de lieu")
+        assert not rows[0].get("Type de partenaire culturel")
         assert rows[1]["Présence web"] == ""
         assert rows[1]["Offres cibles"] == ""
         assert rows[1]["Compte bancaire associé"] == "Compte actuel"
@@ -1690,10 +1690,10 @@ class GetOffererVenuesTest(GetEndpointHelper):
 
         assert rows[0]["ID"] == str(venue.id)
         assert rows[0]["RIDET"] == venue.ridet
-        assert rows[0]["Permanent"] == "Lieu permanent"
+        assert rows[0]["Permanent"] == "Partenaire culturel permanent"
         assert rows[0]["Nom"] == venue.publicName
         assert rows[0]["Activité principale"] == venue.venueTypeCode.value
-        assert not rows[0].get("Type de lieu")
+        assert not rows[0].get("Type de partenaire culturel")
         assert rows[0]["Présence web"] == ""
         assert rows[0]["Offres cibles"] == ""
         assert rows[0]["Compte bancaire associé"] == "Compte NC"
@@ -1819,7 +1819,7 @@ class GetOffererCollectiveDmsApplicationsTest(GetEndpointHelper):
         assert rows[0]["Date de dernière mise à jour"] == (
             datetime.datetime.utcnow() - datetime.timedelta(hours=1)
         ).strftime("%d/%m/%Y")
-        assert rows[0]["Lieu"] == venue_1.name
+        assert rows[0]["Partenaire culturel"] == venue_1.name
         assert rows[0]["SIRET"] == venue_1.siret
 
         assert rows[1]["ID"] == "36"
@@ -1830,7 +1830,7 @@ class GetOffererCollectiveDmsApplicationsTest(GetEndpointHelper):
         assert rows[1]["Date de dernière mise à jour"] == (
             datetime.datetime.utcnow() - datetime.timedelta(hours=1)
         ).strftime("%d/%m/%Y")
-        assert rows[1]["Lieu"] == venue_2.name
+        assert rows[1]["Partenaire culturel"] == venue_2.name
         assert rows[1]["SIRET"] == venue_2.siret
 
         assert rows[2]["ID"] == "37"
@@ -1841,7 +1841,7 @@ class GetOffererCollectiveDmsApplicationsTest(GetEndpointHelper):
         assert rows[2]["Date de dernière mise à jour"] == (
             datetime.datetime.utcnow() - datetime.timedelta(hours=1)
         ).strftime("%d/%m/%Y")
-        assert rows[2]["Lieu"] == venue_1.name
+        assert rows[2]["Partenaire culturel"] == venue_1.name
         assert rows[2]["SIRET"] == venue_1.siret
 
         assert rows[3]["ID"] == "38"
@@ -1852,7 +1852,7 @@ class GetOffererCollectiveDmsApplicationsTest(GetEndpointHelper):
         assert rows[3]["Date de dernière mise à jour"] == (
             datetime.datetime.utcnow() - datetime.timedelta(hours=1)
         ).strftime("%d/%m/%Y")
-        assert rows[3]["Lieu"] == ""
+        assert rows[3]["Partenaire culturel"] == ""
         assert rows[3]["SIRET"] == "12345678900003"
 
     def test_offerer_with_no_dms_adage_application(self, authenticated_client):
@@ -2166,7 +2166,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 in dms_adage_data
             )
             assert (
-                f"Dossier sans lieu SIRET : {venueless_application.siret} Statut du dossier DMS ADAGE : Accepté Date de dernière modification : {format_date_time(venueless_application.lastChangeDate)}"
+                f"Dossier sans partenaire culturel SIRET : {venueless_application.siret} Statut du dossier DMS ADAGE : Accepté Date de dernière modification : {format_date_time(venueless_application.lastChangeDate)}"
                 in dms_adage_data
             )
 
