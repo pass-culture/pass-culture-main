@@ -1933,9 +1933,18 @@ class UpdateOfferTest:
             assert offer.offererAddress == offerer_address
 
     def test_update_venue(self):
-        offer = factories.OfferFactory(offererAddress=None)
-        new_venue = offerers_factories.VenueFactory(managingOfferer=offer.venue.managingOfferer)
+        offerer = offerers_factories.OffererFactory()
+        offer_oa = offerers_factories.OffererAddressFactory(offerer=offerer)
+        venue_oa = offerers_factories.OffererAddressFactory(offerer=offerer)
+        offer = factories.OfferFactory(offererAddress=offer_oa)
+        offer_oa_id = offer.offererAddressId
+        new_venue = offerers_factories.VenueFactory(
+            managingOfferer=offer.venue.managingOfferer,
+            offererAddress=venue_oa,
+        )
+        venue_oa_id = new_venue.offererAddressId
         body = offers_schemas.UpdateOffer()
+        assert offer_oa_id != venue_oa_id
 
         updated_offer = api.update_offer(offer, body, venue=new_venue)
 
@@ -1944,7 +1953,7 @@ class UpdateOfferTest:
 
         assert updated_offer
         assert updated_offer.venueId == new_venue.id
-        assert not updated_offer.offererAddress
+        assert updated_offer.offererAddressId == offer_oa_id
 
     def test_update_offerer_address(self):
         new_offerer_address = offerers_factories.OffererAddressFactory(
