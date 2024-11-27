@@ -477,11 +477,10 @@ def update_collective_offer(
         raise
 
     with atomic():
-        updated_fields = _update_collective_offer(offer=offer_to_update, new_values=new_values, commit=False)
         if new_venue:
-            educational_models.CollectiveBooking.query.filter(
-                educational_models.CollectiveBooking.collectiveStockId == offer_to_update.collectiveStock.id
-            ).update({"venueId": new_venue.id}, synchronize_session="fetch")
+            move_collective_offer_venue(offer_to_update, new_venue)
+
+        updated_fields = _update_collective_offer(offer=offer_to_update, new_values=new_values, commit=False)
 
     educational_api_offer.notify_educational_redactor_on_collective_offer_or_stock_edit(
         offer_to_update.id,
@@ -1784,6 +1783,41 @@ def check_can_move_event_offer(offer: models.Offer) -> list[offerers_models.Venu
     if count_reimbursed_bookings > 0:
         raise exceptions.OfferHasReimbursedBookings(count_reimbursed_bookings)
 
+    return get_venues_with_same_pricing_point(offer)
+
+
+def check_can_move_collective_offer_venue(
+    collective_offer: educational_models.CollectiveOffer,
+) -> list[offerers_models.Venue]:
+    count_started_stocks = (
+        educational_models.CollectiveStock.query.with_entities(educational_models.CollectiveStock.id)
+        .filter(
+            educational_models.CollectiveStock.collectiveOfferId == collective_offer.id,
+            educational_models.CollectiveStock.startDatetime < datetime.datetime.utcnow(),
+        )
+        .count()
+    )
+    if count_started_stocks > 0:
+        raise exceptions.OfferEventInThePast(count_started_stocks)
+
+    count_reimbursed_bookings = (
+        educational_models.CollectiveBooking.query.with_entities(educational_models.CollectiveBooking.id)
+        .join(educational_models.CollectiveBooking.collectiveStock)
+        .filter(
+            educational_models.CollectiveStock.collectiveOfferId == collective_offer.id,
+            educational_models.CollectiveBooking.isReimbursed,
+        )
+        .count()
+    )
+    if count_reimbursed_bookings > 0:
+        raise exceptions.OfferHasReimbursedBookings(count_reimbursed_bookings)
+
+    return get_venues_with_same_pricing_point(collective_offer)
+
+
+def get_venues_with_same_pricing_point(
+    offer: models.Offer | educational_models.CollectiveOffer,
+) -> list[offerers_models.Venue]:
     venues_choices = (
         offerers_models.Venue.query.filter(
             offerers_models.Venue.managingOffererId == offer.venue.managingOffererId,
@@ -1924,6 +1958,77 @@ def move_event_offer(
 
     if notify_beneficiary:
         on_commit(partial(transactional_mails.send_email_for_each_ongoing_booking, offer))
+
+
+def move_collective_offer_venue(
+    collective_offer: educational_models.CollectiveOffer, destination_venue: offerers_models.Venue
+) -> None:
+    venue_choices = check_can_move_collective_offer_venue(collective_offer)
+
+    if destination_venue not in venue_choices:
+        raise exceptions.ForbiddenDestinationVenue()
+
+    destination_pricing_point_link = destination_venue.current_pricing_point_link
+    assert destination_pricing_point_link  # for mypy - it would not be in venue_choices without link
+    destination_pricing_point_id = destination_pricing_point_link.pricingPointId
+
+    collective_bookings = (
+        educational_models.CollectiveBooking.query.join(educational_models.CollectiveBooking.collectiveStock)
+        .outerjoin(
+            # max 1 row joined thanks to idx_uniq_collective_booking_id
+            finance_models.FinanceEvent,
+            sa.and_(
+                finance_models.FinanceEvent.collectiveBookingId == educational_models.CollectiveBooking.id,
+                finance_models.FinanceEvent.status.in_(
+                    (finance_models.FinanceEventStatus.PENDING, finance_models.FinanceEventStatus.READY)
+                ),
+            ),
+        )
+        .outerjoin(
+            # max 1 row joined thanks to idx_uniq_booking_id
+            finance_models.Pricing,
+            sa.and_(
+                finance_models.Pricing.collectiveBookingId == educational_models.CollectiveBooking.id,
+                finance_models.Pricing.status != finance_models.PricingStatus.CANCELLED,
+            ),
+        )
+        .options(
+            sa.orm.load_only(educational_models.CollectiveBooking.status),
+            sa.orm.contains_eager(educational_models.CollectiveBooking.finance_events).load_only(
+                finance_models.FinanceEvent.status
+            ),
+            sa.orm.contains_eager(educational_models.CollectiveBooking.pricings).load_only(
+                finance_models.Pricing.pricingPointId, finance_models.Pricing.status
+            ),
+        )
+        .filter(educational_models.CollectiveStock.collectiveOfferId == collective_offer.id)
+        .all()
+    )
+
+    with transaction():
+        collective_offer.venue = destination_venue
+        collective_offer.offererAddressId = destination_venue.offererAddressId
+        db.session.add(collective_offer)
+
+        for collective_booking in collective_bookings:
+            assert not collective_booking.isReimbursed
+            collective_booking.venueId = destination_venue.id
+            db.session.add(collective_booking)
+
+            # when offer has priced bookings, pricing point for destination venue must be the same as pricing point
+            # used for pricing (same as venue pricing point at the time pricing was processed)
+            pricing = collective_booking.pricings[0] if collective_booking.pricings else None
+            if pricing and pricing.pricingPointId != destination_pricing_point_id:
+                raise exceptions.BookingsHaveOtherPricingPoint()
+
+            finance_event = collective_booking.finance_events[0] if collective_booking.finance_events else None
+            if finance_event:
+                finance_event.venueId = destination_venue.id
+                finance_event.pricingPointId = destination_pricing_point_id
+                if finance_event.status == finance_models.FinanceEventStatus.PENDING:
+                    finance_event.status = finance_models.FinanceEventStatus.READY
+                    finance_event.pricingOrderingDate = finance_api.get_pricing_ordering_date(collective_booking)
+                db.session.add(finance_event)
 
 
 def update_used_stock_price(
