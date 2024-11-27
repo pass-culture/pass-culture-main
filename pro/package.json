@@ -52,7 +52,7 @@
     "classnames": "^2.5.1",
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
-    "design-system": "https://github.com/pass-culture/design-system.git#v0.0.12",
+    "design-system": "https://github.com/pass-culture/design-system.git#v0.0.14",
     "dompurify": "^3.1.7",
     "downshift": "^9.0.8",
     "eslint-plugin-cypress": "^4.1.0",
