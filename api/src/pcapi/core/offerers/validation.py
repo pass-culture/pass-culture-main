@@ -3,6 +3,7 @@ import typing
 from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.feature import FeatureToggle
 
 from . import models
 
@@ -71,13 +72,22 @@ def check_venue_edition(modifications: dict[str, typing.Any], venue: models.Venu
 
 def check_venue_can_be_linked_to_pricing_point(venue: models.Venue, pricing_point_id: int) -> None:
     if venue.siret and venue.id != pricing_point_id:
+        if not FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
+            raise ApiErrors(
+                errors={
+                    "pricingPointId": [
+                        "Ce lieu a un SIRET, vous ne pouvez donc pas choisir un autre lieu pour le calcul du barème de remboursement."
+                    ]
+                }
+            )
         raise ApiErrors(
             errors={
                 "pricingPointId": [
-                    "Ce lieu a un SIRET, vous ne pouvez donc pas choisir un autre lieu pour le calcul du barème de remboursement."
+                    "Ce partenaire culturel a un SIRET, vous ne pouvez donc pas choisir un autre partenaire culturel pour le calcul du barème de remboursement."
                 ]
             }
         )
+
     pricing_point = models.Venue.query.filter_by(id=pricing_point_id).one_or_none()
     if not pricing_point:
         raise ApiErrors(errors={"pricingPointId": ["Ce lieu n'existe pas."]})
