@@ -67,15 +67,11 @@ To be able to perform those actions, **you need to be given access to the `venue
 
 ### Understanding the key resources: `Offerers` and `Venues`
 
-An **`offerer`** corresponds to the **main company**, identified in the French administrative system by a **SIREN** (_système d'identification du répertoire des entreprises_).
+An **`offerer`** represents the **main company** in the French administrative system, identified by a **SIREN** (_Système d'Identification du Répertoire des Entreprises_).
 
-A `venue` is the offer location. It can be:
+A **`venue`** is an **entity responsible for managing offers**, such as a theater, concert hall, museum, bookshop, cinema, or concert producer. While it has a physical location, its primary purpose is to centralize a cultural partner's administrative information. In the French administrative system, it is identified by a **SIRET** (_Système d'Identification du Répertoire des Établissements_).
 
-* a physical selling point owned by the offerer in the case of physical product,
-* an address when the offer is a festival located in a field,
-* a digital address when the offer is digital.
-
-For instance, the shop Pass Culture Office is a `venue` (SIRET: *853 318 459 00049*), owned by the offerer Pass Culture (SIREN: *853 318 459*).
+For instance, the pass Culture Office is a `venue` (SIRET: *853 318 459 00049*), owned by the `offerer` pass Culture (SIREN: *853 318 459*).
 
 ### Gaining access to a `venue`
 

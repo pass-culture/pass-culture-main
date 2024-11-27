@@ -141,3 +141,78 @@ If you want to delete a booking :
     * You can’t cancel an individual booking, but you can invalidate it (the booking). When the token is invalidated: the reservation reverts to the previous status. e.g.: if a booking is `USED`. You invalidate it, the booking will be `CONFIRMED`.
 * For a product :
     * When the token is invalidated the reservation reverts to the previous status.
+
+## 📍 Offers location
+
+### General description
+
+Event and product offers are geotagged in the application using their location.
+
+You can specify an offer's location through different endpoints:
+
+- **📚 For Products:**
+  - At creation:
+    - [**Create Product Offer**](/rest-api#tag/Product-Offers/operation/PostProductOffer)
+    - [**Batch Upsert Product Offers by EAN**](/rest-api#tag/Product-Offer-Bulk-Operations/operation/PostProductOfferByEan)
+  - At update:
+    - [**Update Product Offer**](/rest-api#tag/Product-Offers/operation/EditProduct)
+    - [**Batch Upsert Product Offers by EAN**](/rest-api#tag/Product-Offer-Bulk-Operations/operation/PostProductOfferByEan)
+- **🎭 For Events:**
+  - At creation:
+    - [**Create Event Offer**](/rest-api#tag/Event-Offers/operation/PostEventOffer)
+  - At update:
+    - [**Update Event Offer**](/rest-api#tag/Event-Offers/operation/EditEvent)
+
+### Location types
+
+The offer's location is specified using the `Location` object, which supports three types:
+
+#### 1. `Location` of type `"physical"`
+
+A **`"physical"`** location indicates that **the offer shares the same address as the venue**. This is common for cultural partners selling product offers (e.g., a bookshop), where the offer's location usually matches the venue's location.
+
+Example of the **`Location`** object for a **`"physical"`** type:
+
+```json
+{
+  "type": "physical",
+  "venueId": 535
+}
+```
+
+#### 2. `Location` of type `"address"`
+
+:::tip
+You can manage addresses using the [**Addresses endpoints**](/rest-api#tags/Addresses)
+:::
+
+An **`"address"`** location indicates that **the offer’s address differs from the venue’s address**. This is relevant for event organizers like concert producers managing events at various external locations.
+
+Example of the **`Location`** object for a **`"address"`** type:
+
+```json
+{
+  "type": "address",
+  "venueId": 535,
+  "addressId": 123,
+  "addressLabel": "L'Olympia Paris"
+}
+```
+
+#### 3. `Location` of type `"digital"`
+
+A **`"digital"`** location signifies that the offer is digital and does not have a physical location. Instead, it includes a URL.
+
+Example of the **`Location`** object for a **`"digital"`** type:
+
+```json
+{
+  "type": "digital",
+  "venueId": 535,
+  "url": "https://link.to/my/offer"
+}
+```
+
+:::info
+For each location type, you must provide the **`venueId`** to identify the venue managing the offer.
+:::
