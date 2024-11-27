@@ -149,7 +149,7 @@
     }
 
     .button-icon:not(.has-tooltip) {
-      height: rem.torem(20px);
+      height: var(--typography-body-line-height);
       width: rem.torem(20px);
       margin-right: rem.torem(8px);
     }
@@ -169,7 +169,7 @@
     color: var(--color-black);
 
     .button-icon:not(.has-tooltip) {
-      height: rem.torem(16px);
+      height: var(--typography-body-xs-line-height);
       width: rem.torem(16px);
       margin-right: rem.torem(4px);
     }
