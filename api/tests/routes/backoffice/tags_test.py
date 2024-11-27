@@ -221,7 +221,7 @@ class ListTagsTest(GetEndpointHelper):
 
 class CreateTagButtonTest(button_helpers.ButtonHelper):
     needed_permission = perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS
-    button_label = "Créer un tag offres et lieux"
+    button_label = "Créer un tag offres et partenaires culturels"
 
     @property
     def path(self):

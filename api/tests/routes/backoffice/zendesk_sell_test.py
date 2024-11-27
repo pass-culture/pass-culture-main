@@ -52,7 +52,7 @@ class UpdateOffererOnZendeskSellTest(PostEndpointHelper):
         assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id, _external=True)
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "Cette entité juridique ne gère que des lieux virtuels"
+            == "Cette entité juridique ne gère que des partenaires culturels virtuels"
         )
 
         assert not testing.zendesk_sell_requests
@@ -183,10 +183,10 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
         assert response.status_code == 303
         assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
         assert html_parser.extract_alerts(authenticated_client.get(response.location).data) == [
-            "Attention : Plusieurs entités juridiques parentes possibles ont été trouvées pour ce lieu dans Zendesk Sell. "
+            "Attention : Plusieurs entités juridiques parentes possibles ont été trouvées pour ce partenaire culturel dans Zendesk Sell. "
             f"Identifiant Zendesk Sell : 123, Produit Offerer ID : {venue.managingOffererId}, SIREN : {venue.managingOfferer.siren} "
             f"Identifiant Zendesk Sell : 456, Produit Offerer ID : {venue.managingOffererId}, SIREN :",
-            "Le lieu a été mis à jour sur Zendesk Sell",
+            "Le partenaire culturel a été mis à jour sur Zendesk Sell",
         ]
 
         assert testing.zendesk_sell_requests == [
@@ -213,7 +213,7 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
         assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
         assert html_parser.extract_alerts(authenticated_client.get(response.location).data) == [
             "Une erreur 500 s'est produite lors de la recherche de l'entité juridique parente : test",
-            "Le lieu a été mis à jour sur Zendesk Sell",
+            "Le partenaire culturel a été mis à jour sur Zendesk Sell",
         ]
         assert testing.zendesk_sell_requests == [
             {
@@ -234,7 +234,7 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
         assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "Ce lieu est virtuel ou n'est pas ouvert au public"
+            == "Ce partenaire culturel est virtuel ou n'est pas ouvert au public"
         )
 
         assert not testing.zendesk_sell_requests
@@ -248,7 +248,7 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
         assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "Ce lieu est virtuel ou n'est pas ouvert au public"
+            == "Ce partenaire culturel est virtuel ou n'est pas ouvert au public"
         )
 
         assert not testing.zendesk_sell_requests
@@ -282,7 +282,7 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
         assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "Plusieurs lieux ont été trouvés dans Zendesk Sell, aucun ne peut donc être mis à jour : "
+            == "Plusieurs partenaires culturels ont été trouvés dans Zendesk Sell, aucun ne peut donc être mis à jour : "
             f"Identifiant Zendesk Sell : 123, Produit Venue ID : {venue.id}, SIRET : {venue.siret} "
             f"Identifiant Zendesk Sell : 456, Produit Venue ID : {venue.id}, SIRET :"
         )
@@ -301,7 +301,7 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
         assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "Le lieu n'a pas été trouvé dans Zendesk Sell"
+            == "Le partenaire culturel n'a pas été trouvé dans Zendesk Sell"
         )
 
         assert not testing.zendesk_sell_requests

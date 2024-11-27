@@ -172,7 +172,7 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Dernière validation"] == ""
         assert rows[0]["Dép."] == offers[0].venue.departementCode
         assert rows[0]["Entité juridique"] == offers[0].venue.managingOfferer.name
-        assert rows[0]["Lieu"] == offers[0].venue.name
+        assert rows[0]["Partenaire culturel"] == offers[0].venue.name
 
         if stock_data_expected:
             assert rows[0]["Stock réservé"] == "0"
@@ -231,7 +231,7 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Dernière validation"] == "22/02/2022"
         assert rows[0]["Dép."] == offers[1].venue.departementCode
         assert rows[0]["Entité juridique"] == offers[1].venue.managingOfferer.name
-        assert rows[0]["Lieu"] == offers[1].venue.name
+        assert rows[0]["Partenaire culturel"] == offers[1].venue.name
         assert rows[1]["ID"] == str(offers[2].id)
         assert rows[1]["Nom de l'offre"] == offers[2].name
 
@@ -1178,7 +1178,7 @@ class ListOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert rows[0]["Entité juridique"] == "Offerer Revue manuelle"
-        assert rows[0]["Lieu"] == "Venue"
+        assert rows[0]["Partenaire culturel"] == "Venue"
 
     def test_list_offers_with_venue_confidence_rule(self, client, pro_fraud_admin):
         rule = offerers_factories.ManualReviewVenueConfidenceRuleFactory(
@@ -1194,7 +1194,7 @@ class ListOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert rows[0]["Entité juridique"] == "Offerer"
-        assert rows[0]["Lieu"] == "Venue Revue manuelle"
+        assert rows[0]["Partenaire culturel"] == "Venue Revue manuelle"
 
     def test_list_offers_with_top_acteur_offerer(self, client, pro_fraud_admin):
         offer = offers_factories.OfferFactory(
@@ -1845,11 +1845,11 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert "Score data : 55 " in card_text
         assert "Raison de score faible : Prix Sous-catégorie Description de l'offre " in card_text
         assert "Entité juridique : Le Petit Rintintin Management" in card_text
-        assert "Lieu : Le Petit Rintintin" in card_text
+        assert "Partenaire culturel : Le Petit Rintintin" in card_text
         assert "Utilisateur de la dernière validation" not in card_text
         assert "Date de dernière validation" not in card_text
         assert "Resynchroniser l'offre dans Algolia" in card_text
-        assert "Modifier le lieu" not in card_text
+        assert "Modifier le partenaire culturel" not in card_text
 
         content = html_parser.content_as_text(response.data)
         assert "Auteur : Author" in content
@@ -1956,12 +1956,12 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert "Statut : Épuisée" in card_text
         assert "État : Validée" in card_text
         assert "Entité juridique : Le Petit Rintintin Management" in card_text
-        assert "Lieu : Le Petit Rintintin" in card_text
+        assert "Partenaire culturel : Le Petit Rintintin" in card_text
         assert "Adresse :" not in card_text  # no offererAddress
         assert "Utilisateur de la dernière validation" not in card_text
         assert "Date de dernière validation" not in card_text
         assert "Resynchroniser l'offre dans Algolia" in card_text
-        assert "Modifier le lieu" not in card_text
+        assert "Modifier le partenaire culturel" not in card_text
 
         content = html_parser.content_as_text(response.data)
         assert "Identifiant chez le fournisseur : pouet provider" in content
@@ -2294,7 +2294,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
 
         cards_text = html_parser.extract_cards_text(response.data)
         assert len(cards_text) == 1
-        assert "Modifier le lieu" in cards_text[0]
+        assert "Modifier le partenaire culturel" in cards_text[0]
 
     def test_get_offer_details_with_offerer_address(self, authenticated_client):
         address = geography_factories.AddressFactory(
@@ -2341,7 +2341,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         text = html_parser.extract_cards_text(response.data)[0]
-        assert "Lieu : Venue Revue manuelle" in text
+        assert "Partenaire culturel : Venue Revue manuelle" in text
 
     def test_collective_offer_with_top_acteur_offerer(self, authenticated_client):
         offer = offers_factories.OfferFactory(
@@ -2370,7 +2370,7 @@ class IndexOfferButtonTest(button_helpers.ButtonHelper):
 
 class MoveOfferVenueButtonTest(button_helpers.ButtonHelper):
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
-    button_label = "Modifier le lieu"
+    button_label = "Modifier le partenaire culturel"
 
     @property
     def path(self):
@@ -2461,7 +2461,7 @@ class EditOfferVenueTest(PostEndpointHelper):
         if not expected_error:
             assert (
                 html_parser.extract_alert(authenticated_client.get(response.location).data)
-                == f"L'offre a été déplacée vers le lieu {destination_venue.name}"
+                == f"L'offre a été déplacée vers le partenaire culturel {destination_venue.name}"
             )
 
             mocked_async_index_offer_ids.assert_called_once_with(
@@ -2530,8 +2530,8 @@ class EditOfferVenueTest(PostEndpointHelper):
             source_venue,
             venue_with_own_pricing_point,
             True,
-            expected_error="Le lieu de cette offre ne peut pas être modifié : "
-            "Il existe des réservations valorisées sur un autre point de valorisation que celui du nouveau lieu",
+            expected_error="Le partenaire culturel de cette offre ne peut pas être modifié : "
+            "Il existe des réservations valorisées sur un autre point de valorisation que celui du nouveau partenaire culturel",
         )
 
     @patch("pcapi.core.search.async_index_offer_ids")
@@ -2547,7 +2547,7 @@ class EditOfferVenueTest(PostEndpointHelper):
             venue_without_pricing_point,
             True,
             with_pricings=False,
-            expected_error="Le lieu de cette offre ne peut pas être modifié : Ce lieu n'est pas éligible au transfert de l'offre",
+            expected_error="Le partenaire culturel de cette offre ne peut pas être modifié : Ce partenaire culturel n'est pas éligible au transfert de l'offre",
         )
 
     def test_cant_move_when_offer_is_not_an_event(self, authenticated_client, venues_in_same_offerer):
@@ -2559,7 +2559,7 @@ class EditOfferVenueTest(PostEndpointHelper):
         assert response.status_code == 303
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "Le lieu de cette offre ne peut pas être modifié : L'offre n'est pas un évènement"
+            == "Le partenaire culturel de cette offre ne peut pas être modifié : L'offre n'est pas un évènement"
         )
 
     def test_cant_move_when_event_is_in_the_past(self, authenticated_client, venues_in_same_offerer):
@@ -2577,7 +2577,7 @@ class EditOfferVenueTest(PostEndpointHelper):
         assert response.status_code == 303
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "Le lieu de cette offre ne peut pas être modifié : L'évènement a déjà eu lieu pour 2 stocks"
+            == "Le partenaire culturel de cette offre ne peut pas être modifié : L'évènement a déjà eu lieu pour 2 stocks"
         )
 
     def test_cant_move_when_reimbursed_bookings(self, authenticated_client, venues_in_same_offerer):
@@ -2592,7 +2592,7 @@ class EditOfferVenueTest(PostEndpointHelper):
         assert response.status_code == 303
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "Le lieu de cette offre ne peut pas être modifié : 1 réservation est déjà remboursée sur cette offre"
+            == "Le partenaire culturel de cette offre ne peut pas être modifié : 1 réservation est déjà remboursée sur cette offre"
         )
 
     @patch("pcapi.core.search.async_index_offer_ids")
@@ -3368,6 +3368,10 @@ class DownloadBookingsXLSXTest(GetEndpointHelper):
 
     @pytest.mark.parametrize("is_oa_as_data_source_ff_active", (False, True))
     def test_download_bookings_xlsx(self, features, authenticated_client, is_oa_as_data_source_ff_active):
+        EXPECTED_COLUMN_NAME = {
+            True: "Structure",
+            False: "Lieu",
+        }
         offerer = offerers_factories.UserOffererFactory().offerer  # because of join on UserOfferers
         offer = offers_factories.EventOfferFactory(venue__managingOfferer=offerer)
         booking1 = bookings_factories.UsedBookingFactory(stock__offer=offer)
@@ -3377,12 +3381,13 @@ class DownloadBookingsXLSXTest(GetEndpointHelper):
         url = url_for(self.endpoint, offer_id=offer.id)
 
         features.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE = is_oa_as_data_source_ff_active
+        features.WIP_ENABLE_OFFER_ADDRESS = is_oa_as_data_source_ff_active
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
         sheet = self.reader_from_response(response)
-        assert sheet.cell(row=1, column=1).value == "Lieu"
+        assert sheet.cell(row=1, column=1).value == EXPECTED_COLUMN_NAME[is_oa_as_data_source_ff_active]
         assert sheet.cell(row=2, column=1).value == booking1.venue.name
         assert sheet.cell(row=3, column=1).value == booking2.venue.name
         assert sheet.cell(row=4, column=1).value == None

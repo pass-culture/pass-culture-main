@@ -129,7 +129,7 @@ class ListVenuesTest(GetEndpointHelper):
         assert rows[0]["Nom"] == venues[0].name
         assert rows[0]["Nom d'usage"] == venues[0].publicName
         assert rows[0]["Entité juridique"] == venues[0].managingOfferer.name
-        assert rows[0]["Permanent"] == "Lieu permanent"
+        assert rows[0]["Permanent"] == "Partenaire culturel permanent"
         assert rows[0]["Label"] == venues[0].venueLabel.label
         assert sorted(rows[0]["Tags"].split()) == sorted("Criterion_cinema Criterion_art".split())
         assert rows[0]["Date de création"] == venues[0].dateCreated.strftime("%d/%m/%Y")
@@ -347,7 +347,7 @@ class GetVenueTest(GetEndpointHelper):
         assert "Validation des offres : Suivre les règles" in response_text
 
         badges = html_parser.extract(response.data, tag="span", class_="badge")
-        assert "Lieu" in badges
+        assert "Partenaire culturel" in badges
         assert "Suspendu" not in badges
 
     def test_get_venue_with_adage_id(self, authenticated_client):
@@ -425,7 +425,7 @@ class GetVenueTest(GetEndpointHelper):
         assert "Site web : https://my.website.com" in response_text
 
         badges = html_parser.extract(response.data, tag="span", class_="badge")
-        assert "Lieu" in badges
+        assert "Partenaire culturel" in badges
         assert "Suspendu" not in badges
 
     @pytest.mark.parametrize(
@@ -799,7 +799,7 @@ class DeleteVenueTest(PostEndpointHelper):
         response = authenticated_client.get(expected_url)
         assert (
             html_parser.extract_alert(response.data)
-            == f"Le lieu {venue_to_delete_name} ({venue_to_delete_id}) a été supprimé"
+            == f"Le partenaire culturel {venue_to_delete_name} ({venue_to_delete_id}) a été supprimé"
         )
 
     def test_cant_delete_venue_with_bookings(self, legit_user, authenticated_client):
@@ -816,7 +816,7 @@ class DeleteVenueTest(PostEndpointHelper):
         response = authenticated_client.get(expected_url)
         assert (
             html_parser.extract_alert(response.data)
-            == "Impossible de supprimer un lieu pour lequel il existe des réservations"
+            == "Impossible de supprimer un partenaire culturel pour lequel il existe des réservations"
         )
 
     def test_cant_delete_venue_when_pricing_point_for_another_venue(self, legit_user, authenticated_client):
@@ -833,7 +833,7 @@ class DeleteVenueTest(PostEndpointHelper):
         response = authenticated_client.get(expected_url)
         assert (
             html_parser.extract_alert(response.data)
-            == "Impossible de supprimer un lieu utilisé comme point de valorisation d'un autre lieu"
+            == "Impossible de supprimer un partenaire culturel utilisé comme point de valorisation d'un autre partenaire culturel"
         )
 
     def test_no_script_injection_in_venue_name(self, legit_user, authenticated_client):
@@ -843,7 +843,7 @@ class DeleteVenueTest(PostEndpointHelper):
         assert response.status_code == 303
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == f"Le lieu Lieu <script>alert('coucou')</script> ({venue_id}) a été supprimé"
+            == f"Le partenaire culturel Lieu <script>alert('coucou')</script> ({venue_id}) a été supprimé"
         )
 
 
@@ -1606,7 +1606,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert response.status_code == 400
         assert (
             html_parser.extract_alert(response.data)
-            == "Vous ne pouvez pas ajouter le SIRET d'un lieu. Contactez le support pro N2."
+            == "Vous ne pouvez pas ajouter le SIRET d'un partenaire culturel. Contactez le support pro N2."
         )
         db.session.refresh(venue)
         assert venue.siret is None
@@ -1635,7 +1635,10 @@ class UpdateVenueTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 400
-        assert html_parser.extract_alert(response.data) == "Un autre lieu existe déjà avec le SIRET 11122233344444"
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Un autre partenaire culturel existe déjà avec le SIRET 11122233344444"
+        )
         db.session.refresh(venue)
         assert venue.siret is None
 
@@ -1653,7 +1656,7 @@ class UpdateVenueTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 400
-        assert "Ce lieu a déjà un point de valorisation" in html_parser.extract_alert(response.data)
+        assert "Ce partenaire culturel a déjà un point de valorisation" in html_parser.extract_alert(response.data)
         db.session.refresh(venue)
         assert venue.siret is None
 
@@ -1669,7 +1672,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert response.status_code == 400
         assert (
             html_parser.extract_alert(response.data)
-            == "Ce SIRET n'est plus actif, on ne peut pas l'attribuer à ce lieu"
+            == "Ce SIRET n'est plus actif, on ne peut pas l'attribuer à ce partenaire culturel"
         )
         db.session.refresh(venue)
         assert venue.siret is None
@@ -1688,7 +1691,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert response.status_code == 400
         assert (
             html_parser.extract_alert(response.data)
-            == "Vous ne pouvez pas modifier le SIRET d'un lieu. Contactez le support pro N2."
+            == "Vous ne pouvez pas modifier le SIRET d'un partenaire culturel. Contactez le support pro N2."
         )
         db.session.refresh(venue)
         assert venue.siret == "11122233344444"
@@ -1703,7 +1706,9 @@ class UpdateVenueTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 400
-        assert html_parser.extract_alert(response.data) == "Vous ne pouvez pas retirer le SIRET d'un lieu."
+        assert (
+            html_parser.extract_alert(response.data) == "Vous ne pouvez pas retirer le SIRET d'un partenaire culturel."
+        )
         db.session.refresh(venue)
         assert venue.siret
 
@@ -2451,8 +2456,9 @@ class BatchEditVenuesTest(PostEndpointHelper):
         assert response.status_code == 303
 
         redirected_response = authenticated_client.get(response.location)
-        assert "Impossible de passer tous les lieux en permanents et non permanents" in html_parser.extract_alert(
-            redirected_response.data
+        assert (
+            "Impossible de passer tous les partenaires culturels en permanents et non permanents"
+            in html_parser.extract_alert(redirected_response.data)
         )
 
         assert venue.isPermanent is is_permanent  # unchanged
@@ -2587,7 +2593,7 @@ class GetRemovePricingPointFormTest(GetEndpointHelper):
 
         assert response.status_code == 200
         content = html_parser.content_as_text(response.data)
-        assert f"Lieu : {venue_with_no_siret.name}" in content
+        assert f"Partenaire culturel : {venue_with_no_siret.name}" in content
         assert f"Venue ID : {venue_with_no_siret.id}" in content
         assert "SIRET : Pas de SIRET" in content
         assert "CA de l'année : 123,40 €" in content
@@ -2607,7 +2613,7 @@ class GetRemovePricingPointFormTest(GetEndpointHelper):
         assert response.status_code == 400
         assert (
             html_parser.extract_alert(response.data)
-            == "Vous ne pouvez supprimer le point de valorisation d'un lieu avec SIRET"
+            == "Vous ne pouvez supprimer le point de valorisation d'un partenaire culturel avec SIRET"
         )
 
     def test_venue_with_no_pricing_point(self, authenticated_client):
@@ -2616,7 +2622,9 @@ class GetRemovePricingPointFormTest(GetEndpointHelper):
         response = authenticated_client.get(url_for(self.endpoint, venue_id=venue.id))
 
         assert response.status_code == 400
-        assert html_parser.extract_alert(response.data) == "Ce lieu n'a pas de point de valorisation actif"
+        assert (
+            html_parser.extract_alert(response.data) == "Ce partenaire culturel n'a pas de point de valorisation actif"
+        )
 
     def test_venue_with_high_yearly_revenue(self, authenticated_client, venue_with_no_siret):
         rich_beneficiary = users_factories.BeneficiaryGrant18Factory(deposit__amount=25_000)
@@ -2627,7 +2635,10 @@ class GetRemovePricingPointFormTest(GetEndpointHelper):
         response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_with_no_siret.id))
 
         assert response.status_code == 400
-        assert html_parser.extract_alert(response.data) == "Ce lieu a un chiffre d'affaires de l'année élevé : 10800.00"
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Ce partenaire culturel a un chiffre d'affaires de l'année élevé : 10800.00"
+        )
 
 
 class GetSetPricingPointFormTest(GetEndpointHelper):
@@ -2678,7 +2689,10 @@ class SetPricingPointTest(PostEndpointHelper):
         assert response.status_code == 303
         assert venue_with_no_siret.current_pricing_point is venue_with_siret
         redirected_response = authenticated_client.get(response.headers["location"])
-        assert html_parser.extract_alert(redirected_response.data) == "Ce lieu a été lié à un point de valorisation"
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Ce partenaire culturel a été lié à un point de valorisation"
+        )
 
     def test_venue_not_found(self, authenticated_client):
         venue_with_siret = offerers_factories.VenueFactory()
@@ -2735,7 +2749,10 @@ class SetPricingPointTest(PostEndpointHelper):
         assert response.status_code == 303
         assert venue_with_no_siret.current_pricing_point is previous_pricing_point
         redirected_response = authenticated_client.get(response.headers["location"])
-        assert html_parser.extract_alert(redirected_response.data) == "Ce lieu est déja lié à un point de valorisation"
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Ce partenaire culturel est déja lié à un point de valorisation"
+        )
 
     def test_venue_has_siret(self, authenticated_client):
         venue_with_no_siret = offerers_factories.VenueFactory()
@@ -2754,7 +2771,7 @@ class SetPricingPointTest(PostEndpointHelper):
         redirected_response = authenticated_client.get(response.headers["location"])
         assert (
             html_parser.extract_alert(redirected_response.data)
-            == "Ce lieu a un SIRET, vous ne pouvez donc pas choisir un autre lieu pour le calcul du barème de remboursement."
+            == "Ce partenaire culturel a un SIRET, vous ne pouvez donc pas choisir un autre partenaire culturel pour le calcul du barème de remboursement."
         )
 
 
@@ -2811,7 +2828,7 @@ class RemovePricingPointTest(PostEndpointHelper):
         assert response.status_code == 400
         assert (
             html_parser.extract_alert(response.data)
-            == "Vous ne pouvez supprimer le point de valorisation d'un lieu avec SIRET"
+            == "Vous ne pouvez supprimer le point de valorisation d'un partenaire culturel avec SIRET"
         )
 
     def test_venue_with_no_pricing_point(self, authenticated_client):
@@ -2827,7 +2844,9 @@ class RemovePricingPointTest(PostEndpointHelper):
         )
 
         assert response.status_code == 400
-        assert html_parser.extract_alert(response.data) == "Ce lieu n'a pas de point de valorisation actif"
+        assert (
+            html_parser.extract_alert(response.data) == "Ce partenaire culturel n'a pas de point de valorisation actif"
+        )
 
     def test_venue_with_high_yearly_revenue(self, authenticated_client, venue_with_no_siret):
         rich_beneficiary = users_factories.BeneficiaryGrant18Factory(deposit__amount=25_000)
@@ -2845,7 +2864,10 @@ class RemovePricingPointTest(PostEndpointHelper):
         )
 
         assert response.status_code == 400
-        assert html_parser.extract_alert(response.data) == "Ce lieu a un chiffre d'affaires de l'année élevé : 10800.00"
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Ce partenaire culturel a un chiffre d'affaires de l'année élevé : 10800.00"
+        )
 
     def test_override_yearly_revenue(self, authenticated_client, venue_with_no_siret):
         rich_beneficiary = users_factories.BeneficiaryGrant18Factory(deposit__amount=25_000)
@@ -2885,7 +2907,7 @@ class GetRemoveSiretFormTest(GetEndpointHelper):
         content = html_parser.content_as_text(response.data)
         assert f"Entité juridique : {offerer.name}" in content
         assert f"Offerer ID : {offerer.id}" in content
-        assert f"Lieu : {venue.name}" in content
+        assert f"Partenaire culturel : {venue.name}" in content
         assert f"Venue ID : {venue.id}" in content
         assert f"SIRET : {venue.siret}" in content
         assert "CA de l'année : 0,00 €" in content
@@ -2901,7 +2923,7 @@ class GetRemoveSiretFormTest(GetEndpointHelper):
         response = authenticated_client.get(url_for(self.endpoint, venue_id=venue.id))
 
         assert response.status_code == 400
-        assert html_parser.extract_alert(response.data) == "Ce lieu n'a pas de SIRET"
+        assert html_parser.extract_alert(response.data) == "Ce partenaire culturel n'a pas de SIRET"
 
     def test_no_other_venue_with_siret(self, authenticated_client):
         venue = offerers_factories.VenueFactory()
@@ -2912,7 +2934,7 @@ class GetRemoveSiretFormTest(GetEndpointHelper):
         assert response.status_code == 400
         assert (
             html_parser.extract_alert(response.data)
-            == "L'entité juridique gérant ce lieu n'a pas d'autre lieu avec SIRET"
+            == "L'entité juridique gérant ce partenaire culturel n'a pas d'autre partenaire culturel avec SIRET"
         )
 
     def test_venue_with_high_yearly_revenue(self, authenticated_client):
@@ -3052,7 +3074,7 @@ class RemoveSiretTest(PostEndpointHelper):
         )
 
         assert response.status_code == 400
-        assert html_parser.extract_alert(response.data) == "Ce lieu n'a pas de SIRET"
+        assert html_parser.extract_alert(response.data) == "Ce partenaire culturel n'a pas de SIRET"
 
     def test_invalid_new_pricing_point(self, authenticated_client):
         venue = offerers_factories.VenueFactory()
@@ -3090,7 +3112,10 @@ class RemoveSiretTest(PostEndpointHelper):
         )
 
         assert response.status_code == 400
-        assert html_parser.extract_alert(response.data) == "Ce lieu a un chiffre d'affaires de l'année élevé : 10800.00"
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Ce partenaire culturel a un chiffre d'affaires de l'année élevé : 10800.00"
+        )
 
     def test_override_yearly_revenue(self, authenticated_client):
         venue = offerers_factories.VenueFactory()
@@ -3144,7 +3169,10 @@ class PostToggleVenueProviderIsActiveTest(PostEndpointHelper):
         assert action.extraData["modified_info"] == {"isActive": {"old_info": is_active, "new_info": not is_active}}
 
         response = authenticated_client.get(response.location)
-        assert html_parser.extract_alert(response.data) == f"La synchronisation du lieu avec le provider a été {verb}."
+        assert (
+            html_parser.extract_alert(response.data)
+            == f"La synchronisation du partenaire culturel avec le provider a été {verb}."
+        )
 
     def test_toggle_wrong_provider(self, authenticated_client):
         venue_provider = providers_factories.VenueProviderFactory()
@@ -3190,7 +3218,10 @@ class PostDeleteVenueProviderTest(PostEndpointHelper):
         )
 
         response = authenticated_client.get(response.location)
-        assert html_parser.extract_alert(response.data) == "Le lien entre le lieu et le provider a été supprimé."
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Le lien entre le partenaire culturel et le provider a été supprimé."
+        )
 
     def test_delete_venue_wrong_provider(self, authenticated_client):
         venue_provider = providers_factories.VenueProviderFactory()
@@ -3226,7 +3257,10 @@ class PostDeleteVenueProviderTest(PostEndpointHelper):
         )
 
         response = authenticated_client.get(response.location)
-        assert html_parser.extract_alert(response.data) == "Impossible de supprimer le lien entre le lieu et Allociné."
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Impossible de supprimer le lien entre le partenaire culturel et Allociné."
+        )
 
 
 class GetEntrepriseInfoTest(GetEndpointHelper):

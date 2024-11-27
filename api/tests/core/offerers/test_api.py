@@ -1825,7 +1825,7 @@ class LinkVenueToPricingPointTest:
 
         with pytest.raises(api_errors.ApiErrors) as error:
             offerers_api.link_venue_to_pricing_point(venue, pricing_point.id)
-        msg = "Ce lieu a un SIRET, vous ne pouvez donc pas choisir un autre lieu pour le calcul du barème de remboursement."
+        msg = "Ce partenaire culturel a un SIRET, vous ne pouvez donc pas choisir un autre partenaire culturel pour le calcul du barème de remboursement."
         assert error.value.errors == {"pricingPointId": [msg]}
 
 

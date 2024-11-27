@@ -177,7 +177,7 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[0].booking_finance_incidents))
         assert rows[0]["Montant total"] == "11,00 €"
         assert rows[0]["Entité juridique"] == incidents[0].venue.managingOfferer.name
-        assert rows[0]["Porteur de l'offre (lieu)"] == incidents[0].venue.name
+        assert rows[0]["Partenaire culturel"] == incidents[0].venue.name
         assert rows[0]["Origine de la demande"] == incidents[0].details["origin"]
 
     def test_list_incident_by_booking_id(self, authenticated_client, incidents):
@@ -197,7 +197,7 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[0].booking_finance_incidents))
         assert rows[0]["Montant total"] == "11,00 €"
         assert rows[0]["Entité juridique"] == incidents[0].venue.managingOfferer.name
-        assert rows[0]["Porteur de l'offre (lieu)"] == incidents[0].venue.name
+        assert rows[0]["Partenaire culturel"] == incidents[0].venue.name
         assert rows[0]["Origine de la demande"] == incidents[0].details["origin"]
 
     def test_list_incident_by_offer_id(self, authenticated_client, incidents):
@@ -226,7 +226,7 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[1].booking_finance_incidents))
         assert rows[0]["Montant total"] == "100,00 €"
         assert rows[0]["Entité juridique"] == incidents[1].venue.managingOfferer.name
-        assert rows[0]["Porteur de l'offre (lieu)"] == incidents[1].venue.name
+        assert rows[0]["Partenaire culturel"] == incidents[1].venue.name
         assert rows[0]["Origine de la demande"] == incidents[1].details["origin"]
 
     def test_list_incident_by_collective_offer_id(self, authenticated_client, incidents):
@@ -255,7 +255,7 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[0].booking_finance_incidents))
         assert rows[0]["Montant total"] == "11,00 €"
         assert rows[0]["Entité juridique"] == incidents[0].venue.managingOfferer.name
-        assert rows[0]["Porteur de l'offre (lieu)"] == incidents[0].venue.name
+        assert rows[0]["Partenaire culturel"] == incidents[0].venue.name
         assert rows[0]["Origine de la demande"] == incidents[0].details["origin"]
 
     def test_list_incident_by_status(self, authenticated_client, incidents, closed_incident):
@@ -286,7 +286,7 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[0].booking_finance_incidents))
         assert rows[0]["Montant total"] == "11,00 €"
         assert rows[0]["Entité juridique"] == incidents[0].venue.managingOfferer.name
-        assert rows[0]["Porteur de l'offre (lieu)"] == incidents[0].venue.name
+        assert rows[0]["Partenaire culturel"] == incidents[0].venue.name
         assert rows[0]["Origine de la demande"] == incidents[0].details["origin"]
 
     def test_list_incident_by_venue(self, authenticated_client, incidents):
@@ -347,7 +347,9 @@ class GetIncidentValidationFormTest(GetEndpointHelper):
             assert response.status_code == 200
 
         text_content = html_parser.content_as_text(response.data)
-        assert "Vous allez valider un incident de 11,00 € sur le compte bancaire du lieu." in text_content
+        assert (
+            "Vous allez valider un incident de 11,00 € sur le compte bancaire du partenaire culturel." in text_content
+        )
 
     def test_no_script_injection_in_venue_name(self, authenticated_client):
         bank_account = finance_factories.BankAccountFactory()
@@ -1066,7 +1068,7 @@ class GetOverpaymentIncidentTest(GetEndpointHelper):
 
         content = html_parser.content_as_text(response.data)
         assert f"ID : {finance_incident.id}" in content
-        assert f"Lieu porteur de l'offre : {finance_incident.venue.name}" in content
+        assert f"Partenaire culturel porteur de l'offre : {finance_incident.venue.name}" in content
         assert f"Compte bancaire : {bank_account.label}" in content
         assert f"Montant trop perçu par l'acteur culturel à récupérer : 10,10 € {expected_xpf_text}" in content
         assert "Batch :" not in content
@@ -1086,7 +1088,7 @@ class GetOverpaymentIncidentTest(GetEndpointHelper):
         content = html_parser.content_as_text(response.data)
 
         assert f"ID : {finance_incident.id}" in content
-        assert f"Lieu porteur de l'offre : {finance_incident.venue.name}" in content
+        assert f"Partenaire culturel porteur de l'offre : {finance_incident.venue.name}" in content
         assert f"Incident créé par : {finance_incident.details['author']}" in content
         assert "Batch :" not in content
         assert "Justificatif de remboursement :" not in content
@@ -1131,7 +1133,7 @@ class GetOverpaymentIncidentTest(GetEndpointHelper):
         content = html_parser.content_as_text(response.data)
 
         assert f"ID : {finance_incident.id}" in content
-        assert f"Lieu porteur de l'offre : {finance_incident.venue.name}" in content
+        assert f"Partenaire culturel porteur de l'offre : {finance_incident.venue.name}" in content
         assert f"Incident créé par : {finance_incident.details['author']}" in content
         assert "Batch : VIR1" in content
         assert "Justificatif de remboursement : PDF" in content
@@ -1173,7 +1175,7 @@ class GetCommercialGestureTest(GetEndpointHelper):
 
         content = html_parser.content_as_text(response.data)
         assert f"ID : {finance_incident.id}" in content
-        assert f"Lieu porteur de l'offre : {finance_incident.venue.name}" in content
+        assert f"Partenaire culturel porteur de l'offre : {finance_incident.venue.name}" in content
         assert f"Compte bancaire : {bank_account.label}" in content
         assert f"Montant d'origine de la réservation : 10,10 € {expected_xpf_text}" in content
         assert f"Montant du geste commercial à verser à l'acteur : 10,10 € {expected_xpf_text}" in content
@@ -1196,7 +1198,7 @@ class GetCommercialGestureTest(GetEndpointHelper):
         content = html_parser.content_as_text(response.data)
 
         assert f"ID : {finance_incident.id}" in content
-        assert f"Lieu porteur de l'offre : {finance_incident.venue.name}" in content
+        assert f"Partenaire culturel porteur de l'offre : {finance_incident.venue.name}" in content
         assert f"Geste commercial créé par : {finance_incident.details['author']}" in content
         assert "Batch :" not in content
         assert "Justificatif de remboursement :" not in content
@@ -1241,7 +1243,7 @@ class GetCommercialGestureTest(GetEndpointHelper):
         content = html_parser.content_as_text(response.data)
 
         assert f"ID : {finance_incident.id}" in content
-        assert f"Lieu porteur de l'offre : {finance_incident.venue.name}" in content
+        assert f"Partenaire culturel porteur de l'offre : {finance_incident.venue.name}" in content
         assert f"Geste commercial créé par : {finance_incident.details['author']}" in content
         assert "Batch : VIR1" in content
         assert "Justificatif de remboursement : PDF" in content
@@ -1279,7 +1281,7 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
             assert response.status_code == 200
 
         additional_data_text = html_parser.extract_cards_text(response.data)[0]
-        assert f"Lieu : {venue.name}" in additional_data_text
+        assert f"Partenaire culturel : {venue.name}" in additional_data_text
         assert f"ID de la réservation : {booking.id}" in additional_data_text
         assert f"Statut de la réservation : {format_booking_status(booking)}" in additional_data_text
         assert f"Contremarque : {booking.token}" in additional_data_text
@@ -1316,7 +1318,7 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
             assert response.status_code == 200
 
         additional_data_text = html_parser.extract_cards_text(response.data)[0]
-        assert f"Lieu : {venue.name}" in additional_data_text
+        assert f"Partenaire culturel : {venue.name}" in additional_data_text
         assert f"Nombre de réservations : {len(selected_bookings)}" in additional_data_text
         assert "Montant des réservations : 20,20 €" in additional_data_text
         assert "Montant remboursé à l'acteur : 20,20 €" in additional_data_text
@@ -1352,7 +1354,7 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
 
         assert (
             html_parser.content_as_text(response.data)
-            == "Un incident ne peut être créé qu'à partir de réservations venant du même lieu."
+            == "Un incident ne peut être créé qu'à partir de réservations venant du même partenaire culturel."
         )
 
 
@@ -1543,7 +1545,7 @@ class GetCommercialGestureCreationFormTest(PostEndpointHelper):
             assert response.status_code == 200
 
         additional_data_text = html_parser.extract_cards_text(response.data)[0]
-        assert "Lieu : Etablissement" in additional_data_text
+        assert "Partenaire culturel : Etablissement" in additional_data_text
         assert f"ID de la réservation : {booking.id}" in additional_data_text
         assert "Statut de la réservation : Annulée" in additional_data_text
         assert "Contremarque : TOK3N" in additional_data_text
@@ -1584,7 +1586,7 @@ class GetCommercialGestureCreationFormTest(PostEndpointHelper):
             assert response.status_code == 200
 
         additional_data_text = html_parser.extract_cards_text(response.data)[0]
-        assert "Lieu : Etablissement" in additional_data_text
+        assert "Partenaire culturel : Etablissement" in additional_data_text
         assert "Nombre de réservations : 2" in additional_data_text
         assert "Montant des réservations : 66,00 €" in additional_data_text
         assert "Montant remboursé à l'acteur : 7,00 €" in additional_data_text
