@@ -2,6 +2,7 @@ import sqlalchemy as sqla
 from sqlalchemy import orm as sqla_orm
 
 from pcapi.core.geography import models as geography_models
+from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
@@ -185,3 +186,25 @@ def load_venue_and_provider_query(query: sqla_orm.Query) -> sqla_orm.Query:
         sqla_orm.joinedload(offers_models.Offer.lastProvider).joinedload(providers_models.Provider.offererProvider),
         sqla_orm.joinedload(offers_models.Offer.venue).load_only(offerers_models.Venue.isVirtual),
     )
+
+
+def extract_venue_and_offerer_address_from_location(
+    body: serialization.OfferEditionBase,
+) -> tuple[offerers_models.Venue | None, offerers_models.OffererAddress | None]:
+    location = body.location
+    if not location:
+        return None, None
+
+    venue = get_venue_with_offerer_address(location.venue_id)
+
+    if location.type == "address":
+        address = get_address_or_raise_404(location.address_id)
+        offerer_address = offerers_api.get_or_create_offerer_address(
+            offerer_id=venue.managingOffererId,
+            address_id=address.id,
+            label=location.address_label,
+        )
+
+        return venue, offerer_address
+
+    return venue, venue.offererAddress

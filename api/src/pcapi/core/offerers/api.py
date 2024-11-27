@@ -2743,6 +2743,7 @@ LocationData = typing.TypedDict(
         "city": str,
         "postal_code": str,
         "insee_code": str | None,
+        # TODO(xordoquy): change lat/long to decimal
         "latitude": float,
         "longitude": float,
         "ban_id": str | None,
@@ -2755,8 +2756,8 @@ def get_or_create_address(location_data: LocationData, is_manual_edition: bool =
     timezone = None
     insee_code = location_data.get("insee_code")
     postal_code = location_data["postal_code"]
-    latitude = typing.cast(decimal.Decimal, location_data["latitude"])
-    longitude = typing.cast(decimal.Decimal, location_data["longitude"])
+    latitude = decimal.Decimal(location_data["latitude"]).quantize(decimal.Decimal("1.00000"))
+    longitude = decimal.Decimal(location_data["longitude"]).quantize(decimal.Decimal("1.00000"))
     street = location_data.get("street")
     city = location_data["city"]
     ban_id = None if is_manual_edition else location_data.get("ban_id")
@@ -2800,8 +2801,8 @@ def get_or_create_address(location_data: LocationData, is_manual_edition: bool =
                     geography_models.Address.street == street,
                     geography_models.Address.postalCode == postal_code,
                     geography_models.Address.city == city,
-                    geography_models.Address.latitude == decimal.Decimal(latitude),
-                    geography_models.Address.longitude == decimal.Decimal(longitude),
+                    geography_models.Address.latitude == latitude,
+                    geography_models.Address.longitude == longitude,
                 ),
             ),
         ).one()

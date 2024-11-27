@@ -9,7 +9,6 @@ import {
   OFFER_FORM_NAVIGATION_IN,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'commons/core/FirebaseEvents/constants'
-import { DEFAULT_SEARCH_FILTERS } from 'commons/core/Offers/constants'
 import { useQuerySearchFilters } from 'commons/core/Offers/hooks/useQuerySearchFilters'
 import { useNotification } from 'commons/hooks/useNotification'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
@@ -20,13 +19,21 @@ import { computeDeletionErrorMessage } from 'pages/Offers/utils/computeDeletionE
 import { computeDeletionSuccessMessage } from 'pages/Offers/utils/computeDeletionSuccessMessage'
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 
-import styles from './Cells.module.scss'
+import styles from 'styles/components/Cells.module.scss'
+import { computeIndividualApiFilters } from 'pages/Offers/utils/computeIndividualApiFilters'
+import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { useSelector } from 'react-redux'
 
 interface DeleteDraftOffersProps {
   offer: ListOffersOfferResponseModel
+  isRestrictedAsAdmin: boolean
 }
 
-export const DeleteDraftCell = ({ offer }: DeleteDraftOffersProps) => {
+export const DeleteDraftCell = ({
+  offer,
+  isRestrictedAsAdmin,
+}: DeleteDraftOffersProps) => {
+  const selectedOffererId = useSelector(selectCurrentOffererId)?.toString()
   const urlSearchFilters = useQuerySearchFilters()
   const { mutate } = useSWRConfig()
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
@@ -37,11 +44,11 @@ export const DeleteDraftCell = ({ offer }: DeleteDraftOffersProps) => {
     setIsConfirmDialogOpen(false)
   }, [])
 
-  const apiFilters = {
-    ...DEFAULT_SEARCH_FILTERS,
-    ...urlSearchFilters,
-  }
-  delete apiFilters.page
+  const apiFilters = computeIndividualApiFilters(
+    urlSearchFilters,
+    selectedOffererId?.toString(),
+    isRestrictedAsAdmin
+  )
 
   const onConfirmDeleteDraftOffer = async () => {
     try {

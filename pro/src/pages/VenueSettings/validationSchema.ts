@@ -22,7 +22,8 @@ export const getValidationSchema = (isVenueVirtual: boolean) =>
       .string()
       .trim()
       .required('Veuillez renseigner un code postal')
-      .min(4, 'Veuillez renseigner un code postal valide'),
+      .min(5, 'Veuillez renseigner un code postal valide')
+      .max(5, 'Veuillez renseigner un code postal valide'),
 
     city: yup.string().trim().required('Veuillez renseigner une ville'),
     coords: yup

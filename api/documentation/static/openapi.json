@@ -1910,117 +1910,6 @@
                 "title": "DECOUVERTE_METIERS_read",
                 "type": "object"
             },
-            "DateCreation": {
-                "properties": {
-                    "beginningDatetime": {
-                        "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2025-07-24T14:00:00+02:00",
-                        "format": "date-time",
-                        "title": "Beginningdatetime",
-                        "type": "string"
-                    },
-                    "bookingLimitDatetime": {
-                        "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2025-07-24T14:00:00+02:00",
-                        "format": "date-time",
-                        "title": "Bookinglimitdatetime",
-                        "type": "string"
-                    },
-                    "idAtProvider": {
-                        "description": "Id of the object (product, event...) on your side. It should not be more than 70 characters long.",
-                        "example": "Your own id",
-                        "maxLength": 70,
-                        "nullable": true,
-                        "title": "Idatprovider",
-                        "type": "string"
-                    },
-                    "priceCategoryId": {
-                        "description": "Price category id",
-                        "example": 12,
-                        "title": "Pricecategoryid",
-                        "type": "integer"
-                    },
-                    "quantity": {
-                        "anyOf": [
-                            {
-                                "type": "integer"
-                            },
-                            {
-                                "enum": [
-                                    "unlimited"
-                                ],
-                                "type": "string"
-                            }
-                        ],
-                        "description": "Quantity of items currently available to pass Culture. Value `'unlimited'` is used for infinite quantity of items.",
-                        "example": 10,
-                        "title": "Quantity"
-                    }
-                },
-                "required": [
-                    "quantity",
-                    "beginningDatetime",
-                    "bookingLimitDatetime",
-                    "priceCategoryId"
-                ],
-                "title": "DateCreation",
-                "type": "object"
-            },
-            "DateEdition": {
-                "additionalProperties": false,
-                "properties": {
-                    "beginningDatetime": {
-                        "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2025-07-24T14:00:00+02:00",
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Beginningdatetime",
-                        "type": "string"
-                    },
-                    "bookingLimitDatetime": {
-                        "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2025-07-24T14:00:00+02:00",
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Bookinglimitdatetime",
-                        "type": "string"
-                    },
-                    "idAtProvider": {
-                        "description": "Id of the object (product, event...) on your side. It should not be more than 70 characters long.",
-                        "example": "Your own id",
-                        "maxLength": 70,
-                        "nullable": true,
-                        "title": "Idatprovider",
-                        "type": "string"
-                    },
-                    "priceCategoryId": {
-                        "description": "Price category id",
-                        "example": 12,
-                        "nullable": true,
-                        "title": "Pricecategoryid",
-                        "type": "integer"
-                    },
-                    "quantity": {
-                        "anyOf": [
-                            {
-                                "type": "integer"
-                            },
-                            {
-                                "enum": [
-                                    "unlimited"
-                                ],
-                                "type": "string"
-                            }
-                        ],
-                        "description": "Quantity of items currently available to pass Culture. Value `'unlimited'` is used for infinite quantity of items.",
-                        "example": 10,
-                        "nullable": true,
-                        "title": "Quantity"
-                    }
-                },
-                "title": "DateEdition",
-                "type": "object"
-            },
             "DateResponse": {
                 "properties": {
                     "beginningDatetime": {
@@ -2084,24 +1973,6 @@
                     "priceCategory"
                 ],
                 "title": "DateResponse",
-                "type": "object"
-            },
-            "DatesCreation": {
-                "additionalProperties": false,
-                "properties": {
-                    "dates": {
-                        "description": "Dates to add to the event. If there are different prices and quantity for the same date, you must add several date objects",
-                        "items": {
-                            "$ref": "#/components/schemas/DateCreation"
-                        },
-                        "title": "Dates",
-                        "type": "array"
-                    }
-                },
-                "required": [
-                    "dates"
-                ],
-                "title": "DatesCreation",
                 "type": "object"
             },
             "DigitalLocation": {
@@ -3236,6 +3107,136 @@
                     "events"
                 ],
                 "title": "EventOffersResponse",
+                "type": "object"
+            },
+            "EventStockCreation": {
+                "properties": {
+                    "beginningDatetime": {
+                        "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2025-07-24T14:00:00+02:00",
+                        "format": "date-time",
+                        "title": "Beginningdatetime",
+                        "type": "string"
+                    },
+                    "bookingLimitDatetime": {
+                        "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2025-07-24T14:00:00+02:00",
+                        "format": "date-time",
+                        "title": "Bookinglimitdatetime",
+                        "type": "string"
+                    },
+                    "idAtProvider": {
+                        "description": "Id of the object (product, event...) on your side. It should not be more than 70 characters long.",
+                        "example": "Your own id",
+                        "maxLength": 70,
+                        "nullable": true,
+                        "title": "Idatprovider",
+                        "type": "string"
+                    },
+                    "priceCategoryId": {
+                        "description": "Price category id",
+                        "example": 12,
+                        "title": "Pricecategoryid",
+                        "type": "integer"
+                    },
+                    "quantity": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "enum": [
+                                    "unlimited"
+                                ],
+                                "type": "string"
+                            }
+                        ],
+                        "description": "Quantity of items currently available to pass Culture. Value `'unlimited'` is used for infinite quantity of items.",
+                        "example": 10,
+                        "title": "Quantity"
+                    }
+                },
+                "required": [
+                    "quantity",
+                    "beginningDatetime",
+                    "bookingLimitDatetime",
+                    "priceCategoryId"
+                ],
+                "title": "EventStockCreation",
+                "type": "object"
+            },
+            "EventStockEdition": {
+                "additionalProperties": false,
+                "properties": {
+                    "beginningDatetime": {
+                        "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2025-07-24T14:00:00+02:00",
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Beginningdatetime",
+                        "type": "string"
+                    },
+                    "bookingLimitDatetime": {
+                        "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2025-07-24T14:00:00+02:00",
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Bookinglimitdatetime",
+                        "type": "string"
+                    },
+                    "idAtProvider": {
+                        "description": "Id of the object (product, event...) on your side. It should not be more than 70 characters long.",
+                        "example": "Your own id",
+                        "maxLength": 70,
+                        "nullable": true,
+                        "title": "Idatprovider",
+                        "type": "string"
+                    },
+                    "priceCategoryId": {
+                        "description": "Price category id",
+                        "example": 12,
+                        "nullable": true,
+                        "title": "Pricecategoryid",
+                        "type": "integer"
+                    },
+                    "quantity": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "enum": [
+                                    "unlimited"
+                                ],
+                                "type": "string"
+                            }
+                        ],
+                        "description": "Quantity of items currently available to pass Culture. Value `'unlimited'` is used for infinite quantity of items.",
+                        "example": 10,
+                        "nullable": true,
+                        "title": "Quantity"
+                    }
+                },
+                "title": "EventStockEdition",
+                "type": "object"
+            },
+            "EventStocksCreation": {
+                "additionalProperties": false,
+                "properties": {
+                    "dates": {
+                        "description": "A list of stocks to associate with an event. Each stock represents a unique combination of a date and a price category. To add stocks for multiple price categories on the same date, you must create a separate stock entry for each category.",
+                        "items": {
+                            "$ref": "#/components/schemas/EventStockCreation"
+                        },
+                        "maxItems": 2500,
+                        "title": "Dates",
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "dates"
+                ],
+                "title": "EventStocksCreation",
                 "type": "object"
             },
             "FESTIVAL_ART_VISUEL_create": {
@@ -6801,6 +6802,30 @@
                         "title": "Itemcollectiondetails",
                         "type": "string"
                     },
+                    "location": {
+                        "description": "\nIndicates where the offer will be available or where it will take place. The location type must be compatible with the offer category.\n\nYou have **three options** for the location:\n\n- `\"digital\"`: Use this if the offer is a digital product and does not have a physical location\n- `\"physical\"`: Use this if the offer will be available at your venue\n- `\"address\"`: Use this if the offer takes place at a different location from your venue\n",
+                        "discriminator": {
+                            "mapping": {
+                                "address": "#/components/schemas/AddressLocation",
+                                "digital": "#/components/schemas/DigitalLocation",
+                                "physical": "#/components/schemas/PhysicalLocation"
+                            },
+                            "propertyName": "type"
+                        },
+                        "nullable": true,
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/PhysicalLocation"
+                            },
+                            {
+                                "$ref": "#/components/schemas/DigitalLocation"
+                            },
+                            {
+                                "$ref": "#/components/schemas/AddressLocation"
+                            }
+                        ],
+                        "title": "Location"
+                    },
                     "name": {
                         "description": "Offer title",
                         "example": "Le Petit Prince",
@@ -10161,7 +10186,7 @@
                 ]
             },
             "post": {
-                "description": "Add stocks to given event. Each stock is attached to a price category and to a date. For a given date, you will have one stock per price category.\n\n**\u26a0\ufe0f Event must have less than 1 000 stocks** otherwise they will not be published.",
+                "description": "Add stocks to given event. Each stock is attached to a price category and to a date. For a given date, you will have one stock per price category.\n\n**\u26a0\ufe0f Event must have less than 2 500 stocks** otherwise they will not be published.",
                 "operationId": "PostEventStocks",
                 "parameters": [
                     {
@@ -10179,7 +10204,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/DatesCreation"
+                                "$ref": "#/components/schemas/EventStocksCreation"
                             }
                         }
                     }
@@ -10321,7 +10346,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/DateEdition"
+                                "$ref": "#/components/schemas/EventStockEdition"
                             }
                         }
                     }

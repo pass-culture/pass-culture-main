@@ -5,6 +5,7 @@ import {
   GetOffererResponseModel,
   UserRole,
 } from 'apiClient/v1'
+import { CollectiveOffersSortingColumn } from 'commons/core/OfferEducational/types'
 import {
   DEFAULT_PAGE,
   MAX_TOTAL_PAGES,
@@ -17,11 +18,12 @@ import { SelectOption } from 'commons/custom_types/form'
 import { useColumnSorting } from 'commons/hooks/useColumnSorting'
 import { usePagination } from 'commons/hooks/usePagination'
 import { sortCollectiveOffers } from 'commons/utils/sortCollectiveOffers'
+import { CollectiveOffersActionsBar } from 'components/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
+import { CollectiveOffersTable } from 'components/CollectiveOffersTable/CollectiveOffersTable'
 import { NoData } from 'components/NoData/NoData'
-import { CollectiveOffersActionsBar } from 'pages/Offers/OffersTable/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
-import { CollectiveOffersTable } from 'pages/Offers/OffersTable/CollectiveOffersTable/CollectiveOffersTable'
 import { isSameOffer } from 'pages/Offers/utils/isSameOffer'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
+
 
 import styles from './CollectiveOffersScreen.module.scss'
 import { CollectiveOffersSearchFilters } from './CollectiveOffersSearchFilters/CollectiveOffersSearchFilters'
@@ -45,10 +47,6 @@ export type CollectiveOffersScreenProps = {
   categories?: SelectOption[]
   isRestrictedAsAdmin?: boolean
   offers: CollectiveOfferResponseModel[]
-}
-
-export enum CollectiveOffersSortingColumn {
-  EVENT_DATE = 'EVENT_DATE',
 }
 
 export const CollectiveOffersScreen = ({

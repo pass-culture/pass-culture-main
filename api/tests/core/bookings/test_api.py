@@ -589,7 +589,7 @@ class BookOfferTest:
             url = EMSBookingConnector()._build_url("VENTE", payload)
             booking_adapter = requests_mock.post(url=re.compile(rf"{url}"), exc=exception)
 
-            with pytest.raises(external_bookings_exceptions.ExternalBookingException):
+            with pytest.raises(external_bookings_exceptions.ExternalBookingTimeoutException):
                 api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
             assert not Booking.query.all()
@@ -700,7 +700,7 @@ class BookOfferTest:
             url = EMSBookingConnector()._build_url("VENTE", payload)
             booking_adapter = requests_mock.post(url=re.compile(rf"{url}"), exc=exception)
 
-            with pytest.raises(external_bookings_exceptions.ExternalBookingException):
+            with pytest.raises(external_bookings_exceptions.ExternalBookingTimeoutException):
                 api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
             assert not Booking.query.all()
@@ -781,7 +781,7 @@ class BookOfferTest:
             url = EMSBookingConnector()._build_url("VENTE", payload)
             booking_adapter = requests_mock.post(url=re.compile(rf"{url}"), exc=exception)
 
-            with pytest.raises(external_bookings_exceptions.ExternalBookingException):
+            with pytest.raises(external_bookings_exceptions.ExternalBookingTimeoutException):
                 api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
             assert not Booking.query.all()

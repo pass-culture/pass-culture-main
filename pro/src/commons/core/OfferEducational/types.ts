@@ -95,3 +95,7 @@ export type VisibilityFormValues = {
   'search-teacher': string | null
   teacher: string | null
 }
+
+export enum CollectiveOffersSortingColumn {
+  EVENT_DATE = 'EVENT_DATE',
+}

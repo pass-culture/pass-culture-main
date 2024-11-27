@@ -33,14 +33,14 @@ export const statisticsFactory = ({
     }),
     [collectiveAndIndividualRevenueYear]: {
       revenue: {
-        total: 11_000,
-        individual: 5000,
-        collective: 6000,
+        total: 11_430.23,
+        individual: 510.23,
+        collective: 10_920,
       },
       expectedRevenue: {
-        total: 15_000,
-        individual: 7000,
-        collective: 8000,
+        total: 18_389.20,
+        individual: 7_832.10,
+        collective: 10_557.10,
       },
     },
   }

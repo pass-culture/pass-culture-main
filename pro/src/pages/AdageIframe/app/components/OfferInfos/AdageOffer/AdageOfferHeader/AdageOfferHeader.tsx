@@ -1,4 +1,4 @@
-import { AdageFrontRoles } from 'apiClient/adage'
+import { AdageFrontRoles, AuthenticatedResponse, CollectiveOfferResponseModel, CollectiveOfferTemplateResponseModel } from 'apiClient/adage'
 import { OfferAddressType } from 'apiClient/v1'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
@@ -11,7 +11,6 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { OfferFavoriteButton } from '../../../OffersInstantSearch/OffersSearch/Offers/OfferFavoriteButton/OfferFavoriteButton'
 import { OfferShareLink } from '../../../OffersInstantSearch/OffersSearch/Offers/OfferShareLink/OfferShareLink'
 import { getOfferVenueAndOffererName } from '../../../OffersInstantSearch/OffersSearch/Offers/utils/getOfferVenueAndOffererName'
-import { AdageOfferProps } from '../AdageOffer'
 import {
   getFormattedDatesForBookableOffer,
   getFormattedDatesForTemplateOffer,
@@ -21,11 +20,18 @@ import { getBookableOfferStockPrice } from '../utils/adageOfferStocks'
 
 import styles from './AdageOfferHeader.module.scss'
 
+export type AdageOfferHeaderProps = {
+  offer: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
+  adageUser?: AuthenticatedResponse
+  isPreview?: boolean
+}
+
+
 export function AdageOfferHeader({
   offer,
   adageUser,
   isPreview,
-}: AdageOfferProps) {
+}: AdageOfferHeaderProps) {
   const isOfferBookable = isCollectiveOfferBookable(offer)
 
   const venueAndOffererName = getOfferVenueAndOffererName(offer.venue)

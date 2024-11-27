@@ -1,14 +1,88 @@
 # DOCS
 
-## [UI_KIT](./ui-kit/README.md)
+## Structure du code
+
+Structure du dossier `pro/src/` (générée avec [cet utilitaire](<https://tree.nathanfriend.com/?s=(%27optiMs!(%27fancy!true~fullPathJ~trailingSlashJ~rootDotJ)~N(%27N%277pro37src36apiClientsUIWMfigWMtextWoreWustom_typesLhooksLstoreLutilsOfactories46c9sLT48TH4EC9GFT.KHOKsOIBAB*6pRsBLPR1B*OIOKs4O51Q851HQE5GAQO52Q852HQF52.KH4AQ6icMsUpublicUrepositoryUstylesUui-kit3%27)~versiM!%271%27)*%20%200**73V*4B**5SousPR6V07%F0%9F%93%81%208%F0%9F%93%98%209ompMentA*%E2%80%A6B3*E%F0%9F%93%95%20F%F0%9F%93%97%20G1.module.scss4H.tsxIcommMsJ!falseKspecL30MonNsource!OB0Q4*RageTC91UB6V%5CnWLc%01WVUTRQONMLKJIHGFEBA98765430*>)) :
+
+```
+📁 pro
+│
+└── 📁 src
+    │
+    ├── 📁 apiClient    ===> CONFIG ET SERVICES POUR LES APIS (CLIENT PRO, ADRESSE, ADAGE)
+    │
+    ├── 📁 commons      ===> ÉLÉMENTS PARTAGÉS DANS TOUTE L’APP (HOOKS, STORE REDUX, TYPES, …)
+    │   ├── 📁 config
+    │   ├── 📁 context
+    │   ├── 📁 core
+    │   ├── 📁 custom_types
+    │   ├── 📁 hooks
+    │   ├── 📁 store
+    │   └── 📁 utils            ===> UTILITAIRES PARTAGÉS DANS TOUTE L’APP.
+    │       └── 📁 factories    ===> FACTORIES POUR LES TESTS UNITAIRES.
+    │
+    ├── 📁 components    ===> COMPOSANTS FONCTIONNEL TRANSVERSES (SIDENAVLINKS, HEADER, FOOTER, …).
+    │   │
+    │   ├── 📁 Component1
+    │   │   ├── 📘 Component1.tsx
+    │   │   ├── 📕 Component1.module.scss    ===> FICHIER DE STYLE (OPTIONNEL)
+    │   │   ├── 📗 Component1.spec.tsx       ===> FICHIER DE SPECS (OPTIONNEL) (UNIQUEMENT SI 1 SEUL FICHIER DE TEST)
+    │   │   ├── 📁 specs                     ===> DOSSIER DE SPECS (OPTIONNEL) (UNIQUEMENT SI PLUSIEURS FICHIERS DE TEST)
+    │   │   └── 📁 commons                   ===> ÉLÉMENTS PARTAGÉS PAR CE COMPOSANT ET SES ENFANTS (OPTIONNEL)
+    │   │
+    │   └── …
+    │
+    ├── 📁 pages    ===> PAGES ET COMPOSANTS LIÉS À UNE FEATURE.
+    │   │
+    │   └── 📁 Page1
+    │       │
+    │       ├── 📁 commons    ===> ÉLÉMENTS PARTAGÉS PAR CETTE PAGE ET TOUS SES COMPOSANTS ENFANTS (OPTIONNEL)
+    │       ├── 📁 specs      ===> DOSSIER DE SPECS POUR CETTE PAGE (OPTIONNEL)
+    │       │
+    │       ├── 📁 SousPage1
+    │       │   ├── 📁 specs      ===> DOSSIER DE SPECS POUR CETTE SOUS-PAGE (OPTIONNEL)
+    │       │   ├── 📘 SousPage1.tsx
+    │       │   ├── 📕 SousPage1.module.scss
+    │       │   └── …
+    │       │
+    │       └── 📁 SousPage2
+    │           ├── 📘 SousPage2.tsx
+    │           ├── 📗 SousPage2.spec.tsx
+    │           └── …
+    │
+    ├── 📁 icons
+    │
+    ├── 📁 public
+    │
+    ├── 📁 repository
+    │
+    ├── 📁 styles
+    │
+    └── 📁 ui-kit    ===> COMPOSANTS D'INTERFACE VALIDÉS PAR LE DESIGN (BUTTONS, INPUTS, …) ET QUI POURRAIENT ÊTRE MIGRÉS DANS DESIGN-SYSTEM à terme
+        │
+        ├── 📁 Button
+        │   ├── 📁 assets    ===> SVGS, ICONS ET IMAGES UTILISÉES DANS LE COMPOSANT UI
+        │   ├── 📘 Button.tsx
+        │   ├── 📕 Button.module.scss
+        │   └── 📕 Button.stories.tsx
+        └── …
+        │
+        └── …
+```
+
+> [!TIP]
+>
+> On peut générer un composant (page, ui-kit, transverse) avec la commande suivante :
+>
+> ```bash
+> yarn generate:component <nom composant>
+> ```
 
 ## [COMPONENTS](./components/README.md)
 
-## [SCREENS](./screens/README.md)
-
-## [REPOSITORY](./repository/README.md)
-
 ## [PAGES](./pages/README.md)
+
+## [UI-KIT](./ui-kit/README.md)
 
 ## Architecture générale :
 
@@ -16,15 +90,11 @@ La structure des composants visuels suit une organisation par couches :
 
 ```
 +---------------------------------------------------------------+
-|    THEME : nos variables, mixins et fonctions SCSS            |
+|    COMPONENTS : features transverses liées au portail pro     |
++---------------------------------------------------------------+
+|    PAGES : pages et composants liées à une seule feature      |
 +---------------------------------------------------------------+
 |    UI-KIT : composants standards hautement réutilisables      |
-+---------------------------------------------------------------+
-|    COMPONENTS : features intermédiaires                       |
-+---------------------------------------------------------------+
-|    SCREENS : écrans non connéctés et sans la nav générale     |
-+---------------------------------------------------------------+
-|    ROUTES : routage, hydratation des screens, chargement      |
 +---------------------------------------------------------------+
 ```
 

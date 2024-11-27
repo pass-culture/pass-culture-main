@@ -1148,7 +1148,7 @@ def reject_inappropriate_products(
         models.Product.extraData["ean"].astext.in_(eans),
         models.Product.idAtProviders.is_not(None),
         models.Product.gcuCompatibilityType != models.GcuCompatibilityType.FRAUD_INCOMPATIBLE,
-    )
+    ).all()
 
     if not products:
         return False
@@ -1412,7 +1412,7 @@ def get_shows_remaining_places_from_provider(provider_class: str | None, offer: 
 
 def _should_try_to_update_offer_stock_quantity(offer: models.Offer) -> bool:
     # The offer is to update only if it is a cinema offer, and if the venue has a cinema provider
-    if not offer.subcategory.id == subcategories.SEANCE_CINE.id:
+    if offer.subcategory.id != subcategories.SEANCE_CINE.id:
         return False
 
     if not offer.lastProviderId:  # Manual offer

@@ -9,6 +9,7 @@ from pcapi.connectors.serialization import ems_serializers
 from pcapi.core.bookings import models as booking_models
 from pcapi.core.bookings import repository as bookings_repository
 from pcapi.core.external_bookings import models as external_bookings_models
+from pcapi.core.external_bookings.decorators import catch_cinema_provider_request_timeout
 from pcapi.core.external_bookings.exceptions import ExternalBookingSoldOutError
 from pcapi.core.users import models as users_models
 from pcapi.models.feature import FeatureToggle
@@ -46,6 +47,7 @@ class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             for ticket in content.billets
         ]
 
+    @catch_cinema_provider_request_timeout
     def book_ticket(
         self, show_id: int, booking: booking_models.Booking, beneficiary: users_models.User
     ) -> list[external_bookings_models.Ticket]:

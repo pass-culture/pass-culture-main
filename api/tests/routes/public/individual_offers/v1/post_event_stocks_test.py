@@ -227,3 +227,66 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 400
         assert response.json == {"idAtProvider": ["`aïe aïe aïe` is already taken by another offer stock"]}
+
+    def test_should_raise_400_because_too_many_stocks_sent(self, client: TestClient):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event, carre_or_price_category = self.setup_base_resource(
+            venue=venue_provider.venue, provider=venue_provider.provider
+        )
+
+        next_week = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=1)
+        next_month = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
+        next_month_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(next_month, "973")
+
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url.format(event_id=event.id),
+            json={
+                "dates": [
+                    {
+                        "beginningDatetime": next_month_in_non_utc_tz.isoformat(),
+                        "bookingLimitDatetime": date_utils.format_into_utc_date(next_week),
+                        "price_category_id": carre_or_price_category.id,
+                        "quantity": 10,
+                        "id_at_provider": f"id_143556{a}",
+                    }
+                    for a in range(0, offers_models.Offer.MAX_STOCKS_PER_OFFER + 1)
+                ],
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"dates": ["ensure this value has at most 2500 items"]}
+
+    def test_should_raise_400_because_stocks_would_exceed_max_stocks_per_offer(self, client: TestClient):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event, carre_or_price_category = self.setup_base_resource(
+            venue=venue_provider.venue, provider=venue_provider.provider
+        )
+        offers_factories.StockFactory(offer=event)
+
+        next_week = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=1)
+        next_month = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
+        next_month_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(next_month, "973")
+
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url.format(event_id=event.id),
+            json={
+                "dates": [
+                    {
+                        "beginningDatetime": next_month_in_non_utc_tz.isoformat(),
+                        "bookingLimitDatetime": date_utils.format_into_utc_date(next_week),
+                        "price_category_id": carre_or_price_category.id,
+                        "quantity": 10,
+                        "id_at_provider": f"id_143556{a}",
+                    }
+                    for a in range(0, offers_models.Offer.MAX_STOCKS_PER_OFFER)
+                ],
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json == {
+            "dates": [
+                f"The maximum number of stock entries allowed per offer is {offers_models.Offer.MAX_STOCKS_PER_OFFER}"
+            ]
+        }

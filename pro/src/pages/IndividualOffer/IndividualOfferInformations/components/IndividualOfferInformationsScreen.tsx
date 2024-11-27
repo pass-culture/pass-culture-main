@@ -17,7 +17,10 @@ import { useIndividualOfferContext } from 'commons/context/IndividualOfferContex
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
-import { PATCH_SUCCESS_MESSAGE } from 'commons/core/shared/constants'
+import {
+  PATCH_SUCCESS_MESSAGE,
+  SENT_DATA_ERROR_MESSAGE,
+} from 'commons/core/shared/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
@@ -169,6 +172,8 @@ export const IndividualOfferInformationsScreen = ({
       )
       // This is used from scroll to error
       formik.setStatus('apiError')
+
+      return notify.error(SENT_DATA_ERROR_MESSAGE)
     }
 
     if (

@@ -314,8 +314,7 @@ describe('Income', () => {
       vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
       vi.spyOn(api, 'getStatistics').mockResolvedValue({ incomeByYear: MOCK_DATA.incomeByYear })
       renderIncome()
-      const toFloatStr = (number: number): string =>
-        number.toString().replace('.', ',') + '€'
+      const toLocalEur = (number: number): string => number.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })
 
       await waitFor(() => screen.getAllByText(LABELS.incomeResultsLabel))
       const yearsWithData = Object.keys(MOCK_DATA.incomeByYear).filter(
@@ -332,26 +331,18 @@ describe('Income', () => {
         const income = MOCK_DATA.incomeByYear[y]
         const incomeTypes = Object.keys(income) as (keyof AggregatedRevenue)[]
         for (const t of incomeTypes) {
-          await waitFor(() => {
-            const incomeResults = income[t]
-            if (incomeResults) {
-              if (isCollectiveAndIndividualRevenue(incomeResults)) {
-                expect(screen.getByText(toFloatStr(incomeResults.total))).toBeInTheDocument()
-                expect(
-                  screen.getByText(toFloatStr(incomeResults.individual))
-                ).toBeInTheDocument()
-                expect(
-                  screen.getByText(toFloatStr(incomeResults.collective))
-                ).toBeInTheDocument()
-              } else if (isCollectiveRevenue(incomeResults)) {
-                expect(
-                  screen.getByText(toFloatStr(incomeResults.collective))
-                ).toBeInTheDocument()
-              } else {
-                expect(screen.getByText(toFloatStr(incomeResults.individual))).toBeInTheDocument()
-              }
+          const incomeResults = income[t]
+          if (incomeResults) {
+            if (isCollectiveAndIndividualRevenue(incomeResults)) {
+              await waitFor(() => expect(screen.getByText(toLocalEur(incomeResults.total), { collapseWhitespace: false })).toBeInTheDocument())
+              expect(screen.getByText(toLocalEur(incomeResults.individual), { collapseWhitespace: false })).toBeInTheDocument()
+              expect(screen.getByText(toLocalEur(incomeResults.collective), { collapseWhitespace: false })).toBeInTheDocument()
+            } else if (isCollectiveRevenue(incomeResults)) {
+              await waitFor(() => expect(screen.getByText(toLocalEur(incomeResults.collective), { collapseWhitespace: false })).toBeInTheDocument())
+            } else {
+              await waitFor(() => expect(screen.getByText(toLocalEur(incomeResults.individual), { collapseWhitespace: false })).toBeInTheDocument())
             }
-          })
+          }
         }
       }
     })

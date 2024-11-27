@@ -63,6 +63,7 @@ export const AddressManual = ({
           label="Adresse postale"
           name="street"
           disabled={readOnlyFields.includes('street')}
+          maxLength={200}
         />
       </FormLayout.Row>
       <FormLayout.Row inline className={styles['inline-fields']}>
@@ -78,6 +79,7 @@ export const AddressManual = ({
           name="city"
           className={styles['field-city']}
           disabled={readOnlyFields.includes('city')}
+          maxLength={50}
         />
       </FormLayout.Row>
       <FormLayout.Row>

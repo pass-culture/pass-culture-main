@@ -15,7 +15,7 @@ type IncomeSubBoxProps = {
 }
 
 const IncomeResultsSubBox = ({ title, number, help }: IncomeSubBoxProps) => {
-  const numberStr = number.toString().replace('.', ',')
+  const numberStr = number.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })
 
   return (
     <div className={styles['income-results-block']}>
@@ -37,7 +37,7 @@ const IncomeResultsSubBox = ({ title, number, help }: IncomeSubBoxProps) => {
           </Button>
         )}
       </div>
-      <div className={styles['income-results-block-number']}>{numberStr}€</div>
+      <div className={styles['income-results-block-number']}>{numberStr}</div>
     </div>
   )
 }

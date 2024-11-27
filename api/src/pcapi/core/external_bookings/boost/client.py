@@ -9,6 +9,7 @@ from pcapi.connectors import boost
 from pcapi.connectors.serialization import boost_serializers
 import pcapi.core.bookings.constants as bookings_constants
 import pcapi.core.bookings.models as bookings_models
+from pcapi.core.external_bookings.decorators import catch_cinema_provider_request_timeout
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.users.models as users_models
 from pcapi.utils.queue import add_to_queue
@@ -73,6 +74,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             request_timeout=self.request_timeout,
         )
 
+    @catch_cinema_provider_request_timeout
     def book_ticket(
         self, show_id: int, booking: bookings_models.Booking, beneficiary: users_models.User
     ) -> list[external_bookings_models.Ticket]:

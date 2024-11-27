@@ -1081,6 +1081,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
             in content_as_text
         )
         assert "Statut : Expirée" in content_as_text
+        assert "Statut PC Pro : Réservée" in content_as_text
         assert "État : Validée" in content_as_text
         assert "Utilisateur de la dernière validation" not in content_as_text
         assert "Date de dernière validation de l’offre" not in content_as_text
