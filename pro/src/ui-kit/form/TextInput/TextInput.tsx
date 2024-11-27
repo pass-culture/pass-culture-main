@@ -55,6 +55,12 @@ export type TextInputProps = FieldLayoutBaseProps &
      * Use the `label` or `description` props instead to provide instructions on the expected format.
      */
     placeholder?: string
+    /**
+     * A custom component to be displayed next to the input.
+     * It can be used to display additional information or related actions like
+     * a checkbox to reset the input value.
+     */
+    InputExtension?: React.ReactNode
   }
 
 /**
@@ -115,6 +121,7 @@ export const TextInput = ({
   externalError,
   ErrorDetails,
   showMandatoryAsterisk,
+  InputExtension,
   ...props
 }: TextInputProps): JSX.Element => {
   const [field, meta] = useField({
@@ -138,6 +145,44 @@ export const TextInput = ({
   if (countCharacters) {
     describedBy.push(`field-characters-count-description-${name}`)
   }
+
+  const input = <BaseInput
+    disabled={disabled}
+    hasError={showError}
+    maxLength={maxLength}
+    placeholder={placeholder}
+    step={step}
+    type={type}
+    rightButton={rightButton}
+    ref={refForInput}
+    rightIcon={rightIcon}
+    leftIcon={leftIcon}
+    aria-required={!isOptional}
+    aria-describedby={describedBy.join(' ') || undefined}
+    onKeyDown={(event) => {
+      // Restrict input for number types
+      if (type === 'number') {
+        if (regexIsNavigationKey.test(event.key)) {
+          return
+        }
+        const testInput = hasDecimal
+          ? !regexHasDecimal.test(event.key)
+          : !regexHasNotDecimal.test(event.key)
+        if (testInput) {
+          event.preventDefault()
+        }
+      }
+    }}
+    // Disable changing input value on scroll over a number input
+    onWheel={(event) => {
+      if (type === 'number') {
+        // Blur the input to prevent value change on scroll
+        event.currentTarget.blur()
+      }
+    }}
+    {...field}
+    {...props}
+  />
 
   return (
     <FieldLayout
@@ -166,45 +211,14 @@ export const TextInput = ({
         <span className={styles['text-input-readonly']} ref={refForInput}>
           {props.value}
         </span>
-      ) : (
-        <BaseInput
-          disabled={disabled}
-          hasError={showError}
-          maxLength={maxLength}
-          placeholder={placeholder}
-          step={step}
-          type={type}
-          rightButton={rightButton}
-          ref={refForInput}
-          rightIcon={rightIcon}
-          leftIcon={leftIcon}
-          aria-required={!isOptional}
-          aria-describedby={describedBy.join(' ') || undefined}
-          onKeyDown={(event) => {
-            // Restrict input for number types
-            if (type === 'number') {
-              if (regexIsNavigationKey.test(event.key)) {
-                return
-              }
-              const testInput = hasDecimal
-                ? !regexHasDecimal.test(event.key)
-                : !regexHasNotDecimal.test(event.key)
-              if (testInput) {
-                event.preventDefault()
-              }
-            }
-          }}
-          // Disable changing input value on scroll over a number input
-          onWheel={(event) => {
-            if (type === 'number') {
-              // Blur the input to prevent value change on scroll
-              event.currentTarget.blur()
-            }
-          }}
-          {...field}
-          {...props}
-        />
-      )}
+      ) : InputExtension ? (
+        <div className={styles['text-input-group']} role="group">
+          {input}
+          <div className={styles['text-input-group-extension']}>
+            {InputExtension}
+          </div>
+        </div>
+      ) : input}
     </FieldLayout>
   )
 }

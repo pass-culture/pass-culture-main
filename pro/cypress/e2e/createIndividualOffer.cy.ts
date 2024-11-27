@@ -93,7 +93,7 @@ describe('Create individual offers', () => {
       cy.findByLabelText('Intitulé du tarif *').type('Fosse Sceptique')
     })
     // manque un data-testid ou un accessibility label
-    cy.get('[name="priceCategories[2].free"]').click()
+    cy.get('[name="priceCategories[2].price.free"]').click()
 
     cy.findByText('Accepter les réservations “Duo“').should('exist')
 

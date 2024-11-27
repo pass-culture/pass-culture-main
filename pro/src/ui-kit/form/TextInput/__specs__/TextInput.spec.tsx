@@ -60,4 +60,21 @@ describe('TextInput', () => {
     const input = screen.getByRole('textbox', { name: inputLabel })
     expect(input.getAttribute('aria-describedby')).toBe(descriptionId)
   })
+
+  it('should display the element passed as input extension when defined', () => {
+    const inputExtensionContent = 'Extension content'
+
+    render(
+      <Formik initialValues={{ test1: '', test2: '' }} onSubmit={() => {}}>
+        <TextInput
+          type="text"
+          label="Input 1"
+          name="test1"
+          InputExtension={<span>{inputExtensionContent}</span>}
+        />
+      </Formik>
+    )
+
+    expect(screen.getByText(inputExtensionContent)).toBeInTheDocument()
+  })
 })

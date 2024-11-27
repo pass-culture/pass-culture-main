@@ -25,6 +25,8 @@
   &-small-label &-label {
     @include fonts.caption;
 
+    display: block;
+    min-height: forms.$input-label-min-height;
     margin-bottom: forms.$label-small-space-before-input;
   }
 
@@ -63,6 +65,8 @@
   &-input-description {
     @include fonts.caption;
 
+    display: block;
+    min-height: forms.$input-description-min-height;
     color: var(--color-grey-dark);
   }
 }

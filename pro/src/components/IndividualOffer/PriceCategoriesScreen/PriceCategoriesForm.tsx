@@ -15,7 +15,7 @@ import strokeEuroIcon from 'icons/stroke-euro.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
-import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
+import { PriceInput } from 'ui-kit/form/PriceInput/PriceInput'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
@@ -49,9 +49,6 @@ export const PriceCategoriesForm = ({
   const [currentDeletionIndex, setCurrentDeletionIndex] = useState<
     number | null
   >(null)
-  const isFreeCheckboxSelectedArray = values.priceCategories.map(
-    (priceCategory) => priceCategory.price === 0
-  )
 
   const onDeletePriceCategory = async (
     index: number,
@@ -152,43 +149,20 @@ export const PriceCategoriesForm = ({
                         values.priceCategories.length <= 1 || isDisabled
                       }
                     />
-
-                    <TextInput
-                      smallLabel
+                    <PriceInput
+                      className={styles['price-input']}
                       name={`priceCategories[${index}].price`}
                       label="Prix par personne"
-                      type="number"
-                      step="0.01"
                       max={PRICE_CATEGORY_PRICE_MAX}
                       rightIcon={strokeEuroIcon}
-                      className={styles['price-input']}
                       disabled={isDisabled}
+                      showFreeCheckbox
+                      smallLabel
                     />
-
-                    <div className={cn(styles['form-row-actions'])}>
-                      <BaseCheckbox
-                        className={styles['free-checkbox']}
-                        label="Gratuit"
-                        checked={isFreeCheckboxSelectedArray[index]}
-                        name={`priceCategories[${index}].free`}
-                        onChange={async (e) => {
-                          if (e.target.checked) {
-                            await setFieldValue(
-                              `priceCategories[${index}].price`,
-                              0
-                            )
-                          } else {
-                            await setFieldValue(
-                              `priceCategories[${index}].price`,
-                              ''
-                            )
-                          }
-                        }}
-                        disabled={isDisabled}
-                      />
-                      {mode === OFFER_WIZARD_MODE.CREATION && (
+                    {mode === OFFER_WIZARD_MODE.CREATION && (
                         <Button
                           className={styles['delete-icon']}
+                          iconClassName={styles['delete-icon-svg']}
                           data-testid={'delete-button'}
                           variant={ButtonVariant.TERNARY}
                           icon={fullTrashIcon}
@@ -212,8 +186,7 @@ export const PriceCategoriesForm = ({
                             !isDisabled &&
                             'Supprimer le tarif'}
                         </Button>
-                      )}
-                    </div>
+                    )}
                   </FormLayout.Row>
                 </fieldset>
               ))}

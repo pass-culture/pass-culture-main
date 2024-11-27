@@ -8,10 +8,8 @@
 }
 
 .price-input {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
+  width: rem.torem(200px);
+  max-width: fit-content;
 }
 
 .duo-section {
@@ -19,19 +17,21 @@
   margin-bottom: rem.torem(40px);
 }
 
-.form-row-actions {
-  height: size.$input-min-height;
-  display: flex;
-  align-items: center;
-  margin-top: 0;
-}
-
 .free-checkbox {
   margin-right: rem.torem(20px);
 }
 
 .delete-icon {
-  svg {
+  padding: 0;
+  height: fit-content;
+  margin-top: calc(
+    forms.$input-label-min-height +
+    forms.$label-small-space-before-input +
+    (size.$input-min-height / 2) -
+    (rem.torem(24px) / 2)
+  );
+
+  &-svg {
     width: rem.torem(24px);
     height: rem.torem(24px);
   }
@@ -51,19 +51,23 @@
     width: rem.torem(424px);
   }
 
+  .price-input {
+    margin-top: calc(forms.$label-space-before-input + forms.$input-description-min-height);
+  }
+
+  .delete-icon {
+    margin-top: calc(
+      forms.$label-space-before-input +
+      forms.$input-description-min-height +
+      forms.$input-label-min-height +
+      forms.$label-small-space-before-input +
+      (size.$input-min-height / 2) -
+      (rem.torem(24px) / 2)
+    );
+  }
+
   .form-layout-row-price-category:nth-child(odd) {
     background-color: unset;
-  }
-
-  .price-input {
-    width: rem.torem(146px);
-  }
-
-  .form-row-actions {
-    margin-top: calc(
-      #{forms.$label-small-space-before-input} + #{fonts.$caption-line-height}/ 2
-    );
-    height: auto;
   }
 
   .form-layout-row-price-category {
