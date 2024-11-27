@@ -536,6 +536,7 @@ def create_offers_booking_with_different_displayed_status(
             startDatetime=beginning_datetime,
             endDatetime=end_datetime,
             bookingLimitDatetime=booking_limit_datetime,
+            priceDetail="Some details",
         )
 
         if booking_factory:
@@ -594,6 +595,7 @@ def create_offer_templates_with_different_displayed_status(
             venue=next(venue_iterator),
             educational_domains=[next(domains_iterator)],
             bookingEmails=["toto@totoland.com"],
+            formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
         )
 
 
