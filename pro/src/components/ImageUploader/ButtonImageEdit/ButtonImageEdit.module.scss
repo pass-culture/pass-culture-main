@@ -51,7 +51,7 @@
 }
 
 .label {
-  @include fonts.body-exergue;
+  @include fonts.body-accent;
 
   line-height: rem.torem(20px);
 }

@@ -19,7 +19,7 @@
   height: 0;
 
   .pellet {
-    @include fonts.caption;
+    @include fonts.body-accent-xs;
 
     align-items: center;
     background-color: var(--color-grey-light);

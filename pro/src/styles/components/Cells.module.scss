@@ -47,7 +47,7 @@
 }
 
 .title-column {
-  @include fonts.body-exergue;
+  @include fonts.body-accent;
 
   grid-column: head;
   grid-row: head / desc;
@@ -103,13 +103,13 @@
 }
 
 .isbn {
-  @include fonts.caption;
+  @include fonts.body-accent-xs;
 
   color: var(--color-grey-dark);
 }
 
 .stocks {
-  @include fonts.caption;
+  @include fonts.body-accent-xs;
 
   color: var(--color-grey-dark);
   display: flex;
@@ -307,7 +307,7 @@
   flex-direction: column;
 
   &-hours {
-    @include fonts.caption;
+    @include fonts.body-accent-xs;
   }
 }
 

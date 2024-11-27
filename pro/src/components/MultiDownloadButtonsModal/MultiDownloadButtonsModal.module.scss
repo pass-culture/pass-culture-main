@@ -35,7 +35,7 @@
     top: rem.torem(45px);
 
     .inside-modal-button {
-      @include fonts.body-exergue;
+      @include fonts.body-accent;
 
       font-size: rem.torem(16px);
       background: var(--color-white);

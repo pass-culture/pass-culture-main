@@ -9,7 +9,7 @@
 }
 
 .tag {
-  @include fonts.caption;
+  @include fonts.body-accent-xs;
 
   white-space: nowrap;
   justify-content: center;
@@ -26,7 +26,7 @@
   }
 
   &-close-button {
-    @include fonts.caption;
+    @include fonts.body-accent-xs;
 
     cursor: pointer;
     line-height: rem.torem(16px);

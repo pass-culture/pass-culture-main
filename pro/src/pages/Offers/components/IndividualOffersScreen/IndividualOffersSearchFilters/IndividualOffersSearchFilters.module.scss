@@ -9,7 +9,7 @@ $status-filter-margin-top: rem.torem(24px);
 }
 
 .offerer-filter {
-  @include fonts.caption;
+  @include fonts.body-accent-xs;
 
   align-items: center;
   background-color: var(--color-accent-light);

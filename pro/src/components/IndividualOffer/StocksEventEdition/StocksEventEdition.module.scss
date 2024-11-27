@@ -18,7 +18,7 @@
 }
 
 .table-head {
-  @include fonts.caption;
+  @include fonts.body-accent-xs;
 
   text-align: left;
   padding-bottom: rem.torem(16px);
@@ -31,7 +31,7 @@
 }
 
 .header-name {
-  @include fonts.caption;
+  @include fonts.body-accent-xs;
 }
 
 .filter-input {
