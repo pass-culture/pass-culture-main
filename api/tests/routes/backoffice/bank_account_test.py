@@ -208,7 +208,7 @@ class GetBankAccountHistoryTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
         assert rows[0]["Type"] == history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED.value
-        assert f"Lieu : {venue.common_name}" in rows[0]["Commentaire"]
+        assert f"Partenaire culturel : {venue.common_name}" in rows[0]["Commentaire"]
         assert url_for("backoffice_web.venue.get", venue_id=venue.id) in str(response.data)
         assert rows[0]["Date/Heure"].startswith(action.actionDate.strftime("Le %d/%m/%Y à "))
         assert rows[0]["Auteur"] == action.authorUser.full_name
@@ -247,13 +247,13 @@ class GetBankAccountHistoryTest(GetEndpointHelper):
         assert len(rows) == 2
 
         assert rows[0]["Type"] == "Lieu dissocié d'un compte bancaire"
-        assert f"Lieu : {venue.common_name}" in rows[0]["Commentaire"]
+        assert f"Partenaire culturel : {venue.common_name}" in rows[0]["Commentaire"]
         assert url_for("backoffice_web.venue.get", venue_id=venue.id) in str(response.data)
         assert rows[0]["Date/Heure"].startswith(unlink_action.actionDate.strftime("Le %d/%m/%Y à "))
         assert rows[0]["Auteur"] == legit_user.full_name
 
         assert rows[1]["Type"] == "Lieu associé à un compte bancaire"
-        assert f"Lieu : {venue.common_name}" in rows[0]["Commentaire"]
+        assert f"Partenaire culturel : {venue.common_name}" in rows[0]["Commentaire"]
         assert url_for("backoffice_web.venue.get", venue_id=venue.id) in str(response.data)
         assert rows[1]["Date/Heure"].startswith(link_action.actionDate.strftime("Le %d/%m/%Y à "))
         assert rows[1]["Auteur"] == legit_user.full_name
@@ -392,6 +392,7 @@ class DownloadReimbursementDetailsTest(PostEndpointHelper):
         )
         second_invoice = finance_factories.InvoiceFactory(cashflows=[second_cashflow], bankAccount=bank_account)
         features.WIP_ENABLE_OFFER_ADDRESS = is_use_offer_address_ff_active
+        features.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE = is_use_offer_address_ff_active
         response = self.post_to_endpoint(
             authenticated_client,
             bank_account_id=bank_account.id,

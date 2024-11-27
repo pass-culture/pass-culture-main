@@ -148,7 +148,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
             (datetime.date.today() - datetime.timedelta(days=4)).strftime("%d/%m/%Y")
         )
         assert rows[0]["Entité juridique"] == bookings[0].offerer.name
-        assert rows[0]["Lieu"] == bookings[0].venue.name
+        assert rows[0]["Partenaire culturel"] == bookings[0].venue.name
 
         extra_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[0]
         assert f"Catégorie : {categories.LIVRE.pro_label}" in extra_data
@@ -284,7 +284,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
             (datetime.date.today() - datetime.timedelta(days=2)).strftime("%d/%m/%Y à")
         )
         assert row["Entité juridique"] == bookings[2].offerer.name
-        assert row["Lieu"] == bookings[2].venue.name
+        assert row["Partenaire culturel"] == bookings[2].venue.name
 
         extra_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[row_index]
         assert f"Catégorie : {categories.LIVRE.pro_label}" in extra_data
@@ -1308,15 +1308,20 @@ class GetIndividualBookingXLSXDownloadTest(GetEndpointHelper):
 
     @pytest.mark.parametrize("is_oa_as_data_source_ff_active", (True, False))
     def test_csv_length(self, features, authenticated_client, bookings, is_oa_as_data_source_ff_active):
+        EXPECTED_COLUMN_NAME = {
+            True: "Structure",
+            False: "Lieu",
+        }
         venue_id = bookings[0].venueId
 
         features.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE = is_oa_as_data_source_ff_active
+        features.WIP_ENABLE_OFFER_ADDRESS = is_oa_as_data_source_ff_active
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, venue=venue_id))
             assert response.status_code == 200
 
         sheet = self.reader_from_response(response)
-        assert sheet.cell(row=1, column=1).value == "Lieu"
+        assert sheet.cell(row=1, column=1).value == EXPECTED_COLUMN_NAME[is_oa_as_data_source_ff_active]
         assert sheet.cell(row=2, column=1).value == bookings[0].venue.name
         assert sheet.cell(row=3, column=1).value == bookings[0].venue.name
         assert sheet.cell(row=4, column=1).value == None

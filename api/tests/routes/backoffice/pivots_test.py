@@ -58,8 +58,8 @@ class ListPivotsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         allocine_rows = html_parser.extract_table_rows(response.data)
-        assert allocine_rows[0]["Id du Lieu"] == str(allocine_pivot.venue.id)
-        assert allocine_rows[0]["Lieu"] == allocine_pivot.venue.name
+        assert allocine_rows[0]["Id du partenaire culturel"] == str(allocine_pivot.venue.id)
+        assert allocine_rows[0]["Partenaire culturel"] == allocine_pivot.venue.name
         assert allocine_rows[0]["Identifiant cinéma (Allociné)"] == allocine_pivot.theaterId
         assert allocine_rows[0]["Identifiant interne Allociné"] == allocine_pivot.internalId
 
@@ -91,7 +91,7 @@ class ListPivotsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         allocine_rows = html_parser.extract_table_rows(response.data)
-        assert {row["Lieu"] for row in allocine_rows} == expected_venues
+        assert {row["Partenaire culturel"] for row in allocine_rows} == expected_venues
 
     def test_list_pivots_boost(self, authenticated_client):
         boost_pivot = providers_factories.BoostCinemaDetailsFactory()
@@ -101,8 +101,8 @@ class ListPivotsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         boost_rows = html_parser.extract_table_rows(response.data)
-        assert boost_rows[0]["Id du Lieu"] == str(boost_pivot.cinemaProviderPivot.venue.id)
-        assert boost_rows[0]["Lieu"] == boost_pivot.cinemaProviderPivot.venue.name
+        assert boost_rows[0]["Id du partenaire culturel"] == str(boost_pivot.cinemaProviderPivot.venue.id)
+        assert boost_rows[0]["Partenaire culturel"] == boost_pivot.cinemaProviderPivot.venue.name
         assert boost_rows[0]["Identifiant cinéma (Boost)"] == boost_pivot.cinemaProviderPivot.idAtProvider
         assert boost_rows[0]["URL du cinéma (Boost)"] == boost_pivot.cinemaUrl
 
@@ -147,7 +147,7 @@ class ListPivotsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         cgr_rows = html_parser.extract_table_rows(response.data)
-        assert {row["Lieu"] for row in cgr_rows} == expected_venues
+        assert {row["Partenaire culturel"] for row in cgr_rows} == expected_venues
 
     def test_list_pivots_cgr(self, authenticated_client):
         cgr_pivot = providers_factories.CGRCinemaDetailsFactory()
@@ -157,8 +157,8 @@ class ListPivotsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         cgr_rows = html_parser.extract_table_rows(response.data)
-        assert cgr_rows[0]["Id du Lieu"] == str(cgr_pivot.cinemaProviderPivot.venue.id)
-        assert cgr_rows[0]["Lieu"] == cgr_pivot.cinemaProviderPivot.venue.name
+        assert cgr_rows[0]["Id du partenaire culturel"] == str(cgr_pivot.cinemaProviderPivot.venue.id)
+        assert cgr_rows[0]["Partenaire culturel"] == cgr_pivot.cinemaProviderPivot.venue.name
         assert cgr_rows[0]["Identifiant cinéma (CGR)"] == cgr_pivot.cinemaProviderPivot.idAtProvider
         assert cgr_rows[0]["URL du cinéma (CGR)"] == cgr_pivot.cinemaUrl
 
@@ -203,7 +203,7 @@ class ListPivotsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         cgr_rows = html_parser.extract_table_rows(response.data)
-        assert {row["Lieu"] for row in cgr_rows} == expected_venues
+        assert {row["Partenaire culturel"] for row in cgr_rows} == expected_venues
 
     def test_list_pivots_cineoffice(self, authenticated_client):
         cineoffice_pivot = providers_factories.CDSCinemaDetailsFactory()
@@ -213,8 +213,8 @@ class ListPivotsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         cineoffice_rows = html_parser.extract_table_rows(response.data)
-        assert cineoffice_rows[0]["Id du Lieu"] == str(cineoffice_pivot.cinemaProviderPivot.venue.id)
-        assert cineoffice_rows[0]["Lieu"] == cineoffice_pivot.cinemaProviderPivot.venue.name
+        assert cineoffice_rows[0]["Id du partenaire culturel"] == str(cineoffice_pivot.cinemaProviderPivot.venue.id)
+        assert cineoffice_rows[0]["Partenaire culturel"] == cineoffice_pivot.cinemaProviderPivot.venue.name
         assert cineoffice_rows[0]["Identifiant cinéma (CDS)"] == cineoffice_pivot.cinemaProviderPivot.idAtProvider
         assert cineoffice_rows[0]["Nom de l'utilisateur (CDS)"] == cineoffice_pivot.accountId
 
@@ -265,7 +265,7 @@ class ListPivotsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         cgr_rows = html_parser.extract_table_rows(response.data)
-        assert {row["Lieu"] for row in cgr_rows} == expected_venues
+        assert {row["Partenaire culturel"] for row in cgr_rows} == expected_venues
 
     def test_list_pivots_ems(self, authenticated_client):
         ems_pivot = providers_factories.EMSCinemaDetailsFactory()
@@ -276,8 +276,8 @@ class ListPivotsTest(GetEndpointHelper):
 
         ems_rows = html_parser.extract_table_rows(response.data)
 
-        assert ems_rows[0]["Id du Lieu"] == str(ems_pivot.cinemaProviderPivot.venue.id)
-        assert ems_rows[0]["Lieu"] == ems_pivot.cinemaProviderPivot.venue.name
+        assert ems_rows[0]["Id du partenaire culturel"] == str(ems_pivot.cinemaProviderPivot.venue.id)
+        assert ems_rows[0]["Partenaire culturel"] == ems_pivot.cinemaProviderPivot.venue.name
         assert ems_rows[0]["Identifiant cinéma (EMS)"] == ems_pivot.cinemaProviderPivot.idAtProvider
         assert ems_rows[0]["Dernière synchronisation réussie"] == ems_pivot.last_version_as_isoformat
 

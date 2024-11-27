@@ -76,7 +76,7 @@ def test_with_pricings(client):
     assert response.headers["Content-type"] == "text/csv; charset=utf-8;"
     assert response.headers["Content-Disposition"] == "attachment; filename=remboursements_pass_culture.csv"
     reader = csv.DictReader(StringIO(response.data.decode("utf-8-sig")), delimiter=";")
-    assert reader.fieldnames == ReimbursementDetails.CSV_HEADER
+    assert reader.fieldnames == ReimbursementDetails.get_csv_headers()
     rows = list(reader)
     assert len(rows) == 2
     row = rows[1]
@@ -91,11 +91,11 @@ def test_with_pricings(client):
     assert row["N° du justificatif"] == invoice.reference
     assert row["N° de virement"] == batch.label
     assert row["Intitulé du compte bancaire"] == bank_account_1.label
-    assert row["SIRET du lieu"] == venue1.siret
+    assert row["SIRET de la structure"] == venue1.siret
     assert row["IBAN"] == bank_account_1.iban
-    assert row["Raison sociale du lieu"] == venue1.name
-    assert row["Adresse du lieu"] == f"{venue1.street} {venue1.postalCode} {venue1.city}"
-    assert row["SIRET du lieu"] == venue1.siret
+    assert row["Raison sociale de la structure"] == venue1.name
+    assert row["Adresse de l'offre"] == f"{venue1.street} {venue1.postalCode} {venue1.city}"
+    assert row["SIRET de la structure"] == venue1.siret
     assert row["Nom de l'offre"] == offer.name
     assert row["N° de réservation (offre collective)"] == ""
     assert row["Nom (offre collective)"] == ""
@@ -156,7 +156,7 @@ def test_with_pricings_collective_use_case(client):
     assert response.headers["Content-type"] == "text/csv; charset=utf-8;"
     assert response.headers["Content-Disposition"] == "attachment; filename=remboursements_pass_culture.csv"
     reader = csv.DictReader(StringIO(response.data.decode("utf-8-sig")), delimiter=";")
-    assert reader.fieldnames == ReimbursementDetails.CSV_HEADER
+    assert reader.fieldnames == ReimbursementDetails.get_csv_headers()
     rows = list(reader)
     assert len(rows) == 2
     row = rows[1]
@@ -179,11 +179,11 @@ def test_with_pricings_collective_use_case(client):
     assert row["N° du justificatif"] == invoice.reference
     assert row["N° de virement"] == batch.label
     assert row["Intitulé du compte bancaire"] == bank_account_1.label
-    assert row["SIRET du lieu"] == venue1.siret
+    assert row["SIRET de la structure"] == venue1.siret
     assert row["IBAN"] == bank_account_1.iban
-    assert row["Raison sociale du lieu"] == venue1.name
-    assert row["Adresse du lieu"] == f"{venue1.street} {venue1.postalCode} {venue1.city}"
-    assert row["SIRET du lieu"] == venue1.siret
+    assert row["Raison sociale de la structure"] == venue1.name
+    assert row["Adresse de l'offre"] == f"{venue1.street} {venue1.postalCode} {venue1.city}"
+    assert row["SIRET de la structure"] == venue1.siret
     assert row["Nom de l'offre"] == collective_offer.name
     assert row["N° de réservation (offre collective)"] == str(collective_booking.id)
     assert row["Nom (offre collective)"] == redactor.lastName
@@ -243,7 +243,7 @@ def test_return_only_searched_invoice(client):
     assert response.headers["Content-type"] == "text/csv; charset=utf-8;"
     assert response.headers["Content-Disposition"] == "attachment; filename=remboursements_pass_culture.csv"
     reader = csv.DictReader(StringIO(response.data.decode("utf-8-sig")), delimiter=";")
-    assert reader.fieldnames == ReimbursementDetails.CSV_HEADER
+    assert reader.fieldnames == ReimbursementDetails.get_csv_headers()
     rows = list(reader)
     assert len(rows) == 1
 

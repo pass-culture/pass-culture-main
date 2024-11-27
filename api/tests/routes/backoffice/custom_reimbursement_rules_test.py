@@ -61,7 +61,7 @@ class ListCustomReimbursementRulesTest(GetEndpointHelper):
         assert rows[0]["ID règle"] == str(offer_rule.id)
         assert rows[0]["Entité juridique"] == offer_rule.offer.venue.managingOfferer.name
         assert rows[0]["SIREN"] == offer_rule.offer.venue.managingOfferer.siren
-        assert rows[0]["Lieu"] == offer_rule.offer.venue.name
+        assert rows[0]["Partenaire culturel"] == offer_rule.offer.venue.name
         assert rows[0]["Offre"] == offer_rule.offer.name
         assert rows[0]["Taux de remboursement"] == ""
         assert rows[0]["Montant remboursé"] == "27,00 €"
@@ -71,7 +71,7 @@ class ListCustomReimbursementRulesTest(GetEndpointHelper):
         assert rows[1]["ID règle"] == str(venue_rule.id)
         assert rows[1]["Entité juridique"] == venue_rule.venue.managingOfferer.name
         assert rows[1]["SIREN"] == venue_rule.venue.managingOfferer.siren
-        assert rows[1]["Lieu"] == venue_rule.venue.name
+        assert rows[1]["Partenaire culturel"] == venue_rule.venue.name
         assert rows[1]["Offre"] == ""
         assert rows[1]["Taux de remboursement"] == "98,00 %"
         assert rows[1]["Montant remboursé"] == ""
@@ -81,7 +81,7 @@ class ListCustomReimbursementRulesTest(GetEndpointHelper):
         assert rows[2]["ID règle"] == str(offerer_rule.id)
         assert rows[2]["Entité juridique"] == offerer_rule.offerer.name
         assert rows[2]["SIREN"] == offerer_rule.offerer.siren
-        assert rows[2]["Lieu"] == ""
+        assert rows[2]["Partenaire culturel"] == ""
         assert rows[2]["Offre"] == ""
         assert rows[2]["Taux de remboursement"] == "50,00 %"
         assert rows[2]["Montant remboursé"] == ""
@@ -319,7 +319,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
         assert response.status_code == 303
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "Un tarif dérogatoire ne peut pas concerner un lieu et une entité juridique en même temps"
+            == "Un tarif dérogatoire ne peut pas concerner un partenaire culturel et une entité juridique en même temps"
         )
 
         assert finance_models.CustomReimbursementRule.query.count() == 0

@@ -129,7 +129,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["Tarif"] == "10,10 €"
         assert rows[0]["Formats"] == ", ".join([fmt.value for fmt in collective_offers[0].formats])
         assert rows[0]["Entité juridique"] == collective_offers[0].venue.managingOfferer.name
-        assert rows[0]["Lieu"] == collective_offers[0].venue.name
+        assert rows[0]["Partenaire culturel"] == collective_offers[0].venue.name
 
     def test_list_collective_offers_without_fraud_permission(
         self,
@@ -172,7 +172,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         )
         assert rows[0]["Tarif"] == "11,00 €"
         assert rows[0]["Entité juridique"] == collective_offers[1].venue.managingOfferer.name
-        assert rows[0]["Lieu"] == collective_offers[1].venue.name
+        assert rows[0]["Partenaire culturel"] == collective_offers[1].venue.name
 
     def test_list_collective_offers_by_several_filters(self, authenticated_client, collective_offers):
         collective_offer = collective_offers[2]
@@ -731,7 +731,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert rows[0]["Entité juridique"] == "Offerer Revue manuelle"
-        assert rows[0]["Lieu"] == "Venue"
+        assert rows[0]["Partenaire culturel"] == "Venue"
 
     def test_list_offers_with_venue_confidence_rule(self, client, pro_fraud_admin):
         rule = offerers_factories.ManualReviewVenueConfidenceRuleFactory(
@@ -747,7 +747,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert rows[0]["Entité juridique"] == "Offerer"
-        assert rows[0]["Lieu"] == "Venue Revue manuelle"
+        assert rows[0]["Partenaire culturel"] == "Venue Revue manuelle"
 
     def test_list_collective_offers_with_top_acteur_offerer(self, client, pro_fraud_admin):
         collective_offer = educational_factories.CollectiveOfferFactory(
@@ -1287,7 +1287,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
             assert response.status_code == 200
 
         text = html_parser.extract_cards_text(response.data)[0]
-        assert "Lieu : Venue Revue manuelle" in text
+        assert "Partenaire culturel : Venue Revue manuelle" in text
 
     def test_collective_offer_with_top_acteur_offerer(self, authenticated_client):
         collective_offer = educational_factories.CollectiveOfferFactory(

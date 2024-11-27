@@ -164,7 +164,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
             in row["Date de l'évènement"]
         )
         assert row["Entité juridique"] == collective_bookings[1].offerer.name
-        assert row["Lieu"] == collective_bookings[1].venue.name
+        assert row["Partenaire culturel"] == collective_bookings[1].venue.name
 
         extra_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[row_index]
         assert f"Formats : {subcategories.EacFormat.VISITE_GUIDEE.value}" in extra_data
@@ -303,7 +303,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
             (datetime.date.today() + datetime.timedelta(days=7)).strftime("%d/%m/%Y à ")
         )
         assert row["Entité juridique"] == collective_bookings[2].offerer.name
-        assert row["Lieu"] == collective_bookings[2].venue.name
+        assert row["Partenaire culturel"] == collective_bookings[2].venue.name
 
         extra_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[row_index]
         assert f"Formats : {subcategories.EacFormat.CONCERT.value}" in extra_data

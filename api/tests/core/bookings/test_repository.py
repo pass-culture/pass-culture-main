@@ -3584,7 +3584,7 @@ class GetCsvReportTest:
         assert headers == LEGACY_BOOKINGS_CSV_HEADER
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
-        assert data_dict["Lieu"] == venue.name
+        assert data_dict["Structure"] == venue.name
         assert data_dict["Nom de l’offre"] == offer.name
         assert data_dict["Date de l'évènement"] == ""
         assert data_dict["EAN"] == ((offer.extraData or {}).get("ean") or "")
@@ -3687,7 +3687,7 @@ class GetCsvReportTest:
         assert headers == LEGACY_BOOKINGS_CSV_HEADER
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
-        assert data_dict["Lieu"] == venue.name
+        assert data_dict["Structure"] == venue.name
         assert data_dict["Nom de l’offre"] == offer.name
         assert data_dict["Date de l'évènement"] == ""
         assert data_dict["EAN"] == ((offer.extraData or {}).get("ean") or "")
@@ -3964,7 +3964,7 @@ class GetCsvReportTest:
         assert headers == LEGACY_BOOKINGS_CSV_HEADER
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
-        assert data_dict["Lieu"] == venue.name
+        assert data_dict["Structure"] == venue.name
         assert data_dict["Nom de l’offre"] == offer.name
         assert data_dict["Date de l'évènement"] == str(stock.beginningDatetime.astimezone(tz.gettz("Europe/Paris")))
         assert data_dict["EAN"] == ((offer.extraData or {}).get("ean") or "")
@@ -4453,9 +4453,9 @@ class GetCsvReportTest:
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 3
         data_dicts = [dict(zip(headers, line)) for line in data]
-        assert data_dicts[0]["Lieu"] == venue_for_event.name
-        assert data_dicts[1]["Lieu"] == venue_for_book.name
-        assert data_dicts[2]["Lieu"] == venue_for_thing.name
+        assert data_dicts[0]["Structure"] == venue_for_event.name
+        assert data_dicts[1]["Structure"] == venue_for_book.name
+        assert data_dicts[2]["Structure"] == venue_for_thing.name
 
     @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_booking_with_venue_public_name_when_public_name_is_provided(self, app):
@@ -4581,9 +4581,9 @@ class GetCsvReportTest:
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 3
         data_dicts = [dict(zip(headers, line)) for line in data]
-        assert data_dicts[0]["Lieu"] == venue_for_event.publicName
-        assert data_dicts[1]["Lieu"] == venue_for_book.publicName
-        assert data_dicts[2]["Lieu"] == venue_for_thing.publicName
+        assert data_dicts[0]["Structure"] == venue_for_event.publicName
+        assert data_dicts[1]["Structure"] == venue_for_book.publicName
+        assert data_dicts[2]["Structure"] == venue_for_thing.publicName
 
     @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_only_booking_for_requested_venue(self, app: fixture):
