@@ -9,7 +9,6 @@ import { isOfferEducational } from 'commons/core/OfferEducational/types'
 import styles from 'styles/components/Cells.module.scss'
 import { Thumb } from 'ui-kit/Thumb/Thumb'
 
-
 export const ThumbCell = ({
   offer,
   editionOfferLink,

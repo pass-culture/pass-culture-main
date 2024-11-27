@@ -58,9 +58,9 @@ $connect-as-header-height: rem.torem(52px);
       width: 100%;
       min-height: rem.torem(120px);
       background-image: linear-gradient(
-          97deg,
-          var(--color-primary),
-          var(--color-secondary)
+        97deg,
+        var(--color-primary),
+        var(--color-secondary)
       );
 
       @media (min-width: size.$tablet) {
@@ -68,7 +68,7 @@ $connect-as-header-height: rem.torem(52px);
         width: size.$side-logo-width;
         min-height: 100vh;
         box-shadow: inset rem.torem(-10px) 0 rem.torem(20px) 0
-        var(--color-large-shadow);
+          var(--color-large-shadow);
         max-width: size.$logo-side-width;
         position: sticky;
         height: 100vh;
@@ -121,7 +121,9 @@ $connect-as-header-height: rem.torem(52px);
     }
 
     &-with-heading {
-      min-height: calc(100vh - #{size.$footer-height} - rem.torem(32px) - var(--typography-title1-line-height));
+      min-height: calc(
+        100vh - #{size.$footer-height} - rem.torem(32px) - var(--typography-title1-line-height)
+      );
     }
   }
 }
@@ -165,7 +167,8 @@ $connect-as-header-height: rem.torem(52px);
   align-items: center;
   justify-content: center;
 
-  &:active, &:focus {
+  &:active,
+  &:focus {
     opacity: 1;
   }
 }

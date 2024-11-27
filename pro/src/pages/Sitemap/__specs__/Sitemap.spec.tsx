@@ -1,7 +1,10 @@
 import { screen, within } from '@testing-library/react'
 
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
-import { renderWithProviders, RenderWithProvidersOptions } from 'commons/utils/renderWithProviders'
+import {
+  renderWithProviders,
+  RenderWithProvidersOptions,
+} from 'commons/utils/renderWithProviders'
 
 import { Sitemap } from '../Sitemap'
 
@@ -13,8 +16,8 @@ const renderSitemap = (options: RenderWithProvidersOptions = {}) => {
       user: {
         currentUser: sharedCurrentUserFactory(),
         selectedOffererId: 42,
-      }
-    }
+      },
+    },
   })
 }
 

@@ -23,7 +23,6 @@ import { computeIndividualApiFilters } from 'pages/Offers/utils/computeIndividua
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-
 import { DeleteConfirmDialog } from './DeleteConfirmDialog'
 import { IndividualDeactivationConfirmDialog } from './IndividualDeactivationConfirmDialog'
 

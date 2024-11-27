@@ -21,7 +21,6 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 import { useTooltipProps } from 'ui-kit/Tooltip/useTooltipProps'
 
-
 import { getDate, getRemainingTime, shouldDisplayWarning } from './utils'
 
 export interface OfferNameCellProps {

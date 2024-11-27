@@ -23,11 +23,9 @@ export const OffererStatsScreen = () => {
   const [venueOptions, setVenueOptions] = useState<SelectOption[]>([])
 
   if (isOffererStatsV2Active) {
-    return <Navigate
-      to='/remboursements/revenus'
-      replace={true}
-      relative="path"
-    />
+    return (
+      <Navigate to="/remboursements/revenus" replace={true} relative="path" />
+    )
   }
 
   const ALL_VENUES_OPTION = {

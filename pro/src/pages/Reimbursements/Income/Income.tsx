@@ -22,8 +22,11 @@ type VenueFormValues = {
 export const Income = () => {
   const firstYearFilterRef = useRef<HTMLButtonElement>(null)
 
-  const [previouslySelectedOffererId, setPreviouslySelectedOffererId] = useState<number | null>(null)
-  const [debouncedSelectedVenues, setDebouncedSelectedVenues] = useState<string[]>([])
+  const [previouslySelectedOffererId, setPreviouslySelectedOffererId] =
+    useState<number | null>(null)
+  const [debouncedSelectedVenues, setDebouncedSelectedVenues] = useState<
+    string[]
+  >([])
   const [activeYear, setActiveYear] = useState<number>()
 
   const {
@@ -31,7 +34,7 @@ export const Income = () => {
     venuesApiError,
     venuesDataReady,
     venues,
-    selectedOffererId
+    selectedOffererId,
   } = useVenues()
   const hasSingleVenue = venuesDataReady && venues.length === 1
   const venueValues = venues.map((v) => v.value)
@@ -60,7 +63,10 @@ export const Income = () => {
 
   useEffect(() => {
     const newSelectedVenues = [...formik.values.selectedVenues]
-    const selectionHasChanged = !isEqual(newSelectedVenues, debouncedSelectedVenues)
+    const selectionHasChanged = !isEqual(
+      newSelectedVenues,
+      debouncedSelectedVenues
+    )
 
     if (selectionHasChanged) {
       if (selectedOffererId !== previouslySelectedOffererId) {
@@ -89,7 +95,8 @@ export const Income = () => {
   } = useIncome(debouncedSelectedVenues)
   const finalActiveYear = activeYear || years[0]
   const activeYearIncome = incomeByYear?.[finalActiveYear] || {}
-  const activeYearHasData = activeYearIncome.revenue || activeYearIncome.expectedRevenue
+  const activeYearHasData =
+    activeYearIncome.revenue || activeYearIncome.expectedRevenue
 
   useEffect(() => {
     if (hasSingleVenue && incomeDataReady && firstYearFilterRef.current) {
@@ -122,7 +129,9 @@ export const Income = () => {
               {!hasSingleVenue && (
                 <SelectAutocomplete
                   className={styles['income-filters-by-venue']}
-                  selectedValuesTagsClassName={styles['income-filters-by-venue-selected-tags']}
+                  selectedValuesTagsClassName={
+                    styles['income-filters-by-venue-selected-tags']
+                  }
                   name="selectedVenues"
                   label="Partenaire(s) sélectionné(s)"
                   options={venues}
@@ -176,7 +185,7 @@ export const Income = () => {
             {!incomeDataReady && (
               <>
                 {isIncomeLoading ? (
-                  <Spinner testId="income-spinner"/>
+                  <Spinner testId="income-spinner" />
                 ) : incomeApiError ? (
                   <IncomeError />
                 ) : (
@@ -190,14 +199,18 @@ export const Income = () => {
                   <IncomeNoData type="income-year" />
                 ) : (
                   <div className={styles['income-results']}>
-                    {activeYearIncome.revenue && <IncomeResultsBox
-                      type="revenue"
-                      income={activeYearIncome.revenue}
-                    />}
-                    {activeYearIncome.expectedRevenue && <IncomeResultsBox
-                      type="expectedRevenue"
-                      income={activeYearIncome.expectedRevenue}
-                    />}
+                    {activeYearIncome.revenue && (
+                      <IncomeResultsBox
+                        type="revenue"
+                        income={activeYearIncome.revenue}
+                      />
+                    )}
+                    {activeYearIncome.expectedRevenue && (
+                      <IncomeResultsBox
+                        type="expectedRevenue"
+                        income={activeYearIncome.expectedRevenue}
+                      />
+                    )}
                   </div>
                 )}
               </>

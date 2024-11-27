@@ -37,13 +37,18 @@
         width: calc(100vw - size.$main-content-padding-xs * 2);
 
         @media (min-width: size.$mobile) {
-          width: calc(100vw - (size.$main-content-padding) * 2)
+          width: calc(100vw - (size.$main-content-padding) * 2);
         }
 
         @media (min-width: size.$laptop) {
           // On very large screens the layout does not exceed 90rem.
-          width: calc(100vw - (size.$main-content-padding * 2) - size.$side-nav-width);
-          max-width: calc(size.$desktop - (size.$main-content-padding * 2) - size.$side-nav-width);
+          width: calc(
+            100vw - (size.$main-content-padding * 2) - size.$side-nav-width
+          );
+          max-width: calc(
+            size.$desktop - (size.$main-content-padding * 2) -
+              size.$side-nav-width
+          );
         }
       }
     }
@@ -76,7 +81,8 @@
         border: solid rem.torem(1px) var(--color-grey-dark);
         border-radius: rem.torem(4px);
 
-        &:hover, &:focus {
+        &:hover,
+        &:focus {
           outline: rem.torem(1px) solid var(--color-primary);
         }
 
@@ -86,7 +92,7 @@
           border-color: var(--color-black);
 
           &::before {
-            content: '';
+            content: "";
             display: block;
             width: rem.torem(8px);
             height: rem.torem(8px);

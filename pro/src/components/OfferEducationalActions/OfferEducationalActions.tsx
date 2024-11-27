@@ -274,9 +274,7 @@ export const OfferEducationalActions = ({
               <div className={style.separator} />{' '}
             </>
           )}
-          <CollectiveStatusLabel
-            offerDisplayedStatus={offer.displayedStatus}
-          />
+          <CollectiveStatusLabel offerDisplayedStatus={offer.displayedStatus} />
         </div>
       )}
     </>

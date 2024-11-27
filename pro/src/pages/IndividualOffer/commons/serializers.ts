@@ -77,7 +77,7 @@ export const serializePatchOffer = ({
     if (isAllocineOffer(offer)) {
       editableFields.push(...allocineEditableFields)
     }
-     
+
     const filtered = asArray.filter(([key, _]) => editableFields.includes(key))
 
     sentValues = Object.fromEntries(filtered)

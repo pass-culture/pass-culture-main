@@ -17,8 +17,6 @@ export const CollectiveOfferStatusCell = ({
     className={cn(styles['offers-table-cell'], styles['status-column'])}
     headers={headers}
   >
-    <CollectiveStatusLabel
-      offerDisplayedStatus={offer.displayedStatus}
-    />
+    <CollectiveStatusLabel offerDisplayedStatus={offer.displayedStatus} />
   </td>
 )

@@ -245,9 +245,9 @@ export const SelectAutocomplete = ({
 
   const openFieldOnFocus = async () => {
     const focusedOnce = meta.touched
-    const shouldOpen = (preventOpenOnFirstFocus
+    const shouldOpen = preventOpenOnFirstFocus
       ? focusedOnce && !isOpen
-      : !isOpen)
+      : !isOpen
 
     if (shouldOpen) {
       setIsOpen(true)

@@ -3,9 +3,10 @@ import { screen } from '@testing-library/react'
 import { collectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { OfferEventDateCellProps, OfferEventDateCell } from './OfferEventDateCell'
-
-
+import {
+  OfferEventDateCellProps,
+  OfferEventDateCell,
+} from './OfferEventDateCell'
 
 const renderOfferNameCell = (props: OfferEventDateCellProps) =>
   renderWithProviders(

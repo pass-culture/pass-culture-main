@@ -1,4 +1,9 @@
-import type { AggregatedRevenue, CollectiveAndIndividualRevenue,  CollectiveRevenue, IndividualRevenue } from 'apiClient/v1'
+import type {
+  AggregatedRevenue,
+  CollectiveAndIndividualRevenue,
+  CollectiveRevenue,
+  IndividualRevenue,
+} from 'apiClient/v1'
 import fullHelpIcon from 'icons/full-help.svg'
 import { BoxRounded } from 'ui-kit/BoxRounded/BoxRounded'
 import { Button } from 'ui-kit/Button/Button'
@@ -15,7 +20,10 @@ type IncomeSubBoxProps = {
 }
 
 const IncomeResultsSubBox = ({ title, number, help }: IncomeSubBoxProps) => {
-  const numberStr = number.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })
+  const numberStr = number.toLocaleString('fr-FR', {
+    style: 'currency',
+    currency: 'EUR',
+  })
 
   return (
     <div className={styles['income-results-block']}>
@@ -44,7 +52,7 @@ const IncomeResultsSubBox = ({ title, number, help }: IncomeSubBoxProps) => {
 
 type IncomeResultsBoxProps = {
   type: keyof AggregatedRevenue
-  income: CollectiveAndIndividualRevenue |  CollectiveRevenue | IndividualRevenue 
+  income: CollectiveAndIndividualRevenue | CollectiveRevenue | IndividualRevenue
 }
 
 export const IncomeResultsBox = ({ type, income }: IncomeResultsBoxProps) => {
@@ -57,19 +65,18 @@ export const IncomeResultsBox = ({ type, income }: IncomeResultsBoxProps) => {
       ? 'Montant des réservations validées et remboursées.'
       : 'Montant des réservations en cours, validées et remboursées.'
   const shouldDisplayIncomeDetails = isCollectiveAndIndividualRevenue(income)
-  const total = isCollectiveAndIndividualRevenue(income) ? income.total :
-    isCollectiveRevenue(income) ? income.collective : income.individual
+  const total = isCollectiveAndIndividualRevenue(income)
+    ? income.total
+    : isCollectiveRevenue(income)
+      ? income.collective
+      : income.individual
 
   return (
     <BoxRounded
       className={styles['income-results-box']}
       showButtonModify={false}
     >
-      <IncomeResultsSubBox
-        title={totalLabel}
-        number={total}
-        help={totalHelp}
-      />
+      <IncomeResultsSubBox title={totalLabel} number={total} help={totalHelp} />
       {shouldDisplayIncomeDetails && (
         <div className={styles['income-results-box-subbox']}>
           <IncomeResultsSubBox

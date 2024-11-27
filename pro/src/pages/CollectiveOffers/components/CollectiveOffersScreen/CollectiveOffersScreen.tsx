@@ -24,7 +24,6 @@ import { NoData } from 'components/NoData/NoData'
 import { isSameOffer } from 'pages/Offers/utils/isSameOffer'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
 
-
 import styles from './CollectiveOffersScreen.module.scss'
 import { CollectiveOffersSearchFilters } from './CollectiveOffersSearchFilters/CollectiveOffersSearchFilters'
 

@@ -14,7 +14,6 @@ import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { CollectiveOfferFromRequest } from './CollectiveOfferFromRequest'
 
-
 const offererId = 666
 const mockLogEvent = vi.fn()
 const mockNavigate = vi.fn()

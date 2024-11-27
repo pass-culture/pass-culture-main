@@ -1,12 +1,16 @@
 /* istanbul ignore file: DEBT, TO FIX */
 
-import { PatchOfferBodyModel, PostOfferBodyModel } from "apiClient/v1";
-import { AccessibilityEnum } from "commons/core/shared/types";
-import { getIndividualOfferFactory } from "commons/utils/factories/individualApiFactories";
-import { OFFER_LOCATION } from "pages/IndividualOffer/commons/constants";
-import { IndividualOfferFormValues } from "pages/IndividualOffer/commons/types";
+import { PatchOfferBodyModel, PostOfferBodyModel } from 'apiClient/v1'
+import { AccessibilityEnum } from 'commons/core/shared/types'
+import { getIndividualOfferFactory } from 'commons/utils/factories/individualApiFactories'
+import { OFFER_LOCATION } from 'pages/IndividualOffer/commons/constants'
+import { IndividualOfferFormValues } from 'pages/IndividualOffer/commons/types'
 
-import { serializeDurationMinutes, serializeExtraDataForPatch, serializePatchOffer } from "../serializers"
+import {
+  serializeDurationMinutes,
+  serializeExtraDataForPatch,
+  serializePatchOffer,
+} from '../serializers'
 
 describe('IndividualOffer:commons:serializers', () => {
   describe('serializeDurationMinutes', () => {
@@ -38,7 +42,7 @@ describe('IndividualOffer:commons:serializers', () => {
         name: 'Test name',
         description: 'Test description',
       } as IndividualOfferFormValues
-  
+
       const extraData: PostOfferBodyModel['extraData'] = {
         author: 'author value',
         ean: 'ean value',

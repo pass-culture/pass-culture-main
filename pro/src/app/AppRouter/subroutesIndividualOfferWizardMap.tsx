@@ -45,13 +45,17 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
   },
   {
     lazy: () =>
-      import('pages/IndividualOffer/IndividualOfferInformations/IndividualOfferInformations'),
+      import(
+        'pages/IndividualOffer/IndividualOfferInformations/IndividualOfferInformations'
+      ),
     path: '/offre/individuelle/:offerId/creation/pratiques',
     title: 'Informations pratiques - Créer une offre individuelle',
   },
   {
     lazy: () =>
-      import('pages/IndividualOffer/IndividualOfferInformations/IndividualOfferInformations'),
+      import(
+        'pages/IndividualOffer/IndividualOfferInformations/IndividualOfferInformations'
+      ),
     path: '/offre/individuelle/:offerId/edition/pratiques',
     title: 'Informations pratiques - Modifier une offre individuelle',
   },
