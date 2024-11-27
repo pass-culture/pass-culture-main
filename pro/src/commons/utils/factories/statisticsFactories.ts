@@ -1,4 +1,4 @@
-import { StatisticsModel } from "apiClient/v1";
+import { StatisticsModel } from 'apiClient/v1'
 
 export const statisticsFactory = ({
   emptyYear = '',
@@ -7,10 +7,12 @@ export const statisticsFactory = ({
   collectiveAndIndividualRevenueYear = '2024',
 }): StatisticsModel => {
   const incomeByYear = {
-    ...(emptyYear && {[emptyYear]: {
-      revenue: null,
-      expectedRevenue: null,
-    }}),
+    ...(emptyYear && {
+      [emptyYear]: {
+        revenue: null,
+        expectedRevenue: null,
+      },
+    }),
     ...(individualRevenueOnlyYear && {
       [individualRevenueOnlyYear]: {
         revenue: {
@@ -18,8 +20,8 @@ export const statisticsFactory = ({
         },
         expectedRevenue: {
           individual: 2000,
-        }
-      }
+        },
+      },
     }),
     ...(collectiveRevenueOnlyYear && {
       [collectiveRevenueOnlyYear]: {
@@ -29,7 +31,7 @@ export const statisticsFactory = ({
         expectedRevenue: {
           collective: 4000,
         },
-      }
+      },
     }),
     [collectiveAndIndividualRevenueYear]: {
       revenue: {
@@ -38,9 +40,9 @@ export const statisticsFactory = ({
         collective: 10_920,
       },
       expectedRevenue: {
-        total: 18_389.20,
-        individual: 7_832.10,
-        collective: 10_557.10,
+        total: 18_389.2,
+        individual: 7_832.1,
+        collective: 10_557.1,
       },
     },
   }

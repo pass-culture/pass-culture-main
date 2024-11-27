@@ -13,8 +13,6 @@ import { OfferNameCell } from 'components/OffersTable/Cells/OfferNameCell/OfferN
 import { OfferVenueCell } from 'components/OffersTable/Cells/OfferVenueCell'
 import { ThumbCell } from 'components/OffersTable/Cells/ThumbCell'
 
-
-
 import { AddressCell } from '../../Cells/AddressCell'
 import { IndividualActionsCells } from '../../Cells/IndividualActionsCell'
 import { OfferRemainingStockCell } from '../../Cells/OfferRemainingStockCell'

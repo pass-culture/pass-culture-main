@@ -166,17 +166,19 @@ export const CollectiveStatusLabel = ({
         />
       )
     case CollectiveOfferDisplayedStatus.CANCELLED:
-      return <StatusLabel
-      className={style['status-cancelled']}
-      icon={
-        <SvgIcon
-          src={strokeWrongIcon}
-          alt=""
-          className={style['status-label-icon']}
+      return (
+        <StatusLabel
+          className={style['status-cancelled']}
+          icon={
+            <SvgIcon
+              src={strokeWrongIcon}
+              alt=""
+              className={style['status-label-icon']}
+            />
+          }
+          label="annulée"
         />
-      }
-      label="annulée"
-    />
+      )
     case CollectiveOfferDisplayedStatus.ARCHIVED:
       return (
         <StatusLabel

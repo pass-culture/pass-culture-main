@@ -17,9 +17,10 @@ import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import * as filterBookingsRecap from 'components/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
 
 import { BookingsRecapTable } from './BookingsRecapTable'
-import { EMPTY_FILTER_VALUE, DEFAULT_OMNISEARCH_CRITERIA } from './Filters/constants'
-
-
+import {
+  EMPTY_FILTER_VALUE,
+  DEFAULT_OMNISEARCH_CRITERIA,
+} from './Filters/constants'
 
 vi.mock('commons/utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(() => true),

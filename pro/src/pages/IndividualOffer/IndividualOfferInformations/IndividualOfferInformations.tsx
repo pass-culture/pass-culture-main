@@ -1,4 +1,3 @@
-
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { IndivualOfferLayout } from 'components/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'

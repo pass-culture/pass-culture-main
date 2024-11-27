@@ -561,17 +561,13 @@ describe('CollectiveOffersScreen', () => {
       })
     )
 
-    expect(
-      screen.getByRole('option', { name: 'Annulée' })
-    ).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: 'Annulée' })).toBeInTheDocument()
   })
 
   it('should not show the cancelled status option if the ENABLE_COLLECTIVE_NEW_STATUSES FF is inactive', async () => {
-    renderOffers(
-      {
-        ...props,
-      }
-    )
+    renderOffers({
+      ...props,
+    })
 
     await userEvent.click(
       screen.getByRole('combobox', {

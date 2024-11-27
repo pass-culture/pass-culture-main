@@ -9,7 +9,10 @@ import {
 } from 'commons/core/Offers/constants'
 import { isOfferSynchronized } from 'commons/core/Offers/utils/typology'
 import { AccessibilityEnum } from 'commons/core/shared/types'
-import { FORM_DEFAULT_VALUES, OFFER_LOCATION } from 'pages/IndividualOffer/commons/constants'
+import {
+  FORM_DEFAULT_VALUES,
+  OFFER_LOCATION,
+} from 'pages/IndividualOffer/commons/constants'
 import { computeAddressDisplayName } from 'repository/venuesService'
 
 import { DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES } from './constants'

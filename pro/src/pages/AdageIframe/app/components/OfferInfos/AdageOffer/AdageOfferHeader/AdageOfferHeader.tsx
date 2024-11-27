@@ -1,4 +1,9 @@
-import { AdageFrontRoles, AuthenticatedResponse, CollectiveOfferResponseModel, CollectiveOfferTemplateResponseModel } from 'apiClient/adage'
+import {
+  AdageFrontRoles,
+  AuthenticatedResponse,
+  CollectiveOfferResponseModel,
+  CollectiveOfferTemplateResponseModel,
+} from 'apiClient/adage'
 import { OfferAddressType } from 'apiClient/v1'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
@@ -25,7 +30,6 @@ export type AdageOfferHeaderProps = {
   adageUser?: AuthenticatedResponse
   isPreview?: boolean
 }
-
 
 export function AdageOfferHeader({
   offer,

@@ -29,7 +29,6 @@ import strokeThingIcon from 'icons/stroke-thing.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-
 import { CollectiveDeactivationConfirmDialog } from './CollectiveDeactivationConfirmDialog'
 
 export type CollectiveOffersActionsBarProps = {

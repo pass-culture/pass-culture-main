@@ -22,7 +22,9 @@ import {
   CollectiveActionButtonsProps,
 } from '../CollectiveActionButtons'
 
-const renderCollectiveActionButtons = (props: CollectiveActionButtonsProps, features: string[] = []
+const renderCollectiveActionButtons = (
+  props: CollectiveActionButtonsProps,
+  features: string[] = []
 ) => {
   renderWithProviders(<CollectiveActionButtons {...props} />, { features })
 }
@@ -187,7 +189,6 @@ describe('collectiveActionButton api call', () => {
     )
   })
 
-
   it('should show cancel button when ENABLE_COLLECTIVE_NEW_STATUSES is on and offer has CAN_CANCEL allowed action', async () => {
     const offer = getCollectiveOfferFactory({
       allowedActions: [CollectiveOfferAllowedAction.CAN_CANCEL],
@@ -202,12 +203,17 @@ describe('collectiveActionButton api call', () => {
       }),
     })
 
-    renderCollectiveActionButtons({
-      bookingRecap,
-      isCancellable: false,
-    },['ENABLE_COLLECTIVE_NEW_STATUSES'])
+    renderCollectiveActionButtons(
+      {
+        bookingRecap,
+        isCancellable: false,
+      },
+      ['ENABLE_COLLECTIVE_NEW_STATUSES']
+    )
 
-    expect(await screen.findByText('Annuler la préréservation')).toBeInTheDocument()
+    expect(
+      await screen.findByText('Annuler la préréservation')
+    ).toBeInTheDocument()
   })
 
   it('should not show cancel button when ENABLE_COLLECTIVE_NEW_STATUSES is and offer has not CAN_CANCEL allowed action', async () => {
@@ -224,14 +230,18 @@ describe('collectiveActionButton api call', () => {
       }),
     })
 
-    renderCollectiveActionButtons({
-      bookingRecap,
-      isCancellable: false,
-    },['ENABLE_COLLECTIVE_NEW_STATUSES'])
+    renderCollectiveActionButtons(
+      {
+        bookingRecap,
+        isCancellable: false,
+      },
+      ['ENABLE_COLLECTIVE_NEW_STATUSES']
+    )
 
     await waitFor(() => {
-      expect(screen.queryByText('Annuler la préréservation')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Annuler la préréservation')
+      ).not.toBeInTheDocument()
     })
   })
-
 })

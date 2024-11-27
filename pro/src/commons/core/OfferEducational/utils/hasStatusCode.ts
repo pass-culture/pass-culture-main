@@ -1,4 +1,3 @@
- 
 type Error = {
   status: number
   code: string

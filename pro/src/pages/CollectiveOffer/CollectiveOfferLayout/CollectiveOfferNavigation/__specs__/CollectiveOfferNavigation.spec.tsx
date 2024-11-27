@@ -374,7 +374,10 @@ describe('CollectiveOfferNavigation', () => {
     renderCollectiveOfferNavigation({
       ...props,
       isTemplate: true,
-      offer: { ...offer, displayedStatus: CollectiveOfferDisplayedStatus.PENDING }
+      offer: {
+        ...offer,
+        displayedStatus: CollectiveOfferDisplayedStatus.PENDING,
+      },
     })
 
     const duplicateOffer = screen.queryByRole('button', {

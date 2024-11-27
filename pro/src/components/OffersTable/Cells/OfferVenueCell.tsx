@@ -4,7 +4,6 @@ import { ListOffersVenueResponseModel } from 'apiClient/v1'
 import { computeVenueDisplayName } from 'repository/venuesService'
 import styles from 'styles/components/Cells.module.scss'
 
-
 interface OfferVenueCellProps {
   venue: ListOffersVenueResponseModel
   headers?: string

@@ -65,9 +65,7 @@ describe('CollectiveStatusLabel', () => {
     'should render %s status',
     ({ displayedStatus, expectedLabel }: TestCaseProps) => {
       renderWithProviders(
-        <CollectiveStatusLabel
-          offerDisplayedStatus={displayedStatus}
-        />
+        <CollectiveStatusLabel offerDisplayedStatus={displayedStatus} />
       )
       expect(screen.getByText(expectedLabel)).toBeInTheDocument()
     }

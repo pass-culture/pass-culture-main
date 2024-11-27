@@ -67,11 +67,13 @@ export const Sitemap = () => {
             </li>
           </ul>
         </li>
-        {!isOffererStatsV2Active && <li className={styles['sitemap-list-item']}>
-          <Link to="/statistiques" className={styles['sitemap-link']}>
-            Statistiques
-          </Link>
-        </li>}
+        {!isOffererStatsV2Active && (
+          <li className={styles['sitemap-list-item']}>
+            <Link to="/statistiques" className={styles['sitemap-link']}>
+              Statistiques
+            </Link>
+          </li>
+        )}
         <li className={styles['sitemap-list-item']}>
           <span className={styles['sitemap-list-title']}>
             Gestion financière
@@ -90,14 +92,16 @@ export const Sitemap = () => {
                 Informations bancaires
               </Link>
             </li>
-            {isOffererStatsV2Active && <li className={styles['sitemap-list-item']}>
-              <Link
-                to="/remboursements/revenus"
-                className={styles['sitemap-link']}
-              >
-                Chiffre d’affaires
-              </Link>
-            </li>}
+            {isOffererStatsV2Active && (
+              <li className={styles['sitemap-list-item']}>
+                <Link
+                  to="/remboursements/revenus"
+                  className={styles['sitemap-link']}
+                >
+                  Chiffre d’affaires
+                </Link>
+              </li>
+            )}
           </ul>
         </li>
         <li className={styles['sitemap-list-item']}>

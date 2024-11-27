@@ -4,7 +4,6 @@ import { OfferStatus } from 'apiClient/v1'
 import { StatusLabel } from 'components/StatusLabel/StatusLabel'
 import styles from 'styles/components/Cells.module.scss'
 
-
 interface OfferStatusCellProps {
   status: OfferStatus
 }

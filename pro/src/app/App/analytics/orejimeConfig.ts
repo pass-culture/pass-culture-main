@@ -59,7 +59,7 @@ export const orejimeConfig = {
     }
 
     // l’api orejime n’est pas asynchrone
-     
+
     api.cookiesConsent(cookieConsent)
 
     return JSON.stringify(contents)

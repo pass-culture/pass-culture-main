@@ -55,10 +55,8 @@ import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 
-
 import { BookingLinkCell } from './BookingLinkCell'
 import { DuplicateOfferDialog } from './DuplicateOfferDialog/DuplicateOfferDialog'
-
 
 export interface CollectiveActionsCellsProps {
   offer: CollectiveOfferResponseModel

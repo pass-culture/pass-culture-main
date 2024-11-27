@@ -4,7 +4,6 @@ import { AddressResponseIsLinkedToVenueModel } from 'apiClient/v1'
 import { computeAddressDisplayName } from 'repository/venuesService'
 import styles from 'styles/components/Cells.module.scss'
 
-
 export function AddressCell({
   address,
 }: {

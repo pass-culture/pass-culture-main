@@ -14,7 +14,9 @@ export const setInitialFormValues = ({
   const addressFields =
     isOfferAddressEnabled && venue.address ? venue.address : venue
 
-  let autoCompleteStreet = addressFields.street ? addressFields.street + ' ' : '';
+  let autoCompleteStreet = addressFields.street
+    ? addressFields.street + ' '
+    : ''
 
   return {
     street: addressFields.street || '',
