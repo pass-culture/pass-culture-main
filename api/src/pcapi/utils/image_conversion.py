@@ -123,10 +123,11 @@ def _pre_process_image(content: bytes) -> PIL.Image.Image:
     # Remove exif orientation so that it doesn't rotate after upload
     try:
         transposed_image = ImageOps.exif_transpose(raw_image)
-    except SyntaxError as exc:
+    except (SyntaxError, ZeroDivisionError) as exc:
         # PIL may raise `SyntaxError("not a TIFF file [...]")` or a
         # similar message, depending on the expected type of file. In
         # that case, re-reraise as a more specific, PIL-related error.
+        # It can also raise ZeroDivisionError in some cases.
         raise UnidentifiedImageError() from exc
     assert transposed_image is not None  # helps mypy
 

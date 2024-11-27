@@ -688,12 +688,15 @@ def attach_offer_image(
             status_code=400,
         )
 
-    educational_api_offer.attach_image(
-        obj=offer,
-        image=image_as_bytes,
-        crop_params=form.crop_params,
-        credit=form.credit,
-    )
+    try:
+        educational_api_offer.attach_image(
+            obj=offer,
+            image=image_as_bytes,
+            crop_params=form.crop_params,
+            credit=form.credit,
+        )
+    except UnidentifiedImageError:
+        raise ApiErrors({"image": "Impossible d'identifier l'image"}, status_code=400)
 
     return collective_offers_serialize.AttachImageResponseModel.from_orm(offer)
 
