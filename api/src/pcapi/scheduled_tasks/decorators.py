@@ -53,3 +53,24 @@ def log_cron_with_transaction(func: typing.Callable) -> typing.Callable:
         return result
 
     return wrapper
+
+
+def log_cron(func: typing.Callable) -> typing.Callable:
+    @wraps(func)
+    def wrapper(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
+        start_time = time.time()
+        logger.info(build_cron_log_message(name=func.__name__, status=CronStatus.STARTED))
+
+        status = None  # avoid "used-before-assignment" pylint warning in `finally`
+        try:
+            result = func(*args, **kwargs)
+            status = CronStatus.ENDED
+        except Exception as exception:
+            status = CronStatus.FAILED
+            raise exception
+        finally:
+            duration = time.time() - start_time
+            logger.info(build_cron_log_message(name=func.__name__, status=status, duration=duration))
+        return result
+
+    return wrapper

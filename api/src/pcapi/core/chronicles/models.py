@@ -39,7 +39,7 @@ class Chronicle(PcObject, Base, Model, DeactivableMixin):
     isSocialMediaDiffusible = sa.Column(
         sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
     )
-    products: sa_orm.Mapped["Product"] = sa.orm.relationship(
+    products: list[sa_orm.Mapped["Product"]] = sa.orm.relationship(
         "Product", backref="chronicles", secondary="product_chronicle"
     )
     offers: sa_orm.Mapped["Offer"] = sa.orm.relationship("Offer", backref="chronicles", secondary="offer_chronicle")

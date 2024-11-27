@@ -1,11 +1,23 @@
 import datetime
+from itertools import chain
+import random
+import string
+from unittest.mock import patch
 
 import pytest
 
+from pcapi.connectors import typeform
 from pcapi.core.chronicles import api
+from pcapi.core.chronicles import constants
 from pcapi.core.chronicles import factories as chronicles_factories
+from pcapi.core.chronicles import models
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
+
+
+def random_string(length: int = 20) -> str:
+    return "".join(random.choices(string.ascii_lowercase, k=length))
 
 
 @pytest.mark.usefixtures("db_session")
@@ -45,3 +57,465 @@ class AnonymizeUnlinkedChronicleTest:
         db.session.refresh(chronicle)
 
         assert chronicle.email == email
+
+
+@pytest.mark.usefixtures("db_session")
+class ImportBookClubChroniclesTest:
+    def _get_api_result(self):
+        return [
+            typeform.TypeformResponse(
+                response_id=random_string(),
+                date_submitted=datetime.datetime(2024, 10, 24),
+                phone_number=None,
+                email="email@mail.test",
+                answers=[
+                    typeform.TypeformAnswer(
+                        field_id=constants.BookClub.AGE_ID.value,
+                        choice_id=None,
+                        text="18",
+                    ),
+                    typeform.TypeformAnswer(
+                        field_id=constants.BookClub.CITY_ID.value,
+                        choice_id=None,
+                        text="Paris",
+                    ),
+                    typeform.TypeformAnswer(
+                        field_id=random_string(),
+                        choice_id=None,
+                        text="should be ignored",
+                    ),
+                    typeform.TypeformAnswer(
+                        field_id=constants.BookClub.NAME_ID.value,
+                        choice_id=None,
+                        text="Bob",
+                    ),
+                    typeform.TypeformAnswer(
+                        field_id=constants.BookClub.BOOK_EAN_ID.value,
+                        choice_id=random_string(),
+                        text="1235467890123",
+                    ),
+                    typeform.TypeformAnswer(
+                        field_id=constants.BookClub.CHRONICLE_ID.value,
+                        choice_id=None,
+                        text=random_string(150),
+                    ),
+                    typeform.TypeformAnswer(
+                        field_id=constants.BookClub.DIFFUSIBLE_PERSONAL_DATA_QUESTION_ID.value,
+                        choice_id=constants.BookClub.DIFFUSIBLE_PERSONAL_DATA_ANSWER_ID.value,
+                        text="oui",
+                    ),
+                    typeform.TypeformAnswer(
+                        field_id=constants.BookClub.SOCIAL_MEDIA_QUESTION_ID.value,
+                        choice_id=constants.BookClub.SOCIAL_MEDIA_ANSWER_ID.value,
+                        text="oui",
+                    ),
+                ],
+            ),
+        ]
+
+    def test_import_book_club_chronicles_with_old_chronicle(self):
+        old_chronicle = chronicles_factories.ChronicleFactory()
+        api_results = self._get_api_result()
+
+        with patch("pcapi.core.chronicles.api.typeform.get_responses", return_value=api_results) as typeform_mock:
+            api.import_book_club_chronicles()
+
+            typeform_mock.assert_called_once_with(
+                form_id=constants.BookClub.FORM_ID.value,
+                num_results=constants.IMPORT_CHUNK_SIZE,
+                since=old_chronicle.dateCreated,
+                sort="submitted_at,asc",
+            )
+
+        chronicle = models.Chronicle.query.order_by(models.Chronicle.id.desc()).first()
+        assert chronicle.email == "email@mail.test"
+
+    def test_import_book_club_chronicles_without_old_chronicle(self):
+        api_results = self._get_api_result()
+
+        with patch("pcapi.core.chronicles.api.typeform.get_responses", return_value=api_results) as typeform_mock:
+            api.import_book_club_chronicles()
+
+            typeform_mock.assert_called_once_with(
+                form_id=constants.BookClub.FORM_ID.value,
+                num_results=constants.IMPORT_CHUNK_SIZE,
+                since=None,
+                sort="submitted_at,asc",
+            )
+
+        chronicle = models.Chronicle.query.order_by(models.Chronicle.id.desc()).first()
+        assert chronicle.email == "email@mail.test"
+
+
+@pytest.mark.usefixtures("db_session")
+class SaveBookClubChronicleTest:
+    def test_save_book_club_chronicle_full(self):
+        ean = "1234567890123"
+        ean_choice_id = random_string()
+        form = typeform.TypeformResponse(
+            response_id=random_string(),
+            date_submitted=datetime.datetime(2024, 10, 24),
+            phone_number=None,
+            email="email@mail.test",
+            answers=[
+                typeform.TypeformAnswer(
+                    field_id=constants.BookClub.AGE_ID.value,
+                    choice_id=None,
+                    text="18",
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.BookClub.CITY_ID.value,
+                    choice_id=None,
+                    text="Paris",
+                ),
+                typeform.TypeformAnswer(
+                    field_id=random_string(),
+                    choice_id=None,
+                    text="should be ignored",
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.BookClub.NAME_ID.value,
+                    choice_id=None,
+                    text="Bob",
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.BookClub.BOOK_EAN_ID.value,
+                    choice_id=ean_choice_id,
+                    text=ean,
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.BookClub.CHRONICLE_ID.value,
+                    choice_id=None,
+                    text="some random chronicle description",
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.BookClub.DIFFUSIBLE_PERSONAL_DATA_QUESTION_ID.value,
+                    choice_id=constants.BookClub.DIFFUSIBLE_PERSONAL_DATA_ANSWER_ID.value,
+                    text="oui",
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.BookClub.SOCIAL_MEDIA_QUESTION_ID.value,
+                    choice_id=constants.BookClub.SOCIAL_MEDIA_ANSWER_ID.value,
+                    text="oui",
+                ),
+            ],
+        )
+
+        api.save_book_club_chronicle(form)
+
+        chronicle = models.Chronicle.query.first()
+        assert chronicle.age == 18
+        assert chronicle.city == "Paris"
+        assert chronicle.firstName == "Bob"
+        assert chronicle.ean == ean
+        assert chronicle.eanChoiceId == ean_choice_id
+        assert chronicle.content == "some random chronicle description"
+        assert chronicle.isIdentityDiffusible
+        assert chronicle.isSocialMediaDiffusible
+        assert not chronicle.isActive
+        assert chronicle.formId == form.response_id
+        assert chronicle.userId is None
+
+    def test_save_book_club_chronicle_empty(self):
+        ean = "1234567890123"
+        ean_choice_id = random_string()
+        form = typeform.TypeformResponse(
+            response_id=random_string(),
+            date_submitted=datetime.datetime(2024, 10, 24),
+            phone_number=None,
+            email="email@mail.test",
+            answers=[
+                typeform.TypeformAnswer(
+                    field_id=constants.BookClub.BOOK_EAN_ID.value,
+                    choice_id=ean_choice_id,
+                    text=ean,
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.BookClub.CHRONICLE_ID.value,
+                    choice_id=None,
+                    text="some random chronicle description",
+                ),
+            ],
+        )
+
+        api.save_book_club_chronicle(form)
+
+        chronicle = models.Chronicle.query.first()
+        assert chronicle.age is None
+        assert chronicle.city is None
+        assert chronicle.firstName is None
+        assert chronicle.ean == ean
+        assert chronicle.eanChoiceId == ean_choice_id
+        assert chronicle.content == "some random chronicle description"
+        assert not chronicle.isIdentityDiffusible
+        assert not chronicle.isSocialMediaDiffusible
+        assert not chronicle.isActive
+        assert chronicle.formId == form.response_id
+        assert chronicle.userId is None
+
+    def test_do_not_save_book_club_chronicle_without_email(self):
+        form = typeform.TypeformResponse(
+            response_id=random_string(),
+            date_submitted=datetime.datetime(2024, 10, 24),
+            phone_number=None,
+            email=None,
+            answers=[
+                typeform.TypeformAnswer(
+                    field_id=constants.BookClub.BOOK_EAN_ID.value,
+                    choice_id=random_string(),
+                    text="1234567890123",
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.BookClub.CHRONICLE_ID.value,
+                    choice_id=None,
+                    text="some random chronicle description",
+                ),
+            ],
+        )
+
+        api.save_book_club_chronicle(form)
+
+        assert models.Chronicle.query.count() == 0
+
+    def test_save_book_club_chronicle_without_content(self):
+        form = typeform.TypeformResponse(
+            response_id=random_string(),
+            date_submitted=datetime.datetime(2024, 10, 24),
+            phone_number=None,
+            email="email@mail.test",
+            answers=[
+                typeform.TypeformAnswer(
+                    field_id=constants.BookClub.BOOK_EAN_ID.value,
+                    choice_id=random_string(),
+                    text="1234567890123",
+                ),
+            ],
+        )
+
+        api.save_book_club_chronicle(form)
+
+        assert models.Chronicle.query.count() == 0
+
+    def test_save_book_club_chronicle_without_ean(self):
+        form = typeform.TypeformResponse(
+            response_id=random_string(),
+            date_submitted=datetime.datetime(2024, 10, 24),
+            phone_number=None,
+            email="email@mail.test",
+            answers=[
+                typeform.TypeformAnswer(
+                    field_id=constants.BookClub.CHRONICLE_ID.value,
+                    choice_id=None,
+                    text="some random chronicle description",
+                ),
+            ],
+        )
+
+        api.save_book_club_chronicle(form)
+
+        assert models.Chronicle.query.count() == 0
+
+    def test_save_book_club_chronicle_link_to_user(self):
+        user = users_factories.UserFactory(
+            email="email@mail.test",
+        )
+        form = typeform.TypeformResponse(
+            response_id=random_string(),
+            date_submitted=datetime.datetime(2024, 10, 24),
+            phone_number=None,
+            email="email@mail.test",
+            answers=[
+                typeform.TypeformAnswer(
+                    field_id=constants.BookClub.BOOK_EAN_ID.value,
+                    choice_id=random_string(),
+                    text="1234567890123",
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.BookClub.CHRONICLE_ID.value,
+                    choice_id=None,
+                    text="some random chronicle description",
+                ),
+            ],
+        )
+
+        api.save_book_club_chronicle(form)
+
+        chronicle = models.Chronicle.query.first()
+        assert chronicle.userId == user.id
+
+    def test_save_book_club_chronicle_refuse_publication(self):
+        user = users_factories.UserFactory(
+            email="email@mail.test",
+        )
+        form = typeform.TypeformResponse(
+            response_id=random_string(),
+            date_submitted=datetime.datetime(2024, 10, 24),
+            phone_number=None,
+            email="email@mail.test",
+            answers=[
+                typeform.TypeformAnswer(
+                    field_id=constants.BookClub.BOOK_EAN_ID.value,
+                    choice_id=random_string(),
+                    text="1234567890123",
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.BookClub.CHRONICLE_ID.value,
+                    choice_id=None,
+                    text="some random chronicle description",
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.BookClub.DIFFUSIBLE_PERSONAL_DATA_QUESTION_ID.value,
+                    choice_id=random_string(),
+                    text="non",
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.BookClub.SOCIAL_MEDIA_QUESTION_ID.value,
+                    choice_id=random_string(),
+                    text="non",
+                ),
+            ],
+        )
+
+        api.save_book_club_chronicle(form)
+
+        chronicle = models.Chronicle.query.first()
+
+        assert not chronicle.isIdentityDiffusible
+        assert not chronicle.isSocialMediaDiffusible
+
+    def test_save_book_club_chronicle_link_to_product(self):
+        product = offers_factories.ProductFactory(
+            extraData={
+                "ean": "1234567890123",
+            }
+        )
+        form = typeform.TypeformResponse(
+            response_id=random_string(),
+            date_submitted=datetime.datetime(2024, 10, 24),
+            phone_number=None,
+            email="email@mail.test",
+            answers=[
+                typeform.TypeformAnswer(
+                    field_id=constants.BookClub.BOOK_EAN_ID.value,
+                    choice_id=random_string(),
+                    text="1234567890123",
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.BookClub.CHRONICLE_ID.value,
+                    choice_id=None,
+                    text="some random chronicle description",
+                ),
+            ],
+        )
+
+        api.save_book_club_chronicle(form)
+
+        chronicle = models.Chronicle.query.first()
+
+        assert chronicle.products == [product]
+
+
+@pytest.mark.usefixtures("db_session")
+class BookClubFormsGeneratorTest:
+
+    def test_empty_answer(self):
+        list_expected = []
+
+        with patch("pcapi.core.chronicles.api.typeform.get_responses", return_value=list_expected) as typeform_mock:
+            for result in api._book_club_forms_generator():
+                assert False
+
+            typeform_mock.assert_called_once_with(
+                form_id=constants.BookClub.FORM_ID.value,
+                num_results=constants.IMPORT_CHUNK_SIZE,
+                since=None,
+                sort="submitted_at,asc",
+            )
+
+    def test_multiple_calls(self):
+        now = datetime.datetime(2024, 12, 31)
+        list_expected = [
+            list(range(1, 101)),
+            list(string.ascii_lowercase),
+        ]
+
+        with patch("pcapi.core.chronicles.api.typeform.get_responses", side_effect=list_expected) as typeform_mock:
+            for result, expected in zip(api._book_club_forms_generator(), chain(*list_expected)):
+                assert result == expected
+                if result == 100:
+                    typeform_mock.assert_called_once_with(
+                        form_id=constants.BookClub.FORM_ID.value,
+                        num_results=constants.IMPORT_CHUNK_SIZE,
+                        since=None,
+                        sort="submitted_at,asc",
+                    )
+                    chronicles_factories.ChronicleFactory(dateCreated=now)
+
+            assert typeform_mock.call_count == 2
+            typeform_mock.assert_called_with(
+                form_id=constants.BookClub.FORM_ID.value,
+                num_results=constants.IMPORT_CHUNK_SIZE,
+                since=now,
+                sort="submitted_at,asc",
+            )
+
+
+@pytest.mark.usefixtures("db_session")
+class ExtractBookClubEanTest:
+    def test_ean_in_text(self):
+        ean = "1234567890123"
+        choice_id = random_string()
+        form = typeform.TypeformAnswer(
+            field_id=constants.BookClub.BOOK_EAN_ID.value,
+            choice_id=choice_id,
+            text=f"book title - {ean} - december",
+        )
+
+        result = api._extract_book_club_ean(form)
+
+        assert result == ean
+
+    def test_choice_in_db(self):
+        ean = "1234567890123"
+        choice_id = random_string()
+        form = typeform.TypeformAnswer(
+            field_id=constants.BookClub.BOOK_EAN_ID.value,
+            choice_id=choice_id,
+            text="nothing to see here",
+        )
+        chronicles_factories.ChronicleFactory(ean=ean, eanChoiceId=choice_id)
+
+        result = api._extract_book_club_ean(form)
+
+        assert result == ean
+
+    def test_ends_with_ean(self):
+        ean = "1234567890123"
+        choice_id = random_string()
+        form = typeform.TypeformAnswer(
+            field_id=constants.BookClub.BOOK_EAN_ID.value,
+            choice_id=choice_id,
+            text=f"book title - {ean}",
+        )
+
+        result = api._extract_book_club_ean(form)
+
+        assert result == ean
+
+    def test_unknown_choice(self):
+        form = typeform.TypeformAnswer(
+            field_id=constants.BookClub.BOOK_EAN_ID.value,
+            choice_id=random_string(),
+            text="nothing to see here",
+        )
+
+        result = api._extract_book_club_ean(form)
+
+        assert result is None
+
+    def test_empty_answer(self):
+        form = typeform.TypeformAnswer(field_id="")
+
+        result = api._extract_book_club_ean(form)
+
+        assert result is None
