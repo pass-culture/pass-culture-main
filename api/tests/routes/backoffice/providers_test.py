@@ -57,7 +57,7 @@ class ListProvidersPageTest(GetEndpointHelper):
 
         assert rows[0]["ID"] == str(provider.id)
         assert rows[0]["Partenaire technique"] == provider.name
-        assert rows[0]["Lieux synchronisés au partenaire"] == "0 actif / 0 inactif"
+        assert rows[0]["Partenaires culturels synchronisés au partenaire"] == "0 actif / 0 inactif"
         assert rows[0]["SIREN"] == offerer.siren
         assert rows[0]["Ville"] == offerer.city
         assert rows[0]["Code postal"] == offerer.postalCode
@@ -68,7 +68,7 @@ class ListProvidersPageTest(GetEndpointHelper):
 
         assert rows[-1]["ID"] == str(second_provider.id)
         assert rows[-1]["Partenaire technique"] == second_provider.name
-        assert rows[-1]["Lieux synchronisés au partenaire"] == "1 actif / 1 inactif"
+        assert rows[-1]["Partenaires culturels synchronisés au partenaire"] == "1 actif / 1 inactif"
         assert rows[-1]["SIREN"] == second_offerer.siren
         assert rows[-1]["Ville"] == second_offerer.city
         assert rows[-1]["Code postal"] == second_offerer.postalCode
@@ -274,7 +274,10 @@ class GetProviderStatsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         cards_text = html_parser.extract_cards_text(response.data)
-        assert "0 lieu avec une synchronisation active 2 lieux avec une synchronisation inactive" in cards_text
+        assert (
+            "0 partenaire culturel avec une synchronisation active 2 partenaires culturels avec une synchronisation inactive"
+            in cards_text
+        )
 
         providers_factories.VenueProviderFactory(provider=provider, isActive=True)
 
@@ -289,7 +292,10 @@ class GetProviderStatsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         cards_text = html_parser.extract_cards_text(response.data)
-        assert "1 lieu avec une synchronisation active 2 lieux avec une synchronisation inactive" in cards_text
+        assert (
+            "1 partenaire culturel avec une synchronisation active 2 partenaires culturels avec une synchronisation inactive"
+            in cards_text
+        )
 
 
 class GetProviderVenuesTest(GetEndpointHelper):
