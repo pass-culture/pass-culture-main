@@ -2,9 +2,11 @@ import logging
 import mimetypes
 import os
 import pathlib
+import re
 import shutil
 import tempfile
 
+import flask
 from pydantic.v1.networks import HttpUrl
 
 from pcapi import settings
@@ -23,6 +25,7 @@ from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.exceptions import BeneficiaryFraudCheckMissingException
 from pcapi.core.users import models as users_models
+from pcapi.models.feature import FeatureToggle
 import pcapi.repository as pcapi_repository
 from pcapi.tasks import ubble_tasks
 from pcapi.utils import requests as requests_utils
@@ -36,7 +39,7 @@ logger = logging.getLogger(__name__)
 
 
 def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> None:
-    content = ubble.get_content(fraud_check.thirdPartyId)
+    content = _get_content(fraud_check.thirdPartyId)
 
     if settings.ENABLE_UBBLE_TEST_EMAIL and ubble_fraud_api.does_match_ubble_test_email(fraud_check.user.email):
         content.birth_date = fraud_check.user.birth_date
@@ -99,13 +102,49 @@ def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> No
         pcapi_repository.repository.save(fraud_check)
 
 
-def start_ubble_workflow(user: users_models.User, first_name: str, last_name: str, redirect_url: str) -> HttpUrl | None:
-    content = ubble.start_identification(
-        user_id=user.id,
-        first_name=first_name,
-        last_name=last_name,
-        redirect_url=redirect_url,
+def is_v2_identification(identification_id: str | None) -> bool:
+    if not identification_id:
+        return True
+
+    V2_IDENTIFICATION_RE = r"^idv_\w+"
+    v2_match = re.match(V2_IDENTIFICATION_RE, identification_id)
+    return bool(v2_match)
+
+
+def start_ubble_workflow(
+    user: users_models.User, first_name: str, last_name: str, redirect_url: str, webhook_url: str | None = None
+) -> HttpUrl | None:
+    if FeatureToggle.WIP_UBBLE_V2.is_active():
+        return _start_ubble_v2_workflow(user, first_name, last_name, redirect_url, webhook_url)
+    return _start_ubble_v1_workflow(user, first_name, last_name, redirect_url, webhook_url)
+
+
+def _start_ubble_v2_workflow(
+    user: users_models.User, first_name: str, last_name: str, redirect_url: str, webhook_url: str | None = None
+) -> HttpUrl | None:
+    if webhook_url is None:
+        webhook_url = flask.url_for("Public API.ubble_v2_webhook_update_application_status", _external=True)
+
+    content = ubble.create_and_start_identity_verification(first_name, last_name, redirect_url, webhook_url)
+    fraud_check = subscription_api.initialize_identity_fraud_check(
+        eligibility_type=user.eligibility,
+        fraud_check_type=fraud_models.FraudCheckType.UBBLE,
+        identity_content=content,
+        third_party_id=str(content.identification_id),
+        user=user,
     )
+    batch_notification.track_identity_check_started_event(user.id, fraud_check.type)
+
+    return content.identification_url
+
+
+def _start_ubble_v1_workflow(
+    user: users_models.User, first_name: str, last_name: str, redirect_url: str, webhook_url: str | None = None
+) -> HttpUrl | None:
+    if webhook_url is None:
+        webhook_url = flask.url_for("Public API.ubble_webhook_update_application_status", _external=True)
+
+    content = ubble.start_identification(user.id, first_name, last_name, redirect_url, webhook_url)
     fraud_check = subscription_api.initialize_identity_fraud_check(
         eligibility_type=user.eligibility,
         fraud_check_type=fraud_models.FraudCheckType.UBBLE,
@@ -183,7 +222,7 @@ def archive_ubble_user_id_pictures(identification_id: str) -> None:
         )
 
     try:
-        ubble_content = ubble.get_content(fraud_check.thirdPartyId)
+        ubble_content = _get_content(fraud_check.thirdPartyId)
     except requests_utils.ExternalAPIException:
         fraud_check.idPicturesStored = False
         pcapi_repository.repository.save(fraud_check)
@@ -208,6 +247,12 @@ def archive_ubble_user_id_pictures(identification_id: str) -> None:
 
     fraud_check.idPicturesStored = True
     pcapi_repository.repository.save(fraud_check)
+
+
+def _get_content(identification_id: str) -> fraud_models.UbbleContent:
+    if is_v2_identification(identification_id):
+        return ubble.get_identity_verification(identification_id)
+    return ubble.get_content(identification_id)
 
 
 def _download_and_store_ubble_picture(
