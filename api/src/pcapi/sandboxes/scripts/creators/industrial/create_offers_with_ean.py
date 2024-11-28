@@ -5,6 +5,7 @@ from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.models.offer_mixin import OfferValidationStatus
 
@@ -16,7 +17,7 @@ def create_offers_with_ean() -> None:
     ean_criteria = criteria_factories.CriterionFactory(name="Livre avec EAN")
     odd_criteria = criteria_factories.CriterionFactory(name="Librairie impaire")
     even_criteria = criteria_factories.CriterionFactory(name="Librairie paire")
-    products = []
+    products = [offers_models.Product.query.filter(offers_models.Product.name == "multiple thumbs").one()]
     provider = providers_factories.PublicApiProviderFactory(name="BookProvider")
     for i in range(1, 5):
         ean = f"9780000000{i:03}"
@@ -29,10 +30,6 @@ def create_offers_with_ean() -> None:
                 extraData={"ean": f"9780000000{i:03}"},
             )
         )
-        if i == 1:
-            product = products[0]
-            product.name = f"Livre {i} avec EAN et image"
-            offers_factories.ProductMediationFactory(product=product)
 
     user_offerer = offerers_factories.UserOffererFactory(
         user__firstName="Super",

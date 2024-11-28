@@ -639,7 +639,11 @@ def create_institutional_website_offer_playlist() -> None:
 
 
 def create_product_with_multiple_images() -> None:
-    product = offers_factories.ProductFactory(name="multiple thumbs", subcategoryId=subcategories_v2.LIVRE_PAPIER.id)
+    product = offers_factories.ProductFactory(
+        name="multiple thumbs",
+        subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+        extraData={"ean": "9999999999999"},
+    )
     offer = offers_factories.OfferFactory(product=product, name=product.name, subcategoryId=product.subcategoryId)
     offers_factories.StockFactory(offer=offer)
     offers_factories.ProductMediationFactory(
