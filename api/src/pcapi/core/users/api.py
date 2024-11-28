@@ -1926,6 +1926,13 @@ def _extract_gdpr_chronicles(user: models.User) -> list[users_serialization.Gdpr
     return chronicles
 
 
+def _extract_gdpr_account_update_requests(user: models.User) -> list[users_serialization.GdprAccountUpdateRequests]:
+    update_requests_data = models.UserAccountUpdateRequest.query.filter(
+        models.UserAccountUpdateRequest.userId == user.id,
+    )
+    return [users_serialization.GdprAccountUpdateRequests.from_orm(data) for data in update_requests_data]
+
+
 def _extract_gdpr_marketing_data(user: models.User) -> users_serialization.GdprMarketing:
     notification_subscriptions = user.notificationSubscriptions or {}
     return users_serialization.GdprMarketing(
@@ -2162,6 +2169,7 @@ def extract_beneficiary_data(extract: models.GdprUserDataExtract) -> None:
             deposits=_extract_gdpr_deposits(user),
             bookings=_extract_gdpr_booking_data(user),
             chronicles=_extract_gdpr_chronicles(user),
+            accountUpdateRequests=_extract_gdpr_account_update_requests(user),
         ),
         external=users_serialization.GdprExternal(
             brevo=_extract_gdpr_brevo_data(user),

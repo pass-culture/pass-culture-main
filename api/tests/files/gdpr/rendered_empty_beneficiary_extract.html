@@ -90,145 +90,43 @@
         </div>
         <h3>Données de l’utilisateur</h3>
         <table class="borderless">
-            {% if container.internal.user.firstName %}<tr><td>Nom</td><td>{{container.internal.user.firstName}}</td></tr>{% endif %}
-            {% if container.internal.user.lastName %}<tr><td>Prénom</td><td>{{container.internal.user.lastName}}</td></tr>{% endif %}
-            {% if container.internal.user.marriedName %}<tr><td>Nom de mariage</td><td>{{container.internal.user.marriedName}}</td></tr> {% endif %}
-            <tr><td>Adresse de messagerie</td><td>{{container.internal.user.email}}</td></tr>
-            {% if container.internal.user.address %}<tr><td>Adresse</td><td>{{container.internal.user.address}}</td></tr>{% endif %}
-            {% if container.internal.user.postalCode %}<tr><td>Code postal</td><td>{{container.internal.user.postalCode}}</td></tr>{% endif %}
-            {% if container.internal.user.city %}<tr><td>Ville</td><td>{{container.internal.user.city}}</td></tr>{% endif %}
-            {% if container.internal.user.departementCode %}<tr><td>Département</td><td>{{container.internal.user.departementCode}}</td></tr>{% endif %}
-            {% if container.internal.user.dateOfBirth %}<tr><td>Date de naissance</td><td>{{container.internal.user.dateOfBirth.strftime('%d/%m/%Y')}}</td></tr> {%endif%}
-            {% if container.internal.user.validatedBirthDate %}<tr><td>Date de naissance confirmée</td><td>{{container.internal.user.validatedBirthDate.strftime('%d/%m/%Y')}}</td></tr>{% endif %}
-            <tr><td>Date de création du compte</td><td>{{container.internal.user.dateCreated.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>
-            <tr><td>Compte actif</td><td>{% if container.internal.user.isActive%}oui{%else%}non{%endif%}</td></tr>
-            {% if container.internal.user.activity %}<tr><td>Activité</td><td>{{container.internal.user.activity}}</td></tr>{% endif %}
-            {% if container.internal.user.schoolType %}<tr><td>Type d'école</td><td>{{container.internal.user.schoolType.value}}</td></tr>{% endif %}
+            <tr><td>Nom</td><td>firstname</td></tr>
+            <tr><td>Prénom</td><td>lastName</td></tr>
+            
+            <tr><td>Adresse de messagerie</td><td>firstname.lastname@example.com</td></tr>
+            
+            
+            
+            
+            
+            
+            <tr><td>Date de création du compte</td><td>26/06/2024 13:14:28</td></tr>
+            <tr><td>Compte actif</td><td>oui</td></tr>
+            
+            
         </table>
 
         <h3>Informations marketing</h3>
         <table class="borderless">
-            <tr><td>Accepte la récéption de mails</td><td>{% if container.internal.marketing.marketingEmails%}oui{%else%}non{%endif%}</td></tr>
-            <tr><td>Accepte les notifications mobiles</td><td>{% if container.internal.marketing.marketingNotifications%}oui{%else%}non{%endif%}</td></tr>
+            <tr><td>Accepte la récéption de mails</td><td>oui</td></tr>
+            <tr><td>Accepte les notifications mobiles</td><td>oui</td></tr>
         </table>
 
-        {% if container.internal.loginDevices %}
-            <h3>Historique des moyens de connexion</h3>
-            {% for device in container.internal.loginDevices%}
-                <table class="borderless">
-                    <tr><td>Date de première connexion</td><td>{{device.dateCreated.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>
-                    {% if device.deviceId %}<tr><td>Identifiant de l’appareil</td><td>{{device.deviceId}}</td></tr>{% endif %}
-                    {% if device.source %}<tr><td>Type d’appareil</td><td>{{device.source}}</td></tr>{% endif %}
-                    {% if device.os %}<tr><td>Système d’exploitation</td><td>{{device.os}}</td></tr>{% endif %}
-                </table>
-            {% endfor %}
-        {% endif %}
+        
 
-        {% if container.internal.emailsHistory %}
-            <h3>Historique des changements d’adresse de messagerie</h3>
-            {% for history in container.internal.emailsHistory %}
-                <table class="borderless">
-                    <tr><td>Date de la demande</td><td>{{history.dateCreated.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>
-                    <tr><td>Ancienne adresse email</td><td>{{history.oldEmail}}</td></tr>
-                    {%if history.newEmail %}<tr><td>Nouvelle adresse email</td><td>{{history.newEmail}}</td></tr>{% endif %}
-                </table>
-            {% endfor %}
-        {% endif %}
+        
 
-        {% if container.internal.actionsHistory %}
-            <h3>Historique des blocages du compte « pass Culture »</h3>
-            {% for action in container.internal.actionsHistory %}
-                <table class="borderless">
-                    {% if action.actionDate %}<tr><td>Date</td><td>{{action.actionDate.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>{% endif %}
-                    <tr><td>Action</td><td>{{action.actionType.value}}</td></tr>
-                </table>
-            {% endfor %}
-        {% endif %}
+        
 
-        {% if container.internal.beneficiaryValidations %}
-            <h3>Validations d’identité</h3>
-            {% for validation in container.internal.beneficiaryValidations %}
-                <table class="borderless">
-                    <tr><td>Date de la validation</td><td>{{validation.dateCreated.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>
-                    <tr><td>Moyen de la validation</td><td>{{validation.type}}</td></tr>
-                    {% if validation.status %}<tr><td>Résultat</td><td>{{validation.status}}</td></tr>{%endif%}
-                    {% if validation.updatedAt %} <tr><td>Dernière modification</td><td>{{validation.updatedAt.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>{%endif%}
-                </table>
-            {% endfor %}
-        {% endif %}
+        
 
-        {% if container.internal.deposits %}
-            <h3>Crédits</h3>
-            {% for deposit in container.internal.deposits %}
-                <table class="borderless">
-                    <tr><td>Date d’obtention</td><td>{{deposit.dateCreated.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>
-                    {% if deposit.expirationDate %}<tr><td>Date d’expiration</td><td>{{deposit.expirationDate.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>{% endif %}
-                    <tr><td>Valeur</td><td>{{('%0.2f' % deposit.amount|float)|replace('.', ',')}}€</td></tr>
-                    <tr><td>Source</td><td>{{deposit.source}}</td></tr>
-                    {% if deposit.dateUpdated %}<tr><td>Dernière modification</td><td>{{deposit.dateUpdated.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>{% endif %}
-                    <tr><td>Type de crédit</td><td>{{deposit.type}}</td></tr>
-                </table>
-            {% endfor %}
-        {% endif %}
+        
 
-        {% if container.internal.bookings %}
-            <h3>Réservations effectuées depuis l’application « pass Culture »</h3>
-            {% for booking in container.internal.bookings %}
-                <table class="borderless">
-                    <tr><td>Nom</td><td>{{booking.name}}</td></tr>
-                    <tr><td>Quantité</td><td>{{booking.quantity}}</td></tr>
-                    <tr><td>Prix unitaire</td><td>{{('%0.2f' % booking.amount|float)|replace('.', ',') }}€</td></tr>
-                    <tr><td>Date de réservation</td><td>{{booking.dateCreated.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>
-                    {% if booking.dateUsed %}<tr><td>Date de retrait</td><td>{{booking.dateUsed.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>{% endif %}
-                    {% if booking.cancellationDate %}<tr><td>Date d’annulation</td><td>{{booking.cancellationDate.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>{% endif %}
-                    <tr><td>État</td><td>{{booking.status}}</td></tr>
-                    <tr><td>Lieu de vente</td><td>{{booking.venue}}</td></tr>
-                    <tr><td>Vendeur</td><td>{{booking.offerer}}</td></tr>
-                </table>
-            {% endfor %}
-        {% endif %}
+        
 
-        {% if container.internal.chronicles %}
-            <h3>Historique des chroniques pour le « Book Club »</h3>
-            {% for chronicle in container.internal.chronicles %}
-                <table class="borderless">
-                    <tr><td>Date</td><td>{{chronicle.dateCreated.strftime('%d/%m/%Y')}}</td></tr>
-                    {% if chronicle.age %}<tr><td>Age</td><td>{{chronicle.age}} ans</td></tr>{% endif %}
-                    {% if chronicle.city %}<tr><td>Ville</td><td>{{chronicle.city}}</td></tr>{% endif %}
-                    {% if chronicle.firstName %}<tr><td>Prénom</td><td>{{chronicle.firstName}}</td></tr>{% endif %}
-                    <tr><td>Adresse de messagerie</td><td>{{chronicle.email}}</td></tr>
-                    {% if chronicle.productName %}<tr><td>Titre du livre</td><td>{{chronicle.productName}}</td></tr>
-                    {% elif chronicle.ean %}<tr><td>EAN du livre</td><td>{{chronicle.ean}}</td></tr>{% endif %}
-                    <tr><td>Chronique</td><td>{{chronicle.content |replace('\n', '<br/>' | safe)}}</td></tr>
-                    <tr><td>Accepte la diffusion sur les médias sociaux</td><td>{%if chronicle.isSocialMediaDiffusible%}oui{%else%}non{%endif%}</td></tr>
-                    <tr><td>Accepte la diffusion d'identité</td><td>{%if chronicle.isIdentityDiffusible%}oui{%else%}non{%endif%}</td></tr>
-                </table>
-            {% endfor %}
-        {% endif %}
+        
 
-        {% if container.internal.accountUpdateRequests %}
-            <h3>Dossiers Démarches-Simplifiées de mise à jour d'informations personnelles</h3>
-            {% for update_request in container.internal.accountUpdateRequests %}
-                <table class="borderless">
-                    <tr><td>Accords de traitement des données<br/>(Consentement, CGU, accord au traitement<br/>des données, déclaration sur l'honneur)</td><td>{% if update_request.allConditionsChecked%}oui{%else%}non{%endif%}</td></tr>
-                    <tr><td>État du dossier</td><td>{{update_request.status.value}}</td></tr>
-                    <tr><td>Date de création du dossier</td><td>{{update_request.dateCreated.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>
-                    {% if update_request.dateLastStatusUpdate %}<tr><td>Date de dernière mise à jour du dossier</td><td>{{update_request.dateLastStatusUpdate.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>{% endif %}
-                    {% if update_request.dateLastInstructorMessage %}<tr><td>Date du dernier message de l'instructeur</td><td>{{update_request.dateLastInstructorMessage.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>{% endif %}
-                    {% if update_request.dateLastUserMessage %}<tr><td>Date du dernier message du demandeur</td><td>{{update_request.dateLastUserMessage.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>{% endif %}
-                    {% if update_request.firstName %}<tr><td>Prénom du demandeur</td><td>{{update_request.firstName}}</td></tr>{% endif %}
-                    {% if update_request.lastName %}<tr><td>Nom du demandeur</td><td>{{update_request.lastName}}</td></tr>{% endif %}
-                    {% if update_request.email %}<tr><td>Adresse email du demandeur</td><td>{{update_request.email}}</td></tr>{% endif %}
-                    {% if update_request.birthDate %}<tr><td>Date de naissance du demandeur</td><td>{{update_request.birthDate.strftime('%d/%m/%Y')}}</td></tr>{% endif %}
-                    {% if update_request.oldEmail %}<tr><td>Ancienne adresse email</td><td>{{update_request.oldEmail}}</td></tr>{% endif %}
-                    {% if update_request.newFirstName %}<tr><td>Nouveau prénom</td><td>{{update_request.newFirstName}}</td></tr>{% endif %}
-                    {% if update_request.newLastName %}<tr><td>Nouveau nom</td><td>{{update_request.newLastName}}</td></tr>{% endif %}
-                    {% if update_request.newEmail %}<tr><td>Nouvelle adresse email</td><td>{{update_request.newEmail}}</td></tr>{% endif %}
-                    {% if update_request.newPhoneNumber %}<tr><td>Nouveau numéro de téléphone</td><td>{{update_request.newPhoneNumber}}</td></tr>{% endif %}
-                    {% if update_request.updateTypes %}<tr><td>Informations modifiées</td><td>{%for type in update_request.updateTypes%}{{type.value}}; {% endfor %}</td></tr>{% endif %}
-                </table>
-            {% endfor %}
-        {% endif %}
+        
     <div class="purple-background">
         Bon à savoir : si tu souhaites récupérer ces données dans un format « interopérable » (fichier « .json »), lisible par une machine, tu peux contacter le DPO (dpo@passculture.app) afin d’exercer ton droit à la portabilité.
     </div>
