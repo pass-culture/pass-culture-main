@@ -235,6 +235,21 @@ class Returns200Test:
         assert updated_offer.contactUrl == "http://localhost/"
         assert updated_offer.contactForm is None
 
+    def test_with_start_and_end_equal(self, client):
+        offer_ctx = build_offer_context()
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer = offer_ctx.offer
+        endpoint = url_for("Private API.edit_collective_offer_template", offer_id=offer.id)
+        now = datetime.utcnow()
+
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(endpoint, json={"dates": {"start": now.isoformat(), "end": now.isoformat()}})
+            assert response.status_code == 200
+
+        updated_offer = CollectiveOfferTemplate.query.filter(CollectiveOfferTemplate.id == offer.id).one()
+        assert updated_offer.dateRange.lower == now
+        assert updated_offer.dateRange.upper == now.replace(second=now.second + 1)
+
     def test_contact_form_both_null_form_and_url(self, client):
         offer_ctx = build_offer_context()
         payload_ctx = build_payload_context()

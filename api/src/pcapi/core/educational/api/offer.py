@@ -4,7 +4,6 @@ import logging
 import typing
 
 from flask_sqlalchemy import BaseQuery
-from psycopg2.extras import DateTimeRange
 
 from pcapi import settings
 from pcapi.core import search
@@ -13,6 +12,7 @@ from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational import validation
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer_request
@@ -219,7 +219,11 @@ def create_collective_offer_template(
     )
 
     if offer_data.dates:
-        collective_offer_template.dateRange = DateTimeRange(offer_data.dates.start, offer_data.dates.end)
+        # this is necessary to pass constraint template_dates_non_empty_daterange
+        # currently this only happens when selecting time = 23h59
+        collective_offer_template.dateRange = educational_utils.get_non_empty_date_time_range(
+            offer_data.dates.start, offer_data.dates.end
+        )
 
     collective_offer_template.bookingEmails = offer_data.booking_emails
     db.session.add(collective_offer_template)

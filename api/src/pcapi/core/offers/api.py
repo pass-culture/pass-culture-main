@@ -9,7 +9,6 @@ import typing
 from flask_sqlalchemy import BaseQuery
 from psycopg2.errorcodes import CHECK_VIOLATION
 from psycopg2.errorcodes import UNIQUE_VIOLATION
-from psycopg2.extras import DateTimeRange
 import sentry_sdk
 import sqlalchemy as sa
 from sqlalchemy import func
@@ -31,6 +30,7 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.criteria.models as criteria_models
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational import validation as educational_validation
 from pcapi.core.educational.api import offer as educational_api_offer
 import pcapi.core.educational.api.national_program as national_program_api
@@ -510,7 +510,10 @@ def update_collective_offer_template(offer_id: int, new_values: dict) -> None:
             start, end = dates["start"], dates["end"]
             if start.date() < offer_to_update.dateCreated.date():
                 raise educational_exceptions.StartsBeforeOfferCreation()
-            offer_to_update.dateRange = DateTimeRange(start, end)
+
+            # this is necessary to pass constraint template_dates_non_empty_daterange
+            # currently this only happens when selecting time = 23h59
+            offer_to_update.dateRange = educational_utils.get_non_empty_date_time_range(start, end)
         else:
             offer_to_update.dateRange = None
 

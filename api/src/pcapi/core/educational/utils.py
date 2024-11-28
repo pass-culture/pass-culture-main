@@ -4,6 +4,7 @@ import hashlib
 import logging
 
 import jwt
+from psycopg2.extras import DateTimeRange
 
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.users.utils import ALGORITHM_RS_256
@@ -77,3 +78,17 @@ def get_image_from_url(url: str) -> bytes:
     if response.status_code != 200:
         raise educational_exceptions.CantGetImageFromUrl
     return response.content
+
+
+def get_non_empty_date_time_range(start: datetime, end: datetime) -> DateTimeRange:
+    """
+    As the bounds of DateTimeRange are '[)' by default, we need to add 1 second to end to get a non-empty range
+    when start and end dates are equal
+    """
+
+    if start == end:
+        new_end = end.replace(second=end.second + 1)
+    else:
+        new_end = end
+
+    return DateTimeRange(start, new_end)
