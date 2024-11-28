@@ -11,6 +11,7 @@ from werkzeug.exceptions import NotFound
 
 from pcapi import settings
 from pcapi.core import token as token_utils
+from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import generator as users_generator
@@ -52,6 +53,7 @@ def get_generated_user() -> utils.BackofficeResponse:
         user=user,
         form=form,
         dst=url_for("backoffice_web.generate_user"),
+        ubble_configuration_form=forms.UbbleConfigurationForm(),
     )
 
 
@@ -163,3 +165,49 @@ def delete_user() -> utils.BackofficeResponse:
         "success",
     )
     return redirect(url_for("backoffice_web.delete_user"), code=303)
+
+
+@blueprint.backoffice_web.route("/<int:user_id>/ubble/configuration", methods=["POST"])
+@atomic()
+@utils.custom_login_required(redirect_to=".home")
+def configure_ubble_v2_response(user_id: int) -> utils.BackofficeResponse:
+    user = _get_user_if_exists(str(user_id))
+    if user is None:
+        mark_transaction_as_invalid()
+        flash(f"L'utilisateur {user_id} n'a pas été trouvé", "warning")
+        return redirect(url_for("backoffice_web.get_generated_user"), code=404)
+
+    form = forms.UbbleConfigurationForm()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(utils.build_form_error_msg(form), "warning")
+        return render_template("backoffice_web.get_generated_user", form=form), 400
+
+    # Ubble response codes can be tested by inserting the ones we want in the external applicant id of the Ubble
+    # applicant. See https://docs.ubble.ai/#section/Testing/Declined-verification-on-retry-after-checks-inconclusive
+    second_response_code = form.second_response_code.data
+    if second_response_code:
+        applicant_id_suffix = "A" + second_response_code.ljust(20, "0")
+    else:
+        applicant_id_suffix = "".ljust(21, "0")
+
+    first_response_code = form.first_response_code.data
+    external_applicant_id = f"eaplt_{first_response_code}{applicant_id_suffix}"
+    ubble_fraud_check = fraud_models.BeneficiaryFraudCheck(
+        user=user,
+        eligibilityType=user.eligibility,
+        type=fraud_models.FraudCheckType.UBBLE,
+        thirdPartyId="",
+        status=fraud_models.FraudCheckStatus.STARTED,
+        resultContent=fraud_models.UbbleContent(
+            birth_date=form.birth_date.data, external_applicant_id=external_applicant_id
+        ).dict(exclude_none=True),
+    )
+    db.session.add(ubble_fraud_check)
+    db.session.flush()
+
+    flash("La réponse d'Ubble v2 a été configurée pour cet utilisateur", "success")
+
+    token = token_utils.Token.get_token(token_utils.TokenType.EMAIL_VALIDATION, user.id)
+    access_token = token.encoded_token if token else None
+    return redirect(url_for("backoffice_web.get_generated_user", userId=user.id, accessToken=access_token), code=303)
