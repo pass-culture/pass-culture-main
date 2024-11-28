@@ -182,10 +182,6 @@ export const IndividualOfferDetailsScreen = ({
       // This is used from scroll to error
       formik.setStatus('apiError')
     }
-
-    if (offer && formik.dirty) {
-      notify.success(PATCH_SUCCESS_MESSAGE)
-    }
   }
 
   const formik = useFormik({

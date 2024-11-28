@@ -55,10 +55,7 @@ describe('Edit digital individual offers', () => {
       const randomUrl = `http://myrandomurl.fr/`
       cy.get('input#url').type('{selectall}{del}' + randomUrl)
       cy.findByText('Enregistrer les modifications').click()
-      cy.findAllByTestId('global-notification-success').should(
-        'contain',
-        'Vos modifications ont bien été enregistrées'
-      )
+      cy.findByText('http://myrandomurl.fr/').should('exist')
       cy.findByText('Retour à la liste des offres').click()
       cy.url().should('contain', '/offres')
       cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
@@ -130,11 +127,6 @@ describe('Edit digital individual offers', () => {
 
       cy.stepLog({ message: 'Confirm modifications' })
       cy.findByText('Confirmer les modifications').click()
-      cy.findAllByTestId('global-notification-success').should(
-        'contain',
-        'Vos modifications ont bien été enregistrées'
-      )
-
       cy.stepLog({ message: 'Check that booking date has been modified' })
       cy.visit('/offre/individuelle/2/reservations')
       cy.findAllByTestId('spinner').should('not.exist')

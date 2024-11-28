@@ -174,14 +174,6 @@ export const IndividualOfferInformationsScreen = ({
 
       return notify.error(SENT_DATA_ERROR_MESSAGE)
     }
-
-    if (
-      localStorageAvailable() &&
-      localStorage.getItem(getLocalStorageKeyName(offer)) !== null &&
-      formik.dirty
-    ) {
-      notify.success(PATCH_SUCCESS_MESSAGE)
-    }
   }
 
   // Getting selected venue at step 1 (details) to infer address fields
