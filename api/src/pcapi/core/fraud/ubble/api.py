@@ -167,10 +167,18 @@ def get_ubble_fraud_check(identification_id: str) -> fraud_models.BeneficiaryFra
 
 def does_match_ubble_test_email(email: str) -> re.Match | None:
     # This function MUST ALWAYS return None in production environment
-    if settings.IS_PROD:
+    if settings.IS_PROD or not settings.ENABLE_UBBLE_TEST_EMAIL:
         return None
 
     return UBBLE_TEST_EMAIL_RE.match(email)
+
+
+def does_match_ubble_test_names(content: fraud_models.UbbleContent) -> bool:
+    if settings.IS_PROD:
+        return False
+
+    UBBLE_TEST_NAME = "SMITH"
+    return not content.first_name and content.last_name == UBBLE_TEST_NAME
 
 
 def get_restartable_identity_checks(user: users_models.User) -> fraud_models.BeneficiaryFraudCheck | None:

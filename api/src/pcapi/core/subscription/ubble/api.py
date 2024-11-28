@@ -9,7 +9,6 @@ import tempfile
 import flask
 from pydantic.v1.networks import HttpUrl
 
-from pcapi import settings
 from pcapi.connectors.beneficiaries import outscale
 from pcapi.connectors.beneficiaries import ubble
 from pcapi.connectors.serialization import ubble_serializers
@@ -40,15 +39,11 @@ logger = logging.getLogger(__name__)
 
 def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> None:
     content = _get_content(fraud_check.thirdPartyId)
+    _fill_missing_content_test_fields(content, fraud_check)
 
-    if settings.ENABLE_UBBLE_TEST_EMAIL and ubble_fraud_api.does_match_ubble_test_email(fraud_check.user.email):
-        content.birth_date = fraud_check.user.birth_date
+    _update_identity_fraud_check(fraud_check, content)
 
-    fraud_check.resultContent = content.dict(exclude_none=True)
-    pcapi_repository.repository.save(fraud_check)
-
-    user: users_models.User = fraud_check.user
-
+    user = fraud_check.user
     status = content.status
     if status in (
         ubble_serializers.UbbleIdentificationStatus.PROCESSING,
@@ -64,11 +59,10 @@ def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> No
         ubble_serializers.UbbleIdentificationStatus.PROCESSED,
     ]:
         fraud_check = subscription_api.handle_eligibility_difference_between_declaration_and_identity_provider(
-            user, fraud_check
+            user, fraud_check, content
         )
         try:
             ubble_fraud_api.on_ubble_result(fraud_check)
-
         except Exception:  # pylint: disable=broad-except
             logger.exception("Error on Ubble fraud check result: %s", extra={"user_id": user.id})
             return
@@ -77,7 +71,6 @@ def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> No
 
         if fraud_check.status != fraud_models.FraudCheckStatus.OK:
             handle_validation_errors(user, fraud_check)
-
             return
 
         payload = ubble_tasks.StoreIdPictureRequest(identification_id=fraud_check.thirdPartyId)
@@ -102,6 +95,31 @@ def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> No
         pcapi_repository.repository.save(fraud_check)
 
 
+def _fill_missing_content_test_fields(
+    content: fraud_models.UbbleContent, fraud_check: fraud_models.BeneficiaryFraudCheck
+) -> None:
+    user = fraud_check.user
+    is_v2 = is_v2_identification(content.identification_id)
+    if not is_v2:
+        if ubble_fraud_api.does_match_ubble_test_email(user.email):
+            content.birth_date = user.birth_date
+        return
+
+    previous_ubble_content = fraud_check.source_data()
+    assert isinstance(previous_ubble_content, fraud_models.UbbleContent)
+
+    should_fill_content = (
+        ubble_fraud_api.does_match_ubble_test_names(content)
+        and previous_ubble_content.external_applicant_id is not None
+        and content.status == ubble_serializers.UbbleIdentificationStatus.APPROVED
+    )
+    if should_fill_content:
+        content.birth_date = previous_ubble_content.birth_date
+        content.first_name = user.firstName
+        content.last_name = user.lastName
+        content.id_document_number = f"{user.id:012}"
+
+
 def is_v2_identification(identification_id: str | None) -> bool:
     if not identification_id:
         return True
@@ -115,27 +133,118 @@ def start_ubble_workflow(
     user: users_models.User, first_name: str, last_name: str, redirect_url: str, webhook_url: str | None = None
 ) -> HttpUrl | None:
     if FeatureToggle.WIP_UBBLE_V2.is_active():
-        return _start_ubble_v2_workflow(user, first_name, last_name, redirect_url, webhook_url)
+        return _start_or_reattempt_ubble_v2_workflow(user, first_name, last_name, redirect_url, webhook_url)
     return _start_ubble_v1_workflow(user, first_name, last_name, redirect_url, webhook_url)
 
 
-def _start_ubble_v2_workflow(
+def _start_or_reattempt_ubble_v2_workflow(
     user: users_models.User, first_name: str, last_name: str, redirect_url: str, webhook_url: str | None = None
 ) -> HttpUrl | None:
     if webhook_url is None:
         webhook_url = flask.url_for("Public API.ubble_v2_webhook_update_application_status", _external=True)
 
-    content = ubble.create_and_start_identity_verification(first_name, last_name, redirect_url, webhook_url)
-    fraud_check = subscription_api.initialize_identity_fraud_check(
-        eligibility_type=user.eligibility,
-        fraud_check_type=fraud_models.FraudCheckType.UBBLE,
-        identity_content=content,
-        third_party_id=str(content.identification_id),
-        user=user,
-    )
-    batch_notification.track_identity_check_started_event(user.id, fraud_check.type)
+    ubble_fraud_check = _get_last_ubble_fraud_check(user)
+    if ubble_fraud_check is not None and _should_reattempt_identity_verification(ubble_fraud_check):
+        content = _reattempt_identity_verification(ubble_fraud_check, first_name, last_name, redirect_url, webhook_url)
+        _update_identity_fraud_check(ubble_fraud_check, content)
+        batch_notification.track_identity_check_started_event(ubble_fraud_check.user.id, ubble_fraud_check.type)
+    else:
+        content = ubble.create_and_start_identity_verification(first_name, last_name, redirect_url, webhook_url)
+        subscription_api.initialize_identity_fraud_check(
+            eligibility_type=user.eligibility,
+            fraud_check_type=fraud_models.FraudCheckType.UBBLE,
+            identity_content=content,
+            third_party_id=str(content.identification_id),
+            user=user,
+        )
 
     return content.identification_url
+
+
+def _get_last_ubble_fraud_check(user: users_models.User) -> fraud_models.BeneficiaryFraudCheck | None:
+    ubble_fraud_checks = [
+        fraud_check
+        for fraud_check in user.beneficiaryFraudChecks
+        if fraud_check.type == fraud_models.FraudCheckType.UBBLE
+    ]
+    last_ubble_fraud_check = next((fraud_check for fraud_check in reversed(ubble_fraud_checks)), None)
+    return last_ubble_fraud_check
+
+
+def _should_reattempt_identity_verification(fraud_check: fraud_models.BeneficiaryFraudCheck) -> bool:
+    return is_v2_identification(fraud_check.thirdPartyId) and fraud_check.status in [
+        fraud_models.FraudCheckStatus.STARTED,
+        fraud_models.FraudCheckStatus.PENDING,
+        fraud_models.FraudCheckStatus.SUSPICIOUS,
+    ]
+
+
+def _reattempt_identity_verification(
+    ubble_fraud_check: fraud_models.BeneficiaryFraudCheck,
+    first_name: str,
+    last_name: str,
+    redirect_url: str,
+    webhook_url: str,
+) -> fraud_models.UbbleContent:
+    ubble_content = ubble_fraud_check.source_data()
+    assert isinstance(ubble_content, fraud_models.UbbleContent)
+
+    identification_id = ubble_content.identification_id
+    if not identification_id:
+        ubble_content = _create_ubble_identification(
+            ubble_content=ubble_content,
+            email=ubble_fraud_check.user.email,
+            first_name=first_name,
+            last_name=last_name,
+            redirect_url=redirect_url,
+            webhook_url=webhook_url,
+        )
+        identification_id = ubble_content.identification_id
+
+    identification_url = ubble.create_identity_verification_attempt(identification_id, redirect_url)
+    ubble_content.identification_url = identification_url
+
+    return ubble_content
+
+
+def _create_ubble_identification(
+    *,
+    ubble_content: fraud_models.UbbleContent,
+    email: str,
+    first_name: str,
+    last_name: str,
+    redirect_url: str,
+    webhook_url: str,
+) -> fraud_models.UbbleContent:
+    applicant_id = ubble_content.applicant_id
+    if not applicant_id:
+        external_applicant_id = ubble_content.external_applicant_id
+        if not external_applicant_id:
+            raise ValueError(
+                "An Ubble v2 content must have either the identification_id, applicant_id or external_applicant_id defined"
+            )
+
+        applicant_id = ubble.create_applicant(external_applicant_id, email)
+
+    new_ubble_content = ubble.create_identity_verification(
+        applicant_id, first_name, last_name, redirect_url, webhook_url
+    )
+    return new_ubble_content
+
+
+def _update_identity_fraud_check(
+    fraud_check: fraud_models.BeneficiaryFraudCheck, content: fraud_models.UbbleContent
+) -> None:
+    fraud_check.thirdPartyId = content.identification_id
+
+    if is_v2_identification(content.identification_id):
+        if not fraud_check.resultContent:
+            fraud_check.resultContent = {}
+        fraud_check.resultContent.update(**content.dict(exclude_none=True))
+    else:
+        fraud_check.resultContent = content.dict(exclude_none=True)
+
+    pcapi_repository.repository.save(fraud_check)
 
 
 def _start_ubble_v1_workflow(
@@ -145,14 +254,13 @@ def _start_ubble_v1_workflow(
         webhook_url = flask.url_for("Public API.ubble_webhook_update_application_status", _external=True)
 
     content = ubble.start_identification(user.id, first_name, last_name, redirect_url, webhook_url)
-    fraud_check = subscription_api.initialize_identity_fraud_check(
+    subscription_api.initialize_identity_fraud_check(
         eligibility_type=user.eligibility,
         fraud_check_type=fraud_models.FraudCheckType.UBBLE,
         identity_content=content,
         third_party_id=str(content.identification_id),
         user=user,
     )
-    batch_notification.track_identity_check_started_event(user.id, fraud_check.type)
 
     return content.identification_url
 
