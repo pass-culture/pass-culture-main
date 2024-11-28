@@ -189,6 +189,18 @@ class Returns200Test:
 
         assert response.status_code == 201
 
+    def test_with_start_and_end_equal(self, pro_client, payload):
+        now = datetime.utcnow()
+        data = {**payload, "dates": {"start": format_into_utc_date(now), "end": format_into_utc_date(now)}}
+
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 201
+        offer = CollectiveOfferTemplate.query.filter_by(id=response.json["id"]).one()
+        assert offer.dateRange.lower == now
+        assert offer.dateRange.upper == now.replace(second=now.second + 1)
+
 
 class Returns403Test:
     def test_random_user(self, client, payload):
