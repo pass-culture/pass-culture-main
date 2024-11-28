@@ -225,7 +225,7 @@
                     {% if update_request.newLastName %}<tr><td>Nouveau nom</td><td>{{update_request.newLastName}}</td></tr>{% endif %}
                     {% if update_request.newEmail %}<tr><td>Nouvelle adresse email</td><td>{{update_request.newEmail}}</td></tr>{% endif %}
                     {% if update_request.newPhoneNumber %}<tr><td>Nouveau numéro de téléphone</td><td>{{update_request.newPhoneNumber}}</td></tr>{% endif %}
-                    {% if update_request.updateTypes %}<tr><td>Informations modifiées</td><td>{%for type in update_request.updateTypes%}{{type.value}}; {% endfor %}</td></tr>{% endif %}
+                    {% if update_request.updateTypes %}<tr><td>Informations modifiées</td><td>{%for updateType in update_request.updateTypes%}{{updateType}}; {% endfor %}</td></tr>{% endif %}
                 </table>
             {% endfor %}
         {% endif %}
