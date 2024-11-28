@@ -7,6 +7,7 @@ import prometheus_client
 import prometheus_client.registry
 from prometheus_flask_exporter.multiprocess import GunicornPrometheusMetrics
 
+from pcapi.models import db
 from pcapi.utils import kubernetes as kubernetes_utils
 
 
@@ -37,6 +38,16 @@ def _clean_up_prometheus_metrics_directory(worker):
     directory = pathlib.Path(FLASK_PROMETHEUS_EXPORTER_METRICS_DIR)
     for path in directory.glob(f"*_{worker.pid}.db"):
         path.unlink(missing_ok=True)
+
+
+def pre_fork(server, worker):
+    """Called before a Gunicorn worker is forked."""
+    # We need to drop all connections to the database to prevent those
+    # from being shared among dfferent workers processes once all initialisation
+    # have been made
+    # See https://docs.sqlalchemy.org/en/14/core/pooling.html#using-connection-pools-with-multiprocessing-or-os-fork
+    if db and db.engine:
+        db.engine.dispose()
 
 
 def post_fork(server, worker):

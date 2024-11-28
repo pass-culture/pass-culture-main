@@ -2,6 +2,7 @@ import logging
 import os
 import sys
 import time
+import typing
 
 from authlib.integrations.flask_client import OAuth
 from flask import Flask
@@ -16,6 +17,7 @@ from flask_login import current_user
 import prometheus_flask_exporter.multiprocess
 import redis
 import sentry_sdk
+import sqlalchemy as sa
 from sqlalchemy import orm
 from werkzeug.middleware.profiler import ProfilerMiddleware
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -211,6 +213,24 @@ def remove_db_session(exc: BaseException | None = None) -> None:
         db.session.remove()
     except AttributeError:
         pass
+
+
+with app.app_context():
+    # Invalidates connections that are being shared accross process boundaries
+    # see https://docs.sqlalchemy.org/en/13/core/pooling.html#using-connection-pools-with-multiprocessing-or-os-fork
+    @sa.event.listens_for(db.engine, "connect")
+    def connect(dbapi_connection: typing.Any, connection_record: typing.Any) -> None:
+        connection_record.info["pid"] = os.getpid()
+
+    @sa.event.listens_for(db.engine, "checkout")
+    def checkout(dbapi_connection: typing.Any, connection_record: typing.Any, connection_proxy: typing.Any) -> None:
+        pid = os.getpid()
+        if connection_record.info["pid"] != pid:
+            connection_record.connection = connection_proxy.connection = None
+            raise sa.exc.DisconnectionError(
+                "Connection record belongs to pid %s, "
+                "attempting to check out in pid %s" % (connection_record.info["pid"], pid)
+            )
 
 
 def _non_printable(seq: str) -> str:
