@@ -26,16 +26,16 @@ import {
 import { computeAddressDisplayName } from 'repository/venuesService'
 
 import {
-  IndividualOffersScreen,
-  IndividualOffersScreenProps,
-} from '../IndividualOffersScreen'
+  IndividualOffersContainer,
+  IndividualOffersContainerProps,
+} from './IndividualOffersContainer'
 
 const renderOffers = (
-  props: IndividualOffersScreenProps,
+  props: IndividualOffersContainerProps,
   options?: RenderWithProvidersOptions
 ) => {
   const user = sharedCurrentUserFactory()
-  renderWithProviders(<IndividualOffersScreen {...props} />, {
+  renderWithProviders(<IndividualOffersContainer {...props} />, {
     user,
     storeOverrides: {
       user: {
@@ -106,7 +106,7 @@ vi.mock('apiClient/api', () => ({
 }))
 
 describe('IndividualOffersScreen', () => {
-  let props: IndividualOffersScreenProps
+  let props: IndividualOffersContainerProps
   let currentUser: SharedCurrentUserResponseModel
   let offersRecap: ListOffersOfferResponseModel[]
 
@@ -524,7 +524,7 @@ describe('IndividualOffersScreen', () => {
   })
 
   it('should display actionsBar when at least one offer is selected', async () => {
-    renderWithProviders(<IndividualOffersScreen {...props} />, {
+    renderWithProviders(<IndividualOffersContainer {...props} />, {
       user: currentUser,
     })
 

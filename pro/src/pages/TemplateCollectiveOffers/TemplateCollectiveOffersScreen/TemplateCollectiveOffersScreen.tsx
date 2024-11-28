@@ -17,11 +17,11 @@ import { hasCollectiveSearchFilters } from 'commons/core/Offers/utils/hasSearchF
 import { SelectOption } from 'commons/custom_types/form'
 import { useColumnSorting } from 'commons/hooks/useColumnSorting'
 import { usePagination } from 'commons/hooks/usePagination'
+import { isSameOffer } from 'commons/utils/isSameOffer'
 import { sortCollectiveOffers } from 'commons/utils/sortCollectiveOffers'
 import { CollectiveOffersActionsBar } from 'components/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
 import { CollectiveOffersTable } from 'components/CollectiveOffersTable/CollectiveOffersTable'
 import { NoData } from 'components/NoData/NoData'
-import { isSameOffer } from 'pages/Offers/utils/isSameOffer'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
 
 import styles from './TemplateCollectiveOffersScreen.module.scss'

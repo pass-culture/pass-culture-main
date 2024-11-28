@@ -23,7 +23,6 @@ import {
   CollectiveOfferVisibilityScreen,
   CollectiveOfferVisibilityProps,
 } from '../CollectiveOfferVisibility'
-import { features } from 'process'
 
 vi.mock('apiClient/api', () => ({
   api: {
@@ -500,9 +499,18 @@ describe('CollectiveOfferVisibility', () => {
     props.initialValues = {
       ...props.initialValues,
       institution: '12',
-      
     }
-    renderVisibilityStep({ ...props, mode: Mode.READ_ONLY, offer: {...props.offer, allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION]} }, {features: ['ENABLE_COLLECTIVE_NEW_STATUSES']})
+    renderVisibilityStep(
+      {
+        ...props,
+        mode: Mode.READ_ONLY,
+        offer: {
+          ...props.offer,
+          allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION],
+        },
+      },
+      { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] }
+    )
     expect(
       await screen.findByLabelText(
         /Nom de l’établissement scolaire ou code UAI/
@@ -515,9 +523,15 @@ describe('CollectiveOfferVisibility', () => {
     props.initialValues = {
       ...props.initialValues,
       institution: '12',
-      
     }
-    renderVisibilityStep({ ...props, mode: Mode.READ_ONLY, offer: {...props.offer, allowedActions: []} }, {features: ['ENABLE_COLLECTIVE_NEW_STATUSES']})
+    renderVisibilityStep(
+      {
+        ...props,
+        mode: Mode.READ_ONLY,
+        offer: { ...props.offer, allowedActions: [] },
+      },
+      { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] }
+    )
     expect(
       await screen.findByLabelText(
         /Nom de l’établissement scolaire ou code UAI/

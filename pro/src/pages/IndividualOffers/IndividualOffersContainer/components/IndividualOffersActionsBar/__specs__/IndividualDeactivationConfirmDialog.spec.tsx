@@ -6,7 +6,7 @@ import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import {
   IndividualDeactivationConfirmDialog,
   DeactivationConfirmDialogProps,
-} from '../IndividualDeactivationConfirmDialog'
+} from '../components/IndividualDeactivationConfirmDialog'
 
 const renderDeactivationConfirmDialog = ({
   ...props

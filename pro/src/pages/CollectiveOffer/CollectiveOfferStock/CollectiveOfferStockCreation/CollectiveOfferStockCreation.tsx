@@ -27,8 +27,8 @@ import { extractInitialStockValues } from 'commons/core/OfferEducational/utils/e
 import { hasStatusCodeAndErrorsCode } from 'commons/core/OfferEducational/utils/hasStatusCode'
 import { FORM_ERROR_MESSAGE } from 'commons/core/shared/constants'
 import { useNotification } from 'commons/hooks/useNotification'
+import { queryParamsFromOfferer } from 'commons/utils/queryParamsFromOfferer'
 import { CollectiveOfferLayout } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
-import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 
 import {
   MandatoryCollectiveOfferFromParamsProps,

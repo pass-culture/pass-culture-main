@@ -13,11 +13,10 @@ import { OfferNameCell } from 'components/OffersTable/Cells/OfferNameCell/OfferN
 import { OfferVenueCell } from 'components/OffersTable/Cells/OfferVenueCell'
 import { ThumbCell } from 'components/OffersTable/Cells/ThumbCell'
 
-import { AddressCell } from '../../Cells/AddressCell'
-import { IndividualActionsCells } from '../../Cells/IndividualActionsCell'
-import { OfferRemainingStockCell } from '../../Cells/OfferRemainingStockCell'
-import { OfferStatusCell } from '../../Cells/OfferStatusCell'
-
+import { AddressCell } from './components/AddressCell'
+import { IndividualActionsCells } from './components/IndividualActionsCell'
+import { OfferRemainingStockCell } from './components/OfferRemainingStockCell'
+import { OfferStatusCell } from './components/OfferStatusCell'
 import styles from './IndividualOfferRow.module.scss'
 
 export type IndividualOfferRowProps = {

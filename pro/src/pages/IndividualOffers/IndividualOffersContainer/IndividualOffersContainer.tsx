@@ -6,21 +6,20 @@ import {
   DEFAULT_SEARCH_FILTERS,
   MAX_TOTAL_PAGES,
   NUMBER_OF_OFFERS_PER_PAGE,
-  OFFER_STATUS_DRAFT,
 } from 'commons/core/Offers/constants'
 import { SearchFiltersParams } from 'commons/core/Offers/types'
 import { hasSearchFilters } from 'commons/core/Offers/utils/hasSearchFilters'
 import { Audience } from 'commons/core/shared/types'
 import { SelectOption } from 'commons/custom_types/form'
+import { isSameOffer } from 'commons/utils/isSameOffer'
 import { NoData } from 'components/NoData/NoData'
-import { IndividualOffersActionsBar } from 'pages/Offers/OffersTable/IndividualOffersTable/IndividualOffersActionsBar/IndividualOffersActionsBar'
-import { IndividualOffersTable } from 'pages/Offers/OffersTable/IndividualOffersTable/IndividualOffersTable'
-import { isSameOffer } from 'pages/Offers/utils/isSameOffer'
 
-import styles from './IndividualOffersScreen.module.scss'
-import { IndividualOffersSearchFilters } from './IndividualOffersSearchFilters/IndividualOffersSearchFilters'
+import { IndividualOffersActionsBar } from './components/IndividualOffersActionsBar/IndividualOffersActionsBar'
+import { IndividualOffersSearchFilters } from './components/IndividualOffersSearchFilters/IndividualOffersSearchFilters'
+import { IndividualOffersTable } from './components/IndividualOffersTable/IndividualOffersTable'
+import styles from './IndividualOffersContainer.module.scss'
 
-export type IndividualOffersScreenProps = {
+export type IndividualOffersContainerProps = {
   currentPageNumber: number
   isLoading: boolean
   initialSearchFilters: SearchFiltersParams
@@ -38,7 +37,7 @@ export type IndividualOffersScreenProps = {
   offers?: ListOffersOfferResponseModel[]
 }
 
-export const IndividualOffersScreen = ({
+export const IndividualOffersContainer = ({
   currentPageNumber,
   isLoading,
   initialSearchFilters,
@@ -49,7 +48,7 @@ export const IndividualOffersScreen = ({
   categories,
   isRestrictedAsAdmin,
   offers = [],
-}: IndividualOffersScreenProps): JSX.Element => {
+}: IndividualOffersContainerProps): JSX.Element => {
   const [selectedOffers, setSelectedOffers] = useState<
     ListOffersOfferResponseModel[]
   >([])

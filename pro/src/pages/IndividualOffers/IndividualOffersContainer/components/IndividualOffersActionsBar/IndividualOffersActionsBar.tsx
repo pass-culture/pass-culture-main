@@ -4,6 +4,7 @@ import { mutate, useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
+import { GET_OFFERS_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { useQuerySearchFilters } from 'commons/core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from 'commons/core/Offers/types'
 import { serializeApiFilters } from 'commons/core/Offers/utils/serializer'
@@ -16,15 +17,14 @@ import { computeSelectedOffersLabel } from 'components/OffersTable/utils/compute
 import fullHideIcon from 'icons/full-hide.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
-import { GET_OFFERS_QUERY_KEY } from 'pages/Offers/OffersRoute'
-import { computeDeletionErrorMessage } from 'pages/Offers/utils/computeDeletionErrorMessage'
-import { computeDeletionSuccessMessage } from 'pages/Offers/utils/computeDeletionSuccessMessage'
-import { computeIndividualApiFilters } from 'pages/Offers/utils/computeIndividualApiFilters'
+import { computeDeletionErrorMessage } from 'pages/IndividualOffers/utils/computeDeletionErrorMessage'
+import { computeDeletionSuccessMessage } from 'pages/IndividualOffers/utils/computeDeletionSuccessMessage'
+import { computeIndividualApiFilters } from 'pages/IndividualOffers/utils/computeIndividualApiFilters'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import { DeleteConfirmDialog } from './DeleteConfirmDialog'
-import { IndividualDeactivationConfirmDialog } from './IndividualDeactivationConfirmDialog'
+import { DeleteConfirmDialog } from './components/DeleteConfirmDialog'
+import { IndividualDeactivationConfirmDialog } from './components/IndividualDeactivationConfirmDialog'
 
 export type IndividualOffersActionsBarProps = {
   areAllOffersSelected: boolean

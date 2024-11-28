@@ -35,13 +35,13 @@ import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { queryParamsFromOfferer } from 'commons/utils/queryParamsFromOfferer'
 import { OfferEducationalActions } from 'components/OfferEducationalActions/OfferEducationalActions'
 import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import {
   createPatchOfferPayload,
   createPatchOfferTemplatePayload,
 } from 'pages/CollectiveOffer/CollectiveOffer/CollectiveOfferEdition/utils/createPatchOfferPayload'
-import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 
 import styles from './OfferEducational.module.scss'
 import { OfferEducationalForm } from './OfferEducationalForm/OfferEducationalForm'
