@@ -328,6 +328,8 @@ class DMSContent(common_models.IdentityCheckContent):
         return self.registration_datetime
 
 
+UBBLE_OK_REASON_CODE = 10000
+
 UBBLE_REASON_CODE_MAPPING = {
     # Ubble V2 https://docs.ubble.ai/#section/Handle-verification-results/Response-codes
     61201: FraudReasonCode.NETWORK_CONNECTION_ISSUE,  # applicant did not have a sufficient connection
@@ -363,10 +365,12 @@ UBBLE_REASON_CODE_MAPPING = {
 
 
 class UbbleContent(common_models.IdentityCheckContent):
+    applicant_id: str | None = None
     birth_date: datetime.date | None = None
     comment: str | None = None
     document_type: str | None = None
     expiry_date_score: float | None = None
+    external_applicant_id: str | None = None
     first_name: str | None = None
     gender: users_models.GenderEnum | None = None
     id_document_number: str | None = None

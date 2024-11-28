@@ -82,6 +82,71 @@ def log_and_handle_ubble_response(
     return log_response_status_and_reraise_if_needed
 
 
+@log_and_handle_ubble_response("applicant")
+def create_applicant(external_applicant_id: str, email: str) -> str:
+    response = requests.post(
+        build_url("/v2/applicants"),
+        json={"external_applicant_id": external_applicant_id, "email": email},
+        cert=(settings.UBBLE_CLIENT_CERTIFICATE_PATH, settings.UBBLE_CLIENT_KEY_PATH),
+    )
+    response.raise_for_status()
+
+    ubble_applicant = parse_obj_as(ubble_serializers.UbbleV2ApplicantResponse, response.json())
+
+    logger.info(
+        "Ubble applicant created",
+        extra={
+            "applicant_id": ubble_applicant.id,
+            "external_applicant_id": ubble_applicant.external_applicant_id,
+        },
+    )
+
+    return ubble_applicant.id
+
+
+@log_and_handle_ubble_response("post-identity-verifications")
+def create_identity_verification(
+    applicant_id: str, first_name: str, last_name: str, redirect_url: str, webhook_url: str
+) -> fraud_models.UbbleContent:
+    response = requests.post(
+        build_url("/v2/identity-verifications"),
+        json={
+            "applicant_id": applicant_id,
+            "declared_data": {"name": f"{first_name} {last_name}"},
+            "redirect_url": redirect_url,
+            "webhook_url": webhook_url,
+        },
+        cert=(settings.UBBLE_CLIENT_CERTIFICATE_PATH, settings.UBBLE_CLIENT_KEY_PATH),
+    )
+    response.raise_for_status()
+
+    ubble_identification = parse_obj_as(ubble_serializers.UbbleV2IdentificationResponse, response.json())
+    ubble_content = ubble_serializers.convert_identification_to_ubble_content(ubble_identification)
+
+    logger.info(
+        "Ubble identification created",
+        extra={"identification_id": ubble_identification.id, "status": str(ubble_identification.status)},
+    )
+
+    return ubble_content
+
+
+@log_and_handle_ubble_response("identity-verifications-attempt")
+def create_identity_verification_attempt(identification_id: str, redirect_url: str) -> str:
+    response = requests.post(
+        build_url(f"/v2/identity-verifications/{identification_id}/attempts"),
+        json={"redirect_url": redirect_url},
+        cert=(settings.UBBLE_CLIENT_CERTIFICATE_PATH, settings.UBBLE_CLIENT_KEY_PATH),
+    )
+    response.raise_for_status()
+
+    identification_attempt = parse_obj_as(ubble_serializers.UbbleV2AttemptResponse, response.json())
+
+    logger.info("Ubble identification attempted", extra={"identification_id": identification_attempt.id})
+
+    return identification_attempt.links.verification_url.href
+
+
 @log_and_handle_ubble_response("create-and-start-idv")
 def create_and_start_identity_verification(
     first_name: str, last_name: str, redirect_url: str, webhook_url: str
@@ -118,6 +183,19 @@ def get_identity_verification(identification_id: str) -> fraud_models.UbbleConte
 
     ubble_identification = parse_obj_as(ubble_serializers.UbbleV2IdentificationResponse, response.json())
     return ubble_serializers.convert_identification_to_ubble_content(ubble_identification)
+
+
+def request_webhook_notification(identification_id: str, webhook_url: str) -> None:
+    """
+    Request Ubble to call the webhook url with the given identification id data.
+    This function is useful for development and post-outage recovery purposes.
+    """
+    response = requests.post(
+        build_url(f"/v2/identity-verifications/{identification_id}/notify"),
+        json={"webhook_url": webhook_url},
+        cert=(settings.UBBLE_CLIENT_CERTIFICATE_PATH, settings.UBBLE_CLIENT_KEY_PATH),
+    )
+    response.raise_for_status()
 
 
 def download_ubble_picture(http_url: pydantic_networks.HttpUrl) -> tuple[str | None, typing.Any]:

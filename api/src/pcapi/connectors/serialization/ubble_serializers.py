@@ -43,16 +43,15 @@ class UbbleLink(pydantic_v1.BaseModel):
 
 class UbbleLinks(pydantic_v1.BaseModel):
     self: UbbleLink
-    applicant: UbbleLink
     verification_url: UbbleLink
 
 
 class UbbleDocument(pydantic_v1.BaseModel):
-    full_name: str
     first_names: str | None
+    full_name: str
     last_name: str | None
     birth_date: datetime.date | None
-    document_type: str
+    document_type: str | None
     document_number: str | None
     gender: users_models.GenderEnum | None
     front_image_signed_url: str
@@ -75,6 +74,7 @@ class UbbleV2IdentificationResponse(pydantic_v1.BaseModel):
     # https://docs.ubble.ai/#tag/Identity-verifications/operation/create_and_start_identity_verification
     id: str
     applicant_id: str
+    external_applicant_id: str | None
     user_journey_id: str
     status: UbbleIdentificationStatus
     declared_data: UbbleDeclaredData
@@ -97,6 +97,7 @@ class UbbleV2IdentificationResponse(pydantic_v1.BaseModel):
                 response_code.code, fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER
             )
             for response_code in self.response_codes
+            if response_code.code != fraud_models.UBBLE_OK_REASON_CODE
         ]
 
     class Config:
@@ -113,8 +114,10 @@ def convert_identification_to_ubble_content(
         first_name, last_name = _get_first_and_last_name(document)
 
     content = fraud_models.UbbleContent(
+        applicant_id=identification.applicant_id,
         birth_date=getattr(document, "birth_date", None),
         document_type=getattr(document, "document_type", None),
+        external_applicant_id=identification.external_applicant_id,
         first_name=first_name,
         gender=getattr(document, "gender", None),
         id_document_number=getattr(document, "document_number", None),
@@ -130,22 +133,45 @@ def convert_identification_to_ubble_content(
     return content
 
 
-def _get_first_and_last_name(document: UbbleDocument) -> tuple[str, str]:
+def _get_first_and_last_name(document: UbbleDocument) -> tuple[str | None, str | None]:
     if document.first_names and document.last_name:
         return document.first_names.split(", ")[0], document.last_name
 
-    logger.error(
+    if not document.full_name:
+        return None, None
+
+    logger.warning(
         "Name not composed of first names and last name: %s, defaulting to naive first name detection",
         document.full_name,
     )
-    first_name, last_name = document.full_name.split(" ", maxsplit=1)
+    names = document.full_name.split(" ", maxsplit=1)
+    if len(names) == 2:
+        first_name, last_name = names
+    else:
+        first_name, last_name = "", names[0]
     return first_name, last_name
 
 
-class WebhookBodyV2(pydantic_v1.BaseModel):
+class UbbleV2ApplicantResponse(pydantic_v1.BaseModel):
+    # https://docs.ubble.ai/#tag/Identity-verifications/operation/create_identity_verification
+    id: str
+    external_applicant_id: str | None
+
+
+class UbbleV2AttemptResponse(pydantic_v1.BaseModel):
+    # https://docs.ubble.ai/#tag/Identity-verifications/operation/create_attempt
+    id: str
+    links: UbbleLinks = pydantic_v1.Field(alias="_links")
+
+
+class WebhookBodyData(pydantic_v1.BaseModel):
     # https://docs.ubble.ai/#section/Webhooks/Body
     identity_verification_id: str
     status: UbbleIdentificationStatus
+
+
+class WebhookBodyV2(pydantic_v1.BaseModel):
+    data: WebhookBodyData
 
     class Config:
         use_enum_values = True
