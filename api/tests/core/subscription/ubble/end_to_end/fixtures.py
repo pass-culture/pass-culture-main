@@ -1,3 +1,213 @@
+# Ubble v2 fixtures
+
+APPLICANT_CREATION_RESPONSE = {
+    "_links": {"self": {"href": "https://api.ubble.example.com/v2/applicants/aplt_01je97fqhmtk2jmn6gcgyram3s"}},
+    "created_on": "2024-12-04T16:19:09.492606Z",
+    "email": "catherine.destivelle@example.com",
+    "external_applicant_id": "eaplt_61313A10000000000000000000",
+    "id": "aplt_01je97fqhmtk2jmn6gcgyram3s",
+    "modified_on": "2024-12-04T16:19:09.492615Z",
+}
+
+ID_VERIFICATION_CREATION_RESPONSE = {
+    "_links": {
+        "applicant": {"href": "https://api.ubble.example.com/v2/applicants/aplt_01je97fqhmtk2jmn6gcgyram3s"},
+        "self": {"href": "https://api.ubble.example.com/v2/identity-verifications/idv_01je97fqt08dn6a687jcqnxd1b"},
+        "verification_url": {"href": "https://id.ubble.example.com/897cda39-67d4-4abb-8636-2083d6fabca5"},
+    },
+    "applicant_id": "aplt_01je97fqhmtk2jmn6gcgyram3s",
+    "created_on": "2024-12-04T16:19:09.766392Z",
+    "declared_data": {"name": "Catherine Destivelle"},
+    "documents": [],
+    "id": "idv_01je97fqt08dn6a687jcqnxd1b",
+    "modified_on": "2024-12-04T16:19:09.961436Z",
+    "redirect_url": "https://redirect.example.com",
+    "response_codes": [],
+    "status": "pending",
+    "user_journey_id": "usj_01h13smebsb2y1tyyrzx1sgma7",
+    "webhook_url": "https://webhook.example.com",
+}
+
+ID_VERIFICATION_ATTEMPT_RESPONSE = {
+    "_links": {
+        "self": {
+            "href": "https://api.ubble.example.com/v2/identity-verifications/idv_01je97fqt08dn6a687jcqnxd1b/attempts/iatp_01je97frs00erp851xy0fgda5y"
+        },
+        "verification_url": {"href": "https://id.ubble.example.com/e6f32b1e-d4f3-41ca-ad39-d7ac04f9a3fc"},
+    },
+    "created_on": "2024-12-04T16:19:10.759922Z",
+    "id": "iatp_01je97frs00erp851xy0fgda5y",
+    "modified_on": "2024-12-04T16:19:10.759933Z",
+    "redirect_url": "https://redirect.example.com",
+    "response_codes": [],
+    "status": "pending_redirection",
+}
+
+ID_VERIFICATION_PENDING_WEBHOOK_BODY = {
+    "data": {
+        "applicant_id": "aplt_01je97fqhmtk2jmn6gcgyram3s",
+        "external_applicant_id": "eaplt_61313A10000000000000000000",
+        "identity_verification_id": "idv_01je97fqt08dn6a687jcqnxd1b",
+        "response_codes": [],
+        "status": "pending",
+        "user_journey_id": "usj_01h13smebsb2y1tyyrzx1sgma7",
+    },
+    "datacontenttype": "application/json",
+    "id": "evnt_01je97fr123qbt908mb8nzc97m",
+    "specversion": "2.0",
+    "subject": "idv_01je97fqt08dn6a687jcqnxd1b",
+    "time": "2024-12-04T16:19:09Z",
+    "type": "identity_verification_opened",
+}
+
+ID_CAPTURE_IN_PROGRESS_WEBHOOK_BODY = {
+    "data": {
+        "applicant_id": "aplt_01je97fqhmtk2jmn6gcgyram3s",
+        "external_applicant_id": "eaplt_61313A10000000000000000000",
+        "identity_verification_id": "idv_01je97fqt08dn6a687jcqnxd1b",
+        "response_codes": [],
+        "status": "capture_in_progress",
+        "user_journey_id": "usj_01h13smebsb2y1tyyrzx1sgma7",
+    },
+    "datacontenttype": "application/json",
+    "id": "evnt_01je97hcns67kv4ney8g40ddjm",
+    "specversion": "2.0",
+    "subject": "idv_01je97fqt08dn6a687jcqnxd1b",
+    "time": "2024-12-04T16:20:03Z",
+    "type": "identity_verification_started",
+}
+
+ID_VERIFICATION_REFUSED_WEBHOOK_BODY = {
+    "data": {
+        "applicant_id": "aplt_01je97fqhmtk2jmn6gcgyram3s",
+        "external_applicant_id": "eaplt_61313A10000000000000000000",
+        "identity_verification_id": "idv_01je97fqt08dn6a687jcqnxd1b",
+        "response_codes": [{"code": 61313, "summary": "document_not_tilted"}],
+        "status": "retry_required",
+        "user_journey_id": "usj_01h13smebsb2y1tyyrzx1sgma7",
+    },
+    "datacontenttype": "application/json",
+    "id": "evnt_01je97k3t29anpgtwm6yhwsqry",
+    "specversion": "2.0",
+    "subject": "idv_01je97fqt08dn6a687jcqnxd1b",
+    "time": "2024-12-04T16:21:00Z",
+    "type": "identity_verification_capture_aborted",
+}
+
+ID_VERIFICATION_REFUSED_RESPONSE = {
+    "_links": {
+        "applicant": {"href": "https://api.ubble.ai/v2/applicants/aplt_01je97fqhmtk2jmn6gcgyram3s"},
+        "self": {"href": "https://api.ubble.ai/v2/identity-verifications/idv_01je97fqt08dn6a687jcqnxd1b"},
+        "verification_url": {"href": "https://id.ubble.ai/e6f32b1e-d4f3-41ca-ad39-d7ac04f9a3fc"},
+    },
+    "applicant_id": "aplt_01je97fqhmtk2jmn6gcgyram3s",
+    "created_on": "2024-12-04T16:19:09.766392Z",
+    "declared_data": {"name": "Colin Freeman"},
+    "documents": [],
+    "id": "idv_01je97fqt08dn6a687jcqnxd1b",
+    "modified_on": "2024-12-04T16:21:00.337457Z",
+    "redirect_url": "https://redirect.example.com",
+    "response_codes": [{"code": 61313, "summary": "document_not_tilted"}],
+    "status": "retry_required",
+    "user_journey_id": "usj_01h13smebsb2y1tyyrzx1sgma7",
+    "webhook_url": "https://webhook.example.com",
+}
+
+ID_CHECKS_IN_PROGRESS_WEBHOOK_BODY = {
+    "data": {
+        "applicant_id": "aplt_01je97fqhmtk2jmn6gcgyram3s",
+        "external_applicant_id": "eaplt_61313A10000000000000000000",
+        "identity_verification_id": "idv_01je97fqt08dn6a687jcqnxd1b",
+        "response_codes": [],
+        "status": "checks_in_progress",
+        "user_journey_id": "usj_01h13smebsb2y1tyyrzx1sgma7",
+    },
+    "datacontenttype": "application/json",
+    "id": "evnt_01je97pssabys3dnk54k4sdfzk",
+    "specversion": "2.0",
+    "subject": "idv_01je97fqt08dn6a687jcqnxd1b",
+    "time": "2024-12-04T16:23:01Z",
+    "type": "identity_verification_capture_completed",
+}
+
+ID_CHECKS_IN_PROGRESS_RESPONSE = {
+    "_links": {
+        "applicant": {"href": "https://api.ubble.example.com/v2/applicants/aplt_01je97fqhmtk2jmn6gcgyram3s"},
+        "self": {"href": "https://api.ubble.example.com/v2/identity-verifications/idv_01je97fqt08dn6a687jcqnxd1b"},
+        "verification_url": {"href": "https://id.ubble.example.com/a9febddd-6a89-4aa5-bd6a-912f4ca9f5da"},
+    },
+    "applicant_id": "aplt_01je97fqhmtk2jmn6gcgyram3s",
+    "created_on": "2024-12-04T16:19:09.766392Z",
+    "declared_data": {"name": "Catherine Destivelle"},
+    "documents": [
+        {
+            "back_image_signed_url": "https://minio.ubble.example.com/production.ubble.ai/OIOXQTAYFYMF/idv_01je97fqt08dn6a687jcqnxd1b/a9febddd-6a89-4aa5-bd6a-912f4ca9f5da/dd1e68f6-1a8d-4267-916f-8b381b6d7f87/back_id.jpeg?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=6nzrc5UNPR864KRwHLkZ%2F20241204%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20241204T162302Z&X-Amz-Expires=600&X-Amz-SignedHeaders=host&X-Amz-Signature=38ef832caeb76326b96676b2ad0a0d5041888b35764a99373bf9dab7c8de7933",
+            "front_image_signed_url": "https://minio.ubble.example.com/production.ubble.ai/OIOXQTAYFYMF/idv_01je97fqt08dn6a687jcqnxd1b/a9febddd-6a89-4aa5-bd6a-912f4ca9f5da/dd1e68f6-1a8d-4267-916f-8b381b6d7f87/front_id.jpeg?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=6nzrc5UNPR864KRwHLkZ%2F20241204%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20241204T162302Z&X-Amz-Expires=600&X-Amz-SignedHeaders=host&X-Amz-Signature=97f6d7bb582ae373c1ec653e4274bd77cc95a5398b015289b03a69e3f3141e3b",
+            "full_name": "",
+        }
+    ],
+    "face": {
+        "image_signed_url": "https://minio.ubble.example.com/production.ubble.ai/OIOXQTAYFYMF/idv_01je97fqt08dn6a687jcqnxd1b/a9febddd-6a89-4aa5-bd6a-912f4ca9f5da/dd1e68f6-1a8d-4267-916f-8b381b6d7f87/face.jpeg?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=6nzrc5UNPR864KRwHLkZ%2F20241204%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20241204T162302Z&X-Amz-Expires=600&X-Amz-SignedHeaders=host&X-Amz-Signature=efa1440aeb03afb107562924d22de89643cc3a248ace772907147921cba5f921"
+    },
+    "id": "idv_01je97fqt08dn6a687jcqnxd1b",
+    "modified_on": "2024-12-04T16:23:01.142865Z",
+    "redirect_url": "https://redirect.example.com",
+    "response_codes": [],
+    "status": "checks_in_progress",
+    "user_journey_id": "usj_01h13smebsb2y1tyyrzx1sgma7",
+    "webhook_url": "https://webhook.example.com",
+}
+
+ID_VERIFICATION_APPROVED_WEBHOOK_BODY = {
+    "data": {
+        "applicant_id": "aplt_01je97fqhmtk2jmn6gcgyram3s",
+        "external_applicant_id": "eaplt_61313A10000000000000000000",
+        "identity_verification_id": "idv_01je97fqt08dn6a687jcqnxd1b",
+        "response_codes": [{"code": 10000, "summary": "approved"}],
+        "status": "approved",
+        "user_journey_id": "usj_01h13smebsb2y1tyyrzx1sgma7",
+    },
+    "datacontenttype": "application/json",
+    "id": "evnt_01je97rkkmse0gaxdbh797tqxw",
+    "specversion": "2.0",
+    "subject": "idv_01je97fqt08dn6a687jcqnxd1b",
+    "time": "2024-12-04T16:24:00Z",
+    "type": "identity_verification_checks_completed",
+}
+
+ID_VERIFICATION_APPROVED_RESPONSE = {
+    "_links": {
+        "applicant": {"href": "https://api.ubble.example.com/v2/applicants/aplt_01je97fqhmtk2jmn6gcgyram3s"},
+        "self": {"href": "https://api.ubble.example.com/v2/identity-verifications/idv_01je97fqt08dn6a687jcqnxd1b"},
+        "verification_url": {"href": "https://id.ubble.example.com/a9febddd-6a89-4aa5-bd6a-912f4ca9f5da"},
+    },
+    "applicant_id": "aplt_01je97fqhmtk2jmn6gcgyram3s",
+    "created_on": "2024-12-04T16:19:09.766392Z",
+    "declared_data": {"name": "Catherine Destivelle"},
+    "documents": [
+        {
+            "back_image_signed_url": "https://minio.ubble.example.com/production.ubble.ai/OIOXQTAYFYMF/idv_01je97fqt08dn6a687jcqnxd1b/a9febddd-6a89-4aa5-bd6a-912f4ca9f5da/dd1e68f6-1a8d-4267-916f-8b381b6d7f87/back_id.jpeg?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=6nzrc5UNPR864KRwHLkZ%2F20241204%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20241204T162401Z&X-Amz-Expires=600&X-Amz-SignedHeaders=host&X-Amz-Signature=d3f73e2bb257df8204dd363eda7498067b717fb8d9f31cd7aec31a97e787685f",
+            "front_image_signed_url": "https://minio.ubble.example.com/production.ubble.ai/OIOXQTAYFYMF/idv_01je97fqt08dn6a687jcqnxd1b/a9febddd-6a89-4aa5-bd6a-912f4ca9f5da/dd1e68f6-1a8d-4267-916f-8b381b6d7f87/front_id.jpeg?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=6nzrc5UNPR864KRwHLkZ%2F20241204%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20241204T162401Z&X-Amz-Expires=600&X-Amz-SignedHeaders=host&X-Amz-Signature=dbac3ed4d439973b3986142528638df8d37a133a0673d369f383b74db16d0fd0",
+            "full_name": "SMITH",
+            "last_name": "SMITH",
+        }
+    ],
+    "face": {
+        "image_signed_url": "https://minio.ubble.example.com/production.ubble.ai/OIOXQTAYFYMF/idv_01je97fqt08dn6a687jcqnxd1b/a9febddd-6a89-4aa5-bd6a-912f4ca9f5da/dd1e68f6-1a8d-4267-916f-8b381b6d7f87/face.jpeg?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=6nzrc5UNPR864KRwHLkZ%2F20241204%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20241204T162401Z&X-Amz-Expires=600&X-Amz-SignedHeaders=host&X-Amz-Signature=01610fb60b3c553194f2438f052751ae5c3d35d693cdba539867c7d37237e3e5"
+    },
+    "id": "idv_01je97fqt08dn6a687jcqnxd1b",
+    "modified_on": "2024-12-04T16:24:00.352312Z",
+    "redirect_url": "https://redirect.example.com",
+    "response_codes": [{"code": 10000, "summary": "approved"}],
+    "status": "approved",
+    "user_journey_id": "usj_01h13smebsb2y1tyyrzx1sgma7",
+    "verified_identity": {"full_name": "Smith", "last_name": "Smith"},
+    "webhook_url": "https://webhook.example.com",
+}
+
+
+# Ubble v1 fixtures
+
 IDENTIFICATION_ID = "862a4c37-7026-4a35-a723-5d81d201d33c"
 
 START_IDENTIFICATION_RESPONSE = {

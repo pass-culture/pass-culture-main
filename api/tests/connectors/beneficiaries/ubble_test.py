@@ -46,8 +46,7 @@ class StartIdentificationV2Test:
         )
 
         with caplog.at_level(logging.INFO):
-            response = ubble.start_identification(
-                user_id=123,
+            response = ubble.create_and_start_identity_verification(
                 first_name="Cassandre",
                 last_name="Beaugrand",
                 webhook_url="https://webhook.example.com",
@@ -75,8 +74,7 @@ class StartIdentificationV2Test:
 
         with pytest.raises(requests.ExternalAPIException):
             with caplog.at_level(logging.ERROR):
-                ubble.start_identification(
-                    user_id=123,
+                ubble.create_and_start_identity_verification(
                     first_name="Cassandre",
                     last_name="Beaugrand",
                     webhook_url="https://webhook.example.com",
@@ -96,8 +94,7 @@ class StartIdentificationV2Test:
         requests_mock.post(f"{settings.UBBLE_API_URL}/v2/create-and-start-idv", status_code=401)
 
         with pytest.raises(requests.ExternalAPIException):
-            ubble.start_identification(
-                user_id=123,
+            ubble.create_and_start_identity_verification(
                 first_name="Cassandre",
                 last_name="Beaugrand",
                 webhook_url="https://webhook.example.com",
