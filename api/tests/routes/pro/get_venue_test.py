@@ -25,6 +25,7 @@ class Returns200Test:
             name="L'encre et la plume",
             managingOfferer=user_offerer.offerer,
             collectiveDescription="Description du lieu",
+            isOpenToPublic=True,
         )
         offerers_factories.VenuePricingPointLinkFactory(
             venue=venue,
@@ -218,6 +219,7 @@ class Returns200Test:
             },
             "isVisibleInApp": True,
             "hasOffers": False,
+            "isOpenToPublic": True,
         }
         db.session.expire_all()
 

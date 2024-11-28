@@ -21,6 +21,7 @@ class VenuesTest:
                 # only this field should be sent
                 "image_credit": "Wikimedia Commons CC By",
             },
+            isOpenToPublic=True,
         )
         offerers_factories.AccessibilityProviderFactory(
             venue=venue,
@@ -56,6 +57,7 @@ class VenuesTest:
             "city": venue.city,
             "publicName": venue.publicName,
             "isVirtual": venue.isVirtual,
+            "isOpenToPublic": venue.isOpenToPublic,
             "isPermanent": venue.isPermanent,
             "withdrawalDetails": venue.withdrawalDetails,
             "address": venue.street,
