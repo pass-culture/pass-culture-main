@@ -6,6 +6,7 @@ import pydantic.v1 as pydantic_v1
 from pydantic.v1 import EmailStr
 from pydantic.v1.class_validators import validator
 
+from pcapi.connectors.dms import models as dms_models
 from pcapi.core.history import models as history_models
 from pcapi.core.users import models as users_models
 from pcapi.domain.password import check_password_strength
@@ -255,6 +256,28 @@ class GdprChronicleData(BaseModel):
         orm_mode = True
 
 
+class GdprAccountUpdateRequests(BaseModel):
+    allConditionsChecked: bool
+    birthDate: date | None
+    dateCreated: datetime
+    dateLastInstructorMessage: datetime | None
+    dateLastStatusUpdate: datetime | None
+    dateLastUserMessage: datetime | None
+    email: str | None
+    firstName: str | None
+    lastName: str | None
+    newEmail: str | None
+    newFirstName: str | None
+    newLastName: str | None
+    newPhoneNumber: str | None
+    oldEmail: str | None
+    status: dms_models.GraphQLApplicationStates
+    updateTypes: list[users_models.UserAccountUpdateType]
+
+    class Config:
+        orm_mode = True
+
+
 class GdprMarketing(BaseModel):
     marketingEmails: bool
     marketingNotifications: bool
@@ -324,6 +347,7 @@ class GdprInternal(BaseModel):
     deposits: list[GdprDepositSerializer]
     bookings: list[GdprBookingSerializer]
     chronicles: list[GdprChronicleData]
+    accountUpdateRequests: list[GdprAccountUpdateRequests]
 
 
 class GdprExternal(BaseModel):
