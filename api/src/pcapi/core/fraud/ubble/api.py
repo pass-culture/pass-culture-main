@@ -2,11 +2,11 @@ import logging
 import re
 
 from pcapi import settings
-from pcapi.connectors.beneficiaries import ubble
 from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription.ubble import api as ubble_api
 from pcapi.core.subscription.ubble import errors as ubble_errors
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
@@ -28,12 +28,6 @@ def _ubble_readable_score(score: float | None) -> str:
 
 def _ubble_message_from_code(code: fraud_models.FraudReasonCode) -> str:
     return ubble_errors.UBBLE_CODE_ERROR_MAPPING[code].detail_message
-
-
-def _ubble_result_fraud_item(user: users_models.User, content: fraud_models.UbbleContent) -> fraud_models.FraudItem:
-    if ubble.is_v2_identification(content.identification_id):
-        return _ubble_result_fraud_item_using_status(user, content)
-    return _ubble_result_fraud_item_using_score(user, content)
 
 
 def _ubble_result_fraud_item_using_status(
@@ -118,6 +112,12 @@ def _ubble_result_fraud_item_using_score(
         reason_codes.add(fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER)
 
     return fraud_models.FraudItem(status=status, detail=detail, reason_codes=list(reason_codes))
+
+
+def _ubble_result_fraud_item(user: users_models.User, content: fraud_models.UbbleContent) -> fraud_models.FraudItem:
+    if ubble_api.is_v2_identification(content.identification_id):
+        return _ubble_result_fraud_item_using_status(user, content)
+    return _ubble_result_fraud_item_using_score(user, content)
 
 
 def _ubble_not_eligible_fraud_item(
