@@ -1927,10 +1927,38 @@ def _extract_gdpr_chronicles(user: models.User) -> list[users_serialization.Gdpr
 
 
 def _extract_gdpr_account_update_requests(user: models.User) -> list[users_serialization.GdprAccountUpdateRequests]:
+    fr_update_types = {
+        models.UserAccountUpdateType.FIRST_NAME: "Prénom",
+        models.UserAccountUpdateType.LAST_NAME: "Nom",
+        models.UserAccountUpdateType.EMAIL: "Email",
+        models.UserAccountUpdateType.PHONE_NUMBER: "Numéro de téléphone",
+    }
     update_requests_data = models.UserAccountUpdateRequest.query.filter(
         models.UserAccountUpdateRequest.userId == user.id,
     )
-    return [users_serialization.GdprAccountUpdateRequests.from_orm(data) for data in update_requests_data]
+    update_requests = []
+    for update_request in update_requests_data:
+        update_requests.append(
+            users_serialization.GdprAccountUpdateRequests(
+                allConditionsChecked=update_request.allConditionsChecked,
+                birthDate=update_request.birthDate,
+                dateCreated=update_request.dateCreated,
+                dateLastInstructorMessage=update_request.dateLastInstructorMessage,
+                dateLastStatusUpdate=update_request.dateLastStatusUpdate,
+                dateLastUserMessage=update_request.dateLastUserMessage,
+                email=update_request.email,
+                firstName=update_request.firstName,
+                lastName=update_request.lastName,
+                newEmail=update_request.newEmail,
+                newFirstName=update_request.newFirstName,
+                newLastName=update_request.newLastName,
+                newPhoneNumber=update_request.newPhoneNumber,
+                oldEmail=update_request.oldEmail,
+                status=update_request.status,
+                updateTypes=[fr_update_types.get(updateType, "") for updateType in update_request.updateTypes],
+            )
+        )
+    return update_requests
 
 
 def _extract_gdpr_marketing_data(user: models.User) -> users_serialization.GdprMarketing:

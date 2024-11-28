@@ -272,7 +272,7 @@ class GdprAccountUpdateRequests(BaseModel):
     newPhoneNumber: str | None
     oldEmail: str | None
     status: dms_models.GraphQLApplicationStates
-    updateTypes: list[users_models.UserAccountUpdateType]
+    updateTypes: list[str]
 
     class Config:
         orm_mode = True
