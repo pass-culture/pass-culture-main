@@ -5,6 +5,7 @@ import { useSWRConfig } from 'swr'
 import { api } from 'apiClient/api'
 import { ListOffersOfferResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
+import { GET_OFFERS_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import {
   Events,
   OFFER_FORM_NAVIGATION_IN,
@@ -16,10 +17,9 @@ import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import fullTrashIcon from 'icons/full-trash.svg'
 import strokeTrashIcon from 'icons/stroke-trash.svg'
-import { GET_OFFERS_QUERY_KEY } from 'pages/Offers/OffersRoute'
-import { computeDeletionErrorMessage } from 'pages/Offers/utils/computeDeletionErrorMessage'
-import { computeDeletionSuccessMessage } from 'pages/Offers/utils/computeDeletionSuccessMessage'
-import { computeIndividualApiFilters } from 'pages/Offers/utils/computeIndividualApiFilters'
+import { computeDeletionErrorMessage } from 'pages/IndividualOffers/utils/computeDeletionErrorMessage'
+import { computeDeletionSuccessMessage } from 'pages/IndividualOffers/utils/computeDeletionSuccessMessage'
+import { computeIndividualApiFilters } from 'pages/IndividualOffers/utils/computeIndividualApiFilters'
 import styles from 'styles/components/Cells.module.scss'
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 

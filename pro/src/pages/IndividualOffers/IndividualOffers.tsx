@@ -7,13 +7,10 @@ import { Layout } from 'app/App/layout/Layout'
 import {
   GET_CATEGORIES_QUERY_KEY,
   GET_OFFERER_ADDRESS_QUERY_KEY,
+  GET_OFFERS_QUERY_KEY,
   GET_VENUES_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
-import {
-  ALL_STATUS,
-  DEFAULT_PAGE,
-  DEFAULT_SEARCH_FILTERS,
-} from 'commons/core/Offers/constants'
+import { DEFAULT_PAGE } from 'commons/core/Offers/constants'
 import { useQuerySearchFilters } from 'commons/core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from 'commons/core/Offers/types'
 import { computeIndividualOffersUrl } from 'commons/core/Offers/utils/computeIndividualOffersUrl'
@@ -30,12 +27,10 @@ import {
 } from 'repository/venuesService'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
-import { IndividualOffersScreen } from './components/IndividualOffersScreen/IndividualOffersScreen'
+import { IndividualOffersContainer } from './IndividualOffersContainer/IndividualOffersContainer'
 import { computeIndividualApiFilters } from './utils/computeIndividualApiFilters'
 
-export const GET_OFFERS_QUERY_KEY = 'listOffers'
-
-export const OffersRoute = (): JSX.Element => {
+export const IndividualOffers = (): JSX.Element => {
   const urlSearchFilters = useQuerySearchFilters()
   const currentPageNumber = urlSearchFilters.page ?? DEFAULT_PAGE
   const navigate = useNavigate()
@@ -130,7 +125,7 @@ export const OffersRoute = (): JSX.Element => {
       {isLoadingVenues || isValidatingVenues ? (
         <Spinner />
       ) : (
-        <IndividualOffersScreen
+        <IndividualOffersContainer
           categories={categoriesOptions}
           currentPageNumber={currentPageNumber}
           initialSearchFilters={apiFilters}
@@ -149,4 +144,4 @@ export const OffersRoute = (): JSX.Element => {
 
 // Lazy-loaded by react-router-dom
 // ts-unused-exports:disable-next-line
-export const Component = OffersRoute
+export const Component = IndividualOffers

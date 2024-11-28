@@ -31,7 +31,8 @@ import {
 import { offererAddressFactory } from 'commons/utils/factories/offererAddressFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { OffersRoute } from 'pages/Offers/OffersRoute'
+
+import { IndividualOffers } from '../IndividualOffers'
 
 const categoriesAndSubcategories = {
   categories: [
@@ -79,7 +80,7 @@ const renderOffers = async (
 
   renderWithProviders(
     <Routes>
-      <Route path="/offres" element={<OffersRoute />} />
+      <Route path="/offres" element={<IndividualOffers />} />
       <Route
         path="/offres/collectives"
         element={<div>Offres collectives</div>}

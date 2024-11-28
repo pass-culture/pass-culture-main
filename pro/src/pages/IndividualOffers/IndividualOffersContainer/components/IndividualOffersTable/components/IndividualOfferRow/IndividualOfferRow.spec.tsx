@@ -19,9 +19,9 @@ import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { Notification } from 'components/Notification/Notification'
 
 import {
-  IndividualOfferRow,
   IndividualOfferRowProps,
-} from '../IndividualOfferRow'
+  IndividualOfferRow,
+} from './IndividualOfferRow'
 
 vi.mock('apiClient/api', () => ({
   api: {

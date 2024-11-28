@@ -1,5 +1,5 @@
 import { ListOffersOfferResponseModel } from 'apiClient/v1'
-import { isSameOffer } from 'pages/Offers/utils/isSameOffer'
+import { isSameOffer } from 'commons/utils/isSameOffer'
 
 import { IndividualOfferRow } from '../IndividualOfferRow/IndividualOfferRow'
 

@@ -1,7 +1,6 @@
 /* No need to test this file */
 /* istanbul ignore file */
 
-import React from 'react'
 import { Navigate } from 'react-router-dom'
 
 import { UNAVAILABLE_ERROR_PAGE } from 'commons/utils/routes'
@@ -117,7 +116,7 @@ export const routes: RouteConfig[] = [
     title: 'Choix de la nature de l’offre - Créer une offre',
   },
   {
-    lazy: () => import('pages/Offers/OffersRoute'),
+    lazy: () => import('pages/IndividualOffers/IndividualOffers'),
     path: '/offres',
     title: 'Offres individuelles',
   },

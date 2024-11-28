@@ -2,17 +2,17 @@ import { ListOffersOfferResponseModel } from 'apiClient/v1'
 import { MAX_OFFERS_TO_DISPLAY } from 'commons/core/Offers/constants'
 import { SearchFiltersParams } from 'commons/core/Offers/types'
 import { hasSearchFilters } from 'commons/core/Offers/utils/hasSearchFilters'
-import { NoResults } from 'pages/Offers/components/IndividualOffersScreen/NoResults/NoResults'
-import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
+import { getOffersCountToDisplay } from 'commons/utils/getOffersCountToDisplay'
+import { NoResults } from 'components/NoResults/NoResults'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
+import { IndividualOffersTableBody } from './components/IndividualOffersTableBody/IndividualOffersTableBody'
+import { IndividualOffersTableHead } from './components/IndividualOfferTableHead/IndividualOffersTableHead'
 import styles from './IndividualOffersTable.module.scss'
-import { IndividualOffersTableBody } from './IndividualOffersTableBody/IndividualOffersTableBody'
-import { IndividualOffersTableHead } from './IndividualOfferTableHead/IndividualOffersTableHead'
 
 type IndividualOffersTableProps = {
   applyUrlFiltersAndRedirect: (

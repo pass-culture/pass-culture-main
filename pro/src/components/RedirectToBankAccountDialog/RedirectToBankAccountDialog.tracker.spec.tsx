@@ -5,9 +5,9 @@ import * as useAnalytics from 'app/App/analytics/firebase'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {
-  RedirectToBankAccountDialog,
   RedirectToBankAccountDialogProps,
-} from '../RedirectToBankAccountDialog'
+  RedirectToBankAccountDialog,
+} from './RedirectToBankAccountDialog'
 
 const mockLogEvent = vi.fn()
 const renderDialog = (props: RedirectToBankAccountDialogProps) => {
