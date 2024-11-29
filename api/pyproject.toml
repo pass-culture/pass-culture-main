@@ -262,6 +262,8 @@ filterwarnings = [
     #  is in a release, we'll be able to bump weasyprint and remove these 2 filters.
     "ignore:transform is deprecated, use set_matrix instead.:DeprecationWarning",
     "ignore:text_matrix is deprecated, use set_text_matrix instead.:DeprecationWarning",
+    # FIXME (prouzet, 2024-11-29): sib-api-v3-sdk latest version is still 7.6.0 (March 2023)
+    "ignore:HTTPResponse.getheaders\\(\\) is deprecated and will be removed in urllib3 v2.1.0. Instead access HTTPResponse.headers directly.:DeprecationWarning"
 ]
 testpaths = ["tests"]
 norecursedirs = [".git", "venv", ".pytest_cache"]

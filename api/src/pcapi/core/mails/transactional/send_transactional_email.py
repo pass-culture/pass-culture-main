@@ -1,3 +1,4 @@
+import json
 import logging
 
 import sib_api_v3_sdk
@@ -5,6 +6,7 @@ from sib_api_v3_sdk.rest import ApiException
 
 from pcapi import settings
 from pcapi.tasks.serialization.sendinblue_tasks import SendTransactionalEmailRequest
+from pcapi.utils import email as email_utils
 from pcapi.utils import requests
 
 
@@ -64,12 +66,32 @@ def send_transactional_email(payload: SendTransactionalEmailRequest) -> None:
         api_instance.send_transac_email(send_smtp_email)
 
     except ApiException as exception:
-        if exception.status and int(exception.status) >= 500:
+        status = int(exception.status) if exception.status else 0
+        if status >= 500:
             raise requests.ExternalAPIException(is_retryable=True) from exception
 
         code = "unknown"
-        if exception.body and not isinstance(exception.body, str) and exception.body.get("code"):
-            code = exception.body.get("code")
+        if exception.body:
+            try:
+                data = json.loads(exception.body)
+                if data.get("code"):
+                    code = data["code"]
+
+                if status == 400 and code == "invalid_parameter":
+                    # Don't raise exception for data which should be fixed but create a specific alert for every case.
+                    # This should avoid aggregation of all recipients in a single Sentry alert, so would help identify
+                    # invalid emails and potential other invalid parameters lost in the crowd.
+                    logger.error(
+                        "Sendinblue can't send email to %s: code=%s, message=%s",
+                        # Email is partially obfuscated in logs but full email is available in Sentry for investigation
+                        ",".join(email_utils.anonymize_email(recipient) for recipient in payload.recipients),
+                        code,
+                        data.get("message"),
+                    )
+                    return
+            except json.JSONDecodeError:
+                pass
+
         logger.exception(  # pylint: disable=logging-fstring-interpolation
             f"Exception when calling Sendinblue send_transac_email with status={exception.status} and code={code}",
             extra=extra,
