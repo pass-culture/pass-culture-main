@@ -1,6 +1,7 @@
 import logging
 from unittest.mock import patch
 
+from authlib.integrations.base_client import MismatchingStateError
 from flask import url_for
 import pytest
 
@@ -136,6 +137,15 @@ class AuthorizePageTest:
         assert response.status_code == 302
         assert response.location == url_for("backoffice_web.user_not_found", _external=True)
         assert "Failed authentication attempt" in caplog.messages
+
+    @patch("pcapi.routes.backoffice.auth.backoffice_oauth.google.authorize_access_token")
+    def test_csrf_token_expired(self, mock_authorize_access_token, client):
+        mock_authorize_access_token.side_effect = MismatchingStateError()
+
+        response = client.get(url_for("backoffice_web.authorize"))
+
+        assert response.status_code == 302
+        assert response.location == url_for("backoffice_web.login", _external=True)
 
 
 class LogoutTest(PostEndpointWithoutPermissionHelper):
