@@ -1,4 +1,5 @@
 import datetime
+import random
 import typing
 
 import factory
@@ -39,6 +40,11 @@ class OffererFactory(BaseFactory):
     isActive = True
     validationStatus = ValidationStatus.VALIDATED
     allowedOnAdage = True
+
+
+class E2EOffererFactory(OffererFactory):
+    # FIXME: check if there is a better way to use the sequence counter
+    siren = factory.LazyFunction(lambda: f"{random.randint(1, 999999999):09}")
 
 
 class NotValidatedOffererFactory(OffererFactory):
