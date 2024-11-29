@@ -230,7 +230,9 @@ class Stock(PcObject, Base, Model, SoftDeletableMixin):
     dateCreated: datetime.datetime = sa.Column(
         sa.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sa.func.now()
     )
-    dateModified: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    dateModified: datetime.datetime = sa.Column(
+        sa.DateTime, nullable=False, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
+    )
     dnBookedQuantity: int = sa.Column(sa.BigInteger, nullable=False, server_default=sa.text("0"))
     offer: sa_orm.Mapped["Offer"] = sa.orm.relationship("Offer", backref="stocks")
     offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
