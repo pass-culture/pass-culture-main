@@ -916,7 +916,7 @@ def _upsert_product_stock(
         return
 
     if not existing_stock:
-        if not stock_body.price:
+        if stock_body.price is None:
             raise api_errors.ApiErrors({"stock.price": ["Required"]})
         offers_api.create_stock(
             offer=offer,
