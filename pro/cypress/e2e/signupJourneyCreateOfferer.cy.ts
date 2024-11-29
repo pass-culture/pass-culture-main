@@ -4,10 +4,12 @@ import {
   MOCKED_BACK_ADDRESS_STREET,
 } from '../support/constants.ts'
 
-describe('Signup journey with new venue', () => {
+const venueName = 'MINISTERE DE LA CULTURE'
+const newVenueName = 'First Venue'
+
+describe('Signup journey with unknown offerer and unknown venue', () => {
   let login = ''
   const mySiret = '12345678912345'
-  const venueName = 'MINISTERE DE LA CULTURE'
 
   beforeEach(() => {
     cy.visit('/connexion')
@@ -47,7 +49,7 @@ describe('Signup journey with new venue', () => {
     )
   })
 
-  it('I should be able to sign up with a new account, create a new offerer with an unknown SIRET', () => {
+  it('I should be able to sign up with a new account and create a new offerer with an unknown SIREN (unknown SIRET)', () => {
     goToOffererCreation(login)
 
     cy.stepLog({ message: 'I specify a venue with a SIRET' })
@@ -70,7 +72,7 @@ describe('Signup journey with new venue', () => {
 
     cy.stepLog({ message: 'I fill identification form with a public name' })
     cy.url().should('contain', '/parcours-inscription/identification')
-    cy.findByLabelText('Nom public').type('First Venue')
+    cy.findByLabelText('Nom public').type(newVenueName)
 
     cy.findByText('Étape suivante').click()
     cy.wait('@venue-types').its('response.statusCode').should('eq', 200)
@@ -115,34 +117,24 @@ describe('Signup journey with new venue', () => {
       'Votre structure est en cours de traitement par les équipes du pass Culture'
     ).should('be.visible')
     cy.wait('@getOfferers').its('response.statusCode').should('eq', 200)
-    cy.findByText('First Venue').should('be.visible')
+    cy.findByText(newVenueName).should('be.visible')
   })
 })
 
-describe('Signup journey with known venue', () => {
-  let login = ''
+describe('Signup journey with known offerer...', () => {
+  let login: string
   let mySiret: string
-  const venueName = 'MINISTERE DE LA CULTURE'
 
   beforeEach(() => {
-    cy.visit('/connexion')
-    cy.request({
-      method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_new_pro_user_and_offerer',
-    }).then((response) => {
-      login = response.body.user.email
-      mySiret = response.body.siret
-    })
-    cy.intercept('GET', `/sirene/siret/**`, (req) =>
-      req.reply({
-        statusCode: 200,
-        body: siretInterceptionPayload(mySiret, venueName),
-      })
-    ).as('getSiret')
+    cy.intercept({ method: 'POST', url: '/offerers/new', times: 1 }).as(
+      'createOfferer'
+    )
+    cy.intercept({ method: 'GET', url: '/offerers/names' }).as('getOfferers')
     cy.intercept({
       method: 'GET',
-      url: `/venues/siret/**`,
-    }).as('venuesSiret')
+      url: '/venue-types',
+      times: 1,
+    }).as('venue-types')
     cy.intercept(
       'GET',
       'https://api-adresse.data.gouv.fr/search/?limit=1&q=*',
@@ -153,144 +145,240 @@ describe('Signup journey with known venue', () => {
         })
     ).as('search1Address')
     interceptSearch5Adresses()
-    cy.intercept({ method: 'GET', url: '/offerers/names' }).as('getOfferers')
     cy.intercept({
       method: 'GET',
-      url: '/venue-types',
-      times: 1,
-    }).as('venue-types')
-    cy.intercept({ method: 'POST', url: '/offerers/new' }).as('createOfferer')
-    cy.intercept({ method: 'POST', url: '/offerers' }).as('postOfferers')
+      url: `/venues/siret/**`,
+    }).as('venuesSiret')
   })
 
-  it('I should be able to sign up with a new account and a known offerer, create a new offerer in the space', () => {
-    goToOffererCreation(login)
+  describe('...and unknown venue', () => {
+    let siren: string
+    const endSiret = '12345'
+    beforeEach(() => {
+      cy.visit('/connexion')
+      cy.request({
+        method: 'GET',
+        url: 'http://localhost:5001/sandboxes/pro/create_new_pro_user_and_offerer',
+      }).then((response) => {
+        login = response.body.user.email
+        siren = response.body.siren
+        mySiret = siren + endSiret
+        cy.intercept('GET', `/sirene/siret/**`, (req) =>
+          req.reply({
+            statusCode: 200,
+            body: siretInterceptionPayload(mySiret, venueName),
+          })
+        ).as('getSiret')
+      })
+    })
 
-    cy.stepLog({ message: 'I specify an offerer with a SIRET' })
-    cy.url().should('contain', '/parcours-inscription/structure')
-    cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret)
-    cy.findByText('Continuer').click()
-    cy.wait(['@getSiret', '@venuesSiret', '@search1Address']).then(
-      (interception) => {
-        if (interception[0].response) {
-          expect(interception[0].response.statusCode).to.equal(200)
+    it('I should be able to sign up with a new account and create a new venue with a known SIREN (unknown SIRET)', () => {
+      goToOffererCreation(login)
+
+      cy.stepLog({ message: 'I specify a venue with a SIRET' })
+      cy.url().should('contain', '/parcours-inscription/structure')
+      cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret)
+      cy.findByText('Continuer').click()
+      cy.wait(['@getSiret', '@venuesSiret', '@search1Address']).then(
+        (interception) => {
+          if (interception[0].response) {
+            expect(interception[0].response.statusCode).to.equal(200)
+          }
+          if (interception[1].response) {
+            expect(interception[1].response.statusCode).to.equal(200)
+          }
+          if (interception[2].response) {
+            expect(interception[2].response.statusCode).to.equal(200)
+          }
         }
-        if (interception[1].response) {
-          expect(interception[1].response.statusCode).to.equal(200)
-        }
-        if (interception[2].response) {
-          expect(interception[2].response.statusCode).to.equal(200)
-        }
-      }
-    )
+      )
 
-    cy.stepLog({ message: 'I add a new offerer' })
-    cy.url().should('contain', '/parcours-inscription/structure/rattachement')
+      cy.stepLog({ message: 'I fill identification form with a public name' })
+      cy.url().should('contain', '/parcours-inscription/identification')
+      cy.findByLabelText('Nom public').type(newVenueName)
 
-    cy.findByText('Ajouter une nouvelle structure').click()
-    cy.wait('@search5Address')
+      cy.findByText('Étape suivante').click()
+      cy.wait('@venue-types').its('response.statusCode').should('eq', 200)
 
-    cy.stepLog({ message: 'I fill identification form with a new address' })
-    cy.url().should('contain', '/parcours-inscription/identification')
-    cy.findByLabelText('Adresse postale *').clear()
-    cy.findByLabelText('Adresse postale *').invoke(
-      'val',
-      MOCKED_BACK_ADDRESS_LABEL.slice(0, MOCKED_BACK_ADDRESS_LABEL.length - 1)
-    ) // To avoid being spammed by address search on each chars typed
+      cy.stepLog({ message: 'I fill completely activity form' })
+      cy.url().should('contain', '/parcours-inscription/activite')
+      cy.findByLabelText('Activité principale *').select('Spectacle vivant')
+      cy.findByText('Au grand public').click()
+      cy.findByText('Étape suivante').click()
 
-    cy.findByLabelText('Adresse postale *').type('s') // previous search was too fast, this one raises suggestions
-    cy.wait('@search5Address')
-    cy.findByRole('option', { name: MOCKED_BACK_ADDRESS_LABEL }).click()
+      cy.stepLog({ message: 'the next step is displayed' })
+      cy.url().should('contain', '/parcours-inscription/validation')
 
-    cy.findByText('Étape suivante').click()
-    cy.wait('@venue-types').its('response.statusCode').should('eq', 200)
+      cy.stepLog({ message: 'I validate the registration' })
+      cy.findByText('Valider et créer ma structure').click()
+      cy.wait('@createOfferer')
 
-    cy.stepLog({ message: 'I fill activity form without main activity' })
-    cy.url().should('contain', '/parcours-inscription/activite')
-    cy.findByLabelText('Activité principale *').select(
-      'Sélectionnez votre activité principale'
-    ) // No activity selected
-    cy.findByText('Au grand public').click()
-    cy.findByText('Étape suivante').click()
-    cy.findByTestId('error-venueTypeCode').contains(
-      'Veuillez sélectionner une activité principale'
-    )
+      cy.stepLog({ message: 'the offerer is created' })
+      cy.findAllByTestId('global-notification-success')
+        .contains('Votre structure a bien été créée')
+        .should('not.be.visible')
+      cy.url({ timeout: 10000 }).should('contain', '/accueil')
+      cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
 
-    cy.stepLog({ message: 'an error message is raised' })
-    cy.findByTestId('global-notification-error')
-      .contains('Une ou plusieurs erreurs sont présentes dans le formulaire')
-      .should('not.be.visible')
+      // TODO: Find a better way to wait for the offerer to be created
+      cy.reload()
 
-    cy.stepLog({ message: 'I fill in missing main activity' })
-    cy.url().should('contain', '/parcours-inscription/activite')
-    cy.findByLabelText('Activité principale *').select('Spectacle vivant')
-    cy.findByText('Étape suivante').click()
-
-    cy.stepLog({ message: 'the next step is displayed' })
-    cy.url().should('contain', '/parcours-inscription/validation')
-
-    cy.stepLog({ message: 'I validate the registration' })
-
-    cy.findByText('Valider et créer ma structure').click()
-    cy.wait('@createOfferer')
-
-    cy.stepLog({ message: 'the offerer is created' })
-    cy.findAllByTestId('global-notification-success')
-      .contains('Votre structure a bien été créée')
-      .should('not.be.visible')
-    cy.url({ timeout: 10000 }).should('contain', '/accueil')
-    cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
-
-    // TODO: Find a better way to wait for the offerer to be created
-    cy.reload()
-    cy.wait('@getOfferers').its('response.statusCode').should('eq', 200)
-
-    cy.stepLog({ message: 'the attachment is in progress' })
-    cy.contains(
-      'Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture'
-    ).should('be.visible')
+      cy.contains(
+        'Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture'
+      ).should('be.visible')
+      cy.wait('@getOfferers').its('response.statusCode').should('eq', 200)
+      cy.findByText(newVenueName).should('not.exist')
+    })
   })
 
-  it('I should be able to sign up with a new account and a known offerer', () => {
-    goToOffererCreation(login)
+  describe('...and known venue', () => {
+    beforeEach(() => {
+      cy.visit('/connexion')
+      cy.request({
+        method: 'GET',
+        url: 'http://localhost:5001/sandboxes/pro/create_new_pro_user_and_offerer_with_venue',
+      }).then((response) => {
+        login = response.body.user.email
+        mySiret = response.body.siret
+        cy.intercept('GET', `/sirene/siret/**`, (req) =>
+          req.reply({
+            statusCode: 200,
+            body: siretInterceptionPayload(mySiret, venueName),
+          })
+        ).as('getSiret')
+      })
+      interceptSearch5Adresses()
+      cy.intercept({ method: 'POST', url: '/offerers' }).as('postOfferers')
+    })
 
-    cy.stepLog({ message: 'I specify an offerer with a SIRET' })
-    cy.url().should('contain', '/parcours-inscription/structure')
-    cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret)
-    cy.findByText('Continuer').click()
-    cy.wait(['@getSiret', '@venuesSiret', '@search1Address']).then(
-      (interception) => {
-        if (interception[0].response) {
-          expect(interception[0].response.statusCode).to.equal(200)
+    it('I should be able to sign up with a new account and a known offerer/venue and then create a new venue in the space', () => {
+      goToOffererCreation(login)
+
+      cy.stepLog({ message: 'I specify an offerer with a SIRET' })
+      cy.url().should('contain', '/parcours-inscription/structure')
+      cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret)
+      cy.findByText('Continuer').click()
+      cy.wait(['@getSiret', '@venuesSiret', '@search1Address']).then(
+        (interception) => {
+          if (interception[0].response) {
+            expect(interception[0].response.statusCode).to.equal(200)
+          }
+          if (interception[1].response) {
+            expect(interception[1].response.statusCode).to.equal(200)
+          }
+          if (interception[2].response) {
+            expect(interception[2].response.statusCode).to.equal(200)
+          }
         }
-        if (interception[1].response) {
-          expect(interception[1].response.statusCode).to.equal(200)
+      )
+
+      cy.stepLog({ message: 'I add a new offerer' })
+      cy.url().should('contain', '/parcours-inscription/structure/rattachement')
+
+      cy.findByText('Ajouter une nouvelle structure').click()
+      cy.wait('@search5Address')
+
+      cy.stepLog({ message: 'I fill identification form with a new address' })
+      cy.url().should('contain', '/parcours-inscription/identification')
+      cy.findByLabelText('Adresse postale *').clear()
+      cy.findByLabelText('Adresse postale *').invoke(
+        'val',
+        MOCKED_BACK_ADDRESS_LABEL.slice(0, MOCKED_BACK_ADDRESS_LABEL.length - 1)
+      ) // To avoid being spammed by address search on each chars typed
+      cy.findByLabelText('Adresse postale *').type('s') // previous search was too fast, this one raises suggestions
+      cy.wait('@search5Address')
+      cy.findByRole('option', { name: MOCKED_BACK_ADDRESS_LABEL }).click()
+
+      cy.findByText('Étape suivante').click()
+      cy.wait('@venue-types').its('response.statusCode').should('eq', 200)
+
+      cy.stepLog({ message: 'I fill activity form without main activity' })
+      cy.url().should('contain', '/parcours-inscription/activite')
+      cy.findByLabelText('Activité principale *').select(
+        'Sélectionnez votre activité principale'
+      ) // No activity selected
+      cy.findByText('Au grand public').click()
+      cy.findByText('Étape suivante').click()
+      cy.findByTestId('error-venueTypeCode').contains(
+        'Veuillez sélectionner une activité principale'
+      )
+
+      cy.stepLog({ message: 'an error message is raised' })
+      cy.findByTestId('global-notification-error')
+        .contains('Une ou plusieurs erreurs sont présentes dans le formulaire')
+        .should('not.be.visible')
+
+      cy.stepLog({ message: 'I fill in missing main activity' })
+      cy.url().should('contain', '/parcours-inscription/activite')
+      cy.findByLabelText('Activité principale *').select('Spectacle vivant')
+      cy.findByText('Étape suivante').click()
+
+      cy.stepLog({ message: 'the next step is displayed' })
+      cy.url().should('contain', '/parcours-inscription/validation')
+
+      cy.stepLog({ message: 'I validate the registration' })
+
+      cy.findByText('Valider et créer ma structure').click()
+      cy.wait('@createOfferer')
+
+      cy.stepLog({ message: 'the offerer is created' })
+      cy.findAllByTestId('global-notification-success')
+        .contains('Votre structure a bien été créée')
+        .should('not.be.visible')
+      cy.url({ timeout: 10000 }).should('contain', '/accueil')
+      cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
+
+      // TODO: Find a better way to wait for the offerer to be created
+      cy.reload()
+      cy.wait('@getOfferers').its('response.statusCode').should('eq', 200)
+
+      cy.stepLog({ message: 'the attachment is in progress' })
+      cy.contains(
+        'Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture'
+      ).should('be.visible')
+    })
+
+    it('I should be able to sign up with a new account and a known offerer/venue and then join the space', () => {
+      goToOffererCreation(login)
+
+      cy.stepLog({ message: 'I specify an offerer with a SIRET' })
+      cy.url().should('contain', '/parcours-inscription/structure')
+      cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret)
+      cy.findByText('Continuer').click()
+      cy.wait(['@getSiret', '@venuesSiret', '@search1Address']).then(
+        (interception) => {
+          if (interception[0].response) {
+            expect(interception[0].response.statusCode).to.equal(200)
+          }
+          if (interception[1].response) {
+            expect(interception[1].response.statusCode).to.equal(200)
+          }
+          if (interception[2].response) {
+            expect(interception[2].response.statusCode).to.equal(200)
+          }
         }
-        if (interception[2].response) {
-          expect(interception[2].response.statusCode).to.equal(200)
-        }
-      }
-    )
+      )
 
-    cy.stepLog({ message: 'I chose to join the space' })
-    cy.contains('Rejoindre cet espace').click()
+      cy.stepLog({ message: 'I chose to join the space' })
+      cy.contains('Rejoindre cet espace').click()
 
-    cy.findByTestId('confirm-dialog-button-confirm').click()
-    cy.wait('@postOfferers').its('response.statusCode').should('eq', 201)
-    cy.contains('Accéder à votre espace').click()
+      cy.findByTestId('confirm-dialog-button-confirm').click()
+      cy.wait('@postOfferers').its('response.statusCode').should('eq', 201)
+      cy.contains('Accéder à votre espace').click()
 
-    cy.stepLog({ message: 'I am redirected to homepage' })
-    cy.url({ timeout: 10000 }).should('contain', '/accueil')
-    cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
+      cy.stepLog({ message: 'I am redirected to homepage' })
+      cy.url({ timeout: 10000 }).should('contain', '/accueil')
+      cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
 
-    // TODO: Find a better way to wait for the offerer to be created
-    cy.reload()
-    cy.wait('@getOfferers').its('response.statusCode').should('eq', 200)
+      // TODO: Find a better way to wait for the offerer to be created
+      cy.reload()
+      cy.wait('@getOfferers').its('response.statusCode').should('eq', 200)
 
-    cy.stepLog({ message: 'the attachment is in progress' })
-    cy.contains(
-      'Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture'
-    ).should('be.visible')
+      cy.stepLog({ message: 'the attachment is in progress' })
+      cy.contains(
+        'Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture'
+      ).should('be.visible')
+    })
   })
 })
 
