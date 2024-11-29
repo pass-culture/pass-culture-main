@@ -2,6 +2,7 @@ import datetime
 import logging
 import secrets
 
+from authlib.integrations.base_client import MismatchingStateError
 from flask import redirect
 from flask import render_template
 from flask import session
@@ -62,7 +63,12 @@ def login() -> utils.BackofficeResponse:
 def authorize() -> utils.BackofficeResponse:
     from pcapi.utils import login_manager
 
-    token = backoffice_oauth.google.authorize_access_token()
+    try:
+        token = backoffice_oauth.google.authorize_access_token()
+    except MismatchingStateError:
+        # CSRF token expired, don't crash
+        return redirect(url_for(".login"))
+
     google_user = backoffice_oauth.google.parse_id_token(token, nonce=None)
     google_email = google_user["email"]
     user = users_repository.find_user_by_email(google_email)
