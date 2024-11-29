@@ -1,7 +1,8 @@
-import { logAndGoToPage } from '../support/helpers.ts'
+import { logInAndGoToPage } from '../support/helpers.ts'
 
 describe('Collaborator list feature', () => {
   let login: string
+  let randomEmail: string
 
   beforeEach(() => {
     cy.visit('/connexion')
@@ -18,11 +19,11 @@ describe('Collaborator list feature', () => {
     }).then((response) => {
       expect(response.status).to.eq(200)
     })
+    randomEmail = `collaborator${Math.random()}@example.com`
   })
 
   it('I can add a new collaborator and he receives an email invitation', () => {
-    const randomEmail = `collaborator${Math.random()}@example.com`
-    logAndGoToPage(login, '/accueil')
+    logInAndGoToPage(login, '/accueil')
 
     cy.stepLog({ message: 'open collaborator page' })
     cy.findAllByText('Collaborateurs').click()

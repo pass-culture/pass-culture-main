@@ -1,6 +1,6 @@
 import {
   expectOffersOrBookingsAreFound,
-    logAndGoToPage,
+    logInAndGoToPage,
   } from '../support/helpers.ts'
   
   describe('Adage confirmation', () => {
@@ -27,7 +27,7 @@ import {
     })
   
     it('I should be able to search with several filters and see expected results', () => {
-      logAndGoToPage(login, '/offres/collectives')
+      logInAndGoToPage(login, '/offres/collectives')
       cy.wait('@collectiveOffers')
 
       cy.stepLog({ message: 'I click on the offer' })

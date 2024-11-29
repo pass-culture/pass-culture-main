@@ -1,4 +1,4 @@
-import { logAndGoToPage } from '../support/helpers.ts'
+import { logInAndGoToPage } from '../support/helpers.ts'
 
 describe('Account creation', () => {
   beforeEach(() => {
@@ -56,6 +56,6 @@ describe('Account creation', () => {
       .should('not.be.visible')
     cy.url().should('contain', '/connexion')
 
-    logAndGoToPage(randomEmail, '/parcours-inscription')
+    logInAndGoToPage(randomEmail, '/parcours-inscription')
   })
 })
