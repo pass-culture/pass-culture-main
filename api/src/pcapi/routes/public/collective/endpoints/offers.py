@@ -3,7 +3,6 @@ from contextlib import suppress
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
-from pcapi.core.educational import validation as educational_validation
 from pcapi.core.educational.api import national_program as np_api
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -281,7 +280,6 @@ def patch_collective_offer_public(
     image_as_bytes = None
     image_file = False
     # checking data
-    educational_validation.validate_offer_venue(body.offerVenue)
     non_nullable_fields = [
         "name",
         "venueId",

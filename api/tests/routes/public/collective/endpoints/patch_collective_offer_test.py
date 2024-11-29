@@ -1023,7 +1023,7 @@ class UpdateOfferVenueTest(PublicAPIVenueEndpointHelper):
             api_key=plain_api_key,
             venue_provider=venue_provider,
             src=self.offer_venue_school(),
-            status_code=404,
+            status_code=400,
             payload={**self.offer_venue_school(), "otherAddress": "should not be set"},
         )
 
@@ -1102,7 +1102,7 @@ class UpdateOfferVenueTest(PublicAPIVenueEndpointHelper):
             payload=payload,
         )
 
-        assert response.status_code == status_code
+        assert response.status_code == status_code, response.json
         if json_error:
             assert response.json == json_error
 

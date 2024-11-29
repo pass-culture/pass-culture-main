@@ -1,6 +1,5 @@
 import datetime
 from decimal import Decimal
-from typing import TYPE_CHECKING
 
 from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.educational import exceptions
@@ -8,46 +7,6 @@ from pcapi.core.educational import models
 from pcapi.core.educational import repository
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation as offers_validation
-from pcapi.models.api_errors import ApiErrors
-from pcapi.routes.serialization import collective_offers_serialize
-
-
-if TYPE_CHECKING:
-    from pcapi.routes.public.collective.serialization.offers import OfferVenueModel
-
-
-def validate_offer_venue(offer_venue: "OfferVenueModel | None") -> None:
-    if offer_venue is None:
-        return
-    errors = {}
-    if offer_venue.addressType == collective_offers_serialize.OfferAddressType.OFFERER_VENUE:
-        if offer_venue.venueId is None:
-            errors["offerVenue.venueId"] = (
-                "Ce champ est obligatoire si 'addressType' vaut "
-                f"'{collective_offers_serialize.OfferAddressType.OFFERER_VENUE.value}'"
-            )
-    elif offer_venue.venueId is not None:
-        errors["offerVenue.venueId"] = (
-            "Ce champ est interdit si 'addressType' ne vaut pas "
-            f"'{collective_offers_serialize.OfferAddressType.OFFERER_VENUE.value}'"
-        )
-
-    if offer_venue.addressType == collective_offers_serialize.OfferAddressType.OTHER:
-        if not offer_venue.otherAddress:
-            errors["offerVenue.otherAddress"] = (
-                "Ce champ est obligatoire si 'addressType' vaut "
-                f"'{collective_offers_serialize.OfferAddressType.OTHER.value}'"
-            )
-    elif offer_venue.otherAddress:
-        errors["offerVenue.otherAddress"] = (
-            "Ce champ est interdit si 'addressType' ne vaut pas "
-            f"'{collective_offers_serialize.OfferAddressType.OTHER.value}'"
-        )
-    if errors:
-        raise ApiErrors(
-            errors=errors,
-            status_code=404,
-        )
 
 
 def check_institution_fund(

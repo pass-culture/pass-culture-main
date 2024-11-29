@@ -99,8 +99,9 @@ def date_time_cast_error(error: DateTimeCastError) -> ApiErrorResponse:
 @app.errorhandler(finance_exceptions.DepositTypeAlreadyGrantedException)
 def already_activated_exception(error: finance_exceptions.DepositTypeAlreadyGrantedException) -> ApiErrorResponse:
     mark_transaction_as_invalid()
-    logger.error(json.dumps(error.errors))
-    return app.generate_error_response(error.errors), 405
+    errors = {"user": [f'Cet utilisateur a déjà été crédité de la subvention "{error.deposit_type}".']}
+    logger.error(json.dumps(errors))
+    return app.generate_error_response(errors), 405
 
 
 @app.errorhandler(429)

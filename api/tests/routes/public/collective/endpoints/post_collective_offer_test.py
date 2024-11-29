@@ -311,7 +311,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
-        assert response.status_code == 404
+        assert response.status_code == 400
         assert "offerVenue.otherAddress" in response.json
 
     def test_missing_both_subcategory_and_formats(self, public_client, payload):
