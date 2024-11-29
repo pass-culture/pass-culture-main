@@ -10,9 +10,10 @@ from pcapi.connectors.dms import factories as ds_factories
 from pcapi.connectors.dms import models as ds_models
 from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.connectors.dms.models import LatestDmsImport
+from pcapi.connectors.dms.utils import import_ds_applications
 from pcapi.core.finance.ds import MARK_WITHOUT_CONTINUATION_MOTIVATION
-from pcapi.core.finance.ds import import_ds_bank_information_applications
 from pcapi.core.finance.ds import mark_without_continuation_applications
+from pcapi.core.finance.ds import update_ds_applications_for_procedure
 from pcapi.core.finance.factories import BankAccountFactory
 from pcapi.core.finance.factories import BankAccountStatusHistoryFactory
 from pcapi.core.finance.models import BankAccount
@@ -36,7 +37,7 @@ class ImportDSBankAccountApplicationsTest:
         mocked_get_pro_bank_nodes.return_value = []
         previous = ds_factories.LatestDmsImportFactory(procedureId=settings.DMS_VENUE_PROCEDURE_ID_V4)
 
-        import_ds_bank_information_applications(procedure_number=settings.DMS_VENUE_PROCEDURE_ID_V4)
+        import_ds_applications(settings.DMS_VENUE_PROCEDURE_ID_V4, update_ds_applications_for_procedure)
 
         mocked_get_pro_bank_nodes.assert_called_once_with(
             procedure_number=settings.DMS_VENUE_PROCEDURE_ID_V4, since=previous.latestImportDatetime
@@ -49,7 +50,7 @@ class ImportDSBankAccountApplicationsTest:
             isProcessing=True,
         )
 
-        import_ds_bank_information_applications(procedure_number=settings.DMS_VENUE_PROCEDURE_ID_V4)
+        import_ds_applications(settings.DMS_VENUE_PROCEDURE_ID_V4, update_ds_applications_for_procedure)
 
         mocked_get_pro_bank_nodes.assert_not_called()
 
@@ -61,7 +62,7 @@ class ImportDSBankAccountApplicationsTest:
             latestImportDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=2),
         )
 
-        import_ds_bank_information_applications(procedure_number=settings.DMS_VENUE_PROCEDURE_ID_V4)
+        import_ds_applications(settings.DMS_VENUE_PROCEDURE_ID_V4, update_ds_applications_for_procedure)
 
         assert not latest_import.isProcessing
 
@@ -79,7 +80,7 @@ class ImportDSBankAccountApplicationsTest:
         mock_graphql_client.return_value = ds_creators.get_bank_info_response_procedure_v5(
             state=GraphQLApplicationStates.draft.value, application_id=1
         )
-        import_ds_bank_information_applications(procedure_number=settings.DS_BANK_ACCOUNT_PROCEDURE_ID)
+        import_ds_applications(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, update_ds_applications_for_procedure)
 
         first_import = LatestDmsImport.query.first()
         assert first_import.isProcessing is False
@@ -97,7 +98,7 @@ class ImportDSBankAccountApplicationsTest:
             application_id=2,
             siret=siret_2,
         )
-        import_ds_bank_information_applications(procedure_number=settings.DS_BANK_ACCOUNT_PROCEDURE_ID)
+        import_ds_applications(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, update_ds_applications_for_procedure)
 
         latest_imports = LatestDmsImport.query.order_by(LatestDmsImport.id).all()
 

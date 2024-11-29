@@ -925,6 +925,22 @@ class UserEmailHistory(PcObject, Base, Model):
         )
 
 
+class UserAccountUpdateType(enum.Enum):
+    EMAIL = "EMAIL"
+    PHONE_NUMBER = "PHONE_NUMBER"
+    FIRST_NAME = "FIRST_NAME"
+    LAST_NAME = "LAST_NAME"
+    ACCOUNT_HAS_SAME_INFO = "ACCOUNT_HAS_SAME_INFO"
+
+
+class UserAccountUpdateFlag(enum.Enum):
+    MISSING_VALUE = "MISSING_VALUE"
+    INVALID_VALUE = "INVALID_VALUE"
+    WAITING_FOR_CORRECTION = "WAITING_FOR_CORRECTION"
+    CORRECTION_RESOLVED = "CORRECTION_RESOLVED"
+    DUPLICATE_NEW_EMAIL = "DUPLICATE_NEW_EMAIL"
+
+
 class UserAccountUpdateRequest(PcObject, Base, Model):
     __tablename__ = "user_account_update_request"
     dsApplicationId: int = sa.Column(sa.BigInteger, nullable=False, index=True, unique=True)
@@ -946,6 +962,10 @@ class UserAccountUpdateRequest(PcObject, Base, Model):
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=True)
     user: orm.Mapped[User] = orm.relationship(User, foreign_keys=[userId], backref="accountUpdateRequests")
     # One or several changes may be requested
+    updateTypes: sa.orm.Mapped[list[UserAccountUpdateType]] = sa.Column(
+        postgresql.ARRAY(MagicEnum(UserAccountUpdateType)), nullable=False, server_default="{}"
+    )
+    oldEmail: str = sa.Column(sa.Text, nullable=True)
     newEmail: str = sa.Column(sa.Text, nullable=True)
     newPhoneNumber: str = sa.Column(sa.Text, nullable=True)
     newFirstName: str = sa.Column(sa.Text, nullable=True)
@@ -956,10 +976,69 @@ class UserAccountUpdateRequest(PcObject, Base, Model):
     lastInstructor: orm.Mapped[User] = orm.relationship(User, foreign_keys=[lastInstructorId])
     dateLastUserMessage: datetime = sa.Column(sa.DateTime, nullable=True)
     dateLastInstructorMessage: datetime = sa.Column(sa.DateTime, nullable=True)
+    # Additional information to filter and/or show icons, badges...
+    flags: sa.orm.Mapped[list[UserAccountUpdateFlag]] = sa.Column(
+        postgresql.ARRAY(MagicEnum(UserAccountUpdateFlag)), nullable=False, server_default="{}"
+    )
 
     @property
     def applicant_age(self) -> int | None:
         return users_utils.get_age_from_birth_date(self.birthDate) if self.birthDate else None
+
+    @property
+    def is_accepted(self) -> bool:
+        return self.status == dms_models.GraphQLApplicationStates.accepted
+
+    @property
+    def is_closed(self) -> bool:
+        return self.status in (
+            dms_models.GraphQLApplicationStates.accepted,
+            dms_models.GraphQLApplicationStates.refused,
+            dms_models.GraphQLApplicationStates.without_continuation,
+        )
+
+    @property
+    def data_check_flags(self) -> list[UserAccountUpdateFlag]:
+        return [
+            flag
+            for flag in self.flags
+            if flag
+            in (
+                UserAccountUpdateFlag.MISSING_VALUE,
+                UserAccountUpdateFlag.INVALID_VALUE,
+                UserAccountUpdateFlag.DUPLICATE_NEW_EMAIL,
+            )
+        ]
+
+    @property
+    def correction_flags(self) -> list[UserAccountUpdateFlag]:
+        if self.is_closed:
+            return []
+        return [
+            flag
+            for flag in self.flags
+            if flag in (UserAccountUpdateFlag.WAITING_FOR_CORRECTION, UserAccountUpdateFlag.CORRECTION_RESOLVED)
+        ]
+
+    @property
+    def has_email_update(self) -> bool:
+        return UserAccountUpdateType.EMAIL in self.updateTypes
+
+    @property
+    def has_phone_number_update(self) -> bool:
+        return UserAccountUpdateType.PHONE_NUMBER in self.updateTypes
+
+    @property
+    def has_first_name_update(self) -> bool:
+        return UserAccountUpdateType.FIRST_NAME in self.updateTypes
+
+    @property
+    def has_last_name_update(self) -> bool:
+        return UserAccountUpdateType.LAST_NAME in self.updateTypes
+
+    @property
+    def has_account_has_same_info_update(self) -> bool:
+        return UserAccountUpdateType.ACCOUNT_HAS_SAME_INFO in self.updateTypes
 
 
 class UserSession(PcObject, Base, Model):

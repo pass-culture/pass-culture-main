@@ -1,5 +1,13 @@
 {% import "components/forms.html" as forms with context %}
 {% import "components/links.html" as links %}
+{% macro text_or_question_mark(value) %}
+  {% if value %}
+    {{ value }}
+  {% else %}
+    <i class="bi bi-question-circle-fill"
+       title="Information manquante"></i>
+  {% endif %}
+{% endmacro %}
 {% extends "layouts/connected.html" %}
 {% block page %}
   <div class="pt-3 px-5">
@@ -37,13 +45,17 @@
               <tr>
                 <td></td>
                 <td>
-                  {% set link = "https://www.demarches-simplifiees.fr/dossiers/" + update_request.dsApplicationId|string %}
+                  {% set link = "https://www.demarches-simplifiees.fr/procedures/" + procedure_id|string + "/dossiers/" + update_request.dsApplicationId|string %}
                   <a href="{{ link }}"
                      class="link-primary"
                      target="_blank"
                      title="Ouvrir le dossier DS">{{ update_request.dsApplicationId }} <i class="bi bi-box-arrow-up-right"></i></a>
                 </td>
-                <td>{{ update_request.status | format_dms_application_status_badge }}</td>
+                <td>
+                  {{ update_request.status | format_dms_application_status_badge }}
+                  <br />
+                  {{ update_request.correction_flags | format_user_account_update_flags }}
+                </td>
                 <td>{{ update_request.dateLastStatusUpdate | format_date_time }}</td>
                 <td>
                   {% if update_request.dateLastUserMessage %}
@@ -82,24 +94,36 @@
                   {% endif %}
                 </td>
                 <td>
-                  {% if update_request.newEmail %}
+                  {{ update_request.data_check_flags | format_user_account_update_flags }}
+                  {% if update_request.has_email_update %}
                     <div>
-                      <span class="fw-bold">Email&nbsp;:</span> {{ (update_request.user.email if update_request.user else "") + " => "}}{{ update_request.newEmail }}
+                      <span class="fw-bold">Email&nbsp;:</span> {{ text_or_question_mark(update_request.oldEmail) }} 🠲 {{ text_or_question_mark(update_request.newEmail) }}
                     </div>
                   {% endif %}
-                  {% if update_request.newPhoneNumber %}
+                  {% if update_request.has_phone_number_update %}
                     <div>
-                      <span class="fw-bold">Téléphone&nbsp;:</span> {{ (update_request.user.phoneNumber if (update_request.user and update_request.user.phoneNumber) else "") + " => "}}{{ update_request.newPhoneNumber }}
+                      <span class="fw-bold">Téléphone&nbsp;:</span>
+                      {% if update_request.user and not update_request.is_accepted %}{{ update_request.user.phoneNumber | empty_string_if_null }} 🠲{% endif %}
+                      {{ text_or_question_mark(update_request.newPhoneNumber) }}
                     </div>
                   {% endif %}
-                  {% if update_request.newFirstName %}
+                  {% if update_request.has_first_name_update %}
                     <div>
-                      <span class="fw-bold">Prénom&nbsp;:</span> {{ (update_request.user.firstName if update_request.user else "") + " => "}}{{ update_request.newFirstName }}
+                      <span class="fw-bold">Prénom&nbsp;:</span>
+                      {% if update_request.user and not update_request.is_accepted %}{{ update_request.user.firstName | empty_string_if_null }} 🠲{% endif %}
+                      {{ text_or_question_mark(update_request.newFirstName) }}
                     </div>
                   {% endif %}
-                  {% if update_request.newLastName %}
+                  {% if update_request.has_last_name_update %}
                     <div>
-                      <span class="fw-bold">Nom&nbsp;:</span> {{ (update_request.user.lastName if update_request.user else "") + " => "}}{{ update_request.newLastName }}
+                      <span class="fw-bold">Nom&nbsp;:</span>
+                      {% if update_request.user and not update_request.is_accepted %}{{ update_request.user.lastName | empty_string_if_null }} 🠲{% endif %}
+                      {{ text_or_question_mark(update_request.newLastName) }}
+                    </div>
+                  {% endif %}
+                  {% if update_request.has_account_has_same_info_update %}
+                    <div>
+                      <span class="fw-bold">Un compte a les mêmes informations</span>
                     </div>
                   {% endif %}
                 </td>

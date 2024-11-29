@@ -79,8 +79,8 @@ def update_dms_applications_for_procedure(procedure_number: int, since: datetime
             db.session.rollback()
         else:
             applications_number.append(node["number"])
-            # Committing here ensure that we have a proper transaction for each application successfully imported
-            # And that for each faulty application, the failure only impact that particular one.
+            # Committing here ensures that we have a proper transaction for each application successfully imported
+            # And that for each faulty application, the failure only impacts that particular one.
             db.session.commit()
 
     current_import.processedApplications = applications_number

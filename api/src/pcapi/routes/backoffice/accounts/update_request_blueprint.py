@@ -4,6 +4,7 @@ from functools import partial
 from flask import render_template
 from flask import url_for
 import sqlalchemy as sa
+from sqlalchemy.dialects import postgresql
 
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.permissions import models as perm_models
@@ -95,6 +96,7 @@ def _get_filtered_account_update_requests(form: account_forms.AccountUpdateReque
             term_filters.append(
                 sa.or_(
                     users_models.UserAccountUpdateRequest.email == search_query,
+                    users_models.UserAccountUpdateRequest.oldEmail == search_query,
                     users_models.UserAccountUpdateRequest.newEmail == search_query,
                     users_models.User.email == search_query,
                 )
@@ -151,15 +153,11 @@ def _get_filtered_account_update_requests(form: account_forms.AccountUpdateReque
         )
 
     if form.update_type.data:
-        for update_type in form.update_type.data:
-            if update_type == "first_name":
-                filters.append(users_models.UserAccountUpdateRequest.newFirstName != None)
-            if update_type == "last_name":
-                filters.append(users_models.UserAccountUpdateRequest.newLastName != None)
-            if update_type == "email":
-                filters.append(users_models.UserAccountUpdateRequest.newEmail != None)
-            if update_type == "phone_number":
-                filters.append(users_models.UserAccountUpdateRequest.newPhoneNumber != None)
+        filters.append(
+            users_models.UserAccountUpdateRequest.updateTypes.contains(
+                postgresql.array(type_ for type_ in form.update_type.data)
+            )
+        )
 
     if form.last_instructor.data:
         filters.append(aliased_instructor.id.in_(form.last_instructor.data))

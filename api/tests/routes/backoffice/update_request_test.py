@@ -1,6 +1,7 @@
 import datetime
 
 from dateutil.relativedelta import relativedelta
+import factory
 from flask import url_for
 import pytest
 
@@ -8,6 +9,7 @@ from pcapi.connectors.dms import models as dms_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as users_models
 from pcapi.routes.backoffice.filters import format_date_time
 
 from .helpers import html_parser
@@ -29,7 +31,7 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
 
     def test_list_account_update_requests(self, authenticated_client):
         now = datetime.datetime.utcnow()
-        first_name_update_request = users_factories.UserAccountUpdateRequestFactory(
+        first_name_update_request = users_factories.FirstNameUpdateRequestFactory(
             user__firstName="Octave",
             user__lastName="César",
             user__email="heritier@example.com",
@@ -37,7 +39,6 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
             firstName="Jules",
             lastName="César",
             email="imperator@example.com",
-            newEmail=None,
             newFirstName="Auguste",
             dateLastInstructorMessage=None,
             dateLastUserMessage=now - relativedelta(days=2),
@@ -52,13 +53,18 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
             firstName="Juliette",
             lastName="Montaigu",
             email="juju.montaigu@example.com",
+            updateTypes=[
+                users_models.UserAccountUpdateType.LAST_NAME,
+                users_models.UserAccountUpdateType.EMAIL,
+            ],
+            oldEmail="juju.capulet@example.com",
             newEmail="juju.montaigu@example.com",
             newLastName="Montaigu",
             dateLastInstructorMessage=now - relativedelta(days=3),
             dateLastUserMessage=None,
             dateLastStatusUpdate=now - relativedelta(days=1),
         )
-        phone_number_request = users_factories.UserAccountUpdateRequestFactory(
+        phone_number_request = users_factories.PhoneNumberUpdateRequestFactory(
             user__firstName="Jean-Pierre",
             user__lastName="Impair",
             user__email="impair@example.com",
@@ -66,23 +72,28 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
             firstName="Jean-Pierre",
             lastName="Impair",
             email="impair@example.com",
-            newEmail=None,
             newPhoneNumber="+33111111111",
             dateLastInstructorMessage=now - relativedelta(days=3),
             dateLastUserMessage=now - relativedelta(days=1),
             dateLastStatusUpdate=now - relativedelta(days=2),
         )
-        unknown_user_request = users_factories.UserAccountUpdateRequestFactory(
+        unknown_user_request = users_factories.LastNameUpdateRequestFactory(
             status=dms_models.GraphQLApplicationStates.draft,
             user=None,
             firstName="Martin",
             lastName="Connu",
             email="martinconnu@example.com",
-            newEmail=None,
             newLastName="Inconnu",
             dateLastInstructorMessage=None,
             dateLastUserMessage=None,
             dateLastStatusUpdate=now,
+        )
+        accepted_user_request = users_factories.LastNameUpdateRequestFactory(
+            status=dms_models.GraphQLApplicationStates.accepted,
+            lastName=factory.SelfAttribute("newLastName"),
+            dateLastInstructorMessage=None,
+            dateLastUserMessage=None,
+            dateLastStatusUpdate=now - relativedelta(days=5),
         )
 
         with assert_num_queries(self.expected_num_queries):
@@ -90,23 +101,23 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert len(rows) == 4
+        assert len(rows) == 5
 
         assert rows[0]["Dossier"] == str(unknown_user_request.dsApplicationId)
         assert rows[0]["État"] == "En construction"
-        assert rows[0]["Date de dernière MàJ"] == f"{format_date_time(unknown_user_request.dateLastStatusUpdate)}"
+        assert rows[0]["Date de dernière MàJ"] == format_date_time(unknown_user_request.dateLastStatusUpdate)
         assert rows[0]["Date des derniers messages"] == ""
         assert (
             rows[0]["Demandeur"]
             == f"Martin Connu né(e) le {unknown_user_request.birthDate.strftime('%d/%m/%Y')} ({unknown_user_request.applicant_age} ans) martinconnu@example.com"
         )
         assert rows[0]["Jeune"] == "Compte jeune non trouvé"
-        assert rows[0]["Modification"] == "Nom : => Inconnu"
+        assert rows[0]["Modification"] == "Nom : Inconnu"
         assert rows[0]["Instructeur"] == "Instructeur du Backoffice"
 
         assert rows[1]["Dossier"] == str(first_name_update_request.dsApplicationId)
         assert rows[1]["État"] == "En instruction"
-        assert rows[1]["Date de dernière MàJ"] == f"{format_date_time(first_name_update_request.dateLastStatusUpdate)}"
+        assert rows[1]["Date de dernière MàJ"] == format_date_time(first_name_update_request.dateLastStatusUpdate)
         assert (
             rows[1]["Date des derniers messages"]
             == f"Demandeur : {format_date_time(first_name_update_request.dateLastUserMessage)}"
@@ -119,14 +130,13 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
             rows[1]["Jeune"]
             == f"Octave César ({first_name_update_request.user.id}) né le {first_name_update_request.user.birth_date.strftime('%d/%m/%Y')} ({last_name_and_email_update_request.user.age} ans) heritier@example.com"
         )
-        assert rows[1]["Modification"] == "Prénom : Octave => Auguste"
+        assert rows[1]["Modification"] == "Prénom : Octave 🠲 Auguste"
         assert rows[1]["Instructeur"] == "Instructeur du Backoffice"
 
         assert rows[2]["Dossier"] == str(last_name_and_email_update_request.dsApplicationId)
         assert rows[2]["État"] == "En instruction"
-        assert (
-            rows[2]["Date de dernière MàJ"]
-            == f"{format_date_time(last_name_and_email_update_request.dateLastStatusUpdate)}"
+        assert rows[2]["Date de dernière MàJ"] == format_date_time(
+            last_name_and_email_update_request.dateLastStatusUpdate
         )
         assert (
             rows[2]["Date des derniers messages"]
@@ -142,13 +152,13 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
         )
         assert (
             rows[2]["Modification"]
-            == "Email : juju.capulet@example.com => juju.montaigu@example.com Nom : Capulet => Montaigu"
+            == "Email : juju.capulet@example.com 🠲 juju.montaigu@example.com Nom : Capulet 🠲 Montaigu"
         )
         assert rows[2]["Instructeur"] == "Instructeur du Backoffice"
 
         assert rows[3]["Dossier"] == str(phone_number_request.dsApplicationId)
         assert rows[3]["État"] == "En instruction"
-        assert rows[3]["Date de dernière MàJ"] == f"{format_date_time(phone_number_request.dateLastStatusUpdate)}"
+        assert rows[3]["Date de dernière MàJ"] == format_date_time(phone_number_request.dateLastStatusUpdate)
         assert (
             rows[3]["Date des derniers messages"]
             == f"Demandeur : {format_date_time(phone_number_request.dateLastUserMessage)} Instructeur : {format_date_time(phone_number_request.dateLastInstructorMessage)}"
@@ -161,35 +171,79 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
             rows[3]["Jeune"]
             == f"Jean-Pierre Impair ({phone_number_request.user.id}) né(e) le {phone_number_request.user.birth_date.strftime('%d/%m/%Y')} ({phone_number_request.user.age} ans) impair@example.com"
         )
-        assert rows[3]["Modification"] == "Téléphone : +33222222222 => +33111111111"
+        assert rows[3]["Modification"] == "Téléphone : +33222222222 🠲 +33111111111"
         assert rows[3]["Instructeur"] == "Instructeur du Backoffice"
 
+        assert rows[4]["Dossier"] == str(accepted_user_request.dsApplicationId)
+        assert rows[4]["État"] == "Accepté"
+        assert rows[4]["Date de dernière MàJ"] == format_date_time(accepted_user_request.dateLastStatusUpdate)
+        assert rows[4]["Date des derniers messages"] == ""
+        assert (
+            rows[4]["Demandeur"]
+            == f"Jeune Nouveau-Nom né(e) le {accepted_user_request.birthDate.strftime('%d/%m/%Y')} ({accepted_user_request.applicant_age} ans) {accepted_user_request.email}"
+        )
+        assert (
+            rows[4]["Jeune"]
+            == f"Jeune Nouveau-Nom ({accepted_user_request.user.id}) né(e) le {accepted_user_request.user.birth_date.strftime('%d/%m/%Y')} ({accepted_user_request.user.age} ans) {accepted_user_request.email}"
+        )
+        assert rows[4]["Modification"] == "Nom : Nouveau-Nom"
+        assert rows[4]["Instructeur"] == "Instructeur du Backoffice"
+
+    def test_list_account_update_requests_with_flags(self, authenticated_client):
+        update_request = users_factories.EmailUpdateRequestFactory(
+            status=dms_models.GraphQLApplicationStates.draft,
+            updateTypes=[
+                users_models.UserAccountUpdateType.EMAIL,
+                users_models.UserAccountUpdateType.PHONE_NUMBER,
+            ],
+            flags=[
+                users_models.UserAccountUpdateFlag.WAITING_FOR_CORRECTION,
+                users_models.UserAccountUpdateFlag.MISSING_VALUE,
+                users_models.UserAccountUpdateFlag.DUPLICATE_NEW_EMAIL,
+            ],
+        )
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["État"] == "En construction En attente de correction"
+        assert (
+            rows[0]["Modification"]
+            == f"Saisie incomplète Email en doublon Email : {update_request.oldEmail} 🠲 {update_request.newEmail} Téléphone : 🠲"
+        )
+
     def test_list_filter_by_email(self, authenticated_client):
-        specific_submitter_email_request = users_factories.UserAccountUpdateRequestFactory(
+        specific_submitter_email_request = users_factories.FirstNameUpdateRequestFactory(
             user__email="notimportant@example.com",
             email="that.specific.email@example.com",
-            newEmail=None,
             newFirstName="notimportant",
         )
-        specific_new_email_request = users_factories.UserAccountUpdateRequestFactory(
+        specific_old_email_request = users_factories.EmailUpdateRequestFactory(
+            oldEmail="that.specific.email@example.com"
+        )
+        specific_new_email_request = users_factories.EmailUpdateRequestFactory(
             newEmail="that.specific.email@example.com"
         )
-        specific_user_email_request = users_factories.UserAccountUpdateRequestFactory(
-            user__email="that.specific.email@example.com", newEmail=None, newFirstName="notimportant"
+        specific_user_email_request = users_factories.FirstNameUpdateRequestFactory(
+            user__email="that.specific.email@example.com", newFirstName="notimportant"
         )
-        users_factories.UserAccountUpdateRequestFactory()
+        users_factories.EmailUpdateRequestFactory()
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q="that.specific.email@example.com"))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert len(rows) == 3
+        assert len(rows) == 4
 
         assert {row["Dossier"] for row in rows} == {
             str(request.dsApplicationId)
             for request in (
                 specific_submitter_email_request,
+                specific_old_email_request,
                 specific_new_email_request,
                 specific_user_email_request,
             )
@@ -203,11 +257,9 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
         ),
     )
     def test_list_filter_by_phone_number(self, authenticated_client, q, expected_count, expected_application_ids):
-        users_factories.UserAccountUpdateRequestFactory(
-            dsApplicationId=100001, newEmail=None, newPhoneNumber="+33111111111"
-        )
-        users_factories.UserAccountUpdateRequestFactory(dsApplicationId=100002, user__phoneNumber="+33111111111")
-        users_factories.UserAccountUpdateRequestFactory()
+        users_factories.PhoneNumberUpdateRequestFactory(dsApplicationId=100001, newPhoneNumber="+33111111111")
+        users_factories.EmailUpdateRequestFactory(dsApplicationId=100002, user__phoneNumber="+33111111111")
+        users_factories.EmailUpdateRequestFactory()
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=q))
@@ -218,11 +270,11 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
         assert {row["Dossier"] for row in rows} == expected_application_ids
 
     def test_list_filter_by_id(self, authenticated_client):
-        specific_user_request = users_factories.UserAccountUpdateRequestFactory()
-        specific_application_request = users_factories.UserAccountUpdateRequestFactory(
+        specific_user_request = users_factories.EmailUpdateRequestFactory()
+        specific_application_request = users_factories.EmailUpdateRequestFactory(
             dsApplicationId=specific_user_request.user.id,
         )
-        users_factories.UserAccountUpdateRequestFactory()
+        users_factories.EmailUpdateRequestFactory()
         search_id = specific_user_request.user.id
 
         with assert_num_queries(self.expected_num_queries):
@@ -254,28 +306,28 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
     def test_list_filter_by_name(self, authenticated_client, q, expected_count, expected_application_ids):
         users_factories.UserAccountUpdateRequestFactory(
             dsApplicationId=100001,
-            newEmail=None,
             firstName="Aucun",
             lastName="Rapport",
             user=None,
+            updateTypes=[users_models.UserAccountUpdateType.FIRST_NAME, users_models.UserAccountUpdateType.LAST_NAME],
             newFirstName="Martin",
             newLastName="Cognito",
         )
         users_factories.UserAccountUpdateRequestFactory(
             dsApplicationId=100002,
-            newEmail=None,
             firstName="Jean-Martin",
             lastName="Rapport",
+            updateTypes=[users_models.UserAccountUpdateType.FIRST_NAME, users_models.UserAccountUpdateType.LAST_NAME],
             newFirstName="Aucun",
             newLastName="Incognito",
         )
         users_factories.UserAccountUpdateRequestFactory(
             dsApplicationId=100003,
-            newEmail=None,
             firstName="Aucun",
             lastName="Rapport",
             user__firstName="Martine",
             user__lastName="Alaplage",
+            updateTypes=[users_models.UserAccountUpdateType.FIRST_NAME, users_models.UserAccountUpdateType.LAST_NAME],
             newFirstName="Martin",
             newLastName="Matin",
         )
@@ -298,17 +350,17 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
     )
     def test_list_filter_by_date(self, authenticated_client, from_to_date, expected_count, expected_application_ids):
         now = datetime.datetime(2024, 9, 28)
-        users_factories.UserAccountUpdateRequestFactory(
+        users_factories.EmailUpdateRequestFactory(
             dsApplicationId=100001,
             dateLastUserMessage=None,
             dateLastStatusUpdate=now,
         )
-        users_factories.UserAccountUpdateRequestFactory(
+        users_factories.EmailUpdateRequestFactory(
             dsApplicationId=100002,
             dateLastUserMessage=now,
             dateLastStatusUpdate=now - relativedelta(days=2),
         )
-        users_factories.UserAccountUpdateRequestFactory(
+        users_factories.EmailUpdateRequestFactory(
             dsApplicationId=100003,
             dateLastUserMessage=now - relativedelta(days=2),
             dateLastStatusUpdate=now,
@@ -324,8 +376,8 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
 
     @pytest.mark.parametrize("has_found_user,expected_application_id", [("true", "100001"), ("false", "100002")])
     def test_list_filter_by_found_user(self, authenticated_client, has_found_user, expected_application_id):
-        users_factories.UserAccountUpdateRequestFactory(dsApplicationId=100001)
-        users_factories.UserAccountUpdateRequestFactory(dsApplicationId=100002, user=None)
+        users_factories.EmailUpdateRequestFactory(dsApplicationId=100001)
+        users_factories.EmailUpdateRequestFactory(dsApplicationId=100002, user=None)
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, has_found_user=has_found_user))
@@ -349,11 +401,11 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
         ),
     )
     def test_list_filter_by_status(self, authenticated_client, status, expected_count, expected_application_ids):
-        users_factories.UserAccountUpdateRequestFactory(
+        users_factories.EmailUpdateRequestFactory(
             dsApplicationId=100001, status=dms_models.GraphQLApplicationStates.draft
         )
 
-        users_factories.UserAccountUpdateRequestFactory(
+        users_factories.EmailUpdateRequestFactory(
             dsApplicationId=100002, status=dms_models.GraphQLApplicationStates.on_going
         )
 
@@ -368,10 +420,18 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
     @pytest.mark.parametrize(
         "update_type, expected_count, expected_application_ids",
         (
-            ("first_name", 1, {"100001"}),
-            ("last_name", 2, {"100001", "100002"}),
-            (["first_name", "email"], 0, set()),
-            (["last_name", "email"], 1, {"100002"}),
+            (users_models.UserAccountUpdateType.FIRST_NAME.name, 1, {"100001"}),
+            (users_models.UserAccountUpdateType.LAST_NAME.name, 2, {"100001", "100002"}),
+            (
+                [users_models.UserAccountUpdateType.FIRST_NAME.name, users_models.UserAccountUpdateType.EMAIL.name],
+                0,
+                set(),
+            ),
+            (
+                [users_models.UserAccountUpdateType.LAST_NAME.name, users_models.UserAccountUpdateType.EMAIL.name],
+                1,
+                {"100002"},
+            ),
         ),
     )
     def test_list_filter_by_update_type(
@@ -379,16 +439,17 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
     ):
         users_factories.UserAccountUpdateRequestFactory(
             dsApplicationId=100001,
-            newEmail=None,
+            updateTypes=[users_models.UserAccountUpdateType.FIRST_NAME, users_models.UserAccountUpdateType.LAST_NAME],
             newFirstName="Martin",
             newLastName="Cognito",
         )
         users_factories.UserAccountUpdateRequestFactory(
             dsApplicationId=100002,
+            updateTypes=[users_models.UserAccountUpdateType.EMAIL, users_models.UserAccountUpdateType.LAST_NAME],
             newEmail="shakespeare@example.com",
             newLastName="Montaigu",
         )
-        users_factories.UserAccountUpdateRequestFactory(
+        users_factories.EmailUpdateRequestFactory(
             dsApplicationId=100003,
             newEmail="something.else@example.com",
         )
@@ -404,8 +465,8 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
     def test_list_filter_by_last_instructor(self, authenticated_client):
         instructor = users_factories.AdminFactory()
         instructorId = instructor.id
-        update_request = users_factories.UserAccountUpdateRequestFactory(lastInstructor=instructor)
-        users_factories.UserAccountUpdateRequestFactory(lastInstructor=users_factories.AdminFactory())
+        update_request = users_factories.EmailUpdateRequestFactory(lastInstructor=instructor)
+        users_factories.EmailUpdateRequestFactory(lastInstructor=users_factories.AdminFactory())
 
         # +1 query to fill in instructor filter
         with assert_num_queries(self.expected_num_queries + 1):

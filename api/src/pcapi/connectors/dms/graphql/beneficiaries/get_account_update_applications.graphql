@@ -1,0 +1,122 @@
+  query getDemarche(
+    $demarcheNumber: Int!
+    $state: DossierState
+    $after: String
+    $archived: Boolean
+    $since: ISO8601DateTime
+  ) {
+    demarche(number: $demarcheNumber) {
+      number
+      dossiers(
+        state: $state
+        after: $after
+        archived: $archived
+        updatedSince: $since
+      ) {
+        pageInfo {
+          ...PageInfoFragment
+        }
+        nodes {
+          ...DossierFragment
+        }
+      }
+    }
+  }
+
+  fragment DossierFragment on Dossier {
+    number
+    archived
+    state
+    dateDerniereModification
+    dateDepot
+    datePassageEnConstruction
+    datePassageEnInstruction
+    dateTraitement
+    dateExpiration
+    dateSuppressionParUsager
+    dateDerniereCorrectionEnAttente
+    dateDerniereModificationChamps
+    dateDerniereModificationAnnotations
+    usager {
+      email
+    }
+    prenomMandataire
+    nomMandataire
+    deposeParUnTiers
+    demandeur {
+      ...PersonnePhysiqueFragment
+    }
+    demarche {
+      revision {
+        id
+      }
+    }
+    instructeurs {
+      email
+    }
+    champs {
+      ...ChampFragment
+      ...RootChampFragment
+    }
+    messages {
+      ...MessageFragment
+    }
+  }
+
+  fragment MessageFragment on Message {
+    email
+    createdAt
+    correction {
+      dateResolution
+    }
+  }
+
+  fragment RootChampFragment on Champ {
+    ... on RepetitionChamp {
+      rows {
+        champs {
+          ...ChampFragment
+        }
+      }
+    }
+    ... on DossierLinkChamp {
+      dossier {
+        number
+        state
+      }
+    }
+  }
+
+  fragment ChampFragment on Champ {
+    id
+    ... on TextChamp {
+      value
+    }
+    ... on DateChamp {
+      date
+    }
+    ... on CheckboxChamp {
+      checked: value
+    }
+    ... on IntegerNumberChamp {
+      integerNumber: value
+    }
+    ... on MultipleDropDownListChamp {
+      values
+    }
+    ... on TitreIdentiteChamp {
+      grantType
+    }
+  }
+
+  fragment PersonnePhysiqueFragment on PersonnePhysique {
+    nom
+    prenom
+    email
+  }
+
+
+  fragment PageInfoFragment on PageInfo {
+    hasNextPage
+    endCursor
+  }
