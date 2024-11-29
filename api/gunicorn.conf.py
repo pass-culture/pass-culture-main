@@ -7,6 +7,7 @@ import prometheus_client
 import prometheus_client.registry
 from prometheus_flask_exporter.multiprocess import GunicornPrometheusMetrics
 
+from pcapi.flask_app import app
 from pcapi.models import db
 from pcapi.utils import kubernetes as kubernetes_utils
 
@@ -46,8 +47,9 @@ def pre_fork(server, worker):
     # from being shared among dfferent workers processes once all initialisation
     # have been made
     # See https://docs.sqlalchemy.org/en/14/core/pooling.html#using-connection-pools-with-multiprocessing-or-os-fork
-    if db and db.engine:
-        db.engine.dispose()
+    with app.app_context():
+        if db and db.engine:
+            db.engine.dispose()
 
 
 def post_fork(server, worker):
