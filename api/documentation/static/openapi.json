@@ -3757,10 +3757,12 @@
                         "type": "string"
                     },
                     "venueAddress": {
+                        "nullable": true,
                         "title": "Venueaddress",
                         "type": "string"
                     },
                     "venueDepartementCode": {
+                        "nullable": true,
                         "title": "Venuedepartementcode",
                         "type": "string"
                     },
@@ -3784,8 +3786,6 @@
                     "offerName",
                     "venueId",
                     "venueName",
-                    "venueAddress",
-                    "venueDepartementCode",
                     "userEmail"
                 ],
                 "title": "GetBookingResponse",

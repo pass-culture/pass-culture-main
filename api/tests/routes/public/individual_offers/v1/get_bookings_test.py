@@ -121,9 +121,7 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # select features
         num_queries += 1  # select offer
         num_queries += 1  # select bookings
-        num_queries += 1  # select stock
         num_queries += 1  # select user
-        num_queries += 1  # select venue
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(
                 self.endpoint_url, params={"offer_id": product_offer_id}
@@ -188,11 +186,9 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # select features
         num_queries += 1  # select offer
         num_queries += 1  # select bookings
-        num_queries += 1  # select stock
         num_queries += 1  # select user
         num_queries += 1  # select price_category
         num_queries += 1  # select price_category_label
-        num_queries += 1  # select venue
         num_queries += 1  # select second user
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(
@@ -287,11 +283,9 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # select features
         num_queries += 1  # select offer
         num_queries += 1  # select bookings
-        num_queries += 1  # select stock
         num_queries += 1  # select user
         num_queries += 1  # select price_category
         num_queries += 1  # select price_category_label
-        num_queries += 1  # select venue
         num_queries += 1  # select second user
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(
@@ -393,7 +387,6 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # select user
         num_queries += 1  # select price_category
         num_queries += 1  # select price_category_label
-        num_queries += 1  # select venue
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(
                 self.endpoint_url, params={"offer_id": event_offer_id, "stock_id": event_stock_id}
@@ -465,12 +458,10 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # select features
         num_queries += 1  # select offer
         num_queries += 1  # select bookings
-        num_queries += 1  # select stock
         num_queries += 1  # select user
         num_queries += 1  # select price_category
         num_queries += 1  # select price_category_label
-        num_queries += 1  # select venue
-        with testing.assert_num_queries(9):
+        with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(
                 self.endpoint_url, params={"offer_id": event_offer_id, "beginning_datetime": past}
             )
@@ -541,11 +532,9 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # select features
         num_queries += 1  # select offer
         num_queries += 1  # select bookings
-        num_queries += 1  # select stock
         num_queries += 1  # select user
         num_queries += 1  # select price_category
         num_queries += 1  # select price_category_label
-        num_queries += 1  # select venue
         event_offer_id = event_offer.id
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(
@@ -624,11 +613,9 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # select features
         num_queries += 1  # select offer
         num_queries += 1  # select bookings
-        num_queries += 1  # select stock
         num_queries += 1  # select user
         num_queries += 1  # select price_category
         num_queries += 1  # select price_category_label
-        num_queries += 1  # select venue
         event_offer_id = event_offer.id
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(
@@ -705,11 +692,9 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # select features
         num_queries += 1  # select offer
         num_queries += 1  # select bookings
-        num_queries += 1  # select stock
         num_queries += 1  # select user
         num_queries += 1  # select price_category
         num_queries += 1  # select price_category_label
-        num_queries += 1  # select venue
         num_queries += 1  # select second user
         event_offer_id = event_offer.id
         with testing.assert_num_queries(num_queries):
@@ -806,11 +791,9 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # select features
         num_queries += 1  # select offer
         num_queries += 1  # select bookings
-        num_queries += 1  # select stock
         num_queries += 1  # select user
         num_queries += 1  # select price_category
         num_queries += 1  # select price_category_label
-        num_queries += 1  # select venue
         num_queries += 1  # select second user
         event_offer_id = event_offer.id
         booking_2_id = booking_2.id
