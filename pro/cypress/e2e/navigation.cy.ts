@@ -1,7 +1,7 @@
-import { logAndGoToPage } from '../support/helpers.ts'
+import { logInAndGoToPage } from '../support/helpers.ts'
 
 describe('Navigation', () => {
-  let login = ''
+  let login: string
 
   beforeEach(() => {
     cy.visit('/connexion')
@@ -14,7 +14,7 @@ describe('Navigation', () => {
   })
 
   it('I should see the top of the page when changing page', () => {
-    logAndGoToPage(login, '/accueil')
+    logInAndGoToPage(login, '/accueil')
 
     cy.stepLog({ message: 'I scroll to my venue' })
     cy.findByText('Votre page partenaire').scrollIntoView()

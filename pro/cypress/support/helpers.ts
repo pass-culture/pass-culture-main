@@ -44,24 +44,44 @@ export function expectOffersOrBookingsAreFound(
   }
 }
 
-export function logAndGoToPage(login: string, url: string) {
+export function logInAndGoToPage(
+  login: string,
+  url: string,
+  setDefaultCookieOrejime = true
+) {
   const password = 'user@AZERTY123'
+  cy.stepLog({ message: `I am logged in with account ${login}` })
+  cy.intercept({ method: 'POST', url: '/users/signin' }).as('signinUser')
+  cy.intercept({ method: 'GET', url: '/offerers/names' }).as('offererNames')
 
-  cy.stepLog({ message: 'I am logged in' })
-  cy.login({
-    email: login,
-    password: password,
-    redirectUrl: '/',
-  })
-  cy.findAllByTestId('spinner').should('not.exist')
+  cy.visit('/connexion')
+  if (setDefaultCookieOrejime)
+    {cy.setCookie('orejime','{"firebase":true,"hotjar":true,"beamer":true,"sentry":true}')}
+
+  cy.get('#email').type(login)
+  cy.get('#password').type(password)
+  cy.get('button[type=submit]').click()
+  cy.wait(['@signinUser', '@offererNames'])
 
   cy.stepLog({ message: `I open the "${url}" page` })
   cy.visit(url)
-  cy.findAllByTestId('spinner').should('not.exist')
-
   if (url === '/accueil') {
     homePageLoaded()
+  } else {
+    cy.url().should('contain', url)
+    cy.findAllByTestId('spinner').should('not.exist')
   }
+}
+
+export function sessionLogInAndGoToPage(
+  sessionName: string,
+  login: string,
+  url: string
+) {
+  cy.session(sessionName, () => {
+    logInAndGoToPage(login, url)
+  })
+  cy.visit(url)
 }
 
 export function homePageLoaded() {

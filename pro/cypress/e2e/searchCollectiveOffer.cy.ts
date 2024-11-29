@@ -2,7 +2,7 @@ import { addWeeks, format } from 'date-fns'
 
 import {
   expectOffersOrBookingsAreFound,
-  logAndGoToPage,
+  sessionLogInAndGoToPage,
 } from '../support/helpers.ts'
 
 describe('Search collective offers', () => {
@@ -31,7 +31,7 @@ describe('Search collective offers', () => {
   })
 
   beforeEach(() => {
-    logAndGoToPage(login, '/accueil')
+    sessionLogInAndGoToPage('Session search collective offer', login, '/accueil')
 
     cy.intercept({ method: 'GET', url: '/collective/offers*' }).as(
       'collectiveOffers'

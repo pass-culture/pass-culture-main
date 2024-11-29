@@ -1,4 +1,4 @@
-import { logAndGoToPage } from '../support/helpers.ts'
+import { logInAndGoToPage } from '../support/helpers.ts'
 
 export function attachmentModificationsDone() {
   cy.stepLog({
@@ -13,16 +13,16 @@ export function attachmentModificationsDone() {
 }
 
 describe('Financial Management - messages, links to external help page, reimbursement details, unattach', () => {
-  let login: string
-
   describe('Data contains 2 offerers, one with 0 venue, one with 1 venue', () => {
-    beforeEach(() => {
+    let login1: string
+    before(() => {
       cy.visit('/connexion')
       cy.request({
         method: 'GET',
         url: 'http://localhost:5001/sandboxes/pro/create_pro_user_with_financial_data',
       }).then((response) => {
-        login = response.body.user.email
+        login1 = response.body.user.email
+        cy.log('login1: ' + login1)
       })
       cy.intercept({ method: 'GET', url: '/offerers/*' }).as('getOfferers')
       cy.intercept({ method: 'PATCH', url: 'offerers/*/bank-accounts/*' }).as(
@@ -31,7 +31,7 @@ describe('Financial Management - messages, links to external help page, reimburs
     })
 
     it('I should be able to see messages, reimbursement details and offerer selection change', () => {
-      logAndGoToPage(login, '/remboursements')
+      logInAndGoToPage(login1, '/remboursements')
 
       cy.stepLog({
         message: 'I can see information message about reimbursement',
@@ -144,6 +144,7 @@ describe('Financial Management - messages, links to external help page, reimburs
   })
 
   describe('Data contains 1 offerer with 3 venues', () => {
+    let login2: string
     beforeEach(() => {
       cy.visit('/connexion')
       cy.intercept({ method: 'GET', url: '/offerers/*' }).as('getOfferers')
@@ -154,27 +155,27 @@ describe('Financial Management - messages, links to external help page, reimburs
         method: 'GET',
         url: 'http://localhost:5001/sandboxes/pro/create_pro_user_with_financial_data_and_3_venues',
       }).then((response) => {
-        login = response.body.user.email
-        logAndGoToPage(login, 'remboursements/informations-bancaires')
-        cy.findByTestId('offerer-select')
-        cy.wait('@getOfferers').its('response.statusCode').should('equal', 200)
-        cy.findAllByTestId('spinner').should('not.exist')
-
-        cy.stepLog({
-          message: 'Attach all my venues',
-        })
-        cy.findByText('Rattacher un lieu').click()
-
-        cy.findByRole('dialog').within(() => {
-          cy.findByText('Tout sélectionner').click()
-          cy.findByText('Enregistrer').click()
-        })
-
-        attachmentModificationsDone()
+        login2 = response.body.user.email
+        logInAndGoToPage(login2, 'remboursements/informations-bancaires')
       })
     })
 
     it('I should be able to attach and unattach a few venues', () => {
+      cy.findByTestId('offerer-select')
+      cy.wait('@getOfferers').its('response.statusCode').should('equal', 200)
+      cy.findAllByTestId('spinner').should('not.exist')
+
+      cy.stepLog({
+        message: 'Attach all my venues',
+      })
+      cy.findByText('Rattacher un lieu').click()
+
+      cy.findByRole('dialog').within(() => {
+        cy.findByText('Tout sélectionner').click()
+        cy.findByText('Enregistrer').click()
+      })
+
+      attachmentModificationsDone()
       cy.stepLog({
         message: 'Unattach 2 in 4 venues',
       })
@@ -213,6 +214,20 @@ describe('Financial Management - messages, links to external help page, reimburs
       )
     })
     it('I should be able to attach and unattach all venues', () => {
+      cy.findByTestId('offerer-select')
+      cy.findAllByTestId('spinner').should('not.exist')
+
+      cy.stepLog({
+        message: 'Attach all my venues',
+      })
+      cy.findByText('Rattacher un lieu').click()
+
+      cy.findByRole('dialog').within(() => {
+        cy.findByText('Tout sélectionner').click()
+        cy.findByText('Enregistrer').click()
+      })
+
+      attachmentModificationsDone()
       cy.stepLog({
         message: 'Unattach all venues',
       })
