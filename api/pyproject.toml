@@ -275,5 +275,6 @@ junit_family = "xunit1"
 markers = [
     "backoffice",
     "features",
+    "settings",
 ]
 requests_mock_case_sensitive = true

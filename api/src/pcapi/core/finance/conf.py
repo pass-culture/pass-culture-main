@@ -5,6 +5,10 @@ import pcapi.core.offers.models as offers_models
 from . import models
 
 
+# lock to prevent parallel push of bank accounts
+REDIS_PUSH_BANK_ACCOUNT_LOCK = "pc:finance:push_bank_account_lock"
+REDIS_PUSH_BANK_ACCOUNT_LOCK_TIMEOUT = 86400  # = 60 * 60 * 24 = 24h
+
 # lock to forbid the backoffice any write access to the pricing while the script is running
 REDIS_GENERATE_CASHFLOW_LOCK = "pc:finance:generate_cashflow_lock"
 REDIS_GENERATE_CASHFLOW_LOCK_TIMEOUT = 60 * 60 * 24  # 24h

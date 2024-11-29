@@ -8,6 +8,7 @@ import sqlalchemy.orm as sqla_orm
 from pcapi import settings
 from pcapi.connectors.dms.utils import import_ds_applications
 from pcapi.core.finance import ds
+from pcapi.core.finance import external as finance_external
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.finance.models as finance_models
@@ -184,3 +185,22 @@ def import_ds_bank_information_applications() -> None:
             logger.info("Skipping DS %s because procedure id is empty", procedure)
             continue
         import_ds_applications(int(procedure), ds.update_ds_applications_for_procedure)
+
+
+@blueprint.cli.command("push_bank_accounts")
+@click.option(
+    "--count",
+    help="Number of BankAccounts to sync. Default = 100. Put 0 to push all unsynced BankAccounts",
+    type=int,
+    default=100,
+)
+@cron_decorators.log_cron_with_transaction
+def push_bank_accounts(count: int) -> None:
+    if not FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW or not FeatureToggle.ENABLE_BANK_ACCOUNT_SYNC:
+        logger.info(
+            "Sync bank account cronjob will not run. "
+            "Both WIP_ENABLE_NEW_FINANCE_WORKFLOW and ENABLE_BANK_ACCOUNT_SYNC features must be activated"
+        )
+        return
+
+    finance_external.push_bank_accounts(count)

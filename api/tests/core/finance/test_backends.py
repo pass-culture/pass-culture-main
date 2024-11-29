@@ -15,7 +15,7 @@ from pcapi.core.testing import override_settings
 
 
 pytestmark = [
-    pytest.mark.usefixtures("db_session"),
+    pytest.mark.usefixtures("db_session", "clean_dummy_backend_data"),
 ]
 
 

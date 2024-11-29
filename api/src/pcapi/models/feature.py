@@ -43,6 +43,9 @@ class FeatureToggle(enum.Enum):
     ENABLE_AUTO_VALIDATION_FOR_EXTERNAL_BOOKING = (
         "Valide automatiquement après 48h les offres issues de l'api billeterie cinéma"
     )
+    ENABLE_BANK_ACCOUNT_SYNC = (
+        "Active la synchronisation des comptes bancaires avec l'outil finance externe (Cegid XRP Flex)"
+    )
     ENABLE_BEAMER = "Active Beamer, le système de notifs du portail pro"
     ENABLE_CDS_IMPLEMENTATION = "Permet la réservation de place de cinéma avec l'API CDS"
     ENABLE_CODIR_OFFERERS_REPORT = "Active le rapport sur les entités juridiques actives pour le CODIR (tourne la nuit)"
@@ -174,6 +177,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.DISPLAY_DMS_REDIRECTION,
     FeatureToggle.EMS_CANCEL_PENDING_EXTERNAL_BOOKING,
     FeatureToggle.ENABLE_AUTO_VALIDATION_FOR_EXTERNAL_BOOKING,
+    FeatureToggle.ENABLE_BANK_ACCOUNT_SYNC,
     FeatureToggle.ENABLE_BEAMER,
     FeatureToggle.ENABLE_CODIR_OFFERERS_REPORT,  # only for production
     FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES,
