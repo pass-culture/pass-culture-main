@@ -27,7 +27,7 @@ def _extract_allocine_id_from_allocine_movie_list(movie_list: dict, path: tuple[
         for field in path[:3]:
             obj = obj[field]
         allocine_id = obj["node"]["internalId"]
-    except (KeyError, IndexError):
+    except (KeyError, IndexError, TypeError):
         logger.exception("Error extracting allocine id from movie list")
         allocine_id = None
 

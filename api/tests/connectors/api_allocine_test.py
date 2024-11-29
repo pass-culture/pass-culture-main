@@ -80,10 +80,25 @@ class GetMovieListTest:
         # Then
         assert str(exception.value).endswith("Allocine Id: 131136")
 
-    def test_doesnt_extract_allocine_id_from_response(self, requests_mock, caplog):
+    def test_doesnt_extract_allocine_id_from_response_when_no_edges(self, requests_mock, caplog):
         # Given
         allocine_response = copy.deepcopy(fixtures.MOVIE_LIST)
         del allocine_response["movieList"]["edges"]
+        requests_mock.get("https://graph-api-proxy.allocine.fr/api/query/movieList?after=", json=allocine_response)
+
+        # When
+        with pytest.raises(AllocineException) as exception:
+            with caplog.at_level(logging.ERROR):
+                get_movie_list_page()
+
+        # Then
+        assert caplog.records[0].message == "Error extracting allocine id from movie list"
+        assert str(exception.value).endswith("Allocine Id: None")
+
+    def test_doesnt_extract_allocine_id_from_response_when_node_empty(self, requests_mock, caplog):
+        # Given
+        allocine_response = copy.deepcopy(fixtures.MOVIE_LIST)
+        allocine_response["movieList"]["edges"][0]["node"] = None
         requests_mock.get("https://graph-api-proxy.allocine.fr/api/query/movieList?after=", json=allocine_response)
 
         # When
