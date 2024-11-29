@@ -2,6 +2,7 @@ from dataclasses import asdict
 from datetime import datetime
 import decimal
 import enum
+import functools
 import logging
 import typing
 from typing import Iterable
@@ -22,6 +23,7 @@ import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.repository import on_commit
 from pcapi.repository import repository
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
 from pcapi.validation.models.entity_validator import validate
@@ -74,10 +76,11 @@ def create_venue_provider(
         and not venue.isPermanent
     ):
         venue.isPermanent = True
-        repository.save(venue)
-        search.async_index_venue_ids(
-            [venue.id],
-            reason=search.IndexationReason.VENUE_PROVIDER_CREATION,
+        db.session.add(venue)
+        on_commit(
+            functools.partial(
+                search.async_index_venue_ids, [venue_id], reason=search.IndexationReason.VENUE_PROVIDER_CREATION
+            )
         )
 
     history_api.add_action(
@@ -86,7 +89,7 @@ def create_venue_provider(
         venue=venue,
         provider_name=provider.name,
     )
-    db.session.commit()
+    db.session.flush()
 
     logger.info(
         "La synchronisation d'offre a été activée",
@@ -111,9 +114,18 @@ def reset_stock_quantity(venue: offerers_models.Venue) -> None:
 def delete_venue_provider(
     venue_provider: providers_models.VenueProvider, author: users_models.User, send_email: bool = True
 ) -> None:
-    update_venue_synchronized_offers_active_status_job.delay(venue_provider.venueId, venue_provider.providerId, False)
+    on_commit(
+        functools.partial(
+            update_venue_synchronized_offers_active_status_job.delay,
+            venue_provider.venueId,
+            venue_provider.providerId,
+            False,
+        )
+    )
     if send_email and venue_provider.venue.bookingEmail:
-        transactional_mails.send_venue_provider_deleted_email(venue_provider.venue.bookingEmail)
+        on_commit(
+            functools.partial(transactional_mails.send_venue_provider_deleted_email, venue_provider.venue.bookingEmail)
+        )
 
     # Save data now: it won't be available after we have deleted the object.
     venue_id = venue_provider.venueId
@@ -126,7 +138,7 @@ def delete_venue_provider(
         provider_name=venue_provider.provider.name,
     )
     db.session.delete(venue_provider)
-    db.session.commit()
+    db.session.flush()
     logger.info(
         "Deleted VenueProvider for venue %d",
         venue_id,
@@ -150,9 +162,19 @@ def activate_or_deactivate_venue_provider(
 
         venue_provider.isActive = set_active
         if send_email and not venue_provider.isActive and venue_provider.venue.bookingEmail:
-            transactional_mails.send_venue_provider_disabled_email(venue_provider.venue.bookingEmail)
-        update_venue_synchronized_offers_active_status_job.delay(
-            venue_provider.venueId, venue_provider.providerId, venue_provider.isActive
+            on_commit(
+                functools.partial(
+                    transactional_mails.send_venue_provider_disabled_email, venue_provider.venue.bookingEmail
+                )
+            )
+
+        on_commit(
+            functools.partial(
+                update_venue_synchronized_offers_active_status_job.delay,
+                venue_provider.venueId,
+                venue_provider.providerId,
+                venue_provider.isActive,
+            )
         )
 
         logger.info(
