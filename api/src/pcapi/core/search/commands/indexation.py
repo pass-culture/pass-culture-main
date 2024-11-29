@@ -212,10 +212,3 @@ def index_offers_staging(clear: bool) -> None:
 @log_cron_with_transaction
 def clean_indexation_processing_queues() -> None:
     search.clean_processing_queues()
-
-
-@blueprint.cli.command("remove_duplicates_from_venue_indexation_queue")
-@log_cron_with_transaction
-def remove_duplicates_from_venue_indexation_queue() -> None:
-    # TODO (lixxday) : remove after cron is removed
-    pass
