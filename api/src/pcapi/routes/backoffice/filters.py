@@ -653,9 +653,58 @@ def format_dms_application_status_badge(
             GraphQLApplicationStates.without_continuation
             | finance_models.BankAccountApplicationStatus.WITHOUT_CONTINUATION
         ):
-            return Markup('<span class="badge text-bg-warning">Classé sans suite</span>')
+            return Markup('<span class="badge text-bg-primary">Classé sans suite</span>')
         case _:
             return status.value
+
+
+def format_user_account_update_flags(flags: typing.Iterable[users_models.UserAccountUpdateFlag]) -> str:
+    badges = []
+    for flag in flags:
+        match flag:
+            case users_models.UserAccountUpdateFlag.MISSING_VALUE:
+                badges.append(
+                    Markup(
+                        '<span class="badge text-bg-warning"><i class="bi bi-exclamation-triangle"></i> Saisie incomplète</span>'
+                    )
+                )
+            case users_models.UserAccountUpdateFlag.INVALID_VALUE:
+                badges.append(
+                    Markup(
+                        '<span class="badge text-bg-warning"><i class="bi bi-exclamation-triangle"></i> Saisie invalide</span>'
+                    )
+                )
+            case users_models.UserAccountUpdateFlag.DUPLICATE_NEW_EMAIL:
+                badges.append(
+                    Markup(
+                        '<span class="badge text-bg-primary"><i class="bi bi-person-plus-fill"></i> Email en doublon</span>'
+                    )
+                )
+            case users_models.UserAccountUpdateFlag.WAITING_FOR_CORRECTION:
+                badges.append(Markup('<span class="badge text-bg-warning">En attente de correction</span>'))
+            case users_models.UserAccountUpdateFlag.CORRECTION_RESOLVED:
+                badges.append(Markup('<span class="badge text-bg-light shadow-sm">Corrigé</span>'))
+            case _:
+                badges.append(
+                    Markup('<span class="badge text-bg-light shadow-sm">{name}</span>').format(name=flag.value)
+                )
+    return Markup("<br/>").join(badges)
+
+
+def format_user_account_update_type(update_type: users_models.UserAccountUpdateType) -> str:
+    match update_type:
+        case users_models.UserAccountUpdateType.EMAIL:
+            return "Email"
+        case users_models.UserAccountUpdateType.PHONE_NUMBER:
+            return "Numéro de téléphone"
+        case users_models.UserAccountUpdateType.FIRST_NAME:
+            return "Prénom"
+        case users_models.UserAccountUpdateType.LAST_NAME:
+            return "Nom"
+        case users_models.UserAccountUpdateType.ACCOUNT_HAS_SAME_INFO:
+            return "Compte a les mêmes infos"
+        case _:
+            return update_type.value
 
 
 def format_registration_step_description(description: str) -> str:
@@ -1488,6 +1537,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_dms_status"] = format_dms_status
     app.jinja_env.filters["format_dms_application_status"] = format_dms_application_status
     app.jinja_env.filters["format_dms_application_status_badge"] = format_dms_application_status_badge
+    app.jinja_env.filters["format_user_account_update_flags"] = format_user_account_update_flags
     app.jinja_env.filters["format_registration_step_description"] = format_registration_step_description
     app.jinja_env.filters["format_subscription_step"] = format_subscription_step
     app.jinja_env.filters["format_eligibility_value"] = format_eligibility_value

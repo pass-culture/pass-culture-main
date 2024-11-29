@@ -3,12 +3,14 @@ import logging
 import click
 
 from pcapi import settings
+from pcapi.connectors.dms.utils import import_ds_applications
 import pcapi.core.chronicles.api as chronicles_api
 from pcapi.core.mails.transactional.users import online_event_reminder
 from pcapi.core.users import ds as users_ds
 import pcapi.core.users.api as user_api
 import pcapi.core.users.constants as users_constants
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 import pcapi.scheduled_tasks.decorators as cron_decorators
 from pcapi.utils.blueprint import Blueprint
 
@@ -88,9 +90,26 @@ def clean_gdpr_extracts() -> None:
 @blueprint.cli.command("sync_ds_instructor_ids")
 @cron_decorators.log_cron_with_transaction
 def sync_ds_instructor_ids() -> None:
+    if not FeatureToggle.ENABLE_DS_SYNC_FOR_USER_ACCOUNT_UPDATE_REQUESTS.is_active():
+        return
+
     procedure_ids = [
         settings.DS_USER_ACCOUNT_UPDATE_PROCEDURE_ID,
     ]
     for procedure_id in procedure_ids:
         users_ds.sync_instructor_ids(int(procedure_id))
+        db.session.commit()
+
+
+@blueprint.cli.command("sync_ds_user_account_update_requests")
+@cron_decorators.log_cron_with_transaction
+def sync_ds_user_account_update_requests() -> None:
+    if not FeatureToggle.ENABLE_DS_SYNC_FOR_USER_ACCOUNT_UPDATE_REQUESTS.is_active():
+        return
+
+    procedure_ids = [
+        settings.DS_USER_ACCOUNT_UPDATE_PROCEDURE_ID,
+    ]
+    for procedure_id in procedure_ids:
+        import_ds_applications(int(procedure_id), users_ds.sync_user_account_update_requests)
         db.session.commit()

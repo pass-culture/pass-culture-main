@@ -3,7 +3,6 @@ import logging
 
 from pcapi import settings
 from pcapi.connectors.dms import api as ds_api
-from pcapi.connectors.dms import models as ds_models
 from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.connectors.dms.serializer import ApplicationDetail
 from pcapi.connectors.dms.serializer import MarkWithoutContinuationApplicationDetail
@@ -18,43 +17,8 @@ logger = logging.getLogger(__name__)
 MARK_WITHOUT_CONTINUATION_MOTIVATION = "Marked without continuation & archived through automatic process (PC-24035)"
 
 
-def import_ds_bank_information_applications(procedure_number: int, ignore_previous: bool = False) -> None:
-    logger.info("[DS] Start import of all applications from Démarches Simplifiées for procedure %s", procedure_number)
-    last_import = (
-        ds_models.LatestDmsImport.query.filter(ds_models.LatestDmsImport.procedureId == procedure_number)
-        .order_by(ds_models.LatestDmsImport.latestImportDatetime.desc())
-        .first()
-    )
-    if last_import and last_import.isProcessing:
-        if datetime.datetime.utcnow() < last_import.latestImportDatetime + datetime.timedelta(days=1):
-            logger.info("[DS] Procedure %s is already being processed.", procedure_number)
-        else:
-            last_import.isProcessing = False
-            db.session.add(last_import)
-            db.session.commit()
-            logger.info(
-                "[DS] Procedure %s stopped after having been in treatment since %s",
-                procedure_number,
-                last_import.latestImportDatetime,
-            )
-
-    else:
-        since = last_import.latestImportDatetime if last_import else None
-        update_ds_applications_for_procedure(
-            procedure_number=procedure_number, since=None if ignore_previous else since
-        )
-
-
-def update_ds_applications_for_procedure(procedure_number: int, since: datetime.datetime | None) -> None:
+def update_ds_applications_for_procedure(procedure_number: int, since: datetime.datetime | None) -> list:
     logger.info("[DS] Started processing Bank Account procedure %s", procedure_number)
-    current_import = ds_models.LatestDmsImport(
-        procedureId=procedure_number,
-        latestImportDatetime=datetime.datetime.utcnow(),
-        isProcessing=True,
-        processedApplications=[],
-    )
-    db.session.add(current_import)
-    db.session.commit()
 
     ds_client = ds_api.DMSGraphQLClient()
     application_numbers = []
@@ -82,19 +46,17 @@ def update_ds_applications_for_procedure(procedure_number: int, since: datetime.
             db.session.rollback()
         else:
             application_numbers.append(node["number"])
-            # Committing here ensure that we have a proper transaction for each application successfully imported
-            # And that for each faulty application, the failure only impact that particular one.
+            # Committing here ensures that we have a proper transaction for each application successfully imported
+            # And that for each faulty application, the failure only impacts that particular one.
             db.session.commit()
-
-    current_import.processedApplications = application_numbers
-    current_import.isProcessing = False
-    db.session.commit()
 
     logger.info(
         "[DS] Finished processing Bank Account procedure %s.",
         procedure_number,
         extra={"procedure_number": procedure_number},
     )
+
+    return application_numbers
 
 
 def mark_without_continuation_applications() -> None:

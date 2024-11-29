@@ -103,7 +103,9 @@ class AccountUpdateRequestSearchForm(utils.PCForm):
     )
     update_type = fields.PCSelectMultipleField(
         "Type de demande",
-        choices=(("first_name", "Prénom"), ("last_name", "Nom"), ("email", "Email"), ("phone_number", "Téléphone")),
+        choices=utils.choices_from_enum(
+            users_models.UserAccountUpdateType, formatter=filters.format_user_account_update_type
+        ),
     )
     last_instructor = fields.PCTomSelectField(
         "Dernier instructeur",

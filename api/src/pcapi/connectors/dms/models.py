@@ -33,6 +33,8 @@ class DmsApplicationStates(enum.Enum):
 
 
 class GraphQLApplicationStates(enum.Enum):
+    """https://www.demarches-simplifiees.fr/graphql/schema/index.html#definition-DossierState"""
+
     draft = "en_construction"
     on_going = "en_instruction"
     accepted = "accepte"

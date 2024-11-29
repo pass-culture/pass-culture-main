@@ -6,6 +6,7 @@ import click
 import sqlalchemy.orm as sqla_orm
 
 from pcapi import settings
+from pcapi.connectors.dms.utils import import_ds_applications
 from pcapi.core.finance import ds
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.exceptions as finance_exceptions
@@ -182,4 +183,4 @@ def import_ds_bank_information_applications() -> None:
         if not procedure:
             logger.info("Skipping DS %s because procedure id is empty", procedure)
             continue
-        ds.import_ds_bank_information_applications(procedure_number=int(procedure))
+        import_ds_applications(int(procedure), ds.update_ds_applications_for_procedure)

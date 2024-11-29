@@ -1074,8 +1074,8 @@ class UserAccountUpdateRequestFactory(BaseFactory):
     dsApplicationId = factory.Sequence(lambda n: 1230000 + n + 1)
     status = dms_models.GraphQLApplicationStates.on_going
     firstName = "Jeune"
-    lastName = "Changeant d'Email"
-    email = factory.Sequence(lambda n: f"ancien_email_{n+1}@example.com")
+    lastName = "Demandeur"
+    email = factory.Sequence(lambda n: f"demandeur_{n+1}@example.com")
     birthDate = factory.Sequence(lambda n: date.today() - timedelta(days=18 * 366 + 10 * n))
     user = factory.SubFactory(
         BeneficiaryGrant18Factory,
@@ -1084,10 +1084,12 @@ class UserAccountUpdateRequestFactory(BaseFactory):
         email=factory.SelfAttribute("..email"),
         dateOfBirth=factory.SelfAttribute("..birthDate"),
     )
-    newEmail = factory.Sequence(lambda n: f"nouvel_email_{n+1}@example.com")
-    newPhoneNumber = None
-    newFirstName = None
-    newLastName = None
+    updateTypes: list[models.UserAccountUpdateType] = []
+    oldEmail: str | None = None
+    newEmail: str | None = None
+    newPhoneNumber: str | None = None
+    newFirstName: str | None = None
+    newLastName: str | None = None
     allConditionsChecked = True
     lastInstructor = factory.SubFactory(
         AdminFactory,
@@ -1096,6 +1098,28 @@ class UserAccountUpdateRequestFactory(BaseFactory):
     )
     dateLastUserMessage = LazyAttribute(lambda _: datetime.utcnow() - relativedelta(days=1))
     dateLastInstructorMessage = factory.LazyAttribute(lambda _: datetime.utcnow() - relativedelta(days=3))
+
+
+class EmailUpdateRequestFactory(UserAccountUpdateRequestFactory):
+    lastName = "Changeant d'Email"
+    updateTypes = [models.UserAccountUpdateType.EMAIL]
+    oldEmail = factory.Sequence(lambda n: f"ancien_email_{n+1}@example.com")
+    newEmail = factory.Sequence(lambda n: f"nouvel_email_{n+1}@example.com")
+
+
+class PhoneNumberUpdateRequestFactory(UserAccountUpdateRequestFactory):
+    updateTypes = [models.UserAccountUpdateType.PHONE_NUMBER]
+    newPhoneNumber = "+33730405060"
+
+
+class FirstNameUpdateRequestFactory(UserAccountUpdateRequestFactory):
+    updateTypes = [models.UserAccountUpdateType.FIRST_NAME]
+    newFirstName = "Nouveau-Prénom"
+
+
+class LastNameUpdateRequestFactory(UserAccountUpdateRequestFactory):
+    updateTypes = [models.UserAccountUpdateType.LAST_NAME]
+    newLastName = "Nouveau-Nom"
 
 
 class UserProFlagsFactory(BaseFactory):

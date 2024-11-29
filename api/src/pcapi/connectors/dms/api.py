@@ -33,6 +33,7 @@ UPDATE_TEXT_ANNOTATION_QUERY_NAME = "update_text_annotation"
 GET_EAC_APPLICATIONS_STATE_SIRET = "eac/get_applications_state_siret"
 GET_BANK_INFO_APPLICATIONS_QUERY_NAME = "pro/get_bank_info_applications"
 GET_INSTRUCTORS_QUERY_NAME = "get_instructors"
+GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME = "beneficiaries/get_account_update_applications"
 
 
 class DmsStats(BaseModel):
@@ -280,6 +281,44 @@ class DMSGraphQLClient:
                 procedure_number=procedure_number,
                 since=since,
                 state=state,
+                page_token=dossiers["pageInfo"]["endCursor"],
+            )
+
+    def get_beneficiary_account_update_nodes(
+        self,
+        *,
+        procedure_number: int,
+        state: dms_models.GraphQLApplicationStates | None = None,
+        since: datetime.datetime | None = None,
+        page_token: str | None = None,
+        archived: bool = False,
+    ) -> Generator[dict, None, None]:
+        variables: dict[str, int | str] = {
+            "demarcheNumber": procedure_number,
+            "archived": archived,
+        }
+        if state:
+            variables["state"] = state.value
+        if since:
+            variables["since"] = since.isoformat()
+        if page_token:
+            variables["after"] = page_token
+        results = self.execute_query(GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables=variables)
+        dossiers = results["demarche"]["dossiers"]
+        nodes = dossiers["nodes"]
+        logger.info(
+            "[DS] Found %s applications for procedure %d (page token: %s)",
+            len(nodes),
+            procedure_number,
+            page_token,
+        )
+        yield from nodes
+
+        if dossiers["pageInfo"]["hasNextPage"]:
+            yield from self.get_beneficiary_account_update_nodes(
+                procedure_number=procedure_number,
+                state=state,
+                since=since,
                 page_token=dossiers["pageInfo"]["endCursor"],
             )
 
