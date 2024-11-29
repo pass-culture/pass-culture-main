@@ -7,6 +7,8 @@ export const DEFAULT_ADDRESS_FORM_VALUES = {
   longitude: 0,
   street: '',
   postalCode: '',
+  coords: '',
+  manuallySetAddress: false,
 }
 
 export const DEBOUNCE_TIME_BEFORE_REQUEST = 400

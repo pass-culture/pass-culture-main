@@ -1,6 +1,15 @@
+import { useField, useFormikContext } from 'formik'
+
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { resetAddressFields } from 'commons/utils/resetAddressFields'
 import { AddressSelect } from 'components/Address/Address'
 import { Address } from 'components/Address/types'
+import { AddressManual } from 'components/AddressManual/AddressManual'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import fullBackIcon from 'icons/full-back.svg'
+import fullNextIcon from 'icons/full-next.svg'
+import { Button } from 'ui-kit/Button/Button'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import { OffererFormValues } from '../Offerer/OffererForm'
@@ -14,9 +23,25 @@ export interface OffererAuthenticationFormValues
   publicName: string
   addressAutocomplete: string
   'search-addressAutocomplete': string
+  coords: string
+  manuallySetAddress: boolean
 }
 
 export const OffererAuthenticationForm = (): JSX.Element => {
+  const formik = useFormikContext<OffererAuthenticationFormValues>()
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+
+  const [manuallySetAddress, , { setValue: setManuallySetAddress }] =
+    useField('manuallySetAddress')
+
+  const toggleManuallySetAddress = async () => {
+    const isAddressManual = !manuallySetAddress.value
+    await setManuallySetAddress(isAddressManual)
+    if (isAddressManual) {
+      await resetAddressFields({ formik })
+    }
+  }
+
   return (
     <FormLayout.Section>
       <h1 className={styles['title']}>Identification</h1>
@@ -33,7 +58,25 @@ export const OffererAuthenticationForm = (): JSX.Element => {
         <AddressSelect
           description="À modifier si l’adresse postale de votre structure est différente de la raison sociale."
           suggestionLimit={5}
+          disabled={manuallySetAddress.value}
         />
+        {isOfferAddressEnabled && (
+          <>
+            <Button
+              variant={ButtonVariant.QUATERNARY}
+              title="Renseignez l’adresse manuellement"
+              icon={manuallySetAddress.value ? fullBackIcon : fullNextIcon}
+              onClick={toggleManuallySetAddress}
+            >
+              {manuallySetAddress.value ? (
+                <>Revenir à la sélection automatique</>
+              ) : (
+                <>Vous ne trouvez pas votre adresse ?</>
+              )}
+            </Button>
+            {manuallySetAddress.value && <AddressManual />}
+          </>
+        )}
       </FormLayout.Row>
     </FormLayout.Section>
   )
