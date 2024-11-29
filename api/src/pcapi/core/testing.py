@@ -190,6 +190,23 @@ class TestContextDecorator:
         raise TypeError(f"Cannot decorate object {decorated}")
 
 
+class SettingsContext:
+    def __init__(self) -> None:
+        # Use `object.__setattr__` because `__setattr__` method is overriden
+        object.__setattr__(self, "_initial_settings", {})
+
+    def __setattr__(self, attr_name: str, value: typing.Any) -> None:
+        self._initial_settings[attr_name] = getattr(settings, attr_name)
+        setattr(settings, attr_name, value)
+
+    def __getattr__(self, attr_name: str) -> typing.Any:
+        return getattr(settings, attr_name)
+
+    def reset(self) -> None:
+        for attr_name, value in self._initial_settings.items():
+            setattr(settings, attr_name, value)
+
+
 class override_settings(TestContextDecorator):
     """A context manager/function decorator that temporarily changes a
     setting.
