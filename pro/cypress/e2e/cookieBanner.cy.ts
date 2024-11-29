@@ -1,4 +1,4 @@
-import { homePageLoaded, logAndGoToPage } from '../support/helpers.ts'
+import { logInAndGoToPage } from '../support/helpers.ts'
 
 describe('Cookie management with no login', () => {
   beforeEach(() => {
@@ -6,9 +6,6 @@ describe('Cookie management with no login', () => {
   })
 
   it('The cookie banner should remain displayed when opening a new page', () => {
-    cy.stepLog({ message: 'I decline all cookies' })
-    cy.findByText('Tout refuser').click()
-
     cy.stepLog({ message: 'I clear all cookies in Browser' })
     cy.clearCookies()
 
@@ -42,9 +39,6 @@ describe('Cookie management with no login', () => {
   })
 
   it('I should be able to refuse all cookies, and no cookie is checked in the dialog, except the required', () => {
-    cy.stepLog({ message: 'I decline all cookies' })
-    cy.findByText('Tout refuser').click()
-
     cy.stepLog({ message: 'the cookie banner should not be displayed' })
     cy.contains('Respect de votre vie privée').should('not.exist')
 
@@ -112,30 +106,23 @@ describe('Cookie management with no login', () => {
 
 describe('Cookie management with login', () => {
   const password = 'user@AZERTY123'
+  let login1: string
 
-  beforeEach(() => {
+  before(() => {
     cy.visit('/connexion')
+    cy.request({
+      method: 'GET',
+      url: 'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
+    }).then((response) => {
+      login1 = response.body.user.email
+    })
   })
 
   it('I should be able to choose a specific cookie, log in with another account and check that specific cookie is checked', () => {
     cy.stepLog({ message: 'I clear all cookies in Browser' })
     cy.clearCookies()
 
-    cy.request({
-      method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
-    }).then((response) => {
-      const login = response.body.user.email
-      cy.stepLog({ message: 'I am logged in with account 1' })
-      cy.log('login: ' + login)
-      cy.login({
-        email: login,
-        password: password,
-        redirectUrl: '/',
-      })
-    })
-
-    homePageLoaded()
+    logInAndGoToPage(login1, '/accueil', false)
 
     cy.stepLog({ message: 'I open the cookie management option' })
     cy.findByText('Gestion des cookies').click()
@@ -156,18 +143,9 @@ describe('Cookie management with login', () => {
       method: 'GET',
       url: 'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
     }).then((response) => {
-      const login = response.body.user.email
-      cy.stepLog({
-        message: 'I am logged in with account 2 and no cookie selection',
-      })
-      cy.login({
-        email: login,
-        password: password,
-        refusePopupCookies: false,
-      })
+      const login2 = response.body.user.email
+      logInAndGoToPage(login2, '/accueil', false)
     })
-
-    homePageLoaded()
 
     cy.stepLog({ message: 'I open the cookie management option' })
     cy.findByText('Gestion des cookies').click()
@@ -179,6 +157,9 @@ describe('Cookie management with login', () => {
   it('I should be able to log in, choose a specific cookie, open another browser, log in again and check that specific cookie not checked', () => {
     // Cypress cannot deal with 2 browsers or a tab. So we log out, and log in again with a clean browser
     // See https://docs.cypress.io/guides/references/trade-offs#Multiple-browsers-open-at-the-same-time
+    cy.stepLog({ message: 'I clear all cookies in Browser' })
+    cy.clearCookies()
+
     cy.request({
       method: 'GET',
       url: 'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
@@ -186,12 +167,8 @@ describe('Cookie management with login', () => {
       cy.wrap(response.body.user.email).as('login')
     })
 
-    cy.stepLog({ message: 'I clear all cookies in Browser' })
-    cy.clearCookies()
-
-    cy.stepLog({ message: 'I am logged in with account 3' })
     cy.get('@login').then((login) =>
-      logAndGoToPage(login.toString(), '/accueil')
+      logInAndGoToPage(login.toString(), '/accueil', false)
     )
 
     cy.stepLog({ message: 'I open the cookie management option' })
@@ -214,9 +191,8 @@ describe('Cookie management with login', () => {
     cy.clearAllLocalStorage()
     cy.clearAllSessionStorage()
 
-    cy.stepLog({ message: 'I am logged in with account 3' })
     cy.get('@login').then((login) =>
-      logAndGoToPage(login.toString(), '/accueil')
+      logInAndGoToPage(login.toString(), '/accueil', false)
     )
 
     cy.stepLog({ message: 'I open the cookie management option' })

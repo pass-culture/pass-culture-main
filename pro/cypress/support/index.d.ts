@@ -1,15 +1,6 @@
 declare namespace Cypress {
   interface Chainable {
-    login(params: {
-      email: string
-      password: string
-      redirectUrl?: string
-      refusePopupCookies?: boolean
-    }): Chainable
-
     setFeatureFlags(features: Feature[]): Chainable
-
-    refuseCookies(): Chainable
 
     getFakeAdageToken(): Chainable
 

@@ -1,10 +1,14 @@
-import { interceptSearch5Adresses, logAndGoToPage } from '../support/helpers.ts'
 import { MOCKED_BACK_ADDRESS_LABEL } from '../support/constants.ts'
+import {
+  interceptSearch5Adresses,
+  sessionLogInAndGoToPage,
+} from '../support/helpers.ts'
 
 describe('Create individual offers with OA', () => {
-  let login = ''
+  let login: string
 
-  beforeEach(() => {
+  before(() => {
+    cy.wrap(Cypress.session.clearAllSavedSessions())
     cy.visit('/connexion')
     cy.request({
       method: 'GET',
@@ -12,8 +16,17 @@ describe('Create individual offers with OA', () => {
     }).then((response) => {
       login = response.body.user.email
     })
+    cy.setFeatureFlags([{ name: 'WIP_ENABLE_OFFER_ADDRESS', isActive: true }])
+  })
+
+  beforeEach(() => {
+    sessionLogInAndGoToPage(
+      'Session OA Individual offer',
+      login,
+      '/offre/creation'
+    )
     cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
-    cy.intercept({ method: 'POST', url: '/offers/draft' }).as('postDraftOffer')
+    cy.intercept({ method: 'POST', url: '/offers/draft' }).as('postOffersDraft')
     cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
     cy.intercept({ method: 'GET', url: '/offers/*/stocks/*' }).as('getStocks')
     cy.intercept({ method: 'POST', url: '/stocks/bulk' }).as('postStocks')
@@ -28,12 +41,11 @@ describe('Create individual offers with OA', () => {
       'getVenuesForOfferer'
     )
     interceptSearch5Adresses()
-    cy.setFeatureFlags([{ name: 'WIP_ENABLE_OFFER_ADDRESS', isActive: true }])
+    cy.contains('À qui destinez-vous cette offre ?')
   })
 
   it('I should be able to create an individual offer (event)', () => {
-    logAndGoToPage(login, '/offre/creation')
-
+    const eventName = 'Offer with OA (event) ' + (Cypress.currentRetry + 1)
     cy.stepLog({
       message: 'I want to create "Un évènement physique daté" offer',
     })
@@ -42,7 +54,7 @@ describe('Create individual offers with OA', () => {
     cy.findByText('Étape suivante').click()
 
     cy.stepLog({ message: 'I fill in event details' })
-    cy.findByLabelText('Titre de l’offre *').type('Event with OA')
+    cy.findByLabelText('Titre de l’offre *').type(eventName)
     cy.findByLabelText('Description').type(
       'Une PO invite des développeurs à dîner...'
     )
@@ -53,7 +65,7 @@ describe('Create individual offers with OA', () => {
 
     cy.stepLog({ message: 'I validate event details step' })
     cy.findByText('Enregistrer et continuer').click()
-    cy.wait(['@getOffer', '@postDraftOffer'])
+    cy.wait(['@getOffer', '@postOffersDraft'])
 
     cy.stepLog({ message: 'I fill in event useful informations' })
     cy.findByText('Retrait sur place (guichet, comptoir...)').click()
@@ -117,11 +129,11 @@ describe('Create individual offers with OA', () => {
 
     cy.stepLog({ message: 'my new offer should be displayed' })
     cy.url().should('contain', '/offres')
-    cy.contains('Event with OA')
+    cy.contains(eventName)
     cy.contains('11 dates')
 
     cy.stepLog({ message: 'I want to update my offer' })
-    cy.findByRole('link', { name: 'Event with OA - éditer l’offre' }).click()
+    cy.findByRole('link', { name: eventName + ' - éditer l’offre' }).click()
     cy.findByText('Informations pratiques').click()
     cy.url().should('contain', '/pratiques')
     cy.contains('Adresse : 1 boulevard Poissonnière 75002 Paris')
@@ -149,11 +161,9 @@ describe('Create individual offers with OA', () => {
   })
 
   it('I should be able to create an individual offer (thing)', () => {
-    const offerTitle = 'H2G2 Le Guide du voyageur galactique'
+    const offerTitle = 'Offer with OA (thing) ' + (Cypress.currentRetry + 1)
     const offerDesc =
       'Une quête pour obtenir la question ultime sur la vie, l’univers et tout le reste.'
-
-    logAndGoToPage(login, '/offre/creation')
 
     cy.stepLog({ message: 'I want to create "Un bien physique" offer' })
     cy.findByText('Au grand public').click()
@@ -203,7 +213,7 @@ describe('Create individual offers with OA', () => {
 
     cy.stepLog({ message: 'I validate offer details step' })
     cy.findByText('Enregistrer et continuer').click()
-    cy.wait(['@getOffer', '@postDraftOffer'])
+    cy.wait(['@postOffersDraft'])
 
     cy.stepLog({ message: 'I fill in useful informations for physical offer' })
     cy.findByLabelText('Informations de retrait').type(
@@ -235,13 +245,6 @@ describe('Create individual offers with OA', () => {
 
     cy.stepLog({ message: 'I publish my offer' })
     cy.findByText('Publier l’offre').click()
-    cy.findByText('Plus tard').click()
-    cy.wait('@publishOffer', {
-      timeout: 60000,
-      requestTimeout: 60000,
-      responseTimeout: 60000,
-    })
-    cy.wait('@getOffer', { timeout: 60000 })
 
     cy.stepLog({ message: 'I go to the offers list' })
     cy.findByText('Voir la liste des offres').click()
@@ -252,7 +255,7 @@ describe('Create individual offers with OA', () => {
     })
 
     cy.stepLog({ message: 'my new physical offer should be displayed' })
-    cy.contains('H2G2 Le Guide du voyageur galactique')
+    cy.contains(offerTitle)
     cy.get('@ean').then((ean) => {
       cy.contains(ean.toString())
     })
@@ -279,6 +282,7 @@ describe('Create individual offers with OA', () => {
     cy.findAllByLabelText('Adresse postale *').last().type('Place de la gare')
     cy.findAllByLabelText('Code postal *').type('123123')
     cy.findAllByLabelText('Ville *').type('Y')
+    // eslint-disable-next-line cypress/unsafe-to-chain-command
     cy.findAllByLabelText('Coordonnées GPS *')
       .type('48.853320, 2.348979')
       .blur()

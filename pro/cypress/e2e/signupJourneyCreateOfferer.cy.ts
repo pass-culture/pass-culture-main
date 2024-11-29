@@ -1,14 +1,14 @@
-import { interceptSearch5Adresses } from '../support/helpers.ts'
 import {
   MOCKED_BACK_ADDRESS_LABEL,
   MOCKED_BACK_ADDRESS_STREET,
 } from '../support/constants.ts'
+import { interceptSearch5Adresses, logInAndGoToPage } from '../support/helpers.ts'
 
 const venueName = 'MINISTERE DE LA CULTURE'
 const newVenueName = 'First Venue'
 
 describe('Signup journey with unknown offerer and unknown venue', () => {
-  let login = ''
+  let login: string
   const mySiret = '12345678912345'
 
   beforeEach(() => {
@@ -386,11 +386,7 @@ function goToOffererCreation(login: string) {
   const password = 'user@AZERTY123'
 
   cy.stepLog({ message: 'I am logged in' })
-  cy.login({
-    email: login,
-    password: password,
-    redirectUrl: '/',
-  })
+  logInAndGoToPage(login, '/')
 
   cy.stepLog({ message: 'I start offerer creation' })
   cy.findByText('Commencer').click()
