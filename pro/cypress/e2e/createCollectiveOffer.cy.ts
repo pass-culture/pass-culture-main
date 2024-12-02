@@ -18,8 +18,8 @@ describe('Collaborator list feature', () => {
         'http://localhost:5001/collective/educational-domains',
         {
           body: [
-            { id: 1, name: 'Danse' },
-            { id: 2, name: 'Architecture' },
+            { id: 2, name: 'Danse' },
+            { id: 3, name: 'Architecture' },
           ]
         }
       ).as('getDomains')
