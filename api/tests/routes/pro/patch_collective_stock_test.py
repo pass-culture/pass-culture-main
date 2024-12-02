@@ -6,13 +6,16 @@ import time_machine
 
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import CollectiveBooking
+from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
 import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
+from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
@@ -266,6 +269,62 @@ class Return200Test:
         # Then
         edited_collective_booking = CollectiveBooking.query.get(collective_booking.id)
         assert edited_collective_booking.educationalYearId == educational_year_2022_2023.adageId
+
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    def test_edit_collective_stock_update_booking_limit_date_with_expired_booking(self, client):
+        now = datetime.utcnow()
+        stock = educational_factories.CollectiveStockFactory(
+            beginningDatetime=now + timedelta(days=5), bookingLimitDatetime=now - timedelta(days=2)
+        )
+        booking = educational_factories.CollectiveBookingFactory(
+            collectiveStock=stock,
+            status=CollectiveBookingStatus.CANCELLED,
+            cancellationReason=CollectiveBookingCancellationReasons.EXPIRED,
+            cancellationDate=now - timedelta(days=1),
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
+        )
+
+        new_limit = now + timedelta(days=1)
+        client.with_session_auth("user@example.com")
+        response = client.patch(f"/collective/stocks/{stock.id}", json={"bookingLimitDatetime": new_limit.isoformat()})
+        assert response.status_code == 200
+
+        db.session.refresh(stock)
+        db.session.refresh(booking)
+        assert stock.bookingLimitDatetime == new_limit
+        assert booking.status == CollectiveBookingStatus.PENDING
+        assert booking.cancellationReason == None
+        assert booking.cancellationDate == None
+
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    def test_edit_collective_stock_update_booking_limit_date_with_expired_booking_no_ff(self, client):
+        now = datetime.utcnow()
+        stock = educational_factories.CollectiveStockFactory(
+            beginningDatetime=now + timedelta(days=5), bookingLimitDatetime=now - timedelta(days=2)
+        )
+        booking = educational_factories.CollectiveBookingFactory(
+            collectiveStock=stock,
+            status=CollectiveBookingStatus.CANCELLED,
+            cancellationReason=CollectiveBookingCancellationReasons.EXPIRED,
+            cancellationDate=now - timedelta(days=1),
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
+        )
+
+        new_limit = now + timedelta(days=1)
+        client.with_session_auth("user@example.com")
+        response = client.patch(f"/collective/stocks/{stock.id}", json={"bookingLimitDatetime": new_limit.isoformat()})
+        assert response.status_code == 200
+
+        db.session.refresh(stock)
+        db.session.refresh(booking)
+        assert stock.bookingLimitDatetime == new_limit
+        assert booking.status == CollectiveBookingStatus.CANCELLED
+        assert booking.cancellationReason == CollectiveBookingCancellationReasons.EXPIRED
+        assert booking.cancellationDate == now - timedelta(days=1)
 
 
 class Return403Test:

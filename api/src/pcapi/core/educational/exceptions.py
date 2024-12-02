@@ -1,7 +1,11 @@
+import typing
+
 from pcapi.domain.client_exceptions import ClientError
 from pcapi.models.api_errors import ApiErrors
 
-from . import models
+
+if typing.TYPE_CHECKING:
+    from pcapi.core.educational.models import CollectiveBookingStatus
 
 
 class EducationalInstitutionUnknown(ClientError):
@@ -74,9 +78,13 @@ class PriceRequesteCantBedHigherThanActualPrice(Exception):
 
 
 class CollectiveOfferStockBookedAndBookingNotPending(Exception):
-    def __init__(self, status: models.CollectiveBookingStatus, booking_id: int) -> None:
+    def __init__(self, status: "CollectiveBookingStatus", booking_id: int) -> None:
         self.booking_status = status
         super().__init__()
+
+
+class MultipleCollectiveBookingFound(Exception):
+    pass
 
 
 class CollectiveOfferNotFound(Exception):

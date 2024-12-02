@@ -499,8 +499,9 @@ def edit_collective_offer_public(
     new_values: dict,
     offer: educational_models.CollectiveOffer,
 ) -> educational_models.CollectiveOffer:
-    from pcapi.core.educational.api.stock import _update_educational_booking_cancellation_limit_date
-    from pcapi.core.educational.api.stock import _update_educational_booking_educational_year_id
+    from pcapi.core.educational.api.stock import update_collective_booking_cancellation_limit_date
+    from pcapi.core.educational.api.stock import update_collective_booking_educational_year_id
+    from pcapi.core.educational.api.stock import update_collective_booking_pending
 
     if not (offer.isEditable and offer.collectiveStock.isEditable):
         raise exceptions.CollectiveOfferNotEditable()
@@ -511,17 +512,7 @@ def edit_collective_offer_public(
     offer_fields = {field for field in dir(educational_models.CollectiveOffer) if not field.startswith("_")}
     stock_fields = {field for field in dir(educational_models.CollectiveStock) if not field.startswith("_")}
 
-    collective_stock_unique_booking = (
-        educational_models.CollectiveBooking.query.join(
-            educational_models.CollectiveStock,
-            educational_models.CollectiveBooking.collectiveStock,
-        )
-        .filter(
-            educational_models.CollectiveStock.collectiveOfferId == offer.id,
-            educational_models.CollectiveBooking.status != educational_models.CollectiveBookingStatus.CANCELLED,
-        )
-        .one_or_none()
-    )
+    collective_stock_unique_booking = offer.collectiveStock.get_unique_non_cancelled_booking()
     if collective_stock_unique_booking:
         validation.check_collective_booking_status_pending(collective_stock_unique_booking)
 
@@ -570,8 +561,8 @@ def edit_collective_offer_public(
         elif key == "beginningDatetime":
             offer.collectiveStock.beginningDatetime = value
             if collective_stock_unique_booking:
-                _update_educational_booking_cancellation_limit_date(collective_stock_unique_booking, value)
-                _update_educational_booking_educational_year_id(collective_stock_unique_booking, value)
+                update_collective_booking_cancellation_limit_date(collective_stock_unique_booking, value)
+                update_collective_booking_educational_year_id(collective_stock_unique_booking, value)
         elif key == "price":
             offer.collectiveStock.price = value
             if collective_stock_unique_booking:
@@ -582,6 +573,19 @@ def edit_collective_offer_public(
             setattr(offer, key, value)
         else:
             raise ValueError(f"unknown field {key}")
+
+    # if the booking limit date is set in the future and a PENDING booking was automatically cancelled, set it back to PENDING
+    booking_limit_value = offer.collectiveStock.bookingLimitDatetime
+    if (
+        feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active()
+        and "bookingLimitDatetime" in new_values
+        and booking_limit_value
+        and booking_limit_value > datetime.datetime.utcnow()
+    ):
+        booking = offer.collectiveStock.lastBooking
+        if booking and booking.is_expired:
+            update_collective_booking_pending(booking)
+            db.session.add(booking)
 
     db.session.commit()
 

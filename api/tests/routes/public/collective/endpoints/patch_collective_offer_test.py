@@ -12,6 +12,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers import factories as provider_factories
+from pcapi.core.testing import override_features
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.utils import date as date_utils
@@ -917,6 +918,74 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIEndpointBaseHelper):
         # Then
         assert response.status_code == 400
         assert "nationalProgramId" in response.json
+
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    def test_should_update_expired_booking(self, client):
+        venue_provider = provider_factories.VenueProviderFactory()
+        venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+
+        now = datetime.utcnow()
+        offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
+        stock = educational_factories.CollectiveStockFactory(
+            collectiveOffer=offer,
+            beginningDatetime=now + timedelta(days=5),
+            bookingLimitDatetime=now - timedelta(days=2),
+        )
+        booking = educational_factories.CollectiveBookingFactory(
+            collectiveStock=stock,
+            status=educational_models.CollectiveBookingStatus.CANCELLED,
+            cancellationReason=educational_models.CollectiveBookingCancellationReasons.EXPIRED,
+            cancellationDate=now - timedelta(days=1),
+        )
+
+        new_limit = now + timedelta(days=1)
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+                f"/v2/collective/offers/{offer.id}", json={"bookingLimitDatetime": new_limit.isoformat()}
+            )
+            assert response.status_code == 200
+
+        db.session.refresh(stock)
+        db.session.refresh(booking)
+        assert stock.bookingLimitDatetime == new_limit
+        assert booking.status == educational_models.CollectiveBookingStatus.PENDING
+        assert booking.cancellationReason == None
+        assert booking.cancellationDate == None
+
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    def test_should_not_update_expired_booking(self, client):
+        venue_provider = provider_factories.VenueProviderFactory()
+        venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+
+        now = datetime.utcnow()
+        offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
+        stock = educational_factories.CollectiveStockFactory(
+            collectiveOffer=offer,
+            beginningDatetime=now + timedelta(days=5),
+            bookingLimitDatetime=now - timedelta(days=2),
+        )
+        booking = educational_factories.CollectiveBookingFactory(
+            collectiveStock=stock,
+            status=educational_models.CollectiveBookingStatus.CANCELLED,
+            cancellationReason=educational_models.CollectiveBookingCancellationReasons.EXPIRED,
+            cancellationDate=now - timedelta(days=1),
+        )
+
+        new_limit = now + timedelta(days=1)
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+                f"/v2/collective/offers/{offer.id}", json={"bookingLimitDatetime": new_limit.isoformat()}
+            )
+            assert response.status_code == 200
+
+        db.session.refresh(stock)
+        db.session.refresh(booking)
+        assert stock.bookingLimitDatetime == new_limit
+        assert booking.status == educational_models.CollectiveBookingStatus.CANCELLED
+        assert booking.cancellationReason == educational_models.CollectiveBookingCancellationReasons.EXPIRED
+        assert booking.cancellationDate == now - timedelta(days=1)
 
 
 @pytest.mark.usefixtures("db_session")
