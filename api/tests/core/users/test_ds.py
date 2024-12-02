@@ -63,6 +63,7 @@ class SyncUserAccountUpdateRequestsTest:
 
         uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
         assert uaur.dsApplicationId == 21163559
+        assert uaur.dsTechnicalId == "UHJvY4VkdXKlLTI5NTgw"
         assert uaur.status == dms_models.GraphQLApplicationStates.draft
         assert uaur.dateCreated == datetime(2024, 11, 26, 8, 31, 35)
         assert uaur.dateLastStatusUpdate == uaur.dateCreated
@@ -98,6 +99,7 @@ class SyncUserAccountUpdateRequestsTest:
 
         uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
         assert uaur.dsApplicationId == 21166546
+        assert uaur.dsTechnicalId == "UHJvY4VkdXKlLTI5NTgw"
         assert uaur.status == dms_models.GraphQLApplicationStates.on_going
         assert uaur.dateCreated == datetime(2024, 11, 26, 10, 2, 46)
         assert uaur.dateLastStatusUpdate == datetime(2024, 11, 26, 10, 3, 14)
@@ -134,6 +136,7 @@ class SyncUserAccountUpdateRequestsTest:
         assert users_models.UserAccountUpdateRequest.query.count() == 2
 
         uaur = users_models.UserAccountUpdateRequest.query.filter_by(dsApplicationId=21167090).one()
+        assert uaur.dsTechnicalId == "UHJvY4VkdXKlLTI5NTgw"
         assert uaur.status == dms_models.GraphQLApplicationStates.accepted
         assert uaur.dateCreated == datetime(2024, 11, 26, 10, 19, 35)
         assert uaur.dateLastStatusUpdate == datetime(2024, 11, 26, 10, 21, 45)
@@ -155,6 +158,7 @@ class SyncUserAccountUpdateRequestsTest:
         assert uaur.flags == []
 
         uaur = users_models.UserAccountUpdateRequest.query.filter_by(dsApplicationId=21167148).one()
+        assert uaur.dsTechnicalId == "UHJvY4VkdXKlLTI5NTgx"
         assert uaur.status == dms_models.GraphQLApplicationStates.draft
         assert uaur.dateCreated == datetime(2024, 11, 26, 10, 20, 50)
         assert uaur.dateLastStatusUpdate == datetime(2024, 11, 26, 10, 22, 16)
@@ -190,6 +194,7 @@ class SyncUserAccountUpdateRequestsTest:
 
         uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
         assert uaur.dsApplicationId == 21176193
+        assert uaur.dsTechnicalId == "UHJvY4VkdXKlLTI5NTgw"
         assert uaur.status == dms_models.GraphQLApplicationStates.draft
         assert uaur.dateCreated == datetime(2024, 11, 26, 15, 14, 14)
         assert uaur.dateLastStatusUpdate == uaur.dateCreated
@@ -225,6 +230,7 @@ class SyncUserAccountUpdateRequestsTest:
 
         uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
         assert uaur.dsApplicationId == 21176997
+        assert uaur.dsTechnicalId == "UHJvY4VkdXKlLTI5NTgw"
         assert uaur.status == dms_models.GraphQLApplicationStates.on_going
         assert uaur.dateCreated == datetime(2024, 11, 26, 15, 43, 28)
         assert uaur.dateLastStatusUpdate == datetime(2024, 11, 26, 15, 54, 29)
@@ -260,6 +266,7 @@ class SyncUserAccountUpdateRequestsTest:
 
         uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
         assert uaur.dsApplicationId == 21177744
+        assert uaur.dsTechnicalId == "UHJvY4VkdXKlLTI5NTgw"
         assert uaur.status == dms_models.GraphQLApplicationStates.draft
         assert uaur.dateCreated == datetime(2024, 11, 26, 16, 4, 27)
         assert uaur.dateLastStatusUpdate == datetime(2024, 11, 26, 16, 5, 32)
@@ -298,6 +305,7 @@ class SyncUserAccountUpdateRequestsTest:
 
         uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
         assert uaur.dsApplicationId == 21179224
+        assert uaur.dsTechnicalId == "UHJvY4VkdXKlLTI5NTgw"
         assert uaur.status == dms_models.GraphQLApplicationStates.draft
         assert uaur.dateCreated == datetime(2024, 11, 26, 17, 19, 42)
         assert uaur.dateLastStatusUpdate == uaur.dateCreated
@@ -334,6 +342,7 @@ class SyncUserAccountUpdateRequestsTest:
 
         uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
         assert uaur.dsApplicationId == 21193637
+        assert uaur.dsTechnicalId == "UHJvY4VkdXKlLTI5NTgw"
         assert uaur.status == dms_models.GraphQLApplicationStates.draft
         assert uaur.dateCreated == datetime(2024, 11, 27, 14, 25, 3)
         assert uaur.dateLastStatusUpdate == uaur.dateCreated
