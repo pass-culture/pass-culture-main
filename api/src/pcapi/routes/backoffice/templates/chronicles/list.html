@@ -55,14 +55,15 @@
                   {% endif %}
                 </td>
                 <td>
-                  <a href="">{{ chronicle.id }}</a>
+                  <a class="link-primary"
+                     href="{{ url_for('backoffice_web.chronicles.details', chronicle_id=chronicle.id) }}">{{ chronicle.id }}</a>
                 </td>
                 <td>
                   {% if chronicle.products %}
                     {% for product in chronicle.products %}<div>{{ product }}</div>{% endfor %}
                   {% endif %}
                 </td>
-                <td class="pc-mw-50-vw">{{ collapsable_text(chronicle.id, chronicle.short_content, chronicle.content) }}</td>
+                <td class="pc-mw-50-vw">{{ collapsable_text(chronicle.id, chronicle.short_content|trim, chronicle.content|trim) }}</td>
                 <td>{{ chronicle.dateCreated  | format_date }}</td>
                 <td>{{ chronicle.isActive | format_bool_badge }}</td>
               </tr>

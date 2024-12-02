@@ -4,9 +4,12 @@ from functools import partial
 from flask import flash
 from flask import redirect
 from flask import render_template
+from flask import request
 from flask import url_for
 from flask_login import current_user
+from markupsafe import Markup
 import sqlalchemy as sa
+from sqlalchemy.orm import joinedload
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.chronicles import models as chronicles_models
@@ -17,6 +20,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import atomic
+from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms.empty import EmptyForm
@@ -43,6 +47,7 @@ def list_chronicles() -> utils.BackofficeResponse:
 
     form = forms.GetChronicleSearchForm(formdata=utils.get_query_params())
     if not form.validate():
+        mark_transaction_as_invalid()
         return render_template("chronicles/list.html", rows=[], form=form), 400
 
     product_subquery = (
@@ -56,7 +61,7 @@ def list_chronicles() -> utils.BackofficeResponse:
     query = db.session.query(
         chronicles_models.Chronicle.id,
         chronicles_models.Chronicle.content,
-        sa.func.left(chronicles_models.Chronicle.content, 350).label("short_content"),
+        sa.func.left(chronicles_models.Chronicle.content, 150).label("short_content"),
         chronicles_models.Chronicle.dateCreated,
         chronicles_models.Chronicle.isActive,
         product_subquery.label("products"),
@@ -111,6 +116,82 @@ def list_chronicles() -> utils.BackofficeResponse:
     )
 
 
+@chronicles_blueprint.route("/<int:chronicle_id>", methods=["GET"])
+@atomic()
+def details(chronicle_id: int) -> utils.BackofficeResponse:
+    if not FeatureToggle.WIP_ENABLE_CHRONICLES_IN_BO.is_active():
+        raise NotFound()
+
+    chronicle = (
+        chronicles_models.Chronicle.query.filter(
+            chronicles_models.Chronicle.id == chronicle_id,
+        )
+        .options(
+            joinedload(chronicles_models.Chronicle.products).load_only(
+                offers_models.Product.name,
+                offers_models.Product.extraData,
+            )
+        )
+        .one_or_none()
+    )
+
+    if not chronicle:
+        raise NotFound()
+
+    action_history = (
+        history_models.ActionHistory.query.filter(history_models.ActionHistory.chronicleId == chronicle_id)
+        .order_by(history_models.ActionHistory.id.desc())
+        .all()
+    )
+    product_name = None
+    for product in chronicle.products:
+        if product.extraData.get("ean") == chronicle.ean:
+            product_name = product.name
+            break
+
+    update_content_form = forms.UpdateContentForm(content=chronicle.content)
+    attach_product_form = forms.AttachProductForm()
+
+    return render_template(
+        "chronicles/details.html",
+        chronicle=chronicle,
+        product_name=product_name,
+        active_tab=request.args.get("active_tab", "content"),
+        chronicle_publication_form=EmptyForm(),
+        update_content_form=update_content_form,
+        empty_form=EmptyForm(),
+        attach_product_form=attach_product_form,
+        action_history=action_history,
+        comment_form=forms.CommentForm(),
+    )
+
+
+@chronicles_blueprint.route("/<int:chronicle_id>/update-content", methods=["POST"])
+@atomic()
+@permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
+def update_chronicle_content(chronicle_id: int) -> utils.BackofficeResponse:
+    if not FeatureToggle.WIP_ENABLE_CHRONICLES_IN_BO.is_active():
+        raise NotFound()
+
+    form = forms.UpdateContentForm()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(utils.build_form_error_msg(form), "warning")
+        return redirect(
+            url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="content"), code=303
+        )
+
+    chronicle = chronicles_models.Chronicle.query.get_or_404(chronicle_id)
+    chronicle.content = form.content.data
+    db.session.add(chronicle)
+    db.session.flush()
+
+    flash("Le texte de la chronique a été mis à jour", "success")
+    return redirect(
+        url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="content"), code=303
+    )
+
+
 @chronicles_blueprint.route("/<int:chronicle_id>/pubish", methods=["POST"])
 @atomic()
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
@@ -127,8 +208,8 @@ def publish_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
         author=current_user,
         chronicle=chronicle,
     )
-    flash(f"La chronique {chronicle_id} à été publiée", "success")
-    return redirect(url_for("backoffice_web.chronicles.list_chronicles"), code=303)
+    flash(f"La chronique {chronicle_id} a été publiée", "success")
+    return redirect(request.referrer or url_for("backoffice_web.chronicles.list_chronicles"), code=303)
 
 
 @chronicles_blueprint.route("/<int:chronicle_id>/unpublish", methods=["POST"])
@@ -147,5 +228,103 @@ def unpublish_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
         author=current_user,
         chronicle=chronicle,
     )
-    flash(f"La chronique {chronicle_id} à été dépubliée", "success")
-    return redirect(url_for("backoffice_web.chronicles.list_chronicles"), code=303)
+    flash(f"La chronique {chronicle_id} a été dépubliée", "success")
+    return redirect(request.referrer or url_for("backoffice_web.chronicles.list_chronicles"), code=303)
+
+
+@chronicles_blueprint.route("/<int:chronicle_id>/attach-product", methods=["POST"])
+@atomic()
+@permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
+def attach_product(chronicle_id: int) -> utils.BackofficeResponse:
+    if not FeatureToggle.WIP_ENABLE_CHRONICLES_IN_BO.is_active():
+        raise NotFound()
+
+    form = forms.AttachProductForm()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(utils.build_form_error_msg(form), "warning")
+        redirect(url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id), code=303)
+
+    chronicle = chronicles_models.Chronicle.query.get_or_404(chronicle_id)
+    products = offers_models.Product.query.filter(offers_models.Product.extraData["ean"].astext == form.ean.data).all()
+
+    if not products:
+        mark_transaction_as_invalid()
+        flash("Aucune œuvre n'a été trouvée pour cet EAN", "warning")
+        return redirect(
+            url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="book"), code=303
+        )
+
+    for product in products:
+        chronicle.products.append(product)
+        db.session.add(product)
+
+    if len(products) > 1:
+        product_names = ", ".join(product.name for product in products)
+        flash(
+            Markup("Les produits <b>{product_names}</b> ont été rattachés à la chronique").format(
+                product_names=product_names
+            ),
+            "success",
+        )
+    else:
+        flash(
+            Markup("Le produit <b>{product_name}</b> a été rattaché à la chronique").format(
+                product_name=products[0].name
+            ),
+            "success",
+        )
+    db.session.flush()
+
+    return redirect(
+        url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="book"), code=303
+    )
+
+
+@chronicles_blueprint.route("/<int:chronicle_id>/detach-product/<int:product_id>", methods=["POST"])
+@atomic()
+@permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
+def detach_product(chronicle_id: int, product_id: int) -> utils.BackofficeResponse:
+    if not FeatureToggle.WIP_ENABLE_CHRONICLES_IN_BO.is_active():
+        raise NotFound()
+
+    deleted = chronicles_models.ProductChronicle.query.filter(
+        chronicles_models.ProductChronicle.productId == product_id,
+        chronicles_models.ProductChronicle.chronicleId == chronicle_id,
+    ).delete(synchronize_session=False)
+    db.session.flush()
+
+    if deleted:
+        flash("Le produit à bien été détaché de la chronique", "success")
+    else:
+        mark_transaction_as_invalid()
+        flash("Le produit n'existe pas ou n'était pas attaché à la chronique", "warning")
+
+    return redirect(
+        url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="book"), code=303
+    )
+
+
+@chronicles_blueprint.route("/<int:chronicle_id>/comment", methods=["POST"])
+@atomic()
+def comment_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
+    if not FeatureToggle.WIP_ENABLE_CHRONICLES_IN_BO.is_active():
+        raise NotFound()
+
+    form = forms.CommentForm()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(utils.build_form_error_msg(form), "warning")
+        redirect(
+            url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="history"), code=303
+        )
+
+    chronicle = chronicles_models.Chronicle.query.get_or_404(chronicle_id)
+
+    history_api.add_action(
+        history_models.ActionType.COMMENT, author=current_user, chronicle=chronicle, comment=form.comment.data
+    )
+    flash("Le commentaire a été enregistré", "success")
+    return redirect(
+        url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="history"), code=303
+    )
