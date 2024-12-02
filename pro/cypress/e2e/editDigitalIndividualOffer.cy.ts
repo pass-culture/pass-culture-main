@@ -39,8 +39,9 @@ describe('Edit digital individual offers', () => {
       cy.findAllByTestId('offer-item-row')
         .first()
         .within(() => {
-          cy.findByRole('link', { name: 'Modifier' }).click()
+          cy.findByRole('button', { name: 'Actions'}).click()
         })
+      cy.findByRole('menuitem', { name: 'Voir l’offre' }).click()
       cy.url().should('contain', '/recapitulatif')
 
       cy.stepLog({ message: 'I display Informations pratiques tab' })
@@ -65,8 +66,9 @@ describe('Edit digital individual offers', () => {
       cy.findAllByTestId('offer-item-row')
         .first()
         .within(() => {
-          cy.findByRole('link', { name: 'Modifier' }).click()
+          cy.findByRole('button', { name: 'Actions'}).click()
         })
+      cy.findByRole('menuitem', { name: 'Voir l’offre' }).click()
       cy.url().should('contain', '/recapitulatif')
 
       cy.stepLog({ message: 'I display Informations pratiques tab' })

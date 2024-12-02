@@ -15,13 +15,21 @@ type DropdownMenuWrapperProps = {
    */
   title: string
   /**
+   * The icon to be displayed on the trigger button.
+   */
+  triggerIcon?: string
+  /**
    * The content to be displayed inside the dropdown menu.
    */
   children: React.ReactNode
   /**
-   * Custom CSS class for additional styling of the dropdown menu.
+   * Custom CSS class for additional styling of the trigger button.
    */
-  className?: string
+  triggerClassName?: string
+  /**
+   * Custom CSS class for additional styling of the menu content.
+   */
+  contentClassName?: string
 }
 
 /**
@@ -46,24 +54,25 @@ type DropdownMenuWrapperProps = {
  */
 export function DropdownMenuWrapper({
   title,
+  triggerIcon,
   children,
-  className,
+  triggerClassName,
+  contentClassName,
 }: DropdownMenuWrapperProps): JSX.Element {
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger
-        className={cn(styles['menu-button'], className)}
-        title={title}
+        className={cn(styles['menu-button'], triggerClassName)}
         data-testid="dropdown-menu-trigger"
       >
         <SvgIcon
-          src={fullOtherIcon}
+          src={triggerIcon || fullOtherIcon}
           alt={title}
           className={styles['menu-button-icon']}
         />
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
-        <DropdownMenu.Content className={styles['menu-list']} align="end">
+        <DropdownMenu.Content className={cn(styles['menu-list'], contentClassName)} align="end">
           {children}
         </DropdownMenu.Content>
       </DropdownMenu.Portal>

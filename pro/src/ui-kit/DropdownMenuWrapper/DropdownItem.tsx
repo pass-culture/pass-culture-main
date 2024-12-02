@@ -5,12 +5,14 @@ import styles from './DropdownMenuWrapper.module.scss'
 
 /**
  * Props for the DropdownItem component.
+ *
+ * @extends DropdownMenu.DropdownMenuItemProps
  */
-type DropdownItemProps = {
+type DropdownItemProps = DropdownMenu.DropdownMenuItemProps & {
   /**
    * The title of the dropdown item.
    */
-  title: string
+  title?: string
   /**
    * Callback function triggered when the dropdown item is selected.
    */
@@ -50,15 +52,17 @@ export function DropdownItem({
   children,
   onSelect,
   disabled,
+  ...radixDropdownItemProps
 }: DropdownItemProps): JSX.Element {
   return (
     <DropdownMenu.Item
       className={cn(styles['menu-item'], {
         [styles['menu-item-disabled']]: disabled,
       })}
-      title={title}
       onSelect={onSelect}
       disabled={disabled}
+      {...(title ? { title } : {})}
+      {...radixDropdownItemProps}
     >
       {children}
     </DropdownMenu.Item>
