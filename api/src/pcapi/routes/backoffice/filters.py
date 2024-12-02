@@ -11,6 +11,7 @@ from urllib.parse import urlunparse
 from flask import Flask
 from flask import url_for
 from markupsafe import Markup
+from markupsafe import escape
 import psycopg2.extras
 import pytz
 
@@ -1509,6 +1510,10 @@ def get_offer_type(
     return "offer"
 
 
+def nl2br(text: str) -> str:
+    return escape(text).replace("\n", Markup("<br>"))
+
+
 def install_template_filters(app: Flask) -> None:
     app.jinja_env.trim_blocks = True
     app.jinja_env.lstrip_blocks = True
@@ -1601,3 +1606,4 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_venue_provider_count"] = format_venue_provider_count
     app.jinja_env.filters["build_pro_link"] = build_pro_link
     app.jinja_env.filters["offer_type"] = get_offer_type
+    app.jinja_env.filters["nl2br"] = nl2br

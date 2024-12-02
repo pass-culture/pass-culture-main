@@ -2,7 +2,7 @@
   <div class="pc-display-selector"
        data-pc-input-name="collapsable-text-{{ id }}">
     {% if short == long %}
-      {{ short }}
+      <div>{{ short | nl2br }}</div>
     {% else %}
       <input class="form-check-input d-none"
              type="radio"
@@ -15,12 +15,26 @@
              id="id-{{ id }}-short"
              value="label-{{ id }}-short"
              checked>
-      <label class="form-check-label"
+      <label class="form-check-label w-100"
              for="id-{{ id }}-short"
-             id="label-{{ id }}-long">{{ long }}</label>
-      <label class="form-check-label"
+             id="label-{{ id }}-long">
+        <div class="d-flex">
+          <div>{{ long | nl2br }}</div>
+          <div class="link-primary ml-auto">
+            <i class="bi bi-chevron-up"></i>
+          </div>
+        </div>
+      </label>
+      <label class="form-check-label w-100"
              for="id-{{ id }}-long"
-             id="label-{{ id }}-short">{{ short }}...</label>
+             id="label-{{ id }}-short">
+        <div class="d-flex">
+          <div>{{ short | nl2br }}</div>
+          <div class="link-primary ml-auto">
+            <i class="bi bi-chevron-down"></i>
+          </div>
+        </div>
+      </label>
     {% endif %}
   </div>
 {% endmacro %}
