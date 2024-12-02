@@ -1,6 +1,7 @@
 import * as yup from 'yup'
 
 import { isOneTrue } from 'commons/core/shared/utils/validation'
+import { emailSchema } from 'commons/utils/isValidEmail'
 
 export const validationSchema = yup.object().shape({
   accessibility: yup
@@ -22,7 +23,7 @@ export const validationSchema = yup.object().shape({
     .required('Veuillez sélectionner une adresse parmi les suggestions'),
   bookingEmail: yup
     .string()
-    .email('Veuillez renseigner un email valide, exemple : mail@exemple.com')
+    .test(emailSchema)
     .required('Veuillez renseigner une adresse email'),
   name: yup
     .string()

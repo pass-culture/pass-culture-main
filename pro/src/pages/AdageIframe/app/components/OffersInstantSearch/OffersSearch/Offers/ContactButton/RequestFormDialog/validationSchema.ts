@@ -1,6 +1,8 @@
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import * as yup from 'yup'
 
+import { emailSchema } from 'commons/utils/isValidEmail'
+
 const isPhoneValid = (phone: string | undefined): boolean => {
   if (!phone) {
     return true
@@ -16,7 +18,7 @@ export const validationSchema = () =>
     teacherEmail: yup
       .string()
       .max(120)
-      .email('Veuillez renseigner un email valide, exemple : mail@exemple.com')
+      .test(emailSchema)
       .required('Veuillez renseigner une adresse email'),
     teacherPhone: yup.string().test({
       name: 'is-phone-valid',

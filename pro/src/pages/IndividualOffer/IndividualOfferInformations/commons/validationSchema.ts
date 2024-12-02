@@ -1,6 +1,7 @@
 import * as yup from 'yup'
 
 import { WithdrawalTypeEnum } from 'apiClient/v1'
+import { emailSchema } from 'commons/utils/isValidEmail'
 
 import { validationSchema as offerLocationSchema } from '../components/OfferLocation/validationSchema'
 
@@ -60,9 +61,7 @@ export const getValidationSchema = ({
       then: (schema) =>
         schema
           .required('Veuillez renseigner une adresse email')
-          .email(
-            'Veuillez renseigner un email valide, exemple : mail@exemple.com'
-          )
+          .test(emailSchema)
           .test({
             name: 'organisationEmailNotPassCulture',
             message: 'Ce mail doit vous appartenir',
@@ -88,9 +87,7 @@ export const getValidationSchema = ({
       then: (schema) =>
         schema
           .required('Veuillez renseigner une adresse email')
-          .email(
-            'Veuillez renseigner un email valide, exemple : mail@exemple.com'
-          ),
+          .test(emailSchema),
     }),
     externalTicketOfficeUrl: yup
       .string()
