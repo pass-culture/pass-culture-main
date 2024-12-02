@@ -69,7 +69,7 @@ fetchMock.mockResponse(
   { status: 200 }
 )
 
-const renderOffererAuthentiationScreen = (
+const renderOffererAuthenticationScreen = (
   contextValue: SignupJourneyContextValues
 ) => {
   return renderWithProviders(
@@ -98,6 +98,7 @@ const renderOffererAuthentiationScreen = (
     }
   )
 }
+
 describe('screens:SignupJourney::OffererAuthentication', () => {
   let contextValue: SignupJourneyContextValues
   beforeEach(() => {
@@ -120,7 +121,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
   })
 
   it('should render component', async () => {
-    renderOffererAuthentiationScreen(contextValue)
+    renderOffererAuthenticationScreen(contextValue)
 
     expect(
       await screen.findByText(
@@ -154,7 +155,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
   })
 
   it('should display activity screen on submit', async () => {
-    renderOffererAuthentiationScreen(contextValue)
+    renderOffererAuthenticationScreen(contextValue)
     expect(await screen.findByText('Identification')).toBeInTheDocument()
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape suivante' })
@@ -163,7 +164,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
   })
 
   it('should display offerer screen on submit', async () => {
-    renderOffererAuthentiationScreen(contextValue)
+    renderOffererAuthenticationScreen(contextValue)
     expect(await screen.findByText('Identification')).toBeInTheDocument()
     await userEvent.click(screen.getByRole('button', { name: 'Retour' }))
     expect(screen.getByText('Offerer screen')).toBeInTheDocument()
@@ -171,7 +172,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
 
   it('should redirect to offerer screen if there is no offerer siret', () => {
     contextValue.offerer = DEFAULT_OFFERER_FORM_VALUES
-    renderOffererAuthentiationScreen(contextValue)
+    renderOffererAuthenticationScreen(contextValue)
     expect(screen.queryByText('Identification')).not.toBeInTheDocument()
     expect(screen.getByText('Offerer screen')).toBeInTheDocument()
   })
@@ -181,7 +182,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
       ...DEFAULT_OFFERER_FORM_VALUES,
       siret: '12345678933333',
     }
-    renderOffererAuthentiationScreen(contextValue)
+    renderOffererAuthenticationScreen(contextValue)
     expect(screen.queryByText('Identification')).not.toBeInTheDocument()
     expect(screen.getByText('Offerer screen')).toBeInTheDocument()
   })
