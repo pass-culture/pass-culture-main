@@ -1,6 +1,7 @@
 import datetime
 import enum
 
+from flask import flash
 from flask_wtf import FlaskForm
 import wtforms
 
@@ -26,8 +27,11 @@ class AccountSearchForm(search.SearchForm):
     def validate_q(self, q: fields.PCSearchField) -> fields.PCSearchField:
         q = super().validate_q(q)
         data = q.data.strip(" \t,;")
-        if len(data) < 3 and not str(data).isnumeric():
+        if len(data) < 3 and not data.isnumeric():
             raise wtforms.validators.ValidationError("Attention, la recherche doit contenir au moins 3 lettres.")
+        split_data = data.split()
+        if len(split_data) > 1 and all(len(item) <= 3 for item in split_data):
+            flash("Les termes étant très courts, la recherche n'a porté que sur le nom complet exact.", "info")
         return q
 
 

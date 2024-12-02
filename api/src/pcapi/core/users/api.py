@@ -1098,14 +1098,24 @@ def _filter_user_accounts(accounts: BaseQuery, search_term: str) -> BaseQuery:
         term_filters.append(models.User.email.like(f"%{split_terms[0]}"))
 
     if not term_filters:
-        name_term = search_term
-        for name in name_term.split():
-            term_filters.append(
+        split_term = search_term.split()
+        if len(split_term) > 1 and all(len(item) <= 3 for item in split_term):
+            # When terms only contain 3 letters or less, search for the exact full name to avoid timeout.
+            # This enables to find users with very short names (e.g. "Lou Na") using the trigram index on full name.
+            filters.append(
                 sa.func.immutable_unaccent(models.User.firstName + " " + models.User.lastName).ilike(
-                    f"%{clean_accents(name)}%"
+                    f"{clean_accents(search_term)}"
                 )
             )
-        filters.append(sa.and_(*term_filters) if len(term_filters) > 1 else term_filters[0])
+        else:
+            name_term = search_term
+            for name in split_term:
+                term_filters.append(
+                    sa.func.immutable_unaccent(models.User.firstName + " " + models.User.lastName).ilike(
+                        f"%{clean_accents(name)}%"
+                    )
+                )
+            filters.append(sa.and_(*term_filters) if len(term_filters) > 1 else term_filters[0])
 
     else:
         filters.append(sa.or_(*term_filters) if len(term_filters) > 1 else term_filters[0])

@@ -128,15 +128,18 @@ def extract_cards_titles(html_content: str) -> list[str]:
     return extract(html_content, tag="h5", class_="card-title")
 
 
-def extract_alert(html_content: str) -> str:
+def extract_alert(html_content: str, raise_if_not_found: bool = True) -> str | None:
     """
     Extract the first flash message
     """
     soup = get_soup(html_content)
 
     alert = soup.find("div", class_="alert")
-    assert alert is not None
 
+    if alert is None and not raise_if_not_found:
+        return None
+
+    assert alert is not None
     return _filter_whitespaces(alert.text)
 
 

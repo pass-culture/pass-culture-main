@@ -359,6 +359,34 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
             total_items=1,
         )
 
+        redirected_response = authenticated_client.get(response.location)
+        assert html_parser.extract_alert(redirected_response.data, raise_if_not_found=False) is None
+
+    def test_can_search_public_account_by_first_name_and_very_short_name(self, authenticated_client):
+        create_bunch_of_accounts()
+        user = users_factories.UserFactory(firstName="ANN", lastName="A", email="ann.a@example.com")
+
+        # redirect -> no FF loaded
+        with assert_num_queries(self.expected_num_queries - 1):
+            response = authenticated_client.get(url_for(self.endpoint, q="Ann A"))
+            assert response.status_code == 303
+
+        # Redirected to single result
+        assert_response_location(
+            response,
+            "backoffice_web.public_accounts.get_public_account",
+            user_id=user.id,
+            q="Ann A",
+            search_rank=1,
+            total_items=1,
+        )
+
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Les termes étant très courts, la recherche n'a porté que sur le nom complet exact."
+        )
+
     @pytest.mark.parametrize("query", ["Gédéon Flaille", "Abdal Flaille", "Autre Algézic"])
     def test_can_search_public_account_names_which_do_not_match(self, authenticated_client, query):
         create_bunch_of_accounts()
