@@ -25,7 +25,6 @@ export default defineConfig({
       // Make sure to return the config object as it might have been modified by the plugin.
       return config
     },
-
     baseUrl: 'http://localhost:3001',
     experimentalRunAllSpecs: true, // Run all specs test in UI mode
   },
