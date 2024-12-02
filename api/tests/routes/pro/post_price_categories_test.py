@@ -262,3 +262,28 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"priceCategories": ["The price category cat gold already exists"]}
+
+    @pytest.mark.parametrize(
+        "status", [offers_models.OfferValidationStatus.PENDING, offers_models.OfferValidationStatus.REJECTED]
+    )
+    def test_cant_update_price_when_offer_is_pending_or_rejected(self, client, status):
+        offer = offers_factories.EventOfferFactory(validation=status)
+        price_category = offers_factories.PriceCategoryFactory(
+            offer=offer,
+            priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="Do not change", venue=offer.venue),
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        data = {
+            "priceCategories": [
+                {"price": 350, "label": "Behind a post", "id": price_category.id},
+            ],
+        }
+
+        response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"offer": ["Offer is not editable (because rejected or pending)"]}
