@@ -17,10 +17,7 @@ import { useIndividualOfferContext } from 'commons/context/IndividualOfferContex
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
-import {
-  PATCH_SUCCESS_MESSAGE,
-  SENT_DATA_ERROR_MESSAGE,
-} from 'commons/core/shared/constants'
+import { SENT_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
@@ -135,7 +132,6 @@ export const IndividualOfferInformationsScreen = ({
         shouldSendMail: sendWithdrawalMail,
         shouldNotSendExtraData,
       })
-      console.log('req ', { requestBody })
       const response = await api.patchOffer(offer.id, requestBody)
 
       const receivedOfferId = response.id
