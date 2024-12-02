@@ -5,12 +5,15 @@ import createFetchMock from 'vitest-fetch-mock'
 
 import { apiAdresse } from 'apiClient/adresse/apiAdresse'
 import {
-  SignupJourneyContextValues,
-  SignupJourneyContext,
   Offerer,
+  SignupJourneyContext,
+  SignupJourneyContextValues,
 } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import {
+  renderWithProviders,
+  RenderWithProvidersOptions,
+} from 'commons/utils/renderWithProviders'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'components/SignupJourneyForm/Offerer/constants'
 import { Button } from 'ui-kit/Button/Button'
 
@@ -73,15 +76,18 @@ fetchMock.mockResponse(
   { status: 200 }
 )
 
-const renderOffererAuthenticationForm = ({
-  initialValues,
-  onSubmit = vi.fn(),
-  contextValue,
-}: {
-  initialValues: Partial<OffererAuthenticationFormValues>
-  onSubmit?: () => void
-  contextValue: SignupJourneyContextValues
-}) => {
+const renderOffererAuthenticationForm = (
+  {
+    initialValues,
+    onSubmit = vi.fn(),
+    contextValue,
+  }: {
+    initialValues: Partial<OffererAuthenticationFormValues>
+    onSubmit?: () => void
+    contextValue: SignupJourneyContextValues
+  },
+  options: RenderWithProvidersOptions = {}
+) => {
   return renderWithProviders(
     <SignupJourneyContext.Provider value={contextValue}>
       <Formik
@@ -100,6 +106,7 @@ const renderOffererAuthenticationForm = ({
     {
       user: sharedCurrentUserFactory(),
       initialRouterEntries: ['/parcours-inscription/identification'],
+      ...options,
     }
   )
 }
@@ -153,6 +160,41 @@ describe('OffererAuthenticationForm', () => {
         )
       ).toBeInTheDocument()
     })
+  })
+
+  it('should render form with manual address feature', async () => {
+    renderOffererAuthenticationForm(
+      {
+        initialValues: initialValues,
+        contextValue: contextValue,
+      },
+      { features: ['WIP_ENABLE_OFFER_ADDRESS'] }
+    )
+
+    // The toggle button "Renseignez l’adresse manuellement" should be visible
+    const manualAddressToggle = screen.getByTitle(
+      /Renseignez l’adresse manuellement/
+    )
+
+    expect(manualAddressToggle).toBeInTheDocument()
+
+    // If user toggle manual address fields
+    await userEvent.click(manualAddressToggle)
+
+    // …then he should see the different address fields
+    expect(
+      screen.getByRole('textbox', { name: /Adresse postale/ })
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('textbox', { name: /Code postal/ })
+    ).toBeInTheDocument()
+
+    expect(screen.getByRole('textbox', { name: /Ville/ })).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('textbox', { name: /Coordonnées GPS/ })
+    ).toBeInTheDocument()
   })
 
   it('should not render error on submit when publicName is empty or filled', async () => {
