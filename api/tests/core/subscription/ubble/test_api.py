@@ -32,6 +32,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.notifications import push as push_notifications
 import pcapi.notifications.push.testing as push_testing
+from pcapi.utils import date as date_utils
 from pcapi.utils import requests as requests_utils
 from pcapi.utils.string import u_nbsp
 
@@ -343,7 +344,9 @@ class UbbleWorkflowV2Test:
         nineteen_years_ago = datetime.date.today() - relativedelta(years=19, months=1)
         requests_mock.get(
             f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fraud_check.thirdPartyId}",
-            json=build_ubble_identification_v2_response(birth_date=nineteen_years_ago),
+            json=build_ubble_identification_v2_response(
+                birth_date=nineteen_years_ago, created_on=datetime.datetime.utcnow()
+            ),
         )
 
         ubble_subscription_api.update_ubble_workflow(fraud_check)
@@ -408,7 +411,9 @@ class UbbleWorkflowV2Test:
         )
         requests_mock.get(
             f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fraud_check.thirdPartyId}",
-            json=build_ubble_identification_v2_response(birth_date=twenty_years_ago),
+            json=build_ubble_identification_v2_response(
+                birth_date=twenty_years_ago, created_on=datetime.datetime.utcnow()
+            ),
         )
 
         ubble_subscription_api.update_ubble_workflow(fraud_check)
@@ -427,6 +432,7 @@ def build_ubble_identification_v2_response(
     declared_data: dict | None = None,
     documents: list[dict] | None = None,
     birth_date: datetime.date | None = None,
+    created_on: datetime.datetime | None = None,
 ) -> dict:
     identification_response = copy.deepcopy(UBBLE_IDENTIFICATION_V2_RESPONSE)
     if status is not None:
@@ -439,6 +445,8 @@ def build_ubble_identification_v2_response(
         identification_response["documents"] = documents
     if birth_date is not None and len(identification_response["documents"]) > 0:
         identification_response["documents"][0]["birth_date"] = birth_date.isoformat()
+    if created_on is not None:
+        identification_response["created_on"] = created_on.isoformat() + "Z"
     return identification_response
 
 
