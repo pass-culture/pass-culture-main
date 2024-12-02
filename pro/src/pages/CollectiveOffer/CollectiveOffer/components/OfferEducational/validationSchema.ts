@@ -122,19 +122,18 @@ export function getOfferEducationalValidationSchema(
           'Veuillez entrer un numéro de téléphone valide, exemple : 612345678',
         test: isPhoneValid,
       }),
-    email: yup
-      .string()
-      .when(['contactOptions', 'isTemplate'], {
-        is: (
-          contactOptions: OfferEducationalFormValues['contactOptions'],
-          isTemplate: boolean
-        ) => !isTemplate || contactOptions?.email,
-        then: (schema) =>
-          schema.required('Veuillez renseigner une adresse email'),
-      })
-      .email(
-        'Veuillez renseigner une adresse email valide, exemple : mail@exemple.com'
-      ),
+    email: yup.string().when(['contactOptions', 'isTemplate'], {
+      is: (
+        contactOptions: OfferEducationalFormValues['contactOptions'],
+        isTemplate: boolean
+      ) => !isTemplate || contactOptions?.email,
+      then: (schema) =>
+        schema
+          .required('Veuillez renseigner une adresse email')
+          .email(
+            'Veuillez renseigner une adresse email valide, exemple : mail@exemple.com'
+          ),
+    }),
     contactUrl: yup.string().when(['contactOptions', 'contactFormType'], {
       is: (
         contactOptions: OfferEducationalFormValues['contactOptions'],
