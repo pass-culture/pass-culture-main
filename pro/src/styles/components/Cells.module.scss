@@ -91,6 +91,7 @@
 }
 
 .actions-column {
+  display: flex;
   grid-area: actions;
   padding: 0;
   justify-self: end;
@@ -166,6 +167,10 @@
   .institution-column,
   .stock-column {
     grid-area: desc3;
+  }
+
+  .actions-column {
+    display: table-cell;
   }
 }
 

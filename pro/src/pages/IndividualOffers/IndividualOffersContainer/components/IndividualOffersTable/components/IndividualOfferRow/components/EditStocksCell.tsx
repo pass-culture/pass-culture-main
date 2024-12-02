@@ -1,6 +1,7 @@
 import { ListOffersOfferResponseModel } from 'apiClient/v1'
 import fullStockIcon from 'icons/full-stock.svg'
-import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { DropdownItem } from 'ui-kit/DropdownMenuWrapper/DropdownItem'
 
 interface EditStocksCellProps {
   editionStockLink: string
@@ -12,8 +13,10 @@ export const EditStocksCell = ({
   offer,
 }: EditStocksCellProps) => {
   return (
-    <ListIconButton url={editionStockLink} icon={fullStockIcon}>
-      {offer.isEvent ? `Dates et capacités` : `Stocks`}
-    </ListIconButton>
+    <DropdownItem asChild>
+      <ButtonLink to={editionStockLink} icon={fullStockIcon}>
+        {offer.isEvent ? `Dates et capacités` : `Stocks`}
+      </ButtonLink>
+    </DropdownItem>
   )
 }

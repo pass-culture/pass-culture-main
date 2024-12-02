@@ -638,9 +638,7 @@ describe('IndividualOffersScreen', () => {
     })
 
     await userEvent.click(screen.getByText('Tout sélectionner'))
-    await userEvent.click(
-      screen.getAllByRole('button', { name: 'Supprimer' })[2]
-    )
+    await userEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
     await userEvent.click(screen.getByText('Supprimer ces brouillons'))
 
     expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)

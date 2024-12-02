@@ -42,6 +42,16 @@ const renderOfferItem = (props: IndividualOfferRowProps) =>
     </>
   )
 
+const LABELS = {
+  openActions: /Actions/,
+  editAction: /Voir l’offre/,
+  deleteAction: /Supprimer l’offre/,
+  eventStockEditAction: /Dates et capacités/,
+  physicalStockEditAction: /Stocks/,
+  deleteDraftCancel: /Annuler/,
+  deleteDraftConfirm: /Supprimer/,
+}
+
 describe('IndividualOfferRow', () => {
   let props: IndividualOfferRowProps
   let offer: ListOffersOfferResponseModel
@@ -94,12 +104,13 @@ describe('IndividualOfferRow', () => {
   })
 
   describe('action buttons', () => {
-    it('should display a button to show offer stocks', () => {
+    it('should display a button to show offer stocks', async () => {
       renderOfferItem(props)
 
-      const stockLink = screen.getByRole('link', {
-        name: 'Dates et capacités',
-      })
+      const openActionsButton = screen.getByRole('button', { name: LABELS.openActions })
+      await userEvent.click(openActionsButton)
+
+      const stockLink = screen.getByRole('menuitem', { name: LABELS.eventStockEditAction })
       expect(stockLink).toBeInTheDocument()
       expect(stockLink).toHaveAttribute(
         'href',
@@ -109,14 +120,17 @@ describe('IndividualOfferRow', () => {
     describe('draft delete button', () => {
       it('should display a trash icon with a confirm dialog to delete draft offer', async () => {
         props.offer.status = OfferStatus.DRAFT
-
         renderOfferItem(props)
 
-        await userEvent.click(screen.getAllByRole('button')[1])
-        const deleteButton = screen.getByRole('button', {
-          name: 'Supprimer ce brouillon',
-        })
+        const openActionsButton = screen.getByRole('button', { name: LABELS.openActions })
+        await userEvent.click(openActionsButton)
+
+        const deleteButton = screen.getByRole('menuitem', { name: LABELS.deleteAction })
         await userEvent.click(deleteButton)
+
+        const deleteConfirmButton = screen.getByRole('button', { name: LABELS.deleteDraftConfirm })
+        await userEvent.click(deleteConfirmButton)
+
         expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)
         expect(api.deleteDraftOffers).toHaveBeenCalledWith({
           ids: [offerId],
@@ -128,7 +142,6 @@ describe('IndividualOfferRow', () => {
 
       it('should display a notification in case of draft deletion error', async () => {
         props.offer.status = OfferStatus.DRAFT
-
         renderOfferItem(props)
         vi.spyOn(api, 'deleteDraftOffers').mockRejectedValue(
           new ApiError(
@@ -143,12 +156,15 @@ describe('IndividualOfferRow', () => {
           )
         )
 
-        await userEvent.click(screen.getAllByRole('button')[1])
-        await userEvent.click(
-          screen.getByRole('button', {
-            name: 'Supprimer ce brouillon',
-          })
-        )
+        const openActionsButton = screen.getByRole('button', { name: LABELS.openActions })
+        await userEvent.click(openActionsButton)
+
+        const deleteButton = screen.getByRole('menuitem', { name: LABELS.deleteAction })
+        await userEvent.click(deleteButton)
+
+        const deleteConfirmButton = screen.getByRole('button', { name: LABELS.deleteDraftConfirm })
+        await userEvent.click(deleteConfirmButton)
+
         expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)
         expect(api.deleteDraftOffers).toHaveBeenCalledWith({
           ids: [offerId],

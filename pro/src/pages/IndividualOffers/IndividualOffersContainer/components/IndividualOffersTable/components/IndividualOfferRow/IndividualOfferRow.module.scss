@@ -9,7 +9,7 @@
     ".     thumb   desc    desc"
     ".     desc2   desc3   desc3"
     ".     desc4   desc4   desc4"
-    ".     actions actions status";
+    ".     status  .       actions";
   border-bottom: rem.torem(1px) solid var(--color-grey-medium);
 
   &.is-first-row {
