@@ -9,3 +9,4 @@ Ticket Jira (ou description si BSR) : https://passculture.atlassian.net/browse/P
 - [ ] J'ai mis à jour [la liste des routes et des titres](https://www.notion.so/passcultureapp/Titre-des-pages-de-l-espace-Pro-f4e490619bc54010adeb67c86d5e6a40?pvs=4) de pages du portail pro si j'en ai rajouté/modifié ou supprimé une.
 - [ ] J'ai [relu attentivement les migrations](https://www.notion.so/passcultureapp/Clarifier-les-pratiques-de-migration-de-BDD-5f8edeba57ed4a17b80c847a74def027), en particulier pour éviter les _locks_, et je préviens les équipes Shérif et Data
 - [ ] J'ai ajouté des screenshots pour d'éventuels changements graphiques
+- [ ] J'ai fait la revue fonctionnelle de mon ticket
