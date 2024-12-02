@@ -127,6 +127,7 @@ def _sync_ds_application(procedure_number: int, node: dict, user_id_by_email: di
         ]
 
         data = {
+            "dsTechnicalId": node["id"],
             "status": dms_models.GraphQLApplicationStates(node["state"]),
             "dateCreated": _from_ds_date(node["dateDepot"]),
             "dateLastStatusUpdate": _from_ds_date(

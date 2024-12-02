@@ -24,6 +24,7 @@
   }
 
   fragment DossierFragment on Dossier {
+    id
     number
     archived
     state
