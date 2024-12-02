@@ -1,4 +1,5 @@
 import datetime
+from functools import partial
 import logging
 
 import sqlalchemy as sa
@@ -13,7 +14,8 @@ from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.offers import validation as offer_validation
 from pcapi.core.users.models import User
 from pcapi.models import db
-from pcapi.repository import transaction
+from pcapi.repository import atomic
+from pcapi.repository import on_commit
 from pcapi.routes.serialization.collective_stock_serialize import CollectiveStockCreationBodyModel
 from pcapi.serialization import utils as serialization_utils
 from pcapi.utils import date
@@ -71,7 +73,7 @@ def create_collective_stock(
         priceDetail=educational_price_detail,
     )
     db.session.add(collective_stock)
-    db.session.commit()
+    db.session.flush()
     logger.info(
         "Collective stock has been created",
         extra={"collective_offer": collective_offer.id, "collective_stock_id": collective_stock.id},
@@ -185,19 +187,22 @@ def edit_collective_stock(
     if beginning is not None and beginning < updatable_fields["bookingLimitDatetime"]:
         updatable_fields["bookingLimitDatetime"] = updatable_fields["beginningDatetime"]
 
-    with transaction():
+    with atomic():
         stock = educational_repository.get_and_lock_collective_stock(stock_id=stock.id)
         for attribute, new_value in updatable_fields.items():
             if new_value is not None and getattr(stock, attribute) != new_value:
                 setattr(stock, attribute, new_value)
         db.session.add(stock)
-        db.session.commit()
+        db.session.flush()
 
     logger.info("Stock has been updated", extra={"stock": stock.id})
 
-    notify_educational_redactor_on_collective_offer_or_stock_edit(
-        stock.collectiveOffer.id,
-        list(stock_data.keys()),
+    on_commit(
+        partial(
+            notify_educational_redactor_on_collective_offer_or_stock_edit,
+            stock.collectiveOfferId,
+            list(stock_data.keys()),
+        )
     )
 
     db.session.refresh(stock)
