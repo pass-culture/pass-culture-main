@@ -251,6 +251,7 @@ export const CollectiveActionsCells = ({
     logEvent(Events.CLICKED_EDIT_COLLECTIVE_OFFER, {
       from: location.pathname,
       offerId: offer.id,
+      offerType: 'collective',
       status: offer.displayedStatus,
     })
   }

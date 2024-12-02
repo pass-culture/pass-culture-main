@@ -36,6 +36,7 @@ export const ArchiveConfirmationModal = ({
   function onConfirmArchive() {
     logEvent(Events.CLICKED_ARCHIVE_COLLECTIVE_OFFER, {
       from: location.pathname,
+      offerType: 'collective',
       selected_offers: JSON.stringify(
         selectedOffers.length > 0
           ? selectedOffers.map((offer) => ({
