@@ -12,7 +12,7 @@ from tests.conftest import TestClient
 # This list must be sync with the configmap from deployment repo
 ALLOWED_ORIGIN_BY_ENV = {
     "testing": {
-        "CORS_ALLOWED_ORIGINS_NATIVE": "https://app.testing.passculture.team,https://adage.testing.passculture.team",
+        "CORS_ALLOWED_ORIGINS_NATIVE": "https://app.testing.passculture.team,https://adage.testing.passculture.team,https://.*.web.app",
         "CORS_ALLOWED_ORIGINS": "https://web.testing.passculture.team,https://pro.testing.passculture.team,https://app.passculture-testing.beta.gouv.fr,https://pro.passculture-testing.beta.gouv.fr,https://pro-test.testing.passculture.team,https://.*.web.app",
     },
     "staging": {
