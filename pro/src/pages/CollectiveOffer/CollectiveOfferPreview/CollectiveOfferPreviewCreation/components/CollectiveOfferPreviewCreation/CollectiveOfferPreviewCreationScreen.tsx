@@ -135,6 +135,8 @@ export const CollectiveOfferPreviewCreationScreen = ({
             onClick={() => {
               logEvent(Events.CLICKED_SAVE_DRAFT_AND_EXIT_COLLECTIVE_OFFER, {
                 from: location.pathname,
+                offerId: offer.id,
+                offerType: 'collective',
               })
 
               notify.success('Brouillon sauvegardé dans la liste des offres')

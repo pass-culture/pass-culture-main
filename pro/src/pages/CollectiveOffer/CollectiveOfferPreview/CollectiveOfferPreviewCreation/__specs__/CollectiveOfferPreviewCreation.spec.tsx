@@ -123,6 +123,8 @@ describe('CollectiveOfferPreviewCreation', () => {
       Events.CLICKED_SAVE_DRAFT_AND_EXIT_COLLECTIVE_OFFER,
       {
         from: '/',
+        offerId: defaultProps.offer.id,
+        offerType: 'collective',
       }
     )
   })
