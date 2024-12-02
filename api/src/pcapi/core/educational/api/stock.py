@@ -13,6 +13,7 @@ from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.offers import validation as offer_validation
 from pcapi.core.users.models import User
 from pcapi.models import db
+from pcapi.models import feature
 from pcapi.repository import transaction
 from pcapi.routes.serialization.collective_stock_serialize import CollectiveStockCreationBodyModel
 from pcapi.serialization import utils as serialization_utils
@@ -143,13 +144,7 @@ def edit_collective_stock(
             check_beginning_with_tz.date() == check_booking_limit_datetime_with_tz.date()
         )
 
-    current_booking = educational_models.CollectiveBooking.query.filter(
-        educational_models.CollectiveBooking.collectiveStockId == stock.id,
-        sa.sql.elements.not_(
-            educational_models.CollectiveBooking.status == educational_models.CollectiveBookingStatus.CANCELLED
-        ),
-    ).one_or_none()
-
+    current_booking = stock.get_unique_non_cancelled_booking()
     if (
         "beginningDatetime" not in stock_data
         and "startDatetime" not in stock_data
@@ -174,8 +169,8 @@ def edit_collective_stock(
         current_booking.confirmationLimitDate = updatable_fields["bookingLimitDatetime"]
 
         if beginning:
-            _update_educational_booking_cancellation_limit_date(current_booking, beginning)
-            _update_educational_booking_educational_year_id(current_booking, beginning)
+            update_collective_booking_cancellation_limit_date(current_booking, beginning)
+            update_collective_booking_educational_year_id(current_booking, beginning)
 
         if stock_data.get("price"):
             current_booking.amount = stock_data.get("price")
@@ -191,7 +186,19 @@ def edit_collective_stock(
             if new_value is not None and getattr(stock, attribute) != new_value:
                 setattr(stock, attribute, new_value)
         db.session.add(stock)
-        db.session.commit()
+
+        # if the booking limit date is set in the future and a PENDING booking was automatically cancelled, set it back to PENDING
+        booking_limit_value = stock.bookingLimitDatetime
+        if (
+            feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active()
+            and "bookingLimitDatetime" in stock_data
+            and booking_limit_value
+            and booking_limit_value > datetime.datetime.utcnow()
+        ):
+            booking = stock.lastBooking
+            if booking and booking.is_expired:
+                update_collective_booking_pending(booking)
+                db.session.add(booking)
 
     logger.info("Stock has been updated", extra={"stock": stock.id})
 
@@ -252,7 +259,7 @@ def _extract_updatable_fields_from_stock_data(
     return updatable_fields
 
 
-def _update_educational_booking_educational_year_id(
+def update_collective_booking_educational_year_id(
     booking: educational_models.CollectiveBooking,
     new_beginning_datetime: datetime.datetime,
 ) -> None:
@@ -263,7 +270,7 @@ def _update_educational_booking_educational_year_id(
     booking.educationalYear = educational_year
 
 
-def _update_educational_booking_cancellation_limit_date(
+def update_collective_booking_cancellation_limit_date(
     booking: educational_models.CollectiveBooking, new_beginning_datetime: datetime.datetime
 ) -> None:
     # if the input date has a timezone (resp. does not have one), we need to compare it with an aware datetime (resp. a naive datetime)
@@ -275,3 +282,9 @@ def _update_educational_booking_cancellation_limit_date(
     booking.cancellationLimitDate = educational_utils.compute_educational_booking_cancellation_limit_date(
         new_beginning_datetime, now
     )
+
+
+def update_collective_booking_pending(expired_booking: educational_models.CollectiveBooking) -> None:
+    expired_booking.status = educational_models.CollectiveBookingStatus.PENDING
+    expired_booking.cancellationReason = None
+    expired_booking.cancellationDate = None

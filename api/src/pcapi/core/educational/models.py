@@ -32,6 +32,7 @@ from pcapi import settings
 from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.educational import exceptions as educational_exceptions
 import pcapi.core.finance.models as finance_models
 from pcapi.core.object_storage import delete_public_object
 from pcapi.core.object_storage import store_public_object
@@ -1499,12 +1500,19 @@ class CollectiveStock(PcObject, Base, Model):
     def isEventDeletable(self) -> bool:
         return self.beginningDatetime >= datetime.utcnow()
 
+    def get_non_cancelled_bookings(self) -> list["CollectiveBooking"]:
+        return [booking for booking in self.collectiveBookings if booking.status != CollectiveBookingStatus.CANCELLED]
+
+    def get_unique_non_cancelled_booking(self) -> "CollectiveBooking | None":
+        non_cancelled_bookings = self.get_non_cancelled_bookings()
+        if len(non_cancelled_bookings) > 1:
+            raise educational_exceptions.MultipleCollectiveBookingFound()
+        return non_cancelled_bookings[0] if non_cancelled_bookings else None
+
     @property
     def isSoldOut(self) -> bool:
-        for booking in self.collectiveBookings:
-            if booking.status != CollectiveBookingStatus.CANCELLED:
-                return True
-        return False
+        non_cancelled_bookings = self.get_non_cancelled_bookings()
+        return len(non_cancelled_bookings) > 0
 
     @property
     def is_cancellable_from_offerer(self) -> bool:
@@ -1611,17 +1619,15 @@ class EducationalDeposit(PcObject, Base, Model):
           if the deposit is not the final one, only a part of it can
           be consumed (eg. only 80% can be used).
         """
-        from pcapi.core.educational import exceptions
-
         if self.isFinal:
             if self.amount < total_amount_after_booking:
-                raise exceptions.InsufficientFund()
+                raise educational_exceptions.InsufficientFund()
         else:
             ratio = Decimal(self.TEMPORARY_FUND_AVAILABLE_RATIO)
             temporary_fund = round(self.amount * ratio, 2)
 
             if temporary_fund < total_amount_after_booking:
-                raise exceptions.InsufficientTemporaryFund()
+                raise educational_exceptions.InsufficientTemporaryFund()
 
 
 class EducationalRedactor(PcObject, Base, Model):
@@ -1749,14 +1755,12 @@ class CollectiveBooking(PcObject, Base, Model):
         cancel_even_if_reimbursed: bool = False,
         author_id: int | None = None,
     ) -> None:
-        from pcapi.core.educational import exceptions
-
         if self.status is CollectiveBookingStatus.CANCELLED:
-            raise exceptions.CollectiveBookingAlreadyCancelled()
+            raise educational_exceptions.CollectiveBookingAlreadyCancelled()
         if self.status is CollectiveBookingStatus.REIMBURSED and not cancel_even_if_reimbursed:
-            raise exceptions.CollectiveBookingIsAlreadyUsed
+            raise educational_exceptions.CollectiveBookingIsAlreadyUsed
         if self.status is CollectiveBookingStatus.USED and not cancel_even_if_used:
-            raise exceptions.CollectiveBookingIsAlreadyUsed
+            raise educational_exceptions.CollectiveBookingIsAlreadyUsed
         self.status = CollectiveBookingStatus.CANCELLED
         self.cancellationDate = datetime.utcnow()
         self.cancellationReason = reason
@@ -1818,6 +1822,10 @@ class CollectiveBooking(PcObject, Base, Model):
         return cls.status == CollectiveBookingStatus.CANCELLED
 
     @property
+    def is_expired(self) -> bool:
+        return self.isCancelled and self.cancellationReason == CollectiveBookingCancellationReasons.EXPIRED
+
+    @property
     def userName(self) -> str | None:
         return f"{self.educationalRedactor.firstName} {self.educationalRedactor.lastName}"
 
@@ -1825,10 +1833,8 @@ class CollectiveBooking(PcObject, Base, Model):
         return self.confirmationLimitDate <= datetime.utcnow()
 
     def mark_as_refused(self) -> None:
-        from pcapi.core.educational import exceptions
-
         if self.status != CollectiveBookingStatus.PENDING and self.cancellationLimitDate <= datetime.utcnow():
-            raise exceptions.EducationalBookingNotRefusable()
+            raise educational_exceptions.EducationalBookingNotRefusable()
         cancellation_reason = (
             CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE
             if self.status == CollectiveBookingStatus.PENDING
@@ -1836,8 +1842,8 @@ class CollectiveBooking(PcObject, Base, Model):
         )
         try:
             self.cancel_booking(cancellation_reason)
-        except exceptions.CollectiveBookingIsAlreadyUsed:
-            raise exceptions.EducationalBookingNotRefusable()
+        except educational_exceptions.CollectiveBookingIsAlreadyUsed:
+            raise educational_exceptions.EducationalBookingNotRefusable()
 
         self.status = CollectiveBookingStatus.CANCELLED
 

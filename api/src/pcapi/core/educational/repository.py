@@ -488,11 +488,16 @@ def get_and_lock_collective_stock(stock_id: int) -> educational_models.Collectiv
 
 
 def get_collective_stock(collective_stock_id: int) -> educational_models.CollectiveStock | None:
-    query = educational_models.CollectiveStock.query.filter(
-        educational_models.CollectiveStock.id == collective_stock_id
+    return (
+        educational_models.CollectiveStock.query.filter(educational_models.CollectiveStock.id == collective_stock_id)
+        .options(
+            sa.orm.joinedload(educational_models.CollectiveStock.collectiveOffer).joinedload(
+                educational_models.CollectiveOffer.venue
+            ),
+            sa.orm.joinedload(educational_models.CollectiveStock.collectiveBookings),
+        )
+        .one_or_none()
     )
-    query = query.options(sa.orm.joinedload(educational_models.CollectiveStock.collectiveOffer))
-    return query.one_or_none()
 
 
 def get_collective_offers_for_filters(
