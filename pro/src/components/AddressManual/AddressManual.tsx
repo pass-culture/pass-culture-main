@@ -45,7 +45,7 @@ export const AddressManual = ({
     const coordsType = getCoordsType(newCoords)
 
     if (coordsType === 'DD') {
-      ;[latitude, longitude] = newCoords.split(', ')
+      ;[latitude, longitude] = newCoords.split(',').map((c) => c.trim())
     } else if (coordsType === 'DMS') {
       ;[latitude, longitude] = newCoords
         .split(' ')
