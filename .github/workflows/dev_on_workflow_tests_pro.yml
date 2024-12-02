@@ -85,19 +85,15 @@ jobs:
           restore-keys: |
             v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - run: yarn install --immutable
-      - name: Install Allure CLI via Yarn
-        run: yarn global add allure-commandline
-      - name: Run tests with coverage and generate Allure results
-        run: |
-          yarn test:unit:ci ./src/app/__specs__/App.spec.tsx # TODO: run all tests
-          allure generate ../allure-results --clean -o allure-report/pro-unit
-      - name: "List Allure Report directory"
-        run: ls -la allure-report
-      - name: Upload Allure results for pro unit tests
+      - name: Run tests with coverage
+        run: yarn test:unit:ci
+
+      - name: "Upload Allure results for pro tests"
         uses: actions/upload-artifact@v4
         with:
           name: allure-results-pro-unit
-          path: pro/allure-report/pro-unit
+          path: allure-results
+
       - name: SonarCloud scan
         uses: SonarSource/sonarcloud-github-action@master
         if: ${{ github.actor != 'dependabot[bot]' }}
