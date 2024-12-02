@@ -932,8 +932,7 @@ def create_user_access_token(user: models.User) -> str:
 
 def create_user_refresh_token(user: models.User, device_info: "account_serialization.TrustedDevice | None") -> str:
     should_extend_lifetime = (
-        feature.FeatureToggle.WIP_ENABLE_TRUSTED_DEVICE.is_active()
-        and feature.FeatureToggle.WIP_ENABLE_SUSPICIOUS_EMAIL_SEND.is_active()
+        feature.FeatureToggle.WIP_ENABLE_SUSPICIOUS_EMAIL_SEND.is_active()
         and is_login_device_a_trusted_device(device_info, user)
     )
 

@@ -101,7 +101,6 @@ class FeatureToggle(enum.Enum):
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
     WIP_ENABLE_BREVO_PRO_SUBACCOUNT = "Activer l'utilisation du sous-compte Brevo pour les mails pros"
     WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY = "Changer le template d'email de confirmation de réservation"
-    WIP_ENABLE_TRUSTED_DEVICE = "Active la fonctionnalité d'appareil de confiance"
     WIP_ENABLE_SUSPICIOUS_EMAIL_SEND = "Active l'envoie d'email lors de la détection d'une connexion suspicieuse"
     WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY = "Activer le nouveau parcours de dépôt de coordonnées bancaires"
     WIP_ENABLE_MOCK_UBBLE = "Utiliser le mock Ubble à la place du vrai Ubble"

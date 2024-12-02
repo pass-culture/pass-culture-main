@@ -621,20 +621,6 @@ class TrustedDeviceFeatureTest:
 
         @patch("pcapi.core.token.UUIDToken.load_and_check")
         @patch("pcapi.connectors.google_oauth.get_google_user")
-        @override_features(WIP_ENABLE_GOOGLE_SSO=True, WIP_ENABLE_TRUSTED_DEVICE=False)
-        def should_not_save_login_device_history_when_feature_flag_is_disabled(
-            self, mocked_google_oauth, mocked_load_and_check_oauth_token, client, signin_route, data
-        ):
-            mocked_load_and_check_oauth_token.return_value = self.valid_oauth_state_token
-            mocked_google_oauth.return_value = self.valid_google_user
-            users_factories.UserFactory(email="user@test.com", password=settings.TEST_DEFAULT_PASSWORD, isActive=True)
-
-            client.post(f"/native/v1/{signin_route}", json=data)
-
-            assert LoginDeviceHistory.query.count() == 0
-
-        @patch("pcapi.core.token.UUIDToken.load_and_check")
-        @patch("pcapi.connectors.google_oauth.get_google_user")
         def test_save_login_device_as_trusted_device_on_second_signin_with_same_device(
             self, mocked_google_oauth, mocked_load_and_check_oauth_token, client, signin_route, data
         ):
@@ -649,24 +635,6 @@ class TrustedDeviceFeatureTest:
 
             trusted_device = TrustedDevice.query.filter(TrustedDevice.deviceId == data["deviceInfo"]["deviceId"]).one()
             assert user.trusted_devices == [trusted_device]
-
-        @patch("pcapi.core.token.UUIDToken.load_and_check")
-        @patch("pcapi.connectors.google_oauth.get_google_user")
-        @override_features(WIP_ENABLE_GOOGLE_SSO=True, WIP_ENABLE_TRUSTED_DEVICE=False)
-        def should_not_save_login_device_as_trusted_device_on_second_signin_when_feature_flag_is_inactive(
-            self, mocked_google_oauth, mocked_load_and_check_oauth_token, client, signin_route, data
-        ):
-            mocked_load_and_check_oauth_token.return_value = self.valid_oauth_state_token
-            mocked_google_oauth.return_value = self.valid_google_user
-            user = users_factories.UserFactory(
-                email="user@test.com", password=settings.TEST_DEFAULT_PASSWORD, isActive=True
-            )
-
-            client.post(f"/native/v1/{signin_route}", json=data)
-            client.post(f"/native/v1/{signin_route}", json=data)
-
-            assert TrustedDevice.query.count() == 0
-            assert user.trusted_devices == []
 
         @patch("pcapi.core.token.UUIDToken.load_and_check")
         @patch("pcapi.connectors.google_oauth.get_google_user")
@@ -823,20 +791,6 @@ class TrustedDeviceFeatureTest:
                 email="user@test.com", password=settings.TEST_DEFAULT_PASSWORD, isActive=True
             )
             users_factories.TrustedDeviceFactory(user=user)
-
-            client.post(f"/native/v1/{signin_route}", json=data)
-
-            assert len(mails_testing.outbox) == 0
-
-        @patch("pcapi.core.token.UUIDToken.load_and_check")
-        @patch("pcapi.connectors.google_oauth.get_google_user")
-        @override_features(WIP_ENABLE_GOOGLE_SSO=True, WIP_ENABLE_TRUSTED_DEVICE=False)
-        def should_not_send_email_when_feature_flag_is_inactive(
-            self, mocked_google_oauth, mocked_load_and_check_oauth_token, client, signin_route, data
-        ):
-            mocked_load_and_check_oauth_token.return_value = self.valid_oauth_state_token
-            mocked_google_oauth.return_value = self.valid_google_user
-            users_factories.UserFactory(email="user@test.com", password=settings.TEST_DEFAULT_PASSWORD, isActive=True)
 
             client.post(f"/native/v1/{signin_route}", json=data)
 
