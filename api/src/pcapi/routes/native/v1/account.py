@@ -248,7 +248,7 @@ def create_account(body: serializers.AccountRequest) -> None:
             firebase_pseudo_id=body.firebase_pseudo_id,
         )
 
-        if FeatureToggle.WIP_ENABLE_TRUSTED_DEVICE.is_active() and body.trusted_device is not None:
+        if body.trusted_device is not None:
             api.save_trusted_device(device_info=body.trusted_device, user=created_user)
 
     except exceptions.UserAlreadyExistsException:
@@ -307,7 +307,7 @@ def create_account_with_google_sso(body: serializers.GoogleAccountRequest) -> au
             firebase_pseudo_id=body.firebase_pseudo_id,
         )
 
-        if FeatureToggle.WIP_ENABLE_TRUSTED_DEVICE.is_active() and body.trusted_device is not None:
+        if body.trusted_device is not None:
             api.save_trusted_device(device_info=body.trusted_device, user=created_user)
 
     except exceptions.UserAlreadyExistsException:

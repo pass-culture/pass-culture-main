@@ -66,8 +66,7 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
     if user.account_state == user_models.AccountState.ANONYMIZED:
         raise ApiErrors({"code": "ACCOUNT_ANONYMIZED", "general": ["Le compte a été anonymisé"]})
 
-    if FeatureToggle.WIP_ENABLE_TRUSTED_DEVICE.is_active():
-        users_api.save_device_info_and_notify_user(user, body.device_info)
+    users_api.save_device_info_and_notify_user(user, body.device_info)
 
     users_api.update_last_connection_date(user)
     return authentication.SigninResponse(
@@ -264,8 +263,7 @@ def google_auth(body: authentication.GoogleSigninRequest) -> authentication.Sign
             single_sign_on = users_repo.create_single_sign_on(user, "google", sso_user_id)
             db.session.add(single_sign_on)
 
-    if FeatureToggle.WIP_ENABLE_TRUSTED_DEVICE.is_active():
-        users_api.save_device_info_and_notify_user(user, body.device_info)
+    users_api.save_device_info_and_notify_user(user, body.device_info)
 
     users_api.update_last_connection_date(user)
     logger.info(

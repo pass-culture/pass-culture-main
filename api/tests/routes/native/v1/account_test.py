@@ -529,29 +529,6 @@ class AccountCreationTest:
 
         assert users_models.TrustedDevice.query.count() == 0
 
-    @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    @override_features(WIP_ENABLE_TRUSTED_DEVICE=False)
-    def should_not_save_trusted_device_when_feature_flag_is_disabled(
-        self, mocked_check_recaptcha_token_is_valid, client
-    ):
-        data = {
-            "email": "John.doe@example.com",
-            "password": "Aazflrifaoi6@",
-            "birthdate": "1960-12-31",
-            "notifications": True,
-            "token": "gnagna",
-            "marketingEmailSubscription": True,
-            "trustedDevice": {
-                "deviceId": "2E429592-2446-425F-9A62-D6983F375B3B",
-                "source": "iPhone 13",
-                "os": "iOS",
-            },
-        }
-
-        client.post("/native/v1/account", json=data)
-
-        assert users_models.TrustedDevice.query.count() == 0
-
     def test_account_creation_with_weak_password(self, client):
         data = {
             "email": "John.doe@example.com",
