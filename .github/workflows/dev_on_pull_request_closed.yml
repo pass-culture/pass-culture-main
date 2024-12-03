@@ -1,0 +1,70 @@
+name: "1 [on_pull_request] Delete PR deployment"
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  delete-pullrequest-deployment:
+    name: "Delete PR deployment" 
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4.2.1
+      - name: "Authentification to Google"
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+      # Get github api  token
+      - name: "Get secrets (github)"
+        id: 'get-github-token'
+        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        with:
+          secrets: |-
+            API_TOKEN_GITHUB:passculture-metier-ehp/passculture-main-sa-access-token
+
+      # Checkout rendered-manifests repository
+      - uses: actions/checkout@v4.2.1
+        with:
+          repository: pass-culture/rendered-manifests
+          token: ${{ steps.get-github-token.outputs.API_TOKEN_GITHUB }}
+          path: ./rendered-manifests
+          ref: 'pcapi/pullrequests'
+
+      - name: "Delete PR deployment"
+        run: |
+          git config --global user.email "PassCulture-SA@passculture.team"
+          git config --global user.name "PassCulture-SA"
+          cd ./rendered-manifests
+          files_modified=false
+          [[ -d "pcapi-pr-${{ github.event.pull_request.number }}" ]] && { git rm -r pcapi-pr-${{ github.event.pull_request.number }}; files_modified=true; } || echo "path pcapi-pr-${{ github.event.pull_request.number }} does not exist"
+          [[ -d "postgresql-pr-${{ github.event.pull_request.number }}" ]] && { git rm -r postgresql-pr-${{ github.event.pull_request.number }}; files_modified=true; } || echo "path postgresql-pr-${{ github.event.pull_request.number }} does not exist"
+          [[ -d "redis-pr-${{ github.event.pull_request.number }}" ]] && { git rm -r redis-pr-${{ github.event.pull_request.number }}; files_modified=true; } || echo "path redis-pr-${{ github.event.pull_request.number }} does not exist"
+          if [ "$files_modified" = true ]; then
+            git add .
+            git commit -m "[PR-${{ github.event.pull_request.number }}] Delete deployment"
+            git push
+          fi
+
+      - name: "Connect to cluster"
+        uses: pass-culture/common-workflows/actions/teleport-connect@teleport-connect/v0.1.0
+        with:
+          teleport_proxy: teleport.ehp.passculture.team:443
+          teleport_kubernetes_cluster: passculture-metier-ehp
+
+      - name: "Wait for argocd applications to be deleted; delete namespace"
+        continue-on-error: true
+        run: |
+          set +e
+          while true; do
+            kubectl get application -n argocd | grep ${{ github.event.pull_request.number }}
+            [[ $? -eq 0 ]] && sleep 5 || break
+          done
+          # Check for PR namespace and delete it
+          kubectl get ns pcapi-pr-${{ github.event.pull_request.number }}
+          [[ $? -eq 0 ]] && kubectl delete ns pcapi-pr-${{ github.event.pull_request.number }} || echo "namespace pcapi-pr-${{ github.event.pull_request.number }} does not exist"

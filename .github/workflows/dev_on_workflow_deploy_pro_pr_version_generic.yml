@@ -22,6 +22,9 @@ on:
       CACHE_BUCKET_NAME:
         type: string
         required: true
+      is_pull_request:
+        type: boolean
+        default: false
     secrets:
       GCP_EHP_SERVICE_ACCOUNT:
         required: true
@@ -56,6 +59,9 @@ jobs:
           secrets: |-
             FIREBASE_TOKEN:passculture-metier-ehp/pc_pro_${{ inputs.ENV }}_firebase_json
             SENTRY_TOKEN:passculture-metier-ehp/passculture-app-pro-sentry-token
+      - if: inputs.is_pull_request
+        run: |
+          sed -i 's/https:\/\/backend.testing.passculture.team/https:\/\/backend-${{ github.event.pull_request.number }}.testing.passculture.team/g' src/.env.testing
       - name: "Cache the node_modules"
         id: "yarn-modules-cache"
         uses: pass-culture-github-actions/cache@v1.0.0
