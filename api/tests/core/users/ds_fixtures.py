@@ -891,3 +891,25 @@ DS_RESPONSE_ARCHIVED = {
         },
     }
 }
+
+DS_RESPONSE_UPDATE_STATE_DRAFT_TO_ON_GOING = {
+    "dossierPasserEnInstruction": {
+        "dossier": {
+            "id": "RG9zc2llci0yMTI3Mzc3Mw==",
+            "number": 21273773,
+            "state": "en_instruction",
+            "dateDerniereModification": "2024-12-02T18:20:53+01:00",
+            "dateDepot": "2024-12-02T18:16:50+01:00",
+            "datePassageEnConstruction": "2024-12-02T18:19:39+01:00",
+            "datePassageEnInstruction": "2024-12-02T18:20:53+01:00",
+            "dateTraitement": None,
+            "dateDerniereCorrectionEnAttente": None,
+            "dateDerniereModificationChamps": "2024-12-02T18:16:49+01:00",
+        },
+        "errors": None,
+    }
+}
+
+DS_RESPONSE_UPDATE_STATE_ON_GOING_TO_ON_GOING = {
+    "dossierPasserEnInstruction": {"dossier": None, "errors": [{"message": "Le dossier est déjà en instruction"}]}
+}

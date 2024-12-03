@@ -1,14 +1,23 @@
 import datetime
 from functools import partial
 
+from flask import flash
+from flask import redirect
 from flask import render_template
+from flask import request
 from flask import url_for
+from flask_login import current_user
+from markupsafe import Markup
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
+from werkzeug.exceptions import Forbidden
+from werkzeug.exceptions import NotFound
 
+from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
+from pcapi.core.users import ds as users_ds
 from pcapi.core.users import models as users_models
 from pcapi.models.pc_object import BaseQuery
 from pcapi.repository import atomic
@@ -188,4 +197,34 @@ def list_account_update_requests() -> utils.BackofficeResponse:
         rows=paginated_rows,
         form=form,
         next_pages_urls=next_pages_urls,
+        is_instructor=(current_user.backoffice_profile.dsInstructorId is not None),
     )
+
+
+@account_update_blueprint.route("<int:ds_application_id>/instruct", methods=["POST"])
+@atomic()
+def instruct(ds_application_id: int) -> utils.BackofficeResponse:
+    if not current_user.backoffice_profile.dsInstructorId:
+        raise Forbidden()
+
+    update_request = (
+        users_models.UserAccountUpdateRequest.query.filter_by(dsApplicationId=ds_application_id)
+        .populate_existing()
+        .with_for_update(key_share=True)
+        .one_or_none()
+    )
+    if not update_request:
+        raise NotFound()
+
+    try:
+        users_ds.update_state(
+            update_request,
+            new_state=dms_models.GraphQLApplicationStates.on_going,
+            instructor=current_user,
+        )
+    except dms_exceptions.DmsGraphQLApiError as err:
+        flash(Markup("Le dossier ne peut pas passer en instruction : {message}").format(message=err.message), "warning")
+    except dms_exceptions.DmsGraphQLApiException as exc:
+        flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
+
+    return redirect(request.referrer or url_for(".list_account_update_requests"), code=303)

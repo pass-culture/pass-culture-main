@@ -43,7 +43,33 @@
           <tbody>
             {% for update_request in rows.items %}
               <tr>
-                <td></td>
+                <td>
+                  {% if is_instructor %}
+                    {% if update_request.status == update_request.status.draft %}
+                      <div class="d-flex">
+                        <div class="dropdown">
+                          <button type="button"
+                                  data-bs-toggle="dropdown"
+                                  aria-expanded="false"
+                                  class="btn p-0">
+                            <i class="bi bi-three-dots-vertical"></i>
+                          </button>
+                          <ul class="dropdown-menu">
+                            <li class="dropdown-item p-0">
+                              <form action="{{ url_for('.instruct', ds_application_id=update_request.dsApplicationId) }}"
+                                    name="{{ url_for('.instruct', ds_application_id=update_request.dsApplicationId) | action_to_name }}"
+                                    method="post">
+                                {{ csrf_token }}
+                                <button type="submit"
+                                        class="btn btn-sm d-block w-100 text-start px-3">Passer en instruction</button>
+                              </form>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    {% endif %}
+                  {% endif %}
+                </td>
                 <td>
                   {% set link = "https://www.demarches-simplifiees.fr/procedures/" + procedure_id|string + "/dossiers/" + update_request.dsApplicationId|string %}
                   <a href="{{ link }}"
