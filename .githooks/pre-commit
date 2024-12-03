@@ -13,7 +13,7 @@ cd $DIR/pro
 # To disable some checks, set DISABLED_API_PRE_COMMIT_CHECKS
 # environment variable. For example:
 #
-#     export DISABLED_PRO_PRE_COMMIT_CHECKS="lint:js,test"
+#     export DISABLED_PRO_PRE_COMMIT_CHECKS="lint:js,test,tsc"
 #
 
 STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep '^pro/src/*' | sed 's|^pro\/||g')
@@ -37,6 +37,22 @@ if [[ ! -z "$STAGED_FILES" ]]; then
       exit 1
     else
       echo "✅ js lint all good"
+    fi
+  fi
+
+
+  # run typescript quality on staged files
+  if [[ ! ",${DISABLED_PRO_PRE_COMMIT_CHECKS}," =~ ",tsc," ]]; then
+    echo "Quality checking..."
+    yarn tsc -b
+    QUALITY_EXIT_CODE=$?
+
+    # check linter exit code
+    if [ $QUALITY_EXIT_CODE -ne 0 ]; then
+      echo "❌ Please fix ts quality errors first "
+      exit 1
+    else
+      echo "✅ ts quality all good"
     fi
   fi
 
