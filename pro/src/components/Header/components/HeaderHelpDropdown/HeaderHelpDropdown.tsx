@@ -1,7 +1,6 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import cn from 'classnames'
 
-import { HelpDropdownMenu } from 'components/Header/HeaderHelpDropdown/HelpDropdownMenu'
 import fullDownIcon from 'icons/full-down.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
@@ -9,6 +8,7 @@ import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import dropdownStyles from '../HeaderDropdown/HeaderDropdown.module.scss'
 
 import styles from './HeaderHelpDropdown.module.scss'
+import { HelpDropdownMenu } from './HelpDropdownMenu'
 
 export const HeaderHelpDropdown = () => {
   return (

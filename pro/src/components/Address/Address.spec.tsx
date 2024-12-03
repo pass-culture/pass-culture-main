@@ -1,15 +1,14 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
-import React from 'react'
 import * as yup from 'yup'
 
 import { apiAdresse } from 'apiClient/adresse/apiAdresse'
 import { VenueCreationFormValues } from 'pages/VenueCreation/types'
 import { Button } from 'ui-kit/Button/Button'
 
-import { AddressSelect } from '../Address'
-import { validationSchema as addressValidationSchema } from '../validationSchema'
+import { AddressSelect } from './Address'
+import { validationSchema as addressValidationSchema } from './validationSchema'
 
 const mockAdressData = [
   {

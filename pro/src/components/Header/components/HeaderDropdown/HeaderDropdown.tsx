@@ -1,6 +1,6 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import cn from 'classnames'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 import useSWR from 'swr'
@@ -19,7 +19,6 @@ import {
 import { getSavedOffererId } from 'commons/utils/getSavedOffererId'
 import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
 import { sortByLabel } from 'commons/utils/strings'
-import { HelpDropdownMenu } from 'components/Header/HeaderHelpDropdown/HelpDropdownMenu'
 import fulBackIcon from 'icons/full-back.svg'
 import fullCloseIcon from 'icons/full-close.svg'
 import fullLogoutIcon from 'icons/full-logout.svg'
@@ -31,6 +30,8 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+
+import { HelpDropdownMenu } from '../HeaderHelpDropdown/HelpDropdownMenu'
 
 import styles from './HeaderDropdown.module.scss'
 

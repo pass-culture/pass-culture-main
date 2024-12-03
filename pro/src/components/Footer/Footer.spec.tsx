@@ -3,7 +3,7 @@ import { screen } from '@testing-library/react'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { Footer } from '../Footer'
+import { Footer } from './Footer'
 
 const renderFooter = (isConnected: boolean = true) => {
   renderWithProviders(<Footer />, {

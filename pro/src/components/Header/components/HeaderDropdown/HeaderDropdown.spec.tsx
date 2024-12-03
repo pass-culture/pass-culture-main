@@ -16,7 +16,7 @@ import {
   RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
 
-import { HeaderDropdown } from '../HeaderDropdown/HeaderDropdown'
+import { HeaderDropdown } from './HeaderDropdown'
 
 const renderHeaderDropdown = (options?: RenderWithProvidersOptions) => {
   renderWithProviders(<HeaderDropdown />, options)
