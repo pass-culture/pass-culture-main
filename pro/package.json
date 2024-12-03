@@ -57,7 +57,7 @@
     "downshift": "^9.0.8",
     "eslint-plugin-cypress": "^4.1.0",
     "formik": "^2.4.6",
-    "libphonenumber-js": "^1.11.15",
+    "libphonenumber-js": "^1.11.16",
     "lodash.isequal": "^4.5.0",
     "lodash.memoize": "^4.1.2",
     "orejime": "^2.3.1",
