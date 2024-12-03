@@ -29,7 +29,7 @@ import {
   convertTimeFromVenueTimezoneToUtc,
   getLocalDepartementDateTimeFromUtc,
 } from 'commons/utils/timezone'
-import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
+import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { onSubmit as onRecurrenceSubmit } from 'components/IndividualOffer/StocksEventCreation/form/onSubmit'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'

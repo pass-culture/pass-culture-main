@@ -4,7 +4,7 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { NBSP } from 'commons/core/shared/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
+import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import fullEyeIcon from 'icons/full-hide.svg'
 
 export interface DeactivationConfirmDialogProps {
