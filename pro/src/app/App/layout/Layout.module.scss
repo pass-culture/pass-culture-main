@@ -20,7 +20,7 @@ $connect-as-header-height: rem.torem(52px);
   border: rem.torem(1px) solid var(--color-grey-medium);
   border-top: none;
 
-  &-funnel {
+  &-funnel, &-onboarding {
     width: 100%;
   }
 
@@ -32,7 +32,7 @@ $connect-as-header-height: rem.torem(52px);
     margin: 0 auto;
     width: rem.torem(size.$desktop);
 
-    &-funnel {
+    &-funnel, &-onboarding {
       width: 100%;
     }
   }
@@ -91,7 +91,7 @@ $connect-as-header-height: rem.torem(52px);
     padding: size.$main-content-padding size.$main-content-padding 0;
   }
 
-  &-funnel {
+  &-funnel, &-onboarding {
     background-color: var(--color-white);
     padding: 0;
   }

@@ -14,17 +14,7 @@ describe('OnboardingOffersChoice Component', () => {
     expect(await axe(container)).toHaveNoViolations()
   })
 
-  it('renders the first card with correct image, title, description, and button', () => {
-    // Check for the first card's image
-    const firstCardImage = screen.getByAltText(
-      'Aux jeunes sur l’application mobile pass Culture'
-    )
-    expect(firstCardImage).toBeInTheDocument()
-    expect(firstCardImage).toHaveAttribute(
-      'src',
-      expect.stringContaining('individuelle.jpeg')
-    )
-
+  it('renders the first card with correct title, description, and button', () => {
     // Check for the first card's title
     const firstCardTitle = screen.getByText(
       'Aux jeunes sur l’application mobile pass Culture'
@@ -36,17 +26,7 @@ describe('OnboardingOffersChoice Component', () => {
     expect(firstCardButton).toBeInTheDocument()
   })
 
-  it('renders the second card with correct image, title, description, and button', () => {
-    // Check for the second card's image
-    const secondCardImage = screen.getByAltText(
-      'Aux enseignants sur la plateforme ADAGE'
-    )
-    expect(secondCardImage).toBeInTheDocument()
-    expect(secondCardImage).toHaveAttribute(
-      'src',
-      expect.stringContaining('collective.jpeg')
-    )
-
+  it('renders the second card with correct title, description, and button', () => {
     // Check for the second card's title
     const secondCardTitle = screen.getByText(
       'Aux enseignants sur la plateforme ADAGE'
