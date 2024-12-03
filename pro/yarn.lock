@@ -1865,6 +1865,11 @@
   resolved "https://registry.yarnpkg.com/@storybook/components/-/components-8.4.5.tgz#039e4cb5090c56c47fc10f0c5ecda77f4b015c7f"
   integrity sha512-2PdnKfqNNv3sO7qILgWXiNvmLOi503oN9OMemNCQjTIvdvySc5JpS9/eClwcl/JfmE4qHdSHZr8dLLkBM9S7+Q==
 
+"@storybook/components@8.4.6":
+  version "8.4.6"
+  resolved "https://registry.yarnpkg.com/@storybook/components/-/components-8.4.6.tgz#2c406a709189008172c8cf4f55d05254954bae4d"
+  integrity sha512-9tKSJJCyFT5RZMRGyozTBJkr9C9Yfk1nuOE9XbDEE1Z+3/IypKR9+iwc5mfNBStDNY+rxtYWNLKBb5GPR2yhzA==
+
 "@storybook/core@8.4.6":
   version "8.4.6"
   resolved "https://registry.yarnpkg.com/@storybook/core/-/core-8.4.6.tgz#78a3155f428635be808c4ef2912eeb79140228c8"
@@ -1911,6 +1916,11 @@
   resolved "https://registry.yarnpkg.com/@storybook/manager-api/-/manager-api-8.4.5.tgz#ce586cc5961297272f7228446161015464c65067"
   integrity sha512-t39JaMy3UX4StbUH/tIDcaflBDxTcyIq853wQtBMhVL3e1+Dw3MIiiG/5bw79HU4R7kSmPVLXIIbV3FmXkq7KQ==
 
+"@storybook/manager-api@8.4.6":
+  version "8.4.6"
+  resolved "https://registry.yarnpkg.com/@storybook/manager-api/-/manager-api-8.4.6.tgz#844a8b71de7eae44998a83b96666a05e6e49156c"
+  integrity sha512-TsXlQ5m5rTl2KNT9icPFyy822AqXrx1QplZBt/L7cFn7SpqQKDeSta21FH7MG0piAvzOweXebVSqKngJ6cCWWQ==
+
 "@storybook/preset-scss@^1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@storybook/preset-scss/-/preset-scss-1.0.3.tgz#8ac834545c642dada0f64f510ef08dfb882e9737"
@@ -1921,10 +1931,20 @@
   resolved "https://registry.yarnpkg.com/@storybook/preview-api/-/preview-api-8.4.5.tgz#f8c046575c68062eda1de9494e7118571d20c72a"
   integrity sha512-MKIZ2jQO/3cUdsT57eq8jRgB6inALo9BxrQ88f7mqzltOkMvADvTAY6y8JZqTUoDzWTH/ny/8SGGdtpqlxRuiQ==
 
+"@storybook/preview-api@8.4.6":
+  version "8.4.6"
+  resolved "https://registry.yarnpkg.com/@storybook/preview-api/-/preview-api-8.4.6.tgz#5c167e5c0fceed1010da27bcf08c81e2449cb538"
+  integrity sha512-LbD+lR1FGvWaJBXteVx5xdgs1x1D7tyidBg2CsW2ex+cP0iJ176JgjPfutZxlWOfQnhfRYNnJ3WKoCIfxFOTKA==
+
 "@storybook/react-dom-shim@8.4.5":
   version "8.4.5"
   resolved "https://registry.yarnpkg.com/@storybook/react-dom-shim/-/react-dom-shim-8.4.5.tgz#cc874d008a1def4410c32a95bcf9aac8defdb6f5"
   integrity sha512-YTWTfPagptEYXJsnxAl3zP97Ev0zebtaEV0WgjGaEeumr+zsfgKKwzzHxgrtumBmDzwkuKlzFwlQB5A8keOIGA==
+
+"@storybook/react-dom-shim@8.4.6":
+  version "8.4.6"
+  resolved "https://registry.yarnpkg.com/@storybook/react-dom-shim/-/react-dom-shim-8.4.6.tgz#526fa7a7c754cbb5e42f2ade4b167f210a4fd70e"
+  integrity sha512-f7RM8GO++fqMxbjNdEzeGS1P821jXuwRnAraejk5hyjB5SqetauFxMwoFYEYfJXPaLX2qIubnIJ78hdJ/IBaEA==
 
 "@storybook/react-vite@^8.4.5":
   version "8.4.5"
@@ -1941,7 +1961,7 @@
     resolve "^1.22.8"
     tsconfig-paths "^4.2.0"
 
-"@storybook/react@8.4.5", "@storybook/react@^8.4.2":
+"@storybook/react@8.4.5":
   version "8.4.5"
   resolved "https://registry.yarnpkg.com/@storybook/react/-/react-8.4.5.tgz#9395ce8ffd4e27765459703c0634b306af882137"
   integrity sha512-2+p4aGEdGOnu2XNhnMi1B8GPeszm34P905HgqGD1cuz9gMt7x/bgZQaVxs6kpHZ3Hb6V9qp62La2dbAYatHdSw==
@@ -1953,10 +1973,27 @@
     "@storybook/react-dom-shim" "8.4.5"
     "@storybook/theming" "8.4.5"
 
+"@storybook/react@^8.4.6":
+  version "8.4.6"
+  resolved "https://registry.yarnpkg.com/@storybook/react/-/react-8.4.6.tgz#6e8f2b93bf044db123a9d49a17e867afab02e806"
+  integrity sha512-QAT23beoYNLhFGAXPimtuMErvpcI7eZbZ4AlLqW1fhiTZrRYw06cjC1bs9H3tODMcHH9LS5p3Wz9b29jtV2XGw==
+  dependencies:
+    "@storybook/components" "8.4.6"
+    "@storybook/global" "^5.0.0"
+    "@storybook/manager-api" "8.4.6"
+    "@storybook/preview-api" "8.4.6"
+    "@storybook/react-dom-shim" "8.4.6"
+    "@storybook/theming" "8.4.6"
+
 "@storybook/theming@8.4.5":
   version "8.4.5"
   resolved "https://registry.yarnpkg.com/@storybook/theming/-/theming-8.4.5.tgz#d7c77215f09906c9bb124d530d4307fd1841fbb8"
   integrity sha512-45e/jeG4iuqdZcHg3PbB6dwXQTwlnnEB7r/QcVExyC7ibrkTnjUfvxzyUw4mmU3CXETFGD5EcUobFkgK+/aPxQ==
+
+"@storybook/theming@8.4.6":
+  version "8.4.6"
+  resolved "https://registry.yarnpkg.com/@storybook/theming/-/theming-8.4.6.tgz#40b03d72b014cc0bb6530aba0652b49e176b0c0e"
+  integrity sha512-q7vDPN/mgj7cXIVQ9R1/V75hrzNgKkm2G0LjMo57//9/djQ+7LxvBsR1iScbFIRSEqppvMiBFzkts+2uXidySA==
 
 "@testing-library/cypress@^10.0.2":
   version "10.0.2"
