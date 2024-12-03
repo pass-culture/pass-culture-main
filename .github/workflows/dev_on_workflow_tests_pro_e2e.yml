@@ -152,6 +152,9 @@ jobs:
           CYPRESS_PROJECT_ID: ${{ steps.secrets.outputs.CYPRESS_CLOUD_PROJECT_ID }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: "Remove Cypress videos from Allure results"
+        run: rm -rf ../allure-results/*.mp4
+
       - name: "Upload Allure results for pro E2E tests"
         uses: actions/upload-artifact@v4
         with:

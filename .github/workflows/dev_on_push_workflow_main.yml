@@ -271,22 +271,29 @@ jobs:
           cp -r allure-results/pro-unit/* allure-results/
           cp -r allure-results/pro-e2e/* allure-results/
 
-      - name: "Generate Allure Report with History"
+      - name: "Clone Allure Report Repository to Retrieve History"
+        env:
+          TOKEN: ${{ secrets.PAT_ALLURE_REPORTS_TEMP }}
+        run: |
+          git clone https://x-access-token:${TOKEN}@github.com/fseguin-pass/allure-reports-temp.git allure-report-temp
+          mkdir -p allure-results/history
+          if [ -d "allure-report-temp/history" ]; then
+            cp -r allure-report-temp/history/* allure-results/history/
+          fi
+
+      - name: "Generate Allure Report with Updated History"
         run: allure generate allure-results --clean -o allure-report
 
-      - name: "Push Allure Report with history to another repository"
-        env:
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: "Push Updated Allure Report with History to Repository"
         run: |
-          cd allure-report
-          git init
+          cd allure-report-temp
+          rm -rf *
+          cp -r ../allure-report/* .
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git remote add origin https://x-access-token:${TOKEN}@github.com/pass-culture/allure-reports.git
-          git branch -M main
           git add .
           git commit -m "Update Allure Report with history"
-          git push -u origin main --force # Si possible, éviter le --force
+          git push origin main
 
   deploy-storybook:
     name: "Deploy Storybook"
