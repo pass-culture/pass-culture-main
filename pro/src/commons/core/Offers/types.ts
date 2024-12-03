@@ -3,7 +3,7 @@ import {
   EacFormat,
   OfferStatus,
 } from 'apiClient/v1'
-import { CropParams } from 'components/ImageUploader/ButtonImageEdit/types'
+import { CropParams } from 'components/ImageUploader/components/ButtonImageEdit/types'
 
 import { ALL_FORMATS, ALL_STATUS } from './constants'
 

@@ -8,9 +8,9 @@ import { useNotification } from 'commons/hooks/useNotification'
 import {
   ImageEditor,
   ImageEditorConfig,
-} from 'components/ImageEditor/ImageEditor'
-import { coordonateToPosition } from 'components/ImageEditor/utils'
-import { modeValidationConstraints } from 'components/ImageUploadBrowserForm/constants'
+} from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageCrop/ImageEditor/ImageEditor'
+import { coordonateToPosition } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageCrop/ImageEditor/utils'
+import { modeValidationConstraints } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageUploadBrowser/ImageUploadBrowserForm/constants'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import fullDownloadIcon from 'icons/full-download.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
@@ -19,8 +19,9 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { Divider } from 'ui-kit/Divider/Divider'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
+import { getCropMaxDimension } from '../../utils/getCropMaxDimension'
+
 import style from './ModalImageCrop.module.scss'
-import { getCropMaxDimension } from './utils/getCropMaxDimension'
 
 export interface ModalImageCropProps {
   image: File

@@ -1,11 +1,10 @@
-import React, { useCallback } from 'react'
+import { useCallback } from 'react'
 
 import { useNotification } from 'commons/hooks/useNotification'
 import { ImagePreview } from 'components/ImagePreview/ImagePreview'
 import { ImagePreviewsWrapper } from 'components/ImagePreview/ImagePreviewsWrapper'
-
-import homeShell from '../assets/venue-home-shell.png'
-import venueShell from '../assets/venue-shell.png'
+import homeShell from 'components/ImageUploader/assets/venue-home-shell.png'
+import venueShell from 'components/ImageUploader/assets/venue-shell.png'
 
 import homeStyle from './HomeScreenPreview.module.scss'
 import venueStyle from './VenueScreenPreview.module.scss'

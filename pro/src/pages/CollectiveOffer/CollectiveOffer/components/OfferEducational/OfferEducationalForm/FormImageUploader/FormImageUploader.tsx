@@ -2,8 +2,8 @@ import React from 'react'
 
 import { OfferCollectiveImage } from 'commons/core/Offers/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
-import { UploadImageValues } from 'components/ImageUploader/ButtonImageEdit/types'
+import { OnImageUploadArgs } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
+import { UploadImageValues } from 'components/ImageUploader/components/ButtonImageEdit/types'
 import { ImageUploader } from 'components/ImageUploader/ImageUploader'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 
@@ -26,7 +26,7 @@ export const FormImageUploader = ({
   onImageUpload,
   onImageDelete,
   imageOffer,
-  disableForm
+  disableForm,
 }: ImageUploaderOfferProps) => (
   <FormLayout.Section title="Image de l’offre">
     <FormLayout.Row>

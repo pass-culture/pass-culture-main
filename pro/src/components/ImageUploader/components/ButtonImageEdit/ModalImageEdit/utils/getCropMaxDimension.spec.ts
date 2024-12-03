@@ -1,4 +1,4 @@
-import { getCropMaxDimension } from '../getCropMaxDimension'
+import { getCropMaxDimension } from './getCropMaxDimension'
 
 describe('getCropMaxDimension', () => {
   it('should compute max width for original "landscape" target "landscape"', () => {

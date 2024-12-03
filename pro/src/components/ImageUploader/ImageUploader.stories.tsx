@@ -1,8 +1,8 @@
 import type { StoryObj } from '@storybook/react'
 
+import sampleImageLandscape from './assets/sample-image-landscape.jpg'
+import sampleImagePortrait from './assets/sample-image-portrait.jpg'
 import { ImageUploader, ImageUploaderProps } from './ImageUploader'
-import sampleImageLandscape from './sample-image-landscape.jpg'
-import sampleImagePortrait from './sample-image-portrait.jpg'
 import { UploaderModeEnum } from './types'
 
 export default {

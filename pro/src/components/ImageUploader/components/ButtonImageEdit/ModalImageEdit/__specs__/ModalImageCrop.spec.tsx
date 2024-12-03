@@ -4,7 +4,10 @@ import { userEvent } from '@testing-library/user-event'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 
-import { ModalImageCrop, ModalImageCropProps } from '../ModalImageCrop'
+import {
+  ModalImageCrop,
+  ModalImageCropProps,
+} from '../components/ModalImageCrop/ModalImageCrop'
 
 const mockReplaceImage = vi.fn()
 const mockDeleteImage = vi.fn()

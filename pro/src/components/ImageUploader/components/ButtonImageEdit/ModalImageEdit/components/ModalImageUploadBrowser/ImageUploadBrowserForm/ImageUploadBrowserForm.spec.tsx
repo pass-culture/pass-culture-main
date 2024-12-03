@@ -1,11 +1,10 @@
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 
 import { createImageFile } from 'commons/utils/testFileHelpers'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 
-import { ImageUploadBrowserForm } from '../ImageUploadBrowserForm'
+import { ImageUploadBrowserForm } from './ImageUploadBrowserForm'
 
 const onSubmit = vi.fn()
 const mockCreateImageBitmap = vi.fn()
