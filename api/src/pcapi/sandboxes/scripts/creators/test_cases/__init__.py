@@ -5,6 +5,8 @@ import random
 
 from factory.faker import faker
 
+from pcapi.core.achievements import factories as achievements_factories
+from pcapi.core.achievements import models as achievements_models
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.criteria import factories as criteria_factories
@@ -57,7 +59,7 @@ def save_test_cases_sandbox() -> None:
     create_specific_cashflow_batch_without_invoice()
     create_venue_labels(sandbox=True)
     create_venues_with_gmaps_image()
-    create_app_beneficiary()
+    create_app_beneficiaries()
     create_venues_with_practical_info_graphical_edge_cases()
     create_institutional_website_offer_playlist()
     create_product_with_multiple_images()
@@ -516,12 +518,36 @@ def create_venues_with_gmaps_image() -> None:
     )
 
 
-def create_app_beneficiary() -> None:
+def create_app_beneficiaries() -> None:
     users_factories.BeneficiaryGrant18Factory(
         email="dev-tests-e2e@passculture.team",
         firstName=Fake.first_name(),
         lastName=Fake.last_name(),
         needsToFillCulturalSurvey=False,
+    )
+
+    user_with_achievements = users_factories.BeneficiaryGrant18Factory(
+        email="achievement@example.com",
+        firstName=Fake.first_name(),
+        lastName=Fake.last_name(),
+        needsToFillCulturalSurvey=False,
+    )
+    achievements_factories.AchievementFactory(
+        user=user_with_achievements,
+        name=achievements_models.AchievementEnum.FIRST_BOOK_BOOKING,
+        unlockedDate=datetime.datetime.utcnow(),
+    )
+    achievements_factories.AchievementFactory(
+        user=user_with_achievements,
+        name=achievements_models.AchievementEnum.FIRST_SHOW_BOOKING,
+        unlockedDate=datetime.datetime.utcnow(),
+        seenDate=datetime.datetime.utcnow(),
+    )
+    achievements_factories.AchievementFactory(
+        user=user_with_achievements,
+        name=achievements_models.AchievementEnum.FIRST_ART_LESSON_BOOKING,
+        unlockedDate=datetime.datetime.utcnow(),
+        seenDate=datetime.datetime.utcnow(),
     )
 
 
