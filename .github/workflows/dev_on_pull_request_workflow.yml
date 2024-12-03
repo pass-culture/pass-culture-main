@@ -273,13 +273,23 @@ jobs:
           cp -r allure-results/pro-unit/* allure-results/
           cp -r allure-results/pro-e2e/* allure-results/
 
+      - name: "Clone Allure Report Repository to Retrieve History"
+        env:
+          TOKEN: ${{ secrets.PAT_ALLURE_REPORTS_TEMP }}
+        run: |
+          git clone https://x-access-token:${TOKEN}@github.com/fseguin-pass/allure-reports-temp.git allure-report-temp
+          mkdir -p allure-results/history
+          if [ -d "allure-report-temp/history" ]; then
+            cp -r allure-report-temp/history/* allure-results/history/
+          fi
+
       - name: "Generate Allure Report with History"
         run: allure generate allure-results --single-file --clean -o allure-report
 
       - name: "Upload Allure Report as artifact"
         uses: actions/upload-artifact@v4
         with:
-          name: allure-report.html
+          name: allure-report
           path: allure-report/index.html
 
   dependabot-auto-merge:
