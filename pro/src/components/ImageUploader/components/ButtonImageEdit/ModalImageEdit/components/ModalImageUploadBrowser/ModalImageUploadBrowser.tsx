@@ -1,7 +1,7 @@
 import * as Dialog from '@radix-ui/react-dialog'
 
-import { ImageUploadBrowserForm } from 'components/ImageUploadBrowserForm/ImageUploadBrowserForm'
-import { ImageUploadBrowserFormValues } from 'components/ImageUploadBrowserForm/types'
+import { ImageUploadBrowserForm } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageUploadBrowser/ImageUploadBrowserForm/ImageUploadBrowserForm'
+import { ImageUploadBrowserFormValues } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageUploadBrowser/ImageUploadBrowserForm/types'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 
 import style from './ModalImageUploadBrowser.module.scss'

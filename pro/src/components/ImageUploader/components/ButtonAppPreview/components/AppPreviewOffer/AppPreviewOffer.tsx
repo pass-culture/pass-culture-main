@@ -2,9 +2,8 @@ import React from 'react'
 
 import { ImagePreview } from 'components/ImagePreview/ImagePreview'
 import { ImagePreviewsWrapper } from 'components/ImagePreview/ImagePreviewsWrapper'
-
-import homeShell from '../assets/offer-home-shell.png'
-import offerShell from '../assets/offer-shell.png'
+import homeShell from 'components/ImageUploader/assets/offer-home-shell.png'
+import offerShell from 'components/ImageUploader/assets/offer-shell.png'
 
 import homeStyle from './HomeScreenPreview.module.scss'
 import offerStyle from './OfferScreenPreview.module.scss'

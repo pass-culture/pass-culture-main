@@ -1,5 +1,5 @@
 import { IndividualOfferImage } from 'commons/core/Offers/types'
-import { UploadImageValues } from 'components/ImageUploader/ButtonImageEdit/types'
+import { UploadImageValues } from 'components/ImageUploader/components/ButtonImageEdit/types'
 
 export const buildInitialValues = (
   imageOffer?: IndividualOfferImage

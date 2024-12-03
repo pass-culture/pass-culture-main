@@ -1,10 +1,10 @@
 import cn from 'classnames'
 
-import { ButtonAppPreview } from './ButtonAppPreview/ButtonAppPreview'
-import { ButtonImageDelete } from './ButtonImageDelete/ButtonImageDelete'
-import { ButtonImageEdit } from './ButtonImageEdit/ButtonImageEdit'
-import { OnImageUploadArgs } from './ButtonImageEdit/ModalImageEdit/ModalImageEdit'
-import { UploadImageValues } from './ButtonImageEdit/types'
+import { ButtonAppPreview } from './components/ButtonAppPreview/ButtonAppPreview'
+import { ButtonImageDelete } from './components/ButtonImageDelete/ButtonImageDelete'
+import { ButtonImageEdit } from './components/ButtonImageEdit/ButtonImageEdit'
+import { OnImageUploadArgs } from './components/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
+import { UploadImageValues } from './components/ButtonImageEdit/types'
 import styles from './ImageUploader.module.scss'
 import { UploaderModeEnum } from './types'
 
@@ -27,7 +27,7 @@ export const ImageUploader = ({
   mode,
   onClickButtonImageAdd,
   hideActionButtons = false,
-  disableForm = false
+  disableForm = false,
 }: ImageUploaderProps) => {
   const { imageUrl, originalImageUrl, credit, cropParams } = initialValues
 

@@ -8,7 +8,7 @@ import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { IndividualOfferImage } from 'commons/core/Offers/types'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
+import { OnImageUploadArgs } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { DEFAULT_DETAILS_FORM_VALUES } from 'pages/IndividualOffer/IndividualOfferDetails/commons/constants'
 import { DetailsFormValues } from 'pages/IndividualOffer/IndividualOfferDetails/commons/types'
 import {

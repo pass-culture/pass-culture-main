@@ -1,7 +1,7 @@
 import * as Dialog from '@radix-ui/react-dialog'
 
-import { AppPreviewOffer } from 'components/ImageUploader/AppPreviewOffer/AppPreviewOffer'
-import { AppPreviewVenue } from 'components/ImageUploader/AppPreviewVenue/AppPreviewVenue'
+import { AppPreviewOffer } from 'components/ImageUploader/components/ButtonAppPreview/components/AppPreviewOffer/AppPreviewOffer'
+import { AppPreviewVenue } from 'components/ImageUploader/components/ButtonAppPreview/components/AppPreviewVenue/AppPreviewVenue'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'

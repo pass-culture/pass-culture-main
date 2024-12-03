@@ -3,8 +3,8 @@ import React from 'react'
 
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { ImageUploader, ImageUploaderProps } from '../ImageUploader'
-import { UploaderModeEnum } from '../types'
+import { ImageUploaderProps, ImageUploader } from './ImageUploader'
+import { UploaderModeEnum } from './types'
 
 const renderImageUploader = (props: ImageUploaderProps) =>
   renderWithProviders(<ImageUploader {...props} />)

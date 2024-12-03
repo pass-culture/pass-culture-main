@@ -1,6 +1,5 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 
 import * as apiHelpers from 'apiClient/helpers'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'

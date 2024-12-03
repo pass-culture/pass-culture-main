@@ -8,7 +8,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import { UploaderModeEnum } from '../types'
+import { UploaderModeEnum } from '../../types'
 
 import style from './ButtonImageEdit.module.scss'
 import {
@@ -34,7 +34,7 @@ export const ButtonImageEdit = ({
   onImageDelete,
   onClickButtonImage,
   children,
-  disableForm
+  disableForm,
 }: ButtonImageEditProps): JSX.Element => {
   const { imageUrl, originalImageUrl } = initialValues
 

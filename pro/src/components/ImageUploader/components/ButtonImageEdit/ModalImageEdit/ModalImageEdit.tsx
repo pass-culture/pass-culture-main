@@ -6,15 +6,15 @@ import { useNotification } from 'commons/hooks/useNotification'
 import {
   coordonateToPosition,
   heightCropPercentToScale,
-} from 'components/ImageEditor/utils'
-import { ImageUploadBrowserFormValues } from 'components/ImageUploadBrowserForm/types'
+} from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageCrop/ImageEditor/utils'
+import { ImageUploadBrowserFormValues } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageUploadBrowser/ImageUploadBrowserForm/types'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 
 import { UploadImageValues } from '../types'
 
-import { ModalImageCrop } from './ModalImageCrop'
-import { ModalImageUploadBrowser } from './ModalImageUploadBrowser'
-import { ModalImageUploadConfirm } from './ModalImageUploadConfirm'
+import { ModalImageCrop } from './components/ModalImageCrop/ModalImageCrop'
+import { ModalImageUploadBrowser } from './components/ModalImageUploadBrowser/ModalImageUploadBrowser'
+import { ModalImageUploadConfirm } from './components/ModalImageUploadConfirm/ModalImageUploadConfirm'
 
 export interface OnImageUploadArgs {
   imageFile: File
