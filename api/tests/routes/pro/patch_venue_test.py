@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.connectors import acceslibre as acceslibre_connector
 from pcapi.connectors.api_adresse import AddressInfo
 import pcapi.connectors.entreprise.exceptions as entreprise_exceptions
 from pcapi.core import search
@@ -1067,6 +1068,24 @@ class Returns200Test:
             "contact.website": {"new_info": venue_data["contact"]["website"], "old_info": None},
         }
         mock_request_url_scan.assert_called_once_with(venue_data["contact"]["website"], skip_if_recent_scan=True)
+
+    def test_resync_acceslibre_when_address_change(self, client):
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
+
+        venue_data = {
+            "street": "3 rue de Valois",
+        }
+
+        http_client = client.with_session_auth(email=user.email)
+        http_client.patch(f"/venues/{venue.id}", json=venue_data)
+
+        assert venue.accessibilityProvider.externalAccessibilityId == "mon-lieu-chez-acceslibre"
+        assert venue.accessibilityProvider.externalAccessibilityData["access_modality"] == [
+            acceslibre_connector.ExpectedFieldsEnum.EXTERIOR_ONE_LEVEL,
+            acceslibre_connector.ExpectedFieldsEnum.ENTRANCE_ONE_LEVEL,
+        ]
 
 
 class Returns400Test:
