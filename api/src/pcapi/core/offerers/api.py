@@ -120,6 +120,11 @@ def update_venue(
     # TODO: (pcharlet 2024-11-28) Remove new_permanent when regularisation is done. Used only to sync venues with acceslibre when update permanent from BO
     new_open_to_public = not venue.isOpenToPublic and modifications.get("isOpenToPublic")
     new_permanent = not venue.isPermanent and modifications.get("isPermanent")
+    has_address_changed = (
+        modifications.get("banId", offerers_constants.UNCHANGED) is not offerers_constants.UNCHANGED
+        or modifications.get("postalCode", offerers_constants.UNCHANGED) is not offerers_constants.UNCHANGED
+        or modifications.get("street", offerers_constants.UNCHANGED) is not offerers_constants.UNCHANGED
+    )
     venue_snapshot = history_api.ObjectUpdateSnapshot(venue, author)
     if not venue.isVirtual:
         assert venue.offererAddress is not None  # helps mypy
@@ -248,7 +253,7 @@ def update_venue(
     if contact_data and contact_data.website:
         virustotal.request_url_scan(contact_data.website, skip_if_recent_scan=True)
 
-    if (new_open_to_public or new_permanent) and not external_accessibility_url:
+    if ((new_open_to_public or new_permanent) and not external_accessibility_url) or has_address_changed:
         match_acceslibre_job.delay(venue.id)
 
     return venue

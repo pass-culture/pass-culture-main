@@ -918,7 +918,7 @@ class UpdateVenueTest(PostEndpointHelper):
             "latitude": "48.869311",
             "longitude": "2.325463",
             "venue_type_code": offerers_models.VenueTypeCode.CREATIVE_ARTS_STORE.name,
-            "acceslibre_url": "https://acceslibre.beta.gouv.fr/app/slug/",
+            "acceslibre_url": None,
         }
 
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
@@ -954,10 +954,11 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.contact.website == website
         assert venue.contact.social_medias == social_medias
 
-        assert len(venue.action_history) == 1
+        assert len(venue.action_history) == 2
 
-        update_snapshot = venue.action_history[0].extraData["modified_info"]
-
+        # Check the venue update action
+        update_action = [action for action in venue.action_history if action.extraData["modified_info"].get("name")][0]
+        update_snapshot = update_action.extraData["modified_info"]
         assert update_snapshot["street"]["new_info"] == data["street"]
         assert update_snapshot["bookingEmail"]["new_info"] == data["booking_email"]
         assert update_snapshot["latitude"]["new_info"] == str(round(float(data["latitude"]), 5))
@@ -968,6 +969,29 @@ class UpdateVenueTest(PostEndpointHelper):
             round(float(data["longitude"]), 5)
         )
         assert update_snapshot["old_oa_label"]["new_info"] == "Venue Name"
+
+        # Check the acces libre update action
+        # The folloing assert is a reminder that acceslibre_url must be None to get the updated acceslibre_url
+        # from the associated backend. It is updated in a async task which is executed during the tests though
+        # probably not asynchronously but ends up with unpredictable results.
+        # Slug could be either mon-lieu-chez-acceslibre or whatever the original slug was.
+        assert data["acceslibre_url"] is None
+        acceslibre_action = [
+            action
+            for action in venue.action_history
+            if action.extraData["modified_info"].get("accessibilityProvider.externalAccessibilityId")
+        ][0]
+        acceslibre_snapshot = acceslibre_action.extraData["modified_info"]
+        assert (
+            acceslibre_snapshot["accessibilityProvider.externalAccessibilityId"]["new_info"]
+            == "mon-lieu-chez-acceslibre"
+        )
+        assert acceslibre_snapshot["accessibilityProvider.externalAccessibilityId"]["old_info"] is None
+        assert (
+            acceslibre_snapshot["accessibilityProvider.externalAccessibilityUrl"]["new_info"]
+            == "https://acceslibre.beta.gouv.fr/app/activite/mon-lieu-chez-acceslibre/"
+        )
+        assert acceslibre_snapshot["accessibilityProvider.externalAccessibilityUrl"]["old_info"] is None
 
         assert len(mails_testing.outbox) == 1
         # check that email is sent when venue is set to permanent and has no image
@@ -1016,8 +1040,9 @@ class UpdateVenueTest(PostEndpointHelper):
         offerer_address = offerer_addresses[0]
         assert (len(offerer_addresses)) == 2
         assert venue.offererAddressId == offerer_address.id
-        assert len(venue.action_history) == 1
-        update_snapshot = venue.action_history[0].extraData["modified_info"]
+        assert len(venue.action_history) == 2
+        update_action = [action for action in venue.action_history if action.extraData["modified_info"].get("name")][0]
+        update_snapshot = update_action.extraData["modified_info"]
 
         assert update_snapshot["offererAddress.addressId"]["new_info"] == offerer_address.addressId
 
@@ -1115,7 +1140,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.contact.website == website
         assert venue.contact.social_medias == social_medias
 
-        assert len(venue.action_history) == 1
+        assert len(venue.action_history) == 2
 
         assert len(mails_testing.outbox) == 1
         # check that email is sent when venue is set to permanent and has no image
