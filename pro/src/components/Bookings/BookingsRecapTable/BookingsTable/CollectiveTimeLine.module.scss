@@ -36,6 +36,12 @@
     &-accent {
       @include fonts.body-exergue;
     }
+
+    &-links {
+      display: flex;
+      justify-content: space-between;
+      flex-flow: wrap;
+    }
   }
 }
 

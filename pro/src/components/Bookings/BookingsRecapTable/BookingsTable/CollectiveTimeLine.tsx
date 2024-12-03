@@ -11,6 +11,7 @@ import { BOOKING_STATUS } from 'commons/core/Bookings/constants'
 import { CollectiveBookingsEvents } from 'commons/core/FirebaseEvents/constants'
 import { getDateToFrenchText } from 'commons/utils/date'
 import fullEditIcon from 'icons/full-edit.svg'
+import fullLinkIcon from 'icons/full-link.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import {
@@ -24,6 +25,7 @@ import styles from './CollectiveTimeLine.module.scss'
 interface CollectiveTimeLineProps {
   bookingRecap: CollectiveBookingResponseModel
   bookingDetails: CollectiveBookingByIdResponseModel
+  canEditDiscount: boolean
 }
 
 const cancellationReasonTitle = (
@@ -49,6 +51,7 @@ const cancellationReasonTitle = (
 export const CollectiveTimeLine = ({
   bookingRecap,
   bookingDetails,
+  canEditDiscount,
 }: CollectiveTimeLineProps) => {
   const bookingDate = getDateToFrenchText(bookingRecap.bookingDate)
   const confirmationDate =
@@ -143,6 +146,7 @@ export const CollectiveTimeLine = ({
       </>
     ),
   }
+
   const activeConfirmedStep = {
     type: TimelineStepType.SUCCESS,
     content: (
@@ -172,31 +176,38 @@ export const CollectiveTimeLine = ({
             </>
           ) : (
             <>
-              La réservation n’est plus annulable par l’établissement scolaire.
-              <div className={styles['timeline-infobox']}>
-                <div className={styles['timeline-infobox-text']}>
-                  {getEventRangeDate()}. Vous avez jusqu’au{' '}
-                  {eventDatePlusTwoDays} pour modifier le prix et le nombre de
-                  participants si nécessaire.
+              <p>
+                La réservation n’est plus annulable par l’établissement
+                scolaire.
+              </p>
+              {canEditDiscount && (
+                <div className={styles['timeline-infobox']}>
+                  <div className={styles['timeline-infobox-text']}>
+                    {getEventRangeDate()}. Vous avez jusqu’au{' '}
+                    {eventDatePlusTwoDays} pour modifier le prix et le nombre de
+                    participants si nécessaire.
+                  </div>
+                  <div className={styles['timeline-infobox-links']}>
+                    <ButtonLink
+                      variant={ButtonVariant.TERNARY}
+                      to={`/offre/${bookingRecap.stock.offerId}/collectif/stocks/edition`}
+                      icon={fullEditIcon}
+                      onClick={logModifyBookingLimitDateClick}
+                    >
+                      Modifier le prix ou le nombre d’élèves
+                    </ButtonLink>
+
+                    <ButtonLink
+                      variant={ButtonVariant.TERNARY}
+                      icon={fullLinkIcon}
+                      to="https://aide.passculture.app/hc/fr/articles/4405297381788--Acteurs-Culturels-Que-faire-si-le-groupe-scolaire-n-est-pas-au-complet-ou-doit-annuler-sa-participation-"
+                      isExternal
+                    >
+                      Je rencontre un problème à cette étape
+                    </ButtonLink>
+                  </div>
                 </div>
-                <div>
-                  <ButtonLink
-                    variant={ButtonVariant.TERNARY}
-                    to={`/offre/${bookingRecap.stock.offerId}/collectif/stocks/edition`}
-                    icon={fullEditIcon}
-                    onClick={logModifyBookingLimitDateClick}
-                  >
-                    Modifier le prix ou le nombre d’élèves
-                  </ButtonLink>
-                  <ButtonLink
-                    variant={ButtonVariant.TERNARY}
-                    to="https://aide.passculture.app/hc/fr/articles/4405297381788--Acteurs-Culturels-Que-faire-si-le-groupe-scolaire-n-est-pas-au-complet-ou-doit-annuler-sa-participation-"
-                    isExternal
-                  >
-                    Je rencontre un problème à cette étape
-                  </ButtonLink>
-                </div>
-              </div>
+              )}
             </>
           )}
         </div>

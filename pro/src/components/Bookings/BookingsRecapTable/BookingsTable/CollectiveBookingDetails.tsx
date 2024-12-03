@@ -1,7 +1,14 @@
-import React from 'react'
+import useSWR from 'swr'
 
-import { CollectiveBookingResponseModel } from 'apiClient/v1'
+import { api } from 'apiClient/api'
+import {
+  CollectiveBookingResponseModel,
+  CollectiveOfferAllowedAction,
+} from 'apiClient/v1'
 import { CollectiveBookingByIdResponseModel } from 'apiClient/v1/models/CollectiveBookingByIdResponseModel'
+import { GET_COLLECTIVE_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import strokeLocationIcon from 'icons/stroke-location.svg'
 import strokeMailIcon from 'icons/stroke-mail.svg'
 import strokePhoneIcon from 'icons/stroke-phone.svg'
@@ -22,6 +29,31 @@ export const CollectiveBookingDetails = ({
   bookingDetails,
   bookingRecap,
 }: CollectiveBookingDetailsProps) => {
+  const { data: offer } = useSWR(
+    [GET_COLLECTIVE_OFFER_QUERY_KEY, Number(bookingRecap.stock.offerId)],
+    ([, offerIdParam]) => api.getCollectiveOffer(offerIdParam)
+  )
+
+  const areNewStatusesEnabled = useActiveFeature(
+    'ENABLE_COLLECTIVE_NEW_STATUSES'
+  )
+
+  const bookingIsCancellable = areNewStatusesEnabled
+    ? offer &&
+      isActionAllowedOnCollectiveOffer(
+        offer,
+        CollectiveOfferAllowedAction.CAN_CANCEL
+      )
+    : bookingDetails.isCancellable
+
+  const bookingCanEditDiscount = areNewStatusesEnabled
+    ? offer &&
+      isActionAllowedOnCollectiveOffer(
+        offer,
+        CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
+      )
+    : true
+
   const { educationalInstitution, educationalRedactor } = bookingDetails
 
   return (
@@ -30,6 +62,7 @@ export const CollectiveBookingDetails = ({
         <div className={styles['details-timeline']}>
           <CollectiveTimeLine
             bookingRecap={bookingRecap}
+            canEditDiscount={bookingCanEditDiscount || false}
             bookingDetails={bookingDetails}
           />
         </div>
@@ -100,7 +133,7 @@ export const CollectiveBookingDetails = ({
 
       <CollectiveActionButtons
         bookingRecap={bookingRecap}
-        isCancellable={bookingDetails.isCancellable}
+        isCancellable={bookingIsCancellable || false}
       />
     </>
   )
