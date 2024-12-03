@@ -136,7 +136,7 @@ class DMSGraphQLClient:
 
     def make_on_going(
         self, application_techid: str, instructeur_techid: str, disable_notification: bool | None = False
-    ) -> Any:
+    ) -> dict:
         try:
             response = self.execute_query(
                 MAKE_ON_GOING_MUTATION_NAME,
@@ -148,19 +148,24 @@ class DMSGraphQLClient:
                     }
                 },
             )
+        except gql_exceptions.TransportQueryError as exc:
+            raise exceptions.DmsGraphQLApiError(exc.errors)
         except Exception:
             logger.exception(
                 "[DMS] Unexpected error when marking on going", extra={"application_techid": application_techid}
             )
             raise exceptions.DmsGraphQLApiException()
-        errors = response["dossierPasserEnInstruction"]["errors"]
+        data = response["dossierPasserEnInstruction"]
+        errors = data["errors"]
         if errors:
             logger.error(
                 "[DMS] Error while marking application on going %s",
                 errors,
                 extra={"application_techid": application_techid},
             )
-            raise exceptions.DmsGraphQLApiException()
+            raise exceptions.DmsGraphQLApiError(errors)
+
+        return data["dossier"]
 
     def mark_without_continuation(self, application_techid: str, instructeur_techid: str, motivation: str) -> Any:
         try:
@@ -174,6 +179,8 @@ class DMSGraphQLClient:
                     }
                 },
             )
+        except gql_exceptions.TransportQueryError as exc:
+            raise exceptions.DmsGraphQLApiError(exc.errors)
         except Exception:
             logger.exception(
                 "[DMS] Unexpected error when marking without continuation",
@@ -187,7 +194,7 @@ class DMSGraphQLClient:
                 errors,
                 extra={"application_techid": application_techid},
             )
-            raise exceptions.DmsGraphQLApiException()
+            raise exceptions.DmsGraphQLApiError(errors)
 
     def get_single_application_details(self, application_number: int) -> dms_models.DmsApplicationResponse:
         response = self.execute_query(
