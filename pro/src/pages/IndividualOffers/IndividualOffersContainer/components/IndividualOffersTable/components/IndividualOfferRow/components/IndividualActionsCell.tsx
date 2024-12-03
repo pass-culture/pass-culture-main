@@ -84,6 +84,7 @@ export const IndividualActionsCells = ({
   return (
     <>
       <td
+        role="cell"
         className={classNames(
           styles['offers-table-cell'],
           styles['actions-column']

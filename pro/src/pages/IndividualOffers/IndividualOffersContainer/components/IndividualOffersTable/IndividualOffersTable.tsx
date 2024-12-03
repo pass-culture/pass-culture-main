@@ -106,7 +106,7 @@ export const IndividualOffersTable = ({
                   }
                 />
               </div>
-              <table className={styles['individual-table']}>
+              <table role="table" className={styles['individual-table']}>
                 <IndividualOffersTableHead />
                 <IndividualOffersTableBody
                   offers={currentPageOffersSubset}

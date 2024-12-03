@@ -10,6 +10,7 @@ interface OfferStatusCellProps {
 
 export const OfferStatusCell = ({ status }: OfferStatusCellProps) => (
   <td
+    role="cell"
     className={classNames(styles['offers-table-cell'], styles['status-column'])}
   >
     <StatusLabel status={status} />
