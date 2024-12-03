@@ -1820,22 +1820,6 @@ class RefreshAccessTokenTest:
 
         assert refresh_token_lifetime == settings.JWT_REFRESH_TOKEN_EXTENDED_EXPIRES
 
-    @override_features(WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=False)
-    def should_create_access_token_with_default_lifetime_when_device_is_a_trusted_device_and_suspicious_email_feature_flag_is_disabled(
-        self,
-    ):
-        user = users_factories.UserFactory()
-        trusted_device = users_factories.TrustedDeviceFactory(user=user)
-
-        refresh_token = users_api.create_user_refresh_token(user=user, device_info=trusted_device)
-        decoded_refresh_token = decode_token(refresh_token)
-
-        token_issue_date = decoded_refresh_token["iat"]
-        token_expiration_date = decoded_refresh_token["exp"]
-        refresh_token_lifetime = token_expiration_date - token_issue_date
-
-        assert refresh_token_lifetime == settings.JWT_REFRESH_TOKEN_EXPIRES
-
 
 class NotifyUserBeforeDeletionUponSuspensionTest:
     def test_get_users_with_suspended_account_to_notify(self):
