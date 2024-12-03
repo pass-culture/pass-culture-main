@@ -18,6 +18,10 @@
     margin-left: 0;
   }
 
+  &-layout-onboarding {
+    height: size.$footer-height;
+  }
+
   @media (min-width: size.$tablet) {
     min-height: size.$footer-height;
   }

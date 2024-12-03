@@ -24,7 +24,7 @@ export interface LayoutProps {
    * Make sure that only one heading is displayed per page.
    */
   mainHeading?: string
-  layout?: 'basic' | 'funnel' | 'sticky-actions' | 'logged-out'
+  layout?: 'basic' | 'funnel' | 'onboarding' | 'sticky-actions' | 'logged-out'
 }
 
 export const Layout = ({
@@ -41,7 +41,8 @@ export const Layout = ({
 
   const isMobileScreen = useMediaQuery('(max-width: 46.5rem)')
 
-  const shouldDisplayUserReview = layout !== 'funnel' && layout !== 'logged-out'
+  const shouldDisplayUserReview =
+    layout !== 'funnel' && layout !== 'onboarding' && layout !== 'logged-out'
 
   const mainHeaing = mainHeading && (
     <div className={styles['main-heading-wrapper']}>
@@ -103,6 +104,7 @@ export const Layout = ({
           className={cn(styles['page-layout'], {
             [styles['page-layout-connect-as']]: currentUser?.isImpersonated,
             [styles['page-layout-funnel']]: layout === 'funnel',
+            [styles['page-layout-onboarding']]: layout === 'onboarding',
           })}
         >
           {(layout === 'basic' || layout === 'sticky-actions') && (
@@ -135,12 +137,14 @@ export const Layout = ({
             <div
               className={cn(styles['content-container'], {
                 [styles['content-container-funnel']]: layout === 'funnel',
+                [styles['content-container-onboarding']]:
+                  layout === 'onboarding',
                 [styles['content-container-logged-out']]:
                   layout === 'logged-out',
               })}
             >
               <main id="content">
-                {layout === 'funnel' ? (
+                {layout === 'funnel' || layout === 'onboarding' ? (
                   <>
                     {mainHeaing}
                     {children}
