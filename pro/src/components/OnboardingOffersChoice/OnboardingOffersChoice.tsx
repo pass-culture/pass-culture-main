@@ -1,9 +1,10 @@
+import { ReactNode } from 'react'
+
 import { Button } from 'ui-kit/Button/Button'
 
 import collective from './assets/collective.jpeg'
 import individuelle from './assets/individuelle.jpeg'
 import styles from './OnboardingOffersChoicem.module.scss'
-import { ReactNode } from 'react'
 
 interface CardProps {
   imageSrc: string

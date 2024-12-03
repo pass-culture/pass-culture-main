@@ -7,7 +7,7 @@ import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { useNotification } from 'commons/hooks/useNotification'
-import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
+import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullMoreIcon from 'icons/full-more.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
@@ -160,32 +160,32 @@ export const PriceCategoriesForm = ({
                       smallLabel
                     />
                     {mode === OFFER_WIZARD_MODE.CREATION && (
-                        <Button
-                          className={styles['delete-icon']}
-                          iconClassName={styles['delete-icon-svg']}
-                          data-testid={'delete-button'}
-                          variant={ButtonVariant.TERNARY}
-                          icon={fullTrashIcon}
-                          iconPosition={IconPositionEnum.CENTER}
-                          disabled={
-                            values.priceCategories.length <= 1 || isDisabled
-                          }
-                          onClick={() =>
-                            onDeletePriceCategory(
-                              index,
-                              arrayHelpers,
-                              values.priceCategories,
-                              values.priceCategories[index].id
-                            )
-                          }
-                          hasTooltip={
-                            values.priceCategories.length > 1 && !isDisabled
-                          }
-                        >
-                          {values.priceCategories.length > 1 &&
-                            !isDisabled &&
-                            'Supprimer le tarif'}
-                        </Button>
+                      <Button
+                        className={styles['delete-icon']}
+                        iconClassName={styles['delete-icon-svg']}
+                        data-testid={'delete-button'}
+                        variant={ButtonVariant.TERNARY}
+                        icon={fullTrashIcon}
+                        iconPosition={IconPositionEnum.CENTER}
+                        disabled={
+                          values.priceCategories.length <= 1 || isDisabled
+                        }
+                        onClick={() =>
+                          onDeletePriceCategory(
+                            index,
+                            arrayHelpers,
+                            values.priceCategories,
+                            values.priceCategories[index].id
+                          )
+                        }
+                        hasTooltip={
+                          values.priceCategories.length > 1 && !isDisabled
+                        }
+                      >
+                        {values.priceCategories.length > 1 &&
+                          !isDisabled &&
+                          'Supprimer le tarif'}
+                      </Button>
                     )}
                   </FormLayout.Row>
                 </fieldset>
