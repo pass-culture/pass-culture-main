@@ -107,6 +107,13 @@ class AccountUpdateRequestSearchForm(utils.PCForm):
             users_models.UserAccountUpdateType, formatter=filters.format_user_account_update_type
         ),
     )
+    flags = fields.PCSelectMultipleField(
+        "Marqueur",
+        choices=utils.choices_from_enum(
+            users_models.UserAccountUpdateFlag, formatter=filters.format_user_account_update_flag
+        ),
+    )
+
     last_instructor = fields.PCTomSelectField(
         "Dernier instructeur",
         multiple=True,
