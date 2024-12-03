@@ -124,7 +124,7 @@
             {% endfor %}
         {% endif %}
 
-        {% if  container.internal.emailsHistory %}
+        {% if container.internal.emailsHistory %}
             <h3>Historique des changements d’adresse de messagerie</h3>
             {% for history in container.internal.emailsHistory %}
                 <table class="borderless">
@@ -202,6 +202,30 @@
                     <tr><td>Chronique</td><td>{{chronicle.content |replace('\n', '<br/>' | safe)}}</td></tr>
                     <tr><td>Accepte la diffusion sur les médias sociaux</td><td>{%if chronicle.isSocialMediaDiffusible%}oui{%else%}non{%endif%}</td></tr>
                     <tr><td>Accepte la diffusion d'identité</td><td>{%if chronicle.isIdentityDiffusible%}oui{%else%}non{%endif%}</td></tr>
+                </table>
+            {% endfor %}
+        {% endif %}
+
+        {% if container.internal.accountUpdateRequests %}
+            <h3>Dossiers Démarches-Simplifiées de mise à jour d'informations personnelles</h3>
+            {% for update_request in container.internal.accountUpdateRequests %}
+                <table class="borderless">
+                    <tr><td>Accords de traitement des données<br/>(Consentement, CGU, accord au traitement<br/>des données, déclaration sur l'honneur)</td><td>{% if update_request.allConditionsChecked%}oui{%else%}non{%endif%}</td></tr>
+                    <tr><td>État du dossier</td><td>{{update_request.status.value}}</td></tr>
+                    <tr><td>Date de création du dossier</td><td>{{update_request.dateCreated.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>
+                    {% if update_request.dateLastStatusUpdate %}<tr><td>Date de dernière mise à jour du dossier</td><td>{{update_request.dateLastStatusUpdate.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>{% endif %}
+                    {% if update_request.dateLastInstructorMessage %}<tr><td>Date du dernier message de l'instructeur</td><td>{{update_request.dateLastInstructorMessage.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>{% endif %}
+                    {% if update_request.dateLastUserMessage %}<tr><td>Date du dernier message du demandeur</td><td>{{update_request.dateLastUserMessage.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>{% endif %}
+                    {% if update_request.firstName %}<tr><td>Prénom du demandeur</td><td>{{update_request.firstName}}</td></tr>{% endif %}
+                    {% if update_request.lastName %}<tr><td>Nom du demandeur</td><td>{{update_request.lastName}}</td></tr>{% endif %}
+                    {% if update_request.email %}<tr><td>Adresse email du demandeur</td><td>{{update_request.email}}</td></tr>{% endif %}
+                    {% if update_request.birthDate %}<tr><td>Date de naissance du demandeur</td><td>{{update_request.birthDate.strftime('%d/%m/%Y')}}</td></tr>{% endif %}
+                    {% if update_request.oldEmail %}<tr><td>Ancienne adresse email</td><td>{{update_request.oldEmail}}</td></tr>{% endif %}
+                    {% if update_request.newFirstName %}<tr><td>Nouveau prénom</td><td>{{update_request.newFirstName}}</td></tr>{% endif %}
+                    {% if update_request.newLastName %}<tr><td>Nouveau nom</td><td>{{update_request.newLastName}}</td></tr>{% endif %}
+                    {% if update_request.newEmail %}<tr><td>Nouvelle adresse email</td><td>{{update_request.newEmail}}</td></tr>{% endif %}
+                    {% if update_request.newPhoneNumber %}<tr><td>Nouveau numéro de téléphone</td><td>{{update_request.newPhoneNumber}}</td></tr>{% endif %}
+                    {% if update_request.updateTypes %}<tr><td>Informations modifiées</td><td>{%for updateType in update_request.updateTypes%}{{updateType}}; {% endfor %}</td></tr>{% endif %}
                 </table>
             {% endfor %}
         {% endif %}

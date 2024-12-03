@@ -365,6 +365,13 @@ export const routes: RouteConfig[] = [
     title: 'Collaborateurs',
   },
   {
+    lazy: () =>
+      import('pages/OnboardingOffersTypeChoice/OnboardingOffersTypeChoice'),
+    path: '/inscription-choix-offre',
+    title: "Inscription - Choix du type d'offre",
+    featureName: 'WIP_ENABLE_PRO_ONBOARDING',
+  },
+  {
     lazy: () => import('pages/Errors/NotFound/NotFound'),
     path: '/404',
     title: 'Erreur 404 - Page indisponible',

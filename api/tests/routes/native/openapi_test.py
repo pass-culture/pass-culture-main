@@ -2568,6 +2568,11 @@ def test_public_api(client):
                             "type": "string",
                         },
                         "id": {"title": "Id", "type": "integer"},
+                        "isOpenToPublic": {
+                            "nullable": True,
+                            "title": "Isopentopublic",
+                            "type": "boolean",
+                        },
                         "isPermanent": {"nullable": True, "title": "Ispermanent", "type": "boolean"},
                         "isVirtual": {"title": "Isvirtual", "type": "boolean"},
                         "latitude": {"nullable": True, "title": "Latitude", "type": "number"},

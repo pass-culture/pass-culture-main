@@ -288,18 +288,17 @@ class IndexOffersInQueueTest:
 
         # First run pops and indexes 3 random ids.
         # Second run pops and indexes 3 other random ids,
-        # and stops because there are less than REDIS_OFFER_IDS_CHUNK_SIZE items left in the queue.
-        assert mocked_reindex_offer_ids.call_count == 2
+        # Third run pops and indexes the last 2 items
+        assert mocked_reindex_offer_ids.call_count == 3
 
-        assert app.redis_client.scard(queue) == 2
-        assert app.redis_client.smembers(queue) <= set(str(id_) for id_ in offer_ids)
+        assert app.redis_client.scard(queue) == 0
 
-    def test_command_behaviour(self, mocked_reindex_offer_ids, app):
+    def test_command_behaviour_when_no_limit(self, mocked_reindex_offer_ids, app):
         queue = algolia.REDIS_OFFER_IDS_NAME
         items = list(range(1, 9))
         app.redis_client.sadd(queue, *items)
 
-        search.index_offers_in_queue(stop_only_when_empty=True)
+        search.index_offers_in_queue(max_batches_to_process=None)
 
         # First run pops and indexes 3 random ids.
         # Second run pops and indexes 3 other random ids,
@@ -307,6 +306,20 @@ class IndexOffersInQueueTest:
         # and stops because the queue is empty.
         assert mocked_reindex_offer_ids.call_count == 3
         assert app.redis_client.scard(queue) == 0
+
+    def test_command_behaviour_when_limit_is_set(self, mocked_reindex_offer_ids, app):
+        queue = algolia.REDIS_OFFER_IDS_NAME
+        items = list(range(1, 9))
+        app.redis_client.sadd(queue, *items)
+
+        search.index_offers_in_queue(max_batches_to_process=2)
+
+        # First run pops and indexes 3 random ids.
+        # Second run pops and indexes 3 other random ids,
+        # and stops because the maximum number of batches is reached
+        assert mocked_reindex_offer_ids.call_count == 2
+        assert app.redis_client.scard(queue) == 2
+        assert app.redis_client.smembers(queue) <= set(str(id_) for id_ in items)
 
 
 @override_features(ENABLE_VENUE_STRICT_SEARCH=True)

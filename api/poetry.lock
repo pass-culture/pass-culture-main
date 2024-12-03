@@ -3166,13 +3166,13 @@ sqlparse = ">=0.1.19"
 
 [[package]]
 name = "phonenumberslite"
-version = "8.13.50"
+version = "8.13.51"
 description = "Python version of Google's common library for parsing, formatting, storing and validating international phone numbers."
 optional = false
 python-versions = "*"
 files = [
-    {file = "phonenumberslite-8.13.50-py2.py3-none-any.whl", hash = "sha256:d1968068a7c79486090325e4dd09801aace7ee81fbb5c78a4ec993d51e993797"},
-    {file = "phonenumberslite-8.13.50.tar.gz", hash = "sha256:464df2af4b8d4fe96ff83e184c27440a896adc3cc0c64f17231926ee3ce6e100"},
+    {file = "phonenumberslite-8.13.51-py2.py3-none-any.whl", hash = "sha256:ff121cef3b91ea5ffc952ad573229346694e64039441f41690222fbf6a765886"},
+    {file = "phonenumberslite-8.13.51.tar.gz", hash = "sha256:c116136c7a2fa7b55b6cea492296f14683077a4817d7a6431c0d83abbd0acfeb"},
 ]
 
 [[package]]
@@ -4018,17 +4018,17 @@ tests = ["coverage[toml] (==5.0.4)", "pytest (>=6.0.0,<7.0.0)"]
 
 [[package]]
 name = "pylint"
-version = "3.3.1"
+version = "3.3.2"
 description = "python code static checker"
 optional = false
 python-versions = ">=3.9.0"
 files = [
-    {file = "pylint-3.3.1-py3-none-any.whl", hash = "sha256:2f846a466dd023513240bc140ad2dd73bfc080a5d85a710afdb728c420a5a2b9"},
-    {file = "pylint-3.3.1.tar.gz", hash = "sha256:9f3dcc87b1203e612b78d91a896407787e708b3f189b5fa0b307712d49ff0c6e"},
+    {file = "pylint-3.3.2-py3-none-any.whl", hash = "sha256:77f068c287d49b8683cd7c6e624243c74f92890f767f106ffa1ddf3c0a54cb7a"},
+    {file = "pylint-3.3.2.tar.gz", hash = "sha256:9ec054ec992cd05ad30a6df1676229739a73f8feeabf3912c995d17601052b01"},
 ]
 
 [package.dependencies]
-astroid = ">=3.3.4,<=3.4.0-dev0"
+astroid = ">=3.3.5,<=3.4.0-dev0"
 colorama = {version = ">=0.4.5", markers = "sys_platform == \"win32\""}
 dill = [
     {version = ">=0.3.7", markers = "python_version >= \"3.12\""},
@@ -4059,12 +4059,12 @@ pylint = ">=1.7"
 
 [[package]]
 name = "pylint-pydantic"
-version = "0.3.2"
+version = "0.3.3"
 description = "A Pylint plugin to help Pylint understand the Pydantic"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "pylint_pydantic-0.3.2-py3-none-any.whl", hash = "sha256:e5cec02370aa68ac8eff138e5d573b0ac049bab864e9a6c3a9057cf043440aa1"},
+    {file = "pylint_pydantic-0.3.3-py3-none-any.whl", hash = "sha256:7071ff385e4a30868ea0bf49a2b7221f82fa3aaab56c8fc35dd5d0b004373674"},
 ]
 
 [package.dependencies]
@@ -4286,13 +4286,13 @@ s2repoze = ["paste", "repoze.who", "zope.interface"]
 
 [[package]]
 name = "pytest"
-version = "8.3.3"
+version = "8.3.4"
 description = "pytest: simple powerful testing with Python"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "pytest-8.3.3-py3-none-any.whl", hash = "sha256:a6853c7375b2663155079443d2e45de913a911a11d669df02a50814944db57b2"},
-    {file = "pytest-8.3.3.tar.gz", hash = "sha256:70b98107bd648308a7952b06e6ca9a50bc660be218d53c257cc1fc94fda10181"},
+    {file = "pytest-8.3.4-py3-none-any.whl", hash = "sha256:50e16d954148559c9a74109af1eaf0c945ba2d8f30f0a3d3335edde19788b6f6"},
+    {file = "pytest-8.3.4.tar.gz", hash = "sha256:965370d062bce11e73868e0335abac31b4d3de0e82f4007408d242b4f8610761"},
 ]
 
 [package.dependencies]
@@ -5521,13 +5521,13 @@ types-setuptools = "*"
 
 [[package]]
 name = "types-protobuf"
-version = "5.28.3.20241030"
+version = "5.28.3.20241203"
 description = "Typing stubs for protobuf"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "types-protobuf-5.28.3.20241030.tar.gz", hash = "sha256:f7e6b45845d75393fb41c0b3ce82c46d775f9771fae2097414a1dbfe5b51a988"},
-    {file = "types_protobuf-5.28.3.20241030-py3-none-any.whl", hash = "sha256:f3dae16adf342d4fb5bb3673cabb22549a6252e5dd66fc52d8310b1a39c64ba9"},
+    {file = "types_protobuf-5.28.3.20241203-py3-none-any.whl", hash = "sha256:5367632a4785394b0504e7c1e4d54a2dceeae9cd4f73a705d0f6499fc99cecb1"},
+    {file = "types_protobuf-5.28.3.20241203.tar.gz", hash = "sha256:2e1c962bdf76c576506b5fc0678d28efa6652a54c04ae46562a6209e777bd789"},
 ]
 
 [[package]]
@@ -6166,4 +6166,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "7709e6b1c6cff894ea33a0aa4ab833296d1dacf0b5f94c2e2529869a9782f675"
+content-hash = "f4f6035e0625b01d21ddeff036d9e3cdb906290451619cbf3111432d9259fb92"

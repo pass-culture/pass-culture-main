@@ -244,6 +244,7 @@ def create_draft_offer(
         product=product,
     )
     db.session.add(offer)
+    db.session.flush()
 
     if body.call_id:
         logger.info(

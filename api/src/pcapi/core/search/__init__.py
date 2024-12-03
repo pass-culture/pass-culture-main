@@ -213,25 +213,26 @@ def async_index_offers_of_venue_ids(
         )
 
 
-def index_offers_in_queue(stop_only_when_empty: bool = False, from_error_queue: bool = False) -> None:
+def index_offers_in_queue(from_error_queue: bool = False, max_batches_to_process: int | None = 100) -> None:
     """Pop offers from indexation queue and reindex them.
 
     If ``from_error_queue`` is True, pop offers from the error queue
     instead of the "standard" indexation queue.
 
-    If ``stop_only_when_empty`` is False (i.e. if called as a cron
-    command), we pop from the queue at least once, and stop when there
-    is less than REDIS_OFFER_IDS_CHUNK_SIZE in the queue (otherwise
+    If ``max_batches_to_process`` is a number (i.e. if called as a cron
+    command), we pop from the queue as many times as specified (otherwise
     the cron job may never stop). It means that a cron job may run for
     a long time if the queue has many items. In fact, a subsequent
     cron job may run in parallel if the previous one has not finished.
     It's fine because they both pop from the queue.
 
-    If ``stop_only_when_empty`` is True (i.e. if called manually to
+    If ``max_batches_to_process`` is None (i.e. if called manually to
     process the whole queue), we pop from the queue and stop only when
     the queue is empty.
     """
+
     backend = _get_backend()
+    n_batches = 1
     while True:
         with backend.pop_offer_ids_from_queue(
             count=settings.REDIS_OFFER_IDS_CHUNK_SIZE,
@@ -259,9 +260,10 @@ def index_offers_in_queue(stop_only_when_empty: bool = False, from_error_queue: 
                     extra={"count": len(offer_ids), "from_error_queue": from_error_queue},
                 )
 
-        left_to_process = backend.count_offers_to_index_from_queue(from_error_queue=from_error_queue)
-        if not stop_only_when_empty and left_to_process < settings.REDIS_OFFER_IDS_CHUNK_SIZE:
+        if max_batches_to_process and n_batches >= max_batches_to_process:
             break
+
+        n_batches += 1
 
 
 def index_all_collective_offers_and_templates() -> None:

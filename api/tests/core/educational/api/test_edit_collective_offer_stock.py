@@ -7,9 +7,12 @@ from pcapi.core.educational import exceptions
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.api import stock as educational_api_stock
 from pcapi.core.educational.models import CollectiveBooking
+from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.offers import exceptions as offers_exceptions
+from pcapi.core.testing import override_features
+from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.serialization import collective_stock_serialize
 
@@ -231,7 +234,7 @@ class EditCollectiveOfferStocksTest:
 
         new_start_naive = now + datetime.timedelta(days=34)
         assert new_start_naive.tzinfo is None
-        educational_api_stock._update_educational_booking_cancellation_limit_date(booking, new_start_naive)
+        educational_api_stock.update_collective_booking_cancellation_limit_date(booking, new_start_naive)
 
         booking = CollectiveBooking.query.filter(CollectiveBooking.id == booking.id).one()
         assert booking.cancellationLimitDate == new_start_naive - datetime.timedelta(days=30)
@@ -246,7 +249,7 @@ class EditCollectiveOfferStocksTest:
 
         new_start_aware = now_aware + datetime.timedelta(days=34)
         assert new_start_aware.tzinfo is datetime.timezone.utc
-        educational_api_stock._update_educational_booking_cancellation_limit_date(booking, new_start_aware)
+        educational_api_stock.update_collective_booking_cancellation_limit_date(booking, new_start_aware)
 
         booking = CollectiveBooking.query.filter(CollectiveBooking.id == booking.id).one()
         assert booking.cancellationLimitDate == new_start_aware - datetime.timedelta(days=30)
@@ -323,6 +326,52 @@ class EditCollectiveOfferStocksTest:
         assert booking.cancellationLimitDate == cancellation_limit_date
         stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
         assert stock.beginningDatetime == new_event_date.replace(tzinfo=None)
+
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    def test_should_update_expired_booking(self) -> None:
+        now = datetime.datetime.utcnow()
+        stock = educational_factories.CollectiveStockFactory(
+            beginningDatetime=now + datetime.timedelta(days=5), bookingLimitDatetime=now - datetime.timedelta(days=2)
+        )
+        booking = educational_factories.CollectiveBookingFactory(
+            collectiveStock=stock,
+            status=CollectiveBookingStatus.CANCELLED,
+            cancellationReason=CollectiveBookingCancellationReasons.EXPIRED,
+            cancellationDate=now - datetime.timedelta(days=1),
+        )
+
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
+            bookingLimitDatetime=now + datetime.timedelta(days=1)
+        )
+        educational_api_stock.edit_collective_stock(stock=stock, stock_data=new_stock_data.dict(exclude_unset=True))
+
+        assert stock.bookingLimitDatetime == now + datetime.timedelta(days=1)
+        assert booking.status == CollectiveBookingStatus.PENDING
+        assert booking.cancellationReason == None
+        assert booking.cancellationDate == None
+
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    def test_should_not_update_expired_booking(self) -> None:
+        now = datetime.datetime.utcnow()
+        stock = educational_factories.CollectiveStockFactory(
+            beginningDatetime=now + datetime.timedelta(days=5), bookingLimitDatetime=now - datetime.timedelta(days=2)
+        )
+        booking = educational_factories.CollectiveBookingFactory(
+            collectiveStock=stock,
+            status=CollectiveBookingStatus.CANCELLED,
+            cancellationReason=CollectiveBookingCancellationReasons.EXPIRED,
+            cancellationDate=now - datetime.timedelta(days=1),
+        )
+
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
+            bookingLimitDatetime=now + datetime.timedelta(days=1)
+        )
+        educational_api_stock.edit_collective_stock(stock=stock, stock_data=new_stock_data.dict(exclude_unset=True))
+
+        assert stock.bookingLimitDatetime == now + datetime.timedelta(days=1)
+        assert booking.status == CollectiveBookingStatus.CANCELLED
+        assert booking.cancellationReason == CollectiveBookingCancellationReasons.EXPIRED
+        assert booking.cancellationDate == now - datetime.timedelta(days=1)
 
 
 @pytest.mark.usefixtures("db_session")

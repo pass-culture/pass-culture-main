@@ -932,8 +932,7 @@ def create_user_access_token(user: models.User) -> str:
 
 def create_user_refresh_token(user: models.User, device_info: "account_serialization.TrustedDevice | None") -> str:
     should_extend_lifetime = (
-        feature.FeatureToggle.WIP_ENABLE_TRUSTED_DEVICE.is_active()
-        and feature.FeatureToggle.WIP_ENABLE_SUSPICIOUS_EMAIL_SEND.is_active()
+        feature.FeatureToggle.WIP_ENABLE_SUSPICIOUS_EMAIL_SEND.is_active()
         and is_login_device_a_trusted_device(device_info, user)
     )
 
@@ -1099,14 +1098,24 @@ def _filter_user_accounts(accounts: BaseQuery, search_term: str) -> BaseQuery:
         term_filters.append(models.User.email.like(f"%{split_terms[0]}"))
 
     if not term_filters:
-        name_term = search_term
-        for name in name_term.split():
-            term_filters.append(
+        split_term = search_term.split()
+        if len(split_term) > 1 and all(len(item) <= 3 for item in split_term):
+            # When terms only contain 3 letters or less, search for the exact full name to avoid timeout.
+            # This enables to find users with very short names (e.g. "Lou Na") using the trigram index on full name.
+            filters.append(
                 sa.func.immutable_unaccent(models.User.firstName + " " + models.User.lastName).ilike(
-                    f"%{clean_accents(name)}%"
+                    f"{clean_accents(search_term)}"
                 )
             )
-        filters.append(sa.and_(*term_filters) if len(term_filters) > 1 else term_filters[0])
+        else:
+            name_term = search_term
+            for name in split_term:
+                term_filters.append(
+                    sa.func.immutable_unaccent(models.User.firstName + " " + models.User.lastName).ilike(
+                        f"%{clean_accents(name)}%"
+                    )
+                )
+            filters.append(sa.and_(*term_filters) if len(term_filters) > 1 else term_filters[0])
 
     else:
         filters.append(sa.or_(*term_filters) if len(term_filters) > 1 else term_filters[0])
@@ -1926,6 +1935,41 @@ def _extract_gdpr_chronicles(user: models.User) -> list[users_serialization.Gdpr
     return chronicles
 
 
+def _extract_gdpr_account_update_requests(user: models.User) -> list[users_serialization.GdprAccountUpdateRequests]:
+    fr_update_types = {
+        models.UserAccountUpdateType.FIRST_NAME: "Prénom",
+        models.UserAccountUpdateType.LAST_NAME: "Nom",
+        models.UserAccountUpdateType.EMAIL: "Email",
+        models.UserAccountUpdateType.PHONE_NUMBER: "Numéro de téléphone",
+    }
+    update_requests_data = models.UserAccountUpdateRequest.query.filter(
+        models.UserAccountUpdateRequest.userId == user.id,
+    )
+    update_requests = []
+    for update_request in update_requests_data:
+        update_requests.append(
+            users_serialization.GdprAccountUpdateRequests(
+                allConditionsChecked=update_request.allConditionsChecked,
+                birthDate=update_request.birthDate,
+                dateCreated=update_request.dateCreated,
+                dateLastInstructorMessage=update_request.dateLastInstructorMessage,
+                dateLastStatusUpdate=update_request.dateLastStatusUpdate,
+                dateLastUserMessage=update_request.dateLastUserMessage,
+                email=update_request.email,
+                firstName=update_request.firstName,
+                lastName=update_request.lastName,
+                newEmail=update_request.newEmail,
+                newFirstName=update_request.newFirstName,
+                newLastName=update_request.newLastName,
+                newPhoneNumber=update_request.newPhoneNumber,
+                oldEmail=update_request.oldEmail,
+                status=update_request.status,
+                updateTypes=[fr_update_types.get(updateType, "") for updateType in update_request.updateTypes],
+            )
+        )
+    return update_requests
+
+
 def _extract_gdpr_marketing_data(user: models.User) -> users_serialization.GdprMarketing:
     notification_subscriptions = user.notificationSubscriptions or {}
     return users_serialization.GdprMarketing(
@@ -2162,6 +2206,7 @@ def extract_beneficiary_data(extract: models.GdprUserDataExtract) -> None:
             deposits=_extract_gdpr_deposits(user),
             bookings=_extract_gdpr_booking_data(user),
             chronicles=_extract_gdpr_chronicles(user),
+            accountUpdateRequests=_extract_gdpr_account_update_requests(user),
         ),
         external=users_serialization.GdprExternal(
             brevo=_extract_gdpr_brevo_data(user),

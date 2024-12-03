@@ -119,6 +119,7 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
         "contact",
         "openingHours",
     }
+    location_fields = {"street", "banId", "latitude", "longitude", "postalCode", "city", "inseeCode", "isManualEdition"}
     update_venue_attrs = body.dict(exclude=not_venue_fields, exclude_unset=True)
     accessibility_fields = [
         "audioDisabilityCompliant",
@@ -134,11 +135,18 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
     modifications = {
         field: value for field, value in update_venue_attrs.items() if venue.field_exists_and_has_changed(field, value)
     }
+    update_location_attrs = body.dict(include=location_fields, exclude_unset=True)
+    location_modifications = {
+        field: value
+        for field, value in update_location_attrs.items()
+        if venue.offererAddress.address.field_exists_and_has_changed(field, value)
+    }
     validation.check_venue_edition(modifications, venue)
 
     venue = offerers_api.update_venue(
         venue,
         modifications,
+        location_modifications,
         author=current_user,
         contact_data=body.contact,
         opening_hours=body.openingHours,

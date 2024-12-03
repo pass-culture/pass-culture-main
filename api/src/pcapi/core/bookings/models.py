@@ -177,8 +177,9 @@ class Booking(PcObject, Base, Model):
     )
 
     cancellationUserId: int | None = Column(BigInteger, ForeignKey("user.id"), nullable=True)
-
     cancellationUser: Mapped["users_models.User | None"] = relationship("User", foreign_keys=[cancellationUserId])
+    # Index avoids timeout when any user is deleted (because of foreign key)
+    Index("ix_booking_cancellationUserId", cancellationUserId, postgresql_where=cancellationUserId.is_not(None))
 
     status: BookingStatus = Column(Enum(BookingStatus), nullable=False, default=BookingStatus.CONFIRMED)
     Index("ix_booking_status", status)

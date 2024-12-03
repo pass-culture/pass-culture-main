@@ -785,6 +785,15 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
     else:
         contact_data = None
 
+    location_fields = {"street", "banId", "latitude", "longitude", "postalCode", "city", "inseeCode", "isManualEdition"}
+    update_location_attrs = {field: value for field, value in attrs.items() if field in location_fields}
+    location_modifications = {}
+    if venue.offererAddress:
+        location_modifications = {
+            field: value
+            for field, value in update_location_attrs.items()
+            if venue.offererAddress.address.field_exists_and_has_changed(field, value)
+        }
     criteria = criteria_models.Criterion.query.filter(criteria_models.Criterion.id.in_(form.tags.data)).all()
     modifications = {field: value for field, value in attrs.items() if venue.field_exists_and_has_changed(field, value)}
 
@@ -792,6 +801,7 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
         offerers_api.update_venue(
             venue,
             modifications,
+            location_modifications,
             author=current_user,
             contact_data=contact_data,
             criteria=criteria,

@@ -5,12 +5,13 @@
 .income {
   &-filters {
     display: flex;
-    flex-flow: row wrap;
+    flex-direction: column;
     margin-bottom: rem.torem(20px);
     row-gap: rem.torem(10px);
 
     @media (min-width: size.$tablet) {
       margin-bottom: rem.torem(12px);
+      flex-direction: row;
     }
 
     &-divider {
@@ -18,15 +19,17 @@
 
       @media (min-width: size.$tablet) {
         display: block;
-        margin: rem.torem(31.75px) 0 0 rem.torem(24px);
+        margin-top: rem.torem(26.75px);
+        margin-right: rem.torem(24px);
         width: rem.torem(1px);
-        height: rem.torem(30px);
+        height: rem.torem(40px);
         background: var(--color-grey-semi-dark);
       }
     }
 
     &-by-venue {
       max-width: rem.torem(300px);
+      margin-right: rem.torem(24px);
 
       // Selected tags must be displayed to occupy available width.
       // Width must be calculated based on the viewport width minus
@@ -58,15 +61,13 @@
       flex-flow: row wrap;
       flex-direction: row;
       gap: rem.torem(8px);
+      height: fit-content;
 
-      @media (width >= 634px) {
-        height: rem.torem(66.75px);
-        margin-left: rem.torem(24px);
-        align-items: end;
+      @media (min-width: size.$tablet) {
+        margin-top: rem.torem(26.75px);
 
         &-is-only-filter {
-          height: auto;
-          margin-left: 0;
+          margin-top: 0;
         }
       }
 

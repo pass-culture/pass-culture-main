@@ -400,7 +400,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                 smallLabel
                 disabled={readOnlyFields.includes('quantity')}
                 onChange={onQuantityChange}
-                className={styles['field-layout-xsmall']}
+                className={styles['field-layout-small']}
                 classNameFooter={styles['field-layout-footer']}
                 isOptional
                 min={minQuantity}

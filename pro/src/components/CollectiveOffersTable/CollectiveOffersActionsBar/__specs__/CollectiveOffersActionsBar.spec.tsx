@@ -431,6 +431,7 @@ describe('ActionsBar', () => {
       Events.CLICKED_ARCHIVE_COLLECTIVE_OFFER,
       {
         from: '/offres/collectives',
+        offerType: 'collective',
         selected_offers: JSON.stringify([
           { offerId: '1', offerStatus: CollectiveOfferDisplayedStatus.ACTIVE },
           { offerId: '2', offerStatus: CollectiveOfferDisplayedStatus.ACTIVE },

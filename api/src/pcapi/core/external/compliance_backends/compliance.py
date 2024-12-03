@@ -40,7 +40,9 @@ class ComplianceBackend(BaseBackend):
                     "Connection to Compliance API was refused",
                     extra={"status_code": api_response.status_code},
                 )
-                raise requests.ExternalAPIException(is_retryable=False)
+                # FIXME (prouzet, 2024-11-29) We experience random HTTP 403 errors (1 to 5 every day), so make them
+                #  retryable until the issue is fixed on data team side. Sentry issue: 1613833
+                raise requests.ExternalAPIException(is_retryable=(api_response.status_code == 403))
             if api_response.status_code == 422:
                 error_data = {"status_code": api_response.status_code}
                 try:

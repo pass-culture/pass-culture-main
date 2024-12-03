@@ -3,6 +3,8 @@ A client for the subcategory suggestion API.
 Documentation of the API: https://compliance.passculture.team/latest/docs#
 """
 
+import logging
+
 from pcapi import settings
 from pcapi.core.auth import api as auth_api
 from pcapi.core.external.subcategory_suggestion_backends.base import BaseBackend
@@ -12,6 +14,8 @@ from pcapi.utils import requests
 
 
 SUBCATEGORY_SUGGESTION_TIMEOUT_SECONDS = 3
+
+logger = logging.getLogger(__name__)
 
 
 class SubcategorySuggestionApiException(Exception):
@@ -38,6 +42,14 @@ class SubcategorySuggestionBackend(BaseBackend):
             "offerer_name": venue.managingOfferer.name if venue else "",
         }
         response = requests.post(url, headers=headers, json=data, timeout=SUBCATEGORY_SUGGESTION_TIMEOUT_SECONDS)
+        if response.status_code in {401, 403}:
+            logger.exception(
+                "Connection to Compliance API for Subcategory Suggestion was refused",
+                extra={"status_code": response.status_code, "response": response.json()},
+            )
+            # FIXME (ogeber, 2024-12-02) once the 403 issues has been resolved on data side, make
+            # is_retryable False
+            raise requests.ExternalAPIException(is_retryable=(response.status_code == 403))
         if response.status_code != 200:
             raise SubcategorySuggestionApiException(
                 f"Error getting subcategory suggestion from API with code {response.status_code}"

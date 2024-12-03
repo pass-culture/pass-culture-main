@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 import pytest
 from sib_api_v3_sdk.rest import ApiException
+from urllib3.response import HTTPResponse
 
 from pcapi.core import token as token_utils
 from pcapi.core.mails import models
@@ -17,11 +18,43 @@ from pcapi.utils import requests
 
 
 class TransactionalEmailWithTemplateTest:
-    @patch(
-        "sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email",
-        side_effect=ApiException(status=400, reason="Bad Request"),
-    )
+    @patch("sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email")
     def test_bad_request(self, mock, caplog):
+        mock.side_effect = ApiException(
+            http_resp=HTTPResponse(
+                status=400,
+                reason="Bad Request",
+                headers={"Content-Type": "application/json"},
+                body='{"code":"test_code","message":"test_message"}',
+            )
+        )
+
+        payload = SendTransactionalEmailRequest(
+            recipients=[], params={}, template_id=1, tags=[], sender={}, reply_to={}
+        )
+
+        with pytest.raises(requests.ExternalAPIException) as exception_info:
+            send_transactional_email(payload)
+
+        assert exception_info.value.is_retryable is False
+        assert caplog.records[0].levelname == "ERROR"
+        assert (
+            caplog.records[0].message
+            == "Exception when calling Sendinblue send_transac_email with status=400 and code=test_code"
+        )
+        assert len(caplog.records) == 1
+
+    @patch("sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email")
+    def test_error_not_json(self, mock, caplog):
+        mock.side_effect = ApiException(
+            http_resp=HTTPResponse(
+                status=400,
+                reason="Bad Request",
+                headers={"Content-Type": "application/json"},
+                body="This is an error message",
+            )
+        )
+
         payload = SendTransactionalEmailRequest(
             recipients=[], params={}, template_id=1, tags=[], sender={}, reply_to={}
         )
@@ -34,6 +67,35 @@ class TransactionalEmailWithTemplateTest:
         assert (
             caplog.records[0].message
             == "Exception when calling Sendinblue send_transac_email with status=400 and code=unknown"
+        )
+        assert len(caplog.records) == 1
+
+    @patch("sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email")
+    def test_email_not_valid(self, mock, caplog):
+        mock.side_effect = ApiException(
+            http_resp=HTTPResponse(
+                status=400,
+                reason="Bad Request",
+                headers={"Content-Type": "application/json"},
+                body='{"code":"invalid_parameter","message":"email is not valid in to"}',
+            )
+        )
+
+        payload = SendTransactionalEmailRequest(
+            sender={"email": "support@example.com", "name": "pass Culture"},
+            recipients=["invalid@example"],
+            template_id=TransactionalEmail.EMAIL_CONFIRMATION.value.id,
+            params={"name": "Avery"},
+            reply_to={"email": "support@example.com", "name": "pass Culture"},
+            enable_unsubscribe=False,
+        )
+
+        send_transactional_email(payload)
+
+        assert caplog.records[0].levelname == "ERROR"
+        assert (
+            caplog.records[0].message
+            == "Sendinblue can't send email to inv***@example: code=invalid_parameter, message=email is not valid in to"
         )
         assert len(caplog.records) == 1
 

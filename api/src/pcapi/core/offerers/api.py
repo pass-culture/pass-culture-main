@@ -107,6 +107,7 @@ def create_digital_venue(offerer: models.Offerer) -> models.Venue:
 def update_venue(
     venue: models.Venue,
     modifications: dict,
+    location_modifications: dict,
     author: users_models.User,
     *,
     opening_hours: list[serialize_base.OpeningHoursModel] | None = None,
@@ -121,7 +122,7 @@ def update_venue(
         assert venue.offererAddress is not None  # helps mypy
         assert venue.offererAddress.address is not None  # helps mypy
         is_venue_location_updated = any(
-            field in modifications
+            field in location_modifications
             for field in (
                 "street",
                 "city",
@@ -143,7 +144,12 @@ def update_venue(
         new_oa = models.OffererAddress(offerer=venue.managingOfferer)
         if is_venue_location_updated or coordinates_updated:
             update_venue_location(
-                venue, modifications, venue_snapshot=venue_snapshot, new_oa=new_oa, is_manual_edition=is_manual_edition
+                venue,
+                modifications,
+                location_modifications,
+                venue_snapshot=venue_snapshot,
+                new_oa=new_oa,
+                is_manual_edition=is_manual_edition,
             )
         elif is_manual_edition_updated:
             duplicate_oa(
@@ -245,9 +251,10 @@ def update_venue(
     return venue
 
 
-def update_venue_location(
+def update_venue_location(  # pylint: disable=too-many-positional-arguments
     venue: models.Venue,
     modifications: dict,
+    location_modifications: dict,
     venue_snapshot: history_api.ObjectUpdateSnapshot,
     new_oa: models.OffererAddress,
     is_manual_edition: bool = False,
@@ -259,15 +266,13 @@ def update_venue_location(
     On the other side, BO users might want to force a location to a venue, for example if the address is unknown
     for the API.
     """
-    if not any(field in modifications for field in ("street", "city", "postalCode", "latitude", "longitude")):
-        return
     assert venue.offererAddress is not None
-    street = modifications.get("street") or venue.offererAddress.address.street
-    city = modifications.get("city") or venue.offererAddress.address.city
-    postal_code = modifications.get("postalCode") or venue.offererAddress.address.postalCode
-    latitude = modifications.get("latitude") or venue.offererAddress.address.latitude
-    longitude = modifications.get("longitude") or venue.offererAddress.address.longitude
-    ban_id = modifications.get("banId") or venue.offererAddress.address.banId
+    street = location_modifications.get("street") or venue.offererAddress.address.street
+    city = location_modifications.get("city") or venue.offererAddress.address.city
+    postal_code = location_modifications.get("postalCode") or venue.offererAddress.address.postalCode
+    latitude = location_modifications.get("latitude") or venue.offererAddress.address.latitude
+    longitude = location_modifications.get("longitude") or venue.offererAddress.address.longitude
+    ban_id = location_modifications.get("banId") or venue.offererAddress.address.banId
     logger.info(
         "Updating venue location",
         extra={"venue_id": venue.id, "venue_street": street, "venue_city": city, "venue_postalCode": postal_code},
