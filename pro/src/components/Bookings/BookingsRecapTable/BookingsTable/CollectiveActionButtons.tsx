@@ -1,23 +1,18 @@
 import { useState } from 'react'
-import useSWR, { useSWRConfig } from 'swr'
+import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { getErrorCode, isErrorAPIError } from 'apiClient/helpers'
-import {
-  CollectiveBookingResponseModel,
-  CollectiveOfferAllowedAction,
-} from 'apiClient/v1'
+import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import {
   GET_BOOKINGS_QUERY_KEY,
   GET_COLLECTIVE_BOOKING_BY_ID_QUERY_KEY,
-  GET_COLLECTIVE_OFFER_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
 import { BOOKING_STATUS } from 'commons/core/Bookings/constants'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'commons/core/Notification/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferEditionURL } from 'commons/hooks/useOfferEditionURL'
-import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { CancelCollectiveBookingModal } from 'components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -48,19 +43,6 @@ export const CollectiveActionButtons = ({
     offerId,
     isShowcase: false,
   })
-
-  const { data: offer } = useSWR(
-    [GET_COLLECTIVE_OFFER_QUERY_KEY, Number(bookingRecap.stock.offerId)],
-    ([, offerIdParam]) => api.getCollectiveOffer(offerIdParam)
-  )
-
-  const bookingIsCancellable = areNewStatusesEnabled
-    ? offer &&
-      isActionAllowedOnCollectiveOffer(
-        offer,
-        CollectiveOfferAllowedAction.CAN_CANCEL
-      )
-    : isCancellable
 
   const cancelBooking = async () => {
     setIsModalOpen(false)
@@ -104,7 +86,7 @@ export const CollectiveActionButtons = ({
   return (
     <>
       <div className={styles['action-buttons']}>
-        {bookingIsCancellable && (
+        {isCancellable && (
           <Button
             variant={ButtonVariant.SECONDARY}
             onClick={() => setIsModalOpen(true)}
