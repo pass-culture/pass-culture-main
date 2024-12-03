@@ -296,7 +296,7 @@ jobs:
   # If image builds were successfull OR image was already present in registry
   deploy:
     name: "Deploy PullRequest to testing environment"
-    needs: [pcapi-init-job, push-pcapi, push-pcapi-console]
+    needs: [pcapi-init-job, push-pcapi, push-pcapi-console, deploy_on_firebase]
     if: |
       always() &&
       !cancelled() &&
@@ -306,6 +306,7 @@ jobs:
     with:
       environment: pullrequest
       app_version: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
+      pro_url: ${{ needs.deploy_on_firebase.outputs.pro_url }}
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}

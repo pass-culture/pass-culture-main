@@ -39,6 +39,8 @@ jobs:
   deploy_on_firebase:
     runs-on: ubuntu-22.04
     if: ${{ github.actor != 'dependabot[bot]' }}
+    outputs:
+      pro_url: ${{ steps.firebase-deploy.outputs.details_url }}
     steps:
       - uses: actions/checkout@v4.2.1
         with:
