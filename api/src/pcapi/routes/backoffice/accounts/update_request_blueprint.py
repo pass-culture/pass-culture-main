@@ -159,6 +159,13 @@ def _get_filtered_account_update_requests(form: account_forms.AccountUpdateReque
             )
         )
 
+    if form.flags.data:
+        filters.append(
+            users_models.UserAccountUpdateRequest.flags.overlap(
+                [users_models.UserAccountUpdateFlag[str(flag)] for flag in form.flags.data]
+            )
+        )
+
     if form.last_instructor.data:
         filters.append(aliased_instructor.id.in_(form.last_instructor.data))
 
