@@ -29,6 +29,7 @@ export const OfferRemainingStockCell = ({
 }: OfferRemainingStockCellProps) => {
   return (
     <td
+      role="cell"
       className={classNames(
         styles['offers-table-cell'],
         styles['stock-column']

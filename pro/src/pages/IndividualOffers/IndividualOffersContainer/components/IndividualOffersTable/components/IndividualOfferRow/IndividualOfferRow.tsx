@@ -52,6 +52,7 @@ export const IndividualOfferRow = ({
         isOfferDisabled(offer.status)
   return (
     <tr
+      role="row"
       className={classNames(styles['individual-row'], {
         [styles['is-first-row']]: isFirstRow,
         [styles['inactive']]: isOfferInactiveOrExpiredOrDisabled,
@@ -64,21 +65,15 @@ export const IndividualOfferRow = ({
         disabled={isOfferDisabled(offer.status)}
         selectOffer={() => selectOffer(offer)}
       />
-
       <ThumbCell offer={offer} editionOfferLink={editionOfferLink} />
-
       <OfferNameCell offer={offer} editionOfferLink={editionOfferLink} />
-
       {offerAddressEnabled ? (
         <AddressCell address={offer.address} />
       ) : (
         <OfferVenueCell venue={offer.venue} />
       )}
-
       <OfferRemainingStockCell stocks={offer.stocks} />
-
       <OfferStatusCell status={offer.status} />
-
       <IndividualActionsCells
         offer={offer}
         editionOfferLink={editionOfferLink}

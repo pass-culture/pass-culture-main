@@ -22,6 +22,7 @@ export const ThumbCell = ({
 }) => {
   return (
     <td
+      role="cell"
       className={classNames(
         styles['offers-table-cell'],
         styles['thumb-column']

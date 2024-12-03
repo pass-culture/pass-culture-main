@@ -11,6 +11,7 @@ export function AddressCell({
 }) {
   return (
     <td
+      role="cell"
       className={classNames(
         styles['offers-table-cell'],
         styles['venue-column']
