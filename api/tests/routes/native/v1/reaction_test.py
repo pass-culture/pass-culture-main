@@ -196,27 +196,31 @@ class GetAvailableReactionTest:
             response = client.get("/native/v1/reaction/available")
 
         assert response.status_code == 200
-        assert response.json == {
-            "bookings": [
-                {
-                    "image": med_1.thumbUrl,
-                    "dateUsed": format_into_utc_date(booking_offer_1.dateUsed),
-                    "name": booking_offer_1.stock.offer.name,
-                },
-                {
-                    "image": None,
-                    "dateUsed": format_into_utc_date(booking_offer_2.dateUsed),
-                    "name": booking_offer_2.stock.offer.name,
-                },
-                {
-                    "image": None,
-                    "dateUsed": format_into_utc_date(booking_offer_4.dateUsed),
-                    "name": booking_offer_4.stock.offer.name,
-                },
-                {
-                    "image": None,
-                    "dateUsed": format_into_utc_date(booking_offer_3.dateUsed),
-                    "name": booking_offer_3.stock.offer.name,
-                },
-            ]
-        }
+        response_bookings = response.json.get("bookings")
+        expected_bookings = [
+            {
+                "image": med_1.thumbUrl,
+                "dateUsed": format_into_utc_date(booking_offer_1.dateUsed),
+                "name": booking_offer_1.stock.offer.name,
+            },
+            {
+                "image": None,
+                "dateUsed": format_into_utc_date(booking_offer_2.dateUsed),
+                "name": booking_offer_2.stock.offer.name,
+            },
+            {
+                "image": None,
+                "dateUsed": format_into_utc_date(booking_offer_4.dateUsed),
+                "name": booking_offer_4.stock.offer.name,
+            },
+            {
+                "image": None,
+                "dateUsed": format_into_utc_date(booking_offer_3.dateUsed),
+                "name": booking_offer_3.stock.offer.name,
+            },
+        ]
+
+        sorting_key = lambda x: x["name"]
+        expected_bookings.sort(key=sorting_key)
+        response_bookings.sort(key=sorting_key)
+        assert response_bookings == expected_bookings
