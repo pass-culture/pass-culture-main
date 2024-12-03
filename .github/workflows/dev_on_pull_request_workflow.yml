@@ -273,7 +273,7 @@ jobs:
       - name: "Upload Allure Report as artifact"
         uses: actions/upload-artifact@v4
         with:
-          name: allure-report.html
+          name: allure-report
           path: allure-report/index.html
 
   dependabot-auto-merge:
