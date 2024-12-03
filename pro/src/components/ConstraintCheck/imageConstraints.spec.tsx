@@ -1,6 +1,7 @@
 import { createImageFile } from 'commons/utils/testFileHelpers'
 
-import { getValidatorErrors, imageConstraints } from '../imageConstraints'
+import { imageConstraints, getValidatorErrors } from './imageConstraints'
+
 const mockCreateImageBitmap = vi.fn()
 
 Object.defineProperty(global, 'createImageBitmap', {
