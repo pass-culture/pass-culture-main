@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.connectors import acceslibre as acceslibre_connector
 from pcapi.connectors.api_adresse import AddressInfo
 import pcapi.connectors.entreprise.exceptions as entreprise_exceptions
 from pcapi.core import search
@@ -15,6 +16,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as external_testing
+from pcapi.models import db
 from pcapi.utils.date import timespan_str_to_numrange
 
 
@@ -104,11 +106,15 @@ class Returns200Test:
             }
         ]
 
-        assert len(venue.action_history) == 1
-        assert venue.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
-        assert venue.action_history[0].venueId == venue_id
-        assert venue.action_history[0].authorUser.id == user_offerer.user.id
-        assert venue.action_history[0].extraData == {
+        assert len(venue.action_history) == 2
+
+        update_action = [action for action in venue.action_history if action.extraData["modified_info"].get("street")][
+            0
+        ]
+        assert update_action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert update_action.venueId == venue_id
+        assert update_action.authorUser.id == user_offerer.user.id
+        assert update_action.extraData == {
             "modified_info": {
                 "publicName": {"new_info": "Ma librairie", "old_info": "old name"},
                 "venueTypeCode": {
@@ -179,6 +185,23 @@ class Returns200Test:
                 },
             }
         }
+
+        acceslibre_action = [
+            action
+            for action in venue.action_history
+            if action.extraData["modified_info"].get("accessibilityProvider.externalAccessibilityId")
+        ][0]
+        assert acceslibre_action.extraData["modified_info"] == {
+            "accessibilityProvider.externalAccessibilityId": {
+                "new_info": "mon-lieu-chez-acceslibre",
+                "old_info": None,
+            },
+            "accessibilityProvider.externalAccessibilityUrl": {
+                "new_info": "https://acceslibre.beta.gouv.fr/app/activite/mon-lieu-chez-acceslibre/",
+                "old_info": None,
+            },
+        }
+
         assert (len(offerers_models.OffererAddress.query.all())) == 2
         offerer_address = offerers_models.OffererAddress.query.order_by(
             offerers_models.OffererAddress.id.desc()
@@ -335,27 +358,32 @@ class Returns200Test:
         assert response.json["city"] == venue.city
         assert response.json["siret"] == venue.siret
         assert response.json["postalCode"] == venue.postalCode
-        assert len(venue.action_history) == 1
-        assert venue.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
-        assert venue.action_history[0].venueId == venue_id
-        assert venue.action_history[0].authorUser.id == user_offerer.user.id
-        assert venue.action_history[0].extraData["modified_info"]["street"] == {
+        assert len(venue.action_history) == 2
+
+        update_action = [action for action in venue.action_history if action.extraData["modified_info"].get("street")][
+            0
+        ]
+        update_snapshot = update_action.extraData["modified_info"]
+        assert update_action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert update_action.venueId == venue_id
+        assert update_action.authorUser.id == user_offerer.user.id
+        assert update_snapshot["street"] == {
             "new_info": "3 Rue de Valois",
             "old_info": "1 boulevard Poissonnière",
         }
-        assert venue.action_history[0].extraData["modified_info"]["banId"] == {
+        assert update_snapshot["banId"] == {
             "new_info": "75101_9575_00003",
             "old_info": "75102_7560_00001",
         }
-        assert venue.action_history[0].extraData["modified_info"]["latitude"] == {
+        assert update_snapshot["latitude"] == {
             "new_info": "48.87171",
             "old_info": "48.87004",
         }
-        assert venue.action_history[0].extraData["modified_info"]["longitude"] == {
+        assert update_snapshot["longitude"] == {
             "new_info": "2.30829",
             "old_info": "2.3785",
         }
-        assert venue.action_history[0].extraData["modified_info"]["postalCode"] == {
+        assert update_snapshot["postalCode"] == {
             "new_info": "75001",
             "old_info": "75000",
         }
@@ -575,27 +603,32 @@ class Returns200Test:
         assert response.json["city"] == venue.city
         assert response.json["siret"] == venue.siret
         assert response.json["postalCode"] == venue.postalCode
-        assert len(venue.action_history) == 1
-        assert venue.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
-        assert venue.action_history[0].venueId == venue_without_siret.id
-        assert venue.action_history[0].authorUser.id == user_offerer.user.id
-        assert venue.action_history[0].extraData["modified_info"]["street"] == {
+        assert len(venue.action_history) == 2
+
+        update_action = [action for action in venue.action_history if action.extraData["modified_info"].get("street")][
+            0
+        ]
+        update_snapshot = update_action.extraData["modified_info"]
+        assert update_action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert update_action.venueId == venue_without_siret.id
+        assert update_action.authorUser.id == user_offerer.user.id
+        assert update_snapshot["street"] == {
             "new_info": None,
             "old_info": "1 boulevard Poissonnière",
         }
-        assert venue.action_history[0].extraData["modified_info"]["banId"] == {
+        assert update_snapshot["banId"] == {
             "new_info": "58062",
             "old_info": "75102_7560_00001",
         }
-        assert venue.action_history[0].extraData["modified_info"]["latitude"] == {
+        assert update_snapshot["latitude"] == {
             "new_info": "47.06664",
             "old_info": "48.87004",
         }
-        assert venue.action_history[0].extraData["modified_info"]["longitude"] == {
+        assert update_snapshot["longitude"] == {
             "new_info": "3.93336",
             "old_info": "2.3785",
         }
-        assert venue.action_history[0].extraData["modified_info"]["postalCode"] == {
+        assert update_snapshot["postalCode"] == {
             "new_info": "58120",
             "old_info": "75002",
         }
@@ -1077,6 +1110,27 @@ class Returns200Test:
             "contact.website": {"new_info": venue_data["contact"]["website"], "old_info": None},
         }
         mock_request_url_scan.assert_called_once_with(venue_data["contact"]["website"], skip_if_recent_scan=True)
+
+    def test_resync_acceslibre_when_address_changes(self, client):
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
+
+        venue_data = {
+            "street": "3 rue de Valois",
+        }
+
+        http_client = client.with_session_auth(email=user.email)
+        http_client.patch(f"/venues/{venue.id}", json=venue_data)
+
+        db.session.refresh(venue)
+        assert venue.accessibilityProvider.externalAccessibilityId == "mon-lieu-chez-acceslibre"
+        assert set(venue.accessibilityProvider.externalAccessibilityData["access_modality"]) == set(
+            [
+                acceslibre_connector.ExpectedFieldsEnum.EXTERIOR_ONE_LEVEL.value,
+                acceslibre_connector.ExpectedFieldsEnum.ENTRANCE_ONE_LEVEL.value,
+            ]
+        )
 
 
 class Returns400Test:

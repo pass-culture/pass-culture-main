@@ -2568,13 +2568,10 @@ class OpeningHoursTest:
 class AccessibilityProviderTest:
     def test_set_accessibility_provider_id(self):
         venue = offerers_factories.VenueFactory(
-            name="Une librairie de test",
-            postalCode="75001",
-            city="Paris",
+            name="Une librairie de test", postalCode="75001", city="Paris", accessibilityProvider=None
         )
-        venue_accessibility = offerers_factories.AccessibilityProviderFactory(venue=venue)
         offerers_api.set_accessibility_provider_id(venue)
-        assert venue.accessibilityProvider.externalAccessibilityId == venue_accessibility.externalAccessibilityId
+        assert venue.accessibilityProvider.externalAccessibilityId == "mon-lieu-chez-acceslibre"
 
     def test_set_accessibility_last_update_at_provider_id(self):
         venue = offerers_factories.VenueFactory(
