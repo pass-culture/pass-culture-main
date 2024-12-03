@@ -24,9 +24,6 @@
 
 .search-input {
   @include forms.input-theme;
-
-  border: none;
-
   @include forms.input-theme-nested;
 }
 
