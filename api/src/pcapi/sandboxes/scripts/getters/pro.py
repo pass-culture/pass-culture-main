@@ -3,12 +3,16 @@ import datetime
 from pcapi.core.bookings import models as bookings_models
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories_v2 as subcategories
-from pcapi.core.educational import models as educational_models
 import pcapi.core.educational.factories as educational_factories
+import pcapi.core.educational.models as educational_models
+from pcapi.core.educational.utils import UAI_FOR_FAKE_TOKEN
 from pcapi.core.finance import factories as finance_factories
+from pcapi.core.offerers import api as offerers_api
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.providers import factories as providers_factories
 from pcapi.core.users import factories as users_factories
+from pcapi.models import db
 from pcapi.sandboxes.scripts.utils.helpers import get_pro_user_helper
 
 
@@ -123,7 +127,7 @@ def create_pro_user_with_financial_data_and_3_venues() -> dict:
     return {"user": get_pro_user_helper(pro_user)}
 
 
-def create_adage_environnement() -> dict:
+def create_adage_environment() -> dict:
     current_year = educational_factories.EducationalCurrentYearFactory()
     next_year = educational_factories.EducationalYearFactory()
 
@@ -131,7 +135,7 @@ def create_adage_environnement() -> dict:
 
     educational_institution = educational_factories.EducationalInstitutionFactory(
         # should match id of user generated in create_adage_jwt_fake_token
-        institutionId="0910620E",
+        institutionId=UAI_FOR_FAKE_TOKEN,
     )
     educational_factories.PlaylistFactory(
         distanceInKm=50,
@@ -276,6 +280,52 @@ def create_pro_user_with_collective_offers() -> dict:
     educational_factories.EducationalInstitutionFactory(name="COLLEGE 123")
 
     return {"user": get_pro_user_helper(pro_user)}
+
+
+def create_pro_user_with_active_collective_offer() -> dict:
+    current_year = educational_factories.EducationalCurrentYearFactory()
+
+    educational_institution = educational_factories.EducationalInstitutionFactory(
+        # should match id of user generated in create_adage_jwt_fake_token
+        institutionId=UAI_FOR_FAKE_TOKEN,
+    )
+    educational_factories.EducationalDepositFactory(
+        educationalInstitution=educational_institution, educationalYear=current_year
+    )
+
+    pro_user = users_factories.ProFactory()
+    offerer = offerers_factories.OffererFactory()
+
+    offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+    venue = offerers_factories.CollectiveVenueFactory(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
+    offer = educational_factories.ActiveCollectiveOfferFactory(
+        name="Mon offre collective",
+        institution=educational_institution,
+        venue=venue,
+        subcategoryId=subcategories.SEANCE_CINE.id,
+        formats=[subcategories.EacFormat.PROJECTION_AUDIOVISUELLE],
+    )
+
+    # Create a provider for the offerer
+    provider = providers_factories.PublicApiProviderFactory()
+    providers_factories.VenueProviderFactory(
+        venue=venue,
+        provider=provider,
+    )
+    providers_factories.OffererProviderFactory(
+        offerer=offerer,
+        provider=provider,
+    )
+
+    key, clear_token = offerers_api.generate_provider_api_key(provider)
+    db.session.add(key)
+    db.session.commit()
+
+    return {
+        "user": get_pro_user_helper(pro_user),
+        "offer": {"id": offer.id, "name": offer.name, "venueName": offer.venue.name},
+        "providerApiKey": str(clear_token),
+    }
 
 
 def create_pro_user_with_collective_bookings() -> dict:
