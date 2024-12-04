@@ -41,6 +41,27 @@ def test_nominal_case(requests_mock):
 
 
 @override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+def test_municipality_centroid_with_city_less_than_3_characters(requests_mock):
+    postcode = "80190"
+    city = "Y"
+    requests_mock.get(
+        "https://api-adresse.data.gouv.fr/search?q=80190+Y&postcode=80190&type=municipality&autocomplete=0&limit=1",
+        json=fixtures.ONE_MUNICIPALITY_CENTROID_RESPONSE_CITY_NAME_LESS_THAN_3_CHARS,
+    )
+    address_info = api_adresse.get_municipality_centroid(city=city, postcode=postcode)
+    assert address_info == api_adresse.AddressInfo(
+        id="80829",
+        label="Y",
+        postcode="80190",
+        citycode="80829",
+        latitude=49.803313,
+        longitude=2.991219,
+        score=0.924650909090909,
+        city="Y",
+    )
+
+
+@override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
 def test_fallback_to_municipality(requests_mock):
     address = "123456789"
     postcode = "75018"

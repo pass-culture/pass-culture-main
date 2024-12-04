@@ -31,6 +31,39 @@ ONE_FEATURE_RESPONSE = {
     "limit": 1,
 }
 
+ONE_MUNICIPALITY_CENTROID_RESPONSE_CITY_NAME_LESS_THAN_3_CHARS = {
+    "type": "FeatureCollection",
+    "version": "draft",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {"type": "Point", "coordinates": [2.991219, 49.803313]},
+            "properties": {
+                "label": "Y",
+                "score": 0.924650909090909,
+                "id": "80829",
+                "banId": "58078c1c-1d45-489d-b6cc-5854a29795da",
+                "type": "municipality",
+                "name": "Y",
+                "postcode": "80190",
+                "citycode": "80829",
+                "x": 699367.42,
+                "y": 6967160,
+                "population": 89,
+                "city": "Y",
+                "context": "80, Somme, Hauts-de-France",
+                "importance": 0.17116,
+                "municipality": "Y",
+            },
+        }
+    ],
+    "attribution": "BAN",
+    "licence": "ETALAB-2.0",
+    "query": "80190 Y",
+    "filters": {"postcode": "80190"},
+    "limit": 1,
+}
+
 ONE_UNRELIABLE_FEATURE_RESPONSE = {
     "type": "FeatureCollection",
     "version": "draft",
