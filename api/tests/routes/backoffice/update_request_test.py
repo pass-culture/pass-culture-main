@@ -130,7 +130,7 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
             rows[1]["Jeune"]
             == f"Octave César ({first_name_update_request.user.id}) né le {first_name_update_request.user.birth_date.strftime('%d/%m/%Y')} ({last_name_and_email_update_request.user.age} ans) heritier@example.com"
         )
-        assert rows[1]["Modification"] == "Prénom : Octave 🠲 Auguste"
+        assert rows[1]["Modification"] == "Prénom : Octave => Auguste"
         assert rows[1]["Instructeur"] == "Instructeur du Backoffice"
 
         assert rows[2]["Dossier"] == str(last_name_and_email_update_request.dsApplicationId)
@@ -152,7 +152,7 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
         )
         assert (
             rows[2]["Modification"]
-            == "Email : juju.capulet@example.com 🠲 juju.montaigu@example.com Nom : Capulet 🠲 Montaigu"
+            == "Email : juju.capulet@example.com => juju.montaigu@example.com Nom : Capulet => Montaigu"
         )
         assert rows[2]["Instructeur"] == "Instructeur du Backoffice"
 
@@ -171,7 +171,7 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
             rows[3]["Jeune"]
             == f"Jean-Pierre Impair ({phone_number_request.user.id}) né(e) le {phone_number_request.user.birth_date.strftime('%d/%m/%Y')} ({phone_number_request.user.age} ans) impair@example.com"
         )
-        assert rows[3]["Modification"] == "Téléphone : +33222222222 🠲 +33111111111"
+        assert rows[3]["Modification"] == "Téléphone : +33222222222 => +33111111111"
         assert rows[3]["Instructeur"] == "Instructeur du Backoffice"
 
         assert rows[4]["Dossier"] == str(accepted_user_request.dsApplicationId)
@@ -212,7 +212,7 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
         assert rows[0]["État"] == "En construction En attente de correction"
         assert (
             rows[0]["Modification"]
-            == f"Saisie incomplète Email en doublon Email : {update_request.oldEmail} 🠲 {update_request.newEmail} Téléphone : 🠲"
+            == f"Saisie incomplète Email en doublon Email : {update_request.oldEmail} => {update_request.newEmail} Téléphone : =>"
         )
 
     def test_list_filter_by_email(self, authenticated_client):
@@ -411,6 +411,46 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, status=status))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == expected_count
+        assert {row["Dossier"] for row in rows} == expected_application_ids
+
+    @pytest.mark.parametrize(
+        "flags, expected_count, expected_application_ids",
+        (
+            (users_models.UserAccountUpdateFlag.DUPLICATE_NEW_EMAIL.value, 1, {"100001"}),
+            (users_models.UserAccountUpdateFlag.INVALID_VALUE.value, 2, {"100001", "100002"}),
+            (
+                [
+                    users_models.UserAccountUpdateFlag.DUPLICATE_NEW_EMAIL.value,
+                    users_models.UserAccountUpdateFlag.WAITING_FOR_CORRECTION.value,
+                ],
+                2,
+                {"100001", "100002"},
+            ),
+        ),
+    )
+    def test_list_filter_by_status(self, authenticated_client, flags, expected_count, expected_application_ids):
+        users_factories.EmailUpdateRequestFactory(
+            dsApplicationId=100001,
+            flags=[
+                users_models.UserAccountUpdateFlag.INVALID_VALUE,
+                users_models.UserAccountUpdateFlag.DUPLICATE_NEW_EMAIL,
+            ],
+        )
+
+        users_factories.EmailUpdateRequestFactory(
+            dsApplicationId=100002,
+            flags=[
+                users_models.UserAccountUpdateFlag.INVALID_VALUE,
+                users_models.UserAccountUpdateFlag.WAITING_FOR_CORRECTION,
+            ],
+        )
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, flags=flags))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)

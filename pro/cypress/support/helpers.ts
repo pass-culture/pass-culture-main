@@ -17,6 +17,8 @@ export function expectOffersOrBookingsAreFound(
 
   cy.contains(regexExpectedCount)
 
+  cy.findAllByTestId('offer-item-row').should('have.length', expectedLength)
+
   for (let rowLine = 0; rowLine < expectedLength; rowLine++) {
     const lineArray = expectedResults[rowLine + 1]
 

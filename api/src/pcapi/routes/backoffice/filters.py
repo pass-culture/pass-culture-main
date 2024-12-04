@@ -658,6 +658,22 @@ def format_dms_application_status_badge(
             return status.value
 
 
+def format_user_account_update_flag(flag: users_models.UserAccountUpdateFlag) -> str:
+    match flag:
+        case users_models.UserAccountUpdateFlag.MISSING_VALUE:
+            return "Saisie incomplète"
+        case users_models.UserAccountUpdateFlag.INVALID_VALUE:
+            return "Saisie invalide"
+        case users_models.UserAccountUpdateFlag.DUPLICATE_NEW_EMAIL:
+            return "Email en doublon"
+        case users_models.UserAccountUpdateFlag.WAITING_FOR_CORRECTION:
+            return "En attente de correction"
+        case users_models.UserAccountUpdateFlag.CORRECTION_RESOLVED:
+            return "Corrigé"
+        case _:
+            return flag.value
+
+
 def format_user_account_update_flags(flags: typing.Iterable[users_models.UserAccountUpdateFlag]) -> str:
     badges = []
     for flag in flags:

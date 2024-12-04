@@ -720,3 +720,100 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 400
         assert "global" in response.json
+
+    def test_valid_ean_with_missing_stock_price_returns_an_error(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        offerer_address = offerers_factories.OffererAddressFactory(offerer=venue_provider.venue.managingOfferer)
+        ean, _ = self._get_base_product()
+
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
+            json={
+                "location": {
+                    "type": "address",
+                    "venueId": venue_provider.venueId,
+                    "addressId": offerer_address.address.id,
+                },
+                "products": [{"ean": ean, "stock": {"quantity": 3}}],
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"products.0.stock.price": ["field required"]}
+
+    def test_valid_ean_with_null_stock_price_returns_an_error(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        offerer_address = offerers_factories.OffererAddressFactory(offerer=venue_provider.venue.managingOfferer)
+        ean, _ = self._get_base_product()
+
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
+            json={
+                "location": {
+                    "type": "address",
+                    "venueId": venue_provider.venueId,
+                    "addressId": offerer_address.address.id,
+                },
+                "products": [{"ean": ean, "stock": {"quantity": 3, "price": None}}],
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"products.0.stock.price": ["none is not an allowed value"]}
+
+    def test_valid_ean_and_free_stock_is_created(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        offerer_address = offerers_factories.OffererAddressFactory(offerer=venue_provider.venue.managingOfferer)
+        ean, _ = self._get_base_product()
+
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
+            json={
+                "location": {
+                    "type": "address",
+                    "venueId": venue_provider.venueId,
+                    "addressId": offerer_address.address.id,
+                },
+                "products": [{"ean": ean, "stock": {"quantity": 3, "price": 0}}],
+            },
+        )
+
+        assert response.status_code == 204
+
+        created_product = offers_models.Offer.query.one()
+        created_stock = created_product.stocks[0]
+
+        assert created_stock.price == 0
+
+    def test_valid_ean_and_free_stock_is_updated(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        offerer_address = offerers_factories.OffererAddressFactory(offerer=venue_provider.venue.managingOfferer)
+
+        ean, product = self._get_base_product()
+
+        stock = offers_factories.ThingStockFactory(
+            offer__product=product,
+            offer__venue=venue_provider.venue,
+            offer__lastProvider=venue_provider.provider,
+            offer__extraData=product.extraData,
+            quantity=10,
+            price=100,
+        )
+
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
+            json={
+                "location": {
+                    "type": "address",
+                    "venueId": venue_provider.venueId,
+                    "addressId": offerer_address.address.id,
+                },
+                "products": [{"ean": ean, "stock": {"quantity": 3, "price": 0}}],
+            },
+        )
+
+        assert response.status_code == 204
+
+        updated_stock = offers_models.Stock.query.get(stock.id)
+        assert updated_stock.price == 0
+        assert updated_stock.quantity == 3

@@ -366,6 +366,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         postalCode="57000",
         city="Lorient",
         siret="55208131766523",
+        pricing_point="self",
     )
 
 
