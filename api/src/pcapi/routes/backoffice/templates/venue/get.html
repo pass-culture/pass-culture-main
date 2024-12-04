@@ -215,7 +215,7 @@
               {% if venue.criteria %}
                 <p class="mb-1">
                   <span class="fw-bold">Tags :</span>
-                  {{ venue.criteria | format_criteria | safe }}
+                  {{ venue.criteria | format_criteria }}
                 </p>
               {% endif %}
               {% if venue.accessibilityProvider %}

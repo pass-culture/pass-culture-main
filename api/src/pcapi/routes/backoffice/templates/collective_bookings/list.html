@@ -183,7 +183,7 @@
                 <td>{{ links.build_offer_name_to_pc_pro_link(collective_offer) }}</td>
                 <td>{{ links.build_collective_offer_name_to_details_link(collective_offer, text_attr="id") }}</td>
                 <td>{{ collective_booking.total_amount | format_amount }}</td>
-                <td>{{ collective_booking | format_booking_status(with_badge=True) | safe }}</td>
+                <td>{{ collective_booking | format_booking_status(with_badge=True) }}</td>
                 <td class="text-center">
                   {% if collective_booking.validated_incident_id %}
                     <a href="{{ url_for('backoffice_web.finance_incidents.get_incident', finance_incident_id=collective_booking.validated_incident_id) }}"

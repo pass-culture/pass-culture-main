@@ -3,7 +3,7 @@
 {% macro build_has_tag(count, total_count, criterion) %}
   {{ count }}/{{ total_count }}
   {{ count | pluralize('offre active a', 'offres actives ont') }}
-  déjà le tag {{ [criterion] | format_criteria | safe }}
+  déjà le tag {{ [criterion] | format_criteria }}
 {% endmacro %}
 {% extends "layouts/connected.html" %}
 {% block page %}

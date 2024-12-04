@@ -23,7 +23,7 @@
           </td>
           <td>{{ booking_finance_incident.collectiveBooking.educationalInstitution.name }}</td>
           <td>{{ booking_finance_incident.collectiveBooking.userName }}</td>
-          <td>{{ booking_finance_incident.collectiveBooking | format_booking_status(with_badge=True) | safe }}</td>
+          <td>{{ booking_finance_incident.collectiveBooking | format_booking_status(with_badge=True) }}</td>
           <td>{{ links.build_offer_name_to_pc_pro_link(booking_finance_incident.collectiveBooking.collectiveStock.collectiveOffer) }}</td>
           <td>{{ booking_finance_incident.collectiveBooking.dateCreated | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
         </tr>
