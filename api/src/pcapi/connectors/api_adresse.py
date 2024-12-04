@@ -323,6 +323,8 @@ class ApiAdresseBackend(BaseBackend):
         self, city: str, postcode: str | None = None, citycode: str | None = None
     ) -> AddressInfo:
         """Fallback to querying the city, because the q parameter must contain part of the address label"""
+        if len(city) < 3 and postcode is not None:
+            city = f"{postcode} {city}"
         params = {
             "q": city,
             "postcode": postcode,
