@@ -326,8 +326,3 @@ jobs:
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-
-  publish-summary:
-    - name: Publish Summary
-      needs: [pcapi-init-job, deploy-pro-on-firebase-pullrequest]
-      run: echo -e "| Results |  |\n| --- | --- |\n| Pro Firebase Preview | ${{ needs.deploy-pro-on-firebase-pullrequest.outputs.pro_url }} |\n| [pcapi] docker image tag | ${{ needs.pcapi-init-job.outputs.checksum-tag }} |\n| " >> $GITHUB_STEP_SUMMARY
