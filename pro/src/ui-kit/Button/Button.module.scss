@@ -204,21 +204,6 @@
         var(--color-medium-shadow);
     }
 
-    &:focus-visible {
-      &:not(.button-disabled) {
-        position: relative;
-
-        &::before {
-          display: block;
-          content: "";
-          position: absolute;
-          inset: rem.torem(-4px);
-          border: 1px solid var(--color-input-text-color);
-          border-radius: rem.torem(8px);
-        }
-      }
-    }
-
     .button-arrow-content {
       flex-grow: 1;
       text-align: left;
