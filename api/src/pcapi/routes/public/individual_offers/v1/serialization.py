@@ -830,6 +830,7 @@ class EventOfferResponse(OfferResponse, PriceCategoriesResponse):
 class GetOffersQueryParams(IndexPaginationQueryParams):
     venue_id: int = fields.VENUE_ID
     ids_at_provider: str | None = fields.IDS_AT_PROVIDER_FILTER
+    beginning: datetime.datetime | None = fields.PERIOD_BEGINNING_DATE
 
     @pydantic_v1.validator("ids_at_provider")
     def validate_ids_at_provider(cls, ids_at_provider: str) -> list[str] | None:

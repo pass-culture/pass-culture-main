@@ -1,3 +1,6 @@
+from datetime import datetime
+from datetime import timedelta
+from datetime import timezone as tz
 import decimal
 
 import pytest
@@ -146,3 +149,43 @@ class GetEventsTest(PublicAPIVenueEndpointHelper):
             assert response.status_code == 200
 
         assert [event["id"] for event in response.json["events"]] == [event_1.id, event_2.id]
+
+    def test_filter_events_by_beginning_date(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+
+        days_ago = [6, 4, 2, 0]
+        offer_ids_and_days_count = {
+            n_days_ago: build_offer_id(venue_provider.venue, n_days_ago) for n_days_ago in days_ago
+        }
+
+        base_query_params = {"venueId": venue_provider.venueId, "limit": 15}
+
+        num_queries = self.num_queries
+        num_queries += 1  # filter offers' stocks by beginning date
+
+        for n_days_ago in days_ago:
+            with testing.assert_num_queries(num_queries):
+                query_params = base_query_params | {"beginning": formatted_day_builder(n_days_ago + 1)}
+                response = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params=query_params)
+
+                assert response.status_code == 200
+
+            expected_offer_ids = expected_filtered_offer_ids(offer_ids_and_days_count, n_days_ago)
+            found_offer_ids = {event["id"] for event in response.json["events"]}
+            assert (
+                found_offer_ids == expected_offer_ids
+            ), f"[{n_days_ago} days ago] {found_offer_ids} != {expected_offer_ids}"
+
+
+def build_offer_id(venue, n_days_ago) -> offers_models.Stock:
+    beginning = datetime.now(tz.utc) - timedelta(days=n_days_ago)
+    stock = offers_factories.EventStockFactory(offer__venue=venue, beginningDatetime=beginning)
+    return stock.offerId
+
+
+def expected_filtered_offer_ids(offer_ids_and_days_count, from_n_days_ago):
+    return {offer_id for days_ago, offer_id in offer_ids_and_days_count.items() if days_ago <= from_n_days_ago}
+
+
+def formatted_day_builder(n_days_ago):
+    return (datetime.now(tz.utc) - timedelta(days=n_days_ago)).isoformat()
