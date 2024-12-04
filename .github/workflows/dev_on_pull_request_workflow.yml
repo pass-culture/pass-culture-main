@@ -104,14 +104,14 @@ jobs:
           password: "${{ steps.openid-auth.outputs.access_token }}"
       - name: "pcapi"
         id: check-checksum-tag
-        run: ./.github/workflows/scripts/check-image-tag-exists.sh
+        run: sh ./.github/workflows/scripts/check-image-tag-exists.sh
         env:
           image: pcapi
           tag: ${{ steps.pcapi-tags.outputs.checksum-tag }} 
           token: ${{ steps.openid-auth.outputs.access_token }}
       - name: "pcapi-console"
         id: check-console-checksum-tag
-        run: ./.github/workflows/scripts/check-image-tag-exists.sh
+        run: sh ./.github/workflows/scripts/check-image-tag-exists.sh
         env:
           image: pcapi-console
           tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
