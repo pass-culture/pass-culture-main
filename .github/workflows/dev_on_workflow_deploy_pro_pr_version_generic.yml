@@ -112,9 +112,12 @@ jobs:
           projectId: pc-pro-${{ inputs.ENV }}
           entryPoint: pro
           channelId: ${{ inputs.CHANNEL }}
-      - name: "Firebase Deployment URL"
-        run: |
-          echo "::notice title=pro url for this PR:: ${{ steps.firebase-deploy.outputs.details_url }}"
       - name: "Publish Summary"
         run: |
-          echo -e "\n| [pro] preview url | ${{ steps.firebase-deploy.outputs.details_url }} |" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "### :rocket: Deploy PRO summary"
+            echo "| Results                              | Value |"
+            echo "| ------------------------------------ | ----- |"
+            echo "| [pro] preview url                    |  ${{ steps.firebase-deploy.outputs.details_url }} |"
+          } >> $GITHUB_STEP_SUMMARY
+

@@ -116,26 +116,10 @@ jobs:
           image: pcapi-console
           tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
           token: ${{ steps.openid-auth.outputs.access_token }}
-      - name: "Summary"
-        run: |
-          echo "[api] folder changed : ${{ steps.check-api-changes.outputs.any_modified }}"
-          echo "[api-documentation] folder changed : ${{ steps.check-api-documentation-changes.outputs.any_modified }}"
-          echo "[pro] folder changed : ${{ steps.check-pro-changes.outputs.any_modified }}"
-          echo "[dependencies] changed : ${{ steps.check-dependencies-changes.outputs.any_modified }}"
-          echo "[pcapi] push-tags : ${{ steps.pcapi-tags.outputs.push-tags }}"
-          echo "[pcapi] checksum-tag : ${{ steps.pcapi-tags.outputs.checksum-tag }}"
-          echo "[pcapi] image tag ${{ steps.pcapi-tags.outputs.checksum-tag }} exists : ${{ steps.check-checksum-tag.outputs.tag-exists }}"
-          echo "[pcapi-console] image tag ${{ steps.pcapi-tags.outputs.checksum-tag }} exists : ${{ steps.check-console-checksum-tag.outputs.tag-exists }}"
-          if [ ${{ steps.check-checksum-tag.outputs.tag-exists }} = true ]; then
-            echo "::notice:: pcapi:${{ steps.pcapi-tags.outputs.checksum-tag }} already exists in registry. Skipping build and tests"
-          fi
-          if [ ${{ steps.check-console-checksum-tag.outputs.tag-exists }} = true ]; then
-            echo "::notice:: pcapi-console:${{ steps.pcapi-tags.outputs.checksum-tag }} already exists in registry. Skipping build and tests"
-          fi
       - name: "Publish Summary"
         run: |
           {
-            echo "### :rocket: Workflow summary"
+            echo "### :rocket: Init Job summary"
             echo "| Results                              | Value |"
             echo "| ------------------------------------ | ----- |"
             echo "| [api] content changed                | ${{ steps.check-api-documentation-changes.outputs.any_modified }} |"
