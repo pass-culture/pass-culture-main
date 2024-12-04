@@ -9,7 +9,7 @@ import sqlalchemy as sa
 
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
-from pcapi.core.offerers import models as offerer_models
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
 from pcapi.models import feature
@@ -85,7 +85,7 @@ def create_pivot(name: str) -> utils.BackofficeResponse:
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for(".get_pivots", active_tab=name), code=303)
 
-    venue = offerer_models.Venue.query.filter_by(id=form.venue_id.data[0]).one_or_none()
+    venue = offerers_models.Venue.query.filter_by(id=form.venue_id.data[0]).one_or_none()
     if not venue:
         if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
             flash(
