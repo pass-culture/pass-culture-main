@@ -926,17 +926,17 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIEndpointBaseHelper):
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
 
         now = datetime.utcnow()
+        limit = now - timedelta(days=2)
         offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
-            beginningDatetime=now + timedelta(days=5),
-            bookingLimitDatetime=now - timedelta(days=2),
+            collectiveOffer=offer, beginningDatetime=now + timedelta(days=5), bookingLimitDatetime=limit
         )
         booking = educational_factories.CollectiveBookingFactory(
             collectiveStock=stock,
             status=educational_models.CollectiveBookingStatus.CANCELLED,
             cancellationReason=educational_models.CollectiveBookingCancellationReasons.EXPIRED,
             cancellationDate=now - timedelta(days=1),
+            confirmationLimitDate=limit,
         )
 
         new_limit = now + timedelta(days=1)
@@ -952,6 +952,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIEndpointBaseHelper):
         assert booking.status == educational_models.CollectiveBookingStatus.PENDING
         assert booking.cancellationReason == None
         assert booking.cancellationDate == None
+        assert booking.confirmationLimitDate == new_limit
 
     @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_should_not_update_expired_booking(self, client):
@@ -960,17 +961,17 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIEndpointBaseHelper):
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
 
         now = datetime.utcnow()
+        limit = now - timedelta(days=2)
         offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
-            beginningDatetime=now + timedelta(days=5),
-            bookingLimitDatetime=now - timedelta(days=2),
+            collectiveOffer=offer, beginningDatetime=now + timedelta(days=5), bookingLimitDatetime=limit
         )
         booking = educational_factories.CollectiveBookingFactory(
             collectiveStock=stock,
             status=educational_models.CollectiveBookingStatus.CANCELLED,
             cancellationReason=educational_models.CollectiveBookingCancellationReasons.EXPIRED,
             cancellationDate=now - timedelta(days=1),
+            confirmationLimitDate=limit,
         )
 
         new_limit = now + timedelta(days=1)
@@ -986,6 +987,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIEndpointBaseHelper):
         assert booking.status == educational_models.CollectiveBookingStatus.CANCELLED
         assert booking.cancellationReason == educational_models.CollectiveBookingCancellationReasons.EXPIRED
         assert booking.cancellationDate == now - timedelta(days=1)
+        assert booking.confirmationLimitDate == limit
 
 
 @pytest.mark.usefixtures("db_session")
