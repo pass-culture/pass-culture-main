@@ -41,3 +41,25 @@ class EditBOUserForm(utils.PCForm):
     first_name = fields.PCOptStringField("Prénom")
     last_name = fields.PCOptStringField("Nom")
     email = fields.PCEmailField("Email")
+
+
+class SimpleComponentsForm(FlaskForm):
+    checkbox = fields.PCCheckboxField("checkbox")
+    stringfield = fields.PCStringField("string field")
+    password = fields.PCPasswordField("password")
+    postal_code = fields.PCPostalCodeField("code postal")
+    text_area = fields.PCTextareaField("text area")
+    interger = fields.PCIntegerField("nombre entier")
+    decimal = fields.PCDecimalField("nombre décimal")
+    date_time = fields.PCDateTimeField("date et heure")
+    date = fields.PCDateField("date")
+    date_range = fields.PCDateRangeField("interval de dates")
+    select = fields.PCSelectWithPlaceholderValueField("un seul choix", choices=((1, "choix 1"), (2, "choix 2")))
+    multiselect = fields.PCSelectMultipleField("plusieurs choix", choices=((1, "choix 1"), (2, "choix 2")))
+    tomselect = fields.PCTomSelectField(
+        "autocomplete",
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_venues",
+    )
+    switch = fields.PCSwitchBooleanField("interrupteur")
