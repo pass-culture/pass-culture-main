@@ -8,7 +8,7 @@ describe('ADAGE discovery', () => {
     cy.getFakeAdageToken()
     cy.request({
       method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_adage_environnement',
+      url: 'http://localhost:5001/sandboxes/pro/create_adage_environment',
     }).then((response) => {
       offerId = response.body.offerId
     })

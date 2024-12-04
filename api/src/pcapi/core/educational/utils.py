@@ -52,6 +52,9 @@ def log_information_for_data_purpose(
     )
 
 
+UAI_FOR_FAKE_TOKEN = "0910620E"
+
+
 def create_adage_jwt_fake_valid_token(readonly: bool) -> str:
     with open("tests/routes/adage_iframe/private_keys_for_tests/valid_rsa_private_key", "rb") as reader:
         authenticated_informations = {
@@ -62,7 +65,7 @@ def create_adage_jwt_fake_valid_token(readonly: bool) -> str:
             "exp": datetime.utcnow() + timedelta(days=1),
         }
         if not readonly:
-            authenticated_informations["uai"] = "0910620E"
+            authenticated_informations["uai"] = UAI_FOR_FAKE_TOKEN
             authenticated_informations["lat"] = 48.8566  # Paris
             authenticated_informations["lon"] = 2.3522  # Paris
 
