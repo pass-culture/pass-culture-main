@@ -306,7 +306,7 @@ jobs:
     with:
       environment: pullrequest
       app_version: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
-      pro_url: ${{ needs.deploy_on_firebase.outputs.pro_url }}
+      pro_url: ${{ needs.deploy-pro-on-firebase-pullrequest.outputs.pro_url }}
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
