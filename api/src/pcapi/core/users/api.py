@@ -61,7 +61,6 @@ import pcapi.core.users.utils as users_utils
 from pcapi.domain.password import check_password_strength
 from pcapi.domain.password import random_password
 from pcapi.models import db
-from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications import push as push_api
@@ -931,12 +930,7 @@ def create_user_access_token(user: models.User) -> str:
 
 
 def create_user_refresh_token(user: models.User, device_info: "account_serialization.TrustedDevice | None") -> str:
-    should_extend_lifetime = (
-        feature.FeatureToggle.WIP_ENABLE_SUSPICIOUS_EMAIL_SEND.is_active()
-        and is_login_device_a_trusted_device(device_info, user)
-    )
-
-    if should_extend_lifetime:
+    if is_login_device_a_trusted_device(device_info, user):
         duration = datetime.timedelta(seconds=settings.JWT_REFRESH_TOKEN_EXTENDED_EXPIRES)
     else:
         duration = datetime.timedelta(seconds=settings.JWT_REFRESH_TOKEN_EXPIRES)
@@ -1404,7 +1398,6 @@ def save_device_info_and_notify_user(
     should_send_suspicious_login_email = (
         (user.is_active or user.is_account_suspended_upon_user_request)
         and not is_login_device_a_trusted_device(device_info, user)
-        and feature.FeatureToggle.WIP_ENABLE_SUSPICIOUS_EMAIL_SEND.is_active()
         and len(get_recent_suspicious_logins(user)) <= constants.MAX_SUSPICIOUS_LOGIN_EMAILS
     )
 

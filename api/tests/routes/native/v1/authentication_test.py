@@ -779,37 +779,6 @@ class TrustedDeviceFeatureTest:
 
             assert refresh_token_lifetime == settings.JWT_REFRESH_TOKEN_EXPIRES
 
-        @patch("pcapi.core.token.UUIDToken.load_and_check")
-        @patch("pcapi.connectors.google_oauth.get_google_user")
-        @override_features(WIP_ENABLE_GOOGLE_SSO=True, WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=False)
-        def should_not_send_email_when_logging_in_from_a_trusted_device(
-            self, mocked_google_oauth, mocked_load_and_check_oauth_token, client, signin_route, data
-        ):
-            mocked_load_and_check_oauth_token.return_value = self.valid_oauth_state_token
-            mocked_google_oauth.return_value = self.valid_google_user
-            user = users_factories.UserFactory(
-                email="user@test.com", password=settings.TEST_DEFAULT_PASSWORD, isActive=True
-            )
-            users_factories.TrustedDeviceFactory(user=user)
-
-            client.post(f"/native/v1/{signin_route}", json=data)
-
-            assert len(mails_testing.outbox) == 0
-
-        @patch("pcapi.core.token.UUIDToken.load_and_check")
-        @patch("pcapi.connectors.google_oauth.get_google_user")
-        @override_features(WIP_ENABLE_GOOGLE_SSO=True, WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=False)
-        def should_not_send_email_when_feature_flag_is_active_but_email_is_inactive(
-            self, mocked_google_oauth, mocked_load_and_check_oauth_token, client, signin_route, data
-        ):
-            mocked_load_and_check_oauth_token.return_value = self.valid_oauth_state_token
-            mocked_google_oauth.return_value = self.valid_google_user
-            users_factories.UserFactory(email="user@test.com", password=settings.TEST_DEFAULT_PASSWORD, isActive=True)
-
-            client.post(f"/native/v1/{signin_route}", json=data)
-
-            assert len(mails_testing.outbox) == 0
-
     class TrustedDeviceEmailValidationTest:
         def should_extend_refresh_token_lifetime_on_email_validation_when_device_is_trusted(self, client):
             device_info = {
