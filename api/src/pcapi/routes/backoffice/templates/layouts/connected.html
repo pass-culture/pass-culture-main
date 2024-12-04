@@ -168,13 +168,22 @@
                   {% endif %}
                   {{ menu_section_item('Feature flipping', 'backoffice_web.list_feature_flags') }}
                   {{ menu_section_item('Liste des sous-catégories', 'backoffice_web.get_subcategories') }}
-                  {% if get_setting("ENABLE_TEST_USER_GENERATION") %}
-                    {{ menu_section_item("Générateur d'utilisateurs de test", 'backoffice_web.generate_user') }}
-                    {{ menu_section_item("Suppression d'utilisateur", 'backoffice_web.delete_user') }}
-                  {% endif %}
-                  {% if get_setting("ENABLE_BO_COMPONENT_PAGE") %}{{ menu_section_item('Liste des composants', 'backoffice_web.components') }}{% endif %}
                 {% endcall %}
               </div>
+              {% if get_setting("ENABLE_TEST_USER_GENERATION") or get_setting("ENABLE_BO_COMPONENT_PAGE") %}
+                <hr />
+                <div class="nav nav-pills flex-column">
+                  {% call menu_section("Dev") %}
+                    {% if get_setting("ENABLE_TEST_USER_GENERATION") %}
+                      {{ menu_section_item("Générateur d'utilisateurs de test", 'backoffice_web.dev.generate_user') }}
+                      {{ menu_section_item("Suppression d'utilisateur", 'backoffice_web.dev.delete_user') }}
+                    {% endif %}
+                    {% if get_setting("ENABLE_BO_COMPONENT_PAGE") %}
+                      {{ menu_section_item('Liste des composants', 'backoffice_web.dev.components') }}
+                    {% endif %}
+                  {% endcall %}
+                </div>
+              {% endif %}
             </nav>
           </div>
         </div>

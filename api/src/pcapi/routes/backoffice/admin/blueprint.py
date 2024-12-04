@@ -174,18 +174,3 @@ def get_subcategories() -> utils.BackofficeResponse:
     all_subcategories = subcategories_v2.ALL_SUBCATEGORIES_DICT.values()
 
     return render_template("admin/subcategories.html", rows=all_subcategories)
-
-
-@blueprint.backoffice_web.route("/admin/components", methods=["GET"])
-@atomic()
-@utils.custom_login_required(redirect_to=".home")
-def components() -> utils.BackofficeResponse:
-    if not settings.ENABLE_BO_COMPONENT_PAGE:
-        raise NotFound()
-
-    return render_template(
-        "admin/components.html",
-        simple_form=forms.SimpleComponentsForm(),
-        rows={"pages": 5},
-        next_pages_urls=[(i, str(i)) for i in range(6)],
-    )

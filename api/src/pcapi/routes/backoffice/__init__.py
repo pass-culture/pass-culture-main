@@ -46,7 +46,7 @@ def install_routes(app: Flask) -> None:
     from .users import blueprint as users_blueprint
     from .venues import blueprint as venues_blueprint
 
-    if settings.ENABLE_TEST_USER_GENERATION:
-        from .test_users import blueprint as test_users_blueprint
+    if settings.ENABLE_TEST_USER_GENERATION or settings.ENABLE_BO_COMPONENT_PAGE:
+        from .dev import blueprint
 
     filters.install_template_filters(app)
