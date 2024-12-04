@@ -650,6 +650,7 @@ class UserLoginTest:
         assert saved_user.password is None
 
 
+@pytest.mark.usefixtures("db_session")
 class UserIsCaledonianTest:
     def test_user_is_caledonian(self):
         offerer = users_factories.UserFactory(postalCode="98800")
