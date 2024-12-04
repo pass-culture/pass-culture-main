@@ -7,6 +7,7 @@ export type PatchAllOffersActiveStatusBodyModel = {
   creationMode?: string | null;
   isActive: boolean;
   nameOrIsbn?: string | null;
+  offererAddressId?: number | null;
   offererId?: number | null;
   periodBeginningDate?: string | null;
   periodEndingDate?: string | null;
