@@ -4347,13 +4347,6 @@
                         "title": "Students",
                         "type": "array"
                     },
-                    "subcategoryId": {
-                        "description": "**(deprecated, use formats instead)** Event subcategory id",
-                        "example": "FESTIVAL_MUSIQUE",
-                        "nullable": true,
-                        "title": "Subcategoryid",
-                        "type": "string"
-                    },
                     "totalPrice": {
                         "description": "Collective offer price (in \u20ac)",
                         "example": 100.0,
@@ -5938,13 +5931,6 @@
                         "title": "Students",
                         "type": "array"
                     },
-                    "subcategoryId": {
-                        "description": "**(deprecated, use formats instead)** Event subcategory id",
-                        "example": "FESTIVAL_MUSIQUE",
-                        "nullable": true,
-                        "title": "Subcategoryid",
-                        "type": "string"
-                    },
                     "totalPrice": {
                         "description": "Collective offer price (in \u20ac)",
                         "example": 100.0,
@@ -6104,7 +6090,6 @@
                         "items": {
                             "$ref": "#/components/schemas/EacFormat"
                         },
-                        "nullable": true,
                         "type": "array"
                     },
                     "imageCredit": {
@@ -6182,13 +6167,6 @@
                         "title": "Students",
                         "type": "array"
                     },
-                    "subcategoryId": {
-                        "description": "**(deprecated, use formats instead)** Event subcategory id",
-                        "example": "FESTIVAL_MUSIQUE",
-                        "nullable": true,
-                        "title": "Subcategoryid",
-                        "type": "string"
-                    },
                     "totalPrice": {
                         "description": "Collective offer price (in \u20ac)",
                         "example": 100.0,
@@ -6213,6 +6191,7 @@
                     "venueId",
                     "name",
                     "description",
+                    "formats",
                     "bookingEmails",
                     "contactEmail",
                     "contactPhone",

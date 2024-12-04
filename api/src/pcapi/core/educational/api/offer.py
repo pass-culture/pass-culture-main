@@ -421,8 +421,6 @@ def create_collective_offer_public(
     if not offerers_api.can_offerer_create_educational_offer(venue.managingOffererId):
         raise exceptions.CulturalPartnerNotFoundException("No venue has been found for the selected siren")
 
-    offer_validation.check_offer_subcategory_is_valid(body.subcategory_id)
-    offer_validation.check_offer_is_eligible_for_educational(body.subcategory_id)
     validation.validate_offer_venue(body.offer_venue)
 
     educational_domains = educational_repository.get_educational_domains_from_ids(body.domains)
@@ -451,7 +449,6 @@ def create_collective_offer_public(
         venue=venue,
         name=body.name,
         description=body.description,
-        subcategoryId=body.subcategory_id,
         contactEmail=body.contact_email,
         contactPhone=body.contact_phone,
         domains=educational_domains,

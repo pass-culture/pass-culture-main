@@ -410,7 +410,6 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIEndpointBaseHelper):
         payload = {
             "name": "Un nom en français ævœc des diàcrtîtïqués",
             "description": "une description d'offre",
-            "subcategoryId": "EVENEMENT_CINE",
             "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
             "contactEmail": "offerer-contact@example.com",
             "contactPhone": "+33100992798",
@@ -458,7 +457,6 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIEndpointBaseHelper):
         payload = {
             "name": "Un nom en français ævœc des diàcrtîtïqués",
             "description": "une description d'offre",
-            "subcategoryId": "EVENEMENT_CINE",
             "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
             "contactEmail": "offerer-contact@example.com",
             "contactPhone": "+33100992798",
@@ -505,7 +503,6 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIEndpointBaseHelper):
         payload = {
             "name": "Un nom en français ævœc des diàcrtîtïqués",
             "description": "une description d'offre",
-            "subcategoryId": "EVENEMENT_CINE",
             "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
             "contactEmail": "offerer-contact@example.com",
             "contactPhone": "+33100992798",
@@ -580,7 +577,6 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIEndpointBaseHelper):
         payload = {
             "name": "Un nom en français ævœc des diàcrtîtïqués",
             "description": "une description d'offre",
-            "subcategoryId": "EVENEMENT_CINE",
             "venueId": venue2.id,
             "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
             "contactEmail": "offerer-contact@example.com",
@@ -821,40 +817,6 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIEndpointBaseHelper):
         offer = educational_models.CollectiveOffer.query.filter_by(id=offer.id).one()
         assert offer.institutionId
 
-    def test_patch_offer_invalid_subcategory(self, client):
-        # Given
-        venue_provider = provider_factories.VenueProviderFactory()
-        venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
-
-        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
-        offer = educational_factories.CollectiveOfferFactory(
-            imageCredit="pouet",
-            imageId="123456789",
-            venue=venue,
-            provider=venue_provider.provider,
-            subcategoryId="OLD_SUBCATEGORY",
-        )
-        stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
-        )
-
-        payload = {
-            "subcategoryId": "BAD_SUBCATEGORY",
-        }
-
-        # When
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
-            )
-
-        # Then
-        assert response.status_code == 404
-
-        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
-
-        assert offer.subcategoryId == "OLD_SUBCATEGORY"
-
     def test_unknown_national_program(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -879,7 +841,6 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIEndpointBaseHelper):
         payload = {
             "name": "Un nom en français ævœc des diàcrtîtïqués",
             "description": "une description d'offre",
-            "subcategoryId": "EVENEMENT_CINE",
             "venueId": venue2.id,
             "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
             "contactEmail": "offerer-contact@example.com",
