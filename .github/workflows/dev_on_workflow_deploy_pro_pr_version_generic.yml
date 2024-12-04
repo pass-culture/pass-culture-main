@@ -114,4 +114,4 @@ jobs:
           channelId: ${{ inputs.CHANNEL }}
       - name: "Firebase Deployment URL"
         run: |
-          echo "::notice:: Firebase deployment is available at : ${{ steps.firebase-deploy.outputs.details_url }}"
+          echo "::notice title=pro url for this PR:: ${{ steps.firebase-deploy.outputs.details_url }}"

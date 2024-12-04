@@ -132,6 +132,16 @@ jobs:
           if [ ${{ steps.check-console-checksum-tag.outputs.tag-exists }} = true ]; then
             echo "::notice:: pcapi-console:${{ steps.pcapi-tags.outputs.checksum-tag }} already exists in registry. Skipping build and tests"
           fi
+       - name: "Publish Summary"
+         run: |
+           echo -e "| Results |  |\n| --- | --- |" >> $GITHUB_STEP_SUMMARY
+           echo -e "\n| [api] content changed | ${{ steps.check-api-documentation-changes.outputs.any_modified }} |" >> $GITHUB_STEP_SUMMARY
+           echo -e "\n| [api-documentation] content changed | ${{ steps.check-api-documentation-changes.outputs.any_modified }} |" >> $GITHUB_STEP_SUMMARY
+           echo -e "\n| [pro] content changed | ${{ steps.check-pro-changes.outputs.any_modified }} |" >> $GITHUB_STEP_SUMMARY
+           echo -e "\n| [dependencies] content changed | ${{ steps.check-dependencies-changes.outputs.any_modified }} |" >> $GITHUB_STEP_SUMMARY
+           echo -e "\n| [pcapi] image tag | ${{ steps.pcapi-tags.outputs.checksum-tag }}|" >> $GITHUB_STEP_SUMMARY
+           echo -e "\n| [pcapi] image already exists | ${{ steps.check-checksum-tag.outputs.tag-exists }}|" >> $GITHUB_STEP_SUMMARY
+           echo -e "\n| [pcapi-console] image already exists | ${{ steps.check-console-checksum-tag.outputs.tag-exists }}|" >> $GITHUB_STEP_SUMMARY
 
   build-pcapi:
     name: "[pcapi] build docker image."
@@ -254,18 +264,24 @@ jobs:
   # Deploy on firebase if pro tests are ok OR job was skipped (= no changes in pro folder) 
   deploy-pro-on-firebase-pullrequest:
     name: "[PRO] Deploy PR version for validation"
+    if: always() && (needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped')
     needs: [pcapi-init-job, test-pro]
-    uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
-    if: always() && (needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped') 
-    secrets:
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-    with:
-      ENV: "testing"
-      CHANNEL: ""
-      REF: "${{ github.ref }}"
-      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
-      is_pull_request: true
+    steps:
+      - name: "[PRO] Deploy preview"
+        id: firebase-deploy
+        uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
+        secrets:
+          GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+          GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+        with:
+          ENV: "testing"
+          CHANNEL: ""
+          REF: "${{ github.ref }}"
+          CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
+          is_pull_request: true
+     - name: "Publish Summary"
+       run: |
+         echo -e "\n| [pro] preview url | ${{ steps.firebase-deploy.outputs.details_url }} |" >> $GITHUB_STEP_SUMMARY
 
   # Push docker images to registry
   push-pcapi:
@@ -310,3 +326,8 @@ jobs:
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+  publish-summary:
+    - name: Publish Summary
+      needs: [pcapi-init-job, deploy-pro-on-firebase-pullrequest]
+      run: echo -e "| Results |  |\n| --- | --- |\n| Pro Firebase Preview | ${{ needs.deploy-pro-on-firebase-pullrequest.outputs.pro_url }} |\n| [pcapi] docker image tag | ${{ needs.pcapi-init-job.outputs.checksum-tag }} |\n| " >> $GITHUB_STEP_SUMMARY
