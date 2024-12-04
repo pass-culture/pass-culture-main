@@ -279,9 +279,9 @@ jobs:
           REF: "${{ github.ref }}"
           CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
           is_pull_request: true
-     - name: "Publish Summary"
-       run: |
-         echo -e "\n| [pro] preview url | ${{ steps.firebase-deploy.outputs.details_url }} |" >> $GITHUB_STEP_SUMMARY
+      - name: "Publish Summary"
+        run: |
+          echo -e "\n| [pro] preview url | ${{ steps.firebase-deploy.outputs.details_url }} |" >> $GITHUB_STEP_SUMMARY
 
   # Push docker images to registry
   push-pcapi:
