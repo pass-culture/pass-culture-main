@@ -62,3 +62,22 @@ class HashUserEmailTest:
 
         # Then
         assert result == "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816"
+
+
+class GetNonEmptyDateTimeRangeTest:
+    def test_get_non_empty_datetime_range(self) -> None:
+        start = datetime(2024, 12, 24, 23, 59, 59)
+        end = datetime(2024, 12, 25, 23, 59, 59)
+
+        result = utils.get_non_empty_date_time_range(start, end)
+
+        assert result.lower == start
+        assert result.upper == end
+
+    def test_get_non_empty_datetime_range_ends_when_starts(self) -> None:
+        start = datetime(2024, 12, 24, 23, 59, 59)
+
+        result = utils.get_non_empty_date_time_range(start, start)
+
+        assert result.lower == start
+        assert result.upper == datetime(2024, 12, 25, 0, 0, 0)

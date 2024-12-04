@@ -87,7 +87,7 @@ def get_non_empty_date_time_range(start: datetime, end: datetime) -> DateTimeRan
     """
 
     if start == end:
-        new_end = end.replace(second=end.second + 1)
+        new_end = end + timedelta(seconds=1)
     else:
         new_end = end
 
