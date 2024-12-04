@@ -16,7 +16,7 @@ from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
-from pcapi.core.users import models as user_models
+from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
@@ -68,9 +68,9 @@ def _get_collective_offer_templates(
             offers_models.OfferValidationRule.name
         ),
         sa.orm.joinedload(educational_models.CollectiveOfferTemplate.author).load_only(
-            user_models.User.id,
-            user_models.User.firstName,
-            user_models.User.lastName,
+            users_models.User.id,
+            users_models.User.firstName,
+            users_models.User.lastName,
         ),
     )
     if form.from_date.data:
