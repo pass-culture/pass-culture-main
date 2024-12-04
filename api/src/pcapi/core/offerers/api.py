@@ -117,6 +117,11 @@ def update_venue(
     is_manual_edition: bool = False,
 ) -> models.Venue:
     new_permanent = not venue.isPermanent and modifications.get("isPermanent")
+    has_address_changed = (
+        modifications.get("banId", offerers_constants.UNCHANGED) is not offerers_constants.UNCHANGED
+        or modifications.get("postalCode", offerers_constants.UNCHANGED) is not offerers_constants.UNCHANGED
+        or modifications.get("street", offerers_constants.UNCHANGED) is not offerers_constants.UNCHANGED
+    )
     venue_snapshot = history_api.ObjectUpdateSnapshot(venue, author)
     if not venue.isVirtual:
         assert venue.offererAddress is not None  # helps mypy
@@ -234,6 +239,13 @@ def update_venue(
                 reason=search.IndexationReason.VENUE_UPDATE,
                 log_extra={"changes": set(indexing_modifications_fields)},
             )
+        if has_address_changed:
+            try:
+                delete_venue_accessibility_provider(venue)
+                set_accessibility_provider_id(venue)
+                set_accessibility_infos_from_provider_id(venue)
+            except accessibility_provider.AccesLibreApiException as exc:
+                logger.info("AccesLibre synchronisation not found", extra={"exc": str(exc)})
 
         # Former booking email address shall no longer receive emails about data related to this venue.
         # If booking email was only in this object, this will clear all columns here and it will never be updated later.
