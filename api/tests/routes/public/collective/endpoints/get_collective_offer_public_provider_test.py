@@ -159,7 +159,6 @@ def expected_serialized_offer(offer):
         "numberOfTickets": offer.collectiveStock.numberOfTickets,
         "status": offer.status.name,
         "students": [student.name for student in offer.students],
-        "subcategoryId": offer.subcategoryId,
         "totalPrice": float(offer.collectiveStock.price),
         "hasBookingLimitDatetimesPassed": offer.hasBookingLimitDatetimesPassed,
         "mentalDisabilityCompliant": offer.mentalDisabilityCompliant,
