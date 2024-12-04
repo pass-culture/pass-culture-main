@@ -96,15 +96,12 @@ describe('AddressSelect', () => {
 
     await userEvent.type(adressInput, '12 rue ')
 
-    await waitFor(() => {
-      expect(
-        screen.getByText('12 rue des tournesols 75003 Paris')
-      ).toBeInTheDocument()
-    })
-
-    const suggestion = screen.getByText('12 rue des tournesols 75003 Paris', {
-      selector: 'span',
-    })
+    const suggestion = await screen.findByText(
+      '12 rue des tournesols 75003 Paris',
+      {
+        selector: 'span',
+      }
+    )
 
     await userEvent.click(suggestion)
     await userEvent.click(buttonSubmit)
