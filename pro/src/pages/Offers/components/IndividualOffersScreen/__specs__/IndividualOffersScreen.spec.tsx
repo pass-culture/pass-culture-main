@@ -568,8 +568,16 @@ describe('IndividualOffersScreen', () => {
         'Une offre est en cours d’activation, veuillez rafraichir dans quelques instants'
       )
       expect(api.patchAllOffersActiveStatus).toHaveBeenCalledWith({
+        categoryId: null,
+        creationMode: null,
         isActive: true,
+        nameOrIsbn: null,
+        offererAddressId: null,
         offererId: '1',
+        periodBeginningDate: null,
+        periodEndingDate: null,
+        status: null,
+        venueId: null,
       })
     })
 

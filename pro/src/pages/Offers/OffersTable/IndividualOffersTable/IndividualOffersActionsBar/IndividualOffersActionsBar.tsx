@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import { mutate, useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
-import { OfferStatus } from 'apiClient/v1'
+import { OfferStatus, PatchAllOffersActiveStatusBodyModel } from 'apiClient/v1'
 import { useQuerySearchFilters } from 'commons/core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from 'commons/core/Offers/types'
 import { serializeApiFilters } from 'commons/core/Offers/utils/serializer'
@@ -22,7 +22,6 @@ import { computeDeletionSuccessMessage } from 'pages/Offers/utils/computeDeletio
 import { computeIndividualApiFilters } from 'pages/Offers/utils/computeIndividualApiFilters'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-
 
 import { DeleteConfirmDialog } from './DeleteConfirmDialog'
 import { IndividualDeactivationConfirmDialog } from './IndividualDeactivationConfirmDialog'
@@ -76,7 +75,19 @@ const updateIndividualOffersStatus = async (
   apiFilters: SearchFiltersParams,
   areNewStatusesEnabled: boolean
 ) => {
-  const payload = serializeApiFilters(apiFilters)
+  const filters = serializeApiFilters(apiFilters)
+  const payload: PatchAllOffersActiveStatusBodyModel = {
+    categoryId: filters.categoryId ?? null,
+    creationMode: filters.creationMode ?? null,
+    isActive: isActive,
+    nameOrIsbn: filters.nameOrIsbn ?? null,
+    offererId: filters.offererId ?? null,
+    periodBeginningDate: filters.periodBeginningDate ?? null,
+    periodEndingDate: filters.periodEndingDate ?? null,
+    status: filters.status ?? null,
+    venueId: filters.venueId ?? null,
+    offererAddressId: filters.offererAddressId ?? null,
+  }
   const deactivationWording = areNewStatusesEnabled
     ? 'la mise en pause'
     : 'la désactivation'
