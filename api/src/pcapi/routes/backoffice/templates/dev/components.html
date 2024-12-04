@@ -62,7 +62,7 @@
         </td>
       </tr>
       <tr>
-        <td>copier</td>
+        <td>Copier</td>
         <td>
           <a href=""><i class="bi bi-stickies pc-clipboard"
    data-bs-toggle="tooltip"
@@ -80,7 +80,9 @@
       <tr>
         <td>lien externe</td>
         <td>
-          <a href="" class="link-primary">lien vers un autre site <i class="bi bi-box-arrow-up-right"></i></a>
+          <a href="https://passculture.app"
+             class="link-primary"
+             target="_blank">lien vers un autre site <i class="bi bi-box-arrow-up-right"></i></a>
         </td>
       </tr>
       <tr>
@@ -88,7 +90,7 @@
         <td>{{ build_connect_as_pseudo_link(25, 'user', '/home', 'lien avec connect as') }}</td>
       </tr>
       <tr>
-        <td>Voir le compte sur brevo</td>
+        <td>Voir le compte sur Brevo</td>
         <td>
           <div class="mx-3 pt-2 pc-brevo-logo-link">
             <a href="/users/1/redirect-to-brevo"
@@ -118,7 +120,7 @@
       </tr>
       <tr>
       </table>
-      <h3 class="fw-light">Tags</h3>
+      <h3 class="fw-light">Tags et états avec badges colorés</h3>
       <table class="table">
         <tr>
           <td>Primaire</td>
@@ -169,7 +171,7 @@
           </td>
         </tr>
       </table>
-      <h3 class="fw-light">Élements de formulaire</h3>
+      <h3 class="fw-light">Éléments de formulaire</h3>
       <table class="table">
         {% for field in simple_form %}
           {% if field.name != "csrf_token" %}
@@ -180,7 +182,7 @@
           {% endif %}
         {% endfor %}
       </table>
-      <h3 class="fw-light">Eléments de tableaux</h3>
+      <h3 class="fw-light">Éléments de tableaux</h3>
       <table class="table">
         <tr>
           <td>Annonce du nombre de résultats</td>

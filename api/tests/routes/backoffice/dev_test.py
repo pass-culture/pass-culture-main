@@ -20,7 +20,7 @@ pytestmark = [
 
 
 class UserGenerationGetRouteTest(GetEndpointWithoutPermissionHelper):
-    endpoint = "backoffice_web.get_generated_user"
+    endpoint = "backoffice_web.dev.get_generated_user"
     needed_permission = None
 
     def test_returns_user_data(self, authenticated_client):
@@ -86,7 +86,7 @@ class UserGenerationGetRouteTest(GetEndpointWithoutPermissionHelper):
 
 
 class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermissionHelper):
-    endpoint = "backoffice_web.generate_user"
+    endpoint = "backoffice_web.dev.generate_user"
     needed_permission = None
 
     @override_settings(ENABLE_TEST_USER_GENERATION=False)
@@ -101,7 +101,9 @@ class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermis
         response = self.post_to_endpoint(authenticated_client, form=form)
         number_of_users_after = users_models.User.query.count()
         assert response.status_code == 303
-        assert urllib.parse.urlparse(response.headers["location"]).path == url_for("backoffice_web.get_generated_user")
+        assert urllib.parse.urlparse(response.headers["location"]).path == url_for(
+            "backoffice_web.dev.get_generated_user"
+        )
         assert number_of_users_before == number_of_users_after
 
     def test_user_not_created_when_underage_validates_phone_number(self, authenticated_client):
@@ -110,7 +112,9 @@ class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermis
         response = self.post_to_endpoint(authenticated_client, form=form)
         number_of_users_after = users_models.User.query.count()
         assert response.status_code == 303
-        assert urllib.parse.urlparse(response.headers["location"]).path == url_for("backoffice_web.get_generated_user")
+        assert urllib.parse.urlparse(response.headers["location"]).path == url_for(
+            "backoffice_web.dev.get_generated_user"
+        )
         assert number_of_users_before == number_of_users_after
 
     def test_user_not_created_when_age_below_valid_range(self, authenticated_client):
@@ -119,7 +123,9 @@ class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermis
         response = self.post_to_endpoint(authenticated_client, form=form)
         number_of_users_after = users_models.User.query.count()
         assert response.status_code == 303
-        assert urllib.parse.urlparse(response.headers["location"]).path == url_for("backoffice_web.get_generated_user")
+        assert urllib.parse.urlparse(response.headers["location"]).path == url_for(
+            "backoffice_web.dev.get_generated_user"
+        )
         assert number_of_users_before == number_of_users_after
 
     def test_user_not_created_when_age_above_valid_range(self, authenticated_client):
@@ -128,5 +134,56 @@ class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermis
         response = self.post_to_endpoint(authenticated_client, form=form)
         number_of_users_after = users_models.User.query.count()
         assert response.status_code == 303
-        assert urllib.parse.urlparse(response.headers["location"]).path == url_for("backoffice_web.get_generated_user")
+        assert urllib.parse.urlparse(response.headers["location"]).path == url_for(
+            "backoffice_web.dev.get_generated_user"
+        )
         assert number_of_users_before == number_of_users_after
+
+
+class UserDeletionPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermissionHelper):
+    endpoint = "backoffice_web.dev.delete_user"
+    needed_permission = None
+
+    def test_sso_user_deletion(self, authenticated_client):
+        user = users_factories.UserFactory()
+        users_factories.SingleSignOnFactory(user=user)
+        users_factories.TrustedDeviceFactory(user=user)
+
+        response = self.post_to_endpoint(authenticated_client, form={"email": user.email})
+
+        assert response.status_code == 303, response.data
+        assert users_models.User.query.filter(users_models.User.id == user.id).one_or_none() is None
+        assert urllib.parse.urlparse(response.headers["location"]).path == url_for("backoffice_web.dev.delete_user")
+
+    def test_user_with_relations_deletion_failure(self, authenticated_client):
+        user = users_factories.BeneficiaryFactory()
+
+        response = self.post_to_endpoint(authenticated_client, form={"email": user.email})
+
+        assert response.status_code == 303
+        assert users_models.User.query.filter(users_models.User.id == user.id).one_or_none() is not None
+        assert urllib.parse.urlparse(response.headers["location"]).path == url_for("backoffice_web.dev.delete_user")
+
+    @override_settings(ENABLE_TEST_USER_GENERATION=0)
+    def test_user_deletion_disabled(self, authenticated_client):
+        user = users_factories.BeneficiaryFactory()
+
+        response = self.post_to_endpoint(authenticated_client, form={"email": user.email})
+
+        assert response.status_code == 404
+        assert users_models.User.query.filter(users_models.User.id == user.id).one_or_none() is not None
+
+
+class ComponentsTest(GetEndpointWithoutPermissionHelper):
+    endpoint = "backoffice_web.dev.components"
+    needed_permission = None
+
+    @override_settings(ENABLE_BO_COMPONENT_PAGE=1)
+    def test_returns_user_data(self, authenticated_client):
+        response = authenticated_client.get(url_for(self.endpoint))
+        assert response.status_code == 200
+
+    @override_settings(ENABLE_BO_COMPONENT_PAGE=0)
+    def test_returns_user_data(self, authenticated_client):
+        response = authenticated_client.get(url_for(self.endpoint))
+        assert response.status_code == 404
