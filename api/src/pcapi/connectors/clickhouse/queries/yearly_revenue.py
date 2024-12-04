@@ -69,7 +69,7 @@ class YearlyAggregatedCollectiveRevenueQuery(
     def raw_query(self) -> str:
         return """
             SELECT
-                EXTRACT(YEAR FROM creation_year) AS year,
+                EXTRACT(YEAR FROM year) AS year,
                 toJSONString(map(
                     'collective', ROUND(SUM(revenue),2))
                 ) as revenue,
@@ -90,7 +90,7 @@ class YearlyAggregatedIndividualRevenueQuery(
     def raw_query(self) -> str:
         return """
             SELECT
-                EXTRACT(YEAR FROM creation_year) AS year,
+                EXTRACT(YEAR FROM year) AS year,
                 toJSONString(map(
                     'individual', ROUND(SUM(revenue),2))
                 ) as revenue,
@@ -109,7 +109,7 @@ class YearlyAggregatedRevenueQuery(YearlyAggregatedRevenueQueryMixin, BaseQuery[
     def raw_query(self) -> str:
         return """
             SELECT
-                EXTRACT(YEAR FROM creation_year) AS year,
+                EXTRACT(YEAR FROM year) AS year,
                 toJSONString(map(
                     'individual', ROUND(SUM(individual_revenue),2),
                     'collective', ROUND(SUM(collective_revenue),2),
