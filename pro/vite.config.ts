@@ -38,7 +38,16 @@ export default defineConfig(({ mode }) => {
     test: {
       globals: true,
       environment: 'jsdom',
-      setupFiles: './vitest.setup.ts',
+      setupFiles: ['allure-vitest/setup', './vitest.setup.ts'],
+      reporters: [
+        'verbose',
+        [
+          'allure-vitest/reporter',
+          {
+            resultsDir: '../allure-results',
+          },
+        ],
+      ],
       clearMocks: true,
       restoreMocks: true,
       cacheDir: '../.vitest_cache',
