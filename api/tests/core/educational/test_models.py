@@ -723,18 +723,12 @@ class CollectiveOfferTemplateDisplayedStatusTest:
 
 
 class CollectiveOfferAllowedActionsTest:
-    @pytest.mark.parametrize(
-        "status",
-        ALL_DISPLAYED_STATUSES - NEW_DISPLAYED_STATUSES,
-    )
+    @pytest.mark.parametrize("status", ALL_DISPLAYED_STATUSES - NEW_DISPLAYED_STATUSES)
     def test_get_offer_allowed_actions(self, status):
         offer = factories.create_collective_offer_by_status(status)
         assert offer.allowedActions == list(ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[status])
 
-    @pytest.mark.parametrize(
-        "status",
-        ALL_DISPLAYED_STATUSES - NEW_DISPLAYED_STATUSES,
-    )
+    @pytest.mark.parametrize("status", ALL_DISPLAYED_STATUSES - NEW_DISPLAYED_STATUSES)
     def test_get_offer_allowed_actions_public_api(self, status):
         offer = factories.create_collective_offer_by_status(status)
         offer.provider = providers_factories.ProviderFactory()

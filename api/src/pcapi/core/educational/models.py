@@ -246,7 +246,6 @@ TEMPLATE_ALLOWED_ACTIONS_BY_DISPLAYED_STATUS: typing.Final[
     ),
     CollectiveOfferDisplayedStatus.ENDED: (
         CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS,
-        CollectiveOfferTemplateAllowedAction.CAN_DUPLICATE,
         CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE,
         CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
     ),
