@@ -4038,6 +4038,14 @@
                         "title": "Addressid",
                         "type": "integer"
                     },
+                    "beginning": {
+                        "description": "Period beginning date. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2024-03-03T13:00:00+02:00",
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Beginning",
+                        "type": "string"
+                    },
                     "firstIndex": {
                         "default": 1,
                         "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id).**To learn more about cursor-based pagination [see this page](/docs/understanding-our-api/resources/cursor-pagination)**.",
@@ -9803,6 +9811,20 @@
                             "title": "Addressid",
                             "type": "integer"
                         }
+                    },
+                    {
+                        "description": "Period beginning date. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "in": "query",
+                        "name": "beginning",
+                        "required": false,
+                        "schema": {
+                            "description": "Period beginning date. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                            "example": "2024-03-03T13:00:00+02:00",
+                            "format": "date-time",
+                            "nullable": true,
+                            "title": "Beginning",
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -10897,6 +10919,20 @@
                             "nullable": true,
                             "title": "Addressid",
                             "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "Period beginning date. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "in": "query",
+                        "name": "beginning",
+                        "required": false,
+                        "schema": {
+                            "description": "Period beginning date. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                            "example": "2024-03-03T13:00:00+02:00",
+                            "format": "date-time",
+                            "nullable": true,
+                            "title": "Beginning",
+                            "type": "string"
                         }
                     }
                 ],

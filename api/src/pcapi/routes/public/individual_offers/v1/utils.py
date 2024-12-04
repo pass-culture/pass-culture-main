@@ -1,3 +1,4 @@
+from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sqla
 from sqlalchemy import orm as sqla_orm
 
@@ -102,17 +103,22 @@ def get_filtered_offers_linked_to_provider(
     query_filters: serialization.GetOffersQueryParams,
     is_event: bool,
 ) -> sqla_orm.Query:
+    def apply_base_offer_filters(query: BaseQuery) -> BaseQuery:
+        return query.filter(offers_models.Offer.isEvent == is_event).filter(
+            offers_models.Offer.id >= query_filters.firstIndex
+        )
+
     offers_query = (
         offers_models.Offer.query.outerjoin(offers_models.Offer.futureOffer)
         .join(offerers_models.Venue)
         .join(providers_models.VenueProvider)
         .filter(providers_models.VenueProvider.provider == current_api_key.provider)
-        .filter(offers_models.Offer.isEvent == is_event)
-        .filter(offers_models.Offer.id >= query_filters.firstIndex)
         .order_by(offers_models.Offer.id)
         .options(sqla.orm.contains_eager(offers_models.Offer.futureOffer))
         .options(sqla_orm.joinedload(offers_models.Offer.venue))
     )
+
+    offers_query = apply_base_offer_filters(offers_query)
 
     if query_filters.venue_id:
         offers_query = offers_query.filter(offers_models.Offer.venueId == query_filters.venue_id)
@@ -125,6 +131,18 @@ def get_filtered_offers_linked_to_provider(
             offerers_models.OffererAddress,
             offerers_models.OffererAddress.id == offers_models.Offer.offererAddressId,
         ).filter(offerers_models.OffererAddress.addressId == query_filters.address_id)
+
+    if query_filters.beginning:
+        # fetch offer ids from stock (filtered using beginningDatetime)
+        # inside another query to avoid a massive join
+        offer_ids_query = offers_models.Stock.query.filter(
+            offers_models.Stock.beginningDatetime >= query_filters.beginning
+        ).with_entities(offers_models.Stock.offerId)
+
+        offer_ids_query = apply_base_offer_filters(offer_ids_query.join(offers_models.Offer))
+        filtered_offer_ids = {row[0] for row in offer_ids_query}
+
+        offers_query = offers_query.filter(offers_models.Offer.id.in_(filtered_offer_ids))
 
     offers_query = retrieve_offer_relations_query(offers_query).limit(query_filters.limit)
 
