@@ -10,6 +10,7 @@ from flask import request
 from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
+from markupsafe import escape
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
@@ -1172,9 +1173,9 @@ def set_pricing_point(venue_id: int) -> utils.BackofficeResponse:
             flash("Ce lieu a été lié à un point de valorisation", "info")
     except ApiErrors as exc:
         if not exc.errors or "pricingPointId" not in exc.errors:
-            flash(str(exc.errors) if exc.errors else "Erreur inconue", "warning")
+            flash(escape(str(exc.errors)) if exc.errors else "Erreur inconue", "warning")
         else:
-            flash(exc.errors["pricingPointId"][0], "warning")
+            flash(escape(exc.errors["pricingPointId"][0]), "warning")
     except offerers_exceptions.CannotLinkVenueToPricingPoint:
         if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
             flash("Ce partenaire culturel est déja lié à un point de valorisation", "warning")
