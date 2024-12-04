@@ -401,6 +401,7 @@ def patch_all_offers_active_status(
         "creation_mode": body.creation_mode,
         "period_beginning_date": body.period_beginning_date,
         "period_ending_date": body.period_ending_date,
+        "offerer_address_id": body.offerer_address_id,
     }
     update_all_offers_active_status_job.delay(filters, body.is_active)
     return offers_serialize.PatchAllOffersActiveStatusResponseModel()
