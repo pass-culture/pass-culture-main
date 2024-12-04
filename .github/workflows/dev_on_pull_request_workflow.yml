@@ -264,25 +264,17 @@ jobs:
   # Deploy on firebase if pro tests are ok OR job was skipped (= no changes in pro folder) 
   deploy-pro-on-firebase-pullrequest:
     name: "[PRO] Deploy PR version for validation"
-    runs-on: ubuntu-22.04
     if: always() && (needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped')
-    needs: [pcapi-init-job, test-pro]
-    steps:
-      - name: "[PRO] Deploy preview"
-        id: firebase-deploy
-        uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
-        secrets:
-          GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-          GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-        with:
-          ENV: "testing"
-          CHANNEL: ""
-          REF: "${{ github.ref }}"
-          CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
-          is_pull_request: true
-      - name: "Publish Summary"
-        run: |
-          echo -e "\n| [pro] preview url | ${{ steps.firebase-deploy.outputs.details_url }} |" >> $GITHUB_STEP_SUMMARY
+    uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
+    secrets:
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+    with:
+      ENV: "testing"
+      CHANNEL: ""
+      REF: "${{ github.ref }}"
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
+      is_pull_request: true
 
   # Push docker images to registry
   push-pcapi:
