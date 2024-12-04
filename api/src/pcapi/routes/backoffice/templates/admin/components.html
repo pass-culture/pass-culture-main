@@ -1,0 +1,290 @@
+{% extends "layouts/connected.html" %}
+{% from "components/links.html" import  build_connect_as_pseudo_link with context %}
+{% block page %}
+  <div class="pt-3 px-5">
+    <h2 class="fw-light">Liste des composants du backoffice</h2>
+    <h3 class="fw-light">Actions</h3>
+    <table class="table">
+      <tr>
+        <td>Bouton principal</td>
+        <td>
+          <button class="btn btn-primary">Bouton</button>
+        </td>
+      </tr>
+      <tr>
+        <td>Bouton inversé</td>
+        <td>
+          <button class="btn btn-md btn-outline-primary fw-bold">Bouton</button>
+        </td>
+      </tr>
+      <tr>
+        <td>Bouton inversé secondaire</td>
+        <td>
+          <button class="btn btn-md btn-outline-secondary fw-bold">Bouton</button>
+        </td>
+      </tr>
+      <tr>
+        <td>Boutton désactivé</td>
+        <td>
+          <button class="btn lead fw-bold mt-2"
+                  type="button"
+                  disabled="">Bouton</button>
+        </td>
+      </tr>
+      <tr>
+        <td>Éditer</td>
+        <td>
+          <a href=""><i class="bi-pencil"></i></a>
+        </td>
+      </tr>
+      <tr>
+        <td>Supprimer</td>
+        <td>
+          <a href=""><i class="bi bi-trash3-fill"></i></a>
+        </td>
+      </tr>
+      <tr>
+        <td>Télécharger un CSV</td>
+        <td>
+          <a href=""><i class="bi bi-filetype-csv"></i></a>
+        </td>
+      </tr>
+      <tr>
+        <td>Télécharger un XLSX</td>
+        <td>
+          <a href=""><i class="bi bi-filetype-xlsx"></i></a>
+        </td>
+      </tr>
+      <tr>
+        <td>Voir les autres offres du même lieu</td>
+        <td>
+          <a href=""><i class="bi bi-eye h5"></i></a>
+        </td>
+      </tr>
+      <tr>
+        <td>copier</td>
+        <td>
+          <a href=""><i class="bi bi-stickies pc-clipboard"
+   data-bs-toggle="tooltip"
+   data-bs-placement="top"
+   data-bs-title="Copier l'ID du lieu"
+   data-text="1"></i></a>
+        </td>
+      </tr>
+      <tr>
+        <td>lien</td>
+        <td>
+          <a href="" class="link-primary">lien interne au BO</a>
+        </td>
+      </tr>
+      <tr>
+        <td>lien externe</td>
+        <td>
+          <a href="" class="link-primary">lien vers un autre site <i class="bi bi-box-arrow-up-right"></i></a>
+        </td>
+      </tr>
+      <tr>
+        <td>lien connect as</td>
+        <td>{{ build_connect_as_pseudo_link(25, 'user', '/home', 'lien avec connect as') }}</td>
+      </tr>
+      <tr>
+        <td>Voir le compte sur brevo</td>
+        <td>
+          <div class="mx-3 pt-2 pc-brevo-logo-link">
+            <a href="/users/1/redirect-to-brevo"
+               target="_blank"
+               rel="noreferrer noopener">
+              <svg height="100%"
+                   viewBox="0 0 163.27 223.47998"
+                   version="1.1"
+                   xmlns="http://www.w3.org/2000/svg"
+                   xmlns:svg="http://www.w3.org/2000/svg">
+                <defs></defs>
+                <style type="text/css" id="style2">
+                  .st0 {
+                    fill: #0B996E;
+                  }
+
+                  .st1 {
+                    fill-rule: evenodd;
+                  }
+                </style>
+                <path class="st0" d="M 37.67,111.59 V 36.47 h 45.5 c 15.37,0 25.52,8.93 25.52,22.47 0,15.39 -13.22,27.09 -40.27,36.01 -18.45,5.84 -26.74,10.77 -29.82,16.63 z m 0,75.42 v -31.4 c 0,-13.85 11.68,-27.4 27.98,-32.63 14.45,-4.93 26.44,-9.85 36.59,-15.08 13.53,8.01 21.82,21.85 21.82,36.32 0,24.62 -23.37,42.79 -55.03,42.79 z M 10,213.48 h 61.49 c 46.74,0 81.78,-29.24 81.78,-68.03 0,-21.24 -10.76,-40.32 -29.82,-52.64 9.84,-9.85 14.45,-21.24 14.45,-35.1 C 137.9,29.09 117.3,10 86.25,10 H 10 Z" id="path4">
+                </path>
+              </svg>
+            </a>
+          </div>
+        </td>
+      </tr>
+      <tr>
+      </table>
+      <h3 class="fw-light">Tags</h3>
+      <table class="table">
+        <tr>
+          <td>Primaire</td>
+          <td>
+            <span class="badge rounded-pill text-bg-primary">tag</span>
+          </td>
+        </tr>
+        <tr>
+          <td>Secondaire</td>
+          <td>
+            <span class="badge rounded-pill text-bg-secondary">tag</span>
+          </td>
+        </tr>
+        <tr>
+          <td>Succès</td>
+          <td>
+            <span class="badge rounded-pill text-bg-success">tag</span>
+          </td>
+        </tr>
+        <tr>
+          <td>Sombre</td>
+          <td>
+            <span class="badge rounded-pill text-bg-dark">tag</span>
+          </td>
+        </tr>
+        <tr>
+          <td>Danger</td>
+          <td>
+            <span class="badge rounded-pill text-bg-danger">tag</span>
+          </td>
+        </tr>
+        <tr>
+          <td>Information</td>
+          <td>
+            <span class="badge rounded-pill text-bg-info">tag</span>
+          </td>
+        </tr>
+        <tr>
+          <td>Attention</td>
+          <td>
+            <span class="badge rounded-pill text-bg-warning">tag</span>
+          </td>
+        </tr>
+        <tr>
+          <td>Clair</td>
+          <td>
+            <span class="badge text-bg-light shadow-sm">tag</span>
+          </td>
+        </tr>
+      </table>
+      <h3 class="fw-light">Élements de formulaire</h3>
+      <table class="table">
+        {% for field in simple_form %}
+          {% if field.name != "csrf_token" %}
+            <tr>
+              <td>{{ field.name }}</td>
+              <td>{{ field }}</td>
+            </tr>
+          {% endif %}
+        {% endfor %}
+      </table>
+      <h3 class="fw-light">Eléments de tableaux</h3>
+      <table class="table">
+        <tr>
+          <td>Annonce du nombre de résultats</td>
+          <td>
+            <p class="lead num-results d-inline">{{ 25 }} résultat{{ 25 | pluralize }}</p>
+          </td>
+        </tr>
+        <tr>
+          <td>Pagination</td>
+          <td>{% include "components/search/pagination.html" %}</td>
+        </tr>
+        <tr>
+          <td>Actions de groupe</td>
+          <td>
+            <div class="btn-group btn-group-sm"
+                 data-toggle="pc-batch-confirm-btn-group"
+                 data-toggle-id="table-container-individual-offer-fraud-btn-group"
+                 data-pc-table-multi-select-id="table-individual-offers-multiselect"
+                 data-input-ids-name="object_ids">
+              <button disabled
+                      type="button"
+                      class="btn btn-outline-primary">Action 1</button>
+              <button disabled
+                      type="button"
+                      class="btn btn-outline-primary">Action 2</button>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>Meat ball</td>
+          <td>
+            <div class="dropdown">
+              <button type="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                      class="btn p-0">
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+              <ul class="dropdown-menu">
+                <li class="dropdown-item">
+                  <a class="btn btn-sm d-block w-100 text-start px-3">Action 1</a>
+                </li>
+                <li class="dropdown-item">
+                  <a class="btn btn-sm d-block w-100 text-start px-3">Action 2</a>
+                </li>
+              </ul>
+            </td>
+          </tr>
+        </table>
+        <h3 class="fw-light">Titres</h3>
+        <table class="table">
+          <tr>
+            <td>h1</td>
+            <td>
+              <h1>Titre 1</h1>
+            </td>
+          </tr>
+          <tr>
+            <td>h2</td>
+            <td>
+              <h2>Titre 2</h2>
+            </td>
+          </tr>
+          <tr>
+            <td>h2</td>
+            <td>
+              <h2>Titre 2</h2>
+            </td>
+          </tr>
+          <tr>
+            <td>h3</td>
+            <td>
+              <h3>Titre 3</h3>
+            </td>
+          </tr>
+          <tr>
+            <td>h4</td>
+            <td>
+              <h4>Titre 4</h4>
+            </td>
+          </tr>
+          <tr>
+            <td>h5</td>
+            <td>
+              <h5>Titre 5</h5>
+            </td>
+          </tr>
+        </tr>
+      </table>
+      <h3 class="fw-light">Autre</h3>
+      <table class="table">
+        <td>Barre de progression</td>
+        <td>
+          <div class="progress mt-2">
+            <div class="progress-bar"
+                 role="progressbar"
+                 style="width: 50%"
+                 aria-label="Crédit restant"
+                 aria-valuenow="50.0"
+                 aria-valuemin="0"
+                 aria-valuemax="100"></div>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+{% endblock page %}

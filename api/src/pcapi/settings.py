@@ -631,3 +631,6 @@ CLICKHOUSE_BACKEND = os.environ.get(
 CLICKHOUSE_IP = secrets_utils.get("CLICKHOUSE_IP", "127.0.0.1")
 CLICKHOUSE_USER = secrets_utils.get("CLICKHOUSE_USER", "default")
 CLICKHOUSE_PASSWORD = secrets_utils.get("CLICKHOUSE_PASSWORD")
+
+# Backoffice
+ENABLE_BO_COMPONENT_PAGE = os.environ.get("ENABLE_BO_COMPONENT_PAGE", 0) == "1"
