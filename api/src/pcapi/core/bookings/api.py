@@ -460,6 +460,47 @@ def _book_event_external_ticket(booking: Booking, stock: Stock, beneficiary: Use
     return remaining_quantity
 
 
+def cancel_booking_for_finance_incident(booking: Booking) -> None:
+    try:
+        _execute_cancel_booking(
+            booking=booking,
+            reason=BookingCancellationReasons.FINANCE_INCIDENT,
+            raise_if_error=True,
+            cancel_related_finance_event=False,
+            cancel_even_if_reimbursed=True,
+        )
+    except external_bookings_exceptions.ExternalBookingAlreadyCancelledError as error:
+        booking.cancel_booking(
+            reason=BookingCancellationReasons.FINANCE_INCIDENT,
+            cancel_even_if_reimbursed=True,
+        )
+        if error.remainingQuantity is None:
+            booking.stock.quantity = None
+        else:
+            booking.stock.quantity = booking.stock.dnBookedQuantity + error.remainingQuantity
+
+    logger.info(
+        "Booking has been cancelled",
+        extra={
+            "booking_id": booking.id,
+            "reason": str(BookingCancellationReasons.FINANCE_INCIDENT),
+            "booking_token": booking.token,
+            "barcodes": [external_booking.barcode for external_booking in booking.externalBookings],
+        },
+        technical_message_id="booking.cancelled",
+    )
+    on_commit(
+        partial(external_bookings_api.send_booking_notification_to_external_service, booking, BookingAction.CANCEL)
+    )
+    on_commit(
+        partial(
+            search.async_index_offer_ids,
+            [booking.stock.offerId],
+            reason=search.IndexationReason.BOOKING_CANCELLATION,
+        )
+    )
+
+
 def _cancel_booking(
     booking: Booking,
     reason: BookingCancellationReasons,
@@ -536,6 +577,8 @@ def _execute_cancel_booking(
     reason: BookingCancellationReasons,
     *,
     cancel_even_if_used: bool = False,
+    cancel_even_if_reimbursed: bool = False,
+    cancel_related_finance_event: bool = True,
     raise_if_error: bool = False,
     one_side_cancellation: bool = False,
     author_id: int | None = None,
@@ -553,13 +596,13 @@ def _execute_cancel_booking(
                 },
             )
             try:
-                cancelled_event = finance_api.cancel_latest_event(booking)
                 booking.cancel_booking(
                     reason=reason,
                     cancel_even_if_used=cancel_even_if_used,
+                    cancel_even_if_reimbursed=cancel_even_if_reimbursed,
                     author_id=author_id,
                 )
-                if cancelled_event:
+                if cancel_related_finance_event and finance_api.cancel_latest_event(booking):
                     finance_api.add_event(
                         finance_models.FinanceEventMotive.BOOKING_CANCELLED_AFTER_USE,
                         booking=booking,
