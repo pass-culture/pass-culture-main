@@ -212,7 +212,7 @@
                 <td>{{ (booking.quantity == 2) | format_bool }}</td>
                 <td>{{ booking.stock.quantity }}</td>
                 <td>{{ booking.total_amount | format_amount(target=booking.user) }}</td>
-                <td>{{ booking | format_booking_status(with_badge=True) | safe }}</td>
+                <td>{{ booking | format_booking_status(with_badge=True) }}</td>
                 <td>{{ booking.deposit | format_active_deposit }}</td>
                 <td>{{ booking.validationAuthorType | format_booking_validation_author_type }}</td>
                 <td class="text-center">

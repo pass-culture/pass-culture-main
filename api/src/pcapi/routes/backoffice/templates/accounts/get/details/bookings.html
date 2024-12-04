@@ -24,7 +24,7 @@
             {% if booking.stock.offer.isDuo and booking.quantity == 2 %}(Duo){% endif %}
           </td>
           <td>{{ booking.dateCreated | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
-          <td>{{ booking | format_booking_status_long | safe }}</td>
+          <td>{{ booking | format_booking_status_long }}</td>
           <td>
             {% if booking.token %}{{ links.build_booking_token_to_booking_details_link(booking.token) }}{% endif %}
           </td>
@@ -72,7 +72,7 @@
               </p>
               <p class="mb-1">
                 <span class="fw-bold">Crédit utilisé par le jeune :</span>
-                {{ booking.deposit.type | format_deposit_type | safe }}
+                {{ booking.deposit.type | format_deposit_type }}
               </p>
               <p class="mb-1">
                 <span class="fw-bold">Email du pro :</span>

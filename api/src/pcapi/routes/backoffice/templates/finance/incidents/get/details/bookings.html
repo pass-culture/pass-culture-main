@@ -22,7 +22,7 @@
                target="_top">{{ booking_finance_incident.booking.id }}</a>
           </td>
           <td>{{ links.build_public_user_name_to_details_link(booking_finance_incident.beneficiary) }}</td>
-          <td>{{ booking_finance_incident.booking | format_booking_status(with_badge=True) | safe }}</td>
+          <td>{{ booking_finance_incident.booking | format_booking_status(with_badge=True) }}</td>
           <td>{{ links.build_offer_name_to_pc_pro_link(booking_finance_incident.booking.stock.offer) }}</td>
           <td>{{ booking_finance_incident.booking.dateCreated | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
         </tr>
@@ -69,7 +69,7 @@
               </p>
               <p class="mb-1">
                 <span class="fw-bold">Crédit utilisé par le jeune :</span>
-                {{ booking_finance_incident.booking.deposit.type | format_deposit_type | safe }}
+                {{ booking_finance_incident.booking.deposit.type | format_deposit_type }}
               </p>
               <p class="mb-1">
                 <span class="fw-bold">Email du pro :</span>

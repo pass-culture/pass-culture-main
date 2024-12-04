@@ -108,7 +108,7 @@
                   {% endif %}
                 </td>
                 <td>{{ venue.venueLabel.label }}</td>
-                <td>{{ venue.criteria | format_criteria | safe }}</td>
+                <td>{{ venue.criteria | format_criteria }}</td>
                 <td>{{ venue.dateCreated | format_date }}</td>
               </tr>
             {% endfor %}

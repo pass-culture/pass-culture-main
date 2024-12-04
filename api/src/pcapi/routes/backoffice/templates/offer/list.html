@@ -207,7 +207,7 @@
                          data-bs-placement="top"
                          data-bs-custom-class="primary-tooltip"
                          data-bs-html="true"
-                         data-bs-title="Raison de score faible : {{ compliance_reasons | format_compliance_reasons }}"></i>
+                         data-bs-title="Raison de score faible : {{ compliance_reasons | format_compliance_reasons(return_markup=false) }}"></i>
                     {% endif %}
                   </td>
                   <td>
@@ -222,7 +222,7 @@
                     {% endif %}
                   </td>
                 {% endif %}
-                {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<td>{{ row.tags | format_as_badges | safe }}</td>{% endif %}
+                {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<td>{{ row.tags | format_as_badges }}</td>{% endif %}
                 {% if not has_permission("PRO_FRAUD_ACTIONS") %}
                   <td>{{ links.build_pro_user_name_to_details_link(offer.author.id, offer.author.full_name) }}</td>
                 {% endif %}
