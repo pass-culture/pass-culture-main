@@ -19,8 +19,6 @@
 
   &-is-active {
     @include fonts.button;
-
-    line-height: rem.torem(20px);
   }
 
   &-selected {

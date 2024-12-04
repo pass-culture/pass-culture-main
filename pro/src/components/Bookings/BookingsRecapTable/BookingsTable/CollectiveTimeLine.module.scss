@@ -15,7 +15,6 @@
   &-step-title-disabled {
     @include fonts.body-exergue;
 
-    line-height: rem.torem(20px);
     color: var(--color-grey-dark);
   }
 
