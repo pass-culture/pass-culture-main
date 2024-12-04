@@ -134,15 +134,19 @@ jobs:
           fi
       - name: "Publish Summary"
         run: |
-          echo -e "| Results |  |\n| --- | --- |" >> $GITHUB_STEP_SUMMARY
-          echo -e "\n| [api] content changed | ${{ steps.check-api-documentation-changes.outputs.any_modified }} |" >> $GITHUB_STEP_SUMMARY
-          echo -e "\n| [api-documentation] content changed | ${{ steps.check-api-documentation-changes.outputs.any_modified }} |" >> $GITHUB_STEP_SUMMARY
-          echo -e "\n| [pro] content changed | ${{ steps.check-pro-changes.outputs.any_modified }} |" >> $GITHUB_STEP_SUMMARY
-          echo -e "\n| [dependencies] content changed | ${{ steps.check-dependencies-changes.outputs.any_modified }} |" >> $GITHUB_STEP_SUMMARY
-          echo -e "\n| [pcapi] image tag | ${{ steps.pcapi-tags.outputs.checksum-tag }}|" >> $GITHUB_STEP_SUMMARY
-          echo -e "\n| [pcapi] image already exists | ${{ steps.check-checksum-tag.outputs.tag-exists }}|" >> $GITHUB_STEP_SUMMARY
-          echo -e "\n| [pcapi-console] image already exists | ${{ steps.check-console-checksum-tag.outputs.tag-exists }}|" >> $GITHUB_STEP_SUMMARY
-
+          {
+            echo "### :rocket: Workflow summary"
+            echo "| Results                              | Value |"
+            echo "| ------------------------------------ | ----- |"
+            echo "| [api] content changed                | ${{ steps.check-api-documentation-changes.outputs.any_modified }} |"
+            echo "| [api-documentation] content changed  | ${{ steps.check-api-documentation-changes.outputs.any_modified }} |"
+            echo "| [pro] content changed                | ${{ steps.check-pro-changes.outputs.any_modified }} |"
+            echo "| [dependencies] content changed       | ${{ steps.check-dependencies-changes.outputs.any_modified }} |"
+            echo "| [pcapi] image tag                    | ${{ steps.pcapi-tags.outputs.checksum-tag }} |"
+            echo "| [pcapi] image already exists         | ${{ steps.check-checksum-tag.outputs.tag-exists }} |"
+            echo "| [pcapi-console] image already exists | ${{ steps.check-console-checksum-tag.outputs.tag-exists }} |"
+          } >> $GITHUB_STEP_SUMMARY
+      
   build-pcapi:
     name: "[pcapi] build docker image."
     needs: [pcapi-init-job]
