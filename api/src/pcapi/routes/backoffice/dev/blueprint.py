@@ -18,16 +18,37 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
-from pcapi.routes.backoffice import blueprint
 from pcapi.routes.backoffice import utils
 
 from . import forms
+from .. import utils
 
 
 logger = logging.getLogger(__name__)
 
+dev_blueprint = utils.child_backoffice_blueprint(
+    "dev",
+    __name__,
+    url_prefix="/dev",
+)
 
-@blueprint.backoffice_web.route("/admin/user-generator", methods=["GET"])
+
+@dev_blueprint.route("/components", methods=["GET"])
+@atomic()
+@utils.custom_login_required(redirect_to=".home")
+def components() -> utils.BackofficeResponse:
+    if not settings.ENABLE_BO_COMPONENT_PAGE:
+        raise NotFound()
+
+    return render_template(
+        "dev/components.html",
+        simple_form=forms.SimpleComponentsForm(),
+        rows={"pages": 5},
+        next_pages_urls=[(i, str(i)) for i in range(6)],
+    )
+
+
+@dev_blueprint.route("/user-generator", methods=["GET"])
 @atomic()
 @utils.custom_login_required(redirect_to=".home")
 def get_generated_user() -> utils.BackofficeResponse:
@@ -46,16 +67,16 @@ def get_generated_user() -> utils.BackofficeResponse:
         link_to_ubble_mock = settings.UBBLE_MOCK_CONFIG_URL + f"?{urlencode({'userId': user.id})}"
 
     return render_template(
-        "admin/users_generator.html",
+        "dev/users_generator.html",
         link_to_app=link_to_app,
         link_to_ubble_mock=link_to_ubble_mock,
         user=user,
         form=form,
-        dst=url_for("backoffice_web.generate_user"),
+        dst=url_for("backoffice_web.dev.generate_user"),
     )
 
 
-@blueprint.backoffice_web.route("/admin/user-generator", methods=["POST"])
+@dev_blueprint.route("/user-generator", methods=["POST"])
 @atomic()
 @utils.custom_login_required(redirect_to=".home")
 def generate_user() -> utils.BackofficeResponse:
@@ -64,7 +85,7 @@ def generate_user() -> utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
-        return redirect(url_for("backoffice_web.get_generated_user"), code=303)
+        return redirect(url_for("backoffice_web.dev.get_generated_user"), code=303)
 
     # >18yo user cannot be identified with Educonnect
     age = form.age.data
@@ -77,7 +98,7 @@ def generate_user() -> utils.BackofficeResponse:
     ):
         mark_transaction_as_invalid()
         flash("Un utilisateur de plus de 18 ans ne peut pas être identifié via Educonnect", "warning")
-        return redirect(url_for("backoffice_web.get_generated_user"), code=303)
+        return redirect(url_for("backoffice_web.dev.get_generated_user"), code=303)
 
     # <18yo user cannot validate phone number
     step = form.step.data
@@ -87,7 +108,7 @@ def generate_user() -> utils.BackofficeResponse:
     ):
         mark_transaction_as_invalid()
         flash("Un utilisateur de moins de 18 ans ne peut pas valider son numéro de téléphone", "warning")
-        return redirect(url_for("backoffice_web.get_generated_user"), code=303)
+        return redirect(url_for("backoffice_web.dev.get_generated_user"), code=303)
 
     try:
         user_data = users_generator.GenerateUserData(
@@ -104,7 +125,7 @@ def generate_user() -> utils.BackofficeResponse:
         token_utils.TokenType.EMAIL_VALIDATION, users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME, user.id
     )
     return redirect(
-        url_for("backoffice_web.get_generated_user", userId=user.id, accessToken=token.encoded_token), code=303
+        url_for("backoffice_web.dev.get_generated_user", userId=user.id, accessToken=token.encoded_token), code=303
     )
 
 
@@ -115,15 +136,15 @@ def _get_user_if_exists(user_id: str | None) -> users_models.User | None:
     return users_models.User.query.filter_by(id=int(user_id)).one_or_none()
 
 
-@blueprint.backoffice_web.route("/admin/delete", methods=["GET"])
+@dev_blueprint.route("/delete", methods=["GET"])
 @atomic()
 @utils.custom_login_required(redirect_to=".home")
 def get_user_deletion_form() -> str:
     form = forms.UserDeletionForm()
-    return render_template("admin/users_deletion.html", form=form)
+    return render_template("dev/users_deletion.html", form=form)
 
 
-@blueprint.backoffice_web.route("/admin/delete", methods=["POST"])
+@dev_blueprint.route("/delete", methods=["POST"])
 @atomic()
 @utils.custom_login_required(redirect_to=".home")
 def delete_user() -> utils.BackofficeResponse:
@@ -134,7 +155,7 @@ def delete_user() -> utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
-        return render_template("admin/users_deletion.html", form=form), 400
+        return render_template("dev/users_deletion.html", form=form), 400
 
     email = form.email.data
     user = users_models.User.query.filter_by(email=email).one_or_none()
@@ -144,7 +165,7 @@ def delete_user() -> utils.BackofficeResponse:
             Markup("L'adresse email <b>{email}</b> n'a pas été trouvée.").format(email=email),
             "warning",
         )
-        return render_template("admin/users_deletion.html", form=form), 400
+        return render_template("dev/users_deletion.html", form=form), 400
 
     try:
         users_models.User.query.filter_by(id=user.id).delete()
@@ -156,10 +177,10 @@ def delete_user() -> utils.BackofficeResponse:
             Markup("Le compte de l'utilisateur <b>{email}</b> n'a pas pu être supprimé.").format(email=email),
             "warning",
         )
-        return redirect(url_for("backoffice_web.delete_user"), code=303)
+        return redirect(url_for("backoffice_web.dev.delete_user"), code=303)
 
     flash(
         Markup("Le compte de l'utilisateur <b>{email}</b> a été supprimé").format(email=email),
         "success",
     )
-    return redirect(url_for("backoffice_web.delete_user"), code=303)
+    return redirect(url_for("backoffice_web.dev.delete_user"), code=303)
