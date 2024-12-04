@@ -1822,15 +1822,15 @@
     dequal "^2.0.2"
     ts-dedent "^2.0.0"
 
-"@storybook/addon-docs@^8.4.5":
-  version "8.4.5"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-docs/-/addon-docs-8.4.5.tgz#fa38b6c6c0ef1c8fc588b6913ddb55b67be55666"
-  integrity sha512-zPELIl7wXormOylVaaSpkUIuuCCxrO+OFPMKZnlENt6zSReyy0dJu4V0tzfV8FCw+V4D6Y4wrLRk/TIG951Ojw==
+"@storybook/addon-docs@^8.4.6":
+  version "8.4.6"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-docs/-/addon-docs-8.4.6.tgz#8afa3849066f9b0ee0600b9808a8da81278957cf"
+  integrity sha512-olxz61W7PW/EsXrKhLrYbI3rn9GMBhY3KIOF/6tumbRkh0Siu/qe4EAImaV9NNwiC1R7+De/1OIVMY6o0EIZVw==
   dependencies:
     "@mdx-js/react" "^3.0.0"
-    "@storybook/blocks" "8.4.5"
-    "@storybook/csf-plugin" "8.4.5"
-    "@storybook/react-dom-shim" "8.4.5"
+    "@storybook/blocks" "8.4.6"
+    "@storybook/csf-plugin" "8.4.6"
+    "@storybook/react-dom-shim" "8.4.6"
     react "^16.8.0 || ^17.0.0 || ^18.0.0"
     react-dom "^16.8.0 || ^17.0.0 || ^18.0.0"
     ts-dedent "^2.0.0"
@@ -1842,16 +1842,7 @@
   dependencies:
     "@storybook/global" "^5.0.0"
 
-"@storybook/blocks@8.4.5":
-  version "8.4.5"
-  resolved "https://registry.yarnpkg.com/@storybook/blocks/-/blocks-8.4.5.tgz#9494d9ccddc04bacd6a7a6c67cf870b72bf4ce9d"
-  integrity sha512-Z+LHauSqm3A4HBR9pUEf9KQhD3/3xYMt0FXgA+GHCAyDa6lFeD1C6r9Y2nlT+9dt8gv9B9oygTZvV6GqFVyRSQ==
-  dependencies:
-    "@storybook/csf" "^0.1.11"
-    "@storybook/icons" "^1.2.12"
-    ts-dedent "^2.0.0"
-
-"@storybook/blocks@^8.4.6":
+"@storybook/blocks@8.4.6", "@storybook/blocks@^8.4.6":
   version "8.4.6"
   resolved "https://registry.yarnpkg.com/@storybook/blocks/-/blocks-8.4.6.tgz#57e340e50fc3add1b08dd50dd16980b64e9c7c98"
   integrity sha512-Gzbx8hM7ZQIHlQELcFIMbY1v+r1Po4mlinq0QVPtKS4lBcW4eZIsesbxOaL+uFNrxb583TLFzXo0DbRPzS46sg==
@@ -1900,6 +1891,13 @@
   version "8.4.5"
   resolved "https://registry.yarnpkg.com/@storybook/csf-plugin/-/csf-plugin-8.4.5.tgz#7f9ae0176e36cb74b1f638aac04dfec4aa04222f"
   integrity sha512-qd2rQTglOTS+phQmTbNTXNjNyxdGvolaqHqDNMw3Vf6h9o3U+mLkwnDWNVnQ9oqvOoUEAqpBthgwzU9FhkIk+A==
+  dependencies:
+    unplugin "^1.3.1"
+
+"@storybook/csf-plugin@8.4.6":
+  version "8.4.6"
+  resolved "https://registry.yarnpkg.com/@storybook/csf-plugin/-/csf-plugin-8.4.6.tgz#861c64248e10827c8fdf264c23d149c2dde828cf"
+  integrity sha512-JDIT0czC4yMgKGNf39KTZr3zm5MusAZdn6LBrTfvWb7CrTCR4iVHa4lp2yb7EJk41vHsBec0QUYDDuiFH/vV0g==
   dependencies:
     unplugin "^1.3.1"
 
