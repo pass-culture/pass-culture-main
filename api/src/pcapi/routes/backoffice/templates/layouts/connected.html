@@ -172,6 +172,7 @@
                     {{ menu_section_item("Générateur d'utilisateurs de test", 'backoffice_web.generate_user') }}
                     {{ menu_section_item("Suppression d'utilisateur", 'backoffice_web.delete_user') }}
                   {% endif %}
+                  {% if get_setting("ENABLE_BO_COMPONENT_PAGE") %}{{ menu_section_item('Liste des composants', 'backoffice_web.components') }}{% endif %}
                 {% endcall %}
               </div>
             </nav>
