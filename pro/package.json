@@ -77,7 +77,7 @@
   "devDependencies": {
     "@storybook/addon-a11y": "^8.4.6",
     "@storybook/addon-controls": "^8.4.6",
-    "@storybook/addon-docs": "^8.4.5",
+    "@storybook/addon-docs": "^8.4.6",
     "@storybook/blocks": "^8.4.6",
     "@storybook/preset-scss": "^1.0.3",
     "@storybook/react": "^8.4.6",
