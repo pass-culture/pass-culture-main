@@ -3,7 +3,10 @@ import { useSelector } from 'react-redux'
 import { mutate, useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
-import { OfferStatus } from 'apiClient/v1'
+import {
+  OfferStatus,
+  type PatchAllOffersActiveStatusBodyModel,
+} from 'apiClient/v1'
 import { GET_OFFERS_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { useQuerySearchFilters } from 'commons/core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from 'commons/core/Offers/types'
@@ -75,7 +78,19 @@ const updateIndividualOffersStatus = async (
   apiFilters: SearchFiltersParams,
   areNewStatusesEnabled: boolean
 ) => {
-  const payload = serializeApiFilters(apiFilters)
+  const filters = serializeApiFilters(apiFilters)
+  const payload: PatchAllOffersActiveStatusBodyModel = {
+    categoryId: filters.categoryId ?? null,
+    creationMode: filters.creationMode ?? null,
+    isActive: isActive,
+    nameOrIsbn: filters.nameOrIsbn ?? null,
+    offererId: filters.offererId ?? null,
+    periodBeginningDate: filters.periodBeginningDate ?? null,
+    periodEndingDate: filters.periodEndingDate ?? null,
+    status: filters.status ?? null,
+    venueId: filters.venueId ?? null,
+    offererAddressId: filters.offererAddressId ?? null,
+  }
   const deactivationWording = areNewStatusesEnabled
     ? 'la mise en pause'
     : 'la désactivation'
