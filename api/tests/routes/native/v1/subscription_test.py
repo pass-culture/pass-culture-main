@@ -1345,7 +1345,9 @@ class GetProfileTest:
         user = users_factories.BeneficiaryGrant18Factory()
 
         client.with_token(user.email)
-        with assert_num_queries(self.expected_num_queries):
+        num_queries = self.expected_num_queries
+        num_queries += 1  # atomic rollback to savepoint
+        with assert_num_queries(num_queries):
             response = client.get("/native/v1/subscription/profile")
             assert response.status_code == 404
 
