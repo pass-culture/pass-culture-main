@@ -212,6 +212,24 @@ it('should display saved information in the action bar', () => {
   expect(screen.getByText('Enregistrer et continuer')).toBeInTheDocument()
 })
 
+it('should not disable start datetime, end datetime and event time inputs when form access is edition', () => {
+  const testProps: OfferEducationalStockProps = {
+    ...defaultProps,
+    mode: Mode.EDITION,
+    offer: getCollectiveOfferFactory(),
+  }
+
+  renderWithProviders(<OfferEducationalStock {...testProps} />)
+
+  const startDatetimeInput = screen.getByLabelText('Date de début *')
+  const endDatetimeInput = screen.getByLabelText('Date de fin *')
+  const eventTimeInput = screen.getByLabelText('Horaire *')
+
+  expect(startDatetimeInput).not.toBeDisabled()
+  expect(endDatetimeInput).not.toBeDisabled()
+  expect(eventTimeInput).not.toBeDisabled()
+})
+
 it('should not disable description, price and places when allowedAction CAN_EDIT_DISCOUNT exist and FF ENABLE_COLLECTIVE_NEW_STATUSES enable ', () => {
   const testProps: OfferEducationalStockProps = {
     ...defaultProps,
