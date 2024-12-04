@@ -16,6 +16,8 @@ title: Pass Culture API change logs
 ## December 2024
 
 - You can fetch a Venue by SIRET using the [**Get Venue endpoint**](/rest-api#tag/Venues/operation/GetVenueBySiret)
+- The `subcategoryId` field has been removed from collective offers. The attribute is not returned anymore in the response of the [**Get Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/GetCollectiveOffer) and the [**Get Collective Offers endpoint**](/rest-api#tag/Collective-Offers/operation/GetCollectiveOffers)
+- You must now only use the `formats` field (and not `subcategoryId`) to specify the educational format of your collective offer in the [**Create Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PostCollectiveOffer) and the [**Update Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PatchCollectiveOffer). The `formats` field is required when creating a collective offer.
 
 ## November 2024
 

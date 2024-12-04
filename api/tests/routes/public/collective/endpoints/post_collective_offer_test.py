@@ -314,14 +314,14 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         assert response.status_code == 404
         assert "offerVenue.otherAddress" in response.json
 
-    def test_missing_both_subcategory_and_formats(self, public_client, payload):
+    def test_missing_formats(self, public_client, payload):
         del payload["formats"]
 
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400
-        assert response.json == {"__root__": ["subcategory_id & formats: at least one should not be null"]}
+        assert response.json == {"formats": ["field required"]}
 
 
 @pytest.mark.usefixtures("db_session")
@@ -334,12 +334,6 @@ class CollectiveOffersPublicPostOfferMinimalTest:
 
         minimal_payload["name"] = "Some offer with minimal payload (institution)"
         minimal_payload["educationalInstitution"] = institution.institutionId
-
-        self.assert_expected_offer_is_created(public_client, minimal_payload)
-
-    def test_subcategory_instead_of_formats(self, public_client, minimal_payload, institution):
-        del minimal_payload["formats"]
-        minimal_payload["subcategoryId"] = subcategories.SEANCE_CINE.id
 
         self.assert_expected_offer_is_created(public_client, minimal_payload)
 
