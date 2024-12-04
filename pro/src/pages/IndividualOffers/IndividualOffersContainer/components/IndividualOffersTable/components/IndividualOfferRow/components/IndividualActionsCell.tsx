@@ -91,7 +91,7 @@ export const IndividualActionsCells = ({
         )}
       >
         <div className={styles['actions-column-container']}>
-          <DropdownMenuWrapper title="Actions" triggerIcon={fullThreeDotsIcon}>
+          <DropdownMenuWrapper title="Voir les actions" triggerIcon={fullThreeDotsIcon} triggerTooltip>
             <>
               <EditOfferCell editionOfferLink={editionOfferLink} />
               {offer.status === OFFER_STATUS_DRAFT ? (

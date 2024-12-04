@@ -43,7 +43,7 @@ const renderOfferItem = (props: IndividualOfferRowProps) =>
   )
 
 const LABELS = {
-  openActions: /Actions/,
+  openActions: /Voir les actions/,
   editAction: /Voir l’offre/,
   deleteAction: /Supprimer l’offre/,
   eventStockEditAction: /Dates et capacités/,

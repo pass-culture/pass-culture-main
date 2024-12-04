@@ -39,7 +39,7 @@ describe('Edit digital individual offers', () => {
       cy.findAllByTestId('offer-item-row')
         .first()
         .within(() => {
-          cy.findByRole('button', { name: 'Actions'}).click()
+          cy.findByRole('button', { name: 'Voir les actions'}).click()
         })
       cy.findByRole('menuitem', { name: 'Voir l’offre' }).click()
       cy.url().should('contain', '/recapitulatif')
@@ -66,7 +66,7 @@ describe('Edit digital individual offers', () => {
       cy.findAllByTestId('offer-item-row')
         .first()
         .within(() => {
-          cy.findByRole('button', { name: 'Actions'}).click()
+          cy.findByRole('button', { name: 'Voir les actions'}).click()
         })
       cy.findByRole('menuitem', { name: 'Voir l’offre' }).click()
       cy.url().should('contain', '/recapitulatif')
