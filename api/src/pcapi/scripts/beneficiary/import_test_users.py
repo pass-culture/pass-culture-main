@@ -135,21 +135,26 @@ def _create_pro_user(row: dict) -> User:
         comment="Validée automatiquement par le script de création",
     )
 
-    # Most of offerers are not validated on staging without this commit() - TODO: is this related to atomic? oa?
+# Most of offerers are not validated on staging without this commit() - TODO: is this related to atomic? oa?
     db.session.commit()
-
-    venue_creation_info = venues_serialize.PostVenueBodyModel(
+    
+    address = offerers_schemas.AddressBodyModel(
         street=offerers_schemas.VenueAddress(offerer_creation_info.street),
-        banId=offerers_schemas.VenueBanId("75101_2259_00001"),  # 1 place de la Concorde
-        bookingEmail=offerers_schemas.VenueBookingEmail(user.email),
         city=offerers_schemas.VenueCity(offerer_creation_info.city),
-        comment=None,
+        postalCode=offerers_schemas.VenuePostalCode(offerer_creation_info.postalCode),
         latitude=gps[0],
         longitude=gps[1],
+        banId=offerers_schemas.VenueBanId("75101_2259_00001"),  # 1 place de la Concorde
+        label=None,
+    )
+
+    venue_creation_info = venues_serialize.PostVenueBodyModel(
+        address=address,
+        bookingEmail=offerers_schemas.VenueBookingEmail(user.email),
+        comment=None,
         managingOffererId=offerer.id,
         name=offerers_schemas.VenueName(f'Structure {row["Prénom"]} {row["Nom"]}'),
         publicName=None,
-        postalCode=offerers_schemas.VenuePostalCode(offerer_creation_info.postalCode),
         siret=offerers_schemas.VenueSiret(siret),
         venueLabelId=None,
         venueTypeCode=offerers_models.VenueTypeCode.ADMINISTRATIVE.name,

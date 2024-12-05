@@ -2,25 +2,21 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { AddressBodyModel } from './AddressBodyModel';
 import type { VenueContactModel } from './VenueContactModel';
 export type PostVenueBodyModel = {
+  address: AddressBodyModel;
   audioDisabilityCompliant?: boolean | null;
-  banId?: string | null;
   bookingEmail: string;
-  city: string;
   comment?: string | null;
   contact?: VenueContactModel | null;
   description?: string | null;
-  latitude: number;
-  longitude: number;
   managingOffererId: number;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;
-  postalCode: string;
   publicName?: string | null;
   siret?: string | null;
-  street: string;
   venueLabelId?: number | null;
   venueTypeCode: string;
   visualDisabilityCompliant?: boolean | null;

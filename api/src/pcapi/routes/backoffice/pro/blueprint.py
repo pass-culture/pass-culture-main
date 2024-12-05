@@ -19,6 +19,7 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.token import SecureToken
@@ -251,19 +252,23 @@ def create_offerer() -> utils.BackofficeResponse:
         comment="Entité juridique créée depuis le backoffice",
         ds_dossier_id=form.ds_id.data,
     )
-
-    venue_creation_info = venues_serialize.PostVenueBodyModel(
-        siret=form.siret_info.siret,  # type: ignore[arg-type]
-        street=address.street,  # type: ignore[arg-type]
-        banId=city_info.id,  # type: ignore[arg-type]
-        bookingEmail=pro_user.email,  # type: ignore[arg-type]
-        city=address.city,  # type: ignore[arg-type]
+    address_body_model = offerers_schemas.AddressBodyModel(
+        street=offerers_schemas.VenueAddress(address.street),
+        city=offerers_schemas.VenueCity(address.city),
+        postalCode=offerers_schemas.VenuePostalCode(postal_code),
         latitude=city_info.latitude,
         longitude=city_info.longitude,
+        banId=city_info.id,
+        label=None,
+    )
+
+    venue_creation_info = venues_serialize.PostVenueBodyModel(
+        address=address_body_model,
+        siret=offerers_schemas.VenueSiret(form.siret_info.siret),
+        bookingEmail=offerers_schemas.VenueBookingEmail(pro_user.email),
         managingOffererId=user_offerer.offererId,
-        name=form.public_name.data,
-        publicName=form.public_name.data,
-        postalCode=postal_code,  # type: ignore[arg-type]
+        name=offerers_schemas.VenueName(form.public_name.data),
+        publicName=offerers_schemas.VenuePublicName(form.public_name.data),
         venueLabelId=None,
         venueTypeCode=form.venue_type_code.data,
         withdrawalDetails=None,
