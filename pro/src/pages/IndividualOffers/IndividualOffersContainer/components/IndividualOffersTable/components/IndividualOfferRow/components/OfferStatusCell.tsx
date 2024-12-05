@@ -6,13 +6,20 @@ import styles from 'styles/components/Cells.module.scss'
 
 interface OfferStatusCellProps {
   status: OfferStatus
+  displayLabel?: boolean
+  className?: string
 }
 
-export const OfferStatusCell = ({ status }: OfferStatusCellProps) => (
+export const OfferStatusCell = ({ status, displayLabel, className }: OfferStatusCellProps) => (
   <td
     role="cell"
-    className={classNames(styles['offers-table-cell'], styles['status-column'])}
+    className={classNames(
+      styles['offers-table-cell'],
+      styles['status-column'],
+      className
+    )}
   >
+    {displayLabel && <span className={styles['offers-table-cell-mobile-label']}>Statut :</span>}
     <StatusLabel status={status} />
   </td>
 )

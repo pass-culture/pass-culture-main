@@ -76,7 +76,6 @@ describe('IndividualOfferRow', () => {
       offer,
       selectOffer: vi.fn(),
       isSelected: false,
-      isFirstRow: true,
       isRestrictedAsAdmin: false,
     }
   })
@@ -380,42 +379,6 @@ describe('IndividualOfferRow', () => {
       ).toBeInTheDocument()
     })
   })
-
-  it('should display the offer greyed when offer is inactive', () => {
-    props.offer.isActive = false
-
-    renderOfferItem(props)
-
-    expect(screen.getByLabelText('My little offer').closest('tr')).toHaveClass(
-      'inactive'
-    )
-  })
-
-  const greyedOfferStatusDataSet = [OfferStatus.REJECTED, OfferStatus.PENDING]
-  it.each(greyedOfferStatusDataSet)(
-    'should display the offer greyed when offer is %s',
-    (status) => {
-      props.offer.status = status
-      renderOfferItem(props)
-
-      expect(
-        screen.getByLabelText('My little offer').closest('tr')
-      ).toHaveClass('inactive')
-    }
-  )
-
-  const offerStatusDataSet = [OfferStatus.ACTIVE, OfferStatus.DRAFT]
-  it.each(offerStatusDataSet)(
-    'should not display the offer greyed when offer is %s',
-    (status) => {
-      props.offer.status = status
-      renderOfferItem(props)
-
-      expect(
-        screen.getByLabelText('My little offer').closest('tr')
-      ).not.toHaveClass('inactive')
-    }
-  )
 
   it('should have an edit link to detail page when offer is draft', () => {
     props.offer.status = OfferStatus.DRAFT
