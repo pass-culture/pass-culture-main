@@ -12,6 +12,7 @@ import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementDetails
 from pcapi.utils.date import utc_datetime_to_department_timezone
@@ -76,7 +77,7 @@ def test_with_pricings(client):
     assert response.headers["Content-type"] == "text/csv; charset=utf-8;"
     assert response.headers["Content-Disposition"] == "attachment; filename=remboursements_pass_culture.csv"
     reader = csv.DictReader(StringIO(response.data.decode("utf-8-sig")), delimiter=";")
-    assert reader.fieldnames == ReimbursementDetails.CSV_HEADER
+    assert reader.fieldnames == ReimbursementDetails.get_csv_headers()
     rows = list(reader)
     assert len(rows) == 2
     row = rows[1]
@@ -91,11 +92,10 @@ def test_with_pricings(client):
     assert row["N° du justificatif"] == invoice.reference
     assert row["N° de virement"] == batch.label
     assert row["Intitulé du compte bancaire"] == bank_account_1.label
-    assert row["SIRET du lieu"] == venue1.siret
     assert row["IBAN"] == bank_account_1.iban
-    assert row["Raison sociale du lieu"] == venue1.name
-    assert row["Adresse du lieu"] == f"{venue1.street} {venue1.postalCode} {venue1.city}"
-    assert row["SIRET du lieu"] == venue1.siret
+    assert row["Raison sociale du partenaire culturel"] == venue1.name
+    assert row["Adresse de l'offre"] == f"{venue1.street} {venue1.postalCode} {venue1.city}"
+    assert row["SIRET du partenaire culturel"] == venue1.siret
     assert row["Nom de l'offre"] == offer.name
     assert row["N° de réservation (offre collective)"] == ""
     assert row["Nom (offre collective)"] == ""
@@ -110,6 +110,7 @@ def test_with_pricings(client):
     assert row["Montant remboursé"] == "{:.2f}".format(-pricing.amount / 100).replace(".", ",")
 
 
+@override_features(WIP_ENABLE_OFFER_ADDRESS=False)
 def test_with_pricings_collective_use_case(client):
     offerer = offerers_factories.OffererFactory()
     venue1 = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
@@ -243,7 +244,7 @@ def test_return_only_searched_invoice(client):
     assert response.headers["Content-type"] == "text/csv; charset=utf-8;"
     assert response.headers["Content-Disposition"] == "attachment; filename=remboursements_pass_culture.csv"
     reader = csv.DictReader(StringIO(response.data.decode("utf-8-sig")), delimiter=";")
-    assert reader.fieldnames == ReimbursementDetails.CSV_HEADER
+    assert reader.fieldnames == ReimbursementDetails.get_csv_headers()
     rows = list(reader)
     assert len(rows) == 1
 

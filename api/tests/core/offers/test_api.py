@@ -1934,6 +1934,7 @@ class UpdateOfferTest:
             offer = models.Offer.query.one()
             assert offer.offererAddress == offerer_address
 
+    @override_features(WIP_ENABLE_OFFER_ADDRESS=False)
     def test_update_venue(self):
         offer = factories.OfferFactory(offererAddress=None)
         new_venue = offerers_factories.VenueFactory(managingOfferer=offer.venue.managingOfferer)

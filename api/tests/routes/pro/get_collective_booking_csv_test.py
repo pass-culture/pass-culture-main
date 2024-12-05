@@ -434,7 +434,7 @@ class Returns200Test:
         reader = reader_from_response(response)
         assert len(reader) == 3
         for i in range(3):
-            assert reader[i]["Lieu"] == bookings[i].venue.name
+            assert reader[i]["Partenaire culturel"] == bookings[i].venue.name
             assert reader[i]["Nom de l'offre"] == bookings[i].collectiveStock.collectiveOffer.name
             assert reader[i]["Date de l'évènement"] == "2020-08-13 14:00:00+02:00"
             assert reader[i]["Prénom du bénéficiaire"] == bookings[i].educationalRedactor.firstName

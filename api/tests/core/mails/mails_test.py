@@ -68,8 +68,8 @@ class SendinblueBackendTest:
         self.mock_template = models.TemplatePro(
             id_prod=1,
             id_not_prod=10,
-            subaccount_id_prod=0,
-            subaccount_id_not_prod=0,
+            subaccount_id_prod=1,
+            subaccount_id_not_prod=10,
             tags=["this_is_such_a_great_tag", "it_would_be_a_pity_if_anything_happened_to_it"],
         )
         self.data = models.TransactionalEmailData(template=self.mock_template, params=self.params, reply_to=None)

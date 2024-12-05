@@ -150,7 +150,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
             (datetime.date.today() - datetime.timedelta(days=4)).strftime("%d/%m/%Y")
         )
         assert rows[0]["Entité juridique"] == bookings[0].offerer.name
-        assert rows[0]["Lieu"] == bookings[0].venue.name
+        assert rows[0]["Partenaire culturel"] == bookings[0].venue.name
 
         extra_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[0]
         assert f"Catégorie : {categories.LIVRE.pro_label}" in extra_data
@@ -286,7 +286,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
             (datetime.date.today() - datetime.timedelta(days=2)).strftime("%d/%m/%Y à")
         )
         assert row["Entité juridique"] == bookings[2].offerer.name
-        assert row["Lieu"] == bookings[2].venue.name
+        assert row["Partenaire culturel"] == bookings[2].venue.name
 
         extra_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[row_index]
         assert f"Catégorie : {categories.LIVRE.pro_label}" in extra_data
