@@ -83,12 +83,14 @@ def test_new_offerer_auto_tagging(db_session, ape_code, expected_tag):
 class CreateVenueTest:
     def base_data(self, offerer):
         return {
-            "street": "rue du test",
-            "city": "Paris",
-            "postalCode": "75002",
-            "banId": "75113_1834_00007",
-            "latitude": 1,
-            "longitude": 1,
+            "address": {
+                "street": "rue du test",
+                "city": "Paris",
+                "postalCode": "75002",
+                "banId": "75113_1834_00007",
+                "latitude": 1,
+                "longitude": 1,
+            },
             "managingOffererId": offerer.id,
             "name": "La Venue",
             "venueTypeCode": "VISUAL_ARTS",
