@@ -34,6 +34,7 @@ def create_industrial_event_offers(
             continue
 
         event_venue = event_venues[0]
+        headline_offer_limit_per_offerer = 1
 
         for venue_event_index in range(0, EVENTS_PER_OFFERER_WITH_PHYSICAL_VENUE):
             event_subcategory_index = (venue_event_index + event_index) % len(event_subcategories)
@@ -58,8 +59,11 @@ def create_industrial_event_offers(
                 ),
                 isActive=is_active,
                 isDuo=is_duo,
+                is_headline_offer=bool(headline_offer_limit_per_offerer and not event_venue.has_headline_offer),
             )
             offer_index += 1
+            # FIXME : 6.12.2024 ogeber : decrement headline_offer_limit_per_offerer (limit 0) if original limit is > 1
+            headline_offer_limit_per_offerer = 0
 
         event_index += EVENTS_PER_OFFERER_WITH_PHYSICAL_VENUE
 
