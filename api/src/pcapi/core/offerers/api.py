@@ -434,13 +434,14 @@ def upsert_venue_opening_hours(venue: models.Venue, opening_hours: serialize_bas
 
 def create_venue(venue_data: venues_serialize.PostVenueBodyModel, author: users_models.User) -> models.Venue:
     venue = models.Venue()
+    address_data = venue_data.address
 
-    if utils_regions.NON_DIFFUSIBLE_TAG in venue_data.street:
-        address_info = api_adresse.get_municipality_centroid(venue_data.city, venue_data.postalCode)
+    if utils_regions.NON_DIFFUSIBLE_TAG in address_data.street:
+        address_info = api_adresse.get_municipality_centroid(address_data.city, address_data.postalCode)
         address_info.street = utils_regions.NON_DIFFUSIBLE_TAG
     else:
         address_info = api_adresse.get_address(
-            address=venue_data.street, postcode=venue_data.postalCode, city=venue_data.city
+            address=address_data.street, postcode=address_data.postalCode, city=address_data.city
         )
 
     address = get_or_create_address(
@@ -465,6 +466,15 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel, author: users_
         if key == "contact":
             continue
         setattr(venue, key, value)
+
+    # FIXME (dramelet, 05-12-2024) Until those columns are dropped
+    # we still have to maintain the historic behavior
+    venue.address = data["address"]["street"]
+    venue.city = data["address"]["city"]
+    venue.postalCode = data["address"]["postalCode"]
+    venue.latitude = data["address"]["latitude"]
+    venue.longitude = data["address"]["longitude"]
+
     if venue_data.contact:
         upsert_venue_contact(venue, venue_data.contact)
 

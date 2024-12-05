@@ -1,3 +1,5 @@
+from decimal import Decimal
+from decimal import InvalidOperation
 import re
 import typing
 
@@ -8,6 +10,9 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import phone_number as phone_number_utils
 
+
+MAX_LONGITUDE = 180
+MAX_LATITUDE = 90
 
 SocialMedia = typing.Literal["facebook", "instagram", "snapchat", "twitter"]
 SocialMedias = dict[SocialMedia, pydantic_v1.HttpUrl]
@@ -119,3 +124,25 @@ class AddressBodyModel(BaseModel):
     postalCode: VenuePostalCode
     street: VenueAddress
     isManualEdition: bool = False
+
+    @validator("latitude", pre=True)
+    @classmethod
+    def validate_latitude(cls, raw_latitude: str) -> str:
+        try:
+            latitude = Decimal(raw_latitude)
+        except InvalidOperation:
+            raise ValueError("Format incorrect")
+        if not -MAX_LATITUDE < latitude < MAX_LATITUDE:
+            raise ValueError("La latitude doit être comprise entre -90.0 et +90.0")
+        return raw_latitude
+
+    @validator("longitude", pre=True)
+    @classmethod
+    def validate_longitude(cls, raw_longitude: str) -> str:
+        try:
+            longitude = Decimal(raw_longitude)
+        except InvalidOperation:
+            raise ValueError("Format incorrect")
+        if not -MAX_LONGITUDE < longitude < MAX_LONGITUDE:
+            raise ValueError("La longitude doit être comprise entre -180.0 et +180.0")
+        return raw_longitude
