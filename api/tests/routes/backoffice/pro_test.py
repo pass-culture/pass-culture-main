@@ -95,10 +95,10 @@ def assert_venue_equals(result_card_text: str, expected_venue: offerers_models.V
     if expected_venue.contact:
         assert f"Tél : {expected_venue.contact.phone_number} " in result_card_text
     if expected_venue.isPermanent:
-        assert "Lieu permanent " in result_card_text
+        assert "Partenaire culturel permanent " in result_card_text
     else:
-        assert "Lieu " in result_card_text
-        assert "Lieu permanent " not in result_card_text
+        assert "Partenaire culturel " in result_card_text
+        assert "Partenaire culturel permanent " not in result_card_text
     if not expected_venue.managingOfferer.isActive:
         assert " Suspendu " in result_card_text
 
@@ -1229,7 +1229,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
-            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à ce lieu"
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à ce partenaire culturel"
         )
 
     def test_connect_as_venue_not_found(self, authenticated_client):
@@ -1247,7 +1247,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
-            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à ce lieu"
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à ce partenaire culturel"
         )
 
     def test_connect_as_venue_without_active_user(self, authenticated_client):
@@ -1271,7 +1271,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
-            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à ce lieu"
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à ce partenaire culturel"
         )
 
     @pytest.mark.parametrize(
@@ -1302,7 +1302,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
-            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à ce lieu"
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à ce partenaire culturel"
         )
 
     def test_connect_as_venue_user_has_multiple_offerer(self, authenticated_client, legit_user):
