@@ -55,6 +55,10 @@ def create_offerer_with_various_bank_accounts_state() -> None:
         status=finance_models.BankAccountApplicationStatus.WITHOUT_CONTINUATION,
         offerer=offerer_with_various_bank_accounts_status,
     )
+    finance_factories.BankAccountFactory(
+        status=finance_models.BankAccountApplicationStatus.WITH_PENDING_CORRECTIONS,
+        offerer=offerer_with_various_bank_accounts_status,
+    )
     venue = offerers_factories.VenueFactory(
         managingOfferer=offerer_with_various_bank_accounts_status, pricing_point="self"
     )

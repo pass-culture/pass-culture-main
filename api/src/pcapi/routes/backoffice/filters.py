@@ -633,6 +633,8 @@ def format_dms_application_status(
             | finance_models.BankAccountApplicationStatus.WITHOUT_CONTINUATION
         ):
             return "Classé sans suite"
+        case finance_models.BankAccountApplicationStatus.WITH_PENDING_CORRECTIONS:
+            return "À corriger"
         case _:
             return status.value
 
@@ -654,6 +656,8 @@ def format_dms_application_status_badge(
             | finance_models.BankAccountApplicationStatus.WITHOUT_CONTINUATION
         ):
             return Markup('<span class="badge text-bg-primary">Classé sans suite</span>')
+        case finance_models.BankAccountApplicationStatus.WITH_PENDING_CORRECTIONS:
+            return Markup('<span class="badge text-bg-warning">À corriger</span>')
         case _:
             return status.value
 
