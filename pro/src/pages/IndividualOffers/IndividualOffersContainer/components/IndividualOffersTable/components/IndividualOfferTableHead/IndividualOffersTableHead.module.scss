@@ -4,22 +4,65 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .individual-offers-thead {
-  display: none;
-}
+  display: flex;
+  padding: rem.torem(8px) rem.torem(16px);
+  border-top-left-radius: rem.torem(8px);
+  border-top-right-radius: rem.torem(8px);
+  width: 100%;
+  background-color: var(--color-grey-light);
 
-.individual-th {
-  @include fonts.caption;
+  &-th {
+    @include fonts.caption;
 
-  padding: 0 rem.torem(8px) rem.torem(10px);
-  text-align: left;
-}
+    text-align: left;
+    display: none;
 
-.individual-th-actions {
-  text-align: right;
-}
+    &-checkbox {
+      display: flex;
 
-@media (min-width: size.$tablet) {
-  .individual-offers-thead {
+      &-input {
+        margin-right: rem.torem(16px);
+      }
+
+      &-label {
+        height: rem.torem(20px);
+        justify-content: center;
+      }
+    }
+
+    &-actions {
+      text-align: right;
+    }
+  }
+
+  @media (min-width: size.$tablet) {
     display: table-header-group;
+
+    &-th {
+      display: table-cell;
+      padding: rem.torem(8px) 0;
+
+      &-checkbox {
+        display: flex;
+
+        &-input {
+          margin-right: 0;
+        }
+
+        &-label {
+          display: none;
+        }
+      }
+
+      &:first-child {
+        border-top-left-radius: rem.torem(8px);
+        padding-left: rem.torem(16px);
+      }
+
+      &:last-child {
+        border-top-right-radius: rem.torem(8px);
+        padding-right: rem.torem(16px);
+      }
+    }
   }
 }

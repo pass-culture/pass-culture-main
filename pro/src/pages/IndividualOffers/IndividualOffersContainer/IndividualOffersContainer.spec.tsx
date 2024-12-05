@@ -145,10 +145,12 @@ describe('IndividualOffersScreen', () => {
     renderOffers(props)
 
     const headers = screen.getAllByRole('columnheader')
-    expect(headers[1].textContent).toEqual('Lieu')
-    expect(headers[2].textContent).toEqual('Stocks')
-    expect(headers[3].textContent).toEqual('Statut')
-    expect(headers[4].textContent).toEqual('Actions')
+    expect(headers[0].textContent).toEqual('Tout sélectionner')
+    expect(headers[1].textContent).toEqual('Nom de l’offre')
+    expect(headers[2].textContent).toEqual('Lieu')
+    expect(headers[3].textContent).toEqual('Stocks')
+    expect(headers[4].textContent).toEqual('Statut')
+    expect(headers[5].textContent).toEqual('Actions')
   })
 
   it('should render as much offers as returned by the api', () => {

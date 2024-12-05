@@ -1,7 +1,4 @@
-import classNames from 'classnames'
-
 import { ListOffersOfferResponseModel } from 'apiClient/v1'
-import { OFFER_STATUS_DRAFT } from 'commons/core/Offers/constants'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import {
@@ -11,10 +8,9 @@ import {
 import { CheckboxCell } from 'components/OffersTable/Cells/CheckboxCell'
 import { OfferNameCell } from 'components/OffersTable/Cells/OfferNameCell/OfferNameCell'
 import { OfferVenueCell } from 'components/OffersTable/Cells/OfferVenueCell'
-import { ThumbCell } from 'components/OffersTable/Cells/ThumbCell'
 
 import { AddressCell } from './components/AddressCell'
-import { IndividualActionsCells } from './components/IndividualActionsCell'
+import { IndividualActionsCells } from './components/IndividualActionsCells'
 import { OfferRemainingStockCell } from './components/OfferRemainingStockCell'
 import { OfferStatusCell } from './components/OfferStatusCell'
 import styles from './IndividualOfferRow.module.scss'
@@ -23,7 +19,6 @@ export type IndividualOfferRowProps = {
   isSelected: boolean
   offer: ListOffersOfferResponseModel
   selectOffer: (offer: ListOffersOfferResponseModel) => void
-  isFirstRow: boolean
   isRestrictedAsAdmin: boolean
 }
 
@@ -31,7 +26,6 @@ export const IndividualOfferRow = ({
   offer,
   isSelected,
   selectOffer,
-  isFirstRow,
   isRestrictedAsAdmin,
 }: IndividualOfferRowProps) => {
   const offerAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
@@ -44,19 +38,10 @@ export const IndividualOfferRow = ({
   })
   const editionStockLink = useOfferStockEditionURL(false, offer.id, false)
 
-  const isOfferInactiveOrExpiredOrDisabled =
-    offer.status === OFFER_STATUS_DRAFT
-      ? false
-      : !offer.isActive ||
-        offer.hasBookingLimitDatetimesPassed ||
-        isOfferDisabled(offer.status)
   return (
     <tr
       role="row"
-      className={classNames(styles['individual-row'], {
-        [styles['is-first-row']]: isFirstRow,
-        [styles['inactive']]: isOfferInactiveOrExpiredOrDisabled,
-      })}
+      className={styles['individual-row']}
       data-testid="offer-item-row"
     >
       <CheckboxCell
@@ -64,21 +49,43 @@ export const IndividualOfferRow = ({
         isSelected={isSelected}
         disabled={isOfferDisabled(offer.status)}
         selectOffer={() => selectOffer(offer)}
+        className={styles['individual-cell-checkbox']}
       />
-      <ThumbCell offer={offer} editionOfferLink={editionOfferLink} />
-      <OfferNameCell offer={offer} editionOfferLink={editionOfferLink} />
+      <OfferNameCell
+        offer={offer}
+        editionOfferLink={editionOfferLink}
+        displayThumb={true}
+        className={styles['individual-cell-name']}
+      />
       {offerAddressEnabled ? (
-        <AddressCell address={offer.address} />
+        <AddressCell
+          address={offer.address}
+          className={styles['individual-cell-venue']}
+          displayLabel
+        />
       ) : (
-        <OfferVenueCell venue={offer.venue} />
+        <OfferVenueCell
+          venue={offer.venue}
+          className={styles['individual-cell-venue']}
+          displayLabel
+        />
       )}
-      <OfferRemainingStockCell stocks={offer.stocks} />
-      <OfferStatusCell status={offer.status} />
+      <OfferRemainingStockCell
+        stocks={offer.stocks}
+        className={styles['individual-cell-stock']}
+        displayLabel
+      />
+      <OfferStatusCell
+        status={offer.status}
+        className={styles['individual-cell-status']}
+        displayLabel
+      />
       <IndividualActionsCells
         offer={offer}
         editionOfferLink={editionOfferLink}
         editionStockLink={editionStockLink}
         isRestrictedAsAdmin={isRestrictedAsAdmin}
+        className={styles['individual-cell-actions']}
       />
     </tr>
   )
