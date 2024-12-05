@@ -14,11 +14,13 @@ export const ThumbCell = ({
   offerLink,
   headers,
   inactive,
+  className,
 }: {
   offer: CollectiveOfferResponseModel | ListOffersOfferResponseModel
   offerLink: string
   headers?: string
   inactive?: boolean
+  className?: string
 }) => {
   return (
     <td
@@ -30,15 +32,14 @@ export const ThumbCell = ({
       headers={headers}
     >
       <Link
-        className={styles['thumb-column-link']}
         title={`${offer.name} - éditer l’offre`}
         to={offerLink}
       >
         <Thumb
           url={isOfferEducational(offer) ? offer.imageUrl : offer.thumbUrl}
-          className={classNames(styles['offer-thumb'], {
-            [styles['thumb-inactive']]: inactive,
-          })}
+          className={classNames({
+            [styles['thumb-column-inactive']]: inactive,
+          }, className)}
         />
       </Link>
     </td>

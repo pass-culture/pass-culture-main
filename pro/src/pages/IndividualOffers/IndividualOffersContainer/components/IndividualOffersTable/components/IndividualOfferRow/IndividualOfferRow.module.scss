@@ -3,30 +3,49 @@
 
 .individual-row {
   display: grid;
-  grid-template-columns: rem.torem(22px) repeat(3, 1fr);
+  grid-template-columns: rem.torem(36px) repeat(2, auto);
   grid-template-areas:
-    "check thumb   head    head"
-    ".     thumb   desc    desc"
-    ".     desc2   desc3   desc3"
-    ".     desc4   desc4   desc4"
-    ".     status  .       actions";
+    "check title title"
+    ". venue venue"
+    ". stock-or-institution stock-or-institution"
+    ". status actions";
+  grid-gap: rem.torem(8px) rem.torem(16px);
   border-bottom: rem.torem(1px) solid var(--color-grey-medium);
-
-  &.is-first-row {
-    td {
-      padding-top: 0;
-    }
-  }
 }
 
+<<<<<<< HEAD
 @media screen and (min-width: size.$tablet) {
   .individual-row {
     grid-template-columns: rem.torem(22px) rem.torem(112px) 1fr rem.torem(105px);
+=======
+.individual-cell {
+  &-checkbox {
+    padding-left: rem.torem(16px);
+    padding-top: rem.torem(16px);
+  }
+
+  &-name {
+    padding-top: rem.torem(16px);
+  }
+
+  &-status, &-actions {
+    padding-bottom: rem.torem(16px);
+>>>>>>> 363b7f6a14 ((PC-33334)[PRO] feat: restyle indiv. offer list table)
   }
 }
 
 @media (min-width: size.$tablet) {
   .individual-row {
     display: table-row;
+  }
+
+  .individual-cell {
+    &-checkbox {
+      padding-left: rem.torem(16px);
+    }
+
+    &-actions {
+      padding-right: rem.torem(16px);
+    }
   }
 }

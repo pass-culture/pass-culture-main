@@ -91,6 +91,7 @@ export const CollectiveOfferRow = ({
           disabled={!offer.isEditable}
           selectOffer={() => selectOffer(offer)}
           headers={`${rowId} collective-offer-head-checkbox`}
+          className={styles['collective-cell-checkbox']}
         />
         {isCollectiveOffersExpirationEnabled && (
           <td className={styles['expiration-date-cell']} />
@@ -100,34 +101,40 @@ export const CollectiveOfferRow = ({
           offerLink={offerLink}
           inactive={!offer.isEditable}
           headers={`${rowId} collective-offer-head-image`}
+          className={styles['collective-cell-thumb']}
         />
 
         <OfferNameCell
           offer={offer}
           offerLink={offerLink}
           headers={`${rowId} collective-offer-head-name`}
+          className={styles['collective-cell-name']}
         />
 
         {isCollectiveOffersExpirationEnabled && (
           <OfferEventDateCell
             offer={offer}
             headers={`${rowId} collective-offer-head-expiration-date`}
+            className={styles['collective-cell-expiration-date']}
           />
         )}
 
         <OfferVenueCell
           venue={offer.venue}
           headers={`${rowId} collective-offer-head-venue`}
+          className={styles['collective-cell-venue']}
         />
 
         <OfferInstitutionCell
           educationalInstitution={offer.educationalInstitution}
           headers={`${rowId} collective-offer-head-institution`}
+          className={styles['collective-cell-institution']}
         />
 
         <CollectiveOfferStatusCell
           offer={offer}
           headers={`${rowId} collective-offer-head-status`}
+          className={styles['collective-cell-status']}
         />
 
         <CollectiveActionsCells
@@ -137,6 +144,7 @@ export const CollectiveOfferRow = ({
           isSelected={isSelected}
           deselectOffer={() => selectOffer(offer)}
           headers={`${rowId} collective-offer-head-actions`}
+          className={styles['collective-cell-actions']}
         />
       </tr>
       {hasExpirationRow && (
@@ -146,6 +154,7 @@ export const CollectiveOfferRow = ({
             offer={offer}
             bookingLimitDate={bookingLimitDate}
             headers={`${rowId} collective-offer-head-expiration`}
+            className={styles['collective-cell-expiration']}
           />
         </tr>
       )}

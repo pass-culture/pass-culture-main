@@ -5,23 +5,16 @@
 @use "styles/mixins/_a11y.scss" as a11y;
 
 .offers-table-cell {
-  &:last-of-type {
-    padding-right: 0;
+  &-mobile-label {
+    @include fonts.caption;
+
+    margin-right: rem.torem(8px);
   }
+}
 
-  &:first-of-type {
-    grid-area: check;
-    padding-top: rem.torem(8px);
-    padding-left: 0;
-
-    input[type="checkbox"] {
-      margin-right: 0;
-    }
-
-    .select-offer-checkbox {
-      display: inline-flex;
-    }
-  }
+.checkbox-column {
+  grid-area: check;
+  width: fit-content;
 }
 
 .thumb-column {
@@ -40,61 +33,55 @@
       text-decoration: underline;
     }
   }
-}
 
-.thumb-inactive {
-  opacity: 0.5;
+  &-inactive {
+    opacity: 0.5;
+  }
 }
 
 .title-column {
   @include fonts.body-exergue;
 
-  grid-column: head;
-  grid-row: head / desc;
-  align-self: center;
-  padding-top: rem.torem(4px);
+  grid-area: title;
+
+  &-name {
+    display: block;
+    overflow-wrap: anywhere;
+  }
+
+  &-thumb {
+    display: block;
+    width: fit-content;
+  }
+
+  &-with-thumb {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: rem.torem(8px) rem.torem(24px);
+  }
 
   .offer-template-tag {
     margin-bottom: rem.torem(4px);
   }
-
-  a {
-    display: block;
-  }
-}
-
-.status-column {
-  grid-area: status;
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
-  justify-self: flex-end;
-}
-
-.venue-column,
-.institution-column,
-.title-column {
-  display: block;
-  overflow-wrap: anywhere;
 }
 
 .venue-column {
-  grid-column: desc2 / desc3;
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
+  grid-area: venue;
 }
 
 .institution-column,
 .stock-column {
-  grid-area: desc4;
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
+  grid-area: stock-or-institution;
+}
+
+.status-column {
+  grid-area: status;
 }
 
 .actions-column {
-  display: flex;
   grid-area: actions;
-  padding: 0;
-  justify-self: end;
+  place-self: end end;
 
   &-container {
     display: flex;
@@ -155,39 +142,24 @@
   .thumb-column {
     padding: rem.torem(8px) rem.torem(16px);
   }
-
-  .title-column {
-    grid-area: head;
-  }
-
-  .venue-column {
-    grid-area: desc;
-  }
-
-  .institution-column,
-  .stock-column {
-    grid-area: desc3;
-  }
-
-  .actions-column {
-    display: table-cell;
-  }
 }
 
 @media screen and (min-width: size.$tablet) {
-  .checkbox-column {
-    width: rem.torem(32px);
+  .offers-table-cell {
+    padding: rem.torem(8px);
+
+    &-mobile-label {
+      display: none;
+    }
   }
 
-  .venue-column,
-  .institution-column,
   .title-column {
-    display: table-cell;
-  }
-
-  .venue-column {
-    padding-top: unset;
-    padding-bottom: unset;
+    &-with-thumb {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+    }
   }
 
   .thumb-column {
@@ -199,33 +171,11 @@
     }
   }
 
-  .institution-column,
-  .stock-column {
-    padding-top: unset;
-    padding-bottom: unset;
-  }
-
-  .status-column {
-    padding-top: unset;
-    padding-bottom: unset;
-  }
-
   .actions-column {
-    padding: 0 0 0 rem.torem(10px);
-
-    & > div {
+    &-container {
       justify-content: flex-end;
     }
   }
-
-  .offers-table-cell {
-    padding: rem.torem(8px);
-  }
-}
-
-.actions-container {
-  display: flex;
-  gap: rem.torem(8px);
 }
 
 .pop-in {
