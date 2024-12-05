@@ -1880,13 +1880,6 @@
     util "^0.12.5"
     ws "^8.2.3"
 
-"@storybook/csf-plugin@8.4.5":
-  version "8.4.5"
-  resolved "https://registry.yarnpkg.com/@storybook/csf-plugin/-/csf-plugin-8.4.5.tgz#7f9ae0176e36cb74b1f638aac04dfec4aa04222f"
-  integrity sha512-qd2rQTglOTS+phQmTbNTXNjNyxdGvolaqHqDNMw3Vf6h9o3U+mLkwnDWNVnQ9oqvOoUEAqpBthgwzU9FhkIk+A==
-  dependencies:
-    unplugin "^1.3.1"
-
 "@storybook/csf-plugin@8.4.6":
   version "8.4.6"
   resolved "https://registry.yarnpkg.com/@storybook/csf-plugin/-/csf-plugin-8.4.6.tgz#861c64248e10827c8fdf264c23d149c2dde828cf"
@@ -1925,11 +1918,6 @@
   version "8.4.6"
   resolved "https://registry.yarnpkg.com/@storybook/preview-api/-/preview-api-8.4.6.tgz#5c167e5c0fceed1010da27bcf08c81e2449cb538"
   integrity sha512-LbD+lR1FGvWaJBXteVx5xdgs1x1D7tyidBg2CsW2ex+cP0iJ176JgjPfutZxlWOfQnhfRYNnJ3WKoCIfxFOTKA==
-
-"@storybook/react-dom-shim@8.4.5":
-  version "8.4.5"
-  resolved "https://registry.yarnpkg.com/@storybook/react-dom-shim/-/react-dom-shim-8.4.5.tgz#cc874d008a1def4410c32a95bcf9aac8defdb6f5"
-  integrity sha512-YTWTfPagptEYXJsnxAl3zP97Ev0zebtaEV0WgjGaEeumr+zsfgKKwzzHxgrtumBmDzwkuKlzFwlQB5A8keOIGA==
 
 "@storybook/react-dom-shim@8.4.6":
   version "8.4.6"
@@ -2233,10 +2221,10 @@
     "@types/history" "^4.7.11"
     "@types/react" "*"
 
-"@types/react@*", "@types/react@^18.3.12":
-  version "18.3.12"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.3.12.tgz#99419f182ccd69151813b7ee24b792fe08774f60"
-  integrity sha512-D2wOSq/d6Agt28q7rSI3jhU7G6aiuzljDGZ2hTZHIkrTLUI+AF3WMeKkEZ9nN2fkBAlcktT6vcZjDFiIhMYEQw==
+"@types/react@*", "@types/react@^18.3.13":
+  version "18.3.13"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.3.13.tgz#84c9690d9a271f548659760754ea8745701bfd82"
+  integrity sha512-ii/gswMmOievxAJed4PAHT949bpYjPKXvXo1v6cRB/kqc2ZR4n+SgyCyvyc5Fec5ez8VnUumI1Vk7j6fRyRogg==
   dependencies:
     "@types/prop-types" "*"
     csstype "^3.0.2"
