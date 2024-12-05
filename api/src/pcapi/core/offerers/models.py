@@ -389,6 +389,8 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
         "OffererAddress", foreign_keys=[offererAddressId], back_populates="venues"
     )
 
+    headlineOffers: list["offers_models.HeadlineOffer"] = sa_orm.relationship("HeadlineOffer", back_populates="venue")
+
     def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:
         if street:
             self.street = street  # type: ignore[method-assign]
@@ -721,6 +723,10 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     @property
     def is_caledonian(self) -> bool:
         return self.managingOfferer.is_caledonian
+
+    @property
+    def has_headline_offer(self) -> bool:
+        return bool(self.headlineOffers)
 
 
 class GooglePlacesInfo(PcObject, Base, Model):
