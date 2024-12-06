@@ -3,6 +3,21 @@ import {
   MOCKED_BACK_ADDRESS_STREET,
 } from '../support/constants.ts'
 
+/**
+ * This function takes a string[][] as a DataTable representing the data
+ * in a Table and checks that what is displayed is what is expected.
+ * Also checks that the label above is counting the right number of rows: `3 offres`.
+ * First row represents the title of columns and is not checked
+ *
+ * @export
+ * @param {Array<Array<string>>} expectedResults
+ * @example 
+ * const expectedResults = [
+      ['Réservation', "Nom de l'offre", 'Établissement', 'Places et prix', 'Statut'],
+      ['1', 'Mon offre', 'COLLEGE DE LA TOUR', '25 places', 'confirmée'],
+    ]
+   expectOffersOrBookingsAreFound(expectedResults)
+ */
 export function expectOffersOrBookingsAreFound(
   expectedResults: Array<Array<string>>
 ) {
@@ -44,10 +59,20 @@ export function expectOffersOrBookingsAreFound(
   }
 }
 
+/**
+ * Login then go to a page. This function does not use `session()` so browser
+ * session will not be restored when reused in a test unlike the
+ * `sessionLogInAndGoToPage()`function
+ *
+ * @param {string} login email to use for login (password used is a default one)
+ * @param {string} path path to the page that will be visited after login
+ * @param {boolean} [setDefaultCookieOrejime=true] optional param: close the
+ * cookie popup in all pages (default is true)
+ */
 export function logInAndGoToPage(
   login: string,
-  url: string,
-  setDefaultCookieOrejime = true
+  path: string,
+  setDefaultCookieOrejime: boolean = true
 ) {
   const password = 'user@AZERTY123'
   cy.stepLog({ message: `I am logged in with account ${login}` })
@@ -55,35 +80,53 @@ export function logInAndGoToPage(
   cy.intercept({ method: 'GET', url: '/offerers/names' }).as('offererNames')
 
   cy.visit('/connexion')
-  if (setDefaultCookieOrejime)
-    {cy.setCookie('orejime','{"firebase":true,"hotjar":true,"beamer":true,"sentry":true}')}
+  if (setDefaultCookieOrejime) {
+    cy.setCookie(
+      'orejime',
+      '{"firebase":true,"hotjar":true,"beamer":true,"sentry":true}'
+    )
+  }
 
   cy.get('#email').type(login)
   cy.get('#password').type(password)
   cy.get('button[type=submit]').click()
   cy.wait(['@signinUser', '@offererNames'])
 
-  cy.stepLog({ message: `I open the "${url}" page` })
-  cy.visit(url)
-  if (url === '/accueil') {
+  cy.stepLog({ message: `I open the "${path}" page` })
+  cy.visit(path)
+  if (path === '/accueil') {
     homePageLoaded()
   } else {
-    cy.url().should('contain', url)
+    cy.url().should('contain', path)
     cy.findAllByTestId('spinner').should('not.exist')
   }
 }
 
+/**
+ * Same as `logInAndGoToPage` but encapsulated in a `session()` in order
+ * to be able to reuse the browser session, then the connexion and data
+ * created with Factory routes
+ *
+ * @param {string} sessionName name of the session. Same name will reuse browser session
+ * @param {string} login email to use for login (password used is a default one)
+ * @param {string} path path to the page that will be visited after login
+ */
 export function sessionLogInAndGoToPage(
   sessionName: string,
   login: string,
-  url: string
+  path: string
 ) {
   cy.session(sessionName, () => {
-    logInAndGoToPage(login, url)
+    logInAndGoToPage(login, path)
   })
-  cy.visit(url)
+  cy.visit(path)
 }
 
+
+/**
+ * Checks that the homepage is loaded and displayed
+ *
+ */
 export function homePageLoaded() {
   cy.findByText('Bienvenue dans l’espace acteurs culturels')
   cy.findByText('Vos adresses')
@@ -91,6 +134,15 @@ export function homePageLoaded() {
   cy.findAllByTestId('spinner').should('not.exist')
 }
 
+/**
+ * Intercept and stub a response with an alias `.as('search5Address')`
+
+ * @see https://docs.cypress.io/api/commands/intercept#Dynamically-stubbing-a-response
+ * @example
+ * interceptSearch5Adresses()
+ * ...
+ * cy.wait('@search5Address')
+ */
 export function interceptSearch5Adresses() {
   cy.intercept(
     'GET',
