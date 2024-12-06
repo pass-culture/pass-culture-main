@@ -34,9 +34,9 @@
   {% endif %}
 {% endmacro %}
 {# ----- internal links (backoffice) ----- #}
-{% macro build_public_user_name_to_details_link(user) %}
+{% macro build_public_user_name_to_details_link(user, active_tab=none) %}
   {% if user %}
-    <a href="{{ url_for('backoffice_web.public_accounts.get_public_account', user_id=user.id) }}"
+    <a href="{{ url_for('backoffice_web.public_accounts.get_public_account', user_id=user.id, active_tab=active_tab) }}"
        class="link-primary"
        target="_top">{{ user.full_name }} ({{ user.id }})</a>
   {% endif %}

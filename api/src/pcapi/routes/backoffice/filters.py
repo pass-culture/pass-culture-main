@@ -640,8 +640,11 @@ def format_dms_application_status(
 
 
 def format_dms_application_status_badge(
-    status: GraphQLApplicationStates | finance_models.BankAccountApplicationStatus,
+    status: GraphQLApplicationStates | finance_models.BankAccountApplicationStatus | str,
 ) -> str:
+    if isinstance(status, str):
+        status = GraphQLApplicationStates(status)
+
     match status:
         case GraphQLApplicationStates.accepted | finance_models.BankAccountApplicationStatus.ACCEPTED:
             return Markup('<span class="badge text-bg-success">Accepté</span>')
@@ -678,7 +681,9 @@ def format_user_account_update_flag(flag: users_models.UserAccountUpdateFlag) ->
             return flag.value
 
 
-def format_user_account_update_flags(flags: typing.Iterable[users_models.UserAccountUpdateFlag]) -> str:
+def format_user_account_update_flags(
+    flags: typing.Iterable[users_models.UserAccountUpdateFlag], multiline: bool = False
+) -> str:
     badges = []
     for flag in flags:
         match flag:
@@ -708,7 +713,7 @@ def format_user_account_update_flags(flags: typing.Iterable[users_models.UserAcc
                 badges.append(
                     Markup('<span class="badge text-bg-light shadow-sm">{name}</span>').format(name=flag.value)
                 )
-    return Markup("<br/>").join(badges)
+    return (Markup("<br/>") if multiline else Markup("")).join(badges)
 
 
 def format_user_account_update_type(update_type: users_models.UserAccountUpdateType) -> str:

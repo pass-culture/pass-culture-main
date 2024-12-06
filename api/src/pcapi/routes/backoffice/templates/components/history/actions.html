@@ -95,9 +95,17 @@
               {% if provider_id %}{{ action.extraData.get("provider_name") | empty_string_if_null }} (Provider ID : {{ provider_id }}){% endif %}
               {% set ds_dossier_id = action.extraData.get('ds_dossier_id') %}
               {% if ds_dossier_id %}
-                {% set link = "https://www.demarches-simplifiees.fr/dossiers/" + ds_dossier_id|string %}
+                {% set ds_procedure_id = action.extraData.get("ds_procedure_id") %}
+                {% if ds_procedure_id %}
+                  {% set link = "https://www.demarches-simplifiees.fr/procedures/" + ds_procedure_id|string + "/dossiers/" + ds_dossier_id|string %}
+                {% else %}
+                  {% set link = "https://www.demarches-simplifiees.fr/dossiers/" + ds_dossier_id|string %}
+                {% endif %}
                 <a href="{{ link }}"
-                   target="_blank">Dossier Démarches Simplifiées n°{{ ds_dossier_id }}</a>
+                   class="link-primary"
+                   target="_blank">Dossier Démarches Simplifiées n°{{ ds_dossier_id }} <i class="bi bi-box-arrow-up-right"></i></a></a>
+                {% set ds_status = action.extraData.get("ds_status") %}
+                {% if ds_status %}{{ action.extraData.get("ds_status") | format_dms_application_status_badge }}{% endif %}
               {% endif %}
             {% endif %}
           </td>

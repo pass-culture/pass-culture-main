@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import datetime
 from functools import partial
 
@@ -13,15 +14,27 @@ from sqlalchemy.dialects import postgresql
 from werkzeug.exceptions import Forbidden
 from werkzeug.exceptions import NotFound
 
+from pcapi import settings
 from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.connectors.dms import models as dms_models
+from pcapi.core.external.attributes import api as external_attributes_api
+from pcapi.core.history import api as history_api
+from pcapi.core.history import models as history_models
+from pcapi.core.mails.transactional.users.personal_data_updated import send_beneficiary_personal_data_updated
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
+from pcapi.core.users import api as users_api
 from pcapi.core.users import ds as users_ds
+from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
+from pcapi.core.users.email import update as email_update
+from pcapi.models import db
 from pcapi.models.pc_object import BaseQuery
 from pcapi.repository import atomic
+from pcapi.repository import mark_transaction_as_invalid
+from pcapi.repository import on_commit
 from pcapi.routes.backoffice import autocomplete
+from pcapi.routes.backoffice import filters as bo_filters
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.utils import date as date_utils
@@ -231,8 +244,189 @@ def instruct(ds_application_id: int) -> utils.BackofficeResponse:
             instructor=current_user,
         )
     except dms_exceptions.DmsGraphQLApiError as err:
-        flash(Markup("Le dossier ne peut pas passer en instruction : {message}").format(message=err.message), "warning")
+        flash(
+            Markup("Le dossier <b>{ds_application_id}</b> ne peut pas passer en instruction : {message}").format(
+                ds_application_id=ds_application_id,
+                message="dossier non trouvé" if err.code == "not_found" else err.message,
+            ),
+            "warning",
+        )
     except dms_exceptions.DmsGraphQLApiException as exc:
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
+
+    return redirect(request.referrer or url_for(".list_account_update_requests"), code=303)
+
+
+@account_update_blueprint.route("<int:ds_application_id>/accept", methods=["GET"])
+@atomic()
+def get_accept_form(ds_application_id: int) -> utils.BackofficeResponse:
+    if not current_user.backoffice_profile.dsInstructorId:
+        raise Forbidden()
+
+    update_request = (
+        users_models.UserAccountUpdateRequest.query.filter_by(dsApplicationId=ds_application_id)
+        .join(users_models.UserAccountUpdateRequest.user)
+        .one_or_none()
+    )
+    if not update_request:  # including when no userId is linked to the request
+        raise NotFound()
+
+    if not update_request.can_be_accepted:
+        return render_template(
+            "components/turbo/modal_form.html",
+            information="La situation du dossier ne permet pas de l'accepter.",
+            additional_data=(
+                ("État", bo_filters.format_dms_application_status_badge(update_request.status)),
+                ("Compte jeune", bo_filters.format_bool_badge(update_request.userId is not None)),
+                ("Marqueurs", bo_filters.format_user_account_update_flags(update_request.flags)),
+            ),
+            div_id=f"accept-{ds_application_id}",  # must be consistent with parameter passed to build_lazy_modal
+            title=f"Dossier Démarches-Simplifiées n°{ds_application_id}",
+        )
+    user = update_request.user
+
+    data = OrderedDict()
+
+    data["Prénom"] = user.firstName
+    data["User ID"] = str(user.id)
+    data["Nom"] = user.lastName
+    data["Email"] = user.email
+    data["Date de naissance"] = bo_filters.format_date(user.birth_date)
+    data["Âge"] = f"{user.age} ans"
+
+    data["Modifications"] = " + ".join(
+        bo_filters.format_user_account_update_type(update_type) for update_type in update_request.updateTypes
+    )
+    data["Demande du"] = bo_filters.format_date(update_request.dateCreated)
+
+    for update_type in update_request.updateTypes:
+        match update_type:
+            case users_models.UserAccountUpdateType.EMAIL:
+                data["Ancien email"] = user.email
+                data["Nouvel email"] = update_request.newEmail
+            case users_models.UserAccountUpdateType.PHONE_NUMBER:
+                data["Ancien numéro"] = user.phoneNumber or "(aucun)"
+                data["Nouveau Numéro"] = update_request.newPhoneNumber
+            case users_models.UserAccountUpdateType.FIRST_NAME:
+                data["Ancien prénom"] = user.firstName
+                data["Nouveau prénom"] = update_request.newFirstName
+            case users_models.UserAccountUpdateType.LAST_NAME:
+                data["Ancien nom"] = user.lastName
+                data["Nouveau nom"] = update_request.newLastName
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        information="Vérifie attentivement les données ci-dessus. "
+        "L'acceptation du dossier appliquera automatiquement les modifications en base de données "
+        "et un email sera envoyé au demandeur.",
+        additional_data=data.items(),
+        form=account_forms.AccountUpdateRequestAcceptForm(),
+        dst=url_for(".accept", ds_application_id=ds_application_id),
+        div_id=f"accept-{ds_application_id}",  # must be consistent with parameter passed to build_lazy_modal
+        title=f"Accepter le dossier Démarches-Simplifiées n°{ds_application_id}",
+        button_text="Appliquer les modifications et accepter",
+    )
+
+
+@account_update_blueprint.route("<int:ds_application_id>/accept", methods=["POST"])
+@atomic()
+def accept(ds_application_id: int) -> utils.BackofficeResponse:
+    if not current_user.backoffice_profile.dsInstructorId:
+        raise Forbidden()
+
+    form = account_forms.AccountUpdateRequestAcceptForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return redirect(request.referrer or url_for(".list_account_update_requests"), code=303)
+
+    update_request: users_models.UserAccountUpdateRequest = (
+        users_models.UserAccountUpdateRequest.query.filter_by(dsApplicationId=ds_application_id)
+        .populate_existing()
+        .with_for_update(key_share=True)
+        .one_or_none()
+    )
+    if not update_request:
+        raise NotFound()
+
+    user: users_models.User = (
+        users_models.User.query.filter_by(id=update_request.userId)
+        .populate_existing()
+        .with_for_update(key_share=True)
+        .one_or_none()
+    )
+    if not user:
+        raise NotFound()
+
+    try:
+        snapshot = users_api.update_user_info(
+            user,
+            author=current_user,
+            first_name=(update_request.newFirstName if update_request.has_first_name_update else users_api.UNCHANGED),
+            last_name=(update_request.newLastName if update_request.has_last_name_update else users_api.UNCHANGED),
+            phone_number=(
+                update_request.newPhoneNumber if update_request.has_phone_number_update else users_api.UNCHANGED
+            ),
+            commit=False,
+        )
+        snapshot.add_action()
+        db.session.flush()
+    except sa.exc.IntegrityError as exc:
+        mark_transaction_as_invalid()
+        flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
+        return redirect(request.referrer or url_for(".list_account_update_requests"), code=303)
+
+    if update_request.has_email_update:
+        try:
+            email_update.full_email_update_by_admin(user, update_request.newEmail)
+            db.session.flush()
+        except users_exceptions.EmailExistsError:
+            mark_transaction_as_invalid()
+            Markup(
+                "Le dossier <b>{ds_application_id}</b> ne peut pas être accepté : l'email <b>{email}</b> est déjà associé à un autre utilisateur"
+            ).format(ds_application_id=ds_application_id, email=update_request.newEmail)
+            return redirect(request.referrer or url_for(".list_account_update_requests"), code=303)
+
+    on_commit(partial(external_attributes_api.update_external_user, user))
+    on_commit(
+        partial(
+            send_beneficiary_personal_data_updated,
+            user,
+            is_first_name_updated=update_request.has_first_name_update,
+            is_last_name_updated=update_request.has_last_name_update,
+            is_email_updated=update_request.has_email_update,
+            is_phone_number_updated=update_request.has_phone_number_update,
+        ),
+    )
+
+    try:
+        users_ds.update_state(
+            update_request,
+            new_state=dms_models.GraphQLApplicationStates.accepted,
+            instructor=current_user,
+            motivation=form.motivation.data,
+        )
+    except dms_exceptions.DmsGraphQLApiError as err:
+        mark_transaction_as_invalid()
+        flash(
+            Markup("Le dossier <b>{ds_application_id}</b> ne peut pas être accepté : {message}").format(
+                ds_application_id=ds_application_id,
+                message="dossier non trouvé" if err.code == "not_found" else err.message,
+            ),
+            "warning",
+        )
+    except dms_exceptions.DmsGraphQLApiException as exc:
+        mark_transaction_as_invalid()
+        flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
+
+    history_api.add_action(
+        history_models.ActionType.USER_ACCOUNT_UPDATE_INSTRUCTED,
+        author=current_user,
+        user=user,
+        comment=form.motivation.data,
+        ds_procedure_id=int(settings.DS_USER_ACCOUNT_UPDATE_PROCEDURE_ID),
+        ds_dossier_id=ds_application_id,
+        ds_status=update_request.status,
+    )
+    db.session.flush()
 
     return redirect(request.referrer or url_for(".list_account_update_requests"), code=303)
