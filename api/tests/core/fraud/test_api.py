@@ -1,5 +1,6 @@
 import datetime
 import itertools
+import uuid
 
 from dateutil.relativedelta import relativedelta
 import pytest
@@ -319,13 +320,17 @@ class FindDuplicateUserTest:
                 "first_name": user1.firstName,
                 "last_name": user1.lastName,
                 "birth_date": user1.birth_date.isoformat(),
+                "identification_id": str(uuid.uuid4()),
             },
         )
         ubble_fraud_check3 = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user3,
             status=fraud_models.FraudCheckStatus.OK,
             type=fraud_models.FraudCheckType.UBBLE,
-            resultContent={"id_document_number": user1.idPieceNumber},
+            resultContent={
+                "id_document_number": user1.idPieceNumber,
+                "identification_id": str(uuid.uuid4()),
+            },
         )
 
         fraud_api.on_identity_fraud_check_result(user2, ubble_fraud_check2)

@@ -362,7 +362,7 @@ class NextStepTest:
         ubble_fraud_check.status = fraud_models.FraudCheckStatus.OK
         ubble_fraud_check.resultContent = fraud_factories.UbbleContentFactory(
             status=ubble_serializers.UbbleIdentificationStatus.PROCESSED
-        )
+        ).dict()
         pcapi.repository.repository.save(ubble_fraud_check)
         response = client.get("/native/v1/subscription/next_step")
 
@@ -1145,7 +1145,7 @@ class StepperTest:
         ubble_fraud_check.status = fraud_models.FraudCheckStatus.OK
         ubble_fraud_check.resultContent = fraud_factories.UbbleContentFactory(
             status=ubble_serializers.UbbleIdentificationStatus.PROCESSED
-        )
+        ).dict()
         pcapi.repository.repository.save(ubble_fraud_check)
         response = client.get("/native/v2/subscription/stepper")
 
