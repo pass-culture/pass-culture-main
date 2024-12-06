@@ -21,7 +21,6 @@ from requests.auth import _basic_auth_str  # pylint: disable=wrong-requests-impo
 import requests_mock
 import sqlalchemy as sa
 
-from pcapi import settings
 import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.object_storage.testing as object_storage_testing
@@ -47,6 +46,8 @@ from tests.serialization.serialization_decorator_test import test_bookings_bluep
 
 
 def run_migrations():
+    from pcapi import settings
+
     alembic_cfg = Config("alembic.ini")
     alembic_cfg.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
     command.upgrade(alembic_cfg, "pre@head")
@@ -165,7 +166,7 @@ def faker():
 
 
 @pytest.fixture()
-def clear_tests_assets_bucket():
+def clear_tests_assets_bucket(settings):
     try:
         Path(settings.LOCAL_STORAGE_DIR / "thumbs" / "mediations").mkdir(parents=True, exist_ok=True)
         yield
@@ -174,7 +175,7 @@ def clear_tests_assets_bucket():
 
 
 @pytest.fixture()
-def clear_tests_invoices_bucket():
+def clear_tests_invoices_bucket(settings):
     try:
         Path(settings.LOCAL_STORAGE_DIR / "invoices").mkdir(parents=True, exist_ok=True)
         yield
@@ -283,7 +284,7 @@ def ubble_mock_http_error_status(requests_mock):  # pylint: disable=redefined-ou
 
 
 @pytest.fixture
-def ubble_mocker() -> typing.Callable:
+def ubble_mocker(settings) -> typing.Callable:
     @contextlib.contextmanager
     def ubble_mock(  # pylint: disable=redefined-outer-name
         identification_id: str, response: str, method="get", mocker: requests_mock.Mocker = None
@@ -390,6 +391,8 @@ class TestClient:
         self.auth_header = {}
 
     def with_session_auth(self, email: str) -> "TestClient":
+        from pcapi import settings
+
         response = self.post(
             "/users/signin",
             {"identifier": email, "password": settings.TEST_DEFAULT_PASSWORD, "captchaToken": "test_token"},
@@ -405,6 +408,8 @@ class TestClient:
         return self
 
     def with_basic_auth(self, email: str) -> "TestClient":
+        from pcapi import settings
+
         self.auth_header = {
             "Authorization": _basic_auth_str(email, settings.TEST_DEFAULT_PASSWORD),
         }
@@ -417,6 +422,8 @@ class TestClient:
         return self
 
     def with_eac_token(self) -> "TestClient":
+        from pcapi import settings
+
         self.auth_header = {
             "Authorization": f"Bearer {settings.EAC_API_KEY}",
         }
@@ -595,6 +602,34 @@ def _features_marker(request: pytest.FixtureRequest) -> None:
 
 
 @pytest.fixture
+def settings(request):
+    from pcapi.core.testing import SettingsContext
+
+    marker = request.node.get_closest_marker("settings")
+    _settings = SettingsContext()
+
+    if marker:
+        if kwargs := marker.kwargs:
+            for attr_name, value in kwargs.items():
+                setattr(_settings, attr_name, value)
+        else:
+            raise ValueError(
+                "Invalid usage of `settings` marker, missing settings to override.\n"
+                "Eg. @pytest.mark.settings(ENABLE_SENTRY=False)"
+            )
+    yield _settings
+
+    _settings.reset()
+
+
+@pytest.fixture(autouse=True)
+def _settings_marker(request: pytest.FixtureRequest) -> None:
+    marker = request.node.get_closest_marker("settings")
+    if marker:
+        request.getfixturevalue("settings")
+
+
+@pytest.fixture
 def run_command(app, clean_database):
     from tests.test_utils import run_command as _run_command
 
@@ -734,7 +769,7 @@ def _engine(request, _transaction, mocker):
 
 
 @pytest.fixture(scope="function")
-def db_session(_engine, _transaction, mocker):
+def db_session(_engine, _transaction, mocker, request):
     """
     Make sure all the different ways that we access the database in the code
     are scoped to a transactional context, and return a Session object that
@@ -746,6 +781,10 @@ def db_session(_engine, _transaction, mocker):
     Mock out Session objects (a common way of interacting with the database using
     the SQLAlchemy ORM) using a transactional context.
     """
+
+    # No need for the fixture, `clean_database` will do the job
+    if "clean_database" in request.fixturenames:
+        return
 
     _, _, _session = _transaction
 

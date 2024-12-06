@@ -17,3 +17,14 @@ class BaseFinanceBackend:
     @property
     def is_configured(self) -> bool:
         raise NotImplementedError()
+
+    @property
+    def is_default(self) -> bool:
+        return False
+
+    @property
+    def time_to_sleep_between_two_sync_requests(self) -> int:
+        """
+        Time in seconds to sleep between two requests to avoid rate limit errors
+        """
+        return 0

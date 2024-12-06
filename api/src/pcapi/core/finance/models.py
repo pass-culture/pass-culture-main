@@ -238,6 +238,7 @@ class BankAccount(PcObject, Base, Model, DeactivableMixin):
         foreign_keys="BankAccountStatusHistory.bankAccountId",
         uselist=True,
     )
+    lastCegidSyncDate = sqla.Column(sqla.DateTime, nullable=True)
 
     @property
     def current_link(self) -> "offerers_models.VenueBankAccountLink | None":

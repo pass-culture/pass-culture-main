@@ -36,6 +36,16 @@ def get_invoice(reference: str) -> dict | None:
     return backend.get_invoice(reference)
 
 
+def get_time_to_sleep_between_two_sync_requests() -> int:
+    backend = _get_backend()
+    return backend.time_to_sleep_between_two_sync_requests
+
+
+def get_backend_name() -> str:
+    backend = _get_backend()
+    return backend.__class__.__name__
+
+
 def _get_backend() -> BaseFinanceBackend:
     backend_class = import_string(settings.FINANCE_BACKEND)
     backend = backend_class()
