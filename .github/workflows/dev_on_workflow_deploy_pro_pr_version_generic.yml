@@ -1,4 +1,4 @@
-name: "3 [on_workflow/PRO] Deploy PR version for validation"
+name: '3 [on_workflow/PRO] Deploy PR version for validation'
 
 on:
   workflow_call:
@@ -7,7 +7,7 @@ on:
         type: string
         required: true
       PUSH_RELEASE_TO_SENTRY:
-        description: "If true, creates a release in Sentry and uploads sourcemaps"
+        description: 'If true, creates a release in Sentry and uploads sourcemaps'
         type: boolean
         default: false
       CHANNEL:
@@ -15,7 +15,7 @@ on:
         required: true
       EXPIRES:
         type: string
-        default: "2d"
+        default: '2d'
       REF:
         type: string
         required: true
@@ -31,8 +31,8 @@ on:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
         required: true
     outputs:
-      pro_url: 
-        description: "The pro (firebase) preview URL"
+      pro_url:
+        description: 'The pro (firebase) preview URL'
         value: ${{ jobs.deploy_on_firebase.outputs.pro_url }}
 
 defaults:
@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-22.04
     if: ${{ github.actor != 'dependabot[bot]' }}
     outputs:
-      description: "The pro (firebase) preview URL"
+      description: 'The pro (firebase) preview URL'
       pro_url: ${{ steps.firebase-deploy.outputs.details_url }}
     steps:
       - uses: actions/checkout@v4.2.1
@@ -53,15 +53,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: 'pro/.nvmrc'
-      - name: "OpenID Connect Authentication"
-        id: "openid-auth"
-        uses: "google-github-actions/auth@v2"
+      - name: 'OpenID Connect Authentication'
+        id: 'openid-auth'
+        uses: 'google-github-actions/auth@v2'
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: "Get Secret"
-        id: "secrets"
-        uses: "google-github-actions/get-secretmanager-secrets@v2"
+      - name: 'Get Secret'
+        id: 'secrets'
+        uses: 'google-github-actions/get-secretmanager-secrets@v2'
         with:
           secrets: |-
             FIREBASE_TOKEN:passculture-metier-ehp/pc_pro_${{ inputs.ENV }}_firebase_json
@@ -69,11 +69,11 @@ jobs:
       - if: inputs.is_pull_request
         run: |
           sed -i 's/https:\/\/backend.testing.passculture.team/https:\/\/backend-${{ github.event.pull_request.number }}.testing.passculture.team/g' src/.env.testing
-      - name: "Cache the node_modules"
-        id: "yarn-modules-cache"
+      - name: 'Cache the node_modules'
+        id: 'yarn-modules-cache'
         uses: pass-culture-github-actions/cache@v1.0.0
         with:
-          compression-method: "gzip"
+          compression-method: 'gzip'
           bucket: ${{ inputs.CACHE_BUCKET_NAME }}
           path: |
             **/node_modules
@@ -90,7 +90,7 @@ jobs:
       - if: inputs.ENV != 'testing'
         run: |
           cat package.json | grep -E '"version": "[0-9]+.[0-9]+.[0-9]+"' | grep -Eo '[0-9]+.[0-9]+.[0-9]+' > build/version.txt
-      - name: "Create Sentry release"
+      - name: 'Create Sentry release'
         if: ${{ inputs.PUSH_RELEASE_TO_SENTRY }}
         uses: getsentry/action-release@v1
         env:
@@ -102,17 +102,18 @@ jobs:
           sourcemaps: ./build
           working_directory: pro
           version: ${{ inputs.CHANNEL }}
-          url_prefix: "~"
+          url_prefix: '~'
       - uses: FirebaseExtended/action-hosting-deploy@v0
         id: firebase-deploy
         with:
-          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: ${{ steps.secrets.outputs.FIREBASE_TOKEN }}
           expires: ${{ inputs.EXPIRES }}
           projectId: pc-pro-${{ inputs.ENV }}
           entryPoint: pro
           channelId: ${{ inputs.CHANNEL }}
-      - name: "Publish Summary"
+          target: pc-pro-${{ inputs.ENV }}
+      - name: 'Publish Summary'
         run: |
           {
             echo "### :rocket: Deploy PRO summary"
