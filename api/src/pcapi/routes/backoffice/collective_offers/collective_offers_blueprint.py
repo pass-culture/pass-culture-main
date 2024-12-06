@@ -10,6 +10,7 @@ from flask import request
 from flask import url_for
 from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
+from markupsafe import Markup
 from markupsafe import escape
 import sqlalchemy as sa
 from werkzeug.datastructures import MultiDict
@@ -352,7 +353,11 @@ def _batch_validate_or_reject_collective_offers(
                 try:
                     adage_client.notify_institution_association(serialize_collective_offer(collective_offer))
                 except educational_exceptions.AdageException as exp:
-                    flash(f"Erreur Adage pour l'offre {collective_offer.id}: {exp.message}")
+                    flash(
+                        Markup("Erreur Adage pour l'offre {offer_id}: {message}").format(
+                            offer_id=collective_offer.id, message=exp.message
+                        )
+                    )
                     mark_transaction_as_invalid()
                     collective_offer_update_failed_ids.append(collective_offer.id)
                     continue

@@ -107,7 +107,7 @@
                       <td>{{ tag.id }}</td>
                       <td>{{ tag.name }}</td>
                       <td>{{ tag.description | empty_string_if_null }}</td>
-                      <td>{{ tag.categories | format_tag_object_list | safe }}</td>
+                      <td>{{ tag.categories | format_tag_object_list }}</td>
                       <td>{{ tag.startDateTime | format_date }}</td>
                       <td>{{ tag.endDateTime | format_date }}</td>
                     </tr>

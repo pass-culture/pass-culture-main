@@ -5,10 +5,12 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.connectors.dms import api as dms_api
+from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.users import ds as users_ds
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 
 from . import ds_fixtures
 
@@ -63,6 +65,7 @@ class SyncUserAccountUpdateRequestsTest:
 
         uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
         assert uaur.dsApplicationId == 21163559
+        assert uaur.dsTechnicalId == "UHJvY4VkdXKlLTI5NTgw"
         assert uaur.status == dms_models.GraphQLApplicationStates.draft
         assert uaur.dateCreated == datetime(2024, 11, 26, 8, 31, 35)
         assert uaur.dateLastStatusUpdate == uaur.dateCreated
@@ -98,6 +101,7 @@ class SyncUserAccountUpdateRequestsTest:
 
         uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
         assert uaur.dsApplicationId == 21166546
+        assert uaur.dsTechnicalId == "UHJvY4VkdXKlLTI5NTgw"
         assert uaur.status == dms_models.GraphQLApplicationStates.on_going
         assert uaur.dateCreated == datetime(2024, 11, 26, 10, 2, 46)
         assert uaur.dateLastStatusUpdate == datetime(2024, 11, 26, 10, 3, 14)
@@ -134,6 +138,7 @@ class SyncUserAccountUpdateRequestsTest:
         assert users_models.UserAccountUpdateRequest.query.count() == 2
 
         uaur = users_models.UserAccountUpdateRequest.query.filter_by(dsApplicationId=21167090).one()
+        assert uaur.dsTechnicalId == "UHJvY4VkdXKlLTI5NTgw"
         assert uaur.status == dms_models.GraphQLApplicationStates.accepted
         assert uaur.dateCreated == datetime(2024, 11, 26, 10, 19, 35)
         assert uaur.dateLastStatusUpdate == datetime(2024, 11, 26, 10, 21, 45)
@@ -155,6 +160,7 @@ class SyncUserAccountUpdateRequestsTest:
         assert uaur.flags == []
 
         uaur = users_models.UserAccountUpdateRequest.query.filter_by(dsApplicationId=21167148).one()
+        assert uaur.dsTechnicalId == "UHJvY4VkdXKlLTI5NTgx"
         assert uaur.status == dms_models.GraphQLApplicationStates.draft
         assert uaur.dateCreated == datetime(2024, 11, 26, 10, 20, 50)
         assert uaur.dateLastStatusUpdate == datetime(2024, 11, 26, 10, 22, 16)
@@ -190,6 +196,7 @@ class SyncUserAccountUpdateRequestsTest:
 
         uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
         assert uaur.dsApplicationId == 21176193
+        assert uaur.dsTechnicalId == "UHJvY4VkdXKlLTI5NTgw"
         assert uaur.status == dms_models.GraphQLApplicationStates.draft
         assert uaur.dateCreated == datetime(2024, 11, 26, 15, 14, 14)
         assert uaur.dateLastStatusUpdate == uaur.dateCreated
@@ -225,6 +232,7 @@ class SyncUserAccountUpdateRequestsTest:
 
         uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
         assert uaur.dsApplicationId == 21176997
+        assert uaur.dsTechnicalId == "UHJvY4VkdXKlLTI5NTgw"
         assert uaur.status == dms_models.GraphQLApplicationStates.on_going
         assert uaur.dateCreated == datetime(2024, 11, 26, 15, 43, 28)
         assert uaur.dateLastStatusUpdate == datetime(2024, 11, 26, 15, 54, 29)
@@ -260,6 +268,7 @@ class SyncUserAccountUpdateRequestsTest:
 
         uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
         assert uaur.dsApplicationId == 21177744
+        assert uaur.dsTechnicalId == "UHJvY4VkdXKlLTI5NTgw"
         assert uaur.status == dms_models.GraphQLApplicationStates.draft
         assert uaur.dateCreated == datetime(2024, 11, 26, 16, 4, 27)
         assert uaur.dateLastStatusUpdate == datetime(2024, 11, 26, 16, 5, 32)
@@ -298,6 +307,7 @@ class SyncUserAccountUpdateRequestsTest:
 
         uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
         assert uaur.dsApplicationId == 21179224
+        assert uaur.dsTechnicalId == "UHJvY4VkdXKlLTI5NTgw"
         assert uaur.status == dms_models.GraphQLApplicationStates.draft
         assert uaur.dateCreated == datetime(2024, 11, 26, 17, 19, 42)
         assert uaur.dateLastStatusUpdate == uaur.dateCreated
@@ -334,6 +344,7 @@ class SyncUserAccountUpdateRequestsTest:
 
         uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
         assert uaur.dsApplicationId == 21193637
+        assert uaur.dsTechnicalId == "UHJvY4VkdXKlLTI5NTgw"
         assert uaur.status == dms_models.GraphQLApplicationStates.draft
         assert uaur.dateCreated == datetime(2024, 11, 27, 14, 25, 3)
         assert uaur.dateLastStatusUpdate == uaur.dateCreated
@@ -372,3 +383,63 @@ class SyncUserAccountUpdateRequestsTest:
         )
 
         assert users_models.UserAccountUpdateRequest.query.count() == 0
+
+
+class UpdateStateTest:
+    @patch(
+        "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+        return_value=ds_fixtures.DS_RESPONSE_UPDATE_STATE_DRAFT_TO_ON_GOING,
+    )
+    def test_from_draft_to_on_going(self, mocked_update_state, instructor):
+        uaur = users_factories.EmailUpdateRequestFactory(
+            dsApplicationId=21273773,
+            dsTechnicalId="RG9zc2llci0yMTI3Mzc3Mw==",
+            status=dms_models.GraphQLApplicationStates.draft,
+        )
+
+        users_ds.update_state(uaur, new_state=dms_models.GraphQLApplicationStates.on_going, instructor=instructor)
+
+        mocked_update_state.assert_called_once_with(
+            dms_api.MAKE_ON_GOING_MUTATION_NAME,
+            variables={
+                "input": {
+                    "dossierId": uaur.dsTechnicalId,
+                    "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                    "disableNotification": False,
+                }
+            },
+        )
+
+        db.session.refresh(uaur)
+        assert uaur.status == dms_models.GraphQLApplicationStates.on_going
+        assert uaur.dateCreated == datetime(2024, 12, 2, 17, 16, 50)
+        assert uaur.dateLastStatusUpdate == datetime(2024, 12, 2, 17, 20, 53)
+        assert uaur.lastInstructor == instructor
+
+    @patch(
+        "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+        return_value=ds_fixtures.DS_RESPONSE_UPDATE_STATE_ON_GOING_TO_ON_GOING,
+    )
+    def test_from_remote_on_going_to_on_going(self, mocked_update_state, instructor):
+        uaur = users_factories.EmailUpdateRequestFactory(
+            dsApplicationId=21273773,
+            dsTechnicalId="RG9zc2llci0yMTI3Mzc3Mw==",
+            status=dms_models.GraphQLApplicationStates.draft,
+        )
+
+        with pytest.raises(dms_exceptions.DmsGraphQLApiError) as error:
+            users_ds.update_state(uaur, new_state=dms_models.GraphQLApplicationStates.on_going, instructor=instructor)
+
+        mocked_update_state.assert_called_once_with(
+            dms_api.MAKE_ON_GOING_MUTATION_NAME,
+            variables={
+                "input": {
+                    "dossierId": uaur.dsTechnicalId,
+                    "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                    "disableNotification": False,
+                }
+            },
+        )
+
+        assert error.value.message == "Le dossier est déjà en instruction"
+        assert uaur.lastInstructor != instructor

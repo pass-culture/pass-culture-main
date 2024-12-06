@@ -129,3 +129,19 @@ class Returns204Test:
         assert offer_not_from_provider.isActive
         assert not offer_from_inactive_venue_provider.isActive
         assert not offer_from_deleted_venue_provider.isActive
+
+    def test_update_all_offer_on_offerer_address(self, client):
+        venue = offerers_factories.VenueFactory()
+        offerer_address = offerers_factories.OffererAddressFactory()
+        offer1 = offers_factories.OfferFactory(offererAddress=offerer_address, isActive=False, venue=venue)
+        offer2 = offers_factories.OfferFactory(isActive=False, venue=venue)
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=venue.managingOfferer)
+
+        authentified_client = client.with_session_auth("pro@example.com")
+        data = {"isActive": True, "offererAddressId": offerer_address.id}
+        response = authentified_client.patch("/offers/all-active-status", json=data)
+        assert response.status_code == 202
+        offer1 = Offer.query.get(offer1.id)
+        offer2 = Offer.query.get(offer2.id)
+        assert offer1.isActive
+        assert not offer2.isActive

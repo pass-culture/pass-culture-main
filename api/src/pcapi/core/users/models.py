@@ -43,7 +43,6 @@ from pcapi.utils.phone_number import ParsedPhoneNumber
 if typing.TYPE_CHECKING:
     from pcapi.core.finance.models import Deposit
     from pcapi.core.offerers.models import UserOfferer
-    from pcapi.core.offers.models import Mediation
     from pcapi.core.offers.models import Offer
     from pcapi.core.permissions.models import BackOfficeUserProfile
     from pcapi.core.reactions.models import Reaction
@@ -944,6 +943,8 @@ class UserAccountUpdateFlag(enum.Enum):
 class UserAccountUpdateRequest(PcObject, Base, Model):
     __tablename__ = "user_account_update_request"
     dsApplicationId: int = sa.Column(sa.BigInteger, nullable=False, index=True, unique=True)
+    # FIXME (prouzet, 2024-12-02): make dsTechnicalId non-nullable once deployed on all platforms and data updated
+    dsTechnicalId: str = sa.Column(sa.Text, nullable=True)
     status: dms_models.GraphQLApplicationStates = sa.Column(
         MagicEnum(dms_models.GraphQLApplicationStates), nullable=False
     )

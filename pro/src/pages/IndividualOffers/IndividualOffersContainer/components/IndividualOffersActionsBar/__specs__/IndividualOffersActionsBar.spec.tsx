@@ -1,11 +1,17 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import * as router from 'react-router-dom'
+import { beforeEach, expect } from 'vitest'
 
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { defaultCollectiveTemplateOffer } from 'commons/utils/factories/adageFactories'
+import {
+  renderWithProviders,
+  RenderWithProvidersOptions,
+} from 'commons/utils/renderWithProviders'
 import { Notification } from 'components/Notification/Notification'
 
 import {
@@ -13,15 +19,24 @@ import {
   IndividualOffersActionsBarProps,
 } from '../IndividualOffersActionsBar'
 
-const renderActionsBar = (props: IndividualOffersActionsBarProps) => {
+const renderActionsBar = (
+  props: IndividualOffersActionsBarProps,
+  overrides: RenderWithProvidersOptions = {}
+) => {
+  overrides.initialRouterEntries = ['/offres']
   renderWithProviders(
     <>
       <IndividualOffersActionsBar {...props} />
       <Notification />
     </>,
-    { storeOverrides: {}, initialRouterEntries: ['/offres'] }
+    overrides
   )
 }
+
+vi.mock('react-router-dom', async () => ({
+  ...(await vi.importActual('react-router-dom')),
+  useLocation: vi.fn(),
+}))
 
 vi.mock('apiClient/api', () => ({
   api: {
@@ -30,6 +45,14 @@ vi.mock('apiClient/api', () => ({
     patchAllOffersActiveStatus: vi.fn(),
   },
 }))
+
+const defaultUseLocationValue = {
+  state: { offer: defaultCollectiveTemplateOffer },
+  hash: '',
+  key: '',
+  pathname: '/offres',
+  search: '',
+}
 
 const mockLogEvent = vi.fn()
 
@@ -54,6 +77,7 @@ describe('ActionsBar', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
+    vi.spyOn(router, 'useLocation').mockReturnValue(defaultUseLocationValue)
   })
 
   it('should have buttons to activate and deactivate offers, to delete, and to abort action', () => {
@@ -196,7 +220,16 @@ describe('ActionsBar', () => {
     renderActionsBar(props)
 
     const expectedBody = {
+      categoryId: null,
+      creationMode: null,
       isActive: true,
+      nameOrIsbn: null,
+      offererAddressId: null,
+      offererId: null,
+      periodBeginningDate: null,
+      periodEndingDate: null,
+      status: null,
+      venueId: null,
     }
 
     const activateButton = screen.getByText('Publier')
@@ -213,7 +246,16 @@ describe('ActionsBar', () => {
     renderActionsBar(props)
 
     const expectedBody = {
+      categoryId: null,
+      creationMode: null,
       isActive: false,
+      nameOrIsbn: null,
+      offererAddressId: null,
+      offererId: null,
+      periodBeginningDate: null,
+      periodEndingDate: null,
+      status: null,
+      venueId: null,
     }
 
     const deactivateButton = screen.getByText('Désactiver')
@@ -331,5 +373,70 @@ describe('ActionsBar', () => {
     expect(screen.queryByText('Supprimer')).not.toBeInTheDocument()
     expect(screen.queryByText('Publier')).not.toBeInTheDocument()
     expect(screen.queryByText('Désactiver')).not.toBeInTheDocument()
+  })
+
+  describe('OA feature flag', () => {
+    it('should make the right api call without OA FF', async () => {
+      defaultUseLocationValue.search = 'offererAddressId=814'
+      vi.spyOn(router, 'useLocation').mockReturnValueOnce(
+        defaultUseLocationValue
+      )
+
+      props.areAllOffersSelected = true
+      renderActionsBar(props)
+
+      const expectedBody = {
+        categoryId: null,
+        creationMode: null,
+        isActive: true,
+        nameOrIsbn: null,
+        offererAddressId: '814',
+        offererId: null,
+        periodBeginningDate: null,
+        periodEndingDate: null,
+        status: null,
+        venueId: null,
+      }
+
+      const activateButton = screen.getByText('Publier')
+      await userEvent.click(activateButton)
+
+      expect(api.patchAllOffersActiveStatus).toHaveBeenLastCalledWith(
+        expectedBody
+      )
+      expect(props.clearSelectedOffers).toHaveBeenCalledTimes(1)
+    })
+
+    it('should make the right api call with OA FF', async () => {
+      defaultUseLocationValue.search = 'venueId=123'
+      vi.spyOn(router, 'useLocation').mockReturnValueOnce(
+        defaultUseLocationValue
+      )
+      props.areAllOffersSelected = true
+      renderActionsBar(props, {
+        features: ['WIP_ENABLE_OFFER_ADDRESS'],
+      })
+
+      const expectedBody = {
+        categoryId: null,
+        creationMode: null,
+        isActive: true,
+        nameOrIsbn: null,
+        offererAddressId: null,
+        offererId: null,
+        periodBeginningDate: null,
+        periodEndingDate: null,
+        status: null,
+        venueId: '123',
+      }
+
+      const activateButton = screen.getByText('Publier')
+      await userEvent.click(activateButton)
+
+      expect(api.patchAllOffersActiveStatus).toHaveBeenLastCalledWith(
+        expectedBody
+      )
+      expect(props.clearSelectedOffers).toHaveBeenCalledTimes(1)
+    })
   })
 })

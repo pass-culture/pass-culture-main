@@ -266,7 +266,12 @@ class ZendeskSellReadOnlyBackend(BaseBackend):
             case _:
                 raise ValueError("Unsupported method")
         if not response.ok:
-            logger.error(
+            if response.status_code in (502, 503, 504):
+                # No need for Sentry alert in case of timeout or server unavailable, we can't fix anything
+                log_function = logger.warning
+            else:
+                log_function = logger.error
+            log_function(
                 "Error %s while calling Zendesk Sell API",
                 response.status_code,
                 extra={

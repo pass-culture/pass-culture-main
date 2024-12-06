@@ -401,6 +401,7 @@ def patch_all_offers_active_status(
         "creation_mode": body.creation_mode,
         "period_beginning_date": body.period_beginning_date,
         "period_ending_date": body.period_ending_date,
+        "offerer_address_id": body.offerer_address_id,
     }
     update_all_offers_active_status_job.delay(filters, body.is_active)
     return offers_serialize.PatchAllOffersActiveStatusResponseModel()
@@ -605,12 +606,17 @@ def post_price_categories(
                     status_code=400,
                 )
             data = price_category_to_edit.dict(exclude_unset=True)
-            offers_api.edit_price_category(
-                offer,
-                price_category=existing_price_categories_by_id[data["id"]],
-                label=data.get("label", offers_api.UNCHANGED),
-                price=data.get("price", offers_api.UNCHANGED),
-            )
+            try:
+                offers_api.edit_price_category(
+                    offer,
+                    price_category=existing_price_categories_by_id[data["id"]],
+                    label=data.get("label", offers_api.UNCHANGED),
+                    price=data.get("price", offers_api.UNCHANGED),
+                )
+            except exceptions.RejectedOrPendingOfferNotEditable:
+                raise api_errors.ApiErrors(
+                    {"offer": ["Offer is not editable (because rejected or pending)"]}, status_code=400
+                )
 
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 

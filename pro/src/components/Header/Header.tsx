@@ -4,15 +4,15 @@ import { NavLink, useLocation } from 'react-router-dom'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
-import { HeaderHelpDropdown } from 'components/Header/HeaderHelpDropdown/HeaderHelpDropdown'
 import fullBurgerIcon from 'icons/full-burger.svg'
 import logoPassCultureProIcon from 'icons/logo-pass-culture-pro.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
+import { HeaderDropdown } from './components/HeaderDropdown/HeaderDropdown'
+import { HeaderHelpDropdown } from './components/HeaderHelpDropdown/HeaderHelpDropdown'
 import styles from './Header.module.scss'
-import { HeaderDropdown } from './HeaderDropdown/HeaderDropdown'
 
 type HeaderProps = {
   lateralPanelOpen?: boolean

@@ -3528,6 +3528,8 @@ def validate_finance_overpayment_incident(
     force_debit_note: bool,
     author: users_models.User,
 ) -> None:
+    from pcapi.core.bookings import api as bookings_api
+
     incident_validation_date = datetime.datetime.utcnow()
     finance_events = []
     for booking_incident in finance_incident.booking_finance_incidents:
@@ -3535,17 +3537,15 @@ def validate_finance_overpayment_incident(
             _create_finance_events_from_incident(booking_incident, incident_validation_date=incident_validation_date)
         )
         if not booking_incident.is_partial:
-            if booking_incident.booking:
-                booking_incident.booking.cancel_booking(
-                    bookings_models.BookingCancellationReasons.FINANCE_INCIDENT, cancel_even_if_reimbursed=True
-                )
-                db.session.add(booking_incident.booking)
-            elif booking_incident.collectiveBooking:
-                booking_incident.collectiveBooking.cancel_booking(
+            if booking := booking_incident.booking:
+                bookings_api.cancel_booking_for_finance_incident(booking)
+                db.session.add(booking)
+            elif collective_booking := booking_incident.collectiveBooking:
+                collective_booking.cancel_booking(
                     educational_models.CollectiveBookingCancellationReasons.FINANCE_INCIDENT,
                     cancel_even_if_reimbursed=True,
                 )
-                db.session.add(booking_incident.collectiveBooking)
+                db.session.add(collective_booking)
     db.session.add_all(finance_events)
 
     if not finance_incident.relates_to_collective_bookings:

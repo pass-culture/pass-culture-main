@@ -151,8 +151,7 @@
                     {% set compliance_reasons = offer.compliance.compliance_reasons if offer.compliance else none %}
                     {% if compliance_reasons %}
                       <p class="mb-1">
-                        <span class="fw-bold">Raison de score faible :</span> {{ compliance_reasons | format_compliance_reasons
-                        | safe }}
+                        <span class="fw-bold">Raison de score faible :</span> {{ compliance_reasons | format_compliance_reasons }}
                       </p>
                     {% endif %}
                   {% endif %}
@@ -169,7 +168,7 @@
                 {% endif %}
                 <p class="mb-1">
                   <span class="fw-bold">Tags :</span>
-                  {{ offer.criteria | sort(attribute="name") | format_tag_object_list | safe }}
+                  {{ offer.criteria | sort(attribute="name") | format_tag_object_list }}
                 </p>
               </div>
             </div>

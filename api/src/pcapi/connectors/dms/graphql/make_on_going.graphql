@@ -2,6 +2,15 @@ mutation makeOnGoing($input: DossierPasserEnInstructionInput!) {
   dossierPasserEnInstruction(input: $input) {
     dossier {
       id
+      number
+      state
+      dateDerniereModification
+      dateDepot
+      datePassageEnConstruction
+      datePassageEnInstruction
+      dateTraitement
+      dateDerniereCorrectionEnAttente
+      dateDerniereModificationChamps
     }
     errors {
       message

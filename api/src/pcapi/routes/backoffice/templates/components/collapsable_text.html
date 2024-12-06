@@ -1,20 +1,20 @@
 {% macro collapsable_text(id, short, long) %}
   <div class="pc-display-selector"
-       data-pc-input-name="name-{{ id }}">
+       data-pc-input-name="collapsable-text-{{ id }}">
     {% if short == long %}
       {{ short }}
     {% else %}
       <input class="form-check-input d-none"
              type="radio"
-             name="name-{{ id }}"
+             name="collapsable-text-{{ id }}"
              id="id-{{ id }}-long"
-             value="label-{{ id }}-long"
-             checked>
+             value="label-{{ id }}-long">
       <input class="form-check-input d-none"
              type="radio"
-             name="name-{{ id }}"
+             name="collapsable-text-{{ id }}"
              id="id-{{ id }}-short"
-             value="label-{{ id }}-short">
+             value="label-{{ id }}-short"
+             checked>
       <label class="form-check-label"
              for="id-{{ id }}-short"
              id="label-{{ id }}-long">{{ long }}</label>

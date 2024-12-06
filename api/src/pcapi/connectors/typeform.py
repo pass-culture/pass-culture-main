@@ -68,8 +68,15 @@ def get_form(form_id: str) -> TypeformForm:
     return _get_backend().get_form(form_id)
 
 
-def get_responses(form_id: str, page: int = 1, num_results: int = 100) -> list[TypeformResponse]:
-    return _get_backend().get_responses(form_id, page, num_results)
+def get_responses(
+    form_id: str, *, num_results: int = 100, sort: str = "submitted_at,desc", since: datetime | None = None
+) -> list[TypeformResponse]:
+    return _get_backend().get_responses(
+        form_id=form_id,
+        num_results=num_results,
+        since=since,
+        sort=sort,
+    )
 
 
 class BaseBackend:
@@ -79,7 +86,9 @@ class BaseBackend:
     def get_form(self, form_id: str) -> TypeformForm:
         raise NotImplementedError()
 
-    def get_responses(self, form_id: str, page: int = 1, num_results: int = 100) -> list[TypeformResponse]:
+    def get_responses(
+        self, form_id: str, num_results: int = 100, sort: str = "submitted_at,desc", since: datetime | None = None
+    ) -> list[TypeformResponse]:
         raise NotImplementedError()
 
 
@@ -103,7 +112,9 @@ class TestingBackend(BaseBackend):
             ],
         )
 
-    def get_responses(self, form_id: str, page: int = 1, num_results: int = 100) -> list[TypeformResponse]:
+    def get_responses(
+        self, form_id: str, num_results: int = 100, sort: str = "submitted_at,desc", since: datetime | None = None
+    ) -> list[TypeformResponse]:
         return []
 
 
@@ -180,12 +191,22 @@ class TypeformBackend(BaseBackend):
             fields=self._extract_questions(data["fields"]),
         )
 
-    def get_responses(self, form_id: str, page: int = 1, num_results: int = 1000) -> list[TypeformResponse]:
+    def get_responses(
+        self, form_id: str, num_results: int = 100, sort: str = "submitted_at,desc", since: datetime | None = None
+    ) -> list[TypeformResponse]:
         """
         Documentation: https://www.typeform.com/developers/responses/reference/retrieve-responses/
         """
         path = f"/forms/{form_id}/responses"
-        data = self._get(path, params={"page_size": num_results, "response_type": "completed"})
+        params = {
+            "page_size": num_results,
+            "response_type": "completed",
+            "sort": sort,
+        }
+        if since is not None:
+            params["since"] = since.isoformat()
+
+        data = self._get(path, params=params)
 
         responses = []
 

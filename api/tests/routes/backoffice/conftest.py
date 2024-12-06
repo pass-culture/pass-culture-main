@@ -223,6 +223,7 @@ def legit_user_fixture(roles_with_permissions: None) -> users_models.User:
     )
 
     perm_api.create_backoffice_profile(user)
+    user.backoffice_profile.dsInstructorId = "legit=user=instructor=="
     backoffice_api.upsert_roles(user, list(perm_models.Roles))
 
     db.session.flush()

@@ -173,6 +173,7 @@ class PatchAllOffersActiveStatusBodyModel(BaseModel):
     status: str | None
     period_beginning_date: datetime.date | None
     period_ending_date: datetime.date | None
+    offerer_address_id: int | None
 
     class Config:
         alias_generator = to_camel

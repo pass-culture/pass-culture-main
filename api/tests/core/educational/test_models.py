@@ -711,6 +711,7 @@ class CollectiveOfferTemplateDisplayedStatusTest:
         offer = factories.create_collective_offer_template_by_status(status)
         assert offer.displayedStatus == status
 
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_get_displayed_status_for_inactive_offer_due_to_end_date_passed(self):
         offer = factories.CollectiveOfferTemplateFactory(
             validation=OfferValidationStatus.APPROVED,
@@ -721,20 +722,29 @@ class CollectiveOfferTemplateDisplayedStatusTest:
         )
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.INACTIVE
 
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    def test_get_displayed_status_for_inactive_offer_with_end_date_passed(self):
+        offer = factories.CollectiveOfferTemplateFactory(
+            validation=OfferValidationStatus.APPROVED,
+            isActive=False,
+            dateRange=db_utils.make_timerange(
+                start=datetime.datetime.utcnow() - datetime.timedelta(days=4),
+                end=datetime.datetime.utcnow() - datetime.timedelta(hours=1),
+            ),
+        )
+        assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ENDED
+
+        offer.dateRange = None
+        assert offer.displayedStatus == CollectiveOfferDisplayedStatus.INACTIVE
+
 
 class CollectiveOfferAllowedActionsTest:
-    @pytest.mark.parametrize(
-        "status",
-        ALL_DISPLAYED_STATUSES - NEW_DISPLAYED_STATUSES,
-    )
+    @pytest.mark.parametrize("status", ALL_DISPLAYED_STATUSES - NEW_DISPLAYED_STATUSES)
     def test_get_offer_allowed_actions(self, status):
         offer = factories.create_collective_offer_by_status(status)
         assert offer.allowedActions == list(ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[status])
 
-    @pytest.mark.parametrize(
-        "status",
-        ALL_DISPLAYED_STATUSES - NEW_DISPLAYED_STATUSES,
-    )
+    @pytest.mark.parametrize("status", ALL_DISPLAYED_STATUSES - NEW_DISPLAYED_STATUSES)
     def test_get_offer_allowed_actions_public_api(self, status):
         offer = factories.create_collective_offer_by_status(status)
         offer.provider = providers_factories.ProviderFactory()

@@ -75,9 +75,9 @@ def format_role(role: str | None) -> str:
 def format_deposit_type(deposit_type: finance_models.DepositType) -> str:
     match deposit_type:
         case finance_models.DepositType.GRANT_18:
-            return "<span class='badge text-bg-secondary'>Pass 18</span>"
+            return Markup("<span class='badge text-bg-secondary'>Pass 18</span>")
         case finance_models.DepositType.GRANT_15_17:
-            return "<span class='badge text-bg-secondary'>Pass 15-17</span>"
+            return Markup("<span class='badge text-bg-secondary'>Pass 15-17</span>")
         case _:
             return "Aucune information"
 
@@ -404,24 +404,24 @@ def format_booking_status_long(booking: bookings_models.Booking | educational_mo
         bookings_models.BookingStatus.REIMBURSED,
         educational_models.CollectiveBookingStatus.REIMBURSED,
     ):
-        return '<span class="badge text-bg-success">AC remboursé</span>'
+        return Markup('<span class="badge text-bg-success">AC remboursé</span>')
     if booking.status in (
         bookings_models.BookingStatus.CANCELLED,
         educational_models.CollectiveBookingStatus.CANCELLED,
     ):
-        return "<span class=\"badge text-bg-danger\">L'offre n'a pas eu lieu</span>"
+        return Markup("<span class=\"badge text-bg-danger\">L'offre n'a pas eu lieu</span>")
     if booking.status in (bookings_models.BookingStatus.USED, educational_models.CollectiveBookingStatus.USED):
-        return '<span class="badge text-bg-success">Le jeune a consommé l\'offre</span>'
+        return Markup('<span class="badge text-bg-success">Le jeune a consommé l\'offre</span>')
     if isinstance(booking, bookings_models.Booking) and booking.isConfirmed:
-        return '<span class="badge text-bg-success">Le jeune ne peut plus annuler</span>'
+        return Markup('<span class="badge text-bg-success">Le jeune ne peut plus annuler</span>')
     if (
         isinstance(booking, educational_models.CollectiveBooking)
         and booking.status == educational_models.CollectiveBookingStatus.CONFIRMED
     ):
-        return '<span class="badge text-bg-success">Le chef d\'établissement a validé la réservation</span>'
+        return Markup('<span class="badge text-bg-success">Le chef d\'établissement a validé la réservation</span>')
     if booking.status == educational_models.CollectiveBookingStatus.PENDING:
-        return '<span class="badge text-bg-success">L\'enseignant a posé une option</span>'
-    return '<span class="badge text-bg-success">Le jeune a réservé l\'offre</span>'
+        return Markup('<span class="badge text-bg-success">L\'enseignant a posé une option</span>')
+    return Markup('<span class="badge text-bg-success">Le jeune a réservé l\'offre</span>')
 
 
 def format_booking_validation_author_type(
@@ -445,14 +445,14 @@ def format_booking_status(
         bookings_models.BookingStatus.REIMBURSED,
         educational_models.CollectiveBookingStatus.REIMBURSED,
     ):
-        return '<span class="badge text-bg-success">Remboursée</span>' if with_badge else "Remboursée"
+        return Markup('<span class="badge text-bg-success">Remboursée</span>') if with_badge else "Remboursée"
     if booking.status in (
         bookings_models.BookingStatus.CANCELLED,
         educational_models.CollectiveBookingStatus.CANCELLED,
     ):
-        return '<span class="badge text-bg-danger">Annulée</span>' if with_badge else "Annulée"
+        return Markup('<span class="badge text-bg-danger">Annulée</span>') if with_badge else "Annulée"
     if booking.status in (bookings_models.BookingStatus.USED, educational_models.CollectiveBookingStatus.USED):
-        return '<span class="badge text-bg-success">Validée</span>' if with_badge else "Validée"
+        return Markup('<span class="badge text-bg-success">Validée</span>') if with_badge else "Validée"
     if isinstance(booking, bookings_models.Booking) and booking.isConfirmed:
         return "Confirmée"
     if (
@@ -461,7 +461,7 @@ def format_booking_status(
     ):
         return "Confirmée"
     if booking.status == educational_models.CollectiveBookingStatus.PENDING:
-        return '<span class="text-nowrap">Pré-réservée</span>' if with_badge else "Pré-réservée"
+        return Markup('<span class="text-nowrap">Pré-réservée</span>') if with_badge else "Pré-réservée"
     return "Réservée"
 
 
@@ -633,6 +633,8 @@ def format_dms_application_status(
             | finance_models.BankAccountApplicationStatus.WITHOUT_CONTINUATION
         ):
             return "Classé sans suite"
+        case finance_models.BankAccountApplicationStatus.WITH_PENDING_CORRECTIONS:
+            return "À corriger"
         case _:
             return status.value
 
@@ -654,6 +656,8 @@ def format_dms_application_status_badge(
             | finance_models.BankAccountApplicationStatus.WITHOUT_CONTINUATION
         ):
             return Markup('<span class="badge text-bg-primary">Classé sans suite</span>')
+        case finance_models.BankAccountApplicationStatus.WITH_PENDING_CORRECTIONS:
+            return Markup('<span class="badge text-bg-warning">À corriger</span>')
         case _:
             return status.value
 
@@ -769,11 +773,11 @@ def format_eligibility_type(eligibility_type: users_models.EligibilityType) -> s
             return eligibility_type.value
 
 
-def format_as_badges(items: list[str] | None) -> str:
+def format_as_badges(items: list[str] | None, return_markup: bool = True) -> str:
     if not items:
         return ""
 
-    return " ".join(
+    return (Markup(" ") if return_markup else " ").join(
         Markup('<span class="badge text-bg-light shadow-sm">{name}</span>').format(name=item) for item in items
     )
 
@@ -814,8 +818,8 @@ def format_compliance_reason(feature: str) -> str:
             return feature
 
 
-def format_compliance_reasons(features: list[str]) -> str:
-    return format_as_badges([format_compliance_reason(feature) for feature in features])
+def format_compliance_reasons(features: list[str], return_markup: bool = True) -> str:
+    return format_as_badges([format_compliance_reason(feature) for feature in features], return_markup=return_markup)
 
 
 def format_confidence_level(confidence_level: offerers_models.OffererConfidenceLevel | None) -> str:

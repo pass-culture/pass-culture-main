@@ -97,7 +97,7 @@ export const OfferEducationalStock = <
   
   const canEditDiscount = areCollectiveNewStatusesEnabled ? isActionAllowedOnCollectiveOffer(offer, CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT) : !disablePriceAndParticipantInputs
 
-  const canEditDates = areCollectiveNewStatusesEnabled ? isActionAllowedOnCollectiveOffer(offer, CollectiveOfferAllowedAction.CAN_EDIT_DATES) : mode === Mode.CREATION
+  const canEditDates = areCollectiveNewStatusesEnabled ? isActionAllowedOnCollectiveOffer(offer, CollectiveOfferAllowedAction.CAN_EDIT_DATES) : mode !== Mode.READ_ONLY
 
   const postForm = async (values: OfferEducationalStockFormValues) => {
     setIsLoading(true)

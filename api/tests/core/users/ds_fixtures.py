@@ -27,6 +27,7 @@ DS_RESPONSE_EMAIL_CHANGED = {
             },
             "nodes": [
                 {
+                    "id": "UHJvY4VkdXKlLTI5NTgw",
                     "number": 21163559,
                     "archived": False,
                     "state": "en_construction",
@@ -150,6 +151,7 @@ DS_RESPONSE_PHONE_NUMBER_CHANGED = {
             },
             "nodes": [
                 {
+                    "id": "UHJvY4VkdXKlLTI5NTgw",
                     "number": 21166546,
                     "archived": False,
                     "state": "en_instruction",
@@ -281,6 +283,7 @@ DS_RESPONSE_TWO_APPLICATIONS_FIRST_NAME_LAST_NAME_CHANGED = {
             },
             "nodes": [
                 {
+                    "id": "UHJvY4VkdXKlLTI5NTgw",
                     "number": 21167090,
                     "archived": False,
                     "state": "accepte",
@@ -405,6 +408,7 @@ DS_RESPONSE_TWO_APPLICATIONS_FIRST_NAME_LAST_NAME_CHANGED = {
                     ],
                 },
                 {
+                    "id": "UHJvY4VkdXKlLTI5NTgx",
                     "number": 21167148,
                     "archived": False,
                     "state": "en_construction",
@@ -529,6 +533,7 @@ DS_RESPONSE_ACCOUNT_HAS_SAME = {
             },
             "nodes": [
                 {
+                    "id": "UHJvY4VkdXKlLTI5NTgw",
                     "number": 21176193,
                     "archived": False,
                     "state": "en_construction",
@@ -581,6 +586,7 @@ DS_RESPONSE_APPLIED_BY_PROXY = {
             "pageInfo": {"hasNextPage": False, "endCursor": "MjAyNC0xMS0yNlQxNTo1NToxNC44MTgyNTAwMDBaOzIxMTc2OTk3"},
             "nodes": [
                 {
+                    "id": "UHJvY4VkdXKlLTI5NTgw",
                     "number": 21176997,
                     "archived": False,
                     "state": "en_instruction",
@@ -644,6 +650,7 @@ DS_RESPONSE_CORRECTION_RESOLVED = {
             "pageInfo": {"hasNextPage": False, "endCursor": "MjAyNC0xMS0yNlQxNjowNTozMi40NzMwNjEwMDBaOzIxMTc3NzQ0"},
             "nodes": [
                 {
+                    "id": "UHJvY4VkdXKlLTI5NTgw",
                     "number": 21177744,
                     "archived": False,
                     "state": "en_construction",
@@ -707,6 +714,7 @@ DS_RESPONSE_MISSING_VALUE = {
             "pageInfo": {"hasNextPage": False, "endCursor": "MjAyNC0xMS0yNlQxNzoxOTo0Mi41NzE3NDIwMDBaOzIxMTc5MjI0"},
             "nodes": [
                 {
+                    "id": "UHJvY4VkdXKlLTI5NTgw",
                     "number": 21179224,
                     "archived": False,
                     "state": "en_construction",
@@ -765,6 +773,7 @@ DS_RESPONSE_INVALID_VALUE = {
             "pageInfo": {"hasNextPage": False, "endCursor": "MjAyNC0xMS0yN1QxNDoyNTowMy40NDU4NjAwMDBaOzIxMTkzNjM3"},
             "nodes": [
                 {
+                    "id": "UHJvY4VkdXKlLTI5NTgw",
                     "number": 21193637,
                     "archived": False,
                     "state": "en_construction",
@@ -821,6 +830,7 @@ DS_RESPONSE_ARCHIVED = {
             },
             "nodes": [
                 {
+                    "id": "UHJvY4VkdXKlLTI5NTgw",
                     "number": 21168276,
                     "archived": True,
                     "state": "sans_suite",
@@ -880,4 +890,26 @@ DS_RESPONSE_ARCHIVED = {
             ],
         },
     }
+}
+
+DS_RESPONSE_UPDATE_STATE_DRAFT_TO_ON_GOING = {
+    "dossierPasserEnInstruction": {
+        "dossier": {
+            "id": "RG9zc2llci0yMTI3Mzc3Mw==",
+            "number": 21273773,
+            "state": "en_instruction",
+            "dateDerniereModification": "2024-12-02T18:20:53+01:00",
+            "dateDepot": "2024-12-02T18:16:50+01:00",
+            "datePassageEnConstruction": "2024-12-02T18:19:39+01:00",
+            "datePassageEnInstruction": "2024-12-02T18:20:53+01:00",
+            "dateTraitement": None,
+            "dateDerniereCorrectionEnAttente": None,
+            "dateDerniereModificationChamps": "2024-12-02T18:16:49+01:00",
+        },
+        "errors": None,
+    }
+}
+
+DS_RESPONSE_UPDATE_STATE_ON_GOING_TO_ON_GOING = {
+    "dossierPasserEnInstruction": {"dossier": None, "errors": [{"message": "Le dossier est déjà en instruction"}]}
 }

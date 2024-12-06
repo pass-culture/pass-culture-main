@@ -246,7 +246,6 @@ TEMPLATE_ALLOWED_ACTIONS_BY_DISPLAYED_STATUS: typing.Final[
     ),
     CollectiveOfferDisplayedStatus.ENDED: (
         CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS,
-        CollectiveOfferTemplateAllowedAction.CAN_DUPLICATE,
         CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE,
         CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
     ),
@@ -1145,12 +1144,12 @@ class CollectiveOfferTemplate(
         if self.validation == offer_mixin.OfferValidationStatus.DRAFT:
             return CollectiveOfferDisplayedStatus.DRAFT
 
-        if not self.isActive:
-            return CollectiveOfferDisplayedStatus.INACTIVE
-
         if self.hasEndDatePassed:  # pylint: disable=using-constant-test
             if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
                 return CollectiveOfferDisplayedStatus.ENDED
+            return CollectiveOfferDisplayedStatus.INACTIVE
+
+        if not self.isActive:
             return CollectiveOfferDisplayedStatus.INACTIVE
 
         return CollectiveOfferDisplayedStatus.ACTIVE
@@ -1179,8 +1178,8 @@ class CollectiveOfferTemplate(
                 cls.validation == offer_mixin.OfferValidationStatus.DRAFT.name,
                 CollectiveOfferDisplayedStatus.DRAFT.name,
             ),
-            (cls.isActive.is_(False), CollectiveOfferDisplayedStatus.INACTIVE.name),
             (cls.hasEndDatePassed, has_ended_value),
+            (cls.isActive.is_(False), CollectiveOfferDisplayedStatus.INACTIVE.name),
             else_=CollectiveOfferDisplayedStatus.ACTIVE.name,
         )
 

@@ -1349,7 +1349,10 @@ def create_extract_user_gdpr_data(user_id: int) -> utils.BackofficeResponse:
     )
     db.session.add(gdpr_data)
     db.session.flush()
-    flash(f"L'extraction des données de l'utilisateur {user.full_name} a été demandée.", "success")
+    flash(
+        Markup("L'extraction des données de l'utilisateur <b>{name}</b> a été demandée.").format(name=user.full_name),
+        "success",
+    )
 
     return redirect(url_for(".get_public_account", user_id=user_id))
 

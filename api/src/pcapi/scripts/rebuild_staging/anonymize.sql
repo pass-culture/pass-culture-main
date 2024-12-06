@@ -331,3 +331,9 @@ UPDATE "offerer_invitation"
 SET
     "email" = 'user' || "id" || '@anonymized.email'
 WHERE email NOT LIKE '%@passculture.app';
+
+-- Anonymize redactor for table chronicle
+UPDATE "chronicle"
+SET
+    "email" = 'chronicle' || "id" || '@anonymized.email',
+    "firstName" = pg_temp.fake_first_name(id);

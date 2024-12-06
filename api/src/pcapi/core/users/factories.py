@@ -1,3 +1,4 @@
+import base64
 from datetime import date
 from datetime import datetime
 from datetime import time
@@ -1072,6 +1073,9 @@ class UserAccountUpdateRequestFactory(BaseFactory):
         model = models.UserAccountUpdateRequest
 
     dsApplicationId = factory.Sequence(lambda n: 1230000 + n + 1)
+    dsTechnicalId = factory.LazyAttribute(
+        lambda o: (base64.urlsafe_b64encode(bytearray(f"UAUR:{o.dsApplicationId}", "utf-8"))).decode("utf-8")
+    )
     status = dms_models.GraphQLApplicationStates.on_going
     firstName = "Jeune"
     lastName = "Demandeur"

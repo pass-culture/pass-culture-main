@@ -263,6 +263,18 @@ def create_pro_user_with_collective_offers() -> dict:
         subcategoryId=subcategories.SEANCE_CINE.id,
         formats=[subcategories.EacFormat.PROJECTION_AUDIOVISUELLE],
     )
+
+    educational_factories.EducationalDomainFactory(
+        name="Danse",
+    )
+    educational_factories.EducationalDomainFactory(
+        name="Architecture",
+    )
+
+    educational_factories.EducationalCurrentYearFactory()
+    educational_factories.EducationalYearFactory()
+    educational_factories.EducationalInstitutionFactory(name="COLLEGE 123")
+
     return {"user": get_pro_user_helper(pro_user)}
 
 

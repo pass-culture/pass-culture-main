@@ -1,10 +1,9 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { addDays } from 'date-fns'
-import React from 'react'
 
 import { api } from 'apiClient/api'
-import { ApiError, CollectiveOfferAllowedAction } from 'apiClient/v1'
+import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { BOOKING_STATUS } from 'commons/core/Bookings/constants'
@@ -13,7 +12,6 @@ import * as useNotification from 'commons/hooks/useNotification'
 import {
   collectiveBookingCollectiveStockFactory,
   collectiveBookingFactory,
-  getCollectiveOfferFactory,
 } from 'commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
@@ -189,13 +187,7 @@ describe('collectiveActionButton api call', () => {
     )
   })
 
-  it('should show cancel button when ENABLE_COLLECTIVE_NEW_STATUSES is on and offer has CAN_CANCEL allowed action', async () => {
-    const offer = getCollectiveOfferFactory({
-      allowedActions: [CollectiveOfferAllowedAction.CAN_CANCEL],
-      id: 1,
-    })
-    vi.spyOn(api, 'getCollectiveOffer').mockResolvedValueOnce(offer)
-
+  it('should render cancel button if isCancellable is true', () => {
     const bookingRecap = collectiveBookingFactory({
       bookingStatus: BOOKING_STATUS.PENDING,
       stock: collectiveBookingCollectiveStockFactory({
@@ -203,26 +195,16 @@ describe('collectiveActionButton api call', () => {
       }),
     })
 
-    renderCollectiveActionButtons(
-      {
-        bookingRecap,
-        isCancellable: false,
-      },
-      ['ENABLE_COLLECTIVE_NEW_STATUSES']
-    )
+    renderCollectiveActionButtons({
+      bookingRecap,
+      isCancellable: true,
+    })
 
-    expect(
-      await screen.findByText('Annuler la préréservation')
-    ).toBeInTheDocument()
+    const cancelButton = screen.getByText('Annuler la préréservation')
+    expect(cancelButton).toBeInTheDocument()
   })
 
-  it('should not show cancel button when ENABLE_COLLECTIVE_NEW_STATUSES is and offer has not CAN_CANCEL allowed action', async () => {
-    const offer = getCollectiveOfferFactory({
-      allowedActions: [],
-      id: 1,
-    })
-    vi.spyOn(api, 'getCollectiveOffer').mockResolvedValueOnce(offer)
-
+  it('should not render cancel button if isCancellable is false', () => {
     const bookingRecap = collectiveBookingFactory({
       bookingStatus: BOOKING_STATUS.PENDING,
       stock: collectiveBookingCollectiveStockFactory({
@@ -230,18 +212,12 @@ describe('collectiveActionButton api call', () => {
       }),
     })
 
-    renderCollectiveActionButtons(
-      {
-        bookingRecap,
-        isCancellable: false,
-      },
-      ['ENABLE_COLLECTIVE_NEW_STATUSES']
-    )
-
-    await waitFor(() => {
-      expect(
-        screen.queryByText('Annuler la préréservation')
-      ).not.toBeInTheDocument()
+    renderCollectiveActionButtons({
+      bookingRecap,
+      isCancellable: false,
     })
+
+    const cancelButton = screen.queryByText('Annuler la préréservation')
+    expect(cancelButton).not.toBeInTheDocument()
   })
 })

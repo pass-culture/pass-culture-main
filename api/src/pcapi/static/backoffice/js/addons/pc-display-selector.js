@@ -46,15 +46,21 @@ class PcDisplaySelector extends PcAddOn {
   }
 
   #loadConfiguration = ($selector) => {
-    const selectedValue = localStorage.getItem($selector.dataset.pcInputName)
-    this.#inputInSelector($selector).forEach(($input) => {
-      if ($input.value === selectedValue){
-        $input.checked = true
-      }
-    })
+    if($selector.dataset.pcSaveState === "true") {
+      const selectedValue = localStorage.getItem($selector.dataset.pcInputName)
+      this.#inputInSelector($selector).forEach(($input) => {
+        if ($input.value === selectedValue){
+          $input.checked = true
+        }
+      })
+    } else {
+      localStorage.removeItem($selector.dataset.pcInputName)
+    }
   }
   #saveConfiguration = ($selector) => {
-    localStorage.setItem($selector.dataset.pcInputName, this.#getSelectedValue($selector))
+    if($selector.dataset.pcSaveState === "true") {
+      localStorage.setItem($selector.dataset.pcInputName, this.#getSelectedValue($selector))
+    }
   }
 
 

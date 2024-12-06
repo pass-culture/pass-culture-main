@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { addDays } from 'date-fns'
-import React from 'react'
 
 import {
   CollectiveBookingBankAccountStatus,
@@ -27,15 +26,18 @@ import { CollectiveTimeLine } from '../CollectiveTimeLine'
 const renderCollectiveTimeLine = (
   bookingRecap: CollectiveBookingResponseModel,
   bookingDetails: CollectiveBookingByIdResponseModel,
+  canEditDiscount?: boolean,
   options?: RenderWithProvidersOptions
-) =>
+) => {
   renderWithProviders(
     <CollectiveTimeLine
       bookingRecap={bookingRecap}
       bookingDetails={bookingDetails}
+      canEditDiscount={canEditDiscount ?? true}
     />,
     options
   )
+}
 
 describe('collective timeline', () => {
   let bookingDetails = collectiveBookingByIdFactory()
@@ -287,17 +289,54 @@ describe('collective timeline', () => {
           eventBeginningDatetime: addDays(new Date(), -2).toISOString(),
         }),
       })
-      renderCollectiveTimeLine(bookingRecap, bookingDetails)
+
+      renderCollectiveTimeLine(bookingRecap, bookingDetails, true)
+
       expect(
-        screen.getByRole('link', {
-          name: 'Modifier le prix ou le nombre d’élèves',
-        })
+        screen.getByText('Modifier le prix ou le nombre d’élèves')
       ).toBeInTheDocument()
       expect(
-        screen.getByRole('link', {
-          name: 'Je rencontre un problème à cette étape',
-        })
+        screen.getByText('Je rencontre un problème à cette étape')
       ).toBeInTheDocument()
+    })
+  })
+
+  describe('can edit discount', () => {
+    it('should render steps for confirmed booking and modification links and info when event is passed and can edit discount', () => {
+      const bookingRecap = collectiveBookingFactory({
+        bookingStatus: BOOKING_STATUS.CONFIRMED,
+        stock: collectiveBookingCollectiveStockFactory({
+          eventBeginningDatetime: addDays(new Date(), -2).toISOString(),
+        }),
+      })
+
+      renderCollectiveTimeLine(bookingRecap, bookingDetails, true)
+
+      expect(
+        screen.getByText('Modifier le prix ou le nombre d’élèves')
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText('Je rencontre un problème à cette étape')
+      ).toBeInTheDocument()
+    })
+
+    it('should render steps for confirmed booking without modification links and info when event is passed and cannot edit discount', () => {
+      const bookingRecap = collectiveBookingFactory({
+        bookingStatus: BOOKING_STATUS.CONFIRMED,
+        stock: collectiveBookingCollectiveStockFactory({
+          eventBeginningDatetime: addDays(new Date(), -2).toISOString(),
+        }),
+      })
+
+      renderCollectiveTimeLine(bookingRecap, bookingDetails, false)
+
+      expect(
+        screen.queryByText('Modifier le prix ou le nombre d’élèves')
+      ).toBeNull()
+
+      expect(
+        screen.queryByText('Je rencontre un problème à cette étape')
+      ).toBeNull()
     })
   })
 })

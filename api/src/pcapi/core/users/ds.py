@@ -115,6 +115,30 @@ def _from_ds_date(date_time: str) -> datetime.datetime:
     return datetime.datetime.fromisoformat(date_time).astimezone(datetime.timezone.utc)
 
 
+def _get_updated_data(node: dict) -> dict:
+    # data extracted when "dossiers" are synchronized but also after every mutation
+    return {
+        "dsTechnicalId": node["id"],
+        "status": dms_models.GraphQLApplicationStates(node["state"]),
+        "dateCreated": _from_ds_date(node["dateDepot"]),
+        "dateLastStatusUpdate": _from_ds_date(
+            max(
+                filter(
+                    bool,
+                    (
+                        node["dateDepot"],
+                        node["datePassageEnConstruction"],
+                        node["dateDerniereCorrectionEnAttente"],
+                        node["dateDerniereModificationChamps"],
+                        node["datePassageEnInstruction"],
+                        node["dateTraitement"],
+                    ),
+                )
+            )
+        ),
+    }
+
+
 def _sync_ds_application(procedure_number: int, node: dict, user_id_by_email: dict) -> int | None:
     try:
         ds_application_id = node["number"]
@@ -127,23 +151,6 @@ def _sync_ds_application(procedure_number: int, node: dict, user_id_by_email: di
         ]
 
         data = {
-            "status": dms_models.GraphQLApplicationStates(node["state"]),
-            "dateCreated": _from_ds_date(node["dateDepot"]),
-            "dateLastStatusUpdate": _from_ds_date(
-                max(
-                    filter(
-                        bool,
-                        (
-                            node["dateDepot"],
-                            node["datePassageEnConstruction"],
-                            node["dateDerniereCorrectionEnAttente"],
-                            node["dateDerniereModificationChamps"],
-                            node["datePassageEnInstruction"],
-                            node["dateTraitement"],
-                        ),
-                    )
-                )
-            ),
             "firstName": node["demandeur"]["prenom"],
             "lastName": node["demandeur"]["nom"],
             "email": email_utils.sanitize_email(node["demandeur"]["email"] or node["usager"]["email"]),
@@ -162,6 +169,7 @@ def _sync_ds_application(procedure_number: int, node: dict, user_id_by_email: di
             ),
             "flags": set(),
         }
+        data.update(_get_updated_data(node))
 
         for field in fields:
             match field["id"]:
@@ -254,3 +262,26 @@ def _sync_ds_application(procedure_number: int, node: dict, user_id_by_email: di
         raise
 
     return ds_application_id
+
+
+def update_state(
+    user_request: users_models.UserAccountUpdateRequest,
+    *,
+    new_state: dms_models.GraphQLApplicationStates,
+    instructor: users_models.User,
+) -> None:
+    ds_client = ds_api.DMSGraphQLClient()
+
+    if new_state == dms_models.GraphQLApplicationStates.on_going:
+        node = ds_client.make_on_going(
+            application_techid=user_request.dsTechnicalId,
+            instructeur_techid=instructor.backoffice_profile.dsInstructorId,
+        )
+    else:
+        raise NotImplementedError()
+
+    for key, value in _get_updated_data(node).items():
+        setattr(user_request, key, value)
+    user_request.lastInstructor = instructor
+    db.session.add(user_request)
+    db.session.flush()

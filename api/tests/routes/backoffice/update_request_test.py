@@ -1,19 +1,23 @@
 import datetime
+from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
 import factory
 from flask import url_for
 import pytest
 
+from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 from pcapi.routes.backoffice.filters import format_date_time
 
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
+from .helpers.post import PostEndpointHelper
 
 
 pytestmark = [
@@ -516,3 +520,73 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
         assert rows[0]["Dossier"] == str(update_request.dsApplicationId)
+
+
+class InstructTest(PostEndpointHelper):
+    endpoint = "backoffice_web.account_update.instruct"
+    endpoint_kwargs = {"ds_application_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST
+
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_on_going")
+    def test_instruct_success(self, mock_make_on_going, legit_user, authenticated_client):
+        update_request = users_factories.UserAccountUpdateRequestFactory(
+            status=dms_models.GraphQLApplicationStates.draft
+        )
+
+        mock_make_on_going.return_value = {
+            "id": "RG9zc2llci0yMTI3Mzc3Mw==",
+            "number": 21273773,
+            "state": "en_instruction",
+            "dateDerniereModification": "2024-12-02T18:20:53+01:00",
+            "dateDepot": "2024-12-02T18:16:50+01:00",
+            "datePassageEnConstruction": "2024-12-02T18:19:39+01:00",
+            "datePassageEnInstruction": "2024-12-02T18:20:53+01:00",
+            "dateTraitement": None,
+            "dateDerniereCorrectionEnAttente": None,
+            "dateDerniereModificationChamps": "2024-12-02T18:16:49+01:00",
+        }
+
+        response = self.post_to_endpoint(authenticated_client, ds_application_id=update_request.dsApplicationId)
+        assert response.status_code == 303
+
+        db.session.refresh(update_request)
+        assert update_request.status == dms_models.GraphQLApplicationStates.on_going
+        assert update_request.dateLastStatusUpdate == datetime.datetime(2024, 12, 2, 17, 20, 53)
+        assert update_request.lastInstructor == legit_user
+
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_on_going")
+    def test_instruct_with_error(self, mock_make_on_going, legit_user, authenticated_client):
+        update_request = users_factories.UserAccountUpdateRequestFactory(
+            status=dms_models.GraphQLApplicationStates.draft
+        )
+
+        mock_make_on_going.side_effect = dms_exceptions.DmsGraphQLApiError([{"message": "Test!"}])
+
+        response = self.post_to_endpoint(authenticated_client, ds_application_id=update_request.dsApplicationId)
+        assert response.status_code == 303
+
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "Le dossier ne peut pas passer en instruction : Test!"
+        )
+
+        db.session.refresh(update_request)
+        assert update_request.status == dms_models.GraphQLApplicationStates.draft
+        assert update_request.lastInstructor != legit_user
+
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_on_going")
+    def test_instruct_not_instructor(self, mock_make_on_going, client):
+        not_instructor = users_factories.AdminFactory()
+        update_request = users_factories.UserAccountUpdateRequestFactory(
+            status=dms_models.GraphQLApplicationStates.draft
+        )
+
+        client = client.with_bo_session_auth(not_instructor)
+        response = self.post_to_endpoint(client, ds_application_id=update_request.dsApplicationId)
+        assert response.status_code == 403
+
+        mock_make_on_going.assert_not_called()
+
+    def test_instruct_not_found(self, authenticated_client):
+        response = self.post_to_endpoint(authenticated_client, ds_application_id=1)
+        assert response.status_code == 404

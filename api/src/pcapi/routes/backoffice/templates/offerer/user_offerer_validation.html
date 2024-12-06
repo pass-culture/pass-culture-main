@@ -131,7 +131,7 @@
                 <td>{{ user_offerer.user.email | empty_string_if_null }}</td>
                 <td>{{ links.build_pro_user_name_to_details_link(user_offerer.user.id, user_offerer.user.full_name) }}</td>
                 <td>{{ build_user_offerer_status_badge(user_offerer) }}</td>
-                <td>{{ item.tags | map(attribute="label") | format_as_badges | safe }}</td>
+                <td>{{ item.tags | map(attribute="label") | format_as_badges }}</td>
                 <td>{{ user_offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
                 <td>{{ links.build_offerer_name_to_details_link(offerer) }}</td>
                 <td>{{ item.creator_email | empty_string_if_null }}</td>

@@ -19,6 +19,8 @@ from pcapi import settings
 from pcapi.connectors.google_oauth import GoogleUser
 from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core import token as token_utils
+from pcapi.core.achievements import models as achievements_models
+from pcapi.core.achievements.factories import AchievementFactory
 from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.factories import CancelledBookingFactory
@@ -52,6 +54,7 @@ from pcapi.notifications.push import testing as push_testing
 from pcapi.notifications.sms import testing as sms_testing
 from pcapi.routes.native.v1.api_errors import account as account_errors
 from pcapi.routes.native.v1.serialization import account as account_serializers
+from pcapi.utils.date import format_into_utc_date
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -118,9 +121,7 @@ class AccountTest:
         booking = BookingFactory(user=user, amount=Decimal("123.45"))
         CancelledBookingFactory(user=user, amount=Decimal("123.45"))
 
-        expected_num_queries = (
-            5  # user + deposit + booking(from _get_booked_offers) + booking (from get_domains_credit) + feature
-        )
+        expected_num_queries = 6  # user + deposit + booking(from _get_booked_offers) + booking (from get_domains_credit) + feature + achievement
         client.with_token(self.identifier)
         with assert_num_queries(expected_num_queries):
             response = client.get("/native/v1/me")
@@ -157,6 +158,7 @@ class AccountTest:
             },
             "activityId": users_models.ActivityEnum.STUDENT.name,
             "currency": "EUR",
+            "achievements": [],
         }
         EXPECTED_DATA.update(USER_DATA)
 
@@ -166,7 +168,7 @@ class AccountTest:
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
 
         expected_num_queries = (
-            6  # user + beneficiary_fraud_review + feature + beneficiary_fraud_check + deposit + booking
+            7  # user + beneficiary_fraud_review + feature + beneficiary_fraud_check + deposit + booking + achievement
         )
 
         client.with_token(user.email)
@@ -181,7 +183,7 @@ class AccountTest:
     def test_get_user_not_beneficiary(self, client, app):
         users_factories.UserFactory(email=self.identifier)
 
-        expected_num_queries = 4  # user + booking + deposit + beneficiary_fraud_review
+        expected_num_queries = 5  # user + booking + deposit + beneficiary_fraud_review + achievement
 
         client.with_token(email=self.identifier)
 
@@ -194,7 +196,7 @@ class AccountTest:
     def test_get_user_profile_empty_first_name(self, client, app):
         users_factories.UserFactory(email=self.identifier, firstName="")
 
-        expected_num_queries = 4  # user + booking + deposit + beneficiary_fraud_review
+        expected_num_queries = 5  # user + booking + deposit + beneficiary_fraud_review + achievement
 
         client.with_token(email=self.identifier)
         with assert_num_queries(expected_num_queries):
@@ -209,7 +211,7 @@ class AccountTest:
     def test_get_user_profile_legacy_activity(self, client):
         users_factories.UserFactory(email=self.identifier, activity="activity not in enum")
 
-        expected_num_queries = 4  # user + booking + deposit + beneficiary_fraud_review
+        expected_num_queries = 5  # user + booking + deposit + beneficiary_fraud_review + achievement
         with assert_num_queries(expected_num_queries):
             response = client.with_token(email=self.identifier).get("/native/v1/me")
 
@@ -227,6 +229,7 @@ class AccountTest:
         expected_num_queries += 1  # booking(from _get_booked_offers)
         expected_num_queries += 1  # booking (from get_domains_credit)
         expected_num_queries += 1  # beneficiary fraud checks
+        expected_num_queries += 1  # achievement
 
         client.with_token(email=self.identifier)
         with assert_num_queries(expected_num_queries):
@@ -250,7 +253,7 @@ class AccountTest:
         client.with_token(user.email)
 
         expected_num_queries = (
-            6  # user + beneficiary_fraud_review + beneficiary_fraud_check + feature + deposit + booking
+            7  # user + beneficiary_fraud_review + beneficiary_fraud_check + feature + deposit + booking + achievement
         )
         with assert_num_queries(expected_num_queries):
             response = client.get("/native/v1/me")
@@ -282,7 +285,7 @@ class AccountTest:
 
         client.with_token(user.email)
         expected_num_queries = (
-            6  # user + beneficiary_fraud_review + beneficiary_fraud_check + feature + deposit + booking
+            7  # user + beneficiary_fraud_review + beneficiary_fraud_check + feature + deposit + booking + achievement
         )
         with assert_num_queries(expected_num_queries):
             response = client.get("/native/v1/me")
@@ -310,7 +313,7 @@ class AccountTest:
     def test_user_should_need_to_fill_cultural_survey(self, client, feature_flags):
         user = users_factories.UserFactory(age=18)
 
-        expected_num_queries = 6  # user + booking + deposit + feature + beneficiary_fraud_review * 2
+        expected_num_queries = 7  # user + booking + deposit + feature + beneficiary_fraud_review * 2 + achievement
 
         client.with_token(user.email)
         with override_features(**feature_flags):
@@ -323,7 +326,7 @@ class AccountTest:
     def test_not_eligible_user_should_not_need_to_fill_cultural_survey(self, client):
         user = users_factories.UserFactory(age=4)
 
-        expected_num_queries = 4  # user + booking + deposit + beneficiary_fraud_review
+        expected_num_queries = 5  # user + booking + deposit + beneficiary_fraud_review + achievement
 
         client.with_token(user.email)
         with assert_num_queries(expected_num_queries):
@@ -335,7 +338,7 @@ class AccountTest:
     def test_cultural_survey_disabled(self, client):
         user = users_factories.UserFactory(age=18)
 
-        expected_num_queries = 6  # user + booking + deposit + feature + beneficiary_fraud_review * 2
+        expected_num_queries = 7  # user + booking + deposit + feature + beneficiary_fraud_review * 2 + achievement
 
         client.with_token(user.email)
         with assert_num_queries(expected_num_queries):
@@ -380,6 +383,7 @@ class AccountTest:
         n_queries += 1  # deposit
         n_queries += 1  # deposit bookings
         n_queries += 1  # feature
+        n_queries += 1  # achievement
         with assert_num_queries(n_queries):
             response = client.get("/native/v1/me")
             assert response.status_code == 200
@@ -387,9 +391,7 @@ class AccountTest:
     def should_display_cultural_survey_if_beneficiary(self, client):
         user = users_factories.BeneficiaryGrant18Factory()
 
-        expected_num_queries = (
-            5  # user + deposit + booking(from _get_booked_offers) + booking (from get_domains_credit) + feature
-        )
+        expected_num_queries = 6  # user + deposit + booking(from _get_booked_offers) + booking (from get_domains_credit) + feature + achievement
 
         client.with_token(user.email)
 
@@ -403,7 +405,7 @@ class AccountTest:
         user = sso.user
         user.password = None
 
-        expected_num_queries = 5  # user(update) + user + beneficiary_fraud_review + deposit + booking
+        expected_num_queries = 6  # user(update) + user + beneficiary_fraud_review + deposit + booking + achievement
         with assert_num_queries(expected_num_queries):
             response = client.with_token(user.email).get("/native/v1/me")
             assert response.status_code == 200, response.json
@@ -413,12 +415,40 @@ class AccountTest:
     def test_currency_pacific_franc(self, client):
         user = users_factories.UserFactory(departementCode="988", postalCode="98818")
 
-        expected_num_queries = 5  # user(update) + user + beneficiary_fraud_review + deposit + booking
+        expected_num_queries = 6  # user(update) + user + beneficiary_fraud_review + deposit + booking + achievement
         with assert_num_queries(expected_num_queries):
             response = client.with_token(user.email).get("/native/v1/me")
 
         assert response.status_code == 200, response.json
         assert response.json["currency"] == "XPF"
+
+    def test_achievements(self, client):
+        user = users_factories.UserFactory()
+        now = datetime.utcnow()
+        last_week = now - timedelta(days=7)
+        AchievementFactory(
+            user=user,
+            name=achievements_models.AchievementEnum.FIRST_MOVIE_BOOKING,
+            unlockedDate=last_week,
+            seenDate=last_week,
+        )
+        AchievementFactory(user=user, name=achievements_models.AchievementEnum.FIRST_BOOK_BOOKING, unlockedDate=now)
+
+        response = client.with_token(user.email).get("/native/v1/me")
+
+        assert response.status_code == 200, response.json
+        assert response.json["achievements"] == [
+            {
+                "name": achievements_models.AchievementEnum.FIRST_MOVIE_BOOKING.name,
+                "unlockedDate": format_into_utc_date(last_week),
+                "seenDate": format_into_utc_date(last_week),
+            },
+            {
+                "name": achievements_models.AchievementEnum.FIRST_BOOK_BOOKING.name,
+                "unlockedDate": format_into_utc_date(now),
+                "seenDate": None,
+            },
+        ]
 
 
 class AccountCreationTest:
@@ -1373,7 +1403,7 @@ class UpdateUserEmailTest:
         # Ensure the access token is valid
         access_token = response.json["accessToken"]
 
-        expected_num_queries = 4  # user + booking + deposit + beneficiary_fraud_review
+        expected_num_queries = 5  # user + booking + deposit + beneficiary_fraud_review + achievement
 
         client.auth_header = {"Authorization": f"Bearer {access_token}"}
         with assert_num_queries(expected_num_queries):

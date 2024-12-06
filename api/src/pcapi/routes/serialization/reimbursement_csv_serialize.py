@@ -7,6 +7,7 @@ import typing
 from typing import Callable
 from typing import Iterable
 
+from pydantic.v1 import ConstrainedList
 from pydantic.v1 import validator
 from pydantic.v1.main import BaseModel
 import pytz
@@ -300,8 +301,15 @@ class ReimbursementCsvQueryModel(BaseModel):
     reimbursementPeriodEndingDate: str | None
 
 
+class InvoiceList(ConstrainedList):
+    __args__ = (str,)  # required by pydantic
+    item_type = str
+    unique_items = True
+    max_items = 24
+
+
 class ReimbursementCsvByInvoicesModel(BaseModel):
-    invoicesReferences: list[str]
+    invoicesReferences: InvoiceList
 
     @validator("invoicesReferences", pre=True)
     def ensure_invoices_references_is_list(cls, v: list[str] | str) -> list[str]:
