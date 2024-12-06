@@ -9,7 +9,7 @@
   justify-content: center;
   text-align: left;
 
-  @media (min-width: size.$tablet) {
+  @media screen and (min-width: size.$tablet) {
     max-width: rem.torem(504px);
   }
 
@@ -17,9 +17,10 @@
     @include fonts-design-system.title3;
 
     margin-bottom: rem.torem(32px);
+    margin-top: rem.torem(32px);
 
-    @media (max-width: size.$mobile) {
-      margin-top: rem.torem(32px);
+    @media screen and (min-width: size.$tablet) {
+      margin-top: 0;
     }
   }
 

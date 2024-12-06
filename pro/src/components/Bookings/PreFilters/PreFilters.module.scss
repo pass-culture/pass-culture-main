@@ -58,7 +58,7 @@
     width: 100%;
   }
 
-  @media (min-width: size.$mobile) {
+  @media screen and (min-width: size.$tablet) {
     &-buttons {
       flex-wrap: nowrap;
       gap: initial;
@@ -107,7 +107,7 @@
   width: 100%;
 }
 
-@media (min-width: size.$mobile) {
+@media screen and (min-width: size.$tablet) {
   .download-button {
     flex: initial;
   }

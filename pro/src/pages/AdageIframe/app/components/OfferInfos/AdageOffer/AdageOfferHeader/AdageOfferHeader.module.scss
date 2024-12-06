@@ -88,7 +88,7 @@
   }
 }
 
-@container (min-width: #{size.$mobile}) {
+@container (min-width: #{size.$tablet}) {
   .offer-header-title {
     @include fonts-design-system.title3;
   }
