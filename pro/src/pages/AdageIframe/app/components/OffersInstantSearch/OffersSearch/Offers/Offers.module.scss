@@ -99,8 +99,10 @@
   margin: rem.torem(24px) 0;
 }
 
-@media (max-width: size.$mobile) {
-  .offer-type-vue {
-    display: none;
+.offer-type-vue {
+  display: none;
+
+  @media screen and (min-width: size.$tablet) {
+    display: flex;
   }
 }

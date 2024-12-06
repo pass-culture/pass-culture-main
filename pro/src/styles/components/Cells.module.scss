@@ -151,7 +151,7 @@
   margin-top: rem.torem(4px);
 }
 
-@media (min-width: size.$mobile) {
+@media screen and (min-width: size.$tablet) {
   .thumb-column {
     padding: rem.torem(8px) rem.torem(16px);
   }
@@ -174,7 +174,7 @@
   }
 }
 
-@media (min-width: size.$tablet) {
+@media screen and (min-width: size.$tablet) {
   .checkbox-column {
     width: rem.torem(32px);
   }
@@ -238,7 +238,7 @@
   padding: rem.torem(8px);
   box-shadow: 0 rem.torem(3px) rem.torem(4px) var(--color-medium-shadow);
 
-  @media (min-width: size.$mobile) {
+  @media screen and (min-width: size.$tablet) {
     height: auto;
     width: rem.torem(270px);
     margin-left: 0;

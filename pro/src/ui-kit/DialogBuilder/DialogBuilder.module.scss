@@ -50,7 +50,7 @@
   }
 }
 
-@media (min-width: size.$mobile) {
+@media screen and (min-width: size.$tablet) {
   .dialog-builder-content {
     padding: size.$dialog-box-padding;
   }
@@ -61,7 +61,7 @@
   }
 }
 
-@media (min-width: size.$tablet) {
+@media screen and (min-width: size.$tablet) {
   .dialog-builder-content {
     min-width: rem.torem(534px);
   }

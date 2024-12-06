@@ -23,7 +23,7 @@
     width: rem.torem(592px);
   }
 
-  @media (min-width: size.$mobile) {
+  @media screen and (min-width: size.$tablet) {
     max-width: rem.torem(592px);
   }
 }
@@ -48,7 +48,7 @@
   flex-wrap: wrap;
   gap: rem.torem(16px);
 
-  @media (min-width: size.$mobile) {
+  @media screen and (min-width: size.$tablet) {
     flex-wrap: nowrap;
   }
 }

@@ -49,7 +49,7 @@ $connect-as-header-height: rem.torem(52px);
   background-color: var(--color-white);
 
   &-side {
-    @media (min-width: size.$tablet) {
+    @media screen and (min-width: size.$tablet) {
       flex-direction: row;
     }
 
@@ -65,7 +65,7 @@ $connect-as-header-height: rem.torem(52px);
         var(--color-secondary)
       );
 
-      @media (min-width: size.$tablet) {
+      @media screen and (min-width: size.$tablet) {
         min-width: rem.torem(202px);
         width: size.$side-logo-width;
         min-height: 100vh;
@@ -89,7 +89,7 @@ $connect-as-header-height: rem.torem(52px);
   flex-direction: column;
   justify-content: space-between;
 
-  @media (min-width: size.$mobile) {
+  @media screen and (min-width: size.$tablet) {
     padding: size.$main-content-padding size.$main-content-padding 0;
   }
 
@@ -117,11 +117,8 @@ $connect-as-header-height: rem.torem(52px);
     display: flex;
     flex-direction: column;
     justify-content: center;
-
-    @media (min-width: size.$tablet) {
-      min-width: size.$full-content-min-width;
-      max-width: size.$full-content-max-width;
-    }
+    min-width: size.$full-content-min-width;
+    max-width: size.$full-content-max-width;
 
     &-with-heading {
       min-height: calc(

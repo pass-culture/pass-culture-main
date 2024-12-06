@@ -49,7 +49,7 @@
   }
 }
 
-@media (min-width: size.$mobile) {
+@media screen and (min-width: size.$tablet) {
   .fake-adage-page-pass {
     margin: rem.torem(40px);
   }
