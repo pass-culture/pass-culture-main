@@ -1,0 +1,50 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_a11y.scss" as a11y;
+@use "styles/variables/_size.scss" as size;
+
+.onboarding-offer-container {
+  min-height: calc(
+    100vh -
+      (
+        size.$action-bar-sticky-height + size.$footer-height +
+          size.$action-bar-sticky-height
+      )
+  );
+  margin: rem.torem(32px) auto 0 auto;
+  padding: 0 rem.torem(32px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.offers-title {
+  @include fonts-design-system.title1;
+
+  text-align: center;
+  margin-bottom: rem.torem(36px);
+}
+
+.offers-description {
+  display: flex;
+  gap: rem.torem(16px);
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  .individual-radio-button {
+    max-width: rem.torem(235px);
+    text-align: center;
+  }
+
+  @media (min-width: size.$tablet) {
+    flex-direction: row;
+
+    .individual-radio-button {
+      margin-top: rem.torem(36px);
+    }
+  }
+}
