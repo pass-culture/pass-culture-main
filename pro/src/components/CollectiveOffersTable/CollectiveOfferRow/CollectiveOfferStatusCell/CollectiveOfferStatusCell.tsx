@@ -7,14 +7,16 @@ import styles from 'styles/components/Cells.module.scss'
 interface CollectiveOfferStatusCellProps {
   offer: CollectiveOfferResponseModel
   headers?: string
+  className?: string
 }
 
 export const CollectiveOfferStatusCell = ({
   offer,
   headers,
+  className,
 }: CollectiveOfferStatusCellProps) => (
   <td
-    className={cn(styles['offers-table-cell'], styles['status-column'])}
+    className={cn(styles['offers-table-cell'], styles['status-column'], className)}
     headers={headers}
   >
     <CollectiveStatusLabel offerDisplayedStatus={offer.displayedStatus} />

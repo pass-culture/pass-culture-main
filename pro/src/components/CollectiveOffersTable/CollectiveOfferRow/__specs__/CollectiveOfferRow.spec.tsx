@@ -216,7 +216,7 @@ describe('ollectiveOfferRow', () => {
       props.offer.status = status
       renderOfferItem(props)
 
-      expect(screen.getByRole('presentation')).toHaveClass('thumb-inactive')
+      expect(screen.getByRole('presentation')).toHaveClass('thumb-column-inactive')
     }
   )
 
@@ -230,7 +230,7 @@ describe('ollectiveOfferRow', () => {
       props.offer.status = status
       renderOfferItem(props)
 
-      expect(screen.getByRole('presentation')).not.toHaveClass('thumb-inactive')
+      expect(screen.getByRole('presentation')).not.toHaveClass('thumb-column-inactive')
     }
   )
 
