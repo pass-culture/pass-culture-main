@@ -44,14 +44,17 @@ def retrieve_data_for_offer_rejection_email(
 def retrieve_data_for_pending_offer_rejection_email(
     offer: Offer | educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
 ) -> models.TransactionalEmailData:
+    params = {
+        "OFFER_NAME": offer.name,
+        "VENUE_NAME": offer.venue.publicName or offer.venue.name,
+        "PC_PRO_OFFER_LINK": build_pc_pro_offer_link(offer),
+        "IS_COLLECTIVE_OFFER": not isinstance(offer, Offer),
+    }
+    if isinstance(offer, educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate):
+        assert offer.rejectionReason is not None  # if offer has been rejected, it must have a rejectionReason
+        params["REJECTION_REASON"] = offer.rejectionReason.value
     return models.TransactionalEmailData(
-        template=TransactionalEmail.OFFER_PENDING_TO_REJECTED_TO_PRO.value,
-        params={
-            "OFFER_NAME": offer.name,
-            "VENUE_NAME": offer.venue.publicName or offer.venue.name,
-            "PC_PRO_OFFER_LINK": build_pc_pro_offer_link(offer),
-            "IS_COLLECTIVE_OFFER": not isinstance(offer, Offer),
-        },
+        template=TransactionalEmail.OFFER_PENDING_TO_REJECTED_TO_PRO.value, params=params
     )
 
 

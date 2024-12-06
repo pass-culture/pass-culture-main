@@ -50,6 +50,7 @@ def _get_collective_offer_templates(
             educational_models.CollectiveOfferTemplate.dateCreated,
             educational_models.CollectiveOfferTemplate.validation,
             educational_models.CollectiveOfferTemplate.authorId,
+            educational_models.CollectiveOfferTemplate.rejectionReason,
         ),
         sa.orm.joinedload(educational_models.CollectiveOfferTemplate.venue).load_only(
             offerers_models.Venue.managingOffererId, offerers_models.Venue.name, offerers_models.Venue.publicName
@@ -195,7 +196,7 @@ def get_reject_collective_offer_template_form(collective_offer_template_id: int)
     if not collective_offer_template:
         raise NotFound()
 
-    form = empty_forms.EmptyForm()
+    form = collective_offer_forms.RejectCollectiveOfferForm()
 
     return render_template(
         "components/turbo/modal_form.html",
@@ -214,7 +215,18 @@ def get_reject_collective_offer_template_form(collective_offer_template_id: int)
 @atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def reject_collective_offer_template(collective_offer_template_id: int) -> utils.BackofficeResponse:
-    _batch_validate_or_reject_collective_offer_templates(OfferValidationStatus.REJECTED, [collective_offer_template_id])
+    form = collective_offer_forms.RejectCollectiveOfferForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return redirect(
+            request.referrer or url_for("backoffice_web.collective_offer_template.list_collective_offer_templates"), 303
+        )
+
+    _batch_validate_or_reject_collective_offer_templates(
+        OfferValidationStatus.REJECTED,
+        [collective_offer_template_id],
+        educational_models.CollectiveOfferRejectionReason(form.reason.data),
+    )
     return redirect(
         request.referrer or url_for("backoffice_web.collective_offer_template.list_collective_offer_templates"),
         303,
@@ -222,7 +234,9 @@ def reject_collective_offer_template(collective_offer_template_id: int) -> utils
 
 
 def _batch_validate_or_reject_collective_offer_templates(
-    validation: OfferValidationStatus, collective_offer_template_ids: list[int]
+    validation: OfferValidationStatus,
+    collective_offer_template_ids: list[int],
+    reason: educational_models.CollectiveOfferRejectionReason | None = None,
 ) -> bool:
     collective_offer_templates = educational_models.CollectiveOfferTemplate.query.filter(
         educational_models.CollectiveOfferTemplate.id.in_(collective_offer_template_ids),
@@ -253,6 +267,9 @@ def _batch_validate_or_reject_collective_offer_templates(
             collective_offer_template.lastValidationAuthorUserId = current_user.id
             if validation is OfferValidationStatus.APPROVED:
                 collective_offer_template.isActive = True
+                collective_offer_template.rejectionReason = None
+            else:
+                collective_offer_template.rejectionReason = reason
 
             try:
                 db.session.flush()
@@ -340,7 +357,7 @@ def get_batch_validate_collective_offer_templates_form() -> utils.BackofficeResp
 @atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_batch_reject_collective_offer_templates_form() -> utils.BackofficeResponse:
-    form = empty_forms.BatchForm()
+    form = collective_offer_forms.BatchRejectCollectiveOfferForm()
     return render_template(
         "components/turbo/modal_form.html",
         form=form,
@@ -374,7 +391,7 @@ def batch_validate_collective_offer_templates() -> utils.BackofficeResponse:
 @atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def batch_reject_collective_offer_templates() -> utils.BackofficeResponse:
-    form = empty_forms.BatchForm()
+    form = collective_offer_forms.BatchRejectCollectiveOfferForm()
 
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
@@ -383,7 +400,11 @@ def batch_reject_collective_offer_templates() -> utils.BackofficeResponse:
             303,
         )
 
-    _batch_validate_or_reject_collective_offer_templates(OfferValidationStatus.REJECTED, form.object_ids_list)
+    _batch_validate_or_reject_collective_offer_templates(
+        OfferValidationStatus.REJECTED,
+        form.object_ids_list,
+        educational_models.CollectiveOfferRejectionReason(form.reason.data),
+    )
     return redirect(
         request.referrer or url_for("backoffice_web.collective_offer_template.list_collective_offer_templates"), 303
     )

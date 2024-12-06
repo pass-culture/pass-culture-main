@@ -53,8 +53,13 @@
                   <span class="fw-bold">Statut PC Pro :</span> {{ collective_offer_template.displayedStatus | format_collective_offer_displayed_status }}
                 </p>
                 <p class="mb-1">
-                  <span class="fw-bold">État :</span> {{ collective_offer_template.validation | format_offer_validation_status }}
+                  <span class="fw-bold">État :</span> {{ collective_offer_template.validation | format_offer_validation_status(with_badge=True) }}
                 </p>
+                {% if collective_offer_template.rejectionReason %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Raison de rejet :</span> {{ collective_offer_template.rejectionReason | format_collective_offer_rejection_reason }}
+                  </p>
+                {% endif %}
                 {% if collective_offer_template.lastValidationAuthor %}
                   <p class="mb-1">
                     <span class="fw-bold">Utilisateur de la dernière validation :</span> {{ collective_offer_template.lastValidationAuthor.full_name }}

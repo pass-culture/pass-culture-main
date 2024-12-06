@@ -74,6 +74,7 @@ def collective_offers_fixture() -> tuple:
             subcategories.EacFormat.PROJECTION_AUDIOVISUELLE,
         ],
         collectiveOffer__validation=offers_models.OfferValidationStatus.REJECTED,
+        collectiveOffer__rejectionReason=educational_models.CollectiveOfferRejectionReason.WRONG_DATE,
         collectiveOffer__venue__postalCode="74000",
         collectiveOffer__venue__departementCode="74",
         price=20,
@@ -557,7 +558,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offers[2].id}
-        assert rows[0]["État"] == "Rejetée"
+        assert rows[0]["État"] == "Rejetée Date erronée"
 
     def test_list_collective_offers_by_four_filters(self, authenticated_client, collective_offers):
         venue_id = collective_offers[2].venueId
@@ -827,7 +828,11 @@ class RejectCollectiveOfferTest(PostEndpointHelper):
             validation=OfferValidationStatus.PENDING
         )
 
-        response = self.post_to_endpoint(authenticated_client, collective_offer_id=collective_offer_to_reject.id)
+        response = self.post_to_endpoint(
+            authenticated_client,
+            collective_offer_id=collective_offer_to_reject.id,
+            form={"reason": educational_models.CollectiveOfferRejectionReason.WRONG_PRICE.value},
+        )
         assert response.status_code == 303
 
         expected_url = url_for("backoffice_web.collective_offer.list_collective_offers", _external=True)
@@ -843,13 +848,20 @@ class RejectCollectiveOfferTest(PostEndpointHelper):
         assert collective_offer_to_reject.isActive is False
         assert collective_offer_to_reject.validation == OfferValidationStatus.REJECTED
         assert collective_offer_to_reject.lastValidationType == OfferValidationType.MANUAL
+        assert (
+            collective_offer_to_reject.rejectionReason == educational_models.CollectiveOfferRejectionReason.WRONG_PRICE
+        )
 
     def test_cant_reject_non_pending_offer(self, legit_user, authenticated_client):
         collective_offer_to_reject = educational_factories.CollectiveOfferFactory(
             validation=OfferValidationStatus.APPROVED
         )
 
-        response = self.post_to_endpoint(authenticated_client, collective_offer_id=collective_offer_to_reject.id)
+        response = self.post_to_endpoint(
+            authenticated_client,
+            collective_offer_id=collective_offer_to_reject.id,
+            form={"reason": educational_models.CollectiveOfferRejectionReason.WRONG_PRICE.value},
+        )
         assert response.status_code == 303
 
         expected_url = url_for("backoffice_web.collective_offer.list_collective_offers", _external=True)
@@ -972,7 +984,13 @@ class BatchCollectiveOffersRejectTest(PostEndpointHelper):
         )
         parameter_ids = ",".join(str(collective_offer.id) for collective_offer in collective_offers)
 
-        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "object_ids": parameter_ids,
+                "reason": educational_models.CollectiveOfferRejectionReason.WRONG_PRICE.value,
+            },
+        )
 
         assert response.status_code == 303
 
@@ -988,6 +1006,7 @@ class BatchCollectiveOffersRejectTest(PostEndpointHelper):
             assert collective_offer.lastValidationType is OfferValidationType.MANUAL
             assert collective_offer.validation is OfferValidationStatus.REJECTED
             assert collective_offer.lastValidationAuthor == legit_user
+            assert collective_offer.rejectionReason == educational_models.CollectiveOfferRejectionReason.WRONG_PRICE
 
         assert len(mails_testing.outbox) == 3
 
@@ -1156,6 +1175,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
             collectiveStock__collectiveOffer__lastValidationDate=validation_date,
             collectiveStock__collectiveOffer__validation=offers_models.OfferValidationStatus.REJECTED,
             collectiveStock__collectiveOffer__lastValidationAuthor=legit_user,
+            collectiveStock__collectiveOffer__rejectionReason=educational_models.CollectiveOfferRejectionReason.MISSING_DESCRIPTION,
         )
         url = url_for(self.endpoint, collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id)
         with assert_num_queries(self.expected_num_queries):
@@ -1165,6 +1185,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         content_as_text = html_parser.content_as_text(response.data)
         assert f"Utilisateur de la dernière validation : {legit_user.full_name}" in content_as_text
         assert f"Date de dernière validation : {format_date(validation_date, '%d/%m/%Y à %Hh%M')}" in content_as_text
+        assert "Raison de rejet : Description manquante" in content_as_text
 
 
 class ValidateCollectiveOfferFromDetailsButtonTest(button_helpers.ButtonHelper):

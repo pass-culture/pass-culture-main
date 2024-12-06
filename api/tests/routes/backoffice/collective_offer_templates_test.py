@@ -46,6 +46,7 @@ def collective_offer_templates_fixture() -> tuple:
         name="A Very Specific Name That Is Longer",
         dateCreated=datetime.date.today() - datetime.timedelta(days=2),
         validation=offers_models.OfferValidationStatus.REJECTED,
+        rejectionReason=educational_models.CollectiveOfferRejectionReason.WRONG_DATE,
         formats=[subcategories.EacFormat.FESTIVAL_SALON_CONGRES, subcategories.EacFormat.PROJECTION_AUDIOVISUELLE],
     )
     return collective_offer_template_1, collective_offer_template_2, collective_offer_template_3
@@ -144,7 +145,7 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offer_templates[2].id}
-        assert rows[0]["État"] == "Rejetée"
+        assert rows[0]["État"] == "Rejetée Date erronée"
 
     def test_list_offers_by_all_filters(self, authenticated_client, collective_offer_templates):
         template = collective_offer_templates[2]
@@ -290,6 +291,7 @@ class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
         content_as_text = html_parser.content_as_text(response.data)
         assert "Statut : Active" in content_as_text
         assert "Statut PC Pro : Publiée" in content_as_text
+        assert "État : Validée" in content_as_text
         assert f"Date de création : {collectiveOfferTemplate.dateCreated.strftime('%d/%m/%Y')}" in content_as_text
         assert f"Description : {collectiveOfferTemplate.description}" in content_as_text
         assert f"Entité juridique : {collectiveOfferTemplate.venue.managingOfferer.name}" in content_as_text
@@ -303,6 +305,21 @@ class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
         with assert_num_queries(expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 404
+
+    def test_rejected_collective_offer_template(self, authenticated_client):
+        collectiveOfferTemplate = educational_factories.CollectiveOfferTemplateFactory(
+            validation=OfferValidationStatus.REJECTED,
+            rejectionReason=educational_models.CollectiveOfferRejectionReason.MISSING_DESCRIPTION,
+        )
+        url = url_for(self.endpoint, collective_offer_template_id=collectiveOfferTemplate.id)
+        # +1 query WIP_ENABLE_OFFER_ADDRESS FF
+        with assert_num_queries(self.expected_num_queries + 1):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        content_as_text = html_parser.content_as_text(response.data)
+        assert "État : Rejetée" in content_as_text
+        assert "Raison de rejet : Description manquante" in content_as_text
 
 
 class ValidateCollectiveOfferTemplateFromDetailsButtonTest(button_helpers.ButtonHelper):
@@ -364,7 +381,8 @@ class ValidateCollectiveOfferTemplateTest(PostEndpointHelper):
 
     def test_cant_validate_non_pending_offer(self, legit_user, authenticated_client):
         collective_offer_to_validate = educational_factories.CollectiveOfferTemplateFactory(
-            validation=OfferValidationStatus.REJECTED
+            validation=OfferValidationStatus.REJECTED,
+            rejectionReason=educational_models.CollectiveOfferRejectionReason.WRONG_DATE,
         )
 
         response = self.post_to_endpoint(
@@ -388,7 +406,7 @@ class ValidateCollectiveOfferTemplateTest(PostEndpointHelper):
         assert "Seules les offres collectives vitrine en attente peuvent être validées" in response.data.decode("utf-8")
         row = html_parser.extract_table_rows(response.data)
         assert len(row) == 1
-        assert row[0]["État"] == "Rejetée"
+        assert row[0]["État"] == "Rejetée Date erronée"
 
 
 class ValidateCollectiveOfferTemplateFormTest(GetEndpointHelper):
@@ -417,7 +435,9 @@ class RejectCollectiveOfferTemplateTest(PostEndpointHelper):
         )
 
         response = self.post_to_endpoint(
-            authenticated_client, collective_offer_template_id=collective_offer_template_to_reject.id
+            authenticated_client,
+            collective_offer_template_id=collective_offer_template_to_reject.id,
+            form={"reason": educational_models.CollectiveOfferRejectionReason.WRONG_DATE.value},
         )
         assert response.status_code == 303
 
@@ -436,7 +456,7 @@ class RejectCollectiveOfferTemplateTest(PostEndpointHelper):
         assert response.status_code == 200
         row = html_parser.extract_table_rows(response.data)
         assert len(row) == 1
-        assert row[0]["État"] == "Rejetée"
+        assert row[0]["État"] == "Rejetée Date erronée"
 
         assert collective_offer_template_to_reject.isActive is False
         assert collective_offer_template_to_reject.lastValidationType == OfferValidationType.MANUAL
@@ -447,7 +467,9 @@ class RejectCollectiveOfferTemplateTest(PostEndpointHelper):
         )
 
         response = self.post_to_endpoint(
-            authenticated_client, collective_offer_template_id=collective_offer_template_to_reject.id
+            authenticated_client,
+            collective_offer_template_id=collective_offer_template_to_reject.id,
+            form={"reason": educational_models.CollectiveOfferRejectionReason.WRONG_DATE.value},
         )
         assert response.status_code == 303
 
@@ -554,7 +576,13 @@ class BatchCollectiveOfferTemplatesRejectTest(PostEndpointHelper):
             str(collective_offer_template.id) for collective_offer_template in collective_offer_templates
         )
 
-        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "object_ids": parameter_ids,
+                "reason": educational_models.CollectiveOfferRejectionReason.WRONG_DATE.value,
+            },
+        )
 
         assert response.status_code == 303
 
@@ -571,6 +599,10 @@ class BatchCollectiveOfferTemplatesRejectTest(PostEndpointHelper):
             assert collective_offer_template.isActive is False
             assert collective_offer_template.lastValidationType is OfferValidationType.MANUAL
             assert collective_offer_template.validation is OfferValidationStatus.REJECTED
+            assert (
+                collective_offer_template.rejectionReason
+                is educational_models.CollectiveOfferRejectionReason.WRONG_DATE
+            )
 
         assert len(mails_testing.outbox) == 3
 
@@ -594,7 +626,13 @@ class BatchCollectiveOfferTemplatesRejectTest(PostEndpointHelper):
             validation=OfferValidationStatus.PENDING
         )
         parameter_ids = f"{str(fake_offer_ids[0])}, {str(fake_offer_ids[1])}, {collective_offer_template}"
-        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "object_ids": parameter_ids,
+                "reason": educational_models.CollectiveOfferRejectionReason.WRONG_DATE.value,
+            },
+        )
 
         assert response.status_code == 303
         assert collective_offer_template.validation == OfferValidationStatus.PENDING

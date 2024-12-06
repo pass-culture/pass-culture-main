@@ -9,6 +9,7 @@ from pcapi.core.categories.subcategories_v2 import COLLECTIVE_SUBCATEGORIES
 from pcapi.core.educational import models
 from pcapi.core.educational import utils
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
+from pcapi.core.educational.models import CollectiveOfferRejectionReason
 from pcapi.core.factories import BaseFactory
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -537,6 +538,7 @@ def create_collective_offer_template_by_status(
 
         case CollectiveOfferDisplayedStatus.REJECTED.value:
             kwargs["validation"] = OfferValidationStatus.REJECTED
+            kwargs["rejectionReason"] = CollectiveOfferRejectionReason.MISSING_PRICE
             return CollectiveOfferTemplateFactory(**kwargs)
 
         case CollectiveOfferDisplayedStatus.PENDING.value:
