@@ -55,7 +55,7 @@
                   {% endif %}
                 </td>
                 <td>
-                  <a href="">{{ chronicle.id }}</a>
+                  <a href="{{ url_for('backoffice_web.chronicles.details', chronicle_id=chronicle.id) }}">{{ chronicle.id }}</a>
                 </td>
                 <td>
                   {% if chronicle.products %}
