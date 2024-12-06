@@ -144,7 +144,6 @@ class CollectiveOfferResponseModel(BaseModel):
     name: str
     stocks: list[CollectiveOffersStockResponseModel]
     booking: CollectiveOffersBookingResponseModel | None
-    subcategoryId: subcategories.SubcategoryIdEnum | EmptyStringToNone
     isShowcase: bool
     venue: base_serializers.ListOffersVenueResponseModel
     status: CollectiveOfferStatus
@@ -205,7 +204,6 @@ def _serialize_offer_paginated(
         stocks=serialized_stocks,  # type: ignore[arg-type]
         booking=last_booking,
         thumbUrl=None,
-        subcategoryId=offer.subcategoryId,  # type: ignore[arg-type]
         venue=_serialize_venue(offer.venue),  # type: ignore[arg-type]
         status=offer.status.name,
         displayedStatus=offer.displayedStatus,
@@ -355,7 +353,6 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     isEditable: bool
     id: int
     name: str
-    subcategoryId: subcategories.SubcategoryIdEnum | EmptyStringToNone
     venue: GetCollectiveOfferVenueResponseModel
     status: CollectiveOfferStatus
     displayedStatus: educational_models.CollectiveOfferDisplayedStatus
@@ -534,8 +531,6 @@ class EmailStrOrEmpty(EmailStr):
 
 class PostCollectiveOfferBodyModel(BaseModel):
     venue_id: int
-    # TODO(jeremieb): remove subcategory_id (replaced by formats)
-    subcategory_id: str | None
     name: str
     booking_emails: list[EmailStr]
     description: str
@@ -555,36 +550,11 @@ class PostCollectiveOfferBodyModel(BaseModel):
         str | None
     )  # FIXME (MathildeDuboille - 24/10/22) prevent bug in production where offererId is sent in params
     nationalProgramId: int | None
-    # TODO(jeremieb): when subcategory_id is removed, formats becomes
-    # mandatory
-    formats: typing.Sequence[subcategories.EacFormat] | None
+    formats: typing.Sequence[subcategories.EacFormat]
 
     @validator("students")
     def validate_students(cls, students: list[str]) -> list[educational_models.StudentLevels]:
         return shared_offers.validate_students(students)
-
-    @root_validator
-    def validate_formats_and_subcategory(cls, values: dict) -> dict:
-        # TODO(jeremieb): remove this validator when subcategory_id can
-        # be removed
-        if values.get("template_id"):
-            return values
-
-        formats = values.get("formats")
-        if formats:
-            return values
-
-        subcategory_id = values.get("subcategory_id")
-        if not subcategory_id:
-            raise ValueError("subcategory_id & formats: at least one should not be null")
-
-        try:
-            subcategory = subcategories.COLLECTIVE_SUBCATEGORIES[subcategory_id]
-        except KeyError:
-            raise ValueError("Unknown subcategory id")
-
-        values["formats"] = subcategory.formats
-        return values
 
     @validator("name", pre=True)
     def validate_name(cls, name: str) -> str:
@@ -661,7 +631,6 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     contactEmail: EmailStr | None
     contactPhone: str | None
     durationMinutes: int | None
-    subcategoryId: subcategories.SubcategoryIdEnum | EmptyStringToNone
     domains: list[int] | None
     interventionArea: list[str] | None
     venueId: int | None
