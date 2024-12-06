@@ -19,13 +19,13 @@
   padding: 0;
 }
 
-@media (min-width: size.$mobile) {
+@media screen and (min-width: size.$tablet) {
   .collective-row.collective-row-with-expiration {
     grid-template-columns: rem.torem(22px) rem.torem(112px) 1fr rem.torem(105px);
   }
 }
 
-@media (min-width: size.$tablet) {
+@media screen and (min-width: size.$tablet) {
   .collective-row.collective-row-with-expiration {
     display: table-row;
   }

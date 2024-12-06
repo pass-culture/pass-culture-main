@@ -9,10 +9,6 @@
   margin-bottom: rem.torem(24px);
 
   @include fonts-design-system.title3;
-
-  @media (max-width: size.$tablet) {
-    margin-top: rem.torem(32px);
-  }
 }
 
 .section {
@@ -45,10 +41,7 @@
   display: flex;
   gap: rem.torem(8px);
   margin-bottom: rem.torem(16px);
-
-  @media (max-width: size.$tablet) {
-    flex-wrap: wrap;
-  }
+  flex-wrap: wrap;
 }
 
 .action-buttons {
@@ -60,10 +53,10 @@
 .day-inputs {
   display: flex;
   margin-bottom: rem.torem(16px);
-  gap: rem.torem(16px);
+  gap: rem.torem(2px);
 
-  @media (max-width: size.$tablet) {
-    flex-wrap: wrap;
+  @media (min-width: size.$tablet) {
+   gap: rem.torem(16px);
   }
 }
 
