@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { OnboardingOffersTypeChoice } from '../OnboardingOffersTypeChoice'
+import { OnboardingOffersTypeChoice } from './OnboardingOffersTypeChoice'
 
 describe('OnboardingOffersChoice Component', () => {
   it('displays the content correctly', () => {
