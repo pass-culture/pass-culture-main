@@ -209,20 +209,6 @@ export const IndividualOffersSearchFilters = ({
               value={selectedFilters.creationMode}
             />
           </FieldLayout>
-
-          <fieldset>
-            <legend>Période de l’évènement</legend>
-
-            <PeriodSelector
-              onBeginningDateChange={onBeginningDateChange}
-              onEndingDateChange={onEndingDateChange}
-              isDisabled={disableAllFilters}
-              periodBeginningDate={selectedFilters.periodBeginningDate}
-              periodEndingDate={selectedFilters.periodEndingDate}
-            />
-          </fieldset>
-        </FormLayout.Row>
-        <FormLayout.Row inline className={styles['reset-filters-row']}>
           <FieldLayout
             label="Statut"
             name="status"
@@ -237,6 +223,18 @@ export const IndividualOffersSearchFilters = ({
               options={statusFilterOptions}
             />
           </FieldLayout>
+          <fieldset>
+            <legend>Période de l’évènement</legend>
+            <PeriodSelector
+              onBeginningDateChange={onBeginningDateChange}
+              onEndingDateChange={onEndingDateChange}
+              isDisabled={disableAllFilters}
+              periodBeginningDate={selectedFilters.periodBeginningDate}
+              periodEndingDate={selectedFilters.periodEndingDate}
+            />
+          </fieldset>
+        </FormLayout.Row>
+        <FormLayout.Row inline className={styles['reset-filters-row']}>
           <Button
             icon={fullRefreshIcon}
             disabled={!hasSearchFilters(selectedFilters)}
