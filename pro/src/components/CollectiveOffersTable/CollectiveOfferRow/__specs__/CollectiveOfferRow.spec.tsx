@@ -5,6 +5,7 @@ import { api } from 'apiClient/api'
 import {
   ApiError,
   CollectiveBookingStatus,
+  CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
   CollectiveOfferStatus,
   ListOffersStockResponseModel,
@@ -439,7 +440,7 @@ describe('ollectiveOfferRow', () => {
 
   it('should display a expiration row if the bookable offer is active, and if the FF ENABLE_COLLECTIVE_OFFERS_EXPIRATION is enabled', () => {
     props.offer = collectiveOfferFactory({
-      status: CollectiveOfferStatus.ACTIVE,
+      displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
       stocks: [
         {
           hasBookingLimitDatetimePassed: false,
@@ -460,7 +461,7 @@ describe('ollectiveOfferRow', () => {
 
   it('should display a expiration row if the bookable offer is pre-booked, and if the FF ENABLE_COLLECTIVE_OFFERS_EXPIRATION is enabled', () => {
     props.offer = collectiveOfferFactory({
-      status: CollectiveOfferStatus.SOLD_OUT,
+      displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
       stocks: [
         {
           hasBookingLimitDatetimePassed: false,
@@ -482,7 +483,7 @@ describe('ollectiveOfferRow', () => {
 
   it('should not display a expiration row if the FF ENABLE_COLLECTIVE_OFFERS_EXPIRATION is disabled', () => {
     props.offer = collectiveOfferFactory({
-      status: CollectiveOfferStatus.ACTIVE,
+      displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
       stocks: [
         {
           hasBookingLimitDatetimePassed: false,
@@ -501,12 +502,31 @@ describe('ollectiveOfferRow', () => {
 
   it('should not display a expiration row if the offer has no booking limit', () => {
     props.offer = collectiveOfferFactory({
-      status: CollectiveOfferStatus.ACTIVE,
+      displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
       stocks: [
         {
           hasBookingLimitDatetimePassed: false,
           remainingQuantity: 1,
           bookingLimitDatetime: undefined,
+        },
+      ],
+    })
+
+    renderOfferItem(props)
+
+    expect(
+      screen.queryByText('En attente de préréservation par l’enseignant')
+    ).not.toBeInTheDocument()
+  })
+
+  it('should not display a expiration row if the offer was cancelled', () => {
+    props.offer = collectiveOfferFactory({
+      displayedStatus: CollectiveOfferDisplayedStatus.CANCELLED,
+      stocks: [
+        {
+          hasBookingLimitDatetimePassed: false,
+          remainingQuantity: 1,
+          bookingLimitDatetime: getToday().toISOString(),
         },
       ],
     })
