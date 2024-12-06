@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 
-import { OnboardingOffersChoice } from '../OnboardingOffersChoice'
+import { OnboardingOffersChoice } from './OnboardingOffersChoice'
 
 describe('OnboardingOffersChoice Component', () => {
   beforeEach(() => {
