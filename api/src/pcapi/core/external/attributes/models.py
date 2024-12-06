@@ -89,7 +89,7 @@ class ProAttributes:
     has_individual_offers: bool | None = None  # At least one venue has at least one active offer
     has_offers: bool | None = None  # has_collective_offers or has_individual_offers
     has_banner_url: bool | None = (
-        None  # Set to False when at least one permanent venue doesn't have a banner URL, True otherwise
+        None  # Set to False when at least venue open to public doesn't have a banner URL, True otherwise
     )
     is_eac_meg: bool | None = None  # At least one collective offer with 'Marseille en Grand'
 
