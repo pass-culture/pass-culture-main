@@ -374,6 +374,15 @@ export const routes: RouteConfig[] = [
     featureName: 'WIP_ENABLE_PRO_ONBOARDING',
   },
   {
+    lazy: () =>
+      import(
+        'pages/Onboarding/OnboardingOfferIndividual/OnboardingOfferIndividual'
+      ),
+    path: '/inscription-offre-individuelle',
+    title: 'Inscription - Offre à destination des jeunes',
+    featureName: 'WIP_ENABLE_PRO_ONBOARDING',
+  },
+  {
     lazy: () => import('pages/Errors/NotFound/NotFound'),
     path: '/404',
     title: 'Erreur 404 - Page indisponible',
