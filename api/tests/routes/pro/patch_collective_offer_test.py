@@ -11,6 +11,8 @@ from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import StudentLevels
 import pcapi.core.educational.testing as adage_api_testing
+import pcapi.core.finance.factories as finance_factories
+import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.models import OfferValidationStatus
 import pcapi.core.providers.factories as providers_factories
@@ -26,12 +28,12 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 @pytest.fixture(name="venue")
 def venue_fixture():
-    return offerers_factories.CollectiveVenueFactory()
+    return offerers_factories.CollectiveVenueFactory(pricing_point="self")
 
 
 @pytest.fixture(name="other_related_venue")
 def other_related_venue_fixture(venue):
-    return offerers_factories.CollectiveVenueFactory(managingOfferer=venue.managingOfferer)
+    return offerers_factories.CollectiveVenueFactory(managingOfferer=venue.managingOfferer, pricing_point=venue)
 
 
 @pytest.fixture(name="user_offerer")
@@ -232,6 +234,7 @@ class Returns200Test:
         ],
     )
     def test_update_venue_both_offer_and_booking(self, auth_client, venue, other_related_venue, factory):
+
         offer = educational_factories.CollectiveOfferFactory(venue=other_related_venue)
         stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
@@ -252,6 +255,39 @@ class Returns200Test:
         assert offer.venueId == venue.id
         assert booking.venueId == venue.id
         assert cancelled_booking.venueId == venue.id
+
+    def test_update_venue_update_pricing_events(self, auth_client, venue, other_related_venue):
+
+        offer = educational_factories.CollectiveOfferFactory(venue=other_related_venue)
+        stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer)
+
+        booking = educational_factories.ConfirmedCollectiveBookingFactory(
+            # we need to set dateUsed to avoid errors when moving the finance event
+            venue=other_related_venue,
+            collectiveStock=stock,
+            dateUsed=datetime(2024, 1, 1),
+        )
+
+        finance_event = finance_factories.FinanceEventFactory(
+            status=finance_models.FinanceEventStatus.PENDING,
+            collectiveBooking=booking,
+            booking=None,
+            venue=other_related_venue,
+            valueDate=datetime(2024, 1, 1),
+        )
+
+        patch_path = "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"
+        with patch(patch_path):
+            response = auth_client.patch(url_for(self.endpoint, offer_id=offer.id), json={"venueId": venue.id})
+            assert response.status_code == 200
+
+        db.session.refresh(offer)
+        db.session.refresh(booking)
+        db.session.refresh(finance_event)
+
+        assert offer.venueId == venue.id
+        assert booking.venueId == venue.id
+        assert finance_event.venueId == venue.id
 
 
 class Returns400Test:
@@ -573,27 +609,6 @@ class Returns403Test:
         assert response.status_code == 403
         assert response.json == {"global": ["Collective offer created by public API is only editable via API."]}
 
-    def test_patch_collective_offer_replacing_by_unknown_venue(self, client):
-        # Given
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offerer,
-        )
-        offer = educational_factories.CollectiveOfferFactory(venue__managingOfferer=offerer)
-        data = {"venueId": 0}
-
-        # WHEN
-        client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
-            response = client.patch(f"/collective/offers/{offer.id}", json=data)
-
-        # Then
-        assert response.status_code == 404
-        assert response.json["venueId"] == "The venue does not exist."
-
     def test_patch_collective_offer_replacing_venue_with_different_offerer(self, client):
         # Given
         offerer = offerers_factories.OffererFactory()
@@ -616,6 +631,20 @@ class Returns403Test:
         # Then
         assert response.status_code == 403
         assert response.json == {"venueId": "New venue needs to have the same offerer"}
+
+    def test_update_collective_offer_venue_of_reimbursed_offer_fails(self, client, other_related_venue):
+        offer = educational_factories.ReimbursedCollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        data = {"venueId": other_related_venue.id}
+        client = client.with_session_auth("user@example.com")
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 403
+        assert response.json == {"offer": "the used or refund offer can't be edited."}
 
 
 class Returns404Test:
@@ -675,3 +704,24 @@ class Returns404Test:
         # THEN
         assert response.status_code == 403
         assert response.json == {"Partner": "User not in Adage can't edit the offer"}
+
+    def test_patch_collective_offer_replacing_by_unknown_venue(self, client):
+        # Given
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offerer,
+        )
+        offer = educational_factories.CollectiveOfferFactory(venue__managingOfferer=offerer)
+        data = {"venueId": 0}
+
+        # WHEN
+        client = client.with_session_auth("user@example.com")
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+
+        # Then
+        assert response.status_code == 404
+        assert response.json["venueId"] == "The venue does not exist."
