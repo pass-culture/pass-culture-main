@@ -1,14 +1,37 @@
 import { ApiError } from './v1'
 
 export const serializeApiErrors = (
-  errors: Record<string, string>,
-  apiFieldsMap: Record<string, string> = {}
-): Record<string, string> => {
+  errors: Record<string, string[]>,
+  apiFieldsMap: Record<string, string> = {},
+  apiArrayFieldsMap: Record<string, string> = {}
+): Record<string, string[] | undefined> => {
   Object.entries(apiFieldsMap).forEach(([key, value]) => {
     if (errors[key]) {
       errors[value] = errors[key]
       delete errors[key]
     }
+  })
+
+  //  Arrays must be serialized in a different way. The error from the api for a list of bookingEmails will be
+  //  {bookingEmails.3: ['Invalid email'], bookingEmails.6: ['Invalid email']}
+  //  While the formik form expects {notificationEmails: ['', '', '', 'Invalid email', '', '', 'Invalid email']}
+  Object.entries(apiArrayFieldsMap).forEach(([key, value]) => {
+    const errorKeys = Object.keys(errors).filter((errKey) =>
+      errKey.startsWith(`${key}.`)
+    )
+    const errorIndexes = errorKeys
+      .map((err) => Number(err.split(`${key}.`)[1]))
+      .filter((num) => !isNaN(num))
+
+    const errorValues = []
+    //  Recontruct an array up to the biggest index with an error in the list of errors on that field
+    for (let i = 0; i <= Math.max(...errorIndexes); i++) {
+      errorValues.push(
+        errorKeys.includes(`${key}.${i}`) ? errors[`${key}.${i}`][0] : ''
+      )
+      delete errors[`${key}.${i}`]
+    }
+    errors[value] = errorValues
   })
   return errors
 }
