@@ -1,11 +1,12 @@
 import { addDays, format } from 'date-fns'
 
-import { logAndGoToPage } from '../support/helpers.ts'
+import { sessionLogInAndGoToPage } from '../support/helpers.ts'
 
 describe('Desk (Guichet) feature', () => {
   let login: string
 
-  beforeEach(() => {
+  before(() => {
+    cy.wrap(Cypress.session.clearAllSavedSessions())
     cy.visit('/connexion')
     cy.request({
       method: 'GET',
@@ -15,9 +16,11 @@ describe('Desk (Guichet) feature', () => {
     })
   })
 
-  it('I should see help information on desk page', () => {
-    logAndGoToPage(login, '/guichet')
+  beforeEach(() => {
+   sessionLogInAndGoToPage('Session desk', login, '/guichet')
+  })
 
+  it('I should see help information on desk page', () => {
     cy.stepLog({ message: 'The identity check message is displayed' })
     cy.findByText(
       'N’oubliez pas de vérifier l’identité du bénéficiaire avant de valider la contremarque.'
@@ -41,8 +44,6 @@ describe('Desk (Guichet) feature', () => {
   })
 
   it('I should be able to validate a countermark', () => {
-    logAndGoToPage(login, '/guichet')
-
     cy.stepLog({ message: 'I add this countermark "2XTM3W"' })
     cy.findByLabelText('Contremarque').type('2XTM3W')
 
@@ -55,8 +56,6 @@ describe('Desk (Guichet) feature', () => {
   })
 
   it('It should decline a non-valid countermark', () => {
-    logAndGoToPage(login, '/guichet')
-
     cy.stepLog({ message: 'I add this countermark "XXXXXX"' })
     cy.findByLabelText('Contremarque').type('XXXXXX')
 
@@ -69,8 +68,6 @@ describe('Desk (Guichet) feature', () => {
   })
 
   it('It should decline an event countermark more than 48h before', () => {
-    logAndGoToPage(login, '/guichet')
-
     cy.stepLog({ message: 'I add this countermark "TOSOON"' })
     cy.findByLabelText('Contremarque').type('TOSOON')
 
@@ -86,8 +83,6 @@ describe('Desk (Guichet) feature', () => {
   })
 
   it('I should be able to invalidate an already used countermark', () => {
-    logAndGoToPage(login, '/guichet')
-
     cy.stepLog({ message: 'I add this countermark "XUSEDX"' })
     cy.findByLabelText('Contremarque').type('XUSEDX')
     cy.findByText(/Cette contremarque a été validée./)
@@ -101,8 +96,6 @@ describe('Desk (Guichet) feature', () => {
   })
 
   it('I should not be able to validate another pro countermark', () => {
-    logAndGoToPage(login, '/guichet')
-
     cy.stepLog({ message: 'I add this countermark "OTHERX"' })
     cy.findByLabelText('Contremarque').type('OTHERX')
 
@@ -114,8 +107,6 @@ describe('Desk (Guichet) feature', () => {
   })
 
   it('I should not be able to validate a cancelled countermark', () => {
-    logAndGoToPage(login, '/guichet')
-
     cy.stepLog({ message: 'I add this countermark "CANCEL"' })
     cy.findByLabelText('Contremarque').type('CANCEL')
 
@@ -125,8 +116,6 @@ describe('Desk (Guichet) feature', () => {
   })
 
   it('I should not be able to validate a reimbursed countermark', () => {
-    logAndGoToPage(login, '/guichet')
-
     cy.stepLog({ message: 'I add this countermark "REIMBU"' })
     cy.findByLabelText('Contremarque').type('REIMBU')
 

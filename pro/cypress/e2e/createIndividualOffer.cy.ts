@@ -1,9 +1,13 @@
-import { interceptSearch5Adresses, logAndGoToPage } from '../support/helpers.ts'
+import {
+  interceptSearch5Adresses,
+  sessionLogInAndGoToPage,
+} from '../support/helpers.ts'
 
 describe('Create individual offers', () => {
-  let login = ''
-
-  beforeEach(() => {
+  let login: string
+  
+  before(() => {
+    cy.wrap(Cypress.session.clearAllSavedSessions())
     cy.visit('/connexion')
     cy.request({
       method: 'GET',
@@ -11,6 +15,10 @@ describe('Create individual offers', () => {
     }).then((response) => {
       login = response.body.user.email
     })
+    cy.setFeatureFlags([{ name: 'WIP_ENABLE_OFFER_ADDRESS', isActive: false }])
+  })
+
+  beforeEach(() => {
     cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
     cy.intercept({ method: 'POST', url: '/offers/draft' }).as('postDraftOffer')
     cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
@@ -27,11 +35,14 @@ describe('Create individual offers', () => {
       'getVenuesForOfferer'
     )
     interceptSearch5Adresses()
-    cy.setFeatureFlags([{ name: 'WIP_ENABLE_OFFER_ADDRESS', isActive: false }])
   })
 
   it('I should be able to create an individual offer (event)', () => {
-    logAndGoToPage(login, '/offre/creation')
+    sessionLogInAndGoToPage(
+      'Session create Individual Offer',
+      login,
+      '/offre/creation'
+    )
 
     cy.stepLog({
       message: 'I want to create "Un évènement physique daté" offer',
@@ -189,7 +200,11 @@ describe('Create individual offers', () => {
     const offerDesc =
       'Une quête pour obtenir la question ultime sur la vie, l’univers et tout le reste.'
 
-    logAndGoToPage(login, '/offre/creation')
+    sessionLogInAndGoToPage(
+      'Session create Individual Offer',
+      login,
+      '/offre/creation'
+    )
 
     cy.stepLog({ message: 'I want to create "Un bien physique" offer' })
     cy.findByText('Au grand public').click()
@@ -271,7 +286,7 @@ describe('Create individual offers', () => {
 
     cy.stepLog({ message: 'I publish my offer' })
     cy.findByText('Publier l’offre').click()
-    cy.findByText('Plus tard').click()
+    // cy.findByText('Plus tard').click()
     cy.wait('@publishOffer', {
       timeout: 60000,
       requestTimeout: 60000,

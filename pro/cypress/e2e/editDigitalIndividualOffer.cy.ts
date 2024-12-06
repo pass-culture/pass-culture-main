@@ -1,23 +1,23 @@
 import { addDays, format } from 'date-fns'
 
-import { logAndGoToPage } from '../support/helpers.ts'
+import { sessionLogInAndGoToPage, logInAndGoToPage } from '../support/helpers.ts'
 
 describe('Edit digital individual offers', () => {
-  let login: string
-
   describe('Display and url modification', () => {
-    beforeEach(() => {
+    let login1: string
+    before(() => {
+      cy.wrap(Cypress.session.clearAllSavedSessions())
       cy.visit('/connexion')
       cy.request({
         method: 'GET',
         url: 'http://localhost:5001/sandboxes/pro/create_regular_pro_user_with_virtual_offer',
       }).then((response) => {
-        login = response.body.user.email
+        login1 = response.body.user.email
       })
     })
 
     it('An edited offer is displayed with 4 tabs', function () {
-      logAndGoToPage(login, '/offre/individuelle/1/recapitulatif/details')
+      sessionLogInAndGoToPage('Session edit digital individual offer', login1, '/offre/individuelle/1/recapitulatif/details')
 
       cy.contains('Récapitulatif')
 
@@ -33,7 +33,7 @@ describe('Edit digital individual offers', () => {
     })
 
     it('I should be able to modify the url of a digital offer', function () {
-      logAndGoToPage(login, '/offres')
+      sessionLogInAndGoToPage('Session edit digital individual offer', login1, '/offres')
 
       cy.stepLog({ message: 'I open the first offer in the list' })
       cy.findAllByTestId('offer-item-row')
@@ -81,19 +81,21 @@ describe('Edit digital individual offers', () => {
   })
 
   describe('Modification of date event offer with bookings', () => {
-    beforeEach(() => {
+    let login2: string
+    before(() => {
       cy.visit('/connexion')
       cy.request({
         method: 'GET',
         url: 'http://localhost:5001/sandboxes/pro/create_pro_user_with_bookings',
       }).then((response) => {
-        login = response.body.user.email
+        login2 = response.body.user.email
       })
     })
 
     it('I should be able to change offer date and it should change date in bookings', function () {
       const newDate = format(addDays(new Date(), 15), 'yyyy-MM-dd')
-      logAndGoToPage(login, '/offre/individuelle/2/edition/stocks')
+      logInAndGoToPage(login2, '/offre/individuelle/2/edition/stocks')
+
       cy.contains('Modifier l’offre')
       cy.findAllByTestId('spinner').should('not.exist')
 

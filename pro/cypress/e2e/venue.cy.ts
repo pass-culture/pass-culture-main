@@ -1,15 +1,15 @@
-import { interceptSearch5Adresses, logAndGoToPage } from '../support/helpers.ts'
 import {
   MOCKED_BACK_ADDRESS_LABEL,
   MOCKED_BACK_ADDRESS_STREET,
 } from '../support/constants.ts'
+import { interceptSearch5Adresses, sessionLogInAndGoToPage } from '../support/helpers.ts'
 
 describe('Create and update venue', () => {
   let login: string
   let siret: string
   let siren: string
 
-  beforeEach(() => {
+  before(() => {
     cy.visit('/connexion')
     cy.request({
       method: 'GET',
@@ -18,6 +18,9 @@ describe('Create and update venue', () => {
       login = response.body.user.email
       siren = response.body.siren
     })
+  })
+
+  beforeEach(() => {
     cy.intercept({ method: 'PATCH', url: '/venues/*' }).as('patchVenue')
     cy.intercept(
       'GET',
@@ -34,7 +37,7 @@ describe('Create and update venue', () => {
 
   it('As a pro user, I should be able to add a venue without SIRET', () => {
     const venueNameWithoutSiret = 'Lieu sans Siret'
-    logAndGoToPage(login, '/accueil')
+    sessionLogInAndGoToPage('Session venue', login, '/accueil')
 
     cy.stepLog({ message: 'I want to add a venue' })
     cy.findByText('Ajouter un lieu', { timeout: 60 * 1000 }).click()
@@ -122,7 +125,7 @@ describe('Create and update venue', () => {
       })
     ).as('getSiretVenue')
 
-    logAndGoToPage(login, '/accueil')
+    sessionLogInAndGoToPage('Session venue', login, '/accueil')
 
     cy.stepLog({ message: 'I want to add a venue' })
     cy.findByText('Ajouter un lieu', { timeout: 60 * 1000 }).click()
@@ -160,7 +163,7 @@ describe('Create and update venue', () => {
   it('As a pro user, I should be able to update a venue', () => {
     const textRetrait = 'En main bien propres'
     const textDesc = 'On peut ajouter des choses'
-    logAndGoToPage(login, '/accueil')
+    sessionLogInAndGoToPage('Session venue', login, '/accueil')
 
     cy.stepLog({ message: 'I go to the venue page in Individual section' })
     cy.findByText('Votre page partenaire', {

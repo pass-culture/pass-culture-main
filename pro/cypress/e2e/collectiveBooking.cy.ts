@@ -2,13 +2,13 @@ import { addDays, format } from 'date-fns'
 
 import {
   expectOffersOrBookingsAreFound,
-  logAndGoToPage,
+  sessionLogInAndGoToPage,
 } from '../support/helpers.ts'
 
 describe('Search for collective bookings', () => {
   let login: string
 
-  beforeEach(() => {
+  before(() => {
     cy.visit('/connexion')
     cy.request({
       method: 'GET',
@@ -18,9 +18,11 @@ describe('Search for collective bookings', () => {
     })
   })
 
-  it('I should be able to find collective bookings by offers', () => {
-    logAndGoToPage(login, '/reservations/collectives')
+  beforeEach(() => {
+    sessionLogInAndGoToPage('Session Collective Booking', login, '/reservations/collectives')
+  })
 
+  it('I should be able to find collective bookings by offers', () => {
     cy.stepLog({ message: 'I display bookings' })
     cy.findByText('Afficher').click()
     cy.findByTestId('spinner').should('not.exist')
@@ -45,8 +47,6 @@ describe('Search for collective bookings', () => {
   })
 
   it('I should be able to find collective bookings by establishments', () => {
-    logAndGoToPage(login, '/reservations/collectives')
-
     cy.stepLog({ message: 'I display bookings' })
     cy.findByText('Afficher').click()
     cy.findByTestId('spinner').should('not.exist')
@@ -78,8 +78,6 @@ describe('Search for collective bookings', () => {
   })
 
   it('I should be able to find collective bookings by booking number', () => {
-    logAndGoToPage(login, '/reservations/collectives')
-
     cy.stepLog({ message: 'I display bookings' })
     cy.findByText('Afficher').click()
     cy.findByTestId('spinner').should('not.exist')
@@ -113,8 +111,6 @@ describe('Search for collective bookings', () => {
   })
 
   it('I should be able to find collective bookings by date and by establishment', () => {
-    logAndGoToPage(login, '/reservations/collectives')
-
     const dateSearch = format(addDays(new Date(), 10), 'yyyy-MM-dd')
     cy.findByLabelText('Date de l’évènement').type(dateSearch)
 

@@ -2,7 +2,7 @@ import { addDays, format } from 'date-fns'
 
 import {
   expectOffersOrBookingsAreFound,
-  logAndGoToPage,
+  sessionLogInAndGoToPage,
 } from '../support/helpers.ts'
 
 describe('Search individual offers', () => {
@@ -16,7 +16,8 @@ describe('Search individual offers', () => {
   const offerName6 = 'Encore une offre incroyable'
   const offerName7 = 'Une offre épuisée'
 
-  beforeEach(() => {
+  before(() => {
+    cy.wrap(Cypress.session.clearAllSavedSessions())
     cy.visit('/connexion')
     cy.request({
       method: 'GET',
@@ -24,6 +25,10 @@ describe('Search individual offers', () => {
     }).then((response) => {
       login = response.body.user.email
     })
+  })
+
+  beforeEach(() => {
+    sessionLogInAndGoToPage('Session search Individual offer', login, '/offres')
     cy.intercept({
       method: 'GET',
       url: '/offers?**',
@@ -31,8 +36,6 @@ describe('Search individual offers', () => {
   })
 
   it('I should be able to search with a name and see expected results', () => {
-    logAndGoToPage(login, '/offres')
-
     cy.stepLog({ message: 'I search with the text "Une super offre"' })
     cy.findByPlaceholderText('Rechercher par nom d’offre ou par EAN-13').type(
       offerName1
@@ -54,8 +57,6 @@ describe('Search individual offers', () => {
   it('I should be able to search with a EAN and see expected results', () => {
     const ean = '1234567891234'
 
-    logAndGoToPage(login, '/offres')
-
     cy.stepLog({ message: 'I search with the text:' + ean })
     cy.findByPlaceholderText('Rechercher par nom d’offre ou par EAN-13').type(
       ean
@@ -75,8 +76,6 @@ describe('Search individual offers', () => {
   })
 
   it('I should be able to search with "Catégorie" filter and see expected results', () => {
-    logAndGoToPage(login, '/offres')
-
     cy.stepLog({ message: 'I select "Instrument de musique" in "Catégorie"' })
     cy.findByLabelText('Catégorie').select('Instrument de musique')
 
@@ -94,8 +93,6 @@ describe('Search individual offers', () => {
   })
 
   it('I should be able to search by offer status and see expected results', () => {
-    logAndGoToPage(login, '/offres')
-
     cy.stepLog({ message: 'I select "Publiée" in offer status' })
     cy.findByTestId('wrapper-status').within(() => {
       cy.get('select').select('Publiée')
@@ -120,8 +117,6 @@ describe('Search individual offers', () => {
   })
 
   it('I should be able to search by date and see expected results', () => {
-    logAndGoToPage(login, '/offres')
-
     cy.stepLog({ message: 'I select a date in one month' })
     const dateSearch = format(addDays(new Date(), 30), 'yyyy-MM-dd')
     cy.findByLabelText('Début de la période').type(dateSearch)
@@ -141,8 +136,6 @@ describe('Search individual offers', () => {
   })
 
   it('I should be able to search combining several filters and see expected results', () => {
-    logAndGoToPage(login, '/offres')
-
     cy.stepLog({ message: 'I search with the text "Livre"' })
     cy.findByPlaceholderText('Rechercher par nom d’offre ou par EAN-13').type(
       'incroyable'
