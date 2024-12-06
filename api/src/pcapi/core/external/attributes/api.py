@@ -285,6 +285,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
                 offerers_models.Venue.venueLabelId,
                 offerers_models.Venue.isVirtual,
                 offerers_models.Venue.isPermanent,
+                offerers_models.Venue.isOpenToPublic,
                 offerers_models.Venue._bannerUrl,
                 offerers_models.Venue.adageId,
             ),
@@ -314,6 +315,10 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
 
         has_individual_offers = offerers_repository.venues_have_offers(*venues)
 
+        if FeatureToggle.WIP_IS_OPEN_TO_PUBLIC.is_active():
+            has_banner_url = all(venue._bannerUrl for venue in venues if venue.isOpenToPublic)
+        else:
+            has_banner_url = all(venue._bannerUrl for venue in venues if venue.isPermanent)
         attributes.update(
             {
                 "dms_application_submitted": any(venue.hasPendingBankAccountApplication for venue in venues),
@@ -323,7 +328,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
                 "has_offers": has_individual_offers or has_collective_offers,
                 "has_individual_offers": has_individual_offers,
                 "has_bookings": bookings_repository.venues_have_bookings(*venues),
-                "has_banner_url": all(venue._bannerUrl for venue in venues if venue.isPermanent),
+                "has_banner_url": has_banner_url,
             }
         )
 
