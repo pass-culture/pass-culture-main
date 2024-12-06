@@ -59,6 +59,7 @@ def _get_filtered_account_update_requests(form: account_forms.AccountUpdateReque
                 users_models.User.dateOfBirth,
                 users_models.User.validatedBirthDate,
                 users_models.User.civility,
+                users_models.User.roles,
             ),
             sa.orm.contains_eager(
                 users_models.UserAccountUpdateRequest.lastInstructor.of_type(aliased_instructor)

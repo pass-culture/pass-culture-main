@@ -132,7 +132,7 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
         )
         assert (
             rows[1]["Jeune"]
-            == f"Octave César ({first_name_update_request.user.id}) né le {first_name_update_request.user.birth_date.strftime('%d/%m/%Y')} ({last_name_and_email_update_request.user.age} ans) heritier@example.com"
+            == f"Octave César ({first_name_update_request.user.id}) né le {first_name_update_request.user.birth_date.strftime('%d/%m/%Y')} ({last_name_and_email_update_request.user.age} ans) heritier@example.com Pass 18"
         )
         assert rows[1]["Modification"] == "Prénom : Octave → Auguste"
         assert rows[1]["Instructeur"] == "Instructeur du Backoffice"
@@ -152,7 +152,7 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
         )
         assert (
             rows[2]["Jeune"]
-            == f"Juliette Capulet ({last_name_and_email_update_request.user.id}) née le {last_name_and_email_update_request.user.birth_date.strftime('%d/%m/%Y')} ({last_name_and_email_update_request.user.age} ans) juju.capulet@example.com"
+            == f"Juliette Capulet ({last_name_and_email_update_request.user.id}) née le {last_name_and_email_update_request.user.birth_date.strftime('%d/%m/%Y')} ({last_name_and_email_update_request.user.age} ans) juju.capulet@example.com Pass 18"
         )
         assert (
             rows[2]["Modification"]
@@ -173,7 +173,7 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
         )
         assert (
             rows[3]["Jeune"]
-            == f"Jean-Pierre Impair ({phone_number_request.user.id}) né(e) le {phone_number_request.user.birth_date.strftime('%d/%m/%Y')} ({phone_number_request.user.age} ans) impair@example.com"
+            == f"Jean-Pierre Impair ({phone_number_request.user.id}) né(e) le {phone_number_request.user.birth_date.strftime('%d/%m/%Y')} ({phone_number_request.user.age} ans) impair@example.com Pass 18"
         )
         assert rows[3]["Modification"] == "Téléphone : +33222222222 → +33111111111"
         assert rows[3]["Instructeur"] == "Instructeur du Backoffice"
@@ -188,7 +188,7 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
         )
         assert (
             rows[4]["Jeune"]
-            == f"Jeune Nouveau-Nom ({accepted_user_request.user.id}) né(e) le {accepted_user_request.user.birth_date.strftime('%d/%m/%Y')} ({accepted_user_request.user.age} ans) {accepted_user_request.email}"
+            == f"Jeune Nouveau-Nom ({accepted_user_request.user.id}) né(e) le {accepted_user_request.user.birth_date.strftime('%d/%m/%Y')} ({accepted_user_request.user.age} ans) {accepted_user_request.email} Pass 18"
         )
         assert rows[4]["Modification"] == "Nom : Nouveau-Nom"
         assert rows[4]["Instructeur"] == "Instructeur du Backoffice"

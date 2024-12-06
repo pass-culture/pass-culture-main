@@ -115,6 +115,12 @@
                     {% endif %}
                     <br />
                     {{ update_request.user.email }}
+                    {% if update_request.user.roles %}
+                      <br />
+                      {% for role in update_request.user.roles %}
+                        <span class="me-2 badge rounded-pill text-bg-light shadow-sm align-middle">{{ role | format_role }}</span>
+                      {% endfor %}
+                    {% endif %}
                   {% else %}
                     Compte jeune non trouvé
                   {% endif %}
