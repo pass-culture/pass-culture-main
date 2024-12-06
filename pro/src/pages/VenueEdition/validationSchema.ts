@@ -1,6 +1,7 @@
 import * as yup from 'yup'
 
 import { isPhoneValid } from 'commons/core/shared/utils/validation'
+import { emailSchema } from 'commons/utils/isValidEmail'
 
 import { Day } from './types'
 
@@ -26,10 +27,7 @@ export const getValidationSchema = (validateAccessibility: boolean) =>
             none: yup.boolean(),
           })
       : yup.object(),
-    email: yup
-      .string()
-      .nullable()
-      .email('Veuillez renseigner un email valide, exemple : mail@exemple.com'),
+    email: yup.string().nullable().test(emailSchema),
     phoneNumber: yup
       .string()
       .nullable()

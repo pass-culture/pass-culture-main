@@ -197,7 +197,7 @@ export const VenueSettingsScreen = ({
       <h1 className={styles['title']}>Paramètres généraux</h1>
 
       <FormikProvider value={formik}>
-        <form onSubmit={formik.handleSubmit}>
+        <form onSubmit={formik.handleSubmit} noValidate>
           <VenueSettingsForm
             updateIsSiretValued={setIsSiretValued}
             venueLabels={venueLabels}

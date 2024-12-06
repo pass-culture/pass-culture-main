@@ -1,6 +1,7 @@
 import * as yup from 'yup'
 
 import { checkCoords } from 'commons/utils/coords'
+import { emailSchema } from 'commons/utils/isValidEmail'
 
 export const getValidationSchema = (isVenueVirtual: boolean) =>
   yup.object().shape({
@@ -43,9 +44,7 @@ export const getValidationSchema = (isVenueVirtual: boolean) =>
       ? yup.string()
       : yup
           .string()
-          .email(
-            'Veuillez renseigner un email valide, exemple : mail@exemple.com'
-          )
+          .test(emailSchema)
           .required('Veuillez renseigner une adresse email'),
     name: yup
       .string()

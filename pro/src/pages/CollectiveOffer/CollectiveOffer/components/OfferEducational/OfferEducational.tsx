@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
-import { isErrorAPIError } from 'apiClient/helpers'
+import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
@@ -165,6 +165,17 @@ export const OfferEducational = ({
       )
     } catch (error) {
       if (isErrorAPIError(error) && error.status === 400) {
+        const serializedError = serializeApiErrors(
+          error.body,
+          {
+            contactEmail: 'email',
+          },
+          {
+            bookingEmails: 'notificationEmails',
+          }
+        )
+
+        formik.setErrors(serializedError)
         notify.error(FORM_ERROR_MESSAGE)
       } else {
         notify.error(SENT_DATA_ERROR_MESSAGE)
