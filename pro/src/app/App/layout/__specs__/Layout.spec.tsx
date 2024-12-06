@@ -6,10 +6,13 @@ import { defaultGetOffererResponseModel } from 'commons/utils/factories/individu
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { Layout } from '../Layout'
+import { Layout, LayoutProps } from '../Layout'
 
-const renderLayout = (isImpersonated = false) => {
-  renderWithProviders(<Layout />, {
+const renderLayout = (
+  isImpersonated = false,
+  layoutProps: LayoutProps = {}
+) => {
+  renderWithProviders(<Layout {...layoutProps} />, {
     user: sharedCurrentUserFactory({
       isImpersonated,
     }),
@@ -64,5 +67,25 @@ describe('Layout', () => {
     expect(
       screen.getByText('Vous êtes connecté en tant que :')
     ).toBeInTheDocument()
+  })
+
+  describe('showFooter', () => {
+    it('should display footer by default', () => {
+      renderLayout()
+
+      expect(screen.getByTestId('app-footer')).toBeInTheDocument()
+    })
+
+    it('should not display footer is "showFooter" is false', () => {
+      renderLayout(false, { showFooter: false })
+
+      expect(screen.queryByTestId('app-footer')).not.toBeInTheDocument()
+    })
+
+    it('should not display footer by default if layout is "funnel"', () => {
+      renderLayout(false, { layout: 'funnel' })
+
+      expect(screen.queryByTestId('app-footer')).not.toBeInTheDocument()
+    })
   })
 })
