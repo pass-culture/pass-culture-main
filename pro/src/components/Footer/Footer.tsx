@@ -22,6 +22,7 @@ export const Footer = ({ layout }: FooterProps) => {
         styles['footer'],
         styles[`footer-layout-${layout}`]
       )}
+      data-testid="app-footer"
     >
       <ul>
         <li>
