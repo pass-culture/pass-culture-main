@@ -39,7 +39,7 @@ def login() -> utils.BackofficeResponse:
     if use_google_without_credentials:
         from pcapi.utils import login_manager
 
-        local_admin_email = "admin@passculture.local"
+        local_admin_email = settings.BACKOFFICE_LOCAL_USER_EMAIL
         local_admin = users_repository.find_user_by_email(local_admin_email)
 
         if not local_admin:
