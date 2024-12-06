@@ -1,0 +1,47 @@
+{
+  "projects": {
+    "dev": "passculture-pro",
+    "testing": "pc-pro-testing",
+    "staging": "pc-pro-staging",
+    "integration": "pc-pro-integration",
+    "production": "pc-pro-production"
+  },
+  "targets": {
+    "passculture-pro": {
+      "hosting": {
+        "passculture-pro": [
+          "passculture-pro"
+        ]
+      }
+    },
+    "pc-pro-testing": {
+      "hosting": {
+        "pc-pro-testing": [
+          "pc-pro-testing"
+        ]
+      }
+    },
+    "pc-pro-staging": {
+      "hosting": {
+        "pc-pro-staging": [
+          "pc-pro-staging"
+        ]
+      }
+    },
+    "pc-pro-integration": {
+      "hosting": {
+        "pc-pro-integration": [
+          "pc-pro-integration"
+        ]
+      }
+    },
+    "pc-pro-production": {
+        "hosting": {
+          "pc-pro-production": [
+            "pc-pro-production"
+          ]
+        }
+      }
+  },
+  "etags": {}
+}
