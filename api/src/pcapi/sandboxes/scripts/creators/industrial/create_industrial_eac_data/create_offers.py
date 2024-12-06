@@ -569,7 +569,10 @@ def create_offer_templates_with_different_displayed_status(
 
     options: dict[str, dict[str, typing.Any]] = {
         "Alabama": {"validation": OfferValidationStatus.PENDING},
-        "Alaska": {"validation": OfferValidationStatus.REJECTED},
+        "Alaska": {
+            "validation": OfferValidationStatus.REJECTED,
+            "rejectionReason": educational_models.CollectiveOfferRejectionReason.MISSING_DESCRIPTION,
+        },
         "Arizona": {"validation": OfferValidationStatus.DRAFT},
         "Arkansas": {"validation": OfferValidationStatus.APPROVED, "dateArchived": now},
         "California": {"validation": OfferValidationStatus.APPROVED},
@@ -588,6 +591,7 @@ def create_offer_templates_with_different_displayed_status(
         educational_factories.CollectiveOfferTemplateFactory(
             name=f"The culture in {state}",
             validation=attributes["validation"],
+            rejectionReason=attributes.get("rejectionReason"),
             isActive=attributes.get("isActive", True),
             dateRange=attributes.get("dateRange"),
             dateArchived=attributes.get("dateArchived"),

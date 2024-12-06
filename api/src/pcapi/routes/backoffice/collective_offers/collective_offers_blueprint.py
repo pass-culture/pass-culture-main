@@ -189,6 +189,7 @@ def _get_collective_offers(
                 educational_models.CollectiveOffer.validation,
                 educational_models.CollectiveOffer.formats,
                 educational_models.CollectiveOffer.authorId,
+                educational_models.CollectiveOffer.rejectionReason,
             ),
             sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).load_only(
                 educational_models.CollectiveStock.beginningDatetime,
@@ -290,7 +291,9 @@ def validate_collective_offer(collective_offer_id: int) -> utils.BackofficeRespo
 
 
 def _batch_validate_or_reject_collective_offers(
-    validation: offer_mixin.OfferValidationStatus, collective_offer_ids: list[int]
+    validation: offer_mixin.OfferValidationStatus,
+    collective_offer_ids: list[int],
+    reason: educational_models.CollectiveOfferRejectionReason | None = None,
 ) -> bool:
     collective_offers = educational_models.CollectiveOffer.query.filter(
         educational_models.CollectiveOffer.id.in_(collective_offer_ids),
@@ -322,6 +325,9 @@ def _batch_validate_or_reject_collective_offers(
 
             if validation is offer_mixin.OfferValidationStatus.APPROVED:
                 collective_offer.isActive = True
+                collective_offer.rejectionReason = None
+            else:
+                collective_offer.rejectionReason = reason
 
             try:
                 db.session.flush()
@@ -401,7 +407,7 @@ def get_reject_collective_offer_form(collective_offer_id: int) -> utils.Backoffi
     if not collective_offer:
         raise NotFound()
 
-    form = empty_forms.EmptyForm()
+    form = forms.RejectCollectiveOfferForm()
 
     return render_template(
         "components/turbo/modal_form.html",
@@ -417,7 +423,16 @@ def get_reject_collective_offer_form(collective_offer_id: int) -> utils.Backoffi
 @atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def reject_collective_offer(collective_offer_id: int) -> utils.BackofficeResponse:
-    _batch_validate_or_reject_collective_offers(offer_mixin.OfferValidationStatus.REJECTED, [collective_offer_id])
+    form = forms.RejectCollectiveOfferForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return redirect(request.referrer or url_for("backoffice_web.collective_offer.list_collective_offers"), 303)
+
+    _batch_validate_or_reject_collective_offers(
+        offer_mixin.OfferValidationStatus.REJECTED,
+        [collective_offer_id],
+        educational_models.CollectiveOfferRejectionReason(form.reason.data),
+    )
     return redirect(request.referrer or url_for("backoffice_web.collective_offer.list_collective_offers"), 303)
 
 
@@ -440,7 +455,7 @@ def get_batch_validate_collective_offers_form() -> utils.BackofficeResponse:
 @atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_batch_reject_collective_offers_form() -> utils.BackofficeResponse:
-    form = empty_forms.BatchForm()
+    form = forms.BatchRejectCollectiveOfferForm()
     return render_template(
         "components/turbo/modal_form.html",
         form=form,
@@ -469,13 +484,16 @@ def batch_validate_collective_offers() -> utils.BackofficeResponse:
 @atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def batch_reject_collective_offers() -> utils.BackofficeResponse:
-    form = empty_forms.BatchForm()
-
+    form = forms.BatchRejectCollectiveOfferForm()
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer or url_for("backoffice_web.collective_offer.list_collective_offers"), 303)
 
-    _batch_validate_or_reject_collective_offers(offer_mixin.OfferValidationStatus.REJECTED, form.object_ids_list)
+    _batch_validate_or_reject_collective_offers(
+        offer_mixin.OfferValidationStatus.REJECTED,
+        form.object_ids_list,
+        educational_models.CollectiveOfferRejectionReason(form.reason.data),
+    )
     return redirect(request.referrer or url_for("backoffice_web.collective_offer.list_collective_offers"), 303)
 
 

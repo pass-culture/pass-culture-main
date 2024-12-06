@@ -227,7 +227,7 @@
                   <td>{{ links.build_pro_user_name_to_details_link(offer.author.id, offer.author.full_name) }}</td>
                 {% endif %}
                 {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<td>{{ offer.rankingWeight | empty_string_if_null }}</td>{% endif %}
-                <td>{{ offer.validation | format_offer_validation_status }}</td>
+                <td>{{ offer.validation | format_offer_validation_status(with_badge=True) }}</td>
                 <td>{{ offer.dateCreated | format_date("%d/%m/%Y") }}</td>
                 <td>{{ offer.lastValidationDate | format_date("%d/%m/%Y") }}</td>
                 <td>{{ offer.venue.departementCode | empty_string_if_null }}</td>

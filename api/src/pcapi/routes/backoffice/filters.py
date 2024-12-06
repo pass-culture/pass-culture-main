@@ -482,16 +482,16 @@ def format_validation_status(status: validation_status_mixin.ValidationStatus) -
             return status.value
 
 
-def format_offer_validation_status(status: offer_mixin.OfferValidationStatus) -> str:
+def format_offer_validation_status(status: offer_mixin.OfferValidationStatus, with_badge: bool = False) -> str:
     match status:
         case offer_mixin.OfferValidationStatus.DRAFT:
-            return "Nouvelle"
+            return Markup('<span class="badge text-bg-info">Nouvelle</span>') if with_badge else "Nouvelle"
         case offer_mixin.OfferValidationStatus.PENDING:
-            return "En attente"
+            return Markup('<span class="badge text-bg-warning">En attente</span>') if with_badge else "En attente"
         case offer_mixin.OfferValidationStatus.APPROVED:
-            return "Validée"
+            return Markup('<span class="badge text-bg-success">Validée</span>') if with_badge else "Validée"
         case offer_mixin.OfferValidationStatus.REJECTED:
-            return "Rejetée"
+            return Markup('<span class="badge text-bg-danger">Rejetée</span>') if with_badge else "Rejetée"
         case _:
             return status.value
 
@@ -587,6 +587,42 @@ def format_subcategories(subcategories: list[str]) -> str:
     )
     displayed_labels = ", ".join(labels)
     return displayed_labels
+
+
+def format_collective_offer_rejection_reason(reason: educational_models.CollectiveOfferRejectionReason) -> str:
+    match reason:
+        case educational_models.CollectiveOfferRejectionReason.CO_FUNDING:
+            return "Tarif global/Co-financement"
+        case educational_models.CollectiveOfferRejectionReason.CSTI_IRRELEVANT:
+            return "Ne relève pas de la CSTI"
+        case educational_models.CollectiveOfferRejectionReason.EXAMS_PREPARATION:
+            return "Préparation aux examens"
+        case educational_models.CollectiveOfferRejectionReason.HOUSING_CATERING_TRANSPORT:
+            return "Restauration/Hébergement/Transport"
+        case educational_models.CollectiveOfferRejectionReason.INELIGIBLE_OFFER:
+            return "Offre inéligible"
+        case educational_models.CollectiveOfferRejectionReason.INELIGIBLE_SERVICE:
+            return "Prestation inéligible"
+        case educational_models.CollectiveOfferRejectionReason.MISSING_DESCRIPTION:
+            return "Description manquante"
+        case educational_models.CollectiveOfferRejectionReason.MISSING_DESCRIPTION_AND_DATE:
+            return "Date et description manquante"
+        case educational_models.CollectiveOfferRejectionReason.MISSING_MEDIATION:
+            return "Mediation manquante"
+        case educational_models.CollectiveOfferRejectionReason.MISSING_PRICE:
+            return "Prix manquant"
+        case educational_models.CollectiveOfferRejectionReason.OTHER:
+            return "Autre"
+        case educational_models.CollectiveOfferRejectionReason.PAST_DATE_OFFER:
+            return "Offre anti-datée"
+        case educational_models.CollectiveOfferRejectionReason.PRIMARY_ELEMENTARY_SCHOOL:
+            return "Offre maternelle/primaire"
+        case educational_models.CollectiveOfferRejectionReason.WRONG_DATE:
+            return "Date erronée"
+        case educational_models.CollectiveOfferRejectionReason.WRONG_PRICE:
+            return "Tarif erroné"
+        case _:
+            return reason.value
 
 
 def format_fraud_review_status(status: fraud_models.FraudReviewStatus) -> str:
@@ -1557,6 +1593,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_offerer_rejection_reason"] = format_offerer_rejection_reason
     app.jinja_env.filters["format_collective_offer_formats"] = format_collective_offer_formats
     app.jinja_env.filters["format_subcategories"] = format_subcategories
+    app.jinja_env.filters["format_collective_offer_rejection_reason"] = format_collective_offer_rejection_reason
     app.jinja_env.filters["format_as_badges"] = format_as_badges
     app.jinja_env.filters["format_compliance_reasons"] = format_compliance_reasons
     app.jinja_env.filters["format_confidence_level_badge"] = format_confidence_level_badge
