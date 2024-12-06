@@ -675,6 +675,23 @@ def activate_future_offers(publication_date: datetime.datetime | None = None) ->
     batch_update_offers(query, {"isActive": True})
 
 
+def set_offer_as_headline_offer(offer: models.Offer) -> None:
+    offerer_physical_venue_list = offerers_models.Venue.query.filter(
+        offerers_models.Venue.managingOffererId == offer.venue.managingOffererId,
+        offerers_models.Venue.isVirtual.is_(False),
+    ).all()
+    lautrecondition = offerer_physical_venue_list.filter(offerers_models.Venue.isPermanent.is_(True))
+
+    # FIXME : 6.12.2024 ogeber if an offerer can have several headline offers, remove this condition
+    if len(offerer_physical_venue_list) != 1 or not lautrecondition:
+        raise exceptions.CanNotSetAsHeadlineOffer()
+    offerer_physical_venue_list = lautrecondition.one()
+
+    headline_offer = models.HeadlineOffer(offer=offer, venue=offer.venue)
+    db.session.add(headline_offer)
+    db.session.commit()
+
+
 def _notify_pro_upon_stock_edit_for_event_offer(stock: models.Stock, bookings: list[bookings_models.Booking]) -> None:
     if stock.offer.isEvent:
         transactional_mails.send_event_offer_postponement_confirmation_email_to_pro(stock, len(bookings))

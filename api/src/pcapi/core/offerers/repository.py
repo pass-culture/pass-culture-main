@@ -155,6 +155,15 @@ def get_filtered_venues(
     return query.order_by(models.Venue.name).all()
 
 
+# def get_offerer_partner_pages(offerer: models.Offerer) -> list[models.Venue]:
+#     # 1 PP =  1 offerer a 1 seul Venue Permanent dans ce cas c'est lui
+
+#     # return models.Venue.query.filter(
+#     #     models.Venue.managingOfferer == offerer,
+#     #     models.Venue.isPermanent.is_(True),
+#     # ).all()
+
+
 def get_api_key_prefixes(offerer_id: int) -> list[str]:
     return [
         prefix for prefix, in models.ApiKey.query.filter_by(offererId=offerer_id).with_entities(models.ApiKey.prefix)
