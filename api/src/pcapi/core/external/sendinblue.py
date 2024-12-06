@@ -65,6 +65,7 @@ class SendinblueAttributes(Enum):
     IS_ELIGIBLE = "IS_ELIGIBLE"
     IS_EMAIL_VALIDATED = "IS_EMAIL_VALIDATED"
     IS_PERMANENT = "IS_PERMANENT"
+    IS_OPEN_TO_PUBLIC = "IS_OPEN_TO_PUBLIC"
     IS_PRO = "IS_PRO"
     IS_UNDERAGE_BENEFICIARY = "IS_UNDERAGE_BENEFICIARY"
     IS_USER_EMAIL = "IS_USER_EMAIL"
@@ -228,6 +229,7 @@ def format_user_attributes(attributes: attributes_models.UserAttributes | attrib
         SendinblueAttributes.IS_ELIGIBLE.value: _get_attr(attributes, "is_eligible"),
         SendinblueAttributes.IS_EMAIL_VALIDATED.value: _get_attr(attributes, "is_email_validated"),
         SendinblueAttributes.IS_PERMANENT.value: _get_attr(attributes, "isPermanent"),
+        SendinblueAttributes.IS_OPEN_TO_PUBLIC.value: _get_attr(attributes, "isOpenToPublic"),
         SendinblueAttributes.IS_PRO.value: _get_attr(attributes, "is_pro"),
         SendinblueAttributes.IS_UNDERAGE_BENEFICIARY.value: _get_attr(
             attributes, "roles", lambda v: users_models.UserRole.UNDERAGE_BENEFICIARY.value in v
@@ -281,6 +283,7 @@ def format_pro_attributes(attributes: attributes_models.ProAttributes) -> dict:
         SendinblueAttributes.IS_EAC.value: _get_attr(attributes, "is_eac"),
         SendinblueAttributes.IS_EAC_MEG.value: _get_attr(attributes, "is_eac_meg"),
         SendinblueAttributes.IS_PERMANENT.value: _get_attr(attributes, "isPermanent"),
+        SendinblueAttributes.IS_OPEN_TO_PUBLIC.value: _get_attr(attributes, "isOpenToPublic"),
         SendinblueAttributes.IS_PRO.value: _get_attr(attributes, "is_pro"),
         SendinblueAttributes.IS_USER_EMAIL.value: _get_attr(attributes, "is_user_email"),
         SendinblueAttributes.IS_VIRTUAL.value: _get_attr(attributes, "isVirtual"),
