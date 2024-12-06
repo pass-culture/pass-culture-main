@@ -113,7 +113,13 @@
                     {% if row.rules %}{{ row.rules | join(", ") | escape }}{% endif %}
                   </td>
                 {% endif %}
-                <td>{{ collective_offer.validation | format_offer_validation_status }}</td>
+                <td>
+                  {{ collective_offer.validation | format_offer_validation_status(with_badge=True) }}
+                  {% if collective_offer.rejectionReason %}
+                    <br />
+                    {{ collective_offer.rejectionReason | format_collective_offer_rejection_reason }}
+                  {% endif %}
+                </td>
                 <td>{{ links.build_pro_user_name_to_details_link(collective_offer.authorId, collective_offer.author.full_name) }}</td>
                 <td>{{ collective_offer.dateCreated | format_date }}</td>
                 <td>

@@ -108,7 +108,13 @@
                 {% if has_permission("PRO_FRAUD_ACTIONS") %}
                   <td>{{ collective_offer_template.flaggingValidationRules | format_offer_validation_rule_list }}</td>
                 {% endif %}
-                <td>{{ collective_offer_template.validation | format_offer_validation_status }}</td>
+                <td>
+                  {{ collective_offer_template.validation | format_offer_validation_status(with_badge=True) }}
+                  {% if collective_offer_template.rejectionReason %}
+                    <br />
+                    {{ collective_offer_template.rejectionReason | format_collective_offer_rejection_reason }}
+                  {% endif %}
+                </td>
                 <td>{{ links.build_pro_user_name_to_details_link(collective_offer_template.authorId ,collective_offer_template.author.full_name) }}</td>
                 <td>{{ collective_offer_template.dateCreated | format_date("%d/%m/%Y") }}</td>
                 <td>

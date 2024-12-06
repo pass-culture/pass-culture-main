@@ -137,7 +137,7 @@
                   <span class="fw-bold">Statut :</span> {{ offer.status | format_offer_status }}
                 </p>
                 <p class="mb-1">
-                  <span class="fw-bold">État :</span> {{ offer.validation | format_offer_validation_status }}
+                  <span class="fw-bold">État :</span> {{ offer.validation | format_offer_validation_status(with_badge=True) }}
                 </p>
                 <p class="mb-1">
                   <span class="fw-bold">Date de création :</span> {{ offer.dateCreated | format_date }}
