@@ -116,6 +116,8 @@ def update_venue(
     external_accessibility_url: str | None | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
     is_manual_edition: bool = False,
 ) -> models.Venue:
+    # TODO: (pcharlet 2024-11-28) Remove new_permanent when regularisation is done. Used only to sync venues with acceslibre when update permanent from BO
+    new_open_to_public = not venue.isOpenToPublic and modifications.get("isOpenToPublic")
     new_permanent = not venue.isPermanent and modifications.get("isPermanent")
     venue_snapshot = history_api.ObjectUpdateSnapshot(venue, author)
     if not venue.isVirtual:
@@ -245,7 +247,7 @@ def update_venue(
     if contact_data and contact_data.website:
         virustotal.request_url_scan(contact_data.website, skip_if_recent_scan=True)
 
-    if new_permanent and not external_accessibility_url:
+    if (new_open_to_public or new_permanent) and not external_accessibility_url:
         match_acceslibre_job.delay(venue.id)
 
     return venue
@@ -2439,22 +2441,24 @@ def set_accessibility_infos_from_provider_id(venue: models.Venue) -> None:
         db.session.add(venue.accessibilityProvider)
 
 
-def count_permanent_venues_with_accessibility_provider() -> int:
+def count_open_to_public_or_permanent_venues_with_accessibility_provider() -> int:
     return (
         offerers_models.Venue.query.join(offerers_models.AccessibilityProvider)
         .filter(
-            offerers_models.Venue.isPermanent.is_(True),
+            sa.or_(offerers_models.Venue.isOpenToPublic.is_(True), offerers_models.Venue.isPermanent.is_(True)),
             offerers_models.Venue.isVirtual.is_(False),
         )
         .count()
     )
 
 
-def get_permanent_venues_with_accessibility_provider(batch_size: int, batch_num: int) -> list[models.Venue]:
+def get_open_to_public_or_permanent_venues_with_accessibility_provider(
+    batch_size: int, batch_num: int
+) -> list[models.Venue]:
     return (
         offerers_models.Venue.query.join(offerers_models.Venue.accessibilityProvider)
         .filter(
-            offerers_models.Venue.isPermanent.is_(True),
+            sa.or_(offerers_models.Venue.isOpenToPublic.is_(True), offerers_models.Venue.isPermanent.is_(True)),
             offerers_models.Venue.isVirtual.is_(False),
         )
         .options(sa.orm.contains_eager(offerers_models.Venue.accessibilityProvider))
@@ -2465,12 +2469,12 @@ def get_permanent_venues_with_accessibility_provider(batch_size: int, batch_num:
     )
 
 
-def get_permanent_venues_without_accessibility_provider() -> list[models.Venue]:
+def get_open_to_public_or_permanent_venues_without_accessibility_provider() -> list[models.Venue]:
     return (
         offerers_models.Venue.query.outerjoin(offerers_models.Venue.accessibilityProvider)
         .filter(
-            offerers_models.Venue.isPermanent == True,
-            offerers_models.Venue.isVirtual == False,
+            sa.or_(offerers_models.Venue.isOpenToPublic.is_(True), offerers_models.Venue.isPermanent.is_(True)),
+            offerers_models.Venue.isVirtual.is_(False),
             offerers_models.AccessibilityProvider.id.is_(None),
         )
         .options(
@@ -2577,7 +2581,7 @@ def synchronize_accessibility_with_acceslibre(
 
     If externalAccessibilityId can't be found at acceslibre, we try to find a new match, cf. synchronize_accessibility_provider()
     """
-    venues_count = count_permanent_venues_with_accessibility_provider()
+    venues_count = count_open_to_public_or_permanent_venues_with_accessibility_provider()
     num_batches = ceil(venues_count / batch_size)
     if start_from_batch > num_batches:
         logger.error("Start from batch must be less than %d", num_batches)
@@ -2585,7 +2589,9 @@ def synchronize_accessibility_with_acceslibre(
 
     start_batch_index = start_from_batch - 1
     for i in range(start_batch_index, num_batches):
-        venues_list = get_permanent_venues_with_accessibility_provider(batch_size=batch_size, batch_num=i)
+        venues_list = get_open_to_public_or_permanent_venues_with_accessibility_provider(
+            batch_size=batch_size, batch_num=i
+        )
         for venue in venues_list:
             synchronize_accessibility_provider(venue, force_sync)
 
@@ -2655,13 +2661,13 @@ def match_venue_with_new_entries(
 
 def acceslibre_matching(batch_size: int, dry_run: bool, start_from_batch: int, n_days_to_fetch: int = 7) -> None:
     """
-    For all permanent venues, we are looking for a match at acceslibre
+    For all venues opened to public, we are looking for a match at acceslibre
 
     If we use the --start-from-batch option, it will start synchronization from the given batch number
     Use case: synchronization has failed with message "Could not update batch <n>"
     """
-    synchronized_venues_count_before_matching = count_permanent_venues_with_accessibility_provider()
-    venues_list = get_permanent_venues_without_accessibility_provider()
+    synchronized_venues_count_before_matching = count_open_to_public_or_permanent_venues_with_accessibility_provider()
+    venues_list = get_open_to_public_or_permanent_venues_without_accessibility_provider()
     num_batches = ceil(len(venues_list) / batch_size)
     if start_from_batch > num_batches:
         logger.info("Start from batch must be less than %d", num_batches)
@@ -2685,7 +2691,10 @@ def acceslibre_matching(batch_size: int, dry_run: bool, start_from_batch: int, n
             except sa.exc.SQLAlchemyError:
                 logger.exception("Could not update batch %d", i + 1)
                 db.session.rollback()
-    new_match_found = count_permanent_venues_with_accessibility_provider() - synchronized_venues_count_before_matching
+    new_match_found = (
+        count_open_to_public_or_permanent_venues_with_accessibility_provider()
+        - synchronized_venues_count_before_matching
+    )
     logger.info("%d new match found over last %d days", new_match_found, n_days_to_fetch)
     if dry_run:
         logger.info("Matching with acceslibre as dry run complete")
@@ -2707,9 +2716,9 @@ def find_missing_match_at_acceslibre(batch_size: int, dry_run: bool, start_from_
     Use case: synchronization has failed with message "Could not update batch <n>"
     """
 
-    count_before_match = count_permanent_venues_with_accessibility_provider()
+    count_before_match = count_open_to_public_or_permanent_venues_with_accessibility_provider()
     logger.info("Number of venue synchronized before matching %d", count_before_match)
-    venues_list = get_permanent_venues_without_accessibility_provider()
+    venues_list = get_open_to_public_or_permanent_venues_without_accessibility_provider()
     num_batches = ceil(len(venues_list) / batch_size)
     if start_from_batch > num_batches:
         logger.info("Start from batch must be less than %d", num_batches)
@@ -2729,14 +2738,14 @@ def find_missing_match_at_acceslibre(batch_size: int, dry_run: bool, start_from_
                 logger.error("Acceslibre API Error %s when trying to match venue %d", e, venue.id)
                 continue
         if dry_run:
-            count_after_match = count_permanent_venues_with_accessibility_provider()
+            count_after_match = count_open_to_public_or_permanent_venues_with_accessibility_provider()
         else:
             try:
                 db.session.commit()
             except sa.exc.SQLAlchemyError:
                 logger.exception("Could not update batch %d", i + 1)
                 db.session.rollback()
-            count_after_match = count_permanent_venues_with_accessibility_provider()
+            count_after_match = count_open_to_public_or_permanent_venues_with_accessibility_provider()
 
     logger.info("Matching complete, %s new match found", count_after_match - count_before_match)
 

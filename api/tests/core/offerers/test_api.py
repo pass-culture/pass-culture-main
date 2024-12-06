@@ -2547,28 +2547,30 @@ class AccessibilityProviderTest:
         assert accessibility_provider.externalAccessibilityUrl == "https://nouvelle.adresse/nouveau-slug"
 
     def test_count_venues_with_accessibility_provider(self):
-        offerers_factories.VenueFactory.create_batch(3, isPermanent=True, isVirtual=False)
-        venue = offerers_factories.VenueFactory(isPermanent=True, isVirtual=False)
+        offerers_factories.VenueFactory.create_batch(3, isOpenToPublic=True, isVirtual=False)
+        venue = offerers_factories.VenueFactory(isOpenToPublic=True, isVirtual=False)
         offerers_factories.AccessibilityProviderFactory(venue=venue)
 
-        count = offerers_api.count_permanent_venues_with_accessibility_provider()
+        count = offerers_api.count_open_to_public_or_permanent_venues_with_accessibility_provider()
         assert count == 1
 
-    def test_get_permanent_venues_with_accessibility_provider(self):
-        offerers_factories.VenueFactory.create_batch(3, isPermanent=True, isVirtual=False)
-        venue = offerers_factories.VenueFactory(isPermanent=True, isVirtual=False)
+    def test_get_open_to_public_venues_with_accessibility_provider(self):
+        offerers_factories.VenueFactory.create_batch(3, isOpenToPublic=True, isVirtual=False)
+        venue = offerers_factories.VenueFactory(isOpenToPublic=True, isVirtual=False)
         offerers_factories.AccessibilityProviderFactory(venue=venue)
 
-        venues_list = offerers_api.get_permanent_venues_with_accessibility_provider(batch_size=10, batch_num=0)
+        venues_list = offerers_api.get_open_to_public_or_permanent_venues_with_accessibility_provider(
+            batch_size=10, batch_num=0
+        )
         assert len(venues_list) == 1
         assert venues_list[0] == venue
 
-    def test_get_permanent_venues_without_accessibility_provider(self):
-        offerers_factories.VenueFactory.create_batch(3, isPermanent=True, isVirtual=False)
-        venue = offerers_factories.VenueFactory(isPermanent=True, isVirtual=False)
+    def get_open_to_public_or_permanent_venues_without_accessibility_provider(self):
+        offerers_factories.VenueFactory.create_batch(3, isOpenToPublic=True, isVirtual=False)
+        venue = offerers_factories.VenueFactory(isOpenToPublic=True, isVirtual=False)
         offerers_factories.AccessibilityProviderFactory(venue=venue)
 
-        venues_list = offerers_api.get_permanent_venues_without_accessibility_provider()
+        venues_list = offerers_api.get_open_to_public_or_permanent_venues_without_accessibility_provider()
         assert len(venues_list) == 3
 
     @patch("pcapi.connectors.acceslibre.find_new_entries_by_activity")
@@ -2605,9 +2607,9 @@ class AccessibilityProviderTest:
             activity=acceslibre_connector.AcceslibreActivity.BIBLIOTHEQUE,
         )
 
-        venues_list = [offerers_factories.VenueFactory(isPermanent=True, isVirtual=False)]
+        venues_list = [offerers_factories.VenueFactory(isOpenToPublic=True, isVirtual=False)]
         venue = offerers_factories.VenueFactory(
-            isPermanent=True,
+            isOpenToPublic=True,
             isVirtual=False,
             name="Un lieu",
             postalCode="75001",
@@ -2621,9 +2623,9 @@ class AccessibilityProviderTest:
         assert venue.external_accessibility_id == "mon-lieu-chez-acceslibre"
 
     def test_acceslibre_matching(self):
-        venues_list = [offerers_factories.VenueFactory(isPermanent=True, isVirtual=False)]
+        venues_list = [offerers_factories.VenueFactory(isOpenToPublic=True, isVirtual=False)]
         venue = offerers_factories.VenueFactory(
-            isPermanent=True,
+            isOpenToPublic=True,
             isVirtual=False,
             name="Un lieu",
             postalCode="75001",
@@ -2647,8 +2649,8 @@ class AccessibilityProviderTest:
             acceslibre_connector.AcceslibreInfos(slug="mon-slug", url="https://mon.adresse/mon-slug"),
         ]
 
-        venue_1 = offerers_factories.VenueFactory(isPermanent=True, isVirtual=False)
-        venue_2 = offerers_factories.VenueFactory(isPermanent=True, isVirtual=False)
+        venue_1 = offerers_factories.VenueFactory(isOpenToPublic=True, isVirtual=False)
+        venue_2 = offerers_factories.VenueFactory(isOpenToPublic=True, isVirtual=False)
         venue_ids = [venue_1.id, venue_2.id]
 
         # match result is given by find_new_entries_by_activity in TestingBackend class in acceslibre connector
