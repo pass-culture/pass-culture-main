@@ -111,7 +111,7 @@ export const VenueCreationFormScreen = ({
       </div>
 
       <FormikProvider value={formik}>
-        <form onSubmit={formik.handleSubmit}>
+        <form onSubmit={formik.handleSubmit} noValidate>
           <VenueCreationForm
             updateIsSiretValued={setIsSiretValued}
             isSiretValued={isSiretValued}
