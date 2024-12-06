@@ -64,7 +64,7 @@ describe('Search collective offers', () => {
         '',
         offerNamePublished,
         venueName1,
-        'Tous les établissements',
+        '',
         'publiée',
       ],
     ]
@@ -88,7 +88,7 @@ describe('Search collective offers', () => {
         '',
         offerNameNotConform,
         venueName2,
-        'Tous les établissements',
+        '',
         'non conforme',
       ],
       [
@@ -96,7 +96,7 @@ describe('Search collective offers', () => {
         '',
         offerNameInInstruction,
         venueName2,
-        'Tous les établissements',
+        '',
         'en instruction',
       ],
       [
@@ -104,7 +104,7 @@ describe('Search collective offers', () => {
         '',
         offerNameArchived,
         venueName2,
-        'Tous les établissements',
+        '',
         'archivée',
       ],
     ]
@@ -128,7 +128,7 @@ describe('Search collective offers', () => {
         '',
         offerNamePublished,
         venueName1,
-        'Tous les établissements',
+        '',
         'publiée',
       ],
       [
@@ -136,7 +136,7 @@ describe('Search collective offers', () => {
         '',
         offerNamePublishedTemplate,
         venueName1,
-        'Tous les établissements',
+        '',
         'publiée',
       ],
     ]
@@ -160,7 +160,7 @@ describe('Search collective offers', () => {
         '',
         offerNameArchived,
         venueName2,
-        'Tous les établissements',
+        '',
         'archivée',
       ],
       [
@@ -168,7 +168,7 @@ describe('Search collective offers', () => {
         '',
         offerNameNotConform,
         venueName2,
-        'Tous les établissements',
+        '',
         'non conforme',
       ],
       [
@@ -176,7 +176,7 @@ describe('Search collective offers', () => {
         '',
         offerNameInInstruction,
         venueName2,
-        'Tous les établissements',
+        '',
         'en instruction',
       ],
       [
@@ -184,7 +184,7 @@ describe('Search collective offers', () => {
         '',
         offerNameDraft,
         venueName1,
-        'Tous les établissements',
+        '',
         'brouillon',
       ],
       [
@@ -192,7 +192,7 @@ describe('Search collective offers', () => {
         '',
         offerNamePublished,
         venueName1,
-        'Tous les établissements',
+        '',
         'publiée',
       ],
     ]
@@ -218,7 +218,7 @@ describe('Search collective offers', () => {
         '',
         offerNamePublished,
         venueName1,
-        'Tous les établissements',
+        '',
         'publiée',
       ],
     ]
@@ -244,7 +244,7 @@ describe('Search collective offers', () => {
         '',
         offerNameInInstruction,
         venueName2,
-        'Tous les établissements',
+        '',
         'en instruction',
       ],
     ]
@@ -279,7 +279,7 @@ describe('Search collective offers', () => {
         '',
         offerNameDraft,
         venueName1,
-        'Tous les établissements',
+        '',
         'brouillon',
       ],
     ]
@@ -313,7 +313,7 @@ describe('Search collective offers', () => {
         '',
         offerNameNotConform,
         venueName2,
-        'Tous les établissements',
+        '',
         'non conforme',
       ],
       [
@@ -321,7 +321,7 @@ describe('Search collective offers', () => {
         '',
         offerNameInInstruction,
         venueName2,
-        'Tous les établissements',
+        '',
         'en instruction',
       ],
       [
@@ -329,7 +329,7 @@ describe('Search collective offers', () => {
         '',
         offerNameDraft,
         venueName1,
-        'Tous les établissements',
+        '',
         'brouillon',
       ],
       [
@@ -337,7 +337,7 @@ describe('Search collective offers', () => {
         '',
         offerNamePublished,
         venueName1,
-        'Tous les établissements',
+        '',
         'publiée',
       ],
       [
@@ -345,7 +345,7 @@ describe('Search collective offers', () => {
         '',
         offerNamePublishedTemplate,
         venueName1,
-        'Tous les établissements',
+        '',
         'publiée',
       ],
       [
@@ -353,7 +353,7 @@ describe('Search collective offers', () => {
         '',
         offerNameArchived,
         venueName2,
-        'Tous les établissements',
+        '',
         'archivée',
       ],
     ]

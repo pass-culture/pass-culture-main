@@ -76,8 +76,8 @@ describe('Collaborator list feature', () => {
 
       cy.findByText('Enregistrer et continuer').click()
 
-      cy.findByLabelText('Nom de l’établissement scolaire ou code UAI *').type('COLLEGE')
-      cy.get('#list-institution').find('#option-display-1').click()
+      cy.findByLabelText('Nom de l’établissement scolaire ou code UAI *').type('COLLEGE 123')
+      cy.get('#list-institution').findByText(/COLLEGE 123/).click()
       cy.findByText('Établissement scolaire et enseignant').click()
 
       cy.findByText('Enregistrer et continuer').click()
