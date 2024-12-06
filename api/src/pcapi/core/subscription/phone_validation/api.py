@@ -201,7 +201,7 @@ def validate_phone_number(user: users_models.User, code: str) -> None:
         type=fraud_models.FraudCheckType.PHONE_VALIDATION,
         status=fraud_models.FraudCheckStatus.OK,
         eligibilityType=user.eligibility,
-        resultContent=fraud_models.PhoneValidationFraudData(phone_number=phone_number),  # type: ignore[arg-type]
+        resultContent=fraud_models.PhoneValidationFraudData(phone_number=phone_number).dict(exclude_none=True),
         thirdPartyId=f"PC-{user.id}",
     )
 
