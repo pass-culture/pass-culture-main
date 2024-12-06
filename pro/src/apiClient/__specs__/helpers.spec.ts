@@ -35,27 +35,29 @@ describe('test apiClient:helpers', () => {
       expect(errorCode).toBe('UNAUTHORIZED_ACCESS')
     })
   })
+})
 
+describe('serializeApiErrors', () => {
   it('should map api response errors to form one without changes', () => {
-    const initialError: Record<string, string> = {
-      f1: 'e1',
-      f2: 'e2',
-      f3: 'e3',
+    const initialError: Record<string, string[]> = {
+      f1: ['e1'],
+      f2: ['e2'],
+      f3: ['e3'],
     }
     const serializedError = serializeApiErrors(initialError)
 
     expect(serializedError).toEqual({
-      f1: 'e1',
-      f2: 'e2',
-      f3: 'e3',
+      f1: ['e1'],
+      f2: ['e2'],
+      f3: ['e3'],
     })
   })
 
   it('should map api response errors to form one with changes', () => {
-    const initialError: Record<string, string> = {
-      f1: 'e1',
-      f2: 'e2',
-      f3: 'e3',
+    const initialError: Record<string, string[]> = {
+      f1: ['e1'],
+      f2: ['e2'],
+      f3: ['e3'],
     }
 
     const apiFieldsMap: Record<string, string> = {
@@ -64,9 +66,27 @@ describe('test apiClient:helpers', () => {
     const serializedError = serializeApiErrors(initialError, apiFieldsMap)
 
     expect(serializedError).toEqual({
-      f4: 'e1',
-      f2: 'e2',
-      f3: 'e3',
+      f4: ['e1'],
+      f2: ['e2'],
+      f3: ['e3'],
+    })
+  })
+
+  it('should transform the api response errors of an array field into an error structure compatible with formik', () => {
+    const initialError: Record<string, string[]> = {
+      'emails.1': ['e1'],
+      otherField: ['e2'],
+      'emails.2': ['e3'],
+    }
+    const serializedError = serializeApiErrors(
+      initialError,
+      {},
+      { emails: 'notificationEmails' }
+    )
+
+    expect(serializedError).toEqual({
+      notificationEmails: ['', 'e1', 'e3'],
+      otherField: ['e2'],
     })
   })
 })
