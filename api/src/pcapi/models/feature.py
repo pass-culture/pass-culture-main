@@ -142,6 +142,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_CHRONICLES_IN_BO = "Activer les chroniques du Book Club dans le BO"
     WIP_ENABLE_CLICKHOUSE_IN_BO = "Utiliser Clickhouse pour les statistiques des acteurs culturels dans le BO"
     WIP_HEADLINE_OFFER = "Activer l'offre à la une"
+    WIP_IS_OPEN_TO_PUBLIC = "Activer l'utilisation du critère 'ouvert au public' pour les synchro"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -216,6 +217,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_PRO_ONBOARDING,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
     FeatureToggle.WIP_HEADLINE_OFFER,
+    FeatureToggle.WIP_IS_OPEN_TO_PUBLIC,
     FeatureToggle.WIP_OFFERER_STATS_V2,
     FeatureToggle.WIP_SUGGESTED_SUBCATEGORIES,
     FeatureToggle.WIP_UBBLE_V2,

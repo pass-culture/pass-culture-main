@@ -25,7 +25,8 @@ pytestmark = pytest.mark.usefixtures("db_session")
 # 2 extra SQL queries: select exists on offer and booking tables
 # 1 extra query to check if the venue has any related collective offer with 'marseille en grand'
 # 1 check if the venue is concerned with marseille_en_grand
-EXPECTED_PRO_ATTR_NUM_QUERIES = 6
+# 1 check if FF WIP_IS_OPEN_TO_PUBLIC is active
+EXPECTED_PRO_ATTR_NUM_QUERIES = 7
 
 
 def _build_params(subs, virt, perman, draft, accep, offer, book, attach, colloff, tploff, megoff):
@@ -333,7 +334,8 @@ def _check_user_without_validated_offerer(user):
     email = user.email
 
     # no booking or offer to check without offerer
-    with assert_num_queries(EXPECTED_PRO_ATTR_NUM_QUERIES - 2):
+    # no check for FF WIP_IS_OPEN_TO_PUBLIC
+    with assert_num_queries(EXPECTED_PRO_ATTR_NUM_QUERIES - 3):
         attributes = get_pro_attributes(email)
 
     assert attributes.is_pro is True
@@ -375,10 +377,12 @@ def test_update_external_pro_booking_email_attributes():
         bookingEmail=email,
         siret="12345678900001",
         isPermanent=True,
+        isOpenToPublic=True,
         venueTypeCode=VenueTypeCode.MUSEUM,
     )
 
-    with assert_num_queries(5):
+    # 1 check if FF WIP_IS_OPEN_TO_PUBLIC is active
+    with assert_num_queries(6):
         attributes = get_pro_attributes(email)
 
     assert attributes.is_pro is True
@@ -424,7 +428,8 @@ def test_update_external_pro_booking_email_attributes_for_permanent_venue_with_b
         _bannerUrl="https://example.net/banner.jpg",
     )
 
-    with assert_num_queries(5):
+    # 1 check if FF WIP_IS_OPEN_TO_PUBLIC is active
+    with assert_num_queries(6):
         attributes = get_pro_attributes(email)
     assert attributes.isPermanent is True
     assert attributes.has_banner_url is True
@@ -445,7 +450,8 @@ def test_update_external_pro_booking_email_attributes_for_non_permanent_venue_wi
         _bannerUrl="https://example.net/banner.jpg",
     )
 
-    with assert_num_queries(5):
+    # 1 check if FF WIP_IS_OPEN_TO_PUBLIC is active
+    with assert_num_queries(6):
         attributes = get_pro_attributes(email)
     assert attributes.isPermanent is False
     assert attributes.has_banner_url is True
@@ -465,7 +471,8 @@ def test_update_external_pro_booking_email_attributes_for_non_permanent_venue_wi
         venueTypeCode=VenueTypeCode.MUSEUM,
     )
 
-    with assert_num_queries(5):
+    # 1 check if FF WIP_IS_OPEN_TO_PUBLIC is active
+    with assert_num_queries(6):
         attributes = get_pro_attributes(email)
     assert attributes.isPermanent is False
     assert attributes.has_banner_url is True
