@@ -1,6 +1,6 @@
 import penIcon from 'icons/full-edit.svg'
-import styles from 'styles/components/Cells.module.scss'
-import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { DropdownItem } from 'ui-kit/DropdownMenuWrapper/DropdownItem'
 
 interface EditOfferCellProps {
   editionOfferLink: string
@@ -8,12 +8,10 @@ interface EditOfferCellProps {
 
 export const EditOfferCell = ({ editionOfferLink }: EditOfferCellProps) => {
   return (
-    <ListIconButton
-      url={editionOfferLink}
-      className={styles['button']}
-      icon={penIcon}
-    >
-      Modifier
-    </ListIconButton>
+    <DropdownItem asChild>
+      <ButtonLink to={editionOfferLink} icon={penIcon}>
+        Voir l’offre
+      </ButtonLink>
+    </DropdownItem>
   )
 }

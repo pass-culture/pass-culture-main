@@ -25,11 +25,10 @@
 .menu-list {
   display: flex;
   flex-direction: column;
-  gap: rem.torem(8px);
   border: 1px solid var(--color-grey-light);
   border-radius: rem.torem(6px);
   box-shadow: 0 3px 4px 0 var(--color-medium-shadow);
-  padding: rem.torem(8px) 0;
+  padding: .5rem;
   background: var(--color-white);
 }
 
@@ -37,12 +36,13 @@
   @include fonts.button;
 
   display: flex;
-  padding: 8px 16px;
   color: var(--color-black);
+  padding: .5rem;
 
   &[data-highlighted] {
     outline: none;
-    background: var(--color-grey-medium);
+    border-radius: rem.torem(2px);
+    background: var(--color-grey-light);
     color: var(--color-black);
     cursor: pointer;
   }

@@ -2,6 +2,7 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import cn from 'classnames'
 
 import fullOtherIcon from 'icons/full-other.svg'
+import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './DropdownMenuWrapper.module.scss'
@@ -15,13 +16,25 @@ type DropdownMenuWrapperProps = {
    */
   title: string
   /**
+   * The tooltip to be displayed on the trigger button.
+   */
+  triggerTooltip?: boolean
+  /**
+   * The icon to be displayed on the trigger button.
+   */
+  triggerIcon?: string
+  /**
    * The content to be displayed inside the dropdown menu.
    */
   children: React.ReactNode
   /**
-   * Custom CSS class for additional styling of the dropdown menu.
+   * Custom CSS class for additional styling of the trigger button.
    */
-  className?: string
+  triggerClassName?: string
+  /**
+   * Custom CSS class for additional styling of the menu content.
+   */
+  contentClassName?: string
 }
 
 /**
@@ -46,24 +59,35 @@ type DropdownMenuWrapperProps = {
  */
 export function DropdownMenuWrapper({
   title,
+  triggerIcon,
+  triggerTooltip,
   children,
-  className,
+  triggerClassName,
+  contentClassName,
 }: DropdownMenuWrapperProps): JSX.Element {
+  const icon = triggerIcon || fullOtherIcon
+
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger
-        className={cn(styles['menu-button'], className)}
-        title={title}
+        className={cn(styles['menu-button'], triggerClassName)}
         data-testid="dropdown-menu-trigger"
+        {...triggerTooltip ? { asChild: true } : {}}
       >
-        <SvgIcon
-          src={fullOtherIcon}
-          alt={title}
-          className={styles['menu-button-icon']}
-        />
+        {triggerTooltip ? (
+          <ListIconButton icon={icon}>
+            {title}
+          </ListIconButton>
+        ) :  (
+          <SvgIcon
+            src={icon}
+            alt={title}
+            className={styles['menu-button-icon']}
+          />
+        )}
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
-        <DropdownMenu.Content className={styles['menu-list']} align="end">
+        <DropdownMenu.Content className={cn(styles['menu-list'], contentClassName)} align="end">
           {children}
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
