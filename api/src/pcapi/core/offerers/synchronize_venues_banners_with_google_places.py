@@ -58,7 +58,7 @@ def get_venues_without_photo(frequency: int) -> list[offerers_models.Venue]:
     query = (
         offerers_models.Venue.query.join(offerers_models.Offerer)
         .filter(
-            offerers_models.Venue.isPermanent.is_(True),
+            offerers_models.Venue.isOpenToPublic.is_(True),
             offerers_models.Venue.bannerUrl.is_(None),  # type: ignore[attr-defined]
             offerers_models.Venue.venueTypeCode != "Lieu administratif",
             offerers_models.Offerer.isActive.is_(True),
