@@ -1,3 +1,5 @@
+import pytest
+
 from pcapi.core.testing import override_settings
 from pcapi.utils import crypto
 
@@ -16,6 +18,14 @@ class DevEnvironmentPasswordHasherTest:
         hashed = crypto.hash_public_api_key("secret")
         assert not crypto.check_public_api_key("wrong", hashed)
         assert crypto.check_public_api_key("secret", hashed)
+
+    def test_no_password_leak(self):
+        non_unicode_password = "user@AZERTY123\udee0"
+
+        with pytest.raises(Exception) as exception:
+            crypto.hash_password(non_unicode_password)
+
+        assert "user@AZERTY123" not in str(exception), str(exception)
 
 
 @override_settings(USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM=False)
@@ -39,6 +49,14 @@ class ProdEnvironmentPasswordHasherTest:
         hashed = crypto.hash_public_api_key("secret")
         assert not crypto.check_public_api_key("wrong", hashed)
         assert crypto.check_public_api_key("secret", hashed)
+
+    def test_no_password_leak(self):
+        non_unicode_password = "user@AZERTY123\udee0"
+
+        with pytest.raises(Exception) as exception:
+            crypto.hash_password(non_unicode_password)
+
+        assert "user@AZERTY123" not in str(exception), str(exception)
 
 
 class EncryptDataTest:

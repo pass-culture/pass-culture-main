@@ -48,7 +48,10 @@ def hash_password(clear_text: str) -> bytes:
         hasher = _hash_password_with_md5
     else:
         hasher = _hash_password_with_bcrypt
-    return hasher(clear_text)
+    try:
+        return hasher(clear_text)
+    except UnicodeEncodeError:
+        raise ValueError("non-unicode characters are not allowed in passwords")
 
 
 def hash_public_api_key(clear_text: str) -> bytes:
