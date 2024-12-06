@@ -1,8 +1,8 @@
 import classNames from 'classnames'
 
 import {
+  CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
-  CollectiveOfferStatus,
 } from 'apiClient/v1'
 import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
@@ -32,9 +32,8 @@ function isCollectiveOfferActiveOrPreBooked(
   offer: CollectiveOfferResponseModel
 ) {
   return (
-    offer.status === CollectiveOfferStatus.ACTIVE ||
-    (offer.status === CollectiveOfferStatus.SOLD_OUT &&
-      offer.booking?.booking_status === 'PENDING')
+    offer.displayedStatus === CollectiveOfferDisplayedStatus.ACTIVE ||
+    offer.displayedStatus === CollectiveOfferDisplayedStatus.PREBOOKED
   )
 }
 
@@ -64,7 +63,7 @@ export const CollectiveOfferRow = ({
     isCollectiveOffersExpirationEnabled &&
     !offer.isShowcase &&
     isCollectiveOfferActiveOrPreBooked(offer) &&
-    bookingLimitDate
+    !!bookingLimitDate
 
   return (
     <>

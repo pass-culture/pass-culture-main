@@ -2,8 +2,8 @@ import classNames from 'classnames'
 import { differenceInCalendarDays, format } from 'date-fns'
 
 import {
+  CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
-  CollectiveOfferStatus,
 } from 'apiClient/v1'
 import { FORMAT_DD_MM_YYYY, toDateStrippedOfTimezone } from 'commons/utils/date'
 import { pluralize } from 'commons/utils/pluralize'
@@ -50,7 +50,7 @@ export function ExpirationCell({
           )}
           <div className={styles['banner-expiration-waiting']}>
             <SvgIcon alt="" src={fullWaitIcon} width="16" /> En attente de{' '}
-            {offer.status === CollectiveOfferStatus.ACTIVE
+            {offer.displayedStatus === CollectiveOfferDisplayedStatus.ACTIVE
               ? 'préréservation par l’enseignant'
               : 'réservation par le chef d’établissement'}
           </div>
