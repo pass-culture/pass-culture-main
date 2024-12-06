@@ -126,15 +126,6 @@ def convert_identification_to_ubble_content(
         signed_image_back_url=getattr(document, "back_image_signed_url", None),
         signed_image_front_url=getattr(document, "front_image_signed_url", None),
         status=identification.status,
-        comment=None,
-        expiry_date_score=None,
-        married_name=None,
-        ove_score=None,
-        reference_data_check_score=None,
-        processed_datetime=None,
-        score=None,
-        status_updated_at=None,
-        supported=None,
     )
     return content
 
