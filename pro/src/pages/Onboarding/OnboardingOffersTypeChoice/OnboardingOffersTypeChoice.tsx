@@ -1,4 +1,3 @@
-
 import { Layout } from 'app/App/layout/Layout'
 import { Header } from 'components/Header/Header'
 import { OnboardingOffersChoice } from 'components/OnboardingOffersChoice/OnboardingOffersChoice'
