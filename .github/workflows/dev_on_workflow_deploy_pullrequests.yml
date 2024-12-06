@@ -116,7 +116,15 @@ jobs:
         run: |
           set +e
           while true; do
-            kubectl get application -n argocd | grep ${{ github.event.pull_request.number }}
+            kubectl get application -n argocd | grep postgresql-pr-${{ github.event.pull_request.number }}
+            [[ $? -eq 0 ]] && break || sleep 5
+          done
+          while true; do
+            kubectl get application -n argocd | grep redis-pr-${{ github.event.pull_request.number }}
+            [[ $? -eq 0 ]] && break || sleep 5
+          done
+          while true; do
+            kubectl get application -n argocd | grep pcapi-pr-${{ github.event.pull_request.number }}
             [[ $? -eq 0 ]] && break || sleep 5
           done
 
