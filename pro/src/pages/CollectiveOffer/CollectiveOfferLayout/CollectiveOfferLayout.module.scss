@@ -12,6 +12,11 @@
 
   &-headings {
     margin-bottom: rem.torem(24px);
+    padding-top: rem.torem(56px);
+  
+    @media (min-width: size.$tablet) {
+      padding-top: 0;
+    }
   }
 
   &-heading {
@@ -29,11 +34,5 @@
 
   &-navigation {
     margin-bottom: rem.torem(32px);
-  }
-}
-
-@media (max-width: size.$tablet) {
-  .eac-layout-headings {
-    padding-top: rem.torem(56px);
   }
 }

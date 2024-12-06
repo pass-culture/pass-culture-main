@@ -41,7 +41,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
     animation: fade-out 150ms ease-in;
   }
 
-  @media (min-width: size.$mobile) {
+  @media screen and (min-width: size.$tablet) {
     height: auto;
     width: rem.torem(320px);
     margin-left: 0;
@@ -140,7 +140,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
   background-color: var(--color-white);
   z-index: 15;
 
-  @media (min-width: size.$mobile) {
+  @media screen and (min-width: size.$tablet) {
     border-radius: rem.torem(6px);
     border: solid rem.torem(1px) var(--color-grey-medium);
   }
@@ -190,7 +190,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
 
     @include fonts.caption;
 
-    @media (min-width: size.$mobile) {
+    @media screen and (min-width: size.$tablet) {
       display: block;
     }
   }

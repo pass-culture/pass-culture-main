@@ -104,7 +104,7 @@
   }
 }
 
-@container offer (width >= #{size.$mobile}) {
+@container offer (width >= #{size.$tablet}) {
   .offer-header {
     flex-direction: row;
     align-items: unset;

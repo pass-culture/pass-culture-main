@@ -6,15 +6,15 @@
 .bank-account {
   display: grid;
   padding: rem.torem(16px) rem.torem(24px);
-  grid-template-columns: rem.torem(281px) auto;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(2);
   border: rem.torem(1px) solid var(--color-grey-medium);
   border-radius: rem.torem(6px);
   box-shadow: rem.torem(0) rem.torem(3px) rem.torem(4px)
     var(--color-medium-shadow);
 
-  @media (max-width: size.$tablet) {
-    display: flex;
-    flex-direction: column;
+  @media (min-width: size.$tablet) {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -24,13 +24,13 @@
 }
 
 .informations-section {
-  border-right: rem.torem(1px) solid var(--color-grey-medium);
+  border-bottom: rem.torem(1px) solid var(--color-grey-medium);
+  padding-bottom: rem.torem(24px);
+  margin-bottom: rem.torem(16px);
 
-  @media (max-width: size.$tablet) {
-    border-right: none;
-    border-bottom: rem.torem(1px) solid var(--color-grey-medium);
-    padding-bottom: rem.torem(24px);
-    margin-bottom: rem.torem(16px);
+  @media (min-width: size.$tablet) {
+    border-bottom:none; 
+    border-right: rem.torem(1px) solid var(--color-grey-medium);
   }
 
   &-title {
@@ -85,12 +85,6 @@
     background-color: var(--color-grey-light);
     border-radius: rem.torem(6px);
     padding: rem.torem(12px) rem.torem(16px);
-
-    @media (max-width: size.$tablet) {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
   }
 }
 
