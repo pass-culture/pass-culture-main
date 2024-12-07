@@ -14,10 +14,11 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            memory: 1024Mi
+            memory: 512Mi
             cpu: 1
           limits:
-            memory: 1024Mi
+            memory: 512Mi
+            cpu: 1
         env:
           - name: REDIS_URL
             value: "redis://redis-${PRID}-master.pcapi-pr-${PRID}.svc.cluster.local:6379"
