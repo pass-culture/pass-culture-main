@@ -140,21 +140,95 @@ jobs:
           app_name: redis-pr-${{ github.event.pull_request.number }}
           argocd_app_wait: true
 
-      - name: "Play db-init"
+      - name: "Init local database"
         run: |
           set -e
           VERSION="${{ inputs.app_version }}"
           export ENVIRONMENT="${{ inputs.environment }}"
           IMAGE="europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi"
           export IMAGE="${IMAGE}:${VERSION}"
-          export DATE=$(date +"%Y-%m-%d-%H-%M-%S")
           export PRID=${{ github.event.pull_request.number }}
-          envsubst < .github/workflows/templates/pullrequest-db-init.yaml | kubectl -n pcapi-pr-${{ github.event.pull_request.number }} apply -f -
+
+          echo "=== exec: flask install_postgres_extensions"
+          export DATE=$(date +"%Y-%m-%d-%H-%M-%S")
+          start=$(date +%s.%N)
+          envsubst < .github/workflows/templates/pullrequest-db-init-01.yaml | kubectl -n pcapi-pr-${{ github.event.pull_request.number }} apply -f -
           while true;
           do
-          kubectl logs -n pcapi-pr-${{ github.event.pull_request.number }} -f jobs/pullrequest-db-init-${DATE} && break
+            kubectl logs -n pcapi-pr-${{ github.event.pull_request.number }} -f jobs/pullrequest-db-init-01-${DATE} && break
           done
-          kubectl wait --for=condition=complete --timeout=2700s -n pcapi-pr-${{ github.event.pull_request.number }} jobs/pullrequest-db-init-${DATE}
+          kubectl wait --for=condition=complete --timeout=2700s -n pcapi-pr-${{ github.event.pull_request.number }} jobs/pullrequest-db-init-01-${DATE}
+          end=$(date +%s.%N)
+          duration=$( bc <<< "$end - $start" )
+          {
+            echo "### :rocket: Init local database summary"
+            echo "| Command                              | Duration |"
+            echo "| ------------------------------------ | ----- |"
+            echo "| flask install_postgres_extensions    |  $duration |"
+          } >> $GITHUB_STEP_SUMMARY
+
+          echo "=== exec: alembic upgrade pre@head"
+          export DATE=$(date +"%Y-%m-%d-%H-%M-%S")
+          start=$(date +%s.%N)
+          envsubst < .github/workflows/templates/pullrequest-db-init-02.yaml | kubectl -n pcapi-pr-${{ github.event.pull_request.number }} apply -f -
+          while true;
+          do
+            kubectl logs -n pcapi-pr-${{ github.event.pull_request.number }} -f jobs/pullrequest-db-init-02-${DATE} && break
+          done
+          kubectl wait --for=condition=complete --timeout=2700s -n pcapi-pr-${{ github.event.pull_request.number }} jobs/pullrequest-db-init-02-${DATE}
+          end=$(date +%s.%N)
+          duration=$( bc <<< "$end - $start" )
+          {
+            echo "| alembic upgrade pre@head    |  $duration |"
+          } >> $GITHUB_STEP_SUMMARY
+
+          echo "=== exec: flask install_data"
+          export DATE=$(date +"%Y-%m-%d-%H-%M-%S")
+          start=$(date +%s.%N)
+          envsubst < .github/workflows/templates/pullrequest-db-init-03.yaml | kubectl -n pcapi-pr-${{ github.event.pull_request.number }} apply -f -
+          while true;
+          do
+          kubectl logs -n pcapi-pr-${{ github.event.pull_request.number }} -f jobs/pullrequest-db-init-03-${DATE} && break
+          done
+          kubectl wait --for=condition=complete --timeout=2700s -n pcapi-pr-${{ github.event.pull_request.number }} jobs/pullrequest-db-init-03-${DATE}
+          end=$(date +%s.%N)
+          duration=$( bc <<< "$end - $start" )
+          {
+            echo "| flask install_data    |  $duration |"
+          } >> $GITHUB_STEP_SUMMARY
+
+
+          echo "=== exec: alembic upgrade post@head"
+          export DATE=$(date +"%Y-%m-%d-%H-%M-%S")
+          start=$(date +%s.%N)
+          envsubst < .github/workflows/templates/pullrequest-db-init-04.yaml | kubectl -n pcapi-pr-${{ github.event.pull_request.number }} apply -f -
+          while true;
+          do
+          kubectl logs -n pcapi-pr-${{ github.event.pull_request.number }} -f jobs/pullrequest-db-init-04-${DATE} && break
+          done
+          kubectl wait --for=condition=complete --timeout=2700s -n pcapi-pr-${{ github.event.pull_request.number }} jobs/pullrequest-db-init-04-${DATE}
+          end=$(date +%s.%N)
+          duration=$( bc <<< "$end - $start" )
+          {
+            echo "| alembic upgrade post@head    |  $duration |"
+          } >> $GITHUB_STEP_SUMMARY
+
+
+          echo "=== exec: flask sandbox -n industrial"
+          export DATE=$(date +"%Y-%m-%d-%H-%M-%S")
+          start=$(date +%s.%N)
+          envsubst < .github/workflows/templates/pullrequest-db-init-05.yaml | kubectl -n pcapi-pr-${{ github.event.pull_request.number }} apply -f -
+          while true;
+          do
+          kubectl logs -n pcapi-pr-${{ github.event.pull_request.number }} -f jobs/pullrequest-db-init-05-${DATE} && break
+          done
+          kubectl wait --for=condition=complete --timeout=2700s -n pcapi-pr-${{ github.event.pull_request.number }} jobs/pullrequest-db-init-05-${DATE}
+          end=$(date +%s.%N)
+          duration=$( bc <<< "$end - $start" )
+          {
+            echo "| flask sandbox -n industrial    |  $duration |"
+          } >> $GITHUB_STEP_SUMMARY
+
 
       - name: "Sync ArgoCD pcapi application"
         uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.6.0
