@@ -2,8 +2,8 @@ name: "1 [on_pull_request] Delete PR deployment"
 
 on:
   pull_request:
-    #    types:
-    #  - closed
+    types:
+      - closed
 
 jobs:
   delete-pullrequest-deployment:
@@ -20,7 +20,7 @@ jobs:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-      # Get github api  token
+      # Get github api token
       - name: "Get secrets (github)"
         id: 'get-github-token'
         uses: 'google-github-actions/get-secretmanager-secrets@v2'

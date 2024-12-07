@@ -157,9 +157,9 @@ jobs:
           do
             kubectl logs -n pcapi-pr-${{ github.event.pull_request.number }} -f jobs/pullrequest-db-init-01-${DATE} && break
           done
-          kubectl wait --for=condition=complete --timeout=2700s -n pcapi-pr-${{ github.event.pull_request.number }} jobs/pullrequest-db-init-01-${DATE}
+          kubectl wait --for=condition=complete --timeout=300s -n pcapi-pr-${{ github.event.pull_request.number }} jobs/pullrequest-db-init-01-${DATE}
           end=$(date +%s.%N)
-          duration=$( bc <<< "$end - $start" )
+          duration=`date -d@$(bc <<< "$end - $start") -u +%H:%M:%S`
           {
             echo "### :rocket: Init local database summary"
             echo "| Command                              | Duration |"
@@ -175,9 +175,9 @@ jobs:
           do
             kubectl logs -n pcapi-pr-${{ github.event.pull_request.number }} -f jobs/pullrequest-db-init-02-${DATE} && break
           done
-          kubectl wait --for=condition=complete --timeout=2700s -n pcapi-pr-${{ github.event.pull_request.number }} jobs/pullrequest-db-init-02-${DATE}
+          kubectl wait --for=condition=complete --timeout=300s -n pcapi-pr-${{ github.event.pull_request.number }} jobs/pullrequest-db-init-02-${DATE}
           end=$(date +%s.%N)
-          duration=$( bc <<< "$end - $start" )
+          duration=`date -d@$(bc <<< "$end - $start") -u +%H:%M:%S`
           {
             echo "| alembic upgrade pre@head    |  $duration |"
           } >> $GITHUB_STEP_SUMMARY
@@ -190,13 +190,12 @@ jobs:
           do
           kubectl logs -n pcapi-pr-${{ github.event.pull_request.number }} -f jobs/pullrequest-db-init-03-${DATE} && break
           done
-          kubectl wait --for=condition=complete --timeout=2700s -n pcapi-pr-${{ github.event.pull_request.number }} jobs/pullrequest-db-init-03-${DATE}
+          kubectl wait --for=condition=complete --timeout=300s -n pcapi-pr-${{ github.event.pull_request.number }} jobs/pullrequest-db-init-03-${DATE}
           end=$(date +%s.%N)
-          duration=$( bc <<< "$end - $start" )
+          duration=`date -d@$(bc <<< "$end - $start") -u +%H:%M:%S`
           {
             echo "| flask install_data    |  $duration |"
           } >> $GITHUB_STEP_SUMMARY
-
 
           echo "=== exec: alembic upgrade post@head"
           export DATE=$(date +"%Y-%m-%d-%H-%M-%S")
@@ -206,13 +205,12 @@ jobs:
           do
           kubectl logs -n pcapi-pr-${{ github.event.pull_request.number }} -f jobs/pullrequest-db-init-04-${DATE} && break
           done
-          kubectl wait --for=condition=complete --timeout=2700s -n pcapi-pr-${{ github.event.pull_request.number }} jobs/pullrequest-db-init-04-${DATE}
+          kubectl wait --for=condition=complete --timeout=300s -n pcapi-pr-${{ github.event.pull_request.number }} jobs/pullrequest-db-init-04-${DATE}
           end=$(date +%s.%N)
-          duration=$( bc <<< "$end - $start" )
+          duration=`date -d@$(bc <<< "$end - $start") -u +%H:%M:%S`
           {
             echo "| alembic upgrade post@head    |  $duration |"
           } >> $GITHUB_STEP_SUMMARY
-
 
           echo "=== exec: flask sandbox -n industrial"
           export DATE=$(date +"%Y-%m-%d-%H-%M-%S")
@@ -224,11 +222,10 @@ jobs:
           done
           kubectl wait --for=condition=complete --timeout=2700s -n pcapi-pr-${{ github.event.pull_request.number }} jobs/pullrequest-db-init-05-${DATE}
           end=$(date +%s.%N)
-          duration=$( bc <<< "$end - $start" )
+          duration=`date -d@$(bc <<< "$end - $start") -u +%H:%M:%S`
           {
             echo "| flask sandbox -n industrial    |  $duration |"
           } >> $GITHUB_STEP_SUMMARY
-
 
       - name: "Sync ArgoCD pcapi application"
         uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.6.0
