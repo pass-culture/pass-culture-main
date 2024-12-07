@@ -122,6 +122,7 @@ jobs:
             echo "### :rocket: Init Job summary"
             echo "| Results                              | Value |"
             echo "| ------------------------------------ | ----- |"
+            echo "| commit sha                           | ${{ github.sha }} |"
             echo "| [api] content changed                | ${{ steps.check-api-documentation-changes.outputs.any_modified }} |"
             echo "| [api-documentation] content changed  | ${{ steps.check-api-documentation-changes.outputs.any_modified }} |"
             echo "| [pro] content changed                | ${{ steps.check-pro-changes.outputs.any_modified }} |"
