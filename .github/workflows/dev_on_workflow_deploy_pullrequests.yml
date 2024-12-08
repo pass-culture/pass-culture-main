@@ -127,7 +127,6 @@ jobs:
             kubectl get application -n argocd | grep pcapi-pr-${{ github.event.pull_request.number }}
             [[ $? -eq 0 ]] && break || sleep 5
           done
-          run: |
           {
             echo "### :rocket: Applications Argocd"
             echo "| Argocd       | Link |"
