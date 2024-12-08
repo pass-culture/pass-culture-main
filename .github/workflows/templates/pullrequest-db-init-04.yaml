@@ -4,10 +4,10 @@ metadata:
   name: pullrequest-db-init-04-${DATE}
 spec:
   backoffLimit: 0
-  ttlSecondsAfterFinished: 60
+  ttlSecondsAfterFinished: 3600
   template:
     spec:
-      activeDeadlineSeconds: 10800
+      activeDeadlineSeconds: 3600
       containers:
       - name: pcapi
         image: ${IMAGE}

@@ -220,7 +220,7 @@ jobs:
           do
           kubectl logs -n pcapi-pr-${{ github.event.pull_request.number }} -f jobs/pullrequest-db-init-05-${DATE} && break
           done
-          kubectl wait --for=condition=complete --timeout=2700s -n pcapi-pr-${{ github.event.pull_request.number }} jobs/pullrequest-db-init-05-${DATE}
+          kubectl wait --for=condition=complete --timeout=1800s -n pcapi-pr-${{ github.event.pull_request.number }} jobs/pullrequest-db-init-05-${DATE}
           end=$(date +%s.%N)
           duration=`date -d@$(bc <<< "$end - $start") -u +%H:%M:%S`
           {
