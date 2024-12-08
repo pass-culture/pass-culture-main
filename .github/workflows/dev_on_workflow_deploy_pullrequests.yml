@@ -127,6 +127,13 @@ jobs:
             kubectl get application -n argocd | grep pcapi-pr-${{ github.event.pull_request.number }}
             [[ $? -eq 0 ]] && break || sleep 5
           done
+          run: |
+          {
+            echo "### :rocket: Applications Argocd"
+            echo "| Argocd       | Link |"
+            echo "| ------------ | ---- |"
+            echo "| Applications | https://argocd.ehp.passculture.team/applications?showFavorites=false&proj=pcapi-pullrequest&sync=&autoSync=&health=&namespace=&cluster=&labels=&search=pr-${{ github.event.pull_request.number }} |"
+          } >> $GITHUB_STEP_SUMMARY
 
       - name: "Namespace monitoring"
         run: |
