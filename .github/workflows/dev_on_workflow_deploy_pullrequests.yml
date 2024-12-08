@@ -134,7 +134,7 @@ jobs:
             echo "### :rocket: Pullrequest Namespace monitoring"
             echo "| Namespace                                        | Link |"
             echo "| ------------------------------------------------ | ---- |"
-            echo "| pcapi-pr-${{ github.event.pull_request.number }} | https://https://monitoring.ehp.passculture.team/d/pods-dashboard/k8s-resource-monitoring-pods?orgId=1&var-Filters=namespace%7C%3D%7Cpcapi-pr-${{ github.event.pull_request.number }}&from=now-1h&to=now |"
+            echo "| pcapi-pr-${{ github.event.pull_request.number }} | https://monitoring.ehp.passculture.team/d/pods-dashboard/k8s-resource-monitoring-pods?orgId=1&var-Filters=namespace%7C%3D%7Cpcapi-pr-${{ github.event.pull_request.number }}&from=now-1h&to=now |"
           } >> $GITHUB_STEP_SUMMARY
 
       - name: "Sync ArgoCD Pgsql application"
