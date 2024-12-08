@@ -1,0 +1,49 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pullrequest-db-init-${DATE}
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 60
+  template:
+    spec:
+      activeDeadlineSeconds: 10800
+      containers:
+      - name: pcapi
+        image: ${IMAGE}
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: 1024Mi
+            cpu: 1
+          limits:
+            memory: 1024Mi
+        env:
+          - name: REDIS_URL
+            value: "redis://redis-${PRID}-master.pcapi-pr-${PRID}.svc.cluster.local:6379"
+          - name: DATABASE_URL
+            value: "postgresql://postgres:$(PGSQL_PWD)@pgsql-pr-${PRID}.pcapi-pr-${PRID}.svc.cluster.local:5432/postgres"
+        envFrom:
+        - configMapRef:
+            name: testing-pcapi-api
+            optional: true
+        - configMapRef:
+            name: testing-pcapi-api-specific
+            optional: true
+        - secretRef:
+            name: testing-pcapi
+            optional: true
+        - secretRef:
+            name: testing-pcapi-pgsql
+        command:
+          - "/bin/bash"
+        args:
+          - "-c"
+          - |
+            set -e
+            flask install_postgres_extensions;
+            alembic upgrade pre@head;
+            flask install_data
+            alembic upgrade post@head;
+            flask sandbox -n industrial
+      restartPolicy: Never
