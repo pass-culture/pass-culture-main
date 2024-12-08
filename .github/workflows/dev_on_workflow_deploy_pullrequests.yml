@@ -128,6 +128,15 @@ jobs:
             [[ $? -eq 0 ]] && break || sleep 5
           done
 
+      - name: "Namespace monitoring"
+        run: |
+          {
+            echo "### :rocket: Pullrequest Namespace monitoring"
+            echo "| Namespace                                        | Link |"
+            echo "| ------------------------------------------------ | ---- |"
+            echo "| pcapi-pr-${{ github.event.pull_request.number }} | https://https://monitoring.ehp.passculture.team/d/pods-dashboard/k8s-resource-monitoring-pods?orgId=1&var-Filters=namespace%7C%3D%7Cpcapi-pr-${{ github.event.pull_request.number }}&from=now-1h&to=now |"
+          } >> $GITHUB_STEP_SUMMARY
+
       - name: "Sync ArgoCD Pgsql application"
         uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.6.0
         with:
