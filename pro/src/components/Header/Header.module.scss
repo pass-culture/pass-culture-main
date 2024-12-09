@@ -50,7 +50,7 @@
   .nav-brand {
     display: flex;
 
-    @media (min-width: size.$mobile) {
+    @media screen and (min-width: size.$tablet) {
       flex-grow: 1;
     }
   }
