@@ -639,3 +639,6 @@ CEGID_URL = secrets_utils.get("CEGID_URL")
 CEGID_USERNAME = secrets_utils.get("CEGID_USERNAME")
 CEGID_PASSWORD = secrets_utils.get("CEGID_PASSWORD")
 CEGID_COMPANY = secrets_utils.get("CEGID_COMPANY")
+
+# External APIs
+EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS = int(os.environ.get("EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS", 10))

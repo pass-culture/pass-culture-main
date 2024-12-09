@@ -42,7 +42,7 @@ EXTERNAL_BOOKINGS_FF = (
     feature.FeatureToggle.DISABLE_EMS_EXTERNAL_BOOKINGS,
 )
 
-EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS = 12
+EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS = settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS
 
 
 def get_shows_stock(venue_id: int, shows_id: list[int]) -> dict[str, int]:
