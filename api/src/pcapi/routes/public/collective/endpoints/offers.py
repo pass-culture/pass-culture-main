@@ -402,15 +402,6 @@ def patch_collective_offer_public(
                 status_code=400,
             )
 
-    if "price" in new_values:
-        if offer.collectiveStock.price < new_values["price"]:
-            raise ApiErrors(
-                errors={
-                    "price": ["Le prix ne peut pas etre supérieur au prix existant"],
-                },
-                status_code=400,
-            )
-
     if "imageFile" in new_values:
         if offer.imageCredit is None and not new_values.get("imageCredit", None):
             raise ApiErrors(
@@ -507,13 +498,13 @@ def patch_collective_offer_public(
             },
             status_code=404,
         )
-    except educational_exceptions.CollectiveOfferNotEditable:
-        raise ApiErrors(
-            errors={
-                "global": ["Offre non éditable."],
-            },
-            status_code=422,
-        )
+    except (
+        educational_exceptions.CollectiveOfferNotEditable,
+        educational_exceptions.CollectiveOfferStockBookedAndBookingNotPending,
+    ):
+        raise ApiErrors(errors={"global": ["Offre non éditable."]}, status_code=422)
+    except educational_exceptions.PriceRequesteCantBedHigherThanActualPrice:
+        raise ApiErrors(errors={"price": ["Le prix ne peut pas etre supérieur au prix existant"]}, status_code=400)
     except offers_exceptions.UnknownOfferSubCategory:
         raise ApiErrors(
             errors={"subcategoryId": ["Sous-catégorie non trouvée."]},
