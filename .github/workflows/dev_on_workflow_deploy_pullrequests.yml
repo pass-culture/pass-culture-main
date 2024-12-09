@@ -1,0 +1,250 @@
+name: "3 [on_workflow] Deploy PullRequest"
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
+      app_version:
+        type: string
+        required: true
+      pro_url:
+        type: string
+        required: true
+      teleport_version:
+        type: string
+        required: false
+        default: 15.2.5
+      teleport_proxy:
+        type: string
+        required: false
+        default: teleport.ehp.passculture.team:443
+      teleport_kubernetes_cluster:
+        type: string
+        required: false
+        default: passculture-metier-ehp
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
+        required: true
+      GCP_EHP_SERVICE_ACCOUNT:
+        required: true
+
+jobs:
+  deploy-api:
+    name: "Deploy pullrequest"
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    if: ${{ github.actor != 'dependabot[bot]' }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4.2.1
+      - name: "Authentification to Google"
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+      # Get github api token that will be used to commit and push app_version to pass-culture-deployment repository
+      - name: "Get secrets (github)"
+        id: 'get-github-token'
+        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        with:
+          secrets: |-
+            API_TOKEN_GITHUB:passculture-metier-ehp/passculture-main-sa-access-token
+
+      - name: "Connect to cluster"
+        uses: pass-culture/common-workflows/actions/teleport-connect@teleport-connect/v0.1.0
+        with:
+          teleport_proxy: ${{ inputs.teleport_proxy }}
+          teleport_kubernetes_cluster: ${{ inputs.teleport_kubernetes_cluster }}
+
+      # Checkout pass-culture-deployment repository containing pcapi helm value files
+      - uses: actions/checkout@v4.2.1
+        with:
+          repository: pass-culture/pass-culture-deployment
+          ref: master
+          token: ${{ steps.get-github-token.outputs.API_TOKEN_GITHUB }}
+          path: ./pass-culture-deployment
+
+      # Get pcapi secrets from source code, to be passed later as a helmfile parameter.
+      - name: "Generate pcapi secrets list"
+        id: generate-pcapi-secrets-list
+        run: |
+          #Retrieve pcapi secrets list from source code
+          PCAPI_SECRETS=$(cat api/src/pcapi/settings.py | grep "secrets_utils.getlist(" | awk -F'=' '{print $1}')
+          PCAPI_SECRETS+=$(cat api/src/pcapi/settings.py | grep "secrets_utils.get(" | grep -oP '(?<=secrets_utils.get\(\").*?(?=\")')
+          #Sort list
+          PCAPI_SECRETS=$(echo $PCAPI_SECRETS | xargs -n1 | sort | xargs)
+          #Transform list into helm readable parameter list (pattern: --set secrets={item1,item2,item3})
+          PCAPI_SECRETS=secrets={$(echo $PCAPI_SECRETS | sed -r 's/ /,/g')}
+          echo "PCAPI_SECRETS=$PCAPI_SECRETS" >> "$GITHUB_OUTPUT"
+
+      # Create pullrequest namespace and externalsecret containing pgsql credentials 
+      - name: "Installing Pullrequest deployment prerequisites"
+        run: |
+          set -e
+          export PRID=${{ github.event.pull_request.number }}
+          envsubst < .github/workflows/templates/pullrequest-namespace.yaml | kubectl apply -f -
+          envsubst < .github/workflows/templates/pullrequest-pgsql-externalsecret.yaml | kubectl apply -f -
+
+      # Executes helmfile templating and push results to render-manifests repository
+      - name: "Generate and push rendered manifests"
+        uses: pass-culture/common-workflows/actions/render-push-manifests@render-push-manifests/v2.4.2
+        with:
+          environment: ${{ inputs.environment }}
+          app_name: pcapi
+          app_version: ${{ inputs.app_version }}
+          additional_args: ${{ steps.generate-pcapi-secrets-list.outputs.PCAPI_SECRETS }}
+          registry_workload_identity_secret_name: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
+          registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
+          api_token_github_secret_name: passculture-metier-ehp/passculture-main-sa-access-token
+          chart_values_repository: ""
+          helmfile_path: "./pass-culture-deployment/helm/pcapi"
+          rendered_manifests_target_branch: "pcapi/pullrequests"
+          is_pull_request: true
+          pro_url: ${{ inputs.pro_url }}
+
+      # Wait for ApplicationSet Controller to create applications
+      # TODO : Change to webhook once appset controller ingress gets proper Health endpoint
+      # PC-33270-pr-enable-argocd-applicationset-webhook
+      # Releated issue : https://github.com/argoproj/argo-cd/pull/17691
+      - name: "Wait for argocd applications to create"
+        continue-on-error: true
+        run: |
+          set +e
+          while true; do
+            kubectl get application -n argocd | grep postgresql-pr-${{ github.event.pull_request.number }}
+            [[ $? -eq 0 ]] && break || sleep 5
+          done
+          while true; do
+            kubectl get application -n argocd | grep redis-pr-${{ github.event.pull_request.number }}
+            [[ $? -eq 0 ]] && break || sleep 5
+          done
+          while true; do
+            kubectl get application -n argocd | grep pcapi-pr-${{ github.event.pull_request.number }}
+            [[ $? -eq 0 ]] && break || sleep 5
+          done
+          {
+            echo "### :rocket: Applications Argocd"
+            echo "| Argocd       | Link |"
+            echo "| ------------ | ---- |"
+            echo "| Applications | https://argocd.ehp.passculture.team/applications?showFavorites=false&proj=pcapi-pullrequest&sync=&autoSync=&health=&namespace=&cluster=&labels=&search=pr-${{ github.event.pull_request.number }} |"
+          } >> $GITHUB_STEP_SUMMARY
+
+      - name: "Namespace monitoring"
+        run: |
+          {
+            echo "### :rocket: Pullrequest Namespace monitoring"
+            echo "| Namespace                                        | Link |"
+            echo "| ------------------------------------------------ | ---- |"
+            echo "| pcapi-pr-${{ github.event.pull_request.number }} | https://monitoring.ehp.passculture.team/d/pods-dashboard/k8s-resource-monitoring-pods?orgId=1&var-Filters=namespace%7C%3D%7Cpcapi-pr-${{ github.event.pull_request.number }}&from=now-1h&to=now |"
+          } >> $GITHUB_STEP_SUMMARY
+
+      - name: "Sync ArgoCD Pgsql application"
+        uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.6.0
+        with:
+          app_name: postgresql-pr-${{ github.event.pull_request.number }}
+          argocd_app_wait: true
+
+      - name: "Sync ArgoCD Redis application"
+        uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.6.0
+        with:
+          app_name: redis-pr-${{ github.event.pull_request.number }}
+          argocd_app_wait: true
+
+      - name: "Init local database"
+        run: |
+          set -e
+          VERSION="${{ inputs.app_version }}"
+          export ENVIRONMENT="${{ inputs.environment }}"
+          IMAGE="europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi"
+          export IMAGE="${IMAGE}:${VERSION}"
+          export PRID=${{ github.event.pull_request.number }}
+
+          echo "=== exec: flask install_postgres_extensions"
+          export DATE=$(date +"%Y-%m-%d-%H-%M-%S")
+          start=$(date +%s.%N)
+          envsubst < .github/workflows/templates/pullrequest-db-init-01.yaml | kubectl -n pcapi-pr-${{ github.event.pull_request.number }} apply -f -
+          while true;
+          do
+            kubectl logs -n pcapi-pr-${{ github.event.pull_request.number }} -f jobs/pullrequest-db-init-01-${DATE} && break
+          done
+          kubectl wait --for=condition=complete --timeout=300s -n pcapi-pr-${{ github.event.pull_request.number }} jobs/pullrequest-db-init-01-${DATE}
+          end=$(date +%s.%N)
+          duration=`date -d@$(bc <<< "$end - $start") -u +%H:%M:%S`
+          {
+            echo "### :rocket: Init local database summary"
+            echo "| Command                              | Duration |"
+            echo "| ------------------------------------ | ----- |"
+            echo "| flask install_postgres_extensions    |  $duration |"
+          } >> $GITHUB_STEP_SUMMARY
+
+          echo "=== exec: alembic upgrade pre@head"
+          export DATE=$(date +"%Y-%m-%d-%H-%M-%S")
+          start=$(date +%s.%N)
+          envsubst < .github/workflows/templates/pullrequest-db-init-02.yaml | kubectl -n pcapi-pr-${{ github.event.pull_request.number }} apply -f -
+          while true;
+          do
+            kubectl logs -n pcapi-pr-${{ github.event.pull_request.number }} -f jobs/pullrequest-db-init-02-${DATE} && break
+          done
+          kubectl wait --for=condition=complete --timeout=300s -n pcapi-pr-${{ github.event.pull_request.number }} jobs/pullrequest-db-init-02-${DATE}
+          end=$(date +%s.%N)
+          duration=`date -d@$(bc <<< "$end - $start") -u +%H:%M:%S`
+          {
+            echo "| alembic upgrade pre@head    |  $duration |"
+          } >> $GITHUB_STEP_SUMMARY
+
+          echo "=== exec: flask install_data"
+          export DATE=$(date +"%Y-%m-%d-%H-%M-%S")
+          start=$(date +%s.%N)
+          envsubst < .github/workflows/templates/pullrequest-db-init-03.yaml | kubectl -n pcapi-pr-${{ github.event.pull_request.number }} apply -f -
+          while true;
+          do
+          kubectl logs -n pcapi-pr-${{ github.event.pull_request.number }} -f jobs/pullrequest-db-init-03-${DATE} && break
+          done
+          kubectl wait --for=condition=complete --timeout=300s -n pcapi-pr-${{ github.event.pull_request.number }} jobs/pullrequest-db-init-03-${DATE}
+          end=$(date +%s.%N)
+          duration=`date -d@$(bc <<< "$end - $start") -u +%H:%M:%S`
+          {
+            echo "| flask install_data    |  $duration |"
+          } >> $GITHUB_STEP_SUMMARY
+
+          echo "=== exec: alembic upgrade post@head"
+          export DATE=$(date +"%Y-%m-%d-%H-%M-%S")
+          start=$(date +%s.%N)
+          envsubst < .github/workflows/templates/pullrequest-db-init-04.yaml | kubectl -n pcapi-pr-${{ github.event.pull_request.number }} apply -f -
+          while true;
+          do
+          kubectl logs -n pcapi-pr-${{ github.event.pull_request.number }} -f jobs/pullrequest-db-init-04-${DATE} && break
+          done
+          kubectl wait --for=condition=complete --timeout=300s -n pcapi-pr-${{ github.event.pull_request.number }} jobs/pullrequest-db-init-04-${DATE}
+          end=$(date +%s.%N)
+          duration=`date -d@$(bc <<< "$end - $start") -u +%H:%M:%S`
+          {
+            echo "| alembic upgrade post@head    |  $duration |"
+          } >> $GITHUB_STEP_SUMMARY
+
+          echo "=== exec: flask sandbox -n industrial"
+          export DATE=$(date +"%Y-%m-%d-%H-%M-%S")
+          start=$(date +%s.%N)
+          envsubst < .github/workflows/templates/pullrequest-db-init-05.yaml | kubectl -n pcapi-pr-${{ github.event.pull_request.number }} apply -f -
+          while true;
+          do
+          kubectl logs -n pcapi-pr-${{ github.event.pull_request.number }} -f jobs/pullrequest-db-init-05-${DATE} && break
+          done
+          kubectl wait --for=condition=complete --timeout=1800s -n pcapi-pr-${{ github.event.pull_request.number }} jobs/pullrequest-db-init-05-${DATE}
+          end=$(date +%s.%N)
+          duration=`date -d@$(bc <<< "$end - $start") -u +%H:%M:%S`
+          {
+            echo "| flask sandbox -n industrial    |  $duration |"
+          } >> $GITHUB_STEP_SUMMARY
+
+      - name: "Sync ArgoCD pcapi application"
+        uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.6.0
+        with:
+          app_name: pcapi-pr-${{ github.event.pull_request.number }}
+          argocd_app_wait: true
+          prune: true
