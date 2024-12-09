@@ -183,6 +183,17 @@ class ListCustomReimbursementRulesTest(GetEndpointHelper):
         assert html_parser.count_table_rows(response.data) == 25  # extra data in second row for each booking
         assert "Il y a plus de 25 résultats dans la base de données" in html_parser.extract_alert(response.data)
 
+    def test_display_list_even_if_rule_on_venue_without_siret(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+        finance_factories.CustomReimbursementRuleFactory(venue=venue)
+        venue.comment = "comment"
+        venue.siret = None
+        db.session.flush()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, limit=25))
+            assert response.status_code == 200
+
 
 class GetCreateCustomReimbursementRuleFormTest(GetEndpointHelper):
     endpoint = "backoffice_web.reimbursement_rules.get_create_custom_reimbursement_rule_form"
