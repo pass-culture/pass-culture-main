@@ -2,8 +2,8 @@ import {
   AuthenticatedResponse,
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
+  OfferAddressType,
 } from 'apiClient/adage'
-import { OfferAddressType } from 'apiClient/v1'
 import {
   getHumanizeRelativeDistance,
   humanizeDistance,

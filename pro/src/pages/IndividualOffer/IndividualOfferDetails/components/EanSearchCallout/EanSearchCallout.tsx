@@ -12,7 +12,7 @@ export const EanSearchCallout = ({
 }: EanSearchCalloutProps) => {
   const calloutVariant = isDirtyDraftOfferProductBased
     ? CalloutVariant.SUCCESS
-    : CalloutVariant.DEFAULT
+    : CalloutVariant.INFO
   const calloutLabel = isDirtyDraftOfferProductBased
     ? 'Les informations suivantes ont été synchronisées à partir de l’EAN renseigné.'
     : 'Les informations de cette page ne sont pas modifiables car elles sont liées à l’EAN renseigné.'

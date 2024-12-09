@@ -1,4 +1,4 @@
-import { fr } from 'date-fns/locale'
+import { de, fr } from 'date-fns/locale'
 import {
   format,
   formatInTimeZone,
@@ -53,6 +53,7 @@ export const getDepartmentTimezone = (
 ): string => {
   // This mapping is also defined in the backend. Make
   // sure that all are synchronized.
+  const defaultTimezone = 'Europe/Paris'
   switch (departementCode) {
     case '971':
       return 'America/Guadeloupe'
@@ -79,8 +80,10 @@ export const getDepartmentTimezone = (
       return 'Pacific/Noumea'
     case '989': // Clipperton
       return 'Pacific/Pitcairn'
+    case undefined:
+    case null:
     default:
-      return 'Europe/Paris'
+      return defaultTimezone
   }
 }
 

@@ -147,6 +147,8 @@ const getLineStyle = (
       return styles['line-waiting']
     case TimelineStepType.DISABLED:
       return styles['line-disabled']
+    case TimelineStepType.CANCELLED:
+    case TimelineStepType.REFUSED:
     default:
       throw new Error(`Unsupported step type: ${nextStepType}`)
   }
