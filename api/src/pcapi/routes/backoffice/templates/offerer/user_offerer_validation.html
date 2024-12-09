@@ -135,11 +135,7 @@
                 <td>{{ user_offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
                 <td>{{ links.build_offerer_name_to_details_link(offerer) }}</td>
                 <td>{{ item.creator_email | empty_string_if_null }}</td>
-                <td>
-                  {{ item.last_comment | empty_string_if_null | replace("\n", "
-                                    <br />
-                                    "|safe) }}
-                </td>
+                <td>{{ item.last_comment | empty_string_if_null | nl2br }}</td>
               </tr>
             {% endfor %}
           </tbody>

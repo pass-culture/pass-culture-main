@@ -183,11 +183,7 @@
                       {% if has_read_ae_permission %}</a>{% endif %}
                   {% endif %}
                 </td>
-                <td>
-                  {{ item.last_comment | empty_string_if_null | replace("\n", "
-                                    <br />
-                                    "|safe) }}
-                </td>
+                <td>{{ item.last_comment | empty_string_if_null | nl2br }}</td>
                 <td>{{ links.build_siren_to_external_link(offerer) }}</td>
                 <td>{{ (item.creator_email) | empty_string_if_null }}</td>
                 <td>{{ links.build_pro_user_name_to_details_link(item.creator_id, item.creator_name) }}</td>
