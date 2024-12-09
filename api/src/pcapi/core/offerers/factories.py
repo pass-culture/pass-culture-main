@@ -90,6 +90,7 @@ class VenueFactory(BaseFactory):
     )
     isVirtual = False
     isPermanent = factory.LazyAttribute(lambda o: o.venueTypeCode in models.PERMENANT_VENUE_TYPES)
+    isOpenToPublic = factory.LazyAttribute(lambda o: o.isPermanent is True)
     venueTypeCode = models.VenueTypeCode.OTHER
     description = factory.Faker("text", max_nb_chars=64)
     audioDisabilityCompliant: bool | None = False
@@ -151,7 +152,7 @@ class VenueFactory(BaseFactory):
         opening_hours = extracted
         if not opening_hours:
             opening_hours = []
-        if self.isPermanent:
+        if self.isOpenToPublic:
             for weekday in models.Weekday:
                 if weekday.value == "MONDAY":
                     timespan = timespan_str_to_numrange([OPENING_HOURS[1]])
