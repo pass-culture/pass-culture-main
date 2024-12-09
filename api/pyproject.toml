@@ -85,7 +85,7 @@ optional = true
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.10.0"
-commitizen = "^4.0.0"
+commitizen = "^4.1.0"
 debugpy = "^1.8.9"
 djlint = "1.36.3"
 fakeredis = "^2.26.1"
