@@ -12,6 +12,7 @@ interface OfferVenueCellProps {
 export const OfferVenueCell = ({ venue, headers }: OfferVenueCellProps) => {
   return (
     <td
+      role="cell"
       className={classNames(
         styles['offers-table-cell'],
         styles['venue-column']

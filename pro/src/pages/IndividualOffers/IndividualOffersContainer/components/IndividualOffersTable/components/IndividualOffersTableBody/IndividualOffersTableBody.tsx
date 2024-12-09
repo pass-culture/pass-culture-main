@@ -19,7 +19,7 @@ export const IndividualOffersTableBody = ({
   isRestrictedAsAdmin,
 }: IndividualOffersTableBodyProps) => {
   return (
-    <tbody className={styles['individual-tbody']}>
+    <tbody role="rowgroup" className={styles['individual-tbody']}>
       {offers.map((offer, index) => {
         const isSelected = selectedOffers.some((selectedOffer) =>
           isSameOffer(selectedOffer, offer)

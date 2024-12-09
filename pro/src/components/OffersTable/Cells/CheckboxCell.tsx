@@ -20,6 +20,7 @@ export const CheckboxCell = ({
 }: CheckboxCellProps) => {
   return (
     <td
+      role="cell"
       className={classNames(
         styles['offers-table-cell'],
         styles['checkbox-column']
