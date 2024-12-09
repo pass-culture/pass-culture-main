@@ -222,6 +222,11 @@ class OfferFactory(BaseFactory):
 
         return super()._create(model_class, *args, **kwargs)
 
+    @factory.post_generation
+    def is_headline_offer(self, create: bool, is_headline_offer: bool = False, **kwargs: typing.Any) -> None:
+        if is_headline_offer:
+            HeadlineOfferFactory(offer=self, venue=self.venue)
+
 
 def _check_offer_kwargs(product: models.Product, kwargs: dict[str, typing.Any]) -> None:
     if kwargs.get("name") and kwargs.get("name") != product.name:
@@ -255,6 +260,11 @@ class DigitalOfferFactory(OfferFactory):
     url = factory.Sequence("http://example.com/offer/{}".format)
     venue = factory.SubFactory(offerers_factories.VirtualVenueFactory)
     offererAddress = None
+
+
+class HeadlineOfferFactory(BaseFactory):
+    class Meta:
+        model = models.HeadlineOffer
 
 
 class PriceCategoryLabelFactory(BaseFactory):
