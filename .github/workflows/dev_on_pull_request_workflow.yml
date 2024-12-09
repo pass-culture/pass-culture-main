@@ -104,27 +104,34 @@ jobs:
           password: "${{ steps.openid-auth.outputs.access_token }}"
       - name: "pcapi"
         id: check-checksum-tag
-        run: ./.github/workflows/scripts/check-image-tag-exists.sh
+        run: bash ./.github/workflows/scripts/check-image-tag-exists.sh
         env:
           image: pcapi
           tag: ${{ steps.pcapi-tags.outputs.checksum-tag }} 
+          token: ${{ steps.openid-auth.outputs.access_token }}
       - name: "pcapi-console"
         id: check-console-checksum-tag
-        run: ./.github/workflows/scripts/check-image-tag-exists.sh
+        run: bash ./.github/workflows/scripts/check-image-tag-exists.sh
         env:
           image: pcapi-console
           tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
-      - name: "Summary"
+          token: ${{ steps.openid-auth.outputs.access_token }}
+      - name: "Publish Summary"
         run: |
-          echo "[api] folder changed : ${{ steps.check-api-changes.outputs.any_modified }}"
-          echo "[api-documentation] folder changed : ${{ steps.check-api-documentation-changes.outputs.any_modified }}"
-          echo "[pro] folder changed : ${{ steps.check-pro-changes.outputs.any_modified }}"
-          echo "[dependencies] changed : ${{ steps.check-dependencies-changes.outputs.any_modified }}"
-          echo "[pcapi] push-tags : ${{ steps.pcapi-tags.outputs.push-tags }}"
-          echo "[pcapi] checksum-tag : ${{ steps.pcapi-tags.outputs.checksum-tag }}"
-          echo "[pcapi] image tag ${{ steps.pcapi-tags.outputs.checksum-tag }} exists : ${{ steps.check-checksum-tag.outputs.tag-exists }}"
-          echo "[pcapi-console] image tag ${{ steps.pcapi-tags.outputs.checksum-tag }} exists : ${{ steps.check-console-checksum-tag.outputs.tag-exists }}"
-
+          {
+            echo "### :rocket: Init Job summary"
+            echo "| Results                              | Value |"
+            echo "| ------------------------------------ | ----- |"
+            echo "| commit sha                           | ${{ github.sha }} |"
+            echo "| [api] content changed                | ${{ steps.check-api-documentation-changes.outputs.any_modified }} |"
+            echo "| [api-documentation] content changed  | ${{ steps.check-api-documentation-changes.outputs.any_modified }} |"
+            echo "| [pro] content changed                | ${{ steps.check-pro-changes.outputs.any_modified }} |"
+            echo "| [dependencies] content changed       | ${{ steps.check-dependencies-changes.outputs.any_modified }} |"
+            echo "| [pcapi] image tag                    | ${{ steps.pcapi-tags.outputs.checksum-tag }} |"
+            echo "| [pcapi] image already exists         | ${{ steps.check-checksum-tag.outputs.tag-exists }} |"
+            echo "| [pcapi-console] image already exists | ${{ steps.check-console-checksum-tag.outputs.tag-exists }} |"
+          } >> $GITHUB_STEP_SUMMARY
+      
   build-pcapi:
     name: "[pcapi] build docker image."
     needs: [pcapi-init-job]
@@ -142,7 +149,7 @@ jobs:
   build-pcapi-tests:
     name: "[pcapi-tests] build docker image."
     needs: [pcapi-init-job]
-    if: needs.pcapi-init-job.outputs.api-changed == 'true'
+    if: needs.pcapi-init-job.outputs.api-changed == 'true' && needs.pcapi-init-job.outputs.checksum-tag-exists == 'false'
     uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
     with:
       ref: ${{ github.event.pull_request.head.sha }}
@@ -225,7 +232,7 @@ jobs:
     name: "Tests pro E2E"
     needs: [pcapi-init-job, build-pcapi]
     uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
-    if: |
+    if: 
       always() &&
       !cancelled() &&
       needs.pcapi-init-job.outputs.api-changed == 'true' || 
@@ -243,6 +250,23 @@ jobs:
     if: github.actor == 'dependabot[bot]'
     uses: ./.github/workflows/dev_on_workflow_dependabot_auto_merge.yml
 
+  # Deploy on firebase if pro tests are ok OR job was skipped (= no changes in pro folder) 
+  deploy-pro-on-firebase-pullrequest:
+    name: "[PRO] Deploy PR version for validation"
+    needs: [pcapi-init-job, test-pro]
+    if: always() && (needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped')
+    uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
+    secrets:
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+    with:
+      ENV: "testing"
+      CHANNEL: ""
+      REF: "${{ github.ref }}"
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
+      is_pull_request: true
+
+  # Push docker images to registry
   push-pcapi:
     name: "Push pcapi docker image to registry"
     needs: [pcapi-init-job, test-api, test-pro-e2e]
@@ -267,16 +291,22 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-  deploy-pro-on-firebase-pullrequest:
-    name: "[PRO] Deploy PR version for validation"
-    needs: [pcapi-init-job, test-pro]
-    uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
-    if: always() &&  needs.pcapi-init-job.outputs.pro-changed == 'true'
-    secrets:
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+  # Deploy pullrequest to testing environment
+  # If image builds were successfull OR image was already present in registry
+  deploy:
+    name: "Deploy PullRequest to testing environment"
+    needs: [pcapi-init-job, push-pcapi, push-pcapi-console, deploy-pro-on-firebase-pullrequest]
+    if: |
+      always() &&
+      !cancelled() &&
+      github.actor != 'dependabot[bot]' &&
+      (needs.push-pcapi.result == 'success' && needs.push-pcapi-console.result == 'success') ||
+      (needs.pcapi-init-job.outputs.checksum-console-tag-exists == 'true' && needs.pcapi-init-job.outputs.checksum-console-tag-exists == 'true')
+    uses: ./.github/workflows/dev_on_workflow_deploy_pullrequests.yml
     with:
-      ENV: "testing"
-      CHANNEL: ""
-      REF: "${{ github.ref }}"
-      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
+      environment: pullrequest
+      app_version: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
+      pro_url: ${{ needs.deploy-pro-on-firebase-pullrequest.outputs.pro_url }}
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
