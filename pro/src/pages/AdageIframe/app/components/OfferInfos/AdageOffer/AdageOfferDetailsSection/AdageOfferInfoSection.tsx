@@ -1,8 +1,8 @@
 import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
+  OfferAddressType,
 } from 'apiClient/adage'
-import { OfferAddressType } from 'apiClient/v1'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { isCollectiveOfferBookable } from 'pages/AdageIframe/app/types'
 
@@ -22,13 +22,12 @@ function getLocationForOfferVenue(
   offerVenue: CollectiveOfferResponseModel['offerVenue']
 ) {
   switch (offerVenue.addressType) {
-    case OfferAddressType.OTHER: {
+    case OfferAddressType.OTHER:
       return offerVenue.otherAddress
-    }
-    case OfferAddressType.SCHOOL: {
+    case OfferAddressType.SCHOOL:
       return 'Le partenaire culturel se déplace dans les établissements scolaires.'
-    }
-    default: {
+    case OfferAddressType.OFFERER_VENUE:
+    default:
       return (
         <>
           <div>{offerVenue.publicName || offerVenue.name}</div>
@@ -37,7 +36,6 @@ function getLocationForOfferVenue(
           </div>
         </>
       )
-    }
   }
 }
 

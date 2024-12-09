@@ -40,7 +40,7 @@ export const AddressSelect = ({
   const [selectedField] = useField('addressAutocomplete')
   useEffect(() => {
     setOptions([{ label: selectedField.value, value: selectedField.value }])
-  }, [])
+  }, [selectedField.value])
 
   const onSearchFieldChange = async () => {
     if (searchField.value.length >= 3) {

@@ -92,7 +92,7 @@ function sortInvoices(
           ? a.cashflowLabels[0].localeCompare(b.cashflowLabels[0])
           : b.cashflowLabels[0].localeCompare(a.cashflowLabels[0])
       )
-
+    case null:
     default:
       return invoices
   }

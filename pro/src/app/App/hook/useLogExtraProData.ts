@@ -22,5 +22,5 @@ export const useLogExtraProData = (): void => {
 
       setPreviousOfferer(selectedOffererId)
     }
-  }, [selectedOffererId])
+  }, [selectedOffererId, logEvent, location.pathname, previousOfferer])
 }
