@@ -178,3 +178,14 @@ $connect-as-header-height: rem.torem(52px);
     opacity: 1;
   }
 }
+
+.logo-unlogged {
+  color: var(--color-white);
+  max-width: rem.torem(135px);
+
+  @media (min-width: size.$tablet) {
+    width: 80%;
+    min-width: rem.torem(135px);
+    max-width: rem.torem(282px);
+  }
+}
