@@ -21,7 +21,6 @@ class ImportDepositInstitutionDataTest:
             ministry=educational_models.Ministry.EDUCATION_NATIONALE,
             final=False,
             conflict="crash",
-            commit=True,
         )
 
         institution = educational_models.EducationalInstitution.query.filter_by(institutionId="0470010E").one()
@@ -54,7 +53,6 @@ class ImportDepositInstitutionDataTest:
             ministry=educational_models.Ministry.EDUCATION_NATIONALE,
             final=False,
             conflict="crash",
-            commit=True,
         )
 
         institution = educational_models.EducationalInstitution.query.filter_by(institutionId="0470010E").one()
@@ -87,7 +85,6 @@ class ImportDepositInstitutionDataTest:
                 ministry=educational_models.Ministry.EDUCATION_NATIONALE,
                 final=False,
                 conflict="crash",
-                commit=True,
             )
 
         assert educational_models.EducationalInstitution.query.count() == 0
@@ -110,7 +107,6 @@ class ImportDepositInstitutionDataTest:
             ministry=educational_models.Ministry.EDUCATION_NATIONALE,
             final=False,
             conflict="replace",
-            commit=True,
         )
 
         institution = educational_models.EducationalInstitution.query.filter_by(institutionId="0470010E").one()
@@ -147,7 +143,6 @@ class ImportDepositInstitutionDataTest:
             ministry=educational_models.Ministry.EDUCATION_NATIONALE,
             final=False,
             conflict="keep",
-            commit=True,
         )
 
         institution = educational_models.EducationalInstitution.query.filter_by(institutionId="0470010E").one()

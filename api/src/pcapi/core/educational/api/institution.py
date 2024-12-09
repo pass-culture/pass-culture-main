@@ -3,6 +3,7 @@ from datetime import datetime
 from decimal import Decimal
 import logging
 import os
+import typing
 
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
@@ -60,7 +61,7 @@ def search_educational_institution(
 
 
 def import_deposit_institution_csv(
-    *, path: str, year: int, ministry: str, conflict: str, final: bool, commit: bool
+    *, path: str, year: int, ministry: str, conflict: str, final: bool, program_name: str | None
 ) -> Decimal:
     """
     Import deposits from csv file and update institutions according to adage data
@@ -108,8 +109,15 @@ def import_deposit_institution_csv(
             ministry=educational_models.Ministry[ministry],
             conflict=conflict,
             final=final,
-            commit=commit,
         )
+
+        if program_name is not None:
+            educational_program = educational_models.EducationalInstitutionProgram.query.filter_by(
+                name=program_name
+            ).one()
+            logger.info("Updating institutions with program %s", program_name)
+            _update_institutions_educational_program(educational_program=educational_program, uais=data.keys())
+
         return total_amount
 
 
@@ -120,7 +128,6 @@ def import_deposit_institution_data(
     ministry: educational_models.Ministry,
     final: bool,
     conflict: str,
-    commit: bool,
 ) -> Decimal:
     adage_institutions = {
         i.uai: i for i in adage_client.get_adage_educational_institutions(ansco=educational_year.adageId)
@@ -192,12 +199,28 @@ def import_deposit_institution_data(
 
         total_amount += amount
 
-    if commit:
-        db.session.commit()
-    else:
-        db.session.flush()
-
+    db.session.flush()
     return total_amount
+
+
+def _update_institutions_educational_program(
+    educational_program: educational_models.EducationalInstitutionProgram, uais: typing.Iterable[str]
+) -> None:
+    institutions: typing.Iterable[educational_models.EducationalInstitution] = (
+        educational_models.EducationalInstitution.query.options(
+            sa.orm.joinedload(educational_models.EducationalInstitution.programs)
+        )
+    )
+    institution_by_uai = {institution.institutionId: institution for institution in institutions}
+
+    for uai in uais:
+        institution = institution_by_uai[uai]
+
+        if educational_program.id not in {prog.id for prog in institution.programs}:
+            logger.info("Linking UAI %s to program %s", uai, educational_program.name)
+            institution.programs.append(educational_program)
+
+    db.session.flush()
 
 
 def get_current_year_remaining_credit(institution: educational_models.EducationalInstitution) -> Decimal:

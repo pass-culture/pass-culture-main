@@ -73,8 +73,10 @@ def import_deposit_csv(*, path: str, year: int, ministry: str, conflict: str, fi
     CSV format change every time we try to work with it.
     """
     institution_api.import_deposit_institution_csv(
-        path=path, year=year, ministry=ministry, conflict=conflict, final=final, commit=not dry_run
+        path=path, year=year, ministry=ministry, conflict=conflict, final=final, program_name=None
     )
+    if not dry_run:
+        db.session.commit()
 
 
 @blueprint.cli.command("synchronize_venues_from_adage_cultural_partners")
