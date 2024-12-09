@@ -3,6 +3,7 @@ import typing
 import flask_sqlalchemy
 
 from pcapi import settings
+from pcapi.core.achievements import models as achievements_models
 import pcapi.core.bookings.models as bookings_models
 from pcapi.core.chronicles import models as chronicles_models
 import pcapi.core.criteria.models as criteria_models
@@ -28,6 +29,7 @@ from pcapi.models.feature import install_feature_flags
 # Order of table to clean matters because of foreign key constraints
 # They will be deleted in this order
 tables_to_clean: list[flask_sqlalchemy.Model] = [
+    achievements_models.Achievement,
     chronicles_models.ProductChronicle,
     chronicles_models.OfferChronicle,
     chronicles_models.Chronicle,
