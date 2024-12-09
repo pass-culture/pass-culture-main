@@ -1,15 +1,6 @@
-import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import * as yup from 'yup'
 
-const isPhoneValid = (phone: string | undefined): boolean => {
-  if (!phone) {
-    return true
-  }
-
-  const phoneNumber = parsePhoneNumberFromString(phone, 'FR')
-  const isValid = phoneNumber?.isValid()
-  return Boolean(isValid)
-}
+import { isPhoneValid } from 'commons/core/shared/utils/validation'
 
 export const validationSchema = yup.object().shape({
   collectiveDescription: yup.string(),
@@ -21,7 +12,7 @@ export const validationSchema = yup.object().shape({
     name: 'is-phone-valid',
     message:
       'Veuillez entrer un numéro de téléphone valide, exemple : 612345678',
-    test: isPhoneValid,
+    test: (phone) => isPhoneValid({ phone, emptyAllowed: true }),
   }),
   collectiveEmail: yup
     .string()

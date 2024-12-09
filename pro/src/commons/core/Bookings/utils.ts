@@ -1,3 +1,4 @@
+import { BookingStatusFilter } from 'apiClient/v1'
 import { DEFAULT_PRE_FILTERS } from 'commons/core/Bookings/constants'
 import { APIFilters, PreFiltersParams } from 'commons/core/Bookings/types'
 
@@ -37,4 +38,18 @@ export const buildBookingsRecapQuery = ({
   params.bookingStatusFilter = bookingStatusFilter
 
   return params
+}
+
+export function isBookingStatusFilter(
+  value: unknown
+): value is BookingStatusFilter {
+  return Object.values(BookingStatusFilter).includes(
+    value as BookingStatusFilter
+  )
+}
+
+export function bookingStatusFilterOrNull(
+  value: unknown
+): BookingStatusFilter | null {
+  return isBookingStatusFilter(value) ? value : null
 }

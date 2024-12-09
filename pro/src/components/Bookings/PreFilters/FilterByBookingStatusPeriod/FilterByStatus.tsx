@@ -1,8 +1,8 @@
 import React from 'react'
 
-import { BookingStatusFilter } from 'apiClient/v1'
 import { BOOKING_STATUS_FILTER_OPTIONS } from 'commons/core/Bookings/constants'
 import { PreFiltersParams } from 'commons/core/Bookings/types'
+import { bookingStatusFilterOrNull } from 'commons/core/Bookings/utils'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 
 import styles from './FilterByBookingStatusPeriod.module.scss'
@@ -25,7 +25,8 @@ export const FilterByStatus = ({
     <SelectInput
       onChange={(event) =>
         updateFilters({
-          bookingStatusFilter: event.target.value as BookingStatusFilter,
+          bookingStatusFilter:
+            bookingStatusFilterOrNull(event.target.value) ?? undefined,
         })
       }
       disabled={isDisabled}
