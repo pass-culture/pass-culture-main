@@ -4,6 +4,7 @@ from decimal import Decimal
 
 import sqlalchemy as sa
 
+import pcapi.core.finance.models as finance_models
 import pcapi.core.history.models as history_models
 from pcapi.core.offerers import api as offerers_api
 import pcapi.core.offerers.models as offerers_models
@@ -224,6 +225,17 @@ def check_can_remove_siret(
 
     if not venue.siret:
         raise CheckError(f"Ce {venue_label} n'a pas de SIRET")
+
+    active_custom_reimbursment_rules = finance_models.CustomReimbursementRule.query.filter(
+        finance_models.CustomReimbursementRule.venueId == venue.id,
+        sa.or_(
+            sa.func.upper(finance_models.CustomReimbursementRule.timespan).is_(None),
+            sa.func.upper(finance_models.CustomReimbursementRule.timespan) >= datetime.datetime.utcnow(),
+        ),
+    ).count()
+
+    if active_custom_reimbursment_rules:
+        raise CheckError(f"Ce {venue_label} à un tarif dérogatoire qui termine dans le futur")
 
     if check_offerer_has_other_siret:
         if not any(
