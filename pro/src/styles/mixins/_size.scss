@@ -11,28 +11,19 @@ $main-content-padding: rem.torem(32px);
 $main-content-padding-xs: rem.torem(24px);
 $checkbox-size: rem.torem(20px);
 $action-bar-sticky-height: rem.torem(72px);
-$image-banner-height: rem.torem(140px);
-$image-banner-width: rem.torem(826px);
 $input-min-height: rem.torem(40px);
 $input-border-width: rem.torem(1px);
 $input-filter-variant-horizontal-padding: rem.torem(4px);
-$provider-banner-height: rem.torem(52px);
 $signup-content-width: rem.torem(488px);
 $button-icon-size: rem.torem(20px);
-$header-grid-template-columns: [col-start] 1fr [col-main]
-  minmax(rem.torem($main-content-width), auto) 1fr;
 $header-nav-item-padding: rem.torem(16px);
-$nav-brand-margin-right: 5%;
 $logo-side-width: rem.torem(520px);
-$sign-footer-height: rem.torem(72px);
 $dialog-box-padding: rem.torem(32px);
 $full-content-min-width: rem.torem(300px);
 $full-content-max-width: rem.torem(600px);
 $top-menu-height: rem.torem(50px);
 $top-menu-border-size: rem.torem(1px);
-$nav-height: rem.torem(72px);
 $footer-height: rem.torem(76px);
-$container-padding-bottom: calc($action-bar-sticky-height + rem.torem(16px));
 $side-logo-width: 35%;
 $side-nav-width: rem.torem(268px);
 
