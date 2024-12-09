@@ -1803,12 +1803,12 @@
     "@sentry/core" "8.42.0"
     hoist-non-react-statics "^3.3.2"
 
-"@storybook/addon-a11y@^8.4.6":
-  version "8.4.6"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-a11y/-/addon-a11y-8.4.6.tgz#22106091030636f9112f31a7d1105a9627dbdb96"
-  integrity sha512-Z6x/yfStplSROgmBTtiJ8LJgTqPgzW3Q7KXi+l+KoZ0pht6Nz9cYfcyygLCaftBk1ZaL7SDDIrjCP0H1NwfYiQ==
+"@storybook/addon-a11y@^8.4.7":
+  version "8.4.7"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-a11y/-/addon-a11y-8.4.7.tgz#0073090d8d4e0748249317a292ac27dc2c2b9ef2"
+  integrity sha512-GpUvXp6n25U1ZSv+hmDC+05BEqxWdlWjQTb/GaboRXZQeMBlze6zckpVb66spjmmtQAIISo0eZxX1+mGcVR7lA==
   dependencies:
-    "@storybook/addon-highlight" "8.4.6"
+    "@storybook/addon-highlight" "8.4.7"
     axe-core "^4.2.0"
 
 "@storybook/addon-controls@^8.4.6":
@@ -1833,10 +1833,10 @@
     react-dom "^16.8.0 || ^17.0.0 || ^18.0.0"
     ts-dedent "^2.0.0"
 
-"@storybook/addon-highlight@8.4.6":
-  version "8.4.6"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-highlight/-/addon-highlight-8.4.6.tgz#0c6f06a4ef9e265cc1986e74b1bdff6af6f22792"
-  integrity sha512-m8wedbqDMbwkP99dNHkHAiAUkx5E7FEEEyLPX1zfkhZWOGtTkavXHH235SGp50zD75LQ6eC/BvgegrzxSQa9Wg==
+"@storybook/addon-highlight@8.4.7":
+  version "8.4.7"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-highlight/-/addon-highlight-8.4.7.tgz#06b9752977e38884007e9446f9a2b0c04c873229"
+  integrity sha512-whQIDBd3PfVwcUCrRXvCUHWClXe9mQ7XkTPCdPo4B/tZ6Z9c6zD8JUHT76ddyHivixFLowMnA8PxMU6kCMAiNw==
   dependencies:
     "@storybook/global" "^5.0.0"
 
