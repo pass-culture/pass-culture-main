@@ -1820,15 +1820,15 @@
     dequal "^2.0.2"
     ts-dedent "^2.0.0"
 
-"@storybook/addon-docs@^8.4.6":
-  version "8.4.6"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-docs/-/addon-docs-8.4.6.tgz#8afa3849066f9b0ee0600b9808a8da81278957cf"
-  integrity sha512-olxz61W7PW/EsXrKhLrYbI3rn9GMBhY3KIOF/6tumbRkh0Siu/qe4EAImaV9NNwiC1R7+De/1OIVMY6o0EIZVw==
+"@storybook/addon-docs@^8.4.7":
+  version "8.4.7"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-docs/-/addon-docs-8.4.7.tgz#556515da1049f97023427301e11ecb52d0b9dbe7"
+  integrity sha512-NwWaiTDT5puCBSUOVuf6ME7Zsbwz7Y79WF5tMZBx/sLQ60vpmJVQsap6NSjvK1Ravhc21EsIXqemAcBjAWu80w==
   dependencies:
     "@mdx-js/react" "^3.0.0"
-    "@storybook/blocks" "8.4.6"
-    "@storybook/csf-plugin" "8.4.6"
-    "@storybook/react-dom-shim" "8.4.6"
+    "@storybook/blocks" "8.4.7"
+    "@storybook/csf-plugin" "8.4.7"
+    "@storybook/react-dom-shim" "8.4.7"
     react "^16.8.0 || ^17.0.0 || ^18.0.0"
     react-dom "^16.8.0 || ^17.0.0 || ^18.0.0"
     ts-dedent "^2.0.0"
@@ -1840,16 +1840,7 @@
   dependencies:
     "@storybook/global" "^5.0.0"
 
-"@storybook/blocks@8.4.6":
-  version "8.4.6"
-  resolved "https://registry.yarnpkg.com/@storybook/blocks/-/blocks-8.4.6.tgz#57e340e50fc3add1b08dd50dd16980b64e9c7c98"
-  integrity sha512-Gzbx8hM7ZQIHlQELcFIMbY1v+r1Po4mlinq0QVPtKS4lBcW4eZIsesbxOaL+uFNrxb583TLFzXo0DbRPzS46sg==
-  dependencies:
-    "@storybook/csf" "^0.1.11"
-    "@storybook/icons" "^1.2.12"
-    ts-dedent "^2.0.0"
-
-"@storybook/blocks@^8.4.7":
+"@storybook/blocks@8.4.7", "@storybook/blocks@^8.4.7":
   version "8.4.7"
   resolved "https://registry.yarnpkg.com/@storybook/blocks/-/blocks-8.4.7.tgz#ee17f59dd52d11c97c39b0f6b03957085a80ad95"
   integrity sha512-+QH7+JwXXXIyP3fRCxz/7E2VZepAanXJM7G8nbR3wWsqWgrRp4Wra6MvybxAYCxU7aNfJX5c+RW84SNikFpcIA==
@@ -1889,13 +1880,6 @@
     util "^0.12.5"
     ws "^8.2.3"
 
-"@storybook/csf-plugin@8.4.6":
-  version "8.4.6"
-  resolved "https://registry.yarnpkg.com/@storybook/csf-plugin/-/csf-plugin-8.4.6.tgz#861c64248e10827c8fdf264c23d149c2dde828cf"
-  integrity sha512-JDIT0czC4yMgKGNf39KTZr3zm5MusAZdn6LBrTfvWb7CrTCR4iVHa4lp2yb7EJk41vHsBec0QUYDDuiFH/vV0g==
-  dependencies:
-    unplugin "^1.3.1"
-
 "@storybook/csf-plugin@8.4.7":
   version "8.4.7"
   resolved "https://registry.yarnpkg.com/@storybook/csf-plugin/-/csf-plugin-8.4.7.tgz#0117c872b05bf033eec089ab0224e0fab01da810"
@@ -1934,11 +1918,6 @@
   version "8.4.7"
   resolved "https://registry.yarnpkg.com/@storybook/preview-api/-/preview-api-8.4.7.tgz#85e01a97f4182b974581765d725f6c7a7d190013"
   integrity sha512-0QVQwHw+OyZGHAJEXo6Knx+6/4er7n2rTDE5RYJ9F2E2Lg42E19pfdLlq2Jhoods2Xrclo3wj6GWR//Ahi39Eg==
-
-"@storybook/react-dom-shim@8.4.6":
-  version "8.4.6"
-  resolved "https://registry.yarnpkg.com/@storybook/react-dom-shim/-/react-dom-shim-8.4.6.tgz#526fa7a7c754cbb5e42f2ade4b167f210a4fd70e"
-  integrity sha512-f7RM8GO++fqMxbjNdEzeGS1P821jXuwRnAraejk5hyjB5SqetauFxMwoFYEYfJXPaLX2qIubnIJ78hdJ/IBaEA==
 
 "@storybook/react-dom-shim@8.4.7":
   version "8.4.7"
