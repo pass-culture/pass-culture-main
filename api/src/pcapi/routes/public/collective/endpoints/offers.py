@@ -311,7 +311,8 @@ def patch_collective_offer_public(
                 status_code=400,
             )
 
-    new_values["priceDetail"] = new_values.pop("educationalPriceDetail", None)
+    if "educationalPriceDetail" in new_values:
+        new_values["priceDetail"] = new_values.pop("educationalPriceDetail")
 
     with suppress(KeyError):
         if not new_values["formats"] and not new_values["subcategoryId"]:
@@ -398,15 +399,6 @@ def patch_collective_offer_public(
                     "imageCredit": [
                         "Les champs imageFile et imageCredit sont liés, si l'un est rempli l'autre doit l'être aussi"
                     ],
-                },
-                status_code=400,
-            )
-
-    if "price" in new_values:
-        if offer.collectiveStock.price < new_values["price"]:
-            raise ApiErrors(
-                errors={
-                    "price": ["Le prix ne peut pas etre supérieur au prix existant"],
                 },
                 status_code=400,
             )
@@ -507,13 +499,18 @@ def patch_collective_offer_public(
             },
             status_code=404,
         )
-    except educational_exceptions.CollectiveOfferNotEditable:
+    except (
+        educational_exceptions.CollectiveOfferNotEditable,
+        educational_exceptions.CollectiveOfferStockBookedAndBookingNotPending,
+    ):
+        raise ApiErrors(errors={"global": ["Offre non éditable."]}, status_code=422)
+    except educational_exceptions.CollectiveOfferForbiddenFields as e:
         raise ApiErrors(
-            errors={
-                "global": ["Offre non éditable."],
-            },
-            status_code=422,
+            errors={"global": [f"Seuls les champs {', '.join(e.allowed_fields)} peuvent être modifiés."]},
+            status_code=400,
         )
+    except educational_exceptions.PriceRequesteCantBedHigherThanActualPrice:
+        raise ApiErrors(errors={"price": ["Le prix ne peut pas etre supérieur au prix existant"]}, status_code=400)
     except offers_exceptions.UnknownOfferSubCategory:
         raise ApiErrors(
             errors={"subcategoryId": ["Sous-catégorie non trouvée."]},
