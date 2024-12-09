@@ -328,6 +328,8 @@ class DMSContent(common_models.IdentityCheckContent):
         return self.registration_datetime
 
 
+UBBLE_OK_REASON_CODE = 10000
+
 UBBLE_REASON_CODE_MAPPING = {
     # Ubble V2 https://docs.ubble.ai/#section/Handle-verification-results/Response-codes
     61201: FraudReasonCode.NETWORK_CONNECTION_ISSUE,  # applicant did not have a sufficient connection
@@ -363,28 +365,30 @@ UBBLE_REASON_CODE_MAPPING = {
 
 
 class UbbleContent(common_models.IdentityCheckContent):
-    birth_date: datetime.date | None
-    comment: str | None
-    document_type: str | None
-    expiry_date_score: float | None
-    first_name: str | None
-    gender: users_models.GenderEnum | None
-    id_document_number: str | None
-    identification_id: str | None
-    identification_url: pydantic_v1.HttpUrl | None
-    last_name: str | None
-    married_name: str | None
-    ove_score: float | None
-    reason_codes: list[FraudReasonCode] | None
-    reference_data_check_score: float | None
-    registration_datetime: datetime.datetime | None
-    processed_datetime: datetime.datetime | None
-    score: float | None
-    status: ubble_serializers.UbbleIdentificationStatus | None
-    status_updated_at: datetime.datetime | None
-    supported: float | None
-    signed_image_front_url: pydantic_v1.HttpUrl | None
-    signed_image_back_url: pydantic_v1.HttpUrl | None
+    applicant_id: str | None = None
+    birth_date: datetime.date | None = None
+    comment: str | None = None
+    document_type: str | None = None
+    expiry_date_score: float | None = None
+    external_applicant_id: str | None = None
+    first_name: str | None = None
+    gender: users_models.GenderEnum | None = None
+    id_document_number: str | None = None
+    identification_id: str | None = None
+    identification_url: pydantic_v1.HttpUrl | None = None
+    last_name: str | None = None
+    married_name: str | None = None
+    ove_score: float | None = None
+    processed_datetime: datetime.datetime | None = None
+    reason_codes: list[FraudReasonCode] | None = None
+    reference_data_check_score: float | None = None
+    registration_datetime: datetime.datetime | None = None
+    score: float | None = None
+    signed_image_back_url: pydantic_v1.HttpUrl | None = None
+    signed_image_front_url: pydantic_v1.HttpUrl | None = None
+    status: ubble_serializers.UbbleIdentificationStatus | None = None
+    status_updated_at: datetime.datetime | None = None
+    supported: float | None = None
 
     @pydantic_v1.validator("birth_date", pre=True)
     def parse_birth_date(cls, birth_date: datetime.date | str | None) -> datetime.date | None:
@@ -559,7 +563,9 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):
         postgresql.ARRAY(sa.Enum(FraudReasonCode, create_constraint=False, native_enum=False)),
         nullable=True,
     )
-    resultContent: sa.orm.Mapped[dict | None] = sa.Column(sa.dialects.postgresql.JSONB(none_as_null=True))
+    resultContent: sa.orm.Mapped[dict | None] = sa.Column(
+        sa.ext.mutable.MutableDict.as_mutable(sa.dialects.postgresql.JSONB(none_as_null=True))
+    )
     status: FraudCheckStatus = sa.Column(sa.Enum(FraudCheckStatus, create_constraint=False), nullable=True)
     thirdPartyId: str = sa.Column(sa.TEXT(), index=True, nullable=False)
     type: FraudCheckType = sa.Column(sa.Enum(FraudCheckType, create_constraint=False), nullable=False)

@@ -67,7 +67,7 @@ def handle_deleted_dms_applications(procedure_number: int) -> None:
         try:
             fraud_check_data: fraud_models.DMSContent = fraud_check.source_data()
             fraud_check_data.deletion_datetime = dms_information.deletion_datetime
-            fraud_check.resultContent = fraud_check_data
+            fraud_check.resultContent = fraud_check_data.dict()
         except ValueError:
             logger.warning(
                 "Could not write 'deletion_datetime' in fraud check resultContent: resultContent is empty",

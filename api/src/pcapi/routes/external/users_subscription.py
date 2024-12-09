@@ -36,15 +36,40 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
 def ubble_v2_webhook_update_application_status(
     body: ubble_serializers.WebhookBodyV2,
 ) -> ubble_serializers.WebhookDummyReponse:
-    if body.status in (
+    identification_id = body.data.identity_verification_id
+    status = body.data.status
+    log_extra_data = {"identification_id": identification_id, "status": str(status)}
+    logger.info("Ubble webhook v2 called", extra=log_extra_data)
+
+    should_process_webhook_call = status in (
         ubble_serializers.UbbleIdentificationStatus.CHECKS_IN_PROGRESS,
         ubble_serializers.UbbleIdentificationStatus.APPROVED,
         ubble_serializers.UbbleIdentificationStatus.DECLINED,
         ubble_serializers.UbbleIdentificationStatus.RETRY_REQUIRED,
         ubble_serializers.UbbleIdentificationStatus.INCONCLUSIVE,
         ubble_serializers.UbbleIdentificationStatus.REFUSED,
-    ):
-        return _update_ubble_workflow(body.identity_verification_id, body.status)
+    )
+    if not should_process_webhook_call:
+        return ubble_serializers.WebhookDummyReponse()
+
+    fraud_check = ubble_fraud_api.get_ubble_fraud_check(identification_id)
+    if not fraud_check:
+        raise ValueError(f"no Ubble fraud check found with identification_id {identification_id}")
+
+    finished_status_v2 = [FraudCheckStatus.OK, FraudCheckStatus.KO, FraudCheckStatus.CANCELED]
+    if fraud_check.status in finished_status_v2:
+        logger.warning("Ubble v2 fraud check already has finished status", extra=log_extra_data)
+        return ubble_serializers.WebhookDummyReponse()
+
+    try:
+        ubble_subscription_api.update_ubble_workflow(fraud_check)
+    except requests_utils.ExternalAPIException as exc:
+        logger.warning("External API error when updating ubble v2 workflow", extra=log_extra_data | {"exception": exc})
+        raise ApiErrors({"msg": "an error occured while fetching data"}, status_code=500)
+    except Exception as exc:
+        logger.exception("Could not update Ubble workflow", extra=log_extra_data | {"exception": exc})
+        raise ApiErrors({"msg": "an error occured during ubble v2 workflow update"}, status_code=500)
+
     return ubble_serializers.WebhookDummyReponse()
 
 
@@ -58,12 +83,8 @@ def ubble_v2_webhook_update_application_status(
 def ubble_webhook_update_application_status(
     body: ubble_serializers.WebhookRequest,
 ) -> ubble_serializers.WebhookDummyReponse:
-    return _update_ubble_workflow(body.identification_id, body.status)
-
-
-def _update_ubble_workflow(
-    identification_id: str, status: ubble_serializers.UbbleIdentificationStatus
-) -> ubble_serializers.WebhookDummyReponse:
+    identification_id = body.identification_id
+    status = body.status
     log_extra_data = {"identification_id": identification_id, "status": str(status)}
     logger.info("Ubble webhook called", extra=log_extra_data)
 
@@ -78,13 +99,11 @@ def _update_ubble_workflow(
 
     try:
         ubble_subscription_api.update_ubble_workflow(fraud_check)
-
     except requests_utils.ExternalAPIException as exc:
         logger.warning("External API error when updating ubble workflow", extra=log_extra_data | {"exception": exc})
         raise ApiErrors({"msg": "an error occured while fetching data"}, status_code=500)
-
-    except Exception:
-        logger.exception("Could not update Ubble workflow", extra=log_extra_data)
+    except Exception as exc:
+        logger.exception("Could not update Ubble workflow", extra=log_extra_data | {"exception": exc})
         raise ApiErrors({"msg": "an error occured during workflow update"}, status_code=500)
 
     return ubble_serializers.WebhookDummyReponse()
