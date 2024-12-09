@@ -3,6 +3,7 @@ import decimal
 from io import BytesIO
 import logging
 import typing
+import warnings
 
 from PIL import Image
 from PIL import UnidentifiedImageError
@@ -356,6 +357,9 @@ def check_image(
 ) -> None:
     check_image_size(image_as_bytes, max_size)
     try:
+        # to raise an error when PIL warns for a possible decompression bomb
+        # as this warning always lead to the pod being out of memory
+        warnings.simplefilter("error", Image.DecompressionBombWarning)
         image = Image.open(BytesIO(image_as_bytes))
     except UnidentifiedImageError:
         raise exceptions.UnidentifiedImage()
