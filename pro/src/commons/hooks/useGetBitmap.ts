@@ -18,7 +18,7 @@ export const useGetImageBitmap = (file: File) => {
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     updateImageSize()
-  }, [])
+  }, [file])
 
   return { width, height }
 }

@@ -71,7 +71,7 @@ export const App = (): JSX.Element | null => {
       dispatch(updateUser(null))
       dispatch(updateSelectedOffererId(null))
     }
-  }, [location])
+  }, [location, dispatch])
 
   const currentRoute = findCurrentRoute(location)
   if (!currentRoute?.meta?.public && currentUser === null) {
