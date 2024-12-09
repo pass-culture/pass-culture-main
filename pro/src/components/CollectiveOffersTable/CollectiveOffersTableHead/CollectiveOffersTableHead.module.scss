@@ -24,6 +24,10 @@
   padding-right: 0;
 }
 
+.visually-hidden {
+  @include a11y.visually-hidden;
+}
+
 .collective-th-width {
   min-width: rem.torem(120px);
 }

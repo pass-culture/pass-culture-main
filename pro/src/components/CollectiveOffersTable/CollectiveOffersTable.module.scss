@@ -1,6 +1,7 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_size.scss" as size;
+@use "styles/mixins/_a11y.scss" as a11y;
 
 .select-all-container {
   display: flex;
@@ -24,6 +25,10 @@
 
 .max-display-callout {
   margin-bottom: rem.torem(16px);
+}
+
+.visually-hidden {
+  @include a11y.visually-hidden;
 }
 
 @media (min-width: size.$tablet) {

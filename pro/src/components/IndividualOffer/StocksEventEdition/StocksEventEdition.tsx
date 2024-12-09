@@ -464,7 +464,7 @@ export const StocksEventEdition = ({
               render={() => (
                 <div className={styles['stock-table-container']}>
                   <table className={styles['stock-table']}>
-                    <caption className="visually-hidden">
+                    <caption className={styles['visually-hidden']}>
                       Tableau d’édition des stocks
                     </caption>
 

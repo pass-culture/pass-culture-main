@@ -2,6 +2,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_z-index.scss" as zIndex;
 @use "styles/variables/_size.scss" as size;
+@use "styles/mixins/_a11y.scss" as a11y;
 
 .stock-event-table {
   width: 100%;
@@ -76,6 +77,10 @@
 
 .actions {
   z-index: zIndex.$recurrence-sticky-bar;
+}
+
+.visually-hidden {
+  @include a11y.visually-hidden;
 }
 
 @media (min-width: size.$tablet) {

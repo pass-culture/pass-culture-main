@@ -35,7 +35,7 @@ export const PeriodSelector = ({
       )}
     >
       <div className={styles['period-filter-begin-picker']}>
-        <label htmlFor="field-date-begin" className="visually-hidden">
+        <label htmlFor="field-date-begin" className={styles['visually-hidden']}>
           Début de la période
         </label>
         <BaseDatePicker
@@ -55,7 +55,7 @@ export const PeriodSelector = ({
       <span className={styles['vertical-bar']} />
 
       <div className={styles['period-filter-end-picker']}>
-        <label htmlFor="field-date-end" className="visually-hidden">
+        <label htmlFor="field-date-end" className={styles['visually-hidden']}>
           Fin de la période
         </label>
         <BaseDatePicker

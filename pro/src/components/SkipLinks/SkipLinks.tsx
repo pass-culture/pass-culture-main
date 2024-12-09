@@ -1,5 +1,3 @@
-import React from 'react'
-
 import fullNextIcon from 'icons/full-next.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -13,7 +11,12 @@ export const SkipLinks = (): JSX.Element => {
 
   return (
     <>
-      <a tabIndex={-1} href="#" id="top-page" className="visually-hidden" />
+      <a
+        tabIndex={-1}
+        href="#"
+        id="top-page"
+        className={styles['visually-hidden']}
+      />
       <nav aria-label="Accès rapide" className={styles['skip-links']}>
         <div id="orejime" />
         {buttons.length > 1 ? (

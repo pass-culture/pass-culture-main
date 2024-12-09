@@ -176,7 +176,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                           ? 'Les dernières offres vitrines créées'
                           : `${pluralize(offers.length, 'offre')} vitrine`}
                       </p>
-                      <p className="visually-hidden" role="status">
+                      <p className={styles['visually-hidden']} role="status">
                         {pluralize(offers.length, 'offre vitrine trouvée')}
                       </p>
                     </legend>

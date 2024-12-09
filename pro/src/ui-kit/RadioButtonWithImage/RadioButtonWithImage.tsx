@@ -126,7 +126,7 @@ export const RadioButtonWithImage = ({
 
     <input
       checked={isChecked}
-      className="visually-hidden"
+      className={styles['visually-hidden']}
       disabled={disabled}
       name={name}
       onChange={onChange}

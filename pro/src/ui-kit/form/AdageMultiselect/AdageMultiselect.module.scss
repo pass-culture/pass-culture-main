@@ -1,6 +1,7 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_forms.scss" as forms;
+@use "styles/mixins/_a11y.scss" as a11y;
 
 .container {
   display: flex;
@@ -37,4 +38,8 @@ input[type="search"]::-webkit-search-cancel-button {
   color: var(--color-grey-dark);
   fill: var(--color-grey-dark);
   cursor: pointer;
+}
+
+.visually-hidden {
+  @include a11y.visually-hidden;
 }

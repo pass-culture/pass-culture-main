@@ -33,26 +33,26 @@ export const CollectiveOffersTableHead = ({
           id="collective-offer-head-checkbox"
           className={styles['collective-th']}
         >
-          <span className="visually-hidden">Case à cocher</span>
+          <span className={styles['visually-hidden']}>Case à cocher</span>
         </th>
         {isCollectiveOffersExpirationEnabled && (
           <th
             id="collective-offer-head-expiration"
             className={styles['expiration-date-th']}
           >
-            <span className="visually-hidden">
+            <span className={styles['visually-hidden']}>
               Information sur l’expiration
             </span>
           </th>
         )}
         <th id="collective-offer-head-image">
-          <span className="visually-hidden">Image</span>
+          <span className={styles['visually-hidden']}>Image</span>
         </th>
         <th
           id="collective-offer-head-name"
           className={classNames(styles['collective-th-width'])}
         >
-          <span className="visually-hidden">Nom</span>
+          <span className={styles['visually-hidden']}>Nom</span>
         </th>
         {isCollectiveOffersExpirationEnabled && (
           <th

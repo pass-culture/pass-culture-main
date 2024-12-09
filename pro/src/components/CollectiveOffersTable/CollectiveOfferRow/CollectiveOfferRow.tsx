@@ -81,7 +81,7 @@ export const CollectiveOfferRow = ({
           className={styles['reference-row-head']}
           id={rowId}
         >
-          <span className="visually-hidden">{offer.name}</span>
+          <span className={styles['visually-hidden']}>{offer.name}</span>
         </th>
         <CheckboxCell
           offerName={offer.name}

@@ -375,7 +375,7 @@ export const StocksEventList = ({
           </div>
 
           <table className={styles['stock-event-table']}>
-            <caption className="visually-hidden">
+            <caption className={styles['visually-hidden']}>
               Liste des dates et capacités
             </caption>
 

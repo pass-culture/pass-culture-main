@@ -24,11 +24,3 @@
   border-color: inherit;
   border-width: medium;
 }
-
-.visually-hidden {
-  @include visually-hidden;
-}
-
-.visually-hidden-reset {
-  @include visually-hidden-reset;
-}

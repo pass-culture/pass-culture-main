@@ -118,6 +118,10 @@
   word-break: break-word;
 }
 
+.visually-hidden {
+  @include a11y.visually-hidden;
+}
+
 @media (min-width: size.$tablet) {
   // <thead>
   .table-header {
