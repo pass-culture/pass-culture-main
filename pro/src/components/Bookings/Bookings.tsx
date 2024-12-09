@@ -1,5 +1,5 @@
 import isEqual from 'lodash.isequal'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
@@ -7,7 +7,6 @@ import useSWR from 'swr'
 import { api } from 'apiClient/api'
 import {
   BookingRecapResponseModel,
-  BookingStatusFilter,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
@@ -19,6 +18,7 @@ import {
 } from 'commons/config/swrQueryKeys'
 import { DEFAULT_PRE_FILTERS } from 'commons/core/Bookings/constants'
 import { PreFiltersParams } from 'commons/core/Bookings/types'
+import { bookingStatusFilterOrNull } from 'commons/core/Bookings/utils'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { Audience } from 'commons/core/shared/types'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
@@ -67,12 +67,16 @@ export const BookingsContainer = <
 
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
-  const initialAppliedFilters = {
-    ...DEFAULT_PRE_FILTERS,
-    ...{
-      offerId: selectedOffererId?.toString(),
-    },
-  }
+  const initialAppliedFilters = useMemo(
+    () => ({
+      ...DEFAULT_PRE_FILTERS,
+      ...{
+        offerId: selectedOffererId?.toString(),
+      },
+    }),
+    [selectedOffererId]
+  )
+
   const [appliedPreFilters, setAppliedPreFilters] = useState<PreFiltersParams>(
     initialAppliedFilters
   )
@@ -165,9 +169,9 @@ export const BookingsContainer = <
         offererAddressId:
           params.get('offererAddressId') ??
           DEFAULT_PRE_FILTERS.offererAddressId,
-        // TODO typeguard this to remove the `as`
+
         bookingStatusFilter:
-          (params.get('bookingStatusFilter') as BookingStatusFilter | null) ??
+          bookingStatusFilterOrNull(params.get('bookingStatusFilter')) ??
           initialAppliedFilters.bookingStatusFilter,
         bookingBeginningDate:
           params.get('bookingBeginningDate') ??
@@ -185,7 +189,7 @@ export const BookingsContainer = <
 
       setAppliedPreFilters(filterToLoad)
     }
-  }, [location])
+  }, [location, initialAppliedFilters])
 
   const updateUrl = (filter: PreFiltersParams) => {
     const partialUrlInfo = {

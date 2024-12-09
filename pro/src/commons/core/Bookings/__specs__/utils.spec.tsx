@@ -5,7 +5,11 @@ import {
 } from 'commons/utils/date'
 
 import { DEFAULT_PRE_FILTERS } from '../constants'
-import { buildBookingsRecapQuery } from '../utils'
+import {
+  bookingStatusFilterOrNull,
+  buildBookingsRecapQuery,
+  isBookingStatusFilter,
+} from '../utils'
 
 describe('buildBookingsRecapQuery', () => {
   it('should use default filters when no filters is passed in argument', () => {
@@ -44,5 +48,45 @@ describe('buildBookingsRecapQuery', () => {
       bookingStatusFilter: BookingStatusFilter.REIMBURSED,
       page: 2,
     })
+  })
+})
+
+describe('isBookingStatusFilter', () => {
+  it('should return true for a valid BookingStatusFilter value', () => {
+    expect(isBookingStatusFilter(BookingStatusFilter.BOOKED)).toBe(true)
+    expect(isBookingStatusFilter(BookingStatusFilter.VALIDATED)).toBe(true)
+    expect(isBookingStatusFilter(BookingStatusFilter.REIMBURSED)).toBe(true)
+  })
+
+  it('should return false for invalid values', () => {
+    expect(isBookingStatusFilter('invalid')).toBe(false)
+    expect(isBookingStatusFilter(null)).toBe(false)
+    expect(isBookingStatusFilter(undefined)).toBe(false)
+    expect(isBookingStatusFilter(123)).toBe(false)
+    expect(isBookingStatusFilter({})).toBe(false)
+    expect(isBookingStatusFilter([])).toBe(false)
+  })
+})
+
+describe('bookingStatusFilterOrNull', () => {
+  it('should return the value if it is a valid BookingStatusFilter', () => {
+    expect(bookingStatusFilterOrNull(BookingStatusFilter.BOOKED)).toBe(
+      BookingStatusFilter.BOOKED
+    )
+    expect(bookingStatusFilterOrNull(BookingStatusFilter.VALIDATED)).toBe(
+      BookingStatusFilter.VALIDATED
+    )
+    expect(bookingStatusFilterOrNull(BookingStatusFilter.REIMBURSED)).toBe(
+      BookingStatusFilter.REIMBURSED
+    )
+  })
+
+  it('should return null for invalid values', () => {
+    expect(bookingStatusFilterOrNull('invalid')).toBe(null)
+    expect(bookingStatusFilterOrNull(null)).toBe(null)
+    expect(bookingStatusFilterOrNull(undefined)).toBe(null)
+    expect(bookingStatusFilterOrNull(123)).toBe(null)
+    expect(bookingStatusFilterOrNull({})).toBe(null)
+    expect(bookingStatusFilterOrNull([])).toBe(null)
   })
 })
