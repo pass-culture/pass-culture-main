@@ -126,7 +126,7 @@
                 {% if extra_data.genres %}<span class="fw-bold">Genres :</span> {{ extra_data.genres | format_string_list }}{% endif %}
                 {% if offer.withdrawalDetails %}
                   <p class="mb-1">
-                    <span class="fw-bold">Modalités de retrait :</span> {{ offer.withdrawalDetails | replace("\n", "<br />"|safe) }}
+                    <span class="fw-bold">Modalités de retrait :</span> {{ offer.withdrawalDetails | nl2br }}
                   </p>
                 {% endif %}
               </div>
@@ -353,7 +353,7 @@
                       </p>
                     {% endif %}
                     <p class="mb-1">
-                      <span class="fw-bold">Description :</span> {{ offer.description | empty_string_if_null | replace("\n", "<br />"| safe) }}
+                      <span class="fw-bold">Description :</span> {{ offer.description | empty_string_if_null | nl2br }}
                     </p>
                   </div>
                   <h3>Accessibilité</h3>

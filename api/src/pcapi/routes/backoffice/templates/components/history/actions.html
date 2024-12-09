@@ -44,13 +44,7 @@
             {% elif action.extraData and action.actionType.name in ["OFFERER_REJECTED", "USER_OFFERER_REJECTED"] %}
               Raison : {{ action.extraData["rejection_reason"] | format_offerer_rejection_reason }}
             {% endif %}
-            {% if action.comment %}
-              <p>
-                {{ action.comment | empty_string_if_null | replace("\n", "
-                                <br />
-                                "|safe) }}
-              </p>
-            {% endif %}
+            {% if action.comment %}<p>{{ action.comment | empty_string_if_null | nl2br }}</p>{% endif %}
             {% if action.extraData %}
               {% set role_name = action.extraData.get('role_name') %}
               {% if role_name %}
