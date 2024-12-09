@@ -43,6 +43,18 @@ const cancellationReasonTitle = (
       return 'Vous avez annulé la réservation'
     case CollectiveBookingCancellationReasons.EXPIRED:
       return 'Annulé automatiquement'
+
+    case CollectiveBookingCancellationReasons.FRAUD:
+    case CollectiveBookingCancellationReasons.FRAUD_SUSPICION:
+    case CollectiveBookingCancellationReasons.FRAUD_INAPPROPRIATE:
+    case CollectiveBookingCancellationReasons.BACKOFFICE:
+    case CollectiveBookingCancellationReasons.BACKOFFICE_EVENT_CANCELLED:
+    case CollectiveBookingCancellationReasons.BACKOFFICE_OFFERER_BUSINESS_CLOSED:
+    case CollectiveBookingCancellationReasons.PUBLIC_API:
+    case CollectiveBookingCancellationReasons.FINANCE_INCIDENT:
+    case CollectiveBookingCancellationReasons.BACKOFFICE_OFFER_MODIFIED:
+    case CollectiveBookingCancellationReasons.BACKOFFICE_OFFER_WITH_WRONG_INFORMATION:
+    case CollectiveBookingCancellationReasons.OFFERER_CONNECT_AS:
     default:
       return 'Le pass Culture a annulé la réservation'
   }

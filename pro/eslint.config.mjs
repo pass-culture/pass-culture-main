@@ -144,9 +144,9 @@ export default [
       '@typescript-eslint/no-unnecessary-condition': 'error',
       'require-await': 'error',
       'react-hooks/rules-of-hooks': 'error',
+      '@typescript-eslint/switch-exhaustiveness-check': 'error',
 
       // TODO turn into error
-      '@typescript-eslint/switch-exhaustiveness-check': 'warn',
       'react-hooks/exhaustive-deps': 'warn',
 
       'react/self-closing-comp': [

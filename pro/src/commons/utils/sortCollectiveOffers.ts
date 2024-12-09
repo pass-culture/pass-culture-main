@@ -16,16 +16,14 @@ export function sortCollectiveOffers(
 ) {
   const sortedOffers = offers.slice()
 
-  switch (currentSortingColumn) {
-    case CollectiveOffersSortingColumn.EVENT_DATE:
-      return sortedOffers.sort((offerA, offerB) =>
-        sortByDate(
-          offerA.dates?.start ?? '',
-          offerB.dates?.start ?? '',
-          sortingMode
-        )
+  if (currentSortingColumn === CollectiveOffersSortingColumn.EVENT_DATE) {
+    return sortedOffers.sort((offerA, offerB) =>
+      sortByDate(
+        offerA.dates?.start ?? '',
+        offerB.dates?.start ?? '',
+        sortingMode
       )
-    default:
-      return sortedOffers
+    )
   }
+  return sortedOffers
 }

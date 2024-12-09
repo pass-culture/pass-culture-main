@@ -35,22 +35,21 @@ const sortBookings = (
   currentSortingColumn: CollectiveBookingsSortingColumn | null,
   sortingMode: SortingMode
 ) => {
-  switch (currentSortingColumn) {
-    case CollectiveBookingsSortingColumn.OFFER_NAME:
-      return bookings.sort(
-        (a, b) =>
-          sortByOfferName(a, b) * (sortingMode === SortingMode.ASC ? 1 : -1)
-      )
-
-    case CollectiveBookingsSortingColumn.INSTITUTION_NAME:
-      return bookings.sort(
-        (a, b) =>
-          sortByInstitutionName(a, b) *
-          (sortingMode === SortingMode.ASC ? 1 : -1)
-      )
-    default:
-      return bookings.sort((a, b) => sortByBookingDate(a, b) * -1)
+  if (currentSortingColumn === CollectiveBookingsSortingColumn.OFFER_NAME) {
+    return bookings.sort(
+      (a, b) =>
+        sortByOfferName(a, b) * (sortingMode === SortingMode.ASC ? 1 : -1)
+    )
+  } else if (
+    currentSortingColumn === CollectiveBookingsSortingColumn.INSTITUTION_NAME
+  ) {
+    return bookings.sort(
+      (a, b) =>
+        sortByInstitutionName(a, b) * (sortingMode === SortingMode.ASC ? 1 : -1)
+    )
   }
+
+  return bookings.sort((a, b) => sortByBookingDate(a, b) * -1)
 }
 
 interface CollectiveBookingsTableProps {

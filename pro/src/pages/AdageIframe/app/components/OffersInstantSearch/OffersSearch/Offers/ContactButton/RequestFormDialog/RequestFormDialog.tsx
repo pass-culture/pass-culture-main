@@ -191,7 +191,7 @@ export const RequestFormDialog = ({
             <MandatoryInfo className={styles['form-mandatory']} />
             {isPreview && (
               <Callout
-                variant={CalloutVariant.DEFAULT}
+                variant={CalloutVariant.INFO}
                 className={styles['contact-callout']}
               >
                 Vous ne pouvez pas envoyer de demande de contact car ceci est un
@@ -237,7 +237,7 @@ export const RequestFormDialog = ({
           <MandatoryInfo className={styles['form-mandatory']} />
           {isPreview && (
             <Callout
-              variant={CalloutVariant.DEFAULT}
+              variant={CalloutVariant.INFO}
               className={styles['contact-callout']}
             >
               Vous ne pouvez pas envoyer de demande de contact car ceci est un
@@ -253,7 +253,7 @@ export const RequestFormDialog = ({
         </>
       ) : (
         <Callout
-          variant={CalloutVariant.DEFAULT}
+          variant={CalloutVariant.INFO}
           className={styles['contact-readonly']}
         >
           Vous ne pouvez voir les informations de contact du partenaire car vous

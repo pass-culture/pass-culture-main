@@ -7,6 +7,7 @@ export const getSuccessMessage = (mode: OFFER_WIZARD_MODE) => {
       return 'Brouillon sauvegardé dans la liste des offres'
 
     case OFFER_WIZARD_MODE.EDITION:
+    case OFFER_WIZARD_MODE.READ_ONLY:
     default:
       return PATCH_SUCCESS_MESSAGE
   }
