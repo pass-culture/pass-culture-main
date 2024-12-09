@@ -2994,6 +2994,26 @@ class GetRemoveSiretFormTest(GetEndpointHelper):
         content = html_parser.content_as_text(response.data)
         assert "CA de l'année : 10 800,00 €" in content
 
+    @pytest.mark.parametrize(
+        "timespan",
+        [
+            (datetime.utcnow() - timedelta(days=2), None),  # infinite
+            (datetime.utcnow() - timedelta(days=2), datetime.utcnow() + timedelta(days=2)),  # started
+            (datetime.utcnow() + timedelta(days=2), datetime.utcnow() + timedelta(days=3)),  # not started
+        ],
+    )
+    def test_venue_with_custom_reimbursement_rule(self, authenticated_client, timespan):
+        venue = offerers_factories.VenueFactory()
+        finance_factories.CustomReimbursementRuleFactory(
+            venue=venue,
+            timespan=timespan,
+        )
+
+        response = authenticated_client.get(url_for(self.endpoint, venue_id=venue.id))
+
+        assert response.status_code == 400
+        assert html_parser.extract_alert(response.data) == "Ce lieu à un tarif dérogatoire qui termine dans le futur"
+
 
 class RemoveSiretTest(PostEndpointHelper):
     endpoint = "backoffice_web.venue.remove_siret"
@@ -3044,6 +3064,26 @@ class RemoveSiretTest(PostEndpointHelper):
         assert other_action.extraData["modified_info"] == {
             "pricingPointSiret": {"old_info": old_siret, "new_info": None},
         }
+
+    def test_remove_siret_custom_reimbursment_rule_in_the_past(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.VenuePricingPointLinkFactory(venue=venue, pricingPoint=venue)
+        other_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        offerers_factories.VenuePricingPointLinkFactory(venue=other_venue, pricingPoint=venue)
+        target_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        finance_factories.CustomReimbursementRuleFactory(
+            venue=venue,
+            timespan=[datetime.utcnow() - timedelta(days=9), datetime.utcnow() - timedelta(days=1)],
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue.id,
+            form={"override_revenue_check": False, "comment": "test", "new_pricing_point": target_venue.id},
+        )
+        assert response.status_code == 303
+
+        assert venue.siret is None
 
     def test_venue_without_siret(self, authenticated_client):
         venue = offerers_factories.VenueWithoutSiretFactory()
@@ -3122,6 +3162,32 @@ class RemoveSiretTest(PostEndpointHelper):
         assert response.status_code == 303
         assert venue.siret is None
         assert venue.current_pricing_point == target_venue
+
+    @pytest.mark.parametrize(
+        "timespan",
+        [
+            (datetime.utcnow() - timedelta(days=2), None),  # infinite
+            (datetime.utcnow() - timedelta(days=2), datetime.utcnow() + timedelta(days=2)),  # started
+            (datetime.utcnow() + timedelta(days=2), datetime.utcnow() + timedelta(days=3)),  # not started
+        ],
+    )
+    def test_venue_with_custom_reimbursement_rule(self, authenticated_client, timespan):
+        venue = offerers_factories.VenueFactory()
+        target_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        finance_factories.CustomReimbursementRuleFactory(venue=venue, timespan=timespan)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue.id,
+            form={
+                "comment": "test",
+                "override_revenue_check": False,
+                "new_pricing_point": target_venue.id,
+            },
+        )
+
+        assert response.status_code == 400
+        assert html_parser.extract_alert(response.data) == "Ce lieu à un tarif dérogatoire qui termine dans le futur"
 
 
 class PostToggleVenueProviderIsActiveTest(PostEndpointHelper):
