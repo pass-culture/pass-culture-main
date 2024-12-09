@@ -375,6 +375,7 @@ def test_update_external_pro_booking_email_attributes():
         bookingEmail=email,
         siret="12345678900001",
         isPermanent=True,
+        isOpenToPublic=True,
         venueTypeCode=VenueTypeCode.MUSEUM,
     )
 
