@@ -41,7 +41,6 @@
 .bs-filter-button {
   background-color: transparent;
   border: none;
-  line-height: rem.torem(20px);
   vertical-align: middle;
 }
 
@@ -49,7 +48,6 @@
   @include fonts.caption;
 
   color: var(--color-black);
-  line-height: rem.torem(20px);
   min-height: rem.torem(60px);
   padding: rem.torem(14px);
   vertical-align: middle;
