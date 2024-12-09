@@ -1,5 +1,5 @@
-/* istanbul ignore file: RomainC, I think testing is ok with this file*/
-import { useMemo } from 'react'
+/* istanbul ignore file */
+import { useCallback, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
 
 import { NOTIFICATION_SHOW_DURATION } from 'commons/core/Notification/constants'
@@ -21,19 +21,23 @@ interface Options {
 
 export const useNotification = () => {
   const dispatch = useDispatch()
-  const notify = (
-    textMessage: string | null,
-    type: NotificationTypeEnum,
-    { duration = NOTIFICATION_SHOW_DURATION }: Options
-  ) => {
-    dispatch(
-      showNotification({
-        text: textMessage,
-        type: type,
-        duration,
-      })
-    )
-  }
+
+  const notify = useCallback(
+    (
+      textMessage: string | null,
+      type: NotificationTypeEnum,
+      { duration = NOTIFICATION_SHOW_DURATION }: Options
+    ) => {
+      dispatch(
+        showNotification({
+          text: textMessage,
+          type,
+          duration,
+        })
+      )
+    },
+    [dispatch]
+  )
 
   return useMemo(
     () => ({
@@ -47,6 +51,6 @@ export const useNotification = () => {
         notify(msg, NotificationTypeEnum.INFORMATION, options),
       close: () => dispatch(closeNotification()),
     }),
-    [dispatch]
+    [dispatch, notify]
   )
 }
