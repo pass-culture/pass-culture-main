@@ -143,9 +143,9 @@ export default [
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-unnecessary-condition': 'error',
       'require-await': 'error',
+      'react-hooks/rules-of-hooks': 'error',
 
       // TODO turn into error
-      'react-hooks/rules-of-hooks': 'warn',
       '@typescript-eslint/switch-exhaustiveness-check': 'warn',
       'react-hooks/exhaustive-deps': 'warn',
 
