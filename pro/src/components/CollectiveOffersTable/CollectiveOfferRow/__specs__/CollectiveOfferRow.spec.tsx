@@ -206,19 +206,19 @@ describe('ollectiveOfferRow', () => {
     })
   })
 
-  const greyedOfferStatusDataSet = [
-    CollectiveOfferStatus.REJECTED,
-    CollectiveOfferStatus.PENDING,
-  ]
-  it.each(greyedOfferStatusDataSet)(
-    'should display the offer greyed when offer is %s',
-    (status) => {
-      props.offer.status = status
-      renderOfferItem(props)
+  it('should display inactive thumb when offer is not editable', () => {
+    props.offer.isEditable = false
+    renderOfferItem(props)
 
-      expect(screen.getByRole('presentation')).toHaveClass('thumb-inactive')
-    }
-  )
+    expect(screen.getByRole('presentation')).toHaveClass('thumb-inactive')
+  })
+
+  it('should display disabled checkbox when offer is not editable', () => {
+    props.offer.isEditable = false
+    renderOfferItem(props)
+
+    expect(screen.getByRole('checkbox')).toBeDisabled()
+  })
 
   const offerStatusDataSet = [
     CollectiveOfferStatus.ACTIVE,

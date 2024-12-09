@@ -86,7 +86,7 @@ export const CollectiveOfferRow = ({
         <CheckboxCell
           offerName={offer.name}
           isSelected={isSelected}
-          disabled={isOfferDisabled(offer.status)}
+          disabled={!offer.isEditable}
           selectOffer={() => selectOffer(offer)}
           headers={`${rowId} collective-offer-head-checkbox`}
         />
@@ -96,7 +96,7 @@ export const CollectiveOfferRow = ({
         <ThumbCell
           offer={offer}
           editionOfferLink={editionOfferLink}
-          inactive={isOfferDisabled(offer.status)}
+          inactive={!offer.isEditable}
           headers={`${rowId} collective-offer-head-image`}
         />
 
