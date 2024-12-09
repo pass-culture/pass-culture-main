@@ -21,7 +21,7 @@ export function FieldLayoutCharacterCount({
     <>
       <span
         role="status"
-        className="visually-hidden"
+        className={styles['visually-hidden']}
         id={`field-characters-count-${name}`}
       >
         {debouncedCount} caractères sur {maxLength}

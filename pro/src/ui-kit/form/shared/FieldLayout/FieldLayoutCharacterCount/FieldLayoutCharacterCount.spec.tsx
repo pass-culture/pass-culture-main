@@ -22,7 +22,9 @@ describe('FieldLayoutCharacterCount', () => {
 
     const counter = screen.getByText('10 caractères sur 100')
     expect(counter).toBeInTheDocument()
-    expect(counter).toHaveClass('visually-hidden')
+
+    //  Check that the visually-hidden mixin is applied
+    expect(counter).toHaveClass(/visually-hidden/)
   })
 
   it('should delay the change of the count for the hidden counter', () => {

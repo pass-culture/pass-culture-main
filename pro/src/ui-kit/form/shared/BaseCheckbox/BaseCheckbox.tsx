@@ -90,7 +90,9 @@ export const BaseCheckbox = forwardRef(
           )}
           <span
             className={cn(styles['base-checkbox-label'], {
-              'visually-hidden': Boolean(exceptionnallyHideLabelDespiteA11y),
+              [styles['visually-hidden']]: Boolean(
+                exceptionnallyHideLabelDespiteA11y
+              ),
               [styles['base-checkbox-label-with-description']]:
                 Boolean(description),
             })}

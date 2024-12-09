@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { BookingStatusFilter } from 'apiClient/v1'
 import { BOOKING_STATUS_FILTER_OPTIONS } from 'commons/core/Bookings/constants'
 import { PreFiltersParams } from 'commons/core/Bookings/types'
@@ -19,7 +17,7 @@ export const FilterByStatus = ({
   selectedStatusId,
 }: FilterByStatusProps): JSX.Element => (
   <>
-    <label htmlFor="status-filter" className="visually-hidden">
+    <label htmlFor="status-filter" className={styles['visually-hidden']}>
       Type de période
     </label>
     <SelectInput

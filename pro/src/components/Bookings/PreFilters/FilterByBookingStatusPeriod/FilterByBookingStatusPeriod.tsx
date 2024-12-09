@@ -31,7 +31,7 @@ export const FilterByBookingStatusPeriod = ({
 
   return (
     <fieldset className={styles['status-period-filter']}>
-      <legend className="visually-hidden">Période</legend>
+      <legend className={styles['visually-hidden']}>Période</legend>
       <FilterByStatus
         isDisabled={isDisabled}
         selectedStatusId={selectedBookingFilter}

@@ -81,6 +81,10 @@
   align-items: center;
 }
 
+.visually-hidden {
+  @include a11y.visually-hidden;
+}
+
 @media (min-width: size.$tablet) {
   .invoices-table {
     margin-top: 0;

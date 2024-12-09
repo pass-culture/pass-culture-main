@@ -101,10 +101,13 @@ export const FilterByOmniSearch = ({
         [styles['omnisearch-container-disabled']]: isDisabled,
       })}
     >
-      <legend className="visually-hidden">
+      <legend className={styles['visually-hidden']}>
         Rechercher dans les réservations
       </legend>
-      <label htmlFor="omnisearch-criteria" className="visually-hidden">
+      <label
+        htmlFor="omnisearch-criteria"
+        className={styles['visually-hidden']}
+      >
         Informations dans laquelle rechercher
       </label>
       <SelectInput
@@ -120,7 +123,7 @@ export const FilterByOmniSearch = ({
 
       <span className={styles['vertical-bar']} />
 
-      <label htmlFor="text-filter-input" className="visually-hidden">
+      <label htmlFor="text-filter-input" className={styles['visually-hidden']}>
         Texte à rechercher
       </label>
 
