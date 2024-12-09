@@ -151,7 +151,7 @@ export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
     <SummaryLayout>
       <SummaryContent>
         {cannotEditDetails && (
-          <Callout variant={CalloutVariant.DEFAULT}>
+          <Callout variant={CalloutVariant.INFO}>
             Les informations de cette page ne sont pas modifiables car elles
             sont liées à l’EAN renseigné.
           </Callout>

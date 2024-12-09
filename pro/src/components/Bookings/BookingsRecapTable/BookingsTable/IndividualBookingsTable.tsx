@@ -58,6 +58,7 @@ const sortBookings = (
         (a, b) =>
           sortByBookingDate(a, b) * (sortingMode === SortingMode.ASC ? 1 : -1)
       )
+    case null:
     default:
       return bookings.sort((a, b) => sortByBookingDate(a, b) * -1)
   }
