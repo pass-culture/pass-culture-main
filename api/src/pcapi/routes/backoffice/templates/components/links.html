@@ -126,9 +126,9 @@
 {% endmacro %}
 {% macro build_venue_name_to_pc_pro_link(venue, public_name=true, siret=false) %}
   {% if venue.isVirtual %}
-    {{ build_connect_as_pseudo_link(venue.id, "venue", "/accueil?structure="~venue.managingOffererId~"&from-bo=true", (((public_name and venue.publicName) or venue.name) + ((" - " + venue.siret) if siret else "")), "link-primary") }}
+    {{ build_connect_as_pseudo_link(venue.id, "venue", "/accueil?structure="~venue.managingOffererId~"&from-bo=true", (((public_name and venue.publicName) or venue.name) + ((" - " + venue.siret) if (siret and venue.siret) else "")), "link-primary") }}
   {% else %}
-    {{ build_connect_as_pseudo_link(venue.id, "venue", "/structures/"~venue.managingOffererId~"/lieux/"~venue.id~"", (((public_name and venue.publicName) or venue.name) + ((" - " + venue.siret) if siret else "")), "link-primary") }}
+    {{ build_connect_as_pseudo_link(venue.id, "venue", "/structures/"~venue.managingOffererId~"/lieux/"~venue.id~"", (((public_name and venue.publicName) or venue.name) + ((" - " + venue.siret) if (siret and venue.siret) else "")), "link-primary") }}
   {% endif %}
 {% endmacro %}
 {% macro build_venue_parameters_name_to_pc_pro_link(venue) %}
