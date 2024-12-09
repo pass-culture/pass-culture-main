@@ -39,7 +39,7 @@ export const getValidationSchema = (validateAccessibility: boolean) =>
           'Veuillez entrer un numéro de téléphone valide, exemple : 612345678',
         test: (phone?: string | null) => {
           /* istanbul ignore next: DEBT, TO FIX */
-          return phone ? isPhoneValid(phone) : true
+          return phone ? isPhoneValid({ phone, emptyAllowed: true }) : true
         },
       }),
     webSite: yup

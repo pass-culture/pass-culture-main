@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-import { parseAndValidateFrenchPhoneNumber } from 'commons/core/shared/utils/parseAndValidateFrenchPhoneNumber'
+import { isPhoneValid } from 'commons/core/shared/utils/validation'
 
 export const validationSchema = yup.object().shape({
   phoneNumber: yup
@@ -11,21 +11,6 @@ export const validationSchema = yup.object().shape({
     .test(
       'isPhoneValid',
       'Votre numéro de téléphone n’est pas valide',
-      (value) => {
-        if (!value) {
-          return false
-        }
-        let phoneNumber
-        try {
-          phoneNumber = parseAndValidateFrenchPhoneNumber(value)
-        } catch {
-          return false
-        }
-        const isValid = phoneNumber.isValid()
-        if (!isValid) {
-          return false
-        }
-        return true
-      }
+      (phone) => isPhoneValid({ phone, emptyAllowed: false })
     ),
 })

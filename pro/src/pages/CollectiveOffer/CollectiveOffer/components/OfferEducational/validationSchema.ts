@@ -8,22 +8,13 @@ import {
   OfferEducationalFormValues,
   OfferDatesType,
 } from 'commons/core/OfferEducational/types'
+import { isPhoneValid } from 'commons/core/shared/utils/validation'
 import { toDateStrippedOfTimezone } from 'commons/utils/date'
 
 const threeYearsFromNow = addYears(new Date(), 3)
 
 const isOneTrue = (values: Record<string, boolean>): boolean =>
   Object.values(values).includes(true)
-
-const isPhoneValid = (phone: string | undefined): boolean => {
-  if (!phone) {
-    return true
-  }
-
-  const phoneNumber = parsePhoneNumberFromString(phone, 'FR')
-  const isValid = phoneNumber?.isValid()
-  return Boolean(isValid)
-}
 
 const isNotEmpty = (description: string | undefined): boolean =>
   description ? Boolean(description.trim().length > 0) : false
@@ -120,7 +111,7 @@ export function getOfferEducationalValidationSchema(
         name: 'is-phone-valid',
         message:
           'Veuillez entrer un numéro de téléphone valide, exemple : 612345678',
-        test: isPhoneValid,
+        test: (phone) => isPhoneValid({ phone, emptyAllowed: true }),
       }),
     email: yup.string().when(['contactOptions', 'isTemplate'], {
       is: (

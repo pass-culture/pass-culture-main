@@ -7,8 +7,16 @@ import { parseAndValidateFrenchPhoneNumber } from './parseAndValidateFrenchPhone
 export const isOneTrue = (values: Record<string, boolean>): boolean =>
   Object.values(values).includes(true)
 
-export const isPhoneValid = (phone: string | undefined): boolean => {
-  if (!phone) {
+export const isPhoneValid = ({
+  phone,
+  emptyAllowed = false,
+}: {
+  phone: string | undefined
+  emptyAllowed?: boolean
+}): boolean => {
+  if (!phone && emptyAllowed) {
+    return true
+  } else if (!phone) {
     return false
   }
   try {
