@@ -503,18 +503,28 @@ def edit_collective_offer_public(
     from pcapi.core.educational.api.stock import update_collective_booking_educational_year_id
     from pcapi.core.educational.api.stock import update_collective_booking_pending
 
-    if not (offer.isEditable and offer.collectiveStock.isEditable):
+    if not offer.isEditable:
         raise exceptions.CollectiveOfferNotEditable()
 
     if provider_id != offer.providerId:
         raise exceptions.CollectiveOfferNotEditable()
 
+    collective_stock_unique_booking = offer.collectiveStock.get_unique_non_cancelled_booking()
+    if collective_stock_unique_booking is not None:
+        if collective_stock_unique_booking.status == educational_models.CollectiveBookingStatus.CONFIRMED:
+            # if the booking is CONFIRMED, we can only edit the price related fields and the price cannot be increased
+            allowed_fields_for_confirmed_booking = {"price", "priceDetail", "numberOfTickets"}
+            if not set(new_values).issubset(allowed_fields_for_confirmed_booking):
+                raise exceptions.CollectiveOfferNotEditable()
+
+            if "price" in new_values and offer.collectiveStock.price < new_values["price"]:
+                raise exceptions.PriceRequesteCantBedHigherThanActualPrice()
+        else:
+            # if the booking is PENDING, we can edit any field
+            validation.check_collective_booking_status_pending(collective_stock_unique_booking)
+
     offer_fields = {field for field in dir(educational_models.CollectiveOffer) if not field.startswith("_")}
     stock_fields = {field for field in dir(educational_models.CollectiveStock) if not field.startswith("_")}
-
-    collective_stock_unique_booking = offer.collectiveStock.get_unique_non_cancelled_booking()
-    if collective_stock_unique_booking:
-        validation.check_collective_booking_status_pending(collective_stock_unique_booking)
 
     # This variable is meant for Adage mailing
     updated_fields = []

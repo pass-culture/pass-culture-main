@@ -141,22 +141,80 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIEndpointBaseHelper):
         assert offer.institutionId == educational_institution.id
         assert educational_institution.isActive is True
 
-    def test_patch_offer_price_should_be_lower(self, client):
-        # Given
-        plain_api_key, provider = self.setup_provider()
-        venue_provider = provider_factories.VenueProviderFactory(provider=provider)
-        offer = educational_factories.CollectiveOfferFactory(venue=venue_provider.venue)
-        stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer)
+    def test_patch_offer_update_price(self, client):
+        venue_provider = provider_factories.VenueProviderFactory()
+        venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
 
-        # When
+        offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
+        stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer, price=200)
+        url = self.endpoint_url.format(offer_id=offer.id)
+        client_with_token = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+
+        # no booking -> can update with higher price
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_explicit_token(plain_api_key).patch(
-                self.endpoint_url.format(offer_id=stock.collectiveOffer.id),
-                json={"totalPrice": 1196.25},
-            )
+            response = client_with_token.patch(url, json={"totalPrice": 250})
+        assert response.status_code == 200
+        assert stock.price == 250
 
-        # Then
-        assert response.status_code == 403
+        # booking is PENDING -> can update with higher price
+        booking = educational_factories.CollectiveBookingFactory(
+            collectiveStock=stock, status=educational_models.CollectiveBookingStatus.PENDING
+        )
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client_with_token.patch(url, json={"totalPrice": 275})
+        assert response.status_code == 200
+        assert stock.price == 275
+
+        # booking is CANCELLED -> can update with higher price
+        booking.status = educational_models.CollectiveBookingStatus.CANCELLED
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client_with_token.patch(url, json={"totalPrice": 300})
+        assert response.status_code == 200
+        assert stock.price == 300
+
+        # booking is USED -> cannot update
+        booking.status = educational_models.CollectiveBookingStatus.USED
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client_with_token.patch(url, json={"totalPrice": 200})
+        assert response.status_code == 422
+        assert response.json == {"global": ["Offre non éditable."]}
+        assert stock.price == 300
+
+        # booking is REIMBURSED -> cannot update
+        booking.status = educational_models.CollectiveBookingStatus.REIMBURSED
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client_with_token.patch(url, json={"totalPrice": 200})
+        assert response.status_code == 422
+        assert response.json == {"global": ["Offre non éditable."]}
+        assert stock.price == 300
+
+        # booking is CONFIRMED -> can update with lower price + details
+        booking.status = educational_models.CollectiveBookingStatus.CONFIRMED
+        new_tickets = stock.numberOfTickets + 10
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client_with_token.patch(
+                url,
+                json={"totalPrice": 200, "educationalPriceDetail": "hello", "numberOfTickets": new_tickets},
+            )
+        assert response.status_code == 200
+        assert stock.price == 200
+        assert stock.priceDetail == "hello"
+        assert stock.numberOfTickets == new_tickets
+
+        # booking is CONFIRMED -> cannot update with higher price
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client_with_token.patch(url, json={"totalPrice": 250})
+        assert response.status_code == 400
+        assert response.json == {"price": ["Le prix ne peut pas etre supérieur au prix existant"]}
+        assert stock.price == 200
+
+        # booking is CONFIRMED -> cannot update other fields
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client_with_token.patch(url, json={"bookingLimitDatetime": datetime.utcnow().isoformat()})
+        assert response.status_code == 422
+        assert response.json == {"global": ["Offre non éditable."]}
+        assert stock.price == 200
 
     def test_change_venue(self, client):
         # Given
