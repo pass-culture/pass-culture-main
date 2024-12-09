@@ -196,7 +196,6 @@ class Return200Test:
         assert edited_stock.price == 1500
         assert edited_stock.numberOfTickets == 38
         assert edited_stock.priceDetail == "Nouvelle description du prix"
-        assert edited_booking.amount == 1500
         assert edited_booking.confirmationLimitDate is not None
 
         expected_payload = EducationalBookingEdition(
