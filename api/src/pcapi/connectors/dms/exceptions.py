@@ -12,3 +12,9 @@ class DmsGraphQLApiError(DmsGraphQLApiException):
         if not self.errors:
             return None
         return " ; ".join(item["message"] for item in self.errors)
+
+    @property
+    def code(self) -> str | None:
+        if not self.errors:
+            return None
+        return ";".join(item.get("extensions", {}).get("code", "unknown") for item in self.errors)

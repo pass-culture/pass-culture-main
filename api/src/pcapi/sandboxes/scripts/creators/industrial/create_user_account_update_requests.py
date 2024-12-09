@@ -108,14 +108,14 @@ def create_user_account_update_requests() -> None:
     duplicate = users_factories.UserFactory(
         firstName="Jeune",
         lastName="Doublon",
-        email="bene18_bis@example.com",
+        email="bene_18_bis@example.com",
     )
 
     users_factories.EmailUpdateRequestFactory(
         lastName="Doublon",
         email=duplicate.email,
-        user=find_user_by_email("bene18@example.com"),
-        oldEmail="bene18@example.com",
+        user=find_user_by_email("bene_18@example.com"),
+        oldEmail="bene_18@example.com",
         newEmail=duplicate.email,
         lastInstructor=instructor,
         dateLastUserMessage=None,

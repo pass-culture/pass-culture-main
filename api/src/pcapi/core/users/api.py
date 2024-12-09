@@ -417,9 +417,11 @@ def check_can_unsuspend(user: models.User) -> None:
 
 def suspend_account(
     user: models.User,
+    *,
     reason: constants.SuspensionReason,
     actor: models.User | None,
     comment: str | None = None,
+    action_extra_data: dict | None = None,
     is_backoffice_action: bool = False,
 ) -> dict[str, int]:
     """
@@ -442,7 +444,12 @@ def suspend_account(
         db.session.add(user)
 
         history_api.add_action(
-            history_models.ActionType.USER_SUSPENDED, author=actor, user=user, reason=reason.value, comment=comment
+            history_models.ActionType.USER_SUSPENDED,
+            author=actor,
+            user=user,
+            reason=reason.value,
+            comment=comment,
+            **(action_extra_data or {}),
         )
 
         for session in models.UserSession.query.filter_by(userId=user.id):

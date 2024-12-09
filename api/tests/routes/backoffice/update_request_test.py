@@ -1,3 +1,4 @@
+import dataclasses
 import datetime
 from unittest.mock import patch
 
@@ -6,8 +7,12 @@ import factory
 from flask import url_for
 import pytest
 
+from pcapi import settings
 from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.connectors.dms import models as dms_models
+from pcapi.core.history import models as history_models
+import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
@@ -21,7 +26,7 @@ from .helpers.post import PostEndpointHelper
 
 
 pytestmark = [
-    pytest.mark.usefixtures("db_session"),
+    pytest.mark.usefixtures("clean_database"),
     pytest.mark.backoffice,
 ]
 
@@ -549,6 +554,8 @@ class InstructTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, ds_application_id=update_request.dsApplicationId)
         assert response.status_code == 303
 
+        mock_make_on_going.assert_called_once()
+
         db.session.refresh(update_request)
         assert update_request.status == dms_models.GraphQLApplicationStates.on_going
         assert update_request.dateLastStatusUpdate == datetime.datetime(2024, 12, 2, 17, 20, 53)
@@ -557,7 +564,7 @@ class InstructTest(PostEndpointHelper):
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_on_going")
     def test_instruct_with_error(self, mock_make_on_going, legit_user, authenticated_client):
         update_request = users_factories.UserAccountUpdateRequestFactory(
-            status=dms_models.GraphQLApplicationStates.draft
+            dsApplicationId=1234567, status=dms_models.GraphQLApplicationStates.draft
         )
 
         mock_make_on_going.side_effect = dms_exceptions.DmsGraphQLApiError([{"message": "Test!"}])
@@ -567,7 +574,7 @@ class InstructTest(PostEndpointHelper):
 
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "Le dossier ne peut pas passer en instruction : Test!"
+            == "Le dossier 1234567 ne peut pas passer en instruction : Test!"
         )
 
         db.session.refresh(update_request)
@@ -590,3 +597,299 @@ class InstructTest(PostEndpointHelper):
     def test_instruct_not_found(self, authenticated_client):
         response = self.post_to_endpoint(authenticated_client, ds_application_id=1)
         assert response.status_code == 404
+
+
+class GetAcceptFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.account_update.get_accept_form"
+    endpoint_kwargs = {"ds_application_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST
+
+    def test_get_accept_form_test(self):
+        pass
+
+    # TODO
+
+    # TODO error cases
+
+
+class AcceptTest(PostEndpointHelper):
+    endpoint = "backoffice_web.account_update.accept"
+    endpoint_kwargs = {"ds_application_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST
+
+    def _test_successful_request(self, update_request, mock_make_accepted, legit_user, authenticated_client):
+        motivation = "Test !"
+
+        mock_make_accepted.return_value = {
+            "id": "RG9zc2llci0yMTI2ODM4MQ==",
+            "number": 21268381,
+            "state": "accepte",
+            "dateDerniereModification": "2024-12-05T12:17:10+01:00",
+            "dateDepot": "2024-12-02T15:37:29+01:00",
+            "datePassageEnConstruction": "2024-12-05T12:15:55+01:00",
+            "datePassageEnInstruction": "2024-12-05T12:16:03+01:00",
+            "dateTraitement": "2024-12-05T12:17:10+01:00",
+            "dateDerniereCorrectionEnAttente": None,
+            "dateDerniereModificationChamps": "2024-12-02T15:37:28+01:00",
+        }
+
+        response = self.post_to_endpoint(
+            authenticated_client, ds_application_id=update_request.dsApplicationId, form={"motivation": motivation}
+        )
+        assert response.status_code == 303
+        mock_make_accepted.assert_called_once()
+
+        db.session.refresh(update_request)
+        assert update_request.status == dms_models.GraphQLApplicationStates.accepted
+        assert update_request.dateLastStatusUpdate == datetime.datetime(2024, 12, 5, 11, 17, 10)
+        assert update_request.lastInstructor == legit_user
+
+        action = history_models.ActionHistory.query.filter_by(
+            actionType=history_models.ActionType.USER_ACCOUNT_UPDATE_INSTRUCTED
+        ).one()
+        assert action.authorUser == legit_user
+        assert action.user == update_request.user
+        assert action.comment == motivation
+        assert action.extraData == {
+            "ds_procedure_id": int(settings.DS_USER_ACCOUNT_UPDATE_PROCEDURE_ID),
+            "ds_dossier_id": update_request.dsApplicationId,
+            "ds_status": dms_models.GraphQLApplicationStates.accepted.value,
+        }
+
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_accepted")
+    def test_accept_email_update(self, mock_make_accepted, legit_user, authenticated_client):
+        update_request = users_factories.EmailUpdateRequestFactory(
+            user__email="ancien_email@example.com", oldEmail="ancien_email@example.com", dsApplicationId=21268381
+        )
+
+        self._test_successful_request(update_request, mock_make_accepted, legit_user, authenticated_client)
+
+        assert update_request.user.email == update_request.newEmail
+
+        assert len(update_request.user.action_history) == 1
+
+        assert len(update_request.user.email_history) == 1
+        history = update_request.user.email_history[0]
+        assert history.oldEmail == update_request.oldEmail
+        assert history.newEmail == update_request.newEmail
+        assert history.eventType == users_models.EmailHistoryEventTypeEnum.ADMIN_UPDATE
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
+            TransactionalEmail.PERSONAL_DATA_UPDATED_FROM_BACKOFFICE.value
+        )
+        assert mails_testing.outbox[0]["params"] == {
+            "FIRSTNAME": update_request.user.firstName,
+            "LASTNAME": update_request.user.lastName,
+            "UPDATED_FIELD": "EMAIL",
+        }
+
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_accepted")
+    def test_accept_phone_number_update(self, mock_make_accepted, legit_user, authenticated_client):
+        update_request = users_factories.PhoneNumberUpdateRequestFactory(
+            dsApplicationId=21268381, user__phoneNumber="+33612345678"
+        )
+
+        self._test_successful_request(update_request, mock_make_accepted, legit_user, authenticated_client)
+
+        assert update_request.user.phoneNumber == update_request.newPhoneNumber
+
+        assert len(update_request.user.action_history) == 2
+        action = history_models.ActionHistory.query.filter_by(actionType=history_models.ActionType.INFO_MODIFIED).one()
+        assert action.authorUser == legit_user
+        assert action.user == update_request.user
+        assert action.extraData == {
+            "modified_info": {"phoneNumber": {"old_info": "+33612345678", "new_info": "+33730405060"}}
+        }
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
+            TransactionalEmail.PERSONAL_DATA_UPDATED_FROM_BACKOFFICE.value
+        )
+        assert mails_testing.outbox[0]["params"] == {
+            "FIRSTNAME": update_request.user.firstName,
+            "LASTNAME": update_request.user.lastName,
+            "UPDATED_FIELD": "PHONE_NUMBER",
+        }
+
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_accepted")
+    def test_accept_names_update(self, mock_make_accepted, legit_user, authenticated_client):
+        update_request = users_factories.UserAccountUpdateRequestFactory(
+            dsApplicationId=21268381,
+            updateTypes=[
+                users_models.UserAccountUpdateType.FIRST_NAME,
+                users_models.UserAccountUpdateType.LAST_NAME,
+            ],
+            newFirstName="Nouveau-Prénom",
+            newLastName="Nouveau-Nom",
+        )
+
+        self._test_successful_request(update_request, mock_make_accepted, legit_user, authenticated_client)
+
+        assert update_request.user.firstName == update_request.newFirstName
+        assert update_request.user.lastName == update_request.newLastName
+
+        assert len(update_request.user.action_history) == 2
+        action = history_models.ActionHistory.query.filter_by(actionType=history_models.ActionType.INFO_MODIFIED).one()
+        assert action.authorUser == legit_user
+        assert action.user == update_request.user
+        assert action.extraData == {
+            "modified_info": {
+                "firstName": {"old_info": "Jeune", "new_info": "Nouveau-Prénom"},
+                "lastName": {"old_info": "Demandeur", "new_info": "Nouveau-Nom"},
+            }
+        }
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
+            TransactionalEmail.PERSONAL_DATA_UPDATED_FROM_BACKOFFICE.value
+        )
+        assert mails_testing.outbox[0]["params"] == {
+            "FIRSTNAME": update_request.newFirstName,
+            "LASTNAME": update_request.newLastName,
+            "UPDATED_FIELD": "FIRST_NAME,LAST_NAME",
+        }
+
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_accepted")
+    def test_application_not_found(self, mock_make_accepted, legit_user, authenticated_client):
+        update_request = users_factories.EmailUpdateRequestFactory(user__email="original@example.com")
+
+        mock_make_accepted.side_effect = dms_exceptions.DmsGraphQLApiError(
+            [
+                {
+                    "message": "DossierAccepterPayload not found",
+                    "locations": [{"line": 2, "column": 3}],
+                    "path": ["dossierAccepter"],
+                    "extensions": {"code": "not_found"},
+                }
+            ]
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client, ds_application_id=update_request.dsApplicationId, form={"motivation": "Test"}
+        )
+        assert response.status_code == 303
+        mock_make_accepted.assert_called_once()
+
+        db.session.refresh(update_request)
+        assert update_request.status == dms_models.GraphQLApplicationStates.on_going
+        assert update_request.lastInstructor != legit_user
+        assert update_request.user.email == "original@example.com"
+        assert len(update_request.user.action_history) == 0
+        assert len(update_request.user.email_history) == 0
+        assert len(mails_testing.outbox) == 0
+
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == f"Le dossier {update_request.dsApplicationId} ne peut pas être accepté : dossier non trouvé"
+        )
+
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_accepted")
+    def test_wrong_remote_state(self, mock_make_accepted, legit_user, authenticated_client):
+        update_request = users_factories.PhoneNumberUpdateRequestFactory(user__phoneNumber="+33612345678")
+
+        mock_make_accepted.side_effect = dms_exceptions.DmsGraphQLApiError(
+            [{"message": "Le dossier est d\u00e9j\u00e0 en construction"}]
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client, ds_application_id=update_request.dsApplicationId, form={"motivation": "Test"}
+        )
+        assert response.status_code == 303
+        mock_make_accepted.assert_called_once()
+
+        db.session.refresh(update_request)
+        assert update_request.status == dms_models.GraphQLApplicationStates.on_going
+        assert update_request.lastInstructor != legit_user
+        assert update_request.user.phoneNumber == "+33612345678"
+        assert len(update_request.user.action_history) == 0
+        assert len(update_request.user.email_history) == 0
+        assert len(mails_testing.outbox) == 0
+
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == f"Le dossier {update_request.dsApplicationId} ne peut pas être accepté : Le dossier est déjà en construction"
+        )
+
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_accepted")
+    def test_accept_email_update_with_duplicate(self, mock_make_accepted, legit_user, authenticated_client):
+        duplicate_user = users_factories.UserFactory(email="nouvel_email@example.com")
+        update_request = users_factories.EmailUpdateRequestFactory(
+            user__email="ancien_email@example.com",
+            oldEmail="ancien_email@example.com",
+            newEmail="nouvel_email@example.com",
+            dsApplicationId=21268381,
+            flags=[users_models.UserAccountUpdateFlag.DUPLICATE_NEW_EMAIL],
+        )
+
+        self._test_successful_request(update_request, mock_make_accepted, legit_user, authenticated_client)
+
+        assert update_request.user.email == update_request.newEmail
+
+        assert len(update_request.user.action_history) == 1
+
+        assert len(update_request.user.email_history) == 1
+        history = update_request.user.email_history[0]
+        assert history.oldEmail == update_request.oldEmail
+        assert history.newEmail == update_request.newEmail
+        assert history.eventType == users_models.EmailHistoryEventTypeEnum.ADMIN_UPDATE
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
+            TransactionalEmail.PERSONAL_DATA_UPDATED_FROM_BACKOFFICE.value
+        )
+        assert mails_testing.outbox[0]["params"] == {
+            "FIRSTNAME": update_request.user.firstName,
+            "LASTNAME": update_request.user.lastName,
+            "UPDATED_FIELD": "EMAIL",
+        }
+
+        db.session.refresh(duplicate_user)
+        assert not duplicate_user.isActive
+        assert duplicate_user.email != update_request.newEmail
+        assert len(duplicate_user.action_history) == 1
+        assert duplicate_user.action_history[0].actionType == history_models.ActionType.USER_SUSPENDED
+        assert duplicate_user.action_history[0].authorUser == legit_user
+        assert duplicate_user.action_history[0].extraData == {
+            "ds_dossier_id": 21268381,
+            "ds_procedure_id": 104118,
+            "reason": "duplicate reported by user",
+        }
+
+    @pytest.mark.parametrize(
+        "duplicate_factory",
+        [users_factories.BeneficiaryGrant18Factory, users_factories.ProFactory, users_factories.AdminFactory],
+    )
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_accepted")
+    def test_do_not_accept_email_update_duplicate_with_role(
+        self, mock_make_accepted, legit_user, authenticated_client, duplicate_factory
+    ):
+        duplicate_user = duplicate_factory(email="nouvel_email@example.com")
+        update_request = users_factories.EmailUpdateRequestFactory(
+            user__email="ancien_email@example.com",
+            oldEmail="ancien_email@example.com",
+            newEmail="nouvel_email@example.com",
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client, ds_application_id=update_request.dsApplicationId, form={"motivation": "Test"}
+        )
+        assert response.status_code == 303
+        mock_make_accepted.assert_not_called()
+
+        db.session.refresh(update_request)
+        assert update_request.status == dms_models.GraphQLApplicationStates.on_going
+        assert update_request.lastInstructor != legit_user
+        assert update_request.user.email == update_request.oldEmail
+        assert len(update_request.user.action_history) == 0
+        assert len(update_request.user.email_history) == 0
+        assert len(mails_testing.outbox) == 0
+
+        db.session.refresh(duplicate_user)
+        assert duplicate_user.isActive
+        assert duplicate_user.email == update_request.newEmail
+
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == f"Le dossier {update_request.dsApplicationId} ne peut pas être accepté : l'email nouvel_email@example.com est déjà associé à un compte bénéficiaire ou ex-bénéficiaire, pro ou admin."
+        )
