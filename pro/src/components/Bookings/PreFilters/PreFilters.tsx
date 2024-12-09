@@ -1,10 +1,13 @@
 import classNames from 'classnames'
 import isEqual from 'lodash.isequal'
-import React, { FormEvent, useCallback, useEffect, useState } from 'react'
+import { FormEvent, useCallback, useEffect, useState } from 'react'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { DEFAULT_PRE_FILTERS } from 'commons/core/Bookings/constants'
-import { PreFiltersParams } from 'commons/core/Bookings/types'
+import {
+  CollectivePreFiltersParams,
+  PreFiltersParams,
+} from 'commons/core/Bookings/types'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { ALL_OFFERER_ADDRESS_OPTION } from 'commons/core/Offers/constants'
 import { GET_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
@@ -135,8 +138,14 @@ export const PreFilters = ({
     page: 1,
   }
 
+  type DownloadParams =
+    | { audience: Audience.INDIVIDUAL; filters: PreFiltersParams }
+    | {
+        audience: Audience.COLLECTIVE
+        filters: CollectivePreFiltersParams
+      }
   const downloadBookingsCSV = useCallback(
-    async (filters: PreFiltersParams, type: string) => {
+    async ({ audience, filters }: DownloadParams, type: 'CSV' | 'XLS') => {
       setIsDownloadingCSV(true)
 
       try {
@@ -239,7 +248,12 @@ export const PreFilters = ({
             <span className={styles['button-group-separator']} />
 
             <MultiDownloadButtonsModal
-              downloadFunction={downloadBookingsCSV}
+              downloadFunction={(filters, type) =>
+                downloadBookingsCSV(
+                  { audience, filters } as DownloadParams,
+                  type
+                )
+              }
               filters={downloadBookingsFilters}
               isDownloading={isDownloadingCSV}
               isFiltersDisabled={isFiltersDisabled}

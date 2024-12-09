@@ -1,11 +1,11 @@
 import { api } from 'apiClient/api'
 import { DEFAULT_PRE_FILTERS } from 'commons/core/Bookings/constants'
-import { PreFiltersParams } from 'commons/core/Bookings/types'
+import { CollectivePreFiltersParams } from 'commons/core/Bookings/types'
 import { isDateValid } from 'commons/utils/date'
 import { downloadFile } from 'commons/utils/downloadFile'
 
 export const downloadCollectiveBookingsXLSFile = async (
-  filters: PreFiltersParams & { page?: number }
+  filters: CollectivePreFiltersParams & { page?: number }
 ) => {
   const bookingsXLSText = await api.getCollectiveBookingsExcel(
     filters.page,
@@ -16,10 +16,7 @@ export const downloadCollectiveBookingsXLSFile = async (
       isDateValid(filters.offerEventDate)
       ? filters.offerEventDate
       : null,
-    // TODO fix PreFiltersParams type to use CollectiveBookingStatusFilter type
-    // @ts-expect-error
-    // eslint-disable-next-line no-undef
-    filters.bookingStatusFilter as CollectiveBookingStatusFilter,
+    filters.bookingStatusFilter,
     isDateValid(filters.bookingBeginningDate)
       ? filters.bookingBeginningDate
       : null,
