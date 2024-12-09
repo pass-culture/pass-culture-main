@@ -139,7 +139,7 @@ describe('reimbursementsWithFilters', () => {
     expect(screen.getByText(/75,00/)).toBeInTheDocument()
   })
 
-  it('should display new invoice table if FF WIP_ENABLE_FINANCE_INCIDENT is enable', async () => {
+  it('should display the invoice table', async () => {
     vi.spyOn(api, 'getInvoicesV2').mockResolvedValue([
       {
         reference: 'J123456789',
@@ -159,9 +159,7 @@ describe('reimbursementsWithFilters', () => {
       },
     ])
 
-    renderReimbursementsInvoices({
-      features: ['WIP_ENABLE_FINANCE_INCIDENT'],
-    })
+    renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(
@@ -236,9 +234,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should contain sort informations for a11y', async () => {
-    renderReimbursementsInvoices({
-      features: ['WIP_ENABLE_FINANCE_INCIDENT'],
-    })
+    renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
@@ -324,9 +320,7 @@ describe('reimbursementsWithFilters', () => {
     ])
     vi.spyOn(api, 'getReimbursementsCsvV2')
 
-    renderReimbursementsInvoices({
-      features: ['WIP_ENABLE_FINANCE_INCIDENT'],
-    })
+    renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
