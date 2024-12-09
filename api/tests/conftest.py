@@ -45,6 +45,11 @@ from tests.serialization.serialization_decorator_test import test_blueprint
 from tests.serialization.serialization_decorator_test import test_bookings_blueprint
 
 
+if typing.TYPE_CHECKING:
+    from _pytest.config import Config as PytestConfig
+    from _pytest.nodes import Item
+
+
 def run_migrations():
     from pcapi import settings
 
@@ -634,6 +639,16 @@ def run_command(app, clean_database):
     from tests.test_utils import run_command as _run_command
 
     return functools.partial(_run_command, app)
+
+
+@pytest.hookimpl()
+def pytest_collection_modifyitems(config: "PytestConfig", items: list["Items"]) -> None:
+    backoffice_dirs = (Path("tests/routes/backoffice"),)
+    matches = [config.rootdir / dir in Path(item.fspath).parents for dir in backoffice_dirs for item in items]
+    if any(matches) and not all(matches):
+        raise ValueError("You can not run backoffice tests with non backoffice tests")
+    if all(matches):
+        config.option.markexpr = "backoffice"
 
 
 #################################################################################################################
