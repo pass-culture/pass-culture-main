@@ -32,7 +32,7 @@ export const setInitialFormValues = ({
     comment: venue.comment || '',
     bookingEmail: venue.bookingEmail || '',
     name: venue.name,
-    venueSiret: venue.pricingPoint?.id || null,
+    venueSiret: venue.pricingPoint?.id || '',
     publicName: venue.publicName || '',
     siret: humanizeSiret(venue.siret || ''),
     venueLabel: venue.venueLabelId?.toString() || '',

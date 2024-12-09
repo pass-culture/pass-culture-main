@@ -1,13 +1,8 @@
+import { MockInstance } from 'vitest'
+
 import { createImageFile } from 'commons/utils/testFileHelpers'
 
-import { imageConstraints, getValidatorErrors } from './imageConstraints'
-
-const mockCreateImageBitmap = vi.fn()
-
-Object.defineProperty(global, 'createImageBitmap', {
-  writable: true,
-  value: mockCreateImageBitmap,
-})
+import { getValidatorErrors, imageConstraints } from './imageConstraints'
 
 describe('image constraints', () => {
   describe('formats', () => {
@@ -32,6 +27,8 @@ describe('image constraints', () => {
     })
 
     describe('checks file binary', () => {
+      let createImageBitmapSpy: MockInstance<typeof createImageBitmap>
+
       it('accepts bitmap image', async () => {
         const file = createImageFile()
         const constraint = imageConstraints.formats(['image/png'])
@@ -42,17 +39,17 @@ describe('image constraints', () => {
       })
 
       it('refuse non bitmap file', async () => {
-        // TODO: replace Object.defineProperty with something that doesn't impact other tests/suites
         const file = createImageFile()
         const constraint = imageConstraints.formats(['image/png'])
-        Object.defineProperty(global, 'createImageBitmap', {
-          writable: true,
-          value: vi.fn().mockRejectedValueOnce(null),
-        })
+        createImageBitmapSpy = vi
+          .spyOn(global, 'createImageBitmap')
+          .mockRejectedValueOnce(null)
 
         const isValid = await constraint.asyncValidator(file)
 
         expect(isValid).toBe(false)
+
+        createImageBitmapSpy.mockRestore()
       })
     })
   })
