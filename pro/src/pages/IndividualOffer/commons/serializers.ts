@@ -30,9 +30,6 @@ export const serializeDurationMinutes = (
 export const serializeExtraDataForPatch = (
   formValues: Partial<IndividualOfferFormValues>
 ): PostOfferBodyModel['extraData'] | undefined => {
-  // TODO: change api create and update offer in order not to save
-  // extra data fields that's aren't link to offer subCategory
-
   const extraData: PostOfferBodyModel['extraData'] = {}
   extraData.author = formValues.author
   extraData.gtl_id = formValues.gtl_id
