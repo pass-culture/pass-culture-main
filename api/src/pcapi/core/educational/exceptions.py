@@ -139,6 +139,12 @@ class CollectiveOfferNotEditable(Exception):
     pass
 
 
+class CollectiveOfferForbiddenFields(Exception):
+    def __init__(self, allowed_fields: list[str]) -> None:
+        self.allowed_fields = allowed_fields
+        super().__init__()
+
+
 class CollectiveStockNotBookableByUser(Exception):
     pass
 
