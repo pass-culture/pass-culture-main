@@ -115,7 +115,8 @@ one_year_before_booking = default_booking_date - timedelta(weeks=52)
 one_year_after_booking = default_booking_date + timedelta(weeks=52)
 
 
-class FindByProUserTest:
+class FindByProUserTestWithoutOA:
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_only_expected_booking_attributes(self, app: fixture):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory(
@@ -159,6 +160,7 @@ class FindByProUserTest:
         assert expected_booking.quantity == 1
         assert expected_booking.bookingAmount == 12
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_only_validated_bookings_for_requested_period(self, app: fixture):
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -190,6 +192,7 @@ class FindByProUserTest:
         assert len(bookings) == 1
         assert bookings[0].bookingToken == used_booking_2.token
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_only_reimbursed_bookings_for_requested_period(self, app: fixture):
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -219,6 +222,7 @@ class FindByProUserTest:
         assert len(bookings) == 1
         assert bookings[0].bookingToken == reimbursed_booking_1.token
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_booking_as_duo_when_quantity_is_two(self, app: fixture):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory(
@@ -242,6 +246,7 @@ class FindByProUserTest:
         assert len(bookings) == 2
         assert bookings[0].quantity == 2
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_not_duplicate_bookings_when_user_is_admin_and_bookings_offerer_has_multiple_user(
         self, app: fixture
     ):
@@ -262,6 +267,7 @@ class FindByProUserTest:
         assert len(bookings) == 2
         assert bookings[0].quantity == 2
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_event_booking_when_booking_is_on_an_event(self, app: fixture):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory(
@@ -305,6 +311,7 @@ class FindByProUserTest:
         assert not expected_booking.isConfirmed
         assert expected_booking.stockBeginningDatetime == stock.beginningDatetime
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_event_confirmed_booking_when_booking_is_on_an_event_in_confirmation_period(
         self, app: fixture
     ):
@@ -334,6 +341,7 @@ class FindByProUserTest:
 
         assert bookings[0].isConfirmed
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_cancellation_date_when_booking_has_been_cancelled(self, app: fixture):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory(
@@ -364,6 +372,7 @@ class FindByProUserTest:
         assert len(bookings) == 1
         assert bookings[0].cancelledAt
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_validation_date_when_booking_has_been_used_and_not_cancelled_not_reimbursed(
         self, app: fixture
     ):
@@ -397,6 +406,7 @@ class FindByProUserTest:
         assert not expected_booking.cancelledAt
         assert not expected_booking.reimbursedAt
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_correct_number_of_matching_offerers_bookings_linked_to_user(self, app: fixture):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory(
@@ -428,6 +438,7 @@ class FindByProUserTest:
 
         assert len(bookings) == 2
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_bookings_from_first_page(self, app: fixture):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiary@example.com")
@@ -452,6 +463,7 @@ class FindByProUserTest:
         assert bookings[0].bookingToken == booking2.token
         assert total == 2
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_not_return_bookings_when_offerer_link_is_not_validated(self, app: fixture):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -472,6 +484,7 @@ class FindByProUserTest:
 
         assert bookings == []
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_one_booking_recap_item_when_quantity_booked_is_one(self, app: fixture):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -494,6 +507,7 @@ class FindByProUserTest:
         assert bookings[0].bookingToken == booking.token
         assert total == 1
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_two_booking_recap_items_when_quantity_booked_is_two(self, app: fixture):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -519,6 +533,7 @@ class FindByProUserTest:
         assert bookings[1].bookingToken == booking.token
         assert total == 2
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_booking_date_with_offerer_timezone_when_venue_is_digital(self, app: fixture):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -546,6 +561,7 @@ class FindByProUserTest:
         assert len(bookings) == 1
         assert bookings[0].bookedAt == booking_date
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_booking_ean_when_information_is_available(self, app: fixture):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -572,6 +588,7 @@ class FindByProUserTest:
 
         assert bookings[0].offerEan == "9876543234"
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_only_bookings_for_requested_offerer_address(self):
         pro_user = users_factories.ProFactory()
         user_offerer = offerers_factories.UserOffererFactory(user=pro_user)
@@ -595,6 +612,7 @@ class FindByProUserTest:
         assert len(bookings) == 1
         assert bookings[0].offerId == booking_1.stock.offer.id
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_only_booking_for_requested_venue(self, app: fixture):
 
         pro_user = users_factories.ProFactory()
@@ -616,6 +634,7 @@ class FindByProUserTest:
         assert expected_booking.offerName == booking_two.stock.offer.name
         assert expected_booking.bookingAmount == booking_two.amount
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_only_booking_for_requested_event_date(self, app: fixture):
 
         user_offerer = offerers_factories.UserOffererFactory()
@@ -642,6 +661,7 @@ class FindByProUserTest:
         assert len(bookings) == 1
         assert bookings[0].bookingToken == expected_booking.token
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def should_consider_venue_locale_datetime_when_filtering_by_event_date(self, app: fixture):
 
         user_offerer = offerers_factories.UserOffererFactory()
@@ -677,6 +697,7 @@ class FindByProUserTest:
         assert cayenne_booking.token in bookings_tokens
         assert mayotte_booking.token in bookings_tokens
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_only_bookings_for_requested_booking_period(self, app: fixture):
 
         user_offerer = offerers_factories.UserOffererFactory()
@@ -706,6 +727,7 @@ class FindByProUserTest:
         assert len(bookings) == 1
         assert bookings[0].bookedAt == expected_booking.dateCreated
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def should_consider_venue_locale_datetime_when_filtering_by_booking_period(self, app: fixture):
 
         user_offerer = offerers_factories.UserOffererFactory()
@@ -713,7 +735,8 @@ class FindByProUserTest:
         requested_booking_period_ending = datetime(2020, 4, 22, 20, 00).date()
 
         offer_in_cayenne = offers_factories.OfferFactory(
-            venue__postalCode="97300", venue__managingOfferer=user_offerer.offerer
+            venue__postalCode="97300",
+            venue__managingOfferer=user_offerer.offerer,
         )
         cayenne_booking_datetime = datetime(2020, 4, 22, 2, 0)
         stock_in_cayenne = offers_factories.EventStockFactory(
@@ -724,7 +747,9 @@ class FindByProUserTest:
         )
 
         offer_in_mayotte = offers_factories.OfferFactory(
-            venue__postalCode="97600", venue__managingOfferer=user_offerer.offerer
+            venue__postalCode="97600",
+            venue__offererAddress__address__postalCode="97600",
+            venue__managingOfferer=user_offerer.offerer,
         )
         mayotte_booking_datetime = datetime(2020, 4, 20, 23, 0)
         stock_in_mayotte = offers_factories.EventStockFactory(
@@ -745,6 +770,7 @@ class FindByProUserTest:
         assert cayenne_booking.token in bookings_tokens
         assert mayotte_booking.token in bookings_tokens
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_only_bookings_for_requested_offer_type(self, app: fixture):
 
         user_offerer = offerers_factories.UserOffererFactory()
@@ -1335,7 +1361,9 @@ class FindByProUserWithOffererAddressAsDataSourceTest:
         requested_booking_period_ending = datetime(2020, 4, 22, 20, 00).date()
 
         offer_in_cayenne = offers_factories.OfferFactory(
-            venue__postalCode="97300", venue__managingOfferer=user_offerer.offerer
+            venue__postalCode="97300",
+            venue__offererAddress__address__postalCode="97300",
+            venue__managingOfferer=user_offerer.offerer,
         )
         cayenne_booking_datetime = datetime(2020, 4, 22, 2, 0)
         stock_in_cayenne = offers_factories.EventStockFactory(
@@ -1346,7 +1374,9 @@ class FindByProUserWithOffererAddressAsDataSourceTest:
         )
 
         offer_in_mayotte = offers_factories.OfferFactory(
-            venue__postalCode="97600", venue__managingOfferer=user_offerer.offerer
+            venue__postalCode="97600",
+            venue__offererAddress__address__postalCode="97600",
+            venue__managingOfferer=user_offerer.offerer,
         )
         mayotte_booking_datetime = datetime(2020, 4, 20, 23, 0)
         stock_in_mayotte = offers_factories.EventStockFactory(
@@ -4910,7 +4940,9 @@ class GetCsvReportTest:
         )
 
         offer_in_mayotte = offers_factories.OfferFactory(
-            venue__postalCode="97600", venue__managingOfferer=user_offerer.offerer
+            venue__postalCode="97600",
+            venue__offererAddress__address__postalCode="97600",
+            venue__managingOfferer=user_offerer.offerer,
         )
         mayotte_booking_datetime = datetime(2020, 4, 20, 23, 0)
         stock_in_mayotte = offers_factories.EventStockFactory(
