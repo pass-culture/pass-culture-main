@@ -115,7 +115,7 @@ export const FieldLayout = ({
     >
       <div
         className={cn(styles['field-layout-label-container'], classNameLabel, {
-          ['visually-hidden']: isLabelHidden,
+          [styles['visually-hidden']]: isLabelHidden,
         })}
       >
         <label

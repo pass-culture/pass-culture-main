@@ -131,7 +131,9 @@ export const PriceCategoriesForm = ({
               />
               {values.priceCategories.map((priceCategory, index) => (
                 <fieldset key={index}>
-                  <legend className="visually-hidden">Tarif {index + 1}</legend>
+                  <legend className={styles['visually-hidden']}>
+                    Tarif {index + 1}
+                  </legend>
                   <FormLayout.Row
                     inline
                     smSpaceAfter

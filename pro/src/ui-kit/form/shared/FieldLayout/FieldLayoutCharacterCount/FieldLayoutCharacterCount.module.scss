@@ -1,7 +1,12 @@
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_a11y.scss" as a11y;
 
 .field-layout-character-count {
   @include fonts.caption;
 
   color: var(--color-grey-dark);
+}
+
+.visually-hidden {
+  @include a11y.visually-hidden;
 }

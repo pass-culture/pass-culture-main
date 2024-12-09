@@ -99,7 +99,7 @@ export const CumulatedViews = ({ dailyViews }: CumulatedViewsProps) => {
           />
 
           {/* Wrap in visually hidden div, this class doesn't work on Chrome on <table> element */}
-          <div className="visually-hidden">
+          <div className={styles['visually-hidden']}>
             <table id="chart-description">
               <caption id="chart-title">
                 Nombre de vues cumulées de toutes vos offres sur les 6 derniers

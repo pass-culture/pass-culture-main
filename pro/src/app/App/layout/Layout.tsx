@@ -11,7 +11,6 @@ import { UserReview } from 'components/UserReview/UserReview'
 import fullGoTop from 'icons/full-go-top.svg'
 import fullInfoIcon from 'icons/full-info.svg'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
-import logoStyles from 'styles/components/_Logo.module.scss'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { LateralPanel } from './LateralPanel/LateralPanel'
@@ -126,7 +125,7 @@ export const Layout = ({
             {layout === 'logged-out' && (
               <header className={styles['content-wrapper-side-logo']}>
                 <SvgIcon
-                  className={logoStyles['logo-unlogged']}
+                  className={styles['logo-unlogged']}
                   viewBox="0 0 282 120"
                   alt="Pass Culture pro, l’espace des acteurs culturels"
                   src={logoPassCultureProFullIcon}

@@ -4,7 +4,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 @use "styles/mixins/_a11y.scss" as a11y;
-@use "styles/variables/_size.scss" as size;
+@use "styles/mixins/_size.scss" as size;
 
 $action-gap: rem.torem(10px);
 

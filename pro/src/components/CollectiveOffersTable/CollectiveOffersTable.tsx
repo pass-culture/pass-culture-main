@@ -72,7 +72,9 @@ export const CollectiveOffersTable = ({
             offers.length <= 1 ? 'offre' : 'offres'
           }`
         ) : (
-          <span className="visually-hidden">aucune offre trouvée</span>
+          <span className={styles['visually-hidden']}>
+            aucune offre trouvée
+          </span>
         )}
       </div>
       {isLoading ? (

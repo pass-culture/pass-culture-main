@@ -1,5 +1,5 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_size.scss" as size;
+@use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 
 .onboarding-offer-container {
@@ -8,7 +8,10 @@
   gap: rem.torem(32px);
   align-items: center;
   justify-content: center;
-  min-height: calc(100vh - #{size.$footer-height} - #{size.$top-menu-height} - #{size.$top-menu-border-size});
+  min-height: calc(
+    100vh - #{size.$footer-height} - #{size.$top-menu-height} -
+      #{size.$top-menu-border-size}
+  );
   padding: rem.torem(24px);
 }
 
@@ -19,7 +22,8 @@
   align-items: center;
 }
 
-.onboarding-offer-header-title, .onboarding-offer-header-subtitle {
+.onboarding-offer-header-title,
+.onboarding-offer-header-subtitle {
   text-align: center;
 }
 

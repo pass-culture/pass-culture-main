@@ -1,8 +1,4 @@
 @use "orejime/dist/orejime";
-
-//  TODO rework how to distinguish between global imports and scss modules imported when needed
 @use "global/index" as *;
 @use "components/index" as *;
-@use "variables/index" as *;
-@use "mixins/index" as *;
 @import "design-system/build/css/variables.css";

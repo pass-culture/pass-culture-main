@@ -88,7 +88,9 @@ export const CollectiveBookingsTable = ({
   return (
     <div className={styles['table-wrapper']}>
       <table className={styles['table']}>
-        <caption className="visually-hidden">Liste des réservations</caption>
+        <caption className={styles['visually-hidden']}>
+          Liste des réservations
+        </caption>
 
         <thead className={styles['table-header']}>
           <tr className={styles['table-header-row']}>
@@ -177,7 +179,7 @@ export const CollectiveBookingsTable = ({
             </th>
 
             <th scope="col">
-              <span className="visually-hidden">Détails</span>
+              <span className={styles['visually-hidden']}>Détails</span>
             </th>
           </tr>
         </thead>
