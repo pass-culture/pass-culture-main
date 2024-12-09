@@ -366,9 +366,20 @@ export const routes: RouteConfig[] = [
   },
   {
     lazy: () =>
-      import('pages/OnboardingOffersTypeChoice/OnboardingOffersTypeChoice'),
+      import(
+        'pages/Onboarding/OnboardingOffersTypeChoice/OnboardingOffersTypeChoice'
+      ),
     path: '/inscription-choix-offre',
     title: "Inscription - Choix du type d'offre",
+    featureName: 'WIP_ENABLE_PRO_ONBOARDING',
+  },
+  {
+    lazy: () =>
+      import(
+        'pages/Onboarding/OnboardingOfferIndividual/OnboardingOfferIndividual'
+      ),
+    path: '/inscription-offre-individuelle',
+    title: 'Inscription - Offre à destination des jeunes',
     featureName: 'WIP_ENABLE_PRO_ONBOARDING',
   },
   {
