@@ -1,7 +1,10 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 
 import { api } from 'apiClient/api'
-import { getCollectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
+import {
+  getCollectiveOfferFactory,
+  getCollectiveOfferTemplateFactory,
+} from 'commons/utils/factories/collectiveApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
@@ -86,5 +89,29 @@ describe('CollectiveOfferSummaryCreation', () => {
     expect(screen.getByText('Brouillon enregistré')).toBeInTheDocument()
 
     expect(screen.getByText('Enregistrer et continuer')).toBeInTheDocument()
+  })
+
+  it('should render bookable offer summary creation with three edit links (details, stock, institution)', async () => {
+    await renderCollectiveOfferSummaryCreation(
+      '/offre/A1/collectif/creation/recapitulatif',
+      defaultProps
+    )
+
+    expect(screen.getAllByText('Modifier')).toHaveLength(3)
+  })
+
+  it('should render template offer summary creation with one edit link', async () => {
+    const templateProps = {
+      offer: getCollectiveOfferTemplateFactory(),
+      isTemplate: true,
+      offerer: undefined,
+    }
+
+    await renderCollectiveOfferSummaryCreation(
+      '/offre/A1/collectif/creation/recapitulatif',
+      templateProps
+    )
+
+    expect(screen.getAllByText('Modifier')).toHaveLength(1)
   })
 })
