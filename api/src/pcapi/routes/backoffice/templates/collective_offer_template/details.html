@@ -36,9 +36,7 @@
                   <span class="fw-bold">Formats :</span> {{ collective_offer_template.formats | format_collective_offer_formats }}
                 </p>
                 <p class="mb-1">
-                  <span class="fw-bold">Description :</span> {{ collective_offer_template.description | empty_string_if_null | replace("\n", "
-                   <br />
-                   "|safe) }}
+                  <span class="fw-bold">Description :</span> {{ collective_offer_template.description | empty_string_if_null | nl2br }}
                 </p>
                 <p class="mb-1">
                   <span class="fw-bold">Date de création :</span> {{ collective_offer_template.dateCreated | format_date }}

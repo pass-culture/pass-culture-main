@@ -1,6 +1,9 @@
 import enum
+import typing
 
+from wtforms.validators import Length
 from wtforms.validators import Optional
+from wtforms.validators import Regexp
 
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils as forms_utils
@@ -33,3 +36,27 @@ class GetChronicleSearchForm(forms_utils.PCForm):
         default="100",
         validators=(Optional(),),
     )
+
+
+class UpdateContentForm(forms_utils.PCForm):
+
+    def __init__(self, *args: typing.Any, content: str = "", **kwargs: typing.Any) -> None:
+        super().__init__(*args, **kwargs)
+        if content:
+            self.content.data = content
+
+    content = fields.PCTextareaField(
+        "",  # the field name hides the text when scrolling on long chronicles.
+        rows=15,
+        validators=(Length(min=1),),
+    )
+
+
+class AttachProductForm(forms_utils.PCForm):
+    ean = fields.PCStringField(
+        "EAN", validators=[Regexp(r"^[0-9]{13}$", message="L'EAN doit être composé de 13 chiffres")]
+    )
+
+
+class CommentForm(forms_utils.PCForm):
+    comment = fields.PCCommentField("Commentaire interne pour la chronique")

@@ -8,7 +8,7 @@
     {% if is_feature_active("WIP_ENABLE_ALGOLIA_SEARCH_IN_BO") %}
       <div class="d-flex justify-content-between">
         <h2 class="fw-light p-2">Offres individuelles</h2>
-        {{ display_selector("form-selector-individual-offer", (("Recherche exhaustive", "Toutes les offres, même celles non réservables","advanced-search") , ("Recherche dans l'app", "Même résultats que dans l’app jeune : offres réservables", "algolia-search")), "p-2") }}
+        {{ display_selector("form-selector-individual-offer", (("Recherche exhaustive", "Toutes les offres, même celles non réservables","advanced-search") , ("Recherche dans l'app", "Même résultats que dans l’app jeune : offres réservables", "algolia-search")), "p-3") }}
         <div class="p-2"></div>
       </div>
     {% else %}
