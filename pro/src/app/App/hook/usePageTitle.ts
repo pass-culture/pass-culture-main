@@ -13,5 +13,5 @@ export const usePageTitle = (): LocationListener | void => {
     document.title = currentRoute
       ? `${currentRoute.title} - pass Culture Pro`
       : 'pass Culture Pro'
-  }, [location.pathname])
+  }, [location])
 }
