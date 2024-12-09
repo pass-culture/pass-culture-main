@@ -299,9 +299,7 @@ jobs:
     if: |
       always() &&
       !cancelled() &&
-      github.actor != 'dependabot[bot]' &&
-      (needs.push-pcapi.result == 'success' && needs.push-pcapi-console.result == 'success') ||
-      (needs.pcapi-init-job.outputs.checksum-console-tag-exists == 'true' && needs.pcapi-init-job.outputs.checksum-console-tag-exists == 'true')
+      github.actor != 'dependabot[bot]'
     uses: ./.github/workflows/dev_on_workflow_deploy_pullrequests.yml
     with:
       environment: pullrequest
