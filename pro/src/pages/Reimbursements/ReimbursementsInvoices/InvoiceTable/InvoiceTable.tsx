@@ -59,7 +59,6 @@ function sortInvoices(
           : compareAsc(new Date(b.date), new Date(a.date))
       )
 
-    // TODO : remove me when removing WIP_ENABLE_FINANCE_INCIDENT
     case InvoicesOrderedBy.REIMBURSEMENT_POINT_NAME:
       return [...invoices].sort((a, b) =>
         sortingMode === SortingMode.ASC
@@ -93,6 +92,7 @@ function sortInvoices(
           : b.cashflowLabels[0].localeCompare(a.cashflowLabels[0])
       )
 
+    case null:
     default:
       return invoices
   }
