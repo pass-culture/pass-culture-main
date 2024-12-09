@@ -22,7 +22,7 @@ describe('serializeEditVenueBodyModel', () => {
       comment: 'This is a venue comment',
       bookingEmail: 'me@example.com',
       name: 'Lieu de test',
-      venueSiret: null,
+      venueSiret: '',
       publicName: 'Adresse de la venue',
       siret: '418 166 096 00069',
       venueLabel: '',
