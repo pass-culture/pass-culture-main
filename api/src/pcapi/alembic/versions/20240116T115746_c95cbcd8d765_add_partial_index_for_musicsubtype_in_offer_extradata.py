@@ -11,8 +11,8 @@ from pcapi import settings
 # revision identifiers, used by Alembic.
 revision = "c95cbcd8d765"
 down_revision = "36cf4c5380ad"
-branch_labels = None
-depends_on = None
+branch_labels: tuple[str] | None = None
+depends_on: tuple[str] | None = None
 
 
 def upgrade() -> None:
@@ -34,8 +34,5 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.execute("SET SESSION statement_timeout='300s'")  # helm upgrade timeout
-    op.drop_index(
-        "offer_music_sub_type_idx",
-        table_name="offer",
-    )
+    op.drop_index("offer_music_sub_type_idx", table_name="offer", if_exists=True)
     op.execute(f"SET SESSION statement_timeout={settings.DATABASE_STATEMENT_TIMEOUT}")

@@ -612,48 +612,6 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert {int(row["ID"]) for row in rows} == {offer.id}
 
-    def test_list_offers_advanced_search_by_music_type_with_titelive_genres(self, authenticated_client, offers):
-        query_args = {
-            "search-3-search_field": "MUSIC_TYPE_GTL",
-            "search-3-operator": "IN",
-            "search-3-music_type_gtl": ["01", "02", "19"],
-        }
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, **query_args))
-            assert response.status_code == 200
-
-        row = html_parser.extract_table_rows(response.data)
-        assert int(row[0]["ID"]) == offers[0].id
-
-    def test_list_offers_by_show_type(self, authenticated_client, offers):
-        query_args = {
-            "search-3-search_field": "SHOW_TYPE",
-            "search-3-operator": "IN",
-            "search-3-show_type": ["200", "100", "300"],
-        }
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, **query_args))
-            assert response.status_code == 200
-
-        row = html_parser.extract_table_rows(response.data)
-        assert int(row[0]["ID"]) == offers[1].id
-
-    def test_list_offers_by_show_sub_type(self, authenticated_client, offers):
-        query_args = {
-            "search-3-search_field": "SHOW_SUB_TYPE",
-            "search-3-operator": "IN",
-            "search-3-show_sub_type": ["104", "105", "106"],
-        }
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, **query_args))
-            assert response.status_code == 200
-
-        row = html_parser.extract_table_rows(response.data)
-        assert int(row[0]["ID"]) == offers[1].id
-
     def test_list_offers_by_venue(self, authenticated_client, offers):
         venue_id = offers[1].venueId
         query_args = {

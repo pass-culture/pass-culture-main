@@ -188,32 +188,6 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
         "column": offers_models.Offer.extraData["visa"].astext,
         "special": string_utils.format_ean_or_visa,
     },
-    "MUSIC_TYPE_GTL": {
-        "field": "music_type_gtl",
-        "custom_filters": {
-            "IN": lambda values: (
-                sa.and_(
-                    offers_models.Offer.subcategoryId.in_(subcategories_v2.MUSIC_TITELIVE_SUBCATEGORY_SEARCH_IDS),
-                    sa.func.substring(offers_models.Offer.extraData["gtl_id"].astext, 1, 2).in_(values),
-                )
-            ),
-            "NOT_IN": lambda values: (
-                sa.and_(
-                    offers_models.Offer.subcategoryId.in_(subcategories_v2.MUSIC_TITELIVE_SUBCATEGORY_SEARCH_IDS),
-                    sa.func.substring(offers_models.Offer.extraData["gtl_id"].astext, 1, 2).not_in(values),
-                )
-            ),
-        },
-    },
-    "SHOW_TYPE": {
-        "field": "show_type",
-        "column": offers_models.Offer.extraData["showType"].astext,
-        "facet": "offer.showType",
-    },
-    "SHOW_SUB_TYPE": {
-        "field": "show_sub_type",
-        "column": offers_models.Offer.extraData["showSubType"].astext,
-    },
     "PRICE": {
         "field": "price",
         "column": offers_models.Stock.price,
