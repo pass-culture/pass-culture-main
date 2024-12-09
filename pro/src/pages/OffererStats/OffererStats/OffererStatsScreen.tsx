@@ -1,8 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Navigate } from 'react-router-dom'
+import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
+import {
+  GET_DEPRECATED_STATISTIC_DASHBOARD,
+  GET_OFFERER_QUERY_KEY,
+} from 'commons/config/swrQueryKeys'
 import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
@@ -10,6 +15,7 @@ import { sortByLabel } from 'commons/utils/strings'
 import { OffererStatsNoResult } from 'components/OffererStatsNoResult/OffererStatsNoResult'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import styles from './OffererStatsScreen.module.scss'
 
@@ -18,9 +24,28 @@ export const OffererStatsScreen = () => {
   const isOffererStatsV2Active = useActiveFeature('WIP_OFFERER_STATS_V2')
   const targetOffererId = useSelector(selectCurrentOffererId)
 
-  const [iframeUrl, setIframeUrl] = useState('')
   const [selectedVenueId, setSelectedVenueId] = useState('all')
-  const [venueOptions, setVenueOptions] = useState<SelectOption[]>([])
+
+  const offererQuery = useSWR(
+    [GET_OFFERER_QUERY_KEY, Number(targetOffererId)],
+    ([, offererId]) => api.getOfferer(offererId)
+  )
+
+  const getOffererStatsDashboardUrlQuery = useSWR(
+    selectedVenueId
+      ? [GET_DEPRECATED_STATISTIC_DASHBOARD, selectedVenueId]
+      : null,
+    ([, venueId]) => {
+      if (venueId === 'all') {
+        return api.getOffererStatsDashboardUrl(Number(targetOffererId))
+      }
+      return api.getVenueStatsDashboardUrl(Number(selectedVenueId))
+    }
+  )
+
+  if (offererQuery.isLoading || !offererQuery.data) {
+    return <Spinner />
+  }
 
   if (isOffererStatsV2Active) {
     return (
@@ -28,59 +53,34 @@ export const OffererStatsScreen = () => {
     )
   }
 
+  const iframeUrl = getOffererStatsDashboardUrlQuery.data?.dashboardUrl ?? ''
+
+  let venueOptions: SelectOption[] = []
   const ALL_VENUES_OPTION = {
     value: 'all',
     label: isOfferAddressEnabled ? 'Tous' : 'Tous les lieux',
   }
+  const offerer = offererQuery.data
+  if (offerer.managedVenues && offerer.managedVenues.length > 0) {
+    const sortedVenueOptions = sortByLabel(
+      offerer.managedVenues
+        .filter(
+          (venue) => offerer.hasDigitalVenueAtLeastOneOffer || !venue.isVirtual
+        )
+        .map((venue) => ({
+          value: venue.id.toString(),
+          label: venue.publicName || venue.name,
+        }))
+    )
+    venueOptions = [ALL_VENUES_OPTION, ...sortedVenueOptions]
+  } else {
+    venueOptions = []
+  }
+
   const handleChangeVenue = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedVenueId = event.target.value
     setSelectedVenueId(selectedVenueId)
   }
-
-  useEffect(() => {
-    async function loadData() {
-      const offerer = await api.getOfferer(Number(targetOffererId))
-      if (offerer.managedVenues && offerer.managedVenues.length > 0) {
-        const sortedVenueOptions = sortByLabel(
-          offerer.managedVenues
-            .filter(
-              (venue) =>
-                offerer.hasDigitalVenueAtLeastOneOffer || !venue.isVirtual
-            )
-            .map((venue) => ({
-              value: venue.id.toString(),
-              label: venue.publicName || venue.name,
-            }))
-        )
-        setVenueOptions([ALL_VENUES_OPTION, ...sortedVenueOptions])
-      } else {
-        setVenueOptions([])
-      }
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    loadData()
-  }, [targetOffererId])
-
-  useEffect(() => {
-    const updateDashboardUrl = async (venueId: string) => {
-      let response = null
-      if (!venueId) {
-        setIframeUrl('')
-        return
-      }
-      if (venueId === 'all') {
-        response = await api.getOffererStatsDashboardUrl(
-          Number(targetOffererId)
-        )
-      } else {
-        response = await api.getVenueStatsDashboardUrl(Number(selectedVenueId))
-      }
-      setIframeUrl(response.dashboardUrl)
-    }
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    updateDashboardUrl(selectedVenueId)
-  }, [selectedVenueId, targetOffererId])
 
   return (
     <div className={styles['offerer-stats']}>
