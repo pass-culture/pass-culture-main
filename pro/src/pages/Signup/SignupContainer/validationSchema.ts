@@ -2,12 +2,12 @@ import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import * as yup from 'yup'
 
 import { passwordValidationStatus } from 'commons/core/shared/utils/validation'
+import { emailSchema } from 'commons/utils/isValidEmail'
 
 export const validationSchema = yup.object().shape({
   email: yup
     .string()
-    .max(120)
-    .email('Veuillez renseigner un email valide, exemple : mail@exemple.com')
+    .test(emailSchema)
     .required('Veuillez renseigner une adresse email'),
   password: yup
     .string()
