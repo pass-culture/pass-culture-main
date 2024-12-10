@@ -224,7 +224,7 @@ describe('Signup journey with known offerer...', () => {
       cy.reload()
 
       cy.contains(
-        'Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture'
+        'Votre rattachement est en cours de traitement par les équipes du pass Culture'
       ).should('be.visible')
       cy.findByText(newVenueName).should('not.exist')
     })
@@ -332,7 +332,7 @@ describe('Signup journey with known offerer...', () => {
 
       cy.stepLog({ message: 'the attachment is in progress' })
       cy.contains(
-        'Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture'
+        'Votre rattachement est en cours de traitement par les équipes du pass Culture'
       ).should('be.visible')
     })
 
@@ -373,7 +373,7 @@ describe('Signup journey with known offerer...', () => {
 
       cy.stepLog({ message: 'the attachment is in progress' })
       cy.contains(
-        'Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture'
+        'Votre rattachement est en cours de traitement par les équipes du pass Culture'
       ).should('be.visible')
     })
   })

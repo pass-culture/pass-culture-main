@@ -88,7 +88,7 @@ describe('Financial Management - messages, links to external help page, reimburs
         message: 'I select offerer "Structure avec informations bancaires"',
       })
       cy.findByTestId('offerer-select').click()
-      cy.findByText(/Changer de structure/).click()
+      cy.findByText(/Changer/).click()
       cy.findByTestId('offerers-selection-menu')
         .findByText('Structure avec informations bancaires')
         .click()
@@ -166,7 +166,7 @@ describe('Financial Management - messages, links to external help page, reimburs
       cy.stepLog({
         message: 'Attach all my venues',
       })
-      cy.findByText('Rattacher un lieu').click()
+      cy.findByText('Rattacher une structure').click()
 
       cy.findByRole('dialog').within(() => {
         cy.findByText('Tout sélectionner').click()
@@ -178,7 +178,7 @@ describe('Financial Management - messages, links to external help page, reimburs
         message: 'Unattach 2 in 4 venues',
       })
       cy.findByTestId('reimbursement-bank-account-linked-venues').within(() => {
-        cy.contains('Lieux rattachés à ce compte bancaire')
+        cy.contains('Structures rattachées à ce compte bancaire')
         cy.contains('Mon lieu 1')
         cy.contains('Mon lieu 2')
         cy.contains('Mon lieu 3')
@@ -190,7 +190,7 @@ describe('Financial Management - messages, links to external help page, reimburs
         cy.findByText('Mon lieu 2').click()
         cy.findByText('Enregistrer').click()
         cy.contains(
-          'Attention : le ou les lieux désélectionnés ne seront plus remboursés sur ce compte bancaire'
+          'Attention : la ou les structures désélectionnées ne seront plus remboursées sur ce compte bancaire'
         )
         cy.findByText('Confirmer').click()
       })
@@ -202,8 +202,8 @@ describe('Financial Management - messages, links to external help page, reimburs
       })
       cy.findByTestId('reimbursement-bank-account-linked-venues').within(
         ($elt) => {
-          cy.contains('Lieu rattaché à ce compte bancaire')
-          cy.contains('Certains de vos lieux ne sont pas rattachés.')
+          cy.contains('Structure rattachée à ce compte bancaire')
+          cy.contains('Certaines de vos structures ne sont pas rattachées.')
           cy.get('div').contains('Mon lieu 3')
           cy.wrap($elt)
             .should('not.contain', 'Mon lieu 1')
@@ -218,7 +218,7 @@ describe('Financial Management - messages, links to external help page, reimburs
       cy.stepLog({
         message: 'Attach all my venues',
       })
-      cy.findByText('Rattacher un lieu').click()
+      cy.findByText('Rattacher une structure').click()
 
       cy.findByRole('dialog').within(() => {
         cy.findByText('Tout sélectionner').click()
@@ -230,13 +230,13 @@ describe('Financial Management - messages, links to external help page, reimburs
         message: 'Unattach all venues',
       })
 
-      cy.contains('Lieux rattachés à ce compte bancaire')
+      cy.contains('Structures rattachées à ce compte bancaire')
       cy.findByText('Modifier').click()
       cy.findByRole('dialog').within(() => {
         cy.findByText('Tout désélectionner').click()
         cy.findByText('Enregistrer').click()
         cy.contains(
-          'Attention : le ou les lieux désélectionnés ne seront plus remboursés sur ce compte bancaire'
+          'Attention : la ou les structures désélectionnées ne seront plus remboursées sur ce compte bancaire'
         )
         cy.findByText('Confirmer').click()
       })
@@ -248,8 +248,8 @@ describe('Financial Management - messages, links to external help page, reimburs
       })
       cy.findByTestId('reimbursement-bank-account-linked-venues').within(
         ($elt) => {
-          cy.contains('Lieu rattaché à ce compte bancaire')
-          cy.contains('Aucun lieu n’est rattaché à ce compte bancaire.')
+          cy.contains('Structure rattachée à ce compte bancaire')
+          cy.contains('Aucune structure n’est rattachée à ce compte bancaire.')
           cy.wrap($elt)
             .should('not.contain', 'Mon lieu 1')
             .and('not.contain', 'Mon lieu 2')
