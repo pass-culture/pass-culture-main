@@ -218,8 +218,8 @@ export function CollectiveOffersActionsBar({
   }
 
   function openArchiveOffersDialog() {
-    const shouldOpenArchiveDialog = selectedOffers.every((offer) => {
-      const canArchiveOffer = areNewStatusesEnabled
+    const archivableOffers = selectedOffers.filter((offer) => {
+      return areNewStatusesEnabled
         ? isActionAllowedOnCollectiveOffer(
             offer,
             offer.isShowcase
@@ -227,17 +227,15 @@ export function CollectiveOffersActionsBar({
               : CollectiveOfferAllowedAction.CAN_ARCHIVE
           )
         : canArchiveCollectiveOffer(offer)
-
-      if (!canArchiveOffer) {
-        notify.error(
-          'Les offres liées à des réservations en cours ne peuvent pas être archivées'
-        )
-        clearSelectedOfferIds()
-        return false
-      }
-      return true
     })
-    setIsArchiveDialogOpen(shouldOpenArchiveDialog)
+    if (archivableOffers.length < selectedOffers.length) {
+      notify.error(
+        'Les offres déjà archivées ou liées à des réservations ne peuvent pas être archivées'
+      )
+      clearSelectedOfferIds()
+    } else {
+      setIsArchiveDialogOpen(true)
+    }
   }
 
   function openDeactivateOffersDialog() {
