@@ -13,5 +13,10 @@ export const usePageTitle = (): LocationListener | void => {
     document.title = currentRoute
       ? `${currentRoute.title} - pass Culture Pro`
       : 'pass Culture Pro'
+
+    const pageTitleAnnouncer = document.getElementById('page-title-announcer')
+    if (pageTitleAnnouncer) {
+      pageTitleAnnouncer.textContent = currentRoute?.title || 'pass Culture Pro'
+    }
   }, [location])
 }
