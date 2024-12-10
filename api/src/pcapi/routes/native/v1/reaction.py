@@ -22,18 +22,21 @@ def post_reaction(user: users_models.User, body: serialization.PostReactionReque
 
 
 @blueprint.native_route("/reaction/available", methods=["GET"])
-@spectree_serialize(api=blueprint.api)
+@spectree_serialize(api=blueprint.api, response_model=serialization.GetAvailableReactionsResponse)
 @authenticated_and_active_user_required
 def get_available_reactions(user: users_models.User) -> serialization.GetAvailableReactionsResponse:
     booking_with_available_reactions = reactions_api.get_bookings_with_available_reactions(user.id)
 
     return serialization.GetAvailableReactionsResponse(
+        number_of_reactable_bookings=len(booking_with_available_reactions),
         bookings=[
             serialization.AvailableReactionBooking(
                 name=booking.stock.offer.name,
+                offer_id=booking.stock.offer.id,
+                subcategory_id=booking.stock.offer.subcategoryId,
                 dateUsed=booking.dateUsed,
                 image=booking.stock.offer.image.url if booking.stock.offer.image else None,
             )
             for booking in booking_with_available_reactions
-        ]
+        ],
     )

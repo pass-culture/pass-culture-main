@@ -113,6 +113,47 @@ def test_too_many_bookings_postgresql_exception_not_executed():
     assert booking2.quantity == 2
 
 
+class BookingCanReactTest:
+    @pytest.mark.parametrize(
+        "subcategory_id, can_react",
+        [
+            (subcategories.SEANCE_CINE.id, True),
+            (subcategories.LIVRE_PAPIER.id, True),
+            (subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, True),
+            (subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id, True),
+            (subcategories.ACHAT_INSTRUMENT.id, False),
+        ],
+    )
+    def test_can_react_subcategories(self, subcategory_id, can_react):
+        offer = OfferFactory(
+            subcategoryId=subcategory_id,
+        )
+        booking = factories.UsedBookingFactory(
+            stock__offer=offer,
+            dateUsed=datetime.utcnow(),
+        )
+        assert booking.can_react == can_react
+
+    def test_can_react_booking_state(self):
+        offer = OfferFactory(
+            subcategoryId=subcategories.SEANCE_CINE.id,
+        )
+        booking = factories.CancelledBookingFactory(
+            stock__offer=offer,
+        )
+        assert booking.can_react == False
+
+        booking = factories.BookingFactory(
+            stock__offer=offer,
+        )
+        assert booking.can_react == False
+
+        booking = factories.ReimbursedBookingFactory(
+            stock__offer=offer,
+        )
+        assert booking.can_react == True
+
+
 class BookingPopUpReactionTest:
     @pytest.mark.parametrize(
         "subcategory_id",
