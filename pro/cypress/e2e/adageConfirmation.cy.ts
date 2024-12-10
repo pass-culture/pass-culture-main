@@ -1,11 +1,13 @@
 import {
+  collectiveFormatEventDate,
   expectOffersOrBookingsAreFound,
-    logInAndGoToPage,
-  } from '../support/helpers.ts'
+  logInAndGoToPage,
+} from '../support/helpers.ts'
   
   describe('Adage confirmation', () => {
     let login: string
     let offer: { id: number, name: string, venueName: string }
+    let stock: { startDatetime: string}
     let providerApiKey: string
   
     beforeEach(() => {
@@ -16,6 +18,7 @@ import {
       }).then((response) => {
         login = response.body.user.email
         offer = response.body.offer
+        stock = response.body.stock
         providerApiKey = response.body.providerApiKey
       })
       cy.intercept({ method: 'GET', url: '/collective/offers?offererId=1' }).as(
@@ -77,11 +80,13 @@ import {
           .should('eq', 200)
 
         let expectedResults = [
-          ['', '', 'Titre', 'Lieu', 'Établissement', 'Statut'],
+          ['', '', '', 'Titre', 'Date de l’évènement', 'Lieu', 'Établissement', 'Statut'],
           [
             '',
             '',
+            '',
             offer.name,
+            collectiveFormatEventDate(stock.startDatetime),
             offer.venueName,
             'DE LA TOUR',
             'préréservée',
@@ -126,11 +131,13 @@ import {
           .should('eq', 200)
 
         expectedResults = [
-          ['', 'Titre', 'Lieu', 'Établissement', 'Statut'],
+          ['', 'Titre',  'Date de l’évènement', 'Lieu', 'Établissement', 'Statut'],
           [
             '',
             '',
+            '',
             offer.name,
+            collectiveFormatEventDate(stock.startDatetime),
             offer.venueName,
             'DE LA TOUR',
             'réservée',

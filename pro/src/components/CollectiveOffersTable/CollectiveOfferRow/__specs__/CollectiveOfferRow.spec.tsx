@@ -238,7 +238,7 @@ describe('ollectiveOfferRow', () => {
     renderOfferItem(props)
 
     expect(
-      within(screen.getAllByRole('cell')[2]).getByText('Offre vitrine')
+      within(screen.getAllByRole('cell')[3]).getByText('Offre vitrine')
     ).toBeInTheDocument()
   })
 
@@ -436,7 +436,7 @@ describe('ollectiveOfferRow', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display a expiration row if the bookable offer is active, and if the FF ENABLE_COLLECTIVE_OFFERS_EXPIRATION is enabled', () => {
+  it('should display a expiration row if the bookable offer is active', () => {
     props.offer = collectiveOfferFactory({
       displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
       stocks: [
@@ -448,16 +448,14 @@ describe('ollectiveOfferRow', () => {
       ],
     })
 
-    renderOfferItem(props, {
-      features: ['ENABLE_COLLECTIVE_OFFERS_EXPIRATION'],
-    })
+    renderOfferItem(props)
 
     expect(
       screen.getByText('En attente de préréservation par l’enseignant')
     ).toBeInTheDocument()
   })
 
-  it('should display a expiration row if the bookable offer is pre-booked, and if the FF ENABLE_COLLECTIVE_OFFERS_EXPIRATION is enabled', () => {
+  it('should display a expiration row if the bookable offer is pre-booked', () => {
     props.offer = collectiveOfferFactory({
       displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
       stocks: [
@@ -470,9 +468,7 @@ describe('ollectiveOfferRow', () => {
       booking: { id: 1, booking_status: 'PENDING' },
     })
 
-    renderOfferItem(props, {
-      features: ['ENABLE_COLLECTIVE_OFFERS_EXPIRATION'],
-    })
+    renderOfferItem(props)
 
     expect(
       screen.getByText('En attente de réservation par le chef d’établissement')
@@ -494,8 +490,28 @@ describe('ollectiveOfferRow', () => {
     renderOfferItem(props)
 
     expect(
-      screen.queryByText('En attente de préréservation par l’enseignant')
-    ).not.toBeInTheDocument()
+      screen.getByText('En attente de préréservation par l’enseignant')
+    ).toBeInTheDocument()
+  })
+
+  it('should display a expiration row if the bookable offer is pre-booked', () => {
+    props.offer = collectiveOfferFactory({
+      displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
+      stocks: [
+        {
+          hasBookingLimitDatetimePassed: false,
+          remainingQuantity: 1,
+          bookingLimitDatetime: getToday().toISOString(),
+        },
+      ],
+      booking: { id: 1, booking_status: 'PENDING' },
+    })
+
+    renderOfferItem(props)
+
+    expect(
+      screen.getByText('En attente de réservation par le chef d’établissement')
+    ).toBeInTheDocument()
   })
 
   it('should not display a expiration row if the offer has no booking limit', () => {

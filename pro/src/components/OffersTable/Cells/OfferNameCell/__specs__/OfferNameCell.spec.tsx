@@ -189,21 +189,6 @@ describe('OfferNameCell', () => {
       },
     })
 
-    it('should use collective offer’s venue department code', () => {
-      renderOfferNameCell({
-        // Using the COLLECTIVE offer that have a venue located at Paris
-        offer: collectiveOffer,
-        offerLink: '#',
-      })
-
-      // We expect here to see 12h00 because for the 01/10/2024, Paris is UTC+2
-      expect(
-        screen.getByRole('cell', {
-          name: /Collective offer 01\/10\/2024 12:00/,
-        })
-      ).toBeInTheDocument()
-    })
-
     it('should use individual offer’s venue departement code', () => {
       renderOfferNameCell({
         // Using the INDIVIDUAL offer that have VENUE departement code at Saint-Denis (La Réunion)

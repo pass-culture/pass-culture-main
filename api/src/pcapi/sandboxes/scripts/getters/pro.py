@@ -375,6 +375,7 @@ def create_pro_user_with_active_collective_offer() -> dict:
     return {
         "user": get_pro_user_helper(pro_user),
         "offer": {"id": offer.id, "name": offer.name, "venueName": offer.venue.name},
+        "stock": {"startDatetime": datetime.datetime.utcnow() + datetime.timedelta(days=10)},
         "providerApiKey": str(clear_token),
     }
 
