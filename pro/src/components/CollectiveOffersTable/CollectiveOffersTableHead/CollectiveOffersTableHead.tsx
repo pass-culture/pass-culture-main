@@ -20,9 +20,6 @@ export const CollectiveOffersTableHead = ({
   currentSortingColumn,
   currentSortingMode,
 }: CollectiveOffersTableHeadProps): JSX.Element => {
-  const isCollectiveOffersExpirationEnabled = useActiveFeature(
-    'ENABLE_COLLECTIVE_OFFERS_EXPIRATION'
-  )
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   return (
@@ -35,16 +32,14 @@ export const CollectiveOffersTableHead = ({
         >
           <span className={styles['visually-hidden']}>Case à cocher</span>
         </th>
-        {isCollectiveOffersExpirationEnabled && (
-          <th
-            id="collective-offer-head-expiration"
-            className={styles['expiration-date-th']}
-          >
-            <span className={styles['visually-hidden']}>
-              Information sur l’expiration
-            </span>
-          </th>
-        )}
+        <th
+          id="collective-offer-head-expiration"
+          className={styles['expiration-date-th']}
+        >
+          <span className={styles['visually-hidden']}>
+            Information sur l’expiration
+          </span>
+        </th>
         <th id="collective-offer-head-image">
           <span className={styles['visually-hidden']}>Image</span>
         </th>
@@ -54,25 +49,23 @@ export const CollectiveOffersTableHead = ({
         >
           <span className={styles['visually-hidden']}>Nom</span>
         </th>
-        {isCollectiveOffersExpirationEnabled && (
-          <th
-            id="collective-offer-head-event-date"
-            className={styles['collective-th']}
-          >
-            Date de l’évènement{' '}
-            <SortArrow
-              onClick={() => {
-                onColumnHeaderClick(CollectiveOffersSortingColumn.EVENT_DATE)
-              }}
-              sortingMode={
-                currentSortingColumn ===
-                CollectiveOffersSortingColumn.EVENT_DATE
-                  ? currentSortingMode
-                  : SortingMode.NONE
-              }
-            />
-          </th>
-        )}
+        <th
+          id="collective-offer-head-event-date"
+          className={styles['collective-th']}
+        >
+          Date de l’évènement{' '}
+          <SortArrow
+            onClick={() => {
+              onColumnHeaderClick(CollectiveOffersSortingColumn.EVENT_DATE)
+            }}
+            sortingMode={
+              currentSortingColumn ===
+              CollectiveOffersSortingColumn.EVENT_DATE
+                ? currentSortingMode
+                : SortingMode.NONE
+            }
+          />
+        </th>
 
         <th
           id="collective-offer-head-venue"
