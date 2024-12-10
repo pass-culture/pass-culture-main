@@ -111,16 +111,9 @@ describe('Create collective offers', () => {
     cy.wait('@collectiveOffers')
 
     const expectedResults = [
-      ['', '', 'Titre', 'Lieu', 'Établissement', 'Statut'],
-      ['', '', newOfferName, venueName, 'COLLEGE 123', 'brouillon'],
-      [
-        '',
-        '',
-        offerDraft.name,
-        offerDraft.venueName,
-        'DE LA TOUR',
-        'brouillon',
-      ],
+      ['', '', '', 'Titre', 'Date de l’évènement', 'Lieu', 'Établissement', 'Statut'],
+      ['', '', '', newOfferName, '10/05/202518h30', venueName, 'COLLEGE 123', 'brouillon'],
+      ['', '', '', offerDraft.name, 'Toute l’année scolaire', offerDraft.venueName, 'DE LA TOUR', 'brouillon'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
@@ -145,8 +138,8 @@ describe('Create collective offers', () => {
     cy.findByText('Rechercher').click()
 
     const expectedNewResults = [
-      ['', '', 'Titre', 'Lieu', 'Établissement', 'Statut'],
-      ['', '', newOfferName, venueName, 'COLLEGE 123', 'publiée'],
+      ['', '', '', 'Titre', 'Date de l’évènement', 'Lieu', 'Établissement', 'Statut'],
+      ['', '', '', newOfferName, '10/05/202518h30', venueName, 'COLLEGE 123', 'publiée'],
     ]
 
     expectOffersOrBookingsAreFound(expectedNewResults)

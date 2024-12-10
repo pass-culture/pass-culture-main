@@ -381,27 +381,18 @@ describe('TemplateCollectiveOffersScreen', () => {
     )
   })
 
-  it('should display a new column "Date de l’évènement" if FF is enabled', async () => {
-    const featureOverrides = {
-      features: ['ENABLE_COLLECTIVE_OFFERS_EXPIRATION'],
-    }
-
+  it('should display a new column "Date de l’évènement"', async () => {
     renderOffers(
       {
         ...props,
         offers: [collectiveOfferFactory()],
-      },
-      featureOverrides
+      }
     )
 
     expect(await screen.findByText('Date de l’évènement'))
   })
 
   it('should filter new column "Date de l’évènement"', async () => {
-    const featureOverrides = {
-      features: ['ENABLE_COLLECTIVE_OFFERS_EXPIRATION'],
-    }
-
     renderOffers(
       {
         ...props,
@@ -419,8 +410,7 @@ describe('TemplateCollectiveOffersScreen', () => {
             },
           }),
         ],
-      },
-      featureOverrides
+      }
     )
 
     const firstOfferEventDate =
