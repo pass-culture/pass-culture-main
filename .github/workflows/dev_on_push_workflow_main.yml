@@ -276,7 +276,7 @@ jobs:
 
   deploy-to-testing:
     name: "Deploy to testing"
-    needs: [test-api, test-pro, push-pcapi-console, push-pcapi]
+    needs: [pcapi-init-job, test-api, test-pro, push-pcapi-console, push-pcapi]
     if: |
       always() &&
       github.ref == 'refs/heads/master' &&
@@ -285,7 +285,7 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
       environment: testing
-      app_version: ${{ github.sha }}
+      app_version: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
       teleport_proxy: teleport.ehp.passculture.team:443
       teleport_kubernetes_cluster: passculture-metier-ehp
       deploy_api: ${{ needs.test-api.result == 'success' }}
@@ -296,7 +296,7 @@ jobs:
 
   deploy-to-ops:
     name: "Deploy to ops"
-    needs: [test-api, test-pro, push-pcapi-console, push-pcapi]
+    needs: [pcapi-init-job, test-api, test-pro, push-pcapi-console, push-pcapi]
     if: |
       always() &&
       github.ref == 'refs/heads/master' &&
@@ -306,7 +306,7 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
       environment: ops
-      app_version: ${{ github.sha }}
+      app_version: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
       teleport_proxy: teleport.ops.passculture.team:443
       teleport_kubernetes_cluster: passculture-metier-ops
       deploy_api: ${{ needs.test-api.result == 'success' }}
