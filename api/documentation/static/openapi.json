@@ -9544,9 +9544,6 @@
                     "401": {
                         "description": "Authentication is necessary to use this API."
                     },
-                    "404": {
-                        "description": "The municipality could not be found on the Base Nationale d'Adresses (BAN) API."
-                    },
                     "422": {
                         "content": {
                             "application/json": {
@@ -11397,6 +11394,9 @@
                     },
                     "401": {
                         "description": "Authentication is necessary to use this API."
+                    },
+                    "404": {
+                        "description": "The venue could not found for your API key."
                     },
                     "422": {
                         "content": {
