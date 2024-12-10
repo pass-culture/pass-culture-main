@@ -33,7 +33,7 @@ export const CheckboxCell = ({
       <BaseCheckbox
         checked={isSelected}
         className="select-offer-checkbox"
-        label={offerName}
+        label={`Sélectionner l'offre "${offerName}"`}
         exceptionnallyHideLabelDespiteA11y={true}
         disabled={disabled}
         onChange={selectOffer}

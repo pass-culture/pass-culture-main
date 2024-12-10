@@ -30,21 +30,23 @@ export const IndividualOffersTableHead = ({
             styles['individual-offers-thead-th-checkbox']
           )}
         >
-          <BaseCheckbox
-            inputClassName={styles['individual-offers-thead-th-checkbox-input']}
-            labelClassName={styles['individual-offers-thead-th-checkbox-label']}
-            checked={areAllOffersSelected}
-            partialCheck={
-              !areAllOffersSelected && isAtLeastOneOfferChecked
-            }
-            disabled={isRestrictedAsAdmin}
-            onChange={toggleSelectAllCheckboxes}
-            label={
-              areAllOffersSelected
-                ? 'Tout désélectionner'
-                : 'Tout sélectionner'
-            }
-          />
+          <div className={styles['individual-offers-thead-th-checkbox-wrapper']}>
+            <BaseCheckbox
+              inputClassName={styles['individual-offers-thead-th-checkbox-input']}
+              labelClassName={styles['individual-offers-thead-th-checkbox-label']}
+              checked={areAllOffersSelected}
+              partialCheck={
+                !areAllOffersSelected && isAtLeastOneOfferChecked
+              }
+              disabled={isRestrictedAsAdmin}
+              onChange={toggleSelectAllCheckboxes}
+              label={
+                areAllOffersSelected
+                  ? 'Tout désélectionner'
+                  : 'Tout sélectionner'
+              }
+            />
+          </div>
         </th>
         <th role="columnheader" className={styles['individual-offers-thead-th']}>Nom de l’offre</th>
         <th role="columnheader" className={styles['individual-offers-thead-th']}>

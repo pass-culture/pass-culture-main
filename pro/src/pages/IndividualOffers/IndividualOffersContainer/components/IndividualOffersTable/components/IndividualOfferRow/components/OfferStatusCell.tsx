@@ -19,7 +19,13 @@ export const OfferStatusCell = ({ status, displayLabel, className }: OfferStatus
       className
     )}
   >
-    {displayLabel && <span className={styles['offers-table-cell-mobile-label']}>Statut :</span>}
+    {displayLabel &&
+      <span
+        className={styles['offers-table-cell-mobile-label']}
+        aria-hidden={true}
+      >
+        Statut :
+      </span>}
     <StatusLabel status={status} />
   </td>
 )

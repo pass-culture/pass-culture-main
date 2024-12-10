@@ -22,7 +22,13 @@ export const OfferVenueCell = ({ venue, headers, className, displayLabel }: Offe
       )}
       headers={headers}
     >
-      {displayLabel && <span className={styles['offers-table-cell-mobile-label']}>Lieu :</span>}
+      {displayLabel &&
+        <span
+          className={styles['offers-table-cell-mobile-label']}
+          aria-hidden={true}
+        >
+          Lieu :
+        </span>}
       {computeVenueDisplayName(venue)}
     </td>
   )

@@ -110,9 +110,7 @@ describe('ollectiveOfferRow', () => {
     it('should contain a link with the offer name and details link', () => {
       renderOfferItem(props)
 
-      const offerTitle = screen.queryByText(props.offer.name as string, {
-        selector: 'a',
-      })
+      const offerTitle = screen.getByRole('link', { name: props.offer.name })
       expect(offerTitle).toBeInTheDocument()
       expect(offerTitle).toHaveAttribute(
         'href',
