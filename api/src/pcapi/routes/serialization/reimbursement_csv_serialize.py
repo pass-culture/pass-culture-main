@@ -111,6 +111,7 @@ class ReimbursementDetails:
     def __init__(self, payment_info: namedtuple):
 
         using_legacy_models = hasattr(payment_info, "transaction_label")
+        is_collective = getattr(payment_info, "collective_booking_id", None) is not None
 
         # Validation period
         if using_legacy_models:
@@ -132,7 +133,7 @@ class ReimbursementDetails:
         # Venue info
         self.venue_name = payment_info.venue_name
         self.venue_common_name = payment_info.venue_common_name
-        if FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
+        if FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active() and not is_collective:
             self.address = _build_full_address(
                 getattr(payment_info, "address_street", None),
                 getattr(payment_info, "address_postal_code", None),
@@ -195,9 +196,7 @@ class ReimbursementDetails:
         self.collective_booking_id = payment_info.collective_booking_id or ""
 
         # Offer type
-        self.offer_type = serialize_offer_type_educational_or_individual(
-            offer_is_educational=payment_info.collective_booking_id is not None
-        )
+        self.offer_type = serialize_offer_type_educational_or_individual(offer_is_educational=is_collective)
 
     @typing.no_type_check  # see comment for `__init__()` above
     def as_csv_row(self) -> list:
