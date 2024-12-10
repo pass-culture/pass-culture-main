@@ -39,17 +39,18 @@ export const Layout = ({
   const navPanel = useRef<HTMLDivElement>(null)
 
   const isMobileScreen = useMediaQuery('(max-width: 46.5rem)')
+  const isConnected = !!currentUser
 
   const shouldDisplayUserReview =
     layout !== 'funnel' && layout !== 'onboarding' && layout !== 'logged-out'
 
-  const mainHeaing = mainHeading && (
+  const mainHeadingWrapper = mainHeading && (
     <div className={styles['main-heading-wrapper']}>
       <h1 className={styles['main-heading-title']}>{mainHeading}</h1>
-      <BackToNavLink
+      {isConnected && <BackToNavLink
         isMobileScreen={isMobileScreen}
         className={styles['main-heading-back-to-nav-link']}
-      />
+      />}
     </div>
   )
 
@@ -138,7 +139,7 @@ export const Layout = ({
               <main id="content">
                 {layout === 'funnel' || layout === 'onboarding' ? (
                   <>
-                    {mainHeaing}
+                    {mainHeadingWrapper}
                     {children}
                   </>
                 ) : (
@@ -149,7 +150,7 @@ export const Layout = ({
                         layout === 'logged-out' && mainHeading,
                     })}
                   >
-                    {mainHeaing}
+                    {mainHeadingWrapper}
                     {children}
                   </div>
                 )}
