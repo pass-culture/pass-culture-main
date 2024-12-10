@@ -269,6 +269,7 @@ def update_state(
     *,
     new_state: dms_models.GraphQLApplicationStates,
     instructor: users_models.User,
+    motivation: str | None = None,
 ) -> None:
     ds_client = ds_api.DMSGraphQLClient()
 
@@ -276,6 +277,12 @@ def update_state(
         node = ds_client.make_on_going(
             application_techid=user_request.dsTechnicalId,
             instructeur_techid=instructor.backoffice_profile.dsInstructorId,
+        )
+    elif new_state == dms_models.GraphQLApplicationStates.accepted:
+        node = ds_client.make_accepted(
+            application_techid=user_request.dsTechnicalId,
+            instructeur_techid=instructor.backoffice_profile.dsInstructorId,
+            motivation=motivation,
         )
     else:
         raise NotImplementedError()

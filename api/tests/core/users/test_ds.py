@@ -443,3 +443,64 @@ class UpdateStateTest:
 
         assert error.value.message == "Le dossier est déjà en instruction"
         assert uaur.lastInstructor != instructor
+
+    @patch(
+        "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+        return_value=ds_fixtures.DS_RESPONSE_UPDATE_STATE_ON_GOING_TO_ACCEPTED,
+    )
+    def test_from_on_going_to_accepted(self, mocked_update_state, instructor):
+        uaur = users_factories.EmailUpdateRequestFactory(
+            dsApplicationId=21268381,
+            dsTechnicalId="RG9zc2llci0yMTI2ODM4MQ==",
+            status=dms_models.GraphQLApplicationStates.on_going,
+        )
+
+        users_ds.update_state(
+            uaur, new_state=dms_models.GraphQLApplicationStates.accepted, instructor=instructor, motivation="Test"
+        )
+
+        mocked_update_state.assert_called_once_with(
+            dms_api.MAKE_ACCEPTED_MUTATION_NAME,
+            variables={
+                "input": {
+                    "dossierId": uaur.dsTechnicalId,
+                    "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                    "motivation": "Test",
+                    "disableNotification": False,
+                }
+            },
+        )
+
+        db.session.refresh(uaur)
+        assert uaur.status == dms_models.GraphQLApplicationStates.accepted
+        assert uaur.dateCreated == datetime(2024, 12, 2, 14, 37, 29)
+        assert uaur.dateLastStatusUpdate == datetime(2024, 12, 5, 11, 17, 10)
+        assert uaur.lastInstructor == instructor
+
+    @patch(
+        "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+        return_value=ds_fixtures.DS_RESPONSE_UPDATE_STATE_DRAFT_TO_ACCEPTED,
+    )
+    def test_from_draft_to_accepted(self, mocked_update_state, instructor):
+        uaur = users_factories.EmailUpdateRequestFactory(
+            dsApplicationId=21273773,
+            dsTechnicalId="RG9zc2llci0yMTI3Mzc3Mw==",
+            status=dms_models.GraphQLApplicationStates.draft,
+        )
+
+        with pytest.raises(dms_exceptions.DmsGraphQLApiError) as error:
+            users_ds.update_state(uaur, new_state=dms_models.GraphQLApplicationStates.accepted, instructor=instructor)
+
+        mocked_update_state.assert_called_once_with(
+            dms_api.MAKE_ACCEPTED_MUTATION_NAME,
+            variables={
+                "input": {
+                    "dossierId": uaur.dsTechnicalId,
+                    "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                    "disableNotification": False,
+                }
+            },
+        )
+
+        assert error.value.message == "Le dossier est déjà en construction"
+        assert uaur.lastInstructor != instructor

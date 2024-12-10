@@ -913,3 +913,25 @@ DS_RESPONSE_UPDATE_STATE_DRAFT_TO_ON_GOING = {
 DS_RESPONSE_UPDATE_STATE_ON_GOING_TO_ON_GOING = {
     "dossierPasserEnInstruction": {"dossier": None, "errors": [{"message": "Le dossier est déjà en instruction"}]}
 }
+
+DS_RESPONSE_UPDATE_STATE_ON_GOING_TO_ACCEPTED = {
+    "dossierAccepter": {
+        "dossier": {
+            "id": "RG9zc2llci0yMTI2ODM4MQ==",
+            "number": 21268381,
+            "state": "accepte",
+            "dateDerniereModification": "2024-12-05T12:17:10+01:00",
+            "dateDepot": "2024-12-02T15:37:29+01:00",
+            "datePassageEnConstruction": "2024-12-05T12:15:55+01:00",
+            "datePassageEnInstruction": "2024-12-05T12:16:03+01:00",
+            "dateTraitement": "2024-12-05T12:17:10+01:00",
+            "dateDerniereCorrectionEnAttente": None,
+            "dateDerniereModificationChamps": "2024-12-02T15:37:28+01:00",
+        },
+        "errors": None,
+    }
+}
+
+DS_RESPONSE_UPDATE_STATE_DRAFT_TO_ACCEPTED = {
+    "dossierAccepter": {"dossier": None, "errors": [{"message": "Le dossier est d\u00e9j\u00e0 en construction"}]}
+}

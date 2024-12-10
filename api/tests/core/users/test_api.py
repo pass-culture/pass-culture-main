@@ -106,7 +106,9 @@ class CancelBeneficiaryBookingsOnSuspendAccountTest:
 
         author = users_factories.AdminFactory()
 
-        users_api.suspend_account(booking_thing.user, reason, author, is_backoffice_action=is_backoffice_action)
+        users_api.suspend_account(
+            booking_thing.user, reason=reason, actor=author, is_backoffice_action=is_backoffice_action
+        )
 
         assert booking_thing.status is BookingStatus.CANCELLED
 
@@ -118,7 +120,7 @@ class CancelBeneficiaryBookingsOnSuspendAccountTest:
 
         author = users_factories.AdminFactory()
 
-        users_api.suspend_account(booking_thing.user, reason, author, is_backoffice_action=True)
+        users_api.suspend_account(booking_thing.user, reason=reason, actor=author, is_backoffice_action=True)
 
         assert booking_thing.status is BookingStatus.CONFIRMED
 
@@ -149,7 +151,9 @@ class CancelBeneficiaryBookingsOnSuspendAccountTest:
 
         author = users_factories.AdminFactory()
 
-        users_api.suspend_account(booking_event.user, reason, author, is_backoffice_action=is_backoffice_action)
+        users_api.suspend_account(
+            booking_event.user, reason=reason, actor=author, is_backoffice_action=is_backoffice_action
+        )
 
         assert booking_event.status is BookingStatus.CANCELLED
 
@@ -174,7 +178,7 @@ class CancelBeneficiaryBookingsOnSuspendAccountTest:
         author = users_factories.AdminFactory()
         reason = users_constants.SuspensionReason.UPON_USER_REQUEST
 
-        users_api.suspend_account(booking_event.user, reason, author)
+        users_api.suspend_account(booking_event.user, reason=reason, actor=author)
 
         assert booking_event.status is BookingStatus.CONFIRMED
 
@@ -187,7 +191,7 @@ class SuspendAccountTest:
         reason = users_constants.SuspensionReason.FRAUD_RESELL_PRODUCT
         author = users_factories.AdminFactory()
 
-        users_api.suspend_account(user, reason, author, is_backoffice_action=True)
+        users_api.suspend_account(user, reason=reason, actor=author, is_backoffice_action=True)
 
         assert user.suspension_reason == reason
         assert _datetime_within_last_5sec(user.suspension_date)
@@ -219,7 +223,7 @@ class SuspendAccountTest:
         comment = "Dossier n°12345"
         old_password_hash = user.password
 
-        users_api.suspend_account(user, reason, author, comment=comment, is_backoffice_action=True)
+        users_api.suspend_account(user, reason=reason, actor=author, comment=comment, is_backoffice_action=True)
 
         db.session.refresh(user)
 
@@ -252,7 +256,7 @@ class SuspendAccountTest:
         author = users_factories.AdminFactory()
         reason = users_constants.SuspensionReason.END_OF_CONTRACT
 
-        users_api.suspend_account(pro, reason, author, is_backoffice_action=True)
+        users_api.suspend_account(pro, reason=reason, actor=author, is_backoffice_action=True)
 
         assert not pro.isActive
         assert booking.status is BookingStatus.CONFIRMED  # not canceled
@@ -271,7 +275,9 @@ class SuspendAccountTest:
         user = users_factories.UserFactory()
         old_password_hash = user.password
 
-        users_api.suspend_account(user, users_constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER, user)
+        users_api.suspend_account(
+            user, reason=users_constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER, actor=user
+        )
 
         assert user.password != old_password_hash
 
@@ -288,7 +294,7 @@ class SuspendAccountTest:
         user = users_factories.UserFactory()
         old_password_hash = user.password
 
-        users_api.suspend_account(user, reason, user)
+        users_api.suspend_account(user, reason=reason, actor=user)
 
         assert user.password == old_password_hash
 

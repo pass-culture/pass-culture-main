@@ -44,6 +44,7 @@ class ActionType(enum.Enum):
     USER_UNSUSPENDED = "Compte réactivé"
     USER_PHONE_VALIDATED = "Validation manuelle du numéro de téléphone"
     USER_EMAIL_VALIDATED = "Validation manuelle de l'email"
+    USER_ACCOUNT_UPDATE_INSTRUCTED = "Instruction d'une demande de modifications"
     USER_EXTRACT_DATA = "Génération d'un extrait des données du compte"
     CONNECT_AS_USER = "Connexion d'un admin"
     USER_PASSWORD_INVALIDATED = "Invalidation du mot de passe de l'utilisateur"

@@ -1041,6 +1041,22 @@ class UserAccountUpdateRequest(PcObject, Base, Model):
     def has_account_has_same_info_update(self) -> bool:
         return UserAccountUpdateType.ACCOUNT_HAS_SAME_INFO in self.updateTypes
 
+    @property
+    def can_be_accepted(self) -> bool:
+        return bool(
+            self.status == dms_models.GraphQLApplicationStates.on_going
+            and self.userId is not None
+            and self.updateTypes
+            and not self.updateTypes == [UserAccountUpdateType.ACCOUNT_HAS_SAME_INFO]
+            and not (
+                set(self.flags)
+                & {
+                    UserAccountUpdateFlag.MISSING_VALUE,
+                    UserAccountUpdateFlag.INVALID_VALUE,
+                }
+            )
+        )
+
 
 class UserSession(PcObject, Base, Model):
     userId: int = sa.Column(sa.BigInteger, nullable=False)

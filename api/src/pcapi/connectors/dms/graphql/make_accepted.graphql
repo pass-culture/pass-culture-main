@@ -1,0 +1,19 @@
+mutation dossierAccepter($input: DossierAccepterInput!) {
+  dossierAccepter(input: $input) {
+    dossier {
+      id
+      number
+      state
+      dateDerniereModification
+      dateDepot
+      datePassageEnConstruction
+      datePassageEnInstruction
+      dateTraitement
+      dateDerniereCorrectionEnAttente
+      dateDerniereModificationChamps
+    }
+    errors {
+      message
+    }
+  }
+}

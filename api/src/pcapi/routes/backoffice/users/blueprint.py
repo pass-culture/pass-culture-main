@@ -87,8 +87,8 @@ def suspend_user(user_id: int) -> utils.BackofficeResponse:
     if form.validate():
         users_api.suspend_account(
             user,
-            users_constants.SuspensionReason[form.reason.data],
-            current_user,
+            reason=users_constants.SuspensionReason[form.reason.data],
+            actor=current_user,
             comment=form.comment.data,
             is_backoffice_action=True,
         )
@@ -232,7 +232,10 @@ def confirm_batch_suspend_users() -> utils.BackofficeResponse:
 
     for user in users:
         users_api.suspend_account(
-            user, users_constants.SuspensionReason[form.reason.data], current_user, comment=form.comment.data
+            user,
+            reason=users_constants.SuspensionReason[form.reason.data],
+            actor=current_user,
+            comment=form.comment.data,
         )
 
     if len(users) > 1:
