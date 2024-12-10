@@ -8,15 +8,25 @@ import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { Layout, LayoutProps } from '../Layout'
 
-const renderLayout = (
+const LABELS = {
+  backToNavLink: /Revenir à la barre de navigation/,
+}
+
+type LayoutTestProps = Partial<LayoutProps> & {
+  isConnected?: boolean
+  isImpersonated?: boolean
+}
+
+const renderLayout = ({
   isImpersonated = false,
-  layoutProps: LayoutProps = {}
-) => {
-  renderWithProviders(<Layout {...layoutProps} />, {
+  isConnected = true,
+  ...props
+}: LayoutTestProps = {}) => {
+  renderWithProviders(<Layout {...props} />, isConnected ? {
     user: sharedCurrentUserFactory({
       isImpersonated,
     }),
-  })
+  }: {})
 }
 
 describe('Layout', () => {
@@ -48,6 +58,7 @@ describe('Layout', () => {
 
         expect(screen.getByLabelText('Fermer')).toHaveFocus()
       })
+
       it('should trap focus when side nav is open', async () => {
         await userEvent.click(screen.getByLabelText('Menu'))
 
@@ -61,8 +72,29 @@ describe('Layout', () => {
     })
   })
 
+  describe('about main heading & back to nav link', () => {
+    it('should render a main heading when provided', () => {
+      const mainHeading = 'Home'
+      renderLayout({ mainHeading })
+
+      expect(screen.getByRole('heading', { name: mainHeading })).toBeInTheDocument()
+    })
+
+    it('should render a back to nav link when a main heading is provided and when user is connected', () => {
+      renderLayout({ mainHeading: 'Home', isConnected: true })
+
+      expect(screen.getByRole('link', { name: LABELS.backToNavLink })).toBeInTheDocument()
+    })
+
+    it('should not render a back to nav link when not connected', () => {
+      renderLayout({  mainHeading: 'Home', isConnected: false })
+
+      expect(screen.queryByRole('link', { name: LABELS.backToNavLink })).not.toBeInTheDocument()
+    })
+  })
+
   it('should render connect as banner if user has isImpersonated value is true', () => {
-    renderLayout(true)
+    renderLayout({ isImpersonated: true })
 
     expect(
       screen.getByText('Vous êtes connecté en tant que :')
@@ -77,13 +109,13 @@ describe('Layout', () => {
     })
 
     it('should not display footer is "showFooter" is false', () => {
-      renderLayout(false, { showFooter: false })
+      renderLayout({ isImpersonated: false, showFooter: false })
 
       expect(screen.queryByTestId('app-footer')).not.toBeInTheDocument()
     })
 
     it('should not display footer by default if layout is "funnel"', () => {
-      renderLayout(false, { layout: 'funnel' })
+      renderLayout({ isImpersonated: false, layout: 'funnel' })
 
       expect(screen.queryByTestId('app-footer')).not.toBeInTheDocument()
     })
