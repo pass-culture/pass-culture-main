@@ -170,8 +170,6 @@ describe('Create and update venue', () => {
       timeout: 60 * 1000,
     }).scrollIntoView()
     cy.findByText('Votre page partenaire').should('be.visible')
-    cy.findByText('Vos adresses').scrollIntoView()
-    cy.findByText('Vos adresses').should('be.visible')
     cy.findByText('Gérer votre page pour le grand public').click()
     cy.findByText('À propos de votre activité').should('be.visible')
     cy.findByText('Modifier').click()

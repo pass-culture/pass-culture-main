@@ -123,9 +123,14 @@ export function sessionLogInAndGoToPage(
  *
  */
 export function homePageLoaded() {
+  // cy.intercept({
+  //   method: 'GET',
+  //   url: '/offerers/1',
+  // }).as('page_partenaire')
   cy.findByText('Bienvenue dans l’espace acteurs culturels')
-  cy.findByText('Vos adresses')
-  cy.findByText('Ajouter un lieu')
+  // cy.wait('@page_partenaire')
+  cy.findAllByText(/Votre page partenaire|Vos pages partenaire/)
+  cy.findByText('Ajouter une structure')
   cy.findAllByTestId('spinner').should('not.exist')
 }
 
