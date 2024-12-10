@@ -65,9 +65,6 @@ HTTP_404_PRICE_CATEGORY_OR_EVENT_NOT_FOUND = {
 HTTP_404_ADDRESS_NOT_FOUND = {
     "HTTP_404": (None, "The address could not be found."),
 }
-HTTP_404_MUNICIPALITY_NOT_FOUND = {
-    "HTTP_404": (None, "The municipality could not be found on the Base Nationale d'Adresses (BAN) API."),
-}
 
 # Specific 403
 HTTP_403_BOOKING_REIMBURSED_OR_CONFIRMED_OR_NOT_USED = {
