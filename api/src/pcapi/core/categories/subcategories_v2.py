@@ -72,13 +72,13 @@ class SearchNode:
         parents: list[str] | None = None,
         technical_name: str | None = None,
         gtls: list[str] | None = None,
-        position: int | None = None,
+        positions: dict[str, int] | None = None,
     ) -> None:
         self.id = technical_name or str(uuid.uuid4())
         self.label = label
         self.gtls = gtls
         self.parents = parents or []
-        self.position = position
+        self.positions = positions
 
     @property
     def search_value(self) -> str | None:
@@ -172,7 +172,7 @@ def get_book_nodes() -> list[BookGenre]:
             technical_name=book_type.label,
             gtls=[gtl.code for gtl in book_type.gtls],
             parents=[NATIVE_CATEGORY_LIVRES_PAPIER.id],
-            position=book_type.position,
+            positions={NATIVE_CATEGORY_LIVRES_PAPIER.id: book_type.position},
         )
         nodes.append(parent)
         for book_subtype in book_type.children:
@@ -180,7 +180,7 @@ def get_book_nodes() -> list[BookGenre]:
                 label=book_subtype.label,
                 gtls=[gtl.code for gtl in book_subtype.gtls],
                 parents=[parent.id],
-                position=book_subtype.position,
+                positions={parent.id: book_subtype.position},
             )
             nodes.append(child)
 
@@ -231,93 +231,110 @@ def get_show_nodes() -> list[ShowGenre]:
 
 
 # region SearchGroup
+SEARCH_NODES_ROOT = SearchNode(label="Root")
 SEARCH_GROUP_ARTS_LOISIRS_CREATIFS = SearchGroup(
+    parents=[SEARCH_NODES_ROOT.id],
     technical_name="ARTS_LOISIRS_CREATIFS",
     label="Arts & loisirs créatifs",
-    position=7,
+    positions={SEARCH_NODES_ROOT.id: 7},
 )
 SEARCH_GROUP_CARTES_JEUNES = SearchGroup(
+    parents=[SEARCH_NODES_ROOT.id],
     technical_name="CARTES_JEUNES",
     label="Cartes jeunes",
-    position=13,
+    positions={SEARCH_NODES_ROOT.id: 13},
 )
 # FIXME (thconte, 2024-10-15): Delete this SearchGroup once app's minimal version has bumped
 SEARCH_GROUP_CD_VINYLE_MUSIQUE_EN_LIGNE = SearchGroup(
+    parents=[SEARCH_NODES_ROOT.id],
     technical_name="CD_VINYLE_MUSIQUE_EN_LIGNE",
     label="CD, vinyles, musique en ligne",
-    position=6,
+    positions={SEARCH_NODES_ROOT.id: 6},
 )
 SEARCH_GROUP_CONCERTS_FESTIVALS = SearchGroup(
+    parents=[SEARCH_NODES_ROOT.id],
     technical_name="CONCERTS_FESTIVALS",
     label="Concerts & festivals",
-    position=1,
+    positions={SEARCH_NODES_ROOT.id: 1},
 )
 SEARCH_GROUP_EVENEMENTS_EN_LIGNE = SearchGroup(
+    parents=[SEARCH_NODES_ROOT.id],
     technical_name="EVENEMENTS_EN_LIGNE",
     label="Évènements en ligne",
-    position=15,
+    positions={SEARCH_NODES_ROOT.id: 15},
 )
 # FIXME (thconte, 2024-10-03): Delete this SearchGroup once app's minimal version has bumped
 SEARCH_GROUP_FILMS_SERIES_CINEMA = SearchGroup(
+    parents=[SEARCH_NODES_ROOT.id],
     technical_name="FILMS_SERIES_CINEMA",
     label="Cinéma, films et séries",
-    position=2,
+    positions={SEARCH_NODES_ROOT.id: 2},
 )
 SEARCH_GROUP_CINEMA = SearchGroup(
+    parents=[SEARCH_NODES_ROOT.id],
     technical_name="CINEMA",
     label="Cinéma",
-    position=2,
+    positions={SEARCH_NODES_ROOT.id: 2},
 )
 SEARCH_GROUP_FILMS_DOCUMENTAIRES_SERIES = SearchGroup(
+    parents=[SEARCH_NODES_ROOT.id],
     technical_name="FILMS_DOCUMENTAIRES_SERIES",
     label="Films, séries et documentaires",
-    position=3,
+    positions={SEARCH_NODES_ROOT.id: 3},
 )
 # FIXME (thconte, 2024-10-15): Delete this SearchGroup once app's minimal version has bumped
 SEARCH_GROUP_INSTRUMENTS = SearchGroup(
+    parents=[SEARCH_NODES_ROOT.id],
     technical_name="INSTRUMENTS",
     label="Instruments de musique",
-    position=11,
+    positions={SEARCH_NODES_ROOT.id: 11},
 )
 SEARCH_GROUP_JEUX_JEUX_VIDEOS = SearchGroup(
+    parents=[SEARCH_NODES_ROOT.id],
     technical_name="JEUX_JEUX_VIDEOS",
     label="Jeux & jeux vidéos",
-    position=10,
+    positions={SEARCH_NODES_ROOT.id: 10},
 )
 SEARCH_GROUP_LIVRES = SearchGroup(
+    parents=[SEARCH_NODES_ROOT.id],
     technical_name="LIVRES",
     label="Livres",
-    position=4,
+    positions={SEARCH_NODES_ROOT.id: 4},
 )
 SEARCH_GROUP_MEDIA_PRESSE = SearchGroup(
+    parents=[SEARCH_NODES_ROOT.id],
     technical_name="MEDIA_PRESSE",
     label="Médias & presse",
-    position=12,
+    positions={SEARCH_NODES_ROOT.id: 12},
 )
 SEARCH_GROUP_MUSEES_VISITES_CULTURELLES = SearchGroup(
+    parents=[SEARCH_NODES_ROOT.id],
     technical_name="MUSEES_VISITES_CULTURELLES",
     label="Musées & visites culturelles",
-    position=9,
+    positions={SEARCH_NODES_ROOT.id: 9},
 )
 SEARCH_GROUP_MUSIQUE = SearchGroup(
+    parents=[SEARCH_NODES_ROOT.id],
     technical_name="MUSIQUE",
     label="Musique",
-    position=5,
+    positions={SEARCH_NODES_ROOT.id: 5},
 )
 SEARCH_GROUP_NONE = SearchGroup(
+    parents=[SEARCH_NODES_ROOT.id],
     technical_name="NONE",
     label="None",
-    position=None,
 )
 SEARCH_GROUP_RENCONTRES_CONFERENCES = SearchGroup(
+    parents=[SEARCH_NODES_ROOT.id],
     technical_name="RENCONTRES_CONFERENCES",
     label="Conférences & rencontres",
-    position=14,
+    positions={SEARCH_NODES_ROOT.id: 14},
 )
 SEARCH_GROUP_SPECTACLES = SearchGroup(
+    parents=[SEARCH_NODES_ROOT.id],
     technical_name="SPECTACLES",
     label="Spectacles",
-    position=8,
+    positions={SEARCH_NODES_ROOT.id: 8},
 )
 # endregion
 
@@ -362,6 +379,7 @@ NATIVE_CATEGORY_CARTES_CINEMA = NativeCategory(
     technical_name="CARTES_CINEMA",
     label="Cartes cinéma",
     parents=[SEARCH_GROUP_FILMS_SERIES_CINEMA.id, SEARCH_GROUP_CINEMA.id],
+    positions={SEARCH_GROUP_CINEMA.id: 2},
 )
 NATIVE_CATEGORY_CD = NativeCategory(
     technical_name="CD",
@@ -410,6 +428,7 @@ NATIVE_CATEGORY_EVENEMENTS_CINEMA = NativeCategory(
     technical_name="EVENEMENTS_CINEMA",
     label="Evènements cinéma",
     parents=[SEARCH_GROUP_FILMS_SERIES_CINEMA.id, SEARCH_GROUP_CINEMA.id],
+    positions={SEARCH_GROUP_CINEMA.id: 3},
 )
 NATIVE_CATEGORY_EVENEMENTS_PATRIMOINE = NativeCategory(
     technical_name="EVENEMENTS_PATRIMOINE",
@@ -525,6 +544,7 @@ NATIVE_CATEGORY_SEANCES_DE_CINEMA = NativeCategory(
     technical_name="SEANCES_DE_CINEMA",
     label="Films à l'affiche",
     parents=[SEARCH_GROUP_FILMS_SERIES_CINEMA.id, SEARCH_GROUP_CINEMA.id],
+    positions={SEARCH_GROUP_CINEMA.id: 1},
     genre_type=GenreType.MOVIE,
 )
 NATIVE_CATEGORY_SPECTACLES_ENREGISTRES = NativeCategory(
