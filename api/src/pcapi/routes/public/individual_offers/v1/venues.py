@@ -57,6 +57,7 @@ def get_offerer_venues(
             {"HTTP_200": (venues_serialization.VenueResponse, http_responses.HTTP_200_MESSAGE)}
             # errors
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_404_VENUE_NOT_FOUND
         )
     ),
 )
