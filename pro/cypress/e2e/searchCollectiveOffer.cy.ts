@@ -67,7 +67,7 @@ describe('Search collective offers', () => {
 
     cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
-      ['', '', '', 'Titre', '', 'Lieu', 'Établissement', 'Statut'],
+      ['', '', '', 'Titre', '', 'Adresse', 'Établissement', 'Statut'],
       ['', '', '', offerPublished.name, '', offerPublished.venueName, '', 'publiée'],
     ]
 
@@ -76,7 +76,7 @@ describe('Search collective offers', () => {
 
   it(`I should be able to search with a lieu and see expected results`, () => {
     cy.stepLog({ message: 'I search with the place "' + offerArchived.venueName + '"' })
-    cy.findByLabelText('Lieu').select(offerArchived.venueName)
+    cy.findByLabelText('Structure').select(offerArchived.venueName)
 
     cy.stepLog({ message: 'I validate my filters' })
     cy.findByText('Rechercher').click()
@@ -84,7 +84,7 @@ describe('Search collective offers', () => {
 
     cy.stepLog({ message: '3 results should be displayed' })
     const expectedResults = [
-      ['', '', '', 'Titre', '', 'Lieu', 'Établissement', 'Statut'],
+      ['', '', '', 'Titre', '', 'Adresse', 'Établissement', 'Statut'],
       ['', '', '', offerNotConform.name, '', offerNotConform.venueName, '', 'non conforme'],
       ['', '', '', offerInInstruction.name, '', offerInInstruction.venueName, '', 'en instruction'],
       ['', '', '', offerArchived.name, '', offerArchived.venueName, '', 'archivée'],
@@ -103,7 +103,7 @@ describe('Search collective offers', () => {
 
     cy.stepLog({ message: '2 results should be displayed' })
     const expectedResults = [
-      ['', '', '', 'Titre', '', 'Lieu', 'Établissement', 'Statut'],
+      ['', '', '', 'Titre', '', 'Adresse', 'Établissement', 'Statut'],
       ['', '', '', offerPublished.name, '', offerPublished.venueName, '', 'publiée'],
       ['', '', '', offerPublishedTemplate.name, '', offerPublishedTemplate.venueName, '', 'publiée'],
     ]
@@ -172,8 +172,8 @@ describe('Search collective offers', () => {
   })
 
   it('I should be able to search with several filters and see expected results, then reinit filters', () => {
-    cy.stepLog({ message: 'I select ' + offerDraft.venueName + ' in "Lieu"' })
-    cy.findByLabelText('Lieu').select(offerDraft.venueName)
+    cy.stepLog({ message: 'I select ' + offerDraft.venueName + ' in "Structure"' })
+    cy.findByLabelText('Structure').select(offerDraft.venueName)
 
     cy.stepLog({ message: 'I select "Représentation" in "Format"' })
     cy.findByLabelText('Format').select('Représentation')

@@ -53,7 +53,7 @@ describe('Create collective offers', () => {
 
     cy.wait('@getDomains')
 
-    cy.findByLabelText('Lieu *').select(venueName)
+    cy.findByLabelText('Structure *').select(venueName)
 
     cy.findByLabelText('Ajoutez un ou plusieurs domaines artistiques *').click()
 

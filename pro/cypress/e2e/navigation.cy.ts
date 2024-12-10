@@ -17,10 +17,8 @@ describe('Navigation', () => {
     logInAndGoToPage(login, '/accueil')
 
     cy.stepLog({ message: 'I scroll to my venue' })
-    cy.findByText('Votre page partenaire').scrollIntoView()
-    cy.findByText('Votre page partenaire').should('be.visible')
-    cy.findByText('Vos adresses').scrollIntoView()
-    cy.findByText('Vos adresses').should('be.visible')
+    cy.contains('h3', /Votre page partenaire|Vos pages partenaire/).scrollIntoView()
+    cy.contains('h3', /Votre page partenaire|Vos pages partenaire/).should('be.visible')
     cy.get('[id=content-wrapper]').then((el) => {
       expect(el.get(0).scrollTop).to.be.greaterThan(0)
     })
