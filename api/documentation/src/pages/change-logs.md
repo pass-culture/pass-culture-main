@@ -13,6 +13,10 @@ title: Pass Culture API change logs
 **You can find a migration tutorial [here](/docs/tutorials/migrate-to-the-new-api).**
 :::
 
+## December 2024
+
+- You can fetch a Venue by SIRET using the [**Get Venue endpoint**](/rest-api#tag/Venues/operation/GetVenueBySiret)
+
 ## November 2024
 
 - You can edit the name of an event using the [**Update Event Offer endpoint**](/rest-api#tag/Event-Offers/operation/EditEvent)
