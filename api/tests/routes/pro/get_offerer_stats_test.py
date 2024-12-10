@@ -20,8 +20,7 @@ class OffererStatsTest:
         pro_user = users_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
         product = offers_factories.ProductFactory()
-        product_mediation_url = "/product/image/my_id"
-        offers_factories.ProductMediationFactory(product=product, url=product_mediation_url)
+        product_mediation = offers_factories.ProductMediationFactory(product=product, uuid="my_id")
         offer_1 = offers_factories.OfferFactory(venue__managingOffererId=offerer.id, product=product)
         offer_2 = offers_factories.OfferFactory(venue__managingOffererId=offerer.id)
         mediation = offers_factories.MediationFactory(offer=offer_2)
@@ -89,7 +88,7 @@ class OffererStatsTest:
                     {
                         "image": {
                             "credit": None,
-                            "url": product_mediation_url,
+                            "url": product_mediation.url,
                         },
                         "numberOfViews": 3,
                         "offerId": offer_1.id,

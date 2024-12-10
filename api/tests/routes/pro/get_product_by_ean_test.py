@@ -29,12 +29,8 @@ class Returns200Test:
             },
             gcuCompatibilityType=GcuCompatibilityType.COMPATIBLE,
         )
-        offers_factories.ProductMediationFactory(
-            product=product, url="https://url.com", imageType=TiteliveImageType.RECTO
-        )
-        offers_factories.ProductMediationFactory(
-            product=product, url="https://url.com/verso", imageType=TiteliveImageType.VERSO
-        )
+        offers_factories.ProductMediationFactory(product=product, imageType=TiteliveImageType.RECTO)
+        offers_factories.ProductMediationFactory(product=product, imageType=TiteliveImageType.VERSO)
 
         test_client = client.with_session_auth(email=user.email)
         num_queries = testing.AUTHENTICATION_QUERIES
