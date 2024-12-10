@@ -118,7 +118,7 @@ describe('Create collective offers', () => {
 
     cy.stepLog({ message: 'I want to change my offer to published status' })
 
-    cy.findByRole('link', { name: offerName }).click()
+    cy.findByRole('link', { name: `${offerName} - éditer l’offre` }).click()
 
     cy.wait('@educationalOfferers')
 
