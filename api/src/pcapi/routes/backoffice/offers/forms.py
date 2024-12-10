@@ -158,7 +158,6 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
                 "subcategory",
                 "venue",
                 "validation",
-                "music_type_gtl",
                 "show_type",
                 "price",
                 "boolean",
