@@ -99,97 +99,95 @@ export const OfferNameCell = ({
     <td
       role="cell"
       className={classNames(
-        styles['offers-table-cell'], {
-          [styles['title-column']]: true,
-          [styles['title-column-with-thumb']]: displayThumb,
-        }, className
+        styles['offers-table-cell'],
+        styles['title-column'],
+        className
       )}
       headers={headers}
     >
-      {displayThumb && <Link
-        className={styles['title-column-thumb']}
-        title={`${offer.name} - éditer l’offre`}
+      <Link
+        className={classNames({
+          [styles['title-column-with-thumb']]: displayThumb,
+        })}
         to={offerLink}
       >
-        <Thumb url={isOfferEducational(offer) ? offer.imageUrl : offer.thumbUrl} />
-      </Link>}
-      <div>
-        {offer.isShowcase && (
-          <Tag
-            variant={TagVariant.SMALL_OUTLINE}
-            className={styles['offer-template-tag']}
-          >
-            Offre vitrine
-          </Tag>
-        )}
-        <Link
-          className={styles['title-column-name']}
-          title={`${offer.name} - éditer l’offre`}
-          to={editionOfferLink}
-        >
-          {offer.name}
-        </Link>
-        {(isOfferEducational(offer) || offer.isEvent) && (
-          <span className={styles['stocks']}>
-            {!isOfferEducational(offer) && offer.isEvent && getDateInformations()}
-            {isOfferEducational(offer) &&
-              !isCollectiveOffersExpirationEnabled &&
-              getDateInformations()}
+        {displayThumb && <div className={styles['title-column-thumb']}>
+          <Thumb url={isOfferEducational(offer) ? offer.imageUrl : offer.thumbUrl} />
+        </div>}
+        <div>
+          {offer.isShowcase && (
+            <Tag
+              variant={TagVariant.SMALL_OUTLINE}
+              className={styles['offer-template-tag']}
+            >
+              Offre vitrine
+            </Tag>
+          )}
+          <div className={styles['title-column-name']}>
+            {offer.name}
+          </div>
+          {(isOfferEducational(offer) || offer.isEvent) && (
+            <span className={styles['stocks']}>
+              {!isOfferEducational(offer) && offer.isEvent && getDateInformations()}
+              {isOfferEducational(offer) &&
+                !isCollectiveOffersExpirationEnabled &&
+                getDateInformations()}
 
-            {shouldShowIndividualWarning && (
-              <>
-                <button
-                  type="button"
-                  {...tooltipProps}
-                  className={styles['sold-out-button']}
-                >
-                  <SvgIcon
-                    className={styles['sold-out-icon']}
-                    src={fullErrorIcon}
-                    alt="Attention"
-                    width="16"
-                  />
-                </button>
-                {!isTooltipHidden && (
-                  <span className={styles['sold-out-dates']}>
+              {shouldShowIndividualWarning && (
+                <>
+                  <button
+                    type="button"
+                    {...tooltipProps}
+                    className={styles['sold-out-button']}
+                  >
                     <SvgIcon
                       className={styles['sold-out-icon']}
                       src={fullErrorIcon}
                       alt="Attention"
                       width="16"
                     />
-                    {pluralize(computeNumberOfSoldOutStocks(), 'date épuisée')}
+                  </button>
+                  {!isTooltipHidden && (
+                    <span className={styles['sold-out-dates']}>
+                      <SvgIcon
+                        className={styles['sold-out-icon']}
+                        src={fullErrorIcon}
+                        alt="Attention"
+                        width="16"
+                      />
+                      {pluralize(computeNumberOfSoldOutStocks(), 'date épuisée')}
+                    </span>
+                  )}
+                </>
+              )}
+              {shouldShowCollectiveWarning && (
+                <div>
+                  &nbsp;
+                  <SvgIcon
+                    className={styles['sold-out-icon']}
+                    src={fullErrorIcon}
+                    alt="Attention"
+                  />
+                  <span className={styles['sold-out-dates']}>
+                    La date limite de réservation par le chef d’établissement est
+                    dans{' '}
+                    {`${
+                      getRemainingTime(offer.stocks[0]) >= 1
+                        ? pluralize(getRemainingTime(offer.stocks[0]), 'jour')
+                        : 'moins d’un jour'
+                    } (${getDate(offer.stocks[0])})`}
                   </span>
-                )}
-              </>
-            )}
-            {shouldShowCollectiveWarning && (
-              <div>
-                &nbsp;
-                <SvgIcon
-                  className={styles['sold-out-icon']}
-                  src={fullErrorIcon}
-                  alt="Attention"
-                />
-                <span className={styles['sold-out-dates']}>
-                  La date limite de réservation par le chef d’établissement est
-                  dans{' '}
-                  {`${
-                    getRemainingTime(offer.stocks[0]) >= 1
-                      ? pluralize(getRemainingTime(offer.stocks[0]), 'jour')
-                      : 'moins d’un jour'
-                  } (${getDate(offer.stocks[0])})`}
-                </span>
-              </div>
-            )}
-          </span>
-        )}
-        {!isOfferEducational(offer) && offer.productIsbn && (
-          <div className={styles['isbn']} data-testid="offer-isbn">
-            {offer.productIsbn}
-          </div>
-        )}
-      </div>
+                </div>
+              )}
+            </span>
+          )}
+          {!isOfferEducational(offer) && offer.productIsbn && (
+            <div className={styles['isbn']} data-testid="offer-isbn">
+              {offer.productIsbn}
+            </div>
+          )}
+        </div>
+      </Link>
     </td>
   )
 }
