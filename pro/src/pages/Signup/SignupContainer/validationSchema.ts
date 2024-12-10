@@ -1,7 +1,9 @@
-import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import * as yup from 'yup'
 
-import { passwordValidationStatus } from 'commons/core/shared/utils/validation'
+import {
+  isPhoneValid,
+  passwordValidationStatus,
+} from 'commons/core/shared/utils/validation'
 
 export const validationSchema = yup.object().shape({
   email: yup
@@ -31,18 +33,7 @@ export const validationSchema = yup.object().shape({
     .test(
       'isPhoneValid',
       'Veuillez renseigner un numéro de téléphone valide, exemple : 612345678',
-      // TODO (jm) : Create a standard util function that can be used here and everywhere else (other "validationSchema.ts" files that checks phone numbers format
-      (value) => {
-        if (!value) {
-          return false
-        }
-        const phoneNumber = parsePhoneNumberFromString(value, 'FR')
-        const isValid = phoneNumber?.isValid()
-        if (!isValid) {
-          return false
-        }
-        return true
-      }
+      (phone) => isPhoneValid({ phone, emptyAllowed: false })
     ),
   contactOk: yup.string(),
 })
