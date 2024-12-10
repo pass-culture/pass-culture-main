@@ -11372,6 +11372,60 @@
                 ]
             }
         },
+        "/public/offers/v1/venues/{siret}": {
+            "get": {
+                "description": "Return venue corresponding to the given [**SIRET number (Syst\u00e8me d'identification du r\u00e9pertoire des \u00e9tablissements)**](https://www.economie.gouv.fr/cedef/numero-siret)",
+                "operationId": "GetVenueBySiret",
+                "parameters": [
+                    {
+                        "description": "",
+                        "in": "path",
+                        "name": "siret",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VenueResponse"
+                                }
+                            }
+                        },
+                        "description": "Your request was succesful."
+                    },
+                    "401": {
+                        "description": "Authentication is necessary to use this API."
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Entity"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "summary": "Get Venue",
+                "tags": [
+                    "Venues"
+                ]
+            }
+        },
         "/public/offers/v1/{offer_id}/image": {
             "post": {
                 "description": "Upload an image for given offer.",
