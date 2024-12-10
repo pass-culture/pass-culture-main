@@ -85,6 +85,9 @@ The access to the venue will be given to you either :
 :::tip
 If you want **to know which venues are linked to your provider account**, you can use this **[endpoint](/rest-api/#tag/Venues/operation/GetOffererVenues)**. It is possible to filter by offerer, using the offerer's SIREN.
 
+If you want **to know if a specific venue is linked to your provider account**, you can use the [**Get Venue endpoint**](/rest-api#tag/Venues/operation/GetVenueBySiret). 
+If the venue exists in our database and your provider is linked to this venue, the endpoint will return the venue information; otherwise, it will return a **404 Not Found** error.
+
 
 ```bash
 # Example requests with curl
@@ -96,6 +99,11 @@ curl --location 'https://backend.integration.passculture.team/public/offers/v1/o
 
 # Return all the venues linked to your provider account and belonging to the offerer whose siren is 123456789
 curl --location 'https://backend.integration.passculture.team/public/offers/v1/offerer_venues?siren=123456789' \
+--header 'Accept: application/json' \
+--header 'Authorization: Bearer {you-api-key}'
+
+# Return a venue linked to your provider account and whose siret is 12345678900001
+curl --location 'https://backend.integration.passculture.team/public/offers/v1/venues/12345678900001' \
 --header 'Accept: application/json' \
 --header 'Authorization: Bearer {you-api-key}'
 ```
