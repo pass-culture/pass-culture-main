@@ -500,7 +500,7 @@ describe('ActionsBar', () => {
 
     expect(
       screen.getByText(
-        'Les offres liées à des réservations en cours ne peuvent pas être archivées'
+        'Les offres déjà archivées ou liées à des réservations ne peuvent pas être archivées'
       )
     ).toBeInTheDocument()
   })
@@ -533,7 +533,7 @@ describe('ActionsBar', () => {
 
     expect(
       screen.getByText(
-        'Les offres liées à des réservations en cours ne peuvent pas être archivées'
+        'Les offres déjà archivées ou liées à des réservations ne peuvent pas être archivées'
       )
     ).toBeInTheDocument()
   })
