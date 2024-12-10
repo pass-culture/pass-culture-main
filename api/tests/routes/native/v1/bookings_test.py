@@ -762,6 +762,7 @@ class GetBookingsTest:
         used2_json = next(booking for booking in response.json["ended_bookings"] if booking["id"] == used2.id)
         assert used2_json == {
             "enablePopUpReaction": False,
+            "canReact": False,
             "userReaction": None,
             "activationCode": None,
             "cancellationDate": None,

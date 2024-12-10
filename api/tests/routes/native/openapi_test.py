@@ -121,6 +121,18 @@ def test_public_api(client):
                     "title": "AudioDisabilityModel",
                     "type": "object",
                 },
+                "AvailableReactionBooking": {
+                    "properties": {
+                        "dateUsed": {"format": "date-time", "nullable": True, "title": "Dateused", "type": "string"},
+                        "image": {"nullable": True, "title": "Image", "type": "string"},
+                        "name": {"title": "Name", "type": "string"},
+                        "offerId": {"title": "Offerid", "type": "integer"},
+                        "subcategoryId": {"title": "Subcategoryid", "type": "string"},
+                    },
+                    "required": ["name", "offerId", "subcategoryId"],
+                    "title": "AvailableReactionBooking",
+                    "type": "object",
+                },
                 "Banner": {
                     "properties": {
                         "name": {"$ref": "#/components/schemas/BannerName"},
@@ -351,8 +363,17 @@ def test_public_api(client):
                             "nullable": True,
                         },
                         "enablePopUpReaction": {"title": "Enablepopupreaction", "type": "boolean"},
+                        "canReact": {"title": "Canreact", "type": "boolean"},
                     },
-                    "required": ["id", "dateCreated", "quantity", "stock", "totalAmount", "enablePopUpReaction"],
+                    "required": [
+                        "id",
+                        "dateCreated",
+                        "quantity",
+                        "stock",
+                        "totalAmount",
+                        "enablePopUpReaction",
+                        "canReact",
+                    ],
                     "title": "BookingReponse",
                     "type": "object",
                 },
@@ -968,6 +989,19 @@ def test_public_api(client):
                     },
                     "required": ["name", "values", "trees"],
                     "title": "GenreTypeModel",
+                    "type": "object",
+                },
+                "GetAvailableReactionsResponse": {
+                    "properties": {
+                        "bookings": {
+                            "items": {"$ref": "#/components/schemas/AvailableReactionBooking"},
+                            "title": "Bookings",
+                            "type": "array",
+                        },
+                        "numberOfReactableBookings": {"title": "Numberofreactablebookings", "type": "integer"},
+                    },
+                    "required": ["numberOfReactableBookings", "bookings"],
+                    "title": "GetAvailableReactionsResponse",
                     "type": "object",
                 },
                 "GoogleAccountRequest": {
@@ -3901,7 +3935,16 @@ def test_public_api(client):
                     "operationId": "get__native_v1_reaction_available",
                     "parameters": [],
                     "responses": {
-                        "200": {"description": "OK"},
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/GetAvailableReactionsResponse",
+                                    },
+                                },
+                            },
+                            "description": "OK",
+                        },
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
