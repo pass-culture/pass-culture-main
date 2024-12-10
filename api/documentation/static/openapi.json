@@ -9666,9 +9666,6 @@
                     "401": {
                         "description": "Authentication is necessary to use this API."
                     },
-                    "404": {
-                        "description": "The municipality could not be found on the Base Nationale d'Adresses (BAN) API."
-                    },
                     "422": {
                         "content": {
                             "application/json": {
