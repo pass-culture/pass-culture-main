@@ -9,6 +9,7 @@ import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import time_machine
 
+from pcapi.connectors.dms import models as dms_models
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.finance.api as finance_api
@@ -659,3 +660,54 @@ class UserIsCaledonianTest:
     def test_user_is_not_caledonian(self):
         offerer = users_factories.UserFactory()
         assert not offerer.is_caledonian
+
+
+@pytest.mark.usefixtures("db_session")
+class UserAccountUpdateRequestCanBeAcceptedTest:
+    @pytest.mark.parametrize(
+        "status,expected_result",
+        [
+            (dms_models.GraphQLApplicationStates.draft, False),
+            (dms_models.GraphQLApplicationStates.on_going, True),
+            (dms_models.GraphQLApplicationStates.accepted, False),
+            (dms_models.GraphQLApplicationStates.refused, False),
+            (dms_models.GraphQLApplicationStates.without_continuation, False),
+        ],
+    )
+    def test_status(self, status, expected_result):
+        update_request = users_factories.LastNameUpdateRequestFactory(status=status)
+        assert update_request.can_be_accepted is expected_result
+
+    def test_user(self):
+        update_request = users_factories.PhoneNumberUpdateRequestFactory(user=None)
+        assert update_request.can_be_accepted is False
+
+    @pytest.mark.parametrize(
+        "update_types,expected_result",
+        [
+            ([user_models.UserAccountUpdateType.FIRST_NAME], True),
+            ([user_models.UserAccountUpdateType.LAST_NAME], True),
+            ([user_models.UserAccountUpdateType.EMAIL], True),
+            ([user_models.UserAccountUpdateType.PHONE_NUMBER], True),
+            ([user_models.UserAccountUpdateType.ACCOUNT_HAS_SAME_INFO], False),
+            ([], False),
+        ],
+    )
+    def test_update_types(self, update_types, expected_result):
+        update_request = users_factories.UserAccountUpdateRequestFactory(updateTypes=update_types)
+        assert update_request.can_be_accepted is expected_result
+
+    @pytest.mark.parametrize(
+        "flags,expected_result",
+        [
+            ([user_models.UserAccountUpdateFlag.MISSING_VALUE], False),
+            ([user_models.UserAccountUpdateFlag.INVALID_VALUE], False),
+            ([user_models.UserAccountUpdateFlag.WAITING_FOR_CORRECTION], True),
+            ([user_models.UserAccountUpdateFlag.CORRECTION_RESOLVED], True),
+            ([user_models.UserAccountUpdateFlag.DUPLICATE_NEW_EMAIL], True),
+            ([], True),
+        ],
+    )
+    def test_flags(self, flags, expected_result):
+        update_request = users_factories.EmailUpdateRequestFactory(flags=flags)
+        assert update_request.can_be_accepted is expected_result

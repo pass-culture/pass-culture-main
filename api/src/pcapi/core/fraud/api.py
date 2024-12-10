@@ -454,13 +454,13 @@ def _handle_duplicate(fraud_items: list[models.FraudItem], fraud_check: models.B
 
     users_api.suspend_account(
         user,
-        constants.SuspensionReason.FRAUD_SUSPICION,
+        reason=constants.SuspensionReason.FRAUD_SUSPICION,
         actor=None,
         comment="Compte automatiquement suspendu pour suspicion de doublon",
     )
     users_api.suspend_account(
         duplicate_beneficiary,
-        constants.SuspensionReason.FRAUD_SUSPICION,
+        reason=constants.SuspensionReason.FRAUD_SUSPICION,
         actor=None,
         comment="Compte automatiquement suspendu pour suspicion de doublon",
     )

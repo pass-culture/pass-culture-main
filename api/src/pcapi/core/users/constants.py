@@ -46,6 +46,7 @@ class SuspensionReason(enum.Enum):
     CLOSED_STRUCTURE_TEMP = "temporarly closed structure"
     DELETED = "deleted"
     DEVICE_AT_RISK = "device at risk"
+    DUPLICATE_REPORTED_BY_USER = "duplicate reported by user"
     END_OF_CONTRACT = "end of contract"
     END_OF_ELIGIBILITY = "end of eligibility"
     FRAUD_BOOKING_CANCEL = "booking cancel fraud"
@@ -93,6 +94,7 @@ PUBLIC_SUSPENSION_REASON_CHOICES = {
     SuspensionReason.BLACKLISTED_DOMAIN_NAME: "Nom de domaine blacklisté",
     SuspensionReason.DELETED: "Supprimé",
     SuspensionReason.DEVICE_AT_RISK: "Device à risque",
+    SuspensionReason.DUPLICATE_REPORTED_BY_USER: "Doublon signalé par l'utilisateur",
     SuspensionReason.END_OF_ELIGIBILITY: "Fin d'éligibilité",
     SuspensionReason.FRAUD_BOOKING_CANCEL: "Fraude annulation réservation",
     SuspensionReason.FRAUD_DUPLICATE: "Fraude doublon",

@@ -36,7 +36,7 @@ def notify_users_before_online_event() -> None:
 def delete_suspended_accounts_after_withdrawal_period() -> None:
     query = user_api.get_suspended_upon_user_request_accounts_since(settings.DELETE_SUSPENDED_ACCOUNTS_SINCE)
     for user in query:
-        user_api.suspend_account(user, users_constants.SuspensionReason.DELETED, None)
+        user_api.suspend_account(user, reason=users_constants.SuspensionReason.DELETED, actor=None)
 
 
 @blueprint.cli.command("anonymize_inactive_users")

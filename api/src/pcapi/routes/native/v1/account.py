@@ -467,7 +467,7 @@ def phone_validation_remaining_attempts(user: users_models.User) -> serializers.
 @authenticated_and_active_user_required
 def suspend_account(user: users_models.User) -> None:
     try:
-        api.suspend_account(user, constants.SuspensionReason.UPON_USER_REQUEST, actor=user)
+        api.suspend_account(user, reason=constants.SuspensionReason.UPON_USER_REQUEST, actor=user)
     except bookings_exceptions.BookingIsAlreadyCancelled:
         raise api_errors.ResourceGoneError()
     except bookings_exceptions.BookingIsAlreadyRefunded:
@@ -479,7 +479,7 @@ def suspend_account(user: users_models.User) -> None:
 @spectree_serialize(api=blueprint.api, on_success_status=204)
 @authenticated_and_active_user_required
 def suspend_account_for_hack_suspicion(user: users_models.User) -> None:
-    api.suspend_account(user, constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER, actor=user)
+    api.suspend_account(user, reason=constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER, actor=user)
 
 
 @blueprint.native_route("/account/suspend_for_suspicious_login", methods=["POST"])
@@ -494,7 +494,7 @@ def suspend_account_for_suspicious_login(body: serializers.SuspendAccountForSusp
         raise api_errors.ApiErrors({"reason": "Le token a expiré."}, status_code=401)
     except exceptions.InvalidToken:
         raise api_errors.ApiErrors({"reason": "Le token est invalide."})
-    api.suspend_account(user, constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER, actor=user)
+    api.suspend_account(user, reason=constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER, actor=user)
 
 
 @blueprint.native_route("/account/suspend/token_validation/<token>", methods=["GET"])

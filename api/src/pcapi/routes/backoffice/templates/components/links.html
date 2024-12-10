@@ -34,11 +34,11 @@
   {% endif %}
 {% endmacro %}
 {# ----- internal links (backoffice) ----- #}
-{% macro build_public_user_name_to_details_link(user) %}
+{% macro build_public_user_name_to_details_link(user, active_tab=none, target="_top") %}
   {% if user %}
-    <a href="{{ url_for('backoffice_web.public_accounts.get_public_account', user_id=user.id) }}"
+    <a href="{{ url_for('backoffice_web.public_accounts.get_public_account', user_id=user.id, active_tab=active_tab) }}"
        class="link-primary"
-       target="_top">{{ user.full_name }} ({{ user.id }})</a>
+       target="{{ target }}">{{ user.full_name }} ({{ user.id }})</a>
   {% endif %}
 {% endmacro %}
 {% macro build_booking_token_to_booking_details_link(booking_token) %}
@@ -182,6 +182,17 @@
      target="_blank"
      title="Localiser sur le site national de l'adresse"
      class="link-primary">{{ address.latitude }}, {{ address.longitude }} <i class="bi bi-box-arrow-up-right"></i></a>
+{% endmacro %}
+{% macro build_ds_application_external_link(ds_dossier_id, ds_procedure_id=none, prefix="") %}
+  {% if ds_procedure_id %}
+    {% set link = "https://www.demarches-simplifiees.fr/procedures/" + ds_procedure_id|string + "/dossiers/" + ds_dossier_id|string %}
+  {% else %}
+    {% set link = "https://www.demarches-simplifiees.fr/dossiers/" + ds_dossier_id|string %}
+  {% endif %}
+  <a href="{{ link }}"
+     class="link-primary"
+     target="_blank"
+     title="Ouvrir le dossier DS">{{ prefix }}{{ ds_dossier_id }} <i class="bi bi-box-arrow-up-right"></i></a>
 {% endmacro %}
 {% macro build_dms_adage_application_external_link(collective_dms_application) %}
   <a href="https://www.demarches-simplifiees.fr/procedures/{{ collective_dms_application.procedure }}/dossiers/{{ collective_dms_application.application }}"
