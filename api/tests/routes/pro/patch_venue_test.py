@@ -700,13 +700,11 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["siret"] == venue.siret
 
-    def test_should_update_permanent_venue_opening_hours(self, client) -> None:
-        # given
+    def test_should_update_open_to_public_venue_opening_hours(self, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, isPermanent=True)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, isOpenToPublic=True)
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        # when
         venue_data = populate_missing_data_from_venue(
             {
                 "openingHours": [
@@ -743,15 +741,12 @@ class Returns200Test:
         }
 
     def test_should_not_update_opening_hours_when_response_is_none(self, client) -> None:
-        # given
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, isPermanent=True)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, isOpenToPublic=True)
         auth_request = client.with_session_auth(email=user_offerer.user.email)
 
-        # when
         venue_data = populate_missing_data_from_venue({"contact": None}, venue)
 
-        # then
         response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
         assert response.status_code == 200
         assert len(venue.action_history) == 0
