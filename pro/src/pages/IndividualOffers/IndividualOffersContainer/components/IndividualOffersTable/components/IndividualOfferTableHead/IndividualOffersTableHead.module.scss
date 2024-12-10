@@ -5,7 +5,6 @@
 
 .individual-offers-thead {
   display: flex;
-  padding: rem.torem(8px) rem.torem(16px);
   border-top-left-radius: rem.torem(8px);
   border-top-right-radius: rem.torem(8px);
   width: 100%;
@@ -13,12 +12,18 @@
 
   &-th {
     @include fonts.caption;
+    @include a11y.visually-hidden;
 
     text-align: left;
-    display: none;
 
     &-checkbox {
-      display: flex;
+      @include a11y.visually-hidden-reset;
+
+      padding: rem.torem(8px) rem.torem(16px);
+
+      &-wrapper {
+        display: flex;
+      }
 
       &-input {
         margin-right: rem.torem(16px);
@@ -39,18 +44,17 @@
     display: table-header-group;
 
     &-th {
-      display: table-cell;
+      @include a11y.visually-hidden-reset;
+
       padding: rem.torem(8px) 0;
 
       &-checkbox {
-        display: flex;
-
         &-input {
           margin-right: 0;
         }
 
         &-label {
-          display: none;
+          @include a11y.visually-hidden;
         }
       }
 

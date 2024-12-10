@@ -40,7 +40,13 @@ export const OfferRemainingStockCell = ({
         className
       )}
     >
-      {displayLabel && <span className={styles['offers-table-cell-mobile-label']}>Stocks :</span>}
+      {displayLabel &&
+        <span
+          className={styles['offers-table-cell-mobile-label']}
+          aria-hidden={true}
+        >
+          Stocks :
+        </span>}
       {computeRemainingStockValue(stocks)}
     </td>
   )

@@ -44,7 +44,6 @@ const renderOfferItem = (props: IndividualOfferRowProps) =>
 
 const LABELS = {
   openActions: /Voir les actions/,
-  editAction: /Voir l’offre/,
   deleteAction: /Supprimer l’offre/,
   eventStockEditAction: /Dates et capacités/,
   physicalStockEditAction: /Stocks/,
@@ -78,28 +77,6 @@ describe('IndividualOfferRow', () => {
       isSelected: false,
       isRestrictedAsAdmin: false,
     }
-  })
-
-  describe('thumb Component', () => {
-    it('should render an image with url from offer when offer has a thumb url', () => {
-      renderOfferItem(props)
-
-      expect(
-        within(
-          screen.getAllByRole('link', { name: /éditer l’offre/ })[0]
-        ).getByRole('presentation')
-      ).toHaveAttribute('src', '/my-fake-thumb')
-    })
-
-    it('should render an image with an empty url when offer does not have a thumb url', () => {
-      props.offer = listOffersOfferFactory({ thumbUrl: null })
-
-      renderOfferItem(props)
-
-      expect(
-        screen.getAllByTitle(`${props.offer.name} - éditer l’offre`)[0]
-      ).toBeInTheDocument()
-    })
   })
 
   describe('action buttons', () => {
@@ -205,11 +182,9 @@ describe('IndividualOfferRow', () => {
     it('should contain a link with the offer name and details link', () => {
       renderOfferItem(props)
 
-      const offerTitle = screen.queryByText(props.offer.name as string, {
-        selector: 'a',
-      })
-      expect(offerTitle).toBeInTheDocument()
-      expect(offerTitle).toHaveAttribute(
+      const offerTitleLink = screen.getByRole('link', { name: new RegExp(props.offer.name) })
+      expect(offerTitleLink).toBeInTheDocument()
+      expect(offerTitleLink).toHaveAttribute(
         'href',
         `/offre/individuelle/${props.offer.id}/recapitulatif/details`
       )

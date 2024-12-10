@@ -22,7 +22,13 @@ export function AddressCell({
         className
       )}
     >
-      {displayLabel && <span className={styles['offers-table-cell-mobile-label']}>Adresse :</span>}
+      {displayLabel &&
+        <span
+          className={styles['offers-table-cell-mobile-label']}
+          aria-hidden={true}
+        >
+          Adresse :
+        </span>}
       {address ? computeAddressDisplayName(address) : '-'}
     </td>
   )
