@@ -9,3 +9,4 @@ def install_routes(app: Flask) -> None:
     from . import events
     from . import products
     from . import providers
+    from . import venues
