@@ -21,6 +21,7 @@ from sqlalchemy.sql.elements import BooleanClauseList
 from sqlalchemy.sql.elements import Case
 from sqlalchemy.sql.elements import UnaryExpression
 
+from pcapi import settings
 import pcapi.core.bookings.constants as bookings_constants
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2
@@ -140,8 +141,11 @@ class ProductMediation(PcObject, Base, Model):
     productId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("product.id", ondelete="CASCADE"), index=True, nullable=False
     )
-    url: str = sa.Column(sa.String(255), nullable=False, unique=True)
     uuid: str = sa.Column(sa.Text, nullable=False, unique=True)
+
+    @property
+    def url(self) -> str:
+        return f"{settings.OBJECT_STORAGE_URL}/{settings.THUMBS_FOLDER_NAME}/{self.uuid}"
 
 
 class GcuCompatibilityType(enum.Enum):

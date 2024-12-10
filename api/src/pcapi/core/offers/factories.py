@@ -72,14 +72,8 @@ class ProductMediationFactory(BaseFactory):
         model = models.ProductMediation
 
     product = factory.SubFactory(ProductFactory)
-    url = factory.Sequence("http://example.com/product/{}".format)
+    uuid = factory.LazyFunction(lambda: str(uuid.uuid4()))
     imageType = offers_models.TiteliveImageType.RECTO
-
-    @factory.lazy_attribute
-    def uuid(self) -> None:
-        # Temporary extract the last part after the '/' in the URL.
-        # As soon as url is deleted, this can be removed.
-        return self.url.split("/")[-1]
 
 
 class EventProductFactory(ProductFactory):

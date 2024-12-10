@@ -676,8 +676,9 @@ class OffersTest:
 
     def test_get_offer_with_product_mediation_and_thumb(self, client):
         product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
-        offers_factories.ProductMediationFactory(
-            product=product, url="https://url.com", imageType=TiteliveImageType.RECTO
+        uuid = "1"
+        product_mediation = offers_factories.ProductMediationFactory(
+            product=product, uuid=uuid, imageType=TiteliveImageType.RECTO
         )
         offer = offers_factories.OfferFactory(
             product=product, venue__isPermanent=True, subcategoryId=subcategories.LIVRE_PAPIER.id
@@ -693,18 +694,17 @@ class OffersTest:
 
         assert response.status_code == 200
         assert response.json["image"] == {
-            "url": "https://url.com",
+            "url": product_mediation.url,
             "credit": None,
         }
 
     def test_get_offer_with_two_product_mediation(self, client):
         product = offers_factories.ProductFactory(thumbCount=0, subcategoryId=subcategories.LIVRE_PAPIER.id)
-        offers_factories.ProductMediationFactory(
-            product=product, url="https://url.com/recto", imageType=TiteliveImageType.RECTO
+        uuid = "recto"
+        product_mediation = offers_factories.ProductMediationFactory(
+            product=product, uuid=uuid, imageType=TiteliveImageType.RECTO
         )
-        offers_factories.ProductMediationFactory(
-            product=product, url="https://url.com/verso", imageType=TiteliveImageType.VERSO
-        )
+        offers_factories.ProductMediationFactory(product=product, imageType=TiteliveImageType.VERSO)
         offer = offers_factories.OfferFactory(
             product=product, venue__isPermanent=True, subcategoryId=subcategories.LIVRE_PAPIER.id
         )
@@ -719,7 +719,7 @@ class OffersTest:
 
         assert response.status_code == 200
         assert response.json["image"] == {
-            "url": "https://url.com/recto",
+            "url": product_mediation.url,
             "credit": None,
         }
 
@@ -745,9 +745,7 @@ class OffersTest:
 
     def test_get_offer_with_mediation_and_product_mediation(self, client):
         product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
-        offers_factories.ProductMediationFactory(
-            product=product, url="https://url.com", imageType=TiteliveImageType.RECTO
-        )
+        offers_factories.ProductMediationFactory(product=product, imageType=TiteliveImageType.RECTO)
         offer = offers_factories.OfferFactory(
             product=product, venue__isPermanent=True, subcategoryId=subcategories.LIVRE_PAPIER.id
         )
@@ -1555,9 +1553,8 @@ class OffersV2Test:
 
     def test_get_offer_with_product_mediation_and_thumb(self, client):
         product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
-        offers_factories.ProductMediationFactory(
-            product=product, url="https://url.com", imageType=TiteliveImageType.RECTO
-        )
+        uuid = "11111111"
+        offers_factories.ProductMediationFactory(product=product, uuid=uuid, imageType=TiteliveImageType.RECTO)
         offer = offers_factories.OfferFactory(
             product=product, venue__isPermanent=True, subcategoryId=subcategories.LIVRE_PAPIER.id
         )
@@ -1573,19 +1570,17 @@ class OffersV2Test:
         assert response.status_code == 200
         assert response.json["images"] == {
             "recto": {
-                "url": "https://url.com",
+                "url": f"{settings.OBJECT_STORAGE_URL}/{settings.THUMBS_FOLDER_NAME}/{uuid}",
                 "credit": None,
             }
         }
 
     def test_get_offer_with_two_product_mediation(self, client):
         product = offers_factories.ProductFactory(thumbCount=0, subcategoryId=subcategories.LIVRE_PAPIER.id)
-        offers_factories.ProductMediationFactory(
-            product=product, url="https://url.com/recto", imageType=TiteliveImageType.RECTO
-        )
-        offers_factories.ProductMediationFactory(
-            product=product, url="https://url.com/verso", imageType=TiteliveImageType.VERSO
-        )
+        first_uuid = "11111111"
+        second_uuid = "22222222"
+        offers_factories.ProductMediationFactory(product=product, uuid=first_uuid, imageType=TiteliveImageType.RECTO)
+        offers_factories.ProductMediationFactory(product=product, uuid=second_uuid, imageType=TiteliveImageType.VERSO)
         offer = offers_factories.OfferFactory(
             product=product, venue__isPermanent=True, subcategoryId=subcategories.LIVRE_PAPIER.id
         )
@@ -1601,11 +1596,11 @@ class OffersV2Test:
         assert response.status_code == 200
         assert response.json["images"] == {
             "recto": {
-                "url": "https://url.com/recto",
+                "url": f"{settings.OBJECT_STORAGE_URL}/{settings.THUMBS_FOLDER_NAME}/{first_uuid}",
                 "credit": None,
             },
             "verso": {
-                "url": "https://url.com/verso",
+                "url": f"{settings.OBJECT_STORAGE_URL}/{settings.THUMBS_FOLDER_NAME}/{second_uuid}",
                 "credit": None,
             },
         }
@@ -1634,9 +1629,7 @@ class OffersV2Test:
 
     def test_get_offer_with_mediation_and_product_mediation(self, client):
         product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
-        offers_factories.ProductMediationFactory(
-            product=product, url="https://url.com", imageType=TiteliveImageType.RECTO
-        )
+        offers_factories.ProductMediationFactory(product=product, imageType=TiteliveImageType.RECTO)
         offer = offers_factories.OfferFactory(
             product=product, venue__isPermanent=True, subcategoryId=subcategories.LIVRE_PAPIER.id
         )

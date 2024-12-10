@@ -674,12 +674,12 @@ def create_product_with_multiple_images() -> None:
     offers_factories.StockFactory(offer=offer)
     offers_factories.ProductMediationFactory(
         product=product,
-        url="https://storage.googleapis.com/passculture-metier-ehp-testing-assets-fine-grained/thumbs/products/222A",
+        uuid="222A",
         imageType=TiteliveImageType.RECTO,
     )
     offers_factories.ProductMediationFactory(
         product=product,
-        url="https://storage.googleapis.com/passculture-metier-ehp-testing-assets-fine-grained/thumbs/products/222A_1",
+        uuid="222A_1",
         imageType=TiteliveImageType.VERSO,
     )
 
