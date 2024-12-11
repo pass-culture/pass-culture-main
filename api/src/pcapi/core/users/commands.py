@@ -102,8 +102,15 @@ def sync_ds_instructor_ids() -> None:
 
 
 @blueprint.cli.command("sync_ds_user_account_update_requests")
+@click.option(
+    "--ignore_previous",
+    type=bool,
+    is_flag=True,
+    default=False,
+    help="Import all application ignoring previous import date",
+)
 @cron_decorators.log_cron_with_transaction
-def sync_ds_user_account_update_requests() -> None:
+def sync_ds_user_account_update_requests(ignore_previous: bool = False) -> None:
     if not FeatureToggle.ENABLE_DS_SYNC_FOR_USER_ACCOUNT_UPDATE_REQUESTS.is_active():
         return
 
@@ -111,5 +118,7 @@ def sync_ds_user_account_update_requests() -> None:
         settings.DS_USER_ACCOUNT_UPDATE_PROCEDURE_ID,
     ]
     for procedure_id in procedure_ids:
-        import_ds_applications(int(procedure_id), users_ds.sync_user_account_update_requests)
+        import_ds_applications(
+            int(procedure_id), users_ds.sync_user_account_update_requests, ignore_previous=ignore_previous
+        )
         db.session.commit()
