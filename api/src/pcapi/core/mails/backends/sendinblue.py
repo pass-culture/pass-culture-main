@@ -1,4 +1,5 @@
 from dataclasses import asdict
+import json
 import logging
 from typing import Iterable
 
@@ -11,6 +12,7 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.tasks.sendinblue_tasks import send_transactional_email_primary_task
 from pcapi.tasks.sendinblue_tasks import send_transactional_email_secondary_task
 import pcapi.tasks.serialization.sendinblue_tasks as serializers
+from pcapi.utils import email as email_utils
 from pcapi.utils.email import is_email_whitelisted
 from pcapi.utils.requests import ExternalAPIException
 
@@ -164,6 +166,40 @@ class SendinblueBackend(BaseBackend):
     ) -> None:
         if exception.status >= 500:
             raise ExternalAPIException(is_retryable=True) from exception
+
+        if exception.status == 400 and exception.body:
+            try:
+                data = json.loads(exception.body)
+            except json.JSONDecodeError:
+                pass
+            else:
+                code = data.get("code")
+                # When new email already exists in Brevo contacts, no need to raise an error, keep existing and delete the
+                # contact with old email.
+                # Exception body contains:
+                # {
+                #     "code": "duplicate_parameter",
+                #     "message": "Unable to update contact, email is already associated with another Contact",
+                #     "metadata":{"duplicate_identifiers":["email"]}
+                # }
+                if code == "duplicate_parameter" and data.get("metadata", {}).get("duplicate_identifiers") == ["email"]:
+                    return self.delete_contact(payload.email)
+
+                if code:
+                    # Don't raise exception for data which should be fixed but create a specific alert for every case.
+                    # This should avoid aggregation of all cases/emails in a single Sentry alert with 30k exceptions.
+                    logger.error(
+                        "Sendinblue can't create contact %s: code=%s, message=%s",
+                        # Email is partially obfuscated in logs but full email is available in Sentry for investigation
+                        email_utils.anonymize_email(payload.email),
+                        code,
+                        data.get("message"),
+                        extra={
+                            "email": payload.email,
+                            "attributes": payload.attributes,
+                        },
+                    )
+                    return None
 
         logger.exception(
             "Exception when calling Sendinblue create_contact API",
