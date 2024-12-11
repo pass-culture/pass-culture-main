@@ -25,7 +25,7 @@
                       {% endif %}
                     </li>
                     <li>SIRET : {{ dms_venue.siret }}</li>
-                    <li>Statut du dossier DMS ADAGE : {{ dms_venue.state | format_dms_status }}</li>
+                    <li>Statut du dossier DS ADAGE : {{ dms_venue.state | format_dms_status }}</li>
                     <li>Date de dernière modification : {{ dms_venue.lastChangeDate | format_string_to_date_time }}</li>
                   </ul>
                 {% endif %}

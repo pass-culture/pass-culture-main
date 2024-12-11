@@ -596,7 +596,7 @@ def format_fraud_review_status(status: fraud_models.FraudReviewStatus) -> str:
         case fraud_models.FraudReviewStatus.KO:
             return "KO"
         case fraud_models.FraudReviewStatus.REDIRECTED_TO_DMS:
-            return "Redirigé vers DMS"
+            return "Redirigé vers DS"
         case _:
             return status.value
 

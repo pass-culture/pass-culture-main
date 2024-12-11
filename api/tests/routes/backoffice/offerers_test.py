@@ -1902,11 +1902,11 @@ class GetOffererBankAccountTest(GetEndpointHelper):
 
         assert rows[0]["ID"] == str(bank2.id)
         assert rows[0]["Intitulé du compte bancaire"] == bank2.label
-        assert rows[0]["Statut du dossier DMS CB"] == "En instruction"
+        assert rows[0]["Statut du dossier DS CB"] == "En instruction"
 
         assert rows[1]["ID"] == str(bank1.id)
         assert rows[1]["Intitulé du compte bancaire"] == bank1.label
-        assert rows[1]["Statut du dossier DMS CB"] == "Accepté"
+        assert rows[1]["Statut du dossier DS CB"] == "Accepté"
 
 
 class CommentOffererTest(PostEndpointHelper):
@@ -2154,19 +2154,19 @@ class ListOfferersToValidateTest(GetEndpointHelper):
 
             dms_adage_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[0]
             assert (
-                f"Nom : {venue.name} SIRET : {accepted_application.siret} Statut du dossier DMS ADAGE : Accepté Date de dernière modification : {format_date_time(accepted_application.lastChangeDate)}"
+                f"Nom : {venue.name} SIRET : {accepted_application.siret} Statut du dossier DS ADAGE : Accepté Date de dernière modification : {format_date_time(accepted_application.lastChangeDate)}"
                 in dms_adage_data
             )
             assert (
-                f"Nom : {other_venue.name} SIRET : {other_accepted_application.siret} Statut du dossier DMS ADAGE : Accepté Date de dernière modification : {format_date_time(other_accepted_application.lastChangeDate)}"
+                f"Nom : {other_venue.name} SIRET : {other_accepted_application.siret} Statut du dossier DS ADAGE : Accepté Date de dernière modification : {format_date_time(other_accepted_application.lastChangeDate)}"
                 in dms_adage_data
             )
             assert (
-                f"Nom : {other_venue.name} SIRET : {other_rejected_application.siret} Statut du dossier DMS ADAGE : Refusé Date de dernière modification : {format_date_time(other_rejected_application.lastChangeDate)}"
+                f"Nom : {other_venue.name} SIRET : {other_rejected_application.siret} Statut du dossier DS ADAGE : Refusé Date de dernière modification : {format_date_time(other_rejected_application.lastChangeDate)}"
                 in dms_adage_data
             )
             assert (
-                f"Dossier sans lieu SIRET : {venueless_application.siret} Statut du dossier DMS ADAGE : Accepté Date de dernière modification : {format_date_time(venueless_application.lastChangeDate)}"
+                f"Dossier sans lieu SIRET : {venueless_application.siret} Statut du dossier DS ADAGE : Accepté Date de dernière modification : {format_date_time(venueless_application.lastChangeDate)}"
                 in dms_adage_data
             )
 
@@ -2375,7 +2375,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 assert response.status_code == 400
 
             assert (
-                "Le nombre de chiffres ne correspond pas à un SIREN, RID7, code postal, département ou ID DMS CB"
+                "Le nombre de chiffres ne correspond pas à un SIREN, RID7, code postal, département ou ID DS CB"
                 in response.data.decode("utf-8")
             )
 

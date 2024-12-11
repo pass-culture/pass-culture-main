@@ -108,11 +108,7 @@ def _apply_query_filters(
                 query = query.filter(offerers_models.Offerer.departementCode == sanitized_q)
             else:
                 raise ApiErrors(
-                    {
-                        "q": [
-                            "Le nombre de chiffres ne correspond pas à un SIREN, code postal, département ou ID DMS CB"
-                        ]
-                    },
+                    {"q": ["Le nombre de chiffres ne correspond pas à un SIREN, code postal, département ou ID DS CB"]},
                     status_code=400,
                 )
         elif email_utils.is_valid_email(sanitized_q):
