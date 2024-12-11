@@ -30,14 +30,16 @@ export function expectOffersOrBookingsAreFound(
             cy.wrap($elt)
               .eq(column)
               .then((cellValue) => {
-                cy.log(cellValue.text())
-                if (cellValue.text().length && lineArray[column].length) {
-                  return cy
-                    .wrap(cellValue)
-                    .should('contain.text', lineArray[column])
-                } else {
-                  return true
-                }
+                cy.log("1: " + cellValue.text())
+                cy.log("2: " + lineArray[column])
+                let isAMatch: boolean = cellValue.text() === lineArray[column];
+                expect(isAMatch).is.true
+                // if (cellValue.text().length > 0 && lineArray[column].length > 0) {
+                //   cy.wrap(cellValue).should('contain.text', lineArray[column])
+                //   return true
+                // } else {
+                //   return true
+                // }
               })
           }
         })
