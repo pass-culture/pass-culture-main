@@ -922,7 +922,7 @@ def format_modified_info_values(modified_info: typing.Any, name: str | None = No
     new_info = modified_info.get("new_info")
 
     if old_info is not None and new_info is not None:
-        return Markup("{old_value} => {new_value}").format(
+        return Markup("{old_value} → {new_value}").format(
             old_value=_format_modified_info_value(old_info, name),
             new_value=_format_modified_info_value(new_info, name),
         )

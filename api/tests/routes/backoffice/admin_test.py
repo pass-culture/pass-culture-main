@@ -256,8 +256,8 @@ class GetRolesHistoryTest(GetEndpointHelper):
         assert history_rows[0]["Type"] == history_models.ActionType.ROLE_PERMISSIONS_CHANGED.value
         assert (
             history_rows[0]["Commentaire"] == f"Rôle : {role.name} "
-            f"Informations modifiées : {perm_models.Permissions.MANAGE_PERMISSIONS.value} : Oui => Non "
-            f"{perm_models.Permissions.READ_ADMIN_ACCOUNTS.value} : Non => Oui"
+            f"Informations modifiées : {perm_models.Permissions.MANAGE_PERMISSIONS.value} : Oui → Non "
+            f"{perm_models.Permissions.READ_ADMIN_ACCOUNTS.value} : Non → Oui"
         )
         assert history_rows[0]["Auteur"] == action.authorUser.full_name
 

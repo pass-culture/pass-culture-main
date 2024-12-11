@@ -639,10 +639,10 @@ class UpdateOffererTest(PostEndpointHelper):
         history_rows = html_parser.extract_table_rows(history_response.data)
         assert len(history_rows) == 1
         assert history_rows[0]["Type"] == history_models.ActionType.INFO_MODIFIED.value
-        assert f"Nom juridique : {old_name} => {offerer_to_edit.name}" in history_rows[0]["Commentaire"]
-        assert f"Ville : {old_city} => {offerer_to_edit.city}" in history_rows[0]["Commentaire"]
-        assert f"Code postal : {old_postal_code} => {offerer_to_edit.postalCode}" in history_rows[0]["Commentaire"]
-        assert f"Adresse : {old_street} => {offerer_to_edit.street}" in history_rows[0]["Commentaire"]
+        assert f"Nom juridique : {old_name} → {offerer_to_edit.name}" in history_rows[0]["Commentaire"]
+        assert f"Ville : {old_city} → {offerer_to_edit.city}" in history_rows[0]["Commentaire"]
+        assert f"Code postal : {old_postal_code} → {offerer_to_edit.postalCode}" in history_rows[0]["Commentaire"]
+        assert f"Adresse : {old_street} → {offerer_to_edit.street}" in history_rows[0]["Commentaire"]
 
         assert len(testing.sendinblue_requests) == 4
         assert {sendinblue_request["email"] for sendinblue_request in testing.sendinblue_requests} == {
@@ -686,7 +686,7 @@ class UpdateOffererTest(PostEndpointHelper):
         assert len(history_rows) == 1
         assert history_rows[0]["Type"] == history_models.ActionType.INFO_MODIFIED.value
         assert history_rows[0]["Auteur"] == legit_user.full_name
-        assert "Premier tag => Deuxième tag, Troisième tag" in history_rows[0]["Commentaire"]
+        assert "Premier tag → Deuxième tag, Troisième tag" in history_rows[0]["Commentaire"]
         for item in ("Adresse", "Code postal", "Ville"):
             assert item not in history_rows[0]["Commentaire"]
 
@@ -1140,7 +1140,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
         assert rows[1]["Type"] == "Fraude et Conformité"
         assert (
             rows[1]["Commentaire"]
-            == "Informations modifiées : Validation des offres : Revue manuelle => Validation auto"
+            == "Informations modifiées : Validation des offres : Revue manuelle → Validation auto"
         )
         assert rows[1]["Auteur"] == pro_fraud_admin.full_name
 
