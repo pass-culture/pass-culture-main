@@ -5,12 +5,10 @@
     <title>Pass Culture - Site en cours de maintenance</title>
     <style>
       @font-face {
-        font-family: "Montserrat";
+        font-family: 'Montserrat';
         font-style: normal;
-        src:
-          local("Montserrat Regular"),
-          local("Montserrat-Regular"),
-          url("./fonts/Montserrat-Regular.woff2") format("woff2");
+        src: local('Montserrat Regular'), local('Montserrat-Regular'),
+          url('./fonts/Montserrat-Regular.woff2') format('woff2');
       }
 
       html,
@@ -23,12 +21,24 @@
 
       body {
         padding: 20px;
-        background-image: url("./linear-gradient.jpg");
         background-color: #320096;
         background-size: cover;
         background-position: center;
         color: white;
-        font-family: Montserrat, "Helvetica Neue", arial, sans-serif;
+        font-family: Montserrat, 'Helvetica Neue', arial, sans-serif;
+        position: relative;
+      }
+
+      .background-gradient {
+        position: absolute;
+        margin: 0;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        min-height: 100vh;
+        z-index: -1;
+        overflow: hidden;
       }
 
       h1,
@@ -90,12 +100,53 @@
   </head>
 
   <body>
+    <div class="background-gradient">
+      <svg
+        width="100%"
+        height="100%"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        <defs>
+          <linearGradient
+            id="background-gradient-1"
+            gradientTransform="rotate(90)"
+          >
+            <stop offset="0%" stop-color="#6123df" />
+            <stop offset="100%" stop-color="#320096" />
+          </linearGradient>
+
+          <linearGradient
+            id="background-gradient-2"
+            gradientTransform="rotate(90)"
+          >
+            <stop offset="30%" stop-color="#6123df" />
+            <stop offset="70%" stop-color="#320096" />
+          </linearGradient>
+        </defs>
+        <rect
+          x="0"
+          y="0"
+          width="100"
+          height="100"
+          fill="url(#background-gradient-2)"
+        />
+        <path
+          d="M 0 0 C 0 50 100 50 100 100 L 0 100 Z"
+          fill="url(#background-gradient-1)"
+        />
+      </svg>
+    </div>
     <div class="icon-container">
       <svg
         width="350"
         height="220"
         viewBox="0 0 150 100"
         xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
       >
         <title />
         <g fill="none" fill-rule="evenodd">
@@ -130,45 +181,43 @@
     <script>
       function setupRedirect() {
         const allowedDomains = new Set([
-          "app.testing.passculture.team",
-          "pro.testing.passculture.team",
-          "app.staging.passculture.team",
-          "pro.staging.passculture.team",
-          "integration.passculture.app",
-          "integration.passculture.pro",
-          "passculture.app",
-          "passculture.pro",
-        ]);
-        const source = new URLSearchParams(window.location.search).get(
-          "source"
-        );
+          'app.testing.passculture.team',
+          'pro.testing.passculture.team',
+          'app.staging.passculture.team',
+          'pro.staging.passculture.team',
+          'integration.passculture.app',
+          'integration.passculture.pro',
+          'passculture.app',
+          'passculture.pro',
+        ])
+        const source = new URLSearchParams(window.location.search).get('source')
         try {
-          const sourceUrl = new URL(source);
-          if (sourceUrl.protocol != "https:") {
-            sourceDomain = "";
+          const sourceUrl = new URL(source)
+          if (sourceUrl.protocol != 'https:') {
+            sourceDomain = ''
           }
-          sourceDomain = sourceUrl.host;
+          sourceDomain = sourceUrl.host
         } catch (error) {
-          sourceDomain = "";
+          sourceDomain = ''
         }
 
-        var blockClassToShow = "from-pro";
+        var blockClassToShow = 'from-pro'
         if (sourceDomain.match(/app/)) {
-          blockClassToShow = "from-app";
+          blockClassToShow = 'from-app'
         }
-        const block = document.getElementsByClassName(blockClassToShow)[0];
-        block.style.display = "block";
+        const block = document.getElementsByClassName(blockClassToShow)[0]
+        block.style.display = 'block'
 
         if (!allowedDomains.has(sourceDomain)) {
-          return;
+          return
         }
 
         const redirectToSource = () => {
-          window.location.replace(source);
-        };
-        setTimeout(redirectToSource, 60000);
+          window.location.replace(source)
+        }
+        setTimeout(redirectToSource, 60000)
       }
-      setupRedirect();
+      setupRedirect()
     </script>
   </body>
 </html>
