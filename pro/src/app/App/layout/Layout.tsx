@@ -24,12 +24,14 @@ export interface LayoutProps {
    */
   mainHeading?: string
   layout?: 'basic' | 'funnel' | 'onboarding' | 'sticky-actions' | 'logged-out'
+  showFooter?: boolean
 }
 
 export const Layout = ({
   children,
   mainHeading,
   layout = 'basic',
+  showFooter = layout !== 'funnel',
 }: LayoutProps) => {
   const currentUser = useSelector(selectCurrentUser)
   const [lateralPanelOpen, setLateralPanelOpen] = useState(false)
@@ -161,7 +163,7 @@ export const Layout = ({
                   </div>
                 )}
               </main>
-              {layout !== 'funnel' && <Footer layout={layout} />}
+              {showFooter && <Footer layout={layout} />}
             </div>
           </div>
         </div>
