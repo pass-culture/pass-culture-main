@@ -33,6 +33,7 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import BookingStatusFilter
 from pcapi.core.bookings.models import ExternalBooking
 from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
+from pcapi.core.bookings.utils import convert_date_period_to_utc_datetime_period
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.finance.models import BookingFinanceIncident
 from pcapi.core.geography.models import Address
@@ -409,6 +410,30 @@ def get_export(
     return _serialize_csv_report(bookings_query)
 
 
+def get_pro_user_timezones(user: User) -> set[str]:
+    # Timezones based on offerer addresses
+    addresses_timezones_query = (
+        Address.query.with_entities(Address.timezone)
+        .join(OffererAddress, OffererAddress.addressId == Address.id)
+        .join(Offerer, OffererAddress.offererId == Offerer.id)
+        .join(UserOfferer, UserOfferer.offererId == Offerer.id)
+        .filter(UserOfferer.userId == user.id)
+        .distinct()
+    )
+    # Timezones based on offerer venues
+    # For digital offers that do not have an address
+    venues_timezones_query = (
+        Venue.query.with_entities(Venue.timezone)
+        .join(Offerer, Venue.managingOffererId == Offerer.id)
+        .join(UserOfferer, UserOfferer.offererId == Offerer.id)
+        .filter(UserOfferer.userId == user.id)
+        .distinct()
+    )
+    query = addresses_timezones_query.union_all(venues_timezones_query)
+
+    return {row[0] for row in query}
+
+
 def field_to_venue_timezone(
     field: InstrumentedAttribute, column: sa.orm.Mapped[typing.Any] | sa.sql.functions.Function
 ) -> cast:
@@ -464,15 +489,30 @@ def _get_filtered_bookings_query(
     bookings_query = bookings_query.filter(UserOfferer.isValidated)
 
     if period:
-        period_attribut_filter = (
-            BOOKING_DATE_STATUS_MAPPING[status_filter]
-            if status_filter
-            else BOOKING_DATE_STATUS_MAPPING[BookingStatusFilter.BOOKED]
+        date_column_to_filter_on = BOOKING_DATE_STATUS_MAPPING[status_filter or BookingStatusFilter.BOOKED]
+
+        datetime_period_by_timezones = _convert_date_period_to_datetime_period_for_timezones(
+            period,
+            pro_user,
+            offer_id=offer_id,
+            offerer_address_id=offerer_address_id,
         )
 
-        bookings_query = bookings_query.filter(
-            field_to_venue_timezone(period_attribut_filter, timezone_column).between(*period, symmetric=True)
-        )
+        if len(datetime_period_by_timezones) == 1:  # ie. all bookings are on a single timezone
+            [(_, datetime_period)] = datetime_period_by_timezones.items()
+            bookings_query = bookings_query.filter(date_column_to_filter_on.between(*datetime_period, symmetric=True))
+        else:  # ie. bookings are dispatched on several timezones
+            bookings_query = bookings_query.filter(
+                sa.or_(
+                    *[
+                        sa.and_(
+                            timezone_column == timezone,
+                            date_column_to_filter_on.between(*datetime_period, symmetric=True),
+                        )
+                        for timezone, datetime_period in datetime_period_by_timezones.items()
+                    ]
+                )
+            )
 
     if venue_id is not None:
         bookings_query = bookings_query.filter(Booking.venueId == venue_id)
@@ -488,6 +528,88 @@ def _get_filtered_bookings_query(
             field_to_venue_timezone(Stock.beginningDatetime, timezone_column) == event_date
         )
     return bookings_query
+
+
+def _get_offerer_address_timezone(offerer_address_id: int) -> str:
+    return (
+        Address.query.with_entities(Address.timezone)
+        .join(OffererAddress, OffererAddress.addressId == Address.id)
+        .filter(OffererAddress.id == offerer_address_id)
+        .scalar()
+    )
+
+
+def _get_offer_timezone(offer_id: int) -> str:
+    """
+    Retrieve the timezone associated with an offer.
+
+    The function determines the timezone for the specified offer based on the following priority:
+    1. If an address is directly linked to the offer, return its timezone.
+    2. If no address is linked to the offer, return the timezone of the address linked to the offer's venue.
+    3. If no address is linked to the venue (e.g., for virtual venues), return the venue's timezone.
+
+    Note:
+        - This behavior accounts for digital offers that are linked to virtual venues,
+          which do not have associated offerer addresses. Once virtual venues are removed
+          from the system, this fallback logic (step 3) should be simplified.
+
+    Args:
+        offer_id (int): The ID of the offer whose timezone is to be retrieved.
+
+    Returns:
+        str: The timezone associated with the offer.
+    """
+    VenueAddress = aliased(Address)
+    VenueOffererAddress = aliased(OffererAddress)
+    return (
+        Offer.query.with_entities(
+            # TODO: Simplify when the virtual venues are removed
+            # Unfortunately, we still have to use Venue.timezone for digital offers
+            # as they are still on virtual venues that don't have associated OA.
+            # Venue.timezone removal here requires that all venues have their OA
+            func.coalesce(Address.timezone, VenueAddress.timezone, Venue.timezone)
+        )
+        .join(Offer.venue)
+        .outerjoin(Offer.offererAddress)
+        .outerjoin(OffererAddress.address)
+        .outerjoin(VenueOffererAddress, Venue.offererAddressId == VenueOffererAddress.id)
+        .outerjoin(VenueAddress, VenueOffererAddress.addressId == VenueAddress.id)
+        .filter(Offer.id == offer_id)
+        .scalar()
+    )
+
+
+def _convert_date_period_to_datetime_period_for_timezones(
+    period: tuple[date, date],
+    pro_user: User,
+    *,
+    offer_id: int | None = None,
+    offerer_address_id: int | None = None,
+) -> dict[str, tuple[datetime, datetime]]:
+    """
+    Convert a date period to a UTC datetime period based on relevant timezones.
+
+    The function determines the timezone(s) to use for the conversion based on the input parameters:
+    1. If `offerer_address_id` is provided, fetch the timezone of the corresponding address.
+    2. If `offer_id` is provided, fetch the timezone of the corresponding offer.
+    3. Otherwise, fetch all the timezones linked to the `pro_user`.
+
+    The conversion process transforms the given `period` (a date range) into a datetime range in UTC.
+    The function returns a dictionary where:
+        - Keys are the timezones.
+        - Values are the corresponding UTC datetime ranges for the `period`.
+    """
+    if offerer_address_id:
+        timezone = _get_offerer_address_timezone(offerer_address_id)
+        return {timezone: convert_date_period_to_utc_datetime_period(period, timezone)}
+
+    if offer_id:
+        timezone = _get_offer_timezone(offer_id)
+        return {timezone: convert_date_period_to_utc_datetime_period(period, timezone)}
+
+    timezones = get_pro_user_timezones(pro_user)
+
+    return {timezone: convert_date_period_to_utc_datetime_period(period, timezone) for timezone in timezones}
 
 
 def _get_filtered_bookings_count(
