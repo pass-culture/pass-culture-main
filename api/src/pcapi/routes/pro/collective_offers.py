@@ -40,12 +40,8 @@ logger = logging.getLogger(__name__)
 def get_collective_offers(
     query: collective_offers_serialize.ListCollectiveOffersQueryModel,
 ) -> collective_offers_serialize.ListCollectiveOffersResponseModel:
-    statuses = None
-
-    if query.status:
-        assert isinstance(query.status, list)
-
-        statuses = [status.value for status in query.status]
+    statuses = query.status
+    assert (statuses is None) or isinstance(statuses, list)  # ensured by query_params_as_list
 
     capped_offers = educational_api_offer.list_collective_offers_for_pro_user(
         user_id=current_user.id,
