@@ -2,8 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { AggregatedRevenue } from './AggregatedRevenue';
+import type { AggregatedRevenueModel } from './AggregatedRevenueModel';
 export type StatisticsModel = {
-  incomeByYear: Record<string, (AggregatedRevenue | Record<string, null>)>;
+  incomeByYear: Record<string, (AggregatedRevenueModel | Record<string, null>)>;
 };
 

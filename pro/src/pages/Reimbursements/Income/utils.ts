@@ -1,8 +1,8 @@
-import { CollectiveAndIndividualRevenue, CollectiveRevenue } from 'apiClient/v1'
+import { TotalRevenue, CollectiveRevenue } from 'apiClient/v1'
 
 export const isCollectiveAndIndividualRevenue = (
   revenue: any
-): revenue is CollectiveAndIndividualRevenue => {
+): revenue is TotalRevenue => {
   return (
     revenue?.collective !== undefined &&
     revenue?.individual !== undefined &&

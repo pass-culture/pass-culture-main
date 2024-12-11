@@ -1,28 +1,31 @@
-from datetime import date
+import pydantic.v1 as pydantic_v1
 
-from pcapi.connectors.clickhouse.queries import YearlyAggregatedRevenueModel
+from pcapi.connectors.clickhouse.queries import CollectiveRevenue
+from pcapi.connectors.clickhouse.queries import IndividualRevenue
+from pcapi.connectors.clickhouse.queries import TotalRevenue
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import ConfiguredBaseModel
 
 
 class StatisticsQueryModel(BaseModel):
-    venue_ids: list[int] | int = []
+    venue_ids: list[int] = []
+
+    @pydantic_v1.validator("venue_ids", pre=True)
+    def parse_venue_ids(cls, venue_ids: str | int | list[int]) -> list[int]:
+        if isinstance(venue_ids, str):
+            return [int(venue_ids)]
+        if isinstance(venue_ids, int):
+            return [venue_ids]
+        return venue_ids
 
 
-class StatisticsModel(BaseModel, YearlyAggregatedRevenueModel):
-    @classmethod
-    def from_query(cls, income_by_year: dict) -> "StatisticsModel":
-        current_year = date.today().year
-        if income_by_year.keys():
-            min_year = int(min(income_by_year.keys()))
-            max_year = int(max(income_by_year.keys()))
+class AggregatedRevenueModel(ConfiguredBaseModel):
+    revenue: CollectiveRevenue | IndividualRevenue | TotalRevenue
+    expected_revenue: CollectiveRevenue | IndividualRevenue | TotalRevenue | None
 
-            for year in range(min_year, max_year + 1):
-                if str(year) not in income_by_year:
-                    income_by_year[str(year)] = {}
-                # we don't need to serialize expected_revenue for previous years
-                elif year < current_year and hasattr(income_by_year[str(year)], "expected_revenue"):
-                    delattr(income_by_year[str(year)], "expected_revenue")
-        return cls(**{"incomeByYear": income_by_year})
+
+class StatisticsModel(ConfiguredBaseModel):
+    income_by_year: dict[str, AggregatedRevenueModel | dict[None, None]]
 
     class Config:
         extra = "forbid"
