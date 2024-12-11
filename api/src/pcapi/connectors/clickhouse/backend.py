@@ -34,10 +34,11 @@ class BaseBackend:
     def run_query(self, query: str, params: typing.Tuple) -> list:
         try:
             results = self.engine.execute(query, params).fetchall()
+        except requests.exceptions.ConnectionError as e:
+            logger.error("%s when querying Clickhouse: %s", type(e), str(e))
+            raise ApiErrors(errors={"clickhouse": "Can not connect to clickhouse server"}, status_code=422)
         except Exception as err:
             logger.error("%s when querying Clickhouse: %s", type(err), str(err))
-            if isinstance(err, requests.exceptions.ConnectionError):
-                raise ApiErrors(errors={"clickhouse": "Can not connect to clickhouse server"}, status_code=422)
             raise ApiErrors(errors={"clickhouse": f"Error : {err}"}, status_code=400)
         return results
 

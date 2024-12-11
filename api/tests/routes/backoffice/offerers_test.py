@@ -9,6 +9,7 @@ import pytest
 
 from pcapi import settings
 from pcapi.connectors.clickhouse import queries as clickhouse_queries
+from pcapi.connectors.clickhouse import query_mock as clickhouse_query_mock
 from pcapi.connectors.entreprise.backends.testing import TestingBackend
 from pcapi.core import search
 from pcapi.core.bookings import factories as bookings_factories
@@ -37,8 +38,6 @@ from pcapi.routes.backoffice.filters import format_date
 from pcapi.routes.backoffice.filters import format_date_time
 from pcapi.routes.backoffice.offerers import offerer_blueprint
 from pcapi.routes.backoffice.pro.forms import TypeOptions
-
-from tests.connectors.clickhouse import fixtures as clickhouse_fixtures
 
 from .helpers import button as button_helpers
 from .helpers import html_parser
@@ -1037,14 +1036,14 @@ class GetOffererRevenueDetailsTest(GetEndpointHelper):
     @patch(
         "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
         return_value=[
-            clickhouse_fixtures.MockYearlyAggregatedRevenueQueryResult(
+            clickhouse_query_mock.MockYearlyAggregatedRevenueQueryResult(
                 2024,
                 individual=Decimal("246.80"),
                 expected_individual=Decimal("357.90"),
                 collective=Decimal("750"),
                 expected_collective=Decimal("1250"),
             ),
-            clickhouse_fixtures.MockYearlyAggregatedRevenueQueryResult(
+            clickhouse_query_mock.MockYearlyAggregatedRevenueQueryResult(
                 2022,
                 individual=Decimal("123.40"),
                 expected_individual=Decimal("123.40"),
