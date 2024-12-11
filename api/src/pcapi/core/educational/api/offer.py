@@ -98,7 +98,7 @@ def list_collective_offers_for_pro_user(
     offerer_id: int | None,
     venue_id: int | None = None,
     name_keywords: str | None = None,
-    statuses: list[str] | None = None,
+    statuses: list[educational_models.CollectiveOfferDisplayedStatus] | None = None,
     period_beginning_date: datetime.date | None = None,
     period_ending_date: datetime.date | None = None,
     offer_type: collective_offers_serialize.CollectiveOfferType | None = None,

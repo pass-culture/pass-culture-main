@@ -356,7 +356,7 @@ def get_collective_offers_by_filters(
     user_id: int,
     user_is_admin: bool,
     offerer_id: int | None = None,
-    statuses: list[str] | None = None,
+    statuses: list[educational_models.CollectiveOfferDisplayedStatus] | None = None,
     venue_id: int | None = None,
     provider_id: int | None = None,
     category_id: str | None = None,
@@ -374,19 +374,24 @@ def get_collective_offers_by_filters(
             .join(offerers_models.UserOfferer)
             .filter(offerers_models.UserOfferer.userId == user_id, offerers_models.UserOfferer.isValidated)
         )
+
     if offerer_id is not None:
         if user_is_admin:
             query = query.join(offerers_models.Venue)
         query = query.filter(offerers_models.Venue.managingOffererId == offerer_id)
+
     if venue_id is not None:
         query = query.filter(educational_models.CollectiveOffer.venueId == venue_id)
+
     if provider_id is not None:
         query = query.filter(educational_models.CollectiveOffer.providerId == provider_id)
+
     if category_id is not None:
         requested_subcategories = [
             subcategory.id for subcategory in subcategories.ALL_SUBCATEGORIES if subcategory.category.id == category_id
         ]
         query = query.filter(educational_models.CollectiveOffer.subcategoryId.in_(requested_subcategories))
+
     if name_keywords is not None:
         search = name_keywords
         if len(name_keywords) > 3:
@@ -395,6 +400,7 @@ def get_collective_offers_by_filters(
         # 1. it's unlikely that a book will contain its EAN in its name
         # 2. we need to migrate models.Offer.extraData to JSONB in order to use `union`
         query = query.filter(educational_models.CollectiveOffer.name.ilike(search))
+
     if statuses:
         query = _filter_collective_offers_by_statuses(query, statuses)
 
@@ -433,10 +439,12 @@ def get_collective_offers_by_filters(
             )
         q2 = subquery.subquery()
         query = query.join(q2, q2.c.collectiveOfferId == educational_models.CollectiveOffer.id)
+
     if formats:
         query = query.filter(
             educational_models.CollectiveOffer.formats.overlap(postgresql.array((format.name for format in formats)))
         )
+
     return query
 
 
@@ -445,7 +453,7 @@ def get_collective_offers_template_by_filters(
     user_id: int,
     user_is_admin: bool,
     offerer_id: int | None = None,
-    statuses: list[str] | None = None,
+    statuses: list[educational_models.CollectiveOfferDisplayedStatus] | None = None,
     venue_id: int | None = None,
     provider_id: int | None = None,
     category_id: str | None = None,
@@ -489,10 +497,9 @@ def get_collective_offers_template_by_filters(
         query = query.filter(educational_models.CollectiveOfferTemplate.name.ilike(search))
 
     if statuses:
-        template_statuses = set(statuses) & set(
-            st.value for st in educational_models.COLLECTIVE_OFFER_TEMPLATE_STATUSES
-        )
-        query = query.filter(educational_models.CollectiveOfferTemplate.displayedStatus.in_(template_statuses))  # type: ignore[attr-defined]
+        template_statuses = set(statuses) & set(educational_models.COLLECTIVE_OFFER_TEMPLATE_STATUSES)
+        status_values = [status.value for status in template_statuses]
+        query = query.filter(educational_models.CollectiveOfferTemplate.displayedStatus.in_(status_values))  # type: ignore[attr-defined]
 
     if formats:
         query = query.filter(
@@ -517,7 +524,9 @@ def _filter_by_status(query: BaseQuery, status: str) -> BaseQuery:
     return query.filter(models.Offer.status == offer_mixin.OfferStatus[status].name)
 
 
-def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] | None) -> BaseQuery:
+def _filter_collective_offers_by_statuses(
+    query: BaseQuery, statuses: list[educational_models.CollectiveOfferDisplayedStatus] | None
+) -> BaseQuery:
     """
     Filter a SQLAlchemy query for CollectiveOffers based on a list of statuses.
 
@@ -525,7 +534,7 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
 
     Args:
       query (BaseQuery): The initial query to be filtered.
-      statuses (list[str]): A list of status strings to filter by.
+      statuses (list[CollectiveOfferDisplayedStatus]): A list of status strings to filter by.
 
     Returns:
       BaseQuery: The modified query with applied filters.
@@ -533,16 +542,16 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
     on_collective_offer_filters: list = []
     on_booking_status_filter: list = []
 
-    if statuses is None or len(statuses) == 0:
-        # if statuses is empty we return no orders
+    if not statuses:
+        # if statuses is empty we return all offers
         return query
 
     offer_id_with_booking_status_subquery, query_with_booking = add_last_booking_status_to_collective_offer_query(query)
 
-    if DisplayedStatus.ARCHIVED.value in statuses:
+    if DisplayedStatus.ARCHIVED in statuses:
         on_collective_offer_filters.append(educational_models.CollectiveOffer.isArchived == True)
 
-    if DisplayedStatus.DRAFT.value in statuses:
+    if DisplayedStatus.DRAFT in statuses:
         on_collective_offer_filters.append(
             and_(
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.DRAFT,
@@ -550,7 +559,7 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
             )
         )
 
-    if DisplayedStatus.PENDING.value in statuses:
+    if DisplayedStatus.PENDING in statuses:
         on_collective_offer_filters.append(
             and_(
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.PENDING,
@@ -558,7 +567,7 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
             )
         )
 
-    if DisplayedStatus.REJECTED.value in statuses:
+    if DisplayedStatus.REJECTED in statuses:
         on_collective_offer_filters.append(
             and_(
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.REJECTED,
@@ -566,7 +575,7 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
             )
         )
 
-    if DisplayedStatus.INACTIVE.value in statuses:
+    if DisplayedStatus.INACTIVE in statuses:
         if FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
             # If the filter is only on INACTIVE, we need to return no collective_offer
             # otherwise we return offers for others filtered statuses
@@ -580,7 +589,7 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
                 )
             )
 
-    if DisplayedStatus.ACTIVE.value in statuses:
+    if DisplayedStatus.ACTIVE in statuses:
         on_booking_status_filter.append(
             and_(
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
@@ -601,7 +610,7 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
                 )
             )
 
-    if DisplayedStatus.PREBOOKED.value in statuses:
+    if DisplayedStatus.PREBOOKED in statuses:
         on_booking_status_filter.append(
             and_(
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
@@ -611,7 +620,7 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
             )
         )
 
-    if DisplayedStatus.BOOKED.value in statuses:
+    if DisplayedStatus.BOOKED in statuses:
         on_booking_status_filter.append(
             and_(
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
@@ -621,7 +630,7 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
             )
         )
 
-    if DisplayedStatus.ENDED.value in statuses:
+    if DisplayedStatus.ENDED in statuses:
         on_booking_status_filter.append(
             and_(
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
@@ -644,7 +653,7 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
                 )
             )
 
-    if DisplayedStatus.REIMBURSED.value in statuses and FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+    if DisplayedStatus.REIMBURSED in statuses and FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
         on_booking_status_filter.append(
             and_(
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
@@ -653,7 +662,7 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
             )
         )
 
-    if DisplayedStatus.EXPIRED.value in statuses:
+    if DisplayedStatus.EXPIRED in statuses:
         if FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
             on_booking_status_filter.append(
                 and_(
@@ -696,7 +705,7 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
                 ),
             )
 
-    if DisplayedStatus.CANCELLED.value in statuses and FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+    if DisplayedStatus.CANCELLED in statuses and FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
         # Cancelled due to expired booking
         on_booking_status_filter.append(
             and_(
