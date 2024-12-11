@@ -107,6 +107,7 @@ def format_pro_attributes(pro_attributes: attributes_models.ProAttributes) -> di
         "IS_BOOKING_EMAIL": pro_attributes.is_booking_email,
         "IS_EAC": pro_attributes.is_eac,
         "IS_PERMANENT": pro_attributes.isPermanent,
+        "IS_OPEN_TO_PUBLIC": pro_attributes.isOpenToPublic,
         "IS_PRO": pro_attributes.is_pro,
         "IS_VIRTUAL": pro_attributes.isVirtual,
         "OFFERER_NAME": ";".join(pro_attributes.offerers_names),
