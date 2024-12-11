@@ -4,6 +4,9 @@ import re
 MAINLAND_DEPARTEMENT_CODE_LENGTH = 2
 OVERSEAS_DEPARTEMENT_CODE_LENGTH = 3
 OVERSEAS_DEPARTEMENT_CODE_START = 97
+
+SAINT_BARTHELEMY_POSTAL_CODE = "97133"
+SAINT_BARTHELEMY_DEPARTEMENT_CODE = "977"
 SAINT_MARTIN_POSTAL_CODE = "97150"
 SAINT_MARTIN_DEPARTEMENT_CODE = "978"
 
@@ -18,6 +21,8 @@ class PostalCode:
 
     def get_departement_code(self) -> str:
         if self._is_overseas_departement():
+            if self.postalCode == SAINT_BARTHELEMY_POSTAL_CODE:
+                return SAINT_BARTHELEMY_DEPARTEMENT_CODE
             if self.postalCode == SAINT_MARTIN_POSTAL_CODE:
                 return SAINT_MARTIN_DEPARTEMENT_CODE
             return self.postalCode[:OVERSEAS_DEPARTEMENT_CODE_LENGTH]
