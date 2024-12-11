@@ -1,15 +1,15 @@
+import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import fs from 'node:fs/promises'
 
 import Mustache from 'mustache'
 import {
+  createDirectory,
   exitWithScriptError,
-  getConfig,
   getAnswers,
+  getConfig,
   getConfirm,
   makeFilesTree,
-  createDirectory,
   parseAndGenerateFile,
 } from './functions.js'
 
@@ -78,7 +78,11 @@ try {
 
   // Computes a list of files to generate, depending on what the user selected at previous step
   const confirmedFilesToGenerate = config.filesToGenerate
-    .filter((file, index) => index === 0 || answers[file.varName] === 'Yes')
+    .filter(
+      (file, index) =>
+        index === 0 ||
+        (answers[file.varName] === 'Yes' && !!file.templateFileName)
+    )
     .map((file) => ({
       templateFileName: path.join(templatePath, file.templateFileName),
       renderedFileName: path.join(

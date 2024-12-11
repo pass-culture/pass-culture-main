@@ -1,10 +1,10 @@
-import path from 'node:path'
 import fs from 'node:fs/promises'
+import path from 'node:path'
 
-import { printTree } from 'tree-dump'
 import inquirer from 'inquirer'
 import inquirerFuzzyPath from 'inquirer-fuzzy-path'
 import Mustache from 'mustache'
+import { printTree } from 'tree-dump'
 
 inquirer.registerPrompt('fuzzypath', inquirerFuzzyPath)
 
@@ -113,7 +113,10 @@ export const parseAndGenerateFile = async ({
   try {
     // Parse Mustache file
     const templateContent = await fs.readFile(templateFileName, 'utf8')
-    const parsedContent = Mustache.render(templateContent, data)
+    const parsedContent = Mustache.render(templateContent, {
+      ...data,
+      toKebabCase,
+    })
 
     // Write new file parsed
     await fs.writeFile(renderedFileName, parsedContent, 'utf8')
@@ -122,4 +125,16 @@ export const parseAndGenerateFile = async ({
       `Could not create file: ${renderedFileName} (${err.message})`
     )
   }
+}
+
+// Internal mustache templates :
+
+function toKebabCase() {
+  return (str, render) =>
+    render(str)
+      .match(
+        /[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g
+      )
+      ?.map((x) => x.toLowerCase())
+      .join('-')
 }
