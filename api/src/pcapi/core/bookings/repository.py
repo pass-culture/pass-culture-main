@@ -409,6 +409,23 @@ def get_export(
     return _serialize_csv_report(bookings_query)
 
 
+def _get_user_offerer_timezones(user: User) -> set[str]:
+    addresses = (
+        Address.query.join(OffererAddress, OffererAddress.addressId == Address.id)
+        .join(Offerer, OffererAddress.offererId == Offerer.id)
+        .join(UserOfferer, UserOfferer.offererId == Offerer.id)
+        .filter(UserOfferer.userId == user.id)
+        .distinct(Address.timezone)
+        .all()
+    )
+    timezones = ["UTC"]  # default timezone
+
+    for address in addresses:
+        timezones.append(address.timezone)
+
+    return set(timezones)
+
+
 def field_to_venue_timezone(
     field: InstrumentedAttribute, column: sa.orm.Mapped[typing.Any] | sa.sql.functions.Function
 ) -> cast:
