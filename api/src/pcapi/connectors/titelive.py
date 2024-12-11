@@ -192,7 +192,7 @@ def get_new_product_from_ean13(ean: str) -> offers_models.Product:
         # EAN without GTL exist (DVD, ...), ex: 3597660004235
         core_logging.log_for_supervision(
             logger,
-            logging.ERROR,
+            logging.WARNING,
             "Titelive get_new_product_from_ean13: External error:",
             extra={
                 "alert": "Titelive API no gtl_id",
