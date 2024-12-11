@@ -17,7 +17,7 @@ class Returns200Test:
 
     @patch(
         "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
-        return_value=clickhouse_query_mock.YEARLY_AGGREGATED_VENUE_REVENUE,
+        return_value=clickhouse_query_mock.AGGREGATED_TOTAL_VENUE_REVENUE,
     )
     @time_machine.travel("2024-01-01")
     def test_get_statistics_from_one_venue(self, run_query, client):
@@ -36,7 +36,7 @@ class Returns200Test:
         num_queries += 1  # select CollectiveOffer
         with testing.assert_num_queries(num_queries):
             response = test_client.get(f"/get-statistics/?venue_ids={venue_id}")
-            assert response.status_code == 200
+            assert response.status_code == 200, response.json
         assert response.json == {
             "incomeByYear": {
                 "2024": {
@@ -48,7 +48,7 @@ class Returns200Test:
 
     @patch(
         "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
-        return_value=clickhouse_query_mock.YEARLY_AGGREGATED_VENUE_REVENUE,
+        return_value=clickhouse_query_mock.AGGREGATED_TOTAL_VENUE_REVENUE,
     )
     @time_machine.travel("2024-01-01")
     def test_get_statistics_from_multiple_venues(self, run_query, client):
@@ -81,7 +81,7 @@ class Returns200Test:
 
     @patch(
         "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
-        return_value=clickhouse_query_mock.YEARLY_AGGREGATED_VENUE_REVENUE_MULTIPLE_YEARS,
+        return_value=clickhouse_query_mock.MULTIPLE_YEARS_AGGREGATED_VENUE_TOTAL_REVENUE,
     )
     @time_machine.travel("2024-01-01")
     def test_get_statistics_multiple_years(self, run_query, client):
@@ -118,7 +118,7 @@ class Returns200Test:
 
     @patch(
         "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
-        return_value=clickhouse_query_mock.YEARLY_AGGREGATED_VENUE_REVENUE_MULTIPLE_YEARS_ONLY_COLLECTIVE,
+        return_value=clickhouse_query_mock.MULTIPLE_YEARS_AGGREGATED_VENUE_COLLECTIVE_REVENUE,
     )
     @time_machine.travel("2024-01-01")
     def test_get_statistics_only_collective(self, run_query, client):
@@ -152,7 +152,7 @@ class Returns200Test:
 
     @patch(
         "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
-        return_value=clickhouse_query_mock.YEARLY_AGGREGATED_VENUE_REVENUE_MULTIPLE_YEARS_ONLY_INDIVIDUAL,
+        return_value=clickhouse_query_mock.MULTIPLE_YEARS_AGGREGATED_VENUE_INDIVIDUAL_REVENUE,
     )
     @time_machine.travel("2024-01-01")
     def test_get_statistics_only_individual(self, run_query, client):

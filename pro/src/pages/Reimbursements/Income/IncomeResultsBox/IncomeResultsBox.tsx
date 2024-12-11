@@ -1,6 +1,6 @@
 import type {
-  AggregatedRevenue,
-  CollectiveAndIndividualRevenue,
+  AggregatedRevenueModel,
+  TotalRevenue,
   CollectiveRevenue,
   IndividualRevenue,
 } from 'apiClient/v1'
@@ -51,8 +51,8 @@ const IncomeResultsSubBox = ({ title, number, help }: IncomeSubBoxProps) => {
 }
 
 type IncomeResultsBoxProps = {
-  type: keyof AggregatedRevenue
-  income: CollectiveAndIndividualRevenue | CollectiveRevenue | IndividualRevenue
+  type: keyof AggregatedRevenueModel
+  income: TotalRevenue | CollectiveRevenue | IndividualRevenue
 }
 
 export const IncomeResultsBox = ({ type, income }: IncomeResultsBoxProps) => {

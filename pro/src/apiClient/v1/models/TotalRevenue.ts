@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type CollectiveAndIndividualRevenue = {
+export type TotalRevenue = {
   collective: number;
   individual: number;
   total: number;

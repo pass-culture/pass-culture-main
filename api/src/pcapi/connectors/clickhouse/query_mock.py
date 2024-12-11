@@ -2,7 +2,7 @@ from decimal import Decimal
 import json
 
 
-class MockYearlyAggregatedRevenueQueryResult:
+class MockAggregatedRevenueQueryResult:
     year: int
     revenue: str
     expected_revenue: str
@@ -37,22 +37,20 @@ class MockYearlyAggregatedRevenueQueryResult:
             )
 
 
-YEARLY_AGGREGATED_VENUE_REVENUE = [MockYearlyAggregatedRevenueQueryResult()]
-YEARLY_AGGREGATED_VENUE_REVENUE_MULTIPLE_YEARS = [
-    MockYearlyAggregatedRevenueQueryResult(),
-    MockYearlyAggregatedRevenueQueryResult(
-        2022, Decimal("22.12"), Decimal("22.12"), Decimal("22.12"), Decimal("22.12")
-    ),
+AGGREGATED_TOTAL_VENUE_REVENUE = [MockAggregatedRevenueQueryResult()]
+MULTIPLE_YEARS_AGGREGATED_VENUE_TOTAL_REVENUE = [
+    MockAggregatedRevenueQueryResult(),
+    MockAggregatedRevenueQueryResult(2022, Decimal("22.12"), Decimal("22.12"), Decimal("22.12"), Decimal("22.12")),
 ]
-YEARLY_AGGREGATED_VENUE_REVENUE_MULTIPLE_YEARS_ONLY_COLLECTIVE = [
-    MockYearlyAggregatedRevenueQueryResult(only_collective=True),
-    MockYearlyAggregatedRevenueQueryResult(
+MULTIPLE_YEARS_AGGREGATED_VENUE_COLLECTIVE_REVENUE = [
+    MockAggregatedRevenueQueryResult(only_collective=True),
+    MockAggregatedRevenueQueryResult(
         2022, Decimal("22.12"), Decimal("22.12"), Decimal("22.12"), Decimal("22.12"), only_collective=True
     ),
 ]
-YEARLY_AGGREGATED_VENUE_REVENUE_MULTIPLE_YEARS_ONLY_INDIVIDUAL = [
-    MockYearlyAggregatedRevenueQueryResult(only_individual=True),
-    MockYearlyAggregatedRevenueQueryResult(
+MULTIPLE_YEARS_AGGREGATED_VENUE_INDIVIDUAL_REVENUE = [
+    MockAggregatedRevenueQueryResult(only_individual=True),
+    MockAggregatedRevenueQueryResult(
         2022, Decimal("22.12"), Decimal("22.12"), Decimal("22.12"), Decimal("22.12"), only_individual=True
     ),
 ]

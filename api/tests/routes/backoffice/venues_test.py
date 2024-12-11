@@ -680,7 +680,7 @@ class GetVenueStatsTest(GetEndpointHelper):
     @override_features(WIP_ENABLE_CLICKHOUSE_IN_BO=True)
     @patch(
         "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
-        return_value=[clickhouse_queries.TotalAggregatedRevenueModel(expectedRevenue=70.48)],
+        return_value=[clickhouse_queries.TotalExpectedRevenueModel(expected_revenue=70.48)],
     )
     def test_venue_total_revenue_from_clickhouse(self, mock_run_query, authenticated_client):
         venue_id = offerers_factories.VenueFactory().id
@@ -771,14 +771,14 @@ class GetVenueRevenueDetailsTest(GetEndpointHelper):
     @patch(
         "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
         return_value=[
-            clickhouse_query_mock.MockYearlyAggregatedRevenueQueryResult(
+            clickhouse_query_mock.MockAggregatedRevenueQueryResult(
                 2024,
                 individual=Decimal("246.80"),
                 expected_individual=Decimal("357.90"),
                 collective=Decimal("750"),
                 expected_collective=Decimal("1250"),
             ),
-            clickhouse_query_mock.MockYearlyAggregatedRevenueQueryResult(
+            clickhouse_query_mock.MockAggregatedRevenueQueryResult(
                 2022,
                 individual=Decimal("123.40"),
                 expected_individual=Decimal("123.40"),

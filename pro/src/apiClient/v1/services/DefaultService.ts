@@ -1202,7 +1202,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public getStatistics(
-    venueIds?: (Array<number> | number),
+    venueIds?: Array<number>,
   ): CancelablePromise<StatisticsModel> {
     return this.httpRequest.request({
       method: 'GET',
