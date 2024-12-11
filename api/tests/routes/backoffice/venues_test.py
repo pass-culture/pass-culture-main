@@ -2291,11 +2291,11 @@ class GetVenueHistoryTest(GetEndpointHelper):
 
         assert rows[0]["Type"] == "Modification des informations"
         assert "Informations modifiées : " in rows[0]["Commentaire"]
-        assert "Activité principale : Autre => Librairie " in rows[0]["Commentaire"]
+        assert "Activité principale : Autre → Librairie " in rows[0]["Commentaire"]
         assert "Site internet de contact : suppression de : https://old.website.com " in rows[0]["Commentaire"]
         assert "Conditions de retrait : ajout de : Come here!" in rows[0]["Commentaire"]
-        assert "Accessibilité handicap visuel : Non => Oui" in rows[0]["Commentaire"]
-        assert "Horaires du lundi : 14:00-19:30 => 10:00-13:00, 14:00-19:30" in rows[0]["Commentaire"]
+        assert "Accessibilité handicap visuel : Non → Oui" in rows[0]["Commentaire"]
+        assert "Horaires du lundi : 14:00-19:30 → 10:00-13:00, 14:00-19:30" in rows[0]["Commentaire"]
         assert "Horaires du mardi : suppression de : 14:00-19:30" in rows[0]["Commentaire"]
         assert rows[0]["Auteur"] == legit_user.full_name
 

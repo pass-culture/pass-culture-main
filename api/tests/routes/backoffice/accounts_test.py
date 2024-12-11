@@ -1051,9 +1051,9 @@ class GetPublicAccountTest(GetEndpointHelper):
             (datetime.date.today() - relativedelta(days=30)).strftime("Le %d/%m/%Y à ")
         )
         assert history_rows[2]["Commentaire"].startswith("Informations modifiées :")
-        assert "Nom : Pignon => Leblanc" in history_rows[2]["Commentaire"]
+        assert "Nom : Pignon → Leblanc" in history_rows[2]["Commentaire"]
         assert "Prénom : suppression de : François" in history_rows[2]["Commentaire"]
-        assert "Date de naissance : 2001-04-14 => 2000-09-19" in history_rows[2]["Commentaire"]
+        assert "Date de naissance : 2001-04-14 → 2000-09-19" in history_rows[2]["Commentaire"]
         assert history_rows[2]["Auteur"] == admin.full_name
 
         assert history_rows[3]["Type"] == history_models.ActionType.USER_UNSUSPENDED.value
