@@ -272,6 +272,36 @@ SEARCH_ADDRESS_RESPONSE = {
     "limit": 20,
 }
 
+SEARCH_ADDRESS_RESPONSE_WITHOUT_POSTCODE = {
+    "type": "FeatureCollection",
+    "version": "draft",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {"type": "Point", "coordinates": [-62.851796, 17.897144]},
+            "properties": {
+                "label": "Rue Stephen Atwater Saint-Barthélemy",
+                "score": 0.6843390909090907,
+                "id": "97701_h9kt3t",
+                "banId": "cfa1478b-df3a-432d-b0c0-f0cc00f7f835",
+                "name": "Rue Stephen Atwater",
+                "citycode": "97701",
+                "x": 515698.35,
+                "y": 1978812.25,
+                "city": "Saint-Barthélemy",
+                "context": "977, Saint-Barthélemy",
+                "type": "street",
+                "importance": 0.52773,
+                "street": "Rue Stephen Atwater",
+            },
+        }
+    ],
+    "attribution": "BAN",
+    "licence": "ETALAB-2.0",
+    "query": "Stephen Atwater Saint Barthelemy",
+    "limit": 5,
+}
+
 SEARCH_CSV_HEADERS = [
     "venue_id",
     "venue_ban_id",
