@@ -129,8 +129,8 @@ export function sessionLogInAndGoToPage(
  */
 export function homePageLoaded() {
   cy.findByText('Bienvenue dans l’espace acteurs culturels')
-  cy.findByText('Vos adresses')
-  cy.findByText('Ajouter un lieu')
+  cy.findByText('Votre page partenaire')
+  cy.findByText('Ajouter une structure')
   cy.findAllByTestId('spinner').should('not.exist')
 }
 

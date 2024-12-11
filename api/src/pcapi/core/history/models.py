@@ -62,12 +62,12 @@ class ActionType(enum.Enum):
     FINANCE_INCIDENT_CHOOSE_DEBIT_NOTE = "Choix note de débit"
 
     # Actions related to a venue:
-    VENUE_CREATED = "Lieu créé"
-    LINK_VENUE_BANK_ACCOUNT_DEPRECATED = "Lieu dissocié d'un compte bancaire"
-    LINK_VENUE_BANK_ACCOUNT_CREATED = "Lieu associé à un compte bancaire"
+    VENUE_CREATED = "Partenaire culturel créé"
+    LINK_VENUE_BANK_ACCOUNT_DEPRECATED = "Partenaire culturel dissocié d'un compte bancaire"
+    LINK_VENUE_BANK_ACCOUNT_CREATED = "Partenaire culturel associé à un compte bancaire"
     LINK_VENUE_PROVIDER_UPDATED = "Lien avec le partenaire technique modifié"
     LINK_VENUE_PROVIDER_DELETED = "Suppression du lien avec le partenaire technique"
-    SYNC_VENUE_TO_PROVIDER = "Synchronisation du lieu avec un partenaire technique"
+    SYNC_VENUE_TO_PROVIDER = "Synchronisation du partenaire culturel avec un partenaire technique"
 
     # Permissions role changes:
     ROLE_PERMISSIONS_CHANGED = "Modification des permissions du rôle"

@@ -91,11 +91,11 @@ def test_with_pricings(client):
     assert row["N° du justificatif"] == invoice.reference
     assert row["N° de virement"] == batch.label
     assert row["Intitulé du compte bancaire"] == bank_account_1.label
-    assert row["SIRET du lieu"] == venue1.siret
+    assert row["SIRET du partenaire culturel"] == venue1.siret
     assert row["IBAN"] == bank_account_1.iban
-    assert row["Raison sociale du lieu"] == venue1.name
-    assert row["Adresse du lieu"] == f"{venue1.street} {venue1.postalCode} {venue1.city}"
-    assert row["SIRET du lieu"] == venue1.siret
+    assert row["Raison sociale du partenaire culturel"] == venue1.name
+    assert row["Adresse de l'offre"] == f"{venue1.street} {venue1.postalCode} {venue1.city}"
+    assert row["SIRET du partenaire culturel"] == venue1.siret
     assert row["Nom de l'offre"] == offer.name
     assert row["N° de réservation (offre collective)"] == ""
     assert row["Nom (offre collective)"] == ""
@@ -179,11 +179,11 @@ def test_with_pricings_collective_use_case(client):
     assert row["N° du justificatif"] == invoice.reference
     assert row["N° de virement"] == batch.label
     assert row["Intitulé du compte bancaire"] == bank_account_1.label
-    assert row["SIRET du lieu"] == venue1.siret
+    assert row["SIRET du partenaire culturel"] == venue1.siret
     assert row["IBAN"] == bank_account_1.iban
-    assert row["Raison sociale du lieu"] == venue1.name
-    assert row["Adresse du lieu"] == f"{venue1.street} {venue1.postalCode} {venue1.city}"
-    assert row["SIRET du lieu"] == venue1.siret
+    assert row["Raison sociale du partenaire culturel"] == venue1.name
+    assert row["Adresse de l'offre"] == f"{venue1.street} {venue1.postalCode} {venue1.city}"
+    assert row["SIRET du partenaire culturel"] == venue1.siret
     assert row["Nom de l'offre"] == collective_offer.name
     assert row["N° de réservation (offre collective)"] == str(collective_booking.id)
     assert row["Nom (offre collective)"] == redactor.lastName
