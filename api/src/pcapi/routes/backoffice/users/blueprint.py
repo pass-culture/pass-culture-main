@@ -21,6 +21,7 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users.email import update as email_update
 from pcapi.repository import atomic
+from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.users import forms
 from pcapi.utils.requests import ExternalAPIException
@@ -102,12 +103,14 @@ def suspend_user(user_id: int) -> utils.BackofficeResponse:
             "success",
         )
     else:
+        mark_transaction_as_invalid()
         flash("Les données envoyées sont invalides", "warning")
 
     return _redirect_to_user_page(user)
 
 
 @users_blueprint.route("/<int:user_id>/unsuspend", methods=["POST"])
+@atomic()
 @utils.permission_required_in(
     [
         perm_models.Permissions.UNSUSPEND_USER,
@@ -134,6 +137,7 @@ def unsuspend_user(user_id: int) -> utils.BackofficeResponse:
             "success",
         )
     else:
+        mark_transaction_as_invalid()
         flash("Les données envoyées sont invalides", "warning")
 
     return _redirect_to_user_page(user)
@@ -153,6 +157,7 @@ def _render_batch_suspend_users_form(form: forms.BatchSuspendUsersForm) -> str:
 
 
 @users_blueprint.route("/batch-suspend-form", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS)
 def get_batch_suspend_users_form() -> utils.BackofficeResponse:
     form = forms.BatchSuspendUsersForm(suspension_type=forms.SuspensionUserType.PUBLIC)
@@ -189,15 +194,18 @@ def _check_users_to_suspend(ids_list: set[int]) -> tuple[list[users_models.User]
 
 
 @users_blueprint.route("/batch-suspend", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS)
 def batch_suspend_users() -> utils.BackofficeResponse:
     form = forms.BatchSuspendUsersForm()
     if not form.validate():
+        mark_transaction_as_invalid()
         return _render_batch_suspend_users_form(form), 400
 
     users, errors = _check_users_to_suspend(form.get_user_ids())
     if errors:
         form.user_ids.errors += errors
+        mark_transaction_as_invalid()
         return _render_batch_suspend_users_form(form), 400
 
     cancellable_bookings_count = len(
@@ -219,15 +227,18 @@ def batch_suspend_users() -> utils.BackofficeResponse:
 
 
 @users_blueprint.route("/batch-suspend/confirm", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS)
 def confirm_batch_suspend_users() -> utils.BackofficeResponse:
     form = forms.BatchSuspendUsersForm()
     if not form.validate():
+        mark_transaction_as_invalid()
         return _render_batch_suspend_users_form(form), 400
 
     users, errors = _check_users_to_suspend(form.get_user_ids())
     if errors:
         form.user_ids.errors += errors
+        mark_transaction_as_invalid()
         return _render_batch_suspend_users_form(form), 400
 
     for user in users:
@@ -238,12 +249,14 @@ def confirm_batch_suspend_users() -> utils.BackofficeResponse:
     if len(users) > 1:
         flash(f"{len(users)} comptes d'utilisateurs ont été suspendus", "success")
     else:
+        mark_transaction_as_invalid()
         flash(f"{len(users)} compte d'utilisateur a été suspendu", "success")
 
     return redirect(url_for("backoffice_web.fraud.list_blacklisted_domain_names"), code=303)
 
 
 @users_blueprint.route("/<int:user_id>/redirect-to-brevo", methods=["GET"])
+@atomic()
 @utils.permission_required_in(
     [
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
@@ -258,6 +271,7 @@ def redirect_to_brevo_user_page(user_id: int) -> utils.BackofficeResponse:
     try:
         user_url = mails.get_contact_url(user.email, user.has_any_pro_role)
     except ExternalAPIException as exp:
+        mark_transaction_as_invalid()
         flash("Impossible de rediriger vers Brevo suite a une erreur inconnue", "warning")
         logger.error(
             "Brevo search: Unknown error",

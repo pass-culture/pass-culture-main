@@ -1,9 +1,12 @@
+from functools import partial
+
 from babel.dates import format_date
 
 from pcapi.core import mails
 from pcapi.core.bookings.models import Booking
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.repository import on_commit
 from pcapi.utils.mailing import format_booking_hours_for_email
 from pcapi.utils.mailing import get_event_datetime
 
@@ -49,4 +52,10 @@ def send_booking_cancellation_by_pro_to_beneficiary_email(
     booking: Booking, rejected_by_fraud_action: bool = False
 ) -> None:
     data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking, rejected_by_fraud_action)
-    mails.send(recipients=[booking.email], data=data)
+    on_commit(
+        partial(
+            mails.send,
+            recipients=[booking.email],
+            data=data,
+        )
+    )
