@@ -9,6 +9,7 @@ interface CheckboxCellProps {
   disabled?: boolean
   selectOffer: () => void
   headers?: string
+  className?: string
 }
 
 export const CheckboxCell = ({
@@ -17,20 +18,22 @@ export const CheckboxCell = ({
   disabled,
   selectOffer,
   headers,
+  className,
 }: CheckboxCellProps) => {
   return (
     <td
       role="cell"
       className={classNames(
         styles['offers-table-cell'],
-        styles['checkbox-column']
+        styles['checkbox-column'],
+        className
       )}
       headers={headers}
     >
       <BaseCheckbox
         checked={isSelected}
         className="select-offer-checkbox"
-        label={offerName}
+        label={`Sélectionner l'offre "${offerName}"`}
         exceptionnallyHideLabelDespiteA11y={true}
         disabled={disabled}
         onChange={selectOffer}

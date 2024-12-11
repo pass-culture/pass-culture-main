@@ -16,6 +16,8 @@ export interface BaseCheckboxProps
   label: string | React.ReactNode
   hasError?: boolean
   className?: string
+  inputClassName?: string
+  labelClassName?: string
   icon?: string
   withBorder?: boolean
   ref?: React.Ref<HTMLInputElement>
@@ -31,6 +33,8 @@ export const BaseCheckbox = forwardRef(
       label,
       hasError,
       className,
+      inputClassName,
+      labelClassName,
       icon,
       withBorder,
       partialCheck,
@@ -76,7 +80,7 @@ export const BaseCheckbox = forwardRef(
               : {})}
             type="checkbox"
             {...props}
-            className={styles['base-checkbox-input']}
+            className={cn(styles['base-checkbox-input'], inputClassName)}
             id={id}
           />
           {icon && (
@@ -89,10 +93,8 @@ export const BaseCheckbox = forwardRef(
             </span>
           )}
           <span
-            className={cn(styles['base-checkbox-label'], {
-              [styles['visually-hidden']]: Boolean(
-                exceptionnallyHideLabelDespiteA11y
-              ),
+            className={cn(styles['base-checkbox-label'], labelClassName, {
+              [styles['visually-hidden']]: Boolean(exceptionnallyHideLabelDespiteA11y),
               [styles['base-checkbox-label-with-description']]:
                 Boolean(description),
             })}
