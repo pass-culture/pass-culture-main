@@ -3,14 +3,13 @@ from unittest.mock import patch
 import pytest
 import time_machine
 
+from pcapi.connectors.clickhouse import query_mock as clickhouse_query_mock
 from pcapi.core import testing
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.models.validation_status_mixin import ValidationStatus
-
-from tests.connectors.clickhouse import fixtures
 
 
 @pytest.mark.usefixtures("db_session")
@@ -33,7 +32,7 @@ class Returns200Test:
         num_queries += 1  # select Offer
         num_queries += 1  # select CollectiveOffer
         with testing.assert_num_queries(num_queries):
-            run_query.return_value = fixtures.YEARLY_AGGREGATED_VENUE_REVENUE
+            run_query.return_value = clickhouse_query_mock.YEARLY_AGGREGATED_VENUE_REVENUE
             response = test_client.get(f"/get-statistics/?venue_ids={venue_id}")
             assert response.status_code == 200
         assert response.json == {
@@ -64,7 +63,7 @@ class Returns200Test:
         num_queries += 1  # select Offer
         num_queries += 1  # select CollectiveOffer
         with testing.assert_num_queries(num_queries):
-            run_query.return_value = fixtures.YEARLY_AGGREGATED_VENUE_REVENUE
+            run_query.return_value = clickhouse_query_mock.YEARLY_AGGREGATED_VENUE_REVENUE
             response = test_client.get(f"/get-statistics/?venue_ids={venue_id}&venue_ids={venue2_id}")
             assert response.status_code == 200
         assert response.json == {
@@ -95,7 +94,7 @@ class Returns200Test:
         num_queries += 1  # select Offer
         num_queries += 1  # select CollectiveOffer
         with testing.assert_num_queries(num_queries):
-            run_query.return_value = fixtures.YEARLY_AGGREGATED_VENUE_REVENUE_MULTIPLE_YEARS
+            run_query.return_value = clickhouse_query_mock.YEARLY_AGGREGATED_VENUE_REVENUE_MULTIPLE_YEARS
             response = test_client.get(f"/get-statistics/?venue_ids={venue_id}&venue_ids={venue2_id}")
             assert response.status_code == 200
         assert response.json == {
@@ -127,7 +126,9 @@ class Returns200Test:
         num_queries += 1  # select Offer
         num_queries += 1  # select CollectiveOffer
         with testing.assert_num_queries(num_queries):
-            run_query.return_value = fixtures.YEARLY_AGGREGATED_VENUE_REVENUE_MULTIPLE_YEARS_ONLY_COLLECTIVE
+            run_query.return_value = (
+                clickhouse_query_mock.YEARLY_AGGREGATED_VENUE_REVENUE_MULTIPLE_YEARS_ONLY_COLLECTIVE
+            )
             response = test_client.get(f"/get-statistics/?venue_ids={venue_id}")
             assert response.status_code == 200
         assert response.json == {
@@ -159,7 +160,9 @@ class Returns200Test:
         num_queries += 1  # select Offer
         num_queries += 1  # select CollectiveOffer
         with testing.assert_num_queries(num_queries):
-            run_query.return_value = fixtures.YEARLY_AGGREGATED_VENUE_REVENUE_MULTIPLE_YEARS_ONLY_INDIVIDUAL
+            run_query.return_value = (
+                clickhouse_query_mock.YEARLY_AGGREGATED_VENUE_REVENUE_MULTIPLE_YEARS_ONLY_INDIVIDUAL
+            )
             response = test_client.get(f"/get-statistics/?venue_ids={venue_id}")
             assert response.status_code == 200
         assert response.json == {
