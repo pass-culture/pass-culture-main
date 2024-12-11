@@ -5,7 +5,7 @@
 import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useCallback, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'

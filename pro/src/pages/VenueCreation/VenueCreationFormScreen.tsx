@@ -1,6 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import { useMemo, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
@@ -44,6 +44,7 @@ export const VenueCreationFormScreen = ({
         serializePostVenueBodyModel(values, offerer.id, !isSiretValued)
       )
 
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate('/accueil?success')
 
       if (currentUser.isAdmin) {

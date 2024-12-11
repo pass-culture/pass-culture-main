@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
-import { useLocation, useOutletContext } from 'react-router-dom'
+import { useLocation, useOutletContext } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'

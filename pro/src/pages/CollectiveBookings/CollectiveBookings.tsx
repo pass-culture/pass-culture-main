@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { CollectiveBookingResponseModel } from 'apiClient/v1'

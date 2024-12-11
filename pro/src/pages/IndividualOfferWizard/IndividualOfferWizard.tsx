@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { Outlet, RouteObject, useLocation } from 'react-router-dom'
+import { Outlet, RouteObject, useLocation } from 'react-router'
 
 import { Layout } from 'app/App/layout/Layout'
 import { IndividualOfferContextProvider } from 'commons/context/IndividualOfferContext/IndividualOfferContext'

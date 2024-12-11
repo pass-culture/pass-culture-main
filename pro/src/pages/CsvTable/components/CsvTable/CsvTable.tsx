@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router'
 
 import { API_URL } from 'commons/utils/config'
 import { getKey } from 'commons/utils/strings'

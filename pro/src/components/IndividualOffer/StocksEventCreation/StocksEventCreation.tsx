@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
@@ -37,6 +37,7 @@ export const StocksEventCreation = ({
 
   const handlePreviousStep = () => {
     /* istanbul ignore next: DEBT, TO FIX */
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(
       getIndividualOfferUrl({
         offerId: offer.id,
@@ -54,6 +55,7 @@ export const StocksEventCreation = ({
     }
 
     await mutate([GET_OFFER_QUERY_KEY, offer.id])
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(
       getIndividualOfferUrl({
         offerId: offer.id,

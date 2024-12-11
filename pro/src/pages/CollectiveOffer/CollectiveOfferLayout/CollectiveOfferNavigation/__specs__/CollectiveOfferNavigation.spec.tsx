@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as router from 'react-router-dom'
+import * as router from 'react-router'
 
 import { ApiRequestOptions } from 'apiClient/adage/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/adage/core/ApiResult'
@@ -53,8 +53,8 @@ const renderCollectiveOfferNavigation = (
     ...options,
   })
 
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
+vi.mock('react-router', async () => ({
+  ...(await vi.importActual('react-router')),
   useLocation: vi.fn(),
 }))
 

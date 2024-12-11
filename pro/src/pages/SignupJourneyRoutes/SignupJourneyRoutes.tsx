@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { Outlet } from 'react-router-dom'
+import { Outlet } from 'react-router'
 
 import { Layout } from 'app/App/layout/Layout'
 import { SignupJourneyContextProvider } from 'commons/context/SignupJourneyContext/SignupJourneyContext'

@@ -1,6 +1,6 @@
 import { useFormikContext } from 'formik'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 
 import { ProUserCreationBodyV2Model } from 'apiClient/v1'
 import { BannerRGS } from 'components/BannerRGS/BannerRGS'
@@ -83,7 +83,10 @@ export const SignupForm = (): JSX.Element => {
         <div className={styles['buttons-field']}>
           <Button
             className={styles['buttons']}
-            onClick={() => navigate('/connexion')}
+            onClick={() =>
+               
+              navigate('/connexion')
+            }
             variant={ButtonVariant.SECONDARY}
           >
             J’ai déjà un compte

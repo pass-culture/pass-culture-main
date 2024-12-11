@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -140,6 +140,7 @@ export const CollectiveOfferStockCreation = ({
       } else {
         url = `${url}/creation/recapitulatif`
       }
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(url)
     } catch (e) {
       if (

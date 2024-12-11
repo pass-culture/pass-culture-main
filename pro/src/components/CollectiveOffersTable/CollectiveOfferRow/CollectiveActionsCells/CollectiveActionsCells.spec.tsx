@@ -36,9 +36,9 @@ const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
 
 const mockNavigate = vi.fn()
-vi.mock('react-router-dom', async () => {
+vi.mock('react-router', async () => {
   return {
-    ...(await vi.importActual('react-router-dom')),
+    ...(await vi.importActual('react-router')),
     useNavigate: () => mockNavigate,
     default: vi.fn(),
   }

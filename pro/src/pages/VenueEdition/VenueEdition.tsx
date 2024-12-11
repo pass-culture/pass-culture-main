@@ -6,7 +6,7 @@ import {
   useLocation,
   useNavigate,
   useParams,
-} from 'react-router-dom'
+} from 'react-router'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -56,6 +56,7 @@ export const VenueEdition = (): JSX.Element | null => {
   const venueTypes = venueTypesQuery.data
 
   if (selectedOffererId?.toString() !== offererId) {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate('/accueil')
     return null
   }
@@ -132,6 +133,7 @@ export const VenueEdition = (): JSX.Element | null => {
                     options={venuesOptions}
                     value={venueId ?? ''}
                     onChange={(e) => {
+                      // eslint-disable-next-line @typescript-eslint/no-floating-promises
                       navigate(
                         `/structures/${offererId}/lieux/${e.target.value}`
                       )
@@ -159,10 +161,9 @@ export const VenueEdition = (): JSX.Element | null => {
         )}
 
         <Routes>
-          <Route
-            path="collectif/*"
-            element={<CollectiveDataEdition venue={venue} />}
-          />
+          <Route path="collectif">
+            <Route path="*" element={<CollectiveDataEdition venue={venue} />} />
+          </Route>
           <Route path="*" element={<VenueEditionFormScreen venue={venue} />} />
         </Routes>
       </div>

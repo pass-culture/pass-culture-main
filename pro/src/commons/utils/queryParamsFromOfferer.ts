@@ -1,4 +1,4 @@
-import type { Location } from 'react-router-dom'
+import type { Location } from 'react-router'
 
 export const queryParamsFromOfferer = (location: Location) => {
   const queryParams = new URLSearchParams(location.search)

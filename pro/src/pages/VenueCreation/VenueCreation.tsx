@@ -1,6 +1,6 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -24,6 +24,7 @@ export const VenueCreation = (): JSX.Element | null => {
     // Cannot update a component (`RouterProvider`) while rendering a different component (`VenueCreation`).
     // As this is a temporary thing, it should be ok to keep until the beta is done
     setTimeout(() => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(`/structures/${selectedOffererId}/lieux/creation`)
     })
   }
