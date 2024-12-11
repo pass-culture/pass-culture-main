@@ -7,7 +7,6 @@ import time_machine
 
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
-from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.testing import assert_num_queries
@@ -683,8 +682,12 @@ class Return400Test:
             response = client.get("/collective/offers?status=NOT_A_VALID_STATUS")
             assert response.status_code == 400
 
-        msg = response.json["status"][0]
-        assert msg.startswith("value is not a valid enumeration member")
-
-        for value in CollectiveOfferDisplayedStatus:
-            assert value.name in msg
+        assert response.json == {
+            "status": [
+                "value is not a valid list",
+                "value is not a valid enumeration member; permitted: 'ACTIVE', "
+                "'PENDING', 'REJECTED', 'PREBOOKED', 'BOOKED', 'INACTIVE', "
+                "'EXPIRED', 'ENDED', 'CANCELLED', 'REIMBURSED', 'ARCHIVED', "
+                "'DRAFT'",
+            ]
+        }

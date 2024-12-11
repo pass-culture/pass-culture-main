@@ -67,7 +67,6 @@ class CollectiveOfferType(enum.Enum):
 class ListCollectiveOffersQueryModel(BaseModel):
     nameOrIsbn: str | None
     offerer_id: int | None
-    # TODO: (raphaelpra, 2024-07-08): Remove the type CollectiveOfferDisplayedStatus when front only use list in request
     status: (
         list[educational_models.CollectiveOfferDisplayedStatus]
         | educational_models.CollectiveOfferDisplayedStatus
@@ -85,15 +84,6 @@ class ListCollectiveOffersQueryModel(BaseModel):
         alias_generator = to_camel
         extra = "forbid"
         arbitrary_types_allowed = True
-
-    @root_validator(pre=True)
-    def format_status(cls, values: dict) -> dict:
-        status = values.get("status")
-
-        if not isinstance(status, list) and status is not None:
-            values["status"] = [status]
-
-        return values
 
 
 class CollectiveOffersStockResponseModel(BaseModel):
