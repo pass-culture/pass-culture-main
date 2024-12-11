@@ -64,6 +64,7 @@ from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications import push as push_api
+from pcapi.repository import is_managed_transaction
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.serialization import users as users_serialization
@@ -554,7 +555,9 @@ def unsuspend_account(
 
     history_api.add_action(history_models.ActionType.USER_UNSUSPENDED, author=actor, user=user, comment=comment)
 
-    db.session.commit()
+    db.session.flush()
+    if not is_managed_transaction():
+        db.session.commit()
 
     logger.info(
         "Account has been unsuspended",
