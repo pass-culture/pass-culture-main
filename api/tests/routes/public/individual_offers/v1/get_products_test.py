@@ -13,7 +13,7 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
 
     num_queries_400 = 1  # select api_key, offerer and provider
     num_queries_400 += 1  # select features
-    num_queries_404 = num_queries_400 + 1  # check venue_provider exists
+    num_queries_404 = num_queries_400 + 2  # check venue_provider exists + rollback
     num_queries_success = num_queries_404 + 1  # select offer
 
     def test_should_raise_404_because_has_no_access_to_venue(self, client):
