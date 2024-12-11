@@ -20,3 +20,10 @@ export const <% name %> = ({ className }: <% name %>Props): JSX.Element => {
     </div>
   )
 }
+
+<%# lazy.yes %>
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = <% name %>
+
+<%/ lazy.yes %>
