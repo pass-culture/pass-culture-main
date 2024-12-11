@@ -35,7 +35,7 @@ class Returns200Test:
         with testing.assert_num_queries(num_queries):
             run_query.return_value = fixtures.YEARLY_AGGREGATED_VENUE_REVENUE
             response = test_client.get(f"/get-statistics/?venue_ids={venue_id}")
-            assert response.status_code == 200
+            assert response.status_code == 200, response.json
         assert response.json == {
             "incomeByYear": {
                 "2024": {
