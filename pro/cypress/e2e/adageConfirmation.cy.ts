@@ -60,7 +60,7 @@ import {
         cy.get('#list-status').find('#option-display-PREBOOKED').click()
 
         // We click outside the filter to close it
-        cy.findByText('Offres collectives').click()
+        cy.findByRole('heading', { name: 'Offres collectives' }).click()
 
         cy.stepLog({ message: 'I validate my filters' })
         cy.findByText('Rechercher').click()
@@ -106,7 +106,7 @@ import {
         cy.get('#list-status').find('#option-display-BOOKED').click()
 
         // We click outside the filter to close it
-        cy.findByText('Offres collectives').click()
+        cy.findByRole('heading', { name: 'Offres collectives' }).click()
 
         cy.stepLog({ message: 'I validate my filters' })
 
