@@ -6,7 +6,6 @@ from pcapi import settings
 from pcapi.connectors.dms import api as dms_connector_api
 from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.dms import serializer as dms_serializer
-from pcapi.core import logging as core_logging
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
@@ -164,10 +163,8 @@ def handle_dms_application(
 
     application_content = dms_serializer.parse_beneficiary_information_graphql(dms_application)
     if not application_content.field_errors:
-        core_logging.log_for_supervision(
-            logger=logger,
-            log_level=logging.INFO,
-            log_message="Successfully parsed DMS application",
+        logger.info(
+            "Successfully parsed DMS application",
             extra=log_extra_data,
         )
     logger.info("[DMS] Application received with state %s", state, extra=log_extra_data)

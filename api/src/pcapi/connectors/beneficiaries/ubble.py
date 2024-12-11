@@ -9,7 +9,6 @@ from urllib3 import exceptions as urllib3_exceptions
 
 from pcapi import settings
 from pcapi.connectors.serialization import ubble_serializers
-from pcapi.core import logging as core_logging
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import models as users_models
 from pcapi.utils import requests
@@ -263,9 +262,7 @@ def start_identification(
     try:
         response = session.post(build_url("/identifications/", user_id), json=data)
     except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
-        core_logging.log_for_supervision(
-            logger,
-            logging.ERROR,
+        logger.error(
             "Ubble start-identification: Network error",
             extra={
                 "exception": e,
@@ -279,9 +276,7 @@ def start_identification(
     if not response.ok:
         # https://ubbleai.github.io/developer-documentation/#errors
         if response.status_code == 429 or response.status_code >= 500:
-            core_logging.log_for_supervision(
-                logger,
-                logging.ERROR,
+            logger.error(
                 "Ubble start-identification: External error: %s",
                 response.status_code,
                 extra={
@@ -294,9 +289,8 @@ def start_identification(
             )
             raise requests.ExternalAPIException(is_retryable=True)
 
-        core_logging.log_for_supervision(
-            logger,
-            logging.ERROR,
+        logger.error(  # pylint: disable=logging-fstring-interpolation
+            # ungroup errors on sentry
             f"Ubble start-identification: Unexpected error: {response.status_code}, {response.text}",
             extra={
                 "alert": "Ubble error",
@@ -309,9 +303,7 @@ def start_identification(
         raise requests.ExternalAPIException(is_retryable=False)
 
     content = _extract_useful_content_from_response(response.json())
-    core_logging.log_for_supervision(
-        logger,
-        logging.INFO,
+    logger.info(
         "Valid response from Ubble",
         extra={
             "status_code": response.status_code,
@@ -335,19 +327,15 @@ def get_content(identification_id: str) -> fraud_models.UbbleContent:
     try:
         response = session.get(build_url(f"/identifications/{identification_id}/", identification_id))
     except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
-        core_logging.log_for_supervision(
-            logger,
-            logging.ERROR,
+        logger.error(
             "Ubble get-content: Network error",
-            extra={"exception": e, "error_type": "http"} | base_extra_log,
+            extra=typing.cast(dict[str, typing.Any], {"exception": e, "error_type": "http"} | base_extra_log),
         )
         raise requests.ExternalAPIException(is_retryable=True) from e
 
     if not response.ok:
         if response.status_code >= 500 or response.status_code == 429:
-            core_logging.log_for_supervision(
-                logger,
-                logging.ERROR,
+            logger.error(
                 "Ubble get-content: External error: %s",
                 response.status_code,
                 extra={"response_text": response.text, "error_type": "http", "status_code": response.status_code}
@@ -355,27 +343,30 @@ def get_content(identification_id: str) -> fraud_models.UbbleContent:
             )
             raise requests.ExternalAPIException(is_retryable=True)
 
-        core_logging.log_for_supervision(
-            logger,
-            logging.ERROR,
-            f"Ubble get-content: Unexpected error: {response.status_code}, {response.text}",  # ungroup errors on sentry
-            extra={"response_text": response.text, "status_code": response.status_code, "error_type": "http"}
-            | base_extra_log,
+        logger.error(  # pylint: disable=logging-fstring-interpolation
+            # ungroup errors on sentry
+            f"Ubble get-content: Unexpected error: {response.status_code}, {response.text}",
+            extra=typing.cast(
+                dict[str, typing.Any],
+                {"response_text": response.text, "status_code": response.status_code, "error_type": "http"}
+                | base_extra_log,
+            ),
         )
         raise requests.ExternalAPIException(is_retryable=False)
 
     content = _extract_useful_content_from_response(response.json())
-    core_logging.log_for_supervision(
-        logger,
-        logging.INFO,
+    logger.info(
         "Valid response from Ubble",
-        extra={
-            "status_code": response.status_code,
-            "score": content.score,
-            "status": content.status.value if content.status else None,
-            "document_type": content.document_type,
-        }
-        | base_extra_log,
+        extra=typing.cast(
+            dict[str, typing.Any],
+            {
+                "status_code": response.status_code,
+                "score": content.score,
+                "status": content.status.value if content.status else None,
+                "document_type": content.document_type,
+            }
+            | base_extra_log,
+        ),
     )
     return content
 
