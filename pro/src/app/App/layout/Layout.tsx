@@ -4,11 +4,11 @@ import { useSelector } from 'react-redux'
 
 import { useMediaQuery } from 'commons/hooks/useMediaQuery'
 import { selectCurrentUser } from 'commons/store/user/selectors'
+import { BackToNavLink } from 'components/BackToNavLink/BackToNavLink'
 import { Footer } from 'components/Footer/Footer'
 import { Header } from 'components/Header/Header'
 import { SkipLinks } from 'components/SkipLinks/SkipLinks'
 import { UserReview } from 'components/UserReview/UserReview'
-import fullGoTop from 'icons/full-go-top.svg'
 import fullInfoIcon from 'icons/full-info.svg'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -39,24 +39,18 @@ export const Layout = ({
   const navPanel = useRef<HTMLDivElement>(null)
 
   const isMobileScreen = useMediaQuery('(max-width: 46.5rem)')
+  const isConnected = !!currentUser
 
   const shouldDisplayUserReview =
     layout !== 'funnel' && layout !== 'onboarding' && layout !== 'logged-out'
 
-  const mainHeaing = mainHeading && (
+  const mainHeadingWrapper = mainHeading && (
     <div className={styles['main-heading-wrapper']}>
-      <h1 className={styles['main-heading']}>{mainHeading}</h1>
-      <a
-        id="back-to-nav-link"
-        href={isMobileScreen ? '#header-nav-toggle' : '#lateral-panel'}
-        className={styles['back-to-nav-link']}
-      >
-        <SvgIcon
-          src={fullGoTop}
-          alt="Revenir à la barre de navigation"
-          width="20"
-        />
-      </a>
+      <h1 className={styles['main-heading-title']}>{mainHeading}</h1>
+      {isConnected && <BackToNavLink
+        isMobileScreen={isMobileScreen}
+        className={styles['main-heading-back-to-nav-link']}
+      />}
     </div>
   )
 
@@ -145,7 +139,7 @@ export const Layout = ({
               <main id="content">
                 {layout === 'funnel' || layout === 'onboarding' ? (
                   <>
-                    {mainHeaing}
+                    {mainHeadingWrapper}
                     {children}
                   </>
                 ) : (
@@ -156,7 +150,7 @@ export const Layout = ({
                         layout === 'logged-out' && mainHeading,
                     })}
                   >
-                    {mainHeaing}
+                    {mainHeadingWrapper}
                     {children}
                   </div>
                 )}
