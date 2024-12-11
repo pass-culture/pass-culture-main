@@ -205,6 +205,7 @@ def get_events(query: serialization.GetOffersQueryParams) -> serialization.Event
         firstIndex=query.firstIndex,
         filtered_venue_id=query.venue_id,
         ids_at_provider=query.ids_at_provider,  # type: ignore[arg-type]
+        beginning=query.beginning,
     ).limit(query.limit)
 
     return serialization.EventOffersResponse(
