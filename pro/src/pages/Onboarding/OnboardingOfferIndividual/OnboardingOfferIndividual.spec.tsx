@@ -15,6 +15,16 @@ const renderOnboardingOfferIndividual = (
 }
 
 describe('<OnboardingOfferIndividual />', () => {
+  it('should render correctly', async () => {
+    renderOnboardingOfferIndividual()
+
+    expect(
+      await screen.findByRole('heading', {
+        name: /Offre à destination des jeunes/,
+      })
+    ).toBeInTheDocument()
+  })
+
   it('should update offerType state when a radio button is selected', async () => {
     renderOnboardingOfferIndividual()
 

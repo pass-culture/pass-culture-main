@@ -2,15 +2,11 @@
 @use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_a11y.scss" as a11y;
-@use "styles/variables/_size.scss" as size;
+@use "styles/mixins/_size.scss" as size;
 
 .onboarding-offer-container {
   min-height: calc(
-    100vh -
-      (
-        size.$action-bar-sticky-height + size.$footer-height +
-          size.$action-bar-sticky-height
-      )
+    100vh - (size.$action-bar-sticky-height + size.$footer-height)
   );
   margin: rem.torem(32px) auto 0 auto;
   padding: 0 rem.torem(32px);

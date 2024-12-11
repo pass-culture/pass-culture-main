@@ -1,105 +1,92 @@
-import cn from 'classnames'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
-import { Layout } from 'app/App/layout/Layout'
-import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { Header } from 'components/Header/Header'
 import editFullIcon from 'icons/full-edit.svg'
-import fullLeftIcon from 'icons/full-left.svg'
-import fullRightIcon from 'icons/full-right.svg'
 import connectStrokeIcon from 'icons/stroke-connect.svg'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { RadioButtonWithImage } from 'ui-kit/RadioButtonWithImage/RadioButtonWithImage'
+
+import { ActionBar } from '../components/ActionBar/ActionBar'
+import { OnboardingLayout } from '../components/OnboardingLayout/OnboardingLayout'
 
 import styles from './OnboardingOfferIndividual.module.scss'
 
-interface OnboardingOfferIndividualProps {
-  className?: string
-}
+const ONBOARDING_OFFER_PROCEDURE = {
+  MANUAL: 'MANUAL',
+  AUTOMATIC: 'AUTOMATIC',
+} as const
+// eslint-disable-next-line no-redeclare, @typescript-eslint/naming-convention
+type ONBOARDING_OFFER_PROCEDURE =
+  (typeof ONBOARDING_OFFER_PROCEDURE)[keyof typeof ONBOARDING_OFFER_PROCEDURE]
 
-enum ONBOARDING_OFFER_TYPE {
-  INDIVIDUAL = 'INDIVIDUAL',
-  COLLECTIVE = 'COLLECTIVE',
-}
+// Mapping the redirect URLs to the corresponding offer type
+const urls: Record<ONBOARDING_OFFER_PROCEDURE, string> = {
+  MANUAL: '/inscription-offre-individuelle-manuelle',
+  AUTOMATIC: '/inscription-offre-individuelle-auto',
+} as const
 
-export const OnboardingOfferIndividual = ({
-  className,
-}: OnboardingOfferIndividualProps): JSX.Element => {
-  const [offerType, setOfferType] = useState<ONBOARDING_OFFER_TYPE | null>(null)
+export const OnboardingOfferIndividual = (): JSX.Element => {
+  const [offerType, setOfferType] = useState<ONBOARDING_OFFER_PROCEDURE | null>(
+    null
+  )
+  const navigate = useNavigate()
 
   const onChangeOfferType = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setOfferType(e.target.value as ONBOARDING_OFFER_TYPE)
+    setOfferType(e.target.value as ONBOARDING_OFFER_PROCEDURE)
   }
 
   return (
-    <Layout layout="onboarding">
-      <Header disableHomeLink={true} />
-      <div className={cn(styles[`onboarding-offer-container`], className)}>
-        <h1 className={styles['offers-title']}>
-          Offre à destination des jeunes
-        </h1>
-        <FormLayout>
-          <FormLayout.Section
-            title="Comment souhaitez-vous créer votre 1ère offre ?"
-            className={styles['offers-description']}
-          >
-            <FormLayout.Row
-              inline
-              mdSpaceAfter
-              className={styles['individual-radio-button']}
-            >
-              <RadioButtonWithImage
-                name="individualOfferSubtype"
-                icon={editFullIcon}
-                isChecked={offerType === ONBOARDING_OFFER_TYPE.INDIVIDUAL}
-                label={`Créer une offre manuellement`}
-                onChange={onChangeOfferType}
-                value={ONBOARDING_OFFER_TYPE.INDIVIDUAL}
-              />
-            </FormLayout.Row>
+    <OnboardingLayout verticallyCentered showFooter={false}>
+      <h1 className={styles['offers-title']}>Offre à destination des jeunes</h1>
 
-            <FormLayout.Row
-              inline
-              mdSpaceAfter
-              className={styles['individual-radio-button']}
-            >
-              <RadioButtonWithImage
-                name="individualOfferSubtype"
-                icon={connectStrokeIcon}
-                isChecked={offerType === ONBOARDING_OFFER_TYPE.COLLECTIVE}
-                label={`Créer automatiquement des offres via mon logiciel de gestion des stocks`}
-                onChange={onChangeOfferType}
-                value={ONBOARDING_OFFER_TYPE.COLLECTIVE}
-              />
-            </FormLayout.Row>
-          </FormLayout.Section>
-        </FormLayout>
-      </div>
+      <FormLayout>
+        <FormLayout.Section
+          title="Comment souhaitez-vous créer votre 1ère offre ?"
+          className={styles['offers-description']}
+        >
+          <FormLayout.Row
+            inline
+            mdSpaceAfter
+            className={styles['individual-radio-button']}
+          >
+            <RadioButtonWithImage
+              name="individualOfferSubtype"
+              icon={editFullIcon}
+              isChecked={offerType === ONBOARDING_OFFER_PROCEDURE.MANUAL}
+              label={`Créer une offre manuellement`}
+              onChange={onChangeOfferType}
+              value={ONBOARDING_OFFER_PROCEDURE.MANUAL}
+            />
+          </FormLayout.Row>
 
-      <ActionsBarSticky hasSideNav={false}>
-        <ActionsBarSticky.Left>
-          <Button
-            icon={fullLeftIcon}
-            variant={ButtonVariant.SECONDARY}
-            disabled={false}
+          <FormLayout.Row
+            inline
+            mdSpaceAfter
+            className={styles['individual-radio-button']}
           >
-            Retour
-          </Button>
-        </ActionsBarSticky.Left>
-        <ActionsBarSticky.Right>
-          <Button
-            type="submit"
-            icon={fullRightIcon}
-            iconPosition={IconPositionEnum.RIGHT}
-            disabled={offerType === null}
-          >
-            Étape suivante
-          </Button>
-        </ActionsBarSticky.Right>
-      </ActionsBarSticky>
-    </Layout>
+            <RadioButtonWithImage
+              name="individualOfferSubtype"
+              icon={connectStrokeIcon}
+              isChecked={offerType === ONBOARDING_OFFER_PROCEDURE.AUTOMATIC}
+              label={`Créer automatiquement des offres via mon logiciel de gestion des stocks`}
+              onChange={onChangeOfferType}
+              value={ONBOARDING_OFFER_PROCEDURE.AUTOMATIC}
+            />
+          </FormLayout.Row>
+        </FormLayout.Section>
+      </FormLayout>
+
+      <ActionBar
+        disableRightButton={offerType === null}
+        withNextButton
+        onLeftButtonClick={() => navigate(-1)}
+        onRightButtonClick={() => {
+          if (offerType) {
+            navigate(urls[offerType])
+          }
+        }}
+      />
+    </OnboardingLayout>
   )
 }
 
