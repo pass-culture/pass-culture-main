@@ -35,10 +35,6 @@ export const OfferNameCell = ({
   headers,
 }: OfferNameCellProps) => {
   const { isTooltipHidden, ...tooltipProps } = useTooltipProps({})
-  const isCollectiveOffersExpirationEnabled = useActiveFeature(
-    'ENABLE_COLLECTIVE_OFFERS_EXPIRATION'
-  )
-
   const useOffererAddressAsDataSourceEnabled = useActiveFeature(
     'WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE'
   )
@@ -84,12 +80,6 @@ export const OfferNameCell = ({
     computeNumberOfSoldOutStocks() > 0 &&
     offer.status !== OFFER_STATUS_SOLD_OUT
 
-  const shouldShowCollectiveWarning =
-    isOfferEducational(offer) &&
-    offer.booking?.booking_status === OFFER_STATUS_PENDING &&
-    shouldDisplayWarning(offer.stocks[0]) &&
-    !isCollectiveOffersExpirationEnabled
-
   return (
     <td
       role="cell"
@@ -118,10 +108,6 @@ export const OfferNameCell = ({
       {(isOfferEducational(offer) || offer.isEvent) && (
         <span className={styles['stocks']}>
           {!isOfferEducational(offer) && offer.isEvent && getDateInformations()}
-          {isOfferEducational(offer) &&
-            !isCollectiveOffersExpirationEnabled &&
-            getDateInformations()}
-
           {shouldShowIndividualWarning && (
             <>
               <button
@@ -148,25 +134,6 @@ export const OfferNameCell = ({
                 </span>
               )}
             </>
-          )}
-          {shouldShowCollectiveWarning && (
-            <div>
-              &nbsp;
-              <SvgIcon
-                className={styles['sold-out-icon']}
-                src={fullErrorIcon}
-                alt="Attention"
-              />
-              <span className={styles['sold-out-dates']}>
-                La date limite de réservation par le chef d’établissement est
-                dans{' '}
-                {`${
-                  getRemainingTime(offer.stocks[0]) >= 1
-                    ? pluralize(getRemainingTime(offer.stocks[0]), 'jour')
-                    : 'moins d’un jour'
-                } (${getDate(offer.stocks[0])})`}
-              </span>
-            </div>
           )}
         </span>
       )}
