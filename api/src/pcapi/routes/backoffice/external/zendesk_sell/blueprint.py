@@ -144,11 +144,11 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
 
     url = url_for("backoffice_web.venue.get", venue_id=venue_id)
 
-    if venue.isVirtual or not venue.isPermanent:
+    if venue.isVirtual or not venue.isOpenToPublic:
         if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-            flash("Ce partenaire culturel est virtuel ou non permanent", "warning")
+            flash("Ce partenaire culturel est virtuel ou n'est pas ouvert au public", "warning")
         else:
-            flash("Ce lieu est virtuel ou non permanent", "warning")
+            flash("Ce lieu est virtuel ou n'est pas ouvert au public", "warning")
         return redirect(url, code=303)
 
     try:

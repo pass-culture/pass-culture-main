@@ -247,7 +247,7 @@ def render_venue_details(
         active_tab=request.args.get("active_tab", "history"),
         zendesk_sell_synchronisation_form=(
             empty_forms.EmptyForm()
-            if venue.isPermanent
+            if venue.isOpenToPublic
             and not venue.isVirtual
             and utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
             else None

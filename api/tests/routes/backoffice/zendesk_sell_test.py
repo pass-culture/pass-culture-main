@@ -116,8 +116,8 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
-    def test_sync_permanent_venue_with_parent(self, authenticated_client):
-        venue = offerers_factories.VenueFactory(isPermanent=True)
+    def test_sync_open_to_public_venue_with_parent(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(isOpenToPublic=True)
 
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id)
 
@@ -135,8 +135,8 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
         ]
 
     @mock.patch("pcapi.core.external.zendesk_sell_backends.testing.TestingBackend.get_offerer_by_id")
-    def test_sync_permanent_venue_without_parent(self, mock_get_offerer_by_id, authenticated_client):
-        venue = offerers_factories.VenueFactory(isPermanent=True)
+    def test_sync_open_to_public_venue_without_parent(self, mock_get_offerer_by_id, authenticated_client):
+        venue = offerers_factories.VenueFactory(isOpenToPublic=True)
 
         mock_get_offerer_by_id.side_effect = zendesk_sell.ContactNotFoundError()
 
@@ -156,8 +156,8 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
         ]
 
     @mock.patch("pcapi.core.external.zendesk_sell_backends.testing.TestingBackend.get_offerer_by_id")
-    def test_sync_permanent_venue_with_two_parents(self, mock_get_offerer_by_id, authenticated_client):
-        venue = offerers_factories.VenueFactory(isPermanent=True)
+    def test_sync_open_to_public_venue_with_two_parents(self, mock_get_offerer_by_id, authenticated_client):
+        venue = offerers_factories.VenueFactory(isOpenToPublic=True)
 
         mock_get_offerer_by_id.side_effect = zendesk_sell.ContactFoundMoreThanOneError(
             [
@@ -200,8 +200,8 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
         ]
 
     @mock.patch("pcapi.core.external.zendesk_sell_backends.testing.TestingBackend.get_offerer_by_id")
-    def test_sync_permanent_venue_with_parent_error(self, mock_get_offerer_by_id, authenticated_client):
-        venue = offerers_factories.VenueFactory(isPermanent=True)
+    def test_sync_open_to_public_venue_with_parent_error(self, mock_get_offerer_by_id, authenticated_client):
+        venue = offerers_factories.VenueFactory(isOpenToPublic=True)
 
         response = requests.Response
         response.status_code = 500
@@ -225,8 +225,8 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
             },
         ]
 
-    def test_sync_non_permanent_venue(self, authenticated_client):
-        venue = offerers_factories.VenueFactory(isPermanent=False)
+    def test_sync_non_open_to_public_venue(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(isOpenToPublic=False)
 
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id)
 
@@ -234,7 +234,7 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
         assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "Ce lieu est virtuel ou non permanent"
+            == "Ce lieu est virtuel ou n'est pas ouvert au public"
         )
 
         assert not testing.zendesk_sell_requests
@@ -248,14 +248,14 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
         assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "Ce lieu est virtuel ou non permanent"
+            == "Ce lieu est virtuel ou n'est pas ouvert au public"
         )
 
         assert not testing.zendesk_sell_requests
 
     @mock.patch("pcapi.core.external.zendesk_sell_backends.testing.TestingBackend.get_venue_by_id")
     def test_sync_venue_matching_several_contacts(self, mock_get_venue_by_id, authenticated_client):
-        venue = offerers_factories.VenueFactory(isPermanent=True)
+        venue = offerers_factories.VenueFactory(isOpenToPublic=True)
 
         mock_get_venue_by_id.side_effect = zendesk_sell.ContactFoundMoreThanOneError(
             [
@@ -291,7 +291,7 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
 
     @mock.patch("pcapi.core.external.zendesk_sell_backends.testing.TestingBackend.get_venue_by_id")
     def test_sync_venue_not_found(self, mock_get_venue_by_id, authenticated_client):
-        venue = offerers_factories.VenueFactory(isPermanent=True)
+        venue = offerers_factories.VenueFactory(isOpenToPublic=True)
 
         mock_get_venue_by_id.side_effect = zendesk_sell.ContactNotFoundError()
 
