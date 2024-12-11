@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/react'
-import * as router from 'react-router-dom'
+import * as router from 'react-router'
 
 import { LocalOfferersPlaylistOffer } from 'apiClient/adage'
 import { defaultAdageUser } from 'commons/utils/factories/adageFactories'
@@ -31,9 +31,16 @@ const renderVenueCard = ({
   )
 }
 
+
+vi.mock('react-router', async () => ({
+  ...(await vi.importActual('react-router')),
+  useSearchParams: () => [],
+}))
+
+
 describe('VenueCard', () => {
   beforeEach(() => {
-    vi.spyOn(router, 'useSearchParams').mockReturnValueOnce([
+    vi.spyOn(router, 'useSearchParams').mockImplementation(() => [
       new URLSearchParams({ token: '123' }),
       vi.fn(),
     ])

@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -59,10 +59,12 @@ export const Validation = (): JSX.Element => {
 
   useEffect(() => {
     if (offerer === null || offerer === DEFAULT_OFFERER_FORM_VALUES) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate('/parcours-inscription/identification')
       return
     }
     if (activity === null || activity === DEFAULT_ACTIVITY_VALUES) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate('/parcours-inscription/activite')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -113,6 +115,7 @@ export const Validation = (): JSX.Element => {
       const response = await api.saveNewOnboardingData(data)
       dispatch(updateUser({ ...currentUser, hasUserOfferer: true }))
       notify.success('Votre structure a bien été créée')
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate('/accueil')
       dispatch(updateSelectedOffererId(response.id))
     } catch (error) {
@@ -125,6 +128,7 @@ export const Validation = (): JSX.Element => {
   }
 
   const handlePreviousStep = () => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate('/parcours-inscription/activite')
   }
 

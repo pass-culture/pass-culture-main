@@ -1,6 +1,6 @@
 import { render, screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router'
 
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
@@ -42,26 +42,28 @@ describe('ButtonLink', () => {
   it('should enforce absolute links', () => {
     renderWithProviders(
       <Routes>
-        <Route
-          path="/offers/*"
-          element={
-            <>
-              <div>offers</div>
-              <Routes>
-                <Route
-                  path="subrouter"
-                  element={
-                    <div>
-                      sub route{' '}
-                      {/* here the link is missing the starting slash to be an absolute link */}
-                      <ButtonLink to="offers">test</ButtonLink>
-                    </div>
-                  }
-                />
-              </Routes>
-            </>
-          }
-        />
+        <Route path="/offers/*">
+          <Route
+            path="*"
+            element={
+              <>
+                <div>offers</div>
+                <Routes>
+                  <Route
+                    path="subrouter"
+                    element={
+                      <div>
+                        sub route{' '}
+                        {/* here the link is missing the starting slash to be an absolute link */}
+                        <ButtonLink to="offers">test</ButtonLink>
+                      </div>
+                    }
+                  />
+                </Routes>
+              </>
+            }
+          />
+        </Route>
       </Routes>,
       { initialRouterEntries: ['/offers/subrouter'] }
     )

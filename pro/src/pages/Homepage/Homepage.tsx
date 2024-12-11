@@ -108,7 +108,7 @@ export const Homepage = (): JSX.Element => {
   }
 
   return (
-    <Layout mainHeading='Bienvenue dans l’espace acteurs culturels'>
+    <Layout mainHeading="Bienvenue dans l’espace acteurs culturels">
       <div className={styles['reimbursements-banners']}>
         <AddBankAccountCallout offerer={selectedOfferer} />
         <LinkVenueCallout offerer={selectedOfferer} />
@@ -158,6 +158,6 @@ export const Homepage = (): JSX.Element => {
   )
 }
 
-// Below exports are used by react-router-dom
+// Below exports are used by react-router
 // ts-unused-exports:disable-next-line
 export const Component = Homepage

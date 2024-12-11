@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { Outlet, RouteObject, useLocation } from 'react-router-dom'
+import { Outlet, RouteObject, useLocation } from 'react-router'
 
 import { Layout } from 'app/App/layout/Layout'
 import { IndividualOfferContextProvider } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
@@ -30,6 +30,6 @@ export const IndividualOfferWizard = () => {
   )
 }
 
-// Lazy-loaded by react-router-dom
+// Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
 export const Component: RouteObject['Component'] = IndividualOfferWizard

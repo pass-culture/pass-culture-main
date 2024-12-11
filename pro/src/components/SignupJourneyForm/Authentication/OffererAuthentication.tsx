@@ -1,6 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 
 import { useSignupJourneyContext } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -30,6 +30,7 @@ export const OffererAuthentication = (): JSX.Element => {
 
   const handlePreviousStep = () => {
     setOfferer(null)
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate('/parcours-inscription/structure')
   }
 
@@ -41,6 +42,7 @@ export const OffererAuthentication = (): JSX.Element => {
       hasVenueWithSiret: false,
       legalCategoryCode: offerer?.legalCategoryCode,
     })
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate('/parcours-inscription/activite')
   }
 

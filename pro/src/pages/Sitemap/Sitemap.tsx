@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 
 import { Layout } from 'app/App/layout/Layout'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
@@ -119,6 +119,6 @@ export const Sitemap = () => {
   )
 }
 
-// Lazy-loaded by react-router-dom
+// Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
 export const Component = Sitemap

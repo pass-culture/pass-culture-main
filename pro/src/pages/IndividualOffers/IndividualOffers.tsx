@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -69,6 +69,7 @@ export const IndividualOffers = (): JSX.Element => {
   const redirectWithSelectedFilters = (
     filters: Partial<SearchFiltersParams> & { audience?: Audience }
   ) => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(computeIndividualOffersUrl(filters), { replace: true })
   }
 
@@ -164,6 +165,6 @@ export const IndividualOffers = (): JSX.Element => {
   )
 }
 
-// Lazy-loaded by react-router-dom
+// Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
 export const Component = IndividualOffers

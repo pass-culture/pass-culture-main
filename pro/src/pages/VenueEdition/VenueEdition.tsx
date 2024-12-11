@@ -1,11 +1,6 @@
 import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import {
-  generatePath,
-  useLocation,
-  useNavigate,
-  useParams,
-} from 'react-router-dom'
+import { generatePath, useLocation, useNavigate, useParams } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -132,6 +127,7 @@ export const VenueEdition = (): JSX.Element | null => {
                     options={venuesOptions}
                     value={venueId ?? ''}
                     onChange={(e) => {
+                      // eslint-disable-next-line @typescript-eslint/no-floating-promises
                       navigate(
                         `/structures/${offererId}/lieux/${e.target.value}`
                       )
@@ -167,6 +163,6 @@ export const VenueEdition = (): JSX.Element | null => {
   )
 }
 
-// Lazy-loaded by react-router-dom
+// Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
 export const Component = VenueEdition

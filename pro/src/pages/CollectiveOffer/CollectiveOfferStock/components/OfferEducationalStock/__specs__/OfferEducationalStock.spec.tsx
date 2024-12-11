@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { addDays, addMinutes, format, subDays } from 'date-fns'
-import * as router from 'react-router-dom'
+import * as router from 'react-router'
 
 import {
   CollectiveBookingStatus,
@@ -41,8 +41,8 @@ const initialValuesNotEmpty = {
   priceDetail: 'Détail du prix',
 }
 
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
+vi.mock('react-router', async () => ({
+  ...(await vi.importActual('react-router')),
   useNavigate: vi.fn(),
 }))
 

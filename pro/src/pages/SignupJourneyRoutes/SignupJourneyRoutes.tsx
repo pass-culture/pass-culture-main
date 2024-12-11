@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { Outlet } from 'react-router-dom'
+import { Outlet } from 'react-router'
 
 import { Layout } from 'app/App/layout/Layout'
 import { SignupJourneyContextProvider } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
@@ -36,6 +36,6 @@ export const SignupJourneyRoutes = () => {
   )
 }
 
-// Lazy-loaded by react-router-dom
+// Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
 export const Component = SignupJourneyRoutes

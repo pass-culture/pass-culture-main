@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { useParams } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -90,6 +90,6 @@ const VenueSettings = (): JSX.Element | null => {
   )
 }
 
-// Lazy-loaded by react-router-dom
+// Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
 export const Component = VenueSettings

@@ -1,5 +1,5 @@
 import { Form, Formik, FormikConfig, FormikConsumer } from 'formik'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -17,7 +17,6 @@ import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfte
 import { PhoneNumberInput } from 'ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
-
 
 import { Accessibility } from './Accessibility/Accessibility'
 import { OpeningHoursForm } from './OpeningHoursForm/OpeningHoursForm'
@@ -57,6 +56,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
 
       await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
 
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(`/structures/${venue.managingOfferer.id}/lieux/${venue.id}`)
 
       if (currentUser.isAdmin) {

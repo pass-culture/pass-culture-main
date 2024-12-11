@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router'
 
 import { SelectOption } from 'commons/custom_types/form'
 import { getToday } from 'commons/utils/date'
@@ -29,7 +29,7 @@ export const InvoicesFilters = ({
   selectableOptions,
   setFilters,
   onReset,
-  onSearch
+  onSearch,
 }: InvoicesFiltersProps): JSX.Element => {
   const [searchParams] = useSearchParams()
 
