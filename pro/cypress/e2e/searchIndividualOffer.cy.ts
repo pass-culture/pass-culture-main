@@ -7,14 +7,14 @@ import {
 
 describe('Search individual offers', () => {
   let login: string
-  const venueName = 'Mon Lieu'
-  const offerName1 = 'Une super offre'
-  const offerName2 = 'Une offre avec ean'
-  const offerName3 = 'Une flûte traversière'
-  const offerName4 = "Un concert d'electro inoubliable"
-  const offerName5 = 'Une autre offre incroyable'
-  const offerName6 = 'Encore une offre incroyable'
-  const offerName7 = 'Une offre épuisée'
+  let venueName: string // = 'Mon Lieu'
+  let offerName1: string // = 'Une super offre'
+  let offerName2: string // = 'Une offre avec ean'
+  let offerName3: string // = 'Une flûte traversière'
+  let offerName4: string // = "Un concert d'electro inoubliable"
+  let offerName5: string // = 'Une autre offre incroyable'
+  let offerName6: string // = 'Encore une offre incroyable'
+  let offerName7: string // = 'Une offre épuisée'
 
   before(() => {
     cy.wrap(Cypress.session.clearAllSavedSessions())
@@ -24,6 +24,14 @@ describe('Search individual offers', () => {
       url: 'http://localhost:5001/sandboxes/pro/create_pro_user_with_individual_offers',
     }).then((response) => {
       login = response.body.user.email
+      venueName = response.body.venue
+      offerName1 = response.body.offerName1
+      offerName2 = response.body.offerName2
+      offerName3 = response.body.offerName3
+      offerName4 = response.body.offerName4
+      offerName5 = response.body.offerName5
+      offerName6 = response.body.offerName6
+      offerName7 = response.body.offerName7
     })
   })
 

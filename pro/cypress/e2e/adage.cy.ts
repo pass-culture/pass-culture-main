@@ -1,6 +1,7 @@
 describe('ADAGE discovery', () => {
   let offerId: number
-  const offerName = 'Mon offre collective'
+  let offerName: string
+  let venueName: string
 
   beforeEach(() => {
     cy.stepLog({ message: 'I go to adage login page with valid token' })
@@ -11,6 +12,8 @@ describe('ADAGE discovery', () => {
       url: 'http://localhost:5001/sandboxes/pro/create_adage_environment',
     }).then((response) => {
       offerId = response.body.offerId
+      offerName = response.body.offerName
+      venueName = response.body.venueName
     })
     cy.intercept(
       'GET',
@@ -203,7 +206,7 @@ describe('ADAGE discovery', () => {
     cy.visit(`/adage-iframe/recherche?token=${adageToken}`)
     cy.wait('@catalogView').its('response.statusCode').should('eq', 204)
     cy.findAllByTestId('spinner').should('not.exist')
-    cy.findByTestId('offer-listitem').contains('Mon offre collective')
+    cy.findByTestId('offer-listitem').contains(offerName)
 
     cy.stepLog({ message: 'I add first offer to favorites' })
     cy.findByText(offerName).parent().click()
@@ -268,7 +271,7 @@ describe('ADAGE discovery', () => {
     cy.visit(`/adage-iframe?token=${adageToken}`)
 
     cy.stepLog({ message: 'I click on venue' })
-    cy.findByText('Mon lieu collectif').parent().click()
+    cy.findByText(venueName).parent().click()
 
     cy.stepLog({
       message: 'the iframe search page should be displayed correctly',
@@ -281,7 +284,7 @@ describe('ADAGE discovery', () => {
     )
 
     cy.stepLog({ message: 'Venue filter should be there' })
-    cy.findByText('Lieu : Mon lieu collectif').should('be.visible')
+    cy.findByText(`Lieu : ${venueName}`).should('be.visible')
   })
 
   it('It should redirect to search page with filtered domain on click in domain card', () => {
@@ -312,7 +315,7 @@ describe('ADAGE discovery', () => {
     cy.visit(`/adage-iframe?token=${adageToken}`)
 
     cy.stepLog({ message: 'I click on venue' })
-    cy.findByText('Mon lieu collectif').parent().click()
+    cy.findByText(venueName).parent().click()
 
     cy.stepLog({
       message: 'the iframe search page should be displayed correctly',
@@ -325,12 +328,12 @@ describe('ADAGE discovery', () => {
     )
 
     cy.stepLog({ message: 'I go back to search page' })
-    cy.findByText('Lieu : Mon lieu collectif').should('be.visible')
+    cy.findByText(`Lieu : ${venueName}`).should('be.visible')
     cy.findByRole('link', { name: 'Découvrir' }).click()
     cy.findByRole('link', { name: 'Rechercher' }).click()
 
     cy.stepLog({ message: 'The filter has disappear' })
-    cy.findByText('Lieu : Mon lieu collectif').should('not.exist')
+    cy.findByText(`Lieu : ${venueName}`).should('not.exist')
   })
 
   it('It should not keep filter venue after page change', () => {
@@ -339,7 +342,7 @@ describe('ADAGE discovery', () => {
     cy.visit(`/adage-iframe?token=${adageToken}`)
 
     cy.stepLog({ message: 'I click on venue' })
-    cy.findByText('Mon lieu collectif').parent().click()
+    cy.findByText(venueName).parent().click()
 
     cy.stepLog({
       message: 'the iframe search page should be displayed correctly',
@@ -352,12 +355,12 @@ describe('ADAGE discovery', () => {
     )
 
     cy.stepLog({ message: 'I go back to search page' })
-    cy.findByText('Lieu : Mon lieu collectif').should('be.visible')
+    cy.findByText(`Lieu : ${venueName}`).should('be.visible')
     cy.findByRole('link', { name: 'Découvrir' }).click()
     cy.findByRole('link', { name: 'Rechercher' }).click()
 
     cy.stepLog({ message: 'The filter has disappear' })
-    cy.findByText('Lieu : Mon lieu collectif').should('not.exist')
+    cy.findByText(`Lieu : ${venueName}`).should('not.exist')
   })
 
   it('It should save view type in search page', () => {
@@ -400,7 +403,7 @@ describe('ADAGE discovery', () => {
     cy.visit(`/adage-iframe?token=${adageToken}`)
 
     cy.stepLog({ message: 'I choose my filters' })
-    cy.findByText('Mon lieu collectif').parent().click()
+    cy.findByText(venueName).parent().click()
 
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(500) // Click on "Domaine artistique" is too fast waiting api is not enough
@@ -425,7 +428,7 @@ describe('ADAGE discovery', () => {
     cy.findByRole('button', { name: 'Domaine artistique (1)' }).click()
     cy.findByLabelText('Danse').should('be.checked')
 
-    cy.findByText('Lieu : Mon lieu collectif').should('be.visible')
+    cy.findByText(`Lieu : ${venueName}`).should('be.visible')
   })
 
   it('It should save page when navigating the iframe', () => {

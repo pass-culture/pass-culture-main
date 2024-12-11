@@ -30,6 +30,7 @@ export function expectOffersOrBookingsAreFound(
             cy.wrap($elt)
               .eq(column)
               .then((cellValue) => {
+                cy.log(cellValue.text())
                 if (cellValue.text().length && lineArray[column].length) {
                   return cy
                     .wrap(cellValue)
