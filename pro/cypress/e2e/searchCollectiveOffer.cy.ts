@@ -7,14 +7,13 @@ import {
 
 describe('Search collective offers', () => {
   let login: string
-  const venueName1 = 'Mon Lieu 1'
-  const venueName2 = 'Mon Lieu 2'
-  const offerNameArchived = 'Mon offre collective archivée réservable'
-  const offerNamePublished = 'Mon offre collective publiée réservable'
-  const offerNamePublishedTemplate = 'Mon offre collective publiée vitrine'
-  const offerNameDraft = 'Mon offre collective en brouillon réservable'
-  const offerNameNotConform = 'Mon offre collective non conforme réservable'
-  const offerNameInInstruction = 'Mon offre collective en instruction réservable'
+  let offerPublishedTemplate: { "name": string, "venueName": string }
+  let offerPublished: { "name": string, "venueName": string }
+  let offerDraft: { "name": string, "venueName": string }
+  let offerInInstruction: { "name": string, "venueName": string }
+  let offerNotConform: { "name": string, "venueName": string }
+  let offerArchived: { "name": string, "venueName": string }
+
   const formatName = 'Concert'
 
   before(() => {
@@ -24,6 +23,12 @@ describe('Search collective offers', () => {
       url: 'http://localhost:5001/sandboxes/pro/create_pro_user_with_collective_offers',
     }).then((response) => {
       login = response.body.user.email
+      offerPublishedTemplate = response.body.offerPublishedTemplate
+      offerPublished = response.body.offerPublished
+      offerDraft = response.body.offerDraft
+      offerInInstruction = response.body.offerInInstruction
+      offerNotConform = response.body.offerNotConform
+      offerArchived = response.body.offerArchived
     })
     cy.setFeatureFlags([
       { name: 'ENABLE_COLLECTIVE_NEW_STATUSES', isActive: true },
@@ -31,7 +36,11 @@ describe('Search collective offers', () => {
   })
 
   beforeEach(() => {
-    sessionLogInAndGoToPage('Session search collective offer', login, '/accueil')
+    sessionLogInAndGoToPage(
+      'Session search collective offer',
+      login,
+      '/accueil'
+    )
 
     cy.intercept({ method: 'GET', url: '/collective/offers*' }).as(
       'collectiveOffers'
@@ -44,12 +53,12 @@ describe('Search collective offers', () => {
     cy.findAllByTestId('spinner').should('not.exist')
   })
 
-  it(`I should be able to search with a name "${offerNamePublished}" and see expected results`, () => {
+  it(`I should be able to search with a name and see expected results`, () => {
     cy.stepLog({
-      message: 'I search with the name "' + offerNamePublished + '"',
+      message: 'I search with the name "' + offerPublished.name + '"',
     })
     cy.findByPlaceholderText('Rechercher par nom d’offre').type(
-      offerNamePublished
+      offerPublished.name
     )
 
     cy.stepLog({ message: 'I validate my filters' })
@@ -59,22 +68,15 @@ describe('Search collective offers', () => {
     cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
       ['', '', 'Titre', 'Lieu', 'Établissement', 'Statut'],
-      [
-        '',
-        '',
-        offerNamePublished,
-        venueName1,
-        '',
-        'publiée',
-      ],
+      ['', '', offerPublished.name, offerPublished.venueName, '', 'publiée'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
   })
 
-  it(`I should be able to search with a lieu "${venueName2}" and see expected results`, () => {
-    cy.stepLog({ message: 'I search with the place "' + venueName2 + '"' })
-    cy.findByLabelText('Lieu').select(venueName2)
+  it(`I should be able to search with a lieu and see expected results`, () => {
+    cy.stepLog({ message: 'I search with the place "' + offerArchived.venueName + '"' })
+    cy.findByLabelText('Lieu').select(offerArchived.venueName)
 
     cy.stepLog({ message: 'I validate my filters' })
     cy.findByText('Rechercher').click()
@@ -83,30 +85,9 @@ describe('Search collective offers', () => {
     cy.stepLog({ message: '3 results should be displayed' })
     const expectedResults = [
       ['', '', 'Titre', 'Lieu', 'Établissement', 'Statut'],
-      [
-        '',
-        '',
-        offerNameNotConform,
-        venueName2,
-        '',
-        'non conforme',
-      ],
-      [
-        '',
-        '',
-        offerNameInInstruction,
-        venueName2,
-        '',
-        'en instruction',
-      ],
-      [
-        '',
-        '',
-        offerNameArchived,
-        venueName2,
-        '',
-        'archivée',
-      ],
+      ['', '', offerNotConform.name, offerNotConform.venueName, '', 'non conforme'],
+      ['', '', offerInInstruction.name, offerInInstruction.venueName, '', 'en instruction'],
+      ['', '', offerArchived.name, offerArchived.venueName, '', 'archivée'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
@@ -123,22 +104,8 @@ describe('Search collective offers', () => {
     cy.stepLog({ message: '2 results should be displayed' })
     const expectedResults = [
       ['', '', 'Titre', 'Lieu', 'Établissement', 'Statut'],
-      [
-        '',
-        '',
-        offerNamePublished,
-        venueName1,
-        '',
-        'publiée',
-      ],
-      [
-        '',
-        '',
-        offerNamePublishedTemplate,
-        venueName1,
-        '',
-        'publiée',
-      ],
+      ['', '', offerPublished.name, offerPublished.venueName, '', 'publiée'],
+      ['', '', offerPublishedTemplate.name, offerPublishedTemplate.venueName, '', 'publiée'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
@@ -155,46 +122,11 @@ describe('Search collective offers', () => {
     cy.stepLog({ message: '5 results should be displayed' })
     const expectedResults = [
       ['', '', 'Titre', 'Lieu', 'Établissement', 'Statut'],
-      [
-        '',
-        '',
-        offerNameArchived,
-        venueName2,
-        '',
-        'archivée',
-      ],
-      [
-        '',
-        '',
-        offerNameNotConform,
-        venueName2,
-        '',
-        'non conforme',
-      ],
-      [
-        '',
-        '',
-        offerNameInInstruction,
-        venueName2,
-        '',
-        'en instruction',
-      ],
-      [
-        '',
-        '',
-        offerNameDraft,
-        venueName1,
-        '',
-        'brouillon',
-      ],
-      [
-        '',
-        '',
-        offerNamePublished,
-        venueName1,
-        '',
-        'publiée',
-      ],
+      ['', '', offerArchived.name, offerArchived.venueName, '', 'archivée'],
+      ['', '', offerNotConform.name, offerNotConform.venueName, '', 'non conforme'],
+      ['', '', offerInInstruction.name, offerInInstruction.venueName, '', 'en instruction'],
+      ['', '', offerDraft.name, offerDraft.venueName, '', 'brouillon'],
+      ['', '', offerPublished.name, offerPublished.venueName, '', 'publiée'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
@@ -213,14 +145,7 @@ describe('Search collective offers', () => {
     cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
       ['', '', 'Titre', 'Lieu', 'Établissement', 'Statut'],
-      [
-        '',
-        '',
-        offerNamePublished,
-        venueName1,
-        '',
-        'publiée',
-      ],
+      ['', '', offerPublished.name, offerPublished.venueName, '', 'publiée'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
@@ -239,22 +164,15 @@ describe('Search collective offers', () => {
     cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
       ['', '', 'Titre', 'Lieu', 'Établissement', 'Statut'],
-      [
-        '',
-        '',
-        offerNameInInstruction,
-        venueName2,
-        '',
-        'en instruction',
-      ],
+      ['', '', offerInInstruction.name, offerInInstruction.venueName, '', 'en instruction'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
   })
 
   it('I should be able to search with several filters and see expected results, then reinit filters', () => {
-    cy.stepLog({ message: 'I select ' + venueName1 + ' in "Lieu"' })
-    cy.findByLabelText('Lieu').select(venueName1)
+    cy.stepLog({ message: 'I select ' + offerDraft.venueName + ' in "Lieu"' })
+    cy.findByLabelText('Lieu').select(offerDraft.venueName)
 
     cy.stepLog({ message: 'I select "Représentation" in "Format"' })
     cy.findByLabelText('Format').select('Représentation')
@@ -274,14 +192,7 @@ describe('Search collective offers', () => {
     cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
       ['', '', 'Titre', 'Lieu', 'Établissement', 'Statut'],
-      [
-        '',
-        '',
-        offerNameDraft,
-        venueName1,
-        '',
-        'brouillon',
-      ],
+      ['', '', offerDraft.name, offerDraft.venueName, '', 'brouillon'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
@@ -308,54 +219,12 @@ describe('Search collective offers', () => {
     cy.stepLog({ message: '6 results should be displayed' })
     const expectedResults2 = [
       ['', '', 'Titre', 'Lieu', 'Établissement', 'Statut'],
-      [
-        '',
-        '',
-        offerNameNotConform,
-        venueName2,
-        '',
-        'non conforme',
-      ],
-      [
-        '',
-        '',
-        offerNameInInstruction,
-        venueName2,
-        '',
-        'en instruction',
-      ],
-      [
-        '',
-        '',
-        offerNameDraft,
-        venueName1,
-        '',
-        'brouillon',
-      ],
-      [
-        '',
-        '',
-        offerNamePublished,
-        venueName1,
-        '',
-        'publiée',
-      ],
-      [
-        '',
-        '',
-        offerNamePublishedTemplate,
-        venueName1,
-        '',
-        'publiée',
-      ],
-      [
-        '',
-        '',
-        offerNameArchived,
-        venueName2,
-        '',
-        'archivée',
-      ],
+      ['', '', offerNotConform.name, offerNotConform.venueName, '', 'non conforme'],
+      ['', '', offerInInstruction.name, offerInInstruction.venueName, '', 'en instruction'],
+      ['', '', offerDraft.name, offerDraft.venueName, '', 'brouillon'],
+      ['', '', offerPublished.name, offerPublished.venueName, '', 'publiée'],
+      ['', '', offerPublishedTemplate.name, offerPublishedTemplate.venueName, '', 'publiée'],
+      ['', '', offerArchived.name, offerArchived.venueName, '', 'archivée'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults2)

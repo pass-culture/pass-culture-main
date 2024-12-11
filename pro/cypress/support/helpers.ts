@@ -45,12 +45,9 @@ export function expectOffersOrBookingsAreFound(
             cy.wrap($elt)
               .eq(column)
               .then((cellValue) => {
-                if (cellValue.text().length && lineArray[column].length) {
-                  return cy
-                    .wrap(cellValue)
-                    .should('contain.text', lineArray[column])
-                } else {
-                  return true
+                if (lineArray[column].length) {
+                  let isAMatch: boolean = cellValue.text().includes(lineArray[column])
+                  expect(isAMatch).to.be.true
                 }
               })
           }
