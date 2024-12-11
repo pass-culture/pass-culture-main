@@ -157,11 +157,14 @@ def download_reimbursement_details(bank_account_id: int) -> utils.BackofficeResp
         return redirect(
             request.referrer or url_for("backoffice_web.bank_account.get", bank_account_id=bank_account_id), code=303
         )
-
+    offerer_id = finance_models.BankAccount.query.get(bank_account_id).offererId
     invoices = finance_models.Invoice.query.filter(finance_models.Invoice.id.in_(form.object_ids_list)).all()
     reimbursement_details = [
         reimbursement_csv_serialize.ReimbursementDetails(details)
-        for details in finance_repository.find_all_invoices_finance_details([invoice.id for invoice in invoices])
+        for details in finance_repository.find_offerer_payments(
+            offerer_id = offerer_id,
+            bank_account_id=bank_account_id, invoices_references=[invoice.reference for invoice in invoices]
+        )
     ]
     export_data = reimbursement_csv_serialize.generate_reimbursement_details_csv(reimbursement_details)
     export_date = datetime.utcnow().strftime("%Y-%m-%d-%H-%M")
