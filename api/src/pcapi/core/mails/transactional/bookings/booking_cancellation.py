@@ -1,3 +1,4 @@
+from functools import partial
 import logging
 
 from flask import render_template
@@ -7,6 +8,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.repository import find_ongoing_bookings_by_stock
 from pcapi.core.mails import models
+from pcapi.repository import on_commit
 from pcapi.utils.date import format_datetime
 from pcapi.utils.mailing import get_event_datetime
 
@@ -49,7 +51,13 @@ def send_booking_cancellation_confirmation_by_pro_to_pro_email(booking: Booking)
     if not offerer_booking_email:
         return
     email = get_booking_cancellation_confirmation_by_pro_email_data(booking)
-    mails.send(recipients=[offerer_booking_email], data=email)
+    on_commit(
+        partial(
+            mails.send,
+            recipients=[offerer_booking_email],
+            data=email,
+        )
+    )
 
 
 def get_booking_cancellation_confirmation_by_pro_email_data(
