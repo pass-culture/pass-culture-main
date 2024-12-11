@@ -105,8 +105,8 @@ describe('Create collective offers', () => {
 
     cy.get('#search-status').click()
     cy.get('#list-status').find('#option-display-DRAFT').click()
-    cy.findByText('Offres collectives').click()
-
+    // We click outside the filter to close it
+    cy.findByRole('heading', { name: 'Offres collectives' }).click()
     cy.findByText('Rechercher').click()
     cy.wait('@collectiveOffers')
 

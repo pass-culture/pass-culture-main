@@ -155,7 +155,8 @@ describe('Search collective offers', () => {
     cy.stepLog({ message: 'I search with status "En instruction"' })
     cy.get('#search-status').click()
     cy.get('#list-status').find('#option-display-PENDING').click()
-    cy.findByText('Offres collectives').click()
+    // We click outside the filter to close it
+    cy.findByRole('heading', { name: 'Offres collectives' }).click()
 
     cy.stepLog({ message: 'I validate my filters' })
     cy.findByText('Rechercher').click()
@@ -183,7 +184,8 @@ describe('Search collective offers', () => {
     cy.stepLog({ message: 'I search with status "Brouillon"' })
     cy.get('#search-status').click()
     cy.get('#list-status').find('#option-display-DRAFT').click()
-    cy.findByText('Offres collectives').click()
+    // We click outside the filter to close it
+    cy.findByRole('heading', { name: 'Offres collectives' }).click()
 
     cy.stepLog({ message: 'I validate my collective filters' })
     cy.findByText('Rechercher').click()
