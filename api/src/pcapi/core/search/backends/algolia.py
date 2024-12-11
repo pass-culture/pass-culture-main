@@ -359,6 +359,9 @@ class AlgoliaBackend(base.SearchBackend):
             return True
 
     def index_offers(self, offers: abc.Collection[offers_models.Offer], last_30_days_bookings: dict[int, int]) -> None:
+        # Warning: if you ever need to alter the DB, please make sure you take into account that
+        # the calling function index_offers_in_queue does a rollback to remove any reading lock
+        # during processing.
         if not offers:
             return
         objects = [self.serialize_offer(offer, last_30_days_bookings.get(offer.id) or 0) for offer in offers]
