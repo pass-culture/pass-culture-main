@@ -138,6 +138,7 @@ class GetAllBookingsTest:
 class Returns200Test:
     expected_num_queries = 1  # Fetch the session
     expected_num_queries += 1  # Fetch the user
+    expected_num_queries += 1  # Fetch user timezones
     expected_num_queries += 1  # CTE built over booking, stock and external_booking
     expected_num_queries += 1  # 4.external_booking
     expected_num_queries += 1  # 5. check if WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE is active
@@ -310,8 +311,7 @@ class Returns200Test:
 
         # when
         client = client.with_session_auth(pro_user.email)
-        expected_num_queries = 5  # user + session + SELECT DISTINCT booking + bookingToken + check WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE is active
-        with assert_num_queries(expected_num_queries):
+        with assert_num_queries(self.expected_num_queries):
             response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}")
             assert response.status_code == 200
 
@@ -487,8 +487,7 @@ class Returns200Test:
 
         # when
         client = client.with_session_auth(pro_user.email)
-        expected_num_queries = 5  # user + session + SELECT DISTINCT booking + bookingToken + check WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE is active
-        with assert_num_queries(expected_num_queries):
+        with assert_num_queries(self.expected_num_queries):
             response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}")
             assert response.status_code == 200
 

@@ -20,6 +20,7 @@ import pcapi.core.bookings.repository as booking_repository
 from pcapi.core.bookings.repository import get_bookings_from_deposit
 from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
 from pcapi.core.categories import subcategories_v2 as subcategories
+import pcapi.core.geography.factories as geography_factories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.factories as offers_factories
@@ -31,6 +32,7 @@ import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.domain.booking_recap import utils as booking_recap_utils
 from pcapi.models.feature import FeatureToggle
+from pcapi.utils.date import get_department_timezone
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -211,7 +213,7 @@ class FindByProUserTest:
 
         bookings_query, _ = booking_repository.find_by_pro_user(
             user=pro,
-            booking_period=((booking_date + timedelta(1)), (booking_date + timedelta(3))),
+            booking_period=(date(2020, 1, 3), date(2020, 1, 4)),
             status_filter=BookingStatusFilter.REIMBURSED,
         )
         bookings = bookings_query.all()
@@ -238,26 +240,6 @@ class FindByProUserTest:
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
         bookings = bookings_query.all()
-
-        assert len(bookings) == 2
-        assert bookings[0].quantity == 2
-
-    def test_should_not_duplicate_bookings_when_user_is_admin_and_bookings_offerer_has_multiple_user(
-        self, app: fixture
-    ):
-
-        admin = users_factories.AdminFactory()
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.UserOffererFactory(offerer=offerer)
-
-        bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer, quantity=2)
-
-        bookings_recap_paginated_query, _ = booking_repository.find_by_pro_user(
-            user=admin, booking_period=(one_year_before_booking, one_year_after_booking)
-        )
-        bookings = bookings_recap_paginated_query.all()
 
         assert len(bookings) == 2
         assert bookings[0].quantity == 2
@@ -553,7 +535,7 @@ class FindByProUserTest:
         offerer = offerers_factories.OffererFactory(postalCode="97300")
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.ThingOfferFactory(venue=venue, extraData=dict({"ean": "9876543234"}))
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
@@ -643,12 +625,18 @@ class FindByProUserTest:
         assert bookings[0].bookingToken == expected_booking.token
 
     def should_consider_venue_locale_datetime_when_filtering_by_event_date(self, app: fixture):
-
         user_offerer = offerers_factories.UserOffererFactory()
         event_datetime = datetime(2020, 4, 21, 20, 00)
-
+        # Cayenne
+        offerer_address_in_cayenne = offerers_factories.OffererAddressFactory(
+            address__timezone=get_department_timezone("973"),
+            address__postalCode="97300",
+            offerer=user_offerer.offerer,
+        )
         offer_in_cayenne = offers_factories.OfferFactory(
-            venue__postalCode="97300", venue__managingOfferer=user_offerer.offerer
+            venue__postalCode="97300",
+            venue__managingOfferer=user_offerer.offerer,
+            venue__offererAddress=offerer_address_in_cayenne,
         )
         cayenne_event_datetime = datetime(2020, 4, 22, 2, 0)
         stock_in_cayenne = offers_factories.EventStockFactory(
@@ -656,8 +644,16 @@ class FindByProUserTest:
         )
         cayenne_booking = bookings_factories.BookingFactory(stock=stock_in_cayenne)
 
+        # Mayotte
+        offerer_address_in_mayotte = offerers_factories.OffererAddressFactory(
+            address__timezone=get_department_timezone("976"),
+            address__postalCode="97600",
+            offerer=user_offerer.offerer,
+        )
         offer_in_mayotte = offers_factories.OfferFactory(
-            venue__postalCode="97600", venue__managingOfferer=user_offerer.offerer
+            venue__postalCode="97600",
+            venue__managingOfferer=user_offerer.offerer,
+            venue__offererAddress=offerer_address_in_mayotte,
         )
         mayotte_event_datetime = datetime(2020, 4, 20, 22, 0)
         stock_in_mayotte = offers_factories.EventStockFactory(
@@ -711,9 +707,21 @@ class FindByProUserTest:
         user_offerer = offerers_factories.UserOffererFactory()
         requested_booking_period_beginning = datetime(2020, 4, 21, 20, 00).date()
         requested_booking_period_ending = datetime(2020, 4, 22, 20, 00).date()
+        offerer_address_in_cayenne = offerers_factories.OffererAddressFactory(
+            address__timezone=get_department_timezone("973"),
+            address__postalCode="97300",
+            offerer=user_offerer.offerer,
+        )
+        offerer_address_in_mayotte = offerers_factories.OffererAddressFactory(
+            address__timezone=get_department_timezone("976"),
+            address__postalCode="97600",
+            offerer=user_offerer.offerer,
+        )
 
         offer_in_cayenne = offers_factories.OfferFactory(
-            venue__postalCode="97300", venue__managingOfferer=user_offerer.offerer
+            venue__postalCode="97300",
+            venue__managingOfferer=user_offerer.offerer,
+            venue__offererAddress=offerer_address_in_cayenne,
         )
         cayenne_booking_datetime = datetime(2020, 4, 22, 2, 0)
         stock_in_cayenne = offers_factories.EventStockFactory(
@@ -724,7 +732,9 @@ class FindByProUserTest:
         )
 
         offer_in_mayotte = offers_factories.OfferFactory(
-            venue__postalCode="97600", venue__managingOfferer=user_offerer.offerer
+            venue__postalCode="97600",
+            venue__managingOfferer=user_offerer.offerer,
+            venue__offererAddress=offerer_address_in_mayotte,
         )
         mayotte_booking_datetime = datetime(2020, 4, 20, 23, 0)
         stock_in_mayotte = offers_factories.EventStockFactory(
@@ -867,7 +877,7 @@ class FindByProUserWithOffererAddressAsDataSourceTest:
 
         bookings_query, _ = booking_repository.find_by_pro_user(
             user=pro,
-            booking_period=((booking_date + timedelta(1)), (booking_date + timedelta(3))),
+            booking_period=(date(2020, 1, 3), date(2020, 1, 4)),
             status_filter=BookingStatusFilter.REIMBURSED,
         )
         bookings = bookings_query.all()
@@ -895,27 +905,6 @@ class FindByProUserWithOffererAddressAsDataSourceTest:
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
         bookings = bookings_query.all()
-
-        assert len(bookings) == 2
-        assert bookings[0].quantity == 2
-
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
-    def test_should_not_duplicate_bookings_when_user_is_admin_and_bookings_offerer_has_multiple_user(
-        self, app: fixture
-    ):
-
-        admin = users_factories.AdminFactory()
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.UserOffererFactory(offerer=offerer)
-
-        bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer, quantity=2)
-
-        bookings_recap_paginated_query, _ = booking_repository.find_by_pro_user(
-            user=admin, booking_period=(one_year_before_booking, one_year_after_booking)
-        )
-        bookings = bookings_recap_paginated_query.all()
 
         assert len(bookings) == 2
         assert bookings[0].quantity == 2
@@ -1261,14 +1250,19 @@ class FindByProUserWithOffererAddressAsDataSourceTest:
 
     @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def should_consider_venue_locale_datetime_when_filtering_by_event_date(self, app: fixture):
-
         user_offerer = offerers_factories.UserOffererFactory()
         event_datetime = datetime(2020, 4, 21, 20, 00)
 
+        # Cayenne
+        offerer_address_in_cayenne = offerers_factories.OffererAddressFactory(
+            address__timezone=get_department_timezone("973"),
+            address__postalCode="97300",
+            offerer=user_offerer.offerer,
+        )
         offer_in_cayenne = offers_factories.OfferFactory(
             venue__postalCode="97300",
             venue__managingOfferer=user_offerer.offerer,
-            venue__offererAddress__address__inseeCode="97300",
+            venue__offererAddress=offerer_address_in_cayenne,
         )
         cayenne_event_datetime = datetime(2020, 4, 22, 2, 0)
         stock_in_cayenne = offers_factories.EventStockFactory(
@@ -1276,8 +1270,16 @@ class FindByProUserWithOffererAddressAsDataSourceTest:
         )
         cayenne_booking = bookings_factories.BookingFactory(stock=stock_in_cayenne)
 
+        # Mayotte
+        offerer_address_in_mayotte = offerers_factories.OffererAddressFactory(
+            address__timezone=get_department_timezone("976"),
+            address__postalCode="97600",
+            offerer=user_offerer.offerer,
+        )
         offer_in_mayotte = offers_factories.OfferFactory(
-            venue__postalCode="97600", venue__managingOfferer=user_offerer.offerer
+            venue__postalCode="97600",
+            venue__managingOfferer=user_offerer.offerer,
+            venue__offererAddress=offerer_address_in_mayotte,
         )
         mayotte_event_datetime = datetime(2020, 4, 20, 22, 0)
         stock_in_mayotte = offers_factories.EventStockFactory(
@@ -3813,7 +3815,7 @@ class GetCsvReportTest:
 
         bookings_csv = booking_repository.get_export(
             user=pro,
-            booking_period=((booking_date + timedelta(1)), (booking_date + timedelta(3))),
+            booking_period=(date(2020, 1, 3), date(2020, 1, 4)),
             status_filter=BookingStatusFilter.REIMBURSED,
         )
 
@@ -3883,10 +3885,12 @@ class GetCsvReportTest:
         offerers_factories.UserOffererFactory(offerer=offerer)
         offerers_factories.UserOffererFactory(offerer=offerer)
 
-        bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer, quantity=2)
+        booking = bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer, quantity=2)
 
         bookings_csv = booking_repository.get_export(
-            user=admin, booking_period=(one_year_before_booking, one_year_after_booking)
+            user=admin,
+            offer_id=booking.stock.offerId,
+            booking_period=(one_year_before_booking, one_year_after_booking),
         )
 
         _, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
@@ -3903,10 +3907,12 @@ class GetCsvReportTest:
         offerers_factories.UserOffererFactory(offerer=offerer)
         offerers_factories.UserOffererFactory(offerer=offerer)
 
-        bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer, quantity=2)
+        booking = bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer, quantity=2)
 
         bookings_csv = booking_repository.get_export(
-            user=admin, booking_period=(one_year_before_booking, one_year_after_booking)
+            user=admin,
+            offer_id=booking.stock.offerId,
+            booking_period=(one_year_before_booking, one_year_after_booking),
         )
 
         _, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
@@ -5075,8 +5081,8 @@ class GetCsvReportTest:
                 dateCreated=date_created,
             )
 
-            beginning_period = (datetime.utcnow().date() - timedelta(days=1)).isoformat()
-            ending_period = (datetime.utcnow().date() + timedelta(days=360)).isoformat()
+            beginning_period = datetime.utcnow().date() - timedelta(days=1)
+            ending_period = datetime.utcnow().date() + timedelta(days=360)
             bookings_csv = booking_repository.get_export(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
@@ -5115,8 +5121,8 @@ class GetCsvReportTest:
                 dateCreated=date_created,
             )
 
-            beginning_period = (datetime.utcnow().date() - timedelta(days=11)).isoformat()
-            ending_period = (datetime.utcnow().date() + timedelta(days=360)).isoformat()
+            beginning_period = datetime.utcnow().date() - timedelta(days=11)
+            ending_period = datetime.utcnow().date() + timedelta(days=360)
             bookings_csv = booking_repository.get_export(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
@@ -5156,8 +5162,8 @@ class GetCsvReportTest:
                 dateCreated=date_created,
             )
 
-            beginning_period = (datetime.utcnow().date() - timedelta(days=11)).isoformat()
-            ending_period = (datetime.utcnow().date() + timedelta(days=360)).isoformat()
+            beginning_period = datetime.utcnow().date() - timedelta(days=11)
+            ending_period = datetime.utcnow().date() + timedelta(days=360)
             bookings_csv = booking_repository.get_export(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
@@ -5189,8 +5195,8 @@ class GetCsvReportTest:
                 dateCreated=date_created,
             )
 
-            beginning_period = (datetime.utcnow().date() - timedelta(days=1)).isoformat()
-            ending_period = (datetime.utcnow().date() + timedelta(days=360)).isoformat()
+            beginning_period = datetime.utcnow().date() - timedelta(days=1)
+            ending_period = datetime.utcnow().date() + timedelta(days=360)
             bookings_csv = booking_repository.get_export(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
@@ -5231,8 +5237,8 @@ class GetCsvReportTest:
                 dateCreated=date_created,
             )
 
-            beginning_period = (datetime.utcnow().date() - timedelta(days=11)).isoformat()
-            ending_period = (datetime.utcnow().date() + timedelta(days=360)).isoformat()
+            beginning_period = datetime.utcnow().date() - timedelta(days=11)
+            ending_period = datetime.utcnow().date() + timedelta(days=360)
             bookings_csv = booking_repository.get_export(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
@@ -5274,8 +5280,8 @@ class GetCsvReportTest:
                 dateCreated=date_created,
             )
 
-            beginning_period = (datetime.utcnow().date() - timedelta(days=11)).isoformat()
-            ending_period = (datetime.utcnow().date() + timedelta(days=360)).isoformat()
+            beginning_period = datetime.utcnow().date() - timedelta(days=11)
+            ending_period = datetime.utcnow().date() + timedelta(days=360)
             bookings_csv = booking_repository.get_export(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
@@ -5679,3 +5685,22 @@ class GetTomorrowEventOfferTest:
             bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
 
         assert len(bookings) == 1
+
+
+def test_sould_return_user_offerer_timezones():
+    pro_user = users_factories.ProFactory()
+    user_offerer = offerers_factories.UserOffererFactory(user=pro_user)
+    offerer = user_offerer.offerer
+
+    offerers_factories.OffererAddressFactory(offerer=offerer, address__timezone="Europe/Paris")
+    offerers_factories.OffererAddressFactory(offerer=offerer, address__timezone="Europe/Paris")
+    offerers_factories.OffererAddressFactory(offerer=offerer, address__timezone="America/Guadeloupe")
+    offerers_factories.OffererAddressFactory(offerer=offerer, address__timezone="Indian/Mayotte")
+
+    # Venue with different timezone
+    offerers_factories.VenueFactory(managingOfferer=offerer, timezone="America/Cayenne", postalCode="97300")
+
+    timezones = booking_repository.get_pro_user_timezones(pro_user)
+
+    assert len(timezones) == 4
+    assert timezones == {"Europe/Paris", "America/Guadeloupe", "Indian/Mayotte", "America/Cayenne"}
