@@ -4,6 +4,12 @@ import { sessionLogInAndGoToPage } from '../support/helpers.ts'
 
 describe('Desk (Guichet) feature', () => {
   let login: string
+  let tokenConfirmed: string
+  let tokenTooSoon: string
+  let tokenUsed: string
+  let tokenCanceled: string
+  let tokenReimbursed: string
+  let tokenOther: string
 
   before(() => {
     cy.wrap(Cypress.session.clearAllSavedSessions())
@@ -13,6 +19,12 @@ describe('Desk (Guichet) feature', () => {
       url: 'http://localhost:5001/sandboxes/pro/create_pro_user_with_bookings',
     }).then((response) => {
       login = response.body.user.email
+      tokenConfirmed = response.body.tokenConfirmed
+      tokenTooSoon = response.body.tokenTooSoon
+      tokenUsed = response.body.tokenUsed
+      tokenCanceled = response.body.tokenCanceled
+      tokenReimbursed = response.body.tokenReimbursed
+      tokenOther = response.body.tokenOther
     })
   })
 
@@ -43,9 +55,9 @@ describe('Desk (Guichet) feature', () => {
     })
   })
 
-  it('I should be able to validate a countermark', () => {
-    cy.stepLog({ message: 'I add this countermark "2XTM3W"' })
-    cy.findByLabelText('Contremarque').type('2XTM3W')
+  it('I should be able to validate a valid countermark', () => {
+    cy.stepLog({ message: `I add a valid countermark ${tokenConfirmed}` })
+    cy.findByLabelText('Contremarque').type(tokenConfirmed)
 
     cy.stepLog({ message: 'I validate the countermark' })
     cy.findByText('Coupon vérifié, cliquez sur "Valider" pour enregistrer')
@@ -68,8 +80,8 @@ describe('Desk (Guichet) feature', () => {
   })
 
   it('It should decline an event countermark more than 48h before', () => {
-    cy.stepLog({ message: 'I add this countermark "TOSOON"' })
-    cy.findByLabelText('Contremarque').type('TOSOON')
+    cy.stepLog({ message: `I add this countermark "${tokenTooSoon}"` })
+    cy.findByLabelText('Contremarque').type(tokenTooSoon)
 
     cy.stepLog({ message: 'the countermark is rejected as invalid' })
     const date = format(addDays(new Date(), 2), 'dd/MM/yyyy')
@@ -83,8 +95,8 @@ describe('Desk (Guichet) feature', () => {
   })
 
   it('I should be able to invalidate an already used countermark', () => {
-    cy.stepLog({ message: 'I add this countermark "XUSEDX"' })
-    cy.findByLabelText('Contremarque').type('XUSEDX')
+    cy.stepLog({ message: `I add this countermark "${tokenUsed}"` })
+    cy.findByLabelText('Contremarque').type(tokenUsed)
     cy.findByText(/Cette contremarque a été validée./)
 
     cy.stepLog({ message: 'I invalidate the countermark' })
@@ -96,8 +108,8 @@ describe('Desk (Guichet) feature', () => {
   })
 
   it('I should not be able to validate another pro countermark', () => {
-    cy.stepLog({ message: 'I add this countermark "OTHERX"' })
-    cy.findByLabelText('Contremarque').type('OTHERX')
+    cy.stepLog({ message: `I add this countermark "${tokenOther}"` })
+    cy.findByLabelText('Contremarque').type(tokenOther)
 
     cy.stepLog({ message: 'I cannot validate the countermark' })
     cy.findByText('Valider la contremarque').should('be.disabled')
@@ -107,8 +119,8 @@ describe('Desk (Guichet) feature', () => {
   })
 
   it('I should not be able to validate a cancelled countermark', () => {
-    cy.stepLog({ message: 'I add this countermark "CANCEL"' })
-    cy.findByLabelText('Contremarque').type('CANCEL')
+    cy.stepLog({ message: `I add this countermark "${tokenCanceled}"` })
+    cy.findByLabelText('Contremarque').type(tokenCanceled)
 
     cy.stepLog({ message: 'I validate the countermark' })
     cy.findByText('Valider la contremarque').should('be.disabled')
@@ -116,8 +128,8 @@ describe('Desk (Guichet) feature', () => {
   })
 
   it('I should not be able to validate a reimbursed countermark', () => {
-    cy.stepLog({ message: 'I add this countermark "REIMBU"' })
-    cy.findByLabelText('Contremarque').type('REIMBU')
+    cy.stepLog({ message: `I add this countermark "${tokenReimbursed}"` })
+    cy.findByLabelText('Contremarque').type(tokenReimbursed)
 
     cy.stepLog({ message: 'I validate the countermark' })
     cy.findByText('Valider la contremarque').should('be.disabled')

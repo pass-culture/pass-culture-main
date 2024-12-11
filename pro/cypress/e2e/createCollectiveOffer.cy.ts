@@ -5,7 +5,8 @@ import {
 
 describe('Create collective offers', () => {
   let login: string
-  const offerName = 'Mon offre collective en brouillon'
+  let offerDraft: { "name": string, "venueName": string }
+  const newOfferName = 'Ma nouvelle offre collective créée'
   const venueName = 'Mon Lieu 1'
 
   beforeEach(() => {
@@ -15,6 +16,7 @@ describe('Create collective offers', () => {
       url: 'http://localhost:5001/sandboxes/pro/create_pro_user_with_collective_offers',
     }).then((response) => {
       login = response.body.user.email
+      offerDraft = response.body.offerDraft
     })
     cy.intercept(
       'GET',
@@ -62,7 +64,7 @@ describe('Create collective offers', () => {
     cy.get('#list-formats').find('#option-display-Concert').click()
     cy.findByText('Type d’offre').click()
 
-    cy.findByLabelText('Titre de l’offre *').type(offerName)
+    cy.findByLabelText('Titre de l’offre *').type(newOfferName)
     cy.findByLabelText('Description *').type('Bookable draft offer')
     cy.findByText('Collège - 6e').click()
     cy.findByLabelText('Email *').type('example@passculture.app')
@@ -110,15 +112,15 @@ describe('Create collective offers', () => {
 
     const expectedResults = [
       ['', '', 'Titre', 'Lieu', 'Établissement', 'Statut'],
-      ['', '', offerName, venueName, 'COLLEGE 123', 'brouillon'],
-      [],
+      ['', '', newOfferName, venueName, 'COLLEGE 123', 'brouillon'],
+      ['', '', offerDraft.name, offerDraft.venueName, 'DE LA TOUR', 'brouillon'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
 
     cy.stepLog({ message: 'I want to change my offer to published status' })
 
-    cy.findByRole('link', { name: offerName }).click()
+    cy.findByRole('link', { name: newOfferName }).click()
 
     cy.wait('@educationalOfferers')
 
@@ -130,13 +132,12 @@ describe('Create collective offers', () => {
 
     cy.url().should('contain', '/offres/collectives')
 
-    cy.findByPlaceholderText('Rechercher par nom d’offre').type(offerName)
+    cy.findByPlaceholderText('Rechercher par nom d’offre').type(newOfferName)
     cy.findByText('Rechercher').click()
 
     const expectedNewResults = [
       ['', '', 'Titre', 'Lieu', 'Établissement', 'Statut'],
-      ['', '', offerName, venueName, 'COLLEGE 123', 'publiée'],
-      [],
+      ['', '', newOfferName, venueName, 'COLLEGE 123', 'publiée'],
     ]
 
     expectOffersOrBookingsAreFound(expectedNewResults)
