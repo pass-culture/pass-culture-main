@@ -112,6 +112,7 @@ jobs:
           projectId: pc-pro-${{ inputs.ENV }}
           entryPoint: pro
           channelId: ${{ inputs.CHANNEL }}
+          target: pc-pro-${{ inputs.ENV }}
       - name: "Publish Summary"
         run: |
           {
