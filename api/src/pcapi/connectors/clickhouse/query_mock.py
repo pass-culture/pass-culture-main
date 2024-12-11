@@ -4,10 +4,10 @@ import json
 
 class MockYearlyAggregatedRevenueQueryResult:
     year: int
-    revenue: dict
-    expected_revenue: dict
+    revenue: str
+    expected_revenue: str
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-positional-arguments
         self,
         year: int = 2024,
         individual: Decimal = Decimal("12.12"),
@@ -16,7 +16,7 @@ class MockYearlyAggregatedRevenueQueryResult:
         expected_collective: Decimal = Decimal("13.12"),
         only_collective: bool = False,
         only_individual: bool = False,
-    ) -> object:
+    ):
         self.year = year
         if only_collective:
             self.revenue = json.dumps({"collective": str(collective)})
