@@ -201,6 +201,29 @@ def test_search_address(requests_mock):
 
 
 @override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+def test_search_address_without_postcode(requests_mock):
+    address = "Stephen Atwater Saint Barthelemy"
+    requests_mock.get(
+        "https://api-adresse.data.gouv.fr/search",
+        json=fixtures.SEARCH_ADDRESS_RESPONSE_WITHOUT_POSTCODE,
+    )
+    addresses_info = api_adresse.search_address(address)
+    assert addresses_info == [
+        api_adresse.AddressInfo(
+            id="97701_h9kt3t",
+            label="Rue Stephen Atwater Saint-Barthélemy",
+            postcode="97133",
+            citycode="97701",
+            latitude=17.897144,
+            longitude=-62.851796,
+            score=0.6843390909090907,
+            street="Rue Stephen Atwater",
+            city="Saint-Barthélemy",
+        )
+    ]
+
+
+@override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
 def test_search_csv(requests_mock):
     text = api_adresse.format_payload(fixtures.SEARCH_CSV_HEADERS, fixtures.SEARCH_CSV_RESULTS)
     requests_mock.post("https://api-adresse.data.gouv.fr/search/csv", text=text)
