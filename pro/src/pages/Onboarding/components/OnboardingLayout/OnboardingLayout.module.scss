@@ -1,0 +1,23 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_a11y.scss" as a11y;
+@use "styles/mixins/_size.scss" as size;
+
+.onboarding-layout {
+  min-height: calc(
+    100vh - (size.$action-bar-sticky-height + size.$footer-height)
+  );
+  margin: rem.torem(32px) auto 0 auto;
+  padding: 0 rem.torem(32px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  // Not vertically centered by default
+  justify-content: flex-start;
+
+  &.vertically-centered {
+    justify-content: center;
+  }
+}
