@@ -79,6 +79,7 @@ common_pro_attributes = attributes_models.ProAttributes(
     dms_application_approved=True,
     isVirtual=False,
     isPermanent=True,
+    isOpenToPublic=True,
     has_individual_offers=True,
     has_offers=True,
     has_bookings=True,
