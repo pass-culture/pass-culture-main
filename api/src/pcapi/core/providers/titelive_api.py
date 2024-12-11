@@ -9,7 +9,6 @@ import PIL
 import pydantic.v1 as pydantic
 
 from pcapi import repository
-from pcapi import settings
 from pcapi.connectors import thumb_storage
 from pcapi.connectors import titelive
 from pcapi.connectors.serialization.titelive_serializers import TiteliveWorkType
@@ -217,7 +216,6 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveWorkType]):
                             productId=product.id,
                             lastProvider=self.provider,
                             imageType=image_type,
-                            url=f"{settings.OBJECT_STORAGE_URL}/{settings.THUMBS_FOLDER_NAME}/{image_id}",
                             uuid=image_id,
                         )
                         db.session.add(mediation)
