@@ -22,5 +22,9 @@ export default {
       question: 'Generate storybook file?',
       varName: 'story',
     },
+    {
+      question: 'Will this component be lazy-loaded by react-router-dom?',
+      varName: 'lazy',
+    },
   ],
 }
