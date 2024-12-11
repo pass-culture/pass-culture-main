@@ -527,7 +527,7 @@ def _get_filtered_booking_report(
     event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
-) -> str:
+) -> BaseQuery:
     VenueOffererAddress = aliased(OffererAddress)
     VenueAddress = aliased(Address)
 
