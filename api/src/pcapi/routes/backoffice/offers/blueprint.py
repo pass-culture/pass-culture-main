@@ -511,9 +511,11 @@ def list_offers() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/algolia", methods=["GET"])
+@atomic()
 def list_algolia_offers() -> utils.BackofficeResponse:
     form = forms.GetOfferAlgoliaSearchForm(formdata=utils.get_query_params())
     if not form.validate():
+        mark_transaction_as_invalid()
         return _render_offer_list(
             algolia_form=form,
             code=400,
