@@ -11,7 +11,7 @@ interface <% name %>Props {
 export const <% name %> = ({ className }: <% name %>Props): JSX.Element => {
   return (
     <%# scss.yes %>
-    <div className={cn(styles[`<% name %>`], className)}>
+    <div className={cn(styles[`<%# toKebabCase %><% name %><%/ toKebabCase %>`], className)}>
     <%/ scss.yes %>
     <%# scss.no %>
     <div className={className}>
