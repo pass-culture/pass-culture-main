@@ -1,6 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_size.scss" as size;
-@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .onboarding-offer-container {
   display: flex;
@@ -23,9 +23,9 @@
 }
 
 .onboarding-offer-header-title {
-  @include fonts-design-system.title3;
+  @include fonts.title3;
 }
 
 .onboarding-offer-header-subtitle {
-  @include fonts-design-system.title1;
+  @include fonts.title1;
 }

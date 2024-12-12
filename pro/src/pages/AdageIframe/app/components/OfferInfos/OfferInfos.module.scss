@@ -1,5 +1,5 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
+@use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_size.scss" as size;
 
 .offers-info {
@@ -13,7 +13,7 @@
     padding: 0 rem.torem(20px) rem.torem(20px);
 
     &-title {
-      @include fonts-design-system.title2;
+      @include fonts.title2;
 
       margin: rem.torem(24px) 0 rem.torem(32px) 0;
     }

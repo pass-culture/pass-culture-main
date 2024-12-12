@@ -162,7 +162,7 @@
   }
 
   &-quaternary {
-    @include fonts.caption;
+    @include fonts.body-accent-xs;
 
     margin-top: rem.torem(6px);
     margin-bottom: rem.torem(6px);

@@ -2,7 +2,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_size.scss" as size;
 @use "styles/variables/_z-index.scss" as zIndex;
-@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 
 $connect-as-header-height: rem.torem(52px);
 
@@ -171,7 +170,7 @@ $connect-as-header-height: rem.torem(52px);
   }
 
   &-title {
-    @include fonts-design-system.title1;
+    @include fonts.title1;
   }
 
   &-back-to-nav-link {
