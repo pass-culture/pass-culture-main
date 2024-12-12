@@ -11,7 +11,8 @@
   background-color: var(--color-grey-light);
 
   &-th {
-    @include fonts.caption;
+    @include fonts.body-accent-xs;
+
     @include a11y.visually-hidden;
 
     text-align: left;
