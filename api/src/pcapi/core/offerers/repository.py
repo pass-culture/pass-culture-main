@@ -882,3 +882,25 @@ def get_offerer_address_of_offerer(offerer_id: int, offerer_address_id: int) -> 
         )
         .one_or_none()
     )
+
+
+def get_offerer_headline_offer(offerer_id: int) -> offers_models.Offer | None:
+    try:
+        # FIXME: ogeber: when offers will be able to have several headline offers, and unicity of the headline
+        # offer will be on its active status, change this query and add a filter on active headline offer only
+        offer = (
+            offers_models.Offer.query.join(models.Venue, offers_models.Offer.venueId == models.Venue.id)
+            .join(models.Offerer, models.Venue.managingOffererId == models.Offerer.id)
+            .join(offers_models.HeadlineOffer, offers_models.HeadlineOffer.offerId == offers_models.Offer.id)
+            .options(
+                sqla_orm.contains_eager(offers_models.Offer.headlineOffer),
+                sqla_orm.joinedload(offers_models.Offer.mediations),
+                sqla_orm.joinedload(offers_models.Offer.product).joinedload(offers_models.Product.productMediations),
+            )
+            .filter(models.Offerer.id == offerer_id)
+            .one_or_none()
+        )
+
+    except sqla_orm.exc.MultipleResultsFound:
+        raise exceptions.TooManyHeadlineOffersForOfferer
+    return offer

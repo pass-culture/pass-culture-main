@@ -180,6 +180,7 @@ export type { OfferDomain } from './models/OfferDomain';
 export type { OffererAddressRequestModel } from './models/OffererAddressRequestModel';
 export type { OffererAddressResponseModel } from './models/OffererAddressResponseModel';
 export type { OffererApiKey } from './models/OffererApiKey';
+export type { OffererHeadLineOfferResponseModel } from './models/OffererHeadLineOfferResponseModel';
 export { OffererMemberStatus } from './models/OffererMemberStatus';
 export type { OffererStatsDataModel } from './models/OffererStatsDataModel';
 export type { OffererStatsResponseModel } from './models/OffererStatsResponseModel';

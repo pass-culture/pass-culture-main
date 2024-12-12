@@ -338,3 +338,26 @@ def create_offerer_address(
             )
             offerer_address = api.get_or_create_offerer_address(offerer_id, address.id, body.label)
             return offerers_serialize.OffererAddressResponseModel.from_orm(offerer_address)
+
+
+@private_api.route("/offerers/<int:offerer_id>/headline-offer", methods=["GET"])
+@login_required
+@atomic()
+@spectree_serialize(
+    response_model=offerers_serialize.OffererHeadLineOfferResponseModel,
+    api=blueprint.pro_private_schema,
+    on_success_status=200,
+)
+def get_offerer_headline_offer(
+    offerer_id: int,
+) -> offerers_serialize.OffererHeadLineOfferResponseModel:
+    check_user_has_access_to_offerer(current_user, offerer_id)
+
+    try:
+        offerer_headline_offer = repository.get_offerer_headline_offer(offerer_id)
+    except offerers_exceptions.TooManyHeadlineOffersForOfferer:
+        raise ResourceNotFoundError({"global": "Une entité juridique ne peut avoir qu’une seule offre à la une"})
+
+    if not offerer_headline_offer:
+        raise ResourceNotFoundError()
+    return offerers_serialize.OffererHeadLineOfferResponseModel.from_orm(offerer_headline_offer)
