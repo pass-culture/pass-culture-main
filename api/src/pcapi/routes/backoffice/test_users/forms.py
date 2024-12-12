@@ -20,7 +20,7 @@ class UserGeneratorForm(utils.PCForm):
     id_provider = fields.PCSelectField(
         "Méthode d'identification",
         choices=[
-            (GeneratedIdProvider.DMS.name, "DMS"),
+            (GeneratedIdProvider.DMS.name, "DS"),
             (GeneratedIdProvider.EDUCONNECT.name, "Educonnect"),
             (GeneratedIdProvider.UBBLE.name, "Ubble"),
         ],

@@ -447,7 +447,7 @@
             {{ build_details_tab("entreprise", "Données Entreprise", active_tab == 'entreprise') }}
           {% endif %}
           {% if venue.siret and not venue.managingOfferer.is_caledonian %}
-            {{ build_details_tab("dms-adage", "Dossiers DMS ADAGE", active_tab == 'dms_adage') }}
+            {{ build_details_tab("dms-adage", "Dossiers DS ADAGE", active_tab == 'dms_adage') }}
           {% endif %}
         {% endcall %}
         {% call build_details_tabs_content_wrapper() %}

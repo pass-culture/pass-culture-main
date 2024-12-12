@@ -54,10 +54,10 @@ class GetBankAccountTest(GetEndpointHelper):
         assert f"Humanized ID : {humanize(bank_account.id)} " in response_text
         assert f"IBAN : {bank_account.iban} " in response_text
         assert f"BIC : {bank_account.bic} " in response_text
-        assert "Statut dossier DMS ADAGE :" not in response_text
-        assert "Pas de dossier DMS CB" in response_text
+        assert "Statut dossier DS ADAGE :" not in response_text
+        assert "Pas de dossier DS CB" in response_text
         assert "État du compte bancaire : Accepté" in response_text
-        assert "ACCÉDER AU DOSSIER DMS CB" not in response_text
+        assert "ACCÉDER AU DOSSIER DS CB" not in response_text
 
     def test_get_venue_dms_stats(self, authenticated_client):
         with mock.patch("pcapi.connectors.dms.api.DMSGraphQLClient.get_bank_info_status") as bank_info_mock:
@@ -78,10 +78,10 @@ class GetBankAccountTest(GetEndpointHelper):
                 assert response.status_code == 200
 
         response_text = html_parser.content_as_text(response.data)
-        assert "Statut DMS CB : En construction" in response_text
-        assert "Date de dépôt du dossier DMS CB : 21/09/2022" in response_text
-        assert "Date de validation du dossier DMS CB" not in response_text
-        assert "ACCÉDER AU DOSSIER DMS CB" in response_text
+        assert "Statut DS CB : En construction" in response_text
+        assert "Date de dépôt du dossier DS CB : 21/09/2022" in response_text
+        assert "Date de validation du dossier DS CB" not in response_text
+        assert "ACCÉDER AU DOSSIER DS CB" in response_text
 
     def test_get_venue_dms_stats_for_accepted_file(self, authenticated_client):
         with mock.patch("pcapi.connectors.dms.api.DMSGraphQLClient.get_bank_info_status") as bank_info_mock:
@@ -104,10 +104,10 @@ class GetBankAccountTest(GetEndpointHelper):
                 assert response.status_code == 200
 
         response_text = html_parser.content_as_text(response.data)
-        assert "Statut DMS CB : Accepté" in response_text
-        assert "Date de validation du dossier DMS CB : 24/09/2022" in response_text
-        assert "Date de dépôt du dossier DMS CB" not in response_text
-        assert "ACCÉDER AU DOSSIER DMS CB" in response_text
+        assert "Statut DS CB : Accepté" in response_text
+        assert "Date de validation du dossier DS CB : 24/09/2022" in response_text
+        assert "Date de dépôt du dossier DS CB" not in response_text
+        assert "ACCÉDER AU DOSSIER DS CB" in response_text
 
 
 class GetBankAccountVenuesTest(GetEndpointHelper):
