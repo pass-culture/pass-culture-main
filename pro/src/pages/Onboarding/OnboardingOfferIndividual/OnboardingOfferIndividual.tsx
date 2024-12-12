@@ -38,12 +38,12 @@ export const OnboardingOfferIndividual = (): JSX.Element => {
   return (
     <OnboardingLayout verticallyCentered showFooter={false}>
       <h1 className={styles['offers-title']}>Offre à destination des jeunes</h1>
+      <h2 className={styles['offers-subtitle']}>
+        Comment souhaitez-vous créer votre 1ère offre ?
+      </h2>
 
       <FormLayout>
-        <FormLayout.Section
-          title="Comment souhaitez-vous créer votre 1ère offre ?"
-          className={styles['offers-description']}
-        >
+        <FormLayout.Section className={styles['offers-description']}>
           <FormLayout.Row
             inline
             mdSpaceAfter
@@ -56,6 +56,7 @@ export const OnboardingOfferIndividual = (): JSX.Element => {
               label={`Créer une offre manuellement`}
               onChange={onChangeOfferType}
               value={ONBOARDING_OFFER_PROCEDURE.MANUAL}
+              className={styles['individual-radio-label']}
             />
           </FormLayout.Row>
 
@@ -71,6 +72,7 @@ export const OnboardingOfferIndividual = (): JSX.Element => {
               label={`Créer automatiquement des offres via mon logiciel de gestion des stocks`}
               onChange={onChangeOfferType}
               value={ONBOARDING_OFFER_PROCEDURE.AUTOMATIC}
+              className={styles['individual-radio-label']}
             />
           </FormLayout.Row>
         </FormLayout.Section>
