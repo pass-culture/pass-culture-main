@@ -1639,6 +1639,13 @@ class MarkAsUsedTest:
         event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
         assert event.motive == finance_models.FinanceEventMotive.BOOKING_USED
 
+    def test_mark_as_used_unlocks_achievement(self):
+        booking = bookings_factories.BookingFactory(stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id)
+
+        api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
+
+        assert booking.user.achievements
+
     def test_mark_as_used_with_uncancel(self):
         booking = bookings_factories.CancelledBookingFactory()
 
@@ -1650,6 +1657,13 @@ class MarkAsUsedTest:
         assert not booking.cancellationReason
         event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
         assert event.motive == finance_models.FinanceEventMotive.BOOKING_USED_AFTER_CANCELLATION
+
+    def test_mark_as_used_with_uncancel_unlocks_achievement(self):
+        booking = bookings_factories.CancelledBookingFactory(stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id)
+
+        api.mark_as_used_with_uncancelling(booking, models.BookingValidationAuthorType.BACKOFFICE)
+
+        assert booking.user.achievements
 
     def test_mark_as_used_when_stock_starts_soon(self):
         booking = bookings_factories.BookingFactory(stock__beginningDatetime=datetime.utcnow() + timedelta(days=1))
@@ -1865,6 +1879,16 @@ class AutoMarkAsUsedAfterEventTest:
         assert event.booking == booking
         assert event.valueDate == booking.dateUsed != None
 
+    def test_achievement_unlock_for_individual_booking(self):
+        event_date = datetime.utcnow() - timedelta(days=3)
+        booking = bookings_factories.BookingFactory(
+            stock__beginningDatetime=event_date, stock__offer__subcategoryId=subcategories.FESTIVAL_MUSIQUE.id
+        )
+
+        api.auto_mark_as_used_after_event()
+
+        assert booking.user.achievements
+
     def test_num_queries(self):
         event_date = datetime.utcnow() - timedelta(days=3)
         bookings_factories.BookingFactory(stock__beginningDatetime=event_date)
@@ -1874,6 +1898,7 @@ class AutoMarkAsUsedAfterEventTest:
 
         queries = 1  # select feature flag
         queries += 1  # select individual bookings
+        queries += 1  # select individual booking user achievements
         # fmt: off
         queries += 2 * (
             1  # fetch pricing point

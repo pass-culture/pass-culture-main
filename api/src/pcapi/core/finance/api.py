@@ -201,6 +201,8 @@ def add_event(
         pricingOrderingDate=pricing_ordering_date,
     )
     db.session.add(event)
+    db.session.flush()
+
     return event
 
 

@@ -2,6 +2,7 @@ from datetime import datetime
 
 from sqlalchemy import orm as sqla_orm
 
+from pcapi.core.achievements import models as achievements_models
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import models as booking_models
@@ -10,6 +11,7 @@ from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import models as providers_models
+from pcapi.core.users import models as users_models
 from pcapi.models import api_errors
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
@@ -52,7 +54,12 @@ def _get_base_booking_query() -> sqla_orm.Query:
                 offers_models.Stock.id, offers_models.Stock.beginningDatetime, offers_models.Stock.priceCategoryId
             )
             .contains_eager(offers_models.Stock.offer)
-            .load_only(offers_models.Offer.id, offers_models.Offer.name, offers_models.Offer.extraData)
+            .load_only(
+                offers_models.Offer.id,
+                offers_models.Offer.name,
+                offers_models.Offer.extraData,
+                offers_models.Offer.subcategoryId,
+            )
         )
     )
 
@@ -139,8 +146,12 @@ def get_bookings_by_offer(
     )
 
 
+def _get_booking_by_token_query(token: str) -> sqla_orm.Query:
+    return _get_base_booking_query().filter(booking_models.Booking.token == token.upper())
+
+
 def _get_booking_by_token(token: str) -> booking_models.Booking | None:
-    return _get_base_booking_query().filter(booking_models.Booking.token == token.upper()).one_or_none()
+    return _get_booking_by_token_query(token).one_or_none()
 
 
 @blueprints.public_api.route("/public/bookings/v1/token/<string:token>", methods=["GET"])
@@ -208,7 +219,15 @@ def validate_booking_by_token(token: str) -> None:
 
     Confirm that the booking has been used by the beneficiary.
     """
-    booking = _get_booking_by_token(token)
+    booking = (
+        _get_booking_by_token_query(token)
+        .options(
+            sqla_orm.joinedload(booking_models.Booking.user)
+            .selectinload(users_models.User.achievements)
+            .load_only(achievements_models.Achievement.name)
+        )
+        .one_or_none()
+    )
     if booking is None:
         raise api_errors.ResourceNotFoundError({"global": "This countermark cannot be found"})
 

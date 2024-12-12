@@ -247,11 +247,17 @@ def get_individual_booking_xlsx_download() -> utils.BackofficeResponse:
     )
 
 
+def _get_booking_query_for_validation() -> sa.orm.Query:
+    return bookings_models.Booking.query.options(
+        sa.orm.joinedload(bookings_models.Booking.user).selectinload(users_models.User.achievements)
+    ).options(sa.orm.joinedload(bookings_models.Booking.stock).joinedload(offers_models.Stock.offer))
+
+
 @individual_bookings_blueprint.route("/<int:booking_id>/mark-as-used", methods=["POST"])
 @repository.atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def mark_booking_as_used(booking_id: int) -> utils.BackofficeResponse:
-    booking = bookings_models.Booking.query.filter_by(id=booking_id).one_or_none()
+    booking = _get_booking_query_for_validation().filter_by(id=booking_id).one_or_none()
     if not booking:
         raise NotFound()
     _batch_validate_bookings([booking])
@@ -316,7 +322,7 @@ def batch_validate_individual_bookings() -> utils.BackofficeResponse:
         flash(utils.build_form_error_msg(form), "warning")
         return _redirect_after_individual_booking_action()
 
-    bookings = bookings_models.Booking.query.filter(bookings_models.Booking.id.in_(form.object_ids_list)).all()
+    bookings = _get_booking_query_for_validation().filter(bookings_models.Booking.id.in_(form.object_ids_list)).all()
     _batch_validate_bookings(bookings)
 
     return _redirect_after_individual_booking_action()
