@@ -47,7 +47,7 @@
   }
 
   &-placeholder {
-    @include fonts.placeholder;
+    @include fonts.body-italic;
 
     color: var(--color-grey-dark);
   }

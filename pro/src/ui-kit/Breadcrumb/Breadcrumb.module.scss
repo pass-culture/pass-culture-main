@@ -9,7 +9,7 @@
     flex-wrap: wrap;
 
     &-last {
-      @include fonts.caption;
+      @include fonts.body-accent-xs;
 
       display: inline-flex;
       align-items: center;
@@ -27,7 +27,7 @@
       }
 
       &-link {
-        @include fonts.caption;
+        @include fonts.body-accent-xs;
 
         display: inline-flex;
         align-items: center;

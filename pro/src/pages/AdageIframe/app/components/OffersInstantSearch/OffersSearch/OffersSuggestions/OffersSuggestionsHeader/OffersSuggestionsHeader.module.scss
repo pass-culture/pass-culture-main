@@ -1,4 +1,4 @@
-@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
+@use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
 
 .offers-suggestions-header {
@@ -6,7 +6,7 @@
   border-top: rem.torem(1px) solid var(--color-grey-medium);
 
   &-text {
-    @include fonts-design-system.title3;
+    @include fonts.title3;
   }
 
   &-link {

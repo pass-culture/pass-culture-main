@@ -41,11 +41,11 @@
 }
 
 .title {
-  @include fonts.body-exergue;
+  @include fonts.body-accent;
 }
 
 .accessibility-label {
-  @include fonts.caption;
+  @include fonts.body-accent-xs;
 }
 
 .collapse-button {

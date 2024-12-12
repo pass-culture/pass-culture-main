@@ -7,7 +7,7 @@ $step-label-height: rem.torem(12px);
 $number-size: rem.torem(30px);
 
 .stepper {
-  @include fonts.caption;
+  @include fonts.body-accent-xs;
 
   color: var(--color-grey-semi-dark);
   display: flex;
@@ -36,7 +36,7 @@ $number-size: rem.torem(30px);
       padding-right: rem.torem(8px);
 
       .inner {
-        @include fonts.caption;
+        @include fonts.body-accent-xs;
 
         border: solid 1px var(--color-grey-dark);
         border-radius: 50%;

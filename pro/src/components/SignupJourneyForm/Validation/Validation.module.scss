@@ -1,15 +1,14 @@
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 @use "styles/mixins/_rem.scss" as rem;
 
 .title {
-  @include fonts-design-system.title3;
+  @include fonts.title3;
 
   margin-bottom: 0;
 }
 
 .subtitle {
-  @include fonts-design-system.title4;
+  @include fonts.title4;
 }
 
 .data-displaying {

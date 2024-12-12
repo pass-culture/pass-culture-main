@@ -22,7 +22,7 @@
     padding-bottom: rem.torem(16px);
 
     &-label {
-      @include fonts.caption;
+      @include fonts.body-accent-xs;
 
       margin-left: rem.torem(28px);
       margin-right: rem.torem(28px);

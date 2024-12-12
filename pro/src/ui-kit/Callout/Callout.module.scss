@@ -50,7 +50,7 @@
   }
 
   .icon {
-    height: fonts.$body-line-height;
+    height: var(--typography-body-line-height);
     min-width: rem.torem(20px);
     align-self: start;
     margin-right: rem.torem(16px);
@@ -75,7 +75,7 @@
   }
 
   .title {
-    @include fonts.body-exergue;
+    @include fonts.body-accent;
   }
 }
 

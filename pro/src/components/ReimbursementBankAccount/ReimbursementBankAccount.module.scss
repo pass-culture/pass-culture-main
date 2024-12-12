@@ -1,6 +1,5 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 @use "styles/mixins/_size.scss" as size;
 
 .bank-account {
@@ -34,7 +33,7 @@
   }
 
   &-title {
-    @include fonts-design-system.title4;
+    @include fonts.title4;
 
     margin-bottom: rem.torem(16px);
   }
@@ -55,7 +54,7 @@
   }
 
   &-title {
-    @include fonts.body-exergue;
+    @include fonts.body-accent;
 
     margin-bottom: rem.torem(16px);
     display: inline-flex;
@@ -67,7 +66,7 @@
   }
 
   .issue-text {
-    @include fonts.caption;
+    @include fonts.body-accent-xs;
 
     color: var(--color-error);
     margin-bottom: rem.torem(16px);

@@ -37,7 +37,7 @@
 }
 
 .header-name {
-  @include fonts.caption;
+  @include fonts.body-accent-xs;
 }
 
 .row {
@@ -54,7 +54,7 @@
 }
 
 .data::before {
-  @include fonts.caption;
+  @include fonts.body-accent-xs;
 
   content: attr(data-label) " :";
   text-align: left;
@@ -105,7 +105,7 @@
   }
 
   .header {
-    @include fonts.caption;
+    @include fonts.body-accent-xs;
 
     padding-right: rem.torem(16px);
   }

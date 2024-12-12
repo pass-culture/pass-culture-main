@@ -2,7 +2,7 @@
 @use "styles/mixins/_a11y.scss" as a11y;
 
 .field-layout-character-count {
-  @include fonts.caption;
+  @include fonts.body-accent-xs;
 
   color: var(--color-grey-dark);
 }
