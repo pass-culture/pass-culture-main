@@ -31,7 +31,7 @@
 }
 
 .details-label {
-  @include fonts.caption;
+  @include fonts.body-accent-xs;
 
   margin-bottom: rem.torem(8px);
   display: block;

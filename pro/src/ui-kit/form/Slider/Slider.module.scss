@@ -15,12 +15,12 @@
   margin-bottom: rem.torem(12px);
 
   .input-value {
-    @include fonts.body-exergue;
+    @include fonts.body-accent;
   }
 }
 
 .min-max-container {
-  @include fonts.caption;
+  @include fonts.body-accent-xs;
 
   color: var(--color-grey-dark);
   display: flex;

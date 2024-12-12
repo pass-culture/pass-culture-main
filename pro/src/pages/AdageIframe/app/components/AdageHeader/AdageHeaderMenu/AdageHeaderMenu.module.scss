@@ -76,7 +76,7 @@
 }
 
 .adage-header-nb-hits {
-  @include fonts.body-exergue;
+  @include fonts.body-accent;
 
   padding: 0 rem.torem(8px);
   background-color: var(--color-primary);

@@ -1,5 +1,4 @@
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_size.scss" as size;
 
@@ -26,7 +25,7 @@
 }
 
 .venue-name {
-  @include fonts-design-system.title3;
+  @include fonts.title3;
 
   margin-top: rem.torem(8px);
   margin-bottom: rem.torem(8px);
@@ -56,7 +55,7 @@
 }
 
 .details-title {
-  @include fonts-design-system.title4;
+  @include fonts.title4;
 
   display: inline-block;
   margin-right: rem.torem(8px);

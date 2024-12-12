@@ -22,7 +22,7 @@
   }
 
   &-selected {
-    @include fonts.body-exergue;
+    @include fonts.body-accent;
 
     border: rem.torem(2px) solid var(--color-secondary-light);
     background-color: var(--color-background-secondary);

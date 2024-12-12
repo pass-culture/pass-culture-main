@@ -1,5 +1,4 @@
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 @use "styles/variables/_forms.scss" as forms;
 @use "styles/mixins/_forms.scss" as formsM;
 @use "styles/mixins/_rem.scss" as rem;
@@ -25,7 +24,7 @@
   }
 
   &-small-label &-label {
-    @include fonts.caption;
+    @include fonts.body-accent-xs;
 
     display: block;
     min-height: forms.$input-label-min-height;
@@ -65,7 +64,7 @@
   }
 
   &-input-description {
-    @include fonts-design-system.body-xs;
+    @include fonts.body-xs;
 
     display: block;
     min-height: forms.$input-description-min-height;

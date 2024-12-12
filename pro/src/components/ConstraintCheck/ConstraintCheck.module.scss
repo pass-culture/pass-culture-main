@@ -7,7 +7,7 @@
   align-items: center;
   justify-content: center;
 
-  @include fonts.caption;
+  @include fonts.body-accent-xs;
 
   color: var(--color-grey-dark);
 

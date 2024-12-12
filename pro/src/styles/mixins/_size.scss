@@ -34,7 +34,7 @@ $side-nav-width: rem.torem(268px);
     margin-top: calc((#{$input-min-height} - #{$content-height}) / 2);
   } @else {
     margin-top: calc(
-      #{fonts.$body-line-height} +
+      #{var(--typography-body-line-height)} +
         #{forms.$label-space-before-input} +
         (#{$input-min-height} - #{$content-height}) /
         2
