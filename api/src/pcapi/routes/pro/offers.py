@@ -150,6 +150,7 @@ def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offer
     on_success_status=204,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def delete_stocks(offer_id: int, body: offers_serialize.DeleteStockListBody) -> None:
     try:
         offer = offers_repository.get_offer_by_id(offer_id)
