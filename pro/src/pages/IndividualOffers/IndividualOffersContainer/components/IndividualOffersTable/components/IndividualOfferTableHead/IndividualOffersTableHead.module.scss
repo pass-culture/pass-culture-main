@@ -12,7 +12,6 @@
 
   &-th {
     @include fonts.body-accent-xs;
-
     @include a11y.visually-hidden;
 
     text-align: left;

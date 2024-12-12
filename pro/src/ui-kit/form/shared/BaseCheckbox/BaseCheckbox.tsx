@@ -90,9 +90,9 @@ export const BaseCheckbox = forwardRef(
           <label className={labelClasses} htmlFor={id}>
             {label}
             {description && (
-              <span className={styles['base-checkbox-description']}>
+              <p className={styles['base-checkbox-description']}>
                 {description}
-              </span>
+              </p>
             )}
           </label>
         </span>

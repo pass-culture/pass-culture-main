@@ -2,9 +2,11 @@
 
 $margin-between-steps: rem.torem(32px);
 $margin-between-content-and-time-line: rem.torem(16px);
-$vertical-offset-icon-from-step: rem.torem(2px);
 $icon-size: rem.torem(16px);
 $time-line-width: rem.torem(2px);
+$vertical-offset-icon-from-step: calc(
+  (#{var(--typography-body-line-height)} - $icon-size) / 2
+);
 
 .container {
   display: flex;
