@@ -3,11 +3,12 @@
 @use "styles/mixins/_size.scss" as size;
 
 .offer-date-filter {
+  flex-grow: 1;
   width: rem.torem(173px);
 }
 
 .venue-filter {
-  flex-grow: 1;
+  flex-grow: 2;
   width: rem.torem(397px);
 }
 
