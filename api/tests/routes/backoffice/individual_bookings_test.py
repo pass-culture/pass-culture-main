@@ -809,6 +809,13 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
         assert "Impossible de valider ces réservations" in alert
         assert f"- 1 réservation dont l'offre n'a plus assez de stock disponible ({booking.token})" in alert
 
+    def test_uncancel_and_mark_as_used_unlocks_achievement(self, authenticated_client, bookings):
+        festival_booking = bookings[1]
+
+        response = self.post_to_endpoint(authenticated_client, booking_id=festival_booking.id)
+
+        assert festival_booking.user.achievements
+
 
 class CancelBookingTest(PostEndpointHelper):
     endpoint = "backoffice_web.individual_bookings.mark_booking_as_cancelled"
@@ -1207,6 +1214,13 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
             or f"- 2 réservations déjà remboursées ({another_reimbursed_booking.token}, {already_reimbursed_booking.token})"
             in alerts[1]
         )
+
+    def test_batch_mark_as_used_unlocks_achievement(self, authenticated_client, bookings):
+        festival_booking = bookings[1]
+
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": str(festival_booking.id)})
+
+        assert festival_booking.user.achievements
 
 
 class GetBatchCancelIndividualBookingsFormTest(GetEndpointHelper):

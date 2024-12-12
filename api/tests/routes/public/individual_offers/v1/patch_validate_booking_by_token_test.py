@@ -4,6 +4,7 @@ from dateutil.relativedelta import relativedelta
 import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.categories import subcategories_v2
 from pcapi.core.offers import factories as offers_factories
 from pcapi.utils import date as date_utils
 
@@ -22,6 +23,7 @@ class ValidateBookingByTokenTest(PublicAPIVenueEndpointHelper):
     def setup_base_resource(self, venue=None):
         venue = venue or self.setup_venue()
         offer = offers_factories.ThingOfferFactory(
+            subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
             venue=venue,
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
@@ -38,22 +40,6 @@ class ValidateBookingByTokenTest(PublicAPIVenueEndpointHelper):
         )
         return offer, booking
 
-    def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
-        plain_api_key, _ = self.setup_provider()
-        _, booking = self.setup_base_resource()
-        response = client.with_explicit_token(plain_api_key).patch(self.endpoint_url.format(token=booking.token))
-        assert response.status_code == 404
-
-    def test_should_raise_404_because_venue_provider_is_inactive(self, client: TestClient):
-        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
-        _, booking = self.setup_base_resource(venue=venue_provider.venue)
-        response = client.with_explicit_token(plain_api_key).patch(self.endpoint_url.format(token=booking.token))
-        assert response.status_code == 404
-
-    def test_should_raise_404_because_of_missing_token(self, client):
-        response = client.patch(self.endpoint_url.format(token=""))
-        assert response.status_code == 404
-
     def test_key_has_rights_and_regular_product_offer(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         _, booking = self.setup_base_resource(venue=venue_provider.venue)
@@ -62,6 +48,7 @@ class ValidateBookingByTokenTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 204
         assert booking.is_used_or_reimbursed is True
+        assert booking.user.achievements
 
     def test_key_has_rights_and_regular_event_offer(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -84,6 +71,23 @@ class ValidateBookingByTokenTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 204
         assert booking.is_used_or_reimbursed is True
+        assert booking.user.achievements
+
+    def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
+        plain_api_key, _ = self.setup_provider()
+        _, booking = self.setup_base_resource()
+        response = client.with_explicit_token(plain_api_key).patch(self.endpoint_url.format(token=booking.token))
+        assert response.status_code == 404
+
+    def test_should_raise_404_because_venue_provider_is_inactive(self, client: TestClient):
+        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
+        _, booking = self.setup_base_resource(venue=venue_provider.venue)
+        response = client.with_explicit_token(plain_api_key).patch(self.endpoint_url.format(token=booking.token))
+        assert response.status_code == 404
+
+    def test_should_raise_404_because_of_missing_token(self, client):
+        response = client.patch(self.endpoint_url.format(token=""))
+        assert response.status_code == 404
 
     def test_should_raise_403_when_booking_not_confirmed(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
