@@ -21,7 +21,7 @@ jobs:
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
       - name: "Get secrets"
-        id: 'get-github-token'
+        id: 'secrets'
         uses: 'google-github-actions/get-secretmanager-secrets@v2'
         with:
           secrets: |-
@@ -32,7 +32,7 @@ jobs:
       - uses: actions/checkout@v4.2.1
         with:
           repository: pass-culture/rendered-manifests
-          token: ${{ steps.get-github-token.outputs.API_TOKEN_GITHUB }}
+          token: ${{ steps.secrets.outputs.API_TOKEN_GITHUB }}
           path: ./rendered-manifests
           ref: 'pcapi/pullrequests'
 
