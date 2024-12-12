@@ -27,7 +27,7 @@
     }
 
     .text {
-      @include fonts.caption;
+      @include fonts.body-accent-xs;
 
       flex: 1;
       margin-bottom: rem.torem(-9px);

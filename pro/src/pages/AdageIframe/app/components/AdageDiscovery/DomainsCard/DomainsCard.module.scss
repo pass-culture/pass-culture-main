@@ -31,7 +31,7 @@
   }
 
   &-title {
-    @include fonts.body-exergue;
+    @include fonts.body-accent;
 
     position: relative;
     padding: 0 rem.torem(12px) rem.torem(12px) rem.torem(12px);

@@ -76,7 +76,7 @@
 
     &-autocomplete {
       &-text {
-        @include fonts.caption;
+        @include fonts.body-accent-xs;
 
         color: var(--color-grey-dark);
         display: flex;
@@ -85,7 +85,7 @@
         margin-bottom: rem.torem(12px);
 
         &-clean {
-          @include fonts.caption;
+          @include fonts.body-accent-xs;
 
           margin-left: rem.torem(8px);
           text-decoration: none;
@@ -126,7 +126,7 @@
       }
 
       &-category {
-        @include fonts.body-exergue;
+        @include fonts.body-accent;
 
         color: var(--color-primary);
       }
@@ -142,7 +142,7 @@
 }
 
 .panel-footer {
-  @include fonts.caption;
+  @include fonts.body-accent-xs;
 
   padding: rem.torem(12px) rem.torem(16px);
   display: flex;
@@ -151,7 +151,7 @@
   border-top: rem.torem(1px) solid var(--color-grey-medium);
 
   &-link {
-    @include fonts.caption;
+    @include fonts.body-accent-xs;
 
     margin-left: rem.torem(8px);
   }
