@@ -12,11 +12,11 @@ declare namespace Cypress {
 
     
     /**
-     * This function creates a fake adage token which is set as an environment variable `adageToken`
-     *
-     * @example 
-     * cy.getFakeAdageToken()
-     * const adageToken = Cypress.env('adageToken')
+     * This function creates a fake adage token, and returns it as a string
+     * 
+     * @returns a string of the fake adage token
+     * @example
+     * cy.getFakeAdageToken().then((value) => { adageToken = value })
      * cy.visit(`/adage-iframe/recherche?token=${adageToken}`)
      */
     getFakeAdageToken(): Chainable

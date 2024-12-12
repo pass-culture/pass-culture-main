@@ -65,7 +65,7 @@ Cypress.Commands.add('getFakeAdageToken', () => {
     method: 'GET',
     url: 'http://localhost:5001/adage-iframe/testing/token',
   }).then((response) => {
-    Cypress.env('adageToken', response.body.token)
+    return cy.wrap(response.body.token)
   })
 })
 
