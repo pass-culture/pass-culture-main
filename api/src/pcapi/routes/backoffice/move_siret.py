@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import flash
 from flask import redirect
 from flask import render_template
@@ -7,9 +9,11 @@ from markupsafe import Markup
 from markupsafe import escape
 import sqlalchemy as sa
 
+from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import siret_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.models import db
 from pcapi.models import feature
 from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
@@ -135,6 +139,21 @@ def _render_confirmation_page(
     target_venue: offerers_models.Venue,
     code: int = 200,
 ) -> utils.BackofficeResponse:
+    active_custom_reimbursement_rule_exists = db.session.query(
+        finance_models.CustomReimbursementRule.query.filter(
+            finance_models.CustomReimbursementRule.venueId == source_venue.id,
+            sa.or_(
+                sa.func.upper(finance_models.CustomReimbursementRule.timespan).is_(None),
+                sa.func.upper(finance_models.CustomReimbursementRule.timespan) >= datetime.utcnow(),
+            ),
+        ).exists()
+    ).scalar()
+    if active_custom_reimbursement_rule_exists:
+        flash(
+            "Ce partenaire culturel a au moins un tarif dérogatoire qui se termine dans le futur. Si vous validez l'action il sera clôturé",
+            "info",
+        )
+
     return (
         render_template(
             "pro/move_siret_confirmation.html",

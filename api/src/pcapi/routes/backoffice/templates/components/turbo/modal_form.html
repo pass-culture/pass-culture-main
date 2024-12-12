@@ -21,6 +21,10 @@
         <div class="alert alert-warning px-4"
              role="alert">{{ alert }}</div>
       {% endif %}
+      {% if info %}
+        <div class="alert alert-info px-4"
+             role="alert">{{ info }}</div>
+      {% endif %}
       {# Be careful: when information is passed with dynamic data, it must use Markup to avoid risk of XSS vulnerability #}
       {% if information %}<div class="my-1">{{ information | safe }}</div>{% endif %}
       {% if additional_data %}
