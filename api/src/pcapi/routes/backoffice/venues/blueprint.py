@@ -1219,7 +1219,10 @@ def _load_venue_for_removing_siret(venue_id: int) -> offerers_models.Venue:
 
 
 def _render_remove_siret_content(
-    venue: offerers_models.Venue, form: forms.RemoveSiretForm | None = None, error: str | None = None
+    venue: offerers_models.Venue,
+    form: forms.RemoveSiretForm | None = None,
+    error: str | None = None,
+    info: str | None = None,
 ) -> utils.BackofficeResponse:
     kwargs = {}
     if form:
@@ -1245,6 +1248,19 @@ def _render_remove_siret_content(
             "CA de l'année": filters.format_amount(siret_api.get_yearly_revenue(venue.id)),
         }
     )
+
+    active_custom_reimbursement_rule_exists = db.session.query(
+        finance_models.CustomReimbursementRule.query.filter(
+            finance_models.CustomReimbursementRule.venueId == venue.id,
+            sa.or_(
+                sa.func.upper(finance_models.CustomReimbursementRule.timespan).is_(None),
+                sa.func.upper(finance_models.CustomReimbursementRule.timespan) >= datetime.utcnow(),
+            ),
+        ).exists()
+    ).scalar()
+    if active_custom_reimbursement_rule_exists:
+        info = "Ce partenaire culturel a au moins un tarif dérogatoire qui se termine dans le futur. Si vous validez l'action il sera clôturé"
+
     return (
         render_template(
             "components/turbo/modal_form.html",
@@ -1252,6 +1268,7 @@ def _render_remove_siret_content(
             title=REMOVE_SIRET_TITLE,
             additional_data=additional_data.items(),
             alert=error,
+            info=info,
             **kwargs,
         ),
         400 if error or (form and form.errors) else 200,

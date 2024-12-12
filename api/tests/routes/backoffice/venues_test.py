@@ -16,6 +16,7 @@ from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import factories as finance_factories
+from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
@@ -2994,6 +2995,27 @@ class GetRemoveSiretFormTest(GetEndpointHelper):
         content = html_parser.content_as_text(response.data)
         assert "CA de l'année : 10 800,00 €" in content
 
+    @pytest.mark.parametrize(
+        "start_date, end_date",
+        [
+            (datetime.utcnow() - timedelta(days=10), None),
+            (datetime.utcnow() - timedelta(days=10), datetime.utcnow() + timedelta(days=10)),
+            (datetime.utcnow() + timedelta(days=10), None),
+        ],
+    )
+    def test_venue_custom_reimbursement_rule(self, authenticated_client, start_date, end_date):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        finance_factories.CustomReimbursementRuleFactory(venue=venue, timespan=(start_date, end_date))
+
+        response = authenticated_client.get(url_for(self.endpoint, venue_id=venue.id))
+
+        assert response.status_code == 200
+        assert (
+            "Ce partenaire culturel a au moins un tarif dérogatoire qui se termine dans le futur. Si vous validez l'action il sera clôturé"
+            == html_parser.extract_alert(response.data)
+        )
+
 
 class RemoveSiretTest(PostEndpointHelper):
     endpoint = "backoffice_web.venue.remove_siret"
@@ -3044,6 +3066,40 @@ class RemoveSiretTest(PostEndpointHelper):
         assert other_action.extraData["modified_info"] == {
             "pricingPointSiret": {"old_info": old_siret, "new_info": None},
         }
+
+    @pytest.mark.parametrize(
+        "start_date, end_date, update",
+        [
+            (datetime.utcnow() - timedelta(days=10), None, True),
+            (datetime.utcnow() - timedelta(days=10), datetime.utcnow() + timedelta(days=10), True),
+            (datetime.utcnow() + timedelta(days=10), None, False),
+        ],
+    )
+    def test_venue_with_custom_reimbursement_rule(self, authenticated_client, start_date, end_date, update):
+        venue = offerers_factories.VenueFactory()
+        target_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        finance_factories.CustomReimbursementRuleFactory(
+            venue=venue,
+            timespan=(start_date, end_date),
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue.id,
+            form={
+                "comment": "test",
+                "override_revenue_check": False,
+                "new_pricing_point": target_venue.id,
+            },
+        )
+
+        assert response.status_code == 303
+        rules = finance_models.CustomReimbursementRule.query.all()
+        assert bool(rules) == update
+        if update:
+            assert len(rules) == 1
+            assert rules[0].timespan.upper != end_date
+            assert rules[0].timespan.upper < datetime.utcnow() + timedelta(days=1)
 
     def test_venue_without_siret(self, authenticated_client):
         venue = offerers_factories.VenueWithoutSiretFactory()
