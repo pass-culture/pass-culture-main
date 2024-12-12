@@ -15,20 +15,12 @@ $radio-size: rem.torem(16px);
   // reserve space for border
   padding: $border-size-selected;
 
-  &-radio-on,
-  &-radio-off {
-    fill: var(--color-white);
+  &-radio-icon {
     position: absolute;
     top: rem.torem(16px);
     left: rem.torem(16px);
     width: $radio-size;
     height: $radio-size;
-  }
-
-  &-radio-on {
-    color: var(--color-secondary-light);
-    top: calc(rem.torem(16px) - $border-size-selected);
-    right: calc(rem.torem(16px) - $border-size-selected);
   }
 
   &-icon {
@@ -121,12 +113,6 @@ $radio-size: rem.torem(16px);
   .button-text {
     flex-grow: 1;
     margin-left: calc(rem.torem(12px) + $radio-size);
-  }
-
-  .button-radio-on,
-  .button-radio-off {
-    top: 50%;
-    transform: translateY(-50%);
   }
 }
 
