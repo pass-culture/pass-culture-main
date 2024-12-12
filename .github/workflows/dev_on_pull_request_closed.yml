@@ -2,8 +2,8 @@ name: "1 [on_pull_request] Delete PR deployment"
 
 on:
   pull_request:
-    types:
-      - closed
+    #    types:
+    #  - closed
 
 jobs:
   delete-pullrequest-deployment:
@@ -20,19 +20,19 @@ jobs:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-      # Get github api token
-      - name: "Get secrets (github)"
-        id: 'get-github-token'
+      - name: "Get secrets"
+        id: 'secrets'
         uses: 'google-github-actions/get-secretmanager-secrets@v2'
         with:
           secrets: |-
             API_TOKEN_GITHUB:passculture-metier-ehp/passculture-main-sa-access-token
+            FIREBASE_SERVICE_ACCOUNT_TESTING:passculture-metier-ehp/pc_pro_testing_firebase_json
 
       # Checkout rendered-manifests repository
       - uses: actions/checkout@v4.2.1
         with:
           repository: pass-culture/rendered-manifests
-          token: ${{ steps.get-github-token.outputs.API_TOKEN_GITHUB }}
+          token: ${{ steps.secrets.outputs.API_TOKEN_GITHUB }}
           path: ./rendered-manifests
           ref: 'pcapi/pullrequests'
 
@@ -68,3 +68,11 @@ jobs:
           # Check for PR namespace and delete it
           kubectl get ns pcapi-pr-${{ github.event.pull_request.number }}
           [[ $? -eq 0 ]] && kubectl delete ns pcapi-pr-${{ github.event.pull_request.number }} || echo "namespace pcapi-pr-${{ github.event.pull_request.number }} does not exist"
+
+      # Delete pro firebase deployment
+      - uses: w9jds/firebase-action@v12.4.0
+        with:
+          args: hosting:channel:delete ${{ github.head_ref }} --force
+        env:
+          GCP_SA_KEY: ${{ steps.secrets.outputs.FIREBASE_SERVICE_ACCOUNT_TESTING }}
+          PROJECT_ID: pc-pro-testing
