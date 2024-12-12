@@ -415,3 +415,12 @@ class OffererAddressResponseModel(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class OffererHeadLineOfferResponseModel(BaseModel):
+    id: int
+    name: str
+    image: offers_models.OfferImage | None
+
+    class Config:
+        orm_mode = True
