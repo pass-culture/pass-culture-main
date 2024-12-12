@@ -6,6 +6,8 @@ from pcapi.models.api_errors import ApiErrors
 
 if typing.TYPE_CHECKING:
     from pcapi.core.educational.models import CollectiveBookingStatus
+    from pcapi.core.educational.models import CollectiveOfferAllowedAction
+    from pcapi.core.educational.models import CollectiveOfferTemplateAllowedAction
 
 
 class EducationalInstitutionUnknown(ClientError):
@@ -137,6 +139,18 @@ class EducationalRedcatorCannotBeLinked(Exception):
 
 class CollectiveOfferNotEditable(Exception):
     pass
+
+
+class CollectiveOfferForbiddenAction(Exception):
+    def __init__(self, action: "CollectiveOfferAllowedAction") -> None:
+        self.action = action
+        super().__init__()
+
+
+class CollectiveOfferTemplateForbiddenAction(Exception):
+    def __init__(self, action: "CollectiveOfferTemplateAllowedAction") -> None:
+        self.action = action
+        super().__init__()
 
 
 class CollectiveOfferForbiddenFields(Exception):

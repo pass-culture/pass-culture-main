@@ -390,9 +390,23 @@ class ArchivedCollectiveOfferFactory(CollectiveOfferBaseFactory):
 class RejectedCollectiveOfferFactory(CollectiveOfferBaseFactory):
     validation = OfferValidationStatus.REJECTED
 
+    @factory.post_generation
+    def create_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
+        # a rejected offer has a stock because it completed the creation process
+        CollectiveStockFactory(
+            beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=10), collectiveOffer=self
+        )
+
 
 class PendingCollectiveOfferFactory(CollectiveOfferBaseFactory):
     validation = OfferValidationStatus.PENDING
+
+    @factory.post_generation
+    def create_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
+        # a pending offer has a stock because it completed the creation process
+        CollectiveStockFactory(
+            beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=10), collectiveOffer=self
+        )
 
 
 class DraftCollectiveOfferFactory(CollectiveOfferBaseFactory):
@@ -477,10 +491,18 @@ class BookedCollectiveOfferFactory(CollectiveOfferBaseFactory):
         ConfirmedCollectiveBookingFactory(collectiveStock=stock)
 
 
-class EndedCollectiveOfferFactory(CollectiveOfferBaseFactory):
+class EndedNotUsedCollectiveOfferFactory(CollectiveOfferBaseFactory):
     @factory.post_generation
     def create_ended_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
         yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        stock = CollectiveStockFactory(beginningDatetime=yesterday, collectiveOffer=self)
+        ConfirmedCollectiveBookingFactory(collectiveStock=stock)
+
+
+class EndedCollectiveOfferFactory(CollectiveOfferBaseFactory):
+    @factory.post_generation
+    def create_ended_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
+        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=3)
         stock = CollectiveStockFactory(beginningDatetime=yesterday, collectiveOffer=self)
         UsedCollectiveBookingFactory(collectiveStock=stock)
 

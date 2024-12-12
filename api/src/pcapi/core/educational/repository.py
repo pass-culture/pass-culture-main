@@ -1087,12 +1087,19 @@ def get_collective_offer_templates_by_ids_for_adage(offer_ids: typing.Collection
 
 def get_query_for_collective_offers_by_ids_for_user(user: User, ids: typing.Iterable[int]) -> BaseQuery:
     query = educational_models.CollectiveOffer.query
+
     if not user.has_admin_role:
         query = query.join(offerers_models.Venue, educational_models.CollectiveOffer.venue)
         query = query.join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
         query = query.join(offerers_models.UserOfferer, offerers_models.Offerer.UserOfferers)
         query = query.filter(offerers_models.UserOfferer.userId == user.id, offerers_models.UserOfferer.isValidated)
+
     query = query.filter(educational_models.CollectiveOffer.id.in_(ids))
+    query = query.options(
+        sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
+            educational_models.CollectiveStock.collectiveBookings
+        )
+    )
     return query
 
 

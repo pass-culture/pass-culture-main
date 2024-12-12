@@ -368,10 +368,15 @@ def update_collective_offer_educational_institution(
     offer_id: int, educational_institution_id: int | None, teacher_email: str | None
 ) -> educational_models.CollectiveOffer:
     offer = educational_repository.get_collective_offer_by_id(offer_id)
+
     if educational_institution_id is not None:
         validation.check_institution_id_exists(educational_institution_id)
 
-    if offer.collectiveStock and not offer.collectiveStock.isEditable:
+    if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+        validation.check_collective_offer_action_is_allowed(
+            offer, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION
+        )
+    elif offer.collectiveStock and not offer.collectiveStock.isEditable:
         raise exceptions.CollectiveOfferNotEditable()
 
     offer.institutionId = educational_institution_id
@@ -652,8 +657,13 @@ def _get_expired_collective_offer_template_ids(
 def duplicate_offer_and_stock(
     original_offer: educational_models.CollectiveOffer,
 ) -> educational_models.CollectiveOffer:
-    if original_offer.validation == offer_mixin.OfferValidationStatus.DRAFT:
+    if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+        validation.check_collective_offer_action_is_allowed(
+            original_offer, educational_models.CollectiveOfferAllowedAction.CAN_DUPLICATE
+        )
+    elif original_offer.validation == offer_mixin.OfferValidationStatus.DRAFT:
         raise exceptions.ValidationFailedOnCollectiveOffer()
+
     offerer = original_offer.venue.managingOfferer
     if offerer.validationStatus != validation_status_mixin.ValidationStatus.VALIDATED:
         raise exceptions.OffererNotAllowedToDuplicate()
@@ -686,16 +696,18 @@ def duplicate_offer_and_stock(
         nationalProgramId=original_offer.nationalProgramId,
         formats=original_offer.formats,
     )
-    educational_models.CollectiveStock(
-        beginningDatetime=original_offer.collectiveStock.beginningDatetime,
-        startDatetime=original_offer.collectiveStock.startDatetime,
-        endDatetime=original_offer.collectiveStock.endDatetime,
-        collectiveOffer=offer,
-        price=original_offer.collectiveStock.price,
-        bookingLimitDatetime=original_offer.collectiveStock.bookingLimitDatetime,
-        numberOfTickets=original_offer.collectiveStock.numberOfTickets,
-        priceDetail=original_offer.collectiveStock.priceDetail,
-    )
+
+    if original_offer.collectiveStock is not None:
+        educational_models.CollectiveStock(
+            beginningDatetime=original_offer.collectiveStock.beginningDatetime,
+            startDatetime=original_offer.collectiveStock.startDatetime,
+            endDatetime=original_offer.collectiveStock.endDatetime,
+            collectiveOffer=offer,
+            price=original_offer.collectiveStock.price,
+            bookingLimitDatetime=original_offer.collectiveStock.bookingLimitDatetime,
+            numberOfTickets=original_offer.collectiveStock.numberOfTickets,
+            priceDetail=original_offer.collectiveStock.priceDetail,
+        )
 
     db.session.add(offer)
     db.session.commit()
