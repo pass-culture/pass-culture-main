@@ -18,6 +18,7 @@ import pcapi.core.educational.api.national_program as np_api
 from pcapi.core.finance import repository as finance_repository
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.repository import find_venue_by_id
+from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
 from pcapi.core.offers import repository
@@ -27,7 +28,6 @@ from pcapi.domain import show_types
 from pcapi.models import api_errors
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationStatus
-from pcapi.routes.native.v1.serialization.offerers import VenueTypeCode
 from pcapi.routes.serialization import stock_serialize as serialization
 from pcapi.utils import date
 
