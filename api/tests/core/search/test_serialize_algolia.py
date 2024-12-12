@@ -11,6 +11,7 @@ from pcapi.core.educational.models import StudentLevels
 import pcapi.core.geography.factories as geography_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
+from pcapi.core.offerers.schemas import VenueTypeCode
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 from pcapi.core.providers.constants import BookFormat
@@ -18,7 +19,6 @@ from pcapi.core.search.backends import algolia
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.routes.adage_iframe.serialization.offers import OfferAddressType
-from pcapi.routes.native.v1.serialization.offerers import VenueTypeCode
 from pcapi.utils.human_ids import humanize
 
 
