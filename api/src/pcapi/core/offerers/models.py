@@ -50,6 +50,8 @@ from pcapi.connectors.big_query.queries.offerer_stats import TopOffersData
 from pcapi.core.educational import models as educational_models
 import pcapi.core.finance.models as finance_models
 from pcapi.core.geography import models as geography_models
+from pcapi.core.offerers.schemas import BannerMetaModel
+from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
@@ -60,8 +62,6 @@ from pcapi.models.has_address_mixin import HasAddressMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.validation_status_mixin import ValidationStatusMixin
-from pcapi.routes.native.v1.serialization.offerers import BannerMetaModel
-from pcapi.routes.native.v1.serialization.offerers import VenueTypeCode
 from pcapi.utils import crypto
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import siren as siren_utils
