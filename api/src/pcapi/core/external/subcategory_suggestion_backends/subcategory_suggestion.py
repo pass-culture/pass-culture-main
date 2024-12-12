@@ -3,6 +3,7 @@ A client for the subcategory suggestion API.
 Documentation of the API: https://compliance.passculture.team/latest/docs#
 """
 
+from json import JSONDecodeError
 import logging
 
 from pcapi import settings
@@ -43,9 +44,20 @@ class SubcategorySuggestionBackend(BaseBackend):
         }
         response = requests.post(url, headers=headers, json=data, timeout=SUBCATEGORY_SUGGESTION_TIMEOUT_SECONDS)
         if response.status_code in {401, 403}:
-            logger.exception(
+            # FIXME (ogeber, 2024-12-12) this is to investigate the source of 403/401 errors from compliance,
+            # once the issue has been found, we can remove this complex log
+            try:
+                response_data = response.json()
+            except JSONDecodeError:
+                response_data = response.text
+
+            logger.error(
                 "Connection to Compliance API for Subcategory Suggestion was refused",
-                extra={"status_code": response.status_code, "response": response.json()},
+                extra={
+                    "status_code": response.status_code,
+                    "response": response_data,
+                    "headers": response.headers,
+                },
             )
             # FIXME (ogeber, 2024-12-02) once the 403 issues has been resolved on data side, make
             # is_retryable False
