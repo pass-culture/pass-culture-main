@@ -26,9 +26,6 @@
 
 .venue-name {
   @include fonts.title3;
-
-  margin-top: rem.torem(8px);
-  margin-bottom: rem.torem(8px);
 }
 
 .venue-address {
