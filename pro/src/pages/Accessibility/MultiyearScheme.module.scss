@@ -5,6 +5,10 @@
   @include fonts.title2;
 }
 
+.heading3 {
+  @include fonts.title3;
+}
+
 .heading2,
 .heading3,
 .paragraph,
