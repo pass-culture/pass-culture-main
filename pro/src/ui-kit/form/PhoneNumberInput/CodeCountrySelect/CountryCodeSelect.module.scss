@@ -50,7 +50,7 @@ $text-padding-left: calc(
 
 .select-input {
   @include formsM.input-theme;
-  @include fonts.body-exergue;
+  @include fonts.body-accent;
 
   padding-left: $text-padding-left;
   padding-right: rem.torem(8px);
@@ -90,7 +90,7 @@ $text-padding-left: calc(
   }
 
   &-placeholder {
-    @include fonts.placeholder;
+    @include fonts.body-italic;
 
     color: var(--color-grey-dark);
   }
