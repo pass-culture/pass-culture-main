@@ -146,3 +146,17 @@ def check_if_offer_not_used_or_reimbursed(offer: models.CollectiveOffer) -> None
                 or booking.status is models.CollectiveBookingStatus.REIMBURSED
             ):
                 raise offers_exceptions.OfferUsedOrReimbursedCantBeEdit()
+
+
+def check_collective_offer_action_is_allowed(
+    offer: models.CollectiveOffer, action: models.CollectiveOfferAllowedAction
+) -> None:
+    if action not in offer.allowedActions:
+        raise exceptions.CollectiveOfferForbiddenAction(action=action)
+
+
+def check_collective_offer_template_action_is_allowed(
+    offer: models.CollectiveOfferTemplate, action: models.CollectiveOfferTemplateAllowedAction
+) -> None:
+    if action not in offer.allowedActions:
+        raise exceptions.CollectiveOfferTemplateForbiddenAction(action=action)

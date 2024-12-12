@@ -16,6 +16,7 @@ from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation as offers_validation
 from pcapi.models import db
+from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
@@ -406,10 +407,20 @@ def patch_collective_offers_archive(
 ) -> None:
     collective_query = educational_api_offer.get_query_for_collective_offers_by_ids_for_user(current_user, body.ids)
 
-    if educational_api_offer.query_has_any_archived(collective_query):
-        raise ApiErrors({"global": ["One of the offers is already archived"]}, status_code=422)
+    if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+        try:
+            offers_api.archive_collective_offers(offers=collective_query.all(), date_archived=datetime.utcnow())
+        except educational_exceptions.CollectiveOfferForbiddenAction:
+            raise ApiErrors({"global": ["Cette action n'est pas autorisée sur cette offre"]}, status_code=403)
 
-    offers_api.batch_update_collective_offers(collective_query, {"isActive": False, "dateArchived": datetime.utcnow()})
+        db.session.commit()
+    else:
+        if educational_api_offer.query_has_any_archived(collective_query):
+            raise ApiErrors({"global": ["One of the offers is already archived"]}, status_code=422)
+
+        offers_api.batch_update_collective_offers(
+            collective_query, {"isActive": False, "dateArchived": datetime.utcnow()}
+        )
 
 
 @private_api.route("/collective/offers-template/active-status", methods=["PATCH"])
@@ -479,6 +490,8 @@ def patch_collective_offers_educational_institution(
         raise ApiErrors({"educationalInstitution": ["l'institution n'est pas active"]}, status_code=403)
     except educational_exceptions.CollectiveOfferNotEditable:
         raise ApiErrors({"offer": ["L'offre n'est plus modifiable"]}, status_code=403)
+    except educational_exceptions.CollectiveOfferForbiddenAction:
+        raise ApiErrors({"offer": ["Cette action n'est pas autorisée sur cette offre"]}, status_code=403)
     except educational_exceptions.EducationalRedactorNotFound:
         raise ApiErrors({"teacherEmail": ["L'enseignant n'à pas été trouvé dans cet établissement."]}, status_code=404)
     except educational_exceptions.EducationalRedcatorCannotBeLinked:
@@ -821,6 +834,8 @@ def duplicate_collective_offer(
         offer = educational_api_offer.duplicate_offer_and_stock(original_offer=original_offer)
     except educational_exceptions.ValidationFailedOnCollectiveOffer:
         raise ApiErrors({"validation": ["l'offre ne passe pas la validation"]}, status_code=403)
+    except educational_exceptions.CollectiveOfferForbiddenAction:
+        raise ApiErrors({"validation": ["Cette action n'est pas autorisée sur cette offre"]}, status_code=403)
     except educational_exceptions.OffererNotAllowedToDuplicate:
         raise ApiErrors({"offerer": ["la structure n'est pas autorisée à dupliquer l'offre"]}, status_code=403)
     except educational_exceptions.CantGetImageFromUrl:

@@ -612,6 +612,18 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
                 )
 
 
+def archive_collective_offers(
+    offers: list[educational_models.CollectiveOffer], date_archived: datetime.datetime
+) -> None:
+    for offer in offers:
+        educational_validation.check_collective_offer_action_is_allowed(
+            offer, educational_models.CollectiveOfferAllowedAction.CAN_ARCHIVE
+        )
+
+        offer.isActive = False
+        offer.dateArchived = date_archived
+
+
 def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> None:
     allowed_validation_status = {models.OfferValidationStatus.APPROVED}
     if "dateArchived" in update_fields:

@@ -6,11 +6,12 @@ import pytest
 
 from pcapi import settings
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.exceptions import CantGetImageFromUrl
-import pcapi.core.educational.factories as educational_factories
-import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.core.testing import override_features
 from pcapi.core.users import factories as user_factories
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
@@ -22,6 +23,13 @@ import tests
 
 IMAGES_DIR = Path(tests.__path__[0]) / "files"
 UPLOAD_FOLDER = settings.LOCAL_STORAGE_DIR / educational_models.CollectiveOffer.FOLDER
+
+STATUSES_NOT_ALLOWING_DUPLIATE = (educational_models.CollectiveOfferDisplayedStatus.DRAFT,)
+
+STATUSES_ALLOWING_DUPLIATE = tuple(
+    set(educational_models.CollectiveOfferDisplayedStatus)
+    - {*STATUSES_NOT_ALLOWING_DUPLIATE, educational_models.CollectiveOfferDisplayedStatus.INACTIVE}
+)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -208,6 +216,46 @@ class Returns200Test:
 
         assert response.status_code == 403
         assert response.json == {"validation": ["l'offre ne passe pas la validation"]}
+
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.parametrize("status", STATUSES_ALLOWING_DUPLIATE)
+    def test_duplicate_allowed_action(self, client, status):
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offer = educational_factories.create_collective_offer_by_status(status=status, venue=venue)
+
+        response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer.id}/duplicate")
+
+        assert response.status_code == 201
+        duplicate = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        assert duplicate.name == offer.name
+
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    def test_duplicate_ended(self, client):
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offer = educational_factories.EndedNotUsedCollectiveOfferFactory(venue=venue)
+
+        response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer.id}/duplicate")
+
+        assert response.status_code == 201
+        duplicate = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        assert duplicate.name == offer.name
+
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.parametrize("status", STATUSES_NOT_ALLOWING_DUPLIATE)
+    def test_duplicate_unallowed_action(self, client, status):
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offer = educational_factories.create_collective_offer_by_status(status=status, venue=venue)
+
+        response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer.id}/duplicate")
+
+        assert response.status_code == 403
+        assert response.json == {"validation": ["Cette action n'est pas autorisée sur cette offre"]}
 
     def test_duplicate_collective_offer_offerer_not_validated(self, client):
         # Given
