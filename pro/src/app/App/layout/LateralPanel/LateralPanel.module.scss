@@ -37,7 +37,7 @@
   &-nav {
     padding: 0 rem.torem(16px);
     height: rem.torem(50px);
-    box-shadow: 0 3px 4px 0 rgb(103 104 107 / 10%);
+    box-shadow: 0 3px 4px 0 var(--color-medium-shadow);
     display: flex;
     justify-content: space-between;
     align-items: center;
