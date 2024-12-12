@@ -122,6 +122,7 @@ jobs:
         uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.5.0
         with:
           app_name: pcapi-${{ inputs.environment }}
+          sync_timeout: 900
       - name: "Play post-migrations"
         uses: pass-culture/common-workflows/actions/pcapi-migration@pcapi-migration/v0.2.2
         with:
