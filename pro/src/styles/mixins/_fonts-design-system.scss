@@ -4,11 +4,10 @@
   line-height: var(--typography-body-line-height);
 }
 
-@mixin body-semi-bold() {
-  font-family: var(--typography-body-semi-bold-font-family), system-ui,
-    sans-serif;
-  font-size: var(--typography-body-semi-bold-font-size);
-  line-height: var(--typography-body-semi-bold-line-height);
+@mixin body-accent() {
+  font-family: var(--typography-body-accent-font-family), system-ui, sans-serif;
+  font-size: var(--typography-body-accent-font-size);
+  line-height: var(--typography-body-accent-line-height);
 }
 
 @mixin body-italic() {
@@ -17,11 +16,11 @@
   line-height: var(--typography-body-italic-line-height);
 }
 
-@mixin body-italic-semi-bold() {
-  font-family: var(--typography-body-italic-semi-bold-font-family), system-ui,
+@mixin body-italic-accent() {
+  font-family: var(--typography-body-italic-accent-font-family), system-ui,
     sans-serif;
-  font-size: var(--typography-body-italic-semi-bold-font-size);
-  line-height: var(--typography-body-italic-semi-bold-line-height);
+  font-size: var(--typography-body-italic-accent-font-size);
+  line-height: var(--typography-body-italic-accent-line-height);
 }
 
 @mixin body-s() {
@@ -30,11 +29,11 @@
   line-height: var(--typography-body-s-line-height);
 }
 
-@mixin body-semi-bold-s() {
-  font-family: var(--typography-body-semi-bold-s-font-family), system-ui,
+@mixin body-accent-s() {
+  font-family: var(--typography-body-accent-s-font-family), system-ui,
     sans-serif;
-  font-size: var(--typography-body-semi-bold-s-font-size);
-  line-height: var(--typography-body-semi-bold-s-line-height);
+  font-size: var(--typography-body-accent-s-font-size);
+  line-height: var(--typography-body-accent-s-line-height);
 }
 
 @mixin body-xs() {
@@ -43,11 +42,11 @@
   line-height: var(--typography-body-xs-line-height);
 }
 
-@mixin body-semi-bold-xs() {
-  font-family: var(--typography-body-semi-bold-xs-font-family), system-ui,
+@mixin body-accent-xs() {
+  font-family: var(--typography-body-accent-xs-font-family), system-ui,
     sans-serif;
-  font-size: var(--typography-body-semi-bold-xs-font-size);
-  line-height: var(--typography-body-semi-bold-xs-line-height);
+  font-size: var(--typography-body-accent-xs-font-size);
+  line-height: var(--typography-body-accent-xs-line-height);
 }
 
 @mixin button() {
