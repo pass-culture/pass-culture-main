@@ -124,11 +124,6 @@
                   </p>
                 {% endif %}
                 {% if extra_data.genres %}<span class="fw-bold">Genres :</span> {{ extra_data.genres | format_string_list }}{% endif %}
-                {% if offer.withdrawalDetails %}
-                  <p class="mb-1">
-                    <span class="fw-bold">Modalités de retrait :</span> {{ offer.withdrawalDetails | nl2br }}
-                  </p>
-                {% endif %}
               </div>
             </div>
             <div class="col-4">
@@ -311,7 +306,7 @@
               <div class="d-flex justify-content-between">
                 <div class="p-2 flex-shrink-1">
                   {% if offer.idAtProvider or extra_data.ean %}
-                    <h3>Informations techniques</h3>
+                    <h3 class="mt-4">Informations techniques</h3>
                     <div class="fs-6">
                       {% if offer.idAtProvider %}
                         <p class="mb-1">
@@ -325,7 +320,7 @@
                       {% endif %}
                     </div>
                   {% endif %}
-                  <h3>Informations artistiques</h3>
+                  <h3 class="mt-4">Informations artistiques</h3>
                   <div class="fs-6">
                     {% if offer.extraData.author %}
                       <p class="mb-1">
@@ -356,7 +351,13 @@
                       <span class="fw-bold">Description :</span> {{ offer.description | empty_string_if_null | nl2br }}
                     </p>
                   </div>
-                  <h3>Accessibilité</h3>
+                  <h3 class="mt-4">Retrait de l'offre</h3>
+                  <div class="fs-6">
+                    <p class="mb-1">
+                      <span class="fw-bold">Informations de retrait :</span> {{ offer.withdrawalDetails | empty_string_if_null | nl2br }}
+                    </p>
+                  </div>
+                  <h3 class="mt-4">Accessibilité</h3>
                   <div class="fs-6">
                     <p class="mb-1">
                       <span class="fw-bold">Accessible aux handicaps auditifs :</span> {{ offer.audioDisabilityCompliant | format_bool("Non renseigné") }}
@@ -369,6 +370,12 @@
                     </p>
                     <p class="mb-1">
                       <span class="fw-bold">Accessible aux handicaps visuels :</span> {{ offer.visualDisabilityCompliant | format_bool("Non renseigné") }}
+                    </p>
+                  </div>
+                  <h3 class="mt-4">Notification des réservations</h3>
+                  <div class="fs-6">
+                    <p class="mb-1">
+                      <span class="fw-bold">Email auquel envoyer les notifications :</span> {{ offer.bookingEmail | empty_string_if_null }}
                     </p>
                   </div>
                 </div>
