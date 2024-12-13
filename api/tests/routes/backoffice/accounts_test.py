@@ -2863,9 +2863,8 @@ class ExtractPublicAccountTest(PostEndpointHelper):
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT
 
-    expected_queries = 5  # session + user + targeted user with joined data + gdpr insert + featureflag
+    expected_queries = 4  # session + user + targeted user with joined data + gdpr insert
 
-    @override_features(WIP_BENEFICIARY_EXTRACT_TOOL=True)
     def test_extract_public_account(self, authenticated_client, legit_user):
 
         user = users_factories.BeneficiaryFactory()
@@ -2888,7 +2887,6 @@ class ExtractPublicAccountTest(PostEndpointHelper):
             in html_parser.extract_alert(response.data)
         )
 
-    @override_features(WIP_BENEFICIARY_EXTRACT_TOOL=True)
     def test_extract_public_account_extract_data_already_exists(self, authenticated_client):
         gdpr_data_extract = users_factories.GdprUserDataExtractBeneficiaryFactory()
 
@@ -2902,7 +2900,6 @@ class ExtractPublicAccountTest(PostEndpointHelper):
 
         assert 1 == users_models.GdprUserDataExtract.query.count()
 
-    @override_features(WIP_BENEFICIARY_EXTRACT_TOOL=True)
     def test_extract_public_account_with_existing_extract_data_expired(self, authenticated_client, legit_user):
         expired_gdpr_data_extract = users_factories.GdprUserDataExtractBeneficiaryFactory(
             dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=8)
@@ -2929,7 +2926,6 @@ class ExtractPublicAccountTest(PostEndpointHelper):
             in html_parser.extract_alert(response.data)
         )
 
-    @override_features(WIP_BENEFICIARY_EXTRACT_TOOL=True)
     def test_extract_public_account_no_user_found(self, authenticated_client):
 
         response = self.post_to_endpoint(authenticated_client, user_id=42)

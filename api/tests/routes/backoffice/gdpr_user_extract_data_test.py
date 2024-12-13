@@ -47,10 +47,9 @@ class ListGdprUserExtractDataTest(GetEndpointHelper):
     # - fetch session (1 query)
     # - fetch user (1 query)
     # - fetch gdpr_data_extract
-    # - fetch temporary FF WIP_BENEFICIARY_EXTRACT_TOOL
+    # - fetch feature flag in menu: WIP_ENABLE_OFFER_ADDRESS
     expected_num_queries = 4
 
-    @override_features(WIP_BENEFICIARY_EXTRACT_TOOL=True)
     def test_list_gdpr_user_extract_data(self, authenticated_client, list_of_gdpr_user_extract_data):
 
         with assert_num_queries(self.expected_num_queries):
@@ -74,7 +73,6 @@ class ListGdprUserExtractDataTest(GetEndpointHelper):
         for row in rows:
             assert list_of_gdpr_user_extract_data[4].id not in row
 
-    @override_features(WIP_BENEFICIARY_EXTRACT_TOOL=True)
     def test_display_download_button_when_extract_is_processed(self, authenticated_client):
         extract = users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=datetime.datetime.utcnow())
 
@@ -87,7 +85,6 @@ class ListGdprUserExtractDataTest(GetEndpointHelper):
         assert b'<i class="bi bi-cloud-download-fill"></i>' in response.data
         assert expected_action_target.encode("utf-8") in response.data
 
-    @override_features(WIP_BENEFICIARY_EXTRACT_TOOL=True)
     def test_hide_download_button_when_extract_is_not_processed(self, authenticated_client):
         extract = users_factories.GdprUserDataExtractBeneficiaryFactory()
 
@@ -104,15 +101,6 @@ class ListGdprUserExtractDataTest(GetEndpointHelper):
             in response.data
         )
         assert expected_action_target.encode("utf-8") not in response.data
-
-    @override_features(WIP_BENEFICIARY_EXTRACT_TOOL=False)
-    def test_list_gdpr_user_extract_data_ff_false(self, authenticated_client, list_of_gdpr_user_extract_data):
-        with assert_num_queries(self.expected_num_queries - 1):
-            response = authenticated_client.get(url_for(self.endpoint))
-            assert response.status_code == 200
-
-        rows = html_parser.extract_table_rows(response.data)
-        assert len(rows) == 0
 
 
 class DownloadPublicAccountExtractTest(PostEndpointHelper, StorageFolderManager):

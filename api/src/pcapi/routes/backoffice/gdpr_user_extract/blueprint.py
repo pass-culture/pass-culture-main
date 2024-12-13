@@ -14,7 +14,6 @@ from pcapi.core import object_storage
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
-from pcapi.models.feature import FeatureToggle
 from pcapi.repository import atomic
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
@@ -54,10 +53,7 @@ def _get_gdpr_data() -> list[users_models.GdprUserDataExtract]:
 @gdpr_extract_blueprint.route("", methods=["GET"])
 @atomic()
 def list_gdpr_user_data_extract() -> utils.BackofficeResponse:
-    if not FeatureToggle.WIP_BENEFICIARY_EXTRACT_TOOL.is_active():
-        list_gdpr_data = []
-    else:
-        list_gdpr_data = _get_gdpr_data()
+    list_gdpr_data = _get_gdpr_data()
     return render_template(
         "gdpr_user_extract_data/list_gdpr_user_extract.html",
         empty_form=empty_forms.EmptyForm(),
