@@ -397,3 +397,28 @@ class Return400Test:
             # Then
             assert response.status_code == 400
             assert response.json == {"code": "START_AND_END_EDUCATIONAL_YEAR_DIFFERENT"}
+
+    def should_not_accept_payload_with_dates_in_the_past(self, client):
+        past = (datetime.datetime.utcnow() - datetime.timedelta(days=1)).isoformat() + "Z"
+        offer = educational_factories.CollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        stock_payload = {
+            "bookingLimitDatetime": past,
+            "educationalPriceDetail": "Hello",
+            "endDatetime": past,
+            "numberOfTickets": 25,
+            "offerId": offer.id,
+            "startDatetime": past,
+            "totalPrice": 1500,
+        }
+
+        client.with_session_auth("user@example.com")
+        with assert_num_queries(2):  # session + user
+            response = client.post("/collective/stocks", json=stock_payload)
+
+            assert response.status_code == 400
+            assert response.json == {
+                "endDatetime": ["L'évènement ne peut se terminer dans le passé."],
+                "startDatetime": ["L'évènement ne peut commencer dans le passé."],
+            }
