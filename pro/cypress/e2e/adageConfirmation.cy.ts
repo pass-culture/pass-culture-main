@@ -18,17 +18,25 @@ import {
         offer = response.body.offer
         providerApiKey = response.body.providerApiKey
       })
-      cy.intercept({ method: 'GET', url: '/collective/offers*' }).as(
+      cy.intercept({ method: 'GET', url: '/collective/offers?offererId=1' }).as(
         'collectiveOffers'
       )
-      cy.intercept({ method: 'GET', url: /\/collective\/offers\/[1-9]+/ }).as(
+      cy.intercept({
+        method: 'GET',
+        url: '/collective/offers?offererId=1&status=BOOKED',
+      }).as('collectiveOffersBOOKED')
+      cy.intercept({
+        method: 'GET',
+        url: '/collective/offers?offererId=1&status=PREBOOKED',
+      }).as('collectiveOffersPREBOOKED')
+      cy.intercept({ method: 'GET', url: '/collective/offers/1' }).as(
         'collectiveOfferDetails'
       )
     })
   
     it('I should be able to search with several filters and see expected results', () => {
       logInAndGoToPage(login, '/offres/collectives')
-      cy.wait('@collectiveOffers')
+      cy.wait('@collectiveOffers').its('response.statusCode').should('eq', 200)
 
       cy.stepLog({ message: 'I click on the offer' })
 
@@ -64,7 +72,9 @@ import {
 
         cy.stepLog({ message: 'I validate my filters' })
         cy.findByText('Rechercher').click()
-        cy.wait('@collectiveOffers').its('response.statusCode').should('eq', 200)
+        cy.wait('@collectiveOffersPREBOOKED')
+          .its('response.statusCode')
+          .should('eq', 200)
 
         let expectedResults = [
           ['', '', 'Titre', 'Lieu', 'Établissement', 'Statut'],
@@ -111,7 +121,9 @@ import {
         cy.stepLog({ message: 'I validate my filters' })
 
         cy.findByText('Rechercher').click()
-        cy.wait('@collectiveOffers').its('response.statusCode').should('eq', 200)
+        cy.wait('@collectiveOffersBOOKED')
+          .its('response.statusCode')
+          .should('eq', 200)
 
         expectedResults = [
           ['', 'Titre', 'Lieu', 'Établissement', 'Statut'],
