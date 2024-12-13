@@ -525,11 +525,8 @@ class AlgoliaBackend(base.SearchBackend):
         department_code = offer_address.departmentCode
         postal_code = offer_address.postalCode
 
-        search_groups = (
-            offer.subcategory.native_category.parents
-            if offer.subcategory.native_category != subcategories_v2.NATIVE_CATEGORY_NONE
-            else [offer.subcategory.search_group_name]
-        )
+        search_groups = [search_group.id for search_group in offer.subcategory.search_groups]
+        native_categories = [native_category.id for native_category in offer.subcategory.native_categories]
 
         # If you update this dictionary, please check whether you need to
         # also update `core.offerers.api.VENUE_ALGOLIA_INDEXED_FIELDS`.
@@ -561,7 +558,8 @@ class AlgoliaBackend(base.SearchBackend):
                 "movieGenres": extra_data.get("genres"),
                 "musicType": music_type_labels,
                 "name": offer.name,
-                "nativeCategoryId": offer.subcategory.native_category_id,
+                "nativeCategoryId": native_categories,
+                "nativeCategories": native_categories,
                 "prices": sorted(prices),
                 "rankingWeight": offer.rankingWeight,
                 "releaseDate": release_date,
