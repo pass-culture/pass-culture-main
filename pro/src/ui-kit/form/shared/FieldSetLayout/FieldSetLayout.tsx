@@ -14,6 +14,7 @@ interface FieldSetLayoutProps {
   hideFooter?: boolean
   dataTestId?: string
   isOptional?: boolean
+  ariaDescribedBy?: string
 }
 
 export const FieldSetLayout = ({
@@ -25,12 +26,14 @@ export const FieldSetLayout = ({
   hideFooter = false,
   dataTestId,
   isOptional = false,
+  ariaDescribedBy,
 }: FieldSetLayoutProps): JSX.Element => {
   return (
     <fieldset
       className={cn(styles['fieldset-layout'], className)}
       data-testid={dataTestId}
       aria-required={!isOptional}
+      aria-describedby={ariaDescribedBy}
     >
       {legend && (
         <legend className={styles['fieldset-layout-legend']}>

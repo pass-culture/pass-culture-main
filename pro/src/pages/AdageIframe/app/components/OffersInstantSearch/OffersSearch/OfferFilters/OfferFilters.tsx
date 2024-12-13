@@ -184,6 +184,7 @@ export const OfferFilters = ({
                     group={adressTypeRadios}
                     className={styles['filter-container-evenement']}
                     name="eventAddressType"
+                    legend="Choisir un type d'intervention"
                   />
                 </ModalFilterLayout>
               </AdageButtonFilter>
