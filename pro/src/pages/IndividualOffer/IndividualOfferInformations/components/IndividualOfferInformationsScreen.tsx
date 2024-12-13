@@ -1,6 +1,6 @@
 import { Form, FormikProvider, useFormik } from 'formik'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -146,6 +146,7 @@ export const IndividualOfferInformationsScreen = ({
 
       addToLocalStorage()
 
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(
         getIndividualOfferUrl({
           offerId: receivedOfferId,
@@ -213,6 +214,7 @@ export const IndividualOfferInformationsScreen = ({
 
   const handlePreviousStepOrBackToReadOnly = () => {
     if (mode === OFFER_WIZARD_MODE.CREATION) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(
         getIndividualOfferUrl({
           offerId: offer.id,
@@ -221,6 +223,7 @@ export const IndividualOfferInformationsScreen = ({
         })
       )
     } else {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(
         getIndividualOfferUrl({
           offerId: offer.id,

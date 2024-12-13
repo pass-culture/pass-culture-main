@@ -1,5 +1,5 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
-import * as router from 'react-router-dom'
+import * as router from 'react-router'
 
 import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
@@ -23,8 +23,8 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
+vi.mock('react-router', async () => ({
+  ...(await vi.importActual('react-router')),
   useLocation: vi.fn(),
   useParams: () => ({
     offerId: '1',

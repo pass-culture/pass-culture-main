@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -62,6 +62,7 @@ export const CollectiveOffers = (): JSX.Element => {
   const venues = formatAndOrderVenues(data.venues)
 
   const redirectWithUrlFilters = (filters: CollectiveSearchFiltersParams) => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(computeCollectiveOffersUrl(filters, defaultCollectiveFilters), {
       replace: true,
     })

@@ -1,5 +1,5 @@
 import { renderHook, waitFor } from '@testing-library/react'
-import * as router from 'react-router-dom'
+import * as router from 'react-router'
 
 import { api } from 'apiClient/api'
 import {
@@ -18,8 +18,8 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
+vi.mock('react-router', async () => ({
+  ...(await vi.importActual('react-router')),
   useLocation: () => ({
     pathname: 'vitrine',
   }),

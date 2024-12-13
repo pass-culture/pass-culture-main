@@ -1,9 +1,12 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { addDays, addMinutes, format, subDays } from 'date-fns'
-import * as router from 'react-router-dom'
+import * as router from 'react-router'
 
-import { CollectiveBookingStatus, CollectiveOfferAllowedAction } from 'apiClient/v1'
+import {
+  CollectiveBookingStatus,
+  CollectiveOfferAllowedAction,
+} from 'apiClient/v1'
 import { DEFAULT_EAC_STOCK_FORM_VALUES } from 'commons/core/OfferEducational/constants'
 import { Mode, EducationalOfferType } from 'commons/core/OfferEducational/types'
 import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
@@ -38,8 +41,8 @@ const initialValuesNotEmpty = {
   priceDetail: 'Détail du prix',
 }
 
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
+vi.mock('react-router', async () => ({
+  ...(await vi.importActual('react-router')),
   useNavigate: vi.fn(),
 }))
 
@@ -235,11 +238,13 @@ it('should not disable description, price and places when allowedAction CAN_EDIT
     ...defaultProps,
     mode: Mode.EDITION,
     offer: getCollectiveOfferFactory({
-      allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT]
+      allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT],
     }),
   }
 
-  renderWithProviders(<OfferEducationalStock {...testProps} />, {features: ['ENABLE_COLLECTIVE_NEW_STATUSES']})
+  renderWithProviders(<OfferEducationalStock {...testProps} />, {
+    features: ['ENABLE_COLLECTIVE_NEW_STATUSES'],
+  })
 
   const descriptionInput = screen.getByRole('textbox', {
     name: `${DETAILS_PRICE_LABEL} *`,
@@ -257,11 +262,13 @@ it('should disable description, price and places when allowedAction CAN_EDIT_DIS
     ...defaultProps,
     mode: Mode.EDITION,
     offer: getCollectiveOfferFactory({
-      allowedActions: []
+      allowedActions: [],
     }),
   }
 
-  renderWithProviders(<OfferEducationalStock {...testProps} />, {features: ['ENABLE_COLLECTIVE_NEW_STATUSES']})
+  renderWithProviders(<OfferEducationalStock {...testProps} />, {
+    features: ['ENABLE_COLLECTIVE_NEW_STATUSES'],
+  })
 
   const descriptionInput = screen.getByRole('textbox', {
     name: `${DETAILS_PRICE_LABEL} *`,

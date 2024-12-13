@@ -1,6 +1,6 @@
 import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -77,6 +77,7 @@ export const SummaryScreen = () => {
       if (shouldDisplayRedirectDialog) {
         setDisplayRedirectDialog(true)
       } else {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         navigate(offerConfirmationStepUrl)
       }
     } catch (error) {
@@ -110,6 +111,7 @@ export const SummaryScreen = () => {
 
   /* istanbul ignore next: DEBT, TO FIX */
   const handlePreviousStep = () => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(
       getIndividualOfferUrl({
         offerId: offer.id,

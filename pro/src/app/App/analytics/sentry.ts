@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/browser'
-import { reactRouterV6BrowserTracingIntegration } from '@sentry/react'
+import { reactRouterV7BrowserTracingIntegration } from '@sentry/react'
 import React, { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import {
@@ -7,7 +7,7 @@ import {
   matchRoutes,
   useLocation,
   useNavigationType,
-} from 'react-router-dom'
+} from 'react-router'
 
 import { selectCurrentUser } from 'commons/store/user/selectors'
 import {
@@ -24,7 +24,7 @@ export const initializeSentry = () => {
     environment: ENVIRONMENT_NAME,
     release: config.version,
     integrations: [
-      reactRouterV6BrowserTracingIntegration({
+      reactRouterV7BrowserTracingIntegration({
         useEffect: React.useEffect,
         useLocation,
         useNavigationType,

@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -67,6 +67,7 @@ const CollectiveOfferStockEdition = ({
     }
 
     await mutate([GET_COLLECTIVE_OFFER_QUERY_KEY, offer.id])
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(
       `/offre/${computeURLCollectiveOfferId(
         offer.id,

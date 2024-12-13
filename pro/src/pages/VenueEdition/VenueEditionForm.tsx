@@ -1,5 +1,5 @@
 import { Form, Formik, FormikConfig, FormikConsumer } from 'formik'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -53,6 +53,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
 
       await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
 
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(`/structures/${venue.managingOfferer.id}/lieux/${venue.id}`)
 
       if (currentUser.isAdmin) {

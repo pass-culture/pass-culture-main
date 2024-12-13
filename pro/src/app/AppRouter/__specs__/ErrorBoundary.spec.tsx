@@ -1,13 +1,13 @@
 import * as Sentry from '@sentry/react'
 import { render, screen, waitFor } from '@testing-library/react'
-import * as router from 'react-router-dom'
+import * as router from 'react-router'
 
 import { ErrorBoundary } from '../ErrorBoundary'
 
 vi.mock('@sentry/react', () => ({
   captureException: vi.fn(),
 }))
-vi.mock('react-router-dom', () => ({
+vi.mock('react-router', () => ({
   useRouteError: vi.fn(),
 }))
 

@@ -1,6 +1,5 @@
 /* No need to test this file */
 /* istanbul ignore file */
-import React from 'react'
 
 import { SignupConfirmation } from 'pages/Signup/SignupConfirmation/SignupConfirmation'
 import { SignupContainer } from 'pages/Signup/SignupContainer/SignupContainer'

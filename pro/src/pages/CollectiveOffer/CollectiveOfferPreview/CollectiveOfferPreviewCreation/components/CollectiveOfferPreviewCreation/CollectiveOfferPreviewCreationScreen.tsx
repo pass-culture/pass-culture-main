@@ -1,6 +1,6 @@
 import { isBefore } from 'date-fns'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -65,6 +65,7 @@ export const CollectiveOfferPreviewCreationScreen = ({
           { revalidate: false }
         )
 
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         navigate(confirmationUrl)
         return
       }
@@ -105,6 +106,7 @@ export const CollectiveOfferPreviewCreationScreen = ({
       if (shouldDisplayRedirectDialog) {
         setDisplayRedirectDialog(true)
       } else {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         navigate(confirmationUrl)
       }
     } catch {

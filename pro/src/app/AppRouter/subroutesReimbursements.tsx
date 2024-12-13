@@ -1,6 +1,5 @@
 /* No need to test this file */
 /* istanbul ignore file */
-import React from 'react'
 import { Navigate } from 'react-router'
 
 import { BankInformations } from 'pages/Reimbursements/BankInformations/BankInformations'
