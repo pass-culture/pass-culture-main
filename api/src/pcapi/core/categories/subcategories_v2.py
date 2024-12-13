@@ -374,6 +374,11 @@ NATIVE_CATEGORY_AUTRES_MEDIAS = NativeCategory(
     label="Autres médias",
     parents=[SEARCH_GROUP_MEDIA_PRESSE.id],
 )
+NATIVE_CATEGORY_AUTRES_REPRESENTATIONS = NativeCategory(
+    technical_name="AUTRES_REPRESENTATIONS",
+    label="Autres représentations",
+    parents=[SEARCH_GROUP_SPECTACLES.id],
+)
 NATIVE_CATEGORY_BIBLIOTHEQUE_MEDIATHEQUE = NativeCategory(
     technical_name="BIBLIOTHEQUE_MEDIATHEQUE",
     label="Abonnements aux médiathèques et bibliothèques",
@@ -464,6 +469,11 @@ NATIVE_CATEGORY_JEUX_PHYSIQUES = NativeCategory(
     technical_name="JEUX_PHYSIQUES",
     label="Jeux physiques",
     parents=[],
+)
+NATIVE_CATEGORY_LIVESTREAM_EVENEMENT = NativeCategory(
+    technical_name="LIVESTREAM_EVENEMENT",
+    label="Livestream d'évènements",
+    parents=[NATIVE_CATEGORY_AUTRES_REPRESENTATIONS.id],
 )
 NATIVE_CATEGORY_LIVRES_AUDIO_PHYSIQUES = NativeCategory(
     technical_name="LIVRES_AUDIO_PHYSIQUES",
@@ -563,7 +573,7 @@ NATIVE_CATEGORY_SPECTACLES = NativeCategory(
 NATIVE_CATEGORY_SPECTACLES_ENREGISTRES = NativeCategory(
     technical_name="SPECTACLES_ENREGISTRES",
     label="Spectacles enregistrés",
-    parents=[SEARCH_GROUP_SPECTACLES.id],
+    parents=[NATIVE_CATEGORY_AUTRES_REPRESENTATIONS.id],
     genre_type=GenreType.SHOW,
 )
 NATIVE_CATEGORY_SPECTACLES_REPRESENTATIONS = NativeCategory(
@@ -571,6 +581,11 @@ NATIVE_CATEGORY_SPECTACLES_REPRESENTATIONS = NativeCategory(
     label="Spectacles & représentations",
     parents=[SEARCH_GROUP_SPECTACLES.id],
     genre_type=GenreType.SHOW,
+)
+NATIVE_CATEGORY_SPECTACLE_VIVANT_VENTE_A_DISTANCE = NativeCategory(
+    technical_name="SPECTACLE_VIVANT_VENTE_A_DISTANCE",
+    label="Spectacle vivant - vente à distance",
+    parents=[NATIVE_CATEGORY_AUTRES_REPRESENTATIONS.id],
 )
 NATIVE_CATEGORY_THEATRE_HUMOUR = NativeCategory(
     technical_name="THEATRE_HUMOUR",
