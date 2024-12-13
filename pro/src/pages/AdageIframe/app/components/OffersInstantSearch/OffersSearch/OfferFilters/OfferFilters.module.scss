@@ -46,6 +46,10 @@
 
   &-evenement {
     @include fonts.body;
+
+    legend {
+      color: var(--color-grey-dark);
+    }
   }
 }
 

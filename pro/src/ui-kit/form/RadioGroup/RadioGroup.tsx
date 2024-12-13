@@ -6,67 +6,65 @@ import { FieldSetLayout } from '../shared/FieldSetLayout/FieldSetLayout'
 
 import styles from './RadioGroup.module.scss'
 
-export enum Direction {
-  VERTICAL = 'vertical',
-  HORIZONTAL = 'horizontal',
-}
+type RequireAtLeastOne<T, Keys extends keyof T = keyof T> = Pick<
+  T,
+  Exclude<keyof T, Keys>
+> &
+  {
+    [K in Keys]-?: Required<Pick<T, K>> & Partial<Pick<T, Exclude<Keys, K>>>
+  }[Keys]
 
 /**
  * Props for the RadioGroup component.
  */
-interface RadioGroupProps {
-  /**
-   * The direction in which the radio buttons should be displayed.
-   * @default Direction.VERTICAL
-   */
-  direction?: Direction.HORIZONTAL | Direction.VERTICAL
-  /**
-   * Whether the radio buttons are disabled.
-   */
-  disabled?: boolean
-  /**
-   * Whether to hide the footer containing error messages.
-   * @default false
-   */
-  hideFooter?: boolean
-  /**
-   * The name of the radio group field.
-   */
-  name: string
-  /**
-   * The legend text for the radio group.
-   */
-  legend?: string
-  /**
-   * The group of radio button options.
-   * Each item contains a label and a value.
-   */
-  group: {
-    label: string
-    value: string
-  }[]
-  /**
-   * Custom CSS class for the radio group component.
-   */
-  className?: string
-  /**
-   * Whether to add a border around each radio button.
-   */
-  withBorder?: boolean
-  /**
-   * Callback function to handle changes in the radio group.
-   */
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
-}
+export type RadioGroupProps = RequireAtLeastOne<
+  {
+    /**
+     * Whether the radio buttons are disabled.
+     */
+    disabled?: boolean
+    /**
+     * The name of the radio group field.
+     */
+    name: string
+    /**
+     * The legend of the `fieldset`. If this prop is empty, the `describedBy` must be used.
+     */
+    legend?: string
+    /**
+     * A reference to the text element that describes the radio group. If this prop is empty, the `legend` must be used.
+     */
+    describedBy?: string
+    /**
+     * The group of radio button options.
+     * Each item contains a label and a value.
+     * The label is what's displayed while the value is used as an identifier.
+     */
+    group: {
+      label: string | JSX.Element
+      value: string
+      childrenOnChecked?: JSX.Element
+    }[]
+    /**
+     * Custom CSS class applied to the group's `fieldset` element.
+     */
+    className?: string
+    /**
+     * Whether to add a border around each radio button.
+     */
+    withBorder?: boolean
+    /**
+     * Callback function to handle changes in the radio group.
+     */
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
+  },
+  'legend' | 'describedBy'
+>
 
 /**
- * The RadioGroup component is a set of radio buttons grouped together under a common legend.
+ * The RadioGroup component is a set of radio buttons grouped together under a common `fieldset`.
  * It integrates with Formik for form state management and provides customization options for layout and styling.
  *
- * ---
- * **Important: Always provide a legend for accessibility.**
- * Legends are essential for screen readers and provide context for the radio button group. If the legend should not be visible, use the `aria-label` attribute to provide an accessible label.
- * ---
  *
  * @param {RadioGroupProps} props - The props for the RadioGroup component.
  * @returns {JSX.Element} The rendered RadioGroup component.
@@ -80,22 +78,18 @@ interface RadioGroupProps {
  *     { label: 'Female', value: 'female' },
  *     { label: 'Other', value: 'other' },
  *   ]}
- *   direction={Direction.HORIZONTAL}
  * />
  *
  * @accessibility
- * - **Legend**: Always provide a meaningful legend using the `legend` prop for screen readers. This helps users understand the context of the radio group.
- * - **Keyboard Accessibility**: Users can navigate between radio buttons using arrow keys, which is standard behavior for radio groups.
- * - **ARIA Attributes**: The component uses a `fieldset` and `legend` to group related radio buttons, ensuring native browser support for screen readers and accessibility tools.
- * - **Error Handling**: Error messages are displayed in an accessible manner, helping users identify issues with their input.
+ * - **Fieldset**: The component uses a `fieldset` element and a `legend` element to group related radio buttons together. Always provide a meaningful legend using the `legend` prop as it provides context for assistive technologies.
+ * - **Name**: The `name` prop is used as a link in-between the inputs of the group. It should be unique on the page at any time.
  */
 export const RadioGroup = ({
-  direction = Direction.VERTICAL,
   disabled,
-  hideFooter = false,
   group,
   name,
   legend,
+  describedBy,
   className,
   withBorder,
   onChange,
@@ -105,20 +99,17 @@ export const RadioGroup = ({
 
   return (
     <FieldSetLayout
-      className={cn(
-        styles['radio-group'],
-        styles[`radio-group-${direction}`],
-        className
-      )}
+      className={cn(styles['radio-group'], className)}
       dataTestId={`wrapper-${name}`}
       error={hasError ? meta.error : undefined}
-      hideFooter={hideFooter}
       legend={legend}
       name={`radio-group-${name}`}
+      ariaDescribedBy={describedBy}
       isOptional // There should always be an element selected in a radio group, thus it doesn't need to be marked as required
+      hideFooter
     >
       {group.map((item) => (
-        <div className={styles['radio-group-item']} key={item.label}>
+        <div className={styles['radio-group-item']} key={item.value}>
           <RadioButton
             disabled={disabled}
             label={item.label}
@@ -126,9 +117,9 @@ export const RadioGroup = ({
             value={item.value}
             withBorder={withBorder}
             hasError={hasError}
-            fullWidth
             onChange={onChange}
             {...(hasError ? { ariaDescribedBy: `error-${name}` } : {})}
+            childrenOnChecked={item.childrenOnChecked}
           />
         </div>
       ))}
