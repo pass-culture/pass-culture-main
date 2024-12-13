@@ -1800,7 +1800,9 @@ class GetOfferDetailsTest(GetEndpointHelper):
 
     def test_get_detail_offer(self, authenticated_client):
         offer = offers_factories.OfferFactory(
+            description="Une offre pour tester",
             withdrawalDetails="Demander à la caisse",
+            bookingEmail="offre@example.com",
             extraData={"ean": "1234567891234", "author": "Author", "editeur": "Editor", "gtl_id": "08010000"},
         )
         offers_factories.OfferComplianceFactory(
@@ -1830,10 +1832,14 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert "Date de dernière validation" not in card_text
         assert "Resynchroniser l'offre dans Algolia" in card_text
         assert "Modifier le lieu" not in card_text
-        assert "Demander à la caisse" in card_text
-        assert b"Auteur :</span> Author" in response.data
-        assert b"EAN :</span> 1234567891234" in response.data
-        assert "Éditeur :</span> Editor".encode() in response.data
+
+        content = html_parser.content_as_text(response.data)
+        assert "Auteur : Author" in content
+        assert "EAN : 1234567891234" in content
+        assert "Éditeur : Editor" in content
+        assert "Description : Une offre pour tester " in content
+        assert "Informations de retrait : Demander à la caisse " in content
+        assert "Email auquel envoyer les notifications : offre@example.com " in content
 
         assert html_parser.count_table_rows(response.data) == 0
 
@@ -1938,15 +1944,17 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert "Date de dernière validation" not in card_text
         assert "Resynchroniser l'offre dans Algolia" in card_text
         assert "Modifier le lieu" not in card_text
-        assert b"Identifiant chez le fournisseur :</span> pouet provider" in response.data
-        assert b"Langue :</span> VO" in response.data
-        assert "Durée :</span> 133 minutes".encode() in response.data
-        assert b"Accessible aux handicaps auditifs :</span> Oui" in response.data
-        assert b"Accessible aux handicaps mentaux :</span> Non" in response.data
-        assert "Accessible aux handicaps moteurs :</span> Non renseigné".encode() in response.data
-        assert b"Accessible aux handicaps visuels :</span> Non" in response.data
-        assert b"Description :</span> description" in response.data
-        assert "Interprète :</span> John Doe".encode() in response.data
+
+        content = html_parser.content_as_text(response.data)
+        assert "Identifiant chez le fournisseur : pouet provider" in content
+        assert "Langue : VO" in content
+        assert "Durée : 133 minutes" in content
+        assert "Accessible aux handicaps auditifs : Oui" in content
+        assert "Accessible aux handicaps mentaux : Non" in content
+        assert "Accessible aux handicaps moteurs : Non renseigné" in content
+        assert "Accessible aux handicaps visuels : Non" in content
+        assert "Description : description" in content
+        assert "Interprète : John Doe" in content
 
         assert html_parser.count_table_rows(response.data) == 0
 

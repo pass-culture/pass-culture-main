@@ -109,7 +109,8 @@ Ut quis egestas neque. Fusce sem nulla, luctus ac sagittis eu, mattis quis purus
 
     book_offer = offers_factories.OfferFactory(
         venue=next(offerers_iterator).managedVenues[0],
-        withdrawalDetails="demander a la caisse",
+        withdrawalDetails="Demander à la caisse",
+        bookingEmail="caisse@example.com",
         idAtProvider="pouet provider",
         product=book_product,
         isActive=True,
