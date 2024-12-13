@@ -227,6 +227,14 @@ def get_show_nodes() -> list[ShowGenre]:
             ],
         )
         for show_type in SHOW_TYPES
+    ] + [
+        ShowGenre(
+            label=show_sub_type.label,
+            parents=[NATIVE_CATEGORY_THEATRE_HUMOUR.id],
+        )
+        for show_type in SHOW_TYPES
+        for show_sub_type in show_type.children
+        if show_type.code in (400, 1300) and show_sub_type.code != -1
     ]
 
 
@@ -550,6 +558,12 @@ NATIVE_CATEGORY_SPECTACLES_ENREGISTRES = NativeCategory(
 NATIVE_CATEGORY_SPECTACLES_REPRESENTATIONS = NativeCategory(
     technical_name="SPECTACLES_REPRESENTATIONS",
     label="Spectacles & représentations",
+    parents=[SEARCH_GROUP_SPECTACLES.id],
+    genre_type=GenreType.SHOW,
+)
+NATIVE_CATEGORY_THEATRE_HUMOUR = NativeCategory(
+    technical_name="THEATRE_HUMOUR",
+    label="Théâtre et humour",
     parents=[SEARCH_GROUP_SPECTACLES.id],
     genre_type=GenreType.SHOW,
 )
