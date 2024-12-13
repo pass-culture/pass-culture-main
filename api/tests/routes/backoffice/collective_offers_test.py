@@ -1187,6 +1187,30 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         assert f"Date de dernière validation : {format_date(validation_date, '%d/%m/%Y à %Hh%M')}" in content_as_text
         assert "Raison de rejet : Description manquante" in content_as_text
 
+    def test_collective_offer_with_offerer_confidence_rule(self, authenticated_client):
+        rule = offerers_factories.ManualReviewOffererConfidenceRuleFactory(offerer__name="Offerer")
+        collective_offer = educational_factories.CollectiveOfferFactory(venue__managingOfferer=rule.offerer)
+
+        url = url_for(self.endpoint, collective_offer_id=collective_offer.id)
+        with assert_num_queries(self.expected_num_queries - 1):  # no _is_collective_offer_price_editable
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        text = html_parser.extract_cards_text(response.data)[0]
+        assert "Entité juridique : Offerer Revue manuelle" in text
+
+    def test_collective_offer_with_venue_confidence_rule(self, authenticated_client):
+        rule = offerers_factories.ManualReviewVenueConfidenceRuleFactory(venue__name="Venue")
+        collective_offer = educational_factories.CollectiveOfferFactory(venue=rule.venue)
+
+        url = url_for(self.endpoint, collective_offer_id=collective_offer.id)
+        with assert_num_queries(self.expected_num_queries - 1):  # no _is_collective_offer_price_editable
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        text = html_parser.extract_cards_text(response.data)[0]
+        assert "Lieu : Venue Revue manuelle" in text
+
 
 class ValidateCollectiveOfferFromDetailsButtonTest(button_helpers.ButtonHelper):
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS

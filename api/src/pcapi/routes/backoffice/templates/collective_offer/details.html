@@ -111,6 +111,9 @@
               <div class="fs-6">
                 <p class="mb-1">
                   <span class="fw-bold">Entité juridique :</span> {{ links.build_offerer_name_to_details_link(collective_offer.venue.managingOfferer) }}
+                  {% if has_permission("PRO_FRAUD_ACTIONS") %}
+                    {{ collective_offer.venue.managingOfferer.confidenceLevel | format_confidence_level_badge }}
+                  {% endif %}
                 </p>
               </div>
               <div class="fs-6">
@@ -122,6 +125,7 @@
                       Lieu :
                     {% endif %}
                   </span> {{ links.build_venue_name_to_details_link(collective_offer.venue) }}
+                  {% if has_permission("PRO_FRAUD_ACTIONS") %}{{ collective_offer.venue.confidenceLevel | format_confidence_level_badge }}{% endif %}
                 </p>
               </div>
               {% if collective_offer.template %}
