@@ -1,6 +1,6 @@
 import { Formik } from 'formik'
 
-import { Direction, RadioGroup } from './RadioGroup'
+import { RadioGroup } from './RadioGroup'
 
 export default {
   title: 'ui-kit/forms/RadioGroup',
@@ -24,7 +24,6 @@ export default {
 const defaultArgs = {
   name: 'question',
   legend: 'This is the legend',
-  direction: Direction.VERTICAL,
   group: [
     {
       label: 'Oui',
@@ -46,12 +45,5 @@ export const WithBorder = {
   args: {
     ...defaultArgs,
     withBorder: true,
-  },
-}
-
-export const Horizontal = {
-  args: {
-    ...defaultArgs,
-    direction: Direction.HORIZONTAL,
   },
 }
