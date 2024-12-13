@@ -38,7 +38,7 @@
     "@algolia/autocomplete-plugin-query-suggestions": "^1.17.8",
     "@algolia/autocomplete-plugin-recent-searches": "^1.17.8",
     "@firebase/analytics": "^0.10.10",
-    "@firebase/app": "^0.10.16",
+    "@firebase/app": "^0.10.17",
     "@firebase/remote-config": "0.4.11",
     "@radix-ui/react-dialog": "^1.1.2",
     "@radix-ui/react-dropdown-menu": "^2.1.2",
