@@ -123,7 +123,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE = (
         "Activer la nouvelle structure des offres et réservations collectives"
     )
-    WIP_ENABLE_ALGOLIA_SEARCH_IN_BO = "Activer la recherche algolia dans le BO"
     WIP_UBBLE_V2 = "Utiliser l'API v2 d'Ubble pour l'identification des bénéficiaires"
     WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION = (
         "Désactiver la notification push Batch pour l'annulation d'une réservation"
@@ -197,7 +196,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
     FeatureToggle.LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC,
     FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,
-    FeatureToggle.WIP_ENABLE_ALGOLIA_SEARCH_IN_BO,
     FeatureToggle.WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION,
     FeatureToggle.WIP_DISABLE_NOTIFY_USERS_BOOKINGS_NOT_RETRIEVED,
     FeatureToggle.WIP_DISABLE_SEND_NOTIFICATIONS_FAVORITES_NOT_BOOKED,
