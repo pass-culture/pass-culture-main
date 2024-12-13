@@ -568,7 +568,7 @@ class GetBoUserTest(GetEndpointHelper):
         my_id = pro_fraud_admin.id
         client = client.with_bo_session_auth(pro_fraud_admin)
 
-        with assert_num_queries(self.expected_num_queries + 1):  # FF
+        with assert_num_queries(self.expected_num_queries):
             response = client.get(url_for(self.endpoint, user_id=my_id))
             assert response.status_code == 200
 
