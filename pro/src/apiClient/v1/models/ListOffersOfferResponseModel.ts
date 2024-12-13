@@ -15,6 +15,7 @@ export type ListOffersOfferResponseModel = {
   isEditable: boolean;
   isEducational: boolean;
   isEvent: boolean;
+  isHeadlineOffer: boolean;
   isShowcase?: boolean | null;
   isThing: boolean;
   name: string;

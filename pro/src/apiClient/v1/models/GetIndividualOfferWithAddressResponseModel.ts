@@ -32,6 +32,7 @@ export type GetIndividualOfferWithAddressResponseModel = {
   isDuo: boolean;
   isEditable: boolean;
   isEvent: boolean;
+  isHeadlineOffer: boolean;
   isNational: boolean;
   isNonFreeOffer?: boolean | null;
   isThing: boolean;
