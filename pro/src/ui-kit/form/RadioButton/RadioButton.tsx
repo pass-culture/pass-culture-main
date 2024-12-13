@@ -32,13 +32,13 @@ interface RadioButtonProps
    */
   hasError?: boolean
   /**
-   * Whether the radio button should take up the full width of the container.
-   */
-  fullWidth?: boolean
-  /**
    * ARIA attribute to describe the element the radio button is associated with.
    */
   ariaDescribedBy?: string
+  /**
+   * Inner content that appears under the radio button when it is checked.
+   */
+  childrenOnChecked?: JSX.Element
 }
 
 /**
@@ -72,11 +72,11 @@ export const RadioButton = ({
   label,
   value,
   withBorder,
-  fullWidth,
   className,
   hasError,
   onChange,
   ariaDescribedBy,
+  childrenOnChecked,
 }: RadioButtonProps): JSX.Element => {
   const [field] = useField({ name, value, type: 'radio' })
 
@@ -101,9 +101,9 @@ export const RadioButton = ({
       checked={field.checked}
       hasError={hasError}
       withBorder={withBorder}
-      fullWidth={fullWidth}
       onChange={(e) => onCustomChange(e)}
       ariaDescribedBy={ariaDescribedBy}
+      childrenOnChecked={childrenOnChecked}
     />
   )
 }

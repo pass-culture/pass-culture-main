@@ -9,8 +9,8 @@ interface BaseRadioProps
   hasError?: boolean
   className?: string
   withBorder?: boolean
-  fullWidth?: boolean
   ariaDescribedBy?: string
+  childrenOnChecked?: JSX.Element
 }
 
 export const BaseRadio = ({
@@ -18,39 +18,53 @@ export const BaseRadio = ({
   hasError,
   className,
   withBorder = false,
-  fullWidth = false,
   ariaDescribedBy,
+  childrenOnChecked,
   ...props
 }: BaseRadioProps): JSX.Element => {
   const id = useId()
+  const childrenContainerId = useId()
 
   return (
     <div
-      className={cn(
-        styles['base-radio'],
-        {
-          [styles[`with-border`]]: withBorder,
-          [styles[`is-disabled`]]: props.disabled,
-          [styles[`full-width`]]: fullWidth,
-          [styles[`with-border-checked`]]:
-            withBorder && props.checked && !props.disabled,
-        },
-        className
-      )}
+      className={cn(styles['radio'], {
+        [styles[`with-border`]]: withBorder,
+        [styles[`has-children`]]: childrenOnChecked,
+        [styles[`is-checked`]]: props.checked,
+        [styles[`is-disabled`]]: props.disabled,
+        [styles[`has-error`]]: hasError,
+      })}
     >
-      <input
-        type="radio"
-        {...props}
-        className={cn(styles[`base-radio-input`], {
-          [styles['has-error']]: hasError,
-        })}
-        {...(ariaDescribedBy ? { 'aria-describedby': ariaDescribedBy } : {})}
-        aria-invalid={hasError}
-        id={id}
-      />
-      <label htmlFor={id} className={cn(styles['base-radio-label'])}>
-        {label}
-      </label>
+      <div
+        className={cn(
+          styles['base-radio'],
+          {
+            [styles[`is-disabled`]]: props.disabled,
+          },
+          className
+        )}
+      >
+        <input
+          type="radio"
+          {...props}
+          className={cn(styles[`base-radio-input`], {
+            [styles['has-error']]: hasError,
+          })}
+          {...(ariaDescribedBy ? { 'aria-describedby': ariaDescribedBy } : {})}
+          aria-invalid={hasError}
+          id={id}
+        />
+        <label htmlFor={id} className={styles['base-radio-label']}>
+          {label}
+        </label>
+      </div>
+      <div id={childrenContainerId}>
+        {childrenOnChecked && props.checked && (
+          <div className={styles['base-radio-children-on-checked']}>
+            {childrenOnChecked}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
