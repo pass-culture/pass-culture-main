@@ -222,6 +222,7 @@ def get_show_nodes() -> list[ShowGenre]:
             label=show_type.label,
             parents=[
                 NATIVE_CATEGORY_ABONNEMENTS_SPECTACLE.id,
+                NATIVE_CATEGORY_FESTIVALS_DE_SPECTACLES.id,
                 NATIVE_CATEGORY_SPECTACLES_ENREGISTRES.id,
                 NATIVE_CATEGORY_SPECTACLES_REPRESENTATIONS.id,
             ],
@@ -449,6 +450,11 @@ NATIVE_CATEGORY_FESTIVAL_DU_LIVRE = NativeCategory(
     label="Évènements autour du livre",
     parents=[SEARCH_GROUP_LIVRES.id],
 )
+NATIVE_CATEGORY_FESTIVALS_DE_SPECTACLES = NativeCategory(
+    technical_name="FESTIVALS_DE_SPECTACLES",
+    label="Festivals de spectacles",
+    parents=[SEARCH_GROUP_SPECTACLES.id],
+)
 NATIVE_CATEGORY_JEUX_EN_LIGNE = NativeCategory(
     technical_name="JEUX_EN_LIGNE",
     label="Jeux en ligne",
@@ -548,6 +554,11 @@ NATIVE_CATEGORY_SEANCES_DE_CINEMA = NativeCategory(
     parents=[SEARCH_GROUP_FILMS_SERIES_CINEMA.id, SEARCH_GROUP_CINEMA.id],
     positions={SEARCH_GROUP_CINEMA.id: 1},
     genre_type=GenreType.MOVIE,
+)
+NATIVE_CATEGORY_SPECTACLES = NativeCategory(
+    label="Spectacles",
+    parents=[SEARCH_GROUP_SPECTACLES.id],
+    genre_type=GenreType.SHOW,
 )
 NATIVE_CATEGORY_SPECTACLES_ENREGISTRES = NativeCategory(
     technical_name="SPECTACLES_ENREGISTRES",
