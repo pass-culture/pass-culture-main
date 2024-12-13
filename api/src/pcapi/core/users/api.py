@@ -1096,7 +1096,7 @@ def _filter_user_accounts(accounts: BaseQuery, search_term: str) -> BaseQuery:
         term_filters.append(models.User.email.in_(split_terms))
     elif len(split_terms) == 1 and email_utils.is_valid_email_domain(split_terms[0]):
         # search for all emails @domain.ext
-        term_filters.append(models.User.email.like(f"%{split_terms[0]}"))
+        term_filters.append(sa.func.email_domain(models.User.email) == split_terms[0][1:])
 
     if not term_filters:
         split_term = search_term.split()
@@ -1637,7 +1637,7 @@ def anonymize_non_pro_non_beneficiary_users(*, force: bool = False) -> None:
         finance_models.Deposit,
         models.User.deposits,
     ).filter(
-        ~models.User.email.like("%@passculture.app"),  # people who work or worked in the company
+        sa.func.email_domain(models.User.email) != "passculture.app",  # people who work or worked in the company
         func.array_length(models.User.roles, 1).is_(None),  # no role, not already anonymized
         finance_models.Deposit.userId.is_(None),  # no deposit
         models.User.lastConnectionDate < datetime.datetime.utcnow() - relativedelta(years=3),

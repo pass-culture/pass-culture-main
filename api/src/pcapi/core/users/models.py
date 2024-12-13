@@ -227,6 +227,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
             sa.func.immutable_unaccent(firstName + " " + lastName),
             postgresql_using="gin",
         ),
+        sa.Index("ix_user_email_domain", sa.func.email_domain(email)),
     )
 
     def __init__(self, **kwargs: typing.Any) -> None:
