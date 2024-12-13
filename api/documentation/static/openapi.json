@@ -4031,6 +4031,13 @@
             },
             "GetOffersQueryParams": {
                 "properties": {
+                    "addressId": {
+                        "description": "Address id in the pass Culture DB",
+                        "example": 1,
+                        "nullable": true,
+                        "title": "Addressid",
+                        "type": "integer"
+                    },
                     "firstIndex": {
                         "default": 1,
                         "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id).**To learn more about cursor-based pagination [see this page](/docs/understanding-our-api/resources/cursor-pagination)**.",
@@ -4056,13 +4063,11 @@
                     "venueId": {
                         "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
                         "example": 535,
+                        "nullable": true,
                         "title": "Venueid",
                         "type": "integer"
                     }
                 },
-                "required": [
-                    "venueId"
-                ],
                 "title": "GetOffersQueryParams",
                 "type": "object"
             },
@@ -9730,7 +9735,7 @@
         },
         "/public/offers/v1/events": {
             "get": {
-                "description": "Return all the events linked to given venue. Results are paginated (by default there are `50` events per page).",
+                "description": "Return filtered events.\n\nResults are paginated (by default there are `50` events per page).",
                 "operationId": "GetEvents",
                 "parameters": [
                     {
@@ -9764,10 +9769,11 @@
                         "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
                         "in": "query",
                         "name": "venueId",
-                        "required": true,
+                        "required": false,
                         "schema": {
                             "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
                             "example": 535,
+                            "nullable": true,
                             "title": "Venueid",
                             "type": "integer"
                         }
@@ -9783,6 +9789,19 @@
                             "nullable": true,
                             "title": "Idsatprovider",
                             "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Address id in the pass Culture DB",
+                        "in": "query",
+                        "name": "addressId",
+                        "required": false,
+                        "schema": {
+                            "description": "Address id in the pass Culture DB",
+                            "example": 1,
+                            "nullable": true,
+                            "title": "Addressid",
+                            "type": "integer"
                         }
                     }
                 ],
@@ -9825,7 +9844,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get Venue Event Offers",
+                "summary": "Get Event Offers",
                 "tags": [
                     "Event Offers"
                 ]
@@ -10811,7 +10830,7 @@
         },
         "/public/offers/v1/products": {
             "get": {
-                "description": "Return all products linked to a venue. Results are paginated (by default `50` products by page).",
+                "description": "Return fitered products.\n\nResults are paginated (by default `50` products by page).",
                 "operationId": "GetProducts",
                 "parameters": [
                     {
@@ -10845,10 +10864,11 @@
                         "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
                         "in": "query",
                         "name": "venueId",
-                        "required": true,
+                        "required": false,
                         "schema": {
                             "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
                             "example": 535,
+                            "nullable": true,
                             "title": "Venueid",
                             "type": "integer"
                         }
@@ -10864,6 +10884,19 @@
                             "nullable": true,
                             "title": "Idsatprovider",
                             "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Address id in the pass Culture DB",
+                        "in": "query",
+                        "name": "addressId",
+                        "required": false,
+                        "schema": {
+                            "description": "Address id in the pass Culture DB",
+                            "example": 1,
+                            "nullable": true,
+                            "title": "Addressid",
+                            "type": "integer"
                         }
                     }
                 ],
@@ -10903,7 +10936,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get Venue Products",
+                "summary": "Get Product Offers",
                 "tags": [
                     "Product Offers"
                 ]

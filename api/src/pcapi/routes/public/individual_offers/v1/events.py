@@ -193,19 +193,16 @@ def get_event(event_id: int) -> serialization.EventOfferResponse:
 )
 def get_events(query: serialization.GetOffersQueryParams) -> serialization.EventOffersResponse:
     """
-    Get Venue Event Offers
+    Get Event Offers
 
-    Return all the events linked to given venue.
+    Return filtered events.
+
     Results are paginated (by default there are `50` events per page).
     """
-    authorization.get_venue_provider_or_raise_404(query.venue_id)
+    if query.venue_id:
+        authorization.get_venue_provider_or_raise_404(query.venue_id)
 
-    total_offers_query = utils.retrieve_offers(
-        is_event=True,
-        firstIndex=query.firstIndex,
-        filtered_venue_id=query.venue_id,
-        ids_at_provider=query.ids_at_provider,  # type: ignore[arg-type]
-    ).limit(query.limit)
+    total_offers_query = utils.get_filtered_offers_linked_to_provider(query, is_event=True)
 
     return serialization.EventOffersResponse(
         events=[serialization.EventOfferResponse.build_event_offer(offer) for offer in total_offers_query],

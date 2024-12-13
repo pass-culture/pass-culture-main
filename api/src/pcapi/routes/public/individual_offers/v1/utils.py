@@ -98,26 +98,37 @@ def _retrieve_offer_tied_to_user_query() -> sqla_orm.Query:
     )
 
 
-def retrieve_offers(
-    is_event: bool, firstIndex: int, filtered_venue_id: int, ids_at_provider: list[str] | None
+def get_filtered_offers_linked_to_provider(
+    query_filters: serialization.GetOffersQueryParams,
+    is_event: bool,
 ) -> sqla_orm.Query:
     offers_query = (
         offers_models.Offer.query.outerjoin(offers_models.Offer.futureOffer)
         .join(offerers_models.Venue)
         .join(providers_models.VenueProvider)
         .filter(providers_models.VenueProvider.provider == current_api_key.provider)
-        .filter(offers_models.Offer.venueId == filtered_venue_id)
         .filter(offers_models.Offer.isEvent == is_event)
-        .filter(offers_models.Offer.id >= firstIndex)
+        .filter(offers_models.Offer.id >= query_filters.firstIndex)
         .order_by(offers_models.Offer.id)
         .options(sqla.orm.contains_eager(offers_models.Offer.futureOffer))
         .options(sqla_orm.joinedload(offers_models.Offer.venue))
     )
 
-    if ids_at_provider:
-        offers_query = offers_query.filter(offers_models.Offer.idAtProvider.in_(ids_at_provider))
+    if query_filters.venue_id:
+        offers_query = offers_query.filter(offers_models.Offer.venueId == query_filters.venue_id)
 
-    return retrieve_offer_relations_query(offers_query)
+    if query_filters.ids_at_provider:
+        offers_query = offers_query.filter(offers_models.Offer.idAtProvider.in_(query_filters.ids_at_provider))
+
+    if query_filters.address_id:
+        offers_query = offers_query.join(
+            offerers_models.OffererAddress,
+            offerers_models.OffererAddress.id == offers_models.Offer.offererAddressId,
+        ).filter(offerers_models.OffererAddress.addressId == query_filters.address_id)
+
+    offers_query = retrieve_offer_relations_query(offers_query).limit(query_filters.limit)
+
+    return offers_query
 
 
 def save_image(image_body: serialization.ImageBody, offer: offers_models.Offer) -> None:

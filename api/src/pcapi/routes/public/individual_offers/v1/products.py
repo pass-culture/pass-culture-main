@@ -767,17 +767,16 @@ def get_products(
     query: serialization.GetOffersQueryParams,
 ) -> serialization.ProductOffersResponse:
     """
-    Get Venue Products
+    Get Product Offers
 
-    Return all products linked to a venue. Results are paginated (by default `50` products by page).
+    Return fitered products.
+
+    Results are paginated (by default `50` products by page).
     """
-    utils.check_venue_id_is_tied_to_api_key(query.venue_id)
-    total_offers_query = utils.retrieve_offers(
-        is_event=False,
-        firstIndex=query.firstIndex,
-        filtered_venue_id=query.venue_id,
-        ids_at_provider=query.ids_at_provider,  # type: ignore[arg-type]
-    ).limit(query.limit)
+    if query.venue_id:
+        authorization.get_venue_provider_or_raise_404(query.venue_id)
+
+    total_offers_query = utils.get_filtered_offers_linked_to_provider(query, is_event=False)
 
     return serialization.ProductOffersResponse(
         products=[serialization.ProductOfferResponse.build_product_offer(offer) for offer in total_offers_query],
