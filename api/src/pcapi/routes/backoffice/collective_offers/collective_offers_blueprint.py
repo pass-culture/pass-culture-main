@@ -534,8 +534,14 @@ def get_collective_offer_details(collective_offer_id: int) -> utils.BackofficeRe
         sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
             educational_models.CollectiveStock.collectiveBookings
         ),
-        sa.orm.joinedload(educational_models.CollectiveOffer.venue),
-        sa.orm.joinedload(educational_models.CollectiveOffer.venue).joinedload(offerers_models.Venue.managingOfferer),
+        sa.orm.joinedload(educational_models.CollectiveOffer.venue).options(
+            sa.orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
+                offerers_models.OffererConfidenceRule.confidenceLevel
+            ),
+            sa.orm.joinedload(offerers_models.Venue.managingOfferer)
+            .joinedload(offerers_models.Offerer.confidenceRule)
+            .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
+        ),
         sa.orm.joinedload(educational_models.CollectiveOffer.lastValidationAuthor).load_only(
             users_models.User.firstName, users_models.User.lastName
         ),

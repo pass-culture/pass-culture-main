@@ -946,7 +946,12 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
             offerers_models.Offerer.validationStatus,
             offerers_models.Offerer.siren,
             offerers_models.Offerer.postalCode,
-        ),
+        )
+        .joinedload(offerers_models.Offerer.confidenceRule)
+        .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
+        sa.orm.joinedload(offers_models.Offer.venue)
+        .joinedload(offerers_models.Venue.confidenceRule)
+        .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
         sa.orm.joinedload(offers_models.Offer.stocks)
         .joinedload(offers_models.Stock.priceCategory)
         .load_only(offers_models.PriceCategory.price)

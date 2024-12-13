@@ -416,8 +416,13 @@ def get_collective_offer_template_details(collective_offer_template_id: int) -> 
     collective_offer_template_query = educational_models.CollectiveOfferTemplate.query.filter(
         educational_models.CollectiveOfferTemplate.id == collective_offer_template_id
     ).options(
-        sa.orm.joinedload(educational_models.CollectiveOfferTemplate.venue).joinedload(
-            offerers_models.Venue.managingOfferer
+        sa.orm.joinedload(educational_models.CollectiveOfferTemplate.venue).options(
+            sa.orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
+                offerers_models.OffererConfidenceRule.confidenceLevel
+            ),
+            sa.orm.joinedload(offerers_models.Venue.managingOfferer)
+            .joinedload(offerers_models.Offerer.confidenceRule)
+            .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
         )
     )
     collective_offer_template = collective_offer_template_query.one_or_none()

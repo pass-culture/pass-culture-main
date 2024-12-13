@@ -2293,6 +2293,30 @@ class GetOfferDetailsTest(GetEndpointHelper):
         text = html_parser.extract_cards_text(response.data)[0]
         assert "Adresse : Champ de Mars 1v Place Jacques Rueff 75007 Paris 48.85605, 2.29800" in text
 
+    def test_get_offer_details_with_offerer_confidence_rule(self, authenticated_client):
+        rule = offerers_factories.ManualReviewOffererConfidenceRuleFactory(offerer__name="Offerer")
+        offer = offers_factories.OfferFactory(venue__managingOfferer=rule.offerer)
+
+        url = url_for(self.endpoint, offer_id=offer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        text = html_parser.extract_cards_text(response.data)[0]
+        assert "Entité juridique : Offerer Revue manuelle" in text
+
+    def test_get_offer_details_with_venue_confidence_rule(self, authenticated_client):
+        rule = offerers_factories.ManualReviewVenueConfidenceRuleFactory(venue__name="Venue")
+        offer = offers_factories.OfferFactory(venue=rule.venue)
+
+        url = url_for(self.endpoint, offer_id=offer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        text = html_parser.extract_cards_text(response.data)[0]
+        assert "Lieu : Venue Revue manuelle" in text
+
 
 class IndexOfferButtonTest(button_helpers.ButtonHelper):
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
