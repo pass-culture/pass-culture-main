@@ -328,7 +328,7 @@ SEARCH_GROUP_RENCONTRES_CONFERENCES = SearchGroup(
 SEARCH_GROUP_SPECTACLES = SearchGroup(
     parents=[SEARCH_NODES_ROOT.id],
     technical_name="SPECTACLES",
-    label="Spectacles",
+    label="Théâtre et spectacles",
     positions={SEARCH_NODES_ROOT.id: 8},
 )
 # endregion
