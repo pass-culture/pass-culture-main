@@ -44,7 +44,7 @@ def validate_booking_limit_datetime(booking_limit_datetime: datetime | None, val
         and booking_limit_datetime > values["beginning_datetime"]
     ):
         raise ValueError("La date limite de réservation ne peut être postérieure à la date de début de l'évènement")
-    if booking_limit_datetime and values["start_datetime"] and booking_limit_datetime > values["start_datetime"]:
+    if booking_limit_datetime and values.get("start_datetime") and booking_limit_datetime > values["start_datetime"]:
         raise ValueError("La date limite de réservation ne peut être postérieure à la date de début de l'évènement")
     return booking_limit_datetime
 
