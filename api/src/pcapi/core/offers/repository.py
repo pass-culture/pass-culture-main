@@ -53,6 +53,7 @@ OFFER_LOAD_OPTIONS = typing.Iterable[
         "offerer_address",
         "future_offer",
         "pending_bookings",
+        "headline_offer",
     ]
 ]
 
@@ -107,7 +108,7 @@ def get_capped_offers_for_filters(
                 models.Offer.extraData,
                 models.Offer.lastProviderId,
                 models.Offer.offererAddressId,
-            )
+            ).joinedload(models.Offer.headlineOffer)
         )
         .options(
             sa_orm.joinedload(models.Offer.venue)
@@ -1138,6 +1139,8 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
             query = query.options(sa_orm.joinedload(models.Offer.mediations))
         if "product" in load_options:
             query = query.options(sa_orm.joinedload(models.Offer.product).joinedload(models.Product.productMediations))
+        if "headline_offer" in load_options:
+            query = query.options(sa_orm.joinedload(models.Offer.headlineOffer))
         if "price_category" in load_options:
             query = query.options(
                 sa_orm.joinedload(models.Offer.priceCategories).joinedload(models.PriceCategory.priceCategoryLabel)

@@ -1,6 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -8,8 +7,6 @@ import {
   ApiError,
   GetIndividualOfferResponseModel,
   GetIndividualOfferWithAddressResponseModel,
-  OfferStatus,
-  SubcategoryIdEnum,
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
@@ -20,7 +17,11 @@ import {
   getIndividualOfferUrl,
 } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { PATCH_SUCCESS_MESSAGE } from 'commons/core/shared/constants'
-import { getOfferStockFactory } from 'commons/utils/factories/individualApiFactories'
+import {
+  getIndividualOfferFactory,
+  getOfferStockFactory,
+  listOffersOfferFactory,
+} from 'commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
@@ -99,60 +100,9 @@ describe('screens:StocksThing', () => {
   })
 
   beforeEach(() => {
-    apiOffer = {
-      bookingEmail: null,
-      dateCreated: '2022-05-18T08:25:30.991476Z',
-      description: 'A passionate description of product 80',
-      durationMinutes: null,
-      extraData: null,
-      hasBookingLimitDatetimesPassed: true,
-      hasPendingBookings: false,
-      hasStocks: true,
-      isActive: true,
-      isActivable: true,
-      isDigital: false,
-      isDuo: false,
-      isEditable: true,
+    apiOffer = getIndividualOfferFactory({
       isEvent: false,
-      isNational: false,
-      isThing: false,
-      audioDisabilityCompliant: false,
-      mentalDisabilityCompliant: false,
-      motorDisabilityCompliant: false,
-      id: 12,
-      visualDisabilityCompliant: false,
-      lastProvider: null,
-      name: 'Séance ciné duo',
-      priceCategories: [{ price: 12.2, label: 'Mon premier tariff', id: 1 }],
-      subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
-      thumbUrl: null,
-      url: null,
-      venue: {
-        bookingEmail: 'venue29@example.net',
-        city: 'Paris',
-        departementCode: '75',
-        id: 1,
-        isVirtual: false,
-        managingOfferer: {
-          id: 1,
-          name: 'Le Petit Rintintin Management 6',
-          allowedOnAdage: true,
-        },
-        name: 'Cinéma synchro avec booking provider',
-        postalCode: '75000',
-        publicName: 'Cinéma synchro avec booking provider',
-        street: '1 boulevard Poissonnière',
-        audioDisabilityCompliant: false,
-        mentalDisabilityCompliant: false,
-        motorDisabilityCompliant: false,
-        visualDisabilityCompliant: false,
-      },
-      withdrawalDetails: null,
-      status: OfferStatus.EXPIRED,
-      withdrawalType: null,
-      withdrawalDelay: null,
-      bookingsCount: 0,
-    }
+    })
 
     vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     vi.spyOn(api, 'getStocks').mockResolvedValue({
@@ -166,28 +116,7 @@ describe('screens:StocksThing', () => {
     })
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
-    vi.spyOn(api, 'listOffers').mockResolvedValue([
-      {
-        id: 1,
-        status: OfferStatus.ACTIVE,
-        isActive: true,
-        hasBookingLimitDatetimesPassed: false,
-        isEducational: false,
-        name: 'name',
-        isEvent: false,
-        venue: {
-          name: 'venue',
-          offererName: 'offerer',
-          isVirtual: false,
-          id: 1,
-        },
-        stocks: [],
-        isEditable: true,
-        isShowcase: false,
-        isThing: false,
-        subcategoryId: SubcategoryIdEnum.VOD,
-      },
-    ])
+    vi.spyOn(api, 'listOffers').mockResolvedValue([listOffersOfferFactory()])
     vi.spyOn(api, 'patchOffer').mockResolvedValue(
       {} as GetIndividualOfferResponseModel
     )
