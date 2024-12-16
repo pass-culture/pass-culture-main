@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import React from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router'
 
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import strokeLibraryIcon from 'icons/stroke-library.svg'

@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
-import * as router from 'react-router-dom'
+import * as router from 'react-router'
 
 import { api } from 'apiClient/api'
 import {
@@ -44,8 +44,8 @@ const contextData: ReimbursementsContextProps = {
     id: 1,
   },
 }
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
+vi.mock('react-router', async () => ({
+  ...(await vi.importActual('react-router')),
   useOutletContext: () => contextData,
 }))
 

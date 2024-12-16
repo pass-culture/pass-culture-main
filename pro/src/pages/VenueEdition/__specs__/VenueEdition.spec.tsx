@@ -1,6 +1,6 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { GetVenueResponseModel } from 'apiClient/v1'
@@ -38,8 +38,8 @@ const renderVenueEdition = (options?: RenderWithProvidersOptions) => {
   )
 }
 
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
+vi.mock('react-router', async () => ({
+  ...(await vi.importActual('react-router')),
   useParams: () => ({
     venueId: defaultGetVenue.id,
   }),

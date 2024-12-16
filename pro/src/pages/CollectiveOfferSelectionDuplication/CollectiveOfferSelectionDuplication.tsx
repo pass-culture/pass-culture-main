@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { Form, FormikProvider, useFormik } from 'formik'
 import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 
 import { api } from 'apiClient/api'
 import {

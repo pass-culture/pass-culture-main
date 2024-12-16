@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import { FormikProvider, useFormik } from 'formik'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router'
 
 import {
   IndividualOfferContext,

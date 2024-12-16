@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router'
 
 import { GetVenueResponseModel } from 'apiClient/v1'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'

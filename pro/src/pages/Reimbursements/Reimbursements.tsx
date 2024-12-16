@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux'
-import { Outlet } from 'react-router-dom'
+import { Outlet } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'

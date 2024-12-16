@@ -1,5 +1,5 @@
 import { addDays, isBefore } from 'date-fns'
-import { Route, Routes, useParams } from 'react-router-dom'
+import { Route, Routes, useParams } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'

@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/react'
 import { useSelector } from 'react-redux'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider } from 'react-router'
 
 import { App } from 'app/App/App'
 import { routes } from 'app/AppRouter/routesMap'

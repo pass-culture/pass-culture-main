@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Routes, Route, Link } from 'react-router-dom'
+import { Routes, Route, Link } from 'react-router'
 
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { useLogNavigation } from 'app/App/hook/useLogNavigation'

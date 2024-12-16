@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 
 import { ActionBar } from '../components/ActionBar/ActionBar'
 import { OnboardingLayout } from '../components/OnboardingLayout/OnboardingLayout'

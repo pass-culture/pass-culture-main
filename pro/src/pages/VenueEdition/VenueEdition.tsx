@@ -6,7 +6,7 @@ import {
   useLocation,
   useNavigate,
   useParams,
-} from 'react-router-dom'
+} from 'react-router'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'

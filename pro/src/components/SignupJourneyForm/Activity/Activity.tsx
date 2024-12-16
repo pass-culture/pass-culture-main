@@ -1,6 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'

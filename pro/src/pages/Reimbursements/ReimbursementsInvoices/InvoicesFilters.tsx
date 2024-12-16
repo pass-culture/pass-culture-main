@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { GET_INVOICES_QUERY_KEY } from 'commons/config/swrQueryKeys'

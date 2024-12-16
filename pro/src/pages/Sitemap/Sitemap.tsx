@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 
 import { Layout } from 'app/App/layout/Layout'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'

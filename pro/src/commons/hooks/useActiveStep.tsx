@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router'
 
 export const useActiveStep = (steps?: string[]): string => {
   const location = useLocation()

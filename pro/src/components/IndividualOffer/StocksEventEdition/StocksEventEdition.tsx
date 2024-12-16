@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { FieldArray, FormikProvider, useFormik } from 'formik'
 import isEqual from 'lodash/isEqual'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'

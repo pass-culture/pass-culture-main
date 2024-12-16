@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'

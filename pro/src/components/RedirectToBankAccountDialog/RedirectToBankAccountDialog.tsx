@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events, VenueEvents } from 'commons/core/FirebaseEvents/constants'

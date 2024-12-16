@@ -1,7 +1,7 @@
 /* No need to test this file */
 /* istanbul ignore file */
 
-import { Navigate } from 'react-router-dom'
+import { Navigate } from 'react-router'
 
 import { UNAVAILABLE_ERROR_PAGE } from 'commons/utils/routes'
 

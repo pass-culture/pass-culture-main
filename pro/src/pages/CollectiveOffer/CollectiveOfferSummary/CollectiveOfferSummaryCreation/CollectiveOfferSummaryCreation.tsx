@@ -1,5 +1,5 @@
 import React from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams } from 'react-router'
 
 import { Layout } from 'app/App/layout/Layout'
 import { isCollectiveOffer, Mode } from 'commons/core/OfferEducational/types'

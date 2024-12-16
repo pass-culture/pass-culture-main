@@ -5,7 +5,7 @@ import {
   Routes,
   ScrollRestoration,
   useLocation,
-} from 'react-router-dom'
+} from 'react-router'
 
 import { AdageFrontRoles } from 'apiClient/adage'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'

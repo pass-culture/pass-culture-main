@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'

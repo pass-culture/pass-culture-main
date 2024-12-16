@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
