@@ -68,7 +68,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -97,7 +97,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -125,7 +125,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -1090,7 +1090,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -1378,7 +1378,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -1415,7 +1415,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -1451,7 +1451,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -2184,7 +2184,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -2221,7 +2221,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -2257,7 +2257,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -3472,7 +3472,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -3509,7 +3509,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -3545,7 +3545,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -4636,7 +4636,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -4673,7 +4673,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -4709,7 +4709,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -5108,7 +5108,7 @@
                 "title": "MUSEE_VENTE_DISTANCE_read",
                 "type": "object"
             },
-            "MusicTypeEnum": {
+            "MusicTypeEnum__deprecated_": {
                 "description": "An enumeration.",
                 "enum": [
                     "JAZZ-ACID_JAZZ",
@@ -5312,13 +5312,13 @@
                     "CHANSON_VARIETE-OTHER",
                     "OTHER"
                 ],
-                "title": "MusicTypeEnum",
+                "title": "MusicTypeEnum (deprecated)",
                 "type": "string"
             },
             "MusicTypeResponse": {
                 "properties": {
                     "id": {
-                        "$ref": "#/components/schemas/MusicTypeEnum"
+                        "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                     },
                     "label": {
                         "title": "Label",
@@ -8117,7 +8117,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -8157,7 +8157,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -8468,7 +8468,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -8509,7 +8509,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -8549,7 +8549,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
