@@ -3,7 +3,9 @@ import classNames from 'classnames'
 import {
   CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
+  CollectiveOfferStatus,
 } from 'apiClient/v1'
+import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
@@ -48,14 +50,21 @@ export const CollectiveOfferRow = ({
     'ENABLE_COLLECTIVE_OFFERS_EXPIRATION'
   )
 
-  const editionOfferLink = useOfferEditionURL({
+  const offerLink = useOfferEditionURL({
     isOfferEducational: true,
     offerId: offer.id,
     status: offer.status,
     isShowcase: Boolean(offer.isShowcase),
   })
 
-  const rowId = `collective-offer-${offer.isShowcase ? 'T-' : ''}${offer.id}`
+  const id = computeURLCollectiveOfferId(offer.id, Boolean(offer.isShowcase))
+
+  const editionOfferLink =
+    offer.status === CollectiveOfferStatus.DRAFT
+      ? `/offre/collectif/${id}/creation`
+      : `/offre/${id}/collectif/edition`
+
+  const rowId = `collective-offer-${id}`
 
   const bookingLimitDate = offer.stocks[0]?.bookingLimitDatetime
 
@@ -94,14 +103,14 @@ export const CollectiveOfferRow = ({
         )}
         <ThumbCell
           offer={offer}
-          editionOfferLink={editionOfferLink}
+          editionOfferLink={offerLink}
           inactive={!offer.isEditable}
           headers={`${rowId} collective-offer-head-image`}
         />
 
         <OfferNameCell
           offer={offer}
-          editionOfferLink={editionOfferLink}
+          editionOfferLink={offerLink}
           headers={`${rowId} collective-offer-head-name`}
         />
 
