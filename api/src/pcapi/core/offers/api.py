@@ -450,15 +450,18 @@ def update_offer(
     return offer
 
 
-def update_collective_offer(
-    offer_id: int,
-    new_values: dict,
-) -> None:
+def update_collective_offer(offer_id: int, new_values: dict) -> None:
     offer_to_update = educational_models.CollectiveOffer.query.filter(
         educational_models.CollectiveOffer.id == offer_id
     ).first()
-    educational_validation.check_if_offer_is_not_public_api(offer_to_update)
-    educational_validation.check_if_offer_not_used_or_reimbursed(offer_to_update)
+
+    if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+        educational_validation.check_collective_offer_action_is_allowed(
+            offer_to_update, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
+        )
+    else:
+        educational_validation.check_if_offer_is_not_public_api(offer_to_update)
+        educational_validation.check_if_offer_not_used_or_reimbursed(offer_to_update)
 
     new_venue = None
     if "venueId" in new_values and new_values["venueId"] != offer_to_update.venueId:
@@ -483,8 +486,7 @@ def update_collective_offer(
         updated_fields = _update_collective_offer(offer=offer_to_update, new_values=new_values, commit=False)
 
     educational_api_offer.notify_educational_redactor_on_collective_offer_or_stock_edit(
-        offer_to_update.id,
-        updated_fields,
+        offer_to_update.id, updated_fields
     )
 
 

@@ -10,12 +10,13 @@ import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import StudentLevels
-import pcapi.core.educational.testing as adage_api_testing
+import pcapi.core.educational.testing as educational_testing
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.models import OfferValidationStatus
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
@@ -143,7 +144,7 @@ class Returns200Test:
             ),
         )
 
-        adage_request = adage_api_testing.adage_requests[0]
+        adage_request = educational_testing.adage_requests[0]
         adage_request["sent_data"].updatedFields = sorted(adage_request["sent_data"].updatedFields)
 
         assert adage_request["sent_data"] == expected_payload
@@ -176,7 +177,7 @@ class Returns200Test:
 
         # Then
         assert response.status_code == 200
-        assert len(adage_api_testing.adage_requests) == 0
+        assert len(educational_testing.adage_requests) == 0
 
     def test_patch_offer_with_empty_intervention_area_in_offerer_venue(self, client):
         # Given
@@ -255,6 +256,40 @@ class Returns200Test:
         assert offer.venueId == venue.id
         assert booking.venueId == venue.id
         assert cancelled_booking.venueId == venue.id
+
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.parametrize("status", educational_testing.STATUSES_ALLOWING_EDIT_DETAILS)
+    def test_patch_collective_offer_allowed_action(self, client, status):
+        offer = educational_factories.create_collective_offer_by_status(status)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        data = {
+            "name": "New name",
+            "mentalDisabilityCompliant": True,
+            "description": "Ma super description",
+            "contactEmail": "toto@example.com",
+            "bookingEmails": ["pifpouf@testmail.com", "bimbam@testmail.com"],
+            "subcategoryId": "CONCERT",
+            "students": ["Collège - 4e"],
+            "interventionArea": ["01", "2A"],
+            "formats": [subcategories.EacFormat.CONCERT.value],
+        }
+        patch_path = "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"
+        auth_client = client.with_session_auth("user@example.com")
+        with patch(patch_path):
+            response = auth_client.patch(url_for(self.endpoint, offer_id=offer.id), json=data)
+            assert response.status_code == 200
+
+        db.session.refresh(offer)
+        assert offer.name == "New name"
+        assert offer.mentalDisabilityCompliant
+        assert offer.description == "Ma super description"
+        assert offer.contactEmail == "toto@example.com"
+        assert offer.bookingEmails == ["pifpouf@testmail.com", "bimbam@testmail.com"]
+        assert offer.subcategoryId == "CONCERT"
+        assert offer.students == [StudentLevels.COLLEGE4]
+        assert offer.interventionArea == ["01", "2A"]
+        assert offer.formats == [subcategories.EacFormat.CONCERT]
 
 
 class Returns400Test:
@@ -653,6 +688,45 @@ class Returns403Test:
         assert offer.venueId == other_related_venue.id
         assert booking.venueId == other_related_venue.id
         assert finance_event.venueId == other_related_venue.id
+
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.parametrize("status", educational_testing.STATUSES_NOT_ALLOWING_EDIT_DETAILS)
+    def test_patch_collective_offer_unallowed_action(self, client, status):
+        offer = educational_factories.create_collective_offer_by_status(status)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        previous_name = offer.name
+        previous_description = offer.description
+        data = {"name": "New name", "description": "Ma super description"}
+        patch_path = "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"
+        auth_client = client.with_session_auth("user@example.com")
+        with patch(patch_path):
+            response = auth_client.patch(f"/collective/offers/{offer.id}", json=data)
+            assert response.status_code == 403
+            assert response.json == {"offer": "This collective offer status does not allow editing details"}
+
+        db.session.refresh(offer)
+        assert offer.name == previous_name
+        assert offer.description == previous_description
+
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    def test_patch_collective_offer_ended(self, client):
+        offer = educational_factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        previous_name = offer.name
+        previous_description = offer.description
+        data = {"name": "New name", "description": "Ma super description"}
+        patch_path = "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"
+        auth_client = client.with_session_auth("user@example.com")
+        with patch(patch_path):
+            response = auth_client.patch(f"/collective/offers/{offer.id}", json=data)
+            assert response.status_code == 403
+            assert response.json == {"offer": "This collective offer status does not allow editing details"}
+
+        db.session.refresh(offer)
+        assert offer.name == previous_name
+        assert offer.description == previous_description
 
 
 class Returns404Test:

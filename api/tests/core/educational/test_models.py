@@ -747,7 +747,7 @@ class CollectiveOfferAllowedActionsTest:
 
     @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_get_ended_offer_allowed_actions(self):
-        offer = factories.EndedNotUsedCollectiveOfferFactory()
+        offer = factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
 
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ENDED
         assert offer.allowedActions == [
@@ -780,7 +780,7 @@ class CollectiveOfferAllowedActionsTest:
 
     @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_get_offer_ended_allowed_actions_public_api(self):
-        offer = factories.EndedNotUsedCollectiveOfferFactory()
+        offer = factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
         offer.provider = providers_factories.ProviderFactory()
 
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ENDED

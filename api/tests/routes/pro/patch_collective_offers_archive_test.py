@@ -160,7 +160,7 @@ class Returns204Test:
 
     @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_archive_offer_ended(self, client):
-        offer = factories.EndedNotUsedCollectiveOfferFactory()
+        offer = factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
         venue = offer.venue
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)

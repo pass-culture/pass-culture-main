@@ -116,7 +116,7 @@ class Returns204Test:
 
     @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_cancel_ended(self, client):
-        offer = factories.EndedNotUsedCollectiveOfferFactory()
+        offer = factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
 
         client = client.with_session_auth("pro@example.com")

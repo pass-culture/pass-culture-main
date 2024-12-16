@@ -7,7 +7,9 @@ from flask_login import current_user
 from flask_login import login_required
 
 from pcapi.core.educational import exceptions as educational_exceptions
+from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational import validation as educational_validation
 from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.offerers import api as offerers_api
@@ -268,6 +270,8 @@ def edit_collective_offer(
         raise ApiErrors({"subcategoryId": "this subcategory is not educational"}, 400)
     except offers_exceptions.OfferUsedOrReimbursedCantBeEdit:
         raise ApiErrors({"offer": "the used or refund offer can't be edited."}, 403)
+    except educational_exceptions.CollectiveOfferForbiddenAction:
+        raise ApiErrors({"offer": "This collective offer status does not allow editing details"}, 403)
     except educational_exceptions.OffererOfVenueDontMatchOfferer:
         raise ApiErrors({"venueId": "New venue needs to have the same offerer"}, 403)
     except educational_exceptions.VenueIdDontExist:
@@ -386,6 +390,9 @@ def edit_collective_offer_template(
 def patch_collective_offers_active_status(
     body: collective_offers_serialize.PatchCollectiveOfferActiveStatusBodyModel,
 ) -> None:
+    if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+        raise ApiErrors({"global": ["Cette action n'est pas autorisée sur cette offre"]}, status_code=403)
+
     if body.is_active:
         offerers_ids = educational_repository.get_offerer_ids_from_collective_offers_ids(body.ids)
         for offerer_id in offerers_ids:
@@ -670,6 +677,14 @@ def attach_offer_image(
 
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
+    if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+        try:
+            educational_validation.check_collective_offer_action_is_allowed(
+                offer, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
+            )
+        except educational_exceptions.CollectiveOfferForbiddenAction:
+            raise ApiErrors({"global": ["Cette action n'est pas autorisée sur cette offre"]}, status_code=403)
+
     image_as_bytes = form.get_image_as_bytes(request)
 
     try:
@@ -748,15 +763,21 @@ def attach_offer_template_image(
     on_success_status=204,
     api=blueprint.pro_private_schema,
 )
-def delete_offer_image(
-    offer_id: int,
-) -> None:
+def delete_offer_image(offer_id: int) -> None:
     try:
         offer = educational_repository.get_collective_offer_by_id(offer_id)
     except educational_exceptions.CollectiveOfferNotFound:
         raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id."]}, status_code=404)
 
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+
+    if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+        try:
+            educational_validation.check_collective_offer_action_is_allowed(
+                offer, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
+            )
+        except educational_exceptions.CollectiveOfferForbiddenAction:
+            raise ApiErrors({"global": ["Cette action n'est pas autorisée sur cette offre"]}, status_code=403)
 
     educational_api_offer.delete_image(obj=offer)
 
@@ -767,9 +788,7 @@ def delete_offer_image(
     on_success_status=204,
     api=blueprint.pro_private_schema,
 )
-def delete_offer_template_image(
-    offer_id: int,
-) -> None:
+def delete_offer_template_image(offer_id: int) -> None:
     try:
         offer = educational_api_offer.get_collective_offer_template_by_id(offer_id)
     except educational_exceptions.CollectiveOfferTemplateNotFound:
