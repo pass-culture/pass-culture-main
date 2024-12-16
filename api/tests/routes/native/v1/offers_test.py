@@ -3592,3 +3592,9 @@ class CategoriesTest:
         ids = [node["id"] for node in response.json["categories"]]
 
         assert len(ids) == len(set(ids))
+
+    def test_positions_reference_parents(self, client):
+        response = client.get("/native/v1/categories")
+        for node in response.json["categories"]:
+            if node["positions"]:
+                assert set(node["positions"]) <= set(node["parents"]), f'{node["positions"] = }, {node["parents"] = }'
