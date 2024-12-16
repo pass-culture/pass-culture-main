@@ -22,7 +22,7 @@ export default {
 }
 
 const defaultArgs = {
-  name: 'question',
+  name: 'name',
   legend: 'This is the legend',
   group: [
     {
@@ -45,5 +45,18 @@ export const WithBorder = {
   args: {
     ...defaultArgs,
     withBorder: true,
+    name: 'name 2',
+  },
+}
+
+export const WithChildren = {
+  args: {
+    ...defaultArgs,
+    withBorder: true,
+    group: defaultArgs.group.map((g, i) => ({
+      ...g,
+      childrenOnChecked: <p>Sub content {i}</p>,
+    })),
+    name: 'name 3',
   },
 }

@@ -30,6 +30,7 @@ interface RadioGroupProps {
   group: {
     label: string
     value: string
+    childrenOnChecked?: JSX.Element
   }[]
   /**
    * Custom CSS class applied to the group's `fieldset` element.
@@ -98,9 +99,9 @@ export const RadioGroup = ({
             value={item.value}
             withBorder={withBorder}
             hasError={hasError}
-            fullWidth
             onChange={onChange}
             {...(hasError ? { ariaDescribedBy: `error-${name}` } : {})}
+            childrenOnChecked={item.childrenOnChecked}
           />
         </div>
       ))}
