@@ -36,13 +36,13 @@ export const isPasswordValid = (password: string | undefined): boolean => {
   return false
 }
 
-enum PasswordValidationCheck {
-  LENGTH = 'LENGTH',
-  UPPER_CASE = 'UPPER_CASE',
-  LOWER_CASE = 'LOWER_CASE',
-  NUMBER = 'NUMBER',
-  SYMBOLE = 'SYMBOLE',
-}
+const PasswordValidationCheck = {
+  LENGTH: 'LENGTH',
+  UPPER_CASE: 'UPPER_CASE',
+  LOWER_CASE: 'LOWER_CASE',
+  NUMBER: 'NUMBER',
+  SYMBOLE: 'SYMBOLE',
+} as const
 
 export const getPasswordRuleLabel = (value: string) => {
   switch (value) {

@@ -1,15 +1,18 @@
 import cn from 'classnames'
-import { useId, useRef, ForwardedRef, forwardRef, useEffect } from 'react'
+import { ForwardedRef, forwardRef, useEffect, useId, useRef } from 'react'
 
+import { type EnumType } from 'commons/custom_types/utils'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './BaseCheckbox.module.scss'
 
-export enum PartialCheck {
-  CHECKED = 'checked',
-  PARTIAL = 'partial',
-  UNCHECKED = 'unchecked',
-}
+export const PartialCheck = {
+  CHECKED: 'checked',
+  PARTIAL: 'partial',
+  UNCHECKED: 'unchecked',
+} as const
+// eslint-disable-next-line no-redeclare
+export type PartialCheck = EnumType<typeof PartialCheck>
 
 export interface BaseCheckboxProps
   extends React.InputHTMLAttributes<HTMLInputElement> {

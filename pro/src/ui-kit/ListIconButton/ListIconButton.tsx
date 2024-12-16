@@ -1,18 +1,21 @@
 /* istanbul ignore file : no need to test styled html tag  */
 import cn from 'classnames'
-import React, { MouseEvent, forwardRef, ForwardedRef } from 'react'
+import React, { ForwardedRef, MouseEvent, forwardRef } from 'react'
 import { Link } from 'react-router-dom'
 
+import { type EnumType } from 'commons/custom_types/utils'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
 import { useTooltipProps } from 'ui-kit/Tooltip/useTooltipProps'
 
 import styles from './ListIconButton.module.scss'
 
-export enum ListIconButtonVariant {
-  DEFAULT = 'default',
-  PRIMARY = 'primary',
-}
+export const ListIconButtonVariant = {
+  DEFAULT: 'default',
+  PRIMARY: 'primary',
+} as const
+// eslint-disable-next-line no-redeclare
+export type ListIconButtonVariant = EnumType<typeof ListIconButtonVariant>
 
 /**
  * Props for the ListIconButton component.

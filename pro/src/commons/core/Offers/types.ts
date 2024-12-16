@@ -3,6 +3,7 @@ import {
   EacFormat,
   OfferStatus,
 } from 'apiClient/v1'
+import { type EnumType } from 'commons/custom_types/utils'
 import { CropParams } from 'components/ImageUploader/components/ButtonImageEdit/types'
 
 import { ALL_FORMATS, ALL_STATUS } from './constants'
@@ -34,11 +35,13 @@ export type CollectiveSearchFiltersParams = {
   page?: number
 }
 
-export enum CollectiveOfferTypeEnum {
-  ALL = 'all',
-  OFFER = 'offer',
-  TEMPLATE = 'template',
-}
+export const CollectiveOfferTypeEnum = {
+  ALL: 'all',
+  OFFER: 'offer',
+  TEMPLATE: 'template',
+} as const
+// eslint-disable-next-line no-redeclare
+export type CollectiveOfferTypeEnum = EnumType<typeof CollectiveOfferTypeEnum>
 
 export interface CategorySubtypeItem {
   code: number

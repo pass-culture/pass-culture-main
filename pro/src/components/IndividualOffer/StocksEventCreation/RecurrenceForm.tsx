@@ -79,7 +79,7 @@ const getMonthlyOptions = (values: RecurrenceFormValues) => {
       ).replace('.', '')
     : ''
 
-  const options = [
+  const options: Array<{ label: string; value: MonthlyOption }> = [
     {
       label: `Tous les ${xOfMonth} du mois`,
       value: MonthlyOption.X_OF_MONTH,

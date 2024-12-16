@@ -1,10 +1,14 @@
 import { useCallback, useState } from 'react'
 
-export enum SortingMode {
-  ASC = 'asc',
-  DESC = 'desc',
-  NONE = 'none',
-}
+import { type EnumType } from 'commons/custom_types/utils'
+
+export const SortingMode = {
+  ASC: 'asc',
+  DESC: 'desc',
+  NONE: 'none',
+} as const
+// eslint-disable-next-line no-redeclare
+export type SortingMode = EnumType<typeof SortingMode>
 
 export const useColumnSorting = <SortingColumn>() => {
   const [currentSortingColumn, setCurrentSortingColumn] =

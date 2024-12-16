@@ -1,6 +1,7 @@
 import cn from 'classnames'
-import React, { ReactNode } from 'react'
+import { ReactNode } from 'react'
 
+import { type EnumType } from 'commons/custom_types/utils'
 import fullClearIcon from 'icons/full-clear.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
 import strokeWrongIcon from 'icons/stroke-wrong.svg'
@@ -12,14 +13,16 @@ import styles from './Timeline.module.scss'
 /**
  * Enum for the types of steps in the timeline.
  */
-export enum TimelineStepType {
-  SUCCESS = 'SUCCESS',
-  ERROR = 'ERROR',
-  WAITING = 'WAITING',
-  DISABLED = 'DISABLED',
-  CANCELLED = 'CANCELLED',
-  REFUSED = 'REFUSED',
-}
+export const TimelineStepType = {
+  SUCCESS: 'SUCCESS',
+  ERROR: 'ERROR',
+  WAITING: 'WAITING',
+  DISABLED: 'DISABLED',
+  CANCELLED: 'CANCELLED',
+  REFUSED: 'REFUSED',
+} as const
+// eslint-disable-next-line no-redeclare
+export type TimelineStepType = EnumType<typeof TimelineStepType>
 
 /**
  * Represents a single step in the timeline.

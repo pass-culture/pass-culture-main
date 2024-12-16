@@ -1,10 +1,11 @@
 import cn from 'classnames'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { Audience } from 'commons/core/shared/types'
+import { type EnumType } from 'commons/custom_types/utils'
 import { SortingMode, useColumnSorting } from 'commons/hooks/useColumnSorting'
 import { usePagination } from 'commons/hooks/usePagination'
 import { BookingsFilters } from 'components/Bookings/BookingsRecapTable/types'
@@ -22,12 +23,17 @@ import { NoFilteredBookings } from '../NoFilteredBookings/NoFilteredBookings'
 import styles from './BookingsTable.module.scss'
 import { CollectiveTableRow } from './CollectiveTableRow'
 
-enum CollectiveBookingsSortingColumn {
-  OFFER_NAME = 'OFFER_NAME',
-  INSTITUTION_NAME = 'INSTITUTION_NAME',
-  BENEFICIARY_NAME = 'BENEFICIARY_NAME',
-  BOOKING_DATE = 'BOOKING_DATE',
-}
+const CollectiveBookingsSortingColumn = {
+  OFFER_NAME: 'OFFER_NAME',
+  INSTITUTION_NAME: 'INSTITUTION_NAME',
+  BENEFICIARY_NAME: 'BENEFICIARY_NAME',
+  BOOKING_DATE: 'BOOKING_DATE',
+} as const
+// eslint-disable-next-line no-redeclare
+type CollectiveBookingsSortingColumn = EnumType<
+  typeof CollectiveBookingsSortingColumn
+>
+
 const BOOKINGS_PER_PAGE = 20
 
 const sortBookings = (

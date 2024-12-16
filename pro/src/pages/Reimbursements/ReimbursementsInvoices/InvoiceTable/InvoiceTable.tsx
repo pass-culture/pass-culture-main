@@ -7,6 +7,7 @@ import { InvoiceResponseV2Model } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { GET_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
+import { type EnumType } from 'commons/custom_types/utils'
 import {
   SortingMode,
   giveSortingModeForAlly,
@@ -35,13 +36,15 @@ type InvoiceTableProps = {
   invoices: InvoiceResponseV2Model[]
 }
 
-enum InvoicesOrderedBy {
-  DATE = 'date',
-  REIMBURSEMENT_POINT_NAME = 'reimbursementPointName',
-  REFERENCE = 'reference',
-  CASHFLOW_LABELS = 'cashflowLabels',
-  DOCUMENT_TYPE = 'documentType',
-}
+const InvoicesOrderedBy = {
+  DATE: 'date',
+  REIMBURSEMENT_POINT_NAME: 'reimbursementPointName',
+  REFERENCE: 'reference',
+  CASHFLOW_LABELS: 'cashflowLabels',
+  DOCUMENT_TYPE: 'documentType',
+} as const
+// eslint-disable-next-line no-redeclare
+type InvoicesOrderedBy = EnumType<typeof InvoicesOrderedBy>
 
 function sortInvoices(
   invoices: InvoiceResponseV2Model[],

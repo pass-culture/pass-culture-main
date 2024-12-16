@@ -1,4 +1,5 @@
 import { AccessibilityEnum } from 'commons/core/shared/types'
+import { type EnumType } from 'commons/custom_types/utils'
 
 export const SUBCATEGORIES_FIELDS_DEFAULT_VALUES = {
   gtl_id: '',
@@ -88,6 +89,8 @@ export const FORM_DEFAULT_VALUES = {
   isDuo: false,
 }
 
-export enum OFFER_LOCATION {
-  OTHER_ADDRESS = 'other',
-}
+export const OFFER_LOCATION = {
+  OTHER_ADDRESS: 'other',
+} as const
+// eslint-disable-next-line no-redeclare, @typescript-eslint/naming-convention
+export type OFFER_LOCATION = EnumType<typeof OFFER_LOCATION>

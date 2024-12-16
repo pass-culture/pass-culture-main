@@ -1,5 +1,6 @@
 import { OfferStatus, WithdrawalTypeEnum } from 'apiClient/v1'
 import { SelectOption } from 'commons/custom_types/form'
+import { type EnumType } from 'commons/custom_types/utils'
 
 import {
   CollectiveOfferTypeEnum,
@@ -7,39 +8,53 @@ import {
   SearchFiltersParams,
 } from './types'
 
-export enum OFFER_TYPES {
-  INDIVIDUAL_OR_DUO = 'INDIVIDUAL_OR_DUO',
-  EDUCATIONAL = 'EDUCATIONAL',
-}
+export const OFFER_TYPES = {
+  INDIVIDUAL_OR_DUO: 'INDIVIDUAL_OR_DUO',
+  EDUCATIONAL: 'EDUCATIONAL',
+} as const
+// eslint-disable-next-line no-redeclare, @typescript-eslint/naming-convention
+export type OFFER_TYPES = EnumType<typeof OFFER_TYPES>
 
-export enum INDIVIDUAL_OFFER_SUBTYPE {
-  PHYSICAL_GOOD = 'PHYSICAL_GOOD',
-  VIRTUAL_GOOD = 'VIRTUAL_GOOD',
-  PHYSICAL_EVENT = 'PHYSICAL_EVENT',
-  VIRTUAL_EVENT = 'VIRTUAL_EVENT',
-}
+export const INDIVIDUAL_OFFER_SUBTYPE = {
+  PHYSICAL_GOOD: 'PHYSICAL_GOOD',
+  VIRTUAL_GOOD: 'VIRTUAL_GOOD',
+  PHYSICAL_EVENT: 'PHYSICAL_EVENT',
+  VIRTUAL_EVENT: 'VIRTUAL_EVENT',
+} as const
+// eslint-disable-next-line no-redeclare, @typescript-eslint/naming-convention
+export type INDIVIDUAL_OFFER_SUBTYPE = EnumType<typeof INDIVIDUAL_OFFER_SUBTYPE>
 
-export enum COLLECTIVE_OFFER_SUBTYPE {
-  COLLECTIVE = 'COLLECTIVE',
-  TEMPLATE = 'TEMPLATE',
-}
+export const COLLECTIVE_OFFER_SUBTYPE = {
+  COLLECTIVE: 'COLLECTIVE',
+  TEMPLATE: 'TEMPLATE',
+} as const
+// eslint-disable-next-line no-redeclare, @typescript-eslint/naming-convention
+export type COLLECTIVE_OFFER_SUBTYPE = EnumType<typeof COLLECTIVE_OFFER_SUBTYPE>
 
-export enum COLLECTIVE_OFFER_SUBTYPE_DUPLICATE {
-  NEW_OFFER = 'NEW_OFFER',
-  DUPLICATE = 'DUPLICATE',
-}
+export const COLLECTIVE_OFFER_SUBTYPE_DUPLICATE = {
+  NEW_OFFER: 'NEW_OFFER',
+  DUPLICATE: 'DUPLICATE',
+} as const
+// eslint-disable-next-line no-redeclare, @typescript-eslint/naming-convention
+export type COLLECTIVE_OFFER_SUBTYPE_DUPLICATE = EnumType<
+  typeof COLLECTIVE_OFFER_SUBTYPE_DUPLICATE
+>
 
-export enum CATEGORY_STATUS {
-  ONLINE = 'ONLINE',
-  OFFLINE = 'OFFLINE',
-  ONLINE_OR_OFFLINE = 'ONLINE_OR_OFFLINE',
-}
+export const CATEGORY_STATUS = {
+  ONLINE: 'ONLINE',
+  OFFLINE: 'OFFLINE',
+  ONLINE_OR_OFFLINE: 'ONLINE_OR_OFFLINE',
+} as const
+// eslint-disable-next-line no-redeclare, @typescript-eslint/naming-convention
+export type CATEGORY_STATUS = EnumType<typeof CATEGORY_STATUS>
 
-export enum OFFER_WIZARD_MODE {
-  CREATION = 'creation',
-  READ_ONLY = 'readonly',
-  EDITION = 'edition',
-}
+export const OFFER_WIZARD_MODE = {
+  CREATION: 'creation',
+  READ_ONLY: 'readonly',
+  EDITION: 'edition',
+} as const
+// eslint-disable-next-line no-redeclare, @typescript-eslint/naming-convention
+export type OFFER_WIZARD_MODE = EnumType<typeof OFFER_WIZARD_MODE>
 
 export const OFFER_WITHDRAWAL_TYPE_LABELS = {
   [WithdrawalTypeEnum.ON_SITE]: 'Retrait sur place (guichet, comptoir...)',

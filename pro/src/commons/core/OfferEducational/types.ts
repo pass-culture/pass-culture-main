@@ -1,13 +1,14 @@
 import { EacFormat } from 'apiClient/adage'
 import {
-  OfferAddressType,
-  StudentLevels,
+  CollectiveOfferResponseModel,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-  CollectiveOfferResponseModel,
   ListOffersOfferResponseModel,
+  OfferAddressType,
+  StudentLevels,
 } from 'apiClient/v1'
 import { AccessibilityFormValues } from 'commons/core/shared/types'
+import { type EnumType } from 'commons/custom_types/utils'
 import { hasProperty } from 'commons/utils/types'
 
 export type OfferDatesType = 'permanent' | 'specific_dates'
@@ -48,11 +49,13 @@ export type OfferEducationalFormValues = {
   formats?: EacFormat[]
 }
 
-export enum Mode {
-  CREATION,
-  EDITION,
-  READ_ONLY,
-}
+export const Mode = {
+  CREATION: 0,
+  EDITION: 1,
+  READ_ONLY: 2,
+} as const
+// eslint-disable-next-line no-redeclare
+export type Mode = EnumType<typeof Mode>
 
 export type OfferEducationalStockFormValues = {
   startDatetime: string
@@ -65,10 +68,12 @@ export type OfferEducationalStockFormValues = {
   educationalOfferType: EducationalOfferType
 }
 
-export enum EducationalOfferType {
-  SHOWCASE = 'SHOWCASE',
-  CLASSIC = 'CLASSIC',
-}
+export const EducationalOfferType = {
+  SHOWCASE: 'SHOWCASE',
+  CLASSIC: 'CLASSIC',
+} as const
+// eslint-disable-next-line no-redeclare
+export type EducationalOfferType = EnumType<typeof EducationalOfferType>
 
 export const isOfferEducational = (
   offer: CollectiveOfferResponseModel | ListOffersOfferResponseModel
@@ -96,6 +101,10 @@ export type VisibilityFormValues = {
   teacher: string | null
 }
 
-export enum CollectiveOffersSortingColumn {
-  EVENT_DATE = 'EVENT_DATE',
-}
+export const CollectiveOffersSortingColumn = {
+  EVENT_DATE: 'EVENT_DATE',
+} as const
+// eslint-disable-next-line no-redeclare
+export type CollectiveOffersSortingColumn = EnumType<
+  typeof CollectiveOffersSortingColumn
+>

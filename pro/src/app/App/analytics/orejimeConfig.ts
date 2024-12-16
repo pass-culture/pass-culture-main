@@ -1,13 +1,16 @@
 import { api } from 'apiClient/api'
+import { type EnumType } from 'commons/custom_types/utils'
 import { toISOStringWithoutMilliseconds } from 'commons/utils/date'
 import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
 
-export enum Consents {
-  FIREBASE = 'firebase',
-  HOTJAR = 'hotjar',
-  BEAMER = 'beamer',
-  SENTRY = 'sentry',
-}
+export const Consents = {
+  FIREBASE: 'firebase',
+  HOTJAR: 'hotjar',
+  BEAMER: 'beamer',
+  SENTRY: 'sentry',
+} as const
+// eslint-disable-next-line no-redeclare
+export type Consents = EnumType<typeof Consents>
 
 export const LOCAL_STORAGE_DEVICE_ID_KEY = 'DEVICE_ID'
 
