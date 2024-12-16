@@ -19,6 +19,8 @@ import pcapi.core.offers.repository as offers_repository
 from pcapi.core.search.backends import base
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
+from pcapi.repository import atomic
+from pcapi.repository import mark_transaction_as_invalid
 from pcapi.utils import requests
 from pcapi.utils.module_loading import import_string
 
@@ -246,7 +248,9 @@ def index_offers_in_queue(from_error_queue: bool = False, max_batches_to_process
                 extra={"count": len(offer_ids), "offer_ids": offer_ids},
             )
             try:
-                reindex_offer_ids(offer_ids, from_error_queue=from_error_queue)
+                with atomic():
+                    reindex_offer_ids(offer_ids, from_error_queue=from_error_queue)
+                    mark_transaction_as_invalid()
             except Exception as exc:  # pylint: disable=broad-except
                 if not settings.CATCH_INDEXATION_EXCEPTIONS:
                     raise
