@@ -8,7 +8,7 @@ import {
   OFFER_TYPES,
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
 } from 'commons/core/Offers/constants'
-import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { getLastDmsApplicationForOfferer } from 'commons/utils/getLastCollectiveDmsApplication'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import strokeBookedIcon from 'icons/stroke-booked.svg'
