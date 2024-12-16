@@ -22,10 +22,8 @@ import {
   selectIsCollectiveSectionOpen,
   selectIsIndividualSectionOpen,
 } from 'commons/store/nav/selector'
-import {
-  selectCurrentOffererId,
-  selectCurrentUser,
-} from 'commons/store/user/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import { selectCurrentUser } from 'commons/store/user/selectors'
 import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
 import fullDownIcon from 'icons/full-down.svg'
 import fullUpIcon from 'icons/full-up.svg'

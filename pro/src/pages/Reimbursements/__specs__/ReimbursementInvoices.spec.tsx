@@ -33,10 +33,8 @@ const renderReimbursementsInvoices = (options?: RenderWithProvidersOptions) => {
     user,
     ...options,
     storeOverrides: {
-      user: {
-        currentUser: user,
-        selectedOffererId: 1,
-      },
+      user: { currentUser: user },
+      offerer: { selectedOffererId: 1, offererNames: [] },
     },
   })
 }

@@ -17,7 +17,7 @@ import { Events } from 'commons/core/FirebaseEvents/constants'
 import { SortingMode, useColumnSorting } from 'commons/hooks/useColumnSorting'
 import { useNotification } from 'commons/hooks/useNotification'
 import { usePaginationWithSearchParams } from 'commons/hooks/usePagination'
-import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { formatPrice } from 'commons/utils/formatPrice'
 import { pluralize, pluralizeString } from 'commons/utils/pluralize'
 import {

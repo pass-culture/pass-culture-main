@@ -27,9 +27,9 @@ const renderOffererStatsScreen = (options?: RenderWithProvidersOptions) => {
     user,
     storeOverrides: {
       user: {
-        selectedOffererId: 1,
         currentUser: user,
       },
+      offerer: { selectedOffererId: 1, offererNames: [] },
     },
     ...options,
   })

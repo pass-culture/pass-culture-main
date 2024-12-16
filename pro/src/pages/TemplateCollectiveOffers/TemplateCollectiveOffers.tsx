@@ -20,7 +20,7 @@ import { getCollectiveOffersSwrKeys } from 'commons/core/Offers/utils/getCollect
 import { hasCollectiveSearchFilters } from 'commons/core/Offers/utils/hasSearchFilters'
 import { serializeApiCollectiveFilters } from 'commons/core/Offers/utils/serializer'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
-import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { TemplateCollectiveOffersScreen } from 'pages/TemplateCollectiveOffers/TemplateCollectiveOffersScreen/TemplateCollectiveOffersScreen'
 import { formatAndOrderVenues } from 'repository/venuesService'
 import { Spinner } from 'ui-kit/Spinner/Spinner'

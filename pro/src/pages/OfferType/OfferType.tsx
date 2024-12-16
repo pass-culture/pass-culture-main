@@ -6,7 +6,7 @@ import { OfferTypeScreen } from './OfferType/OfferType'
 
 const OfferType = (): JSX.Element => {
   return (
-    <Layout layout={'sticky-actions'}>
+    <Layout layout="sticky-actions">
       <OfferTypeScreen />
     </Layout>
   )

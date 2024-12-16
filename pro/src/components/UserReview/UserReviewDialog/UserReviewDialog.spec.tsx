@@ -13,9 +13,9 @@ const notifyError = vi.fn()
 const renderUserReviewDialog = () => {
   const storeOverrides = {
     user: {
-      selectedOffererId: 1,
       currentUser: sharedCurrentUserFactory(),
     },
+    offerer: { selectedOffererId: 1, offererNames: [] },
   }
   return renderWithProviders(
     <Dialog.Root defaultOpen>

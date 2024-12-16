@@ -2,7 +2,6 @@ import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 
-import { api } from 'apiClient/api'
 import {
   GetOffererNameResponseModel,
   GetOffererResponseModel,
@@ -18,47 +17,55 @@ import {
 
 import { HeaderDropdown } from './HeaderDropdown'
 
+const baseOfferers: GetOffererResponseModel[] = [
+  {
+    ...defaultGetOffererResponseModel,
+    id: 1,
+    name: 'B Structure',
+    isActive: true,
+    hasDigitalVenueAtLeastOneOffer: true,
+    managedVenues: [
+      {
+        ...defaultGetOffererVenueResponseModel,
+        id: 1,
+        isVirtual: true,
+      },
+    ],
+    hasValidBankAccount: false,
+  },
+  {
+    ...defaultGetOffererResponseModel,
+    id: 2,
+    name: 'A Structure',
+    hasValidBankAccount: true,
+  },
+]
+
+const baseOfferersNames = baseOfferers.map(
+  (offerer): GetOffererNameResponseModel => ({
+    id: offerer.id,
+    name: offerer.name,
+    allowedOnAdage: true,
+  })
+)
+
 const renderHeaderDropdown = (options?: RenderWithProvidersOptions) => {
+  if (!options?.storeOverrides?.offerer) {
+    options = {
+      ...options,
+      storeOverrides: {
+        ...options?.storeOverrides,
+        offerer: {
+          selectedOffererId: 1,
+          offererNames: baseOfferersNames,
+        },
+      },
+    }
+  }
   renderWithProviders(<HeaderDropdown />, options)
 }
 
 describe('App', () => {
-  const baseOfferers: GetOffererResponseModel[] = [
-    {
-      ...defaultGetOffererResponseModel,
-      id: 1,
-      name: 'B Structure',
-      isActive: true,
-      hasDigitalVenueAtLeastOneOffer: true,
-      managedVenues: [
-        {
-          ...defaultGetOffererVenueResponseModel,
-          id: 1,
-          isVirtual: true,
-        },
-      ],
-      hasValidBankAccount: false,
-    },
-    {
-      ...defaultGetOffererResponseModel,
-      id: 2,
-      name: 'A Structure',
-      hasValidBankAccount: true,
-    },
-  ]
-
-  const baseOfferersNames = baseOfferers.map(
-    (offerer): GetOffererNameResponseModel => ({
-      id: offerer.id,
-      name: offerer.name,
-      allowedOnAdage: true,
-    })
-  )
-  beforeEach(() => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: baseOfferersNames,
-    })
-  })
   it('should display structure name in alphabetical order', async () => {
     renderHeaderDropdown()
 

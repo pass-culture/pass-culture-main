@@ -3,19 +3,17 @@ import cn from 'classnames'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
-import useSWR from 'swr'
 
-import { api } from 'apiClient/api'
 import { useAnalytics } from 'app/App/analytics/firebase'
-import { GET_OFFERER_NAMES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { SAVED_OFFERER_ID_KEY } from 'commons/core/shared/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { updateSelectedOffererId } from 'commons/store/user/reducer'
+import { updateSelectedOffererId } from 'commons/store/offerer/reducer'
 import {
   selectCurrentOffererId,
-  selectCurrentUser,
-} from 'commons/store/user/selectors'
+  selectOffererNames,
+} from 'commons/store/offerer/selectors'
+import { selectCurrentUser } from 'commons/store/user/selectors'
 import { getSavedOffererId } from 'commons/utils/getSavedOffererId'
 import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
 import { sortByLabel } from 'commons/utils/strings'
@@ -41,6 +39,7 @@ export const HeaderDropdown = () => {
 
   const currentUser = useSelector(selectCurrentUser)
   const currentOffererId = useSelector(selectCurrentOffererId)
+  const offererNames = useSelector(selectOffererNames)
   const dispatch = useDispatch()
   const [windowWidth, setWindowWidth] = useState(window.innerWidth)
   const [subOpen, setSubOpen] = useState(false)
@@ -48,11 +47,6 @@ export const HeaderDropdown = () => {
     windowWidth >= 673
       ? 20
       : -(windowWidth - (16 + (windowWidth >= 380 ? 17 : 0)))
-
-  const offererNamesQuery = useSWR([GET_OFFERER_NAMES_QUERY_KEY], () =>
-    api.listOfferersNames()
-  )
-  const offererNames = offererNamesQuery.data?.offerersNames
 
   const offererOptions = sortByLabel(
     offererNames?.map((item) => ({

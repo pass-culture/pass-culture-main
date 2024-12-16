@@ -16,9 +16,10 @@ const renderVenueCreation = () => {
       `/structures/${defaultGetOffererResponseModel.id}/lieux/creation`,
     ],
     storeOverrides: {
-      user: {
-        currentUser: sharedCurrentUserFactory(),
+      user: { currentUser: sharedCurrentUserFactory() },
+      offerer: {
         selectedOffererId: defaultGetOffererResponseModel.id,
+        offererNames: [],
       },
     },
   })
