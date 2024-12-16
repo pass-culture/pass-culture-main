@@ -46,8 +46,7 @@ export function expectOffersOrBookingsAreFound(
               .eq(column)
               .then((cellValue) => {
                 if (lineArray[column].length) {
-                  let isAMatch: boolean = cellValue.text().includes(lineArray[column])
-                  expect(isAMatch).to.be.true
+                  expect(cellValue.text()).to.include(lineArray[column])
                 }
               })
           }
@@ -118,7 +117,6 @@ export function sessionLogInAndGoToPage(
   })
   cy.visit(path)
 }
-
 
 /**
  * Checks that the homepage is loaded and displayed
