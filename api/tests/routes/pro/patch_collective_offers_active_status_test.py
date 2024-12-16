@@ -5,7 +5,7 @@ import pytest
 from pcapi.core import testing
 from pcapi.core.educational.factories import CollectiveOfferFactory
 from pcapi.core.educational.models import CollectiveOffer
-import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers.models import OfferValidationStatus
 
 
@@ -101,3 +101,26 @@ class Returns403Test:
         assert response.status_code == 403
         assert response.json == {"Partner": ["User not in Adage can't edit the offer"]}
         assert offer1.isActive is False
+
+    @testing.override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    def test_patch_active_status(self, client):
+        offer = CollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
+
+        client = client.with_session_auth("pro@example.com")
+        data = {"ids": [offer.id], "isActive": False}
+        with patch("pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"):
+            response = client.patch("/collective/offers/active-status", json=data)
+
+        assert response.status_code == 403
+        assert response.json == {"global": ["Cette action n'est pas autorisée sur cette offre"]}
+        assert offer.isActive is True
+
+        offer.isActive = False
+        data = {"ids": [offer.id], "isActive": True}
+        with patch("pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"):
+            response = client.patch("/collective/offers/active-status", json=data)
+
+        assert response.status_code == 403
+        assert response.json == {"global": ["Cette action n'est pas autorisée sur cette offre"]}
+        assert offer.isActive is False

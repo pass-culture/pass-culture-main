@@ -491,20 +491,20 @@ class BookedCollectiveOfferFactory(CollectiveOfferBaseFactory):
         ConfirmedCollectiveBookingFactory(collectiveStock=stock)
 
 
-class EndedNotUsedCollectiveOfferFactory(CollectiveOfferBaseFactory):
-    @factory.post_generation
-    def create_ended_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
-        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-        stock = CollectiveStockFactory(beginningDatetime=yesterday, collectiveOffer=self)
-        ConfirmedCollectiveBookingFactory(collectiveStock=stock)
-
-
 class EndedCollectiveOfferFactory(CollectiveOfferBaseFactory):
     @factory.post_generation
-    def create_ended_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
-        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=3)
+    def booking_is_confirmed(self, _create: bool, booking_is_confirmed: bool = False, **kwargs: typing.Any) -> None:
+        if booking_is_confirmed:
+            yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        else:
+            yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=3)
+
         stock = CollectiveStockFactory(beginningDatetime=yesterday, collectiveOffer=self)
-        UsedCollectiveBookingFactory(collectiveStock=stock)
+
+        if booking_is_confirmed:
+            ConfirmedCollectiveBookingFactory(collectiveStock=stock)
+        else:
+            UsedCollectiveBookingFactory(collectiveStock=stock)
 
 
 # Reimbursed offers are relevant only when the FF ENABLE_COLLECTIVE_NEW_STATUSES is active
