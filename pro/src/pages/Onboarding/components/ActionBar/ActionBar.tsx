@@ -10,18 +10,15 @@ import styles from './ActionBar.module.scss'
 type ActionBarProps = {
   hasSideNav?: boolean
   disableRightButton?: boolean
+  withNextButton?: boolean
   onLeftButtonClick: (evt: React.MouseEvent<HTMLButtonElement>) => void
   onRightButtonClick: (evt: React.MouseEvent<HTMLButtonElement>) => void
-} & (
-  | { withNextButton: true; withValidateButton?: never | false }
-  | { withNextButton?: never | false; withValidateButton: true }
-)
+}
 
 export const ActionBar = ({
   hasSideNav = false,
   disableRightButton = false,
   withNextButton = false,
-  withValidateButton = false,
   onLeftButtonClick,
   onRightButtonClick,
 }: ActionBarProps): JSX.Element => {
@@ -34,7 +31,6 @@ export const ActionBar = ({
         <Button
           icon={fullLeftIcon}
           variant={ButtonVariant.SECONDARY}
-          disabled={false}
           onClick={onLeftButtonClick}
         >
           Retour
@@ -48,8 +44,7 @@ export const ActionBar = ({
           disabled={disableRightButton}
           onClick={onRightButtonClick}
         >
-          {withNextButton && 'Étape suivante'}
-          {withValidateButton && 'Valider'}
+          {withNextButton ? 'Étape suivante' : 'Valider'}
         </Button>
       </ActionsBarSticky.Right>
     </ActionsBarSticky>

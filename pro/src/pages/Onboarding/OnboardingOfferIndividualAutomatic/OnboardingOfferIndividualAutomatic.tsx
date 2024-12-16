@@ -27,7 +27,7 @@ export const OnboardingOfferIndividualAutomatic = ({
         <ActionBar
           disableRightButton={true}
           withNextButton
-          onLeftButtonClick={() => navigate(-1)}
+          onLeftButtonClick={() => navigate('/inscription-offre-individuelle')}
           onRightButtonClick={() => {}}
         />
       </div>
