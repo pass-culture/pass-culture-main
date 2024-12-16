@@ -39,7 +39,7 @@
   text-align: center;
   margin-bottom: 0;
 
-  // Fixing <FormLayout.Section> 's description container that have a min-height, even though the prop is empty
+  // TODO: Fixing <FormLayout.Section> 's description container that have a min-height, even though the prop is empty
   // It would be better to fix the <FormLayout.Section> component itself, but it's a bit too much work for now
   & > div:empty {
     display: none;

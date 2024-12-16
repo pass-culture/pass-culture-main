@@ -6,16 +6,17 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 
 import collective from './assets/collective.jpeg'
 import individuelle from './assets/individuelle.jpeg'
-import styles from './OnboardingOffersChoicem.module.scss'
+import styles from './OnboardingOffersChoice.module.scss'
 
 interface CardProps {
   imageSrc: string
   title: string
   children: ReactNode
+  buttonTitle: string
   to?: string
 }
 
-const Card = ({ imageSrc, title, children, to }: CardProps) => {
+const Card = ({ imageSrc, title, children, buttonTitle, to }: CardProps) => {
   return (
     <div className={styles['card']}>
       <div className={styles['card-content']}>
@@ -26,11 +27,17 @@ const Card = ({ imageSrc, title, children, to }: CardProps) => {
         </div>
         <div className={styles['card-button']}>
           {to ? (
-            <ButtonLink variant={ButtonVariant.PRIMARY} to={to}>
+            <ButtonLink
+              variant={ButtonVariant.PRIMARY}
+              to={to}
+              title={buttonTitle}
+            >
               Commencer
             </ButtonLink>
           ) : (
-            <Button type="submit">Commencer</Button>
+            <Button type="submit" title={buttonTitle}>
+              Commencer
+            </Button>
           )}
         </div>
       </div>
@@ -44,6 +51,7 @@ export const OnboardingOffersChoice = () => {
       <Card
         imageSrc={individuelle}
         title="Aux jeunes sur l’application mobile pass Culture"
+        buttonTitle="Commencer la création d’offre sur l’application mobile"
         to={'/inscription-offre-individuelle'}
       >
         Vos offres seront visibles par{' '}
@@ -56,6 +64,7 @@ export const OnboardingOffersChoice = () => {
       <Card
         imageSrc={collective}
         title="Aux enseignants sur la plateforme ADAGE"
+        buttonTitle="Commencer la création d’offre sur ADAGE"
       >
         Vos offres seront visibles par{' '}
         <strong className={styles['card-description-highlight']}>

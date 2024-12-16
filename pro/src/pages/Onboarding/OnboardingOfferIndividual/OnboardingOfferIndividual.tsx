@@ -11,28 +11,20 @@ import { OnboardingLayout } from '../components/OnboardingLayout/OnboardingLayou
 
 import styles from './OnboardingOfferIndividual.module.scss'
 
-const ONBOARDING_OFFER_PROCEDURE = {
-  MANUAL: 'MANUAL',
-  AUTOMATIC: 'AUTOMATIC',
-} as const
-// eslint-disable-next-line no-redeclare, @typescript-eslint/naming-convention
-type ONBOARDING_OFFER_PROCEDURE =
-  (typeof ONBOARDING_OFFER_PROCEDURE)[keyof typeof ONBOARDING_OFFER_PROCEDURE]
+type OnboardingOfferProcedure = 'MANUAL' | 'AUTOMATIC'
 
 // Mapping the redirect URLs to the corresponding offer type
-const urls: Record<ONBOARDING_OFFER_PROCEDURE, string> = {
+const urls: Record<OnboardingOfferProcedure, string> = {
   MANUAL: '/inscription-offre-individuelle-manuelle',
   AUTOMATIC: '/inscription-offre-individuelle-auto',
 } as const
 
 export const OnboardingOfferIndividual = (): JSX.Element => {
-  const [offerType, setOfferType] = useState<ONBOARDING_OFFER_PROCEDURE | null>(
-    null
-  )
+  const [offerType, setOfferType] = useState<OnboardingOfferProcedure>('MANUAL')
   const navigate = useNavigate()
 
   const onChangeOfferType = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setOfferType(e.target.value as ONBOARDING_OFFER_PROCEDURE)
+    setOfferType(e.target.value as OnboardingOfferProcedure)
   }
 
   return (
@@ -52,10 +44,10 @@ export const OnboardingOfferIndividual = (): JSX.Element => {
             <RadioButtonWithImage
               name="individualOfferSubtype"
               icon={editFullIcon}
-              isChecked={offerType === ONBOARDING_OFFER_PROCEDURE.MANUAL}
+              isChecked={offerType === 'MANUAL'}
               label={`Créer une offre manuellement`}
               onChange={onChangeOfferType}
-              value={ONBOARDING_OFFER_PROCEDURE.MANUAL}
+              value={'MANUAL'}
               className={styles['individual-radio-label']}
             />
           </FormLayout.Row>
@@ -68,10 +60,10 @@ export const OnboardingOfferIndividual = (): JSX.Element => {
             <RadioButtonWithImage
               name="individualOfferSubtype"
               icon={connectStrokeIcon}
-              isChecked={offerType === ONBOARDING_OFFER_PROCEDURE.AUTOMATIC}
+              isChecked={offerType === 'AUTOMATIC'}
               label={`Créer automatiquement des offres via mon logiciel de gestion des stocks`}
               onChange={onChangeOfferType}
-              value={ONBOARDING_OFFER_PROCEDURE.AUTOMATIC}
+              value={'AUTOMATIC'}
               className={styles['individual-radio-label']}
             />
           </FormLayout.Row>
@@ -79,14 +71,9 @@ export const OnboardingOfferIndividual = (): JSX.Element => {
       </FormLayout>
 
       <ActionBar
-        disableRightButton={offerType === null}
         withNextButton
-        onLeftButtonClick={() => navigate(-1)}
-        onRightButtonClick={() => {
-          if (offerType) {
-            navigate(urls[offerType])
-          }
-        }}
+        onLeftButtonClick={() => navigate('/inscription-choix-offre')}
+        onRightButtonClick={() => navigate(urls[offerType])}
       />
     </OnboardingLayout>
   )
