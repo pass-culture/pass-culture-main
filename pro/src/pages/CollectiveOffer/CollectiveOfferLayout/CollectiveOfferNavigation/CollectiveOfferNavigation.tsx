@@ -32,7 +32,6 @@ import { createOfferFromTemplate } from 'commons/core/OfferEducational/utils/cre
 import { duplicateBookableOffer } from 'commons/core/OfferEducational/utils/duplicateBookableOffer'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
-import { useOfferStockEditionURL } from 'commons/hooks/useOfferEditionURL'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
@@ -96,12 +95,12 @@ export const CollectiveOfferNavigation = ({
 
   const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false)
 
-  const previewLink = `/offre/${computeURLCollectiveOfferId(
-    offerId,
-    isTemplate
-  )}/collectif${isTemplate ? '/vitrine' : ''}/apercu`
+  const id = computeURLCollectiveOfferId(offerId, Boolean(isTemplate))
 
-  const stockEditionUrl = useOfferStockEditionURL(true, offerId)
+  const previewLink = `/offre/${id}/collectif${isTemplate ? '/vitrine' : ''}/apercu`
+
+  const stockEditionUrl = `/offre/${offerId}/collectif/stocks/edition`
+
   const isEditingExistingOffer = !(isCreatingOffer || isCompletingDraft)
 
   const stepList: { [key in CollectiveOfferStep]?: Step } = {}

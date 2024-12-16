@@ -5,14 +5,18 @@ import {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
-import { OFFER_STATUS_PENDING } from 'commons/core/Offers/constants'
-import { useOfferEditionURL } from 'commons/hooks/useOfferEditionURL'
+import {
+  OFFER_STATUS_PENDING,
+  OFFER_WIZARD_MODE,
+} from 'commons/core/Offers/constants'
+import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import {
   FORMAT_DD_MM_YYYY_HH_mm,
   toDateStrippedOfTimezone,
 } from 'commons/utils/date'
 import { formatPrice } from 'commons/utils/formatPrice'
 import { pluralize } from 'commons/utils/pluralize'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import {
   getDate,
   getRemainingTime,
@@ -36,11 +40,14 @@ export const BookingOfferCell = ({
   booking,
   className,
 }: BookingOfferCellProps) => {
-  const editionUrl = useOfferEditionURL({
-    isOfferEducational: booking.stock.offerIsEducational,
-    offerId: booking.stock.offerId,
-    isShowcase: false,
-  })
+  const offerUrl = booking.stock.offerIsEducational
+    ? `/offre/${booking.stock.offerId}/collectif/recapitulatif`
+    : getIndividualOfferUrl({
+        offerId: booking.stock.offerId,
+        mode: OFFER_WIZARD_MODE.READ_ONLY,
+        step: OFFER_WIZARD_STEP_IDS.DETAILS,
+      })
+
   const eventBeginningDatetime = booking.stock.eventBeginningDatetime
 
   const eventDatetimeFormatted = eventBeginningDatetime
@@ -57,7 +64,7 @@ export const BookingOfferCell = ({
   return (
     <div className={cn(className)}>
       <a
-        href={editionUrl}
+        href={offerUrl}
         title={booking.stock.offerName}
         className={styles['booking-offer-name']}
         data-testid="booking-offer-name"

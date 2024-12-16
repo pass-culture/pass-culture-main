@@ -12,7 +12,6 @@ import { BOOKING_STATUS } from 'commons/core/Bookings/constants'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'commons/core/Notification/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
-import { useOfferEditionURL } from 'commons/hooks/useOfferEditionURL'
 import { CancelCollectiveBookingModal } from 'components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -38,11 +37,6 @@ export const CollectiveActionButtons = ({
   const notify = useNotification()
 
   const offerId = bookingRecap.stock.offerId
-  const offerEditionUrl = useOfferEditionURL({
-    isOfferEducational: true,
-    offerId,
-    isShowcase: false,
-  })
 
   const cancelBooking = async () => {
     setIsModalOpen(false)
@@ -98,7 +92,10 @@ export const CollectiveActionButtons = ({
           </Button>
         )}
         {bookingRecap.bookingStatus === BOOKING_STATUS.PENDING && (
-          <ButtonLink to={offerEditionUrl} variant={ButtonVariant.PRIMARY}>
+          <ButtonLink
+            to={`/offre/${offerId}/collectif/recapitulatif`}
+            variant={ButtonVariant.PRIMARY}
+          >
             Modifier l’offre
           </ButtonLink>
         )}

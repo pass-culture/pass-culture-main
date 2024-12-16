@@ -11,12 +11,12 @@ import { Thumb } from 'ui-kit/Thumb/Thumb'
 
 export const ThumbCell = ({
   offer,
-  editionOfferLink,
+  offerLink,
   headers,
   inactive,
 }: {
   offer: CollectiveOfferResponseModel | ListOffersOfferResponseModel
-  editionOfferLink: string
+  offerLink: string
   headers?: string
   inactive?: boolean
 }) => {
@@ -32,7 +32,7 @@ export const ThumbCell = ({
       <Link
         className={styles['thumb-column-link']}
         title={`${offer.name} - éditer l’offre`}
-        to={editionOfferLink}
+        to={offerLink}
       >
         <Thumb
           url={isOfferEducational(offer) ? offer.imageUrl : offer.thumbUrl}
