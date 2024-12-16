@@ -25,13 +25,13 @@ import { getDate, getRemainingTime, shouldDisplayWarning } from './utils'
 
 export interface OfferNameCellProps {
   offer: CollectiveOfferResponseModel | ListOffersOfferResponseModel
-  editionOfferLink: string
+  offerLink: string
   headers?: string
 }
 
 export const OfferNameCell = ({
   offer,
-  editionOfferLink,
+  offerLink,
   headers,
 }: OfferNameCellProps) => {
   const { isTooltipHidden, ...tooltipProps } = useTooltipProps({})
@@ -110,7 +110,7 @@ export const OfferNameCell = ({
       <Link
         className={styles['name']}
         title={`${offer.name} - éditer l’offre`}
-        to={editionOfferLink}
+        to={offerLink}
       >
         {offer.name}
       </Link>

@@ -48,7 +48,7 @@ describe('OfferNameCell', () => {
 
     renderOfferNameCell({
       offer: eventOffer,
-      editionOfferLink: '#',
+      offerLink: '#',
     })
 
     expect(screen.getByText('Offre vitrine')).toBeInTheDocument()
@@ -63,7 +63,7 @@ describe('OfferNameCell', () => {
 
     renderOfferNameCell({
       offer: eventOffer,
-      editionOfferLink: '#',
+      offerLink: '#',
     })
 
     expect(screen.getByRole('img', { name: 'Attention' })).toBeInTheDocument()
@@ -80,7 +80,7 @@ describe('OfferNameCell', () => {
 
     renderOfferNameCell({
       offer: eventOffer,
-      editionOfferLink: '#',
+      offerLink: '#',
     })
 
     await userEvent.click(screen.getByRole('img', { name: 'Attention' }))
@@ -97,7 +97,7 @@ describe('OfferNameCell', () => {
 
     renderOfferNameCell({
       offer: eventOffer,
-      editionOfferLink: '#',
+      offerLink: '#',
     })
 
     expect(screen.getByTestId('offer-isbn')).toBeInTheDocument()
@@ -118,7 +118,7 @@ describe('OfferNameCell', () => {
 
     renderOfferNameCell({
       offer: eventOffer,
-      editionOfferLink: '#',
+      offerLink: '#',
     })
 
     const expectedDate = formatLocalTimeDateString(
@@ -148,7 +148,7 @@ describe('OfferNameCell', () => {
 
     renderOfferNameCell({
       offer: eventOffer,
-      editionOfferLink: '#',
+      offerLink: '#',
     })
 
     expect(screen.queryByText('12/12/2024 14:00')).not.toBeInTheDocument()
@@ -193,7 +193,7 @@ describe('OfferNameCell', () => {
       renderOfferNameCell({
         // Using the COLLECTIVE offer that have a venue located at Paris
         offer: collectiveOffer,
-        editionOfferLink: '#',
+        offerLink: '#',
       })
 
       // We expect here to see 12h00 because for the 01/10/2024, Paris is UTC+2
@@ -208,7 +208,7 @@ describe('OfferNameCell', () => {
       renderOfferNameCell({
         // Using the INDIVIDUAL offer that have VENUE departement code at Saint-Denis (La Réunion)
         offer: individualOffer,
-        editionOfferLink: '#',
+        offerLink: '#',
       })
 
       // We expect here to see 14h00 because for the 01/10/2024, Saint-Denis is UTC+4
@@ -224,7 +224,7 @@ describe('OfferNameCell', () => {
         {
           // Using the same INDIVIDUAL offer that have an address (OA) located at Fort-de-France (Martinique)
           offer: individualOffer,
-          editionOfferLink: '#',
+          offerLink: '#',
         },
         { features: ['WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE'] }
       )

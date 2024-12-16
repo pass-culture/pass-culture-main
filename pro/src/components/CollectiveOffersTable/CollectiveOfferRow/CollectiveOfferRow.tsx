@@ -7,9 +7,7 @@ import {
 } from 'apiClient/v1'
 import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
-import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { useOfferEditionURL } from 'commons/hooks/useOfferEditionURL'
 import { CheckboxCell } from 'components/OffersTable/Cells/CheckboxCell'
 import { OfferNameCell } from 'components/OffersTable/Cells/OfferNameCell/OfferNameCell'
 import { OfferVenueCell } from 'components/OffersTable/Cells/OfferVenueCell'
@@ -50,19 +48,15 @@ export const CollectiveOfferRow = ({
     'ENABLE_COLLECTIVE_OFFERS_EXPIRATION'
   )
 
-  const offerLink = useOfferEditionURL({
-    isOfferEducational: true,
-    offerId: offer.id,
-    status: offer.status,
-    isShowcase: Boolean(offer.isShowcase),
-  })
-
   const id = computeURLCollectiveOfferId(offer.id, Boolean(offer.isShowcase))
 
-  const editionOfferLink =
-    offer.status === CollectiveOfferStatus.DRAFT
-      ? `/offre/collectif/${id}/creation`
-      : `/offre/${id}/collectif/edition`
+  const isOfferDraft =
+    offer.status === CollectiveOfferStatus.DRAFT &&
+    `/offre/collectif/${id}/creation`
+
+  const offerLink = isOfferDraft || `/offre/${id}/collectif/recapitulatif`
+
+  const editionOfferLink = isOfferDraft || `/offre/${id}/collectif/edition`
 
   const rowId = `collective-offer-${id}`
 
@@ -103,14 +97,14 @@ export const CollectiveOfferRow = ({
         )}
         <ThumbCell
           offer={offer}
-          editionOfferLink={offerLink}
+          offerLink={offerLink}
           inactive={!offer.isEditable}
           headers={`${rowId} collective-offer-head-image`}
         />
 
         <OfferNameCell
           offer={offer}
-          editionOfferLink={offerLink}
+          offerLink={offerLink}
           headers={`${rowId} collective-offer-head-name`}
         />
 

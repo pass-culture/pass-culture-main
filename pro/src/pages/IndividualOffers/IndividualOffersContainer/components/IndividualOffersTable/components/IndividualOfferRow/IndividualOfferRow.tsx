@@ -1,13 +1,14 @@
 import classNames from 'classnames'
 
 import { ListOffersOfferResponseModel } from 'apiClient/v1'
-import { OFFER_STATUS_DRAFT } from 'commons/core/Offers/constants'
+import {
+  OFFER_STATUS_DRAFT,
+  OFFER_WIZARD_MODE,
+} from 'commons/core/Offers/constants'
+import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import {
-  useOfferEditionURL,
-  useOfferStockEditionURL,
-} from 'commons/hooks/useOfferEditionURL'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { CheckboxCell } from 'components/OffersTable/Cells/CheckboxCell'
 import { OfferNameCell } from 'components/OffersTable/Cells/OfferNameCell/OfferNameCell'
 import { OfferVenueCell } from 'components/OffersTable/Cells/OfferVenueCell'
@@ -36,13 +37,20 @@ export const IndividualOfferRow = ({
 }: IndividualOfferRowProps) => {
   const offerAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
-  const editionOfferLink = useOfferEditionURL({
-    isOfferEducational: false,
+  const offerLink = getIndividualOfferUrl({
     offerId: offer.id,
-    isShowcase: false,
-    status: offer.status,
+    mode:
+      offer.status === OFFER_STATUS_DRAFT
+        ? OFFER_WIZARD_MODE.CREATION
+        : OFFER_WIZARD_MODE.READ_ONLY,
+    step: OFFER_WIZARD_STEP_IDS.DETAILS,
   })
-  const editionStockLink = useOfferStockEditionURL(false, offer.id, false)
+
+  const editionStockLink = getIndividualOfferUrl({
+    offerId: offer.id,
+    mode: OFFER_WIZARD_MODE.EDITION,
+    step: OFFER_WIZARD_STEP_IDS.STOCKS,
+  })
 
   const isOfferInactiveOrExpiredOrDisabled =
     offer.status === OFFER_STATUS_DRAFT
@@ -50,6 +58,7 @@ export const IndividualOfferRow = ({
       : !offer.isActive ||
         offer.hasBookingLimitDatetimesPassed ||
         isOfferDisabled(offer.status)
+
   return (
     <tr
       role="row"
@@ -65,8 +74,8 @@ export const IndividualOfferRow = ({
         disabled={isOfferDisabled(offer.status)}
         selectOffer={() => selectOffer(offer)}
       />
-      <ThumbCell offer={offer} editionOfferLink={editionOfferLink} />
-      <OfferNameCell offer={offer} editionOfferLink={editionOfferLink} />
+      <ThumbCell offer={offer} offerLink={offerLink} />
+      <OfferNameCell offer={offer} offerLink={offerLink} />
       {offerAddressEnabled ? (
         <AddressCell address={offer.address} />
       ) : (
@@ -76,7 +85,7 @@ export const IndividualOfferRow = ({
       <OfferStatusCell status={offer.status} />
       <IndividualActionsCells
         offer={offer}
-        editionOfferLink={editionOfferLink}
+        editionOfferLink={offerLink}
         editionStockLink={editionStockLink}
         isRestrictedAsAdmin={isRestrictedAsAdmin}
       />
