@@ -34,6 +34,9 @@ def test_collective_workflow(db_session):
 
     now = beginning_datetime + datetime.timedelta(days=3)
     with time_machine.travel(now) as frozen_time:
+        now = beginning_datetime + datetime.timedelta(days=3)
+        frozen_time.move_to(now)
+
         # Mark the booking as used
         bookings_api.auto_mark_as_used_after_event()
 
