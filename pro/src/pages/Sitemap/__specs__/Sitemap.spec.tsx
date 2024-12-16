@@ -13,10 +13,8 @@ const renderSitemap = (options: RenderWithProvidersOptions = {}) => {
     ...options,
     user: sharedCurrentUserFactory(),
     storeOverrides: {
-      user: {
-        currentUser: sharedCurrentUserFactory(),
-        selectedOffererId: 42,
-      },
+      user: { currentUser: sharedCurrentUserFactory() },
+      offerer: { selectedOffererId: 42, offererNames: [] },
     },
   })
 }

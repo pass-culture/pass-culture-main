@@ -7,7 +7,7 @@ import {
   GET_OFFERER_QUERY_KEY,
   GET_STATISTICS_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
-import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import {
   getPhysicalVenuesFromOfferer,
   getVirtualVenueFromOfferer,

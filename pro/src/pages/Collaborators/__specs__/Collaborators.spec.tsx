@@ -30,9 +30,9 @@ const renderAttachmentInvitations = async () => {
     {
       storeOverrides: {
         user: {
-          selectedOffererId: 1,
           currentUser: sharedCurrentUserFactory(),
         },
+        offerer: { selectedOffererId: 1, offererNames: [] },
       },
     }
   )

@@ -184,10 +184,8 @@ const renderDetailsScreen = ({
       ],
       ...options,
       storeOverrides: {
-        user: {
-          currentUser: sharedCurrentUserFactory(),
-          selectedOffererId: 1,
-        },
+        user: { currentUser: sharedCurrentUserFactory() },
+        offerer: { selectedOffererId: 1, offererNames: [] },
       },
     }
   )
@@ -778,7 +776,9 @@ describe('IndividualOfferDetails', () => {
             options: { features: ['WIP_EAN_CREATION'] },
           })
 
-          const button = screen.getByRole('button', { name: eanSearchButtonLabel })
+          const button = screen.getByRole('button', {
+            name: eanSearchButtonLabel,
+          })
           const input = screen.getByRole('textbox', { name: eanInputLabel })
 
           await userEvent.type(input, ean)
@@ -836,13 +836,17 @@ describe('IndividualOfferDetails', () => {
             options: { features: ['WIP_EAN_CREATION'] },
           })
 
-          const button = screen.getByRole('button', { name: eanSearchButtonLabel })
+          const button = screen.getByRole('button', {
+            name: eanSearchButtonLabel,
+          })
           const input = screen.getByRole('textbox', { name: eanInputLabel })
 
           await userEvent.type(input, ean)
           await userEvent.click(button)
 
-          const resetButton = screen.getByRole('button', { name: eanResetButtonLabel })
+          const resetButton = screen.getByRole('button', {
+            name: eanResetButtonLabel,
+          })
           await userEvent.click(resetButton)
 
           // Inputs and image should be cleared.

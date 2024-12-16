@@ -51,10 +51,8 @@ const renderImageUploaderOffer = (props: ImageUploaderOfferProps) => {
     </IndividualOfferContext.Provider>,
     {
       storeOverrides: {
-        user: {
-          currentUser: sharedCurrentUserFactory(),
-          selectedOffererId: 1,
-        },
+        user: { currentUser: sharedCurrentUserFactory() },
+        offerer: { selectedOffererId: 1, offererNames: [] },
       },
     }
   )

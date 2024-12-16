@@ -12,7 +12,7 @@ import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 
-import { PartnerPageProps, PartnerPage } from '../PartnerPage'
+import { PartnerPage, PartnerPageProps } from '../PartnerPage'
 
 const mockLogEvent = vi.fn()
 
@@ -26,7 +26,8 @@ const renderPartnerPages = (props: Partial<PartnerPageProps>) => {
     />,
     {
       storeOverrides: {
-        user: { currentUser: sharedCurrentUserFactory(), selectedOffererId: 1 },
+        user: { currentUser: sharedCurrentUserFactory() },
+        offerer: { selectedOffererId: 1, offererNames: [] },
       },
     }
   )

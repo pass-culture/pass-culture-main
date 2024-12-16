@@ -10,7 +10,7 @@ import {
 } from 'commons/config/swrQueryKeys'
 import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { sortByLabel } from 'commons/utils/strings'
 import { OffererStatsNoResult } from 'components/OffererStatsNoResult/OffererStatsNoResult'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'

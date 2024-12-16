@@ -19,7 +19,7 @@ import { serializeApiFilters } from 'commons/core/Offers/utils/serializer'
 import { Audience } from 'commons/core/shared/types'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
-import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { sortByLabel } from 'commons/utils/strings'
 import {
   formatAndOrderAddresses,

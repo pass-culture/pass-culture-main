@@ -15,7 +15,7 @@ import {
 import { OFFER_STATUS_DRAFT } from 'commons/core/Offers/constants'
 import { useQuerySearchFilters } from 'commons/core/Offers/hooks/useQuerySearchFilters'
 import { useNotification } from 'commons/hooks/useNotification'
-import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import fullThreeDotsIcon from 'icons/full-three-dots.svg'
 import strokeTrashIcon from 'icons/stroke-trash.svg'
@@ -24,7 +24,6 @@ import { computeDeletionSuccessMessage } from 'pages/IndividualOffers/utils/comp
 import { computeIndividualApiFilters } from 'pages/IndividualOffers/utils/computeIndividualApiFilters'
 import styles from 'styles/components/Cells.module.scss'
 import { DropdownMenuWrapper } from 'ui-kit/DropdownMenuWrapper/DropdownMenuWrapper'
-
 
 import { DeleteDraftCell } from './DeleteDraftCell'
 import { EditOfferCell } from './EditOfferCell'
@@ -94,13 +93,22 @@ export const IndividualActionsCells = ({
         )}
       >
         <div className={styles['actions-column-container']}>
-          <DropdownMenuWrapper title="Voir les actions" triggerIcon={fullThreeDotsIcon} triggerTooltip>
+          <DropdownMenuWrapper
+            title="Voir les actions"
+            triggerIcon={fullThreeDotsIcon}
+            triggerTooltip
+          >
             <>
               <EditOfferCell editionOfferLink={editionOfferLink} />
               {offer.status === OFFER_STATUS_DRAFT ? (
-                <DeleteDraftCell setIsConfirmDialogOpen={setIsConfirmDialogOpen} />
-              ): (
-                <EditStocksCell offer={offer} editionStockLink={editionStockLink} />
+                <DeleteDraftCell
+                  setIsConfirmDialogOpen={setIsConfirmDialogOpen}
+                />
+              ) : (
+                <EditStocksCell
+                  offer={offer}
+                  editionStockLink={editionStockLink}
+                />
               )}
             </>
           </DropdownMenuWrapper>

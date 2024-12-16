@@ -12,9 +12,9 @@ describe('Accessibility layout', () => {
       user,
       storeOverrides: {
         user: {
-          selectedOffererId: 1,
           currentUser: user,
         },
+        offerer: { selectedOffererId: 1, offererNames: [] },
       },
     })
     expect(screen.queryByTestId('logged-out-section')).not.toBeInTheDocument()
