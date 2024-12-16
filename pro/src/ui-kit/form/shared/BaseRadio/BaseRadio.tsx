@@ -23,6 +23,7 @@ export const BaseRadio = ({
   ...props
 }: BaseRadioProps): JSX.Element => {
   const id = useId()
+  const childrenContainerId = useId()
 
   return (
     <div
@@ -51,17 +52,21 @@ export const BaseRadio = ({
           })}
           {...(ariaDescribedBy ? { 'aria-describedby': ariaDescribedBy } : {})}
           aria-invalid={hasError}
+          aria-expanded={childrenOnChecked ? props.checked : undefined}
+          aria-controls={childrenOnChecked ? childrenContainerId : undefined}
           id={id}
         />
-        <label htmlFor={id} className={cn(styles['base-radio-label'])}>
+        <label htmlFor={id} className={styles['base-radio-label']}>
           {label}
         </label>
       </div>
-      {childrenOnChecked && props.checked && (
-        <div className={styles['base-radio-children-on-checked']}>
-          {childrenOnChecked}
-        </div>
-      )}
+      <div id={childrenContainerId}>
+        {childrenOnChecked && props.checked && (
+          <div className={styles['base-radio-children-on-checked']}>
+            {childrenOnChecked}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

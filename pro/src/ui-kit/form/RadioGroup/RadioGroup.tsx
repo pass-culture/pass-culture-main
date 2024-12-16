@@ -6,45 +6,60 @@ import { FieldSetLayout } from '../shared/FieldSetLayout/FieldSetLayout'
 
 import styles from './RadioGroup.module.scss'
 
+type RequireAtLeastOne<T, Keys extends keyof T = keyof T> = Pick<
+  T,
+  Exclude<keyof T, Keys>
+> &
+  {
+    [K in Keys]-?: Required<Pick<T, K>> & Partial<Pick<T, Exclude<Keys, K>>>
+  }[Keys]
+
 /**
  * Props for the RadioGroup component.
  */
-interface RadioGroupProps {
-  /**
-   * Whether the radio buttons are disabled.
-   */
-  disabled?: boolean
-  /**
-   * The name of the radio group fields.
-   */
-  name: string
-  /**
-   * The legend text for the radio group.
-   */
-  legend: string
-  /**
-   * The group of radio button options.
-   * Each item contains a label and a value.
-   * The label is what's displayed while the value is used as an identifier.
-   */
-  group: {
-    label: string
-    value: string
-    childrenOnChecked?: JSX.Element
-  }[]
-  /**
-   * Custom CSS class applied to the group's `fieldset` element.
-   */
-  className?: string
-  /**
-   * Whether to add a border around each radio button.
-   */
-  withBorder?: boolean
-  /**
-   * Callback function to handle changes in the radio group.
-   */
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
-}
+type RadioGroupProps = RequireAtLeastOne<
+  {
+    /**
+     * Whether the radio buttons are disabled.
+     */
+    disabled?: boolean
+    /**
+     * The name of the radio group field.
+     */
+    name: string
+    /**
+     * The legend of the `fieldset`. If this prop is empty, the `describedBy` must be used.
+     */
+    legend?: string
+    /**
+     * A reference to the text element that describes the radio group. If this prop is empty, the `legend` must be used.
+     */
+    describedBy?: string
+    /**
+     * The group of radio button options.
+     * Each item contains a label and a value.
+     * The label is what's displayed while the value is used as an identifier.
+     */
+    group: {
+      label: string | JSX.Element
+      value: string
+      childrenOnChecked?: JSX.Element
+    }[]
+    /**
+     * Custom CSS class applied to the group's `fieldset` element.
+     */
+    className?: string
+    /**
+     * Whether to add a border around each radio button.
+     */
+    withBorder?: boolean
+    /**
+     * Callback function to handle changes in the radio group.
+     */
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
+  },
+  'legend' | 'describedBy'
+>
 
 /**
  * The RadioGroup component is a set of radio buttons grouped together under a common `fieldset`.
@@ -74,6 +89,7 @@ export const RadioGroup = ({
   group,
   name,
   legend,
+  describedBy,
   className,
   withBorder,
   onChange,
@@ -88,10 +104,11 @@ export const RadioGroup = ({
       error={hasError ? meta.error : undefined}
       legend={legend}
       name={`radio-group-${name}`}
+      ariaDescribedBy={describedBy}
       isOptional // There should always be an element selected in a radio group, thus it doesn't need to be marked as required
     >
       {group.map((item) => (
-        <div className={styles['radio-group-item']} key={item.label}>
+        <div className={styles['radio-group-item']} key={item.value}>
           <RadioButton
             disabled={disabled}
             label={item.label}
