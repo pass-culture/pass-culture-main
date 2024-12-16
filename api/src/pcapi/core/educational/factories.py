@@ -499,7 +499,7 @@ class EndedNotUsedCollectiveOfferFactory(CollectiveOfferBaseFactory):
         ConfirmedCollectiveBookingFactory(collectiveStock=stock)
 
 
-class EndedCollectiveOfferFactory(CollectiveOfferBaseFactory):
+class EndedUsedCollectiveOfferFactory(CollectiveOfferBaseFactory):
     @factory.post_generation
     def create_ended_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
         yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=3)
@@ -540,7 +540,7 @@ def create_collective_offer_by_status(
         case CollectiveOfferDisplayedStatus.BOOKED:
             return BookedCollectiveOfferFactory(**kwargs)
         case CollectiveOfferDisplayedStatus.ENDED:
-            return EndedCollectiveOfferFactory(**kwargs)
+            return EndedUsedCollectiveOfferFactory(**kwargs)
         case CollectiveOfferDisplayedStatus.REIMBURSED:
             return ReimbursedCollectiveOfferFactory(**kwargs)
         case CollectiveOfferDisplayedStatus.DRAFT:
