@@ -301,6 +301,7 @@ class GetOffererBankAccountsResponseModel(BaseModel):
 class TopOffersResponseData(offerers_models.TopOffersData):
     offerName: str
     image: offers_models.OfferImage | None
+    isHeadlineOffer: bool
 
 
 class OffererStatsDataModel(BaseModel):
@@ -332,6 +333,7 @@ class GetOffererStatsResponseModel(BaseModel):
                     offerId=topOffer["offerId"],
                     image=topOffer["image"],
                     numberOfViews=topOffer["numberOfViews"],
+                    isHeadlineOffer=topOffer["isHeadlineOffer"],
                 )
                 for topOffer in topOffers
             ]

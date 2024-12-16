@@ -222,7 +222,10 @@ def get_offers_data_from_top_offers(top_offers: list[dict]) -> list[dict]:
     merged_data_list = []
     for offer in offers:
         if offer.id in offer_data_by_id:
-            merged_data = {**{"offerName": offer.name, "image": offer.image}, **offer_data_by_id[offer.id]}
+            merged_data = {
+                **{"offerName": offer.name, "image": offer.image, "isHeadlineOffer": offer.is_headline_offer},
+                **offer_data_by_id[offer.id],
+            }
             merged_data_list.append(merged_data)
 
     sorted_data_list = sorted(merged_data_list, key=lambda x: x["numberOfViews"], reverse=True)
