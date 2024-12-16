@@ -26,6 +26,7 @@ class OffererStatsTest:
         offer_2 = offers_factories.OfferFactory(venue__managingOffererId=offerer.id)
         mediation = offers_factories.MediationFactory(offer=offer_2)
         offer_3 = offers_factories.OfferFactory(venue__managingOffererId=offerer.id)
+        offers_factories.HeadlineOfferFactory(offer=offer_2, venue=offer_2.venue)
 
         offerers_factories.OffererStatsFactory(
             offerer=offerer,
@@ -74,6 +75,7 @@ class OffererStatsTest:
         queries += 1  # check user_offerer exists
         queries += 1  # select offerer_stats
         queries += 1  # select offers with images
+        queries += 3  # determine if headline offers
         with testing.assert_num_queries(queries):
             response = client.get(f"/offerers/{offerer_id}/stats")
             assert response.status_code == 200
@@ -91,16 +93,24 @@ class OffererStatsTest:
                             "credit": None,
                             "url": product_mediation_url,
                         },
+                        "isHeadlineOffer": False,
                         "numberOfViews": 3,
                         "offerId": offer_1.id,
                         "offerName": offer_1.name,
                     },
-                    {"image": None, "numberOfViews": 2, "offerId": offer_3.id, "offerName": offer_3.name},
+                    {
+                        "image": None,
+                        "isHeadlineOffer": False,
+                        "numberOfViews": 2,
+                        "offerId": offer_3.id,
+                        "offerName": offer_3.name,
+                    },
                     {
                         "image": {
                             "credit": None,
                             "url": f"http://localhost/storage/thumbs/mediations/{humanize(mediation.id)}",
                         },
+                        "isHeadlineOffer": False,
                         "numberOfViews": 1,
                         "offerId": offer_2.id,
                         "offerName": offer_2.name,

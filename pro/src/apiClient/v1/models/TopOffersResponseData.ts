@@ -5,6 +5,7 @@
 import type { OfferImage } from './OfferImage';
 export type TopOffersResponseData = {
   image?: OfferImage;
+  isHeadlineOffer: boolean;
   numberOfViews: number;
   offerId: number;
   offerName: string;
