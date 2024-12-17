@@ -78,7 +78,7 @@ def _synchronize_venue_providers_apis() -> None:
     type=int,
     default=None,
 )
-@click.option("-w", "--venue-provider-id", type=int, help="Limit update to this venue provider id")
+@click.option("-w", "--venue-provider-id", type=int, help="Limit update to this venue provider id (deprecated)")
 def update_providables(provider_name: str, venue_provider_id: int, limit: int) -> None:
     start = time()
     logger.info(
@@ -92,8 +92,7 @@ def update_providables(provider_name: str, venue_provider_id: int, limit: int) -
         provider_manager.synchronize_data_for_provider(provider_name, limit)
 
     if venue_provider_id:
-        venue_provider = providers_repository.get_venue_provider_by_id(venue_provider_id)
-        provider_manager.synchronize_venue_provider(venue_provider, limit)
+        logger.info("venue-provider-id is deprecated. Nothing to do.")
 
     logger.info(
         "Finished update_providables with provider_name=%s and venue_provider_id=%s elapsed=%.2f",

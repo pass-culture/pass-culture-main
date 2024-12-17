@@ -73,31 +73,27 @@ def get_local_provider_class_by_name(class_name: str) -> Callable:
 
 
 def synchronize_venue_provider(venue_provider: provider_models.VenueProvider, limit: int | None = None) -> None:
-    if venue_provider.provider.implements_provider_api and not venue_provider.provider.isCinemaProvider:
-        synchronize_provider_api.synchronize_venue_provider(venue_provider)
+    assert (
+        venue_provider.provider.localClass
+        in [
+            "AllocineStocks",
+        ]
+        + CINEMA_PROVIDER_NAMES
+    ), f"Only {', '.join(CINEMA_PROVIDER_NAMES)} or AllocineStocks should reach this code"
+    provider_class = get_local_provider_class_by_name(venue_provider.provider.localClass)
 
-    else:
-        assert (
-            venue_provider.provider.localClass
-            in [
-                "AllocineStocks",
-            ]
-            + CINEMA_PROVIDER_NAMES
-        ), f"Only {', '.join(CINEMA_PROVIDER_NAMES)} or AllocineStocks should reach this code"
-        provider_class = get_local_provider_class_by_name(venue_provider.provider.localClass)
-
-        logger.info(
-            "Starting synchronization of venue_provider=%s with provider=%s",
-            venue_provider.id,
-            venue_provider.provider.localClass,
-        )
-        provider = provider_class(venue_provider)
-        provider.updateObjects(limit)
-        logger.info(
-            "Ended synchronization of venue_provider=%s with provider=%s",
-            venue_provider.id,
-            venue_provider.provider.localClass,
-        )
+    logger.info(
+        "Starting synchronization of venue_provider=%s with provider=%s",
+        venue_provider.id,
+        venue_provider.provider.localClass,
+    )
+    provider = provider_class(venue_provider)
+    provider.updateObjects(limit)
+    logger.info(
+        "Ended synchronization of venue_provider=%s with provider=%s",
+        venue_provider.id,
+        venue_provider.provider.localClass,
+    )
 
 
 def synchronize_ems_venue_providers(from_last_version: bool = False) -> None:
