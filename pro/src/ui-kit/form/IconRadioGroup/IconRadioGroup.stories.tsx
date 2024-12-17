@@ -21,22 +21,6 @@ export default {
   ],
 }
 
-const defaultArgs = {
-  name: 'question',
-  legend: 'This is the legend',
-  group: [
-    {
-      label: 'Oui',
-      value: `question1`,
-    },
-    {
-      label: 'Non',
-      value: `question2`,
-    },
-  ],
-  withBorder: false,
-}
-
 export const Default = {
   args: {
     name: 'question',

@@ -2,6 +2,7 @@ import cn from 'classnames'
 import { useField } from 'formik'
 
 import { RadioButton } from '../RadioButton/RadioButton'
+import { RadioVariant } from '../shared/BaseRadio/BaseRadio'
 import { FieldSetLayout } from '../shared/FieldSetLayout/FieldSetLayout'
 
 import styles from './RadioGroup.module.scss'
@@ -50,9 +51,9 @@ export type RadioGroupProps = RequireAtLeastOne<
      */
     className?: string
     /**
-     * Whether to add a border around each radio button.
+     * Variant of the radio inputs styles within the group.
      */
-    withBorder?: boolean
+    variant?: RadioVariant.BOX
     /**
      * Callback function to handle changes in the radio group.
      */
@@ -91,7 +92,7 @@ export const RadioGroup = ({
   legend,
   describedBy,
   className,
-  withBorder,
+  variant,
   onChange,
 }: RadioGroupProps): JSX.Element => {
   const [, meta] = useField({ name })
@@ -115,7 +116,7 @@ export const RadioGroup = ({
             label={item.label}
             name={name}
             value={item.value}
-            withBorder={withBorder}
+            variant={variant}
             hasError={hasError}
             onChange={onChange}
             {...(hasError ? { ariaDescribedBy: `error-${name}` } : {})}

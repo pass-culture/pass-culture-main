@@ -9,6 +9,7 @@ import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
+import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
 
 import styles from './FormDates.module.scss'
@@ -57,7 +58,7 @@ export const FormDates = ({
             value: 'specific_dates',
           },
         ]}
-        withBorder
+        variant={RadioVariant.BOX}
         legend="Quand votre offre peut-elle avoir lieu ?"
         name="datesType"
       />
