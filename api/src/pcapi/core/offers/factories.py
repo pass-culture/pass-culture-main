@@ -7,6 +7,7 @@ import uuid
 import factory
 from factory.faker import faker
 
+import pcapi.core.artist.models as artist_models
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.factories import BaseFactory
 import pcapi.core.offerers.factories as offerers_factories
@@ -220,6 +221,13 @@ class OfferFactory(BaseFactory):
     def is_headline_offer(self, create: bool, is_headline_offer: bool = False, **kwargs: typing.Any) -> None:
         if is_headline_offer:
             HeadlineOfferFactory(offer=self, venue=self.venue)
+
+
+class ArtistProductLinkFactory(BaseFactory):
+    class Meta:
+        model = artist_models.ArtistProductLink
+
+    artist_type = artist_models.ArtistType.AUTHOR
 
 
 def _check_offer_kwargs(product: models.Product, kwargs: dict[str, typing.Any]) -> None:
