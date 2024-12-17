@@ -135,3 +135,11 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
     title: 'Réservations - Consulter une offre individuelle',
   },
 ]
+
+export const routesOnboardingIndividualOfferWizard: RouteConfig[] =
+  routesIndividualOfferWizard.map((route) => {
+    return {
+      ...route,
+      path: `/onboarding${route.path}`,
+    }
+  })

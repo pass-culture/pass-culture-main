@@ -5,7 +5,10 @@ import { Navigate } from 'react-router-dom'
 
 import { UNAVAILABLE_ERROR_PAGE } from 'commons/utils/routes'
 
-import { routesIndividualOfferWizard } from './subroutesIndividualOfferWizardMap'
+import {
+  routesIndividualOfferWizard,
+  routesOnboardingIndividualOfferWizard,
+} from './subroutesIndividualOfferWizardMap'
 import { routesReimbursements } from './subroutesReimbursements'
 import { routesSignupJourney } from './subroutesSignupJourneyMap'
 import { routesSignup } from './subroutesSignupMap'
@@ -306,6 +309,12 @@ export const routes: RouteConfig[] = [
     path: '/offre/individuelle',
     title: 'Offre étape par étape',
     children: routesIndividualOfferWizard,
+  },
+  {
+    lazy: () => import('pages/IndividualOfferWizard/IndividualOfferWizard'),
+    path: '/onboarding/offre/individuelle',
+    title: 'Offre étape par étape',
+    children: routesOnboardingIndividualOfferWizard,
   },
   {
     lazy: () => import('pages/Reimbursements/Reimbursements'),

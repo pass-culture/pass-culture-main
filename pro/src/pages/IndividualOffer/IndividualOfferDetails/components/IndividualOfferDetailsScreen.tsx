@@ -63,6 +63,7 @@ export const IndividualOfferDetailsScreen = ({
   venues,
 }: IndividualOfferDetailsScreenProps): JSX.Element => {
   const navigate = useNavigate()
+  const { pathname } = useLocation()
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const { mutate } = useSWRConfig()
@@ -146,6 +147,7 @@ export const IndividualOfferDetailsScreen = ({
           step: OFFER_WIZARD_STEP_IDS.DETAILS,
           offerId: receivedOfferId,
           mode,
+          isOnboarding: pathname.indexOf('onboarding') !== -1,
         }),
         { replace: true }
       )
@@ -170,6 +172,7 @@ export const IndividualOfferDetailsScreen = ({
             mode === OFFER_WIZARD_MODE.EDITION
               ? OFFER_WIZARD_MODE.READ_ONLY
               : mode,
+          isOnboarding: pathname.indexOf('onboarding') !== -1,
         })
       )
     } catch (error) {
