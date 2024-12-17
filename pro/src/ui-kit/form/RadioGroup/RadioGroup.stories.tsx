@@ -1,6 +1,8 @@
 import { Formik } from 'formik'
 
-import { Direction, RadioGroup } from './RadioGroup'
+import { RadioVariant } from '../shared/BaseRadio/BaseRadio'
+
+import { RadioGroup } from './RadioGroup'
 
 export default {
   title: 'ui-kit/forms/RadioGroup',
@@ -22,9 +24,8 @@ export default {
 }
 
 const defaultArgs = {
-  name: 'question',
+  name: 'name',
   legend: 'This is the legend',
-  direction: Direction.VERTICAL,
   group: [
     {
       label: 'Oui',
@@ -35,7 +36,6 @@ const defaultArgs = {
       value: `question2`,
     },
   ],
-  withBorder: false,
 }
 
 export const Default = {
@@ -45,13 +45,19 @@ export const Default = {
 export const WithBorder = {
   args: {
     ...defaultArgs,
-    withBorder: true,
+    variant: RadioVariant.BOX,
+    name: 'name 2',
   },
 }
 
-export const Horizontal = {
+export const WithChildren = {
   args: {
     ...defaultArgs,
-    direction: Direction.HORIZONTAL,
+    variant: RadioVariant.BOX,
+    group: defaultArgs.group.map((g, i) => ({
+      ...g,
+      childrenOnChecked: <p>Sub content {i}</p>,
+    })),
+    name: 'name 3',
   },
 }
