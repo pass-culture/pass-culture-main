@@ -1,6 +1,6 @@
 import { Form, FormikProvider, useFormik } from 'formik'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -55,6 +55,8 @@ export const IndividualOfferInformationsScreen = ({
   offer,
 }: IndividualOfferInformationsScreenProps): JSX.Element => {
   const navigate = useNavigate()
+  const { pathname } = useLocation()
+  const isOnboarding = pathname.indexOf('onboarding') !== -1
   const notify = useNotification()
   const mode = useOfferWizardMode()
   const { mutate } = useSWRConfig()
@@ -154,6 +156,7 @@ export const IndividualOfferInformationsScreen = ({
             mode === OFFER_WIZARD_MODE.EDITION
               ? OFFER_WIZARD_MODE.READ_ONLY
               : mode,
+          isOnboarding,
         })
       )
     } catch (error) {

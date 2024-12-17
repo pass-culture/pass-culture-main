@@ -137,9 +137,11 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
 ]
 
 export const routesOnboardingIndividualOfferWizard: RouteConfig[] =
-  routesIndividualOfferWizard.map((route) => {
-    return {
-      ...route,
-      path: `/onboarding${route.path}`,
-    }
-  })
+  routesIndividualOfferWizard
+    .filter((route) => route.path.indexOf('recapitulatif') === -1)
+    .map((route) => {
+      return {
+        ...route,
+        path: `/onboarding${route.path}`,
+      }
+    })
