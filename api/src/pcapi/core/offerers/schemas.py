@@ -113,13 +113,19 @@ class VenueWithdrawalDetails(pydantic_v1.ConstrainedStr):
 
 class AddressBodyModel(BaseModel):
     isVenueAddress: bool = False
+    isManualEdition: bool = False
     city: VenueCity
     label: str | None
     latitude: float | str
     longitude: float | str
     postalCode: VenuePostalCode
     street: VenueAddress
-    isManualEdition: bool = False
+
+    @validator("city")
+    def title_city_when_manually_edited(cls, city: str, values: dict) -> str:
+        if values["isManualEdition"] is True:
+            return city.title()
+        return city
 
 
 class BannerMetaModel(typing.TypedDict, total=False):
