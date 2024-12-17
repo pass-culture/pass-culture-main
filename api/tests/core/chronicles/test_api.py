@@ -435,14 +435,14 @@ class BookClubFormsGeneratorTest:
     def test_multiple_calls(self):
         now = datetime.datetime(2024, 12, 31)
         list_expected = [
-            list(range(1, 101)),
+            list(range(1, constants.IMPORT_CHUNK_SIZE + 1)),
             list(string.ascii_lowercase),
         ]
 
         with patch("pcapi.core.chronicles.api.typeform.get_responses", side_effect=list_expected) as typeform_mock:
             for result, expected in zip(api._book_club_forms_generator(), chain(*list_expected)):
                 assert result == expected
-                if result == 100:
+                if result == constants.IMPORT_CHUNK_SIZE:
                     typeform_mock.assert_called_once_with(
                         form_id=constants.BookClub.FORM_ID.value,
                         num_results=constants.IMPORT_CHUNK_SIZE,
@@ -458,6 +458,15 @@ class BookClubFormsGeneratorTest:
                 since=now,
                 sort="submitted_at,asc",
             )
+
+    def test_inifinite_loop(self):
+        list_expected = [list(range(1, constants.IMPORT_CHUNK_SIZE + 1)) for i in range(5)]
+
+        with patch("pcapi.core.chronicles.api.typeform.get_responses", side_effect=list_expected) as typeform_mock:
+            for result, expected in zip(api._book_club_forms_generator(), chain(*list_expected)):
+                assert result == expected
+
+            assert typeform_mock.call_count == 1
 
 
 @pytest.mark.usefixtures("db_session")
