@@ -65,6 +65,24 @@
   }
 }
 
+.radio:focus-within {
+  outline: rem.torem(1px) solid var(--color-black);
+  outline-offset: rem.torem(4px);
+  border-radius: rem.torem(8px);
+}
+
+@supports selector(:has(*)) {
+  .radio:focus-within {
+    outline: none;
+  }
+
+  .radio:has(.base-radio-input:focus-visible) {
+    outline: rem.torem(1px) solid var(--color-black);
+    outline-offset: rem.torem(4px);
+    border-radius: rem.torem(8px);
+  }
+}
+
 .radio.with-border {
   border: rem.torem(1px) solid var(--color-grey-dark);
   border-radius: rem.torem(8px);
@@ -72,11 +90,6 @@
 
   .base-radio-label {
     padding: rem.torem(16px) rem.torem(16px) rem.torem(16px) 0;
-  }
-
-  &:focus-within {
-    outline: rem.torem(1px) solid var(--color-black);
-    outline-offset: rem.torem(4px);
   }
 
   &:hover {
