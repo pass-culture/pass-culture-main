@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { useField } from 'formik'
 import React, { useCallback } from 'react'
 
-import { BaseRadio } from '../shared/BaseRadio/BaseRadio'
+import { BaseRadio, RadioVariant } from '../shared/BaseRadio/BaseRadio'
 
 /**
  * Props for the RadioButton component.
@@ -24,9 +24,9 @@ interface RadioButtonProps
    */
   value: string
   /**
-   * Whether to add a border around the radio button.
+   * Variant of styles of the radio input.
    */
-  withBorder?: boolean
+  variant?: RadioVariant
   /**
    * Whether the radio button has an error.
    */
@@ -58,7 +58,7 @@ interface RadioButtonProps
  *   name="gender"
  *   label="Male"
  *   value="male"
- *   withBorder={true}
+ *   variant={RadioVariant.BOX}
  * />
  *
  * @accessibility
@@ -71,7 +71,7 @@ export const RadioButton = ({
   name,
   label,
   value,
-  withBorder,
+  variant,
   className,
   hasError,
   onChange,
@@ -100,7 +100,7 @@ export const RadioButton = ({
       className={cn(className)}
       checked={field.checked}
       hasError={hasError}
-      withBorder={withBorder}
+      variant={variant}
       onChange={(e) => onCustomChange(e)}
       ariaDescribedBy={ariaDescribedBy}
       childrenOnChecked={childrenOnChecked}

@@ -1,5 +1,7 @@
 import { Formik } from 'formik'
 
+import { RadioVariant } from '../shared/BaseRadio/BaseRadio'
+
 import { RadioGroup } from './RadioGroup'
 
 export default {
@@ -34,7 +36,6 @@ const defaultArgs = {
       value: `question2`,
     },
   ],
-  withBorder: false,
 }
 
 export const Default = {
@@ -44,7 +45,7 @@ export const Default = {
 export const WithBorder = {
   args: {
     ...defaultArgs,
-    withBorder: true,
+    variant: RadioVariant.BOX,
     name: 'name 2',
   },
 }
@@ -52,7 +53,7 @@ export const WithBorder = {
 export const WithChildren = {
   args: {
     ...defaultArgs,
-    withBorder: true,
+    variant: RadioVariant.BOX,
     group: defaultArgs.group.map((g, i) => ({
       ...g,
       childrenOnChecked: <p>Sub content {i}</p>,

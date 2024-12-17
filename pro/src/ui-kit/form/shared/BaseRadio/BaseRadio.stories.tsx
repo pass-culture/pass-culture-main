@@ -1,6 +1,6 @@
 import type { StoryObj } from '@storybook/react'
 
-import { BaseRadio } from './BaseRadio'
+import { BaseRadio, RadioVariant } from './BaseRadio'
 
 export default {
   title: 'ui-kit/forms/shared/BaseRadio',
@@ -22,7 +22,7 @@ export const WithBorder: StoryObj<typeof BaseRadio> = {
     hasError: false,
     disabled: false,
     checked: false,
-    withBorder: true,
+    variant: RadioVariant.BOX,
   },
 }
 
@@ -32,7 +32,7 @@ export const WithChildren: StoryObj<typeof BaseRadio> = {
     hasError: false,
     disabled: false,
     checked: true,
-    withBorder: true,
+    variant: RadioVariant.BOX,
     childrenOnChecked: (
       <div>Sub content displayed when the radio input is selected.</div>
     ),
