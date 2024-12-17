@@ -11,6 +11,10 @@
     ". status actions";
   grid-gap: rem.torem(8px) rem.torem(16px);
   border-bottom: rem.torem(1px) solid var(--color-grey-medium);
+
+  &:last-child {
+    border-bottom: none;
+  }
 }
 
 <<<<<<< HEAD
