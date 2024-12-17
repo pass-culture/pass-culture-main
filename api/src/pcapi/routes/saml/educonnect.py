@@ -11,7 +11,6 @@ from pcapi import settings
 from pcapi.connectors.beneficiaries.educonnect import educonnect_connector
 from pcapi.connectors.beneficiaries.educonnect import exceptions as educonnect_exceptions
 from pcapi.connectors.beneficiaries.educonnect import models as educonnect_models
-from pcapi.core import logging as core_logging
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription.educonnect import api as educonnect_subscription_api
 from pcapi.core.subscription.educonnect import exceptions as educonnect_subscription_exceptions
@@ -33,10 +32,9 @@ SUCCESS_PAGE_URL = f"{settings.WEBAPP_V2_URL}/educonnect/validation?"
 
 
 def _log_for_educonnect_supervision(log_message: str, user_id: int) -> None:
-    core_logging.log_for_supervision(
-        logger=logging.getLogger(__name__),
-        log_level=logging.INFO,
-        log_message=f"[EDUCONNECT AUTHENTICATION] {log_message}",
+    logger.info(
+        "[EDUCONNECT AUTHENTICATION] %s",
+        log_message,
         extra={"user_id": user_id},
     )
 

@@ -7,7 +7,6 @@ import typing
 from urllib3 import exceptions as urllib3_exceptions
 
 from pcapi import settings
-from pcapi.core import logging as core_logging
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offers import exceptions as offers_exceptions
 import pcapi.core.offers.models as offers_models
@@ -34,9 +33,7 @@ def get_jwt_token() -> str:
         except requests.exceptions.Timeout:
             raise
         except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
-            core_logging.log_for_supervision(
-                logger,
-                logging.ERROR,
+            logger.error(
                 "Titelive get jwt: Network error",
                 extra={
                     "exception": e,
@@ -49,9 +46,7 @@ def get_jwt_token() -> str:
 
         if not response.ok:
             if 400 <= response.status_code < 500:
-                core_logging.log_for_supervision(
-                    logger,
-                    logging.ERROR,
+                logger.error(
                     "Titelive get jwt: External error: %s",
                     response.status_code,
                     extra={
@@ -87,9 +82,7 @@ def get_by_ean13(ean13: str) -> dict[str, typing.Any]:
     except requests.exceptions.Timeout:
         raise
     except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
-        core_logging.log_for_supervision(
-            logger,
-            logging.ERROR,
+        logger.error(
             "Titelive get by ean 13: Network error",
             extra={
                 "exception": e,
@@ -105,9 +98,11 @@ def get_by_ean13(ean13: str) -> dict[str, typing.Any]:
         if response.status_code == 404:
             raise offers_exceptions.TiteLiveAPINotExistingEAN()
         if 400 <= response.status_code < 500:
-            core_logging.log_for_supervision(
-                logger,
-                logging.WARNING if response.status_code == 404 else logging.ERROR,
+            if response.status_code == 404:
+                log_func = logger.warning
+            else:
+                log_func = logger.error
+            log_func(
                 "Titelive get by ean 13: External error: %s",
                 response.status_code,
                 extra={
@@ -134,9 +129,7 @@ def get_by_ean_list(ean_list: set[str]) -> dict[str, typing.Any]:
     except requests.exceptions.Timeout:
         raise
     except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
-        core_logging.log_for_supervision(
-            logger,
-            logging.ERROR,
+        logger.error(
             "Titelive get by ean list: Network error",
             extra={
                 "exception": e,
@@ -151,9 +144,11 @@ def get_by_ean_list(ean_list: set[str]) -> dict[str, typing.Any]:
         if response.status_code == 404:
             raise offers_exceptions.TiteLiveAPINotExistingEAN()
         if 400 <= response.status_code < 500:
-            core_logging.log_for_supervision(
-                logger,
-                logging.WARNING if response.status_code == 404 else logging.ERROR,
+            if response.status_code == 404:
+                log_func = logger.warning
+            else:
+                log_func = logger.error
+            log_func(
                 "Titelive get by ean list: External error: %s",
                 response.status_code,
                 extra={
@@ -190,9 +185,7 @@ def get_new_product_from_ean13(ean: str) -> offers_models.Product:
 
     if gtl_id is None:
         # EAN without GTL exist (DVD, ...), ex: 3597660004235
-        core_logging.log_for_supervision(
-            logger,
-            logging.WARNING,
+        logger.warning(
             "Titelive get_new_product_from_ean13: External error:",
             extra={
                 "alert": "Titelive API no gtl_id",

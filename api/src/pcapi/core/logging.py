@@ -292,16 +292,6 @@ def _silence_noisy_loggers() -> None:
     logging.getLogger("rq.worker").setLevel(getattr(logging, rq_log_level))
 
 
-def log_for_supervision(
-    logger: logging.Logger,
-    log_level: int,
-    log_message: str,
-    *args: typing.Any,
-    **kwargs: typing.Any,
-) -> None:
-    logger.log(log_level, log_message, *args, **kwargs)
-
-
 @contextlib.contextmanager
 def log_elapsed(
     logger: logging.Logger,
