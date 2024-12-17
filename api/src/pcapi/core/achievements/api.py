@@ -1,6 +1,10 @@
+import datetime
+
+from pcapi.core.achievements import exceptions as achievements_exceptions
 from pcapi.core.achievements import models as achievements_models
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories_v2
+from pcapi.core.users import models as users_models
 from pcapi.models import db
 
 
@@ -87,3 +91,17 @@ def _get_booking_achievement(booking: bookings_models.Booking) -> achievements_m
             return achievement_name
 
     return None
+
+
+def mark_achievements_as_seen(user: users_models.User, achievement_ids: list[int]) -> None:
+    achievements = [achievement for achievement in user.achievements if achievement.id in achievement_ids]
+
+    if len(achievements) != len(achievement_ids):
+        raise achievements_exceptions.AchievementNotFound(
+            f"Some {achievement_ids = } were not found for user {user.id}"
+        )
+
+    for achievement in achievements:
+        achievement.seenDate = datetime.datetime.utcnow()
+
+    db.session.flush()

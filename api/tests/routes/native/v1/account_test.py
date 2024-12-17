@@ -426,24 +426,28 @@ class AccountTest:
         user = users_factories.UserFactory()
         now = datetime.utcnow()
         last_week = now - timedelta(days=7)
-        AchievementFactory(
+        achievement_1 = AchievementFactory(
             user=user,
             name=achievements_models.AchievementEnum.FIRST_MOVIE_BOOKING,
             unlockedDate=last_week,
             seenDate=last_week,
         )
-        AchievementFactory(user=user, name=achievements_models.AchievementEnum.FIRST_BOOK_BOOKING, unlockedDate=now)
+        achievement_2 = AchievementFactory(
+            user=user, name=achievements_models.AchievementEnum.FIRST_BOOK_BOOKING, unlockedDate=now
+        )
 
         response = client.with_token(user.email).get("/native/v1/me")
 
         assert response.status_code == 200, response.json
         assert response.json["achievements"] == [
             {
+                "id": achievement_1.id,
                 "name": achievements_models.AchievementEnum.FIRST_MOVIE_BOOKING.name,
                 "unlockedDate": format_into_utc_date(last_week),
                 "seenDate": format_into_utc_date(last_week),
             },
             {
+                "id": achievement_2.id,
                 "name": achievements_models.AchievementEnum.FIRST_BOOK_BOOKING.name,
                 "unlockedDate": format_into_utc_date(now),
                 "seenDate": None,
