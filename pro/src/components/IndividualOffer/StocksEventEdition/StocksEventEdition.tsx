@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { FieldArray, FormikProvider, useFormik } from 'formik'
 import isEqual from 'lodash/isEqual'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -128,6 +128,8 @@ export const StocksEventEdition = ({
   // utilities
   const mode = useOfferWizardMode()
   const navigate = useNavigate()
+  const { pathname } = useLocation()
+  const isOnboarding = pathname.indexOf('onboarding') !== -1
   const { mutate } = useSWRConfig()
   const notify = useNotification()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -283,6 +285,7 @@ export const StocksEventEdition = ({
       offerId: offer.id,
       step: OFFER_WIZARD_STEP_IDS.STOCKS,
       mode: OFFER_WIZARD_MODE.READ_ONLY,
+      isOnboarding,
     })
 
     const isFormEmpty = values.stocks.every((val) =>
@@ -404,6 +407,7 @@ export const StocksEventEdition = ({
         offerId: offer.id,
         step: OFFER_WIZARD_STEP_IDS.STOCKS,
         mode: OFFER_WIZARD_MODE.READ_ONLY,
+        isOnboarding,
       })
     )
   }

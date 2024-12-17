@@ -5,7 +5,10 @@ import { Navigate } from 'react-router-dom'
 
 import { UNAVAILABLE_ERROR_PAGE } from 'commons/utils/routes'
 
-import { routesIndividualOfferWizard } from './subroutesIndividualOfferWizardMap'
+import {
+  routesIndividualOfferWizard,
+  routesOnboardingIndividualOfferWizard,
+} from './subroutesIndividualOfferWizardMap'
 import { routesReimbursements } from './subroutesReimbursements'
 import { routesSignupJourney } from './subroutesSignupJourneyMap'
 import { routesSignup } from './subroutesSignupMap'
@@ -114,6 +117,12 @@ export const routes: RouteConfig[] = [
     lazy: () => import('pages/OfferType/OfferType'),
     path: '/offre/creation',
     title: 'Choix de la nature de l’offre - Créer une offre',
+  },
+  {
+    lazy: () => import('pages/OfferType/OfferType'),
+    path: '/onboarding/offre/creation',
+    title: 'Choix de la nature de l’offre - Créer une offre',
+    featureName: 'WIP_ENABLE_PRO_ONBOARDING',
   },
   {
     lazy: () => import('pages/IndividualOffers/IndividualOffers'),
@@ -308,6 +317,12 @@ export const routes: RouteConfig[] = [
     children: routesIndividualOfferWizard,
   },
   {
+    lazy: () => import('pages/IndividualOfferWizard/IndividualOfferWizard'),
+    path: '/onboarding/offre/individuelle',
+    title: 'Offre étape par étape',
+    children: routesOnboardingIndividualOfferWizard,
+  },
+  {
     lazy: () => import('pages/Reimbursements/Reimbursements'),
     path: '/remboursements',
     title: 'Gestion financière',
@@ -379,15 +394,6 @@ export const routes: RouteConfig[] = [
         'pages/Onboarding/OnboardingOfferIndividual/OnboardingOfferIndividual'
       ),
     path: '/inscription-offre-individuelle',
-    title: 'Inscription - Offre à destination des jeunes',
-    featureName: 'WIP_ENABLE_PRO_ONBOARDING',
-  },
-  {
-    lazy: () =>
-      import(
-        'pages/Onboarding/OnboardingOfferIndividualManual/OnboardingOfferIndividualManual'
-      ),
-    path: '/inscription-offre-individuelle-manuelle',
     title: 'Inscription - Offre à destination des jeunes',
     featureName: 'WIP_ENABLE_PRO_ONBOARDING',
   },

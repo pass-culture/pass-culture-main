@@ -1,6 +1,6 @@
 import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -41,6 +41,8 @@ export const SummaryScreen = () => {
   const mode = useOfferWizardMode()
   const { mutate } = useSWRConfig()
   const navigate = useNavigate()
+  const { pathname } = useLocation()
+  const isOnboarding = pathname.indexOf('onboarding') !== -1
   const { offer, subCategories } = useIndividualOfferContext()
   const showEventPublicationForm = Boolean(offer?.isEvent)
 
@@ -69,10 +71,11 @@ export const SummaryScreen = () => {
       await mutate([GET_OFFER_QUERY_KEY, offer.id])
 
       const shouldDisplayRedirectDialog =
-        publishIndividualOfferResponse.isNonFreeOffer &&
-        !offererResponse.hasNonFreeOffer &&
-        !offererResponse.hasValidBankAccount &&
-        !offererResponse.hasPendingBankAccount
+        isOnboarding ||
+        (publishIndividualOfferResponse.isNonFreeOffer &&
+          !offererResponse.hasNonFreeOffer &&
+          !offererResponse.hasValidBankAccount &&
+          !offererResponse.hasPendingBankAccount)
 
       if (shouldDisplayRedirectDialog) {
         setDisplayRedirectDialog(true)
@@ -102,11 +105,14 @@ export const SummaryScreen = () => {
     (subCategory) => subCategory.id === offer.subcategoryId
   )?.canBeDuo
 
-  const offerConfirmationStepUrl = getIndividualOfferUrl({
-    offerId: offer.id,
-    step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
-    mode,
-  })
+  const offerConfirmationStepUrl = isOnboarding
+    ? '/accueil'
+    : getIndividualOfferUrl({
+        offerId: offer.id,
+        step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
+        mode,
+        isOnboarding,
+      })
 
   /* istanbul ignore next: DEBT, TO FIX */
   const handlePreviousStep = () => {
@@ -115,6 +121,7 @@ export const SummaryScreen = () => {
         offerId: offer.id,
         step: OFFER_WIZARD_STEP_IDS.STOCKS,
         mode,
+        isOnboarding,
       })
     )
   }

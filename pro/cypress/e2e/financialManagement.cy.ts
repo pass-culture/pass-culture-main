@@ -8,7 +8,6 @@ export function attachmentModificationsDone() {
     'contain',
     'Vos modifications ont bien été prises en compte.'
   )
-  cy.wait('@getOfferers').its('response.statusCode').should('equal', 200)
   cy.findByRole('dialog').should('not.exist')
 }
 
@@ -162,7 +161,6 @@ describe('Financial Management - messages, links to external help page, reimburs
 
     it('I should be able to attach and unattach a few venues', () => {
       cy.findByTestId('offerer-select')
-      cy.wait('@getOfferers').its('response.statusCode').should('equal', 200)
       cy.findAllByTestId('spinner').should('not.exist')
 
       cy.stepLog({

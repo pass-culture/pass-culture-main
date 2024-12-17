@@ -26,6 +26,7 @@ import { Spinner } from 'ui-kit/Spinner/Spinner'
 import styles from './OfferSection.module.scss'
 import { serializeOfferSectionData } from './serializer'
 import { humanizeDelay } from './utils'
+import { useLocation } from 'react-router-dom'
 
 interface OfferSummaryProps {
   offer: GetIndividualOfferWithAddressResponseModel
@@ -38,6 +39,8 @@ export const OfferSection = ({
   offer,
   isEventPublicationFormShown,
 }: OfferSummaryProps): JSX.Element => {
+  const { pathname } = useLocation()
+  const isOnboarding = pathname.indexOf('onboarding') !== -1
   const mode = useOfferWizardMode()
   const { categories, subCategories } = useIndividualOfferContext()
   const musicTypesQuery = useSWR(
@@ -195,6 +198,7 @@ export const OfferSection = ({
           mode === OFFER_WIZARD_MODE.READ_ONLY
             ? OFFER_WIZARD_MODE.EDITION
             : mode,
+        isOnboarding,
       })}
       aria-label="Modifier les détails de l’offre"
       className={cn({
@@ -221,6 +225,7 @@ export const OfferSection = ({
             mode === OFFER_WIZARD_MODE.READ_ONLY
               ? OFFER_WIZARD_MODE.EDITION
               : mode,
+          isOnboarding,
         })}
         aria-label="Modifier les informations pratiques de l’offre"
       >
