@@ -7,15 +7,17 @@ interface GetIndividualOfferPathArgs {
   isCreation?: boolean
   mode: OFFER_WIZARD_MODE
   step: OFFER_WIZARD_STEP_IDS
+  isOnboarding?: boolean
 }
 
 export const getIndividualOfferPath = ({
   isCreation = false,
   mode,
   step,
+  isOnboarding = false,
 }: GetIndividualOfferPathArgs): string => {
   if (isCreation) {
-    return `/offre/individuelle/creation/details`
+    return `${isOnboarding ? '/onboarding' : ''}/offre/individuelle/creation/details`
   }
 
   return {
@@ -62,18 +64,21 @@ interface GetIndividualOfferUrlArgs {
   offerId?: number
   mode: OFFER_WIZARD_MODE
   step: OFFER_WIZARD_STEP_IDS
+  isOnboarding?: boolean
 }
 
 export const getIndividualOfferUrl = ({
   offerId,
   mode,
   step,
+  isOnboarding = false,
 }: GetIndividualOfferUrlArgs) =>
   generatePath(
     getIndividualOfferPath({
       isCreation: offerId === undefined,
       mode,
       step,
+      isOnboarding,
     }),
     { offerId }
   )

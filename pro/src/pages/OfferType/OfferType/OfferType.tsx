@@ -80,6 +80,7 @@ export const OfferTypeScreen = (): JSX.Element => {
         pathname: getIndividualOfferUrl({
           step: OFFER_WIZARD_STEP_IDS.DETAILS,
           mode: OFFER_WIZARD_MODE.CREATION,
+          isOnboarding: location.pathname.indexOf('onboarding') !== -1,
         }),
         search: params.toString(),
       })
