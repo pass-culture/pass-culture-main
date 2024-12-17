@@ -2,6 +2,7 @@ import re
 import typing
 
 import pydantic.v1 as pydantic_v1
+from pydantic.v1 import root_validator
 from pydantic.v1 import validator
 
 from pcapi.routes.serialization import BaseModel
@@ -119,3 +120,9 @@ class AddressBodyModel(BaseModel):
     postalCode: VenuePostalCode
     street: VenueAddress
     isManualEdition: bool = False
+
+    @root_validator
+    def title_city_for_manually_edited_addresses(cls, values: dict) -> dict:
+        if values["isManualEdition"] is True:
+            values["city"] = values["city"].title()
+        return values
