@@ -1,0 +1,2 @@
+class AchievementNotFound(Exception):
+    pass

@@ -64,12 +64,26 @@ def test_public_api(client):
                 },
                 "AchievementResponse": {
                     "properties": {
+                        "id": {"title": "Id", "type": "integer"},
                         "name": {"$ref": "#/components/schemas/AchievementEnum"},
                         "seenDate": {"format": "date-time", "nullable": True, "title": "Seendate", "type": "string"},
                         "unlockedDate": {"format": "date-time", "title": "Unlockeddate", "type": "string"},
                     },
-                    "required": ["name", "unlockedDate"],
+                    "required": ["id", "name", "unlockedDate"],
                     "title": "AchievementResponse",
+                    "type": "object",
+                },
+                "AchievementsResponse": {
+                    "items": {"$ref": "#/components/schemas/AchievementResponse"},
+                    "title": "AchievementsResponse",
+                    "type": "array",
+                },
+                "MarkAchievementsAsSeenRequest": {
+                    "properties": {
+                        "achievementIds": {"items": {"type": "integer"}, "title": "Achievementids", "type": "array"}
+                    },
+                    "required": ["achievementIds"],
+                    "title": "MarkAchievementsAsSeenRequest",
                     "type": "object",
                 },
                 "ActivityIdEnum": {
@@ -1089,6 +1103,14 @@ def test_public_api(client):
                     "description": "An enumeration.",
                     "enum": ["with-dms", "without-dms"],
                     "title": "MaintenancePageType",
+                },
+                "MarkAchievementsAsSeenRequest": {
+                    "properties": {
+                        "achievementIds": {"items": {"type": "integer"}, "title": "Achievementids", "type": "array"}
+                    },
+                    "required": ["achievementIds"],
+                    "title": "MarkAchievementsAsSeenRequest",
+                    "type": "object",
                 },
                 "MentalDisabilityModel": {
                     "properties": {
@@ -2971,6 +2993,38 @@ def test_public_api(client):
                     },
                     "security": [{"JWTAuth": []}],
                     "summary": "unsuspend_account <POST>",
+                    "tags": [],
+                }
+            },
+            "/native/v1/achievements/mark_as_seen": {
+                "post": {
+                    "description": "",
+                    "operationId": "post__native_v1_achievements_mark_as_seen",
+                    "parameters": [],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {
+                                "schema": {"$ref": "#/components/schemas/MarkAchievementsAsSeenRequest"}
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/AchievementsResponse"}}
+                            },
+                            "description": "OK",
+                        },
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [{"JWTAuth": []}],
+                    "summary": "mark_achievements_as_seen <POST>",
                     "tags": [],
                 }
             },
