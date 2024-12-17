@@ -126,15 +126,50 @@ def _get_sent_pricings_for_collective_bookings(
     bank_account_id: int | None = None,
     invoices_references: list[str] | None = None,
 ) -> list[tuple]:
-    query = (
-        models.Pricing.query.join(educational_models.CollectiveBooking, models.Pricing.collectiveBooking)
-        .join(educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock)
-        .join(educational_models.CollectiveOffer, educational_models.CollectiveStock.collectiveOffer)
-        .join(offerers_models.Venue, educational_models.CollectiveOffer.venue)
-        .join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
+    # Querying the Pricing information before joining the
+    # CollectiveBooking makes the query much more efficient
+    sub_query = (
+        db.session.query(
+            # See note about `amount` in `core/finance/models.py`.
+            (-models.Pricing.amount).label("amount"),
+            models.Pricing.standardRule.label("rule_name"),
+            models.Pricing.customRuleId.label("rule_id"),
+            models.Pricing.collectiveBookingId.label("collective_booking_id"),
+            sqla.cast(models.Invoice.date, sqla.Date).label("invoice_date"),
+            models.Invoice.reference.label("invoice_reference"),
+            models.CashflowBatch.cutoff.label("cashflow_batch_cutoff"),
+            models.CashflowBatch.label.label("cashflow_batch_label"),
+            models.BankAccount.label.label("bank_account_label"),
+            models.BankAccount.iban.label("iban"),
+        )
         .join(models.Pricing.cashflows)
         .join(models.Cashflow.bankAccount)
+        .join(models.Cashflow.batch)
+        .join(models.Cashflow.invoices)
+        .outerjoin(models.Pricing.customRule)
+        .filter(
+            models.Pricing.status == models.PricingStatus.INVOICED,
+            (
+                (
+                    sqla.cast(models.Cashflow.creationDate, sqla.Date).between(
+                        *reimbursement_period,
+                        symmetric=True,
+                    )
+                )
+                if reimbursement_period
+                else sqla.true()
+            ),
+            (models.Cashflow.bankAccountId == bank_account_id) if bank_account_id else sqla.true(),
+            (models.Invoice.reference.in_(invoices_references)) if invoices_references else sqla.true(),
+            # Complementary invoices (that end with ".2") are linked
+            # to the same bookings as the original invoices they
+            # complement. We don't want these bookings to be listed
+            # twice.
+            models.Invoice.reference.not_like("%.2"),
+        )
+        .subquery("pricing_temp")
     )
+    pricing_sub_query = sqla_orm.aliased(sub_query)
 
     columns: tuple[sqla.sql.elements.Label, ...] = (
         educational_models.EducationalRedactor.firstName.label("redactor_firstname"),
@@ -161,44 +196,27 @@ def _get_sent_pricings_for_collective_bookings(
         ).label("venue_city"),
         offerers_models.Venue.siret.label("venue_siret"),
         offerers_models.Venue.departementCode.label("venue_departement_code"),
-        # See note about `amount` in `core/finance/models.py`.
-        (-models.Pricing.amount).label("amount"),
-        models.Pricing.standardRule.label("rule_name"),
-        models.Pricing.customRuleId.label("rule_id"),
-        models.Pricing.collectiveBookingId.label("collective_booking_id"),
-        sqla.cast(models.Invoice.date, sqla.Date).label("invoice_date"),
-        models.Invoice.reference.label("invoice_reference"),
-        models.CashflowBatch.cutoff.label("cashflow_batch_cutoff"),
-        models.CashflowBatch.label.label("cashflow_batch_label"),
-        models.BankAccount.label.label("bank_account_label"),
-        models.BankAccount.iban.label("iban"),
+        pricing_sub_query.c.amount.label("amount"),
+        pricing_sub_query.c.rule_name.label("rule_name"),
+        pricing_sub_query.c.rule_id.label("rule_id"),
+        pricing_sub_query.c.collective_booking_id.label("collective_booking_id"),
+        pricing_sub_query.c.invoice_date.label("invoice_date"),
+        pricing_sub_query.c.invoice_reference.label("invoice_reference"),
+        pricing_sub_query.c.cashflow_batch_cutoff.label("cashflow_batch_cutoff"),
+        pricing_sub_query.c.cashflow_batch_label.label("cashflow_batch_label"),
+        pricing_sub_query.c.bank_account_label.label("bank_account_label"),
+        pricing_sub_query.c.iban.label("iban"),
     )
 
     return (
-        query.join(models.Cashflow.batch)
-        .join(models.Cashflow.invoices)
-        .outerjoin(models.Pricing.customRule)
-        .filter(
-            models.Pricing.status == models.PricingStatus.INVOICED,
-            (
-                (
-                    sqla.cast(models.Cashflow.creationDate, sqla.Date).between(
-                        *reimbursement_period,
-                        symmetric=True,
-                    )
-                )
-                if reimbursement_period
-                else sqla.true()
-            ),
-            (educational_models.CollectiveBooking.offererId == offerer_id) if offerer_id else sqla.true(),
-            (models.Cashflow.bankAccountId == bank_account_id) if bank_account_id else sqla.true(),
-            (models.Invoice.reference.in_(invoices_references)) if invoices_references else sqla.true(),
-            # Complementary invoices (that end with ".2") are linked
-            # to the same bookings as the original invoices they
-            # complement. We don't want these bookings to be listed
-            # twice.
-            models.Invoice.reference.not_like("%.2"),
+        educational_models.CollectiveBooking.query.join(
+            pricing_sub_query,
+            pricing_sub_query.c.collective_booking_id == educational_models.CollectiveBooking.id,
         )
+        .join(educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock)
+        .join(educational_models.CollectiveOffer, educational_models.CollectiveStock.collectiveOffer)
+        .join(offerers_models.Venue, educational_models.CollectiveOffer.venue)
+        .join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
         .join(
             educational_models.EducationalRedactor,
             educational_models.CollectiveBooking.educationalRedactor,
@@ -207,6 +225,7 @@ def _get_sent_pricings_for_collective_bookings(
             educational_models.EducationalInstitution,
             educational_models.CollectiveBooking.educationalInstitution,
         )
+        .filter((educational_models.CollectiveBooking.offererId == offerer_id) if offerer_id else sqla.true())
         .order_by(
             educational_models.CollectiveBooking.dateUsed.desc(),
             educational_models.CollectiveBooking.id.desc(),
