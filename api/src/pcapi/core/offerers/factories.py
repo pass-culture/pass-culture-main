@@ -112,6 +112,8 @@ class VenueFactory(BaseFactory):
             city=factory.SelfAttribute("...city"),
             latitude=factory.SelfAttribute("...latitude"),
             longitude=factory.SelfAttribute("...longitude"),
+            timezone=factory.SelfAttribute("...timezone"),
+            departmentCode=factory.SelfAttribute("...departementCode"),
         ),
         offerer=factory.SelfAttribute("..managingOfferer"),
     )
