@@ -5,9 +5,6 @@
 @use "styles/mixins/_size.scss" as size;
 
 .onboarding-layout {
-  min-height: calc(
-    100vh - (size.$action-bar-sticky-height + size.$footer-height)
-  );
   margin: rem.torem(32px) auto 0 auto;
   padding: 0 rem.torem(32px);
   display: flex;
@@ -18,7 +15,10 @@
   justify-content: flex-start;
 
   &.vertically-centered {
-    justify-content: center;
-    padding-bottom: rem.torem(100px);
+    margin-top: rem.torem(32px);
+
+    @media (min-width: size.$laptop) {
+      margin-top: 20vh;
+    }
   }
 }

@@ -5,9 +5,6 @@
 @use "styles/mixins/_size.scss" as size;
 
 .onboarding-offer-container {
-  min-height: calc(
-    100vh - (size.$action-bar-sticky-height + size.$footer-height)
-  );
   margin: rem.torem(32px) auto 0 auto;
   padding: 0 rem.torem(32px);
   display: flex;
@@ -20,7 +17,7 @@
   @include fonts-design-system.title3;
 
   text-align: center;
-  margin-bottom: rem.torem(16px);
+  margin-bottom: rem.torem(8px);
 }
 
 .offers-subtitle {
