@@ -9,18 +9,12 @@ export const serializePostVenueBodyModel = (
 ): PostVenueBodyModel => {
   const payload: PostVenueBodyModel = {
     audioDisabilityCompliant: formValues.accessibility.audio,
-    banId: formValues.banId,
     bookingEmail: formValues.bookingEmail,
-    city: formValues.city,
     comment: formValues.comment,
-    latitude: formValues.latitude,
-    longitude: formValues.longitude,
     mentalDisabilityCompliant: formValues.accessibility.mental,
     motorDisabilityCompliant: formValues.accessibility.motor,
     name: formValues.name,
-    postalCode: formValues.postalCode,
     publicName: formValues.publicName,
-    street: formValues.street,
     siret: unhumanizeSiret(formValues.siret),
     venueTypeCode: formValues.venueType,
     visualDisabilityCompliant: formValues.accessibility.visual,
@@ -32,6 +26,14 @@ export const serializePostVenueBodyModel = (
     },
     venueLabelId: null,
     managingOffererId: offererId,
+    address: {
+      banId: formValues.banId,
+      city: formValues.city,
+      latitude: formValues.latitude,
+      longitude: formValues.longitude,
+      postalCode: formValues.postalCode,
+      street: formValues.street
+    }
   }
 
   if (hideSiret) {
