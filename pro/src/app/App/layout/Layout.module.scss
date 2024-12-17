@@ -102,6 +102,12 @@ $connect-as-header-height: rem.torem(52px);
   &-logged-out {
     padding: 0;
   }
+
+  &-sticky-onboarding {
+    max-width: size.$main-content-width;
+    margin: 0 auto size.$action-bar-sticky-height auto;
+    padding: size.$main-content-padding;
+  }
 }
 
 .content {
@@ -128,6 +134,11 @@ $connect-as-header-height: rem.torem(52px);
           )
       );
     }
+  }
+
+  &-sticky-onboarding {
+    display: flex;
+    justify-content: center;
   }
 }
 

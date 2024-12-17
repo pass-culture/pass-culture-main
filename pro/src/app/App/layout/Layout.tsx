@@ -23,7 +23,13 @@ export interface LayoutProps {
    * Make sure that only one heading is displayed per page.
    */
   mainHeading?: string
-  layout?: 'basic' | 'funnel' | 'onboarding' | 'sticky-actions' | 'logged-out'
+  layout?:
+    | 'basic'
+    | 'funnel'
+    | 'onboarding'
+    | 'sticky-actions'
+    | 'sticky-onboarding'
+    | 'logged-out'
   showFooter?: boolean
 }
 
@@ -31,7 +37,7 @@ export const Layout = ({
   children,
   mainHeading,
   layout = 'basic',
-  showFooter = layout !== 'funnel',
+  showFooter = layout !== 'funnel' && layout !== 'sticky-onboarding',
 }: LayoutProps) => {
   const currentUser = useSelector(selectCurrentUser)
   const [lateralPanelOpen, setLateralPanelOpen] = useState(false)
@@ -44,7 +50,10 @@ export const Layout = ({
   const isConnected = !!currentUser
 
   const shouldDisplayUserReview =
-    layout !== 'funnel' && layout !== 'onboarding' && layout !== 'logged-out'
+    layout !== 'funnel' &&
+    layout !== 'onboarding' &&
+    layout !== 'logged-out' &&
+    layout !== 'sticky-onboarding'
 
   const mainHeadingWrapper = mainHeading && (
     <div className={styles['main-heading-wrapper']}>
@@ -83,7 +92,9 @@ export const Layout = ({
             </div>
           </aside>
         )}
-        {(layout === 'basic' || layout === 'sticky-actions') && (
+        {(layout === 'basic' ||
+          layout === 'sticky-actions' ||
+          layout === 'sticky-onboarding') && (
           <Header
             lateralPanelOpen={lateralPanelOpen}
             setLateralPanelOpen={setLateralPanelOpen}
@@ -93,14 +104,17 @@ export const Layout = ({
               })
             }}
             ref={openButtonRef}
+            disableHomeLink={layout === 'sticky-onboarding'}
           />
         )}
         <div
-          className={cn(styles['page-layout'], {
-            [styles['page-layout-connect-as']]: currentUser?.isImpersonated,
-            [styles['page-layout-funnel']]: layout === 'funnel',
-            [styles['page-layout-onboarding']]: layout === 'onboarding',
-          })}
+          className={cn(
+            styles['page-layout'],
+            styles[`page-layout-${layout}`],
+            {
+              [styles['page-layout-connect-as']]: currentUser?.isImpersonated,
+            }
+          )}
         >
           {(layout === 'basic' || layout === 'sticky-actions') && (
             <LateralPanel
@@ -130,13 +144,10 @@ export const Layout = ({
               </header>
             )}
             <div
-              className={cn(styles['content-container'], {
-                [styles['content-container-funnel']]: layout === 'funnel',
-                [styles['content-container-onboarding']]:
-                  layout === 'onboarding',
-                [styles['content-container-logged-out']]:
-                  layout === 'logged-out',
-              })}
+              className={cn(
+                styles['content-container'],
+                styles[`content-container-${layout}`]
+              )}
             >
               <main id="content">
                 {layout === 'funnel' || layout === 'onboarding' ? (
@@ -146,8 +157,7 @@ export const Layout = ({
                   </>
                 ) : (
                   <div
-                    className={cn(styles.content, {
-                      [styles['content-logged-out']]: layout === 'logged-out',
+                    className={cn(styles.content, styles[`content-${layout}`], {
                       [styles['content-logged-out-with-heading']]:
                         layout === 'logged-out' && mainHeading,
                     })}
