@@ -32,7 +32,6 @@ import { createOfferFromTemplate } from 'commons/core/OfferEducational/utils/cre
 import { duplicateBookableOffer } from 'commons/core/OfferEducational/utils/duplicateBookableOffer'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
-import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'

@@ -31,9 +31,6 @@ describe('Create individual offers with OA', () => {
     cy.intercept({ method: 'GET', url: '/offers/*/stocks/*' }).as('getStocks')
     cy.intercept({ method: 'POST', url: '/stocks/bulk' }).as('postStocks')
     cy.intercept({ method: 'PATCH', url: '/offers/publish' }).as('publishOffer')
-    cy.intercept({ method: 'GET', url: '/offerers/names' }).as(
-      'getOfferersNames'
-    )
     cy.intercept({ method: 'GET', url: '/offers/categories' }).as(
       'getCategories'
     )
@@ -122,9 +119,9 @@ describe('Create individual offers with OA', () => {
 
     cy.stepLog({ message: 'I go to the offers list' })
     cy.findByText('Voir la liste des offres').click()
-    cy.wait(['@getOfferersNames', '@getOffer', '@getCategories'], {
-      requestTimeout: 60 * 1000 * 3,
-      responseTimeout: 60 * 1000 * 3,
+    cy.wait(['@getOffer', '@getCategories'], {
+      requestTimeout: 60 * 1000 * 2,
+      responseTimeout: 60 * 1000 * 2,
     })
 
     cy.stepLog({ message: 'my new offer should be displayed' })
@@ -249,9 +246,9 @@ describe('Create individual offers with OA', () => {
     cy.stepLog({ message: 'I go to the offers list' })
     cy.findByText('Voir la liste des offres').click()
     cy.url().should('contain', '/offres')
-    cy.wait(['@getOfferersNames', '@getOffer', '@getCategories'], {
-      requestTimeout: 60 * 1000 * 3,
-      responseTimeout: 60 * 1000 * 3,
+    cy.wait(['@getOffer', '@getCategories'], {
+      requestTimeout: 60 * 1000 * 2,
+      responseTimeout: 60 * 1000 * 2,
     })
 
     cy.stepLog({ message: 'my new physical offer should be displayed' })

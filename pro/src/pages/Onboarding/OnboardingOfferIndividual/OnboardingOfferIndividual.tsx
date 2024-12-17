@@ -15,7 +15,7 @@ type OnboardingOfferProcedure = 'MANUAL' | 'AUTOMATIC'
 
 // Mapping the redirect URLs to the corresponding offer type
 const urls: Record<OnboardingOfferProcedure, string> = {
-  MANUAL: '/inscription-offre-individuelle-manuelle',
+  MANUAL: '/onboarding/offre/creation',
   AUTOMATIC: '/inscription-offre-individuelle-auto',
 } as const
 

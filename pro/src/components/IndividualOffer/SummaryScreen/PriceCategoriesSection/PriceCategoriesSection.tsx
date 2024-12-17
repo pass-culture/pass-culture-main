@@ -10,6 +10,7 @@ import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescript
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 
 import styles from './PriceCategoriesSection.module.scss'
+import { useLocation } from 'react-router-dom'
 
 interface Props {
   offer: GetIndividualOfferResponseModel
@@ -18,12 +19,15 @@ interface Props {
 
 export const PriceCategoriesSection = ({ offer, canBeDuo }: Props) => {
   const mode = useOfferWizardMode()
+  const { pathname } = useLocation()
+  const isOnboarding = pathname.indexOf('onboarding') !== -1
 
   const editLink = getIndividualOfferUrl({
     offerId: offer.id,
     step: OFFER_WIZARD_STEP_IDS.TARIFS,
     mode:
       mode === OFFER_WIZARD_MODE.READ_ONLY ? OFFER_WIZARD_MODE.EDITION : mode,
+    isOnboarding,
   })
 
   return (

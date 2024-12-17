@@ -22,6 +22,7 @@ import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { RecurrenceSection } from './RecurrenceSection/RecurrenceSection'
 import styles from './StockSection.module.scss'
 import { StockThingSection } from './StockThingSection/StockThingSection'
+import { useLocation } from 'react-router-dom'
 
 export const getStockWarningText = (offer: GetIndividualOfferResponseModel) => {
   if (!offer.hasStocks) {
@@ -48,6 +49,8 @@ export const StockSection = ({
   offer,
   canBeDuo,
 }: StockSectionProps): JSX.Element => {
+  const { pathname } = useLocation()
+  const isOnboarding = pathname.indexOf('onboarding') !== -1
   const mode = useOfferWizardMode()
   const [isLoading, setIsLoading] = useState(false)
   const [stocksEventsStats, setStocksEventsStats] = useState<
@@ -91,6 +94,7 @@ export const StockSection = ({
       }
       setIsLoading(false)
     }
+
     if (offer.isEvent) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       getStocksEventsStats()
@@ -109,6 +113,7 @@ export const StockSection = ({
     step: OFFER_WIZARD_STEP_IDS.STOCKS,
     mode:
       mode === OFFER_WIZARD_MODE.READ_ONLY ? OFFER_WIZARD_MODE.EDITION : mode,
+    isOnboarding,
   })
 
   const stockWarningText = getStockWarningText(offer)

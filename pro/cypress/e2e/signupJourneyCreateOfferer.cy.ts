@@ -2,7 +2,10 @@ import {
   MOCKED_BACK_ADDRESS_LABEL,
   MOCKED_BACK_ADDRESS_STREET,
 } from '../support/constants.ts'
-import { interceptSearch5Adresses, logInAndGoToPage } from '../support/helpers.ts'
+import {
+  interceptSearch5Adresses,
+  logInAndGoToPage,
+} from '../support/helpers.ts'
 
 const venueName = 'MINISTERE DE LA CULTURE'
 const newVenueName = 'First Venue'
@@ -38,7 +41,6 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
           body: addressInterceptionPayload,
         })
     ).as('search1Address')
-    cy.intercept({ method: 'GET', url: '/offerers/names' }).as('getOfferers')
     cy.intercept({
       method: 'GET',
       url: '/venue-types',
@@ -116,7 +118,6 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
     cy.contains(
       'Votre structure est en cours de traitement par les équipes du pass Culture'
     ).should('be.visible')
-    cy.wait('@getOfferers').its('response.statusCode').should('eq', 200)
     cy.findByText(newVenueName).should('be.visible')
   })
 })
@@ -129,7 +130,6 @@ describe('Signup journey with known offerer...', () => {
     cy.intercept({ method: 'POST', url: '/offerers/new', times: 1 }).as(
       'createOfferer'
     )
-    cy.intercept({ method: 'GET', url: '/offerers/names' }).as('getOfferers')
     cy.intercept({
       method: 'GET',
       url: '/venue-types',
@@ -226,7 +226,6 @@ describe('Signup journey with known offerer...', () => {
       cy.contains(
         'Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture'
       ).should('be.visible')
-      cy.wait('@getOfferers').its('response.statusCode').should('eq', 200)
       cy.findByText(newVenueName).should('not.exist')
     })
   })
@@ -330,7 +329,6 @@ describe('Signup journey with known offerer...', () => {
 
       // TODO: Find a better way to wait for the offerer to be created
       cy.reload()
-      cy.wait('@getOfferers').its('response.statusCode').should('eq', 200)
 
       cy.stepLog({ message: 'the attachment is in progress' })
       cy.contains(
@@ -372,7 +370,6 @@ describe('Signup journey with known offerer...', () => {
 
       // TODO: Find a better way to wait for the offerer to be created
       cy.reload()
-      cy.wait('@getOfferers').its('response.statusCode').should('eq', 200)
 
       cy.stepLog({ message: 'the attachment is in progress' })
       cy.contains(

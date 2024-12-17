@@ -1,6 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
@@ -87,6 +87,8 @@ export const PriceCategoriesScreen = ({
 }: PriceCategoriesScreenProps): JSX.Element => {
   const { subCategories } = useIndividualOfferContext()
   const navigate = useNavigate()
+  const { pathname } = useLocation()
+  const isOnboarding = pathname.indexOf('onboarding') !== -1
   const mode = useOfferWizardMode()
   const notify = useNotification()
   const { mutate } = useSWRConfig()
@@ -110,6 +112,7 @@ export const PriceCategoriesScreen = ({
           : OFFER_WIZARD_STEP_IDS.STOCKS,
       mode:
         mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
+      isOnboarding,
     })
 
     // Return when saving in edition with an empty form
@@ -160,6 +163,7 @@ export const PriceCategoriesScreen = ({
           offerId: offer.id,
           step: OFFER_WIZARD_STEP_IDS.TARIFS,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
+          isOnboarding,
         })
       )
     } else {
@@ -168,6 +172,7 @@ export const PriceCategoriesScreen = ({
           offerId: offer.id,
           step: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
           mode,
+          isOnboarding,
         })
       )
     }
