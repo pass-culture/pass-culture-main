@@ -24,6 +24,8 @@ interface IndividualOfferNavigationProps {
 export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
   isUsefulInformationSubmitted,
 }) => {
+  const { pathname } = useLocation()
+  const isOnboarding = pathname.indexOf('onboarding') !== -1
   const { offer, isEvent: isEventOfferContext } = useIndividualOfferContext()
   const activeStep = useActiveStep(Object.values(OFFER_WIZARD_STEP_IDS))
   const mode = useOfferWizardMode()
@@ -46,6 +48,7 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
       path: getIndividualOfferPath({
         step: OFFER_WIZARD_STEP_IDS.DETAILS,
         mode,
+        isOnboarding,
       }),
       isActive: true,
     },
@@ -55,6 +58,7 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
       path: getIndividualOfferPath({
         step: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
         mode,
+        isOnboarding,
       }),
       isActive: true,
     },
@@ -69,6 +73,7 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
         path: getIndividualOfferPath({
           step: OFFER_WIZARD_STEP_IDS.TARIFS,
           mode,
+          isOnboarding,
         }),
         isActive:
           (hasOffer && isUsefulInformationSubmitted) || hasPriceCategories,
@@ -79,6 +84,7 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
         path: getIndividualOfferPath({
           step: OFFER_WIZARD_STEP_IDS.STOCKS,
           mode,
+          isOnboarding,
         }),
         isActive: hasPriceCategories,
       }
@@ -90,6 +96,7 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
       path: getIndividualOfferPath({
         step: OFFER_WIZARD_STEP_IDS.STOCKS,
         mode,
+        isOnboarding,
       }),
       isActive:
         (hasOffer && isUsefulInformationSubmitted) || Boolean(offer?.hasStocks),
@@ -104,6 +111,7 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
       path: getIndividualOfferPath({
         step: OFFER_WIZARD_STEP_IDS.SUMMARY,
         mode,
+        isOnboarding,
       }),
       isActive: Boolean(offer?.hasStocks),
     })
@@ -119,6 +127,7 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
       path: getIndividualOfferPath({
         step: OFFER_WIZARD_STEP_IDS.BOOKINGS,
         mode: OFFER_WIZARD_MODE.READ_ONLY,
+        isOnboarding,
       }),
       isActive: true,
     })

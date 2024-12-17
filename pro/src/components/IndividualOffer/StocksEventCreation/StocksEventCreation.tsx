@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
@@ -25,6 +25,8 @@ export const StocksEventCreation = ({
   offer,
 }: StocksEventCreationProps): JSX.Element => {
   const navigate = useNavigate()
+  const { pathname } = useLocation()
+  const isOnboarding = pathname.indexOf('onboarding') !== -1
   const mode = useOfferWizardMode()
   const { mutate } = useSWRConfig()
   const notify = useNotification()
@@ -42,6 +44,7 @@ export const StocksEventCreation = ({
         offerId: offer.id,
         step: OFFER_WIZARD_STEP_IDS.TARIFS,
         mode,
+        isOnboarding,
       })
     )
   }
@@ -59,6 +62,7 @@ export const StocksEventCreation = ({
         offerId: offer.id,
         step: OFFER_WIZARD_STEP_IDS.SUMMARY,
         mode,
+        isOnboarding,
       })
     )
   }
