@@ -21,10 +21,13 @@ import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 import { Thumb } from 'ui-kit/Thumb/Thumb'
 import { useTooltipProps } from 'ui-kit/Tooltip/useTooltipProps'
 
+import { CELLS_DEFINITIONS } from '../../utils/cellDefinitions'
+
 export interface OfferNameCellProps {
   offer: CollectiveOfferResponseModel | ListOffersOfferResponseModel
   offerLink: string
-  headers?: string
+  rowId: string
+  displayLabel?: boolean
   displayThumb?: boolean
   className?: string
 }
@@ -32,7 +35,8 @@ export interface OfferNameCellProps {
 export const OfferNameCell = ({
   offer,
   offerLink,
-  headers,
+  rowId,
+  displayLabel = false,
   displayThumb = false,
   className,
 }: OfferNameCellProps) => {
@@ -90,7 +94,7 @@ export const OfferNameCell = ({
         styles['title-column'],
         className
       )}
-      headers={headers}
+      headers={`${rowId} ${CELLS_DEFINITIONS.NAME.id}`}
     >
       <Link
         className={classNames({
@@ -111,6 +115,14 @@ export const OfferNameCell = ({
             </Tag>
           )}
           <div className={styles['title-column-name']}>
+            {displayLabel &&
+              <span
+                className={styles['offers-table-cell-mobile-label']}
+                aria-hidden={true}
+              >
+                {`${CELLS_DEFINITIONS.NAME.title} :`}
+              </span>
+            }
             {offer.name}
           </div>
           {(isOfferEducational(offer) || offer.isEvent) && (

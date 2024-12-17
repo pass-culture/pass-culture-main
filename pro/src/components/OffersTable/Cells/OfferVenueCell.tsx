@@ -1,19 +1,18 @@
 import classNames from 'classnames'
 
 import { ListOffersVenueResponseModel } from 'apiClient/v1'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { CELLS_DEFINITIONS } from 'components/OffersTable/utils/cellDefinitions'
 import { computeVenueDisplayName } from 'repository/venuesService'
 import styles from 'styles/components/Cells.module.scss'
 
 interface OfferVenueCellProps {
   venue: ListOffersVenueResponseModel
-  headers?: string
+  rowId: string
   className?: string
   displayLabel?: boolean
 }
 
-export const OfferVenueCell = ({ venue, headers, className, displayLabel }: OfferVenueCellProps) => {
-  const offerAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+export const OfferVenueCell = ({ venue, rowId, className, displayLabel }: OfferVenueCellProps) => {
   return (
     <td
       role="cell"
@@ -22,14 +21,14 @@ export const OfferVenueCell = ({ venue, headers, className, displayLabel }: Offe
         styles['venue-column'],
         className
       )}
-      headers={headers}
+      headers={`${rowId} ${CELLS_DEFINITIONS.VENUE.id}`}
     >
       {displayLabel &&
         <span
           className={styles['offers-table-cell-mobile-label']}
           aria-hidden={true}
         >
-          {offerAddressEnabled ? 'Localisation :' : 'Lieu :'}
+          {`${CELLS_DEFINITIONS.VENUE.title} :`}
         </span>}
       {computeVenueDisplayName(venue)}
     </td>

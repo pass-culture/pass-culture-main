@@ -49,6 +49,7 @@ describe('OfferNameCell', () => {
     renderOfferNameCell({
       offer: eventOffer,
       offerLink: '#',
+      rowId: 'rowId',
     })
 
     expect(screen.getByText('Offre vitrine')).toBeInTheDocument()
@@ -64,6 +65,7 @@ describe('OfferNameCell', () => {
     renderOfferNameCell({
       offer: eventOffer,
       offerLink: '#',
+      rowId: 'rowId',
     })
 
     expect(screen.getByRole('img', { name: 'Attention' })).toBeInTheDocument()
@@ -81,6 +83,7 @@ describe('OfferNameCell', () => {
     renderOfferNameCell({
       offer: eventOffer,
       offerLink: '#',
+      rowId: 'rowId',
     })
 
     await userEvent.click(screen.getByRole('img', { name: 'Attention' }))
@@ -98,6 +101,7 @@ describe('OfferNameCell', () => {
     renderOfferNameCell({
       offer: eventOffer,
       offerLink: '#',
+      rowId: 'rowId',
     })
 
     expect(screen.getByTestId('offer-isbn')).toBeInTheDocument()
@@ -119,6 +123,7 @@ describe('OfferNameCell', () => {
     renderOfferNameCell({
       offer: eventOffer,
       offerLink: '#',
+      rowId: 'rowId',
     })
 
     const expectedDate = formatLocalTimeDateString(
@@ -149,6 +154,7 @@ describe('OfferNameCell', () => {
     renderOfferNameCell({
       offer: eventOffer,
       offerLink: '#',
+      rowId: 'rowId',
     })
 
     expect(screen.queryByText('12/12/2024 14:00')).not.toBeInTheDocument()
@@ -181,6 +187,7 @@ describe('OfferNameCell', () => {
         // Using the INDIVIDUAL offer that have VENUE departement code at Saint-Denis (La Réunion)
         offer: individualOffer,
         offerLink: '#',
+        rowId: 'rowId',
       })
 
       // We expect here to see 14h00 because for the 01/10/2024, Saint-Denis is UTC+4
@@ -197,6 +204,7 @@ describe('OfferNameCell', () => {
           // Using the same INDIVIDUAL offer that have an address (OA) located at Fort-de-France (Martinique)
           offer: individualOffer,
           offerLink: '#',
+          rowId: 'rowId',
         },
         { features: ['WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE'] }
       )
