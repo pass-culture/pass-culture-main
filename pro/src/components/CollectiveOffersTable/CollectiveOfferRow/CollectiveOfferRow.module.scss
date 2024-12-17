@@ -3,27 +3,30 @@
 @use "styles/mixins/_a11y.scss" as a11y;
 
 .collective-row {
+  display: grid;
+  grid-template-columns: rem.torem(36px) repeat(2, auto);
+  grid-template-areas:
+    "check thumb thumb"
+    ". title title"
+    ". venue venue"
+    ". stock-or-institution stock-or-institution"
+    ". status actions";
+  grid-gap: rem.torem(8px) rem.torem(16px);
   border-bottom: rem.torem(1px) solid var(--color-grey-medium);
 
-  &.collective-row-with-expiration {
+  &:last-child {
     border-bottom: none;
   }
 
-  &.is-first-row {
-    td {
-      padding-top: 0;
-    }
+  &.collective-row-with-expiration {
+    border-bottom: none;
   }
 }
 
 .collective-cell {
   &-checkbox {
-    padding-top: rem.torem(8px);
-    padding-left: 0;
-
-    input[type="checkbox"] {
-      margin-right: 0;
-    }
+    padding-left: rem.torem(16px);
+    padding-top: rem.torem(16px);
   }
 
   &-name, &-venue, &-institution {
@@ -33,12 +36,6 @@
 
   &-name {
     align-self: center;
-    padding-top: rem.torem(4px);
-  }
-
-  &-venue, &-institution {
-    padding-top: rem.torem(4px);
-    padding-bottom: rem.torem(4px);
   }
 }
 
@@ -51,25 +48,17 @@
 }
 
 @media screen and (min-width: size.$tablet) {
-  .collective-row.collective-row-with-expiration {
-    grid-template-columns: rem.torem(22px) rem.torem(112px) 1fr rem.torem(105px);
-  }
-}
-
-@media screen and (min-width: size.$tablet) {
-  .collective-row.collective-row-with-expiration {
+  .collective-row {
     display: table-row;
   }
 
   .collective-cell {
     &-checkbox {
-      width: rem.torem(32px);
+      padding-left: rem.torem(16px);
     }
 
     &-name, &-venue, &-institution {
       display: table-cell;
-      padding-top: unset;
-      padding-bottom: unset;
     }
   }
 }

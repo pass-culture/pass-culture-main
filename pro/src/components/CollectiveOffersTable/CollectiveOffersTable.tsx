@@ -1,20 +1,15 @@
 import { CollectiveOfferResponseModel } from 'apiClient/v1'
 import { CollectiveOffersSortingColumn } from 'commons/core/OfferEducational/types'
-import { MAX_OFFERS_TO_DISPLAY } from 'commons/core/Offers/constants'
 import { useDefaultCollectiveSearchFilters } from 'commons/core/Offers/hooks/useDefaultCollectiveSearchFilters'
 import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
 import { hasCollectiveSearchFilters } from 'commons/core/Offers/utils/hasSearchFilters'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { SortingMode } from 'commons/hooks/useColumnSorting'
-import { getOffersCountToDisplay } from 'commons/utils/getOffersCountToDisplay'
-import { NoResults } from 'components/NoResults/NoResults'
-import { Callout } from 'ui-kit/Callout/Callout'
-import { CalloutVariant } from 'ui-kit/Callout/types'
-import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
+import { OffersTable } from 'components/OffersTable/OffersTable'
+import { Columns, OffersTableHead } from 'components/OffersTable/OffersTableHead/OffersTableHead'
+import { CELLS_DEFINITIONS } from 'components/OffersTable/utils/cellDefinitions'
 
-import styles from './CollectiveOffersTable.module.scss'
 import { CollectiveOffersTableBody } from './CollectiveOffersTableBody/CollectiveOffersTableBody'
-import { CollectiveOffersTableHead } from './CollectiveOffersTableHead/CollectiveOffersTableHead'
 
 type CollectiveOffersTableProps = {
   areAllOffersSelected: boolean
@@ -54,79 +49,46 @@ export const CollectiveOffersTable = ({
   currentPageItems,
 }: CollectiveOffersTableProps) => {
   const defaultCollectiveFilters = useDefaultCollectiveSearchFilters()
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+
+  const columns: Columns[] = [
+    { ...CELLS_DEFINITIONS.INFO_ON_EXPIRATION },
+    { ...CELLS_DEFINITIONS.THUMB, isVisuallyHidden: true },
+    { ...CELLS_DEFINITIONS.NAME, isVisuallyHidden: true },
+    { ...CELLS_DEFINITIONS.EVENT_DATE, sortableProps: {
+      onColumnHeaderClick,
+      currentSortingColumn,
+      currentSortingMode,
+    } },
+    (isOfferAddressEnabled ? CELLS_DEFINITIONS.STRUCTURE : CELLS_DEFINITIONS.VENUE),
+    CELLS_DEFINITIONS.INSTITUTION,
+    CELLS_DEFINITIONS.STATUS,
+  ]
 
   return (
-    <div>
-      <div role="status">
-        {offers.length > MAX_OFFERS_TO_DISPLAY && (
-          <Callout
-            variant={CalloutVariant.INFO}
-            className={styles['max-display-callout']}
-          >
-            L’affichage est limité à 500 offres. Modifiez les filtres pour
-            affiner votre recherche.
-          </Callout>
-        )}
-        {hasOffers ? (
-          `${getOffersCountToDisplay(offers.length)} ${
-            offers.length <= 1 ? 'offre' : 'offres'
-          }`
-        ) : (
-          <span className={styles['visually-hidden']}>
-            aucune offre trouvée
-          </span>
-        )}
-      </div>
-      {isLoading ? (
-        <Spinner className={styles['loading-spinner']} />
-      ) : (
-        <>
-          {hasOffers && (
-            <>
-              <div className={styles['select-all-container']}>
-                <BaseCheckbox
-                  checked={areAllOffersSelected}
-                  partialCheck={
-                    !areAllOffersSelected && isAtLeastOneOfferChecked
-                  }
-                  disabled={isRestrictedAsAdmin}
-                  onChange={toggleSelectAllCheckboxes}
-                  label={
-                    areAllOffersSelected ? (
-                      <span className={styles['select-all-container-label']}>
-                        Tout désélectionner
-                      </span>
-                    ) : (
-                      <span className={styles['select-all-container-label']}>
-                        Tout sélectionner
-                      </span>
-                    )
-                  }
-                />
-              </div>
-              <table className={styles['collective-table']}>
-                <CollectiveOffersTableHead
-                  onColumnHeaderClick={onColumnHeaderClick}
-                  currentSortingColumn={currentSortingColumn}
-                  currentSortingMode={currentSortingMode}
-                />
-
-                <CollectiveOffersTableBody
-                  offers={currentPageItems}
-                  selectOffer={setSelectedOffer}
-                  selectedOffers={selectedOffers}
-                  urlSearchFilters={urlSearchFilters}
-                />
-              </table>
-            </>
-          )}
-          {!hasOffers &&
-            hasCollectiveSearchFilters(
-              urlSearchFilters,
-              defaultCollectiveFilters
-            ) && <NoResults resetFilters={resetFilters} />}
-        </>
+    <OffersTable
+      hasOffers={hasOffers}
+      hasFilters={hasCollectiveSearchFilters(
+        urlSearchFilters,
+        defaultCollectiveFilters
       )}
-    </div>
+      offersCount={offers.length}
+      isLoading={isLoading}
+      resetFilters={resetFilters}
+    >
+      <OffersTableHead
+        areAllOffersSelected={areAllOffersSelected}
+        isAtLeastOneOfferChecked={isAtLeastOneOfferChecked}
+        isRestrictedAsAdmin={isRestrictedAsAdmin}
+        toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
+        columns={columns}
+      />
+      <CollectiveOffersTableBody
+        offers={currentPageItems}
+        selectOffer={setSelectedOffer}
+        selectedOffers={selectedOffers}
+        urlSearchFilters={urlSearchFilters}
+      />
+    </OffersTable>
   )
 }
