@@ -17,6 +17,7 @@ import { useQuerySearchFilters } from 'commons/core/Offers/hooks/useQuerySearchF
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
+import { CELLS_DEFINITIONS } from 'components/OffersTable/utils/cellDefinitions'
 import fullThreeDotsIcon from 'icons/full-three-dots.svg'
 import strokeTrashIcon from 'icons/stroke-trash.svg'
 import { computeDeletionErrorMessage } from 'pages/IndividualOffers/utils/computeDeletionErrorMessage'
@@ -30,6 +31,7 @@ import { EditOfferCell } from './EditOfferCell'
 import { EditStocksCell } from './EditStocksCell'
 
 interface IndividualActionsCellsProps {
+  rowId: string
   offer: ListOffersOfferResponseModel
   editionOfferLink: string
   editionStockLink: string
@@ -38,6 +40,7 @@ interface IndividualActionsCellsProps {
 }
 
 export const IndividualActionsCells = ({
+  rowId,
   offer,
   editionOfferLink,
   editionStockLink,
@@ -91,6 +94,7 @@ export const IndividualActionsCells = ({
           styles['actions-column'],
           className
         )}
+        headers={`${rowId} ${CELLS_DEFINITIONS.ACTIONS.id}`}
       >
         <div className={styles['actions-column-container']}>
           <DropdownMenuWrapper

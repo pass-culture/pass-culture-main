@@ -35,6 +35,7 @@ describe('OfferNameCell', () => {
 
     renderOfferNameCell({
       offer: eventOffer,
+      rowId: 'rowId',
     })
 
     expect(screen.getByText('04/08/2024')).toBeInTheDocument()
@@ -53,6 +54,7 @@ describe('OfferNameCell', () => {
 
     renderOfferNameCell({
       offer: eventOffer,
+      rowId: 'rowId',
     })
 
     expect(screen.getByText('du 05/08/2024')).toBeInTheDocument()
@@ -69,6 +71,7 @@ describe('OfferNameCell', () => {
 
     renderOfferNameCell({
       offer: eventOffer,
+      rowId: 'rowId',
     })
 
     expect(screen.getByText('Toute l’année scolaire')).toBeInTheDocument()
@@ -86,6 +89,7 @@ describe('OfferNameCell', () => {
 
     renderOfferNameCell({
       offer: eventOffer,
+      rowId: 'rowId',
     })
 
     expect(screen.getByText('du 04/08/2024')).toBeInTheDocument()
@@ -104,6 +108,7 @@ describe('OfferNameCell', () => {
 
     renderOfferNameCell({
       offer: eventOffer,
+      rowId: 'rowId',
     })
 
     expect(screen.getByText('04/08/2024')).toBeInTheDocument()
@@ -121,6 +126,7 @@ describe('OfferNameCell', () => {
 
     renderOfferNameCell({
       offer: eventOffer,
+      rowId: 'rowId',
     })
 
     expect(screen.getByText('04/09/2024')).toBeInTheDocument()

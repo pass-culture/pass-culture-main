@@ -20,9 +20,6 @@
 .thumb-column {
   grid-area: thumb;
   padding: rem.torem(8px);
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
 
   &-link {
     display: block;
@@ -139,12 +136,6 @@
 }
 
 @media screen and (min-width: size.$tablet) {
-  .thumb-column {
-    padding: rem.torem(8px) rem.torem(16px);
-  }
-}
-
-@media screen and (min-width: size.$tablet) {
   .offers-table-cell {
     padding: rem.torem(8px);
 
@@ -159,16 +150,20 @@
       flex-direction: row;
       align-items: center;
       justify-content: flex-start;
+      min-width: rem.torem(240px);
     }
   }
 
   .thumb-column {
-    padding: rem.torem(8px);
-    max-width: rem.torem(80px);
+    padding: rem.torem(8px) rem.torem(16px);
 
     a {
       height: unset;
     }
+  }
+
+  .venue-column {
+    min-width: rem.torem(200px);
   }
 
   .actions-column {

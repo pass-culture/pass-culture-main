@@ -56,6 +56,7 @@ const renderCollectiveActionsCell = (
     urlSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
     isSelected: false,
     deselectOffer: mockDeselectOffer,
+    rowId: 'rowId',
     ...props,
   }
 

@@ -40,6 +40,7 @@ import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
 import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { canArchiveCollectiveOffer } from 'components/ArchiveConfirmationModal/utils/canArchiveCollectiveOffer'
 import { CancelCollectiveBookingModal } from 'components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
+import { CELLS_DEFINITIONS } from 'components/OffersTable/utils/cellDefinitions'
 import fullClearIcon from 'icons/full-clear.svg'
 import fullCopyIcon from 'icons/full-duplicate.svg'
 import fullPenIcon from 'icons/full-edit.svg'
@@ -59,12 +60,12 @@ import { BookingLinkCell } from './BookingLinkCell'
 import { DuplicateOfferDialog } from './DuplicateOfferDialog/DuplicateOfferDialog'
 
 export interface CollectiveActionsCellsProps {
+  rowId: string
   offer: CollectiveOfferResponseModel
   editionOfferLink: string
   urlSearchFilters: CollectiveSearchFiltersParams
   deselectOffer: (offer: CollectiveOfferResponseModel) => void
   isSelected: boolean
-  headers?: string
   className?: string
 }
 
@@ -83,12 +84,12 @@ function hasOfferAnyEditionActionAllowed(offer: CollectiveOfferResponseModel) {
 }
 
 export const CollectiveActionsCells = ({
+  rowId,
   offer,
   editionOfferLink,
   urlSearchFilters,
   deselectOffer,
   isSelected,
-  headers,
   className,
 }: CollectiveActionsCellsProps) => {
   const navigate = useNavigate()
@@ -352,7 +353,7 @@ export const CollectiveActionsCells = ({
   return (
     <td
       className={cn(styles['offers-table-cell'], styles['actions-column'], className)}
-      headers={headers}
+      headers={`${rowId} ${CELLS_DEFINITIONS.ACTIONS.id}`}
     >
       <div className={styles['actions-column-container']}>
         {(offer.status === CollectiveOfferStatus.SOLD_OUT ||

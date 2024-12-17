@@ -30,6 +30,7 @@ export const IndividualOfferRow = ({
   selectOffer,
   isRestrictedAsAdmin,
 }: IndividualOfferRowProps) => {
+  const rowId = `collective-offer-${offer.id}`
   const offerAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const offerLink = getIndividualOfferUrl({
@@ -54,6 +55,7 @@ export const IndividualOfferRow = ({
       data-testid="offer-item-row"
     >
       <CheckboxCell
+        rowId={rowId}
         offerName={offer.name}
         isSelected={isSelected}
         disabled={isOfferDisabled(offer.status)}
@@ -61,35 +63,42 @@ export const IndividualOfferRow = ({
         className={styles['individual-cell-checkbox']}
       />
       <OfferNameCell
+        rowId={rowId}
         offer={offer}
         offerLink={offerLink}
-        displayThumb={true}
         className={styles['individual-cell-name']}
+        displayLabel
+        displayThumb
       />
       {offerAddressEnabled ? (
         <AddressCell
+          rowId={rowId}
           address={offer.address}
           className={styles['individual-cell-venue']}
           displayLabel
         />
       ) : (
         <OfferVenueCell
+          rowId={rowId}
           venue={offer.venue}
           className={styles['individual-cell-venue']}
           displayLabel
         />
       )}
       <OfferRemainingStockCell
+        rowId={rowId}
         stocks={offer.stocks}
         className={styles['individual-cell-stock']}
         displayLabel
       />
       <OfferStatusCell
+        rowId={rowId}
         status={offer.status}
         className={styles['individual-cell-status']}
         displayLabel
       />
       <IndividualActionsCells
+        rowId={rowId}
         offer={offer}
         editionOfferLink={offerLink}
         editionStockLink={editionStockLink}
