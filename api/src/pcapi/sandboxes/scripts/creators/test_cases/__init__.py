@@ -7,6 +7,7 @@ from factory.faker import faker
 
 from pcapi.core.achievements import factories as achievements_factories
 from pcapi.core.achievements import models as achievements_models
+from pcapi.core.artist import factories as artist_factories
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.criteria import factories as criteria_factories
@@ -43,6 +44,7 @@ Fake = faker.Faker(locale="fr_FR")
 
 
 def save_test_cases_sandbox() -> None:
+    create_artists()
     create_offers_with_gtls()
     create_offers_with_same_ean()
     create_cinema_data()
@@ -66,6 +68,47 @@ def save_test_cases_sandbox() -> None:
     create_discord_users()
     create_users_with_reactions()
     create_user_that_booked_some_cinema()  # to suggest reactions on cinema bookings
+
+
+def create_artists() -> None:
+    # Artist 1 : writer
+    artist_1 = artist_factories.ArtistFactory(
+        name="Virginie Despentes",
+        description="écrivaine et réalisatrice française",
+        image="http://commons.wikimedia.org/wiki/Special:FilePath/Virginie%20Despentes%202012.jpg",
+        image_license="CC BY-SA 3.0",
+        image_license_url="https://creativecommons.org/licenses/by-sa/3.0",
+    )
+    for _ in range(10):
+        product = offers_factories.ProductFactory(subcategoryId=subcategories_v2.LIVRE_PAPIER.id)
+        offers_factories.ArtistProductLinkFactory(artist_id=artist_1.id, product_id=product.id, artist_type="author")
+    artist_factories.ArtistAliasFactory(artist_id=artist_1.id, artist_alias_name="Virginie Despente")
+
+    # Artist 2 : singer
+    artist_2 = artist_factories.ArtistFactory(
+        name="Avril Lavigne",
+        description="chanteuse canadienne",
+        image="http://commons.wikimedia.org/wiki/Special:FilePath/Glaston2024%202806%20300624%20%28129%20of%20173%29%20%28cropped%29.jpg",
+        image_license="CC BY 2.0",
+        image_license_url="https://creativecommons.org/licenses/by/2.0",
+    )
+    for _ in range(10):
+        product = offers_factories.ProductFactory(subcategoryId=subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
+        offers_factories.ArtistProductLinkFactory(artist_id=artist_2.id, product_id=product.id, artist_type="performer")
+    artist_factories.ArtistAliasFactory(artist_id=artist_2.id, artist_alias_name="Lavigne Avril")
+
+    # Artist 3 : other
+    artist_3 = artist_factories.ArtistFactory(
+        name="Marina Rollman",
+        description="humoriste suisse",
+        image="http://commons.wikimedia.org/wiki/Special:FilePath/Marina-Rollman-20150710-023%20%2819415372158%29.jpg",
+        image_license="CC BY-SA 2.0",
+        image_license_url="https://creativecommons.org/licenses/by-sa/2.0",
+    )
+    for _ in range(10):
+        product = offers_factories.ProductFactory(subcategoryId=subcategories_v2.SEANCE_CINE.id)
+        offers_factories.ArtistProductLinkFactory(artist_id=artist_3.id, product_id=product.id, artist_type="performer")
+    artist_factories.ArtistAliasFactory(artist_id=artist_3.id, artist_alias_name="Rollman Marina")
 
 
 def create_offers_with_gtls() -> None:
