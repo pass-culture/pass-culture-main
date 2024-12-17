@@ -35,8 +35,18 @@ def import_book_club_chronicles() -> None:
 
 
 def _book_club_forms_generator() -> typing.Iterator[typeform.TypeformResponse]:
+    previous_last_chronicle = object()
     while True:
         last_chronicle = models.Chronicle.query.order_by(models.Chronicle.dateCreated.desc()).first()
+
+        if last_chronicle == previous_last_chronicle:
+            logger.error(
+                "Import chronicle for book club: error: infinite loop detected",
+                extra={
+                    "last_chronicle_id": last_chronicle.id if last_chronicle else None,
+                },
+            )
+            break
 
         forms = typeform.get_responses(
             form_id=constants.BOOK_CLUB_FORM_ID,
@@ -48,6 +58,7 @@ def _book_club_forms_generator() -> typing.Iterator[typeform.TypeformResponse]:
 
         if len(forms) < constants.IMPORT_CHUNK_SIZE:
             break
+        previous_last_chronicle = last_chronicle
 
 
 def _extract_book_club_ean(answer: typeform.TypeformAnswer) -> str | None:
