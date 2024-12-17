@@ -1291,7 +1291,7 @@ def test_invoice_pdf_commercial_gesture(monkeypatch, with_oa):
     total_account_table_rows = html_parser.extract_table_rows(str(total_account_table_soup).encode("utf-8"))
     assert len(total_account_table_rows) == 1
     total_account_table_row = total_account_table_rows[0]
-    assert total_account_table_row["Date"] == invoice.date.strftime("%d/%m/%Y")
+    assert total_account_table_row["Date"] == (invoice.date + datetime.timedelta(days=2)).strftime("%d/%m/%Y")
     assert total_account_table_row["Destinataire"] == bank_account.label
     assert total_account_table_row["Mode de règlement"] == f"Virement {bank_account.iban}"
     assert total_account_table_row["Montant réglé"] == "308,40 €"
@@ -2455,8 +2455,8 @@ class GenerateDebitNoteHtmlTest:
         # We need to replace Cashflow IDs and dates that were used when generating the expected html
 
         expected_invoice_html = expected_invoice_html.replace(
-            'content: "Relevé n°A240000001 du 26/01/2024";',
-            f'content: "Relevé n°{invoice.reference} du {cashflows[0].batch.cutoff.strftime("%d/%m/%Y")}";',
+            'content: "Relevé n°A240000001 du 28/01/2024";',
+            f'content: "Relevé n°{invoice.reference} du {(cashflows[0].batch.cutoff+ datetime.timedelta(days=2)).strftime("%d/%m/%Y")}";',
         )
         assert expected_invoice_html == invoice_html
 
@@ -2603,12 +2603,12 @@ class GenerateInvoiceHtmlTest:
             f'<td class="cashflow_batch_label">{cashflows[0].batch.label}</td>',
         )
         expected_invoice_html = expected_invoice_html.replace(
-            '<td class="cashflow_creation_date">21/12/2021</td>',
-            f'<td class="cashflow_creation_date">{invoice.date.strftime("%d/%m/%Y")}</td>',
+            '<td class="cashflow_creation_date">23/12/2021</td>',
+            f'<td class="cashflow_creation_date">{(invoice.date + datetime.timedelta(days=2)).strftime("%d/%m/%Y")}</td>',
         )
         expected_invoice_html = expected_invoice_html.replace(
-            'content: "Relevé n°F220000001 du 30/01/2022";',
-            f'content: "Relevé n°{invoice.reference} du {cashflows[0].batch.cutoff.strftime("%d/%m/%Y")}";',
+            'content: "Relevé n°F220000001 du 01/02/2022";',
+            f'content: "Relevé n°{invoice.reference} du {(cashflows[0].batch.cutoff + datetime.timedelta(days=2)).strftime("%d/%m/%Y")}";',
         )
         start_period, end_period = api.get_invoice_period(cashflows[0].batch.cutoff)
         expected_invoice_html = expected_invoice_html.replace(
