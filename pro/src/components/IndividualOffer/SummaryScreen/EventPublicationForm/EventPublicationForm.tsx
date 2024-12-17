@@ -6,6 +6,7 @@ import { Divider } from 'ui-kit/Divider/Divider'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 import { RadioButton } from 'ui-kit/form/RadioButton/RadioButton'
 import { Select } from 'ui-kit/form/Select/Select'
+import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import styles from './EventPublicationForm.module.scss'
@@ -62,14 +63,14 @@ export const EventPublicationForm = () => {
                 label="Tout de suite"
                 name="publicationMode"
                 value="now"
-                withBorder
+                variant={RadioVariant.BOX}
               />
 
               <RadioButton
                 label="À une date et heure précise"
                 name="publicationMode"
                 value="later"
-                withBorder
+                variant={RadioVariant.BOX}
               />
             </div>
           </FormLayout.Row>

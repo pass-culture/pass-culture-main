@@ -3,12 +3,17 @@ import React, { useId } from 'react'
 
 import styles from './BaseRadio.module.scss'
 
+export enum RadioVariant {
+  DEFAULT = 'DEFAULT',
+  BOX = 'BOX',
+}
+
 interface BaseRadioProps
   extends Partial<React.InputHTMLAttributes<HTMLInputElement>> {
   label: string | JSX.Element
   hasError?: boolean
   className?: string
-  withBorder?: boolean
+  variant?: RadioVariant
   ariaDescribedBy?: string
   childrenOnChecked?: JSX.Element
 }
@@ -17,9 +22,9 @@ export const BaseRadio = ({
   label,
   hasError,
   className,
-  withBorder = false,
   ariaDescribedBy,
   childrenOnChecked,
+  variant = RadioVariant.DEFAULT,
   ...props
 }: BaseRadioProps): JSX.Element => {
   const id = useId()
@@ -28,7 +33,7 @@ export const BaseRadio = ({
   return (
     <div
       className={cn(styles['radio'], {
-        [styles[`with-border`]]: withBorder,
+        [styles[`box-variant`]]: variant === RadioVariant.BOX,
         [styles[`has-children`]]: childrenOnChecked,
         [styles[`is-checked`]]: props.checked,
         [styles[`is-disabled`]]: props.disabled,
