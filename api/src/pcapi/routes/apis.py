@@ -12,7 +12,7 @@ PRIVATE_API_BLUEPRINT_NAME = "Private API"
 public_api = Blueprint(PUBLIC_API_BLUEPRINT_NAME, __name__)
 CORS(public_api, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
-private_api = Blueprint(PRIVATE_API_BLUEPRINT_NAME, __name__)
+private_api = Blueprint(PRIVATE_API_BLUEPRINT_NAME, __name__, url_prefix="/pro")
 CORS(
     private_api,
     origins=settings.CORS_ALLOWED_ORIGINS,

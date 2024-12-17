@@ -12,7 +12,7 @@ describe('ADAGE discovery', () => {
     })
     cy.request({
       method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_adage_environment',
+      url: 'http://localhost:5001/pro/sandboxes/pro/create_adage_environment',
     }).then((response) => {
       offerId = response.body.offerId
       offerName = response.body.offerName

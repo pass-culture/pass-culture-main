@@ -1,11 +1,11 @@
 from pcapi.core.educational import repository as educational_repository
-from pcapi.routes.apis import public_api
+from pcapi.routes.apis import private_api
 from pcapi.routes.pro import blueprint
 from pcapi.routes.serialization import educational_domains as educational_domains_serialization
 from pcapi.serialization.decorator import spectree_serialize
 
 
-@public_api.route("/collective/educational-domains", methods=["GET"])
+@private_api.route("/collective/educational-domains", methods=["GET"])
 @spectree_serialize(
     on_success_status=200,
     response_model=educational_domains_serialization.EducationalDomainsResponseModel,

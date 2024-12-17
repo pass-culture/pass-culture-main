@@ -11,7 +11,7 @@ from pcapi.validation.routes import users_authentifications
 PRO_PRIVATE_API_BLUEPRINT_NAME = "pro_private_api"
 
 
-pro_private_api = Blueprint(PRO_PRIVATE_API_BLUEPRINT_NAME, __name__)
+pro_private_api = Blueprint(PRO_PRIVATE_API_BLUEPRINT_NAME, __name__, url_prefix="/pro")
 CORS(
     pro_private_api,
     origins=settings.CORS_ALLOWED_ORIGINS,
@@ -35,7 +35,7 @@ pro_private_schema = ExtendedSpecTree(
     title="pass Culture pro private API",
     MODE="strict",
     before=before_handler,
-    PATH="pro",
+    PATH="/",
     security_schemes=SECURITY_SCHEMES,
     humanize_operation_id=True,
     version=1,
