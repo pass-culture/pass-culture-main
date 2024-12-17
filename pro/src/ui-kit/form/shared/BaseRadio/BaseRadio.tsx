@@ -8,7 +8,7 @@ export enum RadioVariant {
   BOX = 'BOX',
 }
 
-interface BaseRadioProps
+export interface BaseRadioProps
   extends Partial<React.InputHTMLAttributes<HTMLInputElement>> {
   label: string | JSX.Element
   hasError?: boolean
