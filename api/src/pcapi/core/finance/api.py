@@ -2435,6 +2435,10 @@ def _prepare_invoice_context(invoice: models.Invoice, batch: models.CashflowBatc
     bank_account_label = bank_account.label
     bank_account_iban = bank_account.iban
 
+    if feature.FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW.is_active():
+        invoice_date = invoice.date.strftime("%d/%m/%Y")
+    else:
+        invoice_date = (invoice.date + datetime.timedelta(days=2)).strftime("%d/%m/%Y")
     period_start, period_end = get_invoice_period(batch.cutoff)
 
     ff_wording = {
@@ -2455,6 +2459,7 @@ def _prepare_invoice_context(invoice: models.Invoice, batch: models.CashflowBatc
         total_used_bookings_amount=total_used_bookings_amount,
         total_contribution_amount=total_contribution_amount,
         total_reimbursed_amount=total_reimbursed_amount,
+        invoice_date=invoice_date,
         period_start=period_start,
         period_end=period_end,
         reimbursements_by_venue=reimbursements_by_venue,
