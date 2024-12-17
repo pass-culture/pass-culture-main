@@ -53,7 +53,7 @@ describe('Collaborator list feature', () => {
       .should('have.text', 'En attente')
     cy.contains(login).next().should('have.text', 'Validé')
 
-    cy.stepLog({ message: 'check email received by email' })
+    cy.stepLog({ message: 'check email received' })
     cy.request({
       method: 'GET',
       url: 'http://localhost:5001/sandboxes/get_unique_email',
