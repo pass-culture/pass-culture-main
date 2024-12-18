@@ -6,6 +6,7 @@ import { getOffersCountToDisplay } from 'commons/utils/getOffersCountToDisplay'
 import { NoResults } from 'components/NoResults/NoResults'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
+import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
@@ -76,15 +77,10 @@ export const IndividualOffersTable = ({
           </Callout>
         )}
         {hasOffers && (
-          <div className={styles['individual-table-title']}>
-            <h2 id="individual-table-title" className={styles['individual-table-title-heading']}>
-              Liste des offres
-            </h2>
-            <div>
-              {`${getOffersCountToDisplay(offersCount)} ${
-                offersCount <= 1 ? 'offre' : 'offres'
-              }`}
-            </div>
+          <div>
+            {`${getOffersCountToDisplay(offersCount)} ${
+              offersCount <= 1 ? 'offre' : 'offres'
+            }`}
           </div>
         )}
       </div>
@@ -93,20 +89,33 @@ export const IndividualOffersTable = ({
       ) : (
         <>
           {hasOffers && (
-            <table role="table" className={styles['individual-table']} aria-labelledby="individual-table-title">
-              <IndividualOffersTableHead
-                areAllOffersSelected={areAllOffersSelected}
-                isAtLeastOneOfferChecked={isAtLeastOneOfferChecked}
-                isRestrictedAsAdmin={isRestrictedAsAdmin}
-                toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
-              />
-              <IndividualOffersTableBody
-                offers={currentPageOffersSubset}
-                selectOffer={setSelectedOffer}
-                selectedOffers={selectedOffers}
-                isRestrictedAsAdmin={isRestrictedAsAdmin}
-              />
-            </table>
+            <>
+              <div className={styles['select-all-container']}>
+                <BaseCheckbox
+                  className={styles['select-all-checkbox']}
+                  checked={areAllOffersSelected}
+                  partialCheck={
+                    !areAllOffersSelected && isAtLeastOneOfferChecked
+                  }
+                  disabled={isRestrictedAsAdmin}
+                  onChange={toggleSelectAllCheckboxes}
+                  label={
+                    areAllOffersSelected
+                      ? 'Tout désélectionner'
+                      : 'Tout sélectionner'
+                  }
+                />
+              </div>
+              <table role="table" className={styles['individual-table']}>
+                <IndividualOffersTableHead />
+                <IndividualOffersTableBody
+                  offers={currentPageOffersSubset}
+                  selectOffer={setSelectedOffer}
+                  selectedOffers={selectedOffers}
+                  isRestrictedAsAdmin={isRestrictedAsAdmin}
+                />
+              </table>
+            </>
           )}
           {hasOffers && (
             <div className={styles['offers-pagination']}>

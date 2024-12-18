@@ -17,14 +17,12 @@ type ExpirationCellProps = {
   offer: CollectiveOfferResponseModel
   headers?: string
   bookingLimitDate: string
-  className?: string
 }
 
 export function ExpirationCell({
   offer,
   headers,
   bookingLimitDate,
-  className,
 }: ExpirationCellProps) {
   const daysCountBeforeExpiration = differenceInCalendarDays(
     new Date(bookingLimitDate),
@@ -32,7 +30,7 @@ export function ExpirationCell({
   )
 
   return (
-    <td colSpan={8} headers={headers} className={classNames(styles['expiration-cell'], className)}>
+    <td colSpan={8} headers={headers} className={styles['expiration-cell']}>
       <div
         className={classNames(styles['banner'], {
           [styles['banner-expires-soon']]: daysCountBeforeExpiration <= 7,

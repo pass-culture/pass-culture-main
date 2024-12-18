@@ -44,6 +44,7 @@ const renderOfferItem = (props: IndividualOfferRowProps) =>
 
 const LABELS = {
   openActions: /Voir les actions/,
+  editAction: /Voir l’offre/,
   deleteAction: /Supprimer l’offre/,
   eventStockEditAction: /Dates et capacités/,
   physicalStockEditAction: /Stocks/,
@@ -75,8 +76,31 @@ describe('IndividualOfferRow', () => {
       offer,
       selectOffer: vi.fn(),
       isSelected: false,
+      isFirstRow: true,
       isRestrictedAsAdmin: false,
     }
+  })
+
+  describe('thumb Component', () => {
+    it('should render an image with url from offer when offer has a thumb url', () => {
+      renderOfferItem(props)
+
+      expect(
+        within(
+          screen.getAllByRole('link', { name: /éditer l’offre/ })[0]
+        ).getByRole('presentation')
+      ).toHaveAttribute('src', '/my-fake-thumb')
+    })
+
+    it('should render an image with an empty url when offer does not have a thumb url', () => {
+      props.offer = listOffersOfferFactory({ thumbUrl: null })
+
+      renderOfferItem(props)
+
+      expect(
+        screen.getAllByTitle(`${props.offer.name} - éditer l’offre`)[0]
+      ).toBeInTheDocument()
+    })
   })
 
   describe('action buttons', () => {
@@ -182,9 +206,11 @@ describe('IndividualOfferRow', () => {
     it('should contain a link with the offer name and details link', () => {
       renderOfferItem(props)
 
-      const offerTitleLink = screen.getByRole('link', { name: new RegExp(props.offer.name) })
-      expect(offerTitleLink).toBeInTheDocument()
-      expect(offerTitleLink).toHaveAttribute(
+      const offerTitle = screen.queryByText(props.offer.name as string, {
+        selector: 'a',
+      })
+      expect(offerTitle).toBeInTheDocument()
+      expect(offerTitle).toHaveAttribute(
         'href',
         `/offre/individuelle/${props.offer.id}/recapitulatif/details`
       )
@@ -354,6 +380,42 @@ describe('IndividualOfferRow', () => {
       ).toBeInTheDocument()
     })
   })
+
+  it('should display the offer greyed when offer is inactive', () => {
+    props.offer.isActive = false
+
+    renderOfferItem(props)
+
+    expect(screen.getByLabelText('My little offer').closest('tr')).toHaveClass(
+      'inactive'
+    )
+  })
+
+  const greyedOfferStatusDataSet = [OfferStatus.REJECTED, OfferStatus.PENDING]
+  it.each(greyedOfferStatusDataSet)(
+    'should display the offer greyed when offer is %s',
+    (status) => {
+      props.offer.status = status
+      renderOfferItem(props)
+
+      expect(
+        screen.getByLabelText('My little offer').closest('tr')
+      ).toHaveClass('inactive')
+    }
+  )
+
+  const offerStatusDataSet = [OfferStatus.ACTIVE, OfferStatus.DRAFT]
+  it.each(offerStatusDataSet)(
+    'should not display the offer greyed when offer is %s',
+    (status) => {
+      props.offer.status = status
+      renderOfferItem(props)
+
+      expect(
+        screen.getByLabelText('My little offer').closest('tr')
+      ).not.toHaveClass('inactive')
+    }
+  )
 
   it('should have an edit link to detail page when offer is draft', () => {
     props.offer.status = OfferStatus.DRAFT

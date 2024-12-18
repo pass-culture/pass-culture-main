@@ -19,7 +19,6 @@ import fullErrorIcon from 'icons/full-error.svg'
 import styles from 'styles/components/Cells.module.scss'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
-import { Thumb } from 'ui-kit/Thumb/Thumb'
 import { useTooltipProps } from 'ui-kit/Tooltip/useTooltipProps'
 
 import { getDate, getRemainingTime, shouldDisplayWarning } from './utils'
@@ -28,16 +27,12 @@ export interface OfferNameCellProps {
   offer: CollectiveOfferResponseModel | ListOffersOfferResponseModel
   offerLink: string
   headers?: string
-  displayThumb?: boolean
-  className?: string
 }
 
 export const OfferNameCell = ({
   offer,
   offerLink,
   headers,
-  displayThumb = false,
-  className,
 }: OfferNameCellProps) => {
   const { isTooltipHidden, ...tooltipProps } = useTooltipProps({})
   const isCollectiveOffersExpirationEnabled = useActiveFeature(
@@ -100,94 +95,87 @@ export const OfferNameCell = ({
       role="cell"
       className={classNames(
         styles['offers-table-cell'],
-        styles['title-column'],
-        className
+        styles['title-column']
       )}
       headers={headers}
     >
+      {offer.isShowcase && (
+        <Tag
+          variant={TagVariant.SMALL_OUTLINE}
+          className={styles['offer-template-tag']}
+        >
+          Offre vitrine
+        </Tag>
+      )}
       <Link
-        className={classNames({
-          [styles['title-column-with-thumb']]: displayThumb,
-        })}
+        className={styles['name']}
+        title={`${offer.name} - éditer l’offre`}
         to={offerLink}
       >
-        {displayThumb && <div className={styles['title-column-thumb']}>
-          <Thumb url={isOfferEducational(offer) ? offer.imageUrl : offer.thumbUrl} />
-        </div>}
-        <div>
-          {offer.isShowcase && (
-            <Tag
-              variant={TagVariant.SMALL_OUTLINE}
-              className={styles['offer-template-tag']}
-            >
-              Offre vitrine
-            </Tag>
-          )}
-          <div className={styles['title-column-name']}>
-            {offer.name}
-          </div>
-          {(isOfferEducational(offer) || offer.isEvent) && (
-            <span className={styles['stocks']}>
-              {!isOfferEducational(offer) && offer.isEvent && getDateInformations()}
-              {isOfferEducational(offer) &&
-                !isCollectiveOffersExpirationEnabled &&
-                getDateInformations()}
+        {offer.name}
+      </Link>
 
-              {shouldShowIndividualWarning && (
-                <>
-                  <button
-                    type="button"
-                    {...tooltipProps}
-                    className={styles['sold-out-button']}
-                  >
-                    <SvgIcon
-                      className={styles['sold-out-icon']}
-                      src={fullErrorIcon}
-                      alt="Attention"
-                      width="16"
-                    />
-                  </button>
-                  {!isTooltipHidden && (
-                    <span className={styles['sold-out-dates']}>
-                      <SvgIcon
-                        className={styles['sold-out-icon']}
-                        src={fullErrorIcon}
-                        alt="Attention"
-                        width="16"
-                      />
-                      {pluralize(computeNumberOfSoldOutStocks(), 'date épuisée')}
-                    </span>
-                  )}
-                </>
-              )}
-              {shouldShowCollectiveWarning && (
-                <div>
-                  &nbsp;
+      {(isOfferEducational(offer) || offer.isEvent) && (
+        <span className={styles['stocks']}>
+          {!isOfferEducational(offer) && offer.isEvent && getDateInformations()}
+          {isOfferEducational(offer) &&
+            !isCollectiveOffersExpirationEnabled &&
+            getDateInformations()}
+
+          {shouldShowIndividualWarning && (
+            <>
+              <button
+                type="button"
+                {...tooltipProps}
+                className={styles['sold-out-button']}
+              >
+                <SvgIcon
+                  className={styles['sold-out-icon']}
+                  src={fullErrorIcon}
+                  alt="Attention"
+                  width="16"
+                />
+              </button>
+              {!isTooltipHidden && (
+                <span className={styles['sold-out-dates']}>
                   <SvgIcon
                     className={styles['sold-out-icon']}
                     src={fullErrorIcon}
                     alt="Attention"
+                    width="16"
                   />
-                  <span className={styles['sold-out-dates']}>
-                    La date limite de réservation par le chef d’établissement est
-                    dans{' '}
-                    {`${
-                      getRemainingTime(offer.stocks[0]) >= 1
-                        ? pluralize(getRemainingTime(offer.stocks[0]), 'jour')
-                        : 'moins d’un jour'
-                    } (${getDate(offer.stocks[0])})`}
-                  </span>
-                </div>
+                  {pluralize(computeNumberOfSoldOutStocks(), 'date épuisée')}
+                </span>
               )}
-            </span>
+            </>
           )}
-          {!isOfferEducational(offer) && offer.productIsbn && (
-            <div className={styles['isbn']} data-testid="offer-isbn">
-              {offer.productIsbn}
+          {shouldShowCollectiveWarning && (
+            <div>
+              &nbsp;
+              <SvgIcon
+                className={styles['sold-out-icon']}
+                src={fullErrorIcon}
+                alt="Attention"
+              />
+              <span className={styles['sold-out-dates']}>
+                La date limite de réservation par le chef d’établissement est
+                dans{' '}
+                {`${
+                  getRemainingTime(offer.stocks[0]) >= 1
+                    ? pluralize(getRemainingTime(offer.stocks[0]), 'jour')
+                    : 'moins d’un jour'
+                } (${getDate(offer.stocks[0])})`}
+              </span>
             </div>
           )}
+        </span>
+      )}
+
+      {!isOfferEducational(offer) && offer.productIsbn && (
+        <div className={styles['isbn']} data-testid="offer-isbn">
+          {offer.productIsbn}
         </div>
-      </Link>
+      )}
     </td>
   )
 }

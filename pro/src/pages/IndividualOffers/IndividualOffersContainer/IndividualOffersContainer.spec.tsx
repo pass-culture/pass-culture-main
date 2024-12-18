@@ -145,12 +145,10 @@ describe('IndividualOffersScreen', () => {
     renderOffers(props)
 
     const headers = screen.getAllByRole('columnheader')
-    expect(headers[0].textContent).toEqual('Tout sélectionner')
-    expect(headers[1].textContent).toEqual('Nom de l’offre')
-    expect(headers[2].textContent).toEqual('Lieu')
-    expect(headers[3].textContent).toEqual('Stocks')
-    expect(headers[4].textContent).toEqual('Statut')
-    expect(headers[5].textContent).toEqual('Actions')
+    expect(headers[1].textContent).toEqual('Lieu')
+    expect(headers[2].textContent).toEqual('Stocks')
+    expect(headers[3].textContent).toEqual('Statut')
+    expect(headers[4].textContent).toEqual('Actions')
   })
 
   it('should render as much offers as returned by the api', () => {
@@ -162,8 +160,8 @@ describe('IndividualOffersScreen', () => {
       offers: [firstOffer, secondOffer],
     })
 
-    expect(screen.getByLabelText(`Sélectionner l'offre "${firstOffer.name}"`)).toBeInTheDocument()
-    expect(screen.getByLabelText(`Sélectionner l'offre "${secondOffer.name}"`)).toBeInTheDocument()
+    expect(screen.getByLabelText(firstOffer.name)).toBeInTheDocument()
+    expect(screen.getByLabelText(secondOffer.name)).toBeInTheDocument()
   })
 
   it('should display an unchecked by default checkbox to select all offers when user is not admin', () => {
@@ -187,7 +185,7 @@ describe('IndividualOffersScreen', () => {
       offers: [...offersRecap, listOffersOfferFactory()],
     })
 
-    screen.getByLabelText(`Sélectionner l'offre "${offersRecap[0].name}"`)
+    screen.getByLabelText(offersRecap[0].name)
     expect(screen.getByText('2 offres')).toBeInTheDocument()
   })
 
@@ -197,7 +195,7 @@ describe('IndividualOffersScreen', () => {
       offers: offersRecap,
     })
 
-    screen.getByLabelText(`Sélectionner l'offre "${offersRecap[0].name}"`)
+    screen.getByLabelText(offersRecap[0].name)
     expect(await screen.findByText('1 offre')).toBeInTheDocument()
   })
 
@@ -209,7 +207,7 @@ describe('IndividualOffersScreen', () => {
       offers: offersRecap,
     })
 
-    screen.getByLabelText(`Sélectionner l'offre "${offersRecap[0].name}"`)
+    screen.getByLabelText(offersRecap[0].name)
     expect(await screen.findByText('500+ offres')).toBeInTheDocument()
   })
 
@@ -520,9 +518,9 @@ describe('IndividualOffersScreen', () => {
       offers: offers,
     })
 
-    expect(screen.queryByLabelText(`Sélectionner l'offre "${offers[0].name}"`)).toBeDisabled()
-    expect(screen.queryByLabelText(`Sélectionner l'offre "${offers[1].name}"`)).toBeDisabled()
-    expect(screen.queryByLabelText(`Sélectionner l'offre "${offers[2].name}"`)).toBeEnabled()
+    expect(screen.queryByLabelText(offers[0].name)).toBeDisabled()
+    expect(screen.queryByLabelText(offers[1].name)).toBeDisabled()
+    expect(screen.queryByLabelText(offers[2].name)).toBeEnabled()
   })
 
   it('should display actionsBar when at least one offer is selected', async () => {
@@ -530,7 +528,7 @@ describe('IndividualOffersScreen', () => {
       user: currentUser,
     })
 
-    const checkbox = screen.getByLabelText(`Sélectionner l'offre "${offersRecap[0].name}"`)
+    const checkbox = screen.getByLabelText(offersRecap[0].name)
     await userEvent.click(checkbox)
 
     const actionBar = await screen.findByTestId('actions-bar')
@@ -604,10 +602,10 @@ describe('IndividualOffersScreen', () => {
         offers: offers,
       })
 
-      const firstOfferCheckbox = screen.getByLabelText(`Sélectionner l'offre "${offers[0].name}"`)
-      const secondOfferCheckbox = screen.getByLabelText(`Sélectionner l'offre "${offers[1].name}"`)
-      const thirdOfferCheckbox = screen.getByLabelText(`Sélectionner l'offre "${offers[2].name}"`)
-      const fourthOfferCheckbox = screen.getByLabelText(`Sélectionner l'offre "${offers[3].name}"`)
+      const firstOfferCheckbox = screen.getByLabelText(offers[0].name)
+      const secondOfferCheckbox = screen.getByLabelText(offers[1].name)
+      const thirdOfferCheckbox = screen.getByLabelText(offers[2].name)
+      const fourthOfferCheckbox = screen.getByLabelText(offers[3].name)
 
       await userEvent.click(screen.getByLabelText('Tout sélectionner'))
 

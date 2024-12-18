@@ -22,31 +22,19 @@ const computeRemainingStockValue = (
 
 interface OfferRemainingStockCellProps {
   stocks: (CollectiveOffersStockResponseModel | ListOffersStockResponseModel)[]
-  displayLabel?: boolean
-  className?: string
 }
 
 export const OfferRemainingStockCell = ({
   stocks,
-  displayLabel,
-  className,
 }: OfferRemainingStockCellProps) => {
   return (
     <td
       role="cell"
       className={classNames(
         styles['offers-table-cell'],
-        styles['stock-column'],
-        className
+        styles['stock-column']
       )}
     >
-      {displayLabel &&
-        <span
-          className={styles['offers-table-cell-mobile-label']}
-          aria-hidden={true}
-        >
-          Stocks :
-        </span>}
       {computeRemainingStockValue(stocks)}
     </td>
   )

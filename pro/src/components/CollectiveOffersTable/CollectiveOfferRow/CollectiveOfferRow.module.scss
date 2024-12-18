@@ -16,32 +16,6 @@
   }
 }
 
-.collective-cell {
-  &-checkbox {
-    padding-top: rem.torem(8px);
-    padding-left: 0;
-
-    input[type="checkbox"] {
-      margin-right: 0;
-    }
-  }
-
-  &-name, &-venue, &-institution {
-    display: block;
-    overflow-wrap: anywhere;
-  }
-
-  &-name {
-    align-self: center;
-    padding-top: rem.torem(4px);
-  }
-
-  &-venue, &-institution {
-    padding-top: rem.torem(4px);
-    padding-bottom: rem.torem(4px);
-  }
-}
-
 .reference-row-head {
   padding: 0;
 }
@@ -59,17 +33,5 @@
 @media screen and (min-width: size.$tablet) {
   .collective-row.collective-row-with-expiration {
     display: table-row;
-  }
-
-  .collective-cell {
-    &-checkbox {
-      width: rem.torem(32px);
-    }
-
-    &-name, &-venue, &-institution {
-      display: table-cell;
-      padding-top: unset;
-      padding-bottom: unset;
-    }
   }
 }

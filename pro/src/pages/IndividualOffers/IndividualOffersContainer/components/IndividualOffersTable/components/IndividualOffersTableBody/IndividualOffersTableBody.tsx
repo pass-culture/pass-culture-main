@@ -20,16 +20,18 @@ export const IndividualOffersTableBody = ({
 }: IndividualOffersTableBodyProps) => {
   return (
     <tbody role="rowgroup" className={styles['individual-tbody']}>
-      {offers.map(offer => {
+      {offers.map((offer, index) => {
         const isSelected = selectedOffers.some((selectedOffer) =>
           isSameOffer(selectedOffer, offer)
         )
+
         return (
           <IndividualOfferRow
             isSelected={isSelected}
             key={offer.id}
             offer={offer}
             selectOffer={selectOffer}
+            isFirstRow={index === 0}
             isRestrictedAsAdmin={isRestrictedAsAdmin}
           />
         )

@@ -65,7 +65,6 @@ export interface CollectiveActionsCellsProps {
   deselectOffer: (offer: CollectiveOfferResponseModel) => void
   isSelected: boolean
   headers?: string
-  className?: string
 }
 
 const LOCAL_STORAGE_HAS_SEEN_MODAL_KEY = 'DUPLICATE_OFFER_MODAL_SEEN'
@@ -89,7 +88,6 @@ export const CollectiveActionsCells = ({
   deselectOffer,
   isSelected,
   headers,
-  className,
 }: CollectiveActionsCellsProps) => {
   const navigate = useNavigate()
   const notify = useNotification()
@@ -351,10 +349,10 @@ export const CollectiveActionsCells = ({
 
   return (
     <td
-      className={cn(styles['offers-table-cell'], styles['actions-column'], className)}
+      className={cn(styles['offers-table-cell'], styles['actions-column'])}
       headers={headers}
     >
-      <div className={styles['actions-column-container']}>
+      <div className={styles['actions-container']}>
         {(offer.status === CollectiveOfferStatus.SOLD_OUT ||
           offer.status === CollectiveOfferStatus.EXPIRED) &&
           offer.booking && (

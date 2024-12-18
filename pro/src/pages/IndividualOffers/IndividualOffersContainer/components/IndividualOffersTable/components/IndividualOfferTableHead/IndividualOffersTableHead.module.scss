@@ -4,69 +4,22 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .individual-offers-thead {
-  display: flex;
-  border-top-left-radius: rem.torem(8px);
-  border-top-right-radius: rem.torem(8px);
-  width: 100%;
-  background-color: var(--color-grey-light);
+  display: none;
+}
 
-  &-th {
-    @include fonts.caption;
-    @include a11y.visually-hidden;
+.individual-th {
+  @include fonts.caption;
 
-    text-align: left;
+  padding: 0 rem.torem(8px) rem.torem(10px);
+  text-align: left;
+}
 
-    &-checkbox {
-      @include a11y.visually-hidden-reset;
+.individual-th-actions {
+  text-align: right;
+}
 
-      padding: rem.torem(8px) rem.torem(16px);
-
-      &-wrapper {
-        display: flex;
-      }
-
-      &-input {
-        margin-right: rem.torem(16px);
-      }
-
-      &-label {
-        height: rem.torem(20px);
-        justify-content: center;
-      }
-    }
-
-    &-actions {
-      text-align: right;
-    }
-  }
-
-  @media (min-width: size.$tablet) {
+@media (min-width: size.$tablet) {
+  .individual-offers-thead {
     display: table-header-group;
-
-    &-th {
-      @include a11y.visually-hidden-reset;
-
-      padding: rem.torem(8px) 0;
-
-      &-checkbox {
-        &-input {
-          margin-right: 0;
-        }
-
-        &-label {
-          @include a11y.visually-hidden;
-        }
-      }
-
-      &:first-child {
-        border-top-left-radius: rem.torem(8px);
-        padding-left: rem.torem(16px);
-      }
-
-      &:last-child {
-        border-top-right-radius: rem.torem(8px);
-        padding-right: rem.torem(16px);
-      }
-    }
   }
 }

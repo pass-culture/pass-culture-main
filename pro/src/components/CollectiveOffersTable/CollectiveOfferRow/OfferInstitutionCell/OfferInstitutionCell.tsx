@@ -6,13 +6,11 @@ import styles from 'styles/components/Cells.module.scss'
 interface OfferInstitutionCellProps {
   educationalInstitution?: EducationalInstitutionResponseModel | null
   headers?: string
-  className?: string
 }
 
 export const OfferInstitutionCell = ({
   educationalInstitution,
   headers,
-  className,
 }: OfferInstitutionCellProps) => {
   const { name, institutionType, city } = educationalInstitution || {}
 
@@ -28,8 +26,7 @@ export const OfferInstitutionCell = ({
     <td
       className={classNames(
         styles['offers-table-cell'],
-        styles['institution-column'],
-        className
+        styles['institution-column']
       )}
       headers={headers}
     >

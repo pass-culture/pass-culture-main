@@ -110,7 +110,9 @@ describe('ollectiveOfferRow', () => {
     it('should contain a link with the offer name and details link', () => {
       renderOfferItem(props)
 
-      const offerTitle = screen.getByRole('link', { name: props.offer.name })
+      const offerTitle = screen.queryByText(props.offer.name as string, {
+        selector: 'a',
+      })
       expect(offerTitle).toBeInTheDocument()
       expect(offerTitle).toHaveAttribute(
         'href',
@@ -209,7 +211,7 @@ describe('ollectiveOfferRow', () => {
     props.offer.isEditable = false
     renderOfferItem(props)
 
-    expect(screen.getByRole('presentation')).toHaveClass('thumb-column-inactive')
+    expect(screen.getByRole('presentation')).toHaveClass('thumb-inactive')
   })
 
   it('should display disabled checkbox when offer is not editable', () => {
@@ -229,7 +231,7 @@ describe('ollectiveOfferRow', () => {
       props.offer.status = status
       renderOfferItem(props)
 
-      expect(screen.getByRole('presentation')).not.toHaveClass('thumb-column-inactive')
+      expect(screen.getByRole('presentation')).not.toHaveClass('thumb-inactive')
     }
   )
 

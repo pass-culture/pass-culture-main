@@ -1,5 +1,3 @@
-import classNames from 'classnames'
-
 import {
   CollectiveOfferResponseModel,
   ListOffersVenueResponseModel,
@@ -14,7 +12,6 @@ import styles from 'styles/components/Cells.module.scss'
 export interface OfferEventDateCellProps {
   offer: CollectiveOfferResponseModel
   headers?: string
-  className?: string
 }
 
 function getOfferDate(
@@ -30,7 +27,6 @@ function getOfferDate(
 export const OfferEventDateCell = ({
   offer,
   headers,
-  className,
 }: OfferEventDateCellProps) => {
   function formattedTime(hour: string | null | undefined) {
     if (!hour) {
@@ -88,7 +84,7 @@ export const OfferEventDateCell = ({
   }
 
   return (
-    <td headers={headers} className={classNames(styles['offers-table-cell'], className)}>
+    <td headers={headers} className={styles['offers-table-cell']}>
       <div className={styles['offer-event']}>
         {getFormattedDatesForOffer(offer).map((date) => (
           <span key={date} data-testid="offer-event-date">

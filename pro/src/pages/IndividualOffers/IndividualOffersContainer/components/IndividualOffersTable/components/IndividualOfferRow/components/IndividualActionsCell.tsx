@@ -35,7 +35,6 @@ interface IndividualActionsCellsProps {
   editionOfferLink: string
   editionStockLink: string
   isRestrictedAsAdmin: boolean
-  className: string
 }
 
 export const IndividualActionsCells = ({
@@ -43,7 +42,6 @@ export const IndividualActionsCells = ({
   editionOfferLink,
   editionStockLink,
   isRestrictedAsAdmin,
-  className,
 }: IndividualActionsCellsProps) => {
   const selectedOffererId = useSelector(selectCurrentOffererId)?.toString()
   const urlSearchFilters = useQuerySearchFilters()
@@ -89,8 +87,7 @@ export const IndividualActionsCells = ({
         role="cell"
         className={classNames(
           styles['offers-table-cell'],
-          styles['actions-column'],
-          className
+          styles['actions-column']
         )}
       >
         <div className={styles['actions-column-container']}>
