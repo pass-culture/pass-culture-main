@@ -1,14 +1,14 @@
 import {
   interceptSearch5Adresses,
   sessionLogInAndGoToPage,
-  expectOffersOrBookingsAreFound
+  expectOffersOrBookingsAreFound,
 } from '../support/helpers.ts'
 
 describe('Create individual offers', () => {
   let login: string
   let venueName: string
   const stock = '42'
-  
+
   before(() => {
     cy.wrap(Cypress.session.clearAllSavedSessions())
     cy.visit('/connexion')
@@ -308,9 +308,9 @@ describe('Create individual offers', () => {
 
     cy.stepLog({ message: 'my new physical offer should be displayed' })
     const expectedNewResults = [
-      ['', '', '', 'Lieu', 'Stocks', 'Statut', ''],
-      ['', '', offerTitle , venueName, stock, 'publiée'],
-      []
+      ['', "Nom de l'offre", 'Lieu', 'Stocks', 'Statut', ''],
+      ['', offerTitle, venueName, stock, 'publiée'],
+      [],
     ]
 
     expectOffersOrBookingsAreFound(expectedNewResults)
