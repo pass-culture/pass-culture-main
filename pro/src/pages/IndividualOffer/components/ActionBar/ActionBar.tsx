@@ -20,6 +20,7 @@ export interface ActionBarProps {
   isDisabled: boolean
   step: OFFER_WIZARD_STEP_IDS
   dirtyForm?: boolean
+  isOnboarding?: boolean
 }
 
 export const ActionBar = ({
@@ -28,6 +29,7 @@ export const ActionBar = ({
   isDisabled,
   step,
   dirtyForm,
+  isOnboarding = false,
 }: ActionBarProps) => {
   const mode = useOfferWizardMode()
   const backOfferUrl = computeIndividualOffersUrl({})
@@ -89,7 +91,7 @@ export const ActionBar = ({
           {step === OFFER_WIZARD_STEP_IDS.SUMMARY ? (
             <>
               <ButtonLink
-                to="/offres"
+                to={isOnboarding ? '/accueil' : '/offres'}
                 variant={ButtonVariant.SECONDARY}
                 onClick={() => {
                   notify.success(
