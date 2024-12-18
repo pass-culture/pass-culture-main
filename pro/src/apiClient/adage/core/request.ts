@@ -1,8 +1,5 @@
 // overwrites request.ts to handle redirection to maintenance
 
-/* istanbul ignore file */
-/* tslint:disable */
-/* eslint-disable */
 import { URL_FOR_MAINTENANCE } from 'commons/utils/config'
 import { ApiError } from './ApiError'
 import type { ApiRequestOptions } from './ApiRequestOptions'
