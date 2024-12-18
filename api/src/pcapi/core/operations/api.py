@@ -1,10 +1,19 @@
 from datetime import datetime
+from datetime import timedelta
+import logging
+
+import sqlalchemy as sa
 
 from pcapi.connectors import typeform
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
+from pcapi.repository import atomic
+from pcapi.repository import mark_transaction_as_invalid
 
 from . import models
+
+
+logger = logging.getLogger(__name__)
 
 
 def create_special_event_from_typeform(
@@ -33,6 +42,7 @@ def create_special_event_from_typeform(
         venueId=venue_id,
     )
     db.session.add(special_event)
+    db.session.flush()
 
     for field in data.fields:
         db.session.add(
@@ -42,3 +52,108 @@ def create_special_event_from_typeform(
     db.session.flush()
 
     return special_event
+
+
+def retrieve_data_from_typeform() -> None:
+    events = models.SpecialEvent.query.filter(
+        models.SpecialEvent.eventDate >= datetime.utcnow() - timedelta(days=7),
+    )
+    for event in events:
+        try:
+            form = typeform.get_form(form_id=event.externalId)
+            update_form_title_from_typeform(event=event, form=form)
+            questions = update_form_questions_from_typeform(event=event, form=form)
+            download_responses_from_typeform(event=event, questions=questions)
+        except Exception as exc:  # pylint: disable=broad-except
+            logger.error(
+                "An error happened while retrieving special event",
+                extra={
+                    "event_id": event.id,
+                    "exc": str(exc),
+                    "external_id": event.externalId,
+                },
+            )
+
+
+@atomic()
+def update_form_title_from_typeform(event: models.SpecialEvent, form: typeform.TypeformForm) -> None:
+    if form.title != event.title:
+        event.title = form.title
+        db.session.add(event)
+        db.session.flush()
+
+
+@atomic()
+def update_form_questions_from_typeform(
+    event: models.SpecialEvent, form: typeform.TypeformForm
+) -> dict[str, models.SpecialEventQuestion]:
+    old_questions = models.SpecialEventQuestion.query.filter(models.SpecialEventQuestion.eventId == event.id).all()
+
+    questions = {q.externalId: q for q in old_questions}
+
+    for question in form.fields:
+        if question.field_id not in questions:
+            questions[question.field_id] = models.SpecialEventQuestion(
+                eventId=event.id, externalId=question.field_id, title=question.title
+            )
+            db.session.add(questions[question.field_id])
+            db.session.flush()
+        elif question.title != questions[question.field_id].title:
+            questions[question.field_id].title = question.title
+            db.session.add(questions[question.field_id])
+            db.session.flush()
+    return questions
+
+
+def download_responses_from_typeform(
+    event: models.SpecialEvent, questions: dict[str, models.SpecialEventQuestion]
+) -> None:
+
+    def get_last_date_for_event() -> datetime | None:
+        result = (
+            models.SpecialEventResponse.query.with_entities(models.SpecialEventResponse.dateSubmitted)
+            .filter(models.SpecialEventResponse.eventId == event.id)
+            .order_by(models.SpecialEventResponse.dateSubmitted.desc())
+            .limit(1)
+            .scalar()
+        )
+        return result
+
+    for response in typeform.get_responses_generator(get_last_date_for_event, event.externalId):
+        save_response(
+            event=event,
+            form=response,
+            questions=questions,
+        )
+
+
+@atomic()
+def save_response(
+    event: models.SpecialEvent, form: typeform.TypeformResponse, questions: dict[str, models.SpecialEventQuestion]
+) -> None:
+    try:
+        response = models.SpecialEventResponse(
+            eventId=event.id,
+            externalId=form.response_id,
+            dateSubmitted=form.date_submitted,
+            phoneNumber=form.phone_number,
+            email=form.email,
+        )
+        db.session.add(response)
+        db.session.flush()
+    except sa.exc.IntegrityError:
+        mark_transaction_as_invalid()
+        return
+
+    for answer in form.answers:
+        if answer.field_id not in questions:
+            continue
+        if answer.text is not None:
+            db.session.add(
+                models.SpecialEventAnswer(
+                    responseId=response.id,
+                    questionId=questions[answer.field_id].id,
+                    text=answer.text,
+                )
+            )
+    db.session.flush()
