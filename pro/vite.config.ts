@@ -44,9 +44,10 @@ export default defineConfig(({ mode }) => {
       cacheDir: '../.vitest_cache',
       css: { modules: { classNameStrategy: 'non-scoped' } },
       coverage: {
+        provider: 'istanbul',
         reportsDirectory: '../coverage',
         reporter: ['text', 'html', 'lcov'],
-        exclude: ['**/*.stories.tsx', ...coverageConfigDefaults.exclude],
+        exclude: ['**/*.stories.tsx', 'apiClient/*', ...coverageConfigDefaults.exclude],
       },
       minThreads: 4,
       maxThreads: 6,
