@@ -17,11 +17,6 @@
   }
 }
 
-<<<<<<< HEAD
-@media screen and (min-width: size.$tablet) {
-  .individual-row {
-    grid-template-columns: rem.torem(22px) rem.torem(112px) 1fr rem.torem(105px);
-=======
 .individual-cell {
   &-checkbox {
     padding-left: rem.torem(16px);
@@ -34,11 +29,10 @@
 
   &-status, &-actions {
     padding-bottom: rem.torem(16px);
->>>>>>> 363b7f6a14 ((PC-33334)[PRO] feat: restyle indiv. offer list table)
   }
 }
 
-@media (min-width: size.$tablet) {
+@media screen and (min-width: size.$tablet) {
   .individual-row {
     display: table-row;
   }
