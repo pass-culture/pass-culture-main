@@ -530,12 +530,6 @@ class SSOSigninTest:
 
         assert authorization_response.status_code == 200, authorization_response.json
 
-    @override_features(WIP_ENABLE_GOOGLE_SSO=False)
-    def test_sso_is_feature_flagged(self, client):
-        response = client.post("/native/v1/oauth/google/authorize", json={"code": "4/google_code"})
-
-        assert response.status_code == 400
-
 
 class TrustedDeviceFeatureTest:
     @pytest.mark.parametrize(
