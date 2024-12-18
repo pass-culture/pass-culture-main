@@ -175,16 +175,34 @@ def recredit_underage_users() -> None:
 
 
 @blueprint.cli.command("import_ds_bank_information_applications")
+@click.option(
+    "--ignore_previous",
+    type=bool,
+    is_flag=True,
+    default=False,
+    help="Import all application ignoring previous import date",
+)
+@click.option(
+    "--since",
+    help="Force previous import date to this date. Format: YYYY-MM-DD. Example: 2024-01-01. Default: None.",
+    type=str,
+)
 @cron_decorators.log_cron_with_transaction
-def import_ds_bank_information_applications() -> None:
+def import_ds_bank_information_applications(ignore_previous: bool = False, since: str | None = None) -> None:
     procedures = [
         settings.DS_BANK_ACCOUNT_PROCEDURE_ID,
     ]
+    forced_since = datetime.datetime.fromisoformat(since) if since else None
     for procedure in procedures:
         if not procedure:
             logger.info("Skipping DS %s because procedure id is empty", procedure)
             continue
-        import_ds_applications(int(procedure), ds.update_ds_applications_for_procedure)
+        import_ds_applications(
+            int(procedure),
+            ds.update_ds_applications_for_procedure,
+            ignore_previous=ignore_previous,
+            forced_since=forced_since,
+        )
 
 
 @blueprint.cli.command("push_bank_accounts")
