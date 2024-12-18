@@ -30,6 +30,7 @@ class Artist(PcObject, Base, Model):
     name = sa.Column(sa.Text, nullable=False, index=True)
     description = sa.Column(sa.Text)
     image = sa.Column(sa.Text)
+    image_author = sa.Column(sa.Text)
     image_license = sa.Column(sa.Text)
     image_license_url = sa.Column(sa.Text)
 
