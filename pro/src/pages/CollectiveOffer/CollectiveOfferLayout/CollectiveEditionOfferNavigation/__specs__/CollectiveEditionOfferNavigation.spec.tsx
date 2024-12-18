@@ -33,17 +33,17 @@ import {
   RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
 
+import { CollectiveOfferStep } from '../../CollectiveOfferNavigation/CollectiveCreationOfferNavigation'
 import {
-  CollectiveOfferNavigation,
-  CollectiveOfferNavigationProps,
-  CollectiveOfferStep,
-} from '../CollectiveOfferNavigation'
+  CollectiveEditionOfferNavigation,
+  CollectiveEditionOfferNavigationProps,
+} from '../CollectiveEditionOfferNavigation'
 
-const renderCollectiveOfferNavigation = (
-  props: CollectiveOfferNavigationProps,
+const renderCollectiveEditingOfferNavigation = (
+  props: CollectiveEditionOfferNavigationProps,
   options?: RenderWithProvidersOptions
 ) =>
-  renderWithProviders(<CollectiveOfferNavigation {...props} />, {
+  renderWithProviders(<CollectiveEditionOfferNavigation {...props} />, {
     storeOverrides: {
       user: { currentUser: sharedCurrentUserFactory() },
       offerer: { selectedOffererId: 1, offererNames: [] },
@@ -56,11 +56,11 @@ vi.mock('react-router-dom', async () => ({
   useLocation: vi.fn(),
 }))
 
-describe('CollectiveOfferNavigation', () => {
+describe('CollectiveEditionOfferNavigation', () => {
   let offer:
     | GetCollectiveOfferTemplateResponseModel
     | GetCollectiveOfferResponseModel
-  let props: CollectiveOfferNavigationProps
+  let props: CollectiveEditionOfferNavigationProps
   const offerId = 1
   const mockLogEvent = vi.fn()
   const notifyError = vi.fn()
@@ -112,228 +112,15 @@ describe('CollectiveOfferNavigation', () => {
 
     props = {
       activeStep: CollectiveOfferStep.DETAILS,
-      isCreatingOffer: true,
       offerId: offerId,
       isTemplate: false,
       offer: getCollectiveOfferFactory(),
     }
   })
 
-  it('should display navigation for collective offer in creation', async () => {
-    renderCollectiveOfferNavigation({ ...props, offerId: 0 })
-
-    expect(screen.getByTestId('stepper')).toBeInTheDocument()
-
-    const listItems = await screen.findAllByRole('listitem')
-
-    expect(listItems).toHaveLength(6)
-    expect(listItems[0]).toHaveTextContent('Détails de l’offre')
-    expect(listItems[1]).toHaveTextContent('Dates et prix')
-    expect(listItems[2]).toHaveTextContent('Établissement et enseignant')
-    expect(listItems[3]).toHaveTextContent('Récapitulatif')
-    expect(listItems[4]).toHaveTextContent('Aperçu')
-    expect(listItems[5]).toHaveTextContent('Confirmation')
-
-    const links = screen.queryAllByRole('link')
-    expect(links).toHaveLength(0)
-  })
-
-  it('should show different links if offer is template', async () => {
-    renderCollectiveOfferNavigation({
-      ...props,
-      activeStep: CollectiveOfferStep.SUMMARY,
-      offer: getCollectiveOfferFactory({
-        institution: undefined,
-        collectiveStock: undefined,
-      }),
-      isTemplate: true,
-    })
-
-    const listItems = await screen.findAllByRole('listitem')
-    expect(listItems).toHaveLength(4)
-    expect(screen.queryByText('Dates et prix')).not.toBeInTheDocument()
-    expect(screen.queryByText('Visibilité')).not.toBeInTheDocument()
-
-    const links = screen.queryAllByRole('link')
-    expect(links).toHaveLength(1)
-    expect(links[0].getAttribute('href')).toBe(
-      `/offre/collectif/vitrine/${offerId}/creation`
-    )
-  })
-
-  it('should show links if stocks is the active step', () => {
-    renderCollectiveOfferNavigation({
-      ...props,
-      activeStep: CollectiveOfferStep.STOCKS,
-      offer: getCollectiveOfferFactory({
-        institution: undefined,
-        collectiveStock: undefined,
-      }),
-    })
-
-    const links = screen.queryAllByRole('link')
-    expect(links).toHaveLength(2)
-    expect(links[0].getAttribute('href')).toBe(
-      `/offre/collectif/${offerId}/creation`
-    )
-    expect(links[1].getAttribute('href')).toBe(
-      `/offre/${offerId}/collectif/stocks`
-    )
-  })
-
-  it('should show links if visibility is the active step', () => {
-    renderCollectiveOfferNavigation({
-      ...props,
-      activeStep: CollectiveOfferStep.VISIBILITY,
-      offer: getCollectiveOfferFactory({
-        institution: undefined,
-      }),
-    })
-    const links = screen.queryAllByRole('link')
-    expect(links).toHaveLength(3)
-    expect(links[0].getAttribute('href')).toBe(
-      `/offre/collectif/${offerId}/creation`
-    )
-    expect(links[1].getAttribute('href')).toBe(
-      `/offre/${offerId}/collectif/stocks`
-    )
-    expect(links[2].getAttribute('href')).toBe(
-      `/offre/${offerId}/collectif/visibilite`
-    )
-  })
-
-  it('should show links if summary is the active step', () => {
-    renderCollectiveOfferNavigation({
-      ...props,
-      activeStep: CollectiveOfferStep.SUMMARY,
-      offer: getCollectiveOfferFactory({
-        institution: {
-          city: '',
-          id: 1,
-          institutionId: '2',
-          name: '',
-          phoneNumber: '',
-          postalCode: '',
-        },
-      }),
-    })
-    const links = screen.queryAllByRole('link')
-    expect(links).toHaveLength(5)
-    expect(links[0].getAttribute('href')).toBe(
-      `/offre/collectif/${offerId}/creation`
-    )
-    expect(links[1].getAttribute('href')).toBe(
-      `/offre/${offerId}/collectif/stocks`
-    )
-    expect(links[2].getAttribute('href')).toBe(
-      `/offre/${offerId}/collectif/visibilite`
-    )
-    expect(links[3].getAttribute('href')).toBe(
-      `/offre/${offerId}/collectif/creation/recapitulatif`
-    )
-    expect(links[4].getAttribute('href')).toBe(
-      `/offre/${offerId}/collectif/creation/apercu`
-    )
-  })
-
-  it('should show links if confirmation is the active step', () => {
-    renderCollectiveOfferNavigation({
-      ...props,
-      activeStep: CollectiveOfferStep.CONFIRMATION,
-      offer: getCollectiveOfferFactory({
-        institution: {
-          city: '',
-          id: 1,
-          institutionId: '2',
-          name: '',
-          phoneNumber: '',
-          postalCode: '',
-        },
-      }),
-    })
-    const links = screen.queryAllByRole('link')
-    expect(links).toHaveLength(5)
-    expect(links[0].getAttribute('href')).toBe(
-      `/offre/collectif/${offerId}/creation`
-    )
-    expect(links[1].getAttribute('href')).toBe(
-      `/offre/${offerId}/collectif/stocks`
-    )
-    expect(links[2].getAttribute('href')).toBe(
-      `/offre/${offerId}/collectif/visibilite`
-    )
-    expect(links[3].getAttribute('href')).toBe(
-      `/offre/${offerId}/collectif/creation/recapitulatif`
-    )
-  })
-
-  it('should show links if confirmation is the active step and the offer is template', () => {
-    renderCollectiveOfferNavigation({
-      ...props,
-      activeStep: CollectiveOfferStep.CONFIRMATION,
-      offer: getCollectiveOfferTemplateFactory(),
-      isTemplate: true,
-    })
-    const links = screen.queryAllByRole('link')
-    expect(links).toHaveLength(3)
-  })
-
-  it('should generate links with offerId when user is editing an offer', async () => {
-    vi.spyOn(router, 'useLocation').mockReturnValueOnce({
-      ...defaultUseLocationValue,
-      pathname: '/offre/${offerId}/collectif/edition',
-    })
-    renderCollectiveOfferNavigation({ ...props, isCreatingOffer: false })
-
-    const links = await screen.findAllByRole('link')
-    const tabs = await screen.findAllByRole('tab')
-
-    expect(links).toHaveLength(1)
-    expect(links[0].getAttribute('href')).toBe(
-      `/offre/${offerId}/collectif/apercu`
-    )
-    expect(tabs).toHaveLength(3)
-
-    expect(tabs[0].getAttribute('href')).toBe(
-      `/offre/${offerId}/collectif/edition`
-    )
-    expect(tabs[1].getAttribute('href')).toBe(
-      `/offre/${offerId}/collectif/stocks/edition`
-    )
-    expect(tabs[2].getAttribute('href')).toBe(
-      `/offre/${offerId}/collectif/visibilite/edition`
-    )
-  })
-
-  it('should log event when clicking "Créer une offre réservable" button', async () => {
-    renderCollectiveOfferNavigation({
-      ...props,
-      isTemplate: true,
-      isCreatingOffer: false,
-    })
-
-    const duplicateOffer = screen.getByRole('button', {
-      name: 'Créer une offre réservable',
-    })
-    await userEvent.click(duplicateOffer)
-
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_DUPLICATE_TEMPLATE_OFFER,
-      {
-        from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFER_RECAP,
-        offererId: '1',
-        offerId: 1,
-        offerType: 'collective',
-        offerStatus: CollectiveOfferDisplayedStatus.ACTIVE,
-      }
-    )
-  })
-
   it('should log event when clicking "Dupliquer" button', async () => {
-    renderCollectiveOfferNavigation({
+    renderCollectiveEditingOfferNavigation({
       ...props,
-      isCreatingOffer: false,
     })
 
     const duplicateOffer = screen.getByRole('button', {
@@ -355,10 +142,9 @@ describe('CollectiveOfferNavigation', () => {
   })
 
   it('should show create bookable offer if offer is template in edition', () => {
-    renderCollectiveOfferNavigation({
+    renderCollectiveEditingOfferNavigation({
       ...props,
       isTemplate: true,
-      isCreatingOffer: false,
     })
 
     const duplicateOfferButton = screen.getByRole('button', {
@@ -368,29 +154,11 @@ describe('CollectiveOfferNavigation', () => {
     expect(duplicateOfferButton).toBeInTheDocument()
   })
 
-  it('should not show create bookable offer button if template offer has pending status', () => {
-    renderCollectiveOfferNavigation({
-      ...props,
-      isTemplate: true,
-      offer: {
-        ...offer,
-        displayedStatus: CollectiveOfferDisplayedStatus.PENDING,
-      },
-    })
-
-    const duplicateOffer = screen.queryByRole('button', {
-      name: 'Créer une offre réservable',
-    })
-
-    expect(duplicateOffer).not.toBeInTheDocument()
-  })
-
   it('should show create bookable offer if offer is template and ff is active', () => {
-    renderCollectiveOfferNavigation(
+    renderCollectiveEditingOfferNavigation(
       {
         ...props,
         isTemplate: true,
-        isCreatingOffer: false,
         offer: {
           ...offer,
           allowedActions: [
@@ -409,11 +177,10 @@ describe('CollectiveOfferNavigation', () => {
   })
 
   it('should show duplicate button if offer is bookable and ff is active', () => {
-    renderCollectiveOfferNavigation(
+    renderCollectiveEditingOfferNavigation(
       {
         ...props,
         isTemplate: false,
-        isCreatingOffer: false,
         offer: getCollectiveOfferFactory({
           allowedActions: [CollectiveOfferAllowedAction.CAN_DUPLICATE],
         }),
@@ -431,10 +198,9 @@ describe('CollectiveOfferNavigation', () => {
   it('should return an error when the collective offer could not be retrieved', async () => {
     vi.spyOn(api, 'getCollectiveOfferTemplate').mockRejectedValueOnce('')
 
-    renderCollectiveOfferNavigation({
+    renderCollectiveEditingOfferNavigation({
       ...props,
       isTemplate: true,
-      isCreatingOffer: false,
     })
 
     const duplicateOffer = screen.getByRole('button', {
@@ -455,10 +221,9 @@ describe('CollectiveOfferNavigation', () => {
       new ApiError({} as ApiRequestOptions, { status: 400 } as ApiResult, '')
     )
 
-    renderCollectiveOfferNavigation({
+    renderCollectiveEditingOfferNavigation({
       ...props,
       isTemplate: true,
-      isCreatingOffer: false,
     })
 
     const duplicateOffer = screen.getByRole('button', {
@@ -474,10 +239,9 @@ describe('CollectiveOfferNavigation', () => {
     // eslint-disable-next-line no-undef
     fetchMock.mockResponse('Service Unavailable', { status: 503 })
 
-    renderCollectiveOfferNavigation({
+    renderCollectiveEditingOfferNavigation({
       ...props,
       isTemplate: true,
-      isCreatingOffer: false,
     })
 
     const duplicateOffer = screen.getByRole('button', {
@@ -490,10 +254,9 @@ describe('CollectiveOfferNavigation', () => {
   })
 
   it('should archive an offer template', async () => {
-    renderCollectiveOfferNavigation({
+    renderCollectiveEditingOfferNavigation({
       ...props,
       isTemplate: true,
-      isCreatingOffer: false,
       offer,
     })
 
@@ -514,10 +277,9 @@ describe('CollectiveOfferNavigation', () => {
   })
 
   it('should archive an offer bookable', async () => {
-    renderCollectiveOfferNavigation({
+    renderCollectiveEditingOfferNavigation({
       ...props,
       isTemplate: false,
-      isCreatingOffer: false,
       offer,
     })
 
@@ -538,10 +300,9 @@ describe('CollectiveOfferNavigation', () => {
   })
 
   it('should not see archive button when offer is not archivable', () => {
-    renderCollectiveOfferNavigation({
+    renderCollectiveEditingOfferNavigation({
       ...props,
       isTemplate: true,
-      isCreatingOffer: false,
       offer: { ...offer, status: CollectiveOfferStatus.ARCHIVED },
     })
 
@@ -553,11 +314,10 @@ describe('CollectiveOfferNavigation', () => {
   })
 
   it('should not see archive button when FF status is enable and archive action is not possible', () => {
-    renderCollectiveOfferNavigation(
+    renderCollectiveEditingOfferNavigation(
       {
         ...props,
         isTemplate: true,
-        isCreatingOffer: false,
         offer: {
           ...offer,
           allowedActions: [],
@@ -574,11 +334,10 @@ describe('CollectiveOfferNavigation', () => {
   })
 
   it('should see archive button when FF status is enable and archive action is possible for template offer', () => {
-    renderCollectiveOfferNavigation(
+    renderCollectiveEditingOfferNavigation(
       {
         ...props,
         isTemplate: true,
-        isCreatingOffer: false,
         offer: {
           ...offer,
           allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE],
@@ -595,11 +354,10 @@ describe('CollectiveOfferNavigation', () => {
   })
 
   it('should see archive button when FF status is enable and archive action is possible for bookable offer', () => {
-    renderCollectiveOfferNavigation(
+    renderCollectiveEditingOfferNavigation(
       {
         ...props,
         isTemplate: false,
-        isCreatingOffer: false,
         offer: getCollectiveOfferFactory({
           allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
         }),
@@ -615,11 +373,10 @@ describe('CollectiveOfferNavigation', () => {
   })
 
   it('should return an error on offer archiving when the offer id is not valid', async () => {
-    renderCollectiveOfferNavigation({
+    renderCollectiveEditingOfferNavigation({
       ...props,
       offerId: undefined,
       isTemplate: true,
-      isCreatingOffer: false,
       offer,
     })
 
@@ -638,10 +395,9 @@ describe('CollectiveOfferNavigation', () => {
   })
 
   it('should return an error on offer archiving when there is an api error', async () => {
-    renderCollectiveOfferNavigation({
+    renderCollectiveEditingOfferNavigation({
       ...props,
       isTemplate: true,
-      isCreatingOffer: false,
       offer,
     })
 
@@ -666,10 +422,9 @@ describe('CollectiveOfferNavigation', () => {
   })
 
   it('should not display the edition button for archived collective offers', () => {
-    renderCollectiveOfferNavigation({
+    renderCollectiveEditingOfferNavigation({
       ...props,
       offerId: 1,
-      isCreatingOffer: false,
       isTemplate: false,
       offer: getCollectiveOfferFactory({
         status: CollectiveOfferStatus.ARCHIVED,
@@ -682,10 +437,9 @@ describe('CollectiveOfferNavigation', () => {
   })
 
   it('should not display the navigation for archived collective offers', () => {
-    renderCollectiveOfferNavigation({
+    renderCollectiveEditingOfferNavigation({
       ...props,
       offerId: 1,
-      isCreatingOffer: false,
       isTemplate: false,
       offer: getCollectiveOfferFactory({
         status: CollectiveOfferStatus.ARCHIVED,
@@ -693,40 +447,5 @@ describe('CollectiveOfferNavigation', () => {
     })
 
     expect(screen.queryByTestId('stepper')).not.toBeInTheDocument()
-  })
-
-  it('should be able to go to the visibility ans stocks step if the institurion and stock are already filled', () => {
-    renderCollectiveOfferNavigation({
-      ...props,
-      offer: getCollectiveOfferFactory(),
-      isTemplate: false,
-      activeStep: CollectiveOfferStep.DETAILS,
-    })
-
-    expect(
-      screen.getByRole('link', { name: /Établissement et enseignant/ })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('link', { name: /Dates et prix/ })
-    ).toBeInTheDocument()
-  })
-
-  it('should be able to go to the stocks step if the details are already filled', () => {
-    renderCollectiveOfferNavigation({
-      ...props,
-      offer: getCollectiveOfferFactory({
-        institution: undefined,
-        collectiveStock: undefined,
-      }),
-      activeStep: CollectiveOfferStep.DETAILS,
-    })
-
-    expect(
-      screen.queryByRole('link', { name: /Établissement et enseignant/ })
-    ).not.toBeInTheDocument()
-
-    expect(
-      screen.getByRole('link', { name: /Dates et prix/ })
-    ).toBeInTheDocument()
   })
 })
