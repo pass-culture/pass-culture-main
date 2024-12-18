@@ -12,7 +12,6 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import override_features
 
-
 @pytest.mark.usefixtures("db_session")
 @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
 def test_collective_workflow(db_session):
@@ -32,10 +31,16 @@ def test_collective_workflow(db_session):
         collectiveStock__collectiveOffer=collective_offer,
     )
 
+    # Le simple fait de rajouter ce check entraine une erreur lors de l'appel à auto_mark_as_used_after_event
+    # Il semblerait que l'update fait api/src/pcapi/core/bookings/api.py#L1075 avec un `execution_options={"synchronize_session": False}`
+    # ne soit pas pris en compte dans la session de test.
+    assert collective_offer.displayedStatus == educational_models.CollectiveOfferDisplayedStatus.BOOKED
+
+    # Le simple fait de rajouter un commit dans la session de test permet de résoudre le problème.
+    # db_session.commit()
+
     now = beginning_datetime + datetime.timedelta(days=3)
     with time_machine.travel(now) as frozen_time:
-        now = beginning_datetime + datetime.timedelta(days=3)
-        frozen_time.move_to(now)
 
         # Mark the booking as used
         bookings_api.auto_mark_as_used_after_event()
