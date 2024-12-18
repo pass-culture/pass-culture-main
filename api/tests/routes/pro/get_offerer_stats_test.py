@@ -109,7 +109,7 @@ class OffererStatsTest:
                             "credit": None,
                             "url": f"http://localhost/storage/thumbs/mediations/{humanize(mediation.id)}",
                         },
-                        "isHeadlineOffer": False,
+                        "isHeadlineOffer": True,
                         "numberOfViews": 1,
                         "offerId": offer_2.id,
                         "offerName": offer_2.name,
