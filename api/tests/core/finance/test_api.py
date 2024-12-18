@@ -1998,15 +1998,37 @@ def test_generate_bank_accounts_file(clean_temp_files):
     assert len(rows) == 3
     for row, bank_account in zip(rows, [bank_account_2, bank_account_3, bank_account_4]):
         assert row == {
-            "Lieux liés au compte bancaire": ", ".join(
-                map(str, sorted(link.venueId for link in bank_account.venueLinks))
-            ),
+            "Numéro": "",
+            "Actif": "True",
+            "Traité": "False",
             "Identifiant des coordonnées bancaires": str(bank_account.id),
-            "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account.id),
-            "SIREN de la structure": bank_account.offerer.siren,
-            "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account.offerer.name} - {bank_account.label}",
+            "Nom du fournisseur - Libellé des coordonnées bancaires": f"{bank_account.offerer.name} - {bank_account.label}",
+            "Statut": "A",
+            "Famille de fournisseurs": "ACTEURCULT",
+            "Condition de règlement": "30J",
+            "Cycle du relevé": "15J",
+            "Devise": "EUR",
+            "Type de taux de change": "SPOT",
+            "Courriel": "",
+            "Site web": "",
+            "Téléphone 1": "",
+            "Téléphone 2": "",
+            "Fax": "",
+            "Langue": "fr-FR",
+            "Adresse 1": "1 boulevard Poissonnière",
+            "Adresse 2": "",
+            "Ville": "Paris",
+            "Pays": "FR",
+            "Département": "",
+            "Code postal": "75002",
+            "Mode de règlement bis": "VSEPA",
             "IBAN": bank_account.iban,
+            "Compte de trésorerie": "",
+            "Nature économique": "",
             "BIC": bank_account.bic,
+            "SIREN": bank_account.offerer.siren,
+            "Numéro de TVA Intracom": "",
+            "Zone de taxes": "EXO",
         }
 
 
