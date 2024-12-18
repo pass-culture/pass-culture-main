@@ -1,11 +1,11 @@
 import datetime
-from itertools import chain
 import random
 import string
 from unittest.mock import patch
 
 import pytest
 
+from pcapi import settings as pcapi_settings
 from pcapi.connectors import typeform
 from pcapi.core.chronicles import api
 from pcapi.core.chronicles import constants
@@ -122,7 +122,7 @@ class ImportBookClubChroniclesTest:
 
             typeform_mock.assert_called_once_with(
                 form_id=constants.BookClub.FORM_ID.value,
-                num_results=constants.IMPORT_CHUNK_SIZE,
+                num_results=pcapi_settings.TYPEFORM_IMPORT_CHUNK_SIZE,
                 since=old_chronicle.dateCreated,
                 sort="submitted_at,asc",
             )
@@ -138,7 +138,7 @@ class ImportBookClubChroniclesTest:
 
             typeform_mock.assert_called_once_with(
                 form_id=constants.BookClub.FORM_ID.value,
-                num_results=constants.IMPORT_CHUNK_SIZE,
+                num_results=pcapi_settings.TYPEFORM_IMPORT_CHUNK_SIZE,
                 since=None,
                 sort="submitted_at,asc",
             )
@@ -413,60 +413,6 @@ class SaveBookClubChronicleTest:
         chronicle = models.Chronicle.query.first()
 
         assert chronicle.products == [product]
-
-
-@pytest.mark.usefixtures("db_session")
-class BookClubFormsGeneratorTest:
-
-    def test_empty_answer(self):
-        list_expected = []
-
-        with patch("pcapi.core.chronicles.api.typeform.get_responses", return_value=list_expected) as typeform_mock:
-            for result in api._book_club_forms_generator():
-                assert False
-
-            typeform_mock.assert_called_once_with(
-                form_id=constants.BookClub.FORM_ID.value,
-                num_results=constants.IMPORT_CHUNK_SIZE,
-                since=None,
-                sort="submitted_at,asc",
-            )
-
-    def test_multiple_calls(self):
-        now = datetime.datetime(2024, 12, 31)
-        list_expected = [
-            list(range(1, constants.IMPORT_CHUNK_SIZE + 1)),
-            list(string.ascii_lowercase),
-        ]
-
-        with patch("pcapi.core.chronicles.api.typeform.get_responses", side_effect=list_expected) as typeform_mock:
-            for result, expected in zip(api._book_club_forms_generator(), chain(*list_expected)):
-                assert result == expected
-                if result == constants.IMPORT_CHUNK_SIZE:
-                    typeform_mock.assert_called_once_with(
-                        form_id=constants.BookClub.FORM_ID.value,
-                        num_results=constants.IMPORT_CHUNK_SIZE,
-                        since=None,
-                        sort="submitted_at,asc",
-                    )
-                    chronicles_factories.ChronicleFactory(dateCreated=now)
-
-            assert typeform_mock.call_count == 2
-            typeform_mock.assert_called_with(
-                form_id=constants.BookClub.FORM_ID.value,
-                num_results=constants.IMPORT_CHUNK_SIZE,
-                since=now,
-                sort="submitted_at,asc",
-            )
-
-    def test_inifinite_loop(self):
-        list_expected = [list(range(1, constants.IMPORT_CHUNK_SIZE + 1)) for i in range(5)]
-
-        with patch("pcapi.core.chronicles.api.typeform.get_responses", side_effect=list_expected) as typeform_mock:
-            for result, expected in zip(api._book_club_forms_generator(), chain(*list_expected)):
-                assert result == expected
-
-            assert typeform_mock.call_count == 1
 
 
 @pytest.mark.usefixtures("db_session")
