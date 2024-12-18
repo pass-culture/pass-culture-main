@@ -97,4 +97,4 @@ Pour que cet ajout soit mis à disposition dans le contrat d'interface généré
 
 1. Enlever toute utilisation du flag
 2. Enlever la ligne de FeatureToggle
-3. Ajouter une [migration post-déploiement](https://github.com/pass-culture/pass-culture-main/blob/565610f9900585e25984c19c02aaacee68e7a49e/api/src/pcapi/alembic/versions/20221207T220341_ba38f011683b_remove_use_pricing_point_feature_flag.py) de suppression du rang concerné dans la table `feature`
+3. Pour les environnements locaux et/ou hors Docker, `flask clean_data` supprimera les FF qui sont en base mais ne sont plus utilisées. Dans les environnements déployés, la commande est automatiquement lancée en fin de déploiement.
