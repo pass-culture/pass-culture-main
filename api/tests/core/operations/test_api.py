@@ -6,7 +6,9 @@ import pytest
 from pcapi.connectors import typeform
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.operations import api as operations_api
+from pcapi.core.operations import factories as operations_factories
 from pcapi.core.operations import models as operations_models
+from pcapi.models import db
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -67,3 +69,260 @@ class CreateSpecialEventFromTypeformTest:
         with pytest.raises(ValueError) as err:
             operations_api.create_special_event_from_typeform("test", venue_id=999999)
         assert "n'existe pas" in str(err.value)
+
+
+class UpdateFormTitleFromTypeformTest:
+    def test_update_title(self):
+        expected_title = "new_title"
+        event = operations_factories.SpecialEventFactory()
+        form = typeform.TypeformForm(
+            form_id=event.externalId,
+            title=expected_title,
+            date_created=datetime.datetime(2020, 1, 1),
+            fields=[],
+        )
+
+        operations_api.update_form_title_from_typeform(event=event, form=form)
+
+        db.session.refresh(event)
+        assert event.title == expected_title
+
+
+class UpdateFormQuestionsFromTypeformTest:
+    def test_update_question_title(self):
+        event = operations_factories.SpecialEventFactory()
+        question = operations_factories.SpecialEventQuestionFactory(
+            event=event,
+            title="old_title",
+        )
+        untouched_question = operations_factories.SpecialEventQuestionFactory(event=event, title="still title")
+
+        form = typeform.TypeformForm(
+            form_id=event.externalId,
+            title="Questions on plouf",
+            date_created=datetime.datetime(2020, 1, 1),
+            fields=[
+                typeform.TypeformQuestion(
+                    field_id=question.externalId,
+                    title="How many plouf do you need to build a tower ?",
+                ),
+                typeform.TypeformQuestion(
+                    field_id=untouched_question.externalId,
+                    title=untouched_question.title,
+                ),
+            ],
+        )
+
+        result = operations_api.update_form_questions_from_typeform(event=event, form=form)
+
+        db.session.refresh(question)
+        db.session.refresh(untouched_question)
+
+        assert untouched_question.title == "still title"
+        assert question.title == form.fields[0].title
+        assert result == {
+            question.externalId: question,
+            untouched_question.externalId: untouched_question,
+        }
+
+    def test_create_new_question(self):
+        event = operations_factories.SpecialEventFactory()
+        question = operations_factories.SpecialEventQuestionFactory(
+            event=event,
+        )
+        form = typeform.TypeformForm(
+            form_id=event.externalId,
+            title="Questions on plouf",
+            date_created=datetime.datetime(2020, 1, 1),
+            fields=[
+                typeform.TypeformQuestion(
+                    field_id="qwerty123",
+                    title="How much does a plouf weight ?",
+                ),
+            ],
+        )
+
+        result = operations_api.update_form_questions_from_typeform(event=event, form=form)
+
+        db.session.refresh(question)
+        assert operations_models.SpecialEventQuestion.query.count() == 2
+        new_question = operations_models.SpecialEventQuestion.query.filter(
+            operations_models.SpecialEventQuestion.externalId == "qwerty123"
+        ).one()
+        assert new_question.title == form.fields[0].title
+        assert new_question.eventId == event.id
+        assert result == {
+            question.externalId: question,
+            new_question.externalId: new_question,
+        }
+
+    def test_complete_list_of_questions(self):
+        event = operations_factories.SpecialEventFactory()
+        question = operations_factories.SpecialEventQuestionFactory(
+            event=event,
+        )
+        form = typeform.TypeformForm(
+            form_id=event.externalId,
+            title="Questions on plouf",
+            date_created=datetime.datetime(2020, 1, 1),
+            fields=[
+                typeform.TypeformQuestion(
+                    field_id="qwerty123",
+                    title="How much does a plouf weight ?",
+                ),
+            ],
+        )
+
+        result = operations_api.update_form_questions_from_typeform(event=event, form=form)
+
+        db.session.refresh(question)
+        new_question = operations_models.SpecialEventQuestion.query.filter(
+            operations_models.SpecialEventQuestion.externalId == "qwerty123"
+        ).one()
+        assert result == {
+            question.externalId: question,
+            new_question.externalId: new_question,
+        }
+
+
+class SaveResponseTest:
+    def test_nominal(self):
+        event = operations_factories.SpecialEventFactory()
+        question1 = operations_factories.SpecialEventQuestionFactory(
+            event=event,
+        )
+        question2 = operations_factories.SpecialEventQuestionFactory(
+            event=event,
+        )
+        questions = {
+            question1.externalId: question1,
+            question2.externalId: question2,
+        }
+        form = typeform.TypeformResponse(
+            response_id="qwerty123",
+            date_submitted=datetime.datetime(2020, 1, 1),
+            phone_number="0123456789",
+            email="valid.email@example.com",
+            answers=[
+                typeform.TypeformAnswer(
+                    field_id=question1.externalId,
+                    choice_id=None,
+                    text="text1",
+                ),
+                typeform.TypeformAnswer(
+                    field_id=question2.externalId,
+                    choice_id=None,
+                    text="text2",
+                ),
+            ],
+        )
+
+        operations_api.save_response(event=event, form=form, questions=questions)
+
+        response = operations_models.SpecialEventResponse.query.one()
+        answers = operations_models.SpecialEventAnswer.query.order_by("text").all()
+
+        assert response.eventId == event.id
+        assert response.externalId == form.response_id
+        assert response.dateSubmitted == form.date_submitted
+        assert response.phoneNumber == form.phone_number
+        assert response.email == form.email
+        assert response.status == operations_models.SpecialEventResponseStatus.NEW
+
+        assert len(answers) == 2
+        assert answers[0].responseId == response.id
+        assert answers[0].questionId == question1.id
+        assert answers[0].text == "text1"
+
+        assert answers[1].responseId == response.id
+        assert answers[1].questionId == question2.id
+        assert answers[1].text == "text2"
+
+    def test_response_already_exists(self):
+        question = operations_factories.SpecialEventQuestionFactory()
+        questions = {question.externalId: question}
+        response = operations_factories.SpecialEventResponseFactory()
+
+        form = typeform.TypeformResponse(
+            response_id=response.externalId,
+            date_submitted=datetime.datetime(2020, 1, 1),
+            phone_number="0123456789",
+            email="valid.email@example.com",
+            answers=[
+                typeform.TypeformAnswer(
+                    field_id=question.externalId,
+                    choice_id=None,
+                    text="text1",
+                ),
+            ],
+        )
+
+        operations_api.save_response(event=question.event, form=form, questions=questions)
+
+        assert operations_models.SpecialEventResponse.query.count() == 1
+        assert operations_models.SpecialEventAnswer.query.count() == 0
+
+    def test_question_does_not_exist(self):
+        question = operations_factories.SpecialEventQuestionFactory()
+        questions = {question.externalId: question}
+        form = typeform.TypeformResponse(
+            response_id="qwerty123",
+            date_submitted=datetime.datetime(2020, 1, 1),
+            phone_number="0123456789",
+            email="valid.email@example.com",
+            answers=[
+                typeform.TypeformAnswer(
+                    field_id=question.externalId,
+                    choice_id=None,
+                    text="text1",
+                ),
+                typeform.TypeformAnswer(
+                    field_id="field_id",
+                    choice_id=None,
+                    text="text2",
+                ),
+            ],
+        )
+
+        operations_api.save_response(event=question.event, form=form, questions=questions)
+
+        response = operations_models.SpecialEventResponse.query.one()
+        answer = operations_models.SpecialEventAnswer.query.one()
+
+        assert response.eventId == question.event.id
+        assert response.externalId == form.response_id
+        assert response.dateSubmitted == form.date_submitted
+        assert response.phoneNumber == form.phone_number
+        assert response.email == form.email
+        assert response.status == operations_models.SpecialEventResponseStatus.NEW
+
+        assert answer.responseId == response.id
+        assert answer.questionId == question.id
+        assert answer.text == "text1"
+
+    def test_ignore_answer_without_text(self):
+        question = operations_factories.SpecialEventQuestionFactory()
+        questions = {question.externalId: question}
+        form = typeform.TypeformResponse(
+            response_id="qwerty123",
+            date_submitted=datetime.datetime(2020, 1, 1),
+            phone_number="0123456789",
+            email="valid.email@example.com",
+            answers=[
+                typeform.TypeformAnswer(
+                    field_id=question.externalId,
+                    choice_id=None,
+                    text="text1",
+                ),
+                typeform.TypeformAnswer(
+                    field_id="field_id",
+                    choice_id="123",
+                    text=None,
+                ),
+            ],
+        )
+
+        operations_api.save_response(event=question.event, form=form, questions=questions)
+
+        assert operations_models.SpecialEventResponse.query.count() == 1
+        assert operations_models.SpecialEventAnswer.query.count() == 1
