@@ -8,6 +8,7 @@ from factory.faker import faker
 from pcapi.core.achievements import factories as achievements_factories
 from pcapi.core.achievements import models as achievements_models
 from pcapi.core.artist import factories as artist_factories
+from pcapi.core.artist.models import ArtistType
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.criteria import factories as criteria_factories
@@ -81,7 +82,9 @@ def create_artists() -> None:
     )
     for _ in range(10):
         product = offers_factories.ProductFactory(subcategoryId=subcategories_v2.LIVRE_PAPIER.id)
-        offers_factories.ArtistProductLinkFactory(artist_id=artist_1.id, product_id=product.id, artist_type="author")
+        offers_factories.ArtistProductLinkFactory(
+            artist_id=artist_1.id, product_id=product.id, artist_type=ArtistType.AUTHOR
+        )
     artist_factories.ArtistAliasFactory(artist_id=artist_1.id, artist_alias_name="Virginie Despente")
 
     # Artist 2 : singer
@@ -94,7 +97,9 @@ def create_artists() -> None:
     )
     for _ in range(10):
         product = offers_factories.ProductFactory(subcategoryId=subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
-        offers_factories.ArtistProductLinkFactory(artist_id=artist_2.id, product_id=product.id, artist_type="performer")
+        offers_factories.ArtistProductLinkFactory(
+            artist_id=artist_2.id, product_id=product.id, artist_type=ArtistType.PERFORMER
+        )
     artist_factories.ArtistAliasFactory(artist_id=artist_2.id, artist_alias_name="Lavigne Avril")
 
     # Artist 3 : other
@@ -107,7 +112,9 @@ def create_artists() -> None:
     )
     for _ in range(10):
         product = offers_factories.ProductFactory(subcategoryId=subcategories_v2.SEANCE_CINE.id)
-        offers_factories.ArtistProductLinkFactory(artist_id=artist_3.id, product_id=product.id, artist_type="performer")
+        offers_factories.ArtistProductLinkFactory(
+            artist_id=artist_3.id, product_id=product.id, artist_type=ArtistType.PERFORMER
+        )
     artist_factories.ArtistAliasFactory(artist_id=artist_3.id, artist_alias_name="Rollman Marina")
 
 
