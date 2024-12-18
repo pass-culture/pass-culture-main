@@ -872,18 +872,6 @@ def get_offerer_addresses(offerer_id: int, only_with_offers: bool = False) -> Ba
     return query
 
 
-def get_offerer_address_of_offerer(offerer_id: int, offerer_address_id: int) -> models.OffererAddress:
-    return (
-        models.OffererAddress.query.where(
-            models.OffererAddress.offererId == offerer_id, models.OffererAddress.id == offerer_address_id
-        )
-        .options(
-            sqla_orm.with_expression(models.OffererAddress._isLinkedToVenue, models.OffererAddress.isLinkedToVenue.expression)  # type: ignore[attr-defined]
-        )
-        .one_or_none()
-    )
-
-
 def get_offerer_headline_offer(offerer_id: int) -> offers_models.Offer | None:
     try:
         offer = (
