@@ -221,6 +221,7 @@ export const IndividualOfferInformationsScreen = ({
           offerId: offer.id,
           step: OFFER_WIZARD_STEP_IDS.DETAILS,
           mode: OFFER_WIZARD_MODE.CREATION,
+          isOnboarding,
         })
       )
     } else {
@@ -229,6 +230,7 @@ export const IndividualOfferInformationsScreen = ({
           offerId: offer.id,
           step: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
+          isOnboarding,
         })
       )
     }

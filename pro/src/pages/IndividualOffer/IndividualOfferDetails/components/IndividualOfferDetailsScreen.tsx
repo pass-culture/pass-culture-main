@@ -64,6 +64,7 @@ export const IndividualOfferDetailsScreen = ({
 }: IndividualOfferDetailsScreenProps): JSX.Element => {
   const navigate = useNavigate()
   const { pathname } = useLocation()
+  const isOnboarding = pathname.indexOf('onboarding') !== -1
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const { mutate } = useSWRConfig()
@@ -172,7 +173,7 @@ export const IndividualOfferDetailsScreen = ({
             mode === OFFER_WIZARD_MODE.EDITION
               ? OFFER_WIZARD_MODE.READ_ONLY
               : mode,
-          isOnboarding: pathname.indexOf('onboarding') !== -1,
+          isOnboarding,
         })
       )
     } catch (error) {
@@ -194,13 +195,14 @@ export const IndividualOfferDetailsScreen = ({
   })
   const handlePreviousStepOrBackToReadOnly = () => {
     if (mode === OFFER_WIZARD_MODE.CREATION) {
-      navigate('/offre/creation')
+      navigate(`${isOnboarding ? '/onboarding' : ''}/offre/creation`)
     } else {
       navigate(
         getIndividualOfferUrl({
           offerId: offer?.id,
           step: OFFER_WIZARD_STEP_IDS.DETAILS,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
+          isOnboarding,
         })
       )
     }

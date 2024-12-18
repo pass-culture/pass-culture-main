@@ -115,8 +115,14 @@ export const routes: RouteConfig[] = [
   },
   {
     lazy: () => import('pages/OfferType/OfferType'),
-    path: '/onboarding?/offre/creation',
+    path: '/offre/creation',
     title: 'Choix de la nature de l’offre - Créer une offre',
+  },
+  {
+    lazy: () => import('pages/OfferType/OfferType'),
+    path: '/onboarding/offre/creation',
+    title: 'Choix de la nature de l’offre - Créer une offre',
+    featureName: 'WIP_ENABLE_PRO_ONBOARDING',
   },
   {
     lazy: () => import('pages/IndividualOffers/IndividualOffers'),
@@ -388,15 +394,6 @@ export const routes: RouteConfig[] = [
         'pages/Onboarding/OnboardingOfferIndividual/OnboardingOfferIndividual'
       ),
     path: '/inscription-offre-individuelle',
-    title: 'Inscription - Offre à destination des jeunes',
-    featureName: 'WIP_ENABLE_PRO_ONBOARDING',
-  },
-  {
-    lazy: () =>
-      import(
-        'pages/Onboarding/OnboardingOfferIndividualManual/OnboardingOfferIndividualManual'
-      ),
-    path: '/inscription-offre-individuelle-manuelle',
     title: 'Inscription - Offre à destination des jeunes',
     featureName: 'WIP_ENABLE_PRO_ONBOARDING',
   },

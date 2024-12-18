@@ -109,6 +109,7 @@ export const SummaryScreen = () => {
     offerId: offer.id,
     step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
     mode,
+    isOnboarding,
   })
 
   /* istanbul ignore next: DEBT, TO FIX */
@@ -118,6 +119,7 @@ export const SummaryScreen = () => {
         offerId: offer.id,
         step: OFFER_WIZARD_STEP_IDS.STOCKS,
         mode,
+        isOnboarding,
       })
     )
   }

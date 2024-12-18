@@ -126,4 +126,63 @@ describe('getIndividualOfferUrl', () => {
   it.each(testCases)('should return right url', ({ props, expectedUrl }) => {
     expect(getIndividualOfferUrl(props)).toBe(expectedUrl)
   })
+
+  describe('onboarding', () => {
+    const onBoardingTestCases = [
+      // when no offer (mode is no relevant)
+      {
+        props: {
+          offerId: undefined,
+          mode: OFFER_WIZARD_MODE.CREATION,
+          step: OFFER_WIZARD_STEP_IDS.DETAILS,
+          isOnboarding: true,
+        },
+        expectedUrl: '/onboarding/offre/individuelle/creation/details',
+      },
+      // when creation mode
+      {
+        props: {
+          offerId: offerId,
+          mode: OFFER_WIZARD_MODE.CREATION,
+          step: OFFER_WIZARD_STEP_IDS.DETAILS,
+          isOnboarding: true,
+        },
+        expectedUrl: '/onboarding/offre/individuelle/42/creation/details',
+      },
+      {
+        props: {
+          offerId: offerId,
+          mode: OFFER_WIZARD_MODE.CREATION,
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          isOnboarding: true,
+        },
+        expectedUrl: '/onboarding/offre/individuelle/42/creation/stocks',
+      },
+      {
+        props: {
+          offerId: offerId,
+          mode: OFFER_WIZARD_MODE.CREATION,
+          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+          isOnboarding: true,
+        },
+        expectedUrl: '/onboarding/offre/individuelle/42/creation/recapitulatif',
+      },
+      {
+        props: {
+          offerId: offerId,
+          mode: OFFER_WIZARD_MODE.CREATION,
+          step: OFFER_WIZARD_STEP_IDS.TARIFS,
+          isOnboarding: true,
+        },
+        expectedUrl: '/onboarding/offre/individuelle/42/creation/tarifs',
+      },
+    ]
+
+    it.each(onBoardingTestCases)(
+      'should return right url',
+      ({ props, expectedUrl }) => {
+        expect(getIndividualOfferUrl(props)).toBe(expectedUrl)
+      }
+    )
+  })
 })
