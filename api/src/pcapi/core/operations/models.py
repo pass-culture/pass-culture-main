@@ -35,7 +35,7 @@ class SpecialEvent(PcObject, Base, Model):
 
 class SpecialEventQuestion(PcObject, Base, Model):
     __tablename__ = "special_event_question"
-    eventId: int = sa.Column(sa.BigInteger, sa.ForeignKey("special_event.id"), index=True, nullable=True)
+    eventId: int = sa.Column(sa.BigInteger, sa.ForeignKey("special_event.id"), index=True, nullable=False)
     event: SpecialEvent = sa.orm.relationship(
         "SpecialEvent", foreign_keys=[eventId], backref=sa.orm.backref("questions")
     )
@@ -59,18 +59,18 @@ class SpecialEventResponse(PcObject, Base, Model):
     """
 
     __tablename__ = "special_event_response"
-    eventId: int = sa.Column(sa.BigInteger, sa.ForeignKey("special_event.id"), index=True, nullable=True)
+    eventId: int = sa.Column(sa.BigInteger, sa.ForeignKey("special_event.id"), index=True, nullable=False)
     event: SpecialEvent = sa.orm.relationship(
         "SpecialEvent", foreign_keys=[eventId], backref=sa.orm.backref("responses")
     )
     externalId: str = sa.Column(sa.Text(), index=True, unique=True, nullable=False)
     dateSubmitted: datetime = sa.Column(sa.DateTime, nullable=False)
-    phoneNumber: str = sa.Column(sa.Text(), nullable=True)
-    email: str = sa.Column(sa.Text(), nullable=True)
+    phoneNumber: str | None = sa.Column(sa.Text(), nullable=True)
+    email: str | None = sa.Column(sa.Text(), nullable=True)
     status: SpecialEventResponseStatus = sa.Column(
         MagicEnum(SpecialEventResponseStatus), nullable=False, default=SpecialEventResponseStatus.NEW
     )
-    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=True)
+    userId: int | None = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=True)
     user: users_models.User = sa.orm.relationship(
         "User", foreign_keys=[userId], backref=sa.orm.backref("specialEventResponses")
     )
@@ -82,10 +82,9 @@ class SpecialEventAnswer(PcObject, Base, Model):
     """
 
     __tablename__ = "special_event_answer"
-    responseId: int = sa.Column(sa.BigInteger, sa.ForeignKey("special_event_response.id"), index=True, nullable=True)
+    responseId: int = sa.Column(sa.BigInteger, sa.ForeignKey("special_event_response.id"), index=True, nullable=False)
     response: SpecialEventResponse = sa.orm.relationship(
         "SpecialEventResponse", foreign_keys=[responseId], backref=sa.orm.backref("answers")
     )
-    externalId: str = sa.Column(sa.Text(), nullable=False)
-    questionId: int = sa.Column(sa.BigInteger, sa.ForeignKey("special_event_question.id"), index=True, nullable=True)
+    questionId: int = sa.Column(sa.BigInteger, sa.ForeignKey("special_event_question.id"), index=True, nullable=False)
     text: str = sa.Column(sa.Text(), nullable=False)
