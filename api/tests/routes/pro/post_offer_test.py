@@ -27,7 +27,7 @@ class Returns200Test:
             "visualDisabilityCompliant": False,
             "motorDisabilityCompliant": False,
         }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers", json=data)
         offer_id = response.json["id"]
         offer = Offer.query.get(offer_id)
         response_dict = response.json
@@ -59,7 +59,7 @@ class Returns200Test:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
         }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers", json=data)
 
         # Then
         assert response.status_code == 201
@@ -127,7 +127,7 @@ class Returns200Test:
                 "street": offerer_address.address.street,
             },
         }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers", json=data)
 
         # Then
         assert response.status_code == 201
@@ -169,7 +169,7 @@ class Returns200Test:
                 "street": "3 Rue de Valois",
             },
         }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers", json=data)
 
         # Then
         assert response.status_code == 201
@@ -211,7 +211,7 @@ class Returns200Test:
                 "isManualEdition": True,
             },
         }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers", json=data)
 
         # Then
         assert response.status_code == 201
@@ -241,7 +241,7 @@ class Returns200Test:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
         }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers", json=data)
 
         # Then
         assert response.status_code == 201
@@ -277,7 +277,7 @@ class Returns200Test:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
         }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers", json=data)
 
         assert response.status_code == 201
         offer_id = response.json["id"]
@@ -306,7 +306,7 @@ class Returns200Test:
             "visualDisabilityCompliant": False,
             "motorDisabilityCompliant": False,
         }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers", json=data)
 
         # Then
         offer_id = response.json["id"]
@@ -333,7 +333,7 @@ class Returns400Test:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
         }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers", json=data)
 
         # Then
         assert response.status_code == 404
@@ -355,7 +355,7 @@ class Returns400Test:
             "visualDisabilityCompliant": False,
             "motorDisabilityCompliant": False,
         }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers", json=data)
 
         # Then
         assert response.status_code == 400
@@ -377,7 +377,7 @@ class Returns400Test:
             "visualDisabilityCompliant": False,
             "motorDisabilityCompliant": False,
         }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers", json=data)
 
         # Then
         assert response.status_code == 400
@@ -400,7 +400,7 @@ class Returns400Test:
             "visualDisabilityCompliant": False,
             "motorDisabilityCompliant": False,
         }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers", json=data)
 
         # Then
         assert response.status_code == 400
@@ -425,7 +425,7 @@ class Returns400Test:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
         }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers", json=data)
 
         # Then
         assert response.status_code == 400
@@ -448,7 +448,7 @@ class Returns400Test:
             "visualDisabilityCompliant": False,
             "motorDisabilityCompliant": False,
         }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers", json=data)
 
         # Then
         assert response.status_code == 400
@@ -471,7 +471,7 @@ class Returns400Test:
             "visualDisabilityCompliant": False,
             "motorDisabilityCompliant": False,
         }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers", json=data)
 
         # Then
         assert response.status_code == 400
@@ -494,7 +494,7 @@ class Returns400Test:
             "visualDisabilityCompliant": False,
             "motorDisabilityCompliant": False,
         }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers", json=data)
 
         # Then
         assert response.status_code == 400
@@ -517,7 +517,7 @@ class Returns400Test:
             "visualDisabilityCompliant": False,
             "motorDisabilityCompliant": False,
         }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers", json=data)
 
         # Then
         assert response.status_code == 400
@@ -540,7 +540,7 @@ class Returns400Test:
             "visualDisabilityCompliant": False,
             "motorDisabilityCompliant": False,
         }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers", json=data)
 
         # Then
         assert response.status_code == 400
@@ -561,7 +561,7 @@ class Returns400Test:
             "visualDisabilityCompliant": False,
             "motorDisabilityCompliant": False,
         }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers", json=data)
 
         # Then
         assert response.status_code == 400
@@ -580,7 +580,7 @@ class Returns400Test:
             "motorDisabilityCompliant": False,
             "withdrawalType": "in_app",
         }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers", json=data)
 
         assert response.status_code == 400
         assert response.json == {"withdrawalType": ["Withdrawal type cannot be in_app for manually created offers"]}
@@ -603,7 +603,7 @@ class Returns403Test:
             "visualDisabilityCompliant": False,
             "name": "Les orphelins",
         }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers", json=data)
 
         # Then
         assert response.status_code == 403

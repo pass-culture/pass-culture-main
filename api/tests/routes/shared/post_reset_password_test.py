@@ -16,7 +16,7 @@ class Returns400Test:
         data = {"email": "", "token": "dumbToken"}
 
         # when
-        response = client.post("/users/reset-password", json=data)
+        response = client.post("/pro/users/reset-password", json=data)
 
         # then
         assert response.status_code == 400
@@ -28,7 +28,7 @@ class Returns400Test:
         data = {"token": "dumbToken"}
 
         # when
-        response = client.post("/users/reset-password", json=data)
+        response = client.post("/pro/users/reset-password", json=data)
 
         # then
         assert response.status_code == 400
@@ -39,7 +39,7 @@ class Returns400Test:
         data = {"email": "dumbemail"}
 
         # when
-        response = client.post("/users/reset-password", json=data)
+        response = client.post("/pro/users/reset-password", json=data)
 
         # then
         assert response.status_code == 400
@@ -51,7 +51,7 @@ class Returns400Test:
         data = {"email": "dumbemail"}
 
         # when
-        response = client.post("/users/reset-password", json=data)
+        response = client.post("/pro/users/reset-password", json=data)
 
         # then
         assert response.status_code == 400
@@ -63,7 +63,7 @@ class Returns400Test:
         data = {"email": "dumbemail", "token": "dumbToken"}
 
         # when
-        response = client.post("/users/reset-password", json=data)
+        response = client.post("/pro/users/reset-password", json=data)
 
         # then
         assert response.status_code == 400
@@ -77,7 +77,7 @@ class Returns204Test:
         data = {"token": "dumbToken", "email": "unknown.user@test.com"}
 
         # when
-        response = client.post("/users/reset-password", json=data)
+        response = client.post("/pro/users/reset-password", json=data)
 
         # then
         assert response.status_code == 204
@@ -89,7 +89,7 @@ class Returns204Test:
         data = {"token": "dumbToken", "email": user.email}
 
         # when
-        response = client.post("/users/reset-password", json=data)
+        response = client.post("/pro/users/reset-password", json=data)
 
         # then
         assert response.status_code == 204
@@ -102,7 +102,7 @@ class Returns204Test:
         data = {"token": "dumbToken", "email": user.email}
 
         # when
-        response = client.post("/users/reset-password", json=data)
+        response = client.post("/pro/users/reset-password", json=data)
 
         # then
         assert response.status_code == 204
@@ -127,7 +127,7 @@ class Returns204Test:
         data = {"token": "dumbToken", "email": pro.email}
 
         # when
-        client.post("/users/reset-password", json=data)
+        client.post("/pro/users/reset-password", json=data)
 
         # then
         assert len(mails_testing.outbox) == 1

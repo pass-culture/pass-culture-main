@@ -41,7 +41,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(user.email)
         with assert_num_queries(self.expected_num_queries):
-            response = client.get("/collective/offers")
+            response = client.get("/pro/collective/offers")
             assert response.status_code == 200
 
         # Then
@@ -87,7 +87,7 @@ class Returns200Test:
         queries += 1  # load national program
 
         with assert_num_queries(queries):
-            response = client.get("/collective/offers")
+            response = client.get("/pro/collective/offers")
 
             # Then
             assert response.status_code == 200
@@ -127,7 +127,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(email=user.email)
         with assert_num_queries(self.expected_num_queries - 1):  # - national_program
-            response = client.get("/collective/offers")
+            response = client.get("/pro/collective/offers")
             assert response.status_code == 200
 
         # Then
@@ -152,7 +152,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(user.email)
         with assert_num_queries(self.expected_num_queries - 1 + 1):  # - national_program + feature flag assertion
-            response = client.get("/collective/offers?status=EXPIRED")
+            response = client.get("/pro/collective/offers?status=EXPIRED")
             assert response.status_code == 200
 
         # Then
@@ -175,7 +175,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(user.email)
         with assert_num_queries(self.expected_num_queries - 1):  # - national_program
-            response = client.get("/collective/offers")
+            response = client.get("/pro/collective/offers")
             assert response.status_code == 200
 
     def test_one_simple_collective_offer_template(self, client):
@@ -189,7 +189,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(user.email)
         with assert_num_queries(self.expected_num_queries - 1):  # - national_program
-            response = client.get("/collective/offers")
+            response = client.get("/pro/collective/offers")
             assert response.status_code == 200
 
         # Then
@@ -230,7 +230,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(user.email)
         with assert_num_queries(self.expected_num_queries - 1):  # - national_program
-            response = client.get("/collective/offers")
+            response = client.get("/pro/collective/offers")
             assert response.status_code == 200
 
         # Then
@@ -266,7 +266,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(email=user.email)
         with assert_num_queries(self.expected_num_queries - 1):  # - national_program
-            response = client.get("/collective/offers")
+            response = client.get("/pro/collective/offers")
             assert response.status_code == 200
 
         # Then
@@ -300,7 +300,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(user.email)
         with assert_num_queries(self.expected_num_queries):
-            response = client.with_session_auth(user.email).get("/collective/offers")
+            response = client.with_session_auth(user.email).get("/pro/collective/offers")
             assert response.status_code == 200
 
         # Then
@@ -327,7 +327,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(user.email)
         with assert_num_queries(self.expected_num_queries - 1):  # - national_program
-            response = client.get("/collective/offers")
+            response = client.get("/pro/collective/offers")
             assert response.status_code == 200
 
         # Then
@@ -366,7 +366,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(user.email)
         with assert_num_queries(self.expected_num_queries - 1 + 1):  # - national_program + feature flag assertion
-            response = client.get("/collective/offers?periodBeginningDate=2022-10-10&periodEndingDate=2022-10-11")
+            response = client.get("/pro/collective/offers?periodBeginningDate=2022-10-10&periodEndingDate=2022-10-11")
             assert response.status_code == 200
 
         # Then
@@ -413,9 +413,9 @@ class Returns200Test:
         expected_num_queries = self.expected_num_queries - 1  # - national_program
         expected_num_queries = expected_num_queries + 1  # feature flag assertion
         with assert_num_queries(expected_num_queries):
-            response_booked = client.get("/collective/offers?status=BOOKED")
+            response_booked = client.get("/pro/collective/offers?status=BOOKED")
 
-        response_prebooked = client.get("/collective/offers?status=PREBOOKED")
+        response_prebooked = client.get("/pro/collective/offers?status=PREBOOKED")
 
         assert response_booked.status_code == 200
 
@@ -474,7 +474,7 @@ class Returns200Test:
         expected_num_queries = self.expected_num_queries - 1  # - national_program
         expected_num_queries = expected_num_queries + 1  # feature flag assertion
         with assert_num_queries(expected_num_queries):
-            response = client.get("/collective/offers?status=BOOKED&status=PREBOOKED")
+            response = client.get("/pro/collective/offers?status=BOOKED&status=PREBOOKED")
 
             assert response.status_code == 200
 
@@ -495,7 +495,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(user.email)
         with assert_num_queries(3):  # user + session + collective_offers
-            response = client.get("/collective/offers?collectiveOfferType=offer")
+            response = client.get("/pro/collective/offers?collectiveOfferType=offer")
             assert response.status_code == 200
 
         # Then
@@ -524,7 +524,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(user.email)
         with assert_num_queries(3):  # session + user + collective_offer_template
-            response = client.get("/collective/offers?collectiveOfferType=template")
+            response = client.get("/pro/collective/offers?collectiveOfferType=template")
             assert response.status_code == 200
 
         # Then
@@ -550,7 +550,7 @@ class Returns200Test:
 
         client = client.with_session_auth(user.email)
         with assert_num_queries(self.expected_num_queries - 1):  # - national_program
-            response = client.get("/collective/offers")
+            response = client.get("/pro/collective/offers")
             assert response.status_code == 200
 
         response_json = response.json
@@ -644,7 +644,7 @@ class Returns200Test:
         _booking = educational_factories.PendingCollectiveBookingFactory(collectiveStock=stock)
 
         # When
-        response = client.with_session_auth(user.email).get("/collective/offers")
+        response = client.with_session_auth(user.email).get("/pro/collective/offers")
 
         # Then
         response_json = response.json
@@ -679,7 +679,7 @@ class Return400Test:
         # When
         client = client.with_session_auth(user.email)
         with assert_num_queries(2):  # user + session
-            response = client.get("/collective/offers?status=NOT_A_VALID_STATUS")
+            response = client.get("/pro/collective/offers?status=NOT_A_VALID_STATUS")
             assert response.status_code == 400
 
         assert response.json == {

@@ -29,7 +29,7 @@ def test_get_bank_accounts_by_pro(client):
     # fetch bank_account
     with testing.assert_num_queries(3):
         with testing.assert_no_duplicated_queries():
-            response = client.get("/finance/bank-accounts")
+            response = client.get("/pro/finance/bank-accounts")
 
     assert response.status_code == 200
     bank_accounts = response.json

@@ -46,7 +46,7 @@ class Returns200Test:
             "collectiveSubCategoryId": "SPECTACLE_REPRESENTATION",
         }
 
-        response = client.patch(f"/venues/{venue.id}/collective-data", json=venue_data)
+        response = client.patch(f"/pro/venues/{venue.id}/collective-data", json=venue_data)
 
         # then
         assert response.status_code == 200
@@ -99,7 +99,7 @@ class Returns200Test:
             "collectiveSubCategoryId": None,
         }
 
-        response = client.patch(f"/venues/{venue.id}/collective-data", json=venue_data)
+        response = client.patch(f"/pro/venues/{venue.id}/collective-data", json=venue_data)
 
         # then
         assert response.status_code == 200
@@ -144,7 +144,7 @@ class Returns200Test:
             "venueEducationalStatusId": educational_status_2.id,
         }
 
-        response = client.patch(f"/venues/{venue.id}/collective-data", json=venue_data)
+        response = client.patch(f"/pro/venues/{venue.id}/collective-data", json=venue_data)
 
         # then
         assert response.status_code == 200

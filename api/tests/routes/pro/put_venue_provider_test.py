@@ -31,7 +31,7 @@ class Returns200Test:
         auth_request = client.with_session_auth(email=user.email)
 
         # When
-        response = auth_request.put("/venueProviders", json=updated_venue_provider_data)
+        response = auth_request.put("/pro/venueProviders", json=updated_venue_provider_data)
 
         # Then
         assert response.status_code == 200
@@ -59,7 +59,7 @@ class Returns200Test:
         }
         auth_request = client.with_session_auth(email=user.email)
 
-        response = auth_request.put("/venueProviders", json=updated_venue_provider_data)
+        response = auth_request.put("/pro/venueProviders", json=updated_venue_provider_data)
 
         assert response.status_code == 200
         assert response.json["provider"]["id"] == cds_provider.id
@@ -86,7 +86,7 @@ class Returns200Test:
         auth_request = client.with_session_auth(email=user.email)
 
         # When
-        response = auth_request.put("/venueProviders", json=updated_venue_provider_data)
+        response = auth_request.put("/pro/venueProviders", json=updated_venue_provider_data)
 
         # then
         assert response.status_code == 200
@@ -97,7 +97,7 @@ class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def test_user_is_not_logged_in(self, client):
         # when
-        response = client.put("/venueProviders")
+        response = client.put("/pro/venueProviders")
 
         # then
         assert response.status_code == 401
@@ -127,7 +127,7 @@ class Returns403Test:
         auth_request = client.with_session_auth(email=user.email)
 
         # When
-        response = auth_request.put("/venueProviders", json=updated_venue_provider_data)
+        response = auth_request.put("/pro/venueProviders", json=updated_venue_provider_data)
 
         # Then
         assert response.status_code == 403

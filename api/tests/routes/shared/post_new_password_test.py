@@ -20,7 +20,7 @@ def test_change_password(client):
     )
     data = {"token": token.encoded_token, "newPassword": "N3W_p4ssw0rd"}
 
-    response = client.post("/users/new-password", json=data)
+    response = client.post("/pro/users/new-password", json=data)
 
     assert response.status_code == 204
     assert user.checkPassword("N3W_p4ssw0rd")
@@ -36,7 +36,7 @@ def test_change_password_validates_email(client):
     )
     data = {"token": token.encoded_token, "newPassword": "N3W_p4ssw0rd"}
 
-    response = client.post("/users/new-password", json=data)
+    response = client.post("/pro/users/new-password", json=data)
 
     assert response.status_code == 204
     assert user.checkPassword("N3W_p4ssw0rd")
@@ -60,7 +60,7 @@ def test_fail_if_token_has_expired(client):
             )
             data = {"token": token.encoded_token, "newPassword": "N3W_p4ssw0rd"}
         with time_machine.travel("2021-10-25 12:48:00"):
-            response = client.post("/users/new-password", json=data)
+            response = client.post("/pro/users/new-password", json=data)
 
             assert response.status_code == 400
             assert response.json["token"] == ["Votre lien de changement de mot de passe est invalide."]
@@ -75,7 +75,7 @@ def test_fail_if_token_is_unknown(client):
     )
     data = {"token": "OTHER TOKEN", "newPassword": "N3W_p4ssw0rd"}
 
-    response = client.post("/users/new-password", json=data)
+    response = client.post("/pro/users/new-password", json=data)
 
     assert response.status_code == 400
     assert response.json["token"] == ["Votre lien de changement de mot de passe est invalide."]
@@ -84,7 +84,7 @@ def test_fail_if_token_is_unknown(client):
 def test_fail_if_token_is_missing(client):
     data = {"newPassword": "N3W_p4ssw0rd"}
 
-    response = client.post("/users/new-password", json=data)
+    response = client.post("/pro/users/new-password", json=data)
 
     assert response.status_code == 400
     assert response.json["token"] == ["Ce champ est obligatoire"]
@@ -94,7 +94,7 @@ def test_fail_if_token_is_missing(client):
 def test_fail_if_new_password_is_missing(client):
     data = {"token": "KL89PBNG51"}
 
-    response = client.post("/users/new-password", json=data)
+    response = client.post("/pro/users/new-password", json=data)
 
     assert response.status_code == 400
     assert response.json["newPassword"] == ["Ce champ est obligatoire"]
@@ -104,7 +104,7 @@ def test_fail_if_new_password_is_missing(client):
 def test_fail_if_new_password_is_not_strong_enough(client):
     data = {"token": "TOKEN", "newPassword": "weak_password"}
 
-    response = client.post("/users/new-password", json=data)
+    response = client.post("/pro/users/new-password", json=data)
 
     assert response.status_code == 400
     assert response.json["newPassword"] == [

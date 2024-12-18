@@ -21,7 +21,7 @@ class ProUpdateEmailTest:
         user = users_factories.BeneficiaryGrant18Factory(email=self.origin_email)
         form_data = {"email": self.new_email, "password": settings.TEST_DEFAULT_PASSWORD}
         client = client.with_session_auth(user.email)
-        response = client.post("/users/email", json=form_data)
+        response = client.post("/pro/users/email", json=form_data)
 
         assert response.status_code == 400
         assert user.email == self.origin_email
@@ -30,7 +30,7 @@ class ProUpdateEmailTest:
         pro = users_factories.ProFactory(email=self.origin_email)
         form_data = {"email": self.new_email, "password": settings.TEST_DEFAULT_PASSWORD}
         client = client.with_session_auth(pro.email)
-        response = client.post("/users/email", json=form_data)
+        response = client.post("/pro/users/email", json=form_data)
 
         assert response.status_code == 204
         assert pro.email == self.origin_email
@@ -52,7 +52,7 @@ class ProUpdateEmailTest:
         form_data = {"email": self.new_email}
 
         client = client.with_session_auth(pro.email)
-        response = client.post("/users/email", json=form_data)
+        response = client.post("/pro/users/email", json=form_data)
 
         assert response.status_code == 400
         assert "password" in response.json
@@ -72,7 +72,7 @@ class ProUpdateEmailTest:
         pro = users_factories.UserFactory(email=self.origin_email)
         client = client.with_session_auth(pro.email)
         form_data = {"email": email, "password": password}
-        response = client.post("/users/email", json=form_data)
+        response = client.post("/pro/users/email", json=form_data)
 
         assert response.status_code == 400
         assert pro.email == self.origin_email
@@ -88,7 +88,7 @@ class ProUpdateEmailTest:
 
         client = client.with_session_auth(pro.email)
         response = client.post(
-            "/users/email",
+            "/pro/users/email",
             json={
                 "email": other_user.email,
                 "password": settings.TEST_DEFAULT_PASSWORD,
@@ -113,7 +113,7 @@ class ProUpdateEmailTest:
 
         client = client.with_session_auth(pro.email)
         response = client.post(
-            "/users/email",
+            "/pro/users/email",
             json={
                 "email": "updated_" + pro.email,
                 "password": settings.TEST_DEFAULT_PASSWORD,
@@ -124,7 +124,7 @@ class ProUpdateEmailTest:
 
         client = client.with_session_auth(pro.email)
         response = client.post(
-            "/users/email",
+            "/pro/users/email",
             json={
                 "email": "updated_twice_" + pro.email,
                 "password": settings.TEST_DEFAULT_PASSWORD,

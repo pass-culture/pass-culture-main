@@ -102,7 +102,7 @@ class Returns200Test:
         offer_id = offer_ctx.offer.id
 
         with patch(PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload_ctx.payload)
+            response = pro_client.patch(f"/pro/collective/offers-template/{offer_id}", json=payload_ctx.payload)
 
         assert response.status_code == 200
         assert response.json["name"] == "New name"
@@ -145,7 +145,7 @@ class Returns200Test:
         }
 
         with patch(PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+            response = pro_client.patch(f"/pro/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 200
 
@@ -262,7 +262,7 @@ class Returns200Test:
         payload["contactForm"] = None
 
         with patch(PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+            response = pro_client.patch(f"/pro/collective/offers-template/{offer_id}", json=payload)
 
         db.session.flush()  # otherwise "Failed to add object to the flush context!" in teardown
 
@@ -282,7 +282,7 @@ class Returns400Test:
 
         data = {"visualDisabilityCompliant": True}
         with patch(PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer.id}", json=data)
+            response = pro_client.patch(f"/pro/collective/offers-template/{offer.id}", json=data)
 
         assert response.status_code == 400
         assert response.json["global"] == ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
@@ -296,7 +296,7 @@ class Returns400Test:
         data = {"name": " "}
 
         with patch(PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+            response = pro_client.patch(f"/pro/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 400
         assert response.json == {"name": [""]}
@@ -310,7 +310,7 @@ class Returns400Test:
         data = {"name": None}
 
         with patch(PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+            response = pro_client.patch(f"/pro/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 400
         assert response.json == {"name": [""]}
@@ -324,7 +324,7 @@ class Returns400Test:
         data = {"subcategoryId": "LIVRE_PAPIER"}
 
         with patch(PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+            response = pro_client.patch(f"/pro/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 400
         assert response.json == {"subcategoryId": "this subcategory is not educational"}
@@ -338,7 +338,7 @@ class Returns400Test:
         data = {"domains": []}
 
         with patch(PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+            response = pro_client.patch(f"/pro/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 400
         assert response.json == {"domains": ["domains must have at least one value"]}
@@ -352,7 +352,7 @@ class Returns400Test:
         data = {"nationalProgramId": -1}
 
         with patch(PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+            response = pro_client.patch(f"/pro/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 400
         assert response.json == {"global": ["National program not found"]}
@@ -371,7 +371,7 @@ class Returns400Test:
         payload["contactForm"] = None
 
         with patch(PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+            response = pro_client.patch(f"/pro/collective/offers-template/{offer_id}", json=payload)
 
         db.session.flush()  # otherwise "Failed to add object to the flush context!" in teardown
 
@@ -390,7 +390,7 @@ class Returns400Test:
         payload["contactForm"] = educational_models.OfferContactFormEnum.FORM.value
 
         with patch(PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+            response = pro_client.patch(f"/pro/collective/offers-template/{offer_id}", json=payload)
 
         db.session.flush()  # otherwise "Failed to add object to the flush context!" in teardown
 
@@ -407,7 +407,7 @@ class Returns400Test:
 
         payload["bookingEmails"] = ["test@testmail.com", "test@test", "test"]
         with patch(PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+            response = pro_client.patch(f"/pro/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 400
         assert response.json == {
@@ -506,7 +506,7 @@ class Returns403Test:
         pro_client = build_pro_client(client, offer_ctx.user)
 
         data = {"name": "New name"}
-        response = pro_client.patch(f"/collective/offers-template/{offer.id}", json=data)
+        response = pro_client.patch(f"/pro/collective/offers-template/{offer.id}", json=data)
 
         assert response.status_code == 403
         assert response.json["global"] == [
@@ -524,7 +524,7 @@ class Returns403Test:
         data = {"venueId": unrelated_venue.id}
 
         with patch(PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+            response = pro_client.patch(f"/pro/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 403
         assert response.json == {"venueId": "New venue needs to have the same offerer"}
@@ -538,7 +538,7 @@ class Returns403Test:
         data = {"name": "Update some random field"}
 
         with patch(PATCH_CAN_CREATE_OFFER_PATH, return_value=False):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+            response = pro_client.patch(f"/pro/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 403
         assert response.json == {"Partner": "User not in Adage can't edit the offer"}
@@ -549,7 +549,7 @@ class Returns404Test:
         user = offerers_factories.UserOffererFactory().user
         pro_client = build_pro_client(client, user)
 
-        response = pro_client.patch("/collective/offers-template/12", json={})
+        response = pro_client.patch("/pro/collective/offers-template/12", json={})
         assert response.status_code == 404
 
     def test_unknown_educational_domain(self, client):
@@ -561,7 +561,7 @@ class Returns404Test:
         data = {"domains": [0]}
 
         with patch(PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+            response = pro_client.patch(f"/pro/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 404
         assert response.json["code"] == "EDUCATIONAL_DOMAIN_NOT_FOUND"
@@ -575,7 +575,7 @@ class Returns404Test:
         data = {"venueId": 0}
 
         with patch(PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+            response = pro_client.patch(f"/pro/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 404
         assert response.json["venueId"] == "The venue does not exist."

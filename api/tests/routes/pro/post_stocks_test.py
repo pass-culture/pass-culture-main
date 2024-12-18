@@ -40,7 +40,7 @@ class Returns201Test:
             "stocks": [{"price": 20}],
         }
 
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
         assert response.status_code == 201
         assert response.json["stocks_count"] == 1
         assert len(Stock.query.all()) == len(stock_data["stocks"])
@@ -73,7 +73,7 @@ class Returns201Test:
             "stocks": [{"price": 0}],
         }
 
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
         assert response.status_code == 201
         assert response.json["stocks_count"] == 1
         assert len(Stock.query.all()) == len(stock_data["stocks"])
@@ -127,7 +127,7 @@ class Returns201Test:
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
         assert response.status_code == 201
 
         assert response.json["stocks_count"] == len(stock_data["stocks"])
@@ -186,7 +186,7 @@ class Returns201Test:
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
         assert response.status_code == 201
         created_stocks = Stock.query.order_by(Stock.price).all()
         assert len(created_stocks) == 3
@@ -213,7 +213,7 @@ class Returns201Test:
             "stocks": [{"id": existing_stock.id, "price": 20, "quantity": 10}],
         }
 
-        client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
         created_stock = Stock.query.first()
         assert offer.id == created_stock.offerId
         assert created_stock.price == 20
@@ -263,7 +263,7 @@ class Returns201Test:
                 }
             ],
         }
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
 
         assert response.status_code == 201
         assert existing_stock.beginningDatetime == beginning  # didn't change
@@ -300,7 +300,7 @@ class Returns201Test:
                 }
             ],
         }
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
         assert response.status_code == 201
         assert response.json["stocks_count"] == 0
         assert existing_stock.quantity == 10
@@ -333,7 +333,7 @@ class Returns201Test:
                 }
             ],
         }
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
         assert response.json["stocks_count"] == len(stock_data["stocks"])
         created_stock = Stock.query.first()
         assert offer.id == created_stock.offerId
@@ -374,7 +374,7 @@ class Returns201Test:
             ],
         }
         with caplog.at_level(logging.INFO):
-            response = client.with_session_auth(user.email).post("/stocks/bulk/", json=stock_data)
+            response = client.with_session_auth(user.email).post("/pro/stocks/bulk/", json=stock_data)
 
         created_stock = Stock.query.first()
         assert offer.id == created_stock.offerId
@@ -422,7 +422,7 @@ class Returns201Test:
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
 
         # Then
         assert response.status_code == 201
@@ -470,7 +470,7 @@ class Returns201Test:
                 },
             ],
         }
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
 
         # Then
         assert response.status_code == 201
@@ -518,7 +518,7 @@ class Returns201Test:
         bookings_factories.CancelledBookingFactory(stock=existing_stock)
 
         # When
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
 
         # Then
         assert response.status_code == 201
@@ -566,7 +566,7 @@ class Returns201Test:
         }
 
         # When
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
 
         # Then
         assert response.status_code == 201
@@ -602,7 +602,7 @@ class Returns201Test:
         }
 
         # When
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
 
         # Then
         assert response.status_code == 201
@@ -646,7 +646,7 @@ class Returns201Test:
         }
 
         # When
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
 
         # Then
         assert response.status_code == 201
@@ -669,7 +669,7 @@ class Returns201Test:
             "stocks": [{"price": 20, "id": existing_stock.id}],
         }
 
-        client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
 
         created_stock = Stock.query.first()
         assert offer.id == created_stock.offerId
@@ -695,7 +695,7 @@ class Returns201Test:
             "stocks": [{"id": existing_stock.id, "price": 20}],
         }
 
-        response = client.with_session_auth("userofferer@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("userofferer@example.com").post("/pro/stocks/bulk/", json=stock_data)
         assert response.status_code == 201
 
         response = client.with_token(booking.user.email).get("/native/v1/bookings")
@@ -732,7 +732,7 @@ class Returns201Test:
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
 
         assert response.status_code == 201
         created_stock = Stock.query.first()
@@ -802,7 +802,7 @@ class Returns201Test:
         }
 
         # When
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
         # Then
         assert response.status_code == 201
         assert response.json["stocks_count"] == 2
@@ -830,7 +830,7 @@ class Returns400Test:
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
 
         # Then
         assert response.status_code == 400
@@ -867,7 +867,7 @@ class Returns400Test:
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
         assert response.status_code == 400
         assert response.json["stocks"] == ["Le nombre maximum de stocks par offre est de 2"]
 
@@ -884,7 +884,7 @@ class Returns400Test:
             "stocks": [{"quantity": 20, "id": existing_stock.id}],
         }
 
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
 
         assert response.json["price"] == ["Le prix est obligatoire pour les offres produit"]
 
@@ -902,7 +902,7 @@ class Returns400Test:
             "stocks": [{"id": existing_stock.id, "price": 20, "quantity": 1234567890987654}],
         }
 
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
 
         assert response.json["stocks.0.quantity"] == [
             "ensure this value is less than or equal to 1000000",
@@ -922,7 +922,7 @@ class Returns400Test:
             "stocks": [{"quantity": 20, "id": existing_stock.id}],
         }
 
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
 
         assert response.json["price"] == ["Le prix est obligatoire pour les offres produit"]
 
@@ -938,7 +938,7 @@ class Returns400Test:
             "stocks": [{"id": stock.id, "price": 20}],
         }
 
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
 
         assert response.status_code == 400
         assert response.json["global"] == ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
@@ -964,7 +964,7 @@ class Returns400Test:
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
 
         # Then
         assert response.status_code == 400
@@ -1004,7 +1004,7 @@ class Returns400Test:
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
 
         # Then
         assert response.status_code == 400
@@ -1036,7 +1036,7 @@ class Returns400Test:
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
 
         # Then
         assert response.status_code == 400
@@ -1051,7 +1051,7 @@ class Returns400Test:
             "offerId": offer.id,
             "stocks": [{"id": existing_stock.id, "price": 20}],
         }
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
         assert response.status_code == 400
         assert response.json == {"stock_id": [f"Le stock avec l'id {existing_stock.id} n'existe pas"]}
 
@@ -1070,7 +1070,7 @@ class Returns400Test:
             "stocks": [{"price": float(price_str)}],
         }
 
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
 
         # Then
         assert response.status_code == 400
@@ -1113,7 +1113,7 @@ class Returns400Test:
             stock_data["stocks"][0]["id"] = stock.id
 
         # When
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
 
         # Then
         assert response.status_code == 400
@@ -1141,7 +1141,7 @@ class Returns400Test:
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
         assert response.status_code == 400
         assert response.json["price_category_id"] == ["Le tarif est obligatoire pour les offres évènement"]
 
@@ -1165,7 +1165,7 @@ class Returns400Test:
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
         assert response.status_code == 400
         assert response.json["price_category_id"] == [f"Le tarif avec l'id {price_category.id + 1} n'existe pas"]
 
@@ -1192,7 +1192,7 @@ class Returns400Test:
         }
 
         # Then
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
         assert response.status_code == 400
         assert response.json["price300"] == ["Le prix d’une offre ne peut excéder 300 euros."]
 
@@ -1223,7 +1223,7 @@ class Returns400Test:
         }
 
         # Then
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
         assert response.status_code == 400
         assert response.json["priceLimitationRule"] == [
             "Le prix indiqué est invalide, veuillez créer une nouvelle offre"
@@ -1260,7 +1260,7 @@ class Returns400Test:
         }
 
         # Then
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/pro/stocks/bulk/", json=stock_data)
         assert response.status_code == 400
         assert response.json["priceCategoryId"] == ["Le prix d’une offre ne peut excéder 300 euros."]
 
@@ -1285,7 +1285,7 @@ class Returns403Test:
                 },
             ],
         }
-        response = client.with_session_auth(user.email).post("/stocks/bulk/", json=stock_data)
+        response = client.with_session_auth(user.email).post("/pro/stocks/bulk/", json=stock_data)
 
         # Then
         assert response.status_code == 403

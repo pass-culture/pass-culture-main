@@ -35,7 +35,7 @@ def body_fixture() -> serializers.CookieConsentRequest:
 class CookiesConsentTest:
     def test_post(self, client, body):
         response = client.post(
-            "/users/cookies",
+            "/pro/users/cookies",
             json=body,
         )
 
@@ -43,7 +43,7 @@ class CookiesConsentTest:
 
     def test_log_data(self, client, caplog, body):
         with caplog.at_level(logging.INFO):
-            response = client.post("/users/cookies", json=body)
+            response = client.post("/pro/users/cookies", json=body)
 
             assert response.status_code == 204
             assert caplog.records[0].extra == {
@@ -70,13 +70,13 @@ class CookiesConsentTest:
         body["consent"]["accepted"].append("batch")
         body["consent"]["accepted"].append("batch")
 
-        response = client.post("/users/cookies", json=body)
+        response = client.post("/pro/users/cookies", json=body)
 
         assert response.status_code == 400
 
     def test_can_reject_unknown_key(self, client, body):
         body["unknown"] = "value"
 
-        response = client.post("/users/cookies", json=body)
+        response = client.post("/pro/users/cookies", json=body)
 
         assert response.status_code == 400

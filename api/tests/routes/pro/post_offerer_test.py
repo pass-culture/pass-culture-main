@@ -35,7 +35,7 @@ def test_create_virtual_venue(client):
 
     # when
     client = client.with_session_auth(pro.email)
-    response = client.post("/offerers", json=body)
+    response = client.post("/pro/offerers", json=body)
 
     # then
     assert response.status_code == 201
@@ -58,7 +58,7 @@ def test_returned_data(client):
     }
 
     client = client.with_session_auth(pro.email)
-    response = client.post("/offerers", json=body)
+    response = client.post("/pro/offerers", json=body)
 
     created_offerer = offerers_models.Offerer.query.one()
     assert response.json == {
@@ -80,7 +80,7 @@ def test_user_cant_create_same_offerer_twice(client):
     }
 
     client = client.with_session_auth(pro.email)
-    first_response = client.post("/offerers", json=body)
+    first_response = client.post("/pro/offerers", json=body)
 
     created_offerer = offerers_models.Offerer.query.one()
     assert first_response.json == {
@@ -89,7 +89,7 @@ def test_user_cant_create_same_offerer_twice(client):
         "name": "MINISTERE DE LA CULTURE",
     }
 
-    second_response = client.post("/offerers", json=body)
+    second_response = client.post("/pro/offerers", json=body)
 
     assert second_response.status_code == 400
     assert "This user already belongs to this offerer" in str(second_response.data)
@@ -104,7 +104,7 @@ def test_when_no_address_is_provided(client):
 
     # when
     client = client.with_session_auth(pro.email)
-    response = client.post("/offerers", json=body)
+    response = client.post("/pro/offerers", json=body)
 
     # then
     assert response.status_code == 201
@@ -123,7 +123,7 @@ def test_use_offerer_name_retrieved_from_sirene_api(client):
         "city": "Montreuil",
     }
     client = client.with_session_auth(pro.email)
-    response = client.post("/offerers", json=body)
+    response = client.post("/pro/offerers", json=body)
 
     offerers_models.Offerer.query.one()
     assert response.status_code == 201
@@ -144,7 +144,7 @@ def test_current_user_has_access_to_created_offerer(client):
 
     # when
     client = client.with_session_auth(pro.email)
-    response = client.post("/offerers", json=body)
+    response = client.post("/pro/offerers", json=body)
 
     # then
     assert response.status_code == 201
@@ -167,7 +167,7 @@ def test_new_user_offerer_has_validation_status_new(client):
 
     # when
     client = client.with_session_auth(pro.email)
-    response = client.post("/offerers", json=body)
+    response = client.post("/pro/offerers", json=body)
 
     # then
     assert response.status_code == 201
@@ -190,7 +190,7 @@ def test_create_offerer_action_is_logged(client):
 
     # when
     client = client.with_session_auth(user.email)
-    response = client.post("/offerers", json=body)
+    response = client.post("/pro/offerers", json=body)
 
     # then
     assert response.status_code == 201
@@ -223,7 +223,7 @@ def test_with_inactive_siren(requests_mock, client):
     }
 
     client = client.with_session_auth(user.email)
-    response = client.post("/offerers", json=body)
+    response = client.post("/pro/offerers", json=body)
 
     assert response.status_code == 400
     assert response.json["siren"] == ["SIREN is no longer active"]
@@ -253,7 +253,7 @@ def test_saint_martin_offerer_creation_without_postal_code_is_successfull(reques
     }
 
     client = client.with_session_auth(user.email)
-    response = client.post("/offerers", json=body)
+    response = client.post("/pro/offerers", json=body)
 
     assert response.status_code == 201
 

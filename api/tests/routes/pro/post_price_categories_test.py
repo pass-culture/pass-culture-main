@@ -21,7 +21,9 @@ class Returns200Test:
 
         data = {"priceCategories": [{"price": 20.34, "label": "Behind a post"}]}
 
-        response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
+        response = client.with_session_auth("user@example.com").post(
+            f"/pro/offers/{offer.id}/price_categories", json=data
+        )
         assert response.status_code == 200
         price_category = offers_models.PriceCategory.query.one()
         assert price_category.offerId == offer.id
@@ -43,7 +45,9 @@ class Returns200Test:
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
+        response = client.with_session_auth("user@example.com").post(
+            f"/pro/offers/{offer.id}/price_categories", json=data
+        )
 
         assert response.status_code == 200
         assert offers_models.PriceCategory.query.count() == 3
@@ -64,7 +68,7 @@ class Returns200Test:
             ],
         }
 
-        client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
+        client.with_session_auth("user@example.com").post(f"/pro/offers/{offer.id}/price_categories", json=data)
         price_category = offers_models.PriceCategory.query.one()
         assert price_category.price == decimal.Decimal("200.54")
         assert price_category.label == "Behind a post"
@@ -84,7 +88,9 @@ class Returns200Test:
                 {"price": 25.12, "id": price_category.id},
             ],
         }
-        response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
+        response = client.with_session_auth("user@example.com").post(
+            f"/pro/offers/{offer.id}/price_categories", json=data
+        )
 
         assert response.status_code == 200
         price_category = offers_models.PriceCategory.query.one()
@@ -111,7 +117,9 @@ class Returns200Test:
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
+        response = client.with_session_auth("user@example.com").post(
+            f"/pro/offers/{offer.id}/price_categories", json=data
+        )
 
         assert response.status_code == 200
         assert offers_models.PriceCategory.query.count() == 3
@@ -136,7 +144,7 @@ class Returns200Test:
         )
 
         response = client.with_session_auth("user@example.com").post(
-            f"/offers/{offer.id}/price_categories",
+            f"/pro/offers/{offer.id}/price_categories",
             json={"priceCategories": [{"price": 25, "label": "Updated label", "id": price_category.id}]},
         )
 
@@ -159,7 +167,9 @@ class Returns400Test:
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
+        response = client.with_session_auth("user@example.com").post(
+            f"/pro/offers/{offer.id}/price_categories", json=data
+        )
 
         assert response.status_code == 400
         assert offers_models.PriceCategory.query.count() == 0
@@ -182,7 +192,9 @@ class Returns400Test:
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
+        response = client.with_session_auth("user@example.com").post(
+            f"/pro/offers/{offer.id}/price_categories", json=data
+        )
 
         assert response.status_code == 400
         assert response.json == {"price_category_id": [f"Le tarif avec l'id {price_category.id + 1} n'existe pas"]}
@@ -212,7 +224,9 @@ class Returns400Test:
                 {"price": 350, "label": "Behind a post", "id": unreachable_price_category.id},
             ],
         }
-        response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
+        response = client.with_session_auth("user@example.com").post(
+            f"/pro/offers/{offer.id}/price_categories", json=data
+        )
         assert response.status_code == 400
         assert response.json == {
             "price_category_id": [f"Le tarif avec l'id {unreachable_price_category.id} n'existe pas"]
@@ -234,7 +248,9 @@ class Returns400Test:
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
+        response = client.with_session_auth("user@example.com").post(
+            f"/pro/offers/{offer.id}/price_categories", json=data
+        )
 
         assert response.status_code == 400
         assert response.json == {"priceCategories": ["Price categories must be unique"]}
@@ -258,7 +274,9 @@ class Returns400Test:
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
+        response = client.with_session_auth("user@example.com").post(
+            f"/pro/offers/{offer.id}/price_categories", json=data
+        )
 
         assert response.status_code == 400
         assert response.json == {"priceCategories": ["The price category cat gold already exists"]}
@@ -283,7 +301,9 @@ class Returns400Test:
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
+        response = client.with_session_auth("user@example.com").post(
+            f"/pro/offers/{offer.id}/price_categories", json=data
+        )
 
         assert response.status_code == 400
         assert response.json == {"offer": ["Offer is not editable (because rejected or pending)"]}

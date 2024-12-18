@@ -109,7 +109,7 @@ class Returns201Test:
         )
 
         client = client.with_session_auth(email=user.email)
-        response = client.post("/venues", json=venue_data)
+        response = client.post("/pro/venues", json=venue_data)
 
         assert response.status_code == 201
 
@@ -183,7 +183,7 @@ class Returns201Test:
         client = client.with_session_auth(email=user.email)
         venue_data = create_valid_venue_data(user)
 
-        response = client.post("/venues", json=venue_data)
+        response = client.post("/pro/venues", json=venue_data)
 
         assert response.status_code == 201
 
@@ -200,7 +200,7 @@ class Returns201Test:
         venue_data = create_valid_venue_data(user)
         venue_data = {**venue_data, "name": "edited venue name"}
 
-        response = client.post("/venues", json=venue_data)
+        response = client.post("/pro/venues", json=venue_data)
 
         assert response.status_code == 201
         venue = Venue.query.filter_by(id=response.json["id"]).one()
@@ -219,7 +219,7 @@ class Returns400Test:
         }
 
         client = client.with_session_auth(email=user.email)
-        response = client.post("/venues", json=venue_data)
+        response = client.post("/pro/venues", json=venue_data)
 
         assert response.status_code == 400
         assert response.json["latitude"] == ["La latitude doit être comprise entre -90.0 et +90.0"]
@@ -236,7 +236,7 @@ class Returns400Test:
         }
 
         client = client.with_session_auth(email=user.email)
-        response = client.post("/venues", json=venue_data)
+        response = client.post("/pro/venues", json=venue_data)
 
         assert response.status_code == 400
         assert response.json["longitude"] == ["La longitude doit être comprise entre -180.0 et +180.0"]
@@ -252,7 +252,7 @@ class Returns400Test:
         venue_data.pop("visualDisabilityCompliant")
 
         client = client.with_session_auth(email=user.email)
-        response = client.post("/venues", json=venue_data)
+        response = client.post("/pro/venues", json=venue_data)
 
         assert response.status_code == 400
         assert response.json["global"] == ["L'accessibilité du lieu doit être définie."]
@@ -262,7 +262,7 @@ class Returns400Test:
         user_offerer = offerers_factories.UserOffererFactory()
 
         client = client.with_session_auth(user_offerer.user.email)
-        response = client.post("/venues", json=data)
+        response = client.post("/pro/venues", json=data)
 
         assert response.status_code == 400
         assert key in response.json
@@ -273,7 +273,7 @@ class Returns400Test:
         venue_data = create_valid_venue_data(user)
         venue_data.pop("siret")
 
-        response = client.post("/venues", json=venue_data)
+        response = client.post("/pro/venues", json=venue_data)
 
         assert response.status_code == 400
         assert response.json["siret"] == ["Veuillez saisir soit un SIRET soit un commentaire"]
@@ -284,7 +284,7 @@ class Returns400Test:
         venue_data = create_valid_venue_data(user)
         venue_data["comment"] = "J'ai déjà saisi un SIRET"
 
-        response = client.post("/venues", json=venue_data)
+        response = client.post("/pro/venues", json=venue_data)
 
         assert response.status_code == 400
         assert response.json["siret"] == ["Veuillez saisir soit un SIRET soit un commentaire"]
@@ -296,7 +296,7 @@ class Returns400Test:
         venue_data["siret"] = None
         venue_data["comment"] = "Pas de SIRET " * 40
 
-        response = client.post("/venues", json=venue_data)
+        response = client.post("/pro/venues", json=venue_data)
 
         assert response.status_code == 400
         assert response.json["comment"] == ["ensure this value has at most 500 characters"]
@@ -307,7 +307,7 @@ class Returns400Test:
         venue_data = create_valid_venue_data(user)
         venue_data["withdrawalDetails"] = "Trop long " * 51
 
-        response = client.post("/venues", json=venue_data)
+        response = client.post("/pro/venues", json=venue_data)
 
         assert response.status_code == 400
         assert response.json["withdrawalDetails"] == ["ensure this value has at most 500 characters"]
@@ -324,7 +324,7 @@ class Returns400Test:
         client = client.with_session_auth(email=user.email)
         venue_data = create_valid_venue_data(user)
 
-        response = client.post("/venues", json=venue_data)
+        response = client.post("/pro/venues", json=venue_data)
 
         assert response.status_code == 400
         assert response.json["siret"] == ["SIRET is no longer active"]
@@ -336,7 +336,7 @@ class Returns400Test:
 
         client = client.with_session_auth(email=user.email)
 
-        response = client.post("/venues", json=venue_data)
+        response = client.post("/pro/venues", json=venue_data)
         assert response.status_code == 400
 
         assert response.json["siret"] == "Un lieu avec ce SIRET existe déjà"
@@ -348,7 +348,7 @@ class Returns403Test:
         venue_data = create_valid_venue_data()
 
         client = client.with_session_auth(email=user.email)
-        response = client.post("/venues", json=venue_data)
+        response = client.post("/pro/venues", json=venue_data)
 
         assert response.status_code == 403
         assert response.json["global"] == [

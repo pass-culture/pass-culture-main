@@ -23,7 +23,7 @@ class Returns404Test:
         other_stock = offers_factories.StockFactory()
 
         response = client.with_session_auth("user@example.com").patch(
-            "/offers/publish", json={"id": other_stock.offer.id}
+            "/pro/offers/publish", json={"id": other_stock.offer.id}
         )
         assert response.status_code == 403
 
@@ -62,7 +62,7 @@ class Returns200Test:
         client = client.with_session_auth("user@example.com")
         offer_id = stock.offerId
         with assert_num_queries(self.num_queries):
-            response = client.patch("/offers/publish", json={"id": offer_id})
+            response = client.patch("/pro/offers/publish", json={"id": offer_id})
 
         assert response.status_code == 200
         content = response.json
@@ -101,7 +101,7 @@ class Returns200Test:
         # +1 insert into future_offer
         with assert_num_queries(self.num_queries + 1):
             response = client.patch(
-                "/offers/publish",
+                "/pro/offers/publish",
                 json={
                     "id": offer_id,
                     "publicationDate": publication_date.isoformat(),
@@ -145,7 +145,7 @@ class Returns200Test:
         # +1 insert into future_offer
         with assert_num_queries(self.num_queries + 1):
             response = client.patch(
-                "/offers/publish",
+                "/pro/offers/publish",
                 json={
                     "id": offer_id,
                     "publicationDate": publication_date.isoformat(),
@@ -161,7 +161,7 @@ class Returns200Test:
         mocked_send_first_venue_approved_offer_email_to_pro.assert_called_once_with(offer)
         assert offers_models.FutureOffer.query.count() == 1
 
-        response = client.patch("/offers/publish", json={"id": stock.offerId})
+        response = client.patch("/pro/offers/publish", json={"id": stock.offerId})
 
         assert response.status_code == 200
         content = response.json
@@ -185,7 +185,7 @@ class Returns400Test:
         )
 
         client = client.with_session_auth("user@example.com")
-        response = client.patch("/offers/publish", json={"id": offer.id})
+        response = client.patch("/pro/offers/publish", json={"id": offer.id})
 
         assert response.status_code == 400
         assert response.json["offer"] == "Cette offre n’a pas de stock réservable"
@@ -207,7 +207,7 @@ class Returns400Test:
         )
 
         client = client.with_session_auth("user@example.com")
-        response = client.patch("/offers/publish", json={"id": stock.offerId})
+        response = client.patch("/pro/offers/publish", json={"id": stock.offerId})
 
         assert response.status_code == 400
         assert response.json["offer"] == "Cette offre n’a pas de stock réservable"
@@ -231,7 +231,7 @@ class Returns400Test:
         client = client.with_session_auth("user@example.com")
         publication_date = datetime.datetime.utcnow().replace(minute=0, second=0) - datetime.timedelta(days=30)
         response = client.patch(
-            "/offers/publish",
+            "/pro/offers/publish",
             json={
                 "id": stock.offerId,
                 "publicationDate": publication_date.isoformat(),

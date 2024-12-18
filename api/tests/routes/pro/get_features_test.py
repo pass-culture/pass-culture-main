@@ -13,7 +13,7 @@ class Returns200Test:
         queries += 1  # select features
         client = client.with_session_auth(user.email)
         with testing.assert_num_queries(queries):
-            response = client.get("/features")
+            response = client.get("/pro/features")
             assert response.status_code == 200
 
         feature_name_keys = [feature_dict["nameKey"] for feature_dict in response.json]
@@ -23,5 +23,5 @@ class Returns200Test:
     def when_user_is_not_logged_in(self, client):
         queries = 1  # select features
         with testing.assert_num_queries(queries):
-            response = client.get("/features")
+            response = client.get("/pro/features")
             assert response.status_code == 200

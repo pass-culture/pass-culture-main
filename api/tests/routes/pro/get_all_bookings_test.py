@@ -35,7 +35,7 @@ class GetAllBookingsTest:
         # get user_session
         # get user
         with assert_num_queries(2):
-            response = auth_client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&page=3")
+            response = auth_client.get(f"/pro/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&page=3")
             assert response.status_code == 200
 
         find_by_pro_user.assert_called_once_with(
@@ -60,7 +60,7 @@ class GetAllBookingsTest:
         # get user_session
         # get user
         with assert_num_queries(2):
-            response = auth_client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked")
+            response = auth_client.get(f"/pro/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked")
             assert response.status_code == 200
 
         find_by_pro_user.assert_called_once_with(
@@ -88,7 +88,7 @@ class GetAllBookingsTest:
         # get user
         with assert_num_queries(3):
             response = auth_client.get(
-                f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&venueId={venue.id}"
+                f"/pro/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&venueId={venue.id}"
             )
             assert response.status_code == 200
 
@@ -117,7 +117,7 @@ class GetAllBookingsTest:
         # get user
         with assert_num_queries(3):
             response = auth_client.get(
-                f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&offerId={offer.id}"
+                f"/pro/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&offerId={offer.id}"
             )
             assert response.status_code == 200
 
@@ -175,7 +175,7 @@ class Returns200Test:
         client = client.with_session_auth(pro_user.email)
         with assert_num_queries(self.expected_num_queries):
             with assert_no_duplicated_queries():
-                response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked")
+                response = client.get(f"/pro/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked")
                 assert response.status_code == 200
 
         expected_bookings_recap = [
@@ -260,7 +260,7 @@ class Returns200Test:
         with assert_num_queries(self.expected_num_queries):
             with assert_no_duplicated_queries():
                 response = client.get(
-                    f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&eventDate={requested_date}"
+                    f"/pro/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&eventDate={requested_date}"
                 )
 
         assert response.status_code == 200
@@ -284,7 +284,7 @@ class Returns200Test:
         with assert_num_queries(self.expected_num_queries):
             with assert_no_duplicated_queries():
                 response = client.get(
-                    "/bookings/pro?bookingPeriodBeginningDate=%s&bookingPeriodEndingDate=%s&bookingStatusFilter=booked"
+                    "/pro/bookings/pro?bookingPeriodBeginningDate=%s&bookingPeriodEndingDate=%s&bookingStatusFilter=booked"
                     % (booking_period_beginning_date, booking_period_ending_date)
                 )
 
@@ -312,7 +312,7 @@ class Returns200Test:
         client = client.with_session_auth(pro_user.email)
         expected_num_queries = 5  # user + session + SELECT DISTINCT booking + bookingToken + check WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE is active
         with assert_num_queries(expected_num_queries):
-            response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+            response = client.get(f"/pro/bookings/pro?{BOOKING_PERIOD_PARAMS}")
             assert response.status_code == 200
 
         assert response.json["bookingsRecap"][0]["bookingToken"] is None
@@ -350,7 +350,7 @@ class Returns200Test:
         client = client.with_session_auth(pro_user.email)
         with assert_num_queries(self.expected_num_queries):
             with assert_no_duplicated_queries():
-                response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked")
+                response = client.get(f"/pro/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked")
                 assert response.status_code == 200
 
         expected_bookings_recap = [
@@ -435,7 +435,7 @@ class Returns200Test:
         with assert_num_queries(self.expected_num_queries):
             with assert_no_duplicated_queries():
                 response = client.get(
-                    f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&eventDate={requested_date}"
+                    f"/pro/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&eventDate={requested_date}"
                 )
 
         assert response.status_code == 200
@@ -459,7 +459,7 @@ class Returns200Test:
         with assert_num_queries(self.expected_num_queries):
             with assert_no_duplicated_queries():
                 response = client.get(
-                    "/bookings/pro?bookingPeriodBeginningDate=%s&bookingPeriodEndingDate=%s&bookingStatusFilter=booked"
+                    "/pro/bookings/pro?bookingPeriodBeginningDate=%s&bookingPeriodEndingDate=%s&bookingStatusFilter=booked"
                     % (booking_period_beginning_date, booking_period_ending_date)
                 )
 
@@ -489,7 +489,7 @@ class Returns200Test:
         client = client.with_session_auth(pro_user.email)
         expected_num_queries = 5  # user + session + SELECT DISTINCT booking + bookingToken + check WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE is active
         with assert_num_queries(expected_num_queries):
-            response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+            response = client.get(f"/pro/bookings/pro?{BOOKING_PERIOD_PARAMS}")
             assert response.status_code == 200
 
         assert response.json["bookingsRecap"][0]["bookingToken"] is None
@@ -502,7 +502,7 @@ class Returns400Test:
 
         client = client.with_session_auth(pro.email)
         with assert_num_queries(2):  # user + session
-            response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&page=not-a-number")
+            response = client.get(f"/pro/bookings/pro?{BOOKING_PERIOD_PARAMS}&page=not-a-number")
             assert response.status_code == 400
 
         assert response.json["page"] == ["Saisissez un nombre valide"]
@@ -513,7 +513,7 @@ class Returns400Test:
         client = client.with_session_auth(pro.email)
         with assert_num_queries(2):  # user + session
             response = client.get(
-                "/bookings/pro?bookingPeriodBeginningDate=20234-08-10&bookingPeriodEndingDate=2020-08-12"
+                "/pro/bookings/pro?bookingPeriodBeginningDate=20234-08-10&bookingPeriodEndingDate=2020-08-12"
             )
             assert response.status_code == 400
 
@@ -522,7 +522,7 @@ class Returns400Test:
 
         client = client.with_session_auth(pro.email)
         with assert_num_queries(2):  # user + session
-            response = client.get("/bookings/pro")
+            response = client.get("/pro/bookings/pro")
             assert response.status_code == 400
 
         assert response.json["eventDate"] == ["Ce champ est obligatoire si aucune période n'est renseignée."]

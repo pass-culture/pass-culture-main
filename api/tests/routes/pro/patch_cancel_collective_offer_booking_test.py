@@ -41,7 +41,7 @@ class Returns204Test:
 
         offer_id = collective_booking.collectiveStock.collectiveOffer.id
         client = client.with_session_auth(user.email)
-        response = client.patch(f"/collective/offers/{offer_id}/cancel_booking")
+        response = client.patch(f"/pro/collective/offers/{offer_id}/cancel_booking")
 
         assert response.status_code == 204
         assert collective_booking.status == models.CollectiveBookingStatus.CANCELLED
@@ -62,7 +62,7 @@ class Returns204Test:
 
         offer_id = collective_booking.collectiveStock.collectiveOffer.id
         client = client.with_session_auth(user.email)
-        response = client.patch(f"/collective/offers/{offer_id}/cancel_booking")
+        response = client.patch(f"/pro/collective/offers/{offer_id}/cancel_booking")
 
         assert response.status_code == 204
         assert collective_booking.status == models.CollectiveBookingStatus.CANCELLED
@@ -92,11 +92,11 @@ class Returns204Test:
             ).dict(),
         )
 
-        response_token = client.get(f"/users/connect-as/{secure_token.token}")
+        response_token = client.get(f"/pro/users/connect-as/{secure_token.token}")
         assert response_token.status_code == 302
 
         offer_id = collective_booking.collectiveStock.collectiveOffer.id
-        response = client.patch(f"/collective/offers/{offer_id}/cancel_booking")
+        response = client.patch(f"/pro/collective/offers/{offer_id}/cancel_booking")
 
         assert response.status_code == 204
         assert collective_booking.status == models.CollectiveBookingStatus.CANCELLED
@@ -109,7 +109,7 @@ class Returns204Test:
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
 
         client = client.with_session_auth("pro@example.com")
-        response = client.patch(f"/collective/offers/{offer.id}/cancel_booking")
+        response = client.patch(f"/pro/collective/offers/{offer.id}/cancel_booking")
 
         assert response.status_code == 204
         assert offer.collectiveStock.collectiveBookings[0].status == models.CollectiveBookingStatus.CANCELLED
@@ -120,7 +120,7 @@ class Returns204Test:
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
 
         client = client.with_session_auth("pro@example.com")
-        response = client.patch(f"/collective/offers/{offer.id}/cancel_booking")
+        response = client.patch(f"/pro/collective/offers/{offer.id}/cancel_booking")
 
         assert response.status_code == 204
         assert offer.collectiveStock.collectiveBookings[0].status == models.CollectiveBookingStatus.CANCELLED
@@ -132,7 +132,7 @@ class Returns404Test:
         offer_id = 123789654
 
         client = client.with_session_auth(user.email)
-        response = client.patch(f"/collective/offers/{offer_id}/cancel_booking")
+        response = client.patch(f"/pro/collective/offers/{offer_id}/cancel_booking")
 
         assert response.status_code == 404
         assert response.json == {
@@ -152,7 +152,7 @@ class Returns403Test:
 
         offer_id = offer.id
         client = client.with_session_auth(user.email)
-        response = client.patch(f"/collective/offers/{offer_id}/cancel_booking")
+        response = client.patch(f"/pro/collective/offers/{offer_id}/cancel_booking")
 
         assert response.status_code == 403
         assert response.json == {
@@ -167,7 +167,7 @@ class Returns403Test:
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
 
         client = client.with_session_auth("pro@example.com")
-        response = client.patch(f"/collective/offers/{offer.id}/cancel_booking")
+        response = client.patch(f"/pro/collective/offers/{offer.id}/cancel_booking")
 
         assert response.status_code == 403
         assert response.json == {
@@ -197,7 +197,7 @@ class Returns400Test:
         offer_id = educational_booking.collectiveStock.collectiveOffer.id
 
         client = client.with_session_auth(user.email)
-        response = client.patch(f"/collective/offers/{offer_id}/cancel_booking")
+        response = client.patch(f"/pro/collective/offers/{offer_id}/cancel_booking")
 
         assert response.status_code == 400
         assert response.json == {"code": "NO_BOOKING", "message": "This collective offer has no booking to cancel"}

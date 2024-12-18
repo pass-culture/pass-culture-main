@@ -24,7 +24,7 @@ def test_response_serialization(client):
     num_queries += 1  # select venues
     num_queries += 1  # select venue_ids with validated offers
     with testing.assert_num_queries(num_queries):
-        response = client.get("/venues")
+        response = client.get("/pro/venues")
         assert response.status_code == 200
 
     assert "venues" in response.json
@@ -143,7 +143,7 @@ def test_response_created_offer_serialization(client):
     num_queries += 1  # select venues
     num_queries += 1  # select venue_ids with validated offers
     with testing.assert_num_queries(num_queries):
-        response = client.get("/venues")
+        response = client.get("/pro/venues")
         assert response.status_code == 200
 
     assert "venues" in response.json
@@ -167,7 +167,7 @@ def test_invalid_offerer_id(client):
     num_queries = testing.AUTHENTICATION_QUERIES
     num_queries += 1  # select venues
     with testing.assert_num_queries(num_queries):
-        response = client.get("/venues", params)
+        response = client.get("/pro/venues", params)
         assert response.status_code == 200
 
     assert "venues" in response.json
@@ -189,7 +189,7 @@ def test_full_valid_call(client):
     num_queries = testing.AUTHENTICATION_QUERIES
     num_queries += 1  # select venues
     with testing.assert_num_queries(num_queries):
-        response = client.get("/venues", params)
+        response = client.get("/pro/venues", params)
         assert response.status_code == 200
 
 
@@ -208,7 +208,7 @@ def test_full_valid_call_with_false(client):
     num_queries = testing.AUTHENTICATION_QUERIES
     num_queries += 1  # select venues
     with testing.assert_num_queries(num_queries):
-        response = client.get("/venues", params)
+        response = client.get("/pro/venues", params)
         assert response.status_code == 200
 
 
@@ -219,7 +219,7 @@ def test_invalid_validated(client):
 
     client = client.with_session_auth(pro_user.email)
     with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES):
-        response = client.get("/venues", params)
+        response = client.get("/pro/venues", params)
         assert response.status_code == 400
 
 
@@ -230,5 +230,5 @@ def test_invalid_active_offerer_only(client):
 
     client = client.with_session_auth(pro_user.email)
     with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES):
-        response = client.get("/venues", params)
+        response = client.get("/pro/venues", params)
         assert response.status_code == 400
