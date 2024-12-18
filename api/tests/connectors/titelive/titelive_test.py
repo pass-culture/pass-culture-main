@@ -106,3 +106,4 @@ class TiteliveTest:
         assert requests_mock.last_request.qs["tri"] == ["datemodification"]
         assert requests_mock.last_request.qs["tri_ordre"] == ["asc"]
         assert requests_mock.last_request.qs["dateminm"] == ["01/12/2022"]
+        assert requests_mock.last_request.qs["datemaxm"] == ["02/12/2022"]
