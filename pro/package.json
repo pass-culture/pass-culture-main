@@ -71,7 +71,7 @@
     "swr": "^2.2.5",
     "use-debounce": "^10.0.4",
     "uuidv4": "^6.2.13",
-    "yup": "^1.6.0"
+    "yup": "^1.6.1"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "^8.4.7",
