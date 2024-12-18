@@ -66,7 +66,7 @@ schwifty = "2024.11.0"
 semver = "3.0.2"
 sentry-sdk = { version = "2.19.2", extras = ["flask"] }
 sib-api-v3-sdk = "^7.6.0"
-slack-sdk = "3.33.5"
+slack-sdk = "3.34.0"
 spectree = "1.2.1"
 # Do not use 1.4.46 that has a new
 # deprecation warning for which we're not ready
