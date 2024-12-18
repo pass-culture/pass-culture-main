@@ -1,4 +1,4 @@
-import { CollectiveOfferStep } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferNavigation/CollectiveOfferNavigation'
+import { CollectiveOfferStep } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferNavigation/CollectiveCreationOfferNavigation'
 
 export const getActiveStep = (
   locationPathname: string
