@@ -504,7 +504,7 @@ class SSOSigninTest:
         assert not token_utils.UUIDToken.token_exists(token_utils.TokenType.OAUTH_STATE, oauth_state_token.key_suffix)
 
     def test_oauth_state_token_creation(self, client):
-        with assert_num_queries(1):  # feature
+        with assert_num_queries(0):
             response = client.get("/native/v1/oauth/state")
             assert response.status_code == 200, response.json
 
