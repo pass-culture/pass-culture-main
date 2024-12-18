@@ -1,8 +1,11 @@
 import datetime
+from itertools import chain
+from unittest import mock
 
 import pytest
 import requests_mock
 
+from pcapi import settings
 from pcapi.connectors import typeform
 
 from tests.connectors.typeform import fixtures
@@ -151,3 +154,54 @@ class GetResponsesTest:
             )
             with pytest.raises(typeform.NotFoundException):
                 typeform.get_responses(form_id)
+
+
+class GetResponsesGeneratorTest:
+    def test_empty_answer(self):
+        form_id = "123aze"
+        with mock.patch("pcapi.connectors.typeform.get_responses", return_value=[]) as get_responses:
+            for _ in typeform.get_responses_generator(lambda: None, form_id):
+                assert False
+            get_responses.assert_called_once_with(
+                form_id=form_id,
+                num_results=settings.TYPEFORM_IMPORT_CHUNK_SIZE,
+                since=None,
+                sort="submitted_at,asc",
+            )
+
+    @pytest.mark.settings(TYPEFORM_IMPORT_CHUNK_SIZE=5)
+    def test_multiple_call(self):
+        form_id = "123aze"
+        times = [None, datetime.datetime(2000, 1, 1), datetime.datetime(2020, 1, 1)]
+        time_function = mock.MagicMock(side_effect=times)
+        list_expected = [list(range(5)), list(range(10, 15)), [1, 2, 3]]
+        cycles = 0
+
+        with mock.patch("pcapi.connectors.typeform.get_responses", side_effect=list_expected) as get_responses:
+            for r, e in zip(typeform.get_responses_generator(time_function, form_id), chain(*list_expected)):
+                if cycles % 5 == 0:
+                    get_responses.assert_called_with(
+                        form_id=form_id,
+                        num_results=settings.TYPEFORM_IMPORT_CHUNK_SIZE,
+                        since=times[cycles // 5],
+                        sort="submitted_at,asc",
+                    )
+                cycles += 1
+                assert r == e
+
+            assert get_responses.call_count == len(times)
+            assert cycles == len(list(chain(*list_expected)))
+
+    @pytest.mark.settings(TYPEFORM_IMPORT_CHUNK_SIZE=5)
+    def test_inifinite_loop(self):
+        form_id = "123aze"
+        with mock.patch("pcapi.connectors.typeform.get_responses", return_value=list(range(5))) as get_responses:
+            for r, e in zip(typeform.get_responses_generator(lambda: None, form_id), range(5)):
+                assert r == e
+
+            get_responses.assert_called_once_with(
+                form_id=form_id,
+                num_results=settings.TYPEFORM_IMPORT_CHUNK_SIZE,
+                since=None,
+                sort="submitted_at,asc",
+            )
