@@ -79,6 +79,7 @@ wtforms = "3.2.1"
 wtforms-sqlalchemy = "0.4.2"
 xlsxwriter = "^3.2.0"
 zeep = "4.3.1"
+google-auth-oauthlib = "^1.2.1"
 
 [tool.poetry.group.dev]
 optional = true

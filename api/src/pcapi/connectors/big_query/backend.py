@@ -23,7 +23,32 @@ class BaseBackend:
     @property
     def client(self) -> bigquery.Client:
         if not self._client:
-            self._client = bigquery.Client()
+            import os
+
+            from google.auth.transport.requests import Request
+            from google.oauth2.credentials import Credentials
+            from google_auth_oauthlib.flow import InstalledAppFlow
+
+            scopes = [
+                "https://www.googleapis.com/auth/bigquery",
+                "https://www.googleapis.com/auth/cloud-platform",
+            ]
+
+            creds = None
+            if os.path.exists("token.json"):
+                creds = Credentials.from_authorized_user_file("token.json", scopes=scopes)
+            # If there are no (valid) credentials available, let the user log in.
+            if not creds or not creds.valid:
+                if creds and creds.expired and creds.refresh_token:
+                    creds.refresh(Request())
+                else:
+                    flow = InstalledAppFlow.from_client_secrets_file("credentials.json", scopes=scopes)
+                    creds = flow.run_local_server(port=5002)
+                # Save the credentials for the next run
+            with open("token.json", "w") as token:
+                token.write(creds.to_json())
+
+            self._client = bigquery.Client(project="passculture-metier-ehp", credentials=creds, location="europe-west1")
         return self._client
 
     def run_query(self, query: str, page_size: int, **parameters: typing.Any) -> BigQueryRowIterator:

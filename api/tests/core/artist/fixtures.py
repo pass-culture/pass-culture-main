@@ -1,0 +1,38 @@
+import uuid
+
+from pcapi.connectors.big_query.queries.artist import ArtistModel
+
+
+raw_artists_data = [
+    {
+        "artist_id": uuid.uuid4().hex,
+        "artist_name": "Big Query",
+        "artist_description": "Big Query is a Canadian singer-songwriter and musician.",
+        "wikidata_image_file_url": "https://images.dog.ceo/breeds/eskimo/n02109961_546.jpg",
+        "wikidata_image_author": "Big Query",
+        "wikidata_image_license": "CC BY-SA 4.0",
+        "wikidata_image_license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+    },
+    {
+        "artist_id": uuid.uuid4().hex,
+        "artist_name": "Smol Reqvest",
+        "artist_description": "Smol Reqvest est un écrivain russe.",
+        "wikidata_image_file_url": "https://images.dog.ceo/breeds/leonberg/n02111129_2062.jpg",
+        "wikidata_image_author": "Big Query",
+        "wikidata_image_license": "CC BY-SA 4.0",
+        "wikidata_image_license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+    },
+]
+
+big_query_artist_fixture = [
+    ArtistModel(
+        id=raw_artist["artist_id"],
+        name=raw_artist["artist_name"],
+        description=raw_artist["artist_description"],
+        image=raw_artist["wikidata_image_file_url"],
+        image_author=raw_artist["wikidata_image_author"],
+        image_license=raw_artist["wikidata_image_license"],
+        image_license_url=raw_artist["wikidata_image_license_url"],
+    )
+    for raw_artist in raw_artists_data
+]

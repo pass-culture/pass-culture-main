@@ -3,6 +3,9 @@ from .adage_playlists import InstitutionRuralLevelQuery  # noqa: F401
 from .adage_playlists import LocalOfferersQuery  # noqa: F401
 from .adage_playlists import NewOffererQuery  # noqa: F401
 from .adage_playlists import NewTemplateOffersPlaylistQuery  # noqa: F401
+from .artist import ArtistAliasQuery  # noqa: F401
+from .artist import ArtistProductLinkQuery  # noqa: F401
+from .artist import ArtistQuery  # noqa: F401
 from .favorites_not_booked import FavoritesNotBooked  # noqa: F401
 from .favorites_not_booked import FavoritesNotBookedModel  # noqa: F401
 from .last_30_days_booking import Last30DaysBookings  # noqa: F401
