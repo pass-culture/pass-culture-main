@@ -1,7 +1,6 @@
 from datetime import datetime
 import logging
 from re import search
-import typing
 
 from dateutil.relativedelta import relativedelta
 from sqlalchemy import orm as sa_orm
@@ -30,35 +29,15 @@ def anonymize_unlinked_chronicles() -> None:
 
 
 def import_book_club_chronicles() -> None:
-    for form in _book_club_forms_generator():
+    form_id = constants.BOOK_CLUB_FORM_ID
+    for form in typeform.get_responses_generator(_get_last_chronicle_date, form_id):
         save_book_club_chronicle(form)
 
 
-def _book_club_forms_generator() -> typing.Iterator[typeform.TypeformResponse]:
-    previous_last_chronicle = object()
-    while True:
-        last_chronicle = models.Chronicle.query.order_by(models.Chronicle.dateCreated.desc()).first()
-
-        if last_chronicle == previous_last_chronicle:
-            logger.error(
-                "Import chronicle for book club: error: infinite loop detected",
-                extra={
-                    "last_chronicle_id": last_chronicle.id if last_chronicle else None,
-                },
-            )
-            break
-
-        forms = typeform.get_responses(
-            form_id=constants.BOOK_CLUB_FORM_ID,
-            num_results=constants.IMPORT_CHUNK_SIZE,
-            sort="submitted_at,asc",
-            since=last_chronicle.dateCreated if last_chronicle else None,
-        )
-        yield from forms
-
-        if len(forms) < constants.IMPORT_CHUNK_SIZE:
-            break
-        previous_last_chronicle = last_chronicle
+def _get_last_chronicle_date() -> datetime | None:
+    return (
+        db.session.query(models.Chronicle.dateCreated).order_by(models.Chronicle.dateCreated.desc()).limit(1).scalar()
+    )
 
 
 def _extract_book_club_ean(answer: typeform.TypeformAnswer) -> str | None:
