@@ -5,7 +5,7 @@ import {
 
 describe('Create collective offers', () => {
   let login: string
-  let offerDraft: { "name": string, "venueName": string }
+  let offerDraft: { name: string; venueName: string }
   const newOfferName = 'Ma nouvelle offre collective créée'
   const venueName = 'Mon Lieu 1'
 
@@ -113,14 +113,23 @@ describe('Create collective offers', () => {
     const expectedResults = [
       ['', '', 'Titre', 'Lieu', 'Établissement', 'Statut'],
       ['', '', newOfferName, venueName, 'COLLEGE 123', 'brouillon'],
-      ['', '', offerDraft.name, offerDraft.venueName, 'DE LA TOUR', 'brouillon'],
+      [
+        '',
+        '',
+        offerDraft.name,
+        offerDraft.venueName,
+        'DE LA TOUR',
+        'brouillon',
+      ],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
 
     cy.stepLog({ message: 'I want to change my offer to published status' })
 
-    cy.findByRole('link', { name: newOfferName }).click()
+    cy.findAllByTestId('offer-item-row')
+      .eq(0)
+      .within(() => cy.get('a[title*="' + newOfferName + '"]').click())
 
     cy.wait('@educationalOfferers')
 
