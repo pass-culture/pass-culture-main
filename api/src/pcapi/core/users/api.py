@@ -1524,7 +1524,7 @@ def anonymize_user(user: models.User, *, author: models.User | None = None, forc
         try:
             iris = get_iris_from_address(address=user.address, postcode=user.postalCode)
         except (api_adresse.AdresseApiException, api_adresse.InvalidFormatException) as exc:
-            logger.exception("Could not anonymize user", extra={"user_id": user.id, "exc": str(exc)})
+            logger.error("Could not anonymize user", extra={"user_id": user.id, "exc": str(exc)})
             return False
 
         if not iris and not force:
@@ -1535,10 +1535,10 @@ def anonymize_user(user: models.User, *, author: models.User | None = None, forc
     except ExternalAPIException as exc:
         # If is_retryable it is a real error. If this flag is False then it means the email is unknown for brevo.
         if exc.is_retryable:
-            logger.exception("Could not anonymize user", extra={"user_id": user.id, "exc": str(exc)})
+            logger.error("Could not anonymize user", extra={"user_id": user.id, "exc": str(exc)})
             return False
     except Exception as exc:  # pylint: disable=broad-exception-caught
-        logger.exception("Could not anonymize user", extra={"user_id": user.id, "exc": str(exc)})
+        logger.error("Could not anonymize user", extra={"user_id": user.id, "exc": str(exc)})
         return False
 
     for beneficiary_fraud_check in user.beneficiaryFraudChecks:
