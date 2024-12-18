@@ -30,7 +30,7 @@ class Returns403Test:
         auth_client = client.with_session_auth(email=beneficiary.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
-            response = auth_client.get(f"/offers/{offer_id}")
+            response = auth_client.get(f"/pro/offers/{offer_id}")
             assert response.status_code == 403
 
     def test_access_by_unauthorized_pro_user(self, client):
@@ -40,7 +40,7 @@ class Returns403Test:
         auth_client = client.with_session_auth(email=pro_user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
-            response = auth_client.get(f"/offers/{offer_id}")
+            response = auth_client.get(f"/pro/offers/{offer_id}")
             assert response.status_code == 403
 
 
@@ -66,7 +66,7 @@ class Returns200Test:
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
-            response = auth_client.get(f"/offers/{offer_id}")
+            response = auth_client.get(f"/pro/offers/{offer_id}")
             assert response.status_code == 200
 
         response_json = response.json
@@ -88,7 +88,7 @@ class Returns200Test:
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
-            response = auth_client.get(f"/offers/{offer_id}")
+            response = auth_client.get(f"/pro/offers/{offer_id}")
             assert response.status_code == 200
 
     def test_returns_an_active_mediation(self, client):
@@ -100,7 +100,7 @@ class Returns200Test:
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
-            response = auth_client.get(f"/offers/{offer_id}")
+            response = auth_client.get(f"/pro/offers/{offer_id}")
             assert response.status_code == 200
 
         assert f"/thumbs/mediations/{humanize(mediation.id)}" in response.json["activeMediation"]["thumbUrl"]
@@ -149,7 +149,7 @@ class Returns200Test:
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
-            response = auth_client.get(f"/offers/{offer_id}")
+            response = auth_client.get(f"/pro/offers/{offer_id}")
             assert response.status_code == 200
 
         assert response.json == {
@@ -241,7 +241,7 @@ class Returns200Test:
 
         client = client.with_session_auth(email=user_offerer.user.email)
         with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/offers/{offer_id}")
+            response = client.get(f"/pro/offers/{offer_id}")
             assert response.status_code == 200
 
         data = response.json
@@ -256,7 +256,7 @@ class Returns200Test:
 
         client = client.with_session_auth(email=user_offerer.user.email)
         with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/offers/{offer_id}")
+            response = client.get(f"/pro/offers/{offer_id}")
             assert response.status_code == 200
 
         data = response.json
@@ -275,7 +275,7 @@ class Returns200Test:
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
-            response = auth_client.get(f"/offers/{offer_id}")
+            response = auth_client.get(f"/pro/offers/{offer_id}")
             assert response.status_code == 200
 
         data = response.json
@@ -291,7 +291,7 @@ class Returns200Test:
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = deleted_stock.offer.id
         with testing.assert_num_queries(self.num_queries):
-            response = auth_client.get(f"/offers/{offer_id}")
+            response = auth_client.get(f"/pro/offers/{offer_id}")
             assert response.status_code == 200
 
         assert response.json["hasStocks"] == False
@@ -305,7 +305,7 @@ class Returns200Test:
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
-            response = auth_client.get(f"/offers/{offer_id}")
+            response = auth_client.get(f"/pro/offers/{offer_id}")
             assert response.status_code == 200
 
         assert response.json["bookingsCount"] == 2
@@ -329,7 +329,7 @@ class Returns200Test:
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
-            response = auth_client.get(f"/offers/{offer_id}")
+            response = auth_client.get(f"/pro/offers/{offer_id}")
             assert response.status_code == 200
 
         assert response.json["address"] == {
@@ -361,7 +361,7 @@ class Returns200Test:
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
-            response = auth_client.get(f"/offers/{offer_id}")
+            response = auth_client.get(f"/pro/offers/{offer_id}")
             assert response.status_code == 200
 
         assert response.json["address"] == {
@@ -417,7 +417,7 @@ class Returns200Test:
 
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         with testing.assert_num_queries(self.num_queries):
-            response = auth_client.get(f"/offers/{offer_id}")
+            response = auth_client.get(f"/pro/offers/{offer_id}")
             assert response.status_code == 200
 
         assert response.json["publicationDate"] == publication_date.strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -433,7 +433,7 @@ class Returns200Test:
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
-            response = auth_client.get(f"/offers/{offer_id}")
+            response = auth_client.get(f"/pro/offers/{offer_id}")
             assert response.status_code == 200
 
         assert response.json["hasPendingBookings"] == has_pending_bookings

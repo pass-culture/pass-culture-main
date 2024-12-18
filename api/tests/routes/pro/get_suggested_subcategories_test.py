@@ -13,7 +13,7 @@ import pcapi.core.users.factories as users_factories
 class Returns401Test:
     def test_access_by_no_one(self, client):
         with testing.assert_num_queries(0):
-            response = client.get("/offers/suggested-subcategories?offer_name=foo")
+            response = client.get("/pro/offers/suggested-subcategories?offer_name=foo")
             assert response.status_code == 401
 
 
@@ -37,7 +37,7 @@ class Returns200Test:
         venue_id = venue.id
         with testing.assert_num_queries(self.num_queries):
             response = client.get(
-                f"/offers/suggested-subcategories?offer_name=foo&offer_description=bar&venue_id={venue_id}"
+                f"/pro/offers/suggested-subcategories?offer_name=foo&offer_description=bar&venue_id={venue_id}"
             )
             assert response.status_code == 200
 

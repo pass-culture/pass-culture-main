@@ -35,7 +35,7 @@ class Returns200Test:
         num_queries += 1  # select Offer
         num_queries += 1  # select CollectiveOffer
         with testing.assert_num_queries(num_queries):
-            response = test_client.get(f"/get-statistics/?venue_ids={venue_id}")
+            response = test_client.get(f"/pro/get-statistics/?venue_ids={venue_id}")
             assert response.status_code == 200
         assert response.json == {
             "incomeByYear": {
@@ -68,7 +68,7 @@ class Returns200Test:
         num_queries += 1  # select Offer
         num_queries += 1  # select CollectiveOffer
         with testing.assert_num_queries(num_queries):
-            response = test_client.get(f"/get-statistics/?venue_ids={venue_id}&venue_ids={venue2_id}")
+            response = test_client.get(f"/pro/get-statistics/?venue_ids={venue_id}&venue_ids={venue2_id}")
             assert response.status_code == 200
         assert response.json == {
             "incomeByYear": {
@@ -101,7 +101,7 @@ class Returns200Test:
         num_queries += 1  # select Offer
         num_queries += 1  # select CollectiveOffer
         with testing.assert_num_queries(num_queries):
-            response = test_client.get(f"/get-statistics/?venue_ids={venue_id}&venue_ids={venue2_id}")
+            response = test_client.get(f"/pro/get-statistics/?venue_ids={venue_id}&venue_ids={venue2_id}")
             assert response.status_code == 200
         assert response.json == {
             "incomeByYear": {
@@ -135,7 +135,7 @@ class Returns200Test:
         num_queries += 1  # select Offer
         num_queries += 1  # select CollectiveOffer
         with testing.assert_num_queries(num_queries):
-            response = test_client.get(f"/get-statistics/?venue_ids={venue_id}")
+            response = test_client.get(f"/pro/get-statistics/?venue_ids={venue_id}")
             assert response.status_code == 200
         assert response.json == {
             "incomeByYear": {
@@ -169,7 +169,7 @@ class Returns200Test:
         num_queries += 1  # select Offer
         num_queries += 1  # select CollectiveOffer
         with testing.assert_num_queries(num_queries):
-            response = test_client.get(f"/get-statistics/?venue_ids={venue_id}")
+            response = test_client.get(f"/pro/get-statistics/?venue_ids={venue_id}")
             assert response.status_code == 200
         assert response.json == {
             "incomeByYear": {
@@ -200,7 +200,7 @@ class Returns200Test:
         num_queries += 1  # select Offer
         num_queries += 1  # select CollectiveOffer
         with testing.assert_num_queries(num_queries):
-            response = test_client.get(f"/get-statistics/?venue_ids={venue_id}")
+            response = test_client.get(f"/pro/get-statistics/?venue_ids={venue_id}")
             assert response.status_code == 200
         assert response.json == {"incomeByYear": {}}
 
@@ -217,7 +217,7 @@ class Returns422Test:
         test_client = client.with_session_auth(email=user.email)
         num_queries = testing.AUTHENTICATION_QUERIES
         with testing.assert_num_queries(num_queries):
-            response = test_client.get(f"/get-statistics/")
+            response = test_client.get(f"/pro/get-statistics/")
             assert response.status_code == 422
         assert response.json["global"] == ["Vous devez préciser au moins un ID de partenaire culturel"]
 
@@ -237,7 +237,7 @@ class Returns403Test:
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select Offerer
         with testing.assert_num_queries(num_queries):
-            response = test_client.get(f"/get-statistics/?venue_ids={venue_id}&venue_ids={foreign_venue}")
+            response = test_client.get(f"/pro/get-statistics/?venue_ids={venue_id}&venue_ids={foreign_venue}")
             assert response.status_code == 403
         assert response.json["global"] == [
             "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."
@@ -256,7 +256,7 @@ class Returns403Test:
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select Offerer
         with testing.assert_num_queries(num_queries):
-            response = test_client.get(f"/get-statistics/?venue_ids={venue_id}")
+            response = test_client.get(f"/pro/get-statistics/?venue_ids={venue_id}")
             assert response.status_code == 403
         assert response.json["global"] == [
             "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."

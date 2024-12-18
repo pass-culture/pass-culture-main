@@ -32,7 +32,7 @@ class OffererPatchBankAccountsTest:
         http_client = client.with_session_auth(pro_user.email)
 
         response = http_client.patch(
-            f"/offerers/{offerer.id}/bank-accounts/{bank_account.id}", json={"venues_ids": [venue.id]}
+            f"/pro/offerers/{offerer.id}/bank-accounts/{bank_account.id}", json={"venues_ids": [venue.id]}
         )
 
         assert response.status_code == 204
@@ -47,7 +47,7 @@ class OffererPatchBankAccountsTest:
             )
         )
 
-        response = http_client.get(f"/offerers/{offerer.id}/bank-accounts/")
+        response = http_client.get(f"/pro/offerers/{offerer.id}/bank-accounts/")
 
         assert response.status_code == 200
         assert len(response.json["bankAccounts"]) == 1
@@ -90,17 +90,17 @@ class OffererPatchBankAccountsTest:
             ).dict(),
         )
 
-        client.get(f"/users/connect-as/{secure_token.token}")
+        client.get(f"/pro/users/connect-as/{secure_token.token}")
 
         assert not bank_account.venueLinks
 
         response = client.patch(
-            f"/offerers/{offerer.id}/bank-accounts/{bank_account.id}", json={"venues_ids": [venue.id]}
+            f"/pro/offerers/{offerer.id}/bank-accounts/{bank_account.id}", json={"venues_ids": [venue.id]}
         )
 
         assert response.status_code == 204
 
-        response = client.get(f"/offerers/{offerer.id}/bank-accounts/")
+        response = client.get(f"/pro/offerers/{offerer.id}/bank-accounts/")
 
         assert response.status_code == 200
 
@@ -133,13 +133,13 @@ class OffererPatchBankAccountsTest:
         http_client = client.with_session_auth(pro_user.email)
 
         response = http_client.patch(
-            f"/offerers/{offerer.id}/bank-accounts/{bank_account_of_another_offerer_id}",
+            f"/pro/offerers/{offerer.id}/bank-accounts/{bank_account_of_another_offerer_id}",
             json={"venues_ids": [venue.id]},
         )
 
         assert response.status_code == 404
 
-        response = http_client.get(f"/offerers/{offerer.id}/bank-accounts/")
+        response = http_client.get(f"/pro/offerers/{offerer.id}/bank-accounts/")
 
         assert response.status_code == 200
         assert len(response.json["bankAccounts"]) == 1
@@ -176,13 +176,13 @@ class OffererPatchBankAccountsTest:
         http_client = client.with_session_auth(pro_user.email)
 
         response = http_client.patch(
-            f"/offerers/{offerer.id}/bank-accounts/{bank_account_id}",
+            f"/pro/offerers/{offerer.id}/bank-accounts/{bank_account_id}",
             json={"venues_ids": [venue_of_another_offerer_id]},
         )
 
         assert response.status_code == 204
 
-        response = http_client.get(f"/offerers/{offerer.id}/bank-accounts/")
+        response = http_client.get(f"/pro/offerers/{offerer.id}/bank-accounts/")
 
         assert response.status_code == 200
         assert len(response.json["bankAccounts"]) == 1
@@ -227,7 +227,9 @@ class OffererPatchBankAccountsTest:
 
         http_client = client.with_session_auth(pro_user.email)
 
-        response = http_client.patch(f"/offerers/{offerer.id}/bank-accounts/{bank_account_id}", json={"venues_ids": []})
+        response = http_client.patch(
+            f"/pro/offerers/{offerer.id}/bank-accounts/{bank_account_id}", json={"venues_ids": []}
+        )
 
         actions_occured.extend(
             [
@@ -257,7 +259,7 @@ class OffererPatchBankAccountsTest:
 
         assert response.status_code == 204
 
-        response = http_client.get(f"/offerers/{offerer.id}/bank-accounts/")
+        response = http_client.get(f"/pro/offerers/{offerer.id}/bank-accounts/")
 
         assert response.status_code == 200
         assert len(response.json["bankAccounts"]) == 1
@@ -352,7 +354,7 @@ class OffererPatchBankAccountsTest:
 
         http_client = client.with_session_auth(pro_user.email)
         response = http_client.patch(
-            f"/offerers/{offerer.id}/bank-accounts/{bank_account.id}",
+            f"/pro/offerers/{offerer.id}/bank-accounts/{bank_account.id}",
             json={"venues_ids": [third_venue.id, fourth_venue.id]},
         )
 
@@ -377,7 +379,7 @@ class OffererPatchBankAccountsTest:
             ]
         )
 
-        response = http_client.get(f"/offerers/{offerer.id}/bank-accounts/")
+        response = http_client.get(f"/pro/offerers/{offerer.id}/bank-accounts/")
 
         assert response.status_code == 200
         assert len(response.json["bankAccounts"]) == 1
@@ -461,7 +463,7 @@ class OffererPatchBankAccountsTest:
         http_client = client.with_session_auth(pro_user.email)
 
         response = http_client.patch(
-            f"/offerers/{offerer.id}/bank-accounts/{bank_account.id}",
+            f"/pro/offerers/{offerer.id}/bank-accounts/{bank_account.id}",
             json={"venues_ids": [first_venue.id, second_venue.id, third_venue.id, fourth_venue.id]},
         )
         assert response.status_code == 204
@@ -485,7 +487,7 @@ class OffererPatchBankAccountsTest:
             ]
         )
 
-        response = http_client.get(f"/offerers/{offerer.id}/bank-accounts/")
+        response = http_client.get(f"/pro/offerers/{offerer.id}/bank-accounts/")
 
         assert response.status_code == 200
         assert len(response.json["bankAccounts"]) == 1
@@ -550,7 +552,7 @@ class OffererPatchBankAccountsTest:
         http_client = client.with_session_auth(pro_user.email)
 
         response = http_client.patch(
-            f"/offerers/{offerer.id}/bank-accounts/{bank_account.id}", json={"venues_ids": [venue.id]}
+            f"/pro/offerers/{offerer.id}/bank-accounts/{bank_account.id}", json={"venues_ids": [venue.id]}
         )
 
         assert response.status_code == 204
@@ -565,7 +567,7 @@ class OffererPatchBankAccountsTest:
             )
         )
 
-        response = http_client.get(f"/offerers/{offerer.id}/bank-accounts/")
+        response = http_client.get(f"/pro/offerers/{offerer.id}/bank-accounts/")
 
         assert response.status_code == 200
         assert len(response.json["bankAccounts"]) == 1
@@ -612,13 +614,13 @@ class OffererPatchBankAccountsTest:
         http_client = client.with_session_auth(pro_user.email)
 
         response = http_client.patch(
-            f"/offerers/{offerer.id}/bank-accounts/{bank_account_id}",
+            f"/pro/offerers/{offerer.id}/bank-accounts/{bank_account_id}",
             json={"venues_ids": [venue_id, venue_with_pp_id]},
         )
 
         assert response.status_code == 204
 
-        response = http_client.get(f"/offerers/{offerer.id}/bank-accounts/")
+        response = http_client.get(f"/pro/offerers/{offerer.id}/bank-accounts/")
 
         assert response.status_code == 200
         assert len(response.json["bankAccounts"]) == 1
@@ -643,13 +645,13 @@ class OffererPatchBankAccountsTest:
         http_client = client.with_session_auth(pro_user.email)
 
         response = http_client.patch(
-            f"/offerers/{offerer.id}/bank-accounts/{bank_account_id}",
+            f"/pro/offerers/{offerer.id}/bank-accounts/{bank_account_id}",
             json={"venues_ids": [venue_id]},
         )
 
         assert response.status_code == 404
 
-        response = http_client.get(f"/offerers/{offerer.id}/bank-accounts/")
+        response = http_client.get(f"/pro/offerers/{offerer.id}/bank-accounts/")
 
         assert response.status_code == 200
         assert len(response.json["bankAccounts"]) == 1
@@ -671,7 +673,7 @@ class OffererPatchBankAccountsTest:
         http_client = client.with_session_auth(pro_user.email)
 
         response = http_client.patch(
-            f"/offerers/{offerer.id}/bank-accounts/{second_bank_account.id}",
+            f"/pro/offerers/{offerer.id}/bank-accounts/{second_bank_account.id}",
             json={"venues_ids": [venue.id]},
         )
 
@@ -698,6 +700,8 @@ class OffererPatchBankAccountsTest:
 
         http_client = client.with_session_auth(pro_user.email)
 
-        response = http_client.patch(f"/offerers/{offerer.id}/bank-accounts/{bank_account.id}", json={"venues_ids": []})
+        response = http_client.patch(
+            f"/pro/offerers/{offerer.id}/bank-accounts/{bank_account.id}", json={"venues_ids": []}
+        )
 
         assert response.status_code == 204

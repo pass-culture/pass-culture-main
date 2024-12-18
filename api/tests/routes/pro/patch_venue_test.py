@@ -76,7 +76,7 @@ class Returns200Test:
             venue,
         )
 
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        response = auth_request.patch("/pro/venues/%s" % venue.id, json=venue_data)
 
         # then
         assert response.status_code == 200
@@ -242,16 +242,16 @@ class Returns200Test:
         client_http = client.with_session_auth(email=user_offerer.user.email)
 
         # At this point, the user is displayed the address contained in the address table, i.e. the "wrong" address
-        response = client_http.get(f"/venues/{venue.id}")
+        response = client_http.get(f"/pro/venues/{venue.id}")
         assert response.json["address"]["street"] == "11 Avenue Jean Jaurès"
         assert response.json["address"]["city"] == "Millau"
         assert response.json["address"]["postalCode"] == "12100"
 
-        response = client_http.patch(f"/venues/{venue.id}", json=venue_data)
+        response = client_http.patch(f"/pro/venues/{venue.id}", json=venue_data)
         mocked_get_address.assert_called_once_with(address="11 Rue Jean Jaurès", postcode="09300", city="Lavelanet")
         assert response.status_code == 200
 
-        response = client_http.get(f"/venues/{venue.id}")
+        response = client_http.get(f"/pro/venues/{venue.id}")
         assert response.json["address"]["street"] == "11 Rue Jean Jaurès"
         assert response.json["address"]["city"] == "Lavelanet"
         assert response.json["address"]["postalCode"] == "09300"
@@ -287,7 +287,7 @@ class Returns200Test:
             venue,
         )
 
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        response = auth_request.patch("/pro/venues/%s" % venue.id, json=venue_data)
 
         # then
         assert response.status_code == 200
@@ -372,11 +372,11 @@ class Returns200Test:
             venue,
         )
 
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        response = auth_request.patch("/pro/venues/%s" % venue.id, json=venue_data)
         assert response.status_code == 200
 
         # Ensures we can edit another time the venue just fine
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        response = auth_request.patch("/pro/venues/%s" % venue.id, json=venue_data)
         assert response.status_code == 200
 
     @patch("pcapi.connectors.api_adresse.get_address")
@@ -442,7 +442,7 @@ class Returns200Test:
                 city="Paris",
                 street="1 boulevard Poissonnière",
             )
-        response = auth_request.patch("/venues/%s" % venue_id, json=venue_data)
+        response = auth_request.patch("/pro/venues/%s" % venue_id, json=venue_data)
         # then
         assert response.status_code == 200
         venue = offerers_models.Venue.query.one()
@@ -531,7 +531,7 @@ class Returns200Test:
             venue_without_siret,
         )
 
-        response = auth_request.patch("/venues/%s" % venue_without_siret.id, json=venue_data)
+        response = auth_request.patch("/pro/venues/%s" % venue_without_siret.id, json=venue_data)
 
         # then
         assert response.status_code == 200
@@ -594,7 +594,7 @@ class Returns200Test:
         offerer_address = venue.offererAddress
         update_data = {"bookingEmail": "fakeemail@fake.com"}
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        response = auth_request.patch("/venues/%s" % venue.id, json=update_data)
+        response = auth_request.patch("/pro/venues/%s" % venue.id, json=update_data)
 
         venue = offerers_models.Venue.query.one()
         offerer_addresses = offerers_models.OffererAddress.query.order_by(offerers_models.OffererAddress.id).all()
@@ -628,7 +628,7 @@ class Returns200Test:
             venue,
         )
 
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        response = auth_request.patch("/pro/venues/%s" % venue.id, json=venue_data)
 
         # then
         assert response.status_code == 200
@@ -662,7 +662,7 @@ class Returns200Test:
             venue,
         )
 
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        response = auth_request.patch("/pro/venues/%s" % venue.id, json=venue_data)
 
         assert response.status_code == 200
         assert venue.audioDisabilityCompliant is True
@@ -694,7 +694,7 @@ class Returns200Test:
         auth_request = client.with_session_auth(email=user_offerer.user.email)
 
         # when
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        response = auth_request.patch("/pro/venues/%s" % venue.id, json=venue_data)
 
         # Then
         assert response.status_code == 200
@@ -718,7 +718,7 @@ class Returns200Test:
             venue,
         )
 
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        response = auth_request.patch("/pro/venues/%s" % venue.id, json=venue_data)
         assert response.status_code == 200
         assert len(venue.action_history) == 1
 
@@ -747,7 +747,7 @@ class Returns200Test:
 
         venue_data = populate_missing_data_from_venue({"contact": None}, venue)
 
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        response = auth_request.patch("/pro/venues/%s" % venue.id, json=venue_data)
         assert response.status_code == 200
         assert len(venue.action_history) == 0
 
@@ -776,7 +776,7 @@ class Returns200Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        response = auth_request.patch("/pro/venues/%s" % venue.id, json=venue_data)
         assert response.status_code == 200
 
         assert venue.action_history[0].extraData == {
@@ -801,7 +801,7 @@ class Returns200Test:
         # When
         json_data = {"publicName": "my new name"}
         http_client = client.with_session_auth(email=user.email)
-        http_client.patch(f"/venues/{venue.id}", json=json_data)
+        http_client.patch(f"/pro/venues/{venue.id}", json=json_data)
 
         # Then
         mocked_async_index_offers_of_venue_ids.assert_called_once_with(
@@ -824,7 +824,7 @@ class Returns200Test:
         # When
         json_data = {"city": "My new city"}
         http_client = client.with_session_auth(email=user.email)
-        http_client.patch(f"/venues/{venue.id}", json=json_data)
+        http_client.patch(f"/pro/venues/{venue.id}", json=json_data)
 
         # Then
         mocked_async_index_offers_of_venue_ids.assert_called_once_with(
@@ -850,7 +850,7 @@ class Returns200Test:
         # When
         json_data = {"bookingEmail": "new@email.com"}
         http_client = client.with_session_auth(email=user.email)
-        http_client.patch(f"/venues/{venue.id}", json=json_data)
+        http_client.patch(f"/pro/venues/{venue.id}", json=json_data)
 
         # Then
         mocked_async_index_offers_of_venue_ids.assert_not_called()
@@ -871,7 +871,7 @@ class Returns200Test:
         # When
         json_data = {"city": "old City"}
         http_client = client.with_session_auth(email=user.email)
-        http_client.patch(f"/venues/{venue.id}", json=json_data)
+        http_client.patch(f"/pro/venues/{venue.id}", json=json_data)
 
         # Then
         mocked_async_index_offers_of_venue_ids.assert_not_called()
@@ -887,7 +887,7 @@ class Returns200Test:
             "siret": venue.managingOfferer.siren + "11111",
         }
         http_client = client.with_session_auth(email=user.email)
-        http_client.patch(f"/venues/{venue.id}", json=json_data)
+        http_client.patch(f"/pro/venues/{venue.id}", json=json_data)
 
         # Then
         assert venue.siret == json_data["siret"]
@@ -903,7 +903,7 @@ class Returns200Test:
 
         # When
         http_client = client.with_session_auth(email=user.email)
-        http_client.patch(f"/venues/{venue.id}", json=venue_data)
+        http_client.patch(f"/pro/venues/{venue.id}", json=venue_data)
 
         # Then
         assert venue.siret == venue_data["siret"]
@@ -924,7 +924,7 @@ class Returns200Test:
             "visualDisabilityCompliant": False,
         }
         http_client = client.with_session_auth(email=user.email)
-        http_client.patch(f"/venues/{venue.id}", json=venue_data)
+        http_client.patch(f"/pro/venues/{venue.id}", json=venue_data)
 
         venue = offerers_models.Venue.query.get(venue.id)
         assert venue.audioDisabilityCompliant
@@ -953,7 +953,7 @@ class Returns200Test:
         http_client = client.with_session_auth(email=user.email)
         venue_id = venue.id
 
-        response = http_client.patch(f"/venues/{venue_id}", json=venue_data)
+        response = http_client.patch(f"/pro/venues/{venue_id}", json=venue_data)
         assert response.status_code == 200
 
         assert history_models.ActionHistory.query.count() == 0
@@ -968,7 +968,7 @@ class Returns200Test:
         # When
         venue_data = {"contact": {"email": "other.contact@venue.com", "phone_number": "0788888888"}}
         http_client = client.with_session_auth(email=user_offerer.user.email)
-        http_client.patch(f"/venues/{venue.id}", json=venue_data)
+        http_client.patch(f"/pro/venues/{venue.id}", json=venue_data)
 
         venue = offerers_models.Venue.query.get(venue.id)
         assert venue.contact
@@ -986,7 +986,7 @@ class Returns200Test:
         # When
         venue_data = {"contact": {"website": "https://new.website.com"}}
         http_client = client.with_session_auth(email=user_offerer.user.email)
-        http_client.patch(f"/venues/{venue.id}", json=venue_data)
+        http_client.patch(f"/pro/venues/{venue.id}", json=venue_data)
 
         venue = offerers_models.Venue.query.get(venue.id)
         assert venue.contact.website == "https://new.website.com"
@@ -1001,7 +1001,7 @@ class Returns200Test:
         # When
         venue_data = {"contact": {}}
         http_client = client.with_session_auth(email=user_offerer.user.email)
-        http_client.patch(f"/venues/{venue.id}", json=venue_data)
+        http_client.patch(f"/pro/venues/{venue.id}", json=venue_data)
 
         assert offerers_models.VenueContact.query.count() == 0
 
@@ -1019,7 +1019,7 @@ class Returns200Test:
             "contact": {"email": None, "phone_number": None, "social_medias": None, "website": None},
         }
         http_client = client.with_session_auth(email=user.email)
-        http_client.patch(f"/venues/{venue.id}", json=venue_data)
+        http_client.patch(f"/pro/venues/{venue.id}", json=venue_data)
 
         # then
         # nothing has changed => nothing to save nor update
@@ -1045,7 +1045,7 @@ class Returns200Test:
             },
         }
         http_client = client.with_session_auth(email=user.email)
-        http_client.patch(f"/venues/{venue.id}", json=venue_data)
+        http_client.patch(f"/pro/venues/{venue.id}", json=venue_data)
 
         # then
         assert venue.contact
@@ -1074,7 +1074,7 @@ class Returns400Test:
 
         client = client.with_session_auth(user_offerer.user.email)
         venue_id = venue.id
-        response = client.patch(f"/venues/{venue_id}", json=data)
+        response = client.patch(f"/pro/venues/{venue_id}", json=data)
 
         assert response.status_code == 400
         assert key in response.json
@@ -1087,7 +1087,9 @@ class Returns400Test:
             {"comment": "No SIRET " * 60},
             venue,
         )
-        response = client.with_session_auth(email=user_offerer.user.email).patch(f"/venues/{venue.id}", json=venue_data)
+        response = client.with_session_auth(email=user_offerer.user.email).patch(
+            f"/pro/venues/{venue.id}", json=venue_data
+        )
 
         assert response.status_code == 400
         assert response.json["comment"] == ["ensure this value has at most 500 characters"]
@@ -1100,7 +1102,9 @@ class Returns400Test:
             {"withdrawalDetails": "blabla " * 100},
             venue,
         )
-        response = client.with_session_auth(email=user_offerer.user.email).patch(f"/venues/{venue.id}", json=venue_data)
+        response = client.with_session_auth(email=user_offerer.user.email).patch(
+            f"/pro/venues/{venue.id}", json=venue_data
+        )
 
         assert response.status_code == 400
         assert response.json["withdrawalDetails"] == ["ensure this value has at most 500 characters"]
@@ -1113,7 +1117,9 @@ class Returns400Test:
             {"venueTypeCode": "("},
             venue,
         )
-        response = client.with_session_auth(email=user_offerer.user.email).patch(f"/venues/{venue.id}", json=venue_data)
+        response = client.with_session_auth(email=user_offerer.user.email).patch(
+            f"/pro/venues/{venue.id}", json=venue_data
+        )
 
         assert response.status_code == 400
         assert response.json["venueTypeCode"] == ["(: invalide"]
@@ -1125,7 +1131,9 @@ class Returns400Test:
 
         venue_data = populate_missing_data_from_venue({"bookingEmail": "new.email@example.com"}, venue)
 
-        response = client.with_session_auth(email=user_offerer.user.email).patch(f"/venues/{venue.id}", json=venue_data)
+        response = client.with_session_auth(email=user_offerer.user.email).patch(
+            f"/pro/venues/{venue.id}", json=venue_data
+        )
 
         assert response.status_code == 400
         assert response.json["siret"] == ["SIRET is no longer active"]
@@ -1138,7 +1146,7 @@ class Returns400Test:
 
         http_client = client.with_session_auth(email=user.email)
 
-        response = http_client.patch(f"/venues/{virtual_venue.id}", json={"name": "Toto"})
+        response = http_client.patch(f"/pro/venues/{virtual_venue.id}", json={"name": "Toto"})
 
         assert response.status_code == 400
         assert response.json["venue"] == ["Vous ne pouvez pas modifier un lieu Offre Numérique."]
@@ -1152,7 +1160,7 @@ class Returns400Test:
 
         http_client = client.with_session_auth(email=user.email)
 
-        response = http_client.patch(f"/venues/{venue.id}", json=venue_data)
+        response = http_client.patch(f"/pro/venues/{venue.id}", json=venue_data)
 
         # Then
         assert response.status_code == 400
@@ -1167,7 +1175,7 @@ class Returns400Test:
         offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
         http_client = client.with_session_auth(email=user.email)
 
-        response = http_client.patch(f"/venues/{venue.id}", json={"siret": None})
+        response = http_client.patch(f"/pro/venues/{venue.id}", json={"siret": None})
 
         assert response.status_code == 400
         assert response.json["siret"] == ["Vous ne pouvez pas supprimer le siret d'un lieu"]
@@ -1197,7 +1205,7 @@ def test_with_inconsistent_siret(
     with override_settings(ENFORCE_SIRET_CHECK=enforce_siret_check):
         with override_features(DISABLE_SIRET_CHECK=disable_siret_check):
             response = client.with_session_auth(email=user_offerer.user.email).patch(
-                f"/venues/{venue.id}", json=venue_data
+                f"/pro/venues/{venue.id}", json=venue_data
             )
 
     assert response.status_code == expected_result, response.json

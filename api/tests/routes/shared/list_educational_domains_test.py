@@ -12,7 +12,7 @@ class Returns200Test:
         domain3 = educational_factories.EducationalDomainFactory(name="bomain3")
 
         # when
-        response = client.get("/collective/educational-domains")
+        response = client.get("/pro/collective/educational-domains")
 
         # then
         assert response.status_code == 200

@@ -35,7 +35,7 @@ class GetInvoicesTest:
         queries += 1  # select invoice
         queries += 1  # select bank account
         with testing.assert_num_queries(queries):
-            response = client.get("/v2/finance/invoices")
+            response = client.get("/pro/v2/finance/invoices")
             assert response.status_code == 200
 
         invoices = response.json
@@ -75,7 +75,7 @@ class GetInvoicesTest:
         queries += 1  # select invoice
         queries += 1  # select bank account
         with testing.assert_num_queries(queries):
-            response = client.get("/v2/finance/invoices")
+            response = client.get("/pro/v2/finance/invoices")
             assert response.status_code == 200
 
         invoices = response.json
@@ -112,7 +112,7 @@ class GetInvoicesTest:
         queries = testing.AUTHENTICATION_QUERIES
         queries += 1  # select invoice
         with testing.assert_num_queries(queries):
-            response = client.get("/v2/finance/invoices", params=params)
+            response = client.get("/pro/v2/finance/invoices", params=params)
             assert response.status_code == 200
 
         invoices = response.json
@@ -143,7 +143,7 @@ class GetInvoicesTest:
         queries += 1  # select bank account
         params = {"periodBeginningDate": "2021-07-01", "periodEndingDate": "2021-07-31"}
         with testing.assert_num_queries(queries):
-            response = client.get("/v2/finance/invoices", params=params)
+            response = client.get("/pro/v2/finance/invoices", params=params)
             assert response.status_code == 200
 
         invoices = response.json
@@ -161,7 +161,7 @@ class GetInvoicesTest:
         queries += 1  # select invoice
         params = {"bankAccountId": other_bank_account.id}
         with testing.assert_num_queries(queries):
-            response = client.get("/v2/finance/invoices", params=params)
+            response = client.get("/pro/v2/finance/invoices", params=params)
             assert response.status_code == 200
 
         invoices = response.json
@@ -182,7 +182,7 @@ class GetInvoicesTest:
         queries = testing.AUTHENTICATION_QUERIES
         queries += 1  # select invoice
         with testing.assert_num_queries(queries):
-            response = client.get("/v2/finance/invoices", params=params)
+            response = client.get("/pro/v2/finance/invoices", params=params)
             assert response.status_code == 200
 
         invoices = response.json
@@ -200,7 +200,7 @@ class GetInvoicesTest:
         queries += 1  # check user_offerer exists
         queries += 1  # check offerer has invoice
         with testing.assert_num_queries(queries):
-            response = client.get("/v2/finance/has-invoice", params={"offererId": offerer_id})
+            response = client.get("/pro/v2/finance/has-invoice", params={"offererId": offerer_id})
             assert response.status_code == 200
 
         assert response.json == {"hasInvoice": True}
@@ -215,7 +215,7 @@ class GetInvoicesTest:
         queries += 1  # check user_offerer exists
         queries += 1  # check offerer has invoice
         with testing.assert_num_queries(queries):
-            response = client.get("/v2/finance/has-invoice", params=params)
+            response = client.get("/pro/v2/finance/has-invoice", params=params)
             assert response.status_code == 200
 
         assert response.json == {"hasInvoice": False}
@@ -230,7 +230,7 @@ class GetInvoicesTest:
         queries = testing.AUTHENTICATION_QUERIES
         queries += 1  # check user_offerer exists
         with testing.assert_num_queries(queries):
-            response = client.get("/v2/finance/has-invoice", params=params)
+            response = client.get("/pro/v2/finance/has-invoice", params=params)
             assert response.status_code == 403
 
         assert response.json == {

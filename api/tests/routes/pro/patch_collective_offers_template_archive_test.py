@@ -31,7 +31,7 @@ class Returns204Test:
             # 3. retrieve all collective_order.ids to batch them in pool for update
             # 4. update dateArchive on collective_offer
             with assert_num_queries(4):
-                response = client.patch("/collective/offers-template/archive", json=data)
+                response = client.patch("/pro/collective/offers-template/archive", json=data)
                 assert response.status_code == 204
 
         # Then
@@ -61,7 +61,7 @@ class Returns204Test:
         # When
         data = {"ids": [offer.id, other_offer.id]}
 
-        response = client.patch("/collective/offers-template/archive", json=data)
+        response = client.patch("/pro/collective/offers-template/archive", json=data)
 
         # Then
         assert response.status_code == 204
@@ -92,7 +92,7 @@ class Returns204Test:
             # 3. retrieve all collective_order.ids to batch them in pool for update
             # 4. update dateArchive on collective_offer
             with assert_num_queries(4):
-                response = client.patch("/collective/offers-template/archive", json=data)
+                response = client.patch("/pro/collective/offers-template/archive", json=data)
                 assert response.status_code == 204
 
         # Then
@@ -121,7 +121,7 @@ class Returns204Test:
             # 3. retrieve all collective_order.ids to batch them in pool for update
             # 4. update dateArchive on collective_offer
             with assert_num_queries(4):
-                response = client.patch("/collective/offers-template/archive", json=data)
+                response = client.patch("/pro/collective/offers-template/archive", json=data)
                 assert response.status_code == 204
 
         db.session.refresh(rejected_template_offer)

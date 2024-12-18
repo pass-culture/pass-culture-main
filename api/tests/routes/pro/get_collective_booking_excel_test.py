@@ -45,7 +45,7 @@ class Returns200Test:
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.num_queries):
             response = client.get(
-                "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
+                "/pro/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
             )
             assert response.status_code == 200
 
@@ -89,7 +89,7 @@ class Returns200Test:
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.num_queries):
             response = client.get(
-                "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
+                "/pro/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
             )
             assert response.status_code == 200
 
@@ -133,7 +133,7 @@ class Returns200Test:
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.num_queries):
             response = client.get(
-                "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
+                "/pro/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
             )
             assert response.status_code == 200
 
@@ -181,7 +181,7 @@ class Returns200Test:
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.num_queries):
             response = client.get(
-                "/collective/bookings/excel?bookingPeriodBeginningDate=2015-01-01&bookingPeriodEndingDate=2030-01-01"
+                "/pro/collective/bookings/excel?bookingPeriodBeginningDate=2015-01-01&bookingPeriodEndingDate=2030-01-01"
             )
             assert response.status_code == 200
 
@@ -244,7 +244,7 @@ class Returns200Test:
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.num_queries):
             response = client.get(
-                "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
+                "/pro/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
             )
             assert response.status_code == 200
 
@@ -276,7 +276,7 @@ class Returns200Test:
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.num_queries):
             response = client.get(
-                "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
+                "/pro/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
             )
             assert response.status_code == 200
 
@@ -298,7 +298,7 @@ class Returns200Test:
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.num_queries):
             response = client.get(
-                "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
+                "/pro/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
             )
             assert response.status_code == 200
 
@@ -318,7 +318,7 @@ class Returns200Test:
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.num_queries):
             response = client.get(
-                "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
+                "/pro/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
             )
             assert response.status_code == 200
 
@@ -338,7 +338,7 @@ class Returns200Test:
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.num_queries):
             response = client.get(
-                "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
+                "/pro/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
             )
             assert response.status_code == 200
 
@@ -358,7 +358,7 @@ class Returns200Test:
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.num_queries):
             response = client.get(
-                "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
+                "/pro/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
             )
             assert response.status_code == 200
 
@@ -384,7 +384,7 @@ class Returns200Test:
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.num_queries):
             response = client.get(
-                "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
+                "/pro/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
             )
             assert response.status_code == 200
 
@@ -428,7 +428,7 @@ class Returns200Test:
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.num_queries):
             response = client.get(
-                "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
+                "/pro/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
             )
             assert response.status_code == 200
 
@@ -472,7 +472,7 @@ class Returns200Test:
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.num_queries):
             response = client.get(
-                "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
+                "/pro/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
             )
             assert response.status_code == 200
 
@@ -520,7 +520,7 @@ class Returns200Test:
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.num_queries):
             response = client.get(
-                "/collective/bookings/excel?bookingPeriodBeginningDate=2015-01-01&bookingPeriodEndingDate=2030-01-01"
+                "/pro/collective/bookings/excel?bookingPeriodBeginningDate=2015-01-01&bookingPeriodEndingDate=2030-01-01"
             )
             assert response.status_code == 200
 
@@ -583,7 +583,7 @@ class Returns200Test:
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.num_queries):
             response = client.get(
-                "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
+                "/pro/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
             )
             assert response.status_code == 200
 
@@ -615,7 +615,7 @@ class Returns200Test:
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.num_queries):
             response = client.get(
-                "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
+                "/pro/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
             )
             assert response.status_code == 200
 
@@ -637,7 +637,7 @@ class Returns200Test:
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.num_queries):
             response = client.get(
-                "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
+                "/pro/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
             )
             assert response.status_code == 200
 
@@ -657,7 +657,7 @@ class Returns200Test:
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.num_queries):
             response = client.get(
-                "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
+                "/pro/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
             )
             assert response.status_code == 200
 
@@ -677,7 +677,7 @@ class Returns200Test:
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.num_queries):
             response = client.get(
-                "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
+                "/pro/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
             )
             assert response.status_code == 200
 
@@ -697,7 +697,7 @@ class Returns200Test:
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.num_queries):
             response = client.get(
-                "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
+                "/pro/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
             )
             assert response.status_code == 200
 

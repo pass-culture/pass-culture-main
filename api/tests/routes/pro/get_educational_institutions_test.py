@@ -28,7 +28,7 @@ class Return200Test:
 
         client = client.with_session_auth(pro_user.email)
         with testing.assert_num_queries(self.expected_num_queries):
-            response = client.get("/educational_institutions")
+            response = client.get("/pro/educational_institutions")
             assert response.status_code == 200
 
         assert response.json == {
@@ -62,7 +62,7 @@ class Return200Test:
 
         client = client.with_session_auth(pro_user.email)
         with testing.assert_num_queries(self.expected_num_queries):
-            response = client.get("/educational_institutions")
+            response = client.get("/pro/educational_institutions")
             assert response.status_code == 200
 
         assert response.json == {
@@ -79,7 +79,7 @@ class Return200Test:
 
         client = client.with_session_auth(pro_user.email)
         with testing.assert_num_queries(self.expected_num_queries):
-            response = client.get("/educational_institutions?perPageLimit=1")
+            response = client.get("/pro/educational_institutions?perPageLimit=1")
             assert response.status_code == 200
 
         assert response.json == {
@@ -110,7 +110,7 @@ class Return200Test:
 
         client = client.with_session_auth(pro_user.email)
         with testing.assert_num_queries(self.expected_num_queries):
-            response = client.get("/educational_institutions?perPageLimit=2&page=2")
+            response = client.get("/pro/educational_institutions?perPageLimit=2&page=2")
             assert response.status_code == 200
 
         assert response.json == {
@@ -137,5 +137,5 @@ class Return401Test:
         EducationalInstitutionFactory()
 
         with testing.assert_num_queries(0):
-            response = client.get("/educational_institutions")
+            response = client.get("/pro/educational_institutions")
             assert response.status_code == 401

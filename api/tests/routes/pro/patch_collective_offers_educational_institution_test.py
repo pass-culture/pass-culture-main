@@ -32,7 +32,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth("pro@example.com")
         data = {"educationalInstitutionId": institution.id}
-        response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
+        response = client.patch(f"/pro/collective/offers/{offer.id}/educational_institution", json=data)
 
         # Then
         assert response.status_code == 200
@@ -53,7 +53,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth("pro@example.com")
         data = {"educationalInstitutionId": institution.id, "teacherEmail": "maria.sklodowska@example.com"}
-        response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
+        response = client.patch(f"/pro/collective/offers/{offer.id}/educational_institution", json=data)
 
         # Then
         assert response.status_code == 200
@@ -75,7 +75,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth("pro@example.com")
         data = {"educationalInstitutionId": institution2.id}
-        response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
+        response = client.patch(f"/pro/collective/offers/{offer.id}/educational_institution", json=data)
 
         # Then
         assert response.status_code == 200
@@ -96,7 +96,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth("pro@example.com")
         data = {"educationalInstitutionId": None}
-        response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
+        response = client.patch(f"/pro/collective/offers/{offer.id}/educational_institution", json=data)
 
         # Then
         assert response.status_code == 200
@@ -116,7 +116,7 @@ class Returns200Test:
 
         client = client.with_session_auth("pro@example.com")
         data = {"educationalInstitutionId": institution2.id}
-        response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
+        response = client.patch(f"/pro/collective/offers/{offer.id}/educational_institution", json=data)
 
         assert response.status_code == 200
         offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
@@ -136,7 +136,7 @@ class Returns404Test:
         # When
         client = client.with_session_auth("pro@example.com")
         data = {"educationalInstitutionId": institution.id}
-        response = client.patch("/collective/offers/0/educational_institution", json=data)
+        response = client.patch("/pro/collective/offers/0/educational_institution", json=data)
 
         # Then
         assert response.status_code == 404
@@ -152,7 +152,7 @@ class Returns404Test:
         # When
         client = client.with_session_auth("pro@example.com")
         data = {"educationalInstitutionId": 0}
-        response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
+        response = client.patch(f"/pro/collective/offers/{offer.id}/educational_institution", json=data)
 
         # Then
         assert response.status_code == 404
@@ -176,7 +176,7 @@ class Returns403Test:
         # When
         client = client.with_session_auth("pro@example.com")
         data = {"educationalInstitutionId": institution2.id}
-        response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
+        response = client.patch(f"/pro/collective/offers/{offer.id}/educational_institution", json=data)
 
         # Then
         assert response.status_code == 403
@@ -196,7 +196,7 @@ class Returns403Test:
         # When
         client = client.with_session_auth("pro@example.com")
         data = {"educationalInstitutionId": institution2.id}
-        response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
+        response = client.patch(f"/pro/collective/offers/{offer.id}/educational_institution", json=data)
 
         # Then
         assert response.status_code == 403
@@ -216,7 +216,7 @@ class Returns403Test:
         # When
         client = client.with_session_auth("pro@example.com")
         data = {"educationalInstitutionId": institution2.id}
-        response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
+        response = client.patch(f"/pro/collective/offers/{offer.id}/educational_institution", json=data)
 
         # Then
         assert response.status_code == 403
@@ -233,7 +233,7 @@ class Returns403Test:
 
         client = client.with_session_auth("pro@example.com")
         data = {"educationalInstitutionId": institution2.id}
-        response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
+        response = client.patch(f"/pro/collective/offers/{offer.id}/educational_institution", json=data)
 
         assert response.status_code == 403
         assert response.json == {"offer": ["Cette action n'est pas autorisée sur cette offre"]}
@@ -249,7 +249,7 @@ class Returns403Test:
 
         client = client.with_session_auth("pro@example.com")
         data = {"educationalInstitutionId": institution2.id}
-        response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
+        response = client.patch(f"/pro/collective/offers/{offer.id}/educational_institution", json=data)
 
         assert response.status_code == 403
         assert response.json == {"offer": ["Cette action n'est pas autorisée sur cette offre"]}
@@ -266,7 +266,7 @@ class Returns403Test:
         # When
         client = client.with_session_auth("pro@example.com")
         data = {"educationalInstitutionId": institution.id}
-        response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
+        response = client.patch(f"/pro/collective/offers/{offer.id}/educational_institution", json=data)
 
         # Then
         assert response.status_code == 403
@@ -285,7 +285,7 @@ class Returns403Test:
         # When
         client = client.with_session_auth("pro@example.com")
         data = {"educationalInstitutionId": institution.id}
-        response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
+        response = client.patch(f"/pro/collective/offers/{offer.id}/educational_institution", json=data)
 
         # Then
         assert response.status_code == 403

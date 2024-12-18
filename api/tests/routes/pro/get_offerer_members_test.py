@@ -35,7 +35,7 @@ class Returns200Test:
         queries += 1  # select user_offerer
         queries += 1  # select offerer_invitation
         with testing.assert_num_queries(queries):
-            response = client.get(f"/offerers/{offerer_id}/members")
+            response = client.get(f"/pro/offerers/{offerer_id}/members")
             assert response.status_code == 200
 
         assert response.json["members"] == [
@@ -58,5 +58,5 @@ class Returns400Test:
         queries += 1  # check user_offerer exists
         queries += 1  # rollback
         with testing.assert_num_queries(queries):
-            response = client.get(f"/offerers/{offerer_id}/members")
+            response = client.get(f"/pro/offerers/{offerer_id}/members")
             assert response.status_code == 403

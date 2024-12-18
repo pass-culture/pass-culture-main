@@ -22,7 +22,7 @@ class Returns204Test:
         # When
         client = client.with_session_auth("pro@example.com")
         data = {"isActive": True, "page": 1, "venueId": venue.id}
-        response = client.patch("/offers/all-active-status", json=data)
+        response = client.patch("/pro/offers/all-active-status", json=data)
 
         # Then
         assert response.status_code == 202
@@ -40,7 +40,7 @@ class Returns204Test:
         # When
         client = client.with_session_auth("pro@example.com")
         data = {"isActive": False}
-        response = client.patch("/offers/all-active-status", json=data)
+        response = client.patch("/pro/offers/all-active-status", json=data)
 
         # Then
         assert response.status_code == 202
@@ -75,7 +75,7 @@ class Returns204Test:
         client = client.with_session_auth(user_offerer.user.email)
 
         # When
-        response = client.patch("/offers/all-active-status", json=data)
+        response = client.patch("/pro/offers/all-active-status", json=data)
 
         # Then
         assert response.status_code == 202
@@ -95,7 +95,7 @@ class Returns204Test:
 
         client = client.with_session_auth("pro@example.com")
         data = {"isActive": True, "page": 1, "venueId": venue.id}
-        response = client.patch("/offers/all-active-status", json=data)
+        response = client.patch("/pro/offers/all-active-status", json=data)
 
         assert response.status_code == 202
         assert approved_offer.isActive
@@ -121,7 +121,7 @@ class Returns204Test:
 
         client = client.with_session_auth("pro@example.com")
         data = {"isActive": True, "venueId": venue.id}
-        response = client.patch("/offers/all-active-status", json=data)
+        response = client.patch("/pro/offers/all-active-status", json=data)
 
         assert response.status_code == 202
 
@@ -139,7 +139,7 @@ class Returns204Test:
 
         authentified_client = client.with_session_auth("pro@example.com")
         data = {"isActive": True, "offererAddressId": offerer_address.id}
-        response = authentified_client.patch("/offers/all-active-status", json=data)
+        response = authentified_client.patch("/pro/offers/all-active-status", json=data)
         assert response.status_code == 202
         offer1 = Offer.query.get(offer1.id)
         offer2 = Offer.query.get(offer2.id)

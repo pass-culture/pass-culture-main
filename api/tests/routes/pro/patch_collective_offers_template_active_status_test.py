@@ -27,7 +27,7 @@ class Returns204Test:
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
             client = client.with_session_auth("pro@example.com")
-            response = client.patch("/collective/offers-template/active-status", json=data)
+            response = client.patch("/pro/collective/offers-template/active-status", json=data)
 
         # Then
         assert response.status_code == 204
@@ -46,7 +46,7 @@ class Returns204Test:
         client = client.with_session_auth("pro@example.com")
         data = {"ids": [offer1.id, offer2.id], "isActive": False}
         with testing.assert_no_duplicated_queries():
-            response = client.patch("/collective/offers-template/active-status", json=data)
+            response = client.patch("/pro/collective/offers-template/active-status", json=data)
 
         # Then
         assert response.status_code == 204
@@ -70,7 +70,7 @@ class Returns204Test:
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
             client = client.with_session_auth("pro@example.com")
-            response = client.patch("/collective/offers-template/active-status", json=data)
+            response = client.patch("/pro/collective/offers-template/active-status", json=data)
 
         assert response.status_code == 204
         assert approved_offer.isActive
@@ -97,7 +97,7 @@ class Returns403Test:
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
             return_value=False,
         ):
-            response = client.patch("/collective/offers-template/active-status", json=data)
+            response = client.patch("/pro/collective/offers-template/active-status", json=data)
 
         # Then
         assert response.status_code == 403

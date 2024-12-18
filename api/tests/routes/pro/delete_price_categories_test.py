@@ -19,7 +19,7 @@ class Return200Test:
             offerer=offer.venue.managingOfferer,
         )
         response = client.with_session_auth(offerer.user.email).delete(
-            f"/offers/{offer.id}/price_categories/{price_category.id}"
+            f"/pro/offers/{offer.id}/price_categories/{price_category.id}"
         )
 
         assert response.status_code == 204
@@ -37,7 +37,7 @@ class Return400Test:
         )
 
         response = client.with_session_auth("user@example.com").delete(
-            f"/offers/{validated_offer.id}/price_categories/{undeletable_price_category.id}"
+            f"/pro/offers/{validated_offer.id}/price_categories/{undeletable_price_category.id}"
         )
 
         assert response.status_code == 400
@@ -49,7 +49,7 @@ class Return400Test:
         unrelated_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
 
         response = client.with_session_auth(unrelated_offerer.user.email).delete(
-            f"/offers/{offer.id}/price_categories/{price_category.id}"
+            f"/pro/offers/{offer.id}/price_categories/{price_category.id}"
         )
 
         assert response.status_code == 403

@@ -20,20 +20,20 @@ class PostUserReviewTest:
             "userSatisfaction": "Bonne",
             "userComment": "c'est quand même très blanc",
             "offererId": offerer.id,
-            "location": f"/offerers/{id}",
+            "location": f"/pro/offerers/{id}",
         }
 
         client = client.with_session_auth(user.email)
 
         with caplog.at_level(logging.INFO):
-            response = client.post("/users/log-user-review", json=expected_data)
+            response = client.post("/pro/users/log-user-review", json=expected_data)
 
         assert response.status_code == 204
         assert "User submitting review" in caplog.messages
         assert caplog.records[0].extra["offerer_id"] == offerer.id
         assert caplog.records[0].extra["user_satisfaction"] == expected_data["userSatisfaction"]
         assert caplog.records[0].extra["user_comment"] == expected_data["userComment"]
-        assert caplog.records[0].extra["source_page"] == f"/offerers/{id}"
+        assert caplog.records[0].extra["source_page"] == f"/pro/offerers/{id}"
         assert caplog.records[0].technical_message_id == "user_review"
 
     def test_user_cannot_submit_review_for_foreign_offerer(self, client, caplog):
@@ -46,13 +46,13 @@ class PostUserReviewTest:
             "userSatisfaction": "Mauvaise",
             "userComment": "messing with statistics again è_é",
             "offererId": foreign_offerer.id,
-            "location": f"/offerers/{id}/",
+            "location": f"/pro/offerers/{id}/",
         }
 
         client = client.with_session_auth(user.email)
 
         with caplog.at_level(logging.INFO):
-            response = client.post("/users/log-user-review", json=data)
+            response = client.post("/pro/users/log-user-review", json=data)
 
         assert response.status_code == 403
         assert "User submitting review" not in caplog.messages

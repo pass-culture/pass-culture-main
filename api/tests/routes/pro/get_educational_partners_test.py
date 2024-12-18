@@ -16,7 +16,7 @@ class Return200Test:
         client = client.with_session_auth(pro_user.email)
         queries = testing.AUTHENTICATION_QUERIES
         with testing.assert_num_queries(queries):
-            response = client.get("/cultural-partners")
+            response = client.get("/pro/cultural-partners")
             assert response.status_code == 200
 
         assert response.json == {
@@ -40,5 +40,5 @@ class Return200Test:
 class Return401Test:
     def test_get_educational_partners_no_user_login(self, client: Any) -> None:
         with testing.assert_num_queries(0):
-            response = client.get("/cultural-partners")
+            response = client.get("/pro/cultural-partners")
             assert response.status_code == 401

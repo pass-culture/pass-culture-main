@@ -35,7 +35,7 @@ class Returns200Test:
         user = users_factories.UserFactory(email="pro@example.com")
 
         client = client.with_session_auth(user.email)
-        response = client.post("/offerers/new", json=REQUEST_BODY)
+        response = client.post("/pro/offerers/new", json=REQUEST_BODY)
 
         assert response.status_code == 201
         created_offerer = offerers_models.Offerer.query.one()
@@ -81,7 +81,7 @@ class Returns200Test:
         user = users_factories.UserFactory(email="pro@example.com")
 
         client = client.with_session_auth(user.email)
-        response = client.post("/offerers/new", json=REQUEST_BODY)
+        response = client.post("/pro/offerers/new", json=REQUEST_BODY)
 
         created_offerer = offerers_models.Offerer.query.one()
         assert response.json == {
@@ -95,7 +95,7 @@ class Returns200Test:
         user = users_factories.UserFactory(email="pro@example.com")
 
         client = client.with_session_auth(user.email)
-        response = client.post("/offerers/new", json=REQUEST_BODY)
+        response = client.post("/pro/offerers/new", json=REQUEST_BODY)
 
         assert response.status_code == 201
         created_offerer = offerers_models.Offerer.query.one()
@@ -112,7 +112,7 @@ class Returns400Test:
         user = users_factories.UserFactory()
 
         client = client.with_session_auth(user.email)
-        response = client.post("/offerers/new", json=REQUEST_BODY)
+        response = client.post("/pro/offerers/new", json=REQUEST_BODY)
 
         assert response.status_code == 400
         assert offerers_models.Offerer.query.count() == 0
@@ -124,7 +124,7 @@ class Returns400Test:
         user = users_factories.UserFactory()
 
         client = client.with_session_auth(user.email)
-        response = client.post("/offerers/new", json=REQUEST_BODY)
+        response = client.post("/pro/offerers/new", json=REQUEST_BODY)
 
         assert response.status_code == 400
         assert response.json == {"global": ["Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles."]}
@@ -144,7 +144,7 @@ class Returns400Test:
         user = users_factories.UserFactory()
 
         client = client.with_session_auth(user.email)
-        response = client.post("/offerers/new", json=REQUEST_BODY)
+        response = client.post("/pro/offerers/new", json=REQUEST_BODY)
 
         assert response.status_code == 400
         assert response.json == {"siret": "SIRET is no longer active"}
@@ -159,7 +159,7 @@ class Returns500Test:
         user = users_factories.UserFactory()
 
         client = client.with_session_auth(user.email)
-        response = client.post("/offerers/new", json=REQUEST_BODY)
+        response = client.post("/pro/offerers/new", json=REQUEST_BODY)
 
         assert response.status_code == 500
         assert offerers_models.Offerer.query.count() == 0

@@ -44,7 +44,7 @@ class Returns201Test:
         auth_request = client.with_session_auth(email=user.email)
 
         # When
-        response = auth_request.post("/venueProviders", json=venue_provider_data)
+        response = auth_request.post("/pro/venueProviders", json=venue_provider_data)
 
         # Then
         assert response.status_code == 201
@@ -84,7 +84,7 @@ class Returns201Test:
         auth_request = client.with_session_auth(email=user.email)
 
         # When
-        response = auth_request.post("/venueProviders", json=venue_provider_data)
+        response = auth_request.post("/pro/venueProviders", json=venue_provider_data)
 
         # Then
         assert response.status_code == 201
@@ -115,7 +115,7 @@ class Returns201Test:
         auth_request = client.with_session_auth(email=user.email)
 
         # When
-        response = auth_request.post("/venueProviders", json=venue_provider_data)
+        response = auth_request.post("/pro/venueProviders", json=venue_provider_data)
 
         # Then
         assert response.status_code == 201
@@ -147,7 +147,7 @@ class Returns201Test:
         mock_siret_can_be_synchronized.return_value = True
 
         # When
-        response = auth_request.post("/venueProviders", json=venue_provider_data)
+        response = auth_request.post("/pro/venueProviders", json=venue_provider_data)
 
         # Then
         assert response.status_code == 201
@@ -194,7 +194,7 @@ class Returns201Test:
         mock_siret_can_be_synchronized.return_value = True
 
         # When
-        response = auth_request.post("/venueProviders", json=venue_provider_data)
+        response = auth_request.post("/pro/venueProviders", json=venue_provider_data)
 
         # Then
         assert response.status_code == 201
@@ -221,7 +221,7 @@ class Returns201Test:
         }
 
         # When
-        response = client.post("/venueProviders", json=venue_provider_data)
+        response = client.post("/pro/venueProviders", json=venue_provider_data)
 
         # Then
         assert response.status_code == 400
@@ -315,7 +315,7 @@ class Returns201Test:
         ]
         mock_get_shows.return_value = mocked_shows
 
-        response = client.post("/venueProviders", json=venue_provider_data)
+        response = client.post("/pro/venueProviders", json=venue_provider_data)
 
         assert response.json["provider"]["id"] == provider.id
         assert response.json["venueId"] == venue.id
@@ -334,7 +334,7 @@ class Returns201Test:
         client = client.with_session_auth(email=user.email)
         venue_provider_data = {"providerId": ems_provider.id, "venueId": venue.id}
 
-        response = client.post("/venueProviders", json=venue_provider_data)
+        response = client.post("/pro/venueProviders", json=venue_provider_data)
 
         assert response.status_code == 201
         assert response.json["provider"]["id"] == ems_provider.id
@@ -354,7 +354,7 @@ class Returns400Test:
         venue_provider_data = {}
 
         # When
-        response = auth_request.post("/venueProviders", json=venue_provider_data)
+        response = auth_request.post("/pro/venueProviders", json=venue_provider_data)
 
         # Then
         assert response.status_code == 400
@@ -380,7 +380,7 @@ class Returns400Test:
         auth_request = client.with_session_auth(email=user.email)
 
         # When
-        response = auth_request.post("/venueProviders", json=venue_provider_data)
+        response = auth_request.post("/pro/venueProviders", json=venue_provider_data)
 
         # Then
         assert response.status_code == 400
@@ -404,7 +404,7 @@ class Returns400Test:
         auth_request = client.with_session_auth(email=user.email)
 
         # When
-        response = auth_request.post("/venueProviders", json=venue_provider_data)
+        response = auth_request.post("/pro/venueProviders", json=venue_provider_data)
 
         # Then
         assert response.status_code == 400
@@ -429,7 +429,7 @@ class Returns400Test:
         auth_request = client.with_session_auth(email=user.email)
 
         # When
-        response = auth_request.post("/venueProviders", json=venue_provider_data)
+        response = auth_request.post("/pro/venueProviders", json=venue_provider_data)
 
         # Then
         assert response.status_code == 400
@@ -441,7 +441,7 @@ class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def test_when_user_is_not_logged_in(self, client):
         # when
-        response = client.post("/venueProviders")
+        response = client.post("/pro/venueProviders")
 
         # then
         assert response.status_code == 401
@@ -465,7 +465,7 @@ class Returns404Test:
         auth_request = client.with_session_auth(email=user.email)
 
         # When
-        response = auth_request.post("/venueProviders", json=venue_provider_data)
+        response = auth_request.post("/pro/venueProviders", json=venue_provider_data)
 
         # Then
         assert response.status_code == 404
@@ -488,7 +488,7 @@ class Returns404Test:
         auth_request = client.with_session_auth(email=user.email)
 
         # When
-        response = auth_request.post("/venueProviders", json=venue_provider_data)
+        response = auth_request.post("/pro/venueProviders", json=venue_provider_data)
 
         # Then
         assert response.status_code == 404
@@ -524,7 +524,7 @@ class Returns422Test:
         mock_siret_can_be_synchronized.side_effect = [errors]
 
         # When
-        response = auth_request.post("/venueProviders", json=venue_provider_data)
+        response = auth_request.post("/pro/venueProviders", json=venue_provider_data)
 
         # Then
         assert response.status_code == 422
@@ -557,7 +557,7 @@ class ConnectProviderToVenueTest:
         mock_siret_can_be_synchronized.return_value = True
 
         # When
-        auth_request.post("/venueProviders", json=venue_provider_data)
+        auth_request.post("/pro/venueProviders", json=venue_provider_data)
 
         # Then
         mocked_connect_venue_to_provider.assert_called_once_with(venue, provider, None)
@@ -586,7 +586,7 @@ class ConnectProviderToVenueTest:
         auth_request = client.with_session_auth(email=user.email)
 
         # When
-        auth_request.post("/venueProviders", json=venue_provider_data)
+        auth_request.post("/pro/venueProviders", json=venue_provider_data)
 
         # Then
         assert len(venue.venueProviders) == 1
@@ -614,7 +614,7 @@ class ConnectProviderToVenueTest:
             "venueId": venue.id,
         }
 
-        response = client.with_session_auth(email=user.email).post("/venueProviders", json=venue_provider_data)
+        response = client.with_session_auth(email=user.email).post("/pro/venueProviders", json=venue_provider_data)
 
         assert response.status_code == 201
         assert len(venue.venueProviders) == 1
@@ -642,7 +642,7 @@ class ConnectProviderToVenueTest:
             "venueId": venue.id,
         }
 
-        response = client.with_session_auth(email=user.email).post("/venueProviders", json=venue_provider_data)
+        response = client.with_session_auth(email=user.email).post("/pro/venueProviders", json=venue_provider_data)
 
         assert response.status_code == 201
         assert len(venue.venueProviders) == 1

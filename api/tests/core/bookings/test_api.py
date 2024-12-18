@@ -2117,7 +2117,7 @@ class ArchiveOldBookingsTest:
         stock_data = {
             "price": 10,
         }
-        client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        client.with_session_auth("user@example.com").post("/pro/stocks/bulk", json=stock_data)
 
         # when
         api.archive_old_bookings()

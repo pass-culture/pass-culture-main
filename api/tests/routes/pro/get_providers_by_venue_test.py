@@ -24,7 +24,7 @@ def test_venue_has_known_allocine_id(client):
     num_queries += 1  # select allocine_theater
     num_queries += 1  # select provider
     with testing.assert_num_queries(num_queries):
-        response = client.get(f"/venueProviders/{venue_id}")
+        response = client.get(f"/pro/venueProviders/{venue_id}")
         assert response.status_code == 200
 
     assert len(response.json) == 2
@@ -61,7 +61,7 @@ def test_venue_has_no_allocine_id(client):
     num_queries += 1  # select allocine_theater
     num_queries += 1  # select provider
     with testing.assert_num_queries(num_queries):
-        response = client.get(f"/venueProviders/{venue_id}")
+        response = client.get(f"/pro/venueProviders/{venue_id}")
         assert response.status_code == 200
 
     assert len(response.json) == 1
@@ -100,7 +100,7 @@ def test_venue_has_offerer_provider(client):
     num_queries += 1  # select allocine_theater
     num_queries += 1  # select provider
     with testing.assert_num_queries(num_queries):
-        response = client.get(f"/venueProviders/{venue_id}")
+        response = client.get(f"/pro/venueProviders/{venue_id}")
         assert response.status_code == 200
 
     assert response.status_code == 200
@@ -125,12 +125,12 @@ def test_venue_does_not_exist(client):
     num_queries = testing.AUTHENTICATION_QUERIES
     num_queries += 1  # select venue
     with testing.assert_num_queries(num_queries):
-        response = client.get("/venueProviders/1234")
+        response = client.get("/pro/venueProviders/1234")
         assert response.status_code == 404
 
 
 @pytest.mark.usefixtures("db_session")
 def test_user_is_not_logged_in(client):
     with testing.assert_num_queries(0):
-        response = client.get("/venueProviders/1234")
+        response = client.get("/pro/venueProviders/1234")
         assert response.status_code == 401

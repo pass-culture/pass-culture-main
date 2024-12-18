@@ -52,7 +52,7 @@ class GetOffererTest:
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
             with testing.assert_no_duplicated_queries():
-                response = client.get(f"/offerers/{offerer_id}")
+                response = client.get(f"/pro/offerers/{offerer_id}")
                 assert response.status_code == 200
 
         expected_serialized_offerer = {
@@ -138,7 +138,7 @@ class GetOffererTest:
 
         client = client.with_session_auth(pro.email)
         with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES):
-            response = client.get("/offerers/ABC1234")
+            response = client.get("/pro/offerers/ABC1234")
             assert response.status_code == 404
 
     def test_unauthorized_offerer(self, client):
@@ -151,7 +151,7 @@ class GetOffererTest:
         num_queries += 1  # check user_offerer exists
         num_queries += 1  # rollback
         with testing.assert_num_queries(num_queries):
-            response = client.get(f"/offerers/{offerer_id}")
+            response = client.get(f"/pro/offerers/{offerer_id}")
             assert response.status_code == 403
 
     def test_serialize_venue_offer_created_flag(self, client):
@@ -183,7 +183,7 @@ class GetOffererTest:
 
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
-            response = client.get(f"/offerers/{offerer_id}")
+            response = client.get(f"/pro/offerers/{offerer_id}")
             assert response.status_code == 200
         assert response.json["managedVenues"][0]["hasCreatedOffer"] is True
         assert response.json["managedVenues"][1]["hasCreatedOffer"] is True
@@ -215,7 +215,7 @@ class GetOffererTest:
 
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
-            response = client.get(f"/offerers/{offerer_id}")
+            response = client.get(f"/pro/offerers/{offerer_id}")
             assert response.status_code == 200
         assert response.json["managedVenues"][0]["hasCreatedOffer"] is True
         assert response.json["hasValidBankAccount"] is False
@@ -262,7 +262,7 @@ class GetOffererTest:
 
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
-            response = client.get(f"/offerers/{offerer_id}")
+            response = client.get(f"/pro/offerers/{offerer_id}")
             assert response.status_code == 200
         is_onboarded = (offers_status is not None and offers_status != offers_models.OfferValidationStatus.DRAFT) or (
             adage_ds_application is not None
@@ -290,7 +290,7 @@ class GetOffererTest:
 
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
-            response = client.get(f"/offerers/{offerer_id}")
+            response = client.get(f"/pro/offerers/{offerer_id}")
             assert response.status_code == 200
         assert response.json["managedVenues"][0]["hasCreatedOffer"] is True
         assert response.json["hasValidBankAccount"] is False
@@ -345,7 +345,7 @@ class GetOffererTest:
 
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
-            response = client.get(f"/offerers/{offerer_id}")
+            response = client.get(f"/pro/offerers/{offerer_id}")
             assert response.status_code == 200
 
         assert response.json["managedVenues"][0]["hasCreatedOffer"] is (num_approved_offers > 0)
@@ -380,7 +380,7 @@ class GetOffererTest:
 
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
-            response = client.get(f"/offerers/{offerer_id}")
+            response = client.get(f"/pro/offerers/{offerer_id}")
             assert response.status_code == 200
         assert response.json["managedVenues"][0]["hasCreatedOffer"] is True
         assert response.json["hasValidBankAccount"] is False
@@ -412,7 +412,7 @@ class GetOffererTest:
 
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
-            response = client.get(f"/offerers/{offerer_id}")
+            response = client.get(f"/pro/offerers/{offerer_id}")
             assert response.status_code == 200
         assert response.json["managedVenues"][0]["hasCreatedOffer"] is True
         assert response.json["hasValidBankAccount"] is False
@@ -442,7 +442,7 @@ class GetOffererTest:
 
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
-            response = client.get(f"/offerers/{offerer_id}")
+            response = client.get(f"/pro/offerers/{offerer_id}")
             assert response.status_code == 200
         assert response.json["managedVenues"][0]["hasCreatedOffer"] is True
         assert response.json["hasValidBankAccount"] is False
@@ -474,7 +474,7 @@ class GetOffererTest:
 
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
-            response = client.get(f"/offerers/{offerer_id}")
+            response = client.get(f"/pro/offerers/{offerer_id}")
             assert response.status_code == 200
         assert response.json["managedVenues"][0]["hasCreatedOffer"] is True
         assert response.json["hasValidBankAccount"] is False
@@ -500,7 +500,7 @@ class GetOffererTest:
 
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
-            response = http_client.get(f"/offerers/{offerer.id}")
+            response = http_client.get(f"/pro/offerers/{offerer.id}")
             assert response.status_code == 200
 
         offerer = response.json
@@ -538,7 +538,7 @@ class GetOffererTest:
 
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
-            response = http_client.get(f"/offerers/{offerer_id}")
+            response = http_client.get(f"/pro/offerers/{offerer_id}")
             assert response.status_code == 200
 
         offerer = response.json
@@ -598,7 +598,7 @@ class GetOffererTest:
 
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
-            response = http_client.get(f"/offerers/{offerer_id}")
+            response = http_client.get(f"/pro/offerers/{offerer_id}")
             assert response.status_code == 200
 
         offerer = response.json
@@ -632,7 +632,7 @@ class GetOffererTest:
 
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
-            response = http_client.get(f"/offerers/{offerer_id}")
+            response = http_client.get(f"/pro/offerers/{offerer_id}")
             assert response.status_code == 200
 
         offerer = response.json
@@ -664,7 +664,7 @@ class GetOffererTest:
 
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
-            response = http_client.get(f"/offerers/{offerer_id}")
+            response = http_client.get(f"/pro/offerers/{offerer_id}")
             assert response.status_code == 200
 
         offerer = response.json
@@ -694,7 +694,7 @@ class GetOffererTest:
 
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
-            response = http_client.get(f"/offerers/{offerer_id}")
+            response = http_client.get(f"/pro/offerers/{offerer_id}")
             assert response.status_code == 200
 
         offerer = response.json
@@ -740,7 +740,7 @@ class GetOffererTest:
 
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
-            response = http_client.get(f"/offerers/{offerer_id}")
+            response = http_client.get(f"/pro/offerers/{offerer_id}")
             assert response.status_code == 200
 
         offerer = response.json
@@ -774,7 +774,7 @@ class GetOffererTest:
 
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
-            response = client.get(f"/offerers/{offerer_id}")
+            response = client.get(f"/pro/offerers/{offerer_id}")
             assert response.status_code == 200
         sorted_managed_venues = sorted(response.json["managedVenues"], key=lambda x: x["name"])
         assert sorted_managed_venues[0]["hasVenueProviders"] is True
@@ -815,7 +815,7 @@ class GetOffererTest:
 
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
-            response = client.get(f"/offerers/{offerer_id}")
+            response = client.get(f"/pro/offerers/{offerer_id}")
             assert response.status_code == 200
 
         assert response.json["hasValidBankAccount"] is False
@@ -845,24 +845,28 @@ class GetOffererTest:
 
         # Link all offerer venues to this bank_account
         response = http_client.patch(
-            f"/offerers/{offerer.id}/bank-accounts/{bank_account.id}",
+            f"/pro/offerers/{offerer.id}/bank-accounts/{bank_account.id}",
             json={"venues_ids": [first_venue.id, second_venue.id, third_venue.id]},
         )
         assert response.status_code == 204
 
         # Finally unlink all the venues
-        response = http_client.patch(f"/offerers/{offerer.id}/bank-accounts/{bank_account.id}", json={"venues_ids": []})
+        response = http_client.patch(
+            f"/pro/offerers/{offerer.id}/bank-accounts/{bank_account.id}", json={"venues_ids": []}
+        )
         assert response.status_code == 204
 
         # User changed his mind
         response = http_client.patch(
-            f"/offerers/{offerer.id}/bank-accounts/{bank_account.id}",
+            f"/pro/offerers/{offerer.id}/bank-accounts/{bank_account.id}",
             json={"venues_ids": [first_venue.id, second_venue.id, third_venue.id]},
         )
         assert response.status_code == 204
 
         # User changed his mind, again, backward
-        response = http_client.patch(f"/offerers/{offerer.id}/bank-accounts/{bank_account.id}", json={"venues_ids": []})
+        response = http_client.patch(
+            f"/pro/offerers/{offerer.id}/bank-accounts/{bank_account.id}", json={"venues_ids": []}
+        )
         assert response.status_code == 204
 
         # We now have plenty of VenueBankAccountLink
@@ -878,7 +882,7 @@ class GetOffererTest:
         num_queries += 1  # select missing managedVenues
         num_queries += 1  # select venues_id with active offers
         with testing.assert_num_queries(num_queries):
-            response = http_client.get(f"/offerers/{offerer_id}")
+            response = http_client.get(f"/pro/offerers/{offerer_id}")
             assert response.status_code == 200
 
         assert set(response.json["venuesWithNonFreeOffersWithoutBankAccounts"]) == {

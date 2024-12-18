@@ -235,7 +235,7 @@ class Returns200Test:
         num_queries += 1  # select venue_bank_account_link
         num_queries += 1  # select offer
         with testing.assert_num_queries(num_queries):
-            response = auth_request.get("/venues/%s" % venue_id)
+            response = auth_request.get("/pro/venues/%s" % venue_id)
             assert response.status_code == 200
 
         assert response.json == expected_serialized_venue
@@ -262,7 +262,7 @@ class Returns200Test:
         num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
         with testing.assert_num_queries(num_queries):
-            response = auth_request.get("/venues/%s" % venue_id)
+            response = auth_request.get("/pro/venues/%s" % venue_id)
             assert response.status_code == 200
 
         assert response.json["adageInscriptionDate"] is None
@@ -297,7 +297,7 @@ class Returns200Test:
         num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
         with testing.assert_num_queries(num_queries):
-            response = auth_request.get("/venues/%s" % venue_id)
+            response = auth_request.get("/pro/venues/%s" % venue_id)
             assert response.status_code == 200
 
         assert response.json["bannerMeta"] == {
@@ -329,7 +329,7 @@ class Returns200Test:
         num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
         with testing.assert_num_queries(num_queries):
-            response = auth_request.get("/venues/%s" % venue_id)
+            response = auth_request.get("/pro/venues/%s" % venue_id)
             assert response.status_code == 200
 
         assert response.json["bannerMeta"] is None
@@ -354,7 +354,7 @@ class Returns200Test:
         num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
         with testing.assert_num_queries(num_queries):
-            response = auth_request.get("/venues/%s" % venue_id)
+            response = auth_request.get("/pro/venues/%s" % venue_id)
             assert response.status_code == 200
 
         assert response.json["bannerMeta"]["crop_params"] == {
@@ -383,7 +383,7 @@ class Returns200Test:
         num_queries += 1  # select offer
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
-            response = auth_request.get("/venues/%s" % venue_id)
+            response = auth_request.get("/pro/venues/%s" % venue_id)
             assert response.status_code == 200
 
         assert response.json["bannerMeta"] == {
@@ -425,7 +425,7 @@ class Returns200Test:
         num_queries += 1  # select offer
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
-            response = auth_request.get("/venues/%s" % venue_id)
+            response = auth_request.get("/pro/venues/%s" % venue_id)
             assert response.status_code == 200
 
         assert response.json["bannerMeta"] == {
@@ -458,7 +458,7 @@ class Returns200Test:
         num_queries += 1  # select offer
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
-            response = auth_request.get("/venues/%s" % venue_id)
+            response = auth_request.get("/pro/venues/%s" % venue_id)
             assert response.status_code == 200
 
         assert response.json["bannerMeta"]["crop_params"] == {
@@ -495,7 +495,7 @@ class Returns200Test:
         num_queries += 1  # select offer
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
-            response = auth_request.get("/venues/%s" % venue_id)
+            response = auth_request.get("/pro/venues/%s" % venue_id)
             assert response.status_code == 200
 
         assert response.json["bannerMeta"]["crop_params"] == {
@@ -524,7 +524,7 @@ class Returns200Test:
         num_queries += 1  # select offer
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
-            response = auth_request.get("/venues/%s" % venue_id)
+            response = auth_request.get("/pro/venues/%s" % venue_id)
             assert response.status_code == 200
 
         assert response.json["bannerMeta"] == {
@@ -555,7 +555,7 @@ class Returns200Test:
         num_queries += 1  # select offer
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
-            response = auth_request.get("/venues/%s" % venue_id)
+            response = auth_request.get("/pro/venues/%s" % venue_id)
             assert response.status_code == 200
 
         assert response.json["openingHours"]["THURSDAY"] == [
@@ -585,7 +585,7 @@ class Returns200Test:
         num_queries += 1  # select offer
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
-            response = auth_request.get("/venues/%s" % venue_id)
+            response = auth_request.get("/pro/venues/%s" % venue_id)
             assert response.status_code == 200
 
         assert response.json["openingHours"]["SATURDAY"] == [
@@ -612,7 +612,7 @@ class Returns200Test:
         num_queries += 1  # select offer
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
-            response = auth_request.get("/venues/%s" % venue_id)
+            response = auth_request.get("/pro/venues/%s" % venue_id)
             assert response.status_code == 200
 
         assert venue.accessibilityProvider == None
@@ -640,7 +640,7 @@ class Returns200Test:
         num_queries += 1  # select offer
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
-            response = auth_request.get("/venues/%s" % venue_id)
+            response = auth_request.get("/pro/venues/%s" % venue_id)
             assert response.status_code == 200
 
         assert response.json["externalAccessibilityId"] == "lencre-et-la-plume"
@@ -666,7 +666,7 @@ class Returns200Test:
         num_queries += 1  # select offer
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
-            response = auth_request.get("/venues/%s" % venue_id)
+            response = auth_request.get("/pro/venues/%s" % venue_id)
             assert response.status_code == 200
 
         assert venue.accessibilityProvider == accessibility_provider
@@ -721,7 +721,7 @@ class Returns200Test:
         num_queries += 1  # select offer
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
-            response = auth_request.get("/venues/%s" % venue_id)
+            response = auth_request.get("/pro/venues/%s" % venue_id)
             assert response.status_code == 200
 
         assert venue.accessibilityProvider is not None
@@ -769,7 +769,7 @@ class Returns200Test:
         num_queries += 1  # select offer
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
-            response = auth_request.get("/venues/%s" % venue_id)
+            response = auth_request.get("/pro/venues/%s" % venue_id)
             assert response.status_code == 200
 
         assert response.json["hasOffers"]
@@ -788,7 +788,7 @@ class Returns403Test:
         num_queries += 1  # check user has rignts on venue
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
-            response = auth_request.get("/venues/%s" % venue_id)
+            response = auth_request.get("/pro/venues/%s" % venue_id)
             assert response.status_code == 403
 
         assert response.json["global"] == [

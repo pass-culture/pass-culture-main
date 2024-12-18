@@ -6,7 +6,7 @@ import pcapi.core.users.factories as users_factories
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-ROUTE_PATH = "/users/pro_flags"
+ROUTE_PATH = "/pro/users/pro_flags"
 
 
 class Returns204Test:

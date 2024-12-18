@@ -11,7 +11,7 @@ def test_existing_user_session_to_be_deleted(client):
     client = client.with_session_auth(email=user.email)
     assert users_models.UserSession.query.filter_by(userId=user.id).count() == 1
 
-    response = client.get("/users/signout")
+    response = client.get("/pro/users/signout")
 
     assert response.status_code == 204
     assert users_models.UserSession.query.filter_by(userId=user.id).count() == 0

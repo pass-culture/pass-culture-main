@@ -32,7 +32,7 @@ class Returns200Test:
         requested_venue_id = requested_venue.id
         authenticated_client = client.with_session_auth(email=pro.email)
         with testing.assert_num_queries(self.number_of_queries):
-            response = authenticated_client.get(f"/offers?venueId={requested_venue_id}")
+            response = authenticated_client.get(f"/pro/offers?venueId={requested_venue_id}")
             assert response.status_code == 200
 
         offers = response.json
@@ -49,7 +49,7 @@ class Returns200Test:
         authenticated_client = client.with_session_auth(email=pro.email)
         # -1 due to mocking
         with testing.assert_num_queries(self.number_of_queries - 1):
-            response = authenticated_client.get(f"/offers?venueId={venue_id}")
+            response = authenticated_client.get(f"/pro/offers?venueId={venue_id}")
             assert response.status_code == 200
         mocked_get_capped_offers.assert_called_once_with(
             user_id=pro.id,
@@ -75,7 +75,7 @@ class Returns200Test:
         authenticated_client = client.with_session_auth(email=pro.email)
         # -1 due to mocking
         with testing.assert_num_queries(self.number_of_queries - 1):
-            response = authenticated_client.get("/offers?status=ACTIVE")
+            response = authenticated_client.get("/pro/offers?status=ACTIVE")
             assert response.status_code == 200
 
         mocked_get_capped_offers.assert_called_once_with(
@@ -104,7 +104,7 @@ class Returns200Test:
         authenticated_client = client.with_session_auth(email=pro.email)
         # -1 due to mocking
         with testing.assert_num_queries(self.number_of_queries - 1):
-            response = authenticated_client.get(f"/offers?offererId={offerer_id}")
+            response = authenticated_client.get(f"/pro/offers?offererId={offerer_id}")
             assert response.status_code == 200
 
         mocked_get_capped_offers.assert_called_once_with(
@@ -131,7 +131,7 @@ class Returns200Test:
         authenticated_client = client.with_session_auth(email=pro.email)
         # -1 due to mocking
         with testing.assert_num_queries(self.number_of_queries - 1):
-            response = authenticated_client.get("/offers?creationMode=imported")
+            response = authenticated_client.get("/pro/offers?creationMode=imported")
             assert response.status_code == 200
 
         mocked_get_capped_offers.assert_called_once_with(
@@ -158,7 +158,7 @@ class Returns200Test:
         authenticated_client = client.with_session_auth(email=pro.email)
         # -1 due to mocking
         with testing.assert_num_queries(self.number_of_queries - 1):
-            response = authenticated_client.get("/offers?periodBeginningDate=2020-10-11")
+            response = authenticated_client.get("/pro/offers?periodBeginningDate=2020-10-11")
             assert response.status_code == 200
 
         mocked_get_capped_offers.assert_called_once_with(
@@ -194,7 +194,7 @@ class Returns200Test:
         authenticated_client = client.with_session_auth(email=pro.email)
         # +1 Feature flag
         with testing.assert_num_queries(self.number_of_queries + 1):
-            response = authenticated_client.get(f"/offers?offererId={offerer_id}&periodBeginningDate=2024-10-10")
+            response = authenticated_client.get(f"/pro/offers?offererId={offerer_id}&periodBeginningDate=2024-10-10")
             print(response)
             if dp == "974":
                 assert response.json[0]["stocks"][0]["beginningDatetime"] == "2024-10-10T00:00:00Z"
@@ -219,7 +219,7 @@ class Returns200Test:
         authenticated_client = client.with_session_auth(email=pro.email)
         # +1 Feature flag
         with testing.assert_num_queries(self.number_of_queries + 1):
-            response = authenticated_client.get(f"/offers?offererId={offerer_id}&periodEndingDate=2024-10-9")
+            response = authenticated_client.get(f"/pro/offers?offererId={offerer_id}&periodEndingDate=2024-10-9")
             print(response)
             if dp == "971":
                 assert response.json[0]["stocks"][0]["beginningDatetime"] == "2024-10-10T00:00:00Z"
@@ -235,7 +235,7 @@ class Returns200Test:
         authenticated_client = client.with_session_auth(email=pro.email)
         # -1 due to mocking
         with testing.assert_num_queries(self.number_of_queries - 1):
-            response = authenticated_client.get("/offers?periodEndingDate=2020-10-11")
+            response = authenticated_client.get("/pro/offers?periodEndingDate=2020-10-11")
             assert response.status_code == 200
 
         mocked_get_capped_offers.assert_called_once_with(
@@ -262,7 +262,7 @@ class Returns200Test:
         authenticated_client = client.with_session_auth(email=pro.email)
         # -1 due to mocking
         with testing.assert_num_queries(self.number_of_queries - 1):
-            response = authenticated_client.get("/offers?categoryId=LIVRE")
+            response = authenticated_client.get("/pro/offers?categoryId=LIVRE")
             assert response.status_code == 200
 
         mocked_get_capped_offers.assert_called_once_with(
@@ -298,7 +298,7 @@ class Returns200Test:
         )
         authenticated_client = client.with_session_auth(email=pro.email)
         with testing.assert_num_queries(self.number_of_queries):
-            response = authenticated_client.get("/offers")
+            response = authenticated_client.get("/pro/offers")
             assert response.status_code == 200
 
         assert response.json == [
@@ -372,7 +372,7 @@ class Returns200Test:
         )
         authenticated_client = client.with_session_auth(email=pro.email)
         with testing.assert_num_queries(self.number_of_queries):
-            response = authenticated_client.get("/offers")
+            response = authenticated_client.get("/pro/offers")
             assert response.status_code == 200
 
         assert response.json == [
@@ -428,7 +428,7 @@ class Returns200Test:
         )
         authenticated_client = client.with_session_auth(email=pro.email)
         with testing.assert_num_queries(self.number_of_queries):
-            response = authenticated_client.get("/offers")
+            response = authenticated_client.get("/pro/offers")
             assert response.status_code == 200
 
         assert response.json == [
@@ -510,7 +510,7 @@ class Returns200Test:
         offerer_address1_id = offerer_address1.id
         authenticated_client = client.with_session_auth(email=pro.email)
         with testing.assert_num_queries(self.number_of_queries):
-            response = authenticated_client.get(f"/offers?offererAddressId={offerer_address1_id}")
+            response = authenticated_client.get(f"/pro/offers?offererAddressId={offerer_address1_id}")
             assert response.status_code == 200
 
         assert len(response.json) == 2
@@ -616,7 +616,7 @@ class Returns200Test:
         offerer_id = offerer.id
         authenticated_client = client.with_session_auth(email=pro.email)
         with testing.assert_num_queries(self.number_of_queries):
-            response = authenticated_client.get(f"/offers?offererId={offerer_id}")
+            response = authenticated_client.get(f"/pro/offers?offererId={offerer_id}")
             assert response.status_code == 200
 
         assert response.json == [
@@ -684,7 +684,7 @@ class Returns200Test:
         offerer_id = offerer.id
         authenticated_client = client.with_session_auth(email=pro.email)
         with testing.assert_num_queries(self.number_of_queries):
-            response = authenticated_client.get(f"/offers?offererId={offerer_id}")
+            response = authenticated_client.get(f"/pro/offers?offererId={offerer_id}")
             assert response.status_code == 200
         assert response.json == [
             {
@@ -737,7 +737,7 @@ class Returns200Test:
         venue_id = venue.id
         authenticated_client = client.with_session_auth(email=pro.email)
         with testing.assert_num_queries(self.number_of_queries):
-            response = authenticated_client.get(f"/offers?venueId={venue_id}")
+            response = authenticated_client.get(f"/pro/offers?venueId={venue_id}")
             assert response.status_code == 200
 
         assert response.json == []
@@ -758,7 +758,7 @@ class Returns404Test:
         venue_id = offerer.id
         authenticated_client = client.with_session_auth(email=pro.email)
         with testing.assert_num_queries(self.number_of_queries):
-            response = authenticated_client.get(f"/offers?venueId={venue_id}")
+            response = authenticated_client.get(f"/pro/offers?venueId={venue_id}")
             assert response.status_code == 200
 
         assert response.json == []
@@ -772,7 +772,7 @@ class Returns400Test:
 
         authenticated_client = client.with_session_auth(email=pro.email)
         with testing.assert_num_queries(self.number_of_queries):
-            response = authenticated_client.get("/offers?status=NOPENOPENOPE")
+            response = authenticated_client.get("/pro/offers?status=NOPENOPENOPE")
             assert response.status_code == 400
 
         msg = response.json["status"][0]

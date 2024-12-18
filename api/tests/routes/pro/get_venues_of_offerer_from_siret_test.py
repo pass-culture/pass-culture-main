@@ -33,7 +33,7 @@ class Returns200Test:
         num_queries += 1  # select offerer
         num_queries += 1  # select venues
         with assert_num_queries(num_queries):
-            response = auth_request.get("/venues/siret/%s" % "12312312312332")
+            response = auth_request.get("/pro/venues/siret/%s" % "12312312312332")
             assert response.status_code == 200
 
         assert len(response.json["venues"]) == 2
@@ -70,7 +70,7 @@ class Returns200Test:
         num_queries += 1  # select offerer
         num_queries += 1  # select venues
         with assert_num_queries(num_queries):
-            response = auth_request.get("/venues/siret/%s" % "12312312312332")
+            response = auth_request.get("/pro/venues/siret/%s" % "12312312312332")
             assert response.status_code == 200
 
         assert len(response.json["venues"]) == 2
@@ -87,7 +87,7 @@ class Returns200Test:
         num_queries += 1  # select offerer
         num_queries += 1  # select venues
         with assert_num_queries(num_queries):
-            response = auth_request.get("/venues/siret/%s" % "12312312312332")
+            response = auth_request.get("/pro/venues/siret/%s" % "12312312312332")
             assert response.status_code == 200
 
         assert len(response.json["venues"]) == 0
@@ -102,7 +102,7 @@ class Returns200Test:
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select offerer
         with assert_num_queries(num_queries):
-            response = auth_request.get("/venues/siret/%s" % "12312312312332")
+            response = auth_request.get("/pro/venues/siret/%s" % "12312312312332")
             assert response.status_code == 200
 
         assert len(response.json["venues"]) == 0
@@ -114,7 +114,7 @@ class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def test_user_not_logged(self, client):
         with testing.assert_num_queries(0):
-            response = client.get("/venues/siret/%s" % "12312312312312")
+            response = client.get("/pro/venues/siret/%s" % "12312312312312")
             assert response.status_code == 401
 
         assert response.json["global"] == ["Authentification nécessaire"]

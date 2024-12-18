@@ -399,7 +399,7 @@ class TestClient:
         from pcapi import settings
 
         response = self.post(
-            "/users/signin",
+            "/pro/users/signin",
             {"identifier": email, "password": settings.TEST_DEFAULT_PASSWORD, "captchaToken": "test_token"},
         )
         assert response.status_code == 200

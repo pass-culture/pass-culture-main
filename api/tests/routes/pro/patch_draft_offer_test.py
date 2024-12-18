@@ -37,7 +37,7 @@ class Returns200Test:
             "subcategoryId": subcategories.ABO_PLATEFORME_VIDEO.id,
             "extraData": {"gtl_id": "07000000"},
         }
-        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/draft/{offer.id}", json=data)
         assert response.status_code == 200
         assert response.json["id"] == offer.id
         assert response.json["venue"]["id"] == offer.venue.id
@@ -62,7 +62,7 @@ class Returns200Test:
         )
 
         data = {"extraData": {"ean": "2222222222222"}}
-        response = client.with_session_auth("user@example.com").patch(f"offers/draft/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/draft/{offer.id}", json=data)
 
         assert response.status_code == 200
         assert response.json["id"] == offer.id
@@ -87,7 +87,7 @@ class Returns200Test:
             "description": "New description",
             "extraData": {"author": "Nicolas Gogol"},
         }
-        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/draft/{offer.id}", json=data)
         assert response.status_code == 200
         assert response.json["id"] == offer.id
         assert response.json["venue"]["id"] == offer.venue.id
@@ -117,7 +117,7 @@ class Returns200Test:
             "subcategoryId": subcategories.SEANCE_CINE.id,
             "extraData": {"stageDirector": "Greta Gerwig"},
         }
-        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/draft/{offer.id}", json=data)
         assert response.status_code == 200
         assert response.json["id"] == offer.id
 
@@ -155,7 +155,7 @@ class Returns200Test:
                 "visa": "",
             },
         }
-        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/draft/{offer.id}", json=data)
         assert response.status_code == 200
         assert response.json["id"] == offer.id
 
@@ -190,7 +190,7 @@ class Returns200Test:
         data = {
             "extraData": {"gtl_id": "07000000", "ean": "1111111111111"},
         }
-        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/draft/{offer.id}", json=data)
         assert response.status_code == 200
         assert response.json["id"] == offer.id
 
@@ -263,7 +263,7 @@ class Returns200Test:
                 "productionYear": 1970,
             },
         }
-        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/draft/{offer.id}", json=data)
         assert response.status_code == 200
         assert response.json["id"] == offer.id
 
@@ -398,12 +398,12 @@ class Returns200Test:
             },
         }
         user_email = user_offerer.user.email
-        response = client.with_session_auth(user_email).post(f"/offers/draft", json=data)
+        response = client.with_session_auth(user_email).post(f"/pro/offers/draft", json=data)
         assert response.status_code == 201
 
         draft_offer = Offer.query.one()
         offer_id = draft_offer.id
-        response = client.with_session_auth(user_email).get(f"/offers/{offer_id}")
+        response = client.with_session_auth(user_email).get(f"/pro/offers/{offer_id}")
         assert response.status_code == 200
         assert response.json["status"] == OfferStatus.DRAFT.value
         assert response.json["id"] == draft_offer.id
@@ -430,14 +430,14 @@ class Returns200Test:
         }
 
         with patch("pcapi.connectors.api_adresse.get_address", return_value=return_value):
-            response = client.with_session_auth(user_email).patch(f"/offers/{offer_id}", json=data)
+            response = client.with_session_auth(user_email).patch(f"/pro/offers/{offer_id}", json=data)
 
         updated_draft_offer = Offer.query.one()
         created_address = geography_models.Address.query.order_by(geography_models.Address.id.desc()).first()
         assert response.status_code == 200
         assert response.json["status"] == OfferStatus.DRAFT.value
 
-        response = client.with_session_auth(user_email).get(f"/offers/{offer_id}")
+        response = client.with_session_auth(user_email).get(f"/pro/offers/{offer_id}")
         assert response.status_code == 200
         assert response.json["address"] == {
             **expected_data,
@@ -549,12 +549,12 @@ class Returns200Test:
             },
         }
         user_email = user_offerer.user.email
-        response = client.with_session_auth(user_email).post(f"/offers/draft", json=data)
+        response = client.with_session_auth(user_email).post(f"/pro/offers/draft", json=data)
         assert response.status_code == 201
 
         draft_offer = Offer.query.one()
         offer_id = draft_offer.id
-        response = client.with_session_auth(user_email).get(f"/offers/{offer_id}")
+        response = client.with_session_auth(user_email).get(f"/pro/offers/{offer_id}")
         assert response.status_code == 200
         assert response.json["status"] == OfferStatus.DRAFT.value
         assert response.json["id"] == draft_offer.id
@@ -580,14 +580,14 @@ class Returns200Test:
             },
         }
         with patch("pcapi.connectors.api_adresse.get_address", return_value=return_value):
-            response = client.with_session_auth(user_email).patch(f"/offers/{offer_id}", json=data)
+            response = client.with_session_auth(user_email).patch(f"/pro/offers/{offer_id}", json=data)
         updated_draft_offer = Offer.query.one()
         created_address = geography_models.Address.query.order_by(geography_models.Address.id.desc()).first()
         assert response.status_code == 200
         assert response.json["status"] == OfferStatus.DRAFT.value
         assert response.json["id"] == updated_draft_offer.id
 
-        response = client.with_session_auth(user_email).get(f"/offers/{offer_id}")
+        response = client.with_session_auth(user_email).get(f"/pro/offers/{offer_id}")
         assert response.status_code == 200
         assert response.json["address"] == {
             **expected_data,
@@ -620,7 +620,7 @@ class Returns400Test:
             "thumbCount": 2,
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
         }
-        response = client.with_session_auth("user@example.com").patch(f"offers/draft/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/draft/{offer.id}", json=data)
 
         assert response.status_code == 400
         assert response.json["lastProviderId"] == ["Vous ne pouvez pas changer cette information"]
@@ -653,7 +653,7 @@ class Returns400Test:
         )
 
         data = {"extraData": {"ean": "2222222222222"}}
-        response = client.with_session_auth("user@example.com").patch(f"offers/draft/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/draft/{offer.id}", json=data)
 
         assert response.status_code == 400
         assert response.json["global"] == ["Les extraData des offres avec produit ne sont pas modifialbles"]
@@ -672,7 +672,7 @@ class Returns400Test:
         product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
 
         data = {"product_id": product.id}
-        response = client.with_session_auth("user@example.com").patch(f"offers/draft/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/draft/{offer.id}", json=data)
 
         assert response.status_code == 400
         assert response.json["product_id"] == ["Vous ne pouvez pas changer cette information"]
@@ -691,7 +691,7 @@ class Returns403Test:
         offerers_factories.UserOffererFactory(user__email=email)
 
         data = {"name": "New name"}
-        response = client.with_session_auth(email).patch(f"/offers/draft/{offer.id}", json=data)
+        response = client.with_session_auth(email).patch(f"/pro/offers/draft/{offer.id}", json=data)
 
         assert response.status_code == 403
         msg = "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."
@@ -704,5 +704,5 @@ class Returns404Test:
     def test_returns_404_if_offer_does_not_exist(self, client):
         email = "user@example.com"
         users_factories.UserFactory(email=email)
-        response = client.with_session_auth(email).patch("/offers/draft/12345", json={})
+        response = client.with_session_auth(email).patch("/pro/offers/draft/12345", json={})
         assert response.status_code == 404

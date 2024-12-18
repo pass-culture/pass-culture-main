@@ -23,7 +23,7 @@ class Returns204Test:
         data = {"ids_to_delete": [stock.id for stock in batch_stocks]}
 
         # When
-        response = client.with_session_auth(user.email).post(f"/offers/{offer.id}/stocks/delete", json=data)
+        response = client.with_session_auth(user.email).post(f"/pro/offers/{offer.id}/stocks/delete", json=data)
 
         # Then
         assert response.status_code == 204
@@ -51,11 +51,11 @@ class Returns204Test:
             ).dict(),
         )
 
-        response_token = client.get(f"/users/connect-as/{secure_token.token}")
+        response_token = client.get(f"/pro/users/connect-as/{secure_token.token}")
         assert response_token.status_code == 302
 
         # When
-        response = client.with_session_auth(user.email).post(f"/offers/{offer.id}/stocks/delete", json=data)
+        response = client.with_session_auth(user.email).post(f"/pro/offers/{offer.id}/stocks/delete", json=data)
 
         # Then
         assert response.status_code == 204
@@ -74,7 +74,8 @@ class Returns204Test:
 
         # When
         response = client.with_session_auth(user.email).post(
-            f"/offers/{offer.id}/stocks/delete", json={"ids_to_delete": [stock.id for stock in another_offer_stocks]}
+            f"/pro/offers/{offer.id}/stocks/delete",
+            json={"ids_to_delete": [stock.id for stock in another_offer_stocks]},
         )
 
         # Then
@@ -94,7 +95,7 @@ class Returns401Test:
         data = {"ids_to_delete": [stock.id]}
 
         # When
-        response = client.post(f"/offers/{offer.id}/stocks/delete", json=data)
+        response = client.post(f"/pro/offers/{offer.id}/stocks/delete", json=data)
 
         # Then
         assert response.status_code == 401
@@ -112,7 +113,7 @@ class Returns403Test:
         data = {"ids_to_delete": [stock.id]}
 
         # when
-        response = client.with_session_auth(pro.email).post(f"/offers/{offer.id}/stocks/delete", json=data)
+        response = client.with_session_auth(pro.email).post(f"/pro/offers/{offer.id}/stocks/delete", json=data)
 
         # then
         assert response.status_code == 403

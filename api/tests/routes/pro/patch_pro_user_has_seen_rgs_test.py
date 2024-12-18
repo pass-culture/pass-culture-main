@@ -8,7 +8,7 @@ def test_mark_as_seen(app, client):
     user = users_factories.UserFactory(hasSeenProRgs=False)
 
     client = client.with_session_auth(user.email)
-    response = client.patch("/users/rgs-seen")
+    response = client.patch("/pro/users/rgs-seen")
 
     assert response.status_code == 204
     assert user.hasSeenProRgs is True
@@ -18,7 +18,7 @@ def test_mark_as_seen(app, client):
 def test_mark_as_seen_without_auth(app, client):
     user = users_factories.UserFactory(hasSeenProRgs=False)
 
-    response = client.patch("/users/rgs-seen")
+    response = client.patch("/pro/users/rgs-seen")
 
     assert response.status_code == 401
     assert user.hasSeenProRgs is False

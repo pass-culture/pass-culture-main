@@ -38,7 +38,7 @@ class Returns200Test:
         num_queries += 1  # select offerer join load venue
         num_queries += 1  # select offer
         with testing.assert_num_queries(num_queries):
-            response = test_client.get(f"/get_product_by_ean/1234567891011/{offerer_id}")
+            response = test_client.get(f"/pro/get_product_by_ean/1234567891011/{offerer_id}")
             assert response.status_code == 200
         assert response.json == {
             "id": product.id,
@@ -71,7 +71,7 @@ class Returns200Test:
         num_queries += 1  # select offerer join load venue
         num_queries += 1  # select offer
         with testing.assert_num_queries(num_queries):
-            response = test_client.get(f"/get_product_by_ean/1234567891011/{offerer_id}")
+            response = test_client.get(f"/pro/get_product_by_ean/1234567891011/{offerer_id}")
             assert response.status_code == 200
 
     def test_get_product_by_ean_offerer_with_multiple_venues_offer_with_product(self, client):
@@ -100,7 +100,7 @@ class Returns200Test:
         num_queries += 1  # select product join load mediations
         num_queries += 1  # select offerer join load venue
         with testing.assert_num_queries(num_queries):
-            response = test_client.get(f"/get_product_by_ean/1234567891011/{offerer_id}")
+            response = test_client.get(f"/pro/get_product_by_ean/1234567891011/{offerer_id}")
             assert response.status_code == 200
 
 
@@ -126,7 +126,7 @@ class Returns422Test:
         num_queries += 1  # select offerer join load venue
         num_queries += 1  # select offer
         with testing.assert_num_queries(num_queries):
-            response = test_client.get(f"/get_product_by_ean/EANDUPRODUIT/{offerer_id}")
+            response = test_client.get(f"/pro/get_product_by_ean/EANDUPRODUIT/{offerer_id}")
 
             assert response.status_code == 422
             assert response.json == {"ean": ["EAN invalide. Ce produit n'est pas conforme à nos CGU."]}
@@ -143,7 +143,7 @@ class Returns422Test:
         num_queries += 1  # select product join load mediations
         num_queries += 1  # select offerer join load venue
         with testing.assert_num_queries(num_queries):
-            response = test_client.get(f"/get_product_by_ean/UNKNOWN/{offerer_id}")
+            response = test_client.get(f"/pro/get_product_by_ean/UNKNOWN/{offerer_id}")
             assert response.status_code == 422
             assert response.json == {"ean": ["EAN non reconnu. Assurez-vous qu'il n'y ait pas d'erreur de saisie."]}
 
@@ -169,7 +169,7 @@ class Returns422Test:
         num_queries += 1  # select offerer join load venue
         num_queries += 1  # select offer
         with testing.assert_num_queries(num_queries):
-            response = test_client.get(f"/get_product_by_ean/EANDUPRODUIT/{offerer_id}")
+            response = test_client.get(f"/pro/get_product_by_ean/EANDUPRODUIT/{offerer_id}")
 
             assert response.status_code == 422
             assert response.json == {
@@ -191,7 +191,7 @@ class Returns422Test:
         num_queries += 1  # select product join load mediations
         num_queries += 1  # select offerer join load venue
         with testing.assert_num_queries(num_queries):
-            response = test_client.get("/get_product_by_ean/EANDUPRODUIT/0")
+            response = test_client.get("/pro/get_product_by_ean/EANDUPRODUIT/0")
 
             assert response.status_code == 422
             assert response.json == {"ean": ["Structure non reconnue."]}

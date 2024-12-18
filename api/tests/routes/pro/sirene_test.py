@@ -17,7 +17,7 @@ def get_siret_raises(siret):
 class GetSirenTest:
     def test_siren_ok(self, client):
         siren = "123456789"
-        response = client.get(f"/sirene/siren/{siren}")
+        response = client.get(f"/pro/sirene/siren/{siren}")
         assert response.status_code == 200
         assert response.json == {
             "siren": siren,
@@ -33,7 +33,7 @@ class GetSirenTest:
     @mock.patch("pcapi.connectors.entreprise.sirene.get_siren", get_siren_raises)
     def test_siren_error(self, client):
         siren = "123456789"
-        response = client.get(f"/sirene/siren/{siren}")
+        response = client.get(f"/pro/sirene/siren/{siren}")
         assert response.status_code == 400
         msg = "Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles."
         assert response.json == {"global": [msg]}
@@ -46,7 +46,7 @@ class GetSiretTest:
         siret = "12345678900001"
 
         client = client.with_session_auth(pro.email)
-        response = client.get(f"/sirene/siret/{siret}")
+        response = client.get(f"/pro/sirene/siret/{siret}")
 
         assert response.status_code == 200
         assert response.json == {
@@ -69,7 +69,7 @@ class GetSiretTest:
         siret = "12345678900001"
 
         client = client.with_session_auth(pro.email)
-        response = client.get(f"/sirene/siret/{siret}")
+        response = client.get(f"/pro/sirene/siret/{siret}")
 
         assert response.status_code == 400
         msg = "Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles."
@@ -77,5 +77,5 @@ class GetSiretTest:
 
     def test_unauthenticated(self, client):
         siret = "12345678900001"
-        response = client.get(f"/sirene/siret/{siret}")
+        response = client.get(f"/pro/sirene/siret/{siret}")
         assert response.status_code == 401

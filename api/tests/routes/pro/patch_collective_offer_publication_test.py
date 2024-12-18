@@ -18,7 +18,7 @@ class Returns204Test:
         )
         user_offerer = offerers_factories.UserOffererFactory(offerer=offer.venue.managingOfferer)
 
-        url = f"/collective/offers/{offer.id}/publish"
+        url = f"/pro/collective/offers/{offer.id}/publish"
 
         response = client.with_session_auth(user_offerer.user.email).patch(url)
 
@@ -37,7 +37,7 @@ class Returns204Test:
         )
         user_offerer = offerers_factories.UserOffererFactory(offerer=offer.venue.managingOfferer)
 
-        url = f"/collective/offers/{offer.id}/publish"
+        url = f"/pro/collective/offers/{offer.id}/publish"
 
         offer_name_rule = offers_factories.OfferValidationRuleFactory(name="Règle sur les noms d'offres")
         offers_factories.OfferValidationSubRuleFactory(
@@ -64,7 +64,7 @@ class Returns403Test:
         offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.DRAFT)
         user_offerer = offerers_factories.UserOffererFactory()
 
-        url = f"/collective/offers/{offer.id}/publish"
+        url = f"/pro/collective/offers/{offer.id}/publish"
 
         response = client.with_session_auth(user_offerer.user.email).patch(url)
 
@@ -79,7 +79,7 @@ class Returns401Test:
     def expect_offer_to_be_approved(self, client):
         offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.DRAFT)
 
-        url = f"/collective/offers/{offer.id}/publish"
+        url = f"/pro/collective/offers/{offer.id}/publish"
 
         response = client.patch(url)
 

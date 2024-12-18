@@ -14,7 +14,7 @@ class Returns201Test:
         pricing_point = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
         data = {"pricingPointId": pricing_point.id}
 
-        response = client.with_session_auth("user@example.com").post(f"/venues/{venue.id}/pricing-point", json=data)
+        response = client.with_session_auth("user@example.com").post(f"/pro/venues/{venue.id}/pricing-point", json=data)
 
         assert response.status_code == 204
         new_link = offerers_models.VenuePricingPointLink.query.one()
@@ -33,7 +33,7 @@ class Returns400Test:
         pricing_point_2 = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
         data = {"pricingPointId": pricing_point_2.id}
 
-        response = client.with_session_auth("user@example.com").post(f"/venues/{venue.id}/pricing-point", json=data)
+        response = client.with_session_auth("user@example.com").post(f"/pro/venues/{venue.id}/pricing-point", json=data)
         assert response.status_code == 400
         assert response.json["code"] == "CANNOT_LINK_VENUE_TO_PRICING_POINT"
         assert offerers_models.VenuePricingPointLink.query.one() == pre_existing_link

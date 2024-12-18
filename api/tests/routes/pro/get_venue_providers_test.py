@@ -30,7 +30,7 @@ class Returns200Test:
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue_provider.venue.id
         with testing.assert_num_queries(self.num_queries):
-            response = auth_request.get(f"/venueProviders?venueId={venue_id}")
+            response = auth_request.get(f"/pro/venueProviders?venueId={venue_id}")
             assert response.status_code == 200
 
         assert response.json["venue_providers"][0].get("id") == venue_provider.id
@@ -53,7 +53,7 @@ class Returns200Test:
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = allocine_venue_provider.venue.id
         with testing.assert_num_queries(self.num_queries):
-            response = auth_request.get(f"/venueProviders?venueId={venue_id}")
+            response = auth_request.get(f"/pro/venueProviders?venueId={venue_id}")
             assert response.status_code == 200
 
         assert response.status_code == 200
@@ -75,5 +75,5 @@ class Returns400Test:
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES):
-            response = auth_request.get("/venueProviders")
+            response = auth_request.get("/pro/venueProviders")
             assert response.status_code == 400

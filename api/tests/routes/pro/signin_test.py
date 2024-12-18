@@ -36,7 +36,7 @@ class Returns200Test:
 
         # when
         with caplog.at_level(logging.INFO):
-            response = client.post("/users/signin", json=data)
+            response = client.post("/pro/users/signin", json=data)
 
         db.session.refresh(user)
         # then
@@ -81,7 +81,7 @@ class Returns200Test:
         assert users_models.UserSession.query.filter_by(userId=user1.id).count() == 1
 
         # when
-        response = client.post("/users/signin", json=data)
+        response = client.post("/pro/users/signin", json=data)
 
         # then
         assert response.status_code == 200
@@ -94,7 +94,7 @@ class Returns200Test:
         data = {"identifier": user.email, "password": user.clearTextPassword, "captchaToken": "token"}
 
         # when
-        response = client.post("/users/signin", json=data)
+        response = client.post("/pro/users/signin", json=data)
 
         # then
         assert response.status_code == 200
@@ -109,7 +109,7 @@ class Returns200Test:
         data = {"identifier": "  user@example.com  ", "password": user.clearTextPassword, "captchaToken": "token"}
 
         # when
-        response = client.post("/users/signin", json=data)
+        response = client.post("/pro/users/signin", json=data)
 
         # then
         assert response.status_code == 200
@@ -122,7 +122,7 @@ class Returns200Test:
         user = users_factories.UserFactory(email="whitelisted@email.com")
         data = {"identifier": user.email, "password": user.clearTextPassword}
 
-        response = client.post("/users/signin", json=data)
+        response = client.post("/pro/users/signin", json=data)
 
         assert response.status_code == 200
 
@@ -131,7 +131,7 @@ class Returns200Test:
         user = users_factories.UserFactory()
         data = {"identifier": user.email, "password": user.clearTextPassword}
 
-        response = client.post("/users/signin", json=data)
+        response = client.post("/pro/users/signin", json=data)
 
         assert response.status_code == 400
         assert response.json == {"captchaToken": "Ce champ est obligatoire"}
@@ -156,7 +156,7 @@ class Returns200Test:
         # 7 fetch user has partner page
 
         with assert_num_queries(7):
-            response = client.post("/users/signin", json=data)
+            response = client.post("/pro/users/signin", json=data)
 
         assert response.status_code == 200
         assert response.json == {
@@ -192,7 +192,7 @@ class Returns401Test:
         data = {"identifier": None, "password": user.clearTextPassword, "captchaToken": "token"}
 
         with caplog.at_level(logging.INFO):
-            response = client.post("/users/signin", json=data)
+            response = client.post("/pro/users/signin", json=data)
 
         assert response.status_code == 400
         assert response.json["identifier"] == ["Ce champ ne peut pas être nul"]
@@ -204,7 +204,7 @@ class Returns401Test:
         data = {"identifier": "random.email@test.com", "password": user.clearTextPassword, "captchaToken": "token"}
 
         with caplog.at_level(logging.INFO):
-            response = client.post("/users/signin", json=data)
+            response = client.post("/pro/users/signin", json=data)
 
         assert response.status_code == 401
         assert response.json["identifier"] == ["Identifiant ou mot de passe incorrect"]
@@ -215,7 +215,7 @@ class Returns401Test:
         user = users_factories.UserFactory()
         data = {"identifier": user.email, "password": None, "captchaToken": "token"}
 
-        response = client.post("/users/signin", json=data)
+        response = client.post("/pro/users/signin", json=data)
 
         assert response.status_code == 400
         assert response.json["password"] == ["Ce champ ne peut pas être nul"]
@@ -226,7 +226,7 @@ class Returns401Test:
         data = {"identifier": user.email, "password": "wr0ng_p455w0rd", "captchaToken": "token"}
 
         with caplog.at_level(logging.INFO):
-            response = client.post("/users/signin", json=data)
+            response = client.post("/pro/users/signin", json=data)
 
         assert response.status_code == 401
         assert response.json["identifier"] == ["Identifiant ou mot de passe incorrect"]
@@ -237,7 +237,7 @@ class Returns401Test:
         user = users_factories.UserFactory(isEmailValidated=False)
         data = {"identifier": user.email, "password": user.clearTextPassword, "captchaToken": "token"}
 
-        response = client.post("/users/signin", json=data)
+        response = client.post("/pro/users/signin", json=data)
 
         assert response.status_code == 401
         assert response.json["identifier"] == ["Ce compte n'est pas validé."]
@@ -247,7 +247,7 @@ class Returns401Test:
         user = users_factories.AdminFactory()
         data = {"identifier": user.email, "password": user.clearTextPassword, "captchaToken": "token"}
 
-        response = client.post("/users/signin", json=data)
+        response = client.post("/pro/users/signin", json=data)
 
         assert response.status_code == 401
         assert response.json["identifier"] == ["Vous ne pouvez pas vous connecter avec un compte ADMIN."]
@@ -262,10 +262,10 @@ class Returns401Test:
         with time_machine.travel(datetime.datetime.today() - relativedelta(years=2)):
             user = users_factories.BeneficiaryGrant18Factory()
             data = {"identifier": user.email, "password": user.clearTextPassword, "captchaToken": "token"}
-            response = client.post("/users/signin", json=data)
+            response = client.post("/pro/users/signin", json=data)
             assert response.status_code == 200
-            response = client.get("/educational_institutions")
+            response = client.get("/pro/educational_institutions")
             assert response.status_code == 200
 
-        response = client.get("/educational_institutions")
+        response = client.get("/pro/educational_institutions")
         assert response.status_code == 401

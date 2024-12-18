@@ -66,7 +66,7 @@ class Returns200Test:
         expected_num_queries += 1  # educational_redactor
         expected_num_queries += 1  # provider
         with assert_num_queries(expected_num_queries):
-            response = client.get(f"/collective/offers/{offer_id}")
+            response = client.get(f"/pro/collective/offers/{offer_id}")
             assert response.status_code == 200
 
         # Then
@@ -109,7 +109,7 @@ class Returns200Test:
         client = client.with_session_auth(email="user@example.com")
         offer_id = offer.id
         with assert_num_queries(self.num_queries):
-            response = client.get(f"/collective/offers/{offer_id}")
+            response = client.get(f"/pro/collective/offers/{offer_id}")
             assert response.status_code == 200
 
         # Then
@@ -129,7 +129,7 @@ class Returns200Test:
         client = client.with_session_auth(email="user@example.com")
         offer_id = offer.id
         with assert_num_queries(self.num_queries):
-            response = client.get(f"/collective/offers/{offer_id}")
+            response = client.get(f"/pro/collective/offers/{offer_id}")
             assert response.status_code == 200
 
         # Then
@@ -150,7 +150,7 @@ class Returns200Test:
         client = client.with_session_auth(email="user@example.com")
         offer_id = offer.id
         with assert_num_queries(self.num_queries):
-            response = client.get(f"/collective/offers/{offer_id}")
+            response = client.get(f"/pro/collective/offers/{offer_id}")
             assert response.status_code == 200
 
         # Then
@@ -172,7 +172,7 @@ class Returns200Test:
 
         with testing.assert_num_queries(self.num_queries):
             with testing.assert_no_duplicated_queries():
-                client.get(f"/collective/offers/{offer_id}")
+                client.get(f"/pro/collective/offers/{offer_id}")
 
     def test_last_booking_fields(self, client):
         # Given
@@ -190,7 +190,7 @@ class Returns200Test:
         client = client.with_session_auth(email="user@example.com")
         offer_id = offer.id
         with assert_num_queries(self.num_queries):
-            response = client.get(f"/collective/offers/{offer_id}")
+            response = client.get(f"/pro/collective/offers/{offer_id}")
             assert response.status_code == 200
 
         # Then
@@ -216,7 +216,7 @@ class Returns200Test:
         expected_num_queries = self.num_queries
         expected_num_queries += 1  # educational_redactor
         with assert_num_queries(expected_num_queries):
-            response = client.get(f"/collective/offers/{offer_id}")
+            response = client.get(f"/pro/collective/offers/{offer_id}")
             assert response.status_code == 200
 
         # Then
@@ -237,7 +237,7 @@ class Returns200Test:
         num_queries = self.num_queries
         num_queries -= 1  # feature toggle
         with assert_num_queries(num_queries):
-            response = client.get(f"/collective/offers/{offer_id}")
+            response = client.get(f"/pro/collective/offers/{offer_id}")
             assert response.status_code == 200
 
         assert response.json["offerVenue"] == {
@@ -282,7 +282,7 @@ class Returns200Test:
         client = client.with_session_auth(email="user@example.com")
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/collective/offers/{offer_id}")
+            response = client.get(f"/pro/collective/offers/{offer_id}")
             assert response.status_code == 200
 
         assert response.json["dates"] == {
@@ -308,7 +308,7 @@ class Returns403Test:
         # offerer
         # user_offerer
         with assert_num_queries(expected_num_queries):
-            response = client.get(f"/collective/offers/{offer_id}")
+            response = client.get(f"/pro/collective/offers/{offer_id}")
             assert response.status_code == 403
 
 

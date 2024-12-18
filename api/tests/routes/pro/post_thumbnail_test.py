@@ -41,7 +41,7 @@ class CreateThumbnailWithoutImageTest:
         }
 
         # when
-        response = client.post("/offers/thumbnails", form=data)
+        response = client.post("/pro/offers/thumbnails", form=data)
 
         # Then
         assert response.status_code == 400
@@ -61,7 +61,7 @@ class CreateThumbnailFromFileTest:
         }
 
         # when
-        response = client.post("/offers/thumbnails", form=data)
+        response = client.post("/pro/offers/thumbnails", form=data)
 
         # then
         assert response.status_code == 201
@@ -83,7 +83,7 @@ class CreateThumbnailFromFileTest:
         }
 
         # when
-        response = client.post("/offers/thumbnails", form=data)
+        response = client.post("/pro/offers/thumbnails", form=data)
 
         # then
         assert response.status_code == 400
@@ -101,7 +101,7 @@ class CreateThumbnailFromFileTest:
         }
 
         # when
-        response = client.post("/offers/thumbnails", form=data)
+        response = client.post("/pro/offers/thumbnails", form=data)
 
         # then
         mock_check_image.assert_called_once()
@@ -120,7 +120,7 @@ class CreateThumbnailFromFileTest:
         }
 
         # when
-        response = client.post("/offers/thumbnails", form=data)
+        response = client.post("/pro/offers/thumbnails", form=data)
 
         # then
         assert response.status_code == 400
@@ -134,7 +134,7 @@ class CreateThumbnailFromFileTest:
             "thumb": (BytesIO(thumb), "image.jpg"),
         }
 
-        response = client.post("/offers/thumbnails", form=data)
+        response = client.post("/pro/offers/thumbnails", form=data)
 
         # then
         assert response.status_code == 400
@@ -149,7 +149,7 @@ class CreateThumbnailFromFileTest:
             "thumb": (BytesIO(thumb), "image.jpg"),
         }
 
-        response = client.post("/offers/thumbnails", form=data)
+        response = client.post("/pro/offers/thumbnails", form=data)
 
         # then
         assert response.status_code == 404

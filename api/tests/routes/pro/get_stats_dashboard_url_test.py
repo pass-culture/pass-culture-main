@@ -21,7 +21,7 @@ class OffererStatsTest:
         client = client.with_session_auth(user_offerer.user.email)
         offerer_id = offerer.id
         with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/offerers/{offerer_id}/dashboard")
+            response = client.get(f"/pro/offerers/{offerer_id}/dashboard")
             assert response.status_code == 200
 
         url = response.json["dashboardUrl"]
@@ -37,7 +37,7 @@ class OffererStatsTest:
         forbidden_offerer_id = forbidden_offerer.id
         client = client.with_session_auth(user_offerer.user.email)
         with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/offerers/{forbidden_offerer_id}/dashboard")
+            response = client.get(f"/pro/offerers/{forbidden_offerer_id}/dashboard")
             assert response.status_code == 403
 
 
@@ -54,7 +54,7 @@ class VenueStatsTest:
         num_queries += 1  # check user_offerer exists
         num_queries += 1  # select offerer
         with testing.assert_num_queries(num_queries):
-            response = client.get(f"/venues/{venue_id}/dashboard")
+            response = client.get(f"/pro/venues/{venue_id}/dashboard")
             assert response.status_code == 200
 
         url = response.json["dashboardUrl"]
@@ -74,5 +74,5 @@ class VenueStatsTest:
         num_queries += 1  # select venue
         num_queries += 1  # check user_offerer exists
         with testing.assert_num_queries(num_queries):
-            response = client.get(f"/venues/{forbidden_venue_id}/dashboard")
+            response = client.get(f"/pro/venues/{forbidden_venue_id}/dashboard")
             assert response.status_code == 403

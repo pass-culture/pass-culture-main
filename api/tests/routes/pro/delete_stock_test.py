@@ -25,7 +25,7 @@ class Returns200Test:
         booking = BookingFactory(stock=stock)
 
         # when
-        response = client.with_session_auth("pro@example.com").delete(f"/stocks/{stock.id}")
+        response = client.with_session_auth("pro@example.com").delete(f"/pro/stocks/{stock.id}")
 
         # then
         assert response.status_code == 200
@@ -54,7 +54,7 @@ class Returns200Test:
         booking = BookingFactory(stock=stock)
 
         # when
-        response = client.with_session_auth("pro@example.com").delete(f"/stocks/{stock.id}")
+        response = client.with_session_auth("pro@example.com").delete(f"/pro/stocks/{stock.id}")
 
         # then
         assert response.status_code == 200
@@ -83,11 +83,11 @@ class Returns200Test:
             ).dict(),
         )
 
-        response_token = client.get(f"/users/connect-as/{secure_token.token}")
+        response_token = client.get(f"/pro/users/connect-as/{secure_token.token}")
         assert response_token.status_code == 302
 
         # when
-        response = client.delete(f"/stocks/{stock.id}")
+        response = client.delete(f"/pro/stocks/{stock.id}")
 
         # then
         assert response.status_code == 200
@@ -105,7 +105,7 @@ class Returns400Test:
         )
         stock = offers_factories.StockFactory(offer=pending_validation_offer)
 
-        response = client.with_session_auth(user_offerer.user.email).delete(f"/stocks/{stock.id}")
+        response = client.with_session_auth(user_offerer.user.email).delete(f"/pro/stocks/{stock.id}")
 
         assert response.status_code == 400
         assert response.json["global"] == ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
@@ -118,7 +118,7 @@ class Returns403Test:
         stock = offers_factories.StockFactory()
 
         # when
-        response = client.with_session_auth(pro.email).delete(f"/stocks/{stock.id}")
+        response = client.with_session_auth(pro.email).delete(f"/pro/stocks/{stock.id}")
 
         # then
         assert response.status_code == 403

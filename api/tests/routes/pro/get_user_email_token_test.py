@@ -19,7 +19,7 @@ def test_get_user_email_pending_validation(app: Any, client: Any) -> None:
     users_factories.EmailUpdateEntryFactory(user=user)
     client = client.with_session_auth(user.email)
     with testing.assert_num_queries(num_queries):
-        response = client.get("/users/email_pending_validation")
+        response = client.get("/pro/users/email_pending_validation")
         assert response.status_code == 200
 
     assert response.json == {"newEmail": "some@email.com.update"}
@@ -30,7 +30,7 @@ def test_get_user_email_no_pending_validation(client: Any) -> None:
 
     client = client.with_session_auth(user.email)
     with testing.assert_num_queries(num_queries):
-        response = client.get("/users/email_pending_validation")
+        response = client.get("/pro/users/email_pending_validation")
         assert response.status_code == 200
 
     assert response.json == {"newEmail": None}
@@ -44,7 +44,7 @@ def test_get_user_email_no_active_pending_validation(client: Any) -> None:
 
     client = client.with_session_auth(user.email)
     with testing.assert_num_queries(num_queries):
-        response = client.get("/users/email_pending_validation")
+        response = client.get("/pro/users/email_pending_validation")
         assert response.status_code == 200
 
     assert response.json == {"newEmail": None}
@@ -61,7 +61,7 @@ def test_get_user_email_multiple_validations_with_pending(client: Any) -> None:
 
     client = client.with_session_auth(user.email)
     with testing.assert_num_queries(num_queries):
-        response = client.get("/users/email_pending_validation")
+        response = client.get("/pro/users/email_pending_validation")
         assert response.status_code == 200
 
     assert response.json == {"newEmail": "newSuperEmail@pc.cool"}

@@ -37,7 +37,7 @@ class Return200Test:
         }
 
         client.with_session_auth("user@example.com")
-        response = client.post("/collective/stocks/", json=stock_payload)
+        response = client.post("/pro/collective/stocks/", json=stock_payload)
 
         # Then
         assert response.status_code == 201
@@ -77,7 +77,7 @@ class Return200Test:
         }
 
         client.with_session_auth("user@example.com")
-        response = client.post("/collective/stocks/", json=stock_payload)
+        response = client.post("/pro/collective/stocks/", json=stock_payload)
 
         # Then
         assert response.status_code == 201
@@ -112,7 +112,7 @@ class Return400Test:
         }
 
         client.with_session_auth("user@example.com")
-        response = client.post("/collective/stocks/", json=stock_payload)
+        response = client.post("/pro/collective/stocks/", json=stock_payload)
 
         # Then
         # assert response.status_code == 403
@@ -139,7 +139,7 @@ class Return400Test:
         }
 
         client.with_session_auth("user@example.com")
-        response = client.post("/collective/stocks/", json=stock_payload)
+        response = client.post("/pro/collective/stocks/", json=stock_payload)
 
         # Then
         assert response.status_code == 400
@@ -164,7 +164,7 @@ class Return400Test:
         }
 
         client.with_session_auth("user@example.com")
-        response = client.post("/collective/stocks/", json=stock_payload)
+        response = client.post("/pro/collective/stocks/", json=stock_payload)
 
         # Then
         assert response.status_code == 400
@@ -189,7 +189,7 @@ class Return400Test:
         }
 
         client.with_session_auth("user@example.com")
-        response = client.post("/collective/stocks/", json=stock_payload)
+        response = client.post("/pro/collective/stocks/", json=stock_payload)
 
         # Then
         assert response.status_code == 400
@@ -214,7 +214,7 @@ class Return400Test:
         }
 
         client.with_session_auth("user@example.com")
-        response = client.post("/collective/stocks/", json=stock_payload)
+        response = client.post("/pro/collective/stocks/", json=stock_payload)
 
         # Then
         assert response.status_code == 400
@@ -239,7 +239,7 @@ class Return400Test:
         }
 
         client.with_session_auth("user@example.com")
-        response = client.post("/collective/stocks/", json=stock_payload)
+        response = client.post("/pro/collective/stocks/", json=stock_payload)
 
         # Then
         assert response.status_code == 400
@@ -269,7 +269,7 @@ class Return400Test:
         }
 
         client.with_session_auth("user@example.com")
-        response = client.post("/collective/stocks/", json=stock_payload)
+        response = client.post("/pro/collective/stocks/", json=stock_payload)
 
         # Then
         assert response.status_code == 400
@@ -295,7 +295,7 @@ class Return400Test:
         }
 
         client.with_session_auth("user@example.com")
-        response = client.post("/collective/stocks/", json=stock_payload)
+        response = client.post("/pro/collective/stocks/", json=stock_payload)
 
         # Then
         assert response.status_code == 400
@@ -320,7 +320,7 @@ class Return400Test:
         }
 
         client.with_session_auth("user@example.com")
-        response = client.post("/collective/stocks/", json=stock_payload)
+        response = client.post("/pro/collective/stocks/", json=stock_payload)
 
         # Then
         assert response.status_code == 400
@@ -351,7 +351,7 @@ class Return400Test:
 
         client.with_session_auth("user@example.com")
 
-        response = client.post("/collective/stocks", json=stock_payload)
+        response = client.post("/pro/collective/stocks", json=stock_payload)
 
         # Then
         assert response.status_code == 400
@@ -392,7 +392,7 @@ class Return400Test:
             # query += 1 -> check the number of existing stock for the offer id
             # query += 1 -> find education year for start date
             # query += 1 -> find education year for end date
-            response = client.post("/collective/stocks", json=stock_payload)
+            response = client.post("/pro/collective/stocks", json=stock_payload)
 
             # Then
             assert response.status_code == 400
@@ -415,7 +415,7 @@ class Return400Test:
 
         client.with_session_auth("user@example.com")
         with assert_num_queries(2):  # session + user
-            response = client.post("/collective/stocks", json=stock_payload)
+            response = client.post("/pro/collective/stocks", json=stock_payload)
 
             assert response.status_code == 400
             assert response.json == {

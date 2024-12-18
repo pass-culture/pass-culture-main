@@ -24,7 +24,7 @@ class Returns403Test:
         client = client.with_session_auth(email=beneficiary.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/offers/{offer_id}/stocks-stats")
+            response = client.get(f"/pro/offers/{offer_id}/stocks-stats")
             assert response.status_code == 403
 
     def test_access_by_unauthorized_pro_user(self, client):
@@ -34,7 +34,7 @@ class Returns403Test:
         client = client.with_session_auth(email=pro_user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/offers/{offer_id}/stocks-stats")
+            response = client.get(f"/pro/offers/{offer_id}/stocks-stats")
             assert response.status_code == 403
 
 
@@ -54,7 +54,7 @@ class Returns200Test:
         client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/offers/{offer_id}/stocks-stats")
+            response = client.get(f"/pro/offers/{offer_id}/stocks-stats")
             assert response.status_code == 200
 
     @time_machine.travel("2020-10-15 00:00:00")
@@ -78,7 +78,7 @@ class Returns200Test:
         client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/offers/{offer_id}/stocks-stats")
+            response = client.get(f"/pro/offers/{offer_id}/stocks-stats")
             assert response.status_code == 200
 
         assert response.json == {

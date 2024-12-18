@@ -52,7 +52,7 @@ class Returns200Test:
 
         client = client.with_session_auth(email="toto@example.com")
         with testing.assert_num_queries(self.num_queries):
-            response = client.get("/users/current")
+            response = client.get("/pro/users/current")
             assert response.status_code == 200
 
         assert not any("password" in field.lower() for field in response.json)
@@ -90,5 +90,5 @@ class Returns200Test:
 class Returns401Test:
     def when_user_is_not_logged_in(self, client):
         with testing.assert_num_queries(0):
-            response = client.get("/users/current")
+            response = client.get("/pro/users/current")
             assert response.status_code == 401

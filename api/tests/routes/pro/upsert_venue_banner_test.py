@@ -34,7 +34,7 @@ class Returns201Test:
         file = {"banner": (io.BytesIO(image_content), "upsert_banner.jpg")}
 
         client = client.with_session_auth(email=user_offerer.user.email)
-        url = f"/venues/{venue.id}/banner"
+        url = f"/pro/venues/{venue.id}/banner"
         url += "?x_crop_percent=0.0&y_crop_percent=0.0&height_crop_percent=0.6&width_crop_percent=0.9&image_credit=none"
 
         # Override storage url otherwise it would be, well, an URL
@@ -70,7 +70,7 @@ class Returns400Test:
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
         client = client.with_session_auth(email=user_offerer.user.email)
-        url = f"/venues/{venue.id}/banner"
+        url = f"/pro/venues/{venue.id}/banner"
         response = client.post(url)
 
         assert response.status_code == 400
@@ -80,7 +80,7 @@ class Returns400Test:
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
-        url = f"/venues/{venue.id}/banner"
+        url = f"/pro/venues/{venue.id}/banner"
         url += "?x_crop_percent=0.8&y_crop_percent=invalid_value"
 
         image_content = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
@@ -102,7 +102,7 @@ class Returns400Test:
         file = {"banner": (io.BytesIO(image_content), "upsert_banner.jpg")}
 
         client = client.with_session_auth(email=user_offerer.user.email)
-        url = f"/venues/{venue.id}/banner"
+        url = f"/pro/venues/{venue.id}/banner"
         url += "?x_crop_percent=0.0&y_crop_percent=0.0&height_crop_percent=1.0&width_crop_percent=1.0&image_credit=none"
 
         # Override storage url otherwise it would be, well, an URL

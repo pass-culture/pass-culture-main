@@ -21,7 +21,7 @@ class OfferMediationTest:
             offerer=offer.venue.managingOfferer,
         )
         client = client.with_session_auth(email="user@example.com")
-        response = client.delete(f"/offers/thumbnails/{offer.id}")
+        response = client.delete(f"/pro/offers/thumbnails/{offer.id}")
 
         expected_thumb_path = f"{mediation.thumb_path_component}/{humanize(mediation.id)}"
         assert Mediation.query.all() == []
@@ -42,7 +42,7 @@ class OfferMediationTest:
             offerer=offer.venue.managingOfferer,
         )
         client = client.with_session_auth(email="user@example.com")
-        response = client.delete(f"/offers/thumbnails/{offer.id}")
+        response = client.delete(f"/pro/offers/thumbnails/{offer.id}")
 
         assert response.status_code == 204
         mock_delete_public_object.assert_not_called()
@@ -52,7 +52,7 @@ class OfferMediationTest:
         offerers_factories.UserOffererFactory(user__email="user@example.com")
 
         client = client.with_session_auth(email="user@example.com")
-        response = client.delete(f"/offers/thumbnails/{offer.id}")
+        response = client.delete(f"/pro/offers/thumbnails/{offer.id}")
 
         assert response.status_code == 403
 
@@ -60,7 +60,7 @@ class OfferMediationTest:
         offerers_factories.UserOffererFactory(user__email="user@example.com")
 
         client = client.with_session_auth(email="user@example.com")
-        response = client.delete("/offers/thumbnails/123445678")
+        response = client.delete("/pro/offers/thumbnails/123445678")
 
         assert response.status_code == 404
 
@@ -68,7 +68,7 @@ class OfferMediationTest:
         offer = offerers_factories.UserOffererFactory(user__email="user@example.com")
 
         client = client.with_session_auth(email="user@example.com")
-        response = client.delete(f"/offers/thumbnails/{offer.id + 1}")
+        response = client.delete(f"/pro/offers/thumbnails/{offer.id + 1}")
 
         assert response.status_code == 404
         assert response.json == {}

@@ -29,7 +29,7 @@ class Returns200Test:
         # get google_places_info
         # get national_program
         with assert_num_queries(expected_num_queries):
-            response = client.get(f"/collective/offers-template/{offer_id}")
+            response = client.get(f"/pro/collective/offers-template/{offer_id}")
             assert response.status_code == 200
 
         # Then
@@ -76,7 +76,7 @@ class Returns200Test:
         offer_id = offer.id
         with assert_num_queries(expected_num_queries):
             with testing.assert_no_duplicated_queries():
-                client.get(f"/collective/offers-template/{offer_id}")
+                client.get(f"/pro/collective/offers-template/{offer_id}")
 
 
 @pytest.mark.usefixtures("db_session")
@@ -96,5 +96,5 @@ class Returns403Test:
         # get offerer
         # check user_offerer exists
         with assert_num_queries(expected_num_queries):
-            response = client.get(f"/collective/offers-template/{offer_id}")
+            response = client.get(f"/pro/collective/offers-template/{offer_id}")
             assert response.status_code == 403

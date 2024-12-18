@@ -20,7 +20,7 @@ class Returns204Test:
         offerers_factories.UserOffererFactory(user=pro, offerer=draft_offer.venue.managingOfferer)
         data = {"ids": [draft_offer.id, validated_offer.id]}
 
-        response = client.with_session_auth(pro.email).post("/offers/delete-draft", json=data)
+        response = client.with_session_auth(pro.email).post("/pro/offers/delete-draft", json=data)
 
         assert response.status_code == 204
 
@@ -32,7 +32,7 @@ class Returns204Test:
         offerers_factories.UserOffererFactory(offerer=draft_offer.venue.managingOfferer)
         data = {"ids": [draft_offer.id]}
 
-        response = client.with_session_auth(pro.email).post("/offers/delete-draft", json=data)
+        response = client.with_session_auth(pro.email).post("/pro/offers/delete-draft", json=data)
 
         assert response.status_code == 204
 
@@ -46,7 +46,7 @@ class Returns401Test:
         offerers_factories.UserOffererFactory(user=pro, offerer=draft_offer.venue.managingOfferer)
         data = {"ids": [draft_offer.id]}
 
-        response = client.post("/offers/delete-draft", json=data)
+        response = client.post("/pro/offers/delete-draft", json=data)
 
         assert response.status_code == 401
 

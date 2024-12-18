@@ -29,7 +29,7 @@ class Returns200Test:
         )
         # when
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/users/connect-as/{secure_token.token}")
+            response = client.get(f"/pro/users/connect-as/{secure_token.token}")
             assert response.status_code == 302
 
         # then
@@ -57,7 +57,7 @@ class Returns200Test:
         )
         # when
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/users/connect-as/{secure_token.token}")
+            response = client.get(f"/pro/users/connect-as/{secure_token.token}")
             assert response.status_code == 302
 
         # then
@@ -95,7 +95,7 @@ class Returns200Test:
 
         # use connect as to connect to a pro
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/users/connect-as/{intermediary_secure_token.token}")
+            response = client.get(f"/pro/users/connect-as/{intermediary_secure_token.token}")
             assert response.status_code == 302
 
         assert response.location == expected_redirect_link
@@ -106,7 +106,7 @@ class Returns200Test:
         # +1 get admin user
         expected_num_queries = self.expected_num_queries + 3
         with assert_num_queries(expected_num_queries):
-            response = client.get(f"/users/connect-as/{real_secure_token.token}")
+            response = client.get(f"/pro/users/connect-as/{real_secure_token.token}")
             assert response.status_code == 302
 
         assert response.location == expected_redirect_link
@@ -141,7 +141,7 @@ class Returns200Test:
         # +1 get current user
         # +1 get current session
         with assert_num_queries(self.expected_num_queries + 2):
-            response = client.get(f"/users/connect-as/{secure_token.token}")
+            response = client.get(f"/pro/users/connect-as/{secure_token.token}")
             assert response.status_code == 302
 
         # then
@@ -164,7 +164,7 @@ class Returns403Test:
 
         # when
         with assert_num_queries(self.expected_num_queries - 1):  #  -1 user to connect as
-            response = client.get(f"/users/connect-as/{token}")
+            response = client.get(f"/pro/users/connect-as/{token}")
             assert response.status_code == 403
 
         # then
@@ -192,7 +192,7 @@ class Returns403Test:
         )
         # when
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/users/connect-as/{secure_token.token}")
+            response = client.get(f"/pro/users/connect-as/{secure_token.token}")
             assert response.status_code == 403
 
         # then
@@ -220,7 +220,7 @@ class Returns403Test:
         )
         # when
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/users/connect-as/{secure_token.token}")
+            response = client.get(f"/pro/users/connect-as/{secure_token.token}")
             assert response.status_code == 403
 
         # then
@@ -248,7 +248,7 @@ class Returns403Test:
         )
         # when
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/users/connect-as/{secure_token.token}")
+            response = client.get(f"/pro/users/connect-as/{secure_token.token}")
             assert response.status_code == 403
 
         # then
@@ -276,7 +276,7 @@ class Returns403Test:
         )
         # when
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/users/connect-as/{secure_token.token}")
+            response = client.get(f"/pro/users/connect-as/{secure_token.token}")
             assert response.status_code == 403
 
         # then
@@ -307,7 +307,7 @@ class Returns404Test:
         )
         # when
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/users/connect-as/{secure_token.token}")
+            response = client.get(f"/pro/users/connect-as/{secure_token.token}")
             assert response.status_code == 404
 
         # then

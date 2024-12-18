@@ -39,12 +39,12 @@ class DeleteImageFromFileTest:
         }
 
         response = client.with_session_auth(email="user@example.com").post(
-            f"/collective/offers/{offer.id}/image", form=data
+            f"/pro/collective/offers/{offer.id}/image", form=data
         )
 
         # when
 
-        response = client.with_session_auth(email="user@example.com").delete(f"/collective/offers/{offer.id}/image")
+        response = client.with_session_auth(email="user@example.com").delete(f"/pro/collective/offers/{offer.id}/image")
 
         # then
 
@@ -73,7 +73,9 @@ class DeleteImageFromFileTest:
         )
 
         # when
-        response = client.with_session_auth(email="user@example.com").delete(f"/collective/offers/{offer2.id}/image")
+        response = client.with_session_auth(email="user@example.com").delete(
+            f"/pro/collective/offers/{offer2.id}/image"
+        )
 
         # then
         assert response.status_code == 403
@@ -101,7 +103,7 @@ class DeleteImageFromFileTest:
 
     def test_not_authentified(self, client):
         # when
-        response = client.delete("/collective/offers/0/image")
+        response = client.delete("/pro/collective/offers/0/image")
 
         # then
         assert response.status_code == 401
@@ -113,7 +115,7 @@ class DeleteImageFromFileTest:
         )
 
         # when
-        response = client.with_session_auth(email="user@example.com").delete("/collective/offers/0/image")
+        response = client.with_session_auth(email="user@example.com").delete("/pro/collective/offers/0/image")
 
         # then
         assert response.status_code == 404

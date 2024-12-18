@@ -24,7 +24,7 @@ class Returns200Test:
 
         # when
         client = client.with_session_auth(user.email)
-        response = client.post("/users/password", json=data)
+        response = client.post("/pro/users/password", json=data)
 
         # then
         user = users_models.User.query.get(user_id)
@@ -45,7 +45,7 @@ class Returns200Test:
         }
 
         client = client.with_session_auth(user.email)
-        client.post("/users/password", json=data)
+        client.post("/pro/users/password", json=data)
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["params"] == {"EVENT_DATE": "18 novembre 2020", "EVENT_HOUR": "03h00"}
 
@@ -62,7 +62,7 @@ class Returns400Test:
 
         # when
         client = client.with_session_auth(user.email)
-        response = client.post("/users/password", json=data)
+        response = client.post("/pro/users/password", json=data)
         # then
         assert response.status_code == 400
         assert response.json["oldPassword"] == ["Le mot de passe actuel est incorrect."]
@@ -79,7 +79,7 @@ class Returns400Test:
 
         # when
         client = client.with_session_auth(user.email)
-        response = client.post("/users/password", json=data)
+        response = client.post("/pro/users/password", json=data)
         # then
         assert response.status_code == 400
         assert response.json["newConfirmationPassword"] == ["Les deux mots de passe ne sont pas identiques."]
@@ -91,7 +91,7 @@ class Returns400Test:
 
         # when
         client = client.with_session_auth(user.email)
-        response = client.post("/users/password", json=data)
+        response = client.post("/pro/users/password", json=data)
 
         # then
         assert response.status_code == 400

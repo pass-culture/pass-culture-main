@@ -23,7 +23,7 @@ class Returns403Test:
         client = client.with_session_auth(beneficiary.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/offers/{offer_id}/stocks")
+            response = client.get(f"/pro/offers/{offer_id}/stocks")
             assert response.status_code == 403
 
     def test_access_by_unauthorized_pro_user(self, client):
@@ -33,7 +33,7 @@ class Returns403Test:
         client = client.with_session_auth(pro_user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/offers/{offer_id}/stocks")
+            response = client.get(f"/pro/offers/{offer_id}/stocks")
             assert response.status_code == 403
 
 
@@ -64,7 +64,7 @@ class Returns200Test:
         client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = event_offer.id
         with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/offers/{offer_id}/stocks/")
+            response = client.get(f"/pro/offers/{offer_id}/stocks/")
             assert response.status_code == 200
 
         assert response.json == {
@@ -100,7 +100,7 @@ class Returns200Test:
         client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = thing_offer.id
         with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/offers/{offer_id}/stocks/")
+            response = client.get(f"/pro/offers/{offer_id}/stocks/")
             assert response.status_code == 200
 
         assert response.json == {
@@ -131,7 +131,7 @@ class Returns200Test:
         client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries - 2):  # no active stock exists
-            response = client.get(f"/offers/{offer_id}/stocks")
+            response = client.get(f"/pro/offers/{offer_id}/stocks")
             assert response.status_code == 200
 
         assert len(response.json["stocks"]) == 0
@@ -143,7 +143,7 @@ class Returns200Test:
         client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries - 2):  # no stock exists
-            response = client.get(f"/offers/{offer_id}/stocks/")
+            response = client.get(f"/pro/offers/{offer_id}/stocks/")
             assert response.status_code == 200
 
         assert response.json["hasStocks"] == False
@@ -156,7 +156,7 @@ class Returns200Test:
         client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries - 2):  # no active stock exists
-            response = client.get(f"/offers/{offer_id}/stocks")
+            response = client.get(f"/pro/offers/{offer_id}/stocks")
             assert response.status_code == 200
 
         assert response.json["hasStocks"] == False
@@ -173,7 +173,7 @@ class Returns200Test:
         client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/offers/{offer_id}/stocks?date={date_2.date()}")
+            response = client.get(f"/pro/offers/{offer_id}/stocks?date={date_2.date()}")
             assert response.status_code == 200
 
         assert len(response.json["stocks"]) == 0
@@ -190,7 +190,7 @@ class Returns200Test:
         client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/offers/{offer_id}/stocks")
+            response = client.get(f"/pro/offers/{offer_id}/stocks")
             assert response.status_code == 200
 
         assert response.json["stockCount"] == 5
@@ -212,7 +212,7 @@ class Returns200Test:
         client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/offers/{offer_id}/stocks?page=3&stocks_limit_per_page=2")
+            response = client.get(f"/pro/offers/{offer_id}/stocks?page=3&stocks_limit_per_page=2")
             assert response.status_code == 200
 
         assert response.json == {
@@ -252,7 +252,7 @@ class Returns200Test:
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
             response = client.get(
-                f"/offers/{offer_id}/stocks?date={date_1.date()}&stocks_limit_per_page={stock_limit_per_page}"
+                f"/pro/offers/{offer_id}/stocks?date={date_1.date()}&stocks_limit_per_page={stock_limit_per_page}"
             )
             assert response.status_code == 200
 
@@ -278,7 +278,7 @@ class Returns200Test:
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
             response = client.get(
-                f"/offers/{offer_id}/stocks?date={date_1.date()}&stocks_limit_per_page={stock_limit_per_page}"
+                f"/pro/offers/{offer_id}/stocks?date={date_1.date()}&stocks_limit_per_page={stock_limit_per_page}"
             )
             assert response.status_code == 200
 
@@ -322,7 +322,7 @@ class Returns200WithOffererAddressAsDataSourceTest:
         client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = event_offer.id
         with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/offers/{offer_id}/stocks/")
+            response = client.get(f"/pro/offers/{offer_id}/stocks/")
             assert response.status_code == 200
 
         assert response.json == {
@@ -372,7 +372,7 @@ class Returns200WithOffererAddressAsDataSourceTest:
         client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = thing_offer.id
         with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/offers/{offer_id}/stocks/")
+            response = client.get(f"/pro/offers/{offer_id}/stocks/")
             assert response.status_code == 200
 
         assert response.json == {
@@ -404,7 +404,7 @@ class Returns200WithOffererAddressAsDataSourceTest:
         client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries - 2):  # no active stock exists
-            response = client.get(f"/offers/{offer_id}/stocks")
+            response = client.get(f"/pro/offers/{offer_id}/stocks")
             assert response.status_code == 200
 
         assert len(response.json["stocks"]) == 0
@@ -417,7 +417,7 @@ class Returns200WithOffererAddressAsDataSourceTest:
         client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries - 2):  # no stock exists
-            response = client.get(f"/offers/{offer_id}/stocks/")
+            response = client.get(f"/pro/offers/{offer_id}/stocks/")
             assert response.status_code == 200
 
         assert response.json["hasStocks"] == False
@@ -431,7 +431,7 @@ class Returns200WithOffererAddressAsDataSourceTest:
         client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries - 2):  # no active stock exists
-            response = client.get(f"/offers/{offer_id}/stocks")
+            response = client.get(f"/pro/offers/{offer_id}/stocks")
             assert response.status_code == 200
 
         assert response.json["hasStocks"] == False
@@ -449,7 +449,7 @@ class Returns200WithOffererAddressAsDataSourceTest:
         client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/offers/{offer_id}/stocks?date={date_2.date()}")
+            response = client.get(f"/pro/offers/{offer_id}/stocks?date={date_2.date()}")
             assert response.status_code == 200
 
         assert len(response.json["stocks"]) == 0
@@ -467,7 +467,7 @@ class Returns200WithOffererAddressAsDataSourceTest:
         client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/offers/{offer_id}/stocks")
+            response = client.get(f"/pro/offers/{offer_id}/stocks")
             assert response.status_code == 200
 
         assert response.json["stockCount"] == 5
@@ -490,7 +490,7 @@ class Returns200WithOffererAddressAsDataSourceTest:
         client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/offers/{offer_id}/stocks?page=3&stocks_limit_per_page=2")
+            response = client.get(f"/pro/offers/{offer_id}/stocks?page=3&stocks_limit_per_page=2")
             assert response.status_code == 200
 
         assert response.json == {
@@ -531,7 +531,7 @@ class Returns200WithOffererAddressAsDataSourceTest:
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
             response = client.get(
-                f"/offers/{offer_id}/stocks?date={date_1.date()}&stocks_limit_per_page={stock_limit_per_page}"
+                f"/pro/offers/{offer_id}/stocks?date={date_1.date()}&stocks_limit_per_page={stock_limit_per_page}"
             )
             assert response.status_code == 200
 
@@ -558,6 +558,6 @@ class Returns200WithOffererAddressAsDataSourceTest:
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
             response = client.get(
-                f"/offers/{offer_id}/stocks?date={date_1.date()}&stocks_limit_per_page={stock_limit_per_page}"
+                f"/pro/offers/{offer_id}/stocks?date={date_1.date()}&stocks_limit_per_page={stock_limit_per_page}"
             )
             assert response.status_code == 200

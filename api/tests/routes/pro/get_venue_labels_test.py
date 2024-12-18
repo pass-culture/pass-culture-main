@@ -9,7 +9,7 @@ class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def when_the_user_is_not_authenticated(self, client):
         with testing.assert_num_queries(0):
-            response = client.get("/venue-labels")
+            response = client.get("/pro/venue-labels")
             assert response.status_code == 401
 
 
@@ -24,7 +24,7 @@ class Returns200Test:
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select venue_label
         with testing.assert_num_queries(num_queries):
-            response = client.get("/venue-labels")
+            response = client.get("/pro/venue-labels")
             assert response.status_code == 200
 
         assert len(response.json) == 2

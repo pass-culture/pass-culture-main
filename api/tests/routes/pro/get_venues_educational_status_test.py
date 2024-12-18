@@ -11,7 +11,7 @@ class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def test_when_user_not_logged_in(self, client: typing.Any):
         with testing.assert_num_queries(0):
-            response = client.get("/venues-educational-statuses")
+            response = client.get("/pro/venues-educational-statuses")
             assert response.status_code == 401
 
 
@@ -32,7 +32,7 @@ class Returns200Test:
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select venue_educational_status
         with testing.assert_num_queries(num_queries):
-            response = auth_client.get("/venues-educational-statuses")
+            response = auth_client.get("/pro/venues-educational-statuses")
             assert response.status_code == 200
 
         expected_serialized_offerer = {

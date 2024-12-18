@@ -77,7 +77,7 @@ class Return200Test:
         offerer_id = user_offerer.offerer.id
 
         with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/offerers/{offerer_id}/v2/stats")
+            response = client.get(f"/pro/offerers/{offerer_id}/v2/stats")
             assert response.status_code == 200
 
         assert response.json == {
@@ -99,7 +99,7 @@ class Return200Test:
         client = client.with_session_auth(user_offerer.user.email)
         offerer_id = user_offerer.offerer.id
         with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/offerers/{offerer_id}/v2/stats")
+            response = client.get(f"/pro/offerers/{offerer_id}/v2/stats")
             assert response.status_code == 200
 
         assert response.json == {
@@ -124,7 +124,7 @@ class Return200Test:
         client = client.with_session_auth(user_offerer.user.email)
         offerer_id = user_offerer.offerer.id
         with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/offerers/{offerer_id}/v2/stats")
+            response = client.get(f"/pro/offerers/{offerer_id}/v2/stats")
             assert response.status_code == 200
 
         assert response.json == {
@@ -140,7 +140,7 @@ class Return200Test:
         client = client.with_session_auth(user_offerer.user.email)
         offerer_id = user_offerer.offerer.id
         with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/offerers/{offerer_id}/v2/stats")
+            response = client.get(f"/pro/offerers/{offerer_id}/v2/stats")
 
         assert response.status_code == 200
         assert response.json == {
@@ -162,7 +162,7 @@ class TestReturn400:
         client = client.with_session_auth(pro_user.email)
         offerer_id = user_offerer.offerer.id
         with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/offerers/{offerer_id}/v2/stats")
+            response = client.get(f"/pro/offerers/{offerer_id}/v2/stats")
             assert response.status_code == 403
 
         assert response.json == {
@@ -177,6 +177,6 @@ class TestReturn400:
 
         client = client.with_session_auth(pro_user.email)
         with testing.assert_num_queries(self.num_queries):
-            response = client.get("/offerers/1/v2/stats")
+            response = client.get("/pro/offerers/1/v2/stats")
 
         assert response.status_code == 404

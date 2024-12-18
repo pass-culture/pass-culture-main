@@ -25,7 +25,7 @@ class OfferersBankAccountTest:
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # Check user permission on offerer
         with testing.assert_num_queries(num_queries):
-            response = http_client.get(f"/offerers/{offerer_2_id}/bank-accounts")
+            response = http_client.get(f"/pro/offerers/{offerer_2_id}/bank-accounts")
             assert response.status_code == 403
 
         assert "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information." in str(response.json)
@@ -43,7 +43,7 @@ class OfferersBankAccountTest:
         num_queries += 1  # Check user permission on offerer
         num_queries += 1  # Fetch offerer, bank_accounts and related/linked venues
         with testing.assert_num_queries(num_queries):
-            response = http_client.get(f"/offerers/{offerer_id}/bank-accounts")
+            response = http_client.get(f"/pro/offerers/{offerer_id}/bank-accounts")
             assert response.status_code == 200
 
         offerer = response.json
@@ -77,7 +77,7 @@ class OfferersBankAccountTest:
         num_queries += 1  # Check user permission on offerer
         num_queries += 1  # Fetch offerer, bank_accounts and related/linked venues
         with testing.assert_num_queries(num_queries):
-            response = http_client.get(f"/offerers/{offerer_id}/bank-accounts")
+            response = http_client.get(f"/pro/offerers/{offerer_id}/bank-accounts")
             assert response.status_code == 200
 
         offerer = response.json
@@ -129,7 +129,7 @@ class OfferersBankAccountTest:
         num_queries += 1  # Check user permission on offerer
         num_queries += 1  # Fetch offerer, bank_accounts and related/linked venues
         with testing.assert_num_queries(num_queries):
-            response = http_client.get(f"/offerers/{offerer_id}/bank-accounts")
+            response = http_client.get(f"/pro/offerers/{offerer_id}/bank-accounts")
             assert response.status_code == 200
 
         offerer = response.json
@@ -158,7 +158,7 @@ class OfferersBankAccountTest:
         num_queries += 1  # Check user permission on offerer
         num_queries += 1  # Fetch offerer, bank_accounts and related/linked venues
         with testing.assert_num_queries(num_queries):
-            response = http_client.get(f"/offerers/{offerer_id}/bank-accounts")
+            response = http_client.get(f"/pro/offerers/{offerer_id}/bank-accounts")
             assert response.status_code == 200
 
         offerer = response.json
@@ -192,7 +192,7 @@ class OfferersBankAccountTest:
         num_queries += 1  # Check user permission on offerer
         num_queries += 1  # Fetch offerer, bank_accounts and related/linked venues
         with testing.assert_num_queries(num_queries):
-            response = http_client.get(f"/offerers/{offerer_id}/bank-accounts")
+            response = http_client.get(f"/pro/offerers/{offerer_id}/bank-accounts")
             assert response.status_code == 200
 
         offerer = response.json
@@ -238,7 +238,7 @@ class OfferersBankAccountTest:
         num_queries += 1  # Check user permission on offerer
         num_queries += 1  # Fetch offerer, bank_accounts and related/linked venues
         with testing.assert_num_queries(num_queries):
-            response = http_client.get(f"/offerers/{offerer_id}/bank-accounts")
+            response = http_client.get(f"/pro/offerers/{offerer_id}/bank-accounts")
             assert response.status_code == 200
 
         offerer = response.json
@@ -283,7 +283,7 @@ class OfferersBankAccountTest:
         num_queries += 1  # Check user permission on offerer
         num_queries += 1  # Fetch offerer, bank_accounts and related/linked venues
         with testing.assert_num_queries(num_queries):
-            response = http_client.get(f"/offerers/{offerer_id}/bank-accounts")
+            response = http_client.get(f"/pro/offerers/{offerer_id}/bank-accounts")
             assert response.status_code == 200
 
         offerer = response.json

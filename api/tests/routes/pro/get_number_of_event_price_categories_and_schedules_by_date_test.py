@@ -82,7 +82,7 @@ def test_return_price_categories_and_schedule_count_by_date(client):
     queries += 1  # check user_offerer exists
     queries += 1  # select stock
     with testing.assert_num_queries(queries):
-        response = client.get(f"/bookings/dates/{offer_id}")
+        response = client.get(f"/pro/bookings/dates/{offer_id}")
         assert response.status_code == 200
 
     assert response.json == [
@@ -107,7 +107,7 @@ def test_return_empty_list_when_no_stock(client):
     queries += 1  # check user_offerer exists
     queries += 1  # select stock
     with testing.assert_num_queries(queries):
-        response = client.get(f"/bookings/dates/{offer_id}")
+        response = client.get(f"/pro/bookings/dates/{offer_id}")
         assert response.status_code == 200
 
     assert response.json == []
@@ -125,5 +125,5 @@ def test_user_is_forbidden(client):
     queries += 1  # select venue
     queries += 1  # check user_offerer exists
     with testing.assert_num_queries(queries):
-        response = client.get(f"/bookings/dates/{offer_id}")
+        response = client.get(f"/pro/bookings/dates/{offer_id}")
         assert response.status_code == 403

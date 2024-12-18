@@ -73,7 +73,7 @@ def test_common_errors_use_default_fingerprint(mocked_before_send, client):
     offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
     client = client.with_session_auth(pro.email)
 
-    client.get("/test/route")
+    client.get("/pro/test/route")
 
     mocked_before_send.assert_called_once()
 
@@ -91,6 +91,6 @@ def test_validation_erros_are_stamped_with_custom_fingerprint(mocked_before_send
     offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
     client = client.with_session_auth(pro.email)
 
-    client.get("/test/route-with-validation-error/field_2")
+    client.get("/pro/test/route-with-validation-error/field_2")
 
     mocked_before_send.assert_called_once()

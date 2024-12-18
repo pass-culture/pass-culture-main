@@ -30,7 +30,7 @@ class GetEducationalOfferersTest:
         queries += 1  # select offerers
         client = client.with_session_auth(pro_user.email)
         with testing.assert_num_queries(queries):
-            response = client.get("/offerers/educational")
+            response = client.get("/pro/offerers/educational")
             assert response.status_code == 200
 
         assert response.json == {
