@@ -20,7 +20,7 @@ class Returns200Test:
             "educationalPriceDetail": "pouet",
         }
         response = client.with_session_auth(offer.venue.managingOfferer.UserOfferers[0].user.email).post(
-            f"/collective/offers-template/{offer.id}/", json=data
+            f"/pro/collective/offers-template/{offer.id}/", json=data
         )
 
         # Then
@@ -43,7 +43,7 @@ class Returns200Test:
 
         # When
         response = client.with_session_auth(offer.venue.managingOfferer.UserOfferers[0].user.email).post(
-            f"/collective/offers-template/{offer.id}/",
+            f"/pro/collective/offers-template/{offer.id}/",
         )
 
         # Then
@@ -69,7 +69,7 @@ class Returns400Test:
 
         # When
         response = client.with_session_auth(offer.venue.managingOfferer.UserOfferers[0].user.email).post(
-            f"/collective/offers-template/{offer.id}/",
+            f"/pro/collective/offers-template/{offer.id}/",
         )
 
         # Then
@@ -88,7 +88,7 @@ class Returns403Test:
 
         # When
         response = client.with_session_auth("azerty@example.com").post(
-            f"/collective/offers-template/{offer.id}/",
+            f"/pro/collective/offers-template/{offer.id}/",
         )
 
         # Then
@@ -106,7 +106,7 @@ class Returns404Test:
 
         # When
         response = client.with_session_auth(offer.venue.managingOfferer.UserOfferers[0].user.email).post(
-            "/collective/offers-template/P8UET/"
+            "/pro/collective/offers-template/P8UET/"
         )
 
         # Then

@@ -30,7 +30,7 @@ class Returns200Test:
         queries += 1  # select exists user_offerer (access check)
         queries += 1  # select bank account
         with assert_num_queries(queries):
-            response = client.get(f"collective/bookings/{booking_id}")
+            response = client.get(f"/pro/collective/bookings/{booking_id}")
 
         assert response.status_code == 200
         assert response.json == {
@@ -84,7 +84,7 @@ class Returns200Test:
         queries += 1  # select exists user_offerer (access check)
         queries += 1  # select bank account
         with assert_num_queries(queries):
-            response = client.get(f"collective/bookings/{booking_id}")
+            response = client.get(f"/pro/collective/bookings/{booking_id}")
 
         assert response.status_code == 200
         assert response.json == {
@@ -142,5 +142,5 @@ class Returns403Test:
         with assert_num_queries(
             6
         ):  #  collective_booking + session + user + collective_booking + SELECT EXISTS user_offerer + rollback
-            response = client.get(f"collective/bookings/{booking.id}")
+            response = client.get(f"/pro/collective/bookings/{booking.id}")
             assert response.status_code == 403

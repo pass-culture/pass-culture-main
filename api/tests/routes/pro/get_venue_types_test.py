@@ -9,7 +9,7 @@ class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def when_the_user_is_not_authenticated(self, client):
         with testing.assert_num_queries(0):
-            response = client.get("/venue-types")
+            response = client.get("/pro/venue-types")
             assert response.status_code == 401
 
 
@@ -20,7 +20,7 @@ class Returns200Test:
 
         client = client.with_session_auth(user.email)
         with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES):
-            response = client.get("/venue-types")
+            response = client.get("/pro/venue-types")
             assert response.status_code == 200
 
         expected_venue_types = [{"id": venue_type.name, "label": venue_type.value} for venue_type in VenueTypeCode]

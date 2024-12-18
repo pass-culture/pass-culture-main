@@ -98,7 +98,7 @@ class Returns200Test:
 
         # When
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+            response = client.with_session_auth("user@example.com").post("/pro/collective/offers", json=data)
 
         # Then
         assert response.status_code == 201
@@ -120,7 +120,7 @@ class Returns200Test:
         # When
         data = {**base_offer_payload(venue=venue), "students": ["Collège - 6e"]}
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+            response = client.with_session_auth("user@example.com").post("/pro/collective/offers", json=data)
 
         # Then
         assert response.status_code == 201
@@ -145,7 +145,7 @@ class Returns200Test:
         data["offerVenue"] = {"addressType": "offererVenue", "otherAddress": "", "venueId": venue.id}
 
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+            response = client.with_session_auth("user@example.com").post("/pro/collective/offers", json=data)
 
         # Then
         assert response.status_code == 201
@@ -158,7 +158,7 @@ class Returns200Test:
 
         data = {**base_offer_payload(venue=venue), "students": ["Écoles Marseille - Maternelle"]}
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+            response = client.with_session_auth("user@example.com").post("/pro/collective/offers", json=data)
 
         assert response.status_code == 201
 
@@ -173,7 +173,7 @@ class Returns200Test:
 
         data = {**base_offer_payload(venue=venue), "students": ["Écoles Marseille - Maternelle"]}
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+            response = client.with_session_auth("user@example.com").post("/pro/collective/offers", json=data)
 
         assert response.status_code == 400
         assert "students" in response.json
@@ -191,7 +191,7 @@ class Returns403Test:
         # When
         data = base_offer_payload(venue=venue)
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth(user.email).post("/collective/offers", json=data)
+            response = client.with_session_auth(user.email).post("/pro/collective/offers", json=data)
 
         # Then
         assert response.status_code == 403
@@ -209,7 +209,7 @@ class Returns403Test:
         # When
         data = base_offer_payload(venue=venue)
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer", side_effect=raise_ac):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+            response = client.with_session_auth("user@example.com").post("/pro/collective/offers", json=data)
 
         # Then
         assert response.status_code == 403
@@ -228,7 +228,7 @@ class Returns400Test:
         # When
         data = base_offer_payload(venue=venue, subcategory_id="pouet")
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth(user.email).post("/collective/offers", json=data)
+            response = client.with_session_auth(user.email).post("/pro/collective/offers", json=data)
 
         # Then
         assert response.status_code == 400
@@ -244,7 +244,7 @@ class Returns400Test:
         # When
         data = base_offer_payload(venue=venue, subcategory_id=subcategories.OEUVRE_ART.id)
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth(user.email).post("/collective/offers", json=data)
+            response = client.with_session_auth(user.email).post("/pro/collective/offers", json=data)
 
         # Then
         assert response.status_code == 400
@@ -260,7 +260,7 @@ class Returns400Test:
         # When
         data = base_offer_payload(venue=venue, subcategory_id=subcategories.SUPPORT_PHYSIQUE_FILM.id)
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth(user.email).post("/collective/offers", json=data)
+            response = client.with_session_auth(user.email).post("/pro/collective/offers", json=data)
 
         # Then
         assert response.status_code == 400
@@ -276,7 +276,7 @@ class Returns400Test:
         # When
         data = base_offer_payload(venue=venue, domains=[])
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth(user.email).post("/collective/offers", json=data)
+            response = client.with_session_auth(user.email).post("/pro/collective/offers", json=data)
 
         # Then
         assert response.status_code == 400
@@ -290,7 +290,7 @@ class Returns400Test:
         data = base_offer_payload(venue=venue)
         data["bookingEmails"] = ["test@testmail.com", "test@test", "test"]
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth(user.email).post("/collective/offers", json=data)
+            response = client.with_session_auth(user.email).post("/pro/collective/offers", json=data)
 
         assert response.status_code == 400
         assert response.json == {
@@ -305,7 +305,7 @@ class Returns400Test:
 
         data = {**base_offer_payload(venue=venue), "bookingEmails": []}
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+            response = client.with_session_auth("user@example.com").post("/pro/collective/offers", json=data)
 
         assert response.status_code == 400
         assert response.json == {"bookingEmails": ["Un email doit etre renseigné."]}
@@ -317,7 +317,7 @@ class Returns400Test:
 
         data = {**base_offer_payload(venue=venue), "interventionArea": []}
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+            response = client.with_session_auth("user@example.com").post("/pro/collective/offers", json=data)
 
         assert response.status_code == 400
         assert response.json == {"interventionArea": ["intervention_area must have at least one value"]}
@@ -329,7 +329,7 @@ class Returns400Test:
 
         data = {**base_offer_payload(venue=venue), "domains": []}
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+            response = client.with_session_auth("user@example.com").post("/pro/collective/offers", json=data)
 
         assert response.status_code == 400
         assert response.json == {"domains": ["domains must have at least one value"]}
@@ -349,7 +349,7 @@ class Returns404Test:
         data = base_offer_payload(venue=venue, domains=[0, domain.id])
 
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+            response = client.with_session_auth("user@example.com").post("/pro/collective/offers", json=data)
 
         # Then
         assert response.status_code == 404
@@ -365,7 +365,7 @@ class Returns404Test:
         data = base_offer_payload(venue=venue, national_program_id=-1)
 
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+            response = client.with_session_auth("user@example.com").post("/pro/collective/offers", json=data)
 
         # Then
         assert response.status_code == 400
@@ -381,7 +381,7 @@ class Returns404Test:
         data = base_offer_payload(venue=venue, template_id=1234567890)
 
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+            response = client.with_session_auth("user@example.com").post("/pro/collective/offers", json=data)
 
         # Then
         assert response.status_code == 404

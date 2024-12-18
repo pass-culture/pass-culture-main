@@ -151,7 +151,7 @@ export class DefaultService {
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/bookings/csv',
+      url: '/pro/bookings/csv',
       query: {
         'page': page,
         'venueId': venueId,
@@ -180,7 +180,7 @@ export class DefaultService {
   ): CancelablePromise<EventDatesInfos> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/bookings/dates/{offer_id}',
+      url: '/pro/bookings/dates/{offer_id}',
       path: {
         'offer_id': offerId,
       },
@@ -217,7 +217,7 @@ export class DefaultService {
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/bookings/excel',
+      url: '/pro/bookings/excel',
       query: {
         'page': page,
         'venueId': venueId,
@@ -250,7 +250,7 @@ export class DefaultService {
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/bookings/offer/{offer_id}/csv',
+      url: '/pro/bookings/offer/{offer_id}/csv',
       path: {
         'offer_id': offerId,
       },
@@ -279,7 +279,7 @@ export class DefaultService {
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/bookings/offer/{offer_id}/excel',
+      url: '/pro/bookings/offer/{offer_id}/excel',
       path: {
         'offer_id': offerId,
       },
@@ -320,7 +320,7 @@ export class DefaultService {
   ): CancelablePromise<ListBookingsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/bookings/pro',
+      url: '/pro/bookings/pro',
       query: {
         'page': page,
         'venueId': venueId,
@@ -346,7 +346,7 @@ export class DefaultService {
   public getUserHasBookings(): CancelablePromise<UserHasBookingResponse> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/bookings/pro/userHasBookings',
+      url: '/pro/bookings/pro/userHasBookings',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
@@ -374,7 +374,7 @@ export class DefaultService {
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/collective/bookings/csv',
+      url: '/pro/collective/bookings/csv',
       query: {
         'page': page,
         'venueId': venueId,
@@ -410,7 +410,7 @@ export class DefaultService {
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/collective/bookings/excel',
+      url: '/pro/collective/bookings/excel',
       query: {
         'page': page,
         'venueId': venueId,
@@ -446,7 +446,7 @@ export class DefaultService {
   ): CancelablePromise<ListCollectiveBookingsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/collective/bookings/pro',
+      url: '/pro/collective/bookings/pro',
       query: {
         'page': page,
         'venueId': venueId,
@@ -469,7 +469,7 @@ export class DefaultService {
   public getUserHasCollectiveBookings(): CancelablePromise<UserHasBookingResponse> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/collective/bookings/pro/userHasBookings',
+      url: '/pro/collective/bookings/pro/userHasBookings',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
@@ -487,7 +487,7 @@ export class DefaultService {
   ): CancelablePromise<CollectiveBookingByIdResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/collective/bookings/{booking_id}',
+      url: '/pro/collective/bookings/{booking_id}',
       path: {
         'booking_id': bookingId,
       },
@@ -505,7 +505,7 @@ export class DefaultService {
   public listEducationalDomains(): CancelablePromise<EducationalDomainsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/collective/educational-domains',
+      url: '/pro/collective/educational-domains',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
@@ -541,7 +541,7 @@ export class DefaultService {
   ): CancelablePromise<ListCollectiveOffersResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/collective/offers',
+      url: '/pro/collective/offers',
       query: {
         'nameOrIsbn': nameOrIsbn,
         'offererId': offererId,
@@ -571,7 +571,7 @@ export class DefaultService {
   ): CancelablePromise<CollectiveOfferResponseIdModel> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/collective/offers',
+      url: '/pro/collective/offers',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -591,7 +591,7 @@ export class DefaultService {
   ): CancelablePromise<CollectiveOfferResponseIdModel> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/collective/offers-template',
+      url: '/pro/collective/offers-template',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -611,7 +611,7 @@ export class DefaultService {
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',
-      url: '/collective/offers-template/active-status',
+      url: '/pro/collective/offers-template/active-status',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -631,7 +631,7 @@ export class DefaultService {
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',
-      url: '/collective/offers-template/archive',
+      url: '/pro/collective/offers-template/archive',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -651,7 +651,7 @@ export class DefaultService {
   ): CancelablePromise<GetCollectiveOfferRequestResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/collective/offers-template/request/{request_id}',
+      url: '/pro/collective/offers-template/request/{request_id}',
       path: {
         'request_id': requestId,
       },
@@ -672,7 +672,7 @@ export class DefaultService {
   ): CancelablePromise<GetCollectiveOfferTemplateResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/collective/offers-template/{offer_id}',
+      url: '/pro/collective/offers-template/{offer_id}',
       path: {
         'offer_id': offerId,
       },
@@ -695,7 +695,7 @@ export class DefaultService {
   ): CancelablePromise<GetCollectiveOfferTemplateResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
-      url: '/collective/offers-template/{offer_id}',
+      url: '/pro/collective/offers-template/{offer_id}',
       path: {
         'offer_id': offerId,
       },
@@ -720,7 +720,7 @@ export class DefaultService {
   ): CancelablePromise<CollectiveOfferTemplateResponseIdModel> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/collective/offers-template/{offer_id}/',
+      url: '/pro/collective/offers-template/{offer_id}/',
       path: {
         'offer_id': offerId,
       },
@@ -745,7 +745,7 @@ export class DefaultService {
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'DELETE',
-      url: '/collective/offers-template/{offer_id}/image',
+      url: '/pro/collective/offers-template/{offer_id}/image',
       path: {
         'offer_id': offerId,
       },
@@ -768,7 +768,7 @@ export class DefaultService {
   ): CancelablePromise<AttachImageResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/collective/offers-template/{offer_id}/image',
+      url: '/pro/collective/offers-template/{offer_id}/image',
       path: {
         'offer_id': offerId,
       },
@@ -791,7 +791,7 @@ export class DefaultService {
   ): CancelablePromise<GetCollectiveOfferTemplateResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
-      url: '/collective/offers-template/{offer_id}/publish',
+      url: '/pro/collective/offers-template/{offer_id}/publish',
       path: {
         'offer_id': offerId,
       },
@@ -813,7 +813,7 @@ export class DefaultService {
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',
-      url: '/collective/offers/active-status',
+      url: '/pro/collective/offers/active-status',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -833,7 +833,7 @@ export class DefaultService {
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',
-      url: '/collective/offers/archive',
+      url: '/pro/collective/offers/archive',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -855,7 +855,7 @@ export class DefaultService {
   ): CancelablePromise<EducationalRedactors> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/collective/offers/redactors',
+      url: '/pro/collective/offers/redactors',
       query: {
         'uai': uai,
         'candidate': candidate,
@@ -877,7 +877,7 @@ export class DefaultService {
   ): CancelablePromise<GetCollectiveOfferResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/collective/offers/{offer_id}',
+      url: '/pro/collective/offers/{offer_id}',
       path: {
         'offer_id': offerId,
       },
@@ -900,7 +900,7 @@ export class DefaultService {
   ): CancelablePromise<GetCollectiveOfferResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
-      url: '/collective/offers/{offer_id}',
+      url: '/pro/collective/offers/{offer_id}',
       path: {
         'offer_id': offerId,
       },
@@ -923,7 +923,7 @@ export class DefaultService {
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',
-      url: '/collective/offers/{offer_id}/cancel_booking',
+      url: '/pro/collective/offers/{offer_id}/cancel_booking',
       path: {
         'offer_id': offerId,
       },
@@ -946,7 +946,7 @@ export class DefaultService {
   ): CancelablePromise<GetCollectiveOfferResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/collective/offers/{offer_id}/duplicate',
+      url: '/pro/collective/offers/{offer_id}/duplicate',
       path: {
         'offer_id': offerId,
       },
@@ -969,7 +969,7 @@ export class DefaultService {
   ): CancelablePromise<GetCollectiveOfferResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
-      url: '/collective/offers/{offer_id}/educational_institution',
+      url: '/pro/collective/offers/{offer_id}/educational_institution',
       path: {
         'offer_id': offerId,
       },
@@ -993,7 +993,7 @@ export class DefaultService {
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'DELETE',
-      url: '/collective/offers/{offer_id}/image',
+      url: '/pro/collective/offers/{offer_id}/image',
       path: {
         'offer_id': offerId,
       },
@@ -1016,7 +1016,7 @@ export class DefaultService {
   ): CancelablePromise<AttachImageResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/collective/offers/{offer_id}/image',
+      url: '/pro/collective/offers/{offer_id}/image',
       path: {
         'offer_id': offerId,
       },
@@ -1039,7 +1039,7 @@ export class DefaultService {
   ): CancelablePromise<GetCollectiveOfferResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
-      url: '/collective/offers/{offer_id}/publish',
+      url: '/pro/collective/offers/{offer_id}/publish',
       path: {
         'offer_id': offerId,
       },
@@ -1061,7 +1061,7 @@ export class DefaultService {
   ): CancelablePromise<CollectiveStockResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/collective/stocks',
+      url: '/pro/collective/stocks',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -1085,7 +1085,7 @@ export class DefaultService {
   ): CancelablePromise<CollectiveStockResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
-      url: '/collective/stocks/{collective_stock_id}',
+      url: '/pro/collective/stocks/{collective_stock_id}',
       path: {
         'collective_stock_id': collectiveStockId,
       },
@@ -1108,7 +1108,7 @@ export class DefaultService {
   public getEducationalPartners(): CancelablePromise<AdageCulturalPartnersResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/cultural-partners',
+      url: '/pro/cultural-partners',
       errors: {
         401: `Unauthorized`,
         403: `Forbidden`,
@@ -1129,7 +1129,7 @@ export class DefaultService {
   ): CancelablePromise<EducationalInstitutionsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/educational_institutions',
+      url: '/pro/educational_institutions',
       query: {
         'perPageLimit': perPageLimit,
         'page': page,
@@ -1149,7 +1149,7 @@ export class DefaultService {
   public listFeatures(): CancelablePromise<ListFeatureResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/features',
+      url: '/pro/features',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
@@ -1164,7 +1164,7 @@ export class DefaultService {
   public getBankAccounts(): CancelablePromise<FinanceBankAccountListResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/finance/bank-accounts',
+      url: '/pro/finance/bank-accounts',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
@@ -1182,7 +1182,7 @@ export class DefaultService {
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/finance/combined-invoices',
+      url: '/pro/finance/combined-invoices',
       query: {
         'invoiceReferences': invoiceReferences,
       },
@@ -1203,7 +1203,7 @@ export class DefaultService {
   ): CancelablePromise<StatisticsModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/get-statistics',
+      url: '/pro/get-statistics',
       query: {
         'venue_ids': venueIds,
       },
@@ -1226,7 +1226,7 @@ export class DefaultService {
   ): CancelablePromise<GetProductInformations> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/get_product_by_ean/{ean}/{offerer_id}',
+      url: '/pro/get_product_by_ean/{ean}/{offerer_id}',
       path: {
         'ean': ean,
         'offerer_id': offererId,
@@ -1245,7 +1245,7 @@ export class DefaultService {
   public getNationalPrograms(): CancelablePromise<ListNationalProgramsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/national-programs',
+      url: '/pro/national-programs',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
@@ -1263,7 +1263,7 @@ export class DefaultService {
   ): CancelablePromise<PostOffererResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/offerers',
+      url: '/pro/offerers',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -1283,7 +1283,7 @@ export class DefaultService {
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'DELETE',
-      url: '/offerers/api_keys/{api_key_prefix}',
+      url: '/pro/offerers/api_keys/{api_key_prefix}',
       path: {
         'api_key_prefix': apiKeyPrefix,
       },
@@ -1304,7 +1304,7 @@ export class DefaultService {
   ): CancelablePromise<GetEducationalOfferersResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/offerers/educational',
+      url: '/pro/offerers/educational',
       query: {
         'offerer_id': offererId,
       },
@@ -1329,7 +1329,7 @@ export class DefaultService {
   ): CancelablePromise<GetOfferersNamesResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/offerers/names',
+      url: '/pro/offerers/names',
       query: {
         'validated': validated,
         'validated_for_user': validatedForUser,
@@ -1352,7 +1352,7 @@ export class DefaultService {
   ): CancelablePromise<PostOffererResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/offerers/new',
+      url: '/pro/offerers/new',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -1372,7 +1372,7 @@ export class DefaultService {
   ): CancelablePromise<GetOffererResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/offerers/{offerer_id}',
+      url: '/pro/offerers/{offerer_id}',
       path: {
         'offerer_id': offererId,
       },
@@ -1395,7 +1395,7 @@ export class DefaultService {
   ): CancelablePromise<GetOffererAddressesResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/offerers/{offerer_id}/addresses',
+      url: '/pro/offerers/{offerer_id}/addresses',
       path: {
         'offerer_id': offererId,
       },
@@ -1421,7 +1421,7 @@ export class DefaultService {
   ): CancelablePromise<OffererAddressResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/offerers/{offerer_id}/addresses',
+      url: '/pro/offerers/{offerer_id}/addresses',
       path: {
         'offerer_id': offererId,
       },
@@ -1444,7 +1444,7 @@ export class DefaultService {
   ): CancelablePromise<GetOffererBankAccountsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/offerers/{offerer_id}/bank-accounts',
+      url: '/pro/offerers/{offerer_id}/bank-accounts',
       path: {
         'offerer_id': offererId,
       },
@@ -1469,7 +1469,7 @@ export class DefaultService {
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',
-      url: '/offerers/{offerer_id}/bank-accounts/{bank_account_id}',
+      url: '/pro/offerers/{offerer_id}/bank-accounts/{bank_account_id}',
       path: {
         'offerer_id': offererId,
         'bank_account_id': bankAccountId,
@@ -1493,7 +1493,7 @@ export class DefaultService {
   ): CancelablePromise<OffererStatsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/offerers/{offerer_id}/dashboard',
+      url: '/pro/offerers/{offerer_id}/dashboard',
       path: {
         'offerer_id': offererId,
       },
@@ -1516,7 +1516,7 @@ export class DefaultService {
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/offerers/{offerer_id}/invite',
+      url: '/pro/offerers/{offerer_id}/invite',
       path: {
         'offerer_id': offererId,
       },
@@ -1539,7 +1539,7 @@ export class DefaultService {
   ): CancelablePromise<GetOffererMembersResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/offerers/{offerer_id}/members',
+      url: '/pro/offerers/{offerer_id}/members',
       path: {
         'offerer_id': offererId,
       },
@@ -1560,7 +1560,7 @@ export class DefaultService {
   ): CancelablePromise<GetOffererStatsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/offerers/{offerer_id}/stats',
+      url: '/pro/offerers/{offerer_id}/stats',
       path: {
         'offerer_id': offererId,
       },
@@ -1581,7 +1581,7 @@ export class DefaultService {
   ): CancelablePromise<GetOffererV2StatsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/offerers/{offerer_id}/v2/stats',
+      url: '/pro/offerers/{offerer_id}/v2/stats',
       path: {
         'offerer_id': offererId,
       },
@@ -1620,7 +1620,7 @@ export class DefaultService {
   ): CancelablePromise<ListOffersResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/offers',
+      url: '/pro/offers',
       query: {
         'nameOrIsbn': nameOrIsbn,
         'offererId': offererId,
@@ -1650,7 +1650,7 @@ export class DefaultService {
   ): CancelablePromise<GetIndividualOfferResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/offers',
+      url: '/pro/offers',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -1670,7 +1670,7 @@ export class DefaultService {
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',
-      url: '/offers/active-status',
+      url: '/pro/offers/active-status',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -1690,7 +1690,7 @@ export class DefaultService {
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'PATCH',
-      url: '/offers/all-active-status',
+      url: '/pro/offers/all-active-status',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -1707,7 +1707,7 @@ export class DefaultService {
   public getCategories(): CancelablePromise<CategoriesResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/offers/categories',
+      url: '/pro/offers/categories',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
@@ -1725,7 +1725,7 @@ export class DefaultService {
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/offers/delete-draft',
+      url: '/pro/offers/delete-draft',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -1745,7 +1745,7 @@ export class DefaultService {
   ): CancelablePromise<GetIndividualOfferResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/offers/draft',
+      url: '/pro/offers/draft',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -1767,7 +1767,7 @@ export class DefaultService {
   ): CancelablePromise<GetIndividualOfferResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
-      url: '/offers/draft/{offer_id}',
+      url: '/pro/offers/draft/{offer_id}',
       path: {
         'offer_id': offerId,
       },
@@ -1787,7 +1787,7 @@ export class DefaultService {
   public getMusicTypes(): CancelablePromise<GetMusicTypesResponse> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/offers/music-types',
+      url: '/pro/offers/music-types',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
@@ -1805,7 +1805,7 @@ export class DefaultService {
   ): CancelablePromise<GetIndividualOfferResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
-      url: '/offers/publish',
+      url: '/pro/offers/publish',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -1830,7 +1830,7 @@ export class DefaultService {
   ): CancelablePromise<SuggestedSubcategoriesResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/offers/suggested-subcategories',
+      url: '/pro/offers/suggested-subcategories',
       query: {
         'offer_name': offerName,
         'offer_description': offerDescription,
@@ -1853,7 +1853,7 @@ export class DefaultService {
   ): CancelablePromise<CreateThumbnailResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/offers/thumbnails/',
+      url: '/pro/offers/thumbnails/',
       formData: formData,
       mediaType: 'multipart/form-data',
       errors: {
@@ -1873,7 +1873,7 @@ export class DefaultService {
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'DELETE',
-      url: '/offers/thumbnails/{offer_id}',
+      url: '/pro/offers/thumbnails/{offer_id}',
       path: {
         'offer_id': offerId,
       },
@@ -1894,7 +1894,7 @@ export class DefaultService {
   ): CancelablePromise<GetIndividualOfferWithAddressResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/offers/{offer_id}',
+      url: '/pro/offers/{offer_id}',
       path: {
         'offer_id': offerId,
       },
@@ -1917,7 +1917,7 @@ export class DefaultService {
   ): CancelablePromise<GetIndividualOfferResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
-      url: '/offers/{offer_id}',
+      url: '/pro/offers/{offer_id}',
       path: {
         'offer_id': offerId,
       },
@@ -1942,7 +1942,7 @@ export class DefaultService {
   ): CancelablePromise<GetIndividualOfferResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/offers/{offer_id}/price_categories',
+      url: '/pro/offers/{offer_id}/price_categories',
       path: {
         'offer_id': offerId,
       },
@@ -1967,7 +1967,7 @@ export class DefaultService {
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'DELETE',
-      url: '/offers/{offer_id}/price_categories/{price_category_id}',
+      url: '/pro/offers/{offer_id}/price_categories/{price_category_id}',
       path: {
         'offer_id': offerId,
         'price_category_id': priceCategoryId,
@@ -1989,7 +1989,7 @@ export class DefaultService {
   ): CancelablePromise<StockStatsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/offers/{offer_id}/stocks-stats',
+      url: '/pro/offers/{offer_id}/stocks-stats',
       path: {
         'offer_id': offerId,
       },
@@ -2024,7 +2024,7 @@ export class DefaultService {
   ): CancelablePromise<GetStocksResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/offers/{offer_id}/stocks/',
+      url: '/pro/offers/{offer_id}/stocks/',
       path: {
         'offer_id': offerId,
       },
@@ -2056,7 +2056,7 @@ export class DefaultService {
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/offers/{offer_id}/stocks/all-delete',
+      url: '/pro/offers/{offer_id}/stocks/all-delete',
       path: {
         'offer_id': offerId,
       },
@@ -2081,7 +2081,7 @@ export class DefaultService {
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/offers/{offer_id}/stocks/delete',
+      url: '/pro/offers/{offer_id}/stocks/delete',
       path: {
         'offer_id': offerId,
       },
@@ -2110,7 +2110,7 @@ export class DefaultService {
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/reimbursements/csv',
+      url: '/pro/reimbursements/csv',
       query: {
         'offererId': offererId,
         'bankAccountId': bankAccountId,
@@ -2134,7 +2134,7 @@ export class DefaultService {
   ): CancelablePromise<SirenInfo> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/sirene/siren/{siren}',
+      url: '/pro/sirene/siren/{siren}',
       path: {
         'siren': siren,
       },
@@ -2155,7 +2155,7 @@ export class DefaultService {
   ): CancelablePromise<SiretInfo> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/sirene/siret/{siret}',
+      url: '/pro/sirene/siret/{siret}',
       path: {
         'siret': siret,
       },
@@ -2176,7 +2176,7 @@ export class DefaultService {
   ): CancelablePromise<StocksResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/stocks/bulk',
+      url: '/pro/stocks/bulk',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -2196,7 +2196,7 @@ export class DefaultService {
   ): CancelablePromise<StockIdResponseModel> {
     return this.httpRequest.request({
       method: 'DELETE',
-      url: '/stocks/{stock_id}',
+      url: '/pro/stocks/{stock_id}',
       path: {
         'stock_id': stockId,
       },
@@ -2217,7 +2217,7 @@ export class DefaultService {
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/users/connect-as/{token}',
+      url: '/pro/users/connect-as/{token}',
       path: {
         'token': token,
       },
@@ -2238,7 +2238,7 @@ export class DefaultService {
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/users/cookies',
+      url: '/pro/users/cookies',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -2256,7 +2256,7 @@ export class DefaultService {
   public getProfile(): CancelablePromise<SharedCurrentUserResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/users/current',
+      url: '/pro/users/current',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
@@ -2274,7 +2274,7 @@ export class DefaultService {
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/users/email',
+      url: '/pro/users/email',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -2291,7 +2291,7 @@ export class DefaultService {
   public getUserEmailPendingValidation(): CancelablePromise<UserEmailValidationResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/users/email_pending_validation',
+      url: '/pro/users/email_pending_validation',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
@@ -2309,7 +2309,7 @@ export class DefaultService {
   ): CancelablePromise<UserIdentityResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
-      url: '/users/identity',
+      url: '/pro/users/identity',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -2329,7 +2329,7 @@ export class DefaultService {
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/users/log-user-review',
+      url: '/pro/users/log-user-review',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -2349,7 +2349,7 @@ export class DefaultService {
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/users/new-password',
+      url: '/pro/users/new-password',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -2370,7 +2370,7 @@ export class DefaultService {
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/users/password',
+      url: '/pro/users/password',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -2391,7 +2391,7 @@ export class DefaultService {
   ): CancelablePromise<UserPhoneResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
-      url: '/users/phone',
+      url: '/pro/users/phone',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -2411,7 +2411,7 @@ export class DefaultService {
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/users/pro_flags',
+      url: '/pro/users/pro_flags',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -2432,7 +2432,7 @@ export class DefaultService {
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/users/reset-password',
+      url: '/pro/users/reset-password',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -2449,7 +2449,7 @@ export class DefaultService {
   public patchProUserRgsSeen(): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',
-      url: '/users/rgs-seen',
+      url: '/pro/users/rgs-seen',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
@@ -2467,7 +2467,7 @@ export class DefaultService {
   ): CancelablePromise<SharedLoginUserResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/users/signin',
+      url: '/pro/users/signin',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -2484,7 +2484,7 @@ export class DefaultService {
   public signout(): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/users/signout',
+      url: '/pro/users/signout',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
@@ -2502,7 +2502,7 @@ export class DefaultService {
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/users/token/{token}',
+      url: '/pro/users/token/{token}',
       path: {
         'token': token,
       },
@@ -2521,7 +2521,7 @@ export class DefaultService {
   public patchUserTutoSeen(): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',
-      url: '/users/tuto-seen',
+      url: '/pro/users/tuto-seen',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
@@ -2539,7 +2539,7 @@ export class DefaultService {
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',
-      url: '/users/validate_email',
+      url: '/pro/users/validate_email',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -2559,7 +2559,7 @@ export class DefaultService {
   ): CancelablePromise<HasInvoiceResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/v2/finance/has-invoice',
+      url: '/pro/v2/finance/has-invoice',
       query: {
         'offererId': offererId,
       },
@@ -2586,7 +2586,7 @@ export class DefaultService {
   ): CancelablePromise<InvoiceListV2ResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/v2/finance/invoices',
+      url: '/pro/v2/finance/invoices',
       query: {
         'periodBeginningDate': periodBeginningDate,
         'periodEndingDate': periodEndingDate,
@@ -2610,7 +2610,7 @@ export class DefaultService {
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/v2/reimbursements/csv',
+      url: '/pro/v2/reimbursements/csv',
       query: {
         'invoicesReferences': invoicesReferences,
       },
@@ -2631,7 +2631,7 @@ export class DefaultService {
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/v2/users/signup/pro',
+      url: '/pro/v2/users/signup/pro',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -2651,7 +2651,7 @@ export class DefaultService {
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',
-      url: '/validate/user/{token}',
+      url: '/pro/validate/user/{token}',
       path: {
         'token': token,
       },
@@ -2669,7 +2669,7 @@ export class DefaultService {
   public fetchVenueLabels(): CancelablePromise<VenueLabelListResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/venue-labels',
+      url: '/pro/venue-labels',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
@@ -2684,7 +2684,7 @@ export class DefaultService {
   public getVenueTypes(): CancelablePromise<VenueTypeListResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/venue-types',
+      url: '/pro/venue-types',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
@@ -2702,7 +2702,7 @@ export class DefaultService {
   ): CancelablePromise<ListVenueProviderResponse> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/venueProviders',
+      url: '/pro/venueProviders',
       query: {
         'venueId': venueId,
       },
@@ -2723,7 +2723,7 @@ export class DefaultService {
   ): CancelablePromise<VenueProviderResponse> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/venueProviders',
+      url: '/pro/venueProviders',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -2743,7 +2743,7 @@ export class DefaultService {
   ): CancelablePromise<VenueProviderResponse> {
     return this.httpRequest.request({
       method: 'PUT',
-      url: '/venueProviders',
+      url: '/pro/venueProviders',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -2763,7 +2763,7 @@ export class DefaultService {
   ): CancelablePromise<ListProviderResponse> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/venueProviders/{venue_id}',
+      url: '/pro/venueProviders/{venue_id}',
       path: {
         'venue_id': venueId,
       },
@@ -2786,7 +2786,7 @@ export class DefaultService {
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'DELETE',
-      url: '/venueProviders/{venue_provider_id}',
+      url: '/pro/venueProviders/{venue_provider_id}',
       path: {
         'venue_provider_id': venueProviderId,
       },
@@ -2811,7 +2811,7 @@ export class DefaultService {
   ): CancelablePromise<GetVenueListResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/venues',
+      url: '/pro/venues',
       query: {
         'validated': validated,
         'activeOfferersOnly': activeOfferersOnly,
@@ -2834,7 +2834,7 @@ export class DefaultService {
   ): CancelablePromise<VenueResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/venues',
+      url: '/pro/venues',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -2851,7 +2851,7 @@ export class DefaultService {
   public getVenuesEducationalStatuses(): CancelablePromise<VenuesEducationalStatusesResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/venues-educational-statuses',
+      url: '/pro/venues-educational-statuses',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
@@ -2869,7 +2869,7 @@ export class DefaultService {
   ): CancelablePromise<GetVenuesOfOffererFromSiretResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/venues/siret/{siret}',
+      url: '/pro/venues/siret/{siret}',
       path: {
         'siret': siret,
       },
@@ -2890,7 +2890,7 @@ export class DefaultService {
   ): CancelablePromise<GetVenueResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/venues/{venue_id}',
+      url: '/pro/venues/{venue_id}',
       path: {
         'venue_id': venueId,
       },
@@ -2913,7 +2913,7 @@ export class DefaultService {
   ): CancelablePromise<GetVenueResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
-      url: '/venues/{venue_id}',
+      url: '/pro/venues/{venue_id}',
       path: {
         'venue_id': venueId,
       },
@@ -2936,7 +2936,7 @@ export class DefaultService {
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'DELETE',
-      url: '/venues/{venue_id}/banner',
+      url: '/pro/venues/{venue_id}/banner',
       path: {
         'venue_id': venueId,
       },
@@ -2959,7 +2959,7 @@ export class DefaultService {
   ): CancelablePromise<GetVenueResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
-      url: '/venues/{venue_id}/collective-data',
+      url: '/pro/venues/{venue_id}/collective-data',
       path: {
         'venue_id': venueId,
       },
@@ -2982,7 +2982,7 @@ export class DefaultService {
   ): CancelablePromise<OffererStatsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/venues/{venue_id}/dashboard',
+      url: '/pro/venues/{venue_id}/dashboard',
       path: {
         'venue_id': venueId,
       },
@@ -3005,7 +3005,7 @@ export class DefaultService {
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/venues/{venue_id}/pricing-point',
+      url: '/pro/venues/{venue_id}/pricing-point',
       path: {
         'venue_id': venueId,
       },

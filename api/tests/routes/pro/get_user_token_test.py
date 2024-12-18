@@ -16,7 +16,7 @@ class Returns200Test:
             user_offerer.user.id,
         )
         with testing.assert_num_queries(0):
-            request = client.get("/users/token/" + token.encoded_token)
+            request = client.get("/pro/users/token/" + token.encoded_token)
             assert request.status_code == 204
 
 
@@ -24,5 +24,5 @@ class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_activation_token_does_not_exist(self, client):
         with testing.assert_num_queries(0):
-            request = client.get("/users/token/3YU26FS")
+            request = client.get("/pro/users/token/3YU26FS")
             assert request.status_code == 404

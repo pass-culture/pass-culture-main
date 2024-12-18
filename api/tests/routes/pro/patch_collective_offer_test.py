@@ -96,7 +96,7 @@ class Returns200Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
-            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+            response = client.patch(f"/pro/collective/offers/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 200
@@ -172,7 +172,7 @@ class Returns200Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
-            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+            response = client.patch(f"/pro/collective/offers/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 200
@@ -199,7 +199,7 @@ class Returns200Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
-            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+            response = client.patch(f"/pro/collective/offers/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 200
@@ -219,7 +219,7 @@ class Returns200Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
-            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+            response = client.patch(f"/pro/collective/offers/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 200
@@ -273,7 +273,7 @@ class Returns400Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
-            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+            response = client.patch(f"/pro/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 400
         assert response.json["global"] == ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
@@ -292,7 +292,7 @@ class Returns400Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
-            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+            response = client.patch(f"/pro/collective/offers/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 400
@@ -307,7 +307,7 @@ class Returns400Test:
 
         # When
         data = {"name": None}
-        response = client.with_session_auth("user@example.com").patch(f"/collective/offers/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/collective/offers/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 400
@@ -326,7 +326,7 @@ class Returns400Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
-            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+            response = client.patch(f"/pro/collective/offers/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 400
@@ -349,7 +349,7 @@ class Returns400Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
-            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+            response = client.patch(f"/pro/collective/offers/{offer.id}", json=data)
         # Then
         assert response.status_code == 400
 
@@ -371,7 +371,7 @@ class Returns400Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
-            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+            response = client.patch(f"/pro/collective/offers/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 400
@@ -394,7 +394,7 @@ class Returns400Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
-            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+            response = client.patch(f"/pro/collective/offers/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 400
@@ -417,7 +417,7 @@ class Returns400Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
-            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+            response = client.patch(f"/pro/collective/offers/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 400
@@ -440,7 +440,7 @@ class Returns400Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
-            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+            response = client.patch(f"/pro/collective/offers/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 400
@@ -482,7 +482,7 @@ class Returns400Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
-            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+            response = client.patch(f"/pro/collective/offers/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 400
@@ -497,7 +497,7 @@ class Returns400Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
-            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+            response = client.patch(f"/pro/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 400
         assert response.json == {
@@ -519,7 +519,7 @@ class Returns403Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
-            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+            response = client.patch(f"/pro/collective/offers/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 403
@@ -547,7 +547,7 @@ class Returns403Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
-            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+            response = client.patch(f"/pro/collective/offers/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 403
@@ -570,7 +570,7 @@ class Returns403Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
-            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+            response = client.patch(f"/pro/collective/offers/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 403
@@ -593,7 +593,7 @@ class Returns403Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
-            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+            response = client.patch(f"/pro/collective/offers/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 403
@@ -608,7 +608,7 @@ class Returns403Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
-            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+            response = client.patch(f"/pro/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 403
         assert response.json == {"offer": "the used or refund offer can't be edited."}
@@ -661,7 +661,7 @@ class Returns404Test:
         users_factories.UserFactory(email="user@example.com")
 
         # when
-        response = client.with_session_auth("user@example.com").patch("/collective/offers/ADFGA", json={})
+        response = client.with_session_auth("user@example.com").patch("/pro/collective/offers/ADFGA", json={})
 
         # then
         assert response.status_code == 404
@@ -684,7 +684,7 @@ class Returns404Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
-            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+            response = client.patch(f"/pro/collective/offers/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 404
@@ -707,7 +707,7 @@ class Returns404Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer", return_value=False
         ):
-            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+            response = client.patch(f"/pro/collective/offers/{offer.id}", json=data)
 
         # THEN
         assert response.status_code == 403
@@ -728,7 +728,7 @@ class Returns404Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
-            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+            response = client.patch(f"/pro/collective/offers/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 404

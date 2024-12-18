@@ -74,7 +74,7 @@ class OffererStatsTest:
         queries += 1  # select offerer_stats
         queries += 1  # select offers with images
         with testing.assert_num_queries(queries):
-            response = client.get(f"/offerers/{offerer_id}/stats")
+            response = client.get(f"/pro/offerers/{offerer_id}/stats")
             assert response.status_code == 200
 
         assert response.json == {
@@ -144,7 +144,7 @@ class OffererStatsTest:
         queries += 1  # check user_offerer exists
         queries += 1  # select offerer_stats
         with testing.assert_num_queries(queries):
-            response = client.get(f"/offerers/{offerer_id}/stats")
+            response = client.get(f"/pro/offerers/{offerer_id}/stats")
 
         assert response.status_code == 200
         assert response.json == {

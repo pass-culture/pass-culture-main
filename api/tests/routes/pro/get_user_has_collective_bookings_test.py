@@ -19,7 +19,7 @@ class Returns200Test:
         CollectiveBookingFactory(offerer=offerer, collectiveStock__collectiveOffer__venue__managingOfferer=offerer)
         client = client.with_session_auth(user.email)
         with testing.assert_num_queries(self.num_queries):
-            response = client.get("/collective/bookings/pro/userHasBookings")
+            response = client.get("/pro/collective/bookings/pro/userHasBookings")
             assert response.status_code == 200
 
         user_has_bookings = response.json["hasBookings"]
@@ -33,7 +33,7 @@ class Returns200Test:
         client = client.with_session_auth(user.email)
 
         with testing.assert_num_queries(self.num_queries):
-            response = client.get("/collective/bookings/pro/userHasBookings")
+            response = client.get("/pro/collective/bookings/pro/userHasBookings")
             assert response.status_code == 200
 
         user_has_bookings = response.json["hasBookings"]
