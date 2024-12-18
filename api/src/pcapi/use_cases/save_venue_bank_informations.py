@@ -430,7 +430,7 @@ class ImportBankAccountV5(AbstractImportBankAccount, ImportBankAccountMixin):
             logger.info(
                 "Can't link a BankAccount to a venue",
                 extra={
-                    "siren": self.application_details.siret,
+                    "siret": self.application_details.siret,
                     "application_id": self.application_details.application_id,
                     "has_venues": bool(venues),
                 },

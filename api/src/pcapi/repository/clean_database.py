@@ -4,6 +4,7 @@ import flask_sqlalchemy
 from sqlalchemy import exc as sa_exc
 
 from pcapi import settings
+from pcapi.connectors.dms import models as dms_models
 from pcapi.core.achievements import models as achievements_models
 from pcapi.core.artist import models as artist_models
 import pcapi.core.bookings.models as bookings_models
@@ -138,6 +139,7 @@ tables_to_clean: list[flask_sqlalchemy.Model] = [
     perm_models.Role,
     history_models.ActionHistory,
     educational_models.NationalProgram,
+    dms_models.LatestDmsImport,
 ]
 
 

@@ -13,6 +13,7 @@ def import_ds_applications(
     procedure_number: int,
     callback: typing.Callable[[int, datetime.datetime | None], list],
     ignore_previous: bool = False,
+    forced_since: datetime.datetime | None = None,
 ) -> None:
     logger.info("[DS] Start import of all applications from Démarches Simplifiées for procedure %s", procedure_number)
     last_import = (
@@ -34,7 +35,14 @@ def import_ds_applications(
             )
 
     else:
-        since = last_import.latestImportDatetime if last_import else None
+        if ignore_previous:
+            since = None
+        elif forced_since:
+            since = forced_since
+        elif last_import:
+            since = last_import.latestImportDatetime
+        else:
+            since = None
 
         current_import = ds_models.LatestDmsImport(
             procedureId=procedure_number,
@@ -45,7 +53,7 @@ def import_ds_applications(
         db.session.add(current_import)
         db.session.commit()
 
-        application_numbers = callback(procedure_number, None if ignore_previous else since)
+        application_numbers = callback(procedure_number, since)
 
         current_import.processedApplications = application_numbers
         current_import.isProcessing = False
