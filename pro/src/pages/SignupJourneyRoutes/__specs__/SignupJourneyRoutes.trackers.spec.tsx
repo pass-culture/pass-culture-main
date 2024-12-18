@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router'
 
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { routesSignupJourney } from 'app/AppRouter/subroutesSignupJourneyMap'

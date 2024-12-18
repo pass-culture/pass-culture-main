@@ -1,9 +1,4 @@
-import {
-  Link,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router'
 
 import { CollectiveOfferTemplateResponseModel } from 'apiClient/adage'
 import { getHumanizeRelativeDistance } from 'commons/utils/getDistance'

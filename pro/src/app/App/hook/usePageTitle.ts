@@ -1,6 +1,6 @@
 import type { LocationListener } from 'history'
 import { useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router';
 
 import { findCurrentRoute } from 'app/AppRouter/findCurrentRoute'
 

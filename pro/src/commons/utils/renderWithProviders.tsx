@@ -2,7 +2,7 @@
 import { render } from '@testing-library/react'
 import React, { ReactNode } from 'react'
 import { Provider } from 'react-redux'
-import { createMemoryRouter, RouterProvider } from 'react-router-dom'
+import { createMemoryRouter, RouterProvider } from 'react-router'
 import { SWRConfig } from 'swr'
 
 import {

@@ -2,7 +2,7 @@ import { FormikContext, useFormik } from 'formik'
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 import { useInstantSearch } from 'react-instantsearch'
 import { useDispatch, useSelector } from 'react-redux'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router'
 import useSWRMutation from 'swr/mutation'
 
 import { AdageFrontRoles, TrackingFilterBody } from 'apiClient/adage'
@@ -12,7 +12,10 @@ import { GET_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useIsElementVisible } from 'commons/hooks/useIsElementVisible'
 import { useNotification } from 'commons/hooks/useNotification'
-import { setAdageFilter, setAdagePageSaved } from 'commons/store/adageFilter/reducer'
+import {
+  setAdageFilter,
+  setAdagePageSaved,
+} from 'commons/store/adageFilter/reducer'
 import { adageQuerySelector } from 'commons/store/adageFilter/selectors'
 import { MARSEILLE_EN_GRAND } from 'pages/AdageIframe/app/constants'
 import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'

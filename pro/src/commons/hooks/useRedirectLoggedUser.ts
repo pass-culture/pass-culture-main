@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router';
 
 import { api } from 'apiClient/api'
 import { SAVED_OFFERER_ID_KEY } from 'commons/core/shared/constants'

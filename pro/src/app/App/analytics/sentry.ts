@@ -7,7 +7,7 @@ import {
   matchRoutes,
   useLocation,
   useNavigationType,
-} from 'react-router-dom'
+} from 'react-router';
 
 import { selectCurrentUser } from 'commons/store/user/selectors'
 import {

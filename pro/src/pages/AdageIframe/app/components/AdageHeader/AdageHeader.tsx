@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router'
 import useSWR from 'swr'
 
 import { AdageFrontRoles, AdageHeaderLink } from 'apiClient/adage'

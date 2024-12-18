@@ -1,7 +1,7 @@
 import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { Navigate, useSearchParams } from 'react-router-dom'
+import { Navigate, useSearchParams } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { HTTP_STATUS, isErrorAPIError } from 'apiClient/helpers'

@@ -13,8 +13,8 @@ import {
 import { OffererBannersProps, OffererBanners } from './OffererBanners'
 
 const mockNavigate = vi.fn()
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
+vi.mock('react-router', async () => ({
+  ...(await vi.importActual('react-router')),
   useNavigate: () => mockNavigate,
 }))
 

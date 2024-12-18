@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import editFullIcon from 'icons/full-edit.svg'

@@ -1,6 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 
 import { useSignupJourneyContext } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
 import { FormLayout } from 'components/FormLayout/FormLayout'

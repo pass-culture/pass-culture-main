@@ -1,6 +1,6 @@
 import { useFormikContext } from 'formik'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 
 import { ProUserCreationBodyV2Model } from 'apiClient/v1'
 import { BannerRGS } from 'components/BannerRGS/BannerRGS'

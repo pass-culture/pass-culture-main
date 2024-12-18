@@ -1,6 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -90,7 +90,12 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   /* istanbul ignore next: DEBT, TO FIX */
   const bookingsQuantity = stocks.length > 0 ? stocks[0].bookingsQuantity : 0
   const hasBookings = bookingsQuantity > 0
-  const minQuantity = mode === OFFER_WIZARD_MODE.EDITION ? (hasBookings ? bookingsQuantity : 0) : 1
+  const minQuantity =
+    mode === OFFER_WIZARD_MODE.EDITION
+      ? hasBookings
+        ? bookingsQuantity
+        : 0
+      : 1
   const isDisabled = isOfferDisabled(offer.status)
   const useOffererAddressAsDataSourceEnabled = useActiveFeature(
     'WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE'

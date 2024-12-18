@@ -1,5 +1,5 @@
 import { Form, FormikProvider, useFormik } from 'formik'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'

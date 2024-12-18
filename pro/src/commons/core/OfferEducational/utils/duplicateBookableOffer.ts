@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router';
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
