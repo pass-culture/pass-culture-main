@@ -12,13 +12,11 @@ import { Thumb } from 'ui-kit/Thumb/Thumb'
 export const ThumbCell = ({
   offer,
   offerLink,
-  headers,
   inactive,
   className,
 }: {
   offer: CollectiveOfferResponseModel | ListOffersOfferResponseModel
   offerLink: string
-  headers?: string
   inactive?: boolean
   className?: string
 }) => {
@@ -29,17 +27,16 @@ export const ThumbCell = ({
         styles['offers-table-cell'],
         styles['thumb-column']
       )}
-      headers={headers}
     >
-      <Link
-        title={`${offer.name} - éditer l’offre`}
-        to={offerLink}
-      >
+      <Link title={`${offer.name} - éditer l’offre`} to={offerLink}>
         <Thumb
           url={isOfferEducational(offer) ? offer.imageUrl : offer.thumbUrl}
-          className={classNames({
-            [styles['thumb-column-inactive']]: inactive,
-          }, className)}
+          className={classNames(
+            {
+              [styles['thumb-column-inactive']]: inactive,
+            },
+            className
+          )}
         />
       </Link>
     </td>

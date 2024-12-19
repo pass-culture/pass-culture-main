@@ -209,7 +209,9 @@ describe('ollectiveOfferRow', () => {
     props.offer.isEditable = false
     renderOfferItem(props)
 
-    expect(screen.getByRole('presentation')).toHaveClass('thumb-column-inactive')
+    expect(screen.getByRole('presentation')).toHaveClass(
+      'thumb-column-inactive'
+    )
   })
 
   it('should display disabled checkbox when offer is not editable', () => {
@@ -229,7 +231,9 @@ describe('ollectiveOfferRow', () => {
       props.offer.status = status
       renderOfferItem(props)
 
-      expect(screen.getByRole('presentation')).not.toHaveClass('thumb-column-inactive')
+      expect(screen.getByRole('presentation')).not.toHaveClass(
+        'thumb-column-inactive'
+      )
     }
   )
 
@@ -453,8 +457,8 @@ describe('ollectiveOfferRow', () => {
     })
 
     expect(
-      screen.getByText('En attente de préréservation par l’enseignant')
-    ).toBeInTheDocument()
+      screen.getAllByText('En attente de préréservation par l’enseignant')
+    ).toHaveLength(2)
   })
 
   it('should display a expiration row if the bookable offer is pre-booked, and if the FF ENABLE_COLLECTIVE_OFFERS_EXPIRATION is enabled', () => {
@@ -475,8 +479,10 @@ describe('ollectiveOfferRow', () => {
     })
 
     expect(
-      screen.getByText('En attente de réservation par le chef d’établissement')
-    ).toBeInTheDocument()
+      screen.getAllByText(
+        'En attente de réservation par le chef d’établissement'
+      )
+    ).toHaveLength(2)
   })
 
   it('should not display a expiration row if the FF ENABLE_COLLECTIVE_OFFERS_EXPIRATION is disabled', () => {

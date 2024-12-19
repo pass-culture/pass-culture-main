@@ -27,7 +27,6 @@ import { getDate, getRemainingTime, shouldDisplayWarning } from './utils'
 export interface OfferNameCellProps {
   offer: CollectiveOfferResponseModel | ListOffersOfferResponseModel
   offerLink: string
-  headers?: string
   displayThumb?: boolean
   className?: string
 }
@@ -35,7 +34,6 @@ export interface OfferNameCellProps {
 export const OfferNameCell = ({
   offer,
   offerLink,
-  headers,
   displayThumb = false,
   className,
 }: OfferNameCellProps) => {
@@ -103,7 +101,6 @@ export const OfferNameCell = ({
         styles['title-column'],
         className
       )}
-      headers={headers}
     >
       <Link
         className={classNames({
@@ -111,9 +108,13 @@ export const OfferNameCell = ({
         })}
         to={offerLink}
       >
-        {displayThumb && <div className={styles['title-column-thumb']}>
-          <Thumb url={isOfferEducational(offer) ? offer.imageUrl : offer.thumbUrl} />
-        </div>}
+        {displayThumb && (
+          <div className={styles['title-column-thumb']}>
+            <Thumb
+              url={isOfferEducational(offer) ? offer.imageUrl : offer.thumbUrl}
+            />
+          </div>
+        )}
         <div>
           {offer.isShowcase && (
             <Tag
@@ -123,12 +124,12 @@ export const OfferNameCell = ({
               Offre vitrine
             </Tag>
           )}
-          <div className={styles['title-column-name']}>
-            {offer.name}
-          </div>
+          <div className={styles['title-column-name']}>{offer.name}</div>
           {(isOfferEducational(offer) || offer.isEvent) && (
             <span className={styles['stocks']}>
-              {!isOfferEducational(offer) && offer.isEvent && getDateInformations()}
+              {!isOfferEducational(offer) &&
+                offer.isEvent &&
+                getDateInformations()}
               {isOfferEducational(offer) &&
                 !isCollectiveOffersExpirationEnabled &&
                 getDateInformations()}
@@ -155,7 +156,10 @@ export const OfferNameCell = ({
                         alt="Attention"
                         width="16"
                       />
-                      {pluralize(computeNumberOfSoldOutStocks(), 'date épuisée')}
+                      {pluralize(
+                        computeNumberOfSoldOutStocks(),
+                        'date épuisée'
+                      )}
                     </span>
                   )}
                 </>
@@ -169,8 +173,8 @@ export const OfferNameCell = ({
                     alt="Attention"
                   />
                   <span className={styles['sold-out-dates']}>
-                    La date limite de réservation par le chef d’établissement est
-                    dans{' '}
+                    La date limite de réservation par le chef d’établissement
+                    est dans{' '}
                     {`${
                       getRemainingTime(offer.stocks[0]) >= 1
                         ? pluralize(getRemainingTime(offer.stocks[0]), 'jour')

@@ -8,7 +8,6 @@ interface CheckboxCellProps {
   isSelected: boolean
   disabled?: boolean
   selectOffer: () => void
-  headers?: string
   className?: string
 }
 
@@ -17,7 +16,6 @@ export const CheckboxCell = ({
   isSelected,
   disabled,
   selectOffer,
-  headers,
   className,
 }: CheckboxCellProps) => {
   return (
@@ -28,7 +26,6 @@ export const CheckboxCell = ({
         styles['checkbox-column'],
         className
       )}
-      headers={headers}
     >
       <BaseCheckbox
         checked={isSelected}
