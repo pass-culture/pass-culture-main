@@ -28,9 +28,10 @@ class Returns204Test:
         ):
             # 1. authentication
             # 2. load current_user
-            # 3. retrieve all collective_order.ids to batch them in pool for update
-            # 4. update dateArchive on collective_offer
-            with assert_num_queries(4):
+            # 3. feature flag
+            # 4. retrieve all collective_order.ids to batch them in pool for update
+            # 5. update dateArchive on collective_offer
+            with assert_num_queries(5):
                 response = client.patch("/collective/offers-template/archive", json=data)
                 assert response.status_code == 204
 
@@ -89,9 +90,10 @@ class Returns204Test:
         ):
             # 1. authentication
             # 2. load current_user
-            # 3. retrieve all collective_order.ids to batch them in pool for update
-            # 4. update dateArchive on collective_offer
-            with assert_num_queries(4):
+            # 3. feature flag
+            # 4. retrieve all collective_order.ids to batch them in pool for update
+            # 5. update dateArchive on collective_offer
+            with assert_num_queries(5):
                 response = client.patch("/collective/offers-template/archive", json=data)
                 assert response.status_code == 204
 
@@ -118,9 +120,10 @@ class Returns204Test:
         ):
             # 1. authentication
             # 2. load current_user
-            # 3. retrieve all collective_order.ids to batch them in pool for update
-            # 4. update dateArchive on collective_offer
-            with assert_num_queries(4):
+            # 3. feature flag
+            # 4. retrieve all collective_order.ids to batch them in pool for update
+            # 5. update dateArchive on collective_offer
+            with assert_num_queries(5):
                 response = client.patch("/collective/offers-template/archive", json=data)
                 assert response.status_code == 204
 
