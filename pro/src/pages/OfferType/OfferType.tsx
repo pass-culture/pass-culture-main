@@ -5,7 +5,7 @@ import { Layout } from 'app/App/layout/Layout'
 
 import { OfferTypeScreen } from './OfferType/OfferType'
 
-const OfferType = (): JSX.Element => {
+export const OfferType = (): JSX.Element => {
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
 

@@ -1,3 +1,6 @@
+import cn from 'classnames'
+import { useLocation } from 'react-router-dom'
+
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { computeIndividualOffersUrl } from 'commons/core/Offers/utils/computeIndividualOffersUrl'
 import { useNotification } from 'commons/hooks/useNotification'
@@ -20,7 +23,6 @@ export interface ActionBarProps {
   isDisabled: boolean
   step: OFFER_WIZARD_STEP_IDS
   dirtyForm?: boolean
-  isOnboarding?: boolean
 }
 
 export const ActionBar = ({
@@ -29,8 +31,9 @@ export const ActionBar = ({
   isDisabled,
   step,
   dirtyForm,
-  isOnboarding = false,
 }: ActionBarProps) => {
+  const { pathname } = useLocation()
+  const isOnboarding = pathname.indexOf('onboarding') !== -1
   const mode = useOfferWizardMode()
   const backOfferUrl = computeIndividualOffersUrl({})
   const notify = useNotification()
@@ -125,7 +128,7 @@ export const ActionBar = ({
   }
 
   return (
-    <ActionsBarSticky>
+    <ActionsBarSticky hasSideNav={!isOnboarding}>
       <ActionsBarSticky.Left>{Left()}</ActionsBarSticky.Left>
       <ActionsBarSticky.Right
         inverseWhenSmallerThanTablet={step === OFFER_WIZARD_STEP_IDS.SUMMARY}

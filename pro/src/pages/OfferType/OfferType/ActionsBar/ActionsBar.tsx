@@ -22,7 +22,7 @@ export const ActionsBar = ({
   const { logEvent } = useAnalytics()
 
   return (
-    <ActionsBarSticky>
+    <ActionsBarSticky hasSideNav={!isOnboarding}>
       <ActionsBarSticky.Left>
         <ButtonLink
           to={

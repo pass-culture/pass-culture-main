@@ -105,12 +105,14 @@ export const SummaryScreen = () => {
     (subCategory) => subCategory.id === offer.subcategoryId
   )?.canBeDuo
 
-  const offerConfirmationStepUrl = getIndividualOfferUrl({
-    offerId: offer.id,
-    step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
-    mode,
-    isOnboarding,
-  })
+  const offerConfirmationStepUrl = isOnboarding
+    ? '/accueil'
+    : getIndividualOfferUrl({
+        offerId: offer.id,
+        step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
+        mode,
+        isOnboarding,
+      })
 
   /* istanbul ignore next: DEBT, TO FIX */
   const handlePreviousStep = () => {
@@ -209,7 +211,6 @@ export const SummaryScreen = () => {
           isDisabled={
             mode !== OFFER_WIZARD_MODE.CREATION ? false : formik.isSubmitting
           }
-          isOnboarding
         />
         <RedirectToBankAccountDialog
           cancelRedirectUrl={offerConfirmationStepUrl}
