@@ -6,7 +6,9 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
 from pcapi.core.educational.utils import UAI_FOR_FAKE_TOKEN
+from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import factories as finance_factories
+from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import api as offerers_api
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
@@ -111,7 +113,19 @@ def create_pro_user_with_financial_data() -> dict:
         venue=venue_B,
         pricingPoint=venue_B,
     )
+    ##
+    stock = offers_factories.StockFactory(offer__venue=venue_B, price=30)
+
+    bookings_factories.BookingFactory(token="2XTM3W", stock=stock, status=bookings_models.BookingStatus.CONFIRMED)
     finance_factories.InvoiceFactory(bankAccount=bank_account_B)
+
+    finance_api.generate_cashflows_and_payment_files(datetime.datetime.utcnow())
+    cashflows = finance_models.Cashflow.query.filter_by(bankAccount=bank_account_B).all()
+    cashflow_ids = [c.id for c in cashflows]
+    finance_api.generate_and_store_invoice_legacy(
+        bank_account_id=bank_account_B.id,
+        cashflow_ids=cashflow_ids,
+    )
 
     return {"user": get_pro_user_helper(pro_user)}
 
