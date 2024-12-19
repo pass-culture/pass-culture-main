@@ -171,7 +171,10 @@
               <div class="fs-6">
                 <p class="mb-1">
                   <span class="fw-bold">Entité juridique :</span> {{ links.build_offerer_name_to_details_link(offer.venue.managingOfferer) }}
-                  {% if has_permission("PRO_FRAUD_ACTIONS") %}{{ offer.venue.managingOfferer.confidenceLevel | format_confidence_level_badge }}{% endif %}
+                  {% if has_permission("PRO_FRAUD_ACTIONS") %}
+                    {{ offer.venue.managingOfferer.confidenceLevel | format_confidence_level_badge }}
+                    {{ offer.venue.managingOfferer.tags | format_tag_object_list }}
+                  {% endif %}
                 </p>
               </div>
               <div class="fs-6">
