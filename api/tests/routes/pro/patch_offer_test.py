@@ -7,8 +7,11 @@ import pytest
 from pcapi.connectors import api_adresse
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.geography import factories as geography_factories
+from pcapi.core.geography import models as geography_models
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offers import models as offers_models
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
@@ -56,6 +59,159 @@ class Returns200Test:
         assert updated_offer.mentalDisabilityCompliant
         assert updated_offer.subcategoryId == subcategories.ABO_PLATEFORME_VIDEO.id
         assert not updated_offer.product
+
+    @override_features(WIP_ENABLE_OFFER_ADDRESS=True)
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def test_we_handle_unique_address_among_manual_edition_while_patch_offer(self, client):
+        user_offerer_1 = offerers_factories.UserOffererFactory(user__email="user1@example.com")
+        user_offerer_2 = offerers_factories.UserOffererFactory(user__email="user2@example.com")
+        user_offerer_3 = offerers_factories.UserOffererFactory(user__email="user3@example.com")
+
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer_1.offerer)
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.CONFERENCE.id,
+            venue=venue,
+            name="New name",
+            description="description",
+            offererAddress=venue.offererAddress,
+        )
+
+        data = {
+            "address": {
+                "city": "Saint-Pierre-des-Corps",
+                "latitude": 47.38,
+                "longitude": 0.72,
+                "postalCode": "37700",
+                "street": "20 Rue des Grands Mortiers",
+                "banId": "37233_0531_00020",
+                "label": "",
+                "isManualEdition": False,
+                "isVenueAddress": False,
+            }
+        }
+        client_session = client.with_session_auth("user1@example.com")
+
+        # User of offerer 1 create the address through BAN API
+        with patch(
+            "pcapi.connectors.api_adresse.get_address",
+            return_value=api_adresse.AddressInfo(
+                id="37233_0531_00020",
+                label="20 Rue des Grands Mortiers, 37700 Saint-Pierre-des-Corps",
+                postcode="37700",
+                citycode="37233",
+                latitude=47.38,
+                longitude=0.72,
+                score=0.9,
+                city="Saint-Pierre-des-Corps",
+                street="20 Rue des Grands Mortiers",
+            ),
+        ):
+            response = client_session.patch(f"/offers/{offer.id}", json=data)
+            assert response.status_code == 200
+
+        offer = offers_models.Offer.query.one()
+        assert offer.offererAddress.address.city == data["address"]["city"]
+        address = geography_models.Address.query.order_by(geography_models.Address.id.desc()).first()
+        assert address.isManualEdition == False
+        assert address.city == "Saint-Pierre-des-Corps"
+
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer_2.offerer)
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.CONFERENCE.id,
+            venue=venue,
+            name="New name",
+            description="description",
+            offererAddress=venue.offererAddress,
+        )
+
+        data = {
+            "address": {
+                "city": "saint-pierre-des-corps",
+                "latitude": 47.38,
+                "longitude": 0.72,
+                "postalCode": "37700",
+                "street": "20 Rue des Grands Mortiers",
+                "banId": None,
+                "label": "",
+                "isManualEdition": True,
+                "isVenueAddress": False,
+            }
+        }
+        client_session = client.with_session_auth("user2@example.com")
+
+        with patch(
+            "pcapi.connectors.api_adresse.get_municipality_centroid",
+            return_value=api_adresse.AddressInfo(
+                id="37233",
+                label="Saint-Pierre-des-Corps",
+                postcode="37700",
+                citycode="37233",
+                latitude=47.38,
+                longitude=0.72,
+                score=0.9,
+                city="Saint-Pierre-des-Corps",
+                street=None,
+            ),
+        ):
+
+            # User of offerer 2 create the exact same address but manually. Maybe the BAN API is down, maybe is though the
+            # address wasn't knwon. Anyway this can happen and it should be handled.
+            response = client_session.patch(f"/offers/{offer.id}", json=data)
+            assert response.status_code == 200
+
+        offer = offers_models.Offer.query.order_by(Offer.id.desc()).first()
+        assert offer.offererAddress.address.city == data["address"]["city"].title()
+        address = geography_models.Address.query.order_by(geography_models.Address.id.desc()).first()
+        assert address.isManualEdition == True
+        assert address.city == data["address"]["city"].title()
+
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer_3.offerer)
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.CONFERENCE.id,
+            venue=venue,
+            name="New name",
+            description="description",
+            offererAddress=venue.offererAddress,
+        )
+
+        data = {
+            "address": {
+                "city": "SAINT-PIERRE-DES-CORPS",
+                "latitude": 47.38,
+                "longitude": 0.72,
+                "postalCode": "37700",
+                "street": "20 Rue des Grands Mortiers",
+                "banId": None,
+                "label": "",
+                "isManualEdition": True,
+                "isVenueAddress": False,
+            }
+        }
+        client_session = client.with_session_auth("user3@example.com")
+
+        with patch(
+            "pcapi.connectors.api_adresse.get_municipality_centroid",
+            return_value=api_adresse.AddressInfo(
+                id="37233",
+                label="Saint-Pierre-des-Corps",
+                postcode="37700",
+                citycode="37233",
+                latitude=47.38,
+                longitude=0.72,
+                score=0.9,
+                city="Saint-Pierre-des-Corps",
+                street=None,
+            ),
+        ):
+            # User of offerer 3 could create manually the same address as user of offerer 2 for same reasons.
+            # We should handle that case
+            response = client_session.patch(f"/offers/{offer.id}", json=data)
+            assert response.status_code == 200
+
+        offer = offers_models.Offer.query.order_by(offers_models.Offer.id.desc()).first()
+        assert geography_models.Address.query.filter(geography_models.Address.inseeCode == "37233").count() == 2
+        assert offer.offererAddress.address.isManualEdition == True
+        assert offer.offererAddress.address.city == data["address"]["city"].title()
 
     @override_features(WIP_ENABLE_OFFER_ADDRESS=True)
     @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
