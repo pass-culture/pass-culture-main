@@ -24,6 +24,7 @@ def post_reaction(user: users_models.User, body: serialization.PostReactionReque
 @blueprint.native_route("/reaction/available", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=serialization.GetAvailableReactionsResponse)
 @authenticated_and_active_user_required
+@atomic()
 def get_available_reactions(user: users_models.User) -> serialization.GetAvailableReactionsResponse:
     booking_with_available_reactions = reactions_api.get_bookings_with_available_reactions(user.id)
 

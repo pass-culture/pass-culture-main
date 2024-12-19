@@ -11,6 +11,7 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.providers.exceptions import InactiveProvider
 from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
+from pcapi.repository import atomic
 from pcapi.repository import repository
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.v1.serialization.bookings import BookOfferRequest
@@ -105,6 +106,7 @@ def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
 @blueprint.native_route("/bookings", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=BookingsResponse)
 @authenticated_and_active_user_required
+@atomic()
 def get_bookings(user: User) -> BookingsResponse:
     individual_bookings = bookings_api.get_individual_bookings(user)
     ended_bookings, ongoing_bookings = bookings_api.classify_and_sort_bookings(individual_bookings)
