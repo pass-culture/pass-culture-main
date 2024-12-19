@@ -1,16 +1,15 @@
-import { Layout } from 'app/App/layout/Layout'
-import { Header } from 'components/Header/Header'
 import { OnboardingOffersChoice } from 'components/OnboardingOffersChoice/OnboardingOffersChoice'
 import fullWaitIcon from 'icons/full-wait.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
+import { OnboardingLayout } from '../components/OnboardingLayout/OnboardingLayout'
+
 import styles from './OnboardingOffersTypeChoice.module.scss'
 
 export const OnboardingOffersTypeChoice = () => {
   return (
-    <Layout layout="onboarding">
-      <Header disableHomeLink={true} />
+    <OnboardingLayout verticallyCentered>
       <div className={styles['onboarding-offer-container']}>
         <div className={styles['onboarding-offer-header']}>
           <h1 className={styles['onboarding-offer-header-title']}>
@@ -29,7 +28,7 @@ export const OnboardingOffersTypeChoice = () => {
           Plus tard
         </ButtonLink>
       </div>
-    </Layout>
+    </OnboardingLayout>
   )
 }
 

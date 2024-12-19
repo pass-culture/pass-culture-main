@@ -7,12 +7,7 @@
   flex-direction: column;
   gap: rem.torem(32px);
   align-items: center;
-  justify-content: center;
-  min-height: calc(
-    100vh - #{size.$footer-height} - #{size.$top-menu-height} -
-      #{size.$top-menu-border-size}
-  );
-  padding: rem.torem(24px);
+  justify-content: flex-start;
 }
 
 .onboarding-offer-header {
