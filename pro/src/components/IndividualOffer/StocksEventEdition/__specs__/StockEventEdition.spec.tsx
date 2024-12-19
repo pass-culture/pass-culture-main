@@ -5,7 +5,6 @@ import {
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { format } from 'date-fns'
-import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -29,6 +28,7 @@ import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
 import {
   getIndividualOfferFactory,
   getOfferStockFactory,
+  listOffersOfferFactory,
 } from 'commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
@@ -63,28 +63,7 @@ const renderStockEventScreen = async (
     stockCount: stocksCount ?? apiStocks.length,
     hasStocks: true,
   })
-  vi.spyOn(api, 'listOffers').mockResolvedValue([
-    {
-      id: 1,
-      status: OfferStatus.ACTIVE,
-      isActive: true,
-      hasBookingLimitDatetimesPassed: false,
-      isEducational: false,
-      name: 'name',
-      isEvent: false,
-      venue: {
-        name: 'venue',
-        offererName: 'offerer',
-        isVirtual: false,
-        id: 1,
-      },
-      stocks: [],
-      isEditable: true,
-      isShowcase: false,
-      isThing: false,
-      subcategoryId: SubcategoryIdEnum.VOD,
-    },
-  ])
+  vi.spyOn(api, 'listOffers').mockResolvedValue([listOffersOfferFactory()])
 
   renderWithProviders(
     <>

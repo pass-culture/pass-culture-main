@@ -227,6 +227,8 @@ class ListOffersOfferResponseModelsGetterDict(GetterDict):
             return _serialize_venue(self._obj.venue)
         if key == "isShowcase":
             return False
+        if key == "isHeadlineOffer":
+            return self._obj.is_headline_offer
         if key == "address":
             return offer_address_getter_dict_helper(self._obj)
         return super().get(key, default)
@@ -249,11 +251,13 @@ class ListOffersOfferResponseModel(BaseModel):
     status: OfferStatus
     isShowcase: bool | None
     address: AddressResponseIsLinkedToVenueModel | None
+    is_headline_offer: bool
 
     class Config:
         json_encoders = {datetime.datetime: format_into_utc_date}
         orm_mode = True
         getter_dict = ListOffersOfferResponseModelsGetterDict
+        alias_generator = to_camel
 
 
 class ListOffersResponseModel(BaseModel):
@@ -410,6 +414,8 @@ class IndividualOfferWithAddressResponseGetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
         if key == "address":
             return offer_address_getter_dict_helper(self._obj)
+        if key == "isHeadlineOffer":
+            return self._obj.is_headline_offer
         return super().get(key, default)
 
 
@@ -458,13 +464,15 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
 
 class GetIndividualOfferWithAddressResponseModel(GetIndividualOfferResponseModel):
     address: AddressResponseIsLinkedToVenueModel | None
-    hasPendingBookings: bool
+    has_pending_bookings: bool
+    is_headline_offer: bool
 
     class Config:
         orm_mode = True
         json_encoders = {datetime.datetime: format_into_utc_date}
         use_enum_values = True
         getter_dict = IndividualOfferWithAddressResponseGetterDict
+        alias_generator = to_camel
 
 
 class GetStocksResponseModel(ConfiguredBaseModel):
