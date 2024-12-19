@@ -355,9 +355,29 @@ class TiteliveSearchTest:
             f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=2", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE
         )
 
-        TiteliveMusicSearch().synchronize_products(datetime.date(2022, 12, 1), 2)
+        TiteliveMusicSearch().synchronize_products(datetime.date(2022, 12, 1), from_page=2)
 
         assert offers_models.Product.query.count() == 0
+
+    def test_titelive_music_sync_on_multiple_days(self, requests_mock):
+        _configure_login_and_images(requests_mock)
+        requests_mock.get(
+            f"{settings.TITELIVE_EPAGINE_API_URL}/search?datemaxm=01/12/2022", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE
+        )
+        requests_mock.get(
+            f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=1&datemaxm=02/12/2022",
+            json=fixtures.MUSIC_SEARCH_FIXTURE,
+        )
+        requests_mock.get(
+            f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=2&datemaxm=02/12/2022",
+            json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE,
+        )
+
+        TiteliveMusicSearch().synchronize_products(
+            from_date=datetime.date(2022, 11, 30), to_date=datetime.date(2022, 12, 1)
+        )
+
+        assert offers_models.Product.query.count() == 3
 
 
 @override_settings(TITELIVE_EPAGINE_API_USERNAME="test@example.com")
@@ -406,7 +426,7 @@ class TiteliveBookSearchTest:
         self.setup_api_response_fixture(requests_mock, fixtures.build_titelive_one_book_response())
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         product = offers_models.Product.query.one()
@@ -430,7 +450,7 @@ class TiteliveBookSearchTest:
         self.setup_api_response_fixture(requests_mock, TWO_BOOKS_RESPONSE_FIXTURE_WITH_LONG_TITLE)
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         product = offers_models.Product.query.order_by(offers_models.Product.name).all()
@@ -447,7 +467,7 @@ class TiteliveBookSearchTest:
         )
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         product = offers_models.Product.query.one()
@@ -462,6 +482,26 @@ class TiteliveBookSearchTest:
         assert product.extraData.get("rayon") == closest_csr.get("label")
         assert product.extraData.get("code_clil") == "3774"
 
+    def test_create_1_thing_when_syncing_on_multiple_days(self, requests_mock):
+        _configure_login_and_images(requests_mock)
+        requests_mock.get(
+            f"{settings.TITELIVE_EPAGINE_API_URL}/search?datemaxm=01/12/2022", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE
+        )
+        fixture = fixtures.build_titelive_one_book_response()
+        requests_mock.get(f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=1&datemaxm=02/12/2022", json=fixture)
+        requests_mock.get(
+            f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=2&datemaxm=02/12/2022",
+            json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE,
+        )
+        eans = extract_eans_from_titelive_response(fixture["result"])
+        requests_mock.get(f"{settings.TITELIVE_EPAGINE_API_URL}/ean?in=ean={'|'.join(eans)}", json=fixture)
+
+        TiteliveBookSearch().synchronize_products(
+            from_date=datetime.date(2022, 11, 30), to_date=datetime.date(2022, 12, 1)
+        )
+
+        assert offers_models.Product.query.one()
+
     def test_does_not_create_product_when_product_is_gtl_school_book(self, requests_mock):
         # Given
         self.setup_api_response_fixture(
@@ -469,7 +509,7 @@ class TiteliveBookSearchTest:
         )
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         assert offers_models.Product.query.count() == 0
@@ -483,7 +523,7 @@ class TiteliveBookSearchTest:
         )
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         assert offers_models.Product.query.count() == 0
@@ -494,7 +534,7 @@ class TiteliveBookSearchTest:
         )
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         assert offers_models.Product.query.count() == 0
@@ -516,7 +556,7 @@ class TiteliveBookSearchTest:
         )
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         assert offers_models.Product.query.count() == 0
@@ -534,7 +574,7 @@ class TiteliveBookSearchTest:
         ProductWhitelistFactory(ean=whitelisted_ean)
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         # the assertion on the content is made in the previous tests
@@ -548,7 +588,7 @@ class TiteliveBookSearchTest:
         )
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         assert offers_models.Product.query.count() == 0
@@ -568,7 +608,7 @@ class TiteliveBookSearchTest:
         )
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         assert offers_models.Product.query.count() == 0
@@ -585,7 +625,7 @@ class TiteliveBookSearchTest:
         self.setup_api_response_fixture(requests_mock, fixtures.build_titelive_one_book_response(title=title))
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         assert offers_models.Product.query.count() == 0
@@ -608,7 +648,7 @@ class TiteliveBookSearchTest:
         self.setup_api_response_fixture(requests_mock, edited_fixture)
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         product = offers_models.Product.query.one()
@@ -622,7 +662,7 @@ class TiteliveBookSearchTest:
         self.setup_api_response_fixture(requests_mock, fixture_data)
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         product = offers_models.Product.query.one()
@@ -642,7 +682,7 @@ class TiteliveBookSearchTest:
         assert offer.validation != offers_models.OfferValidationStatus.REJECTED
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         product = offers_models.Product.query.one()
@@ -668,7 +708,7 @@ class TiteliveBookSearchTest:
         assert offer.validation != offers_models.OfferValidationStatus.REJECTED
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         product = offers_models.Product.query.one()
@@ -688,7 +728,7 @@ class TiteliveBookSearchTest:
         )
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         product = offers_models.Product.query.one()
@@ -704,7 +744,7 @@ class TiteliveBookSearchTest:
         )
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         product = offers_models.Product.query.one()
@@ -726,7 +766,7 @@ class TiteliveBookSearchTest:
         )
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         offer = offers_models.Offer.query.one()
@@ -746,7 +786,7 @@ class TiteliveBookSearchTest:
         )
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         product = offers_models.Product.query.one()
@@ -757,7 +797,7 @@ class TiteliveBookSearchTest:
         self.setup_api_response_fixture(requests_mock, fixtures.build_titelive_one_book_response())
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         product = offers_models.Product.query.one()
@@ -783,7 +823,7 @@ class TiteliveBookSearchTest:
         )
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         product = offers_models.Product.query.one()
@@ -805,7 +845,7 @@ class TiteliveBookSearchTest:
         )
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         product = offers_models.Product.query.one()
@@ -833,7 +873,7 @@ class TiteliveBookSearchTest:
         )
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         product = offers_models.Product.query.one()
@@ -849,7 +889,7 @@ class TiteliveBookSearchTest:
         )
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         product = offers_models.Product.query.one()
@@ -901,7 +941,7 @@ class TiteliveBookSearchTest:
         # This image should be ignored
         self.setup_api_response_fixture(requests_mock, fixtures.TWO_BOOKS_RESPONSE_FIXTURE)
 
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         products = offers_models.Product.query.all()
         ean_no_verso_image = "9782848018676"

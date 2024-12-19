@@ -245,9 +245,13 @@ class TiteliveBase(enum.Enum):
 MAX_RESULTS_PER_PAGE = 25
 
 
-def search_products(titelive_base: TiteliveBase, from_date: datetime.date, page_index: int) -> list[dict]:
-    """Returns Titelive oeuvres for which an article has been modified since from_date.
-    All the articles of an oeuvre are returned even if they have not been modified recently.
+def search_products(titelive_base: TiteliveBase, modified_date: datetime.date, page_index: int) -> list[dict]:
+    """
+    Returns TiteLive works for which an article has been modified at modified_date.
+    All the articles of an work are returned even if they have not been modified recently.
+
+    Because TiteLive cannot query more than 20 000 articles, their pagination is only reliable if the search
+    is done on a single day.
     """
     try:
         url = f"{settings.TITELIVE_EPAGINE_API_URL}/search"
@@ -261,7 +265,8 @@ def search_products(titelive_base: TiteliveBase, from_date: datetime.date, page_
                 "page": page_index,
                 "tri": "datemodification",
                 "tri_ordre": "asc",
-                "dateminm": date_utils.format_date_to_french_locale(from_date),
+                "dateminm": date_utils.format_date_to_french_locale(modified_date),
+                "datemaxm": date_utils.format_date_to_french_locale(modified_date + datetime.timedelta(days=1)),
             },
         )
     except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:

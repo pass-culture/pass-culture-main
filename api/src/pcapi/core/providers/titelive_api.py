@@ -49,15 +49,20 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveWorkType]):
         self.provider = providers_repository.get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
 
     @insert_local_provider_event_on_error
-    def synchronize_products(self, from_date: datetime.date | None = None, from_page: int = 1) -> None:
+    def synchronize_products(
+        self, from_date: datetime.date | None = None, to_date: datetime.date | None = None, from_page: int = 1
+    ) -> None:
         if from_date is None:
             from_date = self.get_last_sync_date()
+
+        if to_date is None:
+            to_date = from_date
 
         with repository.transaction():
             start_sync_event = self.log_sync_status(providers_models.LocalProviderEventType.SyncStart)
             db.session.add(start_sync_event)
 
-        products_to_update_pages = self.get_updated_titelive_pages(from_date, from_page)
+        products_to_update_pages = self.get_updated_titelive_pages(from_date, to_date, from_page)
         for titelive_page in products_to_update_pages:
             updated_products = self.upsert_titelive_page(titelive_page)
             failed_to_update_products = []
@@ -109,23 +114,31 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveWorkType]):
         )
 
     def get_updated_titelive_pages(
-        self, from_date: datetime.date, from_page: int
+        self, from_date: datetime.date, to_date: datetime.date, from_page: int
     ) -> typing.Iterator[list[TiteliveWorkType]]:
+        updated_date = from_date
         page_index = from_page
-        has_next_page = True
-        while has_next_page:
-            json_response = titelive.search_products(self.titelive_base, from_date, page_index)
-            product_page = self.get_product_info_from_search_response(json_response)
-            recent_product_page = filter_recent_products(product_page, from_date)
-            allowed_product_page, not_allowed_eans = self.partition_allowed_products(recent_product_page)
-            allowed_product_page = [work for work in allowed_product_page if work.article]
-            offers_api.reject_inappropriate_products(not_allowed_eans, author=None)
 
-            yield allowed_product_page
+        days = (to_date - from_date).days
+        for day_offset in range(days + 1):
+            updated_date += datetime.timedelta(days=day_offset)
 
-            # sometimes titelive returns a partially filled page while having a next page in store for us
-            has_next_page = bool(product_page)
-            page_index += 1
+            has_next_page = True
+            while has_next_page:
+                json_response = titelive.search_products(self.titelive_base, updated_date, page_index)
+                product_page = self.get_product_info_from_search_response(json_response)
+                recent_product_page = filter_recent_products(product_page, updated_date)
+                allowed_product_page, not_allowed_eans = self.partition_allowed_products(recent_product_page)
+                allowed_product_page = [work for work in allowed_product_page if work.article]
+                offers_api.reject_inappropriate_products(not_allowed_eans, author=None)
+
+                yield allowed_product_page
+
+                # sometimes titelive returns a partially filled page while having a next page in store for us
+                has_next_page = bool(product_page)
+                page_index += 1
+
+            page_index = 1
 
     def get_product_info_from_search_response(self, titelive_json_response: list[dict]) -> list[TiteliveWorkType]:
         return self.deserialize_titelive_products(titelive_json_response)
