@@ -758,7 +758,7 @@ class CollectiveOfferAllowedActionsTest:
 
     @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_get_ended_offer_two_days_past_allowed_actions(self):
-        offer = factories.EndedCollectiveOfferFactory()
+        offer = factories.EndedUsedCollectiveOfferFactory()
 
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ENDED
         assert offer.allowedActions == [
@@ -791,7 +791,7 @@ class CollectiveOfferAllowedActionsTest:
 
     @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_get_offer_ended_two_days_past_allowed_actions_public_api(self):
-        offer = factories.EndedCollectiveOfferFactory()
+        offer = factories.EndedUsedCollectiveOfferFactory()
         offer.provider = providers_factories.ProviderFactory()
 
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ENDED
