@@ -4,6 +4,7 @@ import pytest
 
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import models
+from pcapi.core.educational import testing as educational_testing
 import pcapi.core.educational.exceptions as educational_exceptions
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import CollectiveOffer
@@ -176,6 +177,23 @@ class Returns200Test:
 
         assert response.status_code == 400
         assert "students" in response.json
+
+    @pytest.mark.parametrize("status", educational_testing.STATUSES_ALLOWING_CREATE_BOOKABLE_OFFER)
+    def test_create_collective_offer_with_allowed_collective_offer_template(self, client, status):
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        collective_offer_template = educational_factories.create_collective_offer_template_by_status(
+            status, venue=venue
+        )
+
+        data = base_offer_payload(venue=venue, template_id=collective_offer_template.id)
+
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+
+        assert response.status_code == 201
 
 
 @pytest.mark.usefixtures("db_session")
@@ -397,3 +415,21 @@ class Returns404Test:
         # Then
         assert response.status_code == 404
         assert response.json == {"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"}
+
+    @pytest.mark.parametrize("status", educational_testing.STATUSES_NOT_ALLOWING_CREATE_BOOKABLE_OFFER)
+    def test_create_collective_offer_with_not_allowed_collective_offer_template(self, client, status):
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        collective_offer_template = educational_factories.create_collective_offer_template_by_status(
+            status, venue=venue
+        )
+
+        data = base_offer_payload(venue=venue, template_id=collective_offer_template.id)
+
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+
+        assert response.status_code == 403
+        assert response.json == {"code": "COLLECTIVE_OFFER_TEMPLATE_FORBIDDEN_ACTION"}

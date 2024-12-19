@@ -7,6 +7,7 @@ from flask import url_for
 import pytest
 
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.educational import testing as educational_testing
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 from pcapi.core.educational.factories import EducationalDomainFactory
@@ -270,22 +271,102 @@ class Returns200Test:
         assert response.json["contactForm"] is None
         assert response.json["contactUrl"] is None
 
+    @pytest.mark.parametrize("status", educational_testing.STATUSES_ALLOWING_EDIT_DETAILS_TEMPLATE)
+    def test_patch_collective_offer_allowed_action(self, client, status):
+        offer = educational_factories.create_collective_offer_template_by_status(status)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-class Returns400Test:
-    def test_non_approved_offer_fails(self, client):
+        data = {"name": "New name", "description": "Ma super description"}
+        auth_client = client.with_session_auth("user@example.com")
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = auth_client.patch(f"/collective/offers-template/{offer.id}", json=data)
+            assert response.status_code == 200
+
+            db.session.refresh(offer)
+            assert offer.name == "New name"
+            assert offer.description == "Ma super description"
+
+
+class InvalidDatesTest:
+    def test_missing_start(self, client):
         offer_ctx = build_offer_context()
 
         pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
 
-        offer = CollectiveOfferTemplateFactory(validation=OfferValidationStatus.PENDING)
-        offerers_factories.UserOffererFactory(user=offer_ctx.user, offerer=offer.venue.managingOfferer)
-
-        data = {"visualDisabilityCompliant": True}
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer.id}", json=data)
+        end = build_template_end().isoformat()
+        response = self.send_request(pro_client, offer_id, {"end": end})
 
         assert response.status_code == 400
-        assert response.json["global"] == ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
+        assert "dates.start" in response.json
+
+    def test_start_is_null(self, client):
+        offer_ctx = build_offer_context()
+
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+
+        end = build_template_end().isoformat()
+
+        response = self.send_request(pro_client, offer_id, {"start": None, "end": end})
+        assert response.status_code == 400
+        assert "dates.start" in response.json
+
+    def test_start_is_in_the_past(self, client):
+        offer_ctx = build_offer_context()
+
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+
+        one_week_ago = datetime.utcnow() - timedelta(days=7)
+        dates = {"start": one_week_ago.isoformat(), "end": build_template_end().isoformat()}
+
+        response = self.send_request(pro_client, offer_id, dates)
+        assert response.status_code == 400
+        assert "dates.start" in response.json
+
+    def test_start_is_after_end(self, client):
+        offer_ctx = build_offer_context()
+
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+
+        template_end = build_template_end()
+        dates = {"start": (template_end + timedelta(days=1)).isoformat(), "end": template_end.isoformat()}
+
+        response = self.send_request(pro_client, offer_id, dates)
+
+        assert response.status_code == 400
+        assert "dates.__root__" in response.json
+
+    def test_missing_end(self, client):
+        offer_ctx = build_offer_context()
+
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+
+        start = build_template_start().isoformat()
+        response = self.send_request(pro_client, offer_id, {"start": start})
+
+        assert response.status_code == 400
+        assert "dates.end" in response.json
+
+    def test_end_is_null(self, client):
+        offer_ctx = build_offer_context()
+
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+
+        start = build_template_start().isoformat()
+        response = self.send_request(pro_client, offer_id, {"start": start, "end": None})
+
+        assert response.status_code == 400
+        assert "dates.end" in response.json
+
+    def send_request(self, pro_client, offer_id, dates):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            endpoint = url_for("Private API.edit_collective_offer_template", offer_id=offer_id)
+            return pro_client.patch(endpoint, json={"dates": dates})
 
     def test_empty_name(self, client):
         offer_ctx = build_offer_context()
@@ -430,90 +511,6 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {"description": ["La description de l’offre doit faire au maximum 1500 caractères."]}
 
-
-class InvalidDatesTest:
-    def test_missing_start(self, client):
-        offer_ctx = build_offer_context()
-
-        pro_client = build_pro_client(client, offer_ctx.user)
-        offer_id = offer_ctx.offer.id
-
-        end = build_template_end().isoformat()
-        response = self.send_request(pro_client, offer_id, {"end": end})
-
-        assert response.status_code == 400
-        assert "dates.start" in response.json
-
-    def test_start_is_null(self, client):
-        offer_ctx = build_offer_context()
-
-        pro_client = build_pro_client(client, offer_ctx.user)
-        offer_id = offer_ctx.offer.id
-
-        end = build_template_end().isoformat()
-
-        response = self.send_request(pro_client, offer_id, {"start": None, "end": end})
-        assert response.status_code == 400
-        assert "dates.start" in response.json
-
-    def test_start_is_in_the_past(self, client):
-        offer_ctx = build_offer_context()
-
-        pro_client = build_pro_client(client, offer_ctx.user)
-        offer_id = offer_ctx.offer.id
-
-        one_week_ago = datetime.utcnow() - timedelta(days=7)
-        dates = {"start": one_week_ago.isoformat(), "end": build_template_end().isoformat()}
-
-        response = self.send_request(pro_client, offer_id, dates)
-        assert response.status_code == 400
-        assert "dates.start" in response.json
-
-    def test_start_is_after_end(self, client):
-        offer_ctx = build_offer_context()
-
-        pro_client = build_pro_client(client, offer_ctx.user)
-        offer_id = offer_ctx.offer.id
-
-        template_end = build_template_end()
-        dates = {"start": (template_end + timedelta(days=1)).isoformat(), "end": template_end.isoformat()}
-
-        response = self.send_request(pro_client, offer_id, dates)
-
-        assert response.status_code == 400
-        assert "dates.__root__" in response.json
-
-    def test_missing_end(self, client):
-        offer_ctx = build_offer_context()
-
-        pro_client = build_pro_client(client, offer_ctx.user)
-        offer_id = offer_ctx.offer.id
-
-        start = build_template_start().isoformat()
-        response = self.send_request(pro_client, offer_id, {"start": start})
-
-        assert response.status_code == 400
-        assert "dates.end" in response.json
-
-    def test_end_is_null(self, client):
-        offer_ctx = build_offer_context()
-
-        pro_client = build_pro_client(client, offer_ctx.user)
-        offer_id = offer_ctx.offer.id
-
-        start = build_template_start().isoformat()
-        response = self.send_request(pro_client, offer_id, {"start": start, "end": None})
-
-        assert response.status_code == 400
-        assert "dates.end" in response.json
-
-    def send_request(self, pro_client, offer_id, dates):
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
-            endpoint = url_for("Private API.edit_collective_offer_template", offer_id=offer_id)
-            return pro_client.patch(endpoint, json={"dates": dates})
-
-
-class Returns403Test:
     def test_user_is_not_attached_to_offerer(self, client):
         offer = CollectiveOfferTemplateFactory(name="Old name")
         offer_ctx = build_offer_context(offer=offer)
@@ -557,6 +554,46 @@ class Returns403Test:
 
         assert response.status_code == 403
         assert response.json == {"Partner": "User not in Adage can't edit the offer"}
+
+
+class Returns403Test:
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.parametrize("status", educational_testing.STATUSES_NOT_ALLOWING_EDIT_DETAILS_TEMPLATE)
+    def test_patch_collective_offer_unallowed_action(self, client, status):
+        offer = educational_factories.create_collective_offer_template_by_status(status)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        previous_name = offer.name
+        previous_description = offer.description
+        data = {"name": "New name", "description": "Ma super description"}
+        auth_client = client.with_session_auth("user@example.com")
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = auth_client.patch(f"/collective/offers-template/{offer.id}", json=data)
+            assert response.status_code == 403
+            assert response.json == {"global": ["Cette action n'est pas autorisée sur cette offre"]}
+
+        db.session.refresh(offer)
+        assert offer.name == previous_name
+        assert offer.description == previous_description
+
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    def test_non_approved_offer_fails(self, client):
+        offer_ctx = build_offer_context()
+
+        pro_client = build_pro_client(client, offer_ctx.user)
+
+        offer = CollectiveOfferTemplateFactory(validation=OfferValidationStatus.PENDING)
+        offerers_factories.UserOffererFactory(user=offer_ctx.user, offerer=offer.venue.managingOfferer)
+
+        data = {"visualDisabilityCompliant": True}
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer.id}", json=data)
+
+            assert response.status_code == 400
+
+            assert response.json["global"] == [
+                "Les offres refusées ou en attente de validation ne sont pas modifiables"
+            ]
 
 
 class Returns404Test:

@@ -63,7 +63,6 @@ from pcapi.models import feature
 from pcapi.models import offer_mixin
 from pcapi.models import pc_object
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import is_managed_transaction
 from pcapi.repository import mark_transaction_as_invalid
@@ -482,7 +481,12 @@ def update_collective_offer(offer_id: int, new_values: dict) -> None:
 def update_collective_offer_template(offer_id: int, new_values: dict) -> None:
     query = educational_models.CollectiveOfferTemplate.query
     query = query.filter(educational_models.CollectiveOfferTemplate.id == offer_id)
-    offer_to_update = query.first()
+    offer_to_update = query.one()
+
+    if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+        educational_validation.check_collective_offer_template_action_is_allowed(
+            offer_to_update, educational_models.CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS
+        )
 
     if "venueId" in new_values and new_values["venueId"] != offer_to_update.venueId:
         new_venue = offerers_api.get_venue_by_id(new_values["venueId"])
@@ -603,7 +607,8 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
 
 
 def archive_collective_offers(
-    offers: list[educational_models.CollectiveOffer], date_archived: datetime.datetime
+    offers: list[educational_models.CollectiveOffer],
+    date_archived: datetime.datetime,
 ) -> None:
     for offer in offers:
         educational_validation.check_collective_offer_action_is_allowed(
@@ -614,6 +619,54 @@ def archive_collective_offers(
         offer.dateArchived = date_archived
 
     db.session.flush()
+
+
+def archive_collective_offers_template(
+    offers: list[educational_models.CollectiveOfferTemplate],
+    date_archived: datetime.datetime,
+) -> None:
+    for offer in offers:
+        educational_validation.check_collective_offer_template_action_is_allowed(
+            offer, educational_models.CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE
+        )
+        offer.isActive = False
+        offer.dateArchived = date_archived
+
+    db.session.flush()
+
+    on_commit(
+        partial(
+            search.async_index_collective_offer_template_ids,
+            [offer.id for offer in offers],
+            reason=search.IndexationReason.OFFER_BATCH_UPDATE,
+            log_extra={"changes": {"isActive", "dateArchived"}},
+        )
+    )
+
+
+def toggle_publish_collective_offers_template(
+    collective_offers_template: list[educational_models.CollectiveOfferTemplate],
+    is_active: bool,
+) -> None:
+    action = (
+        educational_models.CollectiveOfferTemplateAllowedAction.CAN_PUBLISH
+        if is_active
+        else educational_models.CollectiveOfferTemplateAllowedAction.CAN_HIDE
+    )
+    for offer_template in collective_offers_template:
+        educational_validation.check_collective_offer_template_action_is_allowed(offer_template, action)
+        offer_template.isActive = is_active
+
+    db.session.flush()
+
+    on_commit(
+        partial(
+            search.async_index_collective_offer_template_ids,
+            [offer.id for offer in collective_offers_template],
+            reason=search.IndexationReason.OFFER_BATCH_UPDATE,
+            log_extra={"changes": {"isActive"}},
+        )
+    )
 
 
 def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> None:
@@ -1027,7 +1080,7 @@ def _delete_stock(stock: models.Stock, author_id: int | None = None, user_connec
         for booking in cancelled_bookings:
             transactional_mails.send_booking_cancellation_by_pro_to_beneficiary_email(booking)
         transactional_mails.send_booking_cancellation_confirmation_by_pro_email(cancelled_bookings)
-        if not FeatureToggle.WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION.is_active():
+        if not feature.FeatureToggle.WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION.is_active():
             on_commit(
                 partial(
                     push_notification_job.send_cancel_booking_notification.delay,
@@ -1442,7 +1495,7 @@ def report_offer(
 def get_shows_remaining_places_from_provider(provider_class: str | None, offer: models.Offer) -> dict[str, int]:
     match provider_class:
         case "CDSStocks":
-            if not FeatureToggle.ENABLE_CDS_IMPLEMENTATION.is_active():
+            if not feature.FeatureToggle.ENABLE_CDS_IMPLEMENTATION.is_active():
                 raise feature.DisabledFeatureError("ENABLE_CDS_IMPLEMENTATION is inactive")
             show_ids = [
                 cinema_providers_utils.get_cds_show_id_from_uuid(stock.idAtProviders)
@@ -1454,21 +1507,21 @@ def get_shows_remaining_places_from_provider(provider_class: str | None, offer: 
                 return {}
             return external_bookings_api.get_shows_stock(offer.venueId, cleaned_show_ids)
         case "BoostStocks":
-            if not FeatureToggle.ENABLE_BOOST_API_INTEGRATION.is_active():
+            if not feature.FeatureToggle.ENABLE_BOOST_API_INTEGRATION.is_active():
                 raise feature.DisabledFeatureError("ENABLE_BOOST_API_INTEGRATION is inactive")
             film_id = cinema_providers_utils.get_boost_or_cgr_or_ems_film_id_from_uuid(offer.idAtProvider)
             if not film_id:
                 return {}
             return external_bookings_api.get_movie_stocks(offer.venueId, film_id)
         case "CGRStocks":
-            if not FeatureToggle.ENABLE_CGR_INTEGRATION.is_active():
+            if not feature.FeatureToggle.ENABLE_CGR_INTEGRATION.is_active():
                 raise feature.DisabledFeatureError("ENABLE_CGR_INTEGRATION is inactive")
             cgr_allocine_film_id = cinema_providers_utils.get_boost_or_cgr_or_ems_film_id_from_uuid(offer.idAtProvider)
             if not cgr_allocine_film_id:
                 return {}
             return external_bookings_api.get_movie_stocks(offer.venueId, cgr_allocine_film_id)
         case "EMSStocks":
-            if not FeatureToggle.ENABLE_EMS_INTEGRATION.is_active():
+            if not feature.FeatureToggle.ENABLE_EMS_INTEGRATION.is_active():
                 raise feature.DisabledFeatureError("ENABLE_EMS_INTEGRATION is inactive")
             film_id = cinema_providers_utils.get_boost_or_cgr_or_ems_film_id_from_uuid(offer.idAtProvider)
             if not film_id:

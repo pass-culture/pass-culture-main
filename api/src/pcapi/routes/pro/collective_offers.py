@@ -236,7 +236,15 @@ def create_collective_offer(
             "Could not create offer: national program not found",
             extra={"offer_name": body.name, "nationalProgramId": body.nationalProgramId},
         )
-        raise ApiErrors({"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_NOT_FOUND"}, status_code=400)
+        raise ApiErrors(
+            {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_NOT_FOUND"},
+            status_code=400,
+        )
+    except educational_exceptions.CollectiveOfferTemplateForbiddenAction:
+        raise ApiErrors(
+            {"code": "COLLECTIVE_OFFER_TEMPLATE_FORBIDDEN_ACTION"},
+            status_code=403,
+        )
 
     return collective_offers_serialize.CollectiveOfferResponseIdModel.from_orm(offer)
 
@@ -346,6 +354,8 @@ def edit_collective_offer_template(
 
     try:
         offers_api.update_collective_offer_template(offer_id=offer_id, new_values=new_values)
+    except educational_exceptions.CollectiveOfferTemplateForbiddenAction:
+        raise ApiErrors({"global": ["Cette action n'est pas autorisée sur cette offre"]}, 403)
     except educational_exceptions.UpdateCollectiveOfferTemplateError as err:
         raise ApiErrors({err.field: err.msg}, 400)
     except educational_exceptions.VenueIdDontExist:
@@ -439,7 +449,18 @@ def patch_collective_offers_template_active_status(
     collective_template_query = educational_api_offer.get_query_for_collective_offers_template_by_ids_for_user(
         current_user, body.ids
     )
-    offers_api.batch_update_collective_offers_template(collective_template_query, {"isActive": body.is_active})
+
+    if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+        try:
+            offers_api.toggle_publish_collective_offers_template(
+                collective_offers_template=collective_template_query.all(),
+                is_active=body.is_active,
+            )
+        except educational_exceptions.CollectiveOfferTemplateForbiddenAction:
+            raise ApiErrors({"global": ["Cette action n'est pas autorisée sur cette offre"]}, status_code=403)
+
+    else:
+        offers_api.batch_update_collective_offers_template(collective_template_query, {"isActive": body.is_active})
 
 
 @private_api.route("/collective/offers-template/archive", methods=["PATCH"])
@@ -455,9 +476,19 @@ def patch_collective_offers_template_archive(
     collective_template_query = educational_api_offer.get_query_for_collective_offers_template_by_ids_for_user(
         current_user, body.ids
     )
-    offers_api.batch_update_collective_offers_template(
-        collective_template_query, {"isActive": False, "dateArchived": datetime.utcnow()}
-    )
+
+    if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+        try:
+            offers_api.archive_collective_offers_template(
+                offers=collective_template_query, date_archived=datetime.utcnow()
+            )
+        except educational_exceptions.CollectiveOfferTemplateForbiddenAction:
+            raise ApiErrors({"global": ["Cette action n'est pas autorisée sur cette offre"]}, status_code=403)
+
+    else:
+        offers_api.batch_update_collective_offers_template(
+            collective_template_query, {"isActive": False, "dateArchived": datetime.utcnow()}
+        )
 
 
 @private_api.route("/collective/offers/<int:offer_id>/educational_institution", methods=["PATCH"])
