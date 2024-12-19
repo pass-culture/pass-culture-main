@@ -21,7 +21,7 @@ class ArtistFactory(BaseFactory):
     name = factory.Faker("name")
     description = factory.Faker("text")
     image_license_url = factory.Faker("url")
-    image = factory.LazyAttribute(lambda o: some_artist_images[o.id % len(some_artist_images)])
+    image = factory.LazyAttributeSequence(lambda _, n: some_artist_images[n % len(some_artist_images)])
 
 
 class ArtistAliasFactory(BaseFactory):
