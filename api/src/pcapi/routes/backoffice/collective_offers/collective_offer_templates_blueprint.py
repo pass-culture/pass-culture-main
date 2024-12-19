@@ -60,8 +60,12 @@ def _get_collective_offer_templates(
         .load_only(
             offerers_models.Offerer.name, offerers_models.Offerer.isActive, offerers_models.Offerer.validationStatus
         )
-        .joinedload(offerers_models.Offerer.confidenceRule)
-        .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
+        .options(
+            sa.orm.joinedload(offerers_models.Offerer.tags),
+            sa.orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
+                offerers_models.OffererConfidenceRule.confidenceLevel
+            ),
+        ),
         sa.orm.joinedload(educational_models.CollectiveOfferTemplate.venue)
         .joinedload(offerers_models.Venue.confidenceRule)
         .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
@@ -420,9 +424,12 @@ def get_collective_offer_template_details(collective_offer_template_id: int) -> 
             sa.orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
                 offerers_models.OffererConfidenceRule.confidenceLevel
             ),
-            sa.orm.joinedload(offerers_models.Venue.managingOfferer)
-            .joinedload(offerers_models.Offerer.confidenceRule)
-            .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
+            sa.orm.joinedload(offerers_models.Venue.managingOfferer).options(
+                sa.orm.joinedload(offerers_models.Offerer.tags),
+                sa.orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
+                    offerers_models.OffererConfidenceRule.confidenceLevel
+                ),
+            ),
         )
     )
     collective_offer_template = collective_offer_template_query.one_or_none()

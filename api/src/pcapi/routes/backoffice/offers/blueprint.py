@@ -425,8 +425,12 @@ def _get_offers_by_ids(
                 offerers_models.Offerer.siren,
                 offerers_models.Offerer.postalCode,
             )
-            .joinedload(offerers_models.Offerer.confidenceRule)
-            .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
+            .options(
+                sa.orm.joinedload(offerers_models.Offerer.tags),
+                sa.orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
+                    offerers_models.OffererConfidenceRule.confidenceLevel
+                ),
+            ),
             sa.orm.contains_eager(offers_models.Offer.venue)
             .joinedload(offerers_models.Venue.confidenceRule)
             .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
@@ -947,8 +951,12 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
             offerers_models.Offerer.siren,
             offerers_models.Offerer.postalCode,
         )
-        .joinedload(offerers_models.Offerer.confidenceRule)
-        .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
+        .options(
+            sa.orm.joinedload(offerers_models.Offerer.tags),
+            sa.orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
+                offerers_models.OffererConfidenceRule.confidenceLevel
+            ),
+        ),
         sa.orm.joinedload(offers_models.Offer.venue)
         .joinedload(offerers_models.Venue.confidenceRule)
         .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
