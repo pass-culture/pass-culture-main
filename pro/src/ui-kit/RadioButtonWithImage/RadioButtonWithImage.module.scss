@@ -41,7 +41,7 @@ $radio-size: rem.torem(16px);
   }
 
   &.is-selected {
-    @include fonts.body-exergue;
+    @include fonts.body-accent;
 
     border: $border-size-selected solid var(--color-secondary-light);
     background-color: var(--color-background-secondary);
@@ -67,7 +67,7 @@ $radio-size: rem.torem(16px);
   }
 
   &-description {
-    @include fonts.caption;
+    @include fonts.body-accent-xs;
 
     color: var(--color-grey-dark);
     margin-top: rem.torem(4px);

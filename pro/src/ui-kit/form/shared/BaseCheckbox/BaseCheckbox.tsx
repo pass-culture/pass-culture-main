@@ -94,16 +94,18 @@ export const BaseCheckbox = forwardRef(
           )}
           <span
             className={cn(styles['base-checkbox-label'], labelClassName, {
-              [styles['visually-hidden']]: Boolean(exceptionnallyHideLabelDespiteA11y),
+              [styles['visually-hidden']]: Boolean(
+                exceptionnallyHideLabelDespiteA11y
+              ),
               [styles['base-checkbox-label-with-description']]:
                 Boolean(description),
             })}
           >
             <label htmlFor={id}>{label}</label>
             {description && (
-              <span className={styles['base-checkbox-description']}>
+              <p className={styles['base-checkbox-description']}>
                 {description}
-              </span>
+              </p>
             )}
           </span>
         </span>

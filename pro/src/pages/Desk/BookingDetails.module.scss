@@ -2,7 +2,7 @@
 @use "styles/mixins/_rem.scss" as rem;
 
 .booking-summary {
-  @include fonts.caption;
+  @include fonts.body-accent-xs;
 
   margin-bottom: rem.torem(15px);
 

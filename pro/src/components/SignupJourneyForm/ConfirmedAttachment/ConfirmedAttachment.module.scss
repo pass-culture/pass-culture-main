@@ -1,5 +1,5 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 $confirmed-attachment-gap: rem.torem(32px);
 
@@ -11,7 +11,7 @@ $confirmed-attachment-gap: rem.torem(32px);
 }
 
 .title {
-  @include fonts-design-system.title1;
+  @include fonts.title1;
 }
 
 .home-button {
