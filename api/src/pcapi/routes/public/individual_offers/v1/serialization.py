@@ -66,7 +66,7 @@ ALLOWED_PRODUCT_SUBCATEGORIES = [
 
 
 MusicTypeEnum = StrEnum(  # type: ignore[call-overload]
-    "MusicTypeEnum",
+    "MusicTypeEnum (deprecated)",
     {music_sub_type_slug: music_sub_type_slug for music_sub_type_slug in music_types.MUSIC_SUB_TYPES_BY_SLUG},
 )
 
