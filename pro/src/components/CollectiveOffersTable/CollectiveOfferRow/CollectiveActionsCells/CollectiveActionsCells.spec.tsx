@@ -6,7 +6,6 @@ import createFetchMock from 'vitest-fetch-mock'
 import { api } from 'apiClient/api'
 import {
   CollectiveOfferDisplayedStatus,
-  CollectiveOfferStatus,
   CollectiveOfferAllowedAction,
   CollectiveOfferTemplateAllowedAction,
   OfferAddressType,
@@ -57,6 +56,7 @@ const renderCollectiveActionsCell = (
     urlSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
     isSelected: false,
     deselectOffer: mockDeselectOffer,
+    rowId: 'rowId',
     ...props,
   }
 

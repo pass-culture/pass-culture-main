@@ -125,7 +125,7 @@ export const CollectiveOffers = (): JSX.Element => {
   )
 
   return (
-    <Layout>
+    <Layout mainHeading="Offres collectives">
       {/* When the venues are cached for a given offerer, we still need to reset the Screen component.
       SWR isLoading is only true when the data is not cached, while isValidating is always set to true when the key is updated */}
       {offererQuery.isLoading || offererQuery.isValidating ? (
