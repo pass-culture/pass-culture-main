@@ -15,7 +15,7 @@ import { CATEGORY_STATUS } from 'commons/core/Offers/constants'
 import { IndividualOfferImage } from 'commons/core/Offers/types'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useSuggestedSubcategoriesAbTest } from 'commons/hooks/useSuggestedSubcategoriesAbTest'
-import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OnImageUploadArgs } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import fullMoreIcon from 'icons/full-more.svg'
@@ -127,6 +127,7 @@ export const DetailsForm = ({
       await debouncedOnChangeGetSuggestedSubcategories()
     }
   }
+
   const subcategory = subCategories.find((s) => s.id === subcategoryId)
 
   const isSubCategorySelected =

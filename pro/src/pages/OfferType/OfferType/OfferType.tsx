@@ -17,7 +17,7 @@ import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOf
 import { serializeApiCollectiveFilters } from 'commons/core/Offers/utils/serializer'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useSuggestedSubcategoriesAbTest } from 'commons/hooks/useSuggestedSubcategoriesAbTest'
-import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
@@ -80,6 +80,7 @@ export const OfferTypeScreen = (): JSX.Element => {
         pathname: getIndividualOfferUrl({
           step: OFFER_WIZARD_STEP_IDS.DETAILS,
           mode: OFFER_WIZARD_MODE.CREATION,
+          isOnboarding: location.pathname.indexOf('onboarding') !== -1,
         }),
         search: params.toString(),
       })

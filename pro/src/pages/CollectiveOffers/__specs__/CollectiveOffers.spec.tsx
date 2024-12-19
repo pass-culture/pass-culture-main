@@ -56,9 +56,9 @@ const renderOffers = async (
     features: features,
     storeOverrides: {
       user: {
-        selectedOffererId: 1,
         currentUser: user,
       },
+      offerer: { selectedOffererId: 1, offererNames: [] },
     },
   })
 

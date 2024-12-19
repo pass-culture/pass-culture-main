@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, getError } from 'apiClient/helpers'
-import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import strokeBarcode from 'icons/stroke-barcode.svg'
 import { Product } from 'pages/IndividualOffer/IndividualOfferDetails/commons/types'

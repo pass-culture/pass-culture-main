@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import { GetOffererResponseModel, VenueTypeResponseModel } from 'apiClient/v1'
-import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { AddressSelect } from 'components/Address/Address'
 import { FormLayout } from 'components/FormLayout/FormLayout'

@@ -1,15 +1,11 @@
-import { useSelector } from 'react-redux'
 import { Outlet } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import { Layout } from 'app/App/layout/Layout'
-import {
-  GET_OFFERER_NAMES_QUERY_KEY,
-  GET_OFFERER_QUERY_KEY,
-} from 'commons/config/swrQueryKeys'
-import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { GET_OFFERER_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { ReimbursementsTabs } from 'components/ReimbursementsTabs/ReimbursementsTabs'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
@@ -20,29 +16,14 @@ export type ReimbursementsContextProps = {
 }
 
 export const Reimbursements = (): JSX.Element => {
-  const selectedOffererId = useSelector(selectCurrentOffererId)
-
-  const offererNamesQuery = useSWR(
-    [GET_OFFERER_NAMES_QUERY_KEY],
-    () => api.listOfferersNames(),
-    { fallbackData: { offerersNames: [] } }
-  )
+  const selectedOffererId = useCurrentUser().selectedOffererId
 
   const offererQuery = useSWR(
-    offererNamesQuery.isLoading && !selectedOffererId
-      ? null
-      : [
-          GET_OFFERER_QUERY_KEY,
-          selectedOffererId || offererNamesQuery.data.offerersNames[0]?.id,
-        ],
+    !selectedOffererId ? null : [GET_OFFERER_QUERY_KEY, selectedOffererId],
     ([, offererId]) => api.getOfferer(Number(offererId))
   )
 
-  if (
-    offererNamesQuery.isLoading ||
-    offererQuery.isLoading ||
-    offererQuery.error
-  ) {
+  if (offererQuery.isLoading || offererQuery.error) {
     return (
       <Layout>
         <Spinner />

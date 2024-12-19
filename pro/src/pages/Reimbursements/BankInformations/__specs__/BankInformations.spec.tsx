@@ -54,10 +54,8 @@ const renderBankInformations = (offerer: GetOffererResponseModel | null) => {
     {
       initialRouterEntries: ['/remboursements/informations-bancaires'],
       storeOverrides: {
-        user: {
-          currentUser: sharedCurrentUserFactory(),
-          selectedOffererId: 1,
-        },
+        user: { currentUser: sharedCurrentUserFactory() },
+        offerer: { selectedOffererId: 1, offererNames: [] },
       },
     }
   )

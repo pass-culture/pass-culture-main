@@ -1,6 +1,8 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router-dom'
+import * as router from 'react-router-dom'
+import { beforeEach } from 'vitest'
 
 import { api } from 'apiClient/api'
 import {
@@ -64,6 +66,12 @@ const DEFAULTS = {
   mode: OFFER_WIZARD_MODE.CREATION,
   submitButtonLabel: 'Enregistrer et continuer',
 }
+
+vi.mock('react-router-dom', async () => ({
+  ...(await vi.importActual('react-router-dom')),
+  useNavigate: vi.fn(),
+}))
+const mockNavigate = vi.fn()
 
 const MOCK_DATA = {
   title: 'My super offer',
@@ -145,11 +153,16 @@ const renderDetailsScreen = ({
   contextValue,
   options = {},
   mode = DEFAULTS.mode,
+  initialRoute = getIndividualOfferPath({
+    step: OFFER_WIZARD_STEP_IDS.DETAILS,
+    mode,
+  }),
 }: {
   props?: IndividualOfferDetailsScreenProps
   contextValue: IndividualOfferContextValues
   options?: RenderWithProvidersOptions
   mode?: OFFER_WIZARD_MODE
+  initialRoute?: string
 }) => {
   const finalProps = {
     ...(props || {}),
@@ -172,22 +185,22 @@ const renderDetailsScreen = ({
           })}
           element={element}
         />
+        <Route
+          path={`/onboarding${getIndividualOfferPath({
+            step: OFFER_WIZARD_STEP_IDS.DETAILS,
+            mode,
+          })}`}
+          element={element}
+        />
       </Routes>
     </>,
     {
       user: sharedCurrentUserFactory(),
-      initialRouterEntries: [
-        getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.DETAILS,
-          mode,
-        }),
-      ],
+      initialRouterEntries: [initialRoute],
       ...options,
       storeOverrides: {
-        user: {
-          currentUser: sharedCurrentUserFactory(),
-          selectedOffererId: 1,
-        },
+        user: { currentUser: sharedCurrentUserFactory() },
+        offerer: { selectedOffererId: 1, offererNames: [] },
       },
     }
   )
@@ -416,6 +429,7 @@ describe('IndividualOfferDetails', () => {
   })
 
   it('should submit the form with correct payload', async () => {
+    vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
@@ -452,6 +466,10 @@ describe('IndividualOfferDetails', () => {
       venueId: 189,
       callId: '',
     })
+    expect(mockNavigate).toHaveBeenCalledWith(
+      '/offre/individuelle/12/creation/details',
+      { replace: true }
+    )
     expect(mockLogEvent).toHaveBeenCalledWith(
       Events.CLICKED_OFFER_FORM_NAVIGATION,
       {
@@ -778,7 +796,9 @@ describe('IndividualOfferDetails', () => {
             options: { features: ['WIP_EAN_CREATION'] },
           })
 
-          const button = screen.getByRole('button', { name: eanSearchButtonLabel })
+          const button = screen.getByRole('button', {
+            name: eanSearchButtonLabel,
+          })
           const input = screen.getByRole('textbox', { name: eanInputLabel })
 
           await userEvent.type(input, ean)
@@ -836,13 +856,17 @@ describe('IndividualOfferDetails', () => {
             options: { features: ['WIP_EAN_CREATION'] },
           })
 
-          const button = screen.getByRole('button', { name: eanSearchButtonLabel })
+          const button = screen.getByRole('button', {
+            name: eanSearchButtonLabel,
+          })
           const input = screen.getByRole('textbox', { name: eanInputLabel })
 
           await userEvent.type(input, ean)
           await userEvent.click(button)
 
-          const resetButton = screen.getByRole('button', { name: eanResetButtonLabel })
+          const resetButton = screen.getByRole('button', {
+            name: eanResetButtonLabel,
+          })
           await userEvent.click(resetButton)
 
           // Inputs and image should be cleared.
@@ -996,5 +1020,42 @@ describe('IndividualOfferDetails', () => {
     })
 
     expect(screen.queryByText(/Lieu/)).not.toBeInTheDocument()
+  })
+
+  describe('onboarding', () => {
+    beforeEach(() => {
+      vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
+    })
+    it('should display with the lateral bar', async () => {
+      renderDetailsScreen({
+        props: {
+          venues: [venueListItemFactory({ id: 189 })],
+        },
+        contextValue,
+      })
+      await userEvent.click(screen.getByText('Retour'))
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith('/offre/creation')
+      })
+    })
+
+    it('should not render when the offer is not set', async () => {
+      renderDetailsScreen({
+        props: {
+          venues: [venueListItemFactory({ id: 189 })],
+        },
+        contextValue,
+        options: {},
+        mode: OFFER_WIZARD_MODE.CREATION,
+        initialRoute: `/onboarding${getIndividualOfferPath({
+          step: OFFER_WIZARD_STEP_IDS.DETAILS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        })}`,
+      })
+      await userEvent.click(screen.getByText('Retour'))
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith('/onboarding/offre/creation')
+      })
+    })
   })
 })

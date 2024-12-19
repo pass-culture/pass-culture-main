@@ -6,7 +6,7 @@ import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { useNotification } from 'commons/hooks/useNotification'
-import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { sendSentryCustomError } from 'commons/utils/sendSentryCustomError'
 import strokeValidIcon from 'icons/stroke-valid.svg'
 import { Button } from 'ui-kit/Button/Button'

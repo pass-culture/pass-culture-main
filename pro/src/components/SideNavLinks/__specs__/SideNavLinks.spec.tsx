@@ -93,8 +93,8 @@ describe('SideNavLinks', () => {
       storeOverrides: {
         user: {
           currentUser: sharedCurrentUserFactory({ hasPartnerPage: true }),
-          selectedOffererId: 1,
         },
+        offerer: { selectedOffererId: 1, offererNames: [] },
       },
     })
 
@@ -118,8 +118,8 @@ describe('SideNavLinks', () => {
       storeOverrides: {
         user: {
           currentUser: sharedCurrentUserFactory({ hasPartnerPage: false }),
-          selectedOffererId: 1,
         },
+        offerer: { selectedOffererId: 1, offererNames: [] },
       },
       user: sharedCurrentUserFactory({ hasPartnerPage: false }),
     })

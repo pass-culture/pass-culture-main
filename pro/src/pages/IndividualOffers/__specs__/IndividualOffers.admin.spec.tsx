@@ -68,8 +68,8 @@ const renderOffers = async (
       storeOverrides: {
         user: {
           currentUser: user,
-          selectedOffererId,
         },
+        offerer: { selectedOffererId: 1, offererNames: [] },
       },
       initialRouterEntries: [route],
     }

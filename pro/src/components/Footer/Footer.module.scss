@@ -7,7 +7,7 @@
   justify-content: center;
   align-items: center;
 
-  &-layout-sticky-actions {
+  &-layout-sticky-actions, &-layout-sticky-onboarding {
     margin-bottom: size.$action-bar-sticky-height;
     margin-top: rem.torem(24px);
   }
