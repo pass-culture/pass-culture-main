@@ -25,7 +25,7 @@
 }
 
 .data::before {
-  @include fonts.caption;
+  @include fonts.body-accent-xs;
 
   content: attr(data-label) " :";
   text-align: left;
@@ -37,7 +37,7 @@
 }
 
 .date-data {
-  @include fonts.body-exergue;
+  @include fonts.body-accent;
 }
 
 .more-icon {
@@ -96,7 +96,7 @@
   }
 
   .header {
-    @include fonts.caption;
+    @include fonts.body-accent-xs;
     @include a11y.visually-hidden-reset;
   }
 

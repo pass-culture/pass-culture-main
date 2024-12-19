@@ -10,7 +10,7 @@
   margin-bottom: rem.torem(20px);
 
   &-label {
-    @include fonts.caption;
+    @include fonts.body-accent-xs;
   }
 }
 

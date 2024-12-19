@@ -6,20 +6,15 @@
 
 .base-checkbox {
   display: inline-flex;
-  cursor: pointer;
 
   &-label-row {
-    display: inline-flex;
-    align-items: flex-start;
-
-    &-with-description {
-      align-items: center;
-    }
+    display: flex;
+    align-items: center;
   }
 
   &-label {
-    display: flex;
-    flex-direction: column;
+    display: inline;
+    cursor: pointer;
     width: 100%;
 
     &-with-description {
@@ -28,7 +23,7 @@
   }
 
   &-description {
-    @include fonts.caption;
+    @include fonts.body-accent-xs;
 
     color: var(--color-grey-dark);
     margin-top: rem.torem(4px);
@@ -36,8 +31,9 @@
 
   &-icon {
     margin-right: rem.torem(8px);
-    display: flex;
+    display: inline-flex;
     flex-direction: column;
+    vertical-align: middle;
 
     &-svg {
       width: rem.torem(20px);

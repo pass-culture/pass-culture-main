@@ -1,6 +1,5 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 
 .confirmation {
   text-align: center;
@@ -20,7 +19,7 @@
     margin-bottom: rem.torem(32px);
 
     &-title {
-      @include fonts-design-system.title3;
+      @include fonts.title3;
     }
 
     &-header {
