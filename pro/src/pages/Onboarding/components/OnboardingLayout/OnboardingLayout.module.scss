@@ -18,7 +18,12 @@
     margin-top: rem.torem(32px);
 
     @media (min-width: size.$laptop) {
-      margin-top: 20vh;
+      margin-top: 15vh;
+    }
+
+    // Slightly up for low height screens
+    @media (max-height: rem.torem(900px)) {
+      margin-top: 10vh;
     }
   }
 }
