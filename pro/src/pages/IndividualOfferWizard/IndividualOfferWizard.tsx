@@ -4,15 +4,27 @@ import { Outlet, RouteObject, useLocation } from 'react-router-dom'
 import { Layout } from 'app/App/layout/Layout'
 import { IndividualOfferContextProvider } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 
-const IndividualOfferWizard = () => {
-  const { pathname } = useLocation()
+import styles from './IndividualOfferWizard.module.scss'
 
+export const IndividualOfferWizard = () => {
+  const { pathname } = useLocation()
+  const isOnboarding = pathname.indexOf('onboarding') !== -1
   const isConfirmationPage = pathname.endsWith('confirmation')
 
   return (
-    <Layout layout={isConfirmationPage ? 'basic' : 'sticky-actions'}>
+    <Layout
+      layout={
+        isOnboarding
+          ? 'sticky-onboarding'
+          : isConfirmationPage
+            ? 'basic'
+            : 'sticky-actions'
+      }
+    >
       <IndividualOfferContextProvider>
-        <Outlet />
+        <div className={styles['offer-wizard-container']}>
+          <Outlet />
+        </div>
       </IndividualOfferContextProvider>
     </Layout>
   )

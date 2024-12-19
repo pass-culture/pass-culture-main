@@ -31,10 +31,8 @@ const renderOffererStats = async () => {
   renderWithProviders(<OffererStats />, {
     user,
     storeOverrides: {
-      user: {
-        currentUser: user,
-        selectedOffererId: 1,
-      },
+      user: { currentUser: user },
+      offerer: { selectedOffererId: 1, offererNames: [] },
     },
   })
 
@@ -91,9 +89,6 @@ describe('OffererStatsScreen', () => {
     }))
     await renderOffererStats()
 
-    await waitFor(() => {
-      expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
-    })
     await waitFor(() => expect(notifyError).not.toHaveBeenCalled())
   })
 })

@@ -70,9 +70,10 @@ const renderIncome = () => {
   renderWithProviders(<Income />, {
     user: sharedCurrentUserFactory(),
     storeOverrides: {
-      user: {
-        currentUser: sharedCurrentUserFactory(),
+      user: { currentUser: sharedCurrentUserFactory() },
+      offerer: {
         selectedOffererId: MOCK_DATA.selectedOffererId,
+        offererNames: [],
       },
     },
   })

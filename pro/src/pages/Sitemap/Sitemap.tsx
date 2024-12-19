@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 import { Layout } from 'app/App/layout/Layout'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 
 import styles from './Sitemap.module.scss'
 

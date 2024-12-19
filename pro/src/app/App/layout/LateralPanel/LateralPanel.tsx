@@ -60,6 +60,7 @@ export const LateralPanel = ({
 
   return (
     <nav
+      data-testid="lateral-panel"
       id="lateral-panel"
       tabIndex={-1}
       className={classnames({

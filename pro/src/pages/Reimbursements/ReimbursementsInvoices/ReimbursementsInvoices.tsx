@@ -10,7 +10,7 @@ import {
   GET_INVOICES_QUERY_KEY,
   GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
-import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { FORMAT_ISO_DATE_ONLY, getToday } from 'commons/utils/date'
 import { sortByLabel } from 'commons/utils/strings'
 import { Spinner } from 'ui-kit/Spinner/Spinner'

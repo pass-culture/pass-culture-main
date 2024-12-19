@@ -17,20 +17,20 @@ import {
 } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import {
-  Events,
   COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
+  Events,
 } from 'commons/core/FirebaseEvents/constants'
 import { SENT_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
 import * as useNotification from 'commons/hooks/useNotification'
 import {
-  getCollectiveOfferTemplateFactory,
   defaultGetVenue,
   getCollectiveOfferFactory,
+  getCollectiveOfferTemplateFactory,
 } from 'commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
-  RenderWithProvidersOptions,
   renderWithProviders,
+  RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
 
 import {
@@ -45,10 +45,8 @@ const renderCollectiveOfferNavigation = (
 ) =>
   renderWithProviders(<CollectiveOfferNavigation {...props} />, {
     storeOverrides: {
-      user: {
-        currentUser: sharedCurrentUserFactory(),
-        selectedOffererId: 1,
-      },
+      user: { currentUser: sharedCurrentUserFactory() },
+      offerer: { selectedOffererId: 1, offererNames: [] },
     },
     ...options,
   })

@@ -18,7 +18,7 @@ import { serializeApiCollectiveFilters } from 'commons/core/Offers/utils/seriali
 import { GET_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
-import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { pluralize } from 'commons/utils/pluralize'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import strokeSearchIcon from 'icons/stroke-search.svg'

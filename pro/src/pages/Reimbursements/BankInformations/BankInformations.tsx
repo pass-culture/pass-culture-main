@@ -12,7 +12,7 @@ import {
 } from 'commons/config/swrQueryKeys'
 import { BankAccountEvents } from 'commons/core/FirebaseEvents/constants'
 import { useNotification } from 'commons/hooks/useNotification'
-import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { ReimbursementBankAccount } from 'components/ReimbursementBankAccount/ReimbursementBankAccount'
 import fullMoreIcon from 'icons/full-more.svg'
 import { LinkVenuesDialog } from 'pages/Reimbursements/BankInformations/LinkVenuesDialog'
@@ -75,6 +75,7 @@ export const BankInformations = (): JSX.Element => {
       setSelectedBankAccount(null)
     }
   }
+
   let bankAccountVenues = bankAccountVenuesQuery.data?.managedVenues
 
   const updateBankAccountVenuePricingPoint = (venueId: number) => {

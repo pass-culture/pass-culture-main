@@ -33,7 +33,8 @@ const renderPartnerPages = (
     />,
     {
       storeOverrides: {
-        user: { currentUser: sharedCurrentUserFactory(), selectedOffererId: 1 },
+        user: { currentUser: sharedCurrentUserFactory() },
+        offerer: { selectedOffererId: 1, offererNames: [] },
       },
       ...options,
     }
@@ -100,10 +101,8 @@ describe('PartnerPages', () => {
       {
         user: sharedCurrentUserFactory(),
         storeOverrides: {
-          user: {
-            currentUser: sharedCurrentUserFactory(),
-            selectedOffererId: 1,
-          },
+          user: { currentUser: sharedCurrentUserFactory() },
+          offerer: { selectedOffererId: 1, offererNames: [] },
         },
       }
     )

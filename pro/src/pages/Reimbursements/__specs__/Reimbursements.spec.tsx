@@ -38,10 +38,8 @@ const renderReimbursements = () => {
       initialRouterEntries: ['/remboursements'],
       user: sharedCurrentUserFactory(),
       storeOverrides: {
-        user: {
-          currentUser: sharedCurrentUserFactory(),
-          selectedOffererId: 1,
-        },
+        user: { currentUser: sharedCurrentUserFactory() },
+        offerer: { selectedOffererId: 1, offererNames: [] },
       },
     }
   )
@@ -91,7 +89,6 @@ describe('Reimbursement page', () => {
     renderReimbursements()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-    expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
     expect(api.getOfferer).toHaveBeenCalledTimes(1)
     expect(screen.getByText('Informations bancaires')).toBeInTheDocument()
     await waitFor(() => {

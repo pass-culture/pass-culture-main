@@ -38,9 +38,9 @@ function renderComponent(props: OfferEducationalProps, route?: string) {
     user,
     storeOverrides: {
       user: {
-        selectedOffererId: 1,
         currentUser: user,
       },
+      offerer: { selectedOffererId: 1, offererNames: [] },
     },
     initialRouterEntries: route ? [route] : undefined,
   })

@@ -18,7 +18,8 @@ import {
   SAVED_OFFERER_ID_KEY,
 } from 'commons/core/shared/constants'
 import { useNotification } from 'commons/hooks/useNotification'
-import { updateSelectedOffererId, updateUser } from 'commons/store/user/reducer'
+import { updateSelectedOffererId } from 'commons/store/offerer/reducer'
+import { updateUser } from 'commons/store/user/reducer'
 import { selectCurrentUser } from 'commons/store/user/selectors'
 import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
 import { Notification } from 'components/Notification/Notification'

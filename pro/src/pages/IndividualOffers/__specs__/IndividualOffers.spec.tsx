@@ -92,9 +92,9 @@ const renderOffers = async (
       features,
       storeOverrides: {
         user: {
-          selectedOffererId,
           currentUser: user,
         },
+        offerer: { selectedOffererId: 1, offererNames: [] },
       },
     }
   )

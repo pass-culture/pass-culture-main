@@ -36,8 +36,8 @@ const renderOffers = (
         currentUser: sharedCurrentUserFactory({
           isAdmin: false,
         }),
-        selectedOffererId: 1,
       },
+      offerer: { selectedOffererId: 1, offererNames: [] },
     },
     ...options,
   })
