@@ -123,6 +123,15 @@ def test_public_api(client):
                     "title": "ActivityTypesResponse",
                     "type": "object",
                 },
+                "ArtistResponse": {
+                    "properties": {
+                        "id": {"title": "Id", "type": "string"},
+                        "name": {"title": "Name", "type": "string"},
+                    },
+                    "required": ["id", "name"],
+                    "title": "ArtistResponse",
+                    "type": "object",
+                },
                 "AudioDisabilityModel": {
                     "properties": {
                         "deafAndHardOfHearing": {
@@ -3025,6 +3034,39 @@ def test_public_api(client):
                     },
                     "security": [{"JWTAuth": []}],
                     "summary": "mark_achievements_as_seen <POST>",
+                    "tags": [],
+                }
+            },
+            "/native/v1/artists/{artist_id}": {
+                "get": {
+                    "description": "",
+                    "operationId": "get__native_v1_artists_{artist_id}",
+                    "parameters": [
+                        {
+                            "description": "",
+                            "in": "path",
+                            "name": "artist_id",
+                            "required": True,
+                            "schema": {"type": "string"},
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ArtistResponse"}}
+                            },
+                            "description": "OK",
+                        },
+                        "403": {"description": "Forbidden"},
+                        "404": {"description": "Not Found"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "get_artist <GET>",
                     "tags": [],
                 }
             },
