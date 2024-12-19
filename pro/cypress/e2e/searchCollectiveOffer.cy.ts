@@ -67,8 +67,8 @@ describe('Search collective offers', () => {
 
     cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
-      ['', '', 'Titre', 'Lieu', 'Établissement', 'Statut'],
-      ['', '', offerPublished.name, offerPublished.venueName, '', 'publiée'],
+      ['', '', '', 'Titre', '', 'Lieu', 'Établissement', 'Statut'],
+      ['', '', '', offerPublished.name, '', offerPublished.venueName, '', 'publiée'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
@@ -84,10 +84,10 @@ describe('Search collective offers', () => {
 
     cy.stepLog({ message: '3 results should be displayed' })
     const expectedResults = [
-      ['', '', 'Titre', 'Lieu', 'Établissement', 'Statut'],
-      ['', '', offerNotConform.name, offerNotConform.venueName, '', 'non conforme'],
-      ['', '', offerInInstruction.name, offerInInstruction.venueName, '', 'en instruction'],
-      ['', '', offerArchived.name, offerArchived.venueName, '', 'archivée'],
+      ['', '', '', 'Titre', '', 'Lieu', 'Établissement', 'Statut'],
+      ['', '', '', offerNotConform.name, '', offerNotConform.venueName, '', 'non conforme'],
+      ['', '', '', offerInInstruction.name, '', offerInInstruction.venueName, '', 'en instruction'],
+      ['', '', '', offerArchived.name, '', offerArchived.venueName, '', 'archivée'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
@@ -103,9 +103,9 @@ describe('Search collective offers', () => {
 
     cy.stepLog({ message: '2 results should be displayed' })
     const expectedResults = [
-      ['', '', 'Titre', 'Lieu', 'Établissement', 'Statut'],
-      ['', '', offerPublished.name, offerPublished.venueName, '', 'publiée'],
-      ['', '', offerPublishedTemplate.name, offerPublishedTemplate.venueName, '', 'publiée'],
+      ['', '', '', 'Titre', '', 'Lieu', 'Établissement', 'Statut'],
+      ['', '', '', offerPublished.name, '', offerPublished.venueName, '', 'publiée'],
+      ['', '', '', offerPublishedTemplate.name, '', offerPublishedTemplate.venueName, '', 'publiée'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
@@ -121,12 +121,12 @@ describe('Search collective offers', () => {
 
     cy.stepLog({ message: '5 results should be displayed' })
     const expectedResults = [
-      ['', '', 'Titre', 'Lieu', 'Établissement', 'Statut'],
-      ['', '', offerArchived.name, offerArchived.venueName, '', 'archivée'],
-      ['', '', offerNotConform.name, offerNotConform.venueName, '', 'non conforme'],
-      ['', '', offerInInstruction.name, offerInInstruction.venueName, '', 'en instruction'],
-      ['', '', offerDraft.name, offerDraft.venueName, '', 'brouillon'],
-      ['', '', offerPublished.name, offerPublished.venueName, '', 'publiée'],
+      ['', '', '', 'Titre', '', 'Lieu', 'Établissement', 'Statut'],
+      ['', '', '', offerArchived.name, '', offerArchived.venueName, '', 'archivée'],
+      ['', '', '', offerNotConform.name, '', offerNotConform.venueName, '', 'non conforme'],
+      ['', '', '', offerInInstruction.name, '', offerInInstruction.venueName, '', 'en instruction'],
+      ['', '', '', offerDraft.name, '', offerDraft.venueName, '', 'brouillon'],
+      ['', '', '', offerPublished.name, '', offerPublished.venueName, '', 'publiée'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
@@ -144,8 +144,8 @@ describe('Search collective offers', () => {
 
     cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
-      ['', '', 'Titre', 'Lieu', 'Établissement', 'Statut'],
-      ['', '', offerPublished.name, offerPublished.venueName, '', 'publiée'],
+      ['', '', '', 'Titre', '', 'Lieu', 'Établissement', 'Statut'],
+      ['', '', '', offerPublished.name, '', offerPublished.venueName, '', 'publiée'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
@@ -164,8 +164,8 @@ describe('Search collective offers', () => {
 
     cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
-      ['', '', 'Titre', 'Lieu', 'Établissement', 'Statut'],
-      ['', '', offerInInstruction.name, offerInInstruction.venueName, '', 'en instruction'],
+      ['', '', '', 'Titre', '', 'Lieu', 'Établissement', 'Statut'],
+      ['', '', '', offerInInstruction.name, '', offerInInstruction.venueName, '', 'en instruction'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
@@ -193,8 +193,8 @@ describe('Search collective offers', () => {
 
     cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
-      ['', '', 'Titre', 'Lieu', 'Établissement', 'Statut'],
-      ['', '', offerDraft.name, offerDraft.venueName, '', 'brouillon'],
+      ['', '', '', 'Titre', '', 'Lieu', 'Établissement', 'Statut'],
+      ['', '', '', offerDraft.name, '', offerDraft.venueName, '', 'brouillon'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
@@ -220,13 +220,13 @@ describe('Search collective offers', () => {
 
     cy.stepLog({ message: '6 results should be displayed' })
     const expectedResults2 = [
-      ['', '', 'Titre', 'Lieu', 'Établissement', 'Statut'],
-      ['', '', offerNotConform.name, offerNotConform.venueName, '', 'non conforme'],
-      ['', '', offerInInstruction.name, offerInInstruction.venueName, '', 'en instruction'],
-      ['', '', offerDraft.name, offerDraft.venueName, '', 'brouillon'],
-      ['', '', offerPublished.name, offerPublished.venueName, '', 'publiée'],
-      ['', '', offerPublishedTemplate.name, offerPublishedTemplate.venueName, '', 'publiée'],
-      ['', '', offerArchived.name, offerArchived.venueName, '', 'archivée'],
+      ['', '', '', 'Titre', '', 'Lieu', 'Établissement', 'Statut'],
+      ['', '', '', offerNotConform.name, '', offerNotConform.venueName, '', 'non conforme'],
+      ['', '', '', offerInInstruction.name, '', offerInInstruction.venueName, '', 'en instruction'],
+      ['', '', '', offerDraft.name, '', offerDraft.venueName, '', 'brouillon'],
+      ['', '', '', offerPublished.name, '', offerPublished.venueName, '', 'publiée'],
+      ['', '', '', offerPublishedTemplate.name, '', offerPublishedTemplate.venueName, '', 'publiée'],
+      ['', '', '', offerArchived.name, '', offerArchived.venueName, '', 'archivée'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults2)
