@@ -2,11 +2,11 @@ import pytest
 
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offerers.schemas import VenueTypeCode
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
-from pcapi.routes.native.v1.serialization.offerers import VenueTypeCode
 
 
 @pytest.mark.usefixtures("db_session")
