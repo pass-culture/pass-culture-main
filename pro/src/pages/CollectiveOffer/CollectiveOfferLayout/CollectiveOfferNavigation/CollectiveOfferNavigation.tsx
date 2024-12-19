@@ -19,8 +19,8 @@ import {
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
 import {
-  Events,
   COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
+  Events,
 } from 'commons/core/FirebaseEvents/constants'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'commons/core/Notification/constants'
 import {
@@ -30,6 +30,7 @@ import {
 import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { createOfferFromTemplate } from 'commons/core/OfferEducational/utils/createOfferFromTemplate'
 import { duplicateBookableOffer } from 'commons/core/OfferEducational/utils/duplicateBookableOffer'
+import { type EnumType } from 'commons/custom_types/utils'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
@@ -49,14 +50,17 @@ import { Tabs } from 'ui-kit/Tabs/Tabs'
 
 import styles from './CollectiveOfferNavigation.module.scss'
 
-export enum CollectiveOfferStep {
-  DETAILS = 'details',
-  STOCKS = 'stocks',
-  VISIBILITY = 'visibility',
-  SUMMARY = 'recapitulatif',
-  CONFIRMATION = 'confirmation',
-  PREVIEW = 'preview',
-}
+export const CollectiveOfferStep = {
+  DETAILS: 'details',
+  STOCKS: 'stocks',
+  VISIBILITY: 'visibility',
+  SUMMARY: 'recapitulatif',
+  CONFIRMATION: 'confirmation',
+  PREVIEW: 'preview',
+} as const
+
+// eslint-disable-next-line no-redeclare
+export type CollectiveOfferStep = EnumType<typeof CollectiveOfferStep>
 
 export interface CollectiveOfferNavigationProps {
   activeStep: CollectiveOfferStep
@@ -173,9 +177,9 @@ export const CollectiveOfferNavigation = ({
       hasOfferPassedStocksStep &&
       (isCollectiveOfferTemplate(offer) || offer.institution)
 
-    if (hasOfferPassedDetailsStep) {
+    if (hasOfferPassedDetailsStep && stepList[CollectiveOfferStep.DETAILS]) {
       //  The user can go back to the details page after it has been filled the first time
-      stepList[CollectiveOfferStep.DETAILS].url = isTemplate
+      stepList[CollectiveOfferStep.DETAILS]!.url = isTemplate
         ? `/offre/collectif/vitrine/${offerId}/creation`
         : `/offre/collectif/${offerId}/creation${requestIdUrl}`
 
@@ -184,26 +188,34 @@ export const CollectiveOfferNavigation = ({
         stepList[CollectiveOfferStep.STOCKS]
       ) {
         //  The stocks step is accessible when the details form has been filled and the offer is bookable
-        stepList[CollectiveOfferStep.STOCKS].url =
+        stepList[CollectiveOfferStep.STOCKS]!.url =
           `/offre/${offerId}/collectif/stocks`
       }
     }
 
-    if (hasOfferPassedStocksStep && stepList[CollectiveOfferStep.VISIBILITY]) {
-      //  The visibility tab is only accessible when the stocks form has been filled
-      stepList[CollectiveOfferStep.VISIBILITY].url =
-        `/offre/${offerId}/collectif/visibilite`
+    if (hasOfferPassedStocksStep) {
+      const visibilityStep = CollectiveOfferStep.VISIBILITY
+      if (stepList[visibilityStep]) {
+        //  The visibility tab is only accessible when the stocks form has been filled
+        stepList[visibilityStep].url = `/offre/${offerId}/collectif/visibilite`
+      }
     }
 
     if (hasOfferPassedVisibilityStep) {
-      //  The summary tab is only accessible when the visibility form has been filled (or the offer is a template)
-      stepList[CollectiveOfferStep.SUMMARY].url = isTemplate
-        ? `/offre/${offerId}/collectif/vitrine/creation/recapitulatif`
-        : `/offre/${offerId}/collectif/creation/recapitulatif`
+      const summaryStep = CollectiveOfferStep.SUMMARY
+      if (stepList[summaryStep]) {
+        //  The summary tab is only accessible when the visibility form has been filled (or the offer is a template)
+        stepList[summaryStep].url = isTemplate
+          ? `/offre/${offerId}/collectif/vitrine/creation/recapitulatif`
+          : `/offre/${offerId}/collectif/creation/recapitulatif`
+      }
 
-      stepList[CollectiveOfferStep.PREVIEW].url = isTemplate
-        ? `/offre/${offerId}/collectif/vitrine/creation/apercu`
-        : `/offre/${offerId}/collectif/creation/apercu`
+      const previewStep = CollectiveOfferStep.PREVIEW
+      if (stepList[previewStep]) {
+        stepList[previewStep].url = isTemplate
+          ? `/offre/${offerId}/collectif/vitrine/creation/apercu`
+          : `/offre/${offerId}/collectif/creation/apercu`
+      }
     }
   }
 
@@ -343,11 +355,13 @@ export const CollectiveOfferNavigation = ({
           tabs={tabs}
           selectedKey={activeStep}
           className={cn(styles['tabs'], {
-            [styles['tabs-active']]: [
-              CollectiveOfferStep.DETAILS,
-              CollectiveOfferStep.STOCKS,
-              CollectiveOfferStep.VISIBILITY,
-            ].includes(activeStep),
+            [styles['tabs-active']]: (
+              [
+                CollectiveOfferStep.DETAILS,
+                CollectiveOfferStep.STOCKS,
+                CollectiveOfferStep.VISIBILITY,
+              ] as Partial<CollectiveOfferStep>[]
+            ).includes(activeStep),
           })}
         />
       )}

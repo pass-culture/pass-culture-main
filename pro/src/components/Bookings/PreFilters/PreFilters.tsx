@@ -139,9 +139,9 @@ export const PreFilters = ({
   }
 
   type DownloadParams =
-    | { audience: Audience.INDIVIDUAL; filters: PreFiltersParams }
+    | { audience: 'individual'; filters: PreFiltersParams }
     | {
-        audience: Audience.COLLECTIVE
+        audience: 'collective'
         filters: CollectivePreFiltersParams
       }
   const downloadBookingsCSV = useCallback(
