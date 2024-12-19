@@ -1,8 +1,11 @@
+from functools import partial
+
 from pcapi.core import mails
 from pcapi.core.bookings.models import Booking
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.repository import on_commit
 from pcapi.utils.mailing import format_booking_date_for_email
 from pcapi.utils.mailing import format_booking_hours_for_email
 
@@ -66,7 +69,13 @@ def send_booking_cancellation_confirmation_by_pro_email(bookings: list[Booking])
     if not offerer_booking_email:
         return
     data = get_booking_cancellation_confirmation_by_pro_email_data(bookings)
-    mails.send(recipients=[offerer_booking_email], data=data)
+    on_commit(
+        partial(
+            mails.send,
+            recipients=[offerer_booking_email],
+            data=data,
+        )
+    )
 
 
 def send_collective_booking_cancellation_confirmation_by_pro_email(booking: CollectiveBooking) -> None:
