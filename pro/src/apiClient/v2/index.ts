@@ -13,10 +13,7 @@ export type { OpenAPIConfig } from './core/OpenAPI';
 export { BookingFormula } from './models/BookingFormula';
 export { BookingOfferType } from './models/BookingOfferType';
 export type { GetBookingResponse } from './models/GetBookingResponse';
-export type { UpdateVenueStockBodyModel } from './models/UpdateVenueStockBodyModel';
-export type { UpdateVenueStocksBodyModel } from './models/UpdateVenueStocksBodyModel';
 export type { ValidationError } from './models/ValidationError';
 export type { ValidationErrorElement } from './models/ValidationErrorElement';
 
 export { DPrCiEApiContremarqueService } from './services/DPrCiEApiContremarqueService';
-export { DPrCiEApiStocksService } from './services/DPrCiEApiStocksService';

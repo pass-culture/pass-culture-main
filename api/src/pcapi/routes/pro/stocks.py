@@ -19,7 +19,6 @@ from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.api_errors import ResourceGoneError
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
-from pcapi.routes.public.books_stocks import serialization
 from pcapi.routes.serialization import stock_serialize
 from pcapi.serialization import utils as serialization_utils
 from pcapi.serialization.decorator import spectree_serialize
@@ -32,12 +31,12 @@ logger = logging.getLogger(__name__)
 
 
 def _stock_exists(
-    stock_data: serialization.StockCreationBodyModel | serialization.StockEditionBodyModel,
+    stock_data: stock_serialize.StockCreationBodyModel | stock_serialize.StockEditionBodyModel,
     existing_stocks: list[offers_models.Stock],
 ) -> bool:
     for stock in existing_stocks:
         if (
-            (stock.id != stock_data.id if isinstance(stock_data, serialization.StockEditionBodyModel) else True)
+            (stock.id != stock_data.id if isinstance(stock_data, stock_serialize.StockEditionBodyModel) else True)
             and stock.beginningDatetime
             == (stock_data.beginning_datetime.replace(tzinfo=None) if stock_data.beginning_datetime else None)
             and stock.priceCategoryId == stock_data.price_category_id
@@ -49,7 +48,7 @@ def _stock_exists(
 
 def _get_existing_stocks_by_fields(
     offer_id: int,
-    stock_payload: list[serialization.StockCreationBodyModel | serialization.StockEditionBodyModel],
+    stock_payload: list[stock_serialize.StockCreationBodyModel | stock_serialize.StockEditionBodyModel],
 ) -> list[offers_models.Stock]:
     combinaisons_to_check = [
         and_(
@@ -64,7 +63,7 @@ def _get_existing_stocks_by_fields(
 
 
 def _get_existing_stocks_by_id(
-    offer_id: int, stocks_payload: list[serialization.StockEditionBodyModel]
+    offer_id: int, stocks_payload: list[stock_serialize.StockEditionBodyModel]
 ) -> dict[int, offers_models.Stock]:
     existing_stocks = offers_models.Stock.query.filter(
         offers_models.Stock.offerId == offer_id,
@@ -103,12 +102,12 @@ def upsert_stocks(body: stock_serialize.StocksUpsertBodyModel) -> stock_serializ
     stocks_to_edit = [
         stock
         for stock in body.stocks
-        if (isinstance(stock, serialization.StockEditionBodyModel) and not _stock_exists(stock, matching_stocks))
+        if (isinstance(stock, stock_serialize.StockEditionBodyModel) and not _stock_exists(stock, matching_stocks))
     ]
     stocks_to_create = [
         stock
         for stock in body.stocks
-        if (isinstance(stock, serialization.StockCreationBodyModel) and not _stock_exists(stock, matching_stocks))
+        if (isinstance(stock, stock_serialize.StockCreationBodyModel) and not _stock_exists(stock, matching_stocks))
     ]
 
     offers_validation.check_stocks_price(stocks_to_edit, offer)

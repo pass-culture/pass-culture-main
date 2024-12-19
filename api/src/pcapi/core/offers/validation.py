@@ -28,7 +28,7 @@ from pcapi.models import api_errors
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.native.v1.serialization.offerers import VenueTypeCode
-from pcapi.routes.public.books_stocks import serialization
+from pcapi.routes.serialization import stock_serialize as serialization
 from pcapi.utils import date
 
 
