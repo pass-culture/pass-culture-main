@@ -1,4 +1,4 @@
-import{I as p}from"./ImagePreferredOrientation-mp8PP7tY.js";import"./jsx-runtime-CfatFE5O.js";import"./index-ClcD9ViR.js";import"./_commonjsHelpers-Cpj98o6Y.js";const l={title:"components/ImageUploader/ImagePreferredOrientation",component:p},r={args:{orientation:"portrait"}},e={args:{orientation:"landscape"}};var a,o,t;r.parameters={...r.parameters,docs:{...(a=r.parameters)==null?void 0:a.docs,source:{originalSource:`{
+import{I as p}from"./ImagePreferredOrientation-SIe0_GrL.js";import"./jsx-runtime-CfatFE5O.js";import"./index-ClcD9ViR.js";import"./_commonjsHelpers-Cpj98o6Y.js";const l={title:"components/ImageUploader/ImagePreferredOrientation",component:p},r={args:{orientation:"portrait"}},e={args:{orientation:"landscape"}};var a,o,t;r.parameters={...r.parameters,docs:{...(a=r.parameters)==null?void 0:a.docs,source:{originalSource:`{
   args: {
     orientation: 'portrait'
   }
