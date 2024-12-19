@@ -503,6 +503,7 @@ def create_offers_booking_with_different_displayed_status(
             "bookingFactory": educational_factories.CancelledCollectiveBookingFactory,
             "cancellationReason": educational_models.CollectiveBookingCancellationReasons.OFFERER,
         },
+        # inactive
         "Londres": {
             "isActive": False,
             "bookingLimitDatetime": in_two_weeks,
@@ -515,6 +516,32 @@ def create_offers_booking_with_different_displayed_status(
             "beginningDatetime": yesterday,
             "endDatetime": tomorrow,
             "bookingFactory": educational_factories.ConfirmedCollectiveBookingFactory,
+        },
+        # draft, pending, rejected, archived
+        "Rome": {
+            "validation": OfferValidationStatus.DRAFT,
+            "bookingLimitDatetime": in_two_weeks,
+            "beginningDatetime": in_four_weeks,
+            "endDatetime": in_four_weeks,
+        },
+        "Sarajevo": {
+            "validation": OfferValidationStatus.PENDING,
+            "bookingLimitDatetime": in_two_weeks,
+            "beginningDatetime": in_four_weeks,
+            "endDatetime": in_four_weeks,
+        },
+        "Sofia": {
+            "validation": OfferValidationStatus.REJECTED,
+            "bookingLimitDatetime": in_two_weeks,
+            "beginningDatetime": in_four_weeks,
+            "endDatetime": in_four_weeks,
+        },
+        "Stockholm": {
+            "dateArchived": yesterday,
+            "isActive": False,
+            "bookingLimitDatetime": in_two_weeks,
+            "beginningDatetime": in_four_weeks,
+            "endDatetime": in_four_weeks,
         },
     }
 
@@ -529,8 +556,9 @@ def create_offers_booking_with_different_displayed_status(
             collectiveOffer__name=f"La culture à {city}",
             collectiveOffer__educational_domains=[next(domains_iterator)],
             collectiveOffer__venue=next(venue_iterator),
-            collectiveOffer__validation=OfferValidationStatus.APPROVED,
+            collectiveOffer__validation=attributes.get("validation", OfferValidationStatus.APPROVED),
             collectiveOffer__isActive=attributes.get("isActive", True),
+            collectiveOffer__dateArchived=attributes.get("dateArchived"),
             collectiveOffer__bookingEmails=["toto@totoland.com"],
             collectiveOffer__institution=institution,
             collectiveOffer__formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
