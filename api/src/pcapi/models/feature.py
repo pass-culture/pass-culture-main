@@ -50,6 +50,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_CDS_IMPLEMENTATION = "Permet la réservation de place de cinéma avec l'API CDS"
     ENABLE_CODIR_OFFERERS_REPORT = "Active le rapport sur les entités juridiques actives pour le CODIR (tourne la nuit)"
     ENABLE_CRON_TO_UPDATE_OFFERER_STATS = "Active la mise à jour des statistiques des entités juridiques avec un cron"
+    ENABLE_CHRONICLES_SYNC = "Activer la synchronisation des chroniques"
     ENABLE_CULTURAL_SURVEY = "Activer l'affichage du questionnaire des pratiques initiales pour les bénéficiaires"
     ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18 = (
         "Permet l'affichage du lien vers DMS sur la page de maintenance pour les 18 ans"
@@ -69,9 +70,8 @@ class FeatureToggle(enum.Enum):
     )
     ENABLE_PHONE_VALIDATION = "Active la validation du numéro de téléphone"
     ENABLE_PRO_ACCOUNT_CREATION = "Permettre l'inscription des comptes professionels"
-
+    ENABLE_SPECIAL_EVENTS_SYNC = "Activer la synchronisation des réponses aux opérations spéciales"
     ENABLE_TITELIVE_MUSIC_TYPES_IN_API_OUTPUT = "Désactiver le renvoi des genres de titelive dans l'api publique"
-
     ENABLE_UBBLE = "Active la vérification d'identité par Ubble"
     ENABLE_UBBLE_SUBSCRIPTION_LIMITATION = "Active la limitation en fonction de l'âge lors de pic d'inscription"
     ENABLE_VIRUSTOTAL = "Active la vérification des liens externes par VirusTotal"
