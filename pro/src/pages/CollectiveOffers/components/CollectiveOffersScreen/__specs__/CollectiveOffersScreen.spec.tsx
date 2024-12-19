@@ -267,13 +267,7 @@ describe('CollectiveOffersScreen', () => {
       })
     )
 
-    await userEvent.click(
-      screen.getByRole('heading', {
-        name: 'Offres collectives',
-        level: 1,
-      })
-    )
-
+    await userEvent.click(document.body)
     expect(screen.queryByText('Afficher les offres')).not.toBeInTheDocument()
   })
 

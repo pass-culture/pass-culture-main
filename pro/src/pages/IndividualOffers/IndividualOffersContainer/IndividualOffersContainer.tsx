@@ -17,7 +17,6 @@ import { NoData } from 'components/NoData/NoData'
 import { IndividualOffersActionsBar } from './components/IndividualOffersActionsBar/IndividualOffersActionsBar'
 import { IndividualOffersSearchFilters } from './components/IndividualOffersSearchFilters/IndividualOffersSearchFilters'
 import { IndividualOffersTable } from './components/IndividualOffersTable/IndividualOffersTable'
-import styles from './IndividualOffersContainer.module.scss'
 
 export type IndividualOffersContainerProps = {
   currentPageNumber: number
@@ -124,9 +123,6 @@ export const IndividualOffersContainer = ({
   )
   return (
     <div>
-      <div className={styles['title-container']}>
-        <h1 className={styles['title']}>Offres individuelles</h1>
-      </div>
       <IndividualOffersSearchFilters
         applyFilters={applyFilters}
         categories={categories}
