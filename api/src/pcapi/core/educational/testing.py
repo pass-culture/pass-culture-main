@@ -26,3 +26,42 @@ STATUSES_NOT_ALLOWING_EDIT_DETAILS = tuple(
     set(models.CollectiveOfferDisplayedStatus)
     - {*STATUSES_ALLOWING_EDIT_DETAILS, models.CollectiveOfferDisplayedStatus.INACTIVE}
 )
+
+STATUSES_ALLOWING_EDIT_DETAILS_TEMPLATE = (
+    models.CollectiveOfferDisplayedStatus.DRAFT,
+    models.CollectiveOfferDisplayedStatus.ACTIVE,
+    models.CollectiveOfferDisplayedStatus.INACTIVE,
+    models.CollectiveOfferDisplayedStatus.ENDED,
+)
+
+STATUSES_NOT_ALLOWING_EDIT_DETAILS_TEMPLATE = (
+    models.CollectiveOfferDisplayedStatus.PENDING,
+    models.CollectiveOfferDisplayedStatus.REJECTED,
+    models.CollectiveOfferDisplayedStatus.ARCHIVED,
+)
+
+STATUSES_ALLOWING_CREATE_BOOKABLE_OFFER = (
+    models.CollectiveOfferDisplayedStatus.ACTIVE,
+    models.CollectiveOfferDisplayedStatus.INACTIVE,
+    models.CollectiveOfferDisplayedStatus.ENDED,
+)
+
+STATUSES_NOT_ALLOWING_CREATE_BOOKABLE_OFFER = (
+    models.CollectiveOfferDisplayedStatus.DRAFT,
+    models.CollectiveOfferDisplayedStatus.PENDING,
+    models.CollectiveOfferDisplayedStatus.REJECTED,
+    models.CollectiveOfferDisplayedStatus.ARCHIVED,
+)
+
+STATUSES_ALLOWING_ARCHIVE_OFFER = (
+    models.CollectiveOfferDisplayedStatus.DRAFT,
+    models.CollectiveOfferDisplayedStatus.ACTIVE,
+    models.CollectiveOfferDisplayedStatus.INACTIVE,
+    models.CollectiveOfferDisplayedStatus.REJECTED,
+    models.CollectiveOfferDisplayedStatus.ENDED,
+)
+
+STATUSES_NOT_ALLOWING_ARCHIVE_OFFER = (
+    models.CollectiveOfferDisplayedStatus.PENDING,
+    models.CollectiveOfferDisplayedStatus.ARCHIVED,
+)

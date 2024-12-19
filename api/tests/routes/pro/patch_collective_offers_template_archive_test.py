@@ -2,6 +2,8 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational import testing as educational_testing
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
@@ -28,9 +30,11 @@ class Returns204Test:
         ):
             # 1. authentication
             # 2. load current_user
-            # 3. retrieve all collective_order.ids to batch them in pool for update
-            # 4. update dateArchive on collective_offer
-            with assert_num_queries(4):
+            # 3. feature flag
+            # 4. retrieve all collective_order_template to ensure archive is allowed
+            # 5. retrieve all collective_order.ids to batch them in pool for update
+            # 6. update dateArchive on collective_offer
+            with assert_num_queries(6):
                 response = client.patch("/collective/offers-template/archive", json=data)
                 assert response.status_code == 204
 
@@ -89,9 +93,11 @@ class Returns204Test:
         ):
             # 1. authentication
             # 2. load current_user
-            # 3. retrieve all collective_order.ids to batch them in pool for update
-            # 4. update dateArchive on collective_offer
-            with assert_num_queries(4):
+            # 3. feature flag
+            # 4. retrieve all collective_order.ids to batch them in pool for update
+            # 5. retrieve all collective_order.ids to batch them in pool for update
+            # 6. update dateArchive on collective_offer
+            with assert_num_queries(6):
                 response = client.patch("/collective/offers-template/archive", json=data)
                 assert response.status_code == 204
 
@@ -118,9 +124,12 @@ class Returns204Test:
         ):
             # 1. authentication
             # 2. load current_user
-            # 3. retrieve all collective_order.ids to batch them in pool for update
-            # 4. update dateArchive on collective_offer
-            with assert_num_queries(4):
+            # 3. feature flag
+            # 4. retrieve all collective_order.ids to batch them in pool for update
+            # 5. retrieve all collective_order.ids to batch them in pool for update
+            # 6. update dateArchive on collective_offer
+            # 7. update dateArchive on collective_offer
+            with assert_num_queries(7):
                 response = client.patch("/collective/offers-template/archive", json=data)
                 assert response.status_code == 204
 
@@ -130,3 +139,37 @@ class Returns204Test:
         db.session.refresh(other_template_offer)
         assert other_template_offer.isArchived
         assert not other_template_offer.isActive
+
+    @pytest.mark.parametrize("status", educational_testing.STATUSES_ALLOWING_ARCHIVE_OFFER)
+    def test_when_archiving_allowed_offers_templates(self, client, status):
+        pending_template_offer = educational_factories.create_collective_offer_template_by_status(status)
+        venue = pending_template_offer.venue
+        other_template_offer = CollectiveOfferTemplateFactory(venue=venue)
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
+        client = client.with_session_auth("pro@example.com")
+
+        data = {"ids": [pending_template_offer.id, other_template_offer.id]}
+
+        response = client.patch("/collective/offers-template/archive", json=data)
+
+        assert response.status_code == 204
+
+
+@pytest.mark.usefixtures("db_session")
+class Returns403Test:
+    @pytest.mark.parametrize("status", educational_testing.STATUSES_NOT_ALLOWING_ARCHIVE_OFFER)
+    def test_when_archiving_not_allowed_offers_templates(self, client, status):
+        pending_template_offer = educational_factories.create_collective_offer_template_by_status(status)
+        venue = pending_template_offer.venue
+        other_template_offer = CollectiveOfferTemplateFactory(venue=venue)
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
+        client = client.with_session_auth("pro@example.com")
+
+        data = {"ids": [pending_template_offer.id, other_template_offer.id]}
+
+        response = client.patch("/collective/offers-template/archive", json=data)
+
+        assert response.status_code == 403
+        assert response.json["global"] == ["Cette action n'est pas autorisée sur cette offre"]

@@ -53,6 +53,7 @@ class Returns204Test:
         assert not CollectiveOfferTemplate.query.get(offer1.id).isActive
         assert not CollectiveOfferTemplate.query.get(offer2.id).isActive
 
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_only_approved_offers_patch(self, client):
         approved_offer = CollectiveOfferTemplateFactory(isActive=False)
         venue = approved_offer.venue
@@ -81,7 +82,6 @@ class Returns204Test:
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
     def test_when_activating_all_existing_offers_active_status_when_cultural_partners_not_found(self, client):
-        # Given
         offer1 = CollectiveOfferFactory(isActive=False)
         venue = offer1.venue
         offer2 = CollectiveOfferTemplateFactory(venue=venue, isActive=False)
@@ -89,7 +89,6 @@ class Returns403Test:
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
-        # When
         client = client.with_session_auth("pro@example.com")
         data = {"ids": [offer1.id, offer2.id], "isActive": True}
 
@@ -103,3 +102,29 @@ class Returns403Test:
         assert response.status_code == 403
         assert response.json == {"Partner": ["User not in Adage can't edit the offer"]}
         assert offer1.isActive is False
+
+    def test_publish_offer_not_allowed_patch(self, client):
+        approved_offer = CollectiveOfferTemplateFactory(isActive=True)
+        venue = approved_offer.venue
+        pending_offer = CollectiveOfferTemplateFactory(venue=venue, validation=OfferValidationStatus.PENDING)
+        rejected_offer = CollectiveOfferTemplateFactory(venue=venue, validation=OfferValidationStatus.REJECTED)
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
+
+        data = {
+            "ids": [approved_offer.id, pending_offer.id, rejected_offer.id],
+            "isActive": False,
+        }
+
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            client = client.with_session_auth("pro@example.com")
+            response = client.patch("/collective/offers-template/active-status", json=data)
+
+        assert response.status_code == 403
+        assert response.json == {"global": ["Cette action n'est pas autorisée sur cette offre"]}
+
+        assert approved_offer.isActive
+        assert not pending_offer.isActive
+        assert not rejected_offer.isActive

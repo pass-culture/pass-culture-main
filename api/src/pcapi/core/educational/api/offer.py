@@ -255,6 +255,12 @@ def create_collective_offer(
     venue = get_venue_and_check_access_for_offer_creation(offer_data, user)
     educational_domains = get_educational_domains_from_ids(offer_data.domains)
 
+    if offer_data.template_id is not None and feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+        template = educational_repository.get_collective_offer_template_by_id(offer_data.template_id)
+        validation.check_collective_offer_template_action_is_allowed(
+            template, educational_models.CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER
+        )
+
     collective_offer = educational_models.CollectiveOffer(
         isActive=False,  # a DRAFT offer cannot be active
         venueId=venue.id,
