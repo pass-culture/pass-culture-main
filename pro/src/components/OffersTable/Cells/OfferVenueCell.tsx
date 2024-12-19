@@ -7,12 +7,15 @@ import styles from 'styles/components/Cells.module.scss'
 
 interface OfferVenueCellProps {
   venue: ListOffersVenueResponseModel
-  headers?: string
   className?: string
   displayLabel?: boolean
 }
 
-export const OfferVenueCell = ({ venue, headers, className, displayLabel }: OfferVenueCellProps) => {
+export const OfferVenueCell = ({
+  venue,
+  className,
+  displayLabel,
+}: OfferVenueCellProps) => {
   const offerAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   return (
     <td
@@ -22,15 +25,15 @@ export const OfferVenueCell = ({ venue, headers, className, displayLabel }: Offe
         styles['venue-column'],
         className
       )}
-      headers={headers}
     >
-      {displayLabel &&
+      {displayLabel && (
         <span
           className={styles['offers-table-cell-mobile-label']}
           aria-hidden={true}
         >
           {offerAddressEnabled ? 'Localisation :' : 'Lieu :'}
-        </span>}
+        </span>
+      )}
       {computeVenueDisplayName(venue)}
     </td>
   )

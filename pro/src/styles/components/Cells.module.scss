@@ -269,3 +269,7 @@
 .expiration-date-cell {
   padding: 0;
 }
+
+.visually-hidden {
+  @include a11y.visually-hidden;
+}

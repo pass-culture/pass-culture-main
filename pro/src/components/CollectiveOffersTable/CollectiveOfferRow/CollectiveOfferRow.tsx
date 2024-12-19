@@ -16,7 +16,7 @@ import { ThumbCell } from 'components/OffersTable/Cells/ThumbCell'
 import { CollectiveActionsCells } from './CollectiveActionsCells/CollectiveActionsCells'
 import styles from './CollectiveOfferRow.module.scss'
 import { CollectiveOfferStatusCell } from './CollectiveOfferStatusCell/CollectiveOfferStatusCell'
-import { ExpirationCell } from './ExpirationCell/ExpirationCell'
+import { ExpirationBanner } from './ExpirationBanner/ExpirationBanner'
 import { OfferEventDateCell } from './OfferEventDateCell/OfferEventDateCell'
 import { OfferInstitutionCell } from './OfferInstitutionCell/OfferInstitutionCell'
 
@@ -58,8 +58,6 @@ export const CollectiveOfferRow = ({
 
   const editionOfferLink = isOfferDraft || `/offre/${id}/collectif/edition`
 
-  const rowId = `collective-offer-${id}`
-
   const bookingLimitDate = offer.stocks[0]?.bookingLimitDatetime
 
   const hasExpirationRow =
@@ -77,64 +75,48 @@ export const CollectiveOfferRow = ({
         })}
         data-testid="offer-item-row"
       >
-        <th
-          rowSpan={hasExpirationRow ? 2 : 1}
-          scope="rowgroup"
-          className={styles['reference-row-head']}
-          id={rowId}
-        >
-          <span className={styles['visually-hidden']}>{offer.name}</span>
-        </th>
         <CheckboxCell
           offerName={offer.name}
           isSelected={isSelected}
           disabled={!offer.isEditable}
           selectOffer={() => selectOffer(offer)}
-          headers={`${rowId} collective-offer-head-checkbox`}
           className={styles['collective-cell-checkbox']}
         />
-        {isCollectiveOffersExpirationEnabled && (
-          <td className={styles['expiration-date-cell']} />
-        )}
         <ThumbCell
           offer={offer}
           offerLink={offerLink}
           inactive={!offer.isEditable}
-          headers={`${rowId} collective-offer-head-image`}
           className={styles['collective-cell-thumb']}
         />
 
         <OfferNameCell
           offer={offer}
           offerLink={offerLink}
-          headers={`${rowId} collective-offer-head-name`}
           className={styles['collective-cell-name']}
         />
 
         {isCollectiveOffersExpirationEnabled && (
           <OfferEventDateCell
             offer={offer}
-            headers={`${rowId} collective-offer-head-expiration-date`}
             className={styles['collective-cell-expiration-date']}
           />
         )}
 
         <OfferVenueCell
           venue={offer.venue}
-          headers={`${rowId} collective-offer-head-venue`}
           className={styles['collective-cell-venue']}
         />
 
         <OfferInstitutionCell
           educationalInstitution={offer.educationalInstitution}
-          headers={`${rowId} collective-offer-head-institution`}
           className={styles['collective-cell-institution']}
         />
 
         <CollectiveOfferStatusCell
           offer={offer}
-          headers={`${rowId} collective-offer-head-status`}
           className={styles['collective-cell-status']}
+          hasExpirationRow={hasExpirationRow}
+          bookingLimitDate={bookingLimitDate}
         />
 
         <CollectiveActionsCells
@@ -143,19 +125,18 @@ export const CollectiveOfferRow = ({
           urlSearchFilters={urlSearchFilters}
           isSelected={isSelected}
           deselectOffer={() => selectOffer(offer)}
-          headers={`${rowId} collective-offer-head-actions`}
           className={styles['collective-cell-actions']}
         />
       </tr>
       {hasExpirationRow && (
-        <tr className={styles['collective-row']}>
+        <tr className={styles['collective-row']} aria-hidden={true}>
           <td colSpan={1} />
-          <ExpirationCell
-            offer={offer}
-            bookingLimitDate={bookingLimitDate}
-            headers={`${rowId} collective-offer-head-expiration`}
-            className={styles['collective-cell-expiration']}
-          />
+          <td colSpan={8} className={classNames(styles['expiration-cell'])}>
+            <ExpirationBanner
+              offer={offer}
+              bookingLimitDate={bookingLimitDate}
+            />
+          </td>
         </tr>
       )}
     </>

@@ -7,22 +7,27 @@ import {
 } from 'apiClient/v1'
 import { collectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
 
-import { ExpirationCell } from './ExpirationCell'
+import { ExpirationBanner } from './ExpirationBanner'
 
-describe('ExpirationCell', () => {
+describe('ExpirationBanner', () => {
   const offer: CollectiveOfferResponseModel = collectiveOfferFactory({
     status: CollectiveOfferStatus.ACTIVE,
   })
 
-  function renderExpirationCell(offerParam = offer, bookingLimitDate: string) {
+  function renderExpirationBanner(
+    offerParam = offer,
+    bookingLimitDate: string
+  ) {
     return render(
       <table>
         <tbody>
           <tr>
-            <ExpirationCell
-              offer={offerParam}
-              bookingLimitDate={bookingLimitDate}
-            />
+            <td>
+              <ExpirationBanner
+                offer={offerParam}
+                bookingLimitDate={bookingLimitDate}
+              />
+            </td>
           </tr>
         </tbody>
       </table>
@@ -34,7 +39,7 @@ describe('ExpirationCell', () => {
     const in10Days = new Date()
     in10Days.setDate(in10Days.getDate() + 10)
 
-    renderExpirationCell(offerExpiringIn10Days, in10Days.toISOString())
+    renderExpirationBanner(offerExpiringIn10Days, in10Days.toISOString())
 
     expect(
       screen.getByText(
@@ -48,7 +53,7 @@ describe('ExpirationCell', () => {
     const in5Days = new Date()
     in5Days.setDate(in5Days.getDate() + 5)
 
-    renderExpirationCell(offerExpiringIn5Days, in5Days.toISOString())
+    renderExpirationBanner(offerExpiringIn5Days, in5Days.toISOString())
 
     expect(screen.getByText('expire dans 5 jours')).toBeInTheDocument()
   })
@@ -57,7 +62,7 @@ describe('ExpirationCell', () => {
     const offerExpiringToday = { ...offer }
     const today = new Date()
 
-    renderExpirationCell(offerExpiringToday, today.toISOString())
+    renderExpirationBanner(offerExpiringToday, today.toISOString())
 
     expect(screen.getByText('expire aujourd’hui')).toBeInTheDocument()
   })
@@ -70,7 +75,7 @@ describe('ExpirationCell', () => {
     offerExpiring.booking = { booking_status: 'PENDING', id: 1 }
     const today = new Date()
 
-    renderExpirationCell(offerExpiring, today.toISOString())
+    renderExpirationBanner(offerExpiring, today.toISOString())
 
     expect(
       screen.getByText('En attente de réservation par le chef d’établissement')

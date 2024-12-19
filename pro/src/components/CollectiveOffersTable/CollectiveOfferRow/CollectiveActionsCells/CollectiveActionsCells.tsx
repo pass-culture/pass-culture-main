@@ -64,7 +64,6 @@ export interface CollectiveActionsCellsProps {
   urlSearchFilters: CollectiveSearchFiltersParams
   deselectOffer: (offer: CollectiveOfferResponseModel) => void
   isSelected: boolean
-  headers?: string
   className?: string
 }
 
@@ -88,7 +87,6 @@ export const CollectiveActionsCells = ({
   urlSearchFilters,
   deselectOffer,
   isSelected,
-  headers,
   className,
 }: CollectiveActionsCellsProps) => {
   const navigate = useNavigate()
@@ -351,8 +349,11 @@ export const CollectiveActionsCells = ({
 
   return (
     <td
-      className={cn(styles['offers-table-cell'], styles['actions-column'], className)}
-      headers={headers}
+      className={cn(
+        styles['offers-table-cell'],
+        styles['actions-column'],
+        className
+      )}
     >
       <div className={styles['actions-column-container']}>
         {(offer.status === CollectiveOfferStatus.SOLD_OUT ||
