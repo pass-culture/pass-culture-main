@@ -138,6 +138,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_CLICKHOUSE_IN_BO = "Utiliser Clickhouse pour les statistiques des acteurs culturels dans le BO"
     WIP_HEADLINE_OFFER = "Activer l'offre à la une"
     WIP_IS_OPEN_TO_PUBLIC = "Activer l'utilisation du critère 'ouvert au public' pour les synchro"
+    WIP_API_HARVESTR = "Activer l'envoi des commentaires du portail pro vers Harvestr"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -219,6 +220,9 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
 
 if settings.IS_PROD or settings.IS_STAGING:
     FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API,)
+
+    if settings.IS_PROD:
+        FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.WIP_API_HARVESTR,)
 
 
 def add_feature_to_database(feature: Feature) -> None:
