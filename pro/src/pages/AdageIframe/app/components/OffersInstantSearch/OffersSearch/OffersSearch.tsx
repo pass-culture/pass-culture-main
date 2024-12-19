@@ -9,10 +9,14 @@ import { AdageFrontRoles, TrackingFilterBody } from 'apiClient/adage'
 import { api, apiAdage } from 'apiClient/api'
 import { LOG_TRACKING_FILTER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { GET_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
+import { type EnumType } from 'commons/custom_types/utils'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useIsElementVisible } from 'commons/hooks/useIsElementVisible'
 import { useNotification } from 'commons/hooks/useNotification'
-import { setAdageFilter, setAdagePageSaved } from 'commons/store/adageFilter/reducer'
+import {
+  setAdageFilter,
+  setAdagePageSaved,
+} from 'commons/store/adageFilter/reducer'
 import { adageQuerySelector } from 'commons/store/adageFilter/selectors'
 import { MARSEILLE_EN_GRAND } from 'pages/AdageIframe/app/constants'
 import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
@@ -32,12 +36,14 @@ import { Offers } from './Offers/Offers'
 import styles from './OffersSearch.module.scss'
 import { OffersSuggestions } from './OffersSuggestions/OffersSuggestions'
 
-export enum LocalisationFilterStates {
-  DEPARTMENTS = 'departments',
-  ACADEMIES = 'academies',
-  GEOLOCATION = 'geolocation',
-  NONE = 'none',
-}
+export const LocalisationFilterStates = {
+  DEPARTMENTS: 'departments',
+  ACADEMIES: 'academies',
+  GEOLOCATION: 'geolocation',
+  NONE: 'none',
+} as const
+// eslint-disable-next-line no-redeclare
+export type LocalisationFilterStates = EnumType<typeof LocalisationFilterStates>
 
 export interface SearchProps {
   setFilters: Dispatch<SetStateAction<SearchFormValues>>
