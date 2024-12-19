@@ -834,6 +834,15 @@ def format_tag_object_list(
     return ""
 
 
+def format_top_acteur_tag(
+    offerer_tags: list[offerers_models.OffererTag],
+) -> str:
+    for tag in offerer_tags:
+        if tag.name == "top-acteur":
+            return format_as_badges([getattr(tag, "label", getattr(tag, "name", ""))])
+    return ""
+
+
 def format_criteria(criteria: list[criteria_models.OfferCriterion]) -> str:
     return format_as_badges([criterion.name for criterion in criteria])
 
@@ -1600,6 +1609,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_confidence_level_badge_for_venue"] = format_confidence_level_badge_for_venue
     app.jinja_env.filters["format_criteria"] = format_criteria
     app.jinja_env.filters["format_tag_object_list"] = format_tag_object_list
+    app.jinja_env.filters["format_top_acteur_tag"] = format_top_acteur_tag
     app.jinja_env.filters["format_fraud_review_status"] = format_fraud_review_status
     app.jinja_env.filters["format_dms_status"] = format_dms_status
     app.jinja_env.filters["format_dms_application_status"] = format_dms_application_status
