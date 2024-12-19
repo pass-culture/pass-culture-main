@@ -15,6 +15,7 @@ from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.testing import override_features
 from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
 
@@ -272,6 +273,23 @@ class Returns200Test:
 
 
 class Returns400Test:
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    def test_non_approved_offer_fails_with_new_statuses(self, client):
+        offer_ctx = build_offer_context()
+
+        pro_client = build_pro_client(client, offer_ctx.user)
+
+        offer = CollectiveOfferTemplateFactory(validation=OfferValidationStatus.PENDING)
+        offerers_factories.UserOffererFactory(user=offer_ctx.user, offerer=offer.venue.managingOfferer)
+
+        data = {"visualDisabilityCompliant": True}
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer.id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json["global"] == ["Cette action n'est pas autorisée sur cette offre"]
+
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_non_approved_offer_fails(self, client):
         offer_ctx = build_offer_context()
 
@@ -286,6 +304,22 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json["global"] == ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
+
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    def test_non_approved_offer_fails_with_new_statuses(self, client):
+        offer_ctx = build_offer_context()
+
+        pro_client = build_pro_client(client, offer_ctx.user)
+
+        offer = CollectiveOfferTemplateFactory(validation=OfferValidationStatus.PENDING)
+        offerers_factories.UserOffererFactory(user=offer_ctx.user, offerer=offer.venue.managingOfferer)
+
+        data = {"visualDisabilityCompliant": True}
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer.id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json["global"] == ["Cette action n'est pas autorisée sur cette offre"]
 
     def test_empty_name(self, client):
         offer_ctx = build_offer_context()

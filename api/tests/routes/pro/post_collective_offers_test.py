@@ -11,6 +11,7 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import override_features
 from pcapi.core.users import testing as sendinblue_testing
 import pcapi.core.users.factories as users_factories
+from pcapi.models.offer_mixin import OfferValidationStatus
 
 
 def base_offer_payload(
@@ -386,3 +387,22 @@ class Returns404Test:
         # Then
         assert response.status_code == 404
         assert response.json == {"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"}
+
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    def test_create_collective_offer_with_pending_collective_offer_template(self, client):
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
+            validation=OfferValidationStatus.PENDING,
+            venue=venue,
+        )
+
+        data = base_offer_payload(venue=venue, template_id=collective_offer_template.id)
+
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"code": "COLLECTIVE_OFFER_TEMPLATE_FORBIDDEN_ACTION"}
