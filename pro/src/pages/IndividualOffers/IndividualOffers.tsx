@@ -121,7 +121,7 @@ export const IndividualOffers = (): JSX.Element => {
   const offers = offersQuery.error ? [] : offersQuery.data || []
 
   return (
-    <Layout>
+    <Layout mainHeading="Offres individuelles">
       {isLoadingVenues || isValidatingVenues ? (
         <Spinner />
       ) : (
