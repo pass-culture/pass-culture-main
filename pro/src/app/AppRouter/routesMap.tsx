@@ -384,7 +384,7 @@ export const routes: RouteConfig[] = [
       import(
         'pages/Onboarding/OnboardingOffersTypeChoice/OnboardingOffersTypeChoice'
       ),
-    path: '/inscription-choix-offre',
+    path: '/onboarding',
     title: "Inscription - Choix du type d'offre",
     featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
   },
@@ -402,7 +402,7 @@ export const routes: RouteConfig[] = [
       import(
         'pages/Onboarding/OnboardingOfferIndividualAutomatic/OnboardingOfferIndividualAutomatic'
       ),
-    path: '/inscription-offre-individuelle-auto',
+    path: '/onboarding/synchro',
     title: 'Inscription - Connecter à mon logiciel',
     featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
   },
