@@ -202,7 +202,7 @@ def configure_ubble_v2_response(user_id: int) -> utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
-        return render_template("backoffice_web.dev.get_generated_user", form=form), 400
+        return redirect(url_for("backoffice_web.dev.get_generated_user"), code=303)
 
     # Ubble response codes can be tested by inserting the ones we want in the external applicant id of the Ubble
     # applicant. See https://docs.ubble.ai/#section/Testing/Declined-verification-on-retry-after-checks-inconclusive
