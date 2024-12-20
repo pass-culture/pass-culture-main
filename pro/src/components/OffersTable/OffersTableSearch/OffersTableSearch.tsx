@@ -17,16 +17,14 @@ export type OffersTableSearchProps = {
   filtersVisibility: boolean
   onFiltersToggle: () => void
   isDisabled: boolean
+  hasActiveFilters: boolean
   nameInputProps: {
     label: JSX.Element | string
     disabled: boolean
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
     value: string
   }
-  resetButtonProps: {
-    onClick: () => void
-    isDisabled: boolean
-  }
+  onResetFilters: () => void
   children: React.ReactNode
 }
 
@@ -35,8 +33,9 @@ export const OffersTableSearch = ({
   filtersVisibility,
   onFiltersToggle,
   isDisabled,
+  hasActiveFilters,
   nameInputProps,
-  resetButtonProps,
+  onResetFilters,
   children,
 }: OffersTableSearchProps) => {
   return (
@@ -64,7 +63,10 @@ export const OffersTableSearch = ({
           />
         </FieldLayout>
         <Button
-          className={styles['offers-table-search-toggle-button']}
+          className={cn(styles['offers-table-search-toggle-button'], {
+              [styles['offers-table-search-toggle-button-active']]: hasActiveFilters
+            }
+          )}
           icon={filtersVisibility ? strokeUpIcon : strokeDownIcon}
           iconPosition={IconPositionEnum.RIGHT}
           variant={ButtonVariant.BOX}
@@ -73,6 +75,7 @@ export const OffersTableSearch = ({
           aria-expanded="false"
         >
           Filtres
+          {hasActiveFilters && <span className={styles['visually-hidden']}>actifs</span>}
         </Button>
       </FormLayout.Row>
       <div
@@ -86,8 +89,8 @@ export const OffersTableSearch = ({
         <div className={styles['offers-table-search-reset-wrapper']}>
           <Button
             icon={fullRefreshIcon}
-            disabled={resetButtonProps.isDisabled}
-            onClick={resetButtonProps.onClick}
+            disabled={!hasActiveFilters}
+            onClick={onResetFilters}
             variant={ButtonVariant.TERNARY}
             className={styles['offers-table-search-reset-button']}
           >

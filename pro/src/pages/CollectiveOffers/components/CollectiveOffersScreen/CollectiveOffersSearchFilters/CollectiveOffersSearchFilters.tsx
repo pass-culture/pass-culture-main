@@ -247,25 +247,25 @@ export const CollectiveOffersSearchFilters = ({
       : []),
   ]
 
+  const hasActiveFilters = isEqual(
+    { ...selectedFilters, offererId: 'all', page: 1 },
+    defaultCollectiveFilters
+  )
+
   return (
     <OffersTableSearch
       filtersVisibility={filtersVisibility ?? false}
       onFiltersToggle={onFiltersToggle}
       onSubmit={requestFilteredOffers}
       isDisabled={disableAllFilters}
+      hasActiveFilters={hasActiveFilters}
       nameInputProps={{
         label: searchByOfferNameLabel,
         disabled: disableAllFilters,
         onChange: storeNameOrIsbnSearchValue,
         value: selectedFilters.nameOrIsbn,
       }}
-      resetButtonProps={{
-        onClick: onResetFilters,
-        isDisabled: isEqual(
-          { ...selectedFilters, offererId: 'all', page: 1 },
-          defaultCollectiveFilters
-        ),
-      }}
+      onResetFilters={onResetFilters}
     >
        <FormLayout.Row inline>
             <FieldLayout

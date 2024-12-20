@@ -190,9 +190,12 @@ export const IndividualOffersSearchFilters = ({
     return status
   })
 
+  const hasActiveFilters = hasSearchFilters(selectedFilters)
+
   return (
     <OffersTableSearch
       filtersVisibility={filtersVisibility ?? false}
+      hasActiveFilters={hasActiveFilters}
       onFiltersToggle={onFiltersToggle}
       onSubmit={requestFilteredOffers}
       isDisabled={disableAllFilters}
@@ -202,10 +205,7 @@ export const IndividualOffersSearchFilters = ({
         onChange: storeNameOrIsbnSearchValue,
         value: selectedFilters.nameOrIsbn,
       }}
-      resetButtonProps={{
-        onClick: onResetFilters,
-        isDisabled: !hasSearchFilters(selectedFilters),
-      }}
+      onResetFilters={onResetFilters}
     >
       <FormLayout.Row inline>
         {isOfferAddressEnabled ? (
