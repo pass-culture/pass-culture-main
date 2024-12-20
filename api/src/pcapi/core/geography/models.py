@@ -46,13 +46,6 @@ class Address(PcObject, Base, Model):
 
     __table_args__ = (
         sa.Index(
-            "ix_partial_unique_address_per_street_and_insee_code",
-            "street",
-            "inseeCode",
-            unique=True,
-            postgresql_where=sa.and_(street.is_not(None), inseeCode.is_not(None), isManualEdition.is_not(True)),
-        ),
-        sa.Index(
             # FIXME (dramelet, 14-10-2024)
             # Our current version of sqlalchemy (1.4) doesn't handle
             # the option `nulls_not_distinct` from postgresql dialect
