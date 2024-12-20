@@ -31,6 +31,8 @@ def test_create_virtual_venue(client):
         "address": "123 rue de Paris",
         "postalCode": "93100",
         "city": "Montreuil",
+        "latitude": 48,
+        "longitude": 2,
     }
 
     # when
@@ -55,6 +57,8 @@ def test_returned_data(client):
         "address": "123 rue de Paris",
         "postalCode": "93100",
         "city": "Montreuil",
+        "latitude": 48,
+        "longitude": 2,
     }
 
     client = client.with_session_auth(pro.email)
@@ -77,6 +81,8 @@ def test_user_cant_create_same_offerer_twice(client):
         "address": "123 rue de Paris",
         "postalCode": "93100",
         "city": "Montreuil",
+        "latitude": 48,
+        "longitude": 2,
     }
 
     client = client.with_session_auth(pro.email)
@@ -100,7 +106,14 @@ def test_when_no_address_is_provided(client):
     pro = users_factories.ProFactory(
         lastConnectionDate=datetime.utcnow(),
     )
-    body = {"name": "Test Offerer", "siren": "418166096", "postalCode": "93100", "city": "Montreuil"}
+    body = {
+        "name": "Test Offerer",
+        "siren": "418166096",
+        "postalCode": "93100",
+        "city": "Montreuil",
+        "latitude": 48,
+        "longitude": 2,
+    }
 
     # when
     client = client.with_session_auth(pro.email)
@@ -121,6 +134,8 @@ def test_use_offerer_name_retrieved_from_sirene_api(client):
         "address": "123 rue de Paris",
         "postalCode": "93100",
         "city": "Montreuil",
+        "latitude": 48,
+        "longitude": 2,
     }
     client = client.with_session_auth(pro.email)
     response = client.post("/offerers", json=body)
@@ -140,6 +155,8 @@ def test_current_user_has_access_to_created_offerer(client):
         "address": "123 rue de Paris",
         "postalCode": "93100",
         "city": "Montreuil",
+        "latitude": 48,
+        "longitude": 2,
     }
 
     # when
@@ -163,6 +180,8 @@ def test_new_user_offerer_has_validation_status_new(client):
         "street": offerer.street,
         "postalCode": offerer.postalCode,
         "city": offerer.city,
+        "latitude": 48,
+        "longitude": 2,
     }
 
     # when
@@ -186,6 +205,8 @@ def test_create_offerer_action_is_logged(client):
         "address": "123 rue de Paris",
         "postalCode": "93100",
         "city": "Montreuil",
+        "latitude": 48,
+        "longitude": 2,
     }
 
     # when
@@ -220,6 +241,8 @@ def test_with_inactive_siren(requests_mock, client):
         "address": "123 rue de Paris",
         "postalCode": "93100",
         "city": "Montreuil",
+        "latitude": 48,
+        "longitude": 2,
     }
 
     client = client.with_session_auth(user.email)
@@ -250,6 +273,8 @@ def test_saint_martin_offerer_creation_without_postal_code_is_successfull(reques
         "postalCode": "",
         "siren": siren,
         "apeCode": "94.99Z",
+        "latitude": 48,
+        "longitude": 2,
     }
 
     client = client.with_session_auth(user.email)
