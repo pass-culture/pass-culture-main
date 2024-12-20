@@ -526,6 +526,18 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["Dossier"] == str(update_request.dsApplicationId)
 
+    def test_list_filter_by_no_instructor(self, authenticated_client):
+        update_request = users_factories.EmailUpdateRequestFactory(lastInstructor=None)
+        users_factories.EmailUpdateRequestFactory()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, only_unassigned="on"))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Dossier"] == str(update_request.dsApplicationId)
+
 
 class InstructTest(PostEndpointHelper):
     endpoint = "backoffice_web.account_update.instruct"
