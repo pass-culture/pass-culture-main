@@ -72,6 +72,7 @@ import type { LoginUserBodyModel } from '../models/LoginUserBodyModel';
 import type { NewPasswordBodyModel } from '../models/NewPasswordBodyModel';
 import type { OffererAddressRequestModel } from '../models/OffererAddressRequestModel';
 import type { OffererAddressResponseModel } from '../models/OffererAddressResponseModel';
+import type { OffererHeadLineOfferResponseModel } from '../models/OffererHeadLineOfferResponseModel';
 import type { OffererStatsResponseModel } from '../models/OffererStatsResponseModel';
 import type { OfferStatus } from '../models/OfferStatus';
 import type { PatchAllOffersActiveStatusBodyModel } from '../models/PatchAllOffersActiveStatusBodyModel';
@@ -1494,6 +1495,27 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/offerers/{offerer_id}/dashboard',
+      path: {
+        'offerer_id': offererId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * get_offerer_headline_offer <GET>
+   * @param offererId
+   * @returns OffererHeadLineOfferResponseModel OK
+   * @throws ApiError
+   */
+  public getOffererHeadlineOffer(
+    offererId: number,
+  ): CancelablePromise<OffererHeadLineOfferResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/offerers/{offerer_id}/headline-offer',
       path: {
         'offerer_id': offererId,
       },

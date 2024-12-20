@@ -1331,6 +1331,23 @@ def test_public_api(client):
                     "title": "OfferExtraDataResponse",
                     "type": "object",
                 },
+                "OfferImage": {
+                    "properties": {
+                        "credit": {
+                            "title": "Credit",
+                            "type": "string",
+                        },
+                        "url": {
+                            "title": "Url",
+                            "type": "string",
+                        },
+                    },
+                    "required": [
+                        "url",
+                    ],
+                    "title": "OfferImage",
+                    "type": "object",
+                },
                 "OfferImageResponse": {
                     "properties": {
                         "credit": {"nullable": True, "title": "Credit", "type": "string"},
@@ -1607,6 +1624,32 @@ def test_public_api(client):
                     },
                     "required": ["id", "offerer", "name", "coordinates", "isPermanent", "timezone"],
                     "title": "OfferVenueResponse",
+                    "type": "object",
+                },
+                "OffererHeadLineOfferResponseModel": {
+                    "properties": {
+                        "id": {
+                            "title": "Id",
+                            "type": "integer",
+                        },
+                        "image": {
+                            "anyOf": [
+                                {
+                                    "$ref": "#/components/schemas/OfferImage",
+                                },
+                            ],
+                            "nullable": True,
+                        },
+                        "name": {
+                            "title": "Name",
+                            "type": "string",
+                        },
+                    },
+                    "required": [
+                        "id",
+                        "name",
+                    ],
+                    "title": "OffererHeadLineOfferResponseModel",
                     "type": "object",
                 },
                 "OffersStocksRequest": {
@@ -3710,6 +3753,54 @@ def test_public_api(client):
                     "summary": "report_offer <POST>",
                     "tags": [],
                 }
+            },
+            "/native/v1/offerer/{offerer_id}/headline-offer": {
+                "get": {
+                    "description": "",
+                    "operationId": "get__native_v1_offerer_{offerer_id}_headline-offer",
+                    "parameters": [
+                        {
+                            "description": "",
+                            "in": "path",
+                            "name": "offerer_id",
+                            "required": True,
+                            "schema": {
+                                "format": "int32",
+                                "type": "integer",
+                            },
+                        },
+                    ],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/OffererHeadLineOfferResponseModel",
+                                    },
+                                },
+                            },
+                            "description": "OK",
+                        },
+                        "403": {
+                            "description": "Forbidden",
+                        },
+                        "404": {
+                            "description": "Not Found",
+                        },
+                        "422": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/ValidationError",
+                                    },
+                                },
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "get_offerer_headline_offer <GET>",
+                    "tags": [],
+                },
             },
             "/native/v1/offers/reports": {
                 "get": {
