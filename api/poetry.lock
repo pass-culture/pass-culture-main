@@ -1887,13 +1887,13 @@ tracing = ["opentelemetry-api (>=1.1.0)"]
 
 [[package]]
 name = "google-cloud-tasks"
-version = "2.17.1"
+version = "2.18.0"
 description = "Google Cloud Tasks API client library"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "google_cloud_tasks-2.17.1-py2.py3-none-any.whl", hash = "sha256:cee64243623f5b3bae0f57e94eecaa93b61cbe71cf0f1c135554dc51998ab3b8"},
-    {file = "google_cloud_tasks-2.17.1.tar.gz", hash = "sha256:164415b256f2db6a123ab42227b164ed8e25917859824a088f6f2560f47aabe1"},
+    {file = "google_cloud_tasks-2.18.0-py2.py3-none-any.whl", hash = "sha256:5d994ba60a136c942e322b76bc178e1089fbb9bc08ad58b5178e035cc26d2fe9"},
+    {file = "google_cloud_tasks-2.18.0.tar.gz", hash = "sha256:11a26b5b48733405cc4ea066b4f81ac353e5fb8566419b9b4d35d4bd1ceec58c"},
 ]
 
 [package.dependencies]
@@ -6165,4 +6165,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "1044904aa6a60bed606fd01b61f150333e89158fea54bb4dde60a8bc421a5a23"
+content-hash = "facc517c2fd241cc7a7d945343c341f61b670fac49ba26a5b51f284a8b7e82b6"
