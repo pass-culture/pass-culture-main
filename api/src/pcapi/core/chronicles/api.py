@@ -70,7 +70,12 @@ def _extract_book_club_ean(answer: typeform.TypeformAnswer) -> str | None:
         return ean
     # Try to find the ean in db by its choice id.
     # This case could happen if the answer was deleted by an admin in typeform.
-    ean = db.session.query(models.Chronicle.ean).filter(models.Chronicle.eanChoiceId == answer.choice_id).scalar()
+    ean = (
+        db.session.query(models.Chronicle.ean)
+        .filter(models.Chronicle.eanChoiceId == answer.choice_id)
+        .limit(1)
+        .scalar()
+    )
     return ean
 
 
