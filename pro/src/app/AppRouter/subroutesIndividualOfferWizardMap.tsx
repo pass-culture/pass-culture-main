@@ -145,7 +145,7 @@ export const routesOnboardingIndividualOfferWizard: RouteConfig[] = [
       ),
     path: '/onboarding/offre/individuelle/creation/details',
     title: 'Détails de l’offre - Créer une offre individuelle',
-    featureName: 'WIP_ENABLE_PRO_ONBOARDING',
+    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
   },
   {
     lazy: () =>
@@ -154,7 +154,7 @@ export const routesOnboardingIndividualOfferWizard: RouteConfig[] = [
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/details',
     title: 'Détails de l’offre - Créer une offre individuelle',
-    featureName: 'WIP_ENABLE_PRO_ONBOARDING',
+    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
   },
   {
     lazy: () =>
@@ -163,25 +163,25 @@ export const routesOnboardingIndividualOfferWizard: RouteConfig[] = [
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/pratiques',
     title: 'Informations pratiques - Créer une offre individuelle',
-    featureName: 'WIP_ENABLE_PRO_ONBOARDING',
+    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
   },
   {
     lazy: () =>
       import('pages/IndividualOfferWizard/PriceCategories/PriceCategories'),
     path: '/onboarding/offre/individuelle/:offerId/creation/tarifs',
-    featureName: 'WIP_ENABLE_PRO_ONBOARDING',
+    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
     title: 'Tarifs - Créer une offre individuelle',
   },
   {
     lazy: () => import('pages/IndividualOfferWizard/Stocks/Stocks'),
     path: '/onboarding/offre/individuelle/:offerId/creation/stocks',
     title: 'Stocks et prix - Créer une offre individuelle',
-    featureName: 'WIP_ENABLE_PRO_ONBOARDING',
+    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
   },
   {
     lazy: () => import('pages/IndividualOfferWizard/Summary/Summary'),
     path: '/onboarding/offre/individuelle/:offerId/creation/recapitulatif',
     title: 'Récapitulatif - Créer une offre individuelle',
-    featureName: 'WIP_ENABLE_PRO_ONBOARDING',
+    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
   },
 ]
