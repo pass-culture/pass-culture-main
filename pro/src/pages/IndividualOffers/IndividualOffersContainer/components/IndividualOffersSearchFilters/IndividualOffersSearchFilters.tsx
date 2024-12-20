@@ -1,4 +1,4 @@
-import { Dispatch, FormEvent, SetStateAction } from 'react'
+import { Dispatch, FormEvent, SetStateAction, useState } from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
 import {
@@ -13,6 +13,7 @@ import { SearchFiltersParams } from 'commons/core/Offers/types'
 import { hasSearchFilters } from 'commons/core/Offers/utils/hasSearchFilters'
 import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OffersTableSearch } from 'components/OffersTable/OffersTableSearch/OffersTableSearch'
 import { PeriodSelector } from 'ui-kit/form/PeriodSelector/PeriodSelector'
@@ -55,18 +56,72 @@ export const IndividualOffersSearchFilters = ({
   categories,
   isRestrictedAsAdmin = false,
 }: IndividualOffersSearchFiltersProps): JSX.Element => {
+  const isLocalStorageAvailable = localStorageAvailable()
+  const initialFilterConfig = isLocalStorageAvailable ?
+    JSON.parse(localStorage.getItem('INDIVIDUAL_OFFERS_FILTER_CONFIG') || '{}') :
+    {}
+  const [registeredFilterConfig, setRegisteredFilterConfig] = useState(initialFilterConfig)
+  const { filtersVisibility } = registeredFilterConfig
+
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   const areCollectiveNewStatusesEnabled = useActiveFeature(
     'ENABLE_COLLECTIVE_NEW_STATUSES'
   )
 
+  const onFiltersToggle = () => {
+    const newRegisteredFilterConfig = {
+      ...registeredFilterConfig,
+      filtersVisibility: !filtersVisibility
+    }
+
+    if (isLocalStorageAvailable) {
+      localStorage.setItem(
+        'INDIVIDUAL_OFFERS_FILTER_CONFIG',
+        JSON.stringify(newRegisteredFilterConfig)
+      )
+    }
+
+    setRegisteredFilterConfig(newRegisteredFilterConfig)
+  }
+
+  const onResetFilters = () => {
+    resetFilters()
+
+    if (isLocalStorageAvailable) {
+      localStorage.setItem(
+        'INDIVIDUAL_OFFERS_FILTER_CONFIG',
+        JSON.stringify({
+          filtersVisibility,
+        })
+      )
+    }
+
+    setRegisteredFilterConfig({
+      filtersVisibility,
+    })
+  }
+
   const updateSearchFilters = (
-    newSearchFilters: Partial<SearchFiltersParams>
+    searchFilters: Partial<SearchFiltersParams>
   ) => {
-    setSelectedFilters((currentSearchFilters) => ({
-      ...currentSearchFilters,
-      ...newSearchFilters,
-    }))
+    setSelectedFilters((currentSearchFilters) => {
+      const newSearchFilters = {
+        ...currentSearchFilters,
+        ...searchFilters,
+      }
+
+      if (isLocalStorageAvailable) {
+        localStorage.setItem(
+          'INDIVIDUAL_OFFERS_FILTER_CONFIG',
+          JSON.stringify({
+            ...registeredFilterConfig,
+            ...newSearchFilters,
+          })
+        )
+      }
+
+      return newSearchFilters
+    })
   }
 
   const storeNameOrIsbnSearchValue = (event: FormEvent<HTMLInputElement>) => {
@@ -137,6 +192,8 @@ export const IndividualOffersSearchFilters = ({
 
   return (
     <OffersTableSearch
+      filtersVisibility={filtersVisibility ?? false}
+      onFiltersToggle={onFiltersToggle}
       onSubmit={requestFilteredOffers}
       isDisabled={disableAllFilters}
       nameInputProps={{
@@ -146,7 +203,7 @@ export const IndividualOffersSearchFilters = ({
         value: selectedFilters.nameOrIsbn,
       }}
       resetButtonProps={{
-        onClick: resetFilters,
+        onClick: onResetFilters,
         isDisabled: !hasSearchFilters(selectedFilters),
       }}
     >

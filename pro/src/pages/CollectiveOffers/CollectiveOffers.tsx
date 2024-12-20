@@ -20,6 +20,7 @@ import { serializeApiCollectiveFilters } from 'commons/core/Offers/utils/seriali
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
 import { formatAndOrderVenues } from 'repository/venuesService'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
@@ -82,11 +83,16 @@ export const CollectiveOffers = (): JSX.Element => {
     selectedOffererId: offererId ?? '',
   })
 
+  const isLocalStorageAvailable = localStorageAvailable()
   const apiFilters: CollectiveSearchFiltersParams = {
     ...defaultCollectiveFilters,
     ...urlSearchFilters,
     ...(isRestrictedAsAdmin ? { status: [] } : {}),
     ...{ offererId: offererId?.toString() ?? 'all' },
+    ...(isLocalStorageAvailable ? 
+      JSON.parse(localStorage.getItem('COLLECTIVE_OFFERS_FILTER_CONFIG') ?? '{}') :
+      {}
+    )
   }
   delete apiFilters.page
 

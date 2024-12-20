@@ -15,6 +15,8 @@ const LABELS = {
 const renderOffersTableSearch = (props: OffersTableSearchTestProps = {}) => {
   return render(
     <OffersTableSearch
+      filtersVisibility={props.filtersVisibility || false}
+      onFiltersToggle={props.onFiltersToggle || vi.fn()}
       onSubmit={props.onSubmit || vi.fn()}
       isDisabled={false}
       nameInputProps={{
@@ -59,38 +61,54 @@ describe('OffersTableSearch', () => {
     expect(mockedOnChange).toHaveBeenCalledTimes(newText.length)
   })
 
-  it('should hide the filters and the reset button by default', () => {
-    renderOffersTableSearch()
-
-    const filtersWrapper= screen.getByTestId('offers-filter')
-    expect(filtersWrapper).toBeInTheDocument()
-    // There is a better way to do this, but .isVisible() does not seem to work.
-    expect(filtersWrapper).toHaveClass('offers-table-search-filters-collapsed')
-  })
-
-  it('should display the filters and the reset button when the toggle button is clicked', async () => {
-    const mockedOnReset = vi.fn()
+  it('should hide filters passed as children and the reset button by default', () => {
+    const childrenTestId = 'filters'
     renderOffersTableSearch({
-      children: <div data-testid="filters">Filters</div>,
-      resetButtonProps: {
-        onClick: mockedOnReset,
-        isDisabled: false,
-      },
+      filtersVisibility: false,
+      children: <div data-testid={childrenTestId}>Filters</div>,
     })
 
-    const toggleButton = screen.getByRole('button', { name: LABELS.filterToggleButton })
-    await userEvent.click(toggleButton)
-
-    const filtersWrapper = screen.getByTestId('offers-filter')
-    expect(filtersWrapper).not.toHaveClass('offers-table-search-filters-collapsed')
-
-    const filters = screen.getByTestId('filters')
+    // Filters and reset button are always rendered.
+    const filters = screen.getByTestId(childrenTestId)
     const resetButton = screen.getByRole('button', { name: LABELS.resetButton })
-
     expect(filters).toBeInTheDocument()
     expect(resetButton).toBeInTheDocument()
 
-    await userEvent.click(resetButton)
-    expect(mockedOnReset).toHaveBeenCalledTimes(1)
+    // However, they are hidden by default.
+    // There is a better way to do this, but .isVisible() does not seem to work.
+    const filtersWrapper= screen.getByTestId('offers-filter')
+    expect(filtersWrapper).toBeInTheDocument()
+    expect(filtersWrapper).toHaveClass('offers-table-search-filters-collapsed')
+  })
+
+  it('should make filters passed as children and reset button visible when expected', () => {
+    const childrenTestId = 'filters'
+    renderOffersTableSearch({
+      filtersVisibility: true,
+      children: <div data-testid={childrenTestId}>Filters</div>,
+    })
+
+    // Filters and reset button are always rendered.
+    const filters = screen.getByTestId(childrenTestId)
+    const resetButton = screen.getByRole('button', { name: LABELS.resetButton })
+    expect(filters).toBeInTheDocument()
+    expect(resetButton).toBeInTheDocument()
+
+    // They are visible.
+    // There is a better way to do this, but .isVisible() does not seem to work.
+    const filtersWrapper = screen.getByTestId('offers-filter')
+    expect(filtersWrapper).not.toHaveClass('offers-table-search-filters-collapsed')
+  })
+
+  it('should call onFiltersToggle when clicking the filter toggle button', async () => {
+    const mockedOnFiltersToggle = vi.fn()
+    renderOffersTableSearch({
+      onFiltersToggle: mockedOnFiltersToggle,
+    })
+
+    const filterToggleButton = screen.getByRole('button', { name: LABELS.filterToggleButton })
+    await userEvent.click(filterToggleButton)
+
+    expect(mockedOnFiltersToggle).toHaveBeenCalledTimes(1)
   })
 })

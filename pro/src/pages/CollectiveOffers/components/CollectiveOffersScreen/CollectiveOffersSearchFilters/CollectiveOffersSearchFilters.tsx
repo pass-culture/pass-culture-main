@@ -20,6 +20,7 @@ import {
 } from 'commons/core/Offers/types'
 import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OffersTableSearch } from 'components/OffersTable/OffersTableSearch/OffersTableSearch'
 import { PeriodSelector } from 'ui-kit/form/PeriodSelector/PeriodSelector'
@@ -84,6 +85,13 @@ export const CollectiveOffersSearchFilters = ({
   venues,
   isRestrictedAsAdmin = false,
 }: CollectiveOffersSearchFiltersProps): JSX.Element => {
+  const isLocalStorageAvailable = localStorageAvailable()
+  const initialFilterConfig = isLocalStorageAvailable ?
+    JSON.parse(localStorage.getItem('COLLECTIVE_OFFERS_FILTER_CONFIG') || '{}') :
+    {}
+  const [registeredFilterConfig, setRegisteredFilterConfig] = useState(initialFilterConfig)
+  const { filtersVisibility } = registeredFilterConfig
+
   const isNewOffersAndBookingsActive = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
   )
@@ -168,10 +176,38 @@ export const CollectiveOffersSearchFilters = ({
     })
   }
 
-  const resetCollectiveFilters = async () => {
-    await formik.setFieldValue('status', defaultCollectiveFilters.status)
+  const onFiltersToggle = () => {
+    const newRegisteredFilterConfig = {
+      ...registeredFilterConfig,
+      filtersVisibility: !filtersVisibility
+    }
 
+    if (isLocalStorageAvailable) {
+      localStorage.setItem(
+        'COLLECTIVE_OFFERS_FILTER_CONFIG',
+        JSON.stringify(newRegisteredFilterConfig)
+      )
+    }
+
+    setRegisteredFilterConfig(newRegisteredFilterConfig)
+  }
+
+  const onResetFilters = async () => {
+    await formik.setFieldValue('status', defaultCollectiveFilters.status)
     resetFilters()
+
+    if (isLocalStorageAvailable) {
+      localStorage.setItem(
+        'INDIVIDUAL_OFFERS_FILTER_CONFIG',
+        JSON.stringify({
+          filtersVisibility,
+        })
+      )
+    }
+
+    setRegisteredFilterConfig({
+      filtersVisibility,
+    })
   }
 
   const searchByOfferNameLabel = 'Nom de l’offre'
@@ -213,6 +249,8 @@ export const CollectiveOffersSearchFilters = ({
 
   return (
     <OffersTableSearch
+      filtersVisibility={filtersVisibility ?? false}
+      onFiltersToggle={onFiltersToggle}
       onSubmit={requestFilteredOffers}
       isDisabled={disableAllFilters}
       nameInputProps={{
@@ -222,7 +260,7 @@ export const CollectiveOffersSearchFilters = ({
         value: selectedFilters.nameOrIsbn,
       }}
       resetButtonProps={{
-        onClick: resetCollectiveFilters,
+        onClick: onResetFilters,
         isDisabled: isEqual(
           { ...selectedFilters, offererId: 'all', page: 1 },
           defaultCollectiveFilters

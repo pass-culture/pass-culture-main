@@ -14,6 +14,8 @@ import styles from './OffersTableSearch.module.scss'
 
 export type OffersTableSearchProps = {
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void
+  filtersVisibility: boolean
+  onFiltersToggle: () => void
   isDisabled: boolean
   nameInputProps: {
     label: JSX.Element | string
@@ -30,16 +32,13 @@ export type OffersTableSearchProps = {
 
 export const OffersTableSearch = ({
   onSubmit,
+  filtersVisibility,
+  onFiltersToggle,
   isDisabled,
   nameInputProps,
   resetButtonProps,
   children,
 }: OffersTableSearchProps) => {
-  const [filtersVisibility, setFiltersVisibility] = useState(false)
-  const toggleFilters = () => {
-    setFiltersVisibility(!filtersVisibility)
-  }
-
   return (
     <form
       onSubmit={onSubmit}
@@ -69,7 +68,7 @@ export const OffersTableSearch = ({
           icon={filtersVisibility ? strokeUpIcon : strokeDownIcon}
           iconPosition={IconPositionEnum.RIGHT}
           variant={ButtonVariant.BOX}
-          onClick={toggleFilters}
+          onClick={onFiltersToggle}
           aria-controls="offers-filter"
           aria-expanded="false"
         >
