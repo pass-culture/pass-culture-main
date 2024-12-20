@@ -48,8 +48,8 @@ class SendExpiredBookingsRecapEmailToOffererTest:
 
         assert len(mails_testing.outbox) == 2
         email1, email2 = mails_testing.outbox  # pylint: disable=unbalanced-tuple-unpacking
-        email1["params"]["OFFER_ADRESS"] == oa.address.fullAddress if has_offerer_address else None
-        email2["params"]["OFFER_ADRESS"] == oa.address.fullAddress if has_offerer_address else None
+        email1["params"]["OFFER_ADDRESS"] == oa.address.fullAddress if has_offerer_address else None
+        email2["params"]["OFFER_ADDRESS"] == oa.address.fullAddress if has_offerer_address else None
         assert email1["template"] == TransactionalEmail.BOOKING_EXPIRATION_TO_PRO.value.__dict__
         assert email1["params"]["WITHDRAWAL_PERIOD"] == 10
         assert email1["params"]["BOOKINGS"][0]["offer_name"] == "Les misérables"
