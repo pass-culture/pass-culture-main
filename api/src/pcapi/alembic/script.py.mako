@@ -1,4 +1,4 @@
-"""FIXME: Cher auteur de cette migration : le message ci-dessous
+"""FIXME: Cher·e auteur·ice de cette migration : le message ci-dessous
 apparaît dans la sortie de `alembic history`. Tu dois supprimer ce
 FIXME et faire en sorte que le message ci-dessous soit en anglais,
 clair, en une seule ligne et lisible (un peu comme un message de
