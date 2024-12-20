@@ -215,6 +215,7 @@ class SubmitReviewRequestModel(BaseModel):
     userComment: str
     offererId: int
     location: str
+    pageTitle: str
 
 
 class GdprUserSerializer(BaseModel):
