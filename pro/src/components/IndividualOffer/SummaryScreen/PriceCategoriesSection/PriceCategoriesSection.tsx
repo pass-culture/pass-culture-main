@@ -1,4 +1,5 @@
 import React from 'react'
+import { useLocation } from 'react-router-dom'
 
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
@@ -10,7 +11,6 @@ import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescript
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 
 import styles from './PriceCategoriesSection.module.scss'
-import { useLocation } from 'react-router-dom'
 
 interface Props {
   offer: GetIndividualOfferResponseModel

@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import { useLocation } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -26,7 +27,6 @@ import { Spinner } from 'ui-kit/Spinner/Spinner'
 import styles from './OfferSection.module.scss'
 import { serializeOfferSectionData } from './serializer'
 import { humanizeDelay } from './utils'
-import { useLocation } from 'react-router-dom'
 
 interface OfferSummaryProps {
   offer: GetIndividualOfferWithAddressResponseModel
