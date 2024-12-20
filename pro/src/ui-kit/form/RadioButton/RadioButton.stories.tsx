@@ -3,6 +3,8 @@ import { Formik } from 'formik'
 
 import logoPassCultureIcon from 'icons/logo-pass-culture.svg'
 
+import { RadioVariant } from '../shared/BaseRadio/BaseRadio'
+
 import { RadioButton } from './RadioButton'
 
 export default {
@@ -26,7 +28,7 @@ export const Default: StoryObj<typeof RadioButton> = {
 }
 export const WithBorder: StoryObj<typeof RadioButton> = {
   args: {
-    withBorder: true,
+    variant: RadioVariant.BOX,
     label: 'Male',
   },
 }

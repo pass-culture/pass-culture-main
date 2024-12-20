@@ -4,12 +4,4 @@
   &-item:not(:last-of-type) {
     margin-bottom: rem.torem(8px);
   }
-
-  &-horizontal {
-    display: flex;
-
-    .radio-group-item {
-      margin-right: rem.torem(16px);
-    }
-  }
 }
