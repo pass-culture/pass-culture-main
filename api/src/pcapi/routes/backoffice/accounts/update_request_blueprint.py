@@ -188,7 +188,10 @@ def _get_filtered_account_update_requests(form: account_forms.AccountUpdateReque
         )
 
     if form.last_instructor.data:
-        filters.append(aliased_instructor.id.in_(form.last_instructor.data))
+        filters.append(users_models.UserAccountUpdateRequest.lastInstructorId.in_(form.last_instructor.data))
+
+    if form.only_unassigned.data:
+        filters.append(users_models.UserAccountUpdateRequest.lastInstructorId.is_(None))
 
     query = query.filter(*filters)
     return query
