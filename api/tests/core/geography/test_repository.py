@@ -1,7 +1,9 @@
 import pathlib
+from unittest.mock import patch
 
 import pytest
 
+from pcapi.connectors.api_adresse import AddressInfo
 from pcapi.core.geography import api
 from pcapi.core.geography import factories
 from pcapi.core.geography import repository
@@ -31,6 +33,31 @@ class GetIrisFromCoordinatesTest:
     def test_get_iris_from_coordinates_not_found(self):
         result = repository.get_iris_from_coordinates(lon=0, lat=0)
         assert result is None
+
+
+@pytest.mark.usefixtures("db_session")
+class GetIrisFromAddressTest:
+    @patch("pcapi.core.geography.repository.get_iris_from_coordinates")
+    @patch(
+        "pcapi.connectors.api_adresse.get_municipality_centroid",
+        return_value=AddressInfo(
+            id="unused",
+            label="unused",
+            postcode="unused",
+            citycode="unused",
+            score=1,
+            latitude=17.900710,
+            longitude=-62.834786,
+            city="unused",
+            street=None,
+        ),
+    )
+    def test_get_iris_from_postcode_and_missing_address(
+        self, mock_get_municipality_centroid, mock_get_iris_from_coordinates
+    ):
+        repository.get_iris_from_address(".", "97133", city="Gustavia")
+        mock_get_municipality_centroid.assert_called_once_with(postcode="97133", city="Gustavia")
+        mock_get_iris_from_coordinates.assert_called_once_with(lat=17.900710, lon=-62.834786)
 
 
 @pytest.mark.usefixtures("db_session")
