@@ -436,13 +436,14 @@ def upsert_venue_opening_hours(venue: models.Venue, opening_hours: serialize_bas
 
 def create_venue(venue_data: venues_serialize.PostVenueBodyModel, author: users_models.User) -> models.Venue:
     venue = models.Venue()
+    address_data = venue_data.address
 
-    if utils_regions.NON_DIFFUSIBLE_TAG in venue_data.street:
-        address_info = api_adresse.get_municipality_centroid(venue_data.city, venue_data.postalCode)
+    if utils_regions.NON_DIFFUSIBLE_TAG in address_data.street:
+        address_info = api_adresse.get_municipality_centroid(address_data.city, address_data.postalCode)
         address_info.street = utils_regions.NON_DIFFUSIBLE_TAG
     else:
         address_info = api_adresse.get_address(
-            address=venue_data.street, postcode=venue_data.postalCode, city=venue_data.city
+            address=address_data.street, postcode=address_data.postalCode, city=address_data.city
         )
 
     address = get_or_create_address(
@@ -467,6 +468,16 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel, author: users_
         if key == "contact":
             continue
         setattr(venue, key, value)
+
+    # FIXME (dramelet, 05-12-2024) Until those columns are dropped
+    # we still have to maintain the historic behavior
+    venue.street = data["address"]["street"]  # type: ignore [method-assign]
+    venue.city = data["address"]["city"]
+    venue.postalCode = data["address"]["postalCode"]
+    venue.latitude = data["address"]["latitude"]
+    venue.longitude = data["address"]["longitude"]
+    venue.banId = data["address"]["banId"]
+
     if venue_data.contact:
         upsert_venue_contact(venue, venue_data.contact)
 
@@ -2004,12 +2015,12 @@ def create_from_onboarding_data(
 
     # Create Offerer or attach user to existing Offerer
     offerer_creation_info = offerers_serialize.CreateOffererQueryModel(
-        street=onboarding_data.street,
-        city=onboarding_data.city,
-        latitude=onboarding_data.latitude,
-        longitude=onboarding_data.longitude,
+        street=onboarding_data.address.street,
+        city=onboarding_data.address.city,
+        latitude=onboarding_data.address.latitude,
+        longitude=onboarding_data.address.longitude,
         name=name,
-        postalCode=onboarding_data.postalCode,
+        postalCode=onboarding_data.address.postalCode,
         siren=onboarding_data.siret[:9],
     )
     new_onboarding_info = NewOnboardingInfo(
@@ -2023,16 +2034,11 @@ def create_from_onboarding_data(
     venue = offerers_repository.find_venue_by_siret(onboarding_data.siret)
     if not venue or onboarding_data.createVenueWithoutSiret:
         common_kwargs = dict(
-            street=onboarding_data.street or "n/d",  # handle empty VoieEtablissement from Sirene API
-            banId=onboarding_data.banId,
+            address=onboarding_data.address,
             bookingEmail=user.email,
-            city=onboarding_data.city,
-            latitude=onboarding_data.latitude,
-            longitude=onboarding_data.longitude,
             managingOffererId=user_offerer.offererId,
             name=name,
             publicName=onboarding_data.publicName,
-            postalCode=onboarding_data.postalCode,
             venueLabelId=None,
             venueTypeCode=onboarding_data.venueTypeCode,
             withdrawalDetails=None,

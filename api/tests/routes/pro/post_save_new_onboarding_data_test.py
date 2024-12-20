@@ -14,15 +14,17 @@ from tests.connectors import sirene_test_data
 pytestmark = pytest.mark.usefixtures("db_session")
 
 REQUEST_BODY = {
-    "city": "Paris",
-    "banId": "75101_9575_00003",
-    "createVenueWithoutSiret": False,
-    "latitude": 2.30829,
-    "longitude": 48.87171,
-    "postalCode": "75001",
-    "publicName": "Pass Culture",
+    "address": {
+        "city": "Paris",
+        "banId": "75101_9575_00003",
+        "latitude": 2.30829,
+        "longitude": 48.87171,
+        "postalCode": "75001",
+        "street": "3 RUE DE VALOIS",
+    },
     "siret": "85331845900031",
-    "street": "3 RUE DE VALOIS",
+    "publicName": "Pass Culture",
+    "createVenueWithoutSiret": False,
     "target": "INDIVIDUAL",
     "venueTypeCode": "MOVIE",
     "webPresence": "https://www.example.com, https://instagram.com/example, https://mastodon.social/@example",

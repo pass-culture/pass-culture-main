@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import {
@@ -22,7 +23,6 @@ import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { RecurrenceSection } from './RecurrenceSection/RecurrenceSection'
 import styles from './StockSection.module.scss'
 import { StockThingSection } from './StockThingSection/StockThingSection'
-import { useLocation } from 'react-router-dom'
 
 export const getStockWarningText = (offer: GetIndividualOfferResponseModel) => {
   if (!offer.hasStocks) {
