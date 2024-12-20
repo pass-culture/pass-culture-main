@@ -3,17 +3,17 @@
 
 .timeline {
   &-step-title {
-    @include fonts.body-exergue;
+    @include fonts.body-accent;
   }
 
   &-step-title-passed {
-    @include fonts.body-exergue;
+    @include fonts.body-accent;
 
     color: var(--color-grey-dark);
   }
 
   &-step-title-disabled {
-    @include fonts.body-exergue;
+    @include fonts.body-accent;
 
     color: var(--color-grey-dark);
   }
@@ -29,7 +29,7 @@
     }
 
     &-accent {
-      @include fonts.body-exergue;
+      @include fonts.body-accent;
     }
   }
 

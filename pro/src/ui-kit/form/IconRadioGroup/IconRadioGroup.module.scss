@@ -20,7 +20,7 @@
   }
 
   &-scale {
-    @include fonts.caption;
+    @include fonts.body-accent-xs;
 
     margin: rem.torem(8px) 0 0;
     display: flex;

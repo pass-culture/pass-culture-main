@@ -21,7 +21,7 @@
   }
 
   &-format {
-    @include fonts.caption;
+    @include fonts.body-accent-xs;
 
     text-transform: uppercase;
   }

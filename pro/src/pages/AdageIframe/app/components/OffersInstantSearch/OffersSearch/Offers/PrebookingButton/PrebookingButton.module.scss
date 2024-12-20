@@ -5,7 +5,7 @@
   @include fonts.button;
 
   &-booking-limit {
-    @include fonts.caption;
+    @include fonts.body-accent-xs;
 
     margin-top: rem.torem(8px);
   }
@@ -20,7 +20,7 @@
   flex-direction: column;
   align-items: center;
 
-  @include fonts.caption;
+  @include fonts.body-accent-xs;
 }
 
 .prebooking-tag {
