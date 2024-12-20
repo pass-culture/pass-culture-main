@@ -21,6 +21,7 @@ class AddressModelsTest:
             # We can't use a duplicate AddressFactory here because of `sqlalchemy_get_or_create`
             db.session.add(
                 Address(
+                    banId="75102_7560_00001",
                     street="89 Rue de la Boétie",
                     postalCode="75008",
                     inseeCode="75056",
