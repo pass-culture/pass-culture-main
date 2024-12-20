@@ -435,18 +435,12 @@ def upsert_venue_opening_hours(venue: models.Venue, opening_hours: serialize_bas
 
 def create_venue(venue_data: venues_serialize.PostVenueBodyModel, author: users_models.User) -> models.Venue:
     venue = models.Venue()
-    address_data = venue_data.address
+    address = venue_data.address
 
-    if utils_regions.NON_DIFFUSIBLE_TAG in address_data.street:
-        address_info = api_adresse.get_municipality_centroid(address_data.city, address_data.postalCode)
+    if utils_regions.NON_DIFFUSIBLE_TAG in address.street:
+        address_info = api_adresse.get_municipality_centroid(address.city, address.postalCode)
         address_info.street = utils_regions.NON_DIFFUSIBLE_TAG
-    else:
-        address_info = api_adresse.get_address(
-            address=address_data.street, postcode=address_data.postalCode, city=address_data.city
-        )
-
-    address = get_or_create_address(
-        LocationData(
+        location_data = LocationData(
             city=address_info.city,
             postal_code=address_info.postcode,
             latitude=address_info.latitude,
@@ -455,7 +449,40 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel, author: users_
             insee_code=address_info.citycode,
             ban_id=address_info.id,
         )
-    )
+    else:
+        if not address.isManualEdition:
+            address_info = api_adresse.get_address(
+                address=address.street, postcode=address.postalCode, city=address.city
+            )
+            location_data = LocationData(
+                city=address_info.city,
+                postal_code=address_info.postcode,
+                latitude=address_info.latitude,
+                longitude=address_info.longitude,
+                street=address_info.street,
+                insee_code=address_info.citycode,
+                ban_id=address_info.id,
+            )
+        else:
+            insee_code = None
+            if address.city and address.postalCode:
+                # Address entered manually does not provide INSEE code, find it
+                try:
+                    insee_code = api_adresse.get_municipality_centroid(address.city, address.postalCode).citycode
+                except api_adresse.AdresseException:
+                    pass
+
+            location_data = LocationData(
+                city=typing.cast(str, address.city),
+                postal_code=typing.cast(str, address.postalCode),
+                latitude=typing.cast(float, address.latitude),
+                longitude=typing.cast(float, address.longitude),
+                street=address.street,
+                ban_id=address.banId,
+                insee_code=insee_code,
+            )
+
+    address = get_or_create_address(location_data, is_manual_edition=address.isManualEdition)
     offerer_address = create_offerer_address(venue_data.managingOffererId, address.id)
     venue.offererAddressId = offerer_address.id
 
@@ -2014,12 +2041,12 @@ def create_from_onboarding_data(
 
     # Create Offerer or attach user to existing Offerer
     offerer_creation_info = offerers_serialize.CreateOffererQueryModel(
-        street=onboarding_data.street,
-        city=onboarding_data.city,
-        latitude=onboarding_data.latitude,
-        longitude=onboarding_data.longitude,
+        street=onboarding_data.address.street,
+        city=onboarding_data.address.city,
+        latitude=float(onboarding_data.address.latitude),
+        longitude=float(onboarding_data.address.longitude),
         name=name,
-        postalCode=onboarding_data.postalCode,
+        postalCode=onboarding_data.address.postalCode,
         siren=onboarding_data.siret[:9],
     )
     new_onboarding_info = NewOnboardingInfo(
@@ -2032,18 +2059,11 @@ def create_from_onboarding_data(
     # Create Venue with siret if it's not in DB yet, or Venue without siret if requested
     venue = offerers_repository.find_venue_by_siret(onboarding_data.siret)
     if not venue or onboarding_data.createVenueWithoutSiret:
-        address = {
-            "address": {
-                "street": onboarding_data.street or "n/d",
-                "banId": onboarding_data.banId,
-                "city": onboarding_data.city,
-                "latitude": onboarding_data.latitude,
-                "longitude": onboarding_data.longitude,
-                "postalCode": onboarding_data.postalCode,
-            }
-        }
+        address = onboarding_data.address
+        if not address.street:
+            address = address.copy(update={"street": "n/d"})
         common_kwargs = dict(
-            address,
+            address=address,
             bookingEmail=user.email,
             managingOffererId=user_offerer.offererId,
             name=name,
