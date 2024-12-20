@@ -9,6 +9,7 @@ from sqlalchemy.engine import Row
 import sqlalchemy.orm as sqla_orm
 
 from pcapi import settings
+from pcapi.core.offerers import schemas as offerers_schemas
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Target
 import pcapi.core.offerers.repository as offerers_repository
@@ -254,19 +255,14 @@ class CreateOffererQueryModel(BaseModel):
 
 
 class SaveNewOnboardingDataQueryModel(BaseModel):
-    banId: str | None
-    city: str
     createVenueWithoutSiret: bool = False
-    latitude: float
-    longitude: float
-    postalCode: str
     publicName: str | None
     siret: str
-    street: str | None
     target: Target
     venueTypeCode: str
     webPresence: str
     token: str
+    address: offerers_schemas.AddressBodyModel
 
     class Config:
         extra = "forbid"

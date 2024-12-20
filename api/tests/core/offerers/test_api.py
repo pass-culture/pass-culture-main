@@ -513,7 +513,11 @@ class CreateOffererTest:
         gen_offerer_tags()
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
-            name="Test Offerer", siren="777084112", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+            name="Test Offerer",
+            siren="777084112",
+            address="123 rue de Paris",
+            postalCode="93100",
+            city="Montreuil",
         )
 
         # When
@@ -547,7 +551,11 @@ class CreateOffererTest:
         # Given
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
-            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+            name="Test Offerer",
+            siren="418166096",
+            address="123 rue de Paris",
+            postalCode="93100",
+            city="Montreuil",
         )
 
         # When
@@ -562,7 +570,11 @@ class CreateOffererTest:
         # Given
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
-            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+            name="Test Offerer",
+            siren="418166096",
+            address="123 rue de Paris",
+            postalCode="93100",
+            city="Montreuil",
         )
         offerer = offerers_factories.OffererFactory(siren=offerer_informations.siren)
 
@@ -592,7 +604,11 @@ class CreateOffererTest:
         # Given
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
-            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+            name="Test Offerer",
+            siren="418166096",
+            address="123 rue de Paris",
+            postalCode="93100",
+            city="Montreuil",
         )
         offerer = offerers_factories.NotValidatedOffererFactory(
             siren=offerer_informations.siren, validationStatus=ValidationStatus.PENDING
@@ -615,7 +631,11 @@ class CreateOffererTest:
         # Given
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
-            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+            name="Test Offerer",
+            siren="418166096",
+            address="123 rue de Paris",
+            postalCode="93100",
+            city="Montreuil",
         )
         offerer = offerers_factories.RejectedOffererFactory(
             name="Rejected Offerer",
@@ -656,7 +676,11 @@ class CreateOffererTest:
         # Given
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
-            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+            name="Test Offerer",
+            siren="418166096",
+            address="123 rue de Paris",
+            postalCode="93100",
+            city="Montreuil",
         )
         offerer = offerers_factories.RejectedOffererFactory(
             name="Rejected Offerer",
@@ -687,7 +711,13 @@ class CreateOffererTest:
         # Given
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
-            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+            name="Test Offerer",
+            siren="418166096",
+            address="123 rue de Paris",
+            postalCode="93100",
+            city="Montreuil",
+            latitude=48,
+            longitude=2,
         )
         offerer = offerers_factories.RejectedOffererFactory(
             name="Rejected Offerer",
@@ -718,7 +748,11 @@ class CreateOffererTest:
         # Given
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
-            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+            name="Test Offerer",
+            siren="418166096",
+            address="123 rue de Paris",
+            postalCode="93100",
+            city="Montreuil",
         )
         offerer = offerers_factories.OffererFactory(siren=offerer_informations.siren)
         offerers_factories.RejectedUserOffererFactory(user=user, offerer=offerer)
@@ -745,7 +779,11 @@ class CreateOffererTest:
         # Given
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
-            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+            name="Test Offerer",
+            siren="418166096",
+            address="123 rue de Paris",
+            postalCode="93100",
+            city="Montreuil",
         )
         offerer = offerers_factories.OffererFactory(siren=offerer_informations.siren)
         offerers_factories.RejectedUserOffererFactory(user=user, offerer=offerer)
@@ -777,7 +815,11 @@ class CreateOffererTest:
         # Given
         user = users_factories.NonAttachedProFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
-            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+            name="Test Offerer",
+            siren="418166096",
+            address="123 rue de Paris",
+            postalCode="93100",
+            city="Montreuil",
         )
 
         # When
@@ -804,7 +846,11 @@ class CreateOffererTest:
         # Given
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
-            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+            name="Test Offerer",
+            siren="418166096",
+            address="123 rue de Paris",
+            postalCode="93100",
+            city="Montreuil",
         )
         offerer = offerers_factories.OffererFactory(siren=offerer_informations.siren)
         offerers_factories.DeletedUserOffererFactory(user=user, offerer=offerer)
@@ -831,7 +877,11 @@ class CreateOffererTest:
         # Given
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
-            name="Test Offerer", siren="777084112", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+            name="Test Offerer",
+            siren="777084112",
+            address="123 rue de Paris",
+            postalCode="93100",
+            city="Montreuil",
         )
 
         # When
@@ -1971,15 +2021,18 @@ class CreateFromOnboardingDataTest:
         self, create_venue_without_siret: bool
     ) -> offerers_serialize.SaveNewOnboardingDataQueryModel:
         return offerers_serialize.SaveNewOnboardingDataQueryModel(
-            banId="75101_9575_00003",
-            city="Paris",
-            createVenueWithoutSiret=create_venue_without_siret,
-            latitude=2.30829,
-            longitude=48.87171,
-            postalCode="75001",
-            publicName="Nom public de mon lieu",
+            address=offerers_schemas.AddressBodyModel(
+                label="",
+                banId="75101_9575_00003",
+                city=offerers_schemas.VenueCity("Paris"),
+                latitude=2.30829,
+                longitude=48.87171,
+                postalCode=offerers_schemas.VenuePostalCode("75001"),
+                street=offerers_schemas.VenueAddress("3 RUE DE VALOIS"),
+            ),
             siret="85331845900031",
-            street="3 RUE DE VALOIS",
+            publicName="Nom public de mon lieu",
+            createVenueWithoutSiret=create_venue_without_siret,
             target=offerers_models.Target.INDIVIDUAL,
             venueTypeCode=offerers_models.VenueTypeCode.MOVIE.name,
             webPresence="https://www.example.com, https://instagram.com/example, https://mastodon.social/@example",
@@ -2205,7 +2258,7 @@ class CreateFromOnboardingDataTest:
         user = users_factories.UserFactory(email="pro@example.com")
         user.add_non_attached_pro_role()
         onboarding_data = self.get_onboarding_data(create_venue_without_siret=False)
-        onboarding_data.street = None
+        onboarding_data.address.street = ""
 
         created_user_offerer = offerers_api.create_from_onboarding_data(user, onboarding_data)
 
@@ -2213,7 +2266,7 @@ class CreateFromOnboardingDataTest:
         created_offerer = created_user_offerer.offerer
         assert created_offerer.name == "MINISTERE DE LA CULTURE"
         assert created_offerer.siren == "853318459"
-        assert created_offerer.street is None
+        assert not created_offerer.street
         assert created_offerer.city == "Paris"
         assert created_offerer.postalCode == "75001"
         # 1 virtual Venue + 1 Venue with siret have been created
@@ -2229,7 +2282,7 @@ class CreateFromOnboardingDataTest:
         user = users_factories.UserFactory(email="pro@example.com")
         user.add_non_attached_pro_role()
         onboarding_data = self.get_onboarding_data(create_venue_without_siret=False)
-        onboarding_data.banId = None
+        onboarding_data.address.banId = None
 
         created_user_offerer = offerers_api.create_from_onboarding_data(user, onboarding_data)
 

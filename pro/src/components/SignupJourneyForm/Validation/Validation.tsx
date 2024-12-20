@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { SaveNewOnboardingDataQueryModel, Target } from 'apiClient/v1'
+import { SaveNewOnboardingDataQueryModel, Target, AddressBodyModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_VENUE_TYPES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { DEFAULT_ACTIVITY_VALUES } from 'commons/context/SignupJourneyContext/constants'
@@ -94,12 +94,14 @@ export const Validation = (): JSX.Element => {
           /* istanbul ignore next: the form validation already handles this */
           activity.targetCustomer ?? Target.EDUCATIONAL,
         createVenueWithoutSiret: offerer.createVenueWithoutSiret ?? false,
-        banId: offerer.banId,
-        longitude: offerer.longitude ?? 0,
-        latitude: offerer.latitude ?? 0,
-        city: offerer.city,
-        postalCode: offerer.postalCode,
-        street: offerer.street,
+        address: {
+          banId: offerer.banId,
+          longitude: offerer.longitude ?? 0,
+          latitude: offerer.latitude ?? 0,
+          city: offerer.city,
+          postalCode: offerer.postalCode,
+          street: offerer.street,
+        },
         token,
       }
 
