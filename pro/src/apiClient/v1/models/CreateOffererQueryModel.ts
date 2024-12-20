@@ -4,8 +4,8 @@
 /* eslint-disable */
 export type CreateOffererQueryModel = {
   city: string;
-  latitude?: number | null;
-  longitude?: number | null;
+  latitude: (number | string);
+  longitude: (number | string);
   name: string;
   postalCode: string;
   siren: string;
