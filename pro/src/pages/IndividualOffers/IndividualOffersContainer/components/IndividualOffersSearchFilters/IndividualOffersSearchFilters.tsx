@@ -1,5 +1,4 @@
-import cn from 'classnames'
-import { Dispatch, FormEvent, SetStateAction, useState } from 'react'
+import { Dispatch, FormEvent, SetStateAction } from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
 import {
@@ -15,14 +14,9 @@ import { hasSearchFilters } from 'commons/core/Offers/utils/hasSearchFilters'
 import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import fullRefreshIcon from 'icons/full-refresh.svg'
-import strokeDownIcon from 'icons/stroke-down.svg'
-import strokeUpIcon from 'icons/stroke-up.svg'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant , IconPositionEnum } from 'ui-kit/Button/types'
+import { OffersTableSearch } from 'components/OffersTable/OffersTableSearch/OffersTableSearch'
 import { PeriodSelector } from 'ui-kit/form/PeriodSelector/PeriodSelector'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
-import { BaseInput } from 'ui-kit/form/shared/BaseInput/BaseInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 
 import styles from './IndividualOffersSearchFilters.module.scss'
@@ -61,7 +55,6 @@ export const IndividualOffersSearchFilters = ({
   categories,
   isRestrictedAsAdmin = false,
 }: IndividualOffersSearchFiltersProps): JSX.Element => {
-  const [filtersVisibility, setFiltersVisibility] = useState(false)
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   const areCollectiveNewStatusesEnabled = useActiveFeature(
     'ENABLE_COLLECTIVE_NEW_STATUSES'
@@ -142,149 +135,97 @@ export const IndividualOffersSearchFilters = ({
     return status
   })
 
-  const toggleFilters = () => {
-    setFiltersVisibility(!filtersVisibility)
-  }
-
   return (
-    <>
-      <form
-        onSubmit={requestFilteredOffers}
-        className={styles['search-filters-form']}
-      >
-        <FormLayout.Row 
-          className={styles['search-filters-name-and-toggle-row']}
-          inline
-        >
-          <FieldLayout
-            className={styles['search-filters-name-input']}
-            label={searchByOfferNameLabel}
-            name="offre"
-            isOptional
-            hideFooter
-          >
-            <BaseInput
-              type="text"
-              disabled={disableAllFilters}
-              name="offre"
-              onChange={storeNameOrIsbnSearchValue}
-              value={selectedFilters.nameOrIsbn}
+    <OffersTableSearch
+      onSubmit={requestFilteredOffers}
+      isDisabled={disableAllFilters}
+      nameInputProps={{
+        label: searchByOfferNameLabel,
+        disabled: disableAllFilters,
+        onChange: storeNameOrIsbnSearchValue,
+        value: selectedFilters.nameOrIsbn,
+      }}
+      resetButtonProps={{
+        onClick: resetFilters,
+        isDisabled: !hasSearchFilters(selectedFilters),
+      }}
+    >
+      <FormLayout.Row inline>
+        {isOfferAddressEnabled ? (
+          <FieldLayout label="Localisation" name="address" isOptional>
+            <SelectInput
+              defaultOption={ALL_OFFERER_ADDRESS_OPTION}
+              onChange={storeSelectedOfferAddress}
+              disabled={offererAddresses.length === 0 || disableAllFilters}
+              name="address"
+              options={offererAddresses}
+              data-testid="address-select"
+              value={selectedFilters.offererAddressId}
             />
           </FieldLayout>
-          <Button
-            className={styles['search-filters-toggle-button']}
-            icon={filtersVisibility ? strokeUpIcon : strokeDownIcon}
-            iconPosition={IconPositionEnum.RIGHT}
-            variant={ButtonVariant.BOX}
-            onClick={toggleFilters}
-            aria-controls="offers-filter"
-            aria-expanded="false"
-          >
-            Filters
-          </Button>
-        </FormLayout.Row>
-        <div
-          id="offers-filter"
-          className={cn({ [styles['search-filters-collapsed']]: !filtersVisibility })}
+        ) : (
+          <FieldLayout label="Lieu" name="lieu" isOptional>
+            <SelectInput
+              defaultOption={ALL_VENUES_OPTION}
+              onChange={storeSelectedVenue}
+              disabled={disableAllFilters}
+              name="lieu"
+              options={venues}
+              value={selectedFilters.venueId}
+            />
+          </FieldLayout>
+        )}
+        {categories && (
+          <FieldLayout label="Catégorie" name="categorie" isOptional>
+            <SelectInput
+              defaultOption={ALL_CATEGORIES_OPTION}
+              onChange={storeSelectedCategory}
+              disabled={disableAllFilters}
+              name="categorie"
+              options={categories}
+              value={selectedFilters.categoryId}
+            />
+          </FieldLayout>
+        )}
+        <FieldLayout
+          label="Mode de création"
+          name="creationMode"
+          isOptional
+          className={styles['filter-creation-mode']}
         >
-          <FormLayout.Row inline>
-            {isOfferAddressEnabled ? (
-              <FieldLayout label="Localisation" name="address" isOptional>
-                <SelectInput
-                  defaultOption={ALL_OFFERER_ADDRESS_OPTION}
-                  onChange={storeSelectedOfferAddress}
-                  disabled={offererAddresses.length === 0 || disableAllFilters}
-                  name="address"
-                  options={offererAddresses}
-                  data-testid="address-select"
-                  value={selectedFilters.offererAddressId}
-                />
-              </FieldLayout>
-            ) : (
-              <FieldLayout label="Lieu" name="lieu" isOptional>
-                <SelectInput
-                  defaultOption={ALL_VENUES_OPTION}
-                  onChange={storeSelectedVenue}
-                  disabled={disableAllFilters}
-                  name="lieu"
-                  options={venues}
-                  value={selectedFilters.venueId}
-                />
-              </FieldLayout>
-            )}
-
-            {categories && (
-              <FieldLayout label="Catégorie" name="categorie" isOptional>
-                <SelectInput
-                  defaultOption={ALL_CATEGORIES_OPTION}
-                  onChange={storeSelectedCategory}
-                  disabled={disableAllFilters}
-                  name="categorie"
-                  options={categories}
-                  value={selectedFilters.categoryId}
-                />
-              </FieldLayout>
-            )}
-
-            <FieldLayout
-              label="Mode de création"
-              name="creationMode"
-              isOptional
-              className={styles['filter-creation-mode']}
-            >
-              <SelectInput
-                onChange={storeCreationMode}
-                disabled={disableAllFilters}
-                name="creationMode"
-                options={CREATION_MODES_OPTIONS}
-                value={selectedFilters.creationMode}
-              />
-            </FieldLayout>
-            <FieldLayout
-              label="Statut"
-              name="status"
-              isOptional
-              className={styles['status-filter']}
-            >
-              <SelectInput
-                value={selectedFilters.status as OfferStatus}
-                name="status"
-                onChange={storeOfferStatus}
-                disabled={disableAllFilters || isRestrictedAsAdmin}
-                options={statusFilterOptions}
-              />
-            </FieldLayout>
-            <fieldset>
-              <legend>Période de l’évènement</legend>
-              <PeriodSelector
-                onBeginningDateChange={onBeginningDateChange}
-                onEndingDateChange={onEndingDateChange}
-                isDisabled={disableAllFilters}
-                periodBeginningDate={selectedFilters.periodBeginningDate}
-                periodEndingDate={selectedFilters.periodEndingDate}
-              />
-            </fieldset>
-          </FormLayout.Row>
-          <FormLayout.Row inline className={styles['reset-filters-row']}>
-            <Button
-              icon={fullRefreshIcon}
-              disabled={!hasSearchFilters(selectedFilters)}
-              onClick={resetFilters}
-              variant={ButtonVariant.TERNARY}
-              className={styles['reset-filters']}
-            >
-              Réinitialiser les filtres
-            </Button>
-          </FormLayout.Row>
-        </div>
-        <div className={styles['search-separator']}>
-          <div className={styles['separator']} />
-          <Button type="submit" disabled={disableAllFilters}>
-            Rechercher
-          </Button>
-          <div className={styles['separator']} />
-        </div>
-      </form>
-    </>
+          <SelectInput
+            onChange={storeCreationMode}
+            disabled={disableAllFilters}
+            name="creationMode"
+            options={CREATION_MODES_OPTIONS}
+            value={selectedFilters.creationMode}
+          />
+        </FieldLayout>
+        <FieldLayout
+          label="Statut"
+          name="status"
+          isOptional
+          className={styles['status-filter']}
+        >
+          <SelectInput
+            value={selectedFilters.status as OfferStatus}
+            name="status"
+            onChange={storeOfferStatus}
+            disabled={disableAllFilters || isRestrictedAsAdmin}
+            options={statusFilterOptions}
+          />
+        </FieldLayout>
+        <fieldset>
+          <legend>Période de l’évènement</legend>
+          <PeriodSelector
+            onBeginningDateChange={onBeginningDateChange}
+            onEndingDateChange={onEndingDateChange}
+            isDisabled={disableAllFilters}
+            periodBeginningDate={selectedFilters.periodBeginningDate}
+            periodEndingDate={selectedFilters.periodEndingDate}
+          />
+        </fieldset>
+      </FormLayout.Row>
+    </OffersTableSearch>
   )
 }

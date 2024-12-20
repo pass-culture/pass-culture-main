@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import { FormikProvider, useFormik } from 'formik'
 import isEqual from 'lodash.isequal'
 import { Dispatch, FormEvent, SetStateAction, useEffect, useState } from 'react'
@@ -22,15 +21,10 @@ import {
 import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import fullRefreshIcon from 'icons/full-refresh.svg'
-import strokeDownIcon from 'icons/stroke-down.svg'
-import strokeUpIcon from 'icons/stroke-up.svg'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
+import { OffersTableSearch } from 'components/OffersTable/OffersTableSearch/OffersTableSearch'
 import { PeriodSelector } from 'ui-kit/form/PeriodSelector/PeriodSelector'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
-import { BaseInput } from 'ui-kit/form/shared/BaseInput/BaseInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 
 import styles from './CollectiveOffersSearchFilters.module.scss'
@@ -90,7 +84,6 @@ export const CollectiveOffersSearchFilters = ({
   venues,
   isRestrictedAsAdmin = false,
 }: CollectiveOffersSearchFiltersProps): JSX.Element => {
-  const [filtersVisibility, setFiltersVisibility] = useState(false)
   const isNewOffersAndBookingsActive = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
   )
@@ -218,52 +211,25 @@ export const CollectiveOffersSearchFilters = ({
       : []),
   ]
 
-  const toggleFilters = () => {
-    setFiltersVisibility(!filtersVisibility)
-  }
-
   return (
-    <>
-      <form
-        onSubmit={requestFilteredOffers}
-        className={styles['search-filters-form']}
-      >
-        <FormLayout.Row
-          className={styles['search-filters-name-and-toggle-row']}
-          inline
-        >
-          <FieldLayout
-            className={styles['search-filters-name-input']}
-            label={searchByOfferNameLabel}
-            name="offre"
-            isOptional
-            hideFooter
-          >
-            <BaseInput
-              type="text"
-              disabled={disableAllFilters}
-              name="offre"
-              onChange={storeNameOrIsbnSearchValue}
-              value={selectedFilters.nameOrIsbn}
-            />
-          </FieldLayout>
-          <Button
-            className={styles['search-filters-toggle-button']}
-            icon={filtersVisibility ? strokeUpIcon : strokeDownIcon}
-            iconPosition={IconPositionEnum.RIGHT}
-            variant={ButtonVariant.BOX}
-            onClick={toggleFilters}
-            aria-controls="offers-filter"
-            aria-expanded="false"
-          >
-            Filters
-          </Button>
-        </FormLayout.Row>
-        <div
-          id="offers-filter"
-          className={cn({ [styles['search-filters-collapsed']]: !filtersVisibility })}
-        >
-          <FormLayout.Row inline>
+    <OffersTableSearch
+      onSubmit={requestFilteredOffers}
+      isDisabled={disableAllFilters}
+      nameInputProps={{
+        label: searchByOfferNameLabel,
+        disabled: disableAllFilters,
+        onChange: storeNameOrIsbnSearchValue,
+        value: selectedFilters.nameOrIsbn,
+      }}
+      resetButtonProps={{
+        onClick: resetCollectiveFilters,
+        isDisabled: isEqual(
+          { ...selectedFilters, offererId: 'all', page: 1 },
+          defaultCollectiveFilters
+        ),
+      }}
+    >
+       <FormLayout.Row inline>
             <FieldLayout
               label={isOfferAddressEnabled ? 'Structure' : 'Lieu'}
               name="lieu"
@@ -336,28 +302,6 @@ export const CollectiveOffersSearchFilters = ({
               />
             </FormikProvider>
           </FormLayout.Row>
-          <div className={styles['reset-filters']}>
-            <Button
-              icon={fullRefreshIcon}
-              disabled={isEqual(
-                { ...selectedFilters, offererId: 'all', page: 1 },
-                defaultCollectiveFilters
-              )}
-              onClick={resetCollectiveFilters}
-              variant={ButtonVariant.TERNARY}
-            >
-              Réinitialiser les filtres
-            </Button>
-          </div>
-        </div>
-        <div className={styles['search-separator']}>
-          <div className={styles['separator']} />
-          <Button type="submit" disabled={disableAllFilters}>
-            Rechercher
-          </Button>
-          <div className={styles['separator']} />
-        </div>
-      </form>
-    </>
+    </OffersTableSearch>
   )
 }
