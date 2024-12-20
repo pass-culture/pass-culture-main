@@ -65,6 +65,7 @@ describe('UserReviewDialog', () => {
     expect(api.submitUserReview).toHaveBeenCalledWith({
       userSatisfaction: 'Excellente',
       userComment: 'Commentaire utilisateur',
+      pageTitle: '',
       location: location.pathname,
       offererId: 1,
     })
