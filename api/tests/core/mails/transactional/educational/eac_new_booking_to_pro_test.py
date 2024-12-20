@@ -28,7 +28,7 @@ class SendEacNewBookingEmailToProTest:
         assert mails.send.call_args.kwargs["data"].params == {
             "OFFER_NAME": booking.collectiveStock.collectiveOffer.name,
             "VENUE_NAME": booking.collectiveStock.collectiveOffer.venue.name,
-            "EVENT_DATE": "27-Nov-2019",
+            "EVENT_DATE": "mercredi 27 novembre 2019",
             "EVENT_HOUR": "19h29",
             "QUANTITY": 1,
             "PRICE": "100.00 €",

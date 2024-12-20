@@ -4,6 +4,7 @@ from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.urls import build_pc_pro_offer_link
 
 
@@ -11,7 +12,7 @@ def retrieve_data_for_offer_approval_email(
     offer: Offer | educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
 ) -> models.TransactionalEmailData:
     if isinstance(offer, Offer) and offer.publicationDate:
-        publication_date = offer.publicationDate.strftime("%d/%m/%Y")
+        publication_date = get_date_formatted_for_email(offer.publicationDate)
     else:
         publication_date = None
     return models.TransactionalEmailData(
@@ -19,7 +20,7 @@ def retrieve_data_for_offer_approval_email(
         params={
             "OFFER_NAME": offer.name,
             "PUBLICATION_DATE": publication_date,
-            "VENUE_NAME": offer.venue.publicName or offer.venue.name,
+            "VENUE_NAME": offer.venue.common_name,
             "PC_PRO_OFFER_LINK": build_pc_pro_offer_link(offer),
             "OFFER_ADDRESS": offer.fullAddress if isinstance(offer, Offer) else None,
         },
@@ -33,7 +34,7 @@ def retrieve_data_for_offer_rejection_email(
         template=TransactionalEmail.OFFER_REJECTION_TO_PRO.value,
         params={
             "OFFER_NAME": offer.name,
-            "VENUE_NAME": offer.venue.publicName or offer.venue.name,
+            "VENUE_NAME": offer.venue.common_name,
             "PC_PRO_OFFER_LINK": build_pc_pro_offer_link(offer),
             "IS_COLLECTIVE_OFFER": not isinstance(offer, Offer),
             "OFFER_ADDRESS": offer.fullAddress if isinstance(offer, Offer) else None,
@@ -46,7 +47,7 @@ def retrieve_data_for_pending_offer_rejection_email(
 ) -> models.TransactionalEmailData:
     params = {
         "OFFER_NAME": offer.name,
-        "VENUE_NAME": offer.venue.publicName or offer.venue.name,
+        "VENUE_NAME": offer.venue.common_name,
         "PC_PRO_OFFER_LINK": build_pc_pro_offer_link(offer),
         "IS_COLLECTIVE_OFFER": not isinstance(offer, Offer),
     }
@@ -65,7 +66,7 @@ def retrieve_data_for_validated_offer_rejection_email(
         template=TransactionalEmail.OFFER_VALIDATED_TO_REJECTED_TO_PRO.value,
         params={
             "OFFER_NAME": offer.name,
-            "CREATION_DATE": offer.dateCreated.strftime("%d/%m/%Y"),
+            "CREATION_DATE": get_date_formatted_for_email(offer.dateCreated),
             "PC_PRO_OFFER_LINK": build_pc_pro_offer_link(offer),
             "IS_COLLECTIVE_OFFER": not isinstance(offer, Offer),
         },

@@ -1,9 +1,8 @@
-from babel.dates import format_date
-
 from pcapi.core import mails
 import pcapi.core.educational.models as educational_models
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.mailing import get_event_datetime
 
 
@@ -28,7 +27,7 @@ def get_data_pending_booking_confirmation_limit_date_in_3_days(
         params={
             "OFFER_NAME": offer.name,
             "VENUE_NAME": offer.venue.common_name,
-            "EVENT_DATE": format_date(get_event_datetime(stock), format="full", locale="fr"),
+            "EVENT_DATE": get_date_formatted_for_email(get_event_datetime(stock)),
             "USER_FIRSTNAME": booking.educationalRedactor.firstName,
             "USER_LASTNAME": booking.educationalRedactor.lastName,
             "USER_EMAIL": booking.educationalRedactor.email,

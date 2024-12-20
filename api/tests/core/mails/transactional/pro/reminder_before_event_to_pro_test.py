@@ -39,7 +39,7 @@ class Reminder7DaysBeforeEventToProEmailTest:
         assert mails_testing.outbox[0]["params"] == {
             "OFFER_NAME": offer.name,
             "VENUE_NAME": venue.name,
-            "EVENT_DATE": "dimanche 1 mai 2022",
+            "EVENT_DATE": "dimanche 1er mai 2022",
             "EVENT_HOUR": "16h10",
             "BOOKING_COUNT": 3,
             "OFFER_ADDRESS": offer.fullAddress,
@@ -67,7 +67,7 @@ class Reminder7DaysBeforeEventToProEmailTest:
         assert mails_testing.outbox[0]["params"] == {
             "OFFER_NAME": offer.name,
             "VENUE_NAME": venue.name,
-            "EVENT_DATE": "dimanche 1 mai 2022",
+            "EVENT_DATE": "dimanche 1er mai 2022",
             "EVENT_HOUR": "16h10",
             "BOOKING_COUNT": 2,
             "OFFER_ADDRESS": offer.fullAddress,

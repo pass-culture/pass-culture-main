@@ -2,6 +2,7 @@ from datetime import datetime
 from datetime import timedelta
 
 import pytest
+import time_machine
 
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.mails.testing as mails_testing
@@ -37,6 +38,7 @@ class SendinblueSendOfferValidationTest:
             "OFFER_ADDRESS": offer.fullAddress,
         }
 
+    @time_machine.travel("2032-10-15 12:48:00")
     def test_get_validation_approval_correct_email_metadata_when_future_offer(self):
         # Given
         offer = offers_factories.OfferFactory(name="Ma petite offre", venue__name="Mon stade")
@@ -50,7 +52,7 @@ class SendinblueSendOfferValidationTest:
         assert new_offer_validation_email.template == TransactionalEmail.OFFER_APPROVAL_TO_PRO.value
         assert new_offer_validation_email.params == {
             "OFFER_NAME": "Ma petite offre",
-            "PUBLICATION_DATE": publication_date.strftime("%d/%m/%Y"),
+            "PUBLICATION_DATE": "dimanche 14 novembre 2032",
             "VENUE_NAME": "Mon stade",
             "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
             "OFFER_ADDRESS": offer.fullAddress,
@@ -122,6 +124,7 @@ class SendinblueSendOfferValidationTest:
         assert new_offer_validation_email.params["IS_COLLECTIVE_OFFER"] is True
         assert new_offer_validation_email.params["OFFER_ADDRESS"] is None
 
+    @time_machine.travel("2032-10-15 12:48:00")
     def test_send_validated_offer_rejection_email(
         self,
     ):
@@ -147,7 +150,7 @@ class SendinblueSendOfferValidationTest:
             "IS_COLLECTIVE_OFFER": False,
             "OFFER_NAME": offer.name,
             "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
-            "CREATION_DATE": offer.dateCreated.strftime("%d/%m/%Y"),
+            "CREATION_DATE": "vendredi 15 octobre 2032",
         }
 
     def test_send_pending_offer_rejection_email(

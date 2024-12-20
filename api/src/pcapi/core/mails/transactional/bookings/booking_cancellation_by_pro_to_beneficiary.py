@@ -1,13 +1,12 @@
 from functools import partial
 
-from babel.dates import format_date
-
 from pcapi.core import mails
 from pcapi.core.bookings.models import Booking
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.repository import on_commit
-from pcapi.utils.mailing import format_booking_hours_for_email
+from pcapi.utils.date import get_date_formatted_for_email
+from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.mailing import get_event_datetime
 
 
@@ -18,14 +17,13 @@ def get_booking_cancellation_by_pro_to_beneficiary_email_data(
     stock = booking.stock
     offer = stock.offer
     if offer.isEvent:
-        event_date = format_date(get_event_datetime(stock), format="full", locale="fr")
-        event_hour = format_booking_hours_for_email(booking)
+        event_date = get_date_formatted_for_email(get_event_datetime(stock))
+        event_hour = get_time_formatted_for_email(get_event_datetime(stock))
     else:
         event_date = None
         event_hour = None
 
     is_free_offer = stock.price == 0
-    venue_name = offer.venue.publicName if offer.venue.publicName else offer.venue.name
 
     return models.TransactionalEmailData(
         template=TransactionalEmail.BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY.value,
@@ -42,7 +40,7 @@ def get_booking_cancellation_by_pro_to_beneficiary_email_data(
             "OFFERER_NAME": offer.venue.managingOfferer.name,
             "USER_FIRST_NAME": booking.firstName,
             "USER_LAST_NAME": booking.lastName,
-            "VENUE_NAME": venue_name,
+            "VENUE_NAME": offer.venue.common_name,
             "REJECTED": rejected_by_fraud_action,
         },
     )
