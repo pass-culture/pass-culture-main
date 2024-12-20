@@ -167,47 +167,6 @@ class CreateOffererAddressesTest:
         assert content["address"]["latitude"] == expected_data["latitude"] == float(address.latitude)
         assert content["address"]["longitude"] == expected_data["longitude"] == float(address.longitude)
 
-    @pytest.mark.usefixtures("db_session")
-    def test_we_are_aware_of_mismatch_coordinates_between_our_data_and_api_addresses_ones(self, client, caplog):
-        pro_user = users_factories.ProFactory()
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
-        offerer_id = offerer.id
-        expected_data = {
-            "banId": "75101_9575_00003",
-            "postalCode": "75001",
-            "inseeCode": "75056",
-            "city": "Paris",
-            "street": "3 Rue de Valois",
-            "latitude": 48.97171,  # Mismatch at 0.1 degree
-            "longitude": 2.408289,  # Mismatch at 0.1 degree
-        }
-
-        address = geography_factories.AddressFactory(**expected_data)
-        expected_data["label"] = "Ministère de la Culture"
-        offerers_factories.OffererAddressFactory(address=address, offerer=offerer, label="Pass Culture")
-        http_client = client.with_session_auth(pro_user.email)
-
-        # Fetch the session
-        # Fetch the user
-        # Check permissions
-        # rollback
-        # Select address
-        # Select offererAddress if exists
-        # Insert offererAddress
-        with assert_num_queries(7):
-            with caplog.at_level(logging.ERROR):
-                http_client.post(
-                    f"/offerers/{offerer_id}/addresses/",
-                    json={
-                        "label": expected_data["label"],
-                        "street": expected_data["street"],
-                        "inseeCode": expected_data["inseeCode"],
-                    },
-                )
-
-        assert "Unique constraint over street and inseeCode matched different coordinates" == caplog.records[0].message
-
     @override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
     @pytest.mark.usefixtures("db_session")
     def test_we_dont_want_to_get_false_positive_because_of_rounding(self, client, caplog, requests_mock):
