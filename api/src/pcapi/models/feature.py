@@ -133,7 +133,7 @@ class FeatureToggle(enum.Enum):
     WIP_DISABLE_TODAY_STOCK_NOTIFICATION = (
         "Désactiver la notification push Batch pour les réservations se déroulant le jour même"
     )
-    WIP_ENABLE_PRO_ONBOARDING = "Activer le parcours d'onboarding didactique des acteurs culturels"
+    WIP_ENABLE_PRO_DIDACTIC_ONBOARDING = "Activer le parcours d'onboarding didactique des acteurs culturels"
     WIP_ENABLE_CHRONICLES_IN_BO = "Activer les chroniques du Book Club dans le BO"
     WIP_ENABLE_CLICKHOUSE_IN_BO = "Utiliser Clickhouse pour les statistiques des acteurs culturels dans le BO"
     WIP_HEADLINE_OFFER = "Activer l'offre à la une"
@@ -206,7 +206,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW,
     FeatureToggle.WIP_ENABLE_NEW_HASHING_ALGORITHM,
     FeatureToggle.WIP_ENABLE_OFFER_ADDRESS,
-    FeatureToggle.WIP_ENABLE_PRO_ONBOARDING,
+    FeatureToggle.WIP_ENABLE_PRO_DIDACTIC_ONBOARDING,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
     FeatureToggle.WIP_HEADLINE_OFFER,
     FeatureToggle.WIP_IS_OPEN_TO_PUBLIC,
