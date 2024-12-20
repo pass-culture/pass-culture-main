@@ -26,7 +26,7 @@ class ArtistType(enum.Enum):
 
 
 class Artist(PcObject, Base, Model):
-    id = sa.Column(sa.Text, primary_key=True, nullable=False, default=lambda _: uuid.uuid4().hex)
+    id = sa.Column(sa.Text, primary_key=True, nullable=False, default=lambda _: str(uuid.uuid4()))
     name = sa.Column(sa.Text, nullable=False, index=True)
     description = sa.Column(sa.Text)
     image = sa.Column(sa.Text)
