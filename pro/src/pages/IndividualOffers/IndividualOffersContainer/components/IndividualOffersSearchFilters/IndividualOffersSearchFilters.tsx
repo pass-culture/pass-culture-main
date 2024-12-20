@@ -1,4 +1,4 @@
-import { Dispatch, FormEvent, SetStateAction } from 'react'
+import { Dispatch, FormEvent, SetStateAction, useState } from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
 import {
@@ -13,13 +13,11 @@ import { SearchFiltersParams } from 'commons/core/Offers/types'
 import { hasSearchFilters } from 'commons/core/Offers/utils/hasSearchFilters'
 import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import fullRefreshIcon from 'icons/full-refresh.svg'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
+import { OffersTableSearch } from 'components/OffersTable/OffersTableSearch/OffersTableSearch'
 import { PeriodSelector } from 'ui-kit/form/PeriodSelector/PeriodSelector'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
-import { BaseInput } from 'ui-kit/form/shared/BaseInput/BaseInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 
 import styles from './IndividualOffersSearchFilters.module.scss'
@@ -58,18 +56,72 @@ export const IndividualOffersSearchFilters = ({
   categories,
   isRestrictedAsAdmin = false,
 }: IndividualOffersSearchFiltersProps): JSX.Element => {
+  const isLocalStorageAvailable = localStorageAvailable()
+  const initialFilterConfig = isLocalStorageAvailable ?
+    JSON.parse(localStorage.getItem('INDIVIDUAL_OFFERS_FILTER_CONFIG') || '{}') :
+    {}
+  const [registeredFilterConfig, setRegisteredFilterConfig] = useState(initialFilterConfig)
+  const { filtersVisibility } = registeredFilterConfig
+
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   const areCollectiveNewStatusesEnabled = useActiveFeature(
     'ENABLE_COLLECTIVE_NEW_STATUSES'
   )
 
+  const onFiltersToggle = () => {
+    const newRegisteredFilterConfig = {
+      ...registeredFilterConfig,
+      filtersVisibility: !filtersVisibility
+    }
+
+    if (isLocalStorageAvailable) {
+      localStorage.setItem(
+        'INDIVIDUAL_OFFERS_FILTER_CONFIG',
+        JSON.stringify(newRegisteredFilterConfig)
+      )
+    }
+
+    setRegisteredFilterConfig(newRegisteredFilterConfig)
+  }
+
+  const onResetFilters = () => {
+    resetFilters()
+
+    if (isLocalStorageAvailable) {
+      localStorage.setItem(
+        'INDIVIDUAL_OFFERS_FILTER_CONFIG',
+        JSON.stringify({
+          filtersVisibility,
+        })
+      )
+    }
+
+    setRegisteredFilterConfig({
+      filtersVisibility,
+    })
+  }
+
   const updateSearchFilters = (
-    newSearchFilters: Partial<SearchFiltersParams>
+    searchFilters: Partial<SearchFiltersParams>
   ) => {
-    setSelectedFilters((currentSearchFilters) => ({
-      ...currentSearchFilters,
-      ...newSearchFilters,
-    }))
+    setSelectedFilters((currentSearchFilters) => {
+      const newSearchFilters = {
+        ...currentSearchFilters,
+        ...searchFilters,
+      }
+
+      if (isLocalStorageAvailable) {
+        localStorage.setItem(
+          'INDIVIDUAL_OFFERS_FILTER_CONFIG',
+          JSON.stringify({
+            ...registeredFilterConfig,
+            ...newSearchFilters,
+          })
+        )
+      }
+
+      return newSearchFilters
+    })
   }
 
   const storeNameOrIsbnSearchValue = (event: FormEvent<HTMLInputElement>) => {
@@ -122,8 +174,6 @@ export const IndividualOffersSearchFilters = ({
       Nom de l’offre ou <abbr title="European Article Numbering">EAN-13</abbr>
     </span>
   )
-  const searchByOfferNamePlaceholder =
-    'Rechercher par nom d’offre ou par EAN-13'
 
   const statusFilterOptions = individualFilterStatus.map((status) => {
     if (areCollectiveNewStatusesEnabled) {
@@ -140,119 +190,99 @@ export const IndividualOffersSearchFilters = ({
     return status
   })
 
+  const hasActiveFilters = hasSearchFilters(selectedFilters)
+
   return (
-    <>
-      <form
-        onSubmit={requestFilteredOffers}
-        className={styles['search-filters-form']}
-      >
-        <FieldLayout label={searchByOfferNameLabel} name="offre" isOptional>
-          <BaseInput
-            type="text"
+    <OffersTableSearch
+      filtersVisibility={filtersVisibility ?? false}
+      hasActiveFilters={hasActiveFilters}
+      onFiltersToggle={onFiltersToggle}
+      onSubmit={requestFilteredOffers}
+      isDisabled={disableAllFilters}
+      nameInputProps={{
+        label: searchByOfferNameLabel,
+        disabled: disableAllFilters,
+        onChange: storeNameOrIsbnSearchValue,
+        value: selectedFilters.nameOrIsbn,
+      }}
+      onResetFilters={onResetFilters}
+    >
+      <FormLayout.Row inline>
+        {isOfferAddressEnabled ? (
+          <FieldLayout label="Localisation" name="address" isOptional>
+            <SelectInput
+              defaultOption={ALL_OFFERER_ADDRESS_OPTION}
+              onChange={storeSelectedOfferAddress}
+              disabled={offererAddresses.length === 0 || disableAllFilters}
+              name="address"
+              options={offererAddresses}
+              data-testid="address-select"
+              value={selectedFilters.offererAddressId}
+            />
+          </FieldLayout>
+        ) : (
+          <FieldLayout label="Lieu" name="lieu" isOptional>
+            <SelectInput
+              defaultOption={ALL_VENUES_OPTION}
+              onChange={storeSelectedVenue}
+              disabled={disableAllFilters}
+              name="lieu"
+              options={venues}
+              value={selectedFilters.venueId}
+            />
+          </FieldLayout>
+        )}
+        {categories && (
+          <FieldLayout label="Catégorie" name="categorie" isOptional>
+            <SelectInput
+              defaultOption={ALL_CATEGORIES_OPTION}
+              onChange={storeSelectedCategory}
+              disabled={disableAllFilters}
+              name="categorie"
+              options={categories}
+              value={selectedFilters.categoryId}
+            />
+          </FieldLayout>
+        )}
+        <FieldLayout
+          label="Mode de création"
+          name="creationMode"
+          isOptional
+          className={styles['filter-creation-mode']}
+        >
+          <SelectInput
+            onChange={storeCreationMode}
             disabled={disableAllFilters}
-            name="offre"
-            onChange={storeNameOrIsbnSearchValue}
-            placeholder={searchByOfferNamePlaceholder}
-            value={selectedFilters.nameOrIsbn}
+            name="creationMode"
+            options={CREATION_MODES_OPTIONS}
+            value={selectedFilters.creationMode}
           />
         </FieldLayout>
-        <FormLayout.Row inline>
-          {isOfferAddressEnabled ? (
-            <FieldLayout label="Localisation" name="address" isOptional>
-              <SelectInput
-                defaultOption={ALL_OFFERER_ADDRESS_OPTION}
-                onChange={storeSelectedOfferAddress}
-                disabled={offererAddresses.length === 0 || disableAllFilters}
-                name="address"
-                options={offererAddresses}
-                data-testid="address-select"
-                value={selectedFilters.offererAddressId}
-              />
-            </FieldLayout>
-          ) : (
-            <FieldLayout label="Lieu" name="lieu" isOptional>
-              <SelectInput
-                defaultOption={ALL_VENUES_OPTION}
-                onChange={storeSelectedVenue}
-                disabled={disableAllFilters}
-                name="lieu"
-                options={venues}
-                value={selectedFilters.venueId}
-              />
-            </FieldLayout>
-          )}
-
-          {categories && (
-            <FieldLayout label="Catégorie" name="categorie" isOptional>
-              <SelectInput
-                defaultOption={ALL_CATEGORIES_OPTION}
-                onChange={storeSelectedCategory}
-                disabled={disableAllFilters}
-                name="categorie"
-                options={categories}
-                value={selectedFilters.categoryId}
-              />
-            </FieldLayout>
-          )}
-
-          <FieldLayout
-            label="Mode de création"
-            name="creationMode"
-            isOptional
-            className={styles['filter-creation-mode']}
-          >
-            <SelectInput
-              onChange={storeCreationMode}
-              disabled={disableAllFilters}
-              name="creationMode"
-              options={CREATION_MODES_OPTIONS}
-              value={selectedFilters.creationMode}
-            />
-          </FieldLayout>
-          <FieldLayout
-            label="Statut"
+        <FieldLayout
+          label="Statut"
+          name="status"
+          isOptional
+          className={styles['status-filter']}
+        >
+          <SelectInput
+            value={selectedFilters.status as OfferStatus}
             name="status"
-            isOptional
-            className={styles['status-filter']}
-          >
-            <SelectInput
-              value={selectedFilters.status as OfferStatus}
-              name="status"
-              onChange={storeOfferStatus}
-              disabled={disableAllFilters || isRestrictedAsAdmin}
-              options={statusFilterOptions}
-            />
-          </FieldLayout>
-          <fieldset>
-            <legend>Période de l’évènement</legend>
-            <PeriodSelector
-              onBeginningDateChange={onBeginningDateChange}
-              onEndingDateChange={onEndingDateChange}
-              isDisabled={disableAllFilters}
-              periodBeginningDate={selectedFilters.periodBeginningDate}
-              periodEndingDate={selectedFilters.periodEndingDate}
-            />
-          </fieldset>
-        </FormLayout.Row>
-        <FormLayout.Row inline className={styles['reset-filters-row']}>
-          <Button
-            icon={fullRefreshIcon}
-            disabled={!hasSearchFilters(selectedFilters)}
-            onClick={resetFilters}
-            variant={ButtonVariant.TERNARY}
-            className={styles['reset-filters']}
-          >
-            Réinitialiser les filtres
-          </Button>
-        </FormLayout.Row>
-        <div className={styles['search-separator']}>
-          <div className={styles['separator']} />
-          <Button type="submit" disabled={disableAllFilters}>
-            Rechercher
-          </Button>
-          <div className={styles['separator']} />
-        </div>
-      </form>
-    </>
+            onChange={storeOfferStatus}
+            disabled={disableAllFilters || isRestrictedAsAdmin}
+            options={statusFilterOptions}
+          />
+        </FieldLayout>
+        <fieldset>
+          <legend>Période de l’évènement</legend>
+          <PeriodSelector
+            onBeginningDateChange={onBeginningDateChange}
+            onEndingDateChange={onEndingDateChange}
+            isDisabled={disableAllFilters}
+            periodBeginningDate={selectedFilters.periodBeginningDate}
+            periodEndingDate={selectedFilters.periodEndingDate}
+          />
+        </fieldset>
+      </FormLayout.Row>
+    </OffersTableSearch>
   )
 }
