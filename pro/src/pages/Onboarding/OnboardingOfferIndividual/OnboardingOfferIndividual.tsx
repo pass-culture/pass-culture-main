@@ -16,7 +16,7 @@ type OnboardingOfferProcedure = 'MANUAL' | 'AUTOMATIC'
 // Mapping the redirect URLs to the corresponding offer type
 const urls: Record<OnboardingOfferProcedure, string> = {
   MANUAL: '/onboarding/offre/creation',
-  AUTOMATIC: '/inscription-offre-individuelle-auto',
+  AUTOMATIC: '/onboarding/synchro',
 } as const
 
 export const OnboardingOfferIndividual = (): JSX.Element => {
@@ -72,7 +72,7 @@ export const OnboardingOfferIndividual = (): JSX.Element => {
 
       <ActionBar
         withNextButton
-        onLeftButtonClick={() => navigate('/inscription-choix-offre')}
+        onLeftButtonClick={() => navigate('/onboarding')}
         onRightButtonClick={() => navigate(urls[offerType])}
       />
     </OnboardingLayout>
