@@ -43,7 +43,7 @@ def get_expected_base_email_data(booking, **overrides):
         "CAN_EXPIRE": False,
         "COUNTERMARK": "ABC123",
         "DEPARTMENT_CODE": "75",
-        "EVENT_DATE": "06-Nov-2019",
+        "EVENT_DATE": "mercredi 6 novembre 2019",
         "EVENT_HOUR": "15h59",
         "IS_BOOKING_AUTOVALIDATED": False,
         "IS_DIGITAL": False,

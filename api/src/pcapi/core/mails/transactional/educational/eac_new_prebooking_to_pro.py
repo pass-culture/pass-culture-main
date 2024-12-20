@@ -1,10 +1,9 @@
-from babel.dates import format_date
-
 from pcapi.core import mails
 import pcapi.core.educational.models as educational_models
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.utils.mailing import format_booking_hours_for_email
+from pcapi.utils.date import get_date_formatted_for_email
+from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.mailing import get_event_datetime
 
 
@@ -26,8 +25,8 @@ def get_eac_new_collective_prebooking_email_data(
         params={
             "OFFER_NAME": offer.name,
             "VENUE_NAME": offer.venue.common_name,
-            "EVENT_DATE": format_date(get_event_datetime(stock), format="full", locale="fr"),
-            "EVENT_HOUR": format_booking_hours_for_email(booking),
+            "EVENT_DATE": get_date_formatted_for_email(get_event_datetime(stock)),
+            "EVENT_HOUR": get_time_formatted_for_email(get_event_datetime(stock)),
             "QUANTITY": 1,
             "PRICE": str(stock.price) if stock.price > 0 else "Gratuit",
             "REDACTOR_FIRSTNAME": booking.educationalRedactor.firstName,

@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 import pytest
+import time_machine
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
@@ -9,6 +10,7 @@ from pcapi.core.mails.transactional.educational.eac_booking_cancellation import 
 
 @pytest.mark.usefixtures("db_session")
 class SendEducationeBookingCancellationByInstitutionEmailTest:
+    @time_machine.travel("2024-11-26 18:29:20")
     @patch("pcapi.core.mails.transactional.educational.eac_booking_cancellation.mails")
     def test_with_collective_booking(self, mails):
         # given
@@ -26,8 +28,8 @@ class SendEducationeBookingCancellationByInstitutionEmailTest:
             "OFFER_NAME": booking.collectiveStock.collectiveOffer.name,
             "EDUCATIONAL_INSTITUTION_NAME": booking.educationalInstitution.name,
             "VENUE_NAME": booking.collectiveStock.collectiveOffer.venue.name,
-            "EVENT_DATE": booking.collectiveStock.beginningDatetime.strftime("%d/%m/%Y"),
-            "EVENT_HOUR": booking.collectiveStock.beginningDatetime.strftime("%H:%M"),
+            "EVENT_DATE": "mercredi 27 novembre 2024",
+            "EVENT_HOUR": "19h29",
             "REDACTOR_FIRSTNAME": booking.educationalRedactor.firstName,
             "REDACTOR_LASTNAME": booking.educationalRedactor.lastName,
             "REDACTOR_EMAIL": booking.educationalRedactor.email,

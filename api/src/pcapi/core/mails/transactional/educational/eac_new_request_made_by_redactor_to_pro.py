@@ -3,6 +3,7 @@ from pcapi.core import mails
 import pcapi.core.educational.models as educational_models
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.utils.date import get_date_formatted_for_email
 
 
 def send_new_request_made_by_redactor_to_pro(request: educational_models.CollectiveOfferRequest) -> None:
@@ -22,7 +23,7 @@ def get_data_request_made_by_redactor_to_pro(
         params={
             "OFFER_NAME": request.collectiveOfferTemplate.name,
             "VENUE_NAME": request.collectiveOfferTemplate.venue.common_name,
-            "EVENT_DATE": request.requestedDate.strftime("%d/%m/%Y") if request.requestedDate else "",
+            "EVENT_DATE": get_date_formatted_for_email(request.requestedDate) if request.requestedDate else "",
             "NB_STUDENTS": request.totalStudents,
             "NB_TEACHERS": request.totalTeachers,
             "REQUEST_COMMENT": request.comment,

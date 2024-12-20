@@ -77,7 +77,7 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
         )
         assert mails_testing.outbox[0]["params"] == {
             "DEPARTMENT_CODE": booking.venue.departementCode,
-            "EVENT_DATE": "09-Oct-2019",
+            "EVENT_DATE": "mercredi 9 octobre 2019",
             "EVENT_HOUR": "12h20",
             "EXTERNAL_BOOKING_INFORMATION": "barcode: 123456789, additional_information: {'num_ope': 147149, "
             "'num_cine': '9997', 'num_trans': 1257, 'num_caisse': '255'}",
@@ -109,7 +109,7 @@ class MakeOffererBookingRecapEmailAfterUserCancellationTest:
         assert email_data.template == TransactionalEmail.BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO.value
         assert email_data.params == {
             "DEPARTMENT_CODE": venue.departementCode,
-            "EVENT_DATE": "09-Oct-2019",
+            "EVENT_DATE": "mercredi 9 octobre 2019",
             "EVENT_HOUR": "12h20",
             "EXTERNAL_BOOKING_INFORMATION": None,
             "IS_EVENT": True,
@@ -138,7 +138,7 @@ class MakeOffererBookingRecapEmailAfterUserCancellationTest:
         assert email_data.template == TransactionalEmail.BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO.value
         assert email_data.params == {
             "DEPARTMENT_CODE": venue.departementCode,
-            "EVENT_DATE": "09-Oct-2019",
+            "EVENT_DATE": "mercredi 9 octobre 2019",
             "EVENT_HOUR": "12h20",
             "EXTERNAL_BOOKING_INFORMATION": None,
             "IS_EVENT": True,
