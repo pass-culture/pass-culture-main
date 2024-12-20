@@ -1,13 +1,13 @@
+import js from '@eslint/js'
 import typescriptEslint from '@typescript-eslint/eslint-plugin'
-import globals from 'globals'
 import tsParser from '@typescript-eslint/parser'
+import pluginCypress from 'eslint-plugin-cypress/flat'
+import importPlugin from 'eslint-plugin-import'
+import pluginJs from 'eslint-plugin-react'
+import reactHook from 'eslint-plugin-react-hooks'
+import globals from 'globals'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import js from '@eslint/js'
-import importPlugin from 'eslint-plugin-import'
-import reactHook from 'eslint-plugin-react-hooks'
-import pluginJs from 'eslint-plugin-react'
-import pluginCypress from 'eslint-plugin-cypress/flat'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -165,6 +165,14 @@ export default [
       ],
 
       'react-hooks/exhaustive-deps': 'warn',
+
+      'no-restricted-syntax': [
+        'warn',
+        {
+          selector: 'TSEnumDeclaration',
+          message: 'Use a constant map with a string union type instead.',
+        },
+      ],
     },
   },
   {

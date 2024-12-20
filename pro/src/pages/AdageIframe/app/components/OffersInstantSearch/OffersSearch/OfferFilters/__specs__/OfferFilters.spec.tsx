@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
-import React from 'react'
 
 import { EacFormat } from 'apiClient/adage'
 import { defaultAdageUser } from 'commons/utils/factories/adageFactories'
@@ -23,7 +22,7 @@ vi.mock('apiClient/api', () => ({
 
 const renderOfferFilters = (
   initialValues: SearchFormValues,
-  localisationFilterState = LocalisationFilterStates.NONE,
+  localisationFilterState: LocalisationFilterStates = LocalisationFilterStates.NONE,
   adageUser = defaultAdageUser
 ) =>
   renderWithProviders(
