@@ -22,8 +22,8 @@ title: Pass Culture API change logs
 
 ### Collective offers endpoints
 
-- The `subcategoryId` field has been removed from collective offers. The attribute is not returned anymore in the response of the [**Get Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/GetCollectiveOffer) and the [**Get Collective Offers endpoint**](/rest-api#tag/Collective-Offers/operation/GetCollectiveOffers)
-- You must now only use the `formats` field (and not `subcategoryId`) to specify the educational format of your collective offer in the [**Create Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PostCollectiveOffer) and the [**Update Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PatchCollectiveOffer). The `formats` field is required when creating a collective offer.
+- The `subcategoryId` field has been removed from collective offers. The attribute is not returned anymore in the response of the [**Get Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/GetCollectiveOfferPublic) and the [**Get Collective Offers endpoint**](/rest-api#tag/Collective-Offers/operation/GetCollectiveOffersPublic)
+- You must now only use the `formats` field (and not `subcategoryId`) to specify the educational format of your collective offer in the [**Create Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PostCollectiveOfferPublic) and the [**Update Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PatchCollectiveOfferPublic). The `formats` field is required when creating a collective offer.
 
 
 ## November 2024
