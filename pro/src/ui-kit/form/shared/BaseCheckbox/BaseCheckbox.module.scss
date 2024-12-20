@@ -7,10 +7,14 @@
 .base-checkbox {
   display: inline-flex;
   cursor: pointer;
+  height: 100%;
+  width: 100%;
 
   &-label-row {
     display: inline-flex;
     align-items: flex-start;
+    height: 100%;
+    width: 100%;
 
     &-with-description {
       align-items: center;
@@ -20,6 +24,7 @@
   &-label {
     display: flex;
     flex-direction: column;
+    height: 100%;
     width: 100%;
 
     &-with-description {
