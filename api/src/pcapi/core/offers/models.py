@@ -517,10 +517,10 @@ class HeadlineOffer(PcObject, Base, Model):
     __tablename__ = "headline_offer"
 
     offerId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), nullable=False, index=True, unique=True
+        sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), nullable=False, index=True, unique=False
     )
-    offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", back_populates="headlineOffer")
-    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True, unique=True)
+    offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", back_populates="headlineOffers")
+    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True, unique=False)
     venue: sa_orm.Mapped["Venue"] = sa_orm.relationship("Venue", back_populates="headlineOffers")
 
     dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
@@ -614,8 +614,8 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     reactions: list["Reaction"] = sa.orm.relationship(
         "Reaction", back_populates="offer", uselist=True, cascade="all, delete-orphan", passive_deletes=True
     )
-    headlineOffer: sa_orm.Mapped["HeadlineOffer"] = sa_orm.relationship(
-        "HeadlineOffer", back_populates="offer", uselist=False
+    headlineOffers: sa_orm.Mapped[list["HeadlineOffer"]] = sa_orm.relationship(
+        "HeadlineOffer", back_populates="offer", uselist=True, cascade="all, delete-orphan", passive_deletes=True
     )
 
     sa.Index("idx_offer_trgm_name", name, postgresql_using="gin")
