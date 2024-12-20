@@ -1,6 +1,7 @@
+import cn from 'classnames'
 import { FormikProvider, useFormik } from 'formik'
 import isEqual from 'lodash.isequal'
-import { Dispatch, FormEvent, SetStateAction, useEffect } from 'react'
+import { Dispatch, FormEvent, SetStateAction, useEffect, useState } from 'react'
 
 import {
   CollectiveOfferDisplayedStatus,
@@ -22,8 +23,10 @@ import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullRefreshIcon from 'icons/full-refresh.svg'
+import strokeDownIcon from 'icons/stroke-down.svg'
+import strokeUpIcon from 'icons/stroke-up.svg'
 import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
+import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { PeriodSelector } from 'ui-kit/form/PeriodSelector/PeriodSelector'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
@@ -87,6 +90,7 @@ export const CollectiveOffersSearchFilters = ({
   venues,
   isRestrictedAsAdmin = false,
 }: CollectiveOffersSearchFiltersProps): JSX.Element => {
+  const [filtersVisibility, setFiltersVisibility] = useState(false)
   const isNewOffersAndBookingsActive = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
   )
@@ -178,7 +182,6 @@ export const CollectiveOffersSearchFilters = ({
   }
 
   const searchByOfferNameLabel = 'Nom de l’offre'
-  const searchByOfferNamePlaceholder = 'Rechercher par nom d’offre'
 
   const statusFilterOptions = [
     ...collectiveFilterStatus
@@ -215,108 +218,137 @@ export const CollectiveOffersSearchFilters = ({
       : []),
   ]
 
+  const toggleFilters = () => {
+    setFiltersVisibility(!filtersVisibility)
+  }
+
   return (
     <>
       <form
         onSubmit={requestFilteredOffers}
         className={styles['search-filters-form']}
       >
-        <FieldLayout label={searchByOfferNameLabel} name="offre" isOptional>
-          <BaseInput
-            type="text"
-            disabled={disableAllFilters}
-            name="offre"
-            onChange={storeNameOrIsbnSearchValue}
-            placeholder={searchByOfferNamePlaceholder}
-            value={selectedFilters.nameOrIsbn}
-          />
-        </FieldLayout>
-        <FormLayout.Row inline>
+        <FormLayout.Row
+          className={styles['search-filters-name-and-toggle-row']}
+          inline
+        >
           <FieldLayout
-            label={isOfferAddressEnabled ? 'Structure' : 'Lieu'}
-            name="lieu"
+            className={styles['search-filters-name-input']}
+            label={searchByOfferNameLabel}
+            name="offre"
             isOptional
+            hideFooter
           >
-            <SelectInput
-              defaultOption={
-                isOfferAddressEnabled
-                  ? ALL_STRUCTURES_OPTION
-                  : ALL_VENUES_OPTION
-              }
-              onChange={storeSelectedVenue}
+            <BaseInput
+              type="text"
               disabled={disableAllFilters}
-              name="lieu"
-              options={venues}
-              value={selectedFilters.venueId}
+              name="offre"
+              onChange={storeNameOrIsbnSearchValue}
+              value={selectedFilters.nameOrIsbn}
             />
           </FieldLayout>
-
-          <FieldLayout label="Format" name="format" isOptional>
-            <SelectInput
-              defaultOption={ALL_FORMATS_OPTION}
-              onChange={storeSelectedFormat}
-              disabled={disableAllFilters}
-              name="format"
-              options={formats}
-              value={selectedFilters.format}
-            />
-          </FieldLayout>
-
-          {!isNewOffersAndBookingsActive && (
+          <Button
+            className={styles['search-filters-toggle-button']}
+            icon={filtersVisibility ? strokeUpIcon : strokeDownIcon}
+            iconPosition={IconPositionEnum.RIGHT}
+            variant={ButtonVariant.BOX}
+            onClick={toggleFilters}
+            aria-controls="offers-filter"
+            aria-expanded="false"
+          >
+            Filters
+          </Button>
+        </FormLayout.Row>
+        <div
+          id="offers-filter"
+          className={cn({ [styles['search-filters-collapsed']]: !filtersVisibility })}
+        >
+          <FormLayout.Row inline>
             <FieldLayout
-              label="Type de l’offre"
-              name="collectiveOfferType"
+              label={isOfferAddressEnabled ? 'Structure' : 'Lieu'}
+              name="lieu"
               isOptional
             >
               <SelectInput
-                onChange={storeCollectiveOfferType}
+                defaultOption={
+                  isOfferAddressEnabled
+                    ? ALL_STRUCTURES_OPTION
+                    : ALL_VENUES_OPTION
+                }
+                onChange={storeSelectedVenue}
                 disabled={disableAllFilters}
-                name="collectiveOfferType"
-                options={COLLECTIVE_OFFER_TYPES_OPTIONS}
-                value={selectedFilters.collectiveOfferType}
+                name="lieu"
+                options={venues}
+                value={selectedFilters.venueId}
               />
             </FieldLayout>
-          )}
-        </FormLayout.Row>
-        <FormLayout.Row inline>
-          <fieldset>
-            <legend>Période de l’évènement</legend>
 
-            <PeriodSelector
-              onBeginningDateChange={onBeginningDateChange}
-              onEndingDateChange={onEndingDateChange}
-              isDisabled={disableAllFilters}
-              periodBeginningDate={selectedFilters.periodBeginningDate}
-              periodEndingDate={selectedFilters.periodEndingDate}
-            />
-          </fieldset>
+            <FieldLayout label="Format" name="format" isOptional>
+              <SelectInput
+                defaultOption={ALL_FORMATS_OPTION}
+                onChange={storeSelectedFormat}
+                disabled={disableAllFilters}
+                name="format"
+                options={formats}
+                value={selectedFilters.format}
+              />
+            </FieldLayout>
 
-          <FormikProvider value={formik}>
-            <SelectAutocomplete
-              multi
-              name="status"
-              label="Statut"
-              options={statusFilterOptions}
-              placeholder="Statuts"
-              isOptional
-              className={styles['status-filter']}
-              disabled={disableAllFilters || isRestrictedAsAdmin}
-            />
-          </FormikProvider>
-        </FormLayout.Row>
-
-        <div className={styles['reset-filters']}>
-          <Button
-            icon={fullRefreshIcon}
-            disabled={isEqual(
-              { ...selectedFilters, offererId: 'all', page: 1 },
-              defaultCollectiveFilters
+            {!isNewOffersAndBookingsActive && (
+              <FieldLayout
+                label="Type de l’offre"
+                name="collectiveOfferType"
+                isOptional
+              >
+                <SelectInput
+                  onChange={storeCollectiveOfferType}
+                  disabled={disableAllFilters}
+                  name="collectiveOfferType"
+                  options={COLLECTIVE_OFFER_TYPES_OPTIONS}
+                  value={selectedFilters.collectiveOfferType}
+                />
+              </FieldLayout>
             )}
-            onClick={resetCollectiveFilters}
-            variant={ButtonVariant.TERNARY}
-          >
-            Réinitialiser les filtres
-          </Button>
+          </FormLayout.Row>
+          <FormLayout.Row inline>
+            <fieldset>
+              <legend>Période de l’évènement</legend>
+
+              <PeriodSelector
+                onBeginningDateChange={onBeginningDateChange}
+                onEndingDateChange={onEndingDateChange}
+                isDisabled={disableAllFilters}
+                periodBeginningDate={selectedFilters.periodBeginningDate}
+                periodEndingDate={selectedFilters.periodEndingDate}
+              />
+            </fieldset>
+
+            <FormikProvider value={formik}>
+              <SelectAutocomplete
+                multi
+                name="status"
+                label="Statut"
+                options={statusFilterOptions}
+                placeholder="Statuts"
+                isOptional
+                className={styles['status-filter']}
+                disabled={disableAllFilters || isRestrictedAsAdmin}
+              />
+            </FormikProvider>
+          </FormLayout.Row>
+          <div className={styles['reset-filters']}>
+            <Button
+              icon={fullRefreshIcon}
+              disabled={isEqual(
+                { ...selectedFilters, offererId: 'all', page: 1 },
+                defaultCollectiveFilters
+              )}
+              onClick={resetCollectiveFilters}
+              variant={ButtonVariant.TERNARY}
+            >
+              Réinitialiser les filtres
+            </Button>
+          </div>
         </div>
         <div className={styles['search-separator']}>
           <div className={styles['separator']} />
