@@ -6,6 +6,7 @@ API Documentation: https://www.typeform.com/developers/
 from datetime import datetime
 import json
 import logging
+import typing
 
 import pydantic.v1 as pydantic_v1
 
@@ -77,6 +78,32 @@ def get_responses(
         since=since,
         sort=sort,
     )
+
+
+def get_responses_generator(
+    last_date_retriever: typing.Callable[[], datetime | None], form_id: str
+) -> typing.Iterator[TypeformResponse]:
+    previous_date = object()
+    while True:
+
+        last_date = last_date_retriever()
+        if last_date == previous_date:
+            logger.error(
+                "typeform import error: infinite loop detected",
+                extra={"last_chronicle_id": str(last_date), "form_id": form_id},
+            )
+            break
+        previous_date = last_date
+        forms = get_responses(
+            form_id=form_id,
+            num_results=settings.TYPEFORM_IMPORT_CHUNK_SIZE,
+            sort="submitted_at,asc",
+            since=last_date,
+        )
+        yield from forms
+
+        if len(forms) < settings.TYPEFORM_IMPORT_CHUNK_SIZE:
+            break
 
 
 class BaseBackend:

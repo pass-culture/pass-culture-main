@@ -11,8 +11,8 @@ blueprint = Blueprint(__name__, __name__)
 logger = logging.getLogger(__name__)
 
 
-@blueprint.cli.command("import_book_club_chronicle")
+@blueprint.cli.command("import_special_event_answers")
 @cron_decorators.log_cron
 def import_book_club_chronicle() -> None:
-    if FeatureToggle.ENABLE_CHRONICLES_RETRIEVAL.is_active():
-        api.import_book_club_chronicles()
+    if FeatureToggle.ENABLE_SPECIAL_EVENT_RETRIEVAL.is_active():
+        api.retrieve_data_from_typeform()
