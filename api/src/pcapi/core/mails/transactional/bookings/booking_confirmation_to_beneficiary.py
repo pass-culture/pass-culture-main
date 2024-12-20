@@ -85,7 +85,7 @@ def get_booking_confirmation_to_beneficiary_email_data(
                 is_digital_booking_with_activation_code_and_no_expiration_date
             ),
             "CODE_EXPIRATION_DATE": code_expiration_date,
-            "VENUE_NAME": venue.publicName if venue.publicName else venue.name,
+            "VENUE_NAME": venue.common_name,
             "VENUE_ADDRESS": bookings_common.get_venue_street(booking),
             "VENUE_POSTAL_CODE": venue.postalCode,
             "VENUE_CITY": venue.city,

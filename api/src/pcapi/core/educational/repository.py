@@ -252,6 +252,7 @@ def _get_bookings_for_adage_base_query() -> BaseQuery:
                 offerers_models.Venue.latitude,
                 offerers_models.Venue.longitude,
                 offerers_models.Venue.timezone,
+                offerers_models.Venue.departementCode,
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.name,
                 offerers_models.Venue.street,

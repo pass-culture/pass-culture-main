@@ -35,7 +35,7 @@ class SendEacNewBookingEmailToProTest:
         assert mails.send.call_args.kwargs["data"].params == {
             "OFFER_NAME": request.collectiveOfferTemplate.name,
             "VENUE_NAME": request.collectiveOfferTemplate.venue.name,
-            "EVENT_DATE": "26/11/2019",
+            "EVENT_DATE": "mardi 26 novembre 2019",
             "NB_STUDENTS": None,
             "NB_TEACHERS": None,
             "REQUEST_COMMENT": "Un commentaire sublime",

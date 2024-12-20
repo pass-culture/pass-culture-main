@@ -107,8 +107,12 @@ def format_into_utc_date(date_to_format: datetime) -> str:
     return date_to_format.isoformat() + "Z"
 
 
-def get_date_formatted_for_email(date_time: datetime) -> str:
-    return format_date(date_time, format="d MMMM YYYY", locale="fr")
+def get_date_formatted_for_email(date_time: datetime | date) -> str:
+    formatted_date = format_date(date_time, format="full", locale="fr")
+    split_date = formatted_date.split(" ")
+    if split_date[1] == "1":
+        return split_date[0] + " 1er " + " ".join(split_date[2:])
+    return formatted_date
 
 
 def get_time_formatted_for_email(date_time: datetime) -> str:
