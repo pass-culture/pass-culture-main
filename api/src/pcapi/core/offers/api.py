@@ -990,10 +990,19 @@ def _delete_stock(stock: models.Stock, author_id: int | None = None, user_connec
             transactional_mails.send_booking_cancellation_by_pro_to_beneficiary_email(booking)
         transactional_mails.send_booking_cancellation_confirmation_by_pro_email(cancelled_bookings)
         if not FeatureToggle.WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION.is_active():
-            push_notification_job.send_cancel_booking_notification.delay([booking.id for booking in cancelled_bookings])
-    search.async_index_offer_ids(
-        [stock.offerId],
-        reason=search.IndexationReason.STOCK_DELETION,
+            on_commit(
+                partial(
+                    push_notification_job.send_cancel_booking_notification.delay,
+                    [booking.id for booking in cancelled_bookings],
+                )
+            )
+
+    on_commit(
+        partial(
+            search.async_index_offer_ids,
+            [stock.offerId],
+            reason=search.IndexationReason.STOCK_DELETION,
+        )
     )
 
 
@@ -1048,9 +1057,12 @@ def create_mediation(
     )
     _delete_mediations_and_thumbs(previous_mediations)
 
-    search.async_index_offer_ids(
-        [offer.id],
-        reason=search.IndexationReason.MEDIATION_CREATION,
+    on_commit(
+        partial(
+            search.async_index_offer_ids,
+            [offer.id],
+            reason=search.IndexationReason.MEDIATION_CREATION,
+        ),
     )
 
     return mediation
@@ -1595,7 +1607,7 @@ def batch_delete_draft_offers(query: BaseQuery) -> None:
         synchronize_session=False
     )
     models.Offer.query.filter(*filters).delete(synchronize_session=False)
-    db.session.commit()
+    db.session.flush()
 
 
 def batch_delete_stocks(
@@ -1677,7 +1689,7 @@ def delete_price_category(offer: models.Offer, price_category: models.PriceCateg
     """
     validation.check_price_categories_deletable(offer)
     db.session.delete(price_category)
-    db.session.commit()
+    db.session.flush()
 
 
 def approves_provider_product_and_rejected_offers(ean: str) -> None:
