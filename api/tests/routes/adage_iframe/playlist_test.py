@@ -79,18 +79,18 @@ class GetClassroomPlaylistTest(SharedPlaylistsErrorTests, AuthError):
         with assert_num_queries(5):
             response = iframe_client.get(url_for(self.endpoint))
 
-            assert response.status_code == 200
+        assert response.status_code == 200
 
-            assert len(response.json["collectiveOffers"]) == len(offers)
-            response_offers = sorted(response.json["collectiveOffers"], key=lambda o: o["id"])
+        assert len(response.json["collectiveOffers"]) == len(offers)
+        response_offers = sorted(response.json["collectiveOffers"], key=lambda o: o["id"])
 
-            for idx, response_offer in enumerate(response_offers):
-                assert response_offer["id"] == offers[idx].id
-                # Ensure we rounded the distance
-                if idx == 2:
-                    assert response_offer["venue"]["distance"] == 150
-                else:
-                    assert response_offer["venue"]["distance"] == expected_distance
+        for idx, response_offer in enumerate(response_offers):
+            assert response_offer["id"] == offers[idx].id
+            # Ensure we rounded the distance
+            if idx == 2:
+                assert response_offer["venue"]["distance"] == 150
+            else:
+                assert response_offer["venue"]["distance"] == expected_distance
 
     def test_no_rows(self, client):
         iframe_client = _get_iframe_client(client)

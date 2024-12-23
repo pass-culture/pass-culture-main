@@ -7,6 +7,7 @@ from pcapi.core.educational.models import AdageFrontRoles
 from pcapi.core.educational.repository import find_educational_institution_by_uai_code
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models.api_errors import ApiErrors
+from pcapi.repository import atomic
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization.adage_authentication import (
@@ -22,11 +23,11 @@ logger = logging.getLogger(__name__)
 
 
 @blueprint.adage_iframe.route("/collective/bookings", methods=["POST"])
+@atomic()
 @spectree_serialize(api=blueprint.api, response_model=BookCollectiveOfferResponse, on_error_statuses=[400, 403])
 @adage_jwt_required
 def book_collective_offer(
-    body: BookCollectiveOfferRequest,
-    authenticated_information: AuthenticatedInformation,
+    body: BookCollectiveOfferRequest, authenticated_information: AuthenticatedInformation
 ) -> BookCollectiveOfferResponse:
     institution = find_educational_institution_by_uai_code(authenticated_information.uai)
     educational_utils.log_information_for_data_purpose(

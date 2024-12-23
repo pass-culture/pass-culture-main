@@ -807,16 +807,20 @@ def create_offer_request(
         comment=body.comment,
         collectiveOfferTemplateId=offer.id,
         educationalInstitutionId=institution.id,
-        educationalRedactorId=redactor.id,
+        educationalRedactor=redactor,
     )
 
     db.session.add(request)
-    db.session.commit()
+    db.session.flush()
+
     request.email = redactor.email
 
     transactional_mails.send_new_request_made_by_redactor_to_pro(request)
-
-    adage_client.notify_redactor_when_collective_request_is_made(serialize_collective_offer_request(request))
+    on_commit(
+        partial(
+            adage_client.notify_redactor_when_collective_request_is_made, serialize_collective_offer_request(request)
+        )
+    )
 
     return request
 

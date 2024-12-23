@@ -335,9 +335,9 @@ class GetCollectiveOfferTemplatesTest:
         with assert_num_queries(self.expected_num_queries):
             response = eac_client.get(url)
 
-            assert response.status_code == 200
-            assert len(response.json["collectiveOffers"]) == 1
-            assert response.json["collectiveOffers"][0]["id"] == offer.id
+        assert response.status_code == 200
+        assert len(response.json["collectiveOffers"]) == 1
+        assert response.json["collectiveOffers"][0]["id"] == offer.id
 
     def test_one_template_id_with_one_inactive_template(self, eac_client, redactor):
         offer = educational_factories.CollectiveOfferTemplateFactory()
@@ -348,9 +348,9 @@ class GetCollectiveOfferTemplatesTest:
         with assert_num_queries(self.expected_num_queries):
             response = eac_client.get(url)
 
-            assert response.status_code == 200
-            assert len(response.json["collectiveOffers"]) == 1
-            assert response.json["collectiveOffers"][0]["id"] == offer.id
+        assert response.status_code == 200
+        assert len(response.json["collectiveOffers"]) == 1
+        assert response.json["collectiveOffers"][0]["id"] == offer.id
 
     def test_one_template_id_without_date_range(self, eac_client, redactor):
         offer = educational_factories.CollectiveOfferTemplateFactory(dateRange=None)
@@ -359,9 +359,9 @@ class GetCollectiveOfferTemplatesTest:
         with assert_num_queries(self.expected_num_queries):
             response = eac_client.get(url)
 
-            assert response.status_code == 200
-            assert len(response.json["collectiveOffers"]) == 1
-            assert response.json["collectiveOffers"][0]["id"] == offer.id
+        assert response.status_code == 200
+        assert len(response.json["collectiveOffers"]) == 1
+        assert response.json["collectiveOffers"][0]["id"] == offer.id
 
     def test_get_one_template(self, eac_client, redactor):
         venue = offerers_factories.VenueFactory()

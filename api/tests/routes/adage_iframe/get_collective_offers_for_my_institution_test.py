@@ -74,16 +74,16 @@ class CollectiveOfferTest:
         with assert_num_queries(self.num_queries):
             response = eac_client.get(dst)
 
-            assert response.status_code == 200
-            response_data = sorted(response.json["collectiveOffers"], key=lambda offer: offer["id"])
-            assert len(response_data) == 3, response_data
-            assert response_data[0]["id"] == stocks[0].collectiveOffer.id
-            assert response_data[0]["educationalInstitution"]["id"] == institution.id
-            assert response_data[0]["stock"]["id"] == stocks[0].id
-            assert response_data[1]["id"] == stocks[1].collectiveOffer.id
-            assert response_data[1]["educationalInstitution"]["id"] == institution.id
-            assert response_data[1]["stock"]["id"] == stocks[1].id
-            assert response_data[2]["id"] == stock_with_cancelled_booking.collectiveOffer.id
+        assert response.status_code == 200
+        response_data = sorted(response.json["collectiveOffers"], key=lambda offer: offer["id"])
+        assert len(response_data) == 3, response_data
+        assert response_data[0]["id"] == stocks[0].collectiveOffer.id
+        assert response_data[0]["educationalInstitution"]["id"] == institution.id
+        assert response_data[0]["stock"]["id"] == stocks[0].id
+        assert response_data[1]["id"] == stocks[1].collectiveOffer.id
+        assert response_data[1]["educationalInstitution"]["id"] == institution.id
+        assert response_data[1]["stock"]["id"] == stocks[1].id
+        assert response_data[2]["id"] == stock_with_cancelled_booking.collectiveOffer.id
 
     @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_get_collective_offer_for_my_institution_with_feature_toggle(self, eac_client, redactor):
@@ -121,12 +121,12 @@ class CollectiveOfferTest:
         with assert_num_queries(self.num_queries):
             response = eac_client.get(dst)
 
-            assert response.status_code == 200
-            response_data = sorted(response.json["collectiveOffers"], key=lambda offer: offer["id"])
-            assert len(response_data) == 2, response_data
-            assert response_data[0]["id"] == stocks[0].collectiveOffer.id
-            assert response_data[0]["educationalInstitution"]["id"] == institution.id
-            assert response_data[0]["stock"]["id"] == stocks[0].id
-            assert response_data[1]["id"] == stocks[1].collectiveOffer.id
-            assert response_data[1]["educationalInstitution"]["id"] == institution.id
-            assert response_data[1]["stock"]["id"] == stocks[1].id
+        assert response.status_code == 200
+        response_data = sorted(response.json["collectiveOffers"], key=lambda offer: offer["id"])
+        assert len(response_data) == 2, response_data
+        assert response_data[0]["id"] == stocks[0].collectiveOffer.id
+        assert response_data[0]["educationalInstitution"]["id"] == institution.id
+        assert response_data[0]["stock"]["id"] == stocks[0].id
+        assert response_data[1]["id"] == stocks[1].collectiveOffer.id
+        assert response_data[1]["educationalInstitution"]["id"] == institution.id
+        assert response_data[1]["stock"]["id"] == stocks[1].id

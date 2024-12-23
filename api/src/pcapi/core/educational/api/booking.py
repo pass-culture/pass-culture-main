@@ -11,6 +11,7 @@ from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational import schemas as educational_schemas
 from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational import validation
 from pcapi.core.educational.exceptions import AdageException
@@ -87,14 +88,20 @@ def book_collective_offer(
 
     transactional_mails.send_eac_new_collective_prebooking_email_to_pro(booking)
 
+    on_commit(partial(_notify_prebooking, data=prebooking.serialize_collective_booking(booking)))
+
+    return booking
+
+
+def _notify_prebooking(data: educational_schemas.EducationalBookingResponse) -> None:
     try:
-        adage_client.notify_prebooking(data=prebooking.serialize_collective_booking(booking))
+        adage_client.notify_prebooking(data=data)
     except AdageException as adage_error:
         logger.error(
             "%s Educational institution will not receive a confirmation email.",
             adage_error.message,
             extra={
-                "bookingId": booking.id,
+                "bookingId": data.id,
                 "adage status code": adage_error.status_code,
                 "adage response text": adage_error.response_text,
             },
@@ -102,12 +109,8 @@ def book_collective_offer(
     except ValidationError:
         logger.exception(
             "Could not notify adage of prebooking, hence send confirmation email to educational institution, as educationalBooking serialization failed.",
-            extra={
-                "bookingId": booking.id,
-            },
+            extra={"bookingId": data.id},
         )
-
-    return booking
 
 
 def confirm_collective_booking(educational_booking_id: int) -> educational_models.CollectiveBooking:

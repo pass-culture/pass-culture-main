@@ -1,6 +1,7 @@
 from pcapi.core.educational import repository as educational_repository
 import pcapi.core.educational.api.redactor as educational_redactor_api
 from pcapi.models.api_errors import ApiErrors
+from pcapi.repository import atomic
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe import serialization
 from pcapi.routes.adage_iframe.security import adage_jwt_required
@@ -9,6 +10,7 @@ from pcapi.serialization.decorator import spectree_serialize
 
 
 @blueprint.adage_iframe.route("/redactor/preferences", methods=["POST"])
+@atomic()
 @spectree_serialize(api=blueprint.api, on_success_status=204)
 @adage_jwt_required
 def save_redactor_preferences(
