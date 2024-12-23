@@ -73,7 +73,7 @@ spectree = "1.2.1"
 # (https://docs.sqlalchemy.org/en/20/changelog/changelog_14.html#change-e67bfa1efbe52ae40aa842124bc40c51).
 sqlalchemy = { version = "1.4.54", extras = ["mypy"] }
 time-machine = "^2.16.0"
-weasyprint = "62.1"
+weasyprint = "63.1"
 werkzeug = "2.0.3"
 wtforms = "3.2.1"
 wtforms-sqlalchemy = "0.4.2"
