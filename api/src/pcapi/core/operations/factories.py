@@ -54,6 +54,5 @@ class SpecialEventAnswerFactory(BaseFactory):
         model = models.SpecialEventAnswer
 
     responseId = factory.SubFactory(SpecialEventResponseFactory)
-    externalId = factory.Sequence("ExtIdAns{:04}".format)
     questionId = factory.SubFactory(SpecialEventQuestionFactory)
     text = factory.Sequence("Réponse #{}".format)
