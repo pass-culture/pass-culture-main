@@ -119,6 +119,7 @@ def update_venue(
     new_open_to_public = not venue.isOpenToPublic and modifications.get("isOpenToPublic")
     new_permanent = not venue.isPermanent and modifications.get("isPermanent")
     venue_snapshot = history_api.ObjectUpdateSnapshot(venue, author)
+
     if not venue.isVirtual:
         assert venue.offererAddress is not None  # helps mypy
         assert venue.offererAddress.address is not None  # helps mypy
@@ -132,6 +133,9 @@ def update_venue(
         )
         coordinates_updated = any(field in modifications for field in ("latitude", "longitude"))
         is_manual_edition_updated = is_manual_edition != venue.offererAddress.address.isManualEdition
+
+        # Undo coordinates changes only. Do we really want to that ???
+        # What if BAN only updated the coordinates ?
         if coordinates_updated and not is_manual_edition and not is_venue_location_updated:
             if "latitude" in modifications:
                 del modifications["latitude"]
@@ -141,27 +145,18 @@ def update_venue(
             is_manual_edition_updated = False
             logger.error("Coordinates updated without manual edition or location update, ignoring them")
 
-        old_oa = venue.offererAddress
-        new_oa = models.OffererAddress(offerer=venue.managingOfferer)
-        if is_venue_location_updated or coordinates_updated:
+        print("is_manual_edition_updated: %s" % is_manual_edition_updated)
+        print(is_manual_edition, venue.offererAddress.address.isManualEdition)
+        print("is_venue_location_updated: %s" % is_venue_location_updated)
+        if is_manual_edition_updated or is_venue_location_updated:
             update_venue_location(
                 venue,
                 modifications,
                 location_modifications,
                 venue_snapshot=venue_snapshot,
-                new_oa=new_oa,
+                # new_oa=new_oa,
                 is_manual_edition=is_manual_edition,
             )
-        elif is_manual_edition_updated:
-            duplicate_oa(
-                venue=venue,
-                old_oa=old_oa,
-                new_oa=new_oa,
-                is_manual_edition=is_manual_edition,
-                venue_snapshot=venue_snapshot,
-            )
-        if is_manual_edition_updated or is_venue_location_updated or coordinates_updated:
-            switch_old_oa_label(old_oa=old_oa, label=venue.common_name, venue_snapshot=venue_snapshot)
 
     if contact_data:
         # target must not be None, otherwise contact_data fields will be compared to fields in Venue, which do not exist
@@ -252,12 +247,13 @@ def update_venue(
     return venue
 
 
+# TODO: préciser modifications, location_modifications, venue_snapshot
 def update_venue_location(  # pylint: disable=too-many-positional-arguments
     venue: models.Venue,
     modifications: dict,
     location_modifications: dict,
     venue_snapshot: history_api.ObjectUpdateSnapshot,
-    new_oa: models.OffererAddress,
+    # new_oa: models.OffererAddress,
     is_manual_edition: bool = False,
 ) -> None:
     """
@@ -268,6 +264,10 @@ def update_venue_location(  # pylint: disable=too-many-positional-arguments
     for the API.
     """
     assert venue.offererAddress is not None
+    print("update_venue_location called")
+
+    # Get updated informations
+    # TODO: improve this and make it all or none on the modified fields
     street = location_modifications.get("street") or venue.offererAddress.address.street
     city = location_modifications.get("city") or venue.offererAddress.address.city
     postal_code = location_modifications.get("postalCode") or venue.offererAddress.address.postalCode
@@ -279,6 +279,7 @@ def update_venue_location(  # pylint: disable=too-many-positional-arguments
         extra={"venue_id": venue.id, "venue_street": street, "venue_city": city, "venue_postalCode": postal_code},
     )
 
+    # Fill the location_data
     if not is_manual_edition:
         address_info = api_adresse.get_address(address=street, postcode=postal_code, city=city)  # type: ignore[arg-type]
         location_data = LocationData(
@@ -321,23 +322,57 @@ def update_venue_location(  # pylint: disable=too-many-positional-arguments
     }
     # Trace banId modification only if edition is not manual
     # In case of manual edition, banId is emptied with any action user
-    # and we don’t that action to appears as user’s action
+    # and we don’t want that action to appears as user’s action
     if not is_manual_edition:
         snapshot_location_data["banId"] = address.banId
 
-    new_oa.address = address
-    db.session.add(new_oa)
-    db.session.flush()  # flush to get the new_oa.id
-    target = venue.offererAddress.address
-    old_oa = venue.offererAddress
-    venue_snapshot.trace_update(snapshot_location_data, target=target, field_name_template="offererAddress.address.{}")
+    # TODO: move to repository
+    # Check whether there's a potential target offerer address
+    target_offerer_address = (
+        models.OffererAddress.query.filter(
+            models.OffererAddress.offererId == venue.managingOffererId,
+            models.OffererAddress.addressId == address.id,
+            models.OffererAddress.label == venue.common_name,
+        )
+        .options(sa_orm.joinedload(models.OffererAddress.address))
+        .one_or_none()
+    )
+
+    print("target_offerer_address found: %s" % target_offerer_address)
+    print(
+        "Searching with offererId=%s, addressId=%s, label=%s" % (venue.managingOffererId, address.id, venue.common_name)
+    )
+    print("AO: %s" % [i.__dict__ for i in models.OffererAddress.query.all()])
+    former_offerer_address = venue.offererAddress
+    if target_offerer_address:
+        target_offerer_address.label = None
+    else:
+        # get or create will not work due to the constraint not been applied
+        # to null labels
+        target_offerer_address = get_or_create_offerer_address(
+            offerer_id=venue.managingOffererId,
+            address_id=address.id,
+            label=None,
+        )
+    venue.offererAddress = target_offerer_address
+    db.session.add_all([target_offerer_address, venue])
+    db.session.flush()
+
     venue_snapshot.trace_update(
-        {"id": new_oa.id, "addressId": new_oa.addressId, "label": new_oa.label},
-        old_oa,
+        snapshot_location_data, target=former_offerer_address.address, field_name_template="offererAddress.address.{}"
+    )
+    venue_snapshot.trace_update(
+        {
+            "id": target_offerer_address.id,
+            "addressId": target_offerer_address.addressId,
+            "label": target_offerer_address.label,
+        },
+        former_offerer_address,
         "offererAddress.{}",
     )
-    venue.offererAddress = new_oa
-    db.session.add(venue)
+
+    former_offerer_address.label = venue.common_name
+    db.session.add(former_offerer_address)
     db.session.flush()
 
     if modifications.get("street"):
@@ -2830,10 +2865,16 @@ def get_or_create_offerer_address(offerer_id: int, address_id: int, label: str |
             db.session.add(offerer_address)
             db.session.flush()
         except sa.exc.IntegrityError:
+            print(
+                "get_or_create_offerer_address: Integrity error, rollbacking (offererId=%s, addressId=%s, label=%s)"
+                % (offerer_id, address_id, label)
+            )
             if is_managed_transaction():
                 mark_transaction_as_invalid()
             else:
                 db.session.rollback()
+        else:
+            print("get_or_create_offerer_address: creating new object")
 
     offerer_address = (
         models.OffererAddress.query.filter(
@@ -2857,59 +2898,6 @@ def create_offerer_address(offerer_id: int, address_id: int | None, label: str |
         db.session.rollback()
         raise (exceptions.OffererAddressCreationError())
     return offerer_address
-
-
-def switch_old_oa_label(
-    old_oa: models.OffererAddress, label: str, venue_snapshot: history_api.ObjectUpdateSnapshot
-) -> None:
-    venue_snapshot.trace_update(
-        {"label": label},
-        target=old_oa,
-        field_name_template="old_oa_label",
-    )
-    old_oa.label = label
-    db.session.add(old_oa)
-    db.session.flush()
-
-
-def duplicate_oa(
-    venue: models.Venue,
-    old_oa: models.OffererAddress,
-    new_oa: models.OffererAddress,
-    is_manual_edition: bool,
-    venue_snapshot: history_api.ObjectUpdateSnapshot,
-) -> None:
-    new_oa.label = old_oa.label
-    if old_oa.address.isManualEdition != is_manual_edition:
-        new_oa.address = get_or_create_address(
-            {
-                "street": old_oa.address.street,
-                "city": old_oa.address.city,
-                "postal_code": old_oa.address.postalCode,
-                "insee_code": old_oa.address.inseeCode,
-                "latitude": typing.cast(float, old_oa.address.latitude),
-                "longitude": typing.cast(float, old_oa.address.longitude),
-                "ban_id": old_oa.address.banId,
-            },
-            is_manual_edition,
-        )
-        venue_snapshot.trace_update(
-            {"isManualEdition": is_manual_edition},
-            target=old_oa.address,
-            field_name_template="offererAddress.address.isManualEdition",
-        )
-    else:
-        new_oa.address = old_oa.address
-    venue_snapshot.trace_update(
-        {"id": new_oa.id, "addressId": new_oa.addressId, "label": new_oa.label},
-        old_oa,
-        "offererAddress.{}",
-    )
-    db.session.add(new_oa)
-    db.session.flush()
-    venue.offererAddressId = new_oa.id
-    db.session.add(venue)
-    db.session.flush()
 
 
 def create_offerer_address_from_address_api(address: offerers_schemas.AddressBodyModel) -> geography_models.Address:

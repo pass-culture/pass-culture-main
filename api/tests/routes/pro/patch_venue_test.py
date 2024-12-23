@@ -166,10 +166,6 @@ class Returns200Test:
                     "new_info": new_venue.offererAddressId,
                     "old_info": venue_oa_id,
                 },
-                "old_oa_label": {
-                    "new_info": "old name",
-                    "old_info": None,
-                },
             }
         }
         assert (len(offerers_models.OffererAddress.query.all())) == 2
@@ -343,7 +339,9 @@ class Returns200Test:
         address = geography_factories.AddressFactory(
             street="1 boulevard Poissonnière", postalCode="75000", inseeCode="75000", city="Paris"
         )
-        offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer, address=address)
+        offerer_address = offerers_factories.OffererAddressFactory(
+            label=None, offerer=user_offerer.offerer, address=address
+        )
         venue = offerers_factories.VenueFactory(
             managingOfferer=user_offerer.offerer,
             street=address.street,
@@ -369,12 +367,41 @@ class Returns200Test:
             venue,
         )
 
+        assert (
+            offerers_models.OffererAddress.query.filter(
+                offerers_models.OffererAddress.offerer == user_offerer.offerer
+            ).count()
+            == 1
+        )
+
         response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
         assert response.status_code == 200
+        assert (
+            offerers_models.OffererAddress.query.filter(
+                offerers_models.OffererAddress.offerer == user_offerer.offerer
+            ).count()
+            == 2
+        )
 
         # Ensures we can edit another time the venue just fine
         response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
         assert response.status_code == 200
+        assert (
+            offerers_models.OffererAddress.query.filter(
+                offerers_models.OffererAddress.offerer == user_offerer.offerer
+            ).count()
+            == 2
+        )
+
+        # Ensures we can edit another time the venue just fine
+        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        assert response.status_code == 200
+        assert (
+            offerers_models.OffererAddress.query.filter(
+                offerers_models.OffererAddress.offerer == user_offerer.offerer
+            ).count()
+            == 2
+        )
 
     @patch("pcapi.connectors.api_adresse.get_address")
     @pytest.mark.parametrize(
@@ -431,6 +458,18 @@ class Returns200Test:
             mock_get_address.return_value = AddressInfo(
                 longitude=2.34765,
                 latitude=5.871711,
+                id="75101_9575_00003",
+                label="1 boulevard Poissonnière",
+                postcode="75000",
+                citycode="75101",
+                score=0.9384945454545454,
+                city="Paris",
+                street="1 boulevard Poissonnière",
+            )
+        if not has_latitude and not has_longitude:
+            mock_get_address.return_value = AddressInfo(
+                longitude=2.34765,
+                latitude=48.87171,
                 id="75101_9575_00003",
                 label="1 boulevard Poissonnière",
                 postcode="75000",
