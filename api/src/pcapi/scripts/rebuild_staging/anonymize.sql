@@ -341,4 +341,43 @@ WHERE email NOT LIKE '%@passculture.app';
 UPDATE "chronicle"
 SET
     "email" = 'chronicle' || "id" || '@anonymized.email',
-    "firstName" = pg_temp.fake_first_name(id);
+    "firstName" = pg_temp.fake_first_name("id");
+
+-- anonymize special events response
+UPDATE "special_event_response"
+SET
+  "email" = 'special_event' || "id" || '@anonymized.email',
+  "phoneNumber" = pg_temp.fake_phone_number_from_id("userId");
+
+-- anonymize user_account_update_request
+UPDATE "user_account_update_request"
+SET
+  "firstName" = pg_temp.fake_first_name("id")
+WHERE "firstName" IS NOT NULL;
+UPDATE "user_account_update_request"
+SET
+  "newFirstName" = pg_temp.fake_first_name("dsApplicationId")
+WHERE "newFirstName" IS NOT NULL;
+UPDATE "user_account_update_request"
+SET
+  "lastName" = pg_temp.fake_last_name("id")
+WHERE "lastName" IS NOT NULL;
+UPDATE "user_account_update_request"
+SET
+  "newLastName" = pg_temp.fake_last_name("dsApplicationId")
+WHERE "newLastName" IS NOT NULL;
+UPDATE "user_account_update_request"
+SET
+  "email" = 'user_account_update_request' || "id" || '@anonymized.email';
+UPDATE "user_account_update_request"
+SET
+  "newEmail" = 'new_email_user_account_update_request' || "id" || '@anonymized.email'
+WHERE "newEmail" IS NOT NULL;
+UPDATE "user_account_update_request"
+SET
+  "oldEmail" = 'old_email_user_account_update_request' || "id" || '@anonymized.email'
+WHERE "oldEmail" IS NOT NULL;
+UPDATE "user_account_update_request"
+SET
+  "newPhoneNumber" = pg_temp.fake_phone_number_from_id("id")
+WHERE "newPhoneNumber" IS NOT NULL;
