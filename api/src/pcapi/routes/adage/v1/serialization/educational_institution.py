@@ -1,6 +1,6 @@
 from pydantic.v1.fields import Field
 
-from pcapi.routes.adage.v1.serialization.config import AdageBaseResponseModel
+from pcapi.core.educational.schemas import AdageBaseResponseModel
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingResponse
 from pcapi.serialization.utils import to_camel
 

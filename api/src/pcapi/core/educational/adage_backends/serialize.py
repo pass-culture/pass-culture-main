@@ -3,7 +3,7 @@ from datetime import datetime
 import decimal
 
 from pcapi.core.educational import models
-from pcapi.routes.adage.v1.serialization.config import AdageBaseResponseModel
+from pcapi.core.educational.schemas import AdageBaseResponseModel
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
 
 
