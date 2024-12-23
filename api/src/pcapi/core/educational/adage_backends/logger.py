@@ -5,18 +5,18 @@ from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational import exceptions
 from pcapi.core.educational.adage_backends import serialize
 from pcapi.core.educational.adage_backends.base import AdageClient
-from pcapi.core.educational.schemas import AdageCulturalPartner
-from pcapi.routes.adage.v1.serialization import prebooking
+import pcapi.core.educational.schemas as educational_schemas
 
 
 logger = logging.getLogger(__name__)
 
 
 class AdageLoggerClient(AdageClient):
-    def notify_prebooking(self, data: prebooking.EducationalBookingResponse) -> None:
+
+    def notify_prebooking(self, data: educational_schemas.EducationalBookingResponse) -> None:
         logger.info("Adage has been notified at %s, with payload: %s", f"{self.base_url}/v1/prereservation", data)
 
-    def notify_offer_or_stock_edition(self, data: prebooking.EducationalBookingEdition) -> None:
+    def notify_offer_or_stock_edition(self, data: educational_schemas.EducationalBookingEdition) -> None:
         logger.info("Adage has been notified at %s, with payload: %s", f"{self.base_url}/v1/prereservation-edit", data)
 
     def get_adage_offerer(self, siren: str) -> list[AdageVenue]:
@@ -27,7 +27,7 @@ class AdageLoggerClient(AdageClient):
 
         raise exceptions.CulturalPartnerNotFoundException("Requested siren is not a known cultural partner for Adage")
 
-    def notify_booking_cancellation_by_offerer(self, data: prebooking.EducationalBookingResponse) -> None:
+    def notify_booking_cancellation_by_offerer(self, data: educational_schemas.EducationalBookingResponse) -> None:
         logger.info(
             "Adage has been notified at %s, with payload: %s", f"{self.base_url}/v1/prereservation-annule", data
         )
@@ -100,10 +100,10 @@ class AdageLoggerClient(AdageClient):
     def notify_institution_association(self, data: serialize.AdageCollectiveOffer) -> None:
         logger.info("Adage has been notified at %s, with payload: %s", f"{self.base_url}/v1/offre-assoc", data)
 
-    def get_cultural_partner(self, siret: str) -> AdageCulturalPartner:
+    def get_cultural_partner(self, siret: str) -> educational_schemas.AdageCulturalPartner:
         logger.info("Adage has been called at %s", f"{self.base_url}/v1/etablissement-culturel/{siret}")
         if siret == "12345678200010":
-            return AdageCulturalPartner(
+            return educational_schemas.AdageCulturalPartner(
                 id=128028,
                 venueId=None,
                 siret=siret,
@@ -189,7 +189,7 @@ class AdageLoggerClient(AdageClient):
 
         return response_content
 
-    def notify_reimburse_collective_booking(self, data: prebooking.AdageReimbursementNotification) -> None:
+    def notify_reimburse_collective_booking(self, data: educational_schemas.AdageReimbursementNotification) -> None:
         api_url = f"{self.base_url}/v1/reservation-remboursement"
         logger.info("Adage has been called at %s", api_url)
 
