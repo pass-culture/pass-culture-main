@@ -5,8 +5,8 @@ from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational import exceptions
 from pcapi.core.educational.adage_backends import serialize
 from pcapi.core.educational.adage_backends.base import AdageClient
+from pcapi.core.educational.schemas import AdageCulturalPartner
 from pcapi.routes.adage.v1.serialization import prebooking
-from pcapi.routes.serialization import venues_serialize
 
 
 logger = logging.getLogger(__name__)
@@ -100,10 +100,10 @@ class AdageLoggerClient(AdageClient):
     def notify_institution_association(self, data: serialize.AdageCollectiveOffer) -> None:
         logger.info("Adage has been notified at %s, with payload: %s", f"{self.base_url}/v1/offre-assoc", data)
 
-    def get_cultural_partner(self, siret: str) -> venues_serialize.AdageCulturalPartner:
+    def get_cultural_partner(self, siret: str) -> AdageCulturalPartner:
         logger.info("Adage has been called at %s", f"{self.base_url}/v1/etablissement-culturel/{siret}")
         if siret == "12345678200010":
-            return venues_serialize.AdageCulturalPartner(
+            return AdageCulturalPartner(
                 id=128028,
                 venueId=None,
                 siret=siret,
