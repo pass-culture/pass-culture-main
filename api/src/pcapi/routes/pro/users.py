@@ -160,16 +160,6 @@ def get_user_email_pending_validation() -> users_serializers.UserEmailValidation
     return users_serializers.UserEmailValidationResponseModel.from_orm(pending_validation)
 
 
-@blueprint.pro_private_api.route("/users/token/<token>", methods=["GET"])
-@spectree_serialize(on_error_statuses=[404], on_success_status=204, api=blueprint.pro_private_schema)
-def check_activation_token_exists(token: str) -> None:
-    # TODO (yacine-pc) 04-10-23 check if this route is needed, remove it else
-    try:
-        token_utils.Token.load_and_check(token, token_utils.TokenType.RESET_PASSWORD)
-    except users_exceptions.InvalidToken:
-        flask.abort(404)
-
-
 @blueprint.pro_private_api.route("/users/password", methods=["POST"])
 @login_required
 @spectree_serialize(on_success_status=204, on_error_statuses=[400], api=blueprint.pro_private_schema)
