@@ -100,8 +100,18 @@ def create_offers(
 
     # eac_with_displayed_status_cases
     offerer = next(o for o in offerers if o.name == "eac_with_displayed_status_cases")
-    create_offers_booking_with_different_displayed_status(offerer=offerer, institutions=institutions, domains=domains)
-    create_offer_templates_with_different_displayed_status(offerer=offerer, domains=domains)
+    provider = create_collective_api_provider(offerer.managedVenues)
+
+    venue_pc_pro = next(v for v in offerer.managedVenues if "PC_PRO" in v.name)
+    create_offers_booking_with_different_displayed_status(
+        institutions=institutions, domains=domains, venue=venue_pc_pro, provider=None
+    )
+    create_offer_templates_with_different_displayed_status(domains=domains, venue=venue_pc_pro)
+
+    venue_public_api = next(v for v in offerer.managedVenues if "PUBLIC_API" in v.name)
+    create_offers_booking_with_different_displayed_status(
+        institutions=institutions, domains=domains, venue=venue_public_api, provider=provider
+    )
 
     search.index_all_collective_offers_and_templates()
 
@@ -362,16 +372,16 @@ def add_image_to_offer(offer: educational_models.HasImageMixin, image_name: str)
 
 def create_offers_booking_with_different_displayed_status(
     *,
-    offerer: offerers_models.Offerer,
     institutions: list[educational_models.EducationalInstitution],
     domains: list[educational_models.EducationalDomain],
+    venue: offerers_models.Venue,
+    provider: providers_models.Provider | None,
 ) -> None:
     current_ansco = educational_models.EducationalYear.query.filter(
         educational_models.EducationalYear.beginningDate <= datetime.utcnow(),
         educational_models.EducationalYear.expirationDate >= datetime.utcnow(),
     ).one()
     domains_iterator = cycle(domains)
-    venue_iterator = cycle(offerer.managedVenues)
     institution_iterator = cycle(institutions)
 
     today = datetime.utcnow()
@@ -556,15 +566,16 @@ def create_offers_booking_with_different_displayed_status(
         institution = next(institution_iterator)
 
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__name=f"La culture à {city}",
+            collectiveOffer__name=f"La culture à {city}{' (public api)' if provider is not None else ''}",
             collectiveOffer__educational_domains=[next(domains_iterator)],
-            collectiveOffer__venue=next(venue_iterator),
+            collectiveOffer__venue=venue,
             collectiveOffer__validation=attributes.get("validation", OfferValidationStatus.APPROVED),
             collectiveOffer__isActive=attributes.get("isActive", True),
             collectiveOffer__dateArchived=attributes.get("dateArchived"),
             collectiveOffer__bookingEmails=["toto@totoland.com"],
             collectiveOffer__institution=institution,
             collectiveOffer__formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
+            collectiveOffer__provider=provider,
             beginningDatetime=beginning_datetime,
             startDatetime=beginning_datetime,
             endDatetime=end_datetime,
@@ -588,12 +599,9 @@ def create_offers_booking_with_different_displayed_status(
 
 
 def create_offer_templates_with_different_displayed_status(
-    *,
-    offerer: offerers_models.Offerer,
-    domains: list[educational_models.EducationalDomain],
+    *, domains: list[educational_models.EducationalDomain], venue: offerers_models.Venue
 ) -> None:
     domains_iterator = cycle(domains)
-    venue_iterator = cycle(offerer.managedVenues)
 
     now = datetime.utcnow()
     two_weeks_ago = now - timedelta(days=14)
@@ -629,7 +637,7 @@ def create_offer_templates_with_different_displayed_status(
             dateRange=attributes.get("dateRange"),
             dateArchived=attributes.get("dateArchived"),
             dateCreated=two_weeks_ago,  # necessary to pass constraint template_dates_non_empty_daterange
-            venue=next(venue_iterator),
+            venue=venue,
             educational_domains=[next(domains_iterator)],
             bookingEmails=["toto@totoland.com"],
             formats=[EacFormat.PROJECTION_AUDIOVISUELLE],

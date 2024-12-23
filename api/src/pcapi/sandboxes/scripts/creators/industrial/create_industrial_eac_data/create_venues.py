@@ -356,7 +356,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
     offerer = next(offerer_iterator)
     create_venue(
         managingOfferer=offerer,
-        name=f"{offerer.name} 57",
+        name=f"{offerer.name} PC_PRO",
         reimbursement=True,
         adageId="123547",
         adageInscriptionDate=datetime.utcnow() - timedelta(days=3),
@@ -366,6 +366,20 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         postalCode="57000",
         city="Lorient",
         siret="55208131766523",
+        pricing_point="self",
+    )
+    create_venue(
+        managingOfferer=offerer,
+        name=f"{offerer.name} PUBLIC_API",
+        reimbursement=True,
+        adageId="123548",
+        adageInscriptionDate=datetime.utcnow() - timedelta(days=3),
+        venueEducationalStatusId=next(educational_status_iterator),
+        collectiveInterventionArea=ALL_INTERVENTION_AREA,
+        departementCode="57",
+        postalCode="57000",
+        city="Lorient",
+        siret="55208131766524",
         pricing_point="self",
     )
 
