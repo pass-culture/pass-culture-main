@@ -108,7 +108,7 @@ def get_capped_offers_for_filters(
                 models.Offer.extraData,
                 models.Offer.lastProviderId,
                 models.Offer.offererAddressId,
-            ).joinedload(models.Offer.headlineOffer)
+            ).joinedload(models.Offer.headlineOffers)
         )
         .options(
             sa_orm.joinedload(models.Offer.venue)
@@ -207,6 +207,16 @@ def get_offers_data_from_top_offers(top_offers: list[dict]) -> list[dict]:
                 models.Mediation.dateCreated,
                 models.Mediation.thumbCount,
                 models.Mediation.credit,
+            )
+        )
+        .options(sa_orm.joinedload(models.Offer.headlineOffers))
+        .options(
+            sa_orm.joinedload(models.Offer.stocks).load_only(
+                models.Stock.quantity,
+                models.Stock.isSoftDeleted,
+                models.Stock.beginningDatetime,
+                models.Stock.dnBookedQuantity,
+                models.Stock.bookingLimitDatetime,
             )
         )
         .options(
@@ -1140,7 +1150,7 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
         if "product" in load_options:
             query = query.options(sa_orm.joinedload(models.Offer.product).joinedload(models.Product.productMediations))
         if "headline_offer" in load_options:
-            query = query.options(sa_orm.joinedload(models.Offer.headlineOffer))
+            query = query.options(sa_orm.joinedload(models.Offer.headlineOffers))
         if "price_category" in load_options:
             query = query.options(
                 sa_orm.joinedload(models.Offer.priceCategories).joinedload(models.PriceCategory.priceCategoryLabel)

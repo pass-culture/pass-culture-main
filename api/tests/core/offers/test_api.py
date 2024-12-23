@@ -2104,6 +2104,143 @@ class ActivateFutureOffersTest:
 
 
 @pytest.mark.usefixtures("db_session")
+class HeadlineOfferTest:
+    def test_make_new_offer_headline(self):
+        offer = factories.OfferFactory(isActive=True)
+        factories.StockFactory(offer=offer)
+        headline_offer = api.make_offer_headline(offer=offer)
+        db.session.commit()  # see comment in make_offer_headline()
+
+        assert offer.is_headline_offer
+        assert headline_offer.isActive
+        assert headline_offer.timespan.lower
+        assert not headline_offer.timespan.upper
+
+    def test_create_offer_headline_when_another_is_still_active_should_fail(self):
+        offer = factories.OfferFactory(isActive=True)
+        factories.StockFactory(offer=offer)
+        api.make_offer_headline(offer=offer)
+        with pytest.raises(exceptions.OfferHasAlreadyAnActiveHeadlineOffer) as error:
+            api.make_offer_headline(offer=offer)
+            assert error.value.errors["headlineOffer"] == ["This offer is already an active headline offer"]
+
+    def test_make_another_offer_headline_on_the_same_venue_should_fail(self):
+        venue = offerers_factories.VenueFactory()
+        offer_1 = factories.OfferFactory(isActive=True, venue=venue)
+        factories.StockFactory(offer=offer_1)
+        offer_2 = factories.OfferFactory(isActive=True, venue=venue)
+        factories.StockFactory(offer=offer_2)
+
+        api.make_offer_headline(offer=offer_1)
+        assert venue.has_headline_offer
+
+        with pytest.raises(exceptions.VenueHasAlreadyAnActiveHeadlineOffer) as error:
+            api.make_offer_headline(offer=offer_2)
+            assert error.value.errors["headlineOffer"] == ["This venue has already an active headline offer"]
+
+        assert offer_1.is_headline_offer
+        assert not offer_2.is_headline_offer
+        assert venue.has_headline_offer
+
+    def test_create_offer_headline_when_another_is_still_active_should_fail(self):
+        offer = factories.OfferFactory(isActive=True)
+        factories.StockFactory(offer=offer)
+        api.make_offer_headline(offer=offer)
+        with pytest.raises(exceptions.OfferHasAlreadyAnActiveHeadlineOffer) as error:
+            api.make_offer_headline(offer=offer)
+            assert error.value.errors["headlineOffer"] == ["This offer is already an active headline offer"]
+
+    def test_remove_headline_offer(self):
+        offer = factories.OfferFactory(isActive=True)
+        factories.StockFactory(offer=offer)
+        headline_offer = factories.HeadlineOfferFactory(offer=offer)
+
+        api.remove_headline_offer(headline_offer)
+        db.session.commit()  # see comment in make_offer_headline()
+
+        assert headline_offer.timespan.upper
+        assert not headline_offer.isActive
+        assert not offer.is_headline_offer
+
+    @time_machine.travel("2024-12-13 15:44:00")
+    def test_make_offer_headline_again(self):
+        offer = factories.OfferFactory(isActive=True)
+        factories.StockFactory(offer=offer)
+        creation_time = datetime.utcnow()
+        finished_timespan = (creation_time, creation_time + timedelta(days=10))
+        old_headline_offer = factories.HeadlineOfferFactory(offer=offer, timespan=finished_timespan)
+
+        one_eternity_later = creation_time + timedelta(days=1000)
+        with time_machine.travel(one_eternity_later):
+            new_headline_offer = api.make_offer_headline(offer=offer)
+            db.session.commit()  # see comment in make_offer_headline()
+            assert offer.is_headline_offer
+            assert not old_headline_offer.isActive
+            assert new_headline_offer.isActive
+            assert new_headline_offer.timespan.lower.date() != creation_time.date()
+            assert new_headline_offer.timespan.upper == None
+
+    @time_machine.travel("2024-12-13 15:44:00")
+    def test_make_another_offer_headline_on_same_venue(self):
+        venue = offerers_factories.VenueFactory()
+        offer_1 = factories.OfferFactory(isActive=True, venue=venue)
+        factories.StockFactory(offer=offer_1)
+        offer_2 = factories.OfferFactory(isActive=True, venue=venue)
+        factories.StockFactory(offer=offer_2)
+
+        ten_days_ago = datetime.utcnow() - timedelta(days=10)
+        finished_timespan = (ten_days_ago, ten_days_ago + timedelta(days=1))
+        old_headline_offer = factories.HeadlineOfferFactory(offer=offer_1, timespan=finished_timespan)
+        new_headline_offer = api.make_offer_headline(offer=offer_2)
+        db.session.commit()  # see comment in make_offer_headline()
+        assert not old_headline_offer.isActive
+        assert new_headline_offer.isActive
+        assert not offer_1.is_headline_offer
+        assert offer_2.is_headline_offer
+        assert venue.has_headline_offer
+
+    def test_headline_offer_on_offer_turned_inactive_is_inactive(self):
+        active_offer = factories.OfferFactory(isActive=True)
+        factories.StockFactory(offer=active_offer)
+
+        api.make_offer_headline(offer=active_offer)
+
+        active_offer.isActive = False
+        assert not active_offer.is_headline_offer
+
+    def test_headline_offer_on_sold_out_offer_is_inactive(self):
+        stock = factories.StockFactory(quantity=10)
+        offer = factories.OfferFactory(isActive=True, stocks=[stock])
+        api.make_offer_headline(offer=offer)
+        assert offer.is_headline_offer
+
+        stock.quantity = 0
+        assert not offer.is_headline_offer
+
+    def test_headline_offer_on_expired_offer_is_inactive(self):
+        tomorrow = date.today() + timedelta(days=1)
+        stock = factories.StockFactory(bookingLimitDatetime=tomorrow)
+        offer = factories.OfferFactory(
+            validation=models.OfferValidationStatus.APPROVED,
+            isActive=True,
+            stocks=[
+                stock,
+            ],
+        )
+        api.make_offer_headline(offer=offer)
+        assert offer.is_headline_offer
+        with time_machine.travel(tomorrow + timedelta(days=1)):
+            assert not offer.is_headline_offer
+
+    def test_headline_offer_on_rejected_offer_is_inactive(self):
+        offer = factories.OfferFactory(isActive=True)
+        factories.StockFactory(offer=offer)
+
+        api.make_offer_headline(offer=offer)
+        offer.validation = models.OfferValidationStatus.REJECTED
+        assert not offer.is_headline_offer
+
+@pytest.mark.usefixtures("db_session")
 class OfferExpenseDomainsTest:
     def test_offer_expense_domains(self):
         assert api.get_expense_domains(factories.OfferFactory(subcategoryId=subcategories.EVENEMENT_JEU.id)) == [
