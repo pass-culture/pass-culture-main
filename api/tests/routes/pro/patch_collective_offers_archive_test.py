@@ -33,6 +33,10 @@ class Returns204Test:
     num_queries += 1  # retrieve all collective_order.ids to batch them in pool for update
     num_queries += 1  # update dateArchive on collective_offer
 
+    num_queries_error = num_queries - 1  # "ensure there is no existing archived offer" is not run
+    num_queries_error = num_queries_error - 1  # "update dateArchive on collective_offer" is not run
+    num_queries_error = num_queries_error + 1  # rollback due to atomic
+
     def when_archiving_existing_offers(self, client):
         offer1 = factories.CollectiveOfferFactory()
         venue = offer1.venue
@@ -147,9 +151,7 @@ class Returns204Test:
         offer_was_active = offer.isActive
         offer_was_archived = offer.isArchived
         data = {"ids": [offer.id]}
-        # same queries except "ensure there is no existing archived offer" and "update dateArchive on collective_offer"
-        num_queries = self.num_queries - 2
-        with assert_num_queries(num_queries):
+        with assert_num_queries(self.num_queries_error):
             response = client.patch("/collective/offers/archive", json=data)
             assert response.status_code == 403
             assert response.json == {"global": ["Cette action n'est pas autorisée sur cette offre"]}
@@ -167,9 +169,7 @@ class Returns204Test:
         client = client.with_session_auth("pro@example.com")
 
         data = {"ids": [offer.id]}
-        # same queries except "ensure there is no existing archived offer" and "update dateArchive on collective_offer"
-        num_queries = self.num_queries - 2
-        with assert_num_queries(num_queries):
+        with assert_num_queries(self.num_queries_error):
             response = client.patch("/collective/offers/archive", json=data)
             assert response.status_code == 403
             assert response.json == {"global": ["Cette action n'est pas autorisée sur cette offre"]}
@@ -188,9 +188,7 @@ class Returns204Test:
         client = client.with_session_auth("pro@example.com")
 
         data = {"ids": [allowed_offer.id, unallowed_offer.id]}
-        # same queries except "ensure there is no existing archived offer" and "update dateArchive on collective_offer"
-        num_queries = self.num_queries - 2
-        with assert_num_queries(num_queries):
+        with assert_num_queries(self.num_queries_error):
             response = client.patch("/collective/offers/archive", json=data)
             assert response.status_code == 403
             assert response.json == {"global": ["Cette action n'est pas autorisée sur cette offre"]}

@@ -8,6 +8,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.domain import music_types
 from pcapi.domain import show_types
 from pcapi.models import db
+from pcapi.repository import is_managed_transaction
 from pcapi.tasks import compliance_tasks
 from pcapi.tasks.serialization.compliance_tasks import GetComplianceScoreRequest
 
@@ -39,7 +40,11 @@ def make_update_offer_compliance_score(payload: GetComplianceScoreRequest) -> No
         )
 
         db.session.execute(statement)
-        db.session.commit()
+
+        if is_managed_transaction():
+            db.session.flush()
+        else:
+            db.session.commit()
 
 
 def _get_payload_for_compliance_api(offer: offers_models.Offer) -> GetComplianceScoreRequest:

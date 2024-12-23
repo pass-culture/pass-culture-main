@@ -5,6 +5,7 @@ from flask_login import login_required
 
 from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.api import institution as educational_api_institution
+from pcapi.repository import atomic
 from pcapi.routes.apis import private_api
 from pcapi.routes.pro import blueprint
 from pcapi.routes.serialization import educational_institutions
@@ -16,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 @private_api.route("/educational_institutions", methods=["GET"])
+@atomic()
 @login_required
 @spectree_serialize(
     response_model=educational_institutions.EducationalInstitutionsResponseModel,
@@ -50,6 +52,7 @@ def get_educational_institutions(
 
 
 @private_api.route("/cultural-partners", methods=["GET"])
+@atomic()
 @login_required
 @spectree_serialize(
     response_model=venues_serialize.AdageCulturalPartnersResponseModel,
