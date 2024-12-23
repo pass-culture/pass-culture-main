@@ -3,10 +3,10 @@ import datetime
 from pcapi import settings
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational.adage_backends import serialize
+from pcapi.core.educational.schemas import AdageCulturalPartner
 from pcapi.routes.adage.v1.serialization.prebooking import AdageReimbursementNotification
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingResponse
-from pcapi.routes.serialization import venues_serialize
 from pcapi.utils.module_loading import import_string
 
 
@@ -42,7 +42,7 @@ def notify_institution_association(data: serialize.AdageCollectiveOffer) -> None
     backend().notify_institution_association(data=data)
 
 
-def get_cultural_partner(siret: str) -> venues_serialize.AdageCulturalPartner:
+def get_cultural_partner(siret: str) -> AdageCulturalPartner:
     backend = import_string(settings.ADAGE_BACKEND)
     result = backend().get_cultural_partner(siret)
     return result

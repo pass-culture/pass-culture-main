@@ -6,8 +6,8 @@ from pcapi.core.educational.adage_backends.base import AdageClient
 from pcapi.core.educational.adage_backends.serialize import AdageCollectiveOffer
 from pcapi.core.educational.adage_backends.serialize import AdageCollectiveRequest
 from pcapi.core.educational.adage_backends.serialize import AdageEducationalInstitution
+from pcapi.core.educational.schemas import AdageCulturalPartner
 from pcapi.routes.adage.v1.serialization import prebooking
-from pcapi.routes.serialization import venues_serialize
 
 from .. import testing
 
@@ -96,9 +96,9 @@ class AdageSpyClient(AdageClient):
     def notify_institution_association(self, data: AdageCollectiveOffer) -> None:
         testing.adage_requests.append({"url": f"{self.base_url}/v1/offre-assoc", "sent_data": data})
 
-    def get_cultural_partner(self, siret: str) -> venues_serialize.AdageCulturalPartner:
+    def get_cultural_partner(self, siret: str) -> AdageCulturalPartner:
         testing.adage_requests.append({"url": f"{self.base_url}/v1/partenaire-culturel/{siret}", "sent_data": ""})
-        return venues_serialize.AdageCulturalPartner(
+        return AdageCulturalPartner(
             id=128028,
             venueId=None,
             siret=siret,
