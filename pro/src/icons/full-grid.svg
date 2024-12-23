@@ -1,8 +1,1 @@
-<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <g id="icon">
-        <path d="M 39 9 V 16 H 32 V 9 H 39 Z M 42 4 H 29 C 27.9 4 27 4.9 27 6 V 19 C 27 20.1 27.9 21 29 21 H 42 C 43.1 21 44 20.1 44 19 V 6 C 44 4.9 43.1 4 42 4 Z" fill="currentColor"/>
-        <path d="M 16 9 V 16 H 9 V 9 H 16 Z M 19 4 H 6 C 4.9 4 4 4.9 4 6 V 19 C 4 20.1 4.9 21 6 21 H 19 C 20.1 21 21 20.1 21 19 V 6 C 21 4.9 20.1 4 19 4 Z" fill="currentColor"/>
-        <path d="M 39 32 V 39 H 32 V 32 H 39 Z M 42 27 H 29 C 27.9 27 27 27.9 27 29 V 42 C 27 43.1 27.9 44 29 44 H 42 C 43.1 44 44 43.1 44 42 V 29 C 44 27.9 43.1 27 42 27 Z" fill="currentColor"/>
-        <path d="M 16 32 V 39 H 9 V 32 H 16 Z M 19 27 H 6 C 4.9 27 4 27.9 4 29 V 42 C 4 43.1 4.9 44 6 44 H 19 C 20.1 44 21 43.1 21 42 V 29 C 21 27.9 20.1 27 19 27 Z" fill="currentColor"/>
-    </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none"><g id="icon" fill="currentColor"><path d="M39 9v7h-7V9zm3-5H29c-1.1 0-2 .9-2 2v13c0 1.1.9 2 2 2h13c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2M16 9v7H9V9zm3-5H6c-1.1 0-2 .9-2 2v13c0 1.1.9 2 2 2h13c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2M39 32v7h-7v-7zm3-5H29c-1.1 0-2 .9-2 2v13c0 1.1.9 2 2 2h13c1.1 0 2-.9 2-2V29c0-1.1-.9-2-2-2M16 32v7H9v-7zm3-5H6c-1.1 0-2 .9-2 2v13c0 1.1.9 2 2 2h13c1.1 0 2-.9 2-2V29c0-1.1-.9-2-2-2"/></g></svg>
