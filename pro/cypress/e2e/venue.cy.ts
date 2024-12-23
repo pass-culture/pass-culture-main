@@ -13,7 +13,7 @@ describe('Create and update venue', () => {
     cy.visit('/connexion')
     cy.request({
       method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
+      url: 'http://localhost:5001/pro/sandboxes/pro/create_regular_pro_user',
     }).then((response) => {
       login = response.body.user.email
       siren = response.body.siren
@@ -21,7 +21,7 @@ describe('Create and update venue', () => {
   })
 
   beforeEach(() => {
-    cy.intercept({ method: 'PATCH', url: '/venues/*' }).as('patchVenue')
+    cy.intercept({ method: 'PATCH', url: '/pro/venues/*' }).as('patchVenue')
     cy.intercept(
       'GET',
       'https://api-adresse.data.gouv.fr/search/?limit=1&q=*',
@@ -32,7 +32,7 @@ describe('Create and update venue', () => {
         })
     ).as('searchAddress1')
     interceptSearch5Adresses()
-    cy.intercept({ method: 'POST', url: '/venues' }).as('postVenues')
+    cy.intercept({ method: 'POST', url: '/pro/venues' }).as('postVenues')
   })
 
   it('As a pro user, I should be able to add a venue without SIRET', () => {
@@ -107,7 +107,7 @@ describe('Create and update venue', () => {
     const venueNameWithSiret = 'Lieu avec Siret'
     siret = siren + '12345'
 
-    cy.intercept('GET', `/sirene/siret/${siret}`, (req) =>
+    cy.intercept('GET', `/pro/sirene/siret/${siret}`, (req) =>
       req.reply({
         statusCode: 200,
         body: {

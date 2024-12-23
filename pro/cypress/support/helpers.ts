@@ -72,8 +72,8 @@ export function logInAndGoToPage(
 ) {
   const password = 'user@AZERTY123'
   cy.stepLog({ message: `I am logged in with account ${login}` })
-  cy.intercept({ method: 'POST', url: '/users/signin' }).as('signinUser')
-  cy.intercept({ method: 'GET', url: '/offerers/names' }).as('offererNames')
+  cy.intercept({ method: 'POST', url: '/pro/users/signin' }).as('signinUser')
+  cy.intercept({ method: 'GET', url: '/pro/offerers/names' }).as('offererNames')
 
   cy.visit('/connexion')
   if (setDefaultCookieOrejime) {

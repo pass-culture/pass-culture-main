@@ -20,7 +20,7 @@ describe('Search collective offers', () => {
     cy.visit('/connexion')
     cy.request({
       method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_pro_user_with_collective_offers',
+      url: 'http://localhost:5001/pro/sandboxes/pro/create_pro_user_with_collective_offers',
     }).then((response) => {
       login = response.body.user.email
       offerPublishedTemplate = response.body.offerPublishedTemplate
@@ -42,10 +42,10 @@ describe('Search collective offers', () => {
       '/accueil'
     )
 
-    cy.intercept({ method: 'GET', url: '/collective/offers*' }).as(
+    cy.intercept({ method: 'GET', url: '/pro/collective/offers*' }).as(
       'collectiveOffers'
     )
-    cy.intercept({ method: 'GET', url: '/venues?offererId*' }).as(
+    cy.intercept({ method: 'GET', url: '/pro/venues?offererId*' }).as(
       'venuesOffererId'
     )
     cy.visit('/offres/collectives')

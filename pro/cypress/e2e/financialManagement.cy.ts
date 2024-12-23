@@ -18,13 +18,13 @@ describe('Financial Management - messages, links to external help page, reimburs
       cy.visit('/connexion')
       cy.request({
         method: 'GET',
-        url: 'http://localhost:5001/sandboxes/pro/create_pro_user_with_financial_data',
+        url: 'http://localhost:5001/pro/sandboxes/pro/create_pro_user_with_financial_data',
       }).then((response) => {
         login1 = response.body.user.email
         cy.log('login1: ' + login1)
       })
-      cy.intercept({ method: 'GET', url: '/offerers/*' }).as('getOfferers')
-      cy.intercept({ method: 'PATCH', url: 'offerers/*/bank-accounts/*' }).as(
+      cy.intercept({ method: 'GET', url: '/pro/offerers/*' }).as('getOfferers')
+      cy.intercept({ method: 'PATCH', url: '/pro/offerers/*/bank-accounts/*' }).as(
         'patchBankAccount'
       )
     })
@@ -146,13 +146,13 @@ describe('Financial Management - messages, links to external help page, reimburs
     let login2: string
     beforeEach(() => {
       cy.visit('/connexion')
-      cy.intercept({ method: 'GET', url: '/offerers/*' }).as('getOfferers')
-      cy.intercept({ method: 'PATCH', url: 'offerers/*/bank-accounts/*' }).as(
+      cy.intercept({ method: 'GET', url: '/pro/offerers/*' }).as('getOfferers')
+      cy.intercept({ method: 'PATCH', url: '/pro/offerers/*/bank-accounts/*' }).as(
         'patchBankAccount'
       )
       cy.request({
         method: 'GET',
-        url: 'http://localhost:5001/sandboxes/pro/create_pro_user_with_financial_data_and_3_venues',
+        url: 'http://localhost:5001/pro/sandboxes/pro/create_pro_user_with_financial_data_and_3_venues',
       }).then((response) => {
         login2 = response.body.user.email
         logInAndGoToPage(login2, 'remboursements/informations-bancaires')

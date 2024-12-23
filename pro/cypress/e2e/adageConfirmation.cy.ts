@@ -16,7 +16,7 @@ describe('Adage confirmation', () => {
     cy.visit('/connexion')
     cy.request({
       method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_pro_user_with_active_collective_offer',
+      url: 'http://localhost:5001/pro/sandboxes/pro/create_pro_user_with_active_collective_offer',
     }).then((response) => {
       expect(response.status).to.eq(200)
       login = response.body.user.email
@@ -25,17 +25,17 @@ describe('Adage confirmation', () => {
       providerApiKey = response.body.providerApiKey
       cy.intercept({
         method: 'GET',
-        url: `/collective/offers?offererId=${offer.id}`,
+        url: `/pro/collective/offers?offererId=${offer.id}`,
       }).as('collectiveOffers')
       cy.intercept({
         method: 'GET',
-        url: '/collective/offers?offererId=1&status=BOOKED',
+        url: '/pro/collective/offers?offererId=1&status=BOOKED',
       }).as('collectiveOffersBOOKED')
       cy.intercept({
         method: 'GET',
-        url: '/collective/offers?offererId=1&status=PREBOOKED',
+        url: '/pro/collective/offers?offererId=1&status=PREBOOKED',
       }).as('collectiveOffersPREBOOKED')
-      cy.intercept({ method: 'GET', url: `/collective/offers/${offer.id}` }).as(
+      cy.intercept({ method: 'GET', url: `/pro/collective/offers/${offer.id}` }).as(
         'collectiveOfferDetails'
       )
       cy.request({

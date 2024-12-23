@@ -21,7 +21,7 @@ describe('Search individual offers', () => {
     cy.visit('/connexion')
     cy.request({
       method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_pro_user_with_individual_offers',
+      url: 'http://localhost:5001/pro/sandboxes/pro/create_pro_user_with_individual_offers',
     }).then((response) => {
       login = response.body.user.email
       venueName = response.body.venue.name
@@ -39,7 +39,7 @@ describe('Search individual offers', () => {
     sessionLogInAndGoToPage('Session search Individual offer', login, '/offres')
     cy.intercept({
       method: 'GET',
-      url: '/offers?**',
+      url: '/pro/offers?**',
     }).as('searchOffers')
   })
 

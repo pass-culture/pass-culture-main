@@ -10,7 +10,7 @@ describe('Edit digital individual offers', () => {
       cy.visit('/connexion')
       cy.request({
         method: 'GET',
-        url: 'http://localhost:5001/sandboxes/pro/create_regular_pro_user_with_virtual_offer',
+        url: 'http://localhost:5001/pro/sandboxes/pro/create_regular_pro_user_with_virtual_offer',
       }).then((response) => {
         login1 = response.body.user.email
       })
@@ -88,7 +88,7 @@ describe('Edit digital individual offers', () => {
       cy.visit('/connexion')
       cy.request({
         method: 'GET',
-        url: 'http://localhost:5001/sandboxes/pro/create_pro_user_with_bookings',
+        url: 'http://localhost:5001/pro/sandboxes/pro/create_pro_user_with_bookings',
       }).then((response) => {
         login2 = response.body.user.email
       })

@@ -18,11 +18,11 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
     cy.visit('/connexion')
     cy.request({
       method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_new_pro_user',
+      url: 'http://localhost:5001/pro/sandboxes/pro/create_new_pro_user',
     }).then((response) => {
       login = response.body.user.email
     })
-    cy.intercept('GET', `/sirene/siret/**`, (req) =>
+    cy.intercept('GET', `/pro/sirene/siret/**`, (req) =>
       req.reply({
         statusCode: 200,
         body: siretInterceptionPayload(mySiret, venueName),
@@ -30,7 +30,7 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
     ).as('getSiret')
     cy.intercept({
       method: 'GET',
-      url: `/venues/siret/**`,
+      url: `/pro/venues/siret/**`,
     }).as('venuesSiret')
     cy.intercept(
       'GET',
@@ -43,10 +43,10 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
     ).as('search1Address')
     cy.intercept({
       method: 'GET',
-      url: '/venue-types',
+      url: '/pro/venue-types',
       times: 1,
     }).as('venue-types')
-    cy.intercept({ method: 'POST', url: '/offerers/new', times: 1 }).as(
+    cy.intercept({ method: 'POST', url: '/pro/offerers/new', times: 1 }).as(
       'createOfferer'
     )
   })
@@ -127,12 +127,12 @@ describe('Signup journey with known offerer...', () => {
   let mySiret: string
 
   beforeEach(() => {
-    cy.intercept({ method: 'POST', url: '/offerers/new', times: 1 }).as(
+    cy.intercept({ method: 'POST', url: '/pro/offerers/new', times: 1 }).as(
       'createOfferer'
     )
     cy.intercept({
       method: 'GET',
-      url: '/venue-types',
+      url: '/pro/venue-types',
       times: 1,
     }).as('venue-types')
     cy.intercept(
@@ -147,7 +147,7 @@ describe('Signup journey with known offerer...', () => {
     interceptSearch5Adresses()
     cy.intercept({
       method: 'GET',
-      url: `/venues/siret/**`,
+      url: `/pro/venues/siret/**`,
     }).as('venuesSiret')
   })
 
@@ -158,12 +158,12 @@ describe('Signup journey with known offerer...', () => {
       cy.visit('/connexion')
       cy.request({
         method: 'GET',
-        url: 'http://localhost:5001/sandboxes/pro/create_new_pro_user_and_offerer',
+        url: 'http://localhost:5001/pro/sandboxes/pro/create_new_pro_user_and_offerer',
       }).then((response) => {
         login = response.body.user.email
         siren = response.body.siren
         mySiret = siren + endSiret
-        cy.intercept('GET', `/sirene/siret/**`, (req) =>
+        cy.intercept('GET', `/pro/sirene/siret/**`, (req) =>
           req.reply({
             statusCode: 200,
             body: siretInterceptionPayload(mySiret, venueName),
@@ -235,11 +235,11 @@ describe('Signup journey with known offerer...', () => {
       cy.visit('/connexion')
       cy.request({
         method: 'GET',
-        url: 'http://localhost:5001/sandboxes/pro/create_new_pro_user_and_offerer_with_venue',
+        url: 'http://localhost:5001/pro/sandboxes/pro/create_new_pro_user_and_offerer_with_venue',
       }).then((response) => {
         login = response.body.user.email
         mySiret = response.body.siret
-        cy.intercept('GET', `/sirene/siret/**`, (req) =>
+        cy.intercept('GET', `/pro/sirene/siret/**`, (req) =>
           req.reply({
             statusCode: 200,
             body: siretInterceptionPayload(mySiret, venueName),
@@ -247,7 +247,7 @@ describe('Signup journey with known offerer...', () => {
         ).as('getSiret')
       })
       interceptSearch5Adresses()
-      cy.intercept({ method: 'POST', url: '/offerers' }).as('postOfferers')
+      cy.intercept({ method: 'POST', url: '/pro/offerers' }).as('postOfferers')
     })
 
     it('I should be able to sign up with a new account and a known offerer/venue and then create a new venue in the space', () => {
