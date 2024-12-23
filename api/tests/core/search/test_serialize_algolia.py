@@ -7,6 +7,7 @@ import time_machine
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.educational.factories as educational_factories
+from pcapi.core.educational.models import OfferAddressType
 from pcapi.core.educational.models import StudentLevels
 import pcapi.core.geography.factories as geography_factories
 import pcapi.core.offerers.factories as offerers_factories
@@ -17,7 +18,6 @@ from pcapi.core.providers.constants import BookFormat
 from pcapi.core.search.backends import algolia
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
-from pcapi.routes.adage_iframe.serialization.offers import OfferAddressType
 from pcapi.routes.native.v1.serialization.offerers import VenueTypeCode
 from pcapi.utils.human_ids import humanize
 

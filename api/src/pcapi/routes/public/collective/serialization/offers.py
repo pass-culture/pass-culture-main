@@ -11,11 +11,11 @@ from pydantic.v1 import validator
 import pcapi.core.categories.subcategories_v2 as subcategories
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
+from pcapi.core.educational.models import OfferAddressType
 from pcapi.core.educational.models import StudentLevels
 from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.routes.public.documentation_constants.fields import fields
 from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.routes.serialization.collective_offers_serialize import validate_venue_id
 from pcapi.routes.serialization.national_programs import NationalProgramModel
 from pcapi.routes.shared.collective.serialization import offers as shared_offers
@@ -39,7 +39,7 @@ class ListCollectiveOffersQueryModel(BaseModel):
 class OfferVenueModel(BaseModel):
     venueId: int | None = fields.VENUE_ID
     otherAddress: str | None = fields.OFFER_VENUE_OTHER_ADDRESS
-    addressType: collective_offers_serialize.OfferAddressType = fields.OFFER_VENUE_ADDRESS_TYPE
+    addressType: OfferAddressType = fields.OFFER_VENUE_ADDRESS_TYPE
 
     _validated_venue_id = validator("venueId", pre=True, allow_reuse=True)(validate_venue_id)
 

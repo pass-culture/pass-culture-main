@@ -92,6 +92,12 @@ class AdageFrontRoles(enum.Enum):
     READONLY = "readonly"
 
 
+class OfferAddressType(enum.Enum):
+    OFFERER_VENUE = "offererVenue"
+    SCHOOL = "school"
+    OTHER = "other"
+
+
 class CollectiveBookingCancellationReasons(enum.Enum):
     OFFERER = "OFFERER"
     BENEFICIARY = "BENEFICIARY"
