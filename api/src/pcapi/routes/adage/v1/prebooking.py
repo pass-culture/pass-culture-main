@@ -3,6 +3,7 @@ import logging
 from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational import schemas as educational_schemas
 from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.educational.api.institution import create_missing_educational_institution_from_adage
 from pcapi.models.api_errors import ApiErrors
@@ -40,12 +41,12 @@ def get_educational_bookings(
 @blueprint.adage_v1.route("/prebookings/<int:educational_booking_id>/confirm", methods=["POST"])
 @spectree_serialize(
     api=blueprint.api,
-    response_model=prebooking_serialization.EducationalBookingResponse,
+    response_model=educational_schemas.EducationalBookingResponse,
     on_error_statuses=[404, 422],
     tags=("change prebookings",),
 )
 @adage_api_key_required
-def confirm_prebooking(educational_booking_id: int) -> prebooking_serialization.EducationalBookingResponse:
+def confirm_prebooking(educational_booking_id: int) -> educational_schemas.EducationalBookingResponse:
     try:
         educational_booking = educational_api_booking.confirm_collective_booking(educational_booking_id)
     except exceptions.InsufficientFund:
@@ -69,12 +70,12 @@ def confirm_prebooking(educational_booking_id: int) -> prebooking_serialization.
 @blueprint.adage_v1.route("/prebookings/<int:educational_booking_id>/refuse", methods=["POST"])
 @spectree_serialize(
     api=blueprint.api,
-    response_model=prebooking_serialization.EducationalBookingResponse,
+    response_model=educational_schemas.EducationalBookingResponse,
     on_error_statuses=[404, 422],
     tags=("change prebookings", "change bookings"),
 )
 @adage_api_key_required
-def refuse_pre_booking(educational_booking_id: int) -> prebooking_serialization.EducationalBookingResponse:
+def refuse_pre_booking(educational_booking_id: int) -> educational_schemas.EducationalBookingResponse:
     """Refuse a prebooking confirmation
 
     Can only work if prebooking is confirmed or pending,
