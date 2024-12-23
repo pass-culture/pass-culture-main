@@ -24,6 +24,7 @@ from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import atomic
+from pcapi.repository import is_managed_transaction
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import on_commit
 from pcapi.repository import repository
@@ -73,7 +74,11 @@ def book_collective_offer(
                 stock.beginningDatetime, utcnow
             ),
         )
-        repository.save(booking)
+
+        if is_managed_transaction():
+            db.session.add(booking)
+        else:
+            repository.save(booking)
 
     logger.info(
         "Redactor booked a collective offer",
@@ -85,8 +90,14 @@ def book_collective_offer(
         },
     )
 
-    transactional_mails.send_eac_new_collective_prebooking_email_to_pro(booking)
+    on_commit(partial(transactional_mails.send_eac_new_collective_prebooking_email_to_pro, booking))
 
+    on_commit(partial(_notify_prebooking, booking))
+
+    return booking
+
+
+def _notify_prebooking(booking: educational_models.CollectiveBooking) -> None:
     try:
         adage_client.notify_prebooking(data=prebooking.serialize_collective_booking(booking))
     except AdageException as adage_error:
@@ -106,8 +117,6 @@ def book_collective_offer(
                 "bookingId": booking.id,
             },
         )
-
-    return booking
 
 
 def confirm_collective_booking(educational_booking_id: int) -> educational_models.CollectiveBooking:
