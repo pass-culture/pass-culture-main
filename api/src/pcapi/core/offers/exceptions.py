@@ -378,3 +378,18 @@ class AllNullContactRequestDataError(CollectiveOfferContactRequestError):
 class UrlandFormBothSetError(CollectiveOfferContactRequestError):
     msg = "Url and form can not both be used"
     fields = "url,form"
+
+
+class InactiveOfferCanNotBeHeadline(Exception):
+    def __init__(self) -> None:
+        super().__init__("headlineOffer", "This offer is inactive and can not be made headline")
+
+
+class OfferHasAlreadyAnActiveHeadlineOffer(Exception):
+    def __init__(self) -> None:
+        super().__init__("headlineOffer", "This offer is already an active headline offer")
+
+
+class VenueHasAlreadyAnActiveHeadlineOffer(Exception):
+    def __init__(self) -> None:
+        super().__init__("headlineOffer", "This venue has already an active headline offer")

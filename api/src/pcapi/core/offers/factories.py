@@ -268,6 +268,10 @@ class HeadlineOfferFactory(BaseFactory):
     class Meta:
         model = models.HeadlineOffer
 
+    offer = factory.SubFactory(OfferFactory)
+    venue = factory.SelfAttribute("offer.venue")
+    timespan = (datetime.datetime.utcnow(),)
+
 
 class PriceCategoryLabelFactory(BaseFactory):
     class Meta:
