@@ -1,8 +1,11 @@
+from functools import partial
+
 from pcapi import settings
 from pcapi.core import mails
 import pcapi.core.educational.models as educational_models
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.repository import on_commit
 from pcapi.utils.date import get_date_formatted_for_email
 
 
@@ -10,9 +13,11 @@ def send_new_request_made_by_redactor_to_pro(request: educational_models.Collect
     emails = request.collectiveOfferTemplate.bookingEmails
     if not emails:
         return
+
     data = get_data_request_made_by_redactor_to_pro(request)
     main_recipient, bcc_recipients = emails[0], emails[1:]
-    mails.send(recipients=main_recipient, bcc_recipients=bcc_recipients, data=data)
+
+    on_commit(partial(mails.send, recipients=main_recipient, bcc_recipients=bcc_recipients, data=data))
 
 
 def get_data_request_made_by_redactor_to_pro(

@@ -21,6 +21,7 @@ from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.repository import get_venue_by_id
 from pcapi.models.api_errors import ApiErrors
+from pcapi.repository import atomic
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization import offers as serializers
@@ -36,6 +37,7 @@ logger = logging.getLogger(__name__)
 
 
 @blueprint.adage_iframe.route("/offers/categories", methods=["GET"])
+@atomic()
 @spectree_serialize(response_model=serializers.CategoriesResponseModel, api=blueprint.api)
 @adage_jwt_required
 def get_educational_offers_categories(
@@ -55,6 +57,7 @@ def get_educational_offers_categories(
 
 
 @blueprint.adage_iframe.route("/offers/formats", methods=["GET"])
+@atomic()
 @spectree_serialize(response_model=serializers.EacFormatsResponseModel, api=blueprint.api)
 @adage_jwt_required
 def get_educational_offers_formats(
@@ -64,6 +67,7 @@ def get_educational_offers_formats(
 
 
 @blueprint.adage_iframe.route("/collective/offers/<int:offer_id>", methods=["GET"])
+@atomic()
 @spectree_serialize(response_model=serializers.CollectiveOfferResponseModel, api=blueprint.api, on_error_statuses=[404])
 @adage_jwt_required
 def get_collective_offer(
@@ -89,6 +93,7 @@ def get_collective_offer(
 
 
 @blueprint.adage_iframe.route("/collective/offers-template/<int:offer_id>", methods=["GET"])
+@atomic()
 @spectree_serialize(
     response_model=serializers.CollectiveOfferTemplateResponseModel, api=blueprint.api, on_error_statuses=[404]
 )
@@ -115,6 +120,7 @@ def get_collective_offer_template(
 
 
 @blueprint.adage_iframe.route("/collective/offers-template/", methods=["GET"])
+@atomic()
 @spectree_serialize(
     response_model=serializers.ListCollectiveOfferTemplateResponseModel,
     api=blueprint.api,
@@ -156,6 +162,7 @@ def get_collective_offer_templates(
 
 
 @blueprint.adage_iframe.route("/collective/offers-template/<int:offer_id>/request", methods=["POST"])
+@atomic()
 @spectree_serialize(
     response_model=serializers.CollectiveRequestResponseModel, api=blueprint.api, on_error_statuses=[404]
 )
@@ -226,6 +233,7 @@ def _get_all_offer_venues(
 
 
 @blueprint.adage_iframe.route("/collective/offers/my_institution", methods=["GET"])
+@atomic()
 @spectree_serialize(
     on_success_status=200, response_model=serializers.ListCollectiveOffersResponseModel, api=blueprint.api
 )

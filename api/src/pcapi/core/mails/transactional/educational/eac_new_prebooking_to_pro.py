@@ -1,18 +1,23 @@
+from functools import partial
+
 from pcapi.core import mails
-import pcapi.core.educational.models as educational_models
+from pcapi.core.educational import models as educational_models
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.utils import format_price
+from pcapi.repository import on_commit
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.mailing import get_event_datetime
 
 
 def send_eac_new_collective_prebooking_email_to_pro(booking: educational_models.CollectiveBooking) -> None:
-    if not booking.collectiveStock.collectiveOffer.bookingEmails:
+    recipients = booking.collectiveStock.collectiveOffer.bookingEmails
+    if not recipients:
         return
+
     data = get_eac_new_collective_prebooking_email_data(booking)
-    mails.send(recipients=booking.collectiveStock.collectiveOffer.bookingEmails, data=data)
+    on_commit(partial(mails.send, recipients=recipients, data=data))
 
 
 def get_eac_new_collective_prebooking_email_data(

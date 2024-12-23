@@ -15,6 +15,7 @@ from pcapi.core.educational.models import OfferAddressType
 from pcapi.core.offerers.repository import get_venue_by_id
 from pcapi.models import Model
 from pcapi.models.api_errors import ApiErrors
+from pcapi.repository import atomic
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization import offers as serializers
@@ -36,6 +37,7 @@ def get_random_results(cls: type[Model]) -> dict[str, float]:
 
 
 @blueprint.adage_iframe.route("/playlists/classroom", methods=["GET"])
+@atomic()
 @spectree_serialize(response_model=serializers.ListCollectiveOfferTemplateResponseModel, api=blueprint.api)
 @adage_jwt_required
 def get_classroom_playlist(
@@ -130,6 +132,7 @@ def serialize_collective_offer(
 
 
 @blueprint.adage_iframe.route("/playlists/new_template_offers", methods=["GET"])
+@atomic()
 @spectree_serialize(
     response_model=serializers.ListCollectiveOfferTemplateResponseModel,
     api=blueprint.api,
@@ -207,6 +210,7 @@ def new_template_offers_playlist(
 
 
 @blueprint.adage_iframe.route("/playlists/local-offerers", methods=["GET"])
+@atomic()
 @spectree_serialize(response_model=playlists_serializers.LocalOfferersPlaylist, api=blueprint.api)
 @adage_jwt_required
 def get_local_offerers_playlist(
@@ -237,6 +241,7 @@ def get_local_offerers_playlist(
 
 
 @blueprint.adage_iframe.route("/playlists/new_offerers", methods=["GET"])
+@atomic()
 @spectree_serialize(response_model=playlists_serializers.LocalOfferersPlaylist, api=blueprint.api)
 @adage_jwt_required
 def get_new_offerers_playlist(
