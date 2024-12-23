@@ -2492,28 +2492,6 @@ export class DefaultService {
     });
   }
   /**
-   * check_activation_token_exists <GET>
-   * @param token
-   * @returns void
-   * @throws ApiError
-   */
-  public checkActivationTokenExists(
-    token: string,
-  ): CancelablePromise<void> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/users/token/{token}',
-      path: {
-        'token': token,
-      },
-      errors: {
-        403: `Forbidden`,
-        404: `Not Found`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
    * patch_user_tuto_seen <PATCH>
    * @returns void
    * @throws ApiError
