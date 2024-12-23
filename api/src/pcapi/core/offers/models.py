@@ -576,6 +576,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
         parent_args += [
             sa.UniqueConstraint("idAtProvider", "venueId", name="unique_idAtProvider_venueId"),
+            sa.CheckConstraint("ean ~ '^\\d{13}$'", name="check_ean_validity"),
         ]
 
         return tuple(parent_args)
@@ -601,6 +602,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     )
     _description = sa.Column("description", sa.Text, nullable=True)
     _durationMinutes = sa.Column("durationMinutes", sa.Integer, nullable=True)
+    ean = sa.Column(sa.Text, nullable=True)
     externalTicketOfficeUrl = sa.Column(sa.String, nullable=True)
     extraData: OfferExtraData | None = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
     fieldsUpdated: list[str] = sa.Column(
