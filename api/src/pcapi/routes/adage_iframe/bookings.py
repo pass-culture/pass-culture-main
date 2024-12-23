@@ -3,6 +3,7 @@ import logging
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational.api import booking as educational_api_booking
+from pcapi.core.educational.models import AdageFrontRoles
 from pcapi.core.educational.repository import find_educational_institution_by_uai_code
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models.api_errors import ApiErrors
@@ -11,7 +12,6 @@ from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization.adage_authentication import (
     get_redactor_information_from_adage_authentication,
 )
-from pcapi.routes.adage_iframe.serialization.adage_authentication import AdageFrontRoles
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.routes.adage_iframe.serialization.collective_bookings import BookCollectiveOfferRequest
 from pcapi.routes.adage_iframe.serialization.collective_bookings import BookCollectiveOfferResponse

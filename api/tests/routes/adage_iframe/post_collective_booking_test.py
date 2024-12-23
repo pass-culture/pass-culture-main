@@ -5,11 +5,11 @@ import pytest
 import time_machine
 
 from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational.models import AdageFrontRoles
 from pcapi.core.educational.models import CollectiveBooking
 import pcapi.core.educational.testing as adage_api_testing
 from pcapi.core.educational.utils import get_hashed_user_id
 from pcapi.models.offer_mixin import OfferValidationStatus
-from pcapi.routes.adage_iframe.serialization.adage_authentication import AdageFrontRoles
 
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
 
