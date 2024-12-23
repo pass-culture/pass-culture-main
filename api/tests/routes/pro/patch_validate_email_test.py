@@ -30,7 +30,7 @@ class TokenPatchValidateEmailTest:
             user_id=pro.id,
             data=self.token_data,
         )
-        response = client.patch("/users/validate_email", json={"token": token.encoded_token})
+        response = client.patch("/pro/users/validate_email", json={"token": token.encoded_token})
 
         assert response.status_code == 204
         assert pro.email == self.new_email
@@ -46,7 +46,7 @@ class TokenPatchValidateEmailTest:
                     data=self.token_data,
                 )
             with time_machine.travel("2023-10-16 13:00:00"):
-                response = client.patch("/users/validate_email", json={"token": token.encoded_token})
+                response = client.patch("/pro/users/validate_email", json={"token": token.encoded_token})
 
                 assert response.status_code == 400
                 assert response.json["global"] == ["Token invalide"]
@@ -66,7 +66,7 @@ class TokenPatchValidateEmailTest:
             data=self.token_data,
         )
 
-        response = client.patch("/users/validate_email", json={"token": token.encoded_token})
+        response = client.patch("/pro/users/validate_email", json={"token": token.encoded_token})
 
         assert response.status_code == 204
         assert pro_changing.email == self.current_email
@@ -85,6 +85,6 @@ class TokenPatchValidateEmailTest:
             data=self.token_data,
         )
 
-        response = client.patch("/users/validate_email", json={"token": token})
+        response = client.patch("/pro/users/validate_email", json={"token": token})
         assert response.status_code == 400
         assert pro_changing.email == self.current_email

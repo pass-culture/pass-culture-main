@@ -7,7 +7,7 @@ describe('Navigation', () => {
     cy.visit('/connexion')
     cy.request({
       method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
+      url: 'http://localhost:5001/pro/sandboxes/pro/create_regular_pro_user',
     }).then((response) => {
       login = response.body.user.email
     })

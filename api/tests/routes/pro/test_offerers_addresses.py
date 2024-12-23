@@ -43,7 +43,7 @@ class CreateOffererAddressesTest:
         # Select OffererAddress & address
         with assert_num_queries(7):
             response = http_client.post(
-                f"/offerers/{offerer_id}/addresses/",
+                f"/pro/offerers/{offerer_id}/addresses/",
                 json={
                     "label": expected_data["label"],
                     "street": expected_data["street"],
@@ -92,7 +92,7 @@ class CreateOffererAddressesTest:
         # Select OffererAddress & address
         with assert_num_queries(7):
             response = http_client.post(
-                f"/offerers/{offerer_id}/addresses/",
+                f"/pro/offerers/{offerer_id}/addresses/",
                 json={
                     "label": expected_data["label"],
                     "street": expected_data["street"],
@@ -144,7 +144,7 @@ class CreateOffererAddressesTest:
         with assert_num_queries(7):
             with caplog.at_level(logging.ERROR):
                 response = http_client.post(
-                    f"/offerers/{offerer_id}/addresses/",
+                    f"/pro/offerers/{offerer_id}/addresses/",
                     json={
                         "label": expected_data["label"],
                         "street": expected_data["street"],
@@ -198,7 +198,7 @@ class CreateOffererAddressesTest:
         with assert_num_queries(7):
             with caplog.at_level(logging.ERROR):
                 http_client.post(
-                    f"/offerers/{offerer_id}/addresses/",
+                    f"/pro/offerers/{offerer_id}/addresses/",
                     json={
                         "label": expected_data["label"],
                         "street": expected_data["street"],
@@ -276,7 +276,7 @@ class CreateOffererAddressesTest:
         with assert_num_queries(7):
             with caplog.at_level(logging.ERROR):
                 http_client.post(
-                    f"/offerers/{offerer_id}/addresses/",
+                    f"/pro/offerers/{offerer_id}/addresses/",
                     json={
                         "label": expected_data["label"],
                         "street": expected_data["street"],
@@ -316,7 +316,7 @@ class CreateOffererAddressesTest:
         # Select OffererAddress & address
         with assert_num_queries(7):
             response = http_client.post(
-                f"/offerers/{offerer_id}/addresses/",
+                f"/pro/offerers/{offerer_id}/addresses/",
                 json={
                     "label": expected_data["label"],
                     "street": expected_data["street"],
@@ -367,7 +367,7 @@ class CreateOffererAddressesTest:
         # Check permission
         with assert_num_queries(3):
             response = http_client.post(
-                f"/offerers/{foreign_offerer_id}/addresses/",
+                f"/pro/offerers/{foreign_offerer_id}/addresses/",
                 json={
                     "label": expected_data["label"],
                     "street": expected_data["street"],
@@ -418,7 +418,7 @@ class CreateOffererAddressesTest:
         # Select OffererAddress & address
         with assert_num_queries(7):
             response = http_client.post(
-                f"/offerers/{offerer_id}/addresses/",
+                f"/pro/offerers/{offerer_id}/addresses/",
                 json={
                     "label": expected_data["label"],
                     "street": expected_data["street"],
@@ -463,7 +463,7 @@ class CreateOffererAddressesTest:
         # Check permissions
         with assert_num_queries(3):
             response = http_client.post(
-                f"/offerers/{offerer_id}/addresses/",
+                f"/pro/offerers/{offerer_id}/addresses/",
                 json={
                     "label": payload["label"],
                     "street": payload["street"],
@@ -513,7 +513,7 @@ class CreateOffererAddressesTest:
         # Insert offererAddress
         with assert_num_queries(7):
             response = http_client.post(
-                f"/offerers/{offerer_id}/addresses/",
+                f"/pro/offerers/{offerer_id}/addresses/",
                 json={
                     "label": payload["label"],
                     "street": payload["street"],

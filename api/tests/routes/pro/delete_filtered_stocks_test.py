@@ -27,7 +27,7 @@ class Returns204Test:
         }
 
         # When
-        response = client.with_session_auth(user.email).post(f"/offers/{offer.id}/stocks/all-delete", json=data)
+        response = client.with_session_auth(user.email).post(f"/pro/offers/{offer.id}/stocks/all-delete", json=data)
 
         # Then
         assert response.status_code == 204
@@ -49,7 +49,7 @@ class Returns401Test:
             "price_category_id": None,
         }
 
-        response = client.post(f"/offers/{offer.id}/stocks/all-delete", json=data)
+        response = client.post(f"/pro/offers/{offer.id}/stocks/all-delete", json=data)
 
         assert response.status_code == 401
 
@@ -70,7 +70,7 @@ class Returns403Test:
             "price_category_id": None,
         }
 
-        response = client.with_session_auth(pro.email).post(f"/offers/{offer.id}/stocks/all-delete", json=data)
+        response = client.with_session_auth(pro.email).post(f"/pro/offers/{offer.id}/stocks/all-delete", json=data)
 
         # then
         assert response.status_code == 403

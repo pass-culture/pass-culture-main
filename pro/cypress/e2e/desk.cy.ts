@@ -16,7 +16,7 @@ describe('Desk (Guichet) feature', () => {
     cy.visit('/connexion')
     cy.request({
       method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_pro_user_with_bookings',
+      url: 'http://localhost:5001/pro/sandboxes/pro/create_pro_user_with_bookings',
     }).then((response) => {
       login = response.body.user.email
       tokenConfirmed = response.body.tokenConfirmed

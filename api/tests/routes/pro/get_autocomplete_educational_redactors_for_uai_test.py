@@ -16,7 +16,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(email=user.email)
         with assert_num_queries(2):  # user + session
-            response = client.get(f"/collective/offers/redactors?uai={VALID_UAI}&candidate=sklodowska")
+            response = client.get(f"/pro/collective/offers/redactors?uai={VALID_UAI}&candidate=sklodowska")
             assert response.status_code == 200
 
         # Then
@@ -37,7 +37,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(email=user.email)
         with assert_num_queries(2):  # user + session
-            response = client.get(f"/collective/offers/redactors?uai={VALID_UAI}&candidate=HEN")
+            response = client.get(f"/pro/collective/offers/redactors?uai={VALID_UAI}&candidate=HEN")
             assert response.status_code == 200
 
         # Then
@@ -64,7 +64,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(email=user.email)
         with assert_num_queries(2):  # session + user
-            response = client.get(f"/collective/offers/redactors?uai={VALID_UAI}&candidate=pointcaré")
+            response = client.get(f"/pro/collective/offers/redactors?uai={VALID_UAI}&candidate=pointcaré")
             assert response.status_code == 200
 
         # Then
@@ -85,7 +85,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(email=user.email)
         with assert_num_queries(2):  # session + user
-            response = client.get(f"/collective/offers/redactors?uai={VALID_UAI}&candidate=E%20H")
+            response = client.get(f"/pro/collective/offers/redactors?uai={VALID_UAI}&candidate=E%20H")
             assert response.status_code == 200
 
         # Then
@@ -106,7 +106,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(email=user.email)
         with assert_num_queries(2):  #  session + user
-            response = client.get(f"/collective/offers/redactors?uai={VALID_UAI}&candidate=Becquerel")
+            response = client.get(f"/pro/collective/offers/redactors?uai={VALID_UAI}&candidate=Becquerel")
             assert response.status_code == 200
 
         # Then
@@ -123,7 +123,7 @@ class Returns404Test:
         # When
         client = client.with_session_auth(email=user.email)
         with assert_num_queries(2):  #  session + user
-            response = client.get("/collective/offers/redactors?uai=NO_UAI&candidate=sklodowska")
+            response = client.get("/pro/collective/offers/redactors?uai=NO_UAI&candidate=sklodowska")
             assert response.status_code == 404
 
 
@@ -136,7 +136,7 @@ class Returns400Test:
         # When
         client = client.with_session_auth(email=user.email)
         with assert_num_queries(2):  #  session + user
-            response = client.get("/collective/offers/redactors?uai=X&candidate=sklodowska")
+            response = client.get("/pro/collective/offers/redactors?uai=X&candidate=sklodowska")
             assert response.status_code == 400
 
     def test_candidate_too_short(self, client):
@@ -146,7 +146,7 @@ class Returns400Test:
         # When
         client = client.with_session_auth(email=user.email)
         with assert_num_queries(2):  #  session + user
-            response = client.get(f"/collective/offers/redactors?uai={VALID_UAI}&candidate=sk")
+            response = client.get(f"/pro/collective/offers/redactors?uai={VALID_UAI}&candidate=sk")
             assert response.status_code == 400
 
 
@@ -155,5 +155,5 @@ class Returns401Test:
     def test_user_not_logged_in(self, client):
         # When
         with assert_num_queries(0):
-            response = client.get("/collective/offers/redactors?uai=X&candidate=sklodowska")
+            response = client.get("/pro/collective/offers/redactors?uai=X&candidate=sklodowska")
             assert response.status_code == 401

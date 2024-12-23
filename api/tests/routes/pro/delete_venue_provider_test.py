@@ -17,7 +17,9 @@ def test_delete_venue_provider(client):
     providers_api.update_venue_provider_external_urls(venue_provider, notification_external_url="https://notify.com")
 
     # When
-    response = client.with_session_auth(email=user_offerer.user.email).delete(f"/venueProviders/{venue_provider.id}")
+    response = client.with_session_auth(email=user_offerer.user.email).delete(
+        f"/pro/venueProviders/{venue_provider.id}"
+    )
 
     # Then
     assert response.status_code == 204
@@ -30,7 +32,7 @@ def test_delete_venue_provider_should_return_404(client):
     offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
     # When
-    response = client.with_session_auth(email=user_offerer.user.email).delete("/venueProviders/12345")
+    response = client.with_session_auth(email=user_offerer.user.email).delete("/pro/venueProviders/12345")
 
     # Then
     assert response.status_code == 404
@@ -45,7 +47,9 @@ def test_delete_venue_provider_should_return_403(client):
     venue_provider = providers_factories.VenueProviderFactory(venue=venue, provider=provider)
 
     # When
-    response = client.with_session_auth(email=user_offerer.user.email).delete(f"/venueProviders/{venue_provider.id}")
+    response = client.with_session_auth(email=user_offerer.user.email).delete(
+        f"/pro/venueProviders/{venue_provider.id}"
+    )
 
     # Then
     assert response.status_code == 403

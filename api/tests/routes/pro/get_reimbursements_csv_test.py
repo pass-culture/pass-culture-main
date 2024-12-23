@@ -29,7 +29,7 @@ def test_without_reimbursement_period(client):
     num_queries = testing.AUTHENTICATION_QUERIES
     num_queries += 1  # check user_offerer exists
     with testing.assert_num_queries(num_queries):
-        response = client.get(f"/reimbursements/csv?offererId={offerer_id}")
+        response = client.get(f"/pro/reimbursements/csv?offererId={offerer_id}")
         assert response.status_code == 400
 
     assert response.json["reimbursementPeriodBeginningDate"] == [
@@ -48,7 +48,7 @@ def test_without_offerer_id(client):
     client = client.with_session_auth(pro.email)
     with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES):
         response = client.get(
-            "/reimbursements/csv?reimbursementPeriodBeginningDate=2021-01-01&reimbursementPeriodEndingDate=2021-01-15"
+            "/pro/reimbursements/csv?reimbursementPeriodBeginningDate=2021-01-01&reimbursementPeriodEndingDate=2021-01-15"
         )
         assert response.status_code == 400
 
@@ -98,7 +98,7 @@ def test_with_venue_filter_with_pricings(client, cutoff, fortnight):
     queries += 1  # FF retrieving
     with testing.assert_num_queries(queries):
         response = client.get(
-            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&bankAccountId={bank_account_id}&offererId={offerer.id}"
+            f"/pro/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&bankAccountId={bank_account_id}&offererId={offerer.id}"
         )
         assert response.status_code == 200
 
@@ -207,7 +207,7 @@ def test_with_reimbursement_period_filter_with_pricings(client, cutoff, fortnigh
     queries += 1  # FF retrieving
     with testing.assert_num_queries(queries):
         response = client.get(
-            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&bankAccountId={bank_account_id}&offererId={offerer.id}"
+            f"/pro/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&bankAccountId={bank_account_id}&offererId={offerer.id}"
         )
         assert response.status_code == 200
 
@@ -322,7 +322,7 @@ def test_with_reimbursement_period_filter_with_pricings(client, cutoff, fortnigh
     queries += 1  # FF retrieving
     with testing.assert_num_queries(queries):
         response = client.get(
-            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&bankAccountId={bank_account_id}&offererId={offerer.id}"
+            f"/pro/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&bankAccountId={bank_account_id}&offererId={offerer.id}"
         )
         assert response.status_code == 200
 
@@ -422,7 +422,7 @@ def test_with_bank_account_filter_with_pricings_collective_use_case(client, cuto
     queries += 1  # FF retrieving
     with testing.assert_num_queries(queries):
         response = client.get(
-            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&bankAccountId={bank_account_id}&offererId={offerer.id}"
+            f"/pro/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&bankAccountId={bank_account_id}&offererId={offerer.id}"
         )
         assert response.status_code == 200
 
@@ -540,7 +540,7 @@ def test_with_reimbursement_period_filter_with_pricings_collective_use_case(clie
     queries += 1  # FF retrieving
     with testing.assert_num_queries(queries):
         response = client.get(
-            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&bankAccountId={bank_account_id}&offererId={offerer.id}"
+            f"/pro/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&bankAccountId={bank_account_id}&offererId={offerer.id}"
         )
         assert response.status_code == 200
 
@@ -654,7 +654,7 @@ def test_with_offer_address_and_venue_address(client, offer_has_oa, len_offerer_
     queries += 1  # select educational redactor
     with testing.assert_num_queries(queries):
         response = client.get(
-            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&bankAccountId={bank_account_id}&offererId={offerer.id}"
+            f"/pro/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&bankAccountId={bank_account_id}&offererId={offerer.id}"
         )
         assert response.status_code == 200
 

@@ -14,7 +14,9 @@ class Returns200Test:
 
         data = {"email": "new.user@example.com"}
 
-        response = client.with_session_auth("pro.user@example.com").post(f"/offerers/{offerer.id}/invite", json=data)
+        response = client.with_session_auth("pro.user@example.com").post(
+            f"/pro/offerers/{offerer.id}/invite", json=data
+        )
 
         assert response.status_code == 204
         offerer_invitation = offerers_models.OffererInvitation.query.one()
@@ -33,7 +35,9 @@ class Returns400Test:
 
         data = {"email": "new.user@example.com"}
 
-        response = client.with_session_auth("pro.user@example.com").post(f"/offerers/{offerer.id}/invite", json=data)
+        response = client.with_session_auth("pro.user@example.com").post(
+            f"/pro/offerers/{offerer.id}/invite", json=data
+        )
 
         assert response.status_code == 400
         assert response.json == {"email": "Une invitation a déjà été envoyée à ce collaborateur"}
@@ -45,6 +49,6 @@ class Returns400Test:
 
         data = {"email": "new.user@example.com"}
 
-        response = client.with_session_auth("pro.user@example.com").post("/offerers/2/invite", json=data)
+        response = client.with_session_auth("pro.user@example.com").post("/pro/offerers/2/invite", json=data)
 
         assert response.status_code == 403

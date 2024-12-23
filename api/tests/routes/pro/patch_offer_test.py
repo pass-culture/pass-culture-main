@@ -43,7 +43,7 @@ class Returns200Test:
             "externalTicketOfficeUrl": "http://example.net",
             "mentalDisabilityCompliant": True,
         }
-        response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 200
@@ -95,14 +95,14 @@ class Returns200Test:
         client_session = client.with_session_auth("user@example.com")
 
         # First call to create the address
-        response = client_session.patch(f"/offers/{offer.id}", json=data)
+        response = client_session.patch(f"/pro/offers/{offer.id}", json=data)
 
         assert response.status_code == 200, response.json
 
         # Second should not fail
         # this was once a bug as the address could not be recreated (constraint)
         # nor fetched (because float<->decimal approximation made the match on coords fails)
-        response = client_session.patch(f"/offers/{offer.id}", json=data)
+        response = client_session.patch(f"/pro/offers/{offer.id}", json=data)
 
         assert response.status_code == 200, response.json
         assert response.json["id"] == offer.id
@@ -120,7 +120,7 @@ class Returns200Test:
             "name": "New name",
             "mentalDisabilityCompliant": True,
         }
-        response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
         assert response.json["id"] == offer.id
@@ -150,7 +150,7 @@ class Returns200Test:
         )
 
         data = {"extraData": {"ean": "1111111111111"}}
-        response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
         assert response.json["id"] == offer.id
@@ -221,7 +221,7 @@ class Returns200Test:
                 "productionYear": 1970,
             },
         }
-        response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
         assert response.json["id"] == offer.id
@@ -314,7 +314,7 @@ class Returns200Test:
             id="75102_7560_00001",
             label=label if label else "",
         )
-        response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/{offer.id}", json=data)
 
         assert response.status_code == 200, response.json
         assert response.json["id"] == offer.id
@@ -354,7 +354,7 @@ class Returns200Test:
         offer_id = offer.id
         http_client = client.with_session_auth("user@example.com")
         with assert_num_queries(12):
-            response = http_client.patch(f"/offers/{offer_id}", json=data)
+            response = http_client.patch(f"/pro/offers/{offer_id}", json=data)
         get_address_mock.assert_not_called()
 
         assert response.status_code == 200
@@ -401,7 +401,7 @@ class Returns200Test:
             },
         }
 
-        response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
         assert response.json["id"] == offer.id
@@ -444,7 +444,7 @@ class Returns200Test:
             },
         }
 
-        response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
         assert response.json["id"] == offer.id
@@ -520,7 +520,7 @@ class Returns200Test:
             id="75102_7560_00001",
             label="",
         )
-        response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/{offer.id}", json=data)
         assert response.status_code == 200
         assert response.json["id"] == offer.id
         updated_offer = Offer.query.get(offer.id)
@@ -550,7 +550,7 @@ class Returns200Test:
             "withdrawalDetails": "Veuillez récuperer vos billets à l'accueil :)",
             "withdrawalType": "no_ticket",
         }
-        response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
         offer = Offer.query.get(offer.id)
@@ -575,7 +575,7 @@ class Returns200Test:
         }
 
         # when
-        response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/{offer.id}", json=data)
 
         # then
         assert response.status_code == 200
@@ -615,7 +615,7 @@ class Returns200Test:
         }
 
         # when
-        response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/{offer.id}", json=data)
 
         # then
         assert response.status_code == 200
@@ -649,7 +649,7 @@ class Returns200Test:
         }
 
         # when
-        response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/{offer.id}", json=data)
 
         # then
         assert response.status_code == 200
@@ -683,7 +683,7 @@ class Returns400Test:
             "thumbCount": 2,
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
         }
-        response = client.with_session_auth("user@example.com").patch(f"offers/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 400
@@ -720,7 +720,7 @@ class Returns400Test:
             "name": "Les lièvres pas malins",
             "url": "missing.something",
         }
-        response = client.with_session_auth("user@example.com").patch(f"offers/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 400
@@ -746,7 +746,7 @@ class Returns400Test:
             "name": "Les lièvres pas malins",
             "externalTicketOfficeUrl": "missing.something",
         }
-        response = client.with_session_auth("user@example.com").patch(f"offers/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 400
@@ -772,7 +772,7 @@ class Returns400Test:
             "name": "Les lièvres pas malins",
             "url": "https://missing",
         }
-        response = client.with_session_auth("user@example.com").patch(f"offers/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 400
@@ -798,7 +798,7 @@ class Returns400Test:
             "name": "Les lièvres pas malins",
             "externalTicketOfficeUrl": "https://missing",
         }
-        response = client.with_session_auth("user@example.com").patch(f"offers/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 400
@@ -820,7 +820,7 @@ class Returns400Test:
         data = {
             "visualDisabilityCompliant": True,
         }
-        response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/{offer.id}", json=data)
 
         assert response.status_code == 400
         assert response.json["global"] == ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
@@ -840,7 +840,7 @@ class Returns400Test:
         data = {
             "withdrawalType": "no_ticket",
         }
-        response = client.with_session_auth("user@example.com").patch(f"offers/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/{offer.id}", json=data)
 
         assert response.status_code == 400
         assert response.json["offer"] == [
@@ -860,7 +860,7 @@ class Returns400Test:
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         data = {"bookingContact": None}
-        response = client.with_session_auth("user@example.com").patch(f"offers/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/{offer.id}", json=data)
 
         assert response.status_code == 400
         assert response.json["offer"] == [
@@ -884,7 +884,7 @@ class Returns400Test:
         )
 
         data = {"extraData": {"ean": "2222222222222"}}
-        response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/{offer.id}", json=data)
 
         assert response.status_code == 400
         assert response.json["global"] == ["Les extraData des offres avec produit ne sont pas modifialbles"]
@@ -903,7 +903,7 @@ class Returns403Test:
 
         # When
         data = {"name": "New name"}
-        response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/pro/offers/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 403
@@ -919,7 +919,7 @@ class Returns404Test:
         users_factories.UserFactory(email="user@example.com")
 
         # when
-        response = client.with_session_auth("user@example.com").patch("/offers/12345", json={})
+        response = client.with_session_auth("user@example.com").patch("/pro/offers/12345", json={})
 
         # then
         assert response.status_code == 404

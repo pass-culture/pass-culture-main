@@ -51,7 +51,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(pro_user.email)
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+            response = client.get(f"/pro/collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
             assert response.status_code == 200
 
         expected_bookings_recap = [
@@ -129,7 +129,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(pro_user.email)
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+            response = client.get(f"/pro/collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
             assert response.status_code == 200
 
         # Then
@@ -160,7 +160,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(pro_user.email)
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+            response = client.get(f"/pro/collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
             assert response.status_code == 200
 
         # Then
@@ -202,7 +202,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(pro_user.email)
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+            response = client.get(f"/pro/collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
             assert response.status_code == 200
 
         # Then
@@ -256,7 +256,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(pro_user.email)
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+            response = client.get(f"/pro/collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
             assert response.status_code == 200
 
         # Then
@@ -304,7 +304,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(pro_user.email)
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+            response = client.get(f"/pro/collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
             assert response.status_code == 200
 
         # Then
@@ -360,7 +360,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(pro_user.email)
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+            response = client.get(f"/pro/collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
             assert response.status_code == 200
 
         # Then
@@ -406,7 +406,7 @@ class Returns200Test:
         client = client.with_session_auth(pro_user.email)
         with assert_num_queries(self.expected_num_queries + 2):  # + collective_stock + collective_offer
             response = client.get(
-                f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}&venueId={collective_stock.collectiveOffer.venueId}"
+                f"/pro/collective/bookings/pro?{BOOKING_PERIOD_PARAMS}&venueId={collective_stock.collectiveOffer.venueId}"
             )
             assert response.status_code == 200
 
@@ -498,7 +498,9 @@ class Returns200Test:
         # When
         client = client.with_session_auth(pro_user.email)
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}&eventDate=2022-05-15T00:00:00Z")
+            response = client.get(
+                f"/pro/collective/bookings/pro?{BOOKING_PERIOD_PARAMS}&eventDate=2022-05-15T00:00:00Z"
+            )
             assert response.status_code == 200
 
         # Then
@@ -590,7 +592,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(pro_user.email)
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=validated")
+            response = client.get(f"/pro/collective/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=validated")
             assert response.status_code == 200
 
         # Then
@@ -661,7 +663,7 @@ class Returns400Test:
 
         client = client.with_session_auth(pro.email)
         with assert_num_queries(2):  # user + session
-            response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}&page=not-a-number")
+            response = client.get(f"/pro/collective/bookings/pro?{BOOKING_PERIOD_PARAMS}&page=not-a-number")
             assert response.status_code == 400
 
         assert response.json["page"] == ["Saisissez un nombre valide"]
@@ -671,7 +673,7 @@ class Returns400Test:
 
         client = client.with_session_auth(pro.email)
         with assert_num_queries(2):  # user + session
-            response = client.get("collective/bookings/pro")
+            response = client.get("/pro/collective/bookings/pro")
             assert response.status_code == 400
 
         assert response.json["eventDate"] == ["Ce champ est obligatoire si aucune période n'est renseignée."]
@@ -709,7 +711,7 @@ class Returns400Test:
         # When
         client = client.with_session_auth(pro_user.email)
         with assert_num_queries(4):  # user + session + count collective_booking + distinct collective_booking
-            response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+            response = client.get(f"/pro/collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
             assert response.status_code == 200
 
         # Then

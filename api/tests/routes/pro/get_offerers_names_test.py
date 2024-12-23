@@ -46,7 +46,7 @@ class Returns200ForProUserTest:
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select offerer
         with testing.assert_num_queries(num_queries):
-            response = client.get("/offerers/names")
+            response = client.get("/pro/offerers/names")
             assert response.status_code == 200
 
         assert response.json == {
@@ -62,7 +62,7 @@ class Returns200ForProUserTest:
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select offerer
         with testing.assert_num_queries(num_queries):
-            response = client.get(f'/offerers/names?offerer_id={offerers["owned_offerer_validated"].id}')
+            response = client.get(f'/pro/offerers/names?offerer_id={offerers["owned_offerer_validated"].id}')
             assert response.status_code == 200
 
         assert "offerersNames" in response.json
@@ -79,7 +79,7 @@ class Returns200ForProUserTest:
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select offerer
         with testing.assert_num_queries(num_queries):
-            response = client.get("/offerers/names")
+            response = client.get("/pro/offerers/names")
             assert response.status_code == 200
 
         assert "offerersNames" in response.json
@@ -100,7 +100,7 @@ class Returns200ForProUserTest:
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select offerer
         with testing.assert_num_queries(num_queries):
-            response = client.get("/offerers/names?validated=true")
+            response = client.get("/pro/offerers/names?validated=true")
             assert response.status_code == 200
 
         assert "offerersNames" in response.json
@@ -120,7 +120,7 @@ class Returns200ForProUserTest:
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select offerers
         with testing.assert_num_queries(num_queries):
-            response = client.get("/offerers/names?validated_for_user=true")
+            response = client.get("/pro/offerers/names?validated_for_user=true")
             assert response.status_code == 200
 
         assert "offerersNames" in response.json

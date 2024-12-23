@@ -22,7 +22,7 @@ class Returns201Test:
             "venueId": venue.id,
             "extraData": {"gtl_id": "07000000"},
         }
-        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers/draft", json=data)
 
         assert response.status_code == 201
 
@@ -48,7 +48,7 @@ class Returns201Test:
             "subcategoryId": subcategories.CONFERENCE.id,
             "venueId": venue.id,
         }
-        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers/draft", json=data)
 
         assert response.status_code == 201
 
@@ -70,7 +70,7 @@ class Returns201Test:
             "venueId": venue.id,
             "extraData": {"gtl_id": "07000000"},
         }
-        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers/draft", json=data)
 
         assert response.status_code == 201
 
@@ -89,7 +89,7 @@ class Returns201Test:
             "productId": product.id,
             "extraData": {"ean": "9782123456803"},
         }
-        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers/draft", json=data)
 
         assert response.status_code == 201
 
@@ -116,7 +116,7 @@ class Returns201Test:
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
             "venueId": venue.id,
         }
-        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers/draft", json=data)
 
         assert response.status_code == 201
 
@@ -140,7 +140,7 @@ class Returns201Test:
             "subcategoryId": subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
             "venueId": venue.id,
         }
-        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers/draft", json=data)
 
         assert response.status_code == 201
 
@@ -169,7 +169,7 @@ class Returns201Test:
             "extraData": {"gtl_id": "07000000", "ean": "1234567891234"},
             "productId": product.id,
         }
-        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers/draft", json=data)
 
         assert response.status_code == 201
 
@@ -201,7 +201,7 @@ class Returns201Test:
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
             "venueId": venue.id,
         }
-        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers/draft", json=data)
 
         assert response.status_code == 201
 
@@ -226,7 +226,7 @@ class Returns201Test:
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
             "venueId": venue.id,
         }
-        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers/draft", json=data)
 
         assert response.status_code == 201
 
@@ -252,7 +252,7 @@ class Returns201Test:
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
             "venueId": venue.id,
         }
-        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers/draft", json=data)
 
         assert response.status_code == 201
 
@@ -273,7 +273,7 @@ class Returns400Test:
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
             "venueId": 1,
         }
-        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers/draft", json=data)
 
         assert response.status_code == 404
 
@@ -287,7 +287,7 @@ class Returns400Test:
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
             "venueId": venue.id,
         }
-        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers/draft", json=data)
 
         assert response.status_code == 400
         assert response.json["name"] == ["Le titre de l’offre doit faire au maximum 90 caractères."]
@@ -302,7 +302,7 @@ class Returns400Test:
             "subcategoryId": "TOTO",
             "venueId": venue.id,
         }
-        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers/draft", json=data)
 
         assert response.status_code == 400
         assert response.json["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
@@ -319,7 +319,7 @@ class Returns400Test:
             "venueId": venue.id,
             "extraData": {"gtl_id": "07000000"},
         }
-        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers/draft", json=data)
 
         assert response.status_code == 400
         assert response.json["ean"] == ["EAN non reconnu. Assurez-vous qu'il n'y ait pas d'erreur de saisie."]
@@ -337,7 +337,7 @@ class Returns400Test:
             "extraData": {"gtl_id": "07000000", "ean": "1234567891234"},
             "productId": 0,
         }
-        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers/draft", json=data)
 
         assert response.status_code == 400
         assert response.json["ean"] == ["EAN non reconnu. Assurez-vous qu'il n'y ait pas d'erreur de saisie."]
@@ -353,7 +353,7 @@ class Returns400Test:
             "subcategoryId": subcategory_id,
             "venueId": venue.id,
         }
-        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers/draft", json=data)
 
         assert response.status_code == 400
         msg = "Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie"
@@ -371,7 +371,7 @@ class Returns403Test:
             "subcategoryId": subcategories.JEU_EN_LIGNE.id,
             "venueId": venue.id,
         }
-        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+        response = client.with_session_auth("user@example.com").post("/pro/offers/draft", json=data)
 
         assert response.status_code == 403
         msg = "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."

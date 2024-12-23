@@ -14,7 +14,7 @@ describe('Create individual offers', () => {
     cy.visit('/connexion')
     cy.request({
       method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
+      url: 'http://localhost:5001/pro/sandboxes/pro/create_regular_pro_user',
     }).then((response) => {
       login = response.body.user.email
       venueName = response.body.venueName
@@ -23,19 +23,19 @@ describe('Create individual offers', () => {
   })
 
   beforeEach(() => {
-    cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
-    cy.intercept({ method: 'POST', url: '/offers/draft' }).as('postDraftOffer')
-    cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
-    cy.intercept({ method: 'GET', url: '/offers/*/stocks/*' }).as('getStocks')
-    cy.intercept({ method: 'POST', url: '/stocks/bulk' }).as('postStocks')
-    cy.intercept({ method: 'PATCH', url: '/offers/publish' }).as('publishOffer')
-    cy.intercept({ method: 'GET', url: '/offerers/names' }).as(
+    cy.intercept({ method: 'GET', url: '/pro/offers/*' }).as('getOffer')
+    cy.intercept({ method: 'POST', url: '/pro/offers/draft' }).as('postDraftOffer')
+    cy.intercept({ method: 'PATCH', url: '/pro/offers/*' }).as('patchOffer')
+    cy.intercept({ method: 'GET', url: '/pro/offers/*/stocks/*' }).as('getStocks')
+    cy.intercept({ method: 'POST', url: '/pro/stocks/bulk' }).as('postStocks')
+    cy.intercept({ method: 'PATCH', url: '/pro/offers/publish' }).as('publishOffer')
+    cy.intercept({ method: 'GET', url: '/pro/offerers/names' }).as(
       'getOfferersNames'
     )
-    cy.intercept({ method: 'GET', url: '/offers/categories' }).as(
+    cy.intercept({ method: 'GET', url: '/pro/offers/categories' }).as(
       'getCategories'
     )
-    cy.intercept({ method: 'GET', url: '/venues?offererId=*' }).as(
+    cy.intercept({ method: 'GET', url: '/pro/venues?offererId=*' }).as(
       'getVenuesForOfferer'
     )
     interceptSearch5Adresses()

@@ -43,7 +43,7 @@ export const postImageToVenue = async (
   const queryParams = stringify(venueImage)
 
   return await client.postWithFormData(
-    `/venues/${venueId}/banner?${queryParams}`,
+    `/pro/venues/${venueId}/banner?${queryParams}`,
     body
   )
 }

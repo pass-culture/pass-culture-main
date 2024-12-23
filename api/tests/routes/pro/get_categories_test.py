@@ -35,7 +35,7 @@ class Returns200Test:
         # when
         client = client.with_session_auth(user.email)
         with assert_num_queries(2):  #  session + user
-            response = client.get("/offers/categories")
+            response = client.get("/pro/offers/categories")
             assert response.status_code == 200
 
         assert response.json == {

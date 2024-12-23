@@ -26,7 +26,7 @@ def test_without_invoices_references(client):
 
     client = client.with_session_auth(pro.email)
     with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES):
-        response = client.get("/v2/reimbursements/csv")
+        response = client.get("/pro/v2/reimbursements/csv")
         assert response.status_code == 400
 
     assert response.json["invoicesReferences"] == ["Ce champ est obligatoire"]
@@ -70,7 +70,7 @@ def test_with_pricings(client):
     queries += 1  # select educational redactor
     queries += 1  # feature flag
     with testing.assert_num_queries(queries):
-        response = client.get(f"/v2/reimbursements/csv?{invoices_references_str}")
+        response = client.get(f"/pro/v2/reimbursements/csv?{invoices_references_str}")
         assert response.status_code == 200
 
     assert response.headers["Content-type"] == "text/csv; charset=utf-8;"
@@ -150,7 +150,7 @@ def test_with_pricings_collective_use_case(client):
     queries += 1  # select educational redactor
     queries += 1  # feature flag
     with testing.assert_num_queries(queries):
-        response = client.get(f"/v2/reimbursements/csv?{invoices_references_str}")
+        response = client.get(f"/pro/v2/reimbursements/csv?{invoices_references_str}")
         assert response.status_code == 200
 
     assert response.headers["Content-type"] == "text/csv; charset=utf-8;"
@@ -237,7 +237,7 @@ def test_return_only_searched_invoice(client):
     queries += 1  # select educational redactor
     queries += 1  # feature flag
     with testing.assert_num_queries(queries):
-        response = client.get(f"/v2/reimbursements/csv?invoicesReferences={invoice_reference}")
+        response = client.get(f"/pro/v2/reimbursements/csv?invoicesReferences={invoice_reference}")
         assert response.status_code == 200
 
     assert response.headers["Content-type"] == "text/csv; charset=utf-8;"
@@ -254,7 +254,7 @@ def test_too_many_invoices_searched_returns_an_error(client):
     client = client.with_session_auth(pro.email)
     references = "invoicesReferences=" + "&invoicesReferences=".join(list(string.ascii_letters))
 
-    response = client.get(f"/v2/reimbursements/csv?{references}")
+    response = client.get(f"/pro/v2/reimbursements/csv?{references}")
 
     assert response.status_code == 400
     assert response.json == {"invoicesReferences": ["ensure this value has at most 24 items"]}

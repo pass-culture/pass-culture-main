@@ -61,7 +61,7 @@ class Returns200Test:
         educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
         with mock.patch("pcapi.core.educational.api.offer.get_image_from_url", return_value=image_oiseau_bytes):
-            response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer_id}/duplicate")
+            response = client.with_session_auth("user@example.com").post(f"/pro/collective/offers/{offer_id}/duplicate")
 
         # Then
         duplicate = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
@@ -86,7 +86,7 @@ class Returns200Test:
         educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
         # When
-        response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer_id}/duplicate")
+        response = client.with_session_auth("user@example.com").post(f"/pro/collective/offers/{offer_id}/duplicate")
 
         # Then
         assert response.status_code == 201
@@ -192,7 +192,7 @@ class Returns200Test:
         educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
         # When
-        response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer_id}/duplicate")
+        response = client.with_session_auth("user@example.com").post(f"/pro/collective/offers/{offer_id}/duplicate")
 
         # Then
         assert response.status_code == 201
@@ -212,7 +212,7 @@ class Returns200Test:
 
         # When
 
-        response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer_id}/duplicate")
+        response = client.with_session_auth("user@example.com").post(f"/pro/collective/offers/{offer_id}/duplicate")
 
         assert response.status_code == 403
         assert response.json == {"validation": ["l'offre ne passe pas la validation"]}
@@ -225,7 +225,7 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = educational_factories.create_collective_offer_by_status(status=status, venue=venue)
 
-        response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer.id}/duplicate")
+        response = client.with_session_auth("user@example.com").post(f"/pro/collective/offers/{offer.id}/duplicate")
 
         assert response.status_code == 201
         duplicate = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
@@ -238,7 +238,7 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = educational_factories.EndedCollectiveOfferFactory(booking_is_confirmed=True, venue=venue)
 
-        response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer.id}/duplicate")
+        response = client.with_session_auth("user@example.com").post(f"/pro/collective/offers/{offer.id}/duplicate")
 
         assert response.status_code == 201
         duplicate = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
@@ -252,7 +252,7 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = educational_factories.create_collective_offer_by_status(status=status, venue=venue)
 
-        response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer.id}/duplicate")
+        response = client.with_session_auth("user@example.com").post(f"/pro/collective/offers/{offer.id}/duplicate")
 
         assert response.status_code == 403
         assert response.json == {"validation": ["Cette action n'est pas autorisée sur cette offre"]}
@@ -270,7 +270,7 @@ class Returns200Test:
 
         # When
 
-        response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer_id}/duplicate")
+        response = client.with_session_auth("user@example.com").post(f"/pro/collective/offers/{offer_id}/duplicate")
 
         assert response.status_code == 403
         assert response.json == {"offerer": ["la structure n'est pas autorisée à dupliquer l'offre"]}
@@ -295,7 +295,7 @@ class Returns200Test:
             "pcapi.core.educational.api.offer.get_image_from_url",
             side_effect=CantGetImageFromUrl,
         ):
-            response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer_id}/duplicate")
+            response = client.with_session_auth("user@example.com").post(f"/pro/collective/offers/{offer_id}/duplicate")
 
         # Then
         assert response.status_code == 404
@@ -322,7 +322,7 @@ class Returns200Test:
         educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
         # When
-        response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer_id}/duplicate")
+        response = client.with_session_auth("user@example.com").post(f"/pro/collective/offers/{offer_id}/duplicate")
 
         # Then
         assert response.status_code == 201

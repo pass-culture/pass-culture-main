@@ -112,7 +112,7 @@ describe('Cookie management with login', () => {
     cy.visit('/connexion')
     cy.request({
       method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
+      url: 'http://localhost:5001/pro/sandboxes/pro/create_regular_pro_user',
     }).then((response) => {
       login1 = response.body.user.email
     })
@@ -141,7 +141,7 @@ describe('Cookie management with login', () => {
 
     cy.request({
       method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
+      url: 'http://localhost:5001/pro/sandboxes/pro/create_regular_pro_user',
     }).then((response) => {
       const login2 = response.body.user.email
       logInAndGoToPage(login2, '/accueil', false)
@@ -162,7 +162,7 @@ describe('Cookie management with login', () => {
 
     cy.request({
       method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
+      url: 'http://localhost:5001/pro/sandboxes/pro/create_regular_pro_user',
     }).then((response) => {
       cy.wrap(response.body.user.email).as('login')
     })

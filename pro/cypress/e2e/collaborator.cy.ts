@@ -8,14 +8,14 @@ describe('Collaborator list feature', () => {
     cy.visit('/connexion')
     cy.request({
       method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
+      url: 'http://localhost:5001/pro/sandboxes/pro/create_regular_pro_user',
     }).then((response) => {
       login = response.body.user.email
     })
 
     cy.request({
       method: 'GET',
-      url: 'http://localhost:5001/sandboxes/clear_email_list',
+      url: 'http://localhost:5001/pro/sandboxes/clear_email_list',
     }).then((response) => {
       expect(response.status).to.eq(200)
     })
@@ -56,7 +56,7 @@ describe('Collaborator list feature', () => {
     cy.stepLog({ message: 'check email received' })
     cy.request({
       method: 'GET',
-      url: 'http://localhost:5001/sandboxes/get_unique_email',
+      url: 'http://localhost:5001/pro/sandboxes/get_unique_email',
       timeout: 60000
     }).then((response) => {
       expect(response.status).to.eq(200)

@@ -21,7 +21,7 @@ class Returns204Test:
         # When
         client = client.with_session_auth("pro@example.com")
         data = {"ids": [offer1.id, offer2.id], "isActive": True}
-        response = client.patch("/offers/active-status", json=data)
+        response = client.patch("/pro/offers/active-status", json=data)
 
         # Then
         assert response.status_code == 204
@@ -41,7 +41,7 @@ class Returns204Test:
         client = client.with_session_auth("pro@example.com")
         data = {"ids": [offer.id, synchronized_offer.id], "isActive": False}
         with testing.assert_no_duplicated_queries():
-            response = client.patch("/offers/active-status", json=data)
+            response = client.patch("/pro/offers/active-status", json=data)
 
         # Then
         assert response.status_code == 204
@@ -61,7 +61,7 @@ class Returns204Test:
             "ids": [approved_offer.id, pending_offer.id, rejected_offer.id],
             "isActive": True,
         }
-        response = client.patch("/offers/active-status", json=data)
+        response = client.patch("/pro/offers/active-status", json=data)
 
         assert response.status_code == 204
         assert approved_offer.isActive
@@ -84,7 +84,7 @@ class Returns204Test:
         # When
         client = client.with_session_auth("pro@example.com")
         response = client.patch(
-            "/offers/active-status",
+            "/pro/offers/active-status",
             json={"ids": [offer_that_should_stay_deactivated.id, offer.id], "isActive": True},
         )
 

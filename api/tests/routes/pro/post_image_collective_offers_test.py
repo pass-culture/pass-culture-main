@@ -38,7 +38,7 @@ class AttachCollectiveOfferImageTest:
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         auth_client = client.with_session_auth(email="user@example.com")
-        response = auth_client.post(f"/collective/offers/{offer.id}/image", form=get_image_data())
+        response = auth_client.post(f"/pro/collective/offers/{offer.id}/image", form=get_image_data())
 
         assert response.status_code == 200
         db.session.refresh(offer)
@@ -54,7 +54,7 @@ class AttachCollectiveOfferImageTest:
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         auth_client = client.with_session_auth(email="user@example.com")
-        response = auth_client.post(f"/collective/offers/{offer.id}/image", form=get_image_data())
+        response = auth_client.post(f"/pro/collective/offers/{offer.id}/image", form=get_image_data())
 
         assert response.status_code == 200
         assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists() is True
@@ -66,7 +66,7 @@ class AttachCollectiveOfferImageTest:
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         auth_client = client.with_session_auth(email="user@example.com")
-        response = auth_client.post(f"/collective/offers/{offer.id}/image", form=get_image_data())
+        response = auth_client.post(f"/pro/collective/offers/{offer.id}/image", form=get_image_data())
 
         assert response.status_code == 403
         assert response.json == {"global": ["Cette action n'est pas autorisée sur cette offre"]}
@@ -78,7 +78,7 @@ class AttachCollectiveOfferImageTest:
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         auth_client = client.with_session_auth(email="user@example.com")
-        response = auth_client.post(f"/collective/offers/{offer.id}/image", form=get_image_data())
+        response = auth_client.post(f"/pro/collective/offers/{offer.id}/image", form=get_image_data())
 
         assert response.status_code == 403
         assert response.json == {"global": ["Cette action n'est pas autorisée sur cette offre"]}

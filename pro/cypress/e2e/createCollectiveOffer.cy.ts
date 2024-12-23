@@ -13,14 +13,14 @@ describe('Create collective offers', () => {
     cy.visit('/connexion')
     cy.request({
       method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_pro_user_with_collective_offers',
+      url: 'http://localhost:5001/pro/sandboxes/pro/create_pro_user_with_collective_offers',
     }).then((response) => {
       login = response.body.user.email
       offerDraft = response.body.offerDraft
     })
     cy.intercept(
       'GET',
-      'http://localhost:5001/collective/educational-domains',
+      'http://localhost:5001/pro/collective/educational-domains',
       {
         body: [
           { id: 2, name: 'Danse' },
@@ -29,10 +29,10 @@ describe('Create collective offers', () => {
       }
     ).as('getDomains')
 
-    cy.intercept({ method: 'GET', url: '/collective/offers*' }).as(
+    cy.intercept({ method: 'GET', url: '/pro/collective/offers*' }).as(
       'collectiveOffers'
     )
-    cy.intercept({ method: 'GET', url: '/offerers/educational*' }).as(
+    cy.intercept({ method: 'GET', url: '/pro/offerers/educational*' }).as(
       'educationalOfferers'
     )
 

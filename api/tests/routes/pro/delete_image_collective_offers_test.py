@@ -39,12 +39,12 @@ class DeleteImageFromFileTest:
         }
 
         response = client.with_session_auth(email="user@example.com").post(
-            f"/collective/offers/{offer.id}/image", form=data
+            f"/pro/collective/offers/{offer.id}/image", form=data
         )
 
         # when
 
-        response = client.with_session_auth(email="user@example.com").delete(f"/collective/offers/{offer.id}/image")
+        response = client.with_session_auth(email="user@example.com").delete(f"/pro/collective/offers/{offer.id}/image")
 
         # then
 
@@ -57,7 +57,7 @@ class DeleteImageFromFileTest:
         offer = factories.create_collective_offer_by_status(status)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-        response = client.with_session_auth(email="user@example.com").delete(f"/collective/offers/{offer.id}/image")
+        response = client.with_session_auth(email="user@example.com").delete(f"/pro/collective/offers/{offer.id}/image")
 
         assert response.status_code == 204
 
@@ -73,7 +73,9 @@ class DeleteImageFromFileTest:
         )
 
         # when
-        response = client.with_session_auth(email="user@example.com").delete(f"/collective/offers/{offer2.id}/image")
+        response = client.with_session_auth(email="user@example.com").delete(
+            f"/pro/collective/offers/{offer2.id}/image"
+        )
 
         # then
         assert response.status_code == 403
@@ -84,7 +86,7 @@ class DeleteImageFromFileTest:
         offer = factories.create_collective_offer_by_status(status)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-        response = client.with_session_auth(email="user@example.com").delete(f"/collective/offers/{offer.id}/image")
+        response = client.with_session_auth(email="user@example.com").delete(f"/pro/collective/offers/{offer.id}/image")
 
         assert response.status_code == 403
         assert response.json == {"global": ["Cette action n'est pas autorisée sur cette offre"]}
@@ -94,14 +96,14 @@ class DeleteImageFromFileTest:
         offer = factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-        response = client.with_session_auth(email="user@example.com").delete(f"/collective/offers/{offer.id}/image")
+        response = client.with_session_auth(email="user@example.com").delete(f"/pro/collective/offers/{offer.id}/image")
 
         assert response.status_code == 403
         assert response.json == {"global": ["Cette action n'est pas autorisée sur cette offre"]}
 
     def test_not_authentified(self, client):
         # when
-        response = client.delete("/collective/offers/0/image")
+        response = client.delete("/pro/collective/offers/0/image")
 
         # then
         assert response.status_code == 401
@@ -113,7 +115,7 @@ class DeleteImageFromFileTest:
         )
 
         # when
-        response = client.with_session_auth(email="user@example.com").delete("/collective/offers/0/image")
+        response = client.with_session_auth(email="user@example.com").delete("/pro/collective/offers/0/image")
 
         # then
         assert response.status_code == 404

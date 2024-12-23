@@ -49,7 +49,7 @@ class ImageRatioErrorTest:
             image_content = (images_dir / "mouette_small.jpg").read_bytes()
             file = {"banner": (io.BytesIO(image_content), "upsert_banner.jpg")}
 
-            url = f"/venues/{venue.id}/banner"
+            url = f"/pro/venues/{venue.id}/banner"
             url += (
                 "?x_crop_percent=0.0"
                 "&y_crop_percent=0.0"

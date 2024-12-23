@@ -43,7 +43,7 @@ class Returns204Test:
 
         data = {"ids": [offer1.id, offer2.id]}
         with assert_num_queries(self.num_queries):
-            response = client.patch("/collective/offers/archive", json=data)
+            response = client.patch("/pro/collective/offers/archive", json=data)
             assert response.status_code == 204
 
         db.session.refresh(offer1)
@@ -69,7 +69,7 @@ class Returns204Test:
         client = client.with_session_auth("pro@example.com")
 
         data = {"ids": [offer.id, other_offer.id]}
-        response = client.patch("/collective/offers/archive", json=data)
+        response = client.patch("/pro/collective/offers/archive", json=data)
 
         assert response.status_code == 204
         db.session.refresh(offer)
@@ -89,7 +89,7 @@ class Returns204Test:
 
         data = {"ids": [draft_offer.id, other_offer.id]}
         with assert_num_queries(self.num_queries):
-            response = client.patch("/collective/offers/archive", json=data)
+            response = client.patch("/pro/collective/offers/archive", json=data)
             assert response.status_code == 204
 
         db.session.refresh(draft_offer)
@@ -108,7 +108,7 @@ class Returns204Test:
 
         data = {"ids": [offer.id]}
         with assert_num_queries(self.num_queries):
-            response = client.patch("/collective/offers/archive", json=data)
+            response = client.patch("/pro/collective/offers/archive", json=data)
             assert response.status_code == 204
 
         db.session.refresh(offer)
@@ -128,7 +128,7 @@ class Returns204Test:
         # same queries except "ensure there is no existing archived offer"
         num_queries = self.num_queries - 1
         with assert_num_queries(num_queries):
-            response = client.patch("/collective/offers/archive", json=data)
+            response = client.patch("/pro/collective/offers/archive", json=data)
             assert response.status_code == 204
 
         db.session.refresh(offer)
@@ -150,7 +150,7 @@ class Returns204Test:
         # same queries except "ensure there is no existing archived offer" and "update dateArchive on collective_offer"
         num_queries = self.num_queries - 2
         with assert_num_queries(num_queries):
-            response = client.patch("/collective/offers/archive", json=data)
+            response = client.patch("/pro/collective/offers/archive", json=data)
             assert response.status_code == 403
             assert response.json == {"global": ["Cette action n'est pas autorisée sur cette offre"]}
 
@@ -170,7 +170,7 @@ class Returns204Test:
         # same queries except "ensure there is no existing archived offer" and "update dateArchive on collective_offer"
         num_queries = self.num_queries - 2
         with assert_num_queries(num_queries):
-            response = client.patch("/collective/offers/archive", json=data)
+            response = client.patch("/pro/collective/offers/archive", json=data)
             assert response.status_code == 403
             assert response.json == {"global": ["Cette action n'est pas autorisée sur cette offre"]}
 
@@ -191,7 +191,7 @@ class Returns204Test:
         # same queries except "ensure there is no existing archived offer" and "update dateArchive on collective_offer"
         num_queries = self.num_queries - 2
         with assert_num_queries(num_queries):
-            response = client.patch("/collective/offers/archive", json=data)
+            response = client.patch("/pro/collective/offers/archive", json=data)
             assert response.status_code == 403
             assert response.json == {"global": ["Cette action n'est pas autorisée sur cette offre"]}
 
@@ -212,7 +212,7 @@ class Returns422Test:
         client = client.with_session_auth("pro@example.com")
 
         data = {"ids": [offer_already_archived.id, offer_not_archived.id]}
-        response = client.patch("/collective/offers/archive", json=data)
+        response = client.patch("/pro/collective/offers/archive", json=data)
 
         assert response.status_code == 422
         assert response.json == {"global": ["One of the offers is already archived"]}
