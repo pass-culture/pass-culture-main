@@ -1,4 +1,4 @@
-# Guidelines Gherkin
+# Guidelines
 
 ## Dois-je écrire ce test ?
 
@@ -12,9 +12,9 @@ Comme dit dans le titre, ne réécrivez pas un test (ou une assertion) qui exist
 
 ## Ecrivez de beaux scénarios que tout le monde aura envie de lire
 
-### Nommez vos features et scénarios de manière à ce qu'on sache exactement ce qu'ils vont faire
+### Nommez vos it('') de manière à ce qu'on sache exactement ce qu'ils vont faire
 
-En lisant votre feature et votre scénario on devrait savoir immédiatement ce que ça teste. Pour trouver l'inspiration, on pourra par exemple utiliser une tournure à la Friends : "Celui où..."
+En lisant votre cas de test on devrait savoir immédiatement ce que ça teste. Pour trouver l'inspiration, on pourra par exemple utiliser une tournure à la Friends : "Celui où..."
 
 ### Faites le plus court possible
 
@@ -28,11 +28,11 @@ Exemple de tests qui respectent bien ces deux règles : les scénarios Adage.
 
 ### Seule et unique exception aux deux points précédents
 
-la seule exception tolérée dans le contexte Pass Culture sera le cas des parcours (workflow) nominaux (happy path) et critiques: ce que souhaite faire l'utilisateur et qui ne doit jamais casser. Dans ces cas spécifiques, il vaut mieux un parcours de bout en bout que des petits scénarios découpés de façon artificielle et couteuse en préconditions (mocks par exemple).
+La seule exception tolérée dans le contexte Pass Culture sera le cas des parcours (workflow) nominaux (happy path) et critiques: ce que souhaite faire l'utilisateur et qui ne doit jamais casser. Dans ces cas spécifiques, il vaut mieux un parcours de bout en bout que des petits scénarios découpés de façon artificielle et couteuse en préconditions (mocks par exemple).
 
 ### Ne décrivez pas l'interface utilisateur (UI)
 
-votre scénario ne devrait pas parler de l'interface (boutons, liens, etc.). Vous devriez parler de l'intention de l'utlisateur plutôt que de ses interactions.
+Votre scénario ne devrait pas parler de l'interface (boutons, liens, etc.). Vous devriez parler de l'intention de l'utlisateur plutôt que de ses interactions.
 
 _Ex:_ `I click on "Plus Tard" link in confirmation popin`_, devrait plutôt ressembler à :_ `I skip offer creation`
 
