@@ -9,6 +9,7 @@ from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
 from pcapi.core.educational.api import booking as booking_api
+from pcapi.core.educational.schemas import RedactorInformation
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
@@ -18,7 +19,6 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.repository import atomic
-from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.collective.endpoints.adage_mock import utils

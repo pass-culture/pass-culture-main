@@ -13,6 +13,7 @@ from sqlalchemy.sql.expression import extract
 import pcapi.core.categories.subcategories_v2 as subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational.schemas import RedactorInformation
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -25,7 +26,6 @@ from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
-from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
 from pcapi.utils.clean_accents import clean_accents
 
 
