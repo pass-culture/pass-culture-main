@@ -4,18 +4,22 @@ import factory
 
 from pcapi.core.offerers.factories import ApiKeyFactory
 from pcapi.core.offerers.models import Venue
+from pcapi.core.providers.factories import OffererProviderFactory
 from pcapi.core.providers.factories import PublicApiProviderFactory
 from pcapi.core.providers.factories import VenueProviderFactory
 from pcapi.core.providers.models import Provider
 
 
 def create_collective_api_provider(venues: Sequence[Venue]) -> Provider:
+    "Create api_keys with shape : collective_{offererId}_clear{offererId}"
+
     provider = PublicApiProviderFactory(name=factory.Sequence("Collective API Provider {}".format))
 
     for venue in venues:
         VenueProviderFactory(venue=venue, provider=provider)
 
     offerer = venues[0].managingOfferer
-    ApiKeyFactory.create(offerer=offerer, provider=provider, prefix=f"collective_api_prefix_for_{provider.id}")
+    OffererProviderFactory(offerer=offerer, provider=provider)
+    ApiKeyFactory(offerer=offerer, provider=provider, prefix=f"collective_{offerer.id}", secret=f"clear{offerer.id}")
 
     return provider
