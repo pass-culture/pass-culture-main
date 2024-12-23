@@ -10,10 +10,10 @@ import pytest
 import requests_mock
 
 from pcapi.core.educational.api import adage as educational_api_adage
+from pcapi.core.educational.schemas import AdageCulturalPartners
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.repository import get_emails_by_venue
 from pcapi.models import db
-from pcapi.routes.serialization import venues_serialize
 
 
 BASE_DATA = {
@@ -303,7 +303,7 @@ def test_synchronize_adage_ids_on_offerers(db_session):
     assert not venue8.managingOfferer.allowedOnAdage
 
     partners = parse_obj_as(
-        venues_serialize.AdageCulturalPartners,
+        AdageCulturalPartners,
         {
             "partners": [
                 venue1_data,
@@ -352,7 +352,7 @@ def test_synchronize_adage_ids_on_offerers_for_tricky_case(db_session):
     assert not venue1.managingOfferer.allowedOnAdage
 
     partners = parse_obj_as(
-        venues_serialize.AdageCulturalPartners,
+        AdageCulturalPartners,
         {"partners": [venue1_data]},
     ).partners
 

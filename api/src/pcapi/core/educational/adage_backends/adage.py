@@ -10,8 +10,8 @@ from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational import exceptions
 from pcapi.core.educational.adage_backends import serialize
 from pcapi.core.educational.adage_backends.base import AdageClient
+from pcapi.core.educational.schemas import AdageCulturalPartner
 from pcapi.routes.adage.v1.serialization import prebooking
-from pcapi.routes.serialization import venues_serialize
 from pcapi.utils import requests
 
 
@@ -191,7 +191,7 @@ class AdageHttpClient(AdageClient):
             if not is_adage_institution_without_email(api_response):
                 raise self._get_api_adage_exception(api_response, "Error getting Adage API")
 
-    def get_cultural_partner(self, siret: str) -> venues_serialize.AdageCulturalPartner:
+    def get_cultural_partner(self, siret: str) -> AdageCulturalPartner:
         api_url = f"{self.base_url}/v1/etablissement-culturel/{siret}"
         try:
             api_response = requests.get(
@@ -212,7 +212,7 @@ class AdageHttpClient(AdageClient):
         if len(response_content) == 0:
             raise exceptions.CulturalPartnerNotFoundException("Requested cultural partner not found for Adage")
 
-        return parse_obj_as(venues_serialize.AdageCulturalPartner, response_content[0])
+        return parse_obj_as(AdageCulturalPartner, response_content[0])
 
     def get_adage_educational_institutions(self, ansco: str) -> list[serialize.AdageEducationalInstitution]:
         template_url = f"{self.base_url}/v1/etablissement-scolaire?ansco={ansco}&page=%s"
