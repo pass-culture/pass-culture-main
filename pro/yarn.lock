@@ -7877,10 +7877,10 @@ vitest-canvas-mock@^0.3.3:
   dependencies:
     jest-canvas-mock "~2.5.2"
 
-vitest-fetch-mock@^0.4.2:
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/vitest-fetch-mock/-/vitest-fetch-mock-0.4.2.tgz#d39f2de9cc5af86e32ff7b14b6d311b241a5f140"
-  integrity sha512-MuN/TCAvvUs9sLMdOPKqdXEUOD0E5cNW/LN7Tro3KkrLBsvUaH7iQWcznNUU4ml+GqX6ZbNguDmFQ2tliKqhCg==
+vitest-fetch-mock@^0.4.3:
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/vitest-fetch-mock/-/vitest-fetch-mock-0.4.3.tgz#0c361e6e2821f8ac213165155536303a99597257"
+  integrity sha512-PhuEh+9HCsXFMRPUJilDL7yVDFufoxqk7ze+CNks64UGlfFXaJTn1bLABiNlEc0u25RERXQGj0Tm+M9i6UY9HQ==
 
 vitest@^2.1.2:
   version "2.1.2"
