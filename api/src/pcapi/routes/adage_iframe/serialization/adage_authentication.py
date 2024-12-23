@@ -6,6 +6,7 @@ from pydantic.v1 import ValidationError
 
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.exceptions import MissingRequiredRedactorInformation
+from pcapi.core.educational.schemas import RedactorInformation
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 
@@ -60,14 +61,6 @@ class AuthenticatedResponse(BaseModel):
         use_enum_values = True
         alias_generator = to_camel
         allow_population_by_field_name = True
-
-
-class RedactorInformation(BaseModel):
-    civility: str | None
-    lastname: str | None
-    firstname: str | None
-    email: str
-    uai: str
 
 
 def get_redactor_information_from_adage_authentication(
