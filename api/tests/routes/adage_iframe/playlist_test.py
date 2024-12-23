@@ -5,11 +5,9 @@ import pytest
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational.models import OfferAddressType
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
-
-# from pcapi.models import db
-from pcapi.routes.serialization import collective_offers_serialize
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -146,7 +144,7 @@ class GetNewTemplateOffersPlaylistQueryTest(SharedPlaylistsErrorTests, AuthError
         playlist_offers = educational_factories.CollectiveOfferTemplateFactory.create_batch(3)
         for offer in playlist_offers[:-1]:
             offer.offerVenue = {
-                "addressType": collective_offers_serialize.OfferAddressType.OFFERER_VENUE.value,
+                "addressType": OfferAddressType.OFFERER_VENUE.value,
                 "otherAddress": "",
                 "venueId": offer.venueId,
             }
@@ -160,7 +158,7 @@ class GetNewTemplateOffersPlaylistQueryTest(SharedPlaylistsErrorTests, AuthError
         # This item is to make sure that we issue an extended search if we have less than
         # 10 offers in the default search radius
         playlist_offers[-1].offerVenue = {
-            "addressType": collective_offers_serialize.OfferAddressType.OFFERER_VENUE.value,
+            "addressType": OfferAddressType.OFFERER_VENUE.value,
             "otherAddress": "",
             "venueId": playlist_offers[-1].venueId,
         }

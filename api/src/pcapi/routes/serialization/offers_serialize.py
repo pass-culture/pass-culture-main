@@ -1,6 +1,5 @@
 import datetime
 import decimal
-import enum
 import typing
 from typing import Any
 
@@ -110,12 +109,6 @@ class PostOfferBodyModel(BaseModel):
     class Config:
         alias_generator = to_camel
         extra = "forbid"
-
-
-class OfferAddressType(enum.Enum):
-    OFFERER_VENUE = "offererVenue"
-    SCHOOL = "school"
-    OTHER = "other"
 
 
 class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
