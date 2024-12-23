@@ -64,12 +64,14 @@ from pcapi.models import offer_mixin
 from pcapi.models import pc_object
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
+from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import is_managed_transaction
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import on_commit
 from pcapi.repository import repository
 from pcapi.repository import transaction
+from pcapi.utils import db as db_utils
 from pcapi.utils import image_conversion
 import pcapi.utils.cinema_providers as cinema_providers_utils
 from pcapi.utils.custom_keys import get_field
@@ -696,6 +698,36 @@ def activate_future_offers(publication_date: datetime.datetime | None = None) ->
     query = offers_repository.get_offers_by_publication_date(publication_date=publication_date)
     query = offers_repository.exclude_offers_from_inactive_venue_provider(query)
     batch_update_offers(query, {"isActive": True})
+
+
+def make_offer_headline(offer: models.Offer) -> models.HeadlineOffer:
+    if offer.status != OfferStatus.ACTIVE:
+        raise exceptions.InactiveOfferCanNotBeHeadline()
+
+    try:
+        headline_offer = models.HeadlineOffer(offer=offer, venue=offer.venue, timespan=(datetime.datetime.utcnow(),))
+        db.session.add(headline_offer)
+        # Note: We use flush and not commit to be compliant with atomic. At this moment,
+        # the timespan is a str because the __init__ overloaded method of HeadlineOffer calls
+        # make_timerange which transforms timespan into a str using .isoformat. Thus, you will get
+        # a TypeError if you try to access the isActive property of this headline_offer object
+        # before any session commit. To fix this error, you need to commit your session
+        # as the TSRANGE object saves the timespan as a datetime in the database
+        db.session.flush()
+    except sqla_exc.IntegrityError as error:
+        db.session.rollback()
+        if "exclude_offer_timespan" in str(error.orig):
+            raise exceptions.OfferHasAlreadyAnActiveHeadlineOffer
+        if "exclude_venue_timespan" in str(error.orig):
+            raise exceptions.VenueHasAlreadyAnActiveHeadlineOffer
+        raise error
+
+    return headline_offer
+
+
+def remove_headline_offer(headline_offer: models.HeadlineOffer) -> None:
+    headline_offer.timespan = db_utils.make_timerange(headline_offer.timespan.lower, datetime.datetime.utcnow())
+    db.session.flush()
 
 
 def _notify_pro_upon_stock_edit_for_event_offer(stock: models.Stock, bookings: list[bookings_models.Booking]) -> None:
