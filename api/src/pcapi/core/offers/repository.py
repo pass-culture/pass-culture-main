@@ -1127,6 +1127,32 @@ def get_offer_reaction_count_subquery() -> sa.sql.selectable.ScalarSelect:
     )
 
 
+def get_active_headline_offer(offer_id: int) -> models.HeadlineOffer | None:
+    return (
+        models.HeadlineOffer.query.join(models.Offer)
+        .filter(
+            models.HeadlineOffer.offerId == offer_id,
+            models.HeadlineOffer.isActive == True,
+        )
+        .one_or_none()
+    )
+
+
+def get_inactive_headline_offers() -> list[models.HeadlineOffer]:
+    return (
+        models.HeadlineOffer.query.join(models.Offer, models.HeadlineOffer.offerId == models.Offer.id)
+        .filter(models.Offer.status != offer_mixin.OfferStatus.ACTIVE)
+        .filter(
+            # We don't want to fetch HeadlineOffers that have already been marked as finished
+            sa.or_(
+                sa.func.upper(models.HeadlineOffer.timespan).is_(None),
+                sa.func.upper(models.HeadlineOffer.timespan) <= datetime.datetime.utcnow(),
+            ),
+        )
+        .all()
+    )
+
+
 def get_product_reaction_count_subquery() -> sa.sql.selectable.ScalarSelect:
     return (
         sa.select(sa.func.count(reactions_models.Reaction.id))
