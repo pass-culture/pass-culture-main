@@ -480,7 +480,8 @@ class Returns200Test:
 
             response_json = response.json
             assert isinstance(response_json, list)
-            assert {offer["id"] for offer in response_json} == {offer_booked.id, offer_prebooked.id}
+
+        assert {offer["id"] for offer in response_json} == {offer_booked.id, offer_prebooked.id}
 
     def test_select_only_collective_offer(self, client):
         # Given
@@ -671,14 +672,12 @@ class Returns200Test:
 @pytest.mark.usefixtures("db_session")
 class Return400Test:
     def test_return_error_when_status_is_wrong(self, client):
-        # Given
         user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
 
-        # When
         client = client.with_session_auth(user.email)
-        with assert_num_queries(2):  # user + session
+        with assert_num_queries(3):  # user + session + rollback
             response = client.get("/collective/offers?status=NOT_A_VALID_STATUS")
             assert response.status_code == 400
 
