@@ -10,8 +10,7 @@ from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational import exceptions
 from pcapi.core.educational.adage_backends import serialize
 from pcapi.core.educational.adage_backends.base import AdageClient
-from pcapi.core.educational.schemas import AdageCulturalPartner
-from pcapi.routes.adage.v1.serialization import prebooking
+import pcapi.core.educational.schemas as educational_schemas
 from pcapi.utils import requests
 
 
@@ -75,7 +74,7 @@ class AdageHttpClient(AdageClient):
             message="Cannot establish connection to omogen api",
         )
 
-    def notify_prebooking(self, data: prebooking.EducationalBookingResponse) -> None:
+    def notify_prebooking(self, data: educational_schemas.EducationalBookingResponse) -> None:
         api_url = f"{self.base_url}/v1/prereservation"
         try:
             api_response = requests.post(
@@ -90,7 +89,7 @@ class AdageHttpClient(AdageClient):
         if api_response.status_code != 201 and not is_adage_institution_without_email(api_response):
             raise self._get_api_adage_exception(api_response, "Error posting new prebooking to Adage API")
 
-    def notify_offer_or_stock_edition(self, data: prebooking.EducationalBookingEdition) -> None:
+    def notify_offer_or_stock_edition(self, data: educational_schemas.EducationalBookingEdition) -> None:
         api_url = f"{self.base_url}/v1/prereservation-edit"
         try:
             api_response = requests.post(
@@ -126,7 +125,7 @@ class AdageHttpClient(AdageClient):
 
         return parse_obj_as(list[AdageVenue], api_response.json())
 
-    def notify_booking_cancellation_by_offerer(self, data: prebooking.EducationalBookingResponse) -> None:
+    def notify_booking_cancellation_by_offerer(self, data: educational_schemas.EducationalBookingResponse) -> None:
         api_url = f"{self.base_url}/v1/prereservation-annule"
         try:
             api_response = requests.post(
@@ -191,7 +190,7 @@ class AdageHttpClient(AdageClient):
             if not is_adage_institution_without_email(api_response):
                 raise self._get_api_adage_exception(api_response, "Error getting Adage API")
 
-    def get_cultural_partner(self, siret: str) -> AdageCulturalPartner:
+    def get_cultural_partner(self, siret: str) -> educational_schemas.AdageCulturalPartner:
         api_url = f"{self.base_url}/v1/etablissement-culturel/{siret}"
         try:
             api_response = requests.get(
@@ -212,7 +211,7 @@ class AdageHttpClient(AdageClient):
         if len(response_content) == 0:
             raise exceptions.CulturalPartnerNotFoundException("Requested cultural partner not found for Adage")
 
-        return parse_obj_as(AdageCulturalPartner, response_content[0])
+        return parse_obj_as(educational_schemas.AdageCulturalPartner, response_content[0])
 
     def get_adage_educational_institutions(self, ansco: str) -> list[serialize.AdageEducationalInstitution]:
         template_url = f"{self.base_url}/v1/etablissement-scolaire?ansco={ansco}&page=%s"
@@ -274,7 +273,7 @@ class AdageHttpClient(AdageClient):
 
         return redactors
 
-    def notify_reimburse_collective_booking(self, data: prebooking.AdageReimbursementNotification) -> None:
+    def notify_reimburse_collective_booking(self, data: educational_schemas.AdageReimbursementNotification) -> None:
         api_url = f"{self.base_url}/v1/reservation-remboursement"
         try:
             api_response = requests.post(

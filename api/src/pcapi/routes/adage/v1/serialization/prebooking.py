@@ -8,19 +8,17 @@ from pydantic.v1.fields import Field
 
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational import schemas as educational_schemas
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import EducationalBookingStatus
-from pcapi.core.educational.schemas import AdageBaseResponseModel
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers.utils import offer_app_link
-from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import to_camel
 
 
-class MergeInstitutionPrebookingsQueryModel(AdageBaseResponseModel):
+class MergeInstitutionPrebookingsQueryModel(educational_schemas.AdageBaseResponseModel):
     source_uai: str
     destination_uai: str
     bookings_ids: list[int]
@@ -33,86 +31,14 @@ class GetEducationalBookingsRequest(BaseModel):
         title = "Prebookings query filters"
 
 
-class Redactor(AdageBaseResponseModel):
-    email: str
-    redactorFirstName: str | None
-    redactorLastName: str | None
-    redactorCivility: str | None
-
-    class Config:
-        alias_generator = to_camel
-
-
-class Contact(AdageBaseResponseModel):
-    email: str | None
-    phone: str | None
-
-
-class EducationalBookingBaseResponse(AdageBaseResponseModel):
-    accessibility: str = Field(description="Accessibility of the offer")
-    address: str = Field(description="Adresse of event")
-    beginningDatetime: datetime = Field(description="Beginnning date of event")
-    startDatetime: datetime = Field(description="Start date of event")
-    endDatetime: datetime = Field(description="End date of event")
-    cancellationDate: datetime | None = Field(description="Date of cancellation if prebooking is cancelled")
-    cancellationLimitDate: datetime | None = Field(description="Limit date to cancel the prebooking")
-    city: str | None
-    confirmationDate: datetime | None = Field(description="Date of confirmation if prebooking is confirmed")
-    confirmationLimitDate: datetime = Field(description="Limit date to confirm the prebooking")
-    contact: Contact = Field(description="Contact of the prebooking")
-    coordinates: Coordinates
-    creationDate: datetime
-    description: str | None = Field(description="Offer description")
-    durationMinutes: int | None = Field(description="Offer's duration in minutes")
-    expirationDate: datetime | None = Field(description="Expiration date after which booking is cancelled")
-    id: int = Field(description="pass Culture's prebooking id")
-    isDigital: bool = Field(description="If true the event is accessed digitally")
-    venueName: str = Field(description="Name of cultural venue proposing the event")
-    name: str = Field(description="Name of event")
-    numberOfTickets: int | None = Field(description="Number of tickets")
-    postalCode: str | None
-    price: decimal.Decimal
-    quantity: int = Field(description="Number of place prebooked")
-    redactor: Redactor
-    UAICode: str = Field(description="Educational institution UAI code")
-    yearId: int = Field(description="Shared year id")
-    status: EducationalBookingStatus | CollectiveBookingStatus
-    cancellationReason: CollectiveBookingCancellationReasons | None = Field(
-        description="Reason when a prebooking order is cancelled"
-    )
-    participants: list[str] = Field(description="List of class levels which can participate")
-    priceDetail: str | None = Field(description="Offer's stock price detail")
-    venueTimezone: str
-    subcategoryLabel: str = Field(description="Subcategory label")
-    totalAmount: decimal.Decimal = Field(description="Total price of the prebooking")
-    url: str | None = Field(description="Url to access the offer")
-    withdrawalDetails: str | None
-    domain_ids: list[int]
-    domain_labels: list[str]
-    interventionArea: list[str]
-    imageCredit: str | None = Field(description="Credit for the source image")
-    imageUrl: str | None = Field(description="Url for offer image")
-    venueId: int
-    offererName: str
-
-    class Config:
-        title = "Prebooking detailed response"
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-
-
-class EducationalBookingResponse(EducationalBookingBaseResponse):
-    formats: list[subcategories.EacFormat] | None
-
-
-class EducationalBookingsResponse(AdageBaseResponseModel):
-    prebookings: list[EducationalBookingResponse]
+class EducationalBookingsResponse(educational_schemas.AdageBaseResponseModel):
+    prebookings: list[educational_schemas.EducationalBookingResponse]
 
     class Config:
         title = "List of prebookings"
 
 
-class EducationalBookingPerYearResponse(AdageBaseResponseModel):
+class EducationalBookingPerYearResponse(educational_schemas.AdageBaseResponseModel):
     id: int
     UAICode: str
     status: EducationalBookingStatus | CollectiveBookingStatus
@@ -161,7 +87,7 @@ def get_collective_bookings_per_year_response(
     return EducationalBookingsPerYearResponse(bookings=serialized_bookings)
 
 
-class EducationalBookingsPerYearResponse(AdageBaseResponseModel):
+class EducationalBookingsPerYearResponse(educational_schemas.AdageBaseResponseModel):
     bookings: list[EducationalBookingPerYearResponse]
 
 
@@ -170,11 +96,9 @@ class GetAllBookingsPerYearQueryModel(BaseModel):
     per_page: PositiveInt | None
 
 
-class EducationalBookingEdition(EducationalBookingResponse):
-    updatedFields: list[str] = Field(description="List of fields updated")
-
-
-def serialize_collective_bookings(educational_bookings: list[CollectiveBooking]) -> list[EducationalBookingResponse]:
+def serialize_collective_bookings(
+    educational_bookings: list[CollectiveBooking],
+) -> list[educational_schemas.EducationalBookingResponse]:
     serialized_educational_bookings = []
     for educational_booking in educational_bookings:
         serialized_educational_bookings.append(serialize_collective_booking(educational_booking))
@@ -182,12 +106,14 @@ def serialize_collective_bookings(educational_bookings: list[CollectiveBooking])
     return serialized_educational_bookings
 
 
-def serialize_collective_booking(collective_booking: CollectiveBooking) -> EducationalBookingResponse:
+def serialize_collective_booking(
+    collective_booking: CollectiveBooking,
+) -> educational_schemas.EducationalBookingResponse:
     stock: educational_models.CollectiveStock = collective_booking.collectiveStock
     offer: educational_models.CollectiveOffer = stock.collectiveOffer
     domains = offer.domains
     venue: offerers_models.Venue = offer.venue
-    return EducationalBookingResponse(
+    return educational_schemas.EducationalBookingResponse(
         accessibility=_get_educational_offer_accessibility(offer),
         address=_get_collective_offer_address(offer),
         beginningDatetime=stock.beginningDatetime,
@@ -261,8 +187,8 @@ def get_collective_booking_status(
     return collective_booking.status.value
 
 
-def _get_collective_offer_contact(offer: educational_models.CollectiveOffer) -> Contact:
-    return Contact(
+def _get_collective_offer_contact(offer: educational_models.CollectiveOffer) -> educational_schemas.Contact:
+    return educational_schemas.Contact(
         email=offer.contactEmail,
         phone=offer.contactPhone,
     )
@@ -302,20 +228,14 @@ def _get_educational_offer_accessibility(offer: educational_models.CollectiveOff
     return ", ".join(disability_compliance) or "Non accessible"
 
 
-class AdageReimbursementNotification(EducationalBookingBaseResponse):
-    reimbursementReason: str
-    reimbursedValue: decimal.Decimal
-    reimbursementDetails: str
-
-
 def serialize_reimbursement_notification(
     collective_booking: CollectiveBooking, reason: str, value: decimal.Decimal, details: str
-) -> AdageReimbursementNotification:
+) -> educational_schemas.AdageReimbursementNotification:
     stock: educational_models.CollectiveStock = collective_booking.collectiveStock
     offer: educational_models.CollectiveOffer = stock.collectiveOffer
     domains = offer.domains
     venue: offerers_models.Venue = offer.venue
-    return AdageReimbursementNotification(
+    return educational_schemas.AdageReimbursementNotification(
         accessibility=_get_educational_offer_accessibility(offer),
         address=_get_collective_offer_address(offer),
         beginningDatetime=stock.beginningDatetime,
