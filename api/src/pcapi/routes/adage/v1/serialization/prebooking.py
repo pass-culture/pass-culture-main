@@ -12,9 +12,9 @@ from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import EducationalBookingStatus
+from pcapi.core.educational.schemas import AdageBaseResponseModel
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers.utils import offer_app_link
-from pcapi.routes.adage.v1.serialization.config import AdageBaseResponseModel
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
