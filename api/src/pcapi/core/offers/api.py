@@ -700,6 +700,14 @@ def activate_future_offers(publication_date: datetime.datetime | None = None) ->
     batch_update_offers(query, {"isActive": True})
 
 
+def set_upper_timespan_of_inactive_headline_offers() -> None:
+    inactive_headline_offers = offers_repository.get_inactive_headline_offers()
+    for headline_offer in inactive_headline_offers:
+        headline_offer.timespan = db_utils.make_timerange(headline_offer.timespan.lower, datetime.datetime.utcnow())
+
+    db.session.commit()
+
+
 def make_offer_headline(offer: models.Offer) -> models.HeadlineOffer:
     if offer.status != OfferStatus.ACTIVE:
         raise exceptions.InactiveOfferCanNotBeHeadline()

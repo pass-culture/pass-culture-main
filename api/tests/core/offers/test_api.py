@@ -2240,6 +2240,49 @@ class HeadlineOfferTest:
         offer.validation = models.OfferValidationStatus.REJECTED
         assert not offer.is_headline_offer
 
+    def test_set_upper_timespan_of_inactive_headline_offers(self):
+        venue_1 = offerers_factories.VenueFactory()
+        offer_1 = factories.OfferFactory(isActive=True, venue=venue_1)
+        factories.StockFactory(offer=offer_1)
+        venue_2 = offerers_factories.VenueFactory()
+        stock = factories.StockFactory(quantity=1)
+        offer_2 = factories.OfferFactory(isActive=True, venue=venue_2, stocks=[stock])
+        venue_3 = offerers_factories.VenueFactory()
+        offer_3 = factories.OfferFactory(isActive=True, venue=venue_3)
+        factories.StockFactory(offer=offer_3)
+
+        headline_offer_1 = factories.HeadlineOfferFactory(offer=offer_1)
+        headline_offer_2 = factories.HeadlineOfferFactory(offer=offer_2)
+        headline_offer_3 = factories.HeadlineOfferFactory(offer=offer_3)
+
+        assert headline_offer_1.isActive
+        assert headline_offer_1.timespan.upper is None
+        assert headline_offer_2.isActive
+        assert headline_offer_2.timespan.upper is None
+
+        offer_1.validation = models.OfferValidationStatus.REJECTED
+        stock.quantity = 0
+
+        api.set_upper_timespan_of_inactive_headline_offers()
+        assert not headline_offer_1.isActive
+        assert not headline_offer_1.timespan.upper is None
+        assert not headline_offer_2.isActive
+        assert not headline_offer_2.timespan.upper is None
+
+        assert headline_offer_3.isActive
+        assert headline_offer_3.timespan.upper is None
+
+    def test_do_not_update_upper_timespan_of_already_inactive_headline_offers(self):
+        offer = factories.OfferFactory(isActive=True)
+        factories.StockFactory(offer=offer)
+        creation_time = datetime.utcnow() - timedelta(days=20)
+        finished_timespan = (creation_time, creation_time + timedelta(days=10))
+        old_headline_offer = factories.HeadlineOfferFactory(offer=offer, timespan=finished_timespan)
+        api.set_upper_timespan_of_inactive_headline_offers()
+        assert old_headline_offer.timespan.lower.date() == creation_time.date()
+        assert old_headline_offer.timespan.upper.date() == (creation_time + timedelta(days=10)).date()
+
+
 @pytest.mark.usefixtures("db_session")
 class OfferExpenseDomainsTest:
     def test_offer_expense_domains(self):
