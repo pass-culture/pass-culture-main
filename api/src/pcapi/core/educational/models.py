@@ -87,6 +87,11 @@ class StudentLevels(enum.Enum):
         }
 
 
+class AdageFrontRoles(enum.Enum):
+    REDACTOR = "redactor"
+    READONLY = "readonly"
+
+
 class CollectiveBookingCancellationReasons(enum.Enum):
     OFFERER = "OFFERER"
     BENEFICIARY = "BENEFICIARY"

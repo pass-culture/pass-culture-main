@@ -12,6 +12,7 @@ from pcapi.core.educational.api.categories import get_educational_categories
 import pcapi.core.educational.api.favorites as favorites_api
 import pcapi.core.educational.api.institution as educational_institution_api
 import pcapi.core.educational.api.offer as educational_api_offer
+from pcapi.core.educational.models import AdageFrontRoles
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import EducationalRedactor
@@ -26,7 +27,6 @@ from pcapi.routes.adage_iframe.serialization import offers as serializers
 from pcapi.routes.adage_iframe.serialization.adage_authentication import (
     get_redactor_information_from_adage_authentication,
 )
-from pcapi.routes.adage_iframe.serialization.adage_authentication import AdageFrontRoles
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.routes.adage_iframe.serialization.favorites import serialize_collective_offer
 from pcapi.serialization.decorator import spectree_serialize

@@ -7,8 +7,8 @@ import jwt
 from psycopg2.extras import DateTimeRange
 
 from pcapi.core.educational import exceptions as educational_exceptions
+from pcapi.core.educational.models import AdageFrontRoles
 from pcapi.core.users.utils import ALGORITHM_RS_256
-from pcapi.routes.adage_iframe.serialization.adage_authentication import AdageFrontRoles
 from pcapi.utils import requests
 
 
