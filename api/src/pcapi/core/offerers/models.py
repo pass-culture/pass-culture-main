@@ -726,7 +726,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
 
     @property
     def has_headline_offer(self) -> bool:
-        return bool(self.headlineOffers)
+        return any(headline_offer.isActive for headline_offer in self.headlineOffers)
 
 
 class GooglePlacesInfo(PcObject, Base, Model):
