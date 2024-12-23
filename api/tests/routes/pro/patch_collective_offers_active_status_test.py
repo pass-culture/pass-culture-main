@@ -112,7 +112,7 @@ class Returns403Test:
         client = client.with_session_auth("pro@example.com")
         data = {"ids": [offer.id], "isActive": False}
         with patch("pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"):
-            response = client.patch("/collective/offers/active-status", json=data)
+            response = client.patch("/pro/collective/offers/active-status", json=data)
 
         assert response.status_code == 403
         assert response.json == {"global": ["Cette action n'est pas autorisée sur cette offre"]}
@@ -121,7 +121,7 @@ class Returns403Test:
         offer.isActive = False
         data = {"ids": [offer.id], "isActive": True}
         with patch("pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"):
-            response = client.patch("/collective/offers/active-status", json=data)
+            response = client.patch("/pro/collective/offers/active-status", json=data)
 
         assert response.status_code == 403
         assert response.json == {"global": ["Cette action n'est pas autorisée sur cette offre"]}

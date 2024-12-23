@@ -40,7 +40,7 @@ describe('Adage confirmation', () => {
       )
       cy.request({
         method: 'GET',
-        url: 'http://localhost:5001/sandboxes/clear_email_list',
+        url: 'http://localhost:5001/pro/sandboxes/clear_email_list',
       }).then((response) => {
         expect(response.status).to.eq(200)
       })
@@ -85,7 +85,7 @@ describe('Adage confirmation', () => {
       cy.stepLog({ message: 'Check email received with booking ID' })
       cy.request({
         method: 'GET',
-        url: 'http://localhost:5001/sandboxes/get_unique_email',
+        url: 'http://localhost:5001/pro/sandboxes/get_unique_email',
         timeout: 60000,
       }).then((response) => {
         expect(response.status).to.eq(200)
@@ -133,7 +133,7 @@ describe('Adage confirmation', () => {
 
       cy.request({
         method: 'GET',
-        url: 'http://localhost:5001/sandboxes/clear_email_list',
+        url: 'http://localhost:5001/pro/sandboxes/clear_email_list',
       }).then((response) => {
         expect(response.status).to.eq(200)
       })
@@ -158,7 +158,7 @@ describe('Adage confirmation', () => {
       })
       cy.request({
         method: 'GET',
-        url: 'http://localhost:5001/sandboxes/get_unique_email',
+        url: 'http://localhost:5001/pro/sandboxes/get_unique_email',
         timeout: 60000,
       }).then((response) => {
         expect(response.status).to.eq(200)
@@ -224,7 +224,7 @@ describe('Adage confirmation', () => {
 
       cy.request({
         method: 'GET',
-        url: 'http://localhost:5001/sandboxes/clear_email_list',
+        url: 'http://localhost:5001/pro/sandboxes/clear_email_list',
       }).then((response) => {
         expect(response.status).to.eq(200)
       })
@@ -244,7 +244,7 @@ describe('Adage confirmation', () => {
       cy.stepLog({ message: 'Check email received with a To and Bcc' })
       cy.request({
         method: 'GET',
-        url: 'http://localhost:5001/sandboxes/get_unique_email',
+        url: 'http://localhost:5001/pro/sandboxes/get_unique_email',
         timeout: 60000,
       }).then((response) => {
         expect(response.status).to.eq(200)

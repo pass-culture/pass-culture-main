@@ -701,7 +701,7 @@ class Returns403Test:
         patch_path = "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"
         auth_client = client.with_session_auth("user@example.com")
         with patch(patch_path):
-            response = auth_client.patch(f"/collective/offers/{offer.id}", json=data)
+            response = auth_client.patch(f"/pro/collective/offers/{offer.id}", json=data)
             assert response.status_code == 403
             assert response.json == {"offer": "This collective offer status does not allow editing details"}
 
@@ -720,7 +720,7 @@ class Returns403Test:
         patch_path = "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"
         auth_client = client.with_session_auth("user@example.com")
         with patch(patch_path):
-            response = auth_client.patch(f"/collective/offers/{offer.id}", json=data)
+            response = auth_client.patch(f"/pro/collective/offers/{offer.id}", json=data)
             assert response.status_code == 403
             assert response.json == {"offer": "This collective offer status does not allow editing details"}
 
