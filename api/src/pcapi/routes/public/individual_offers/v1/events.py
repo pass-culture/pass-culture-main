@@ -26,6 +26,7 @@ from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils.custom_keys import get_field
 from pcapi.validation.routes.users_authentifications import current_api_key
 from pcapi.validation.routes.users_authentifications import provider_api_key_required
+from pcapi.repository import atomic
 
 from . import serialization
 from . import utils
@@ -61,6 +62,7 @@ def _deserialize_has_ticket(
         )
     ),
 )
+@atomic()
 def post_event_offer(body: serialization.EventOfferCreation) -> serialization.EventOfferResponse:
     """
     Create Event Offer
