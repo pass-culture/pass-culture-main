@@ -131,18 +131,23 @@ def _create_pro_user(row: dict) -> User:
         comment="Validée automatiquement par le script de création",
     )
 
-    venue_creation_info = venues_serialize.PostVenueBodyModel(
+    address = offerers_schemas.AddressBodyModel(
         street=offerers_schemas.VenueAddress(offerer_creation_info.street),
-        banId=None,
-        bookingEmail=offerers_schemas.VenueBookingEmail(user.email),
         city=offerers_schemas.VenueCity(offerer_creation_info.city),
-        comment=None,
+        postalCode=row["Code postal"],
         latitude=46.126,
-        longitude=-3.033,
+        longitude=3.033,
+        banId=None,
+        label=None,
+    )
+
+    venue_creation_info = venues_serialize.PostVenueBodyModel(
+        address=address,
+        bookingEmail=offerers_schemas.VenueBookingEmail(user.email),
+        comment=None,
         managingOffererId=offerer.id,
         name=offerers_schemas.VenueName(f'Lieu {row["Nom"]}'),
         publicName=None,
-        postalCode=row["Code postal"],
         siret=offerers_schemas.VenueSiret(siret),
         venueLabelId=None,
         venueTypeCode=offerers_models.VenueTypeCode.ADMINISTRATIVE.name,
