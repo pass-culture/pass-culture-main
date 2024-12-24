@@ -1,6 +1,7 @@
 import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { getDateToFrenchText } from 'commons/utils/date'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -21,6 +22,7 @@ export const CollectiveDmsTimeline = ({
   hasAdageIdForMoreThan30Days: boolean
   adageInscriptionDate?: string | null
 }) => {
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   const collectiveDmsApplicationLink = `https://www.demarches-simplifiees.fr/dossiers/${collectiveDmsApplication.application}/messagerie`
   const collectiveDmsContactSupport =
     'https://aide.passculture.app/hc/fr/articles/8491401511708'
@@ -156,9 +158,12 @@ export const CollectiveDmsTimeline = ({
           {processingDate}
           <br />
           <div className={styles['timeline-step-description']}>
-            Votre lieu doit encore être référencé dans ADAGE par les équipes du
-            ministère de l’Éducation nationale et de la jeunesse. Vous recevrez
-            un mail lorsque votre référencement sera effectif.
+            {isOfferAddressEnabled
+              ? 'Votre structure doit encore être référencée'
+              : 'Votre lieu doit encore être référencé'}{' '}
+            dans ADAGE par les équipes du ministère de l’Éducation nationale et
+            de la jeunesse. Vous recevrez un mail lorsque votre référencement
+            sera effectif.
           </div>
         </div>
         <ButtonLink
@@ -195,12 +200,16 @@ export const CollectiveDmsTimeline = ({
     content: (
       <>
         <div className={styles['timeline-step-title']}>
-          Votre lieu est en cours d’ajout dans ADAGE
+          {isOfferAddressEnabled
+            ? 'Votre structure est en cours d’ajout dans ADAGE'
+            : 'Votre lieu est en cours d’ajout dans ADAGE'}
         </div>
         <div className={styles['timeline-step-description']}>
-          Une fois votre lieu ajouté dans ADAGE par le Ministère de l’Education
-          Nationale, vous pourrez renseigner vos informations à destination des
-          enseignants et créer des offres à destination des scolaires.
+          Une fois votre{' '}
+          {isOfferAddressEnabled ? 'structure ajoutée' : 'lieu ajouté'} dans
+          ADAGE par le Ministère de l’Education Nationale, vous pourrez
+          renseigner vos informations à destination des enseignants et créer des
+          offres à destination des scolaires.
         </div>
       </>
     ),
@@ -211,16 +220,19 @@ export const CollectiveDmsTimeline = ({
     content: (
       <>
         <div className={styles['timeline-step-title-disabled']}>
-          Votre lieu a été réferencé dans ADAGE par les équipes du Ministère de
-          l’Education Nationale
+          Votre{' '}
+          {isOfferAddressEnabled
+            ? 'structure a été référencée'
+            : 'lieu a été référencé'}{' '}
+          dans ADAGE par les équipes du Ministère de l’Education Nationale
         </div>
         <div>{adageDate}</div>
         <div className={styles['timeline-infobox']}>
           <div className={styles['timeline-infobox-text']}>
             Vous pouvez désormais créer des offres collectives ! Nous vous
-            invitons à vérifier les informations de votre lieu qui sont
-            désormais visibles sur ADAGE par les enseignants et chefs
-            d’établissements.
+            invitons à vérifier les informations de votre{' '}
+            {isOfferAddressEnabled ? 'structure' : 'lieu'} qui sont désormais
+            visibles sur ADAGE par les enseignants et chefs d’établissements.
           </div>
         </div>
       </>
@@ -231,7 +243,11 @@ export const CollectiveDmsTimeline = ({
     type: TimelineStepType.DISABLED,
     content: (
       <div className={styles['timeline-step-title-disabled']}>
-        Votre lieu a été ajouté dans ADAGE
+        Votre{' '}
+        {isOfferAddressEnabled
+          ? 'structure a été ajoutée'
+          : 'lieu a été ajouté'}{' '}
+        dans ADAGE
       </div>
     ),
   }
