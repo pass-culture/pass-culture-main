@@ -171,6 +171,10 @@ class AdageException(Exception):
         super().__init__(message)
 
 
+class AdageInvalidEmailException(AdageException):
+    pass
+
+
 class CulturalPartnerNotFoundException(Exception):
     pass
 
