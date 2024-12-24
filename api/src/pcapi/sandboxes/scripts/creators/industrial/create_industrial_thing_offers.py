@@ -4,6 +4,7 @@ from pcapi.core.categories import subcategories_v2
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
+from pcapi.models.offer_mixin import OfferStatus
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.thing_mocks import MOCK_NAMES
 
@@ -65,12 +66,21 @@ def create_industrial_thing_offers(
                 url="http://example.com" if subcategory.is_online_only else None,
                 idAtProvider=str(id_at_provider),
                 extraData=offers_factories.build_extra_data_from_subcategory(subcategory.id, set_all_fields=False),
-                is_headline_offer=bool(headline_offer_limit_per_offerer and not thing_venue.has_headline_offer),
+            )
+            if (
+                headline_offer_limit_per_offerer
+                and thing_offers_by_name[name].status == OfferStatus.ACTIVE
+                and not thing_venue.has_headline_offer
+            ):
+                offers_factories.HeadlineOfferFactory(offer=thing_offers_by_name[name], venue=thing_venue)
+            offer_index += 1
+            headline_offer_limit_per_offerer = (
+                headline_offer_limit_per_offerer - 1
+                if headline_offer_limit_per_offerer > 0
+                else headline_offer_limit_per_offerer
             )
             offer_index += 1
             id_at_provider += 1
-            # FIXME : 6.12.2024 ogeber : decrement headline_offer_limit_per_offerer (limit 0) if original limit is > 1
-            headline_offer_limit_per_offerer = 0
 
         thing_index += THINGS_PER_OFFERER
 
