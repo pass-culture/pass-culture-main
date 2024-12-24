@@ -1,18 +1,24 @@
-export enum ButtonVariant {
-  PRIMARY = 'primary',
-  SECONDARY = 'secondary',
-  TERNARY = 'ternary',
-  TERNARYPINK = 'ternary-pink',
-  QUATERNARY = 'quaternary',
-  QUATERNARYPINK = 'quaternary-pink',
-  BOX = 'box',
-}
+import { type EnumType } from 'commons/custom_types/utils'
 
-export enum IconPositionEnum {
-  RIGHT = 'right',
-  LEFT = 'left',
-  CENTER = 'center',
-}
+export const ButtonVariant = {
+  PRIMARY: 'primary',
+  SECONDARY: 'secondary',
+  TERNARY: 'ternary',
+  TERNARYPINK: 'ternary-pink',
+  QUATERNARY: 'quaternary',
+  QUATERNARYPINK: 'quaternary-pink',
+  BOX: 'box',
+} as const
+// eslint-disable-next-line no-redeclare
+export type ButtonVariant = EnumType<typeof ButtonVariant>
+
+export const IconPositionEnum = {
+  RIGHT: 'right',
+  LEFT: 'left',
+  CENTER: 'center',
+} as const
+// eslint-disable-next-line no-redeclare
+export type IconPositionEnum = EnumType<typeof IconPositionEnum>
 
 export type SharedButtonProps = {
   /**

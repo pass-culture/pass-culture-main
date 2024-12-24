@@ -5,6 +5,7 @@ import { BookingRecapResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { Audience } from 'commons/core/shared/types'
+import { type EnumType } from 'commons/custom_types/utils'
 import { SortingMode, useColumnSorting } from 'commons/hooks/useColumnSorting'
 import { usePagination } from 'commons/hooks/usePagination'
 import { BookingsFilters } from 'components/Bookings/BookingsRecapTable/types'
@@ -27,11 +28,15 @@ import { BookingDateCell } from './Cells/BookingDateCell'
 import { BookingOfferCell } from './Cells/BookingOfferCell'
 import { IndividualBookingStatusCell } from './Cells/IndividualBookingStatusCell'
 
-enum IndividualBookingsSortingColumn {
-  OFFER_NAME = 'OFFER_NAME',
-  BENEFICIARY_NAME = 'BENEFICIARY_NAME',
-  BOOKING_DATE = 'BOOKING_DATE',
-}
+const IndividualBookingsSortingColumn = {
+  OFFER_NAME: 'OFFER_NAME',
+  BENEFICIARY_NAME: 'BENEFICIARY_NAME',
+  BOOKING_DATE: 'BOOKING_DATE',
+} as const
+// eslint-disable-next-line no-redeclare
+type IndividualBookingsSortingColumn = EnumType<
+  typeof IndividualBookingsSortingColumn
+>
 const BOOKINGS_PER_PAGE = 20
 
 const sortBookings = (

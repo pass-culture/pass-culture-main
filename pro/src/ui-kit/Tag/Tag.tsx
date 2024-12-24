@@ -1,22 +1,26 @@
 import cx from 'classnames'
-import React, { ReactNode } from 'react'
+import { ReactNode } from 'react'
+
+import { type EnumType } from 'commons/custom_types/utils'
 
 import styles from './Tag.module.scss'
 
-export enum TagVariant {
-  SMALL_OUTLINE = 'small-outline',
-  LIGHT_GREY = 'light-grey',
-  DARK_GREY = 'dark-grey',
-  BLACK = 'black',
-  PURPLE = 'purple',
-  LIGHT_PURPLE = 'light-purple',
-  RED = 'red',
-  GREEN = 'green',
-  BLUE = 'blue',
-  LIGHT_GREEN = 'light-green',
-  LIGHT_YELLOW = 'light-yellow',
-  LIGHT_BLUE = 'light-blue',
-}
+export const TagVariant = {
+  SMALL_OUTLINE: 'small-outline',
+  LIGHT_GREY: 'light-grey',
+  DARK_GREY: 'dark-grey',
+  BLACK: 'black',
+  PURPLE: 'purple',
+  LIGHT_PURPLE: 'light-purple',
+  RED: 'red',
+  GREEN: 'green',
+  BLUE: 'blue',
+  LIGHT_GREEN: 'light-green',
+  LIGHT_YELLOW: 'light-yellow',
+  LIGHT_BLUE: 'light-blue',
+} as const
+// eslint-disable-next-line no-redeclare
+export type TagVariant = EnumType<typeof TagVariant>
 
 const classByVariant: Record<TagVariant, string> = {
   [TagVariant.SMALL_OUTLINE]: styles['small-outline'],
