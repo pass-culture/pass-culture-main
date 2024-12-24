@@ -211,6 +211,7 @@ class OffererHeadlineOfferTest:
         offerer = user_offerer.offerer
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = offers_factories.OfferFactory(venue=venue)
+        offers_factories.StockFactory(offer=offer)
         offers_factories.HeadlineOfferFactory(offer=offer, venue=venue)
 
         client = client.with_session_auth(email=pro.email)
