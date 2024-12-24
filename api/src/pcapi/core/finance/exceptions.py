@@ -69,6 +69,10 @@ class CommercialGestureOnMultipleStock(Exception):
     pass
 
 
+class FinanceBackendApiError(FinanceError):
+    pass
+
+
 class FinanceBackendNotConfigured(FinanceError):
     pass
 
@@ -86,6 +90,7 @@ class FinanceBackendException(FinanceError):
         if include_body:
             message = (
                 # using str() to help mypy
+                f"{message}\n"
                 f"{self.__class__.__name__}: Got status code: {self.status_code} when {self.method} url: {self.url}\n"
                 f"body: {self.body!r}\n"
                 f"response: {str(response_str)}"
@@ -93,6 +98,7 @@ class FinanceBackendException(FinanceError):
         else:
             message = (
                 # using str() to help mypy
+                f"{message}\n"
                 f"{self.__class__.__name__}: Got status code: {self.status_code} when {self.method} url: {self.url}\n"
                 f"response: {str(response_str)}"
             )
@@ -120,5 +126,13 @@ class FinanceBackendBankAccountNotFound(FinanceBackendException):
     pass
 
 
+class FinanceBackendInvoiceNotFound(FinanceBackendException):
+    pass
+
+
 class FinanceBackendInconsistentDistantData(FinanceBackendException):
+    pass
+
+
+class FinanceBackendInvoiceAlreadyExists(FinanceBackendException):
     pass
