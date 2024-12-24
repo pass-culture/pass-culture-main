@@ -1,6 +1,7 @@
 from pcapi.core.educational import repository
 import pcapi.core.educational.api.institution as api
 from pcapi.models.api_errors import ApiErrors
+from pcapi.repository import atomic
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization import educational_institution
@@ -9,6 +10,7 @@ from pcapi.serialization.decorator import spectree_serialize
 
 
 @blueprint.adage_iframe.route("/collective/institution", methods=["GET"])
+@atomic()
 @spectree_serialize(
     response_model=educational_institution.EducationalInstitutionWithBudgetResponseModel,
     api=blueprint.api,
