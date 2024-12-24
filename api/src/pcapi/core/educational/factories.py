@@ -389,6 +389,7 @@ class ArchivedCollectiveOfferFactory(CollectiveOfferBaseFactory):
 
 class RejectedCollectiveOfferFactory(CollectiveOfferBaseFactory):
     validation = OfferValidationStatus.REJECTED
+    isActive = False
 
     @factory.post_generation
     def create_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
@@ -400,6 +401,7 @@ class RejectedCollectiveOfferFactory(CollectiveOfferBaseFactory):
 
 class PendingCollectiveOfferFactory(CollectiveOfferBaseFactory):
     validation = OfferValidationStatus.PENDING
+    isActive = False
 
     @factory.post_generation
     def create_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
@@ -411,6 +413,7 @@ class PendingCollectiveOfferFactory(CollectiveOfferBaseFactory):
 
 class DraftCollectiveOfferFactory(CollectiveOfferBaseFactory):
     validation = OfferValidationStatus.DRAFT
+    isActive = False
 
 
 class ActiveCollectiveOfferFactory(CollectiveOfferBaseFactory):
