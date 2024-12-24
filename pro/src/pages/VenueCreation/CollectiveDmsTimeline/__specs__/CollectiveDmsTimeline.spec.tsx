@@ -5,31 +5,40 @@ import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { defaultDMSApplicationForEAC } from 'commons/utils/factories/collectiveApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import {
+  renderWithProviders,
+  RenderWithProvidersOptions,
+} from 'commons/utils/renderWithProviders'
 
 import { CollectiveDmsTimeline } from '../CollectiveDmsTimeline'
 
 const mockLogEvent = vi.fn()
 
-const renderCollectiveDmsTimeline = ({
-  collectiveDmsApplication,
-  hasAdageId = false,
-  hasAdageIdForMoreThan30Days = false,
-  adageInscriptionDate = null,
-}: {
+interface CollectiveDmsTimelineProps {
   collectiveDmsApplication: DMSApplicationForEAC
   hasAdageId?: boolean
   hasAdageIdForMoreThan30Days?: boolean
   adageInscriptionDate?: string | null
   offererId?: number
-}) => {
+}
+
+const renderCollectiveDmsTimeline = (
+  {
+    collectiveDmsApplication,
+    hasAdageId = false,
+    hasAdageIdForMoreThan30Days = false,
+    adageInscriptionDate = null,
+  }: CollectiveDmsTimelineProps,
+  options?: RenderWithProvidersOptions
+) => {
   renderWithProviders(
     <CollectiveDmsTimeline
       collectiveDmsApplication={collectiveDmsApplication}
       hasAdageId={hasAdageId}
       hasAdageIdForMoreThan30Days={hasAdageIdForMoreThan30Days}
       adageInscriptionDate={adageInscriptionDate}
-    />
+    />,
+    options
   )
 }
 
@@ -41,6 +50,13 @@ interface TestCaseProps {
 }
 
 describe('CollectiveDmsTimeline', () => {
+  beforeEach(() => {
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      ...vi.importActual('app/App/analytics/firebase'),
+      logEvent: mockLogEvent,
+    }))
+  })
+
   const testCases: TestCaseProps[] = [
     {
       collectiveDmsApplication: {
@@ -63,7 +79,6 @@ describe('CollectiveDmsTimeline', () => {
       },
       expectedLabel: 'Votre demande de référencement a été acceptée',
     },
-
     {
       collectiveDmsApplication: {
         ...defaultDMSApplicationForEAC,
@@ -88,19 +103,6 @@ describe('CollectiveDmsTimeline', () => {
       expectedLabel: 'Votre demande de référencement a été classée sans suite',
     },
   ]
-  const dmsStates = [
-    DMSApplicationstatus.EN_CONSTRUCTION,
-    DMSApplicationstatus.EN_INSTRUCTION,
-    DMSApplicationstatus.ACCEPTE,
-    DMSApplicationstatus.REFUSE,
-    DMSApplicationstatus.SANS_SUITE,
-  ]
-  beforeEach(() => {
-    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
-      ...vi.importActual('app/App/analytics/firebase'),
-      logEvent: mockLogEvent,
-    }))
-  })
   it.each(testCases)(
     'should render %s status',
     ({
@@ -118,6 +120,13 @@ describe('CollectiveDmsTimeline', () => {
     }
   )
 
+  const dmsStates = [
+    DMSApplicationstatus.EN_CONSTRUCTION,
+    DMSApplicationstatus.EN_INSTRUCTION,
+    DMSApplicationstatus.ACCEPTE,
+    DMSApplicationstatus.REFUSE,
+    DMSApplicationstatus.SANS_SUITE,
+  ]
   it.each(dmsStates)(
     'should log event on click dms link',
     async (dmsState: DMSApplicationstatus) => {
@@ -142,6 +151,68 @@ describe('CollectiveDmsTimeline', () => {
       })
     }
   )
+
+  describe('should replace "lieu" by "structure" if WIP_ENABLE_OFFER_ADDRESS is enabled', () => {
+    let props: CollectiveDmsTimelineProps = {
+      collectiveDmsApplication: {
+        ...defaultDMSApplicationForEAC,
+      },
+    }
+
+    afterEach(() => {
+      props = {
+        collectiveDmsApplication: {
+          ...defaultDMSApplicationForEAC,
+        },
+      }
+    })
+
+    it('should display awaiting Adage step', () => {
+      props.collectiveDmsApplication.state = DMSApplicationstatus.ACCEPTE
+      props.hasAdageId = false
+
+      renderCollectiveDmsTimeline(props, {
+        features: ['WIP_ENABLE_OFFER_ADDRESS'],
+      })
+
+      expect(
+        screen.getByText(/Votre structure doit encore être référencée/)
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText(/Votre structure est en cours d’ajout dans ADAGE/)
+      ).toBeInTheDocument()
+    })
+
+    it('should display success Adage step', () => {
+      props.collectiveDmsApplication.state = DMSApplicationstatus.ACCEPTE
+      props.hasAdageId = true
+      props.hasAdageIdForMoreThan30Days = false
+
+      renderCollectiveDmsTimeline(props, {
+        features: ['WIP_ENABLE_OFFER_ADDRESS'],
+      })
+
+      expect(
+        screen.getByText(/Votre structure doit encore être référencée/)
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText(/Votre structure a été référencée/)
+      ).toBeInTheDocument()
+    })
+
+    it('should display disabled Adage step', () => {
+      props.collectiveDmsApplication.state =
+        DMSApplicationstatus.EN_CONSTRUCTION
+
+      renderCollectiveDmsTimeline(props, {
+        features: ['WIP_ENABLE_OFFER_ADDRESS'],
+      })
+
+      expect(
+        screen.getByText(/Votre structure a été ajoutée dans ADAGE/)
+      ).toBeInTheDocument()
+    })
+  })
 
   it('should display dates for status', () => {
     const collectiveDmsApplication = {
