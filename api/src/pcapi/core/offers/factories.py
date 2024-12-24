@@ -217,11 +217,6 @@ class OfferFactory(BaseFactory):
 
         return super()._create(model_class, *args, **kwargs)
 
-    @factory.post_generation
-    def is_headline_offer(self, create: bool, is_headline_offer: bool = False, **kwargs: typing.Any) -> None:
-        if is_headline_offer:
-            HeadlineOfferFactory(offer=self, venue=self.venue)
-
 
 class ArtistProductLinkFactory(BaseFactory):
     class Meta:
@@ -267,6 +262,10 @@ class DigitalOfferFactory(OfferFactory):
 class HeadlineOfferFactory(BaseFactory):
     class Meta:
         model = models.HeadlineOffer
+
+    offer = factory.SubFactory(OfferFactory)
+    venue = factory.SelfAttribute("offer.venue")
+    timespan = (datetime.datetime.utcnow(),)
 
 
 class PriceCategoryLabelFactory(BaseFactory):

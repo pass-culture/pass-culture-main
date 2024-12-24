@@ -4,6 +4,7 @@ from pcapi.core.categories import subcategories_v2
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
+from pcapi.models.offer_mixin import OfferStatus
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.event_mocks import MOCK_NAMES
 
@@ -59,11 +60,19 @@ def create_industrial_event_offers(
                 ),
                 isActive=is_active,
                 isDuo=is_duo,
-                is_headline_offer=bool(headline_offer_limit_per_offerer and not event_venue.has_headline_offer),
+            )
+            if (
+                headline_offer_limit_per_offerer
+                and event_offers_by_name[name].status == OfferStatus.ACTIVE
+                and not event_venue.has_headline_offer
+            ):
+                offers_factories.HeadlineOfferFactory(offer=event_offers_by_name[name], venue=event_venue)
+            headline_offer_limit_per_offerer = (
+                headline_offer_limit_per_offerer - 1
+                if headline_offer_limit_per_offerer > 0
+                else headline_offer_limit_per_offerer
             )
             offer_index += 1
-            # FIXME : 6.12.2024 ogeber : decrement headline_offer_limit_per_offerer (limit 0) if original limit is > 1
-            headline_offer_limit_per_offerer = 0
 
         event_index += EVENTS_PER_OFFERER_WITH_PHYSICAL_VENUE
 
