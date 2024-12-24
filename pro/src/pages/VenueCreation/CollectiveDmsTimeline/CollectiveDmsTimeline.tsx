@@ -161,9 +161,8 @@ export const CollectiveDmsTimeline = ({
             {isOfferAddressEnabled
               ? 'Votre structure doit encore être référencée'
               : 'Votre lieu doit encore être référencé'}{' '}
-            dans ADAGE par les équipes du ministère de l’Éducation nationale et
-            de la jeunesse. Vous recevrez un mail lorsque votre référencement
-            sera effectif.
+            dans ADAGE par les équipes du Ministère de l’Éducation nationale.
+            Vous recevrez un mail lorsque votre référencement sera effectif.
           </div>
         </div>
         <ButtonLink
