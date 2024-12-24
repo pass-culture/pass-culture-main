@@ -2,17 +2,13 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { AddressBodyModel } from './AddressBodyModel';
 import type { Target } from './Target';
 export type SaveNewOnboardingDataQueryModel = {
-  banId?: string | null;
-  city: string;
+  address: AddressBodyModel;
   createVenueWithoutSiret?: boolean;
-  latitude: number;
-  longitude: number;
-  postalCode: string;
   publicName?: string | null;
   siret: string;
-  street?: string | null;
   target: Target;
   token: string;
   venueTypeCode: string;

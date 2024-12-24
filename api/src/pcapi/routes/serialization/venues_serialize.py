@@ -1,6 +1,4 @@
 from datetime import datetime
-from decimal import Decimal
-from decimal import InvalidOperation
 import enum
 from io import BytesIO
 import typing
@@ -32,10 +30,6 @@ from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.image_conversion import CropParam
 from pcapi.utils.image_conversion import CropParams
-
-
-MAX_LONGITUDE = 180
-MAX_LATITUDE = 90
 
 
 class DMSApplicationstatus(enum.Enum):
@@ -72,17 +66,12 @@ class DMSApplicationForEAC(BaseModel):
 
 
 class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
-    street: offerers_schemas.VenueAddress
-    banId: offerers_schemas.VenueBanId | None
+    address: offerers_schemas.AddressBodyModel
     bookingEmail: offerers_schemas.VenueBookingEmail
-    city: offerers_schemas.VenueCity
     comment: offerers_schemas.VenueComment | None
-    latitude: float
-    longitude: float
     managingOffererId: int
     name: offerers_schemas.VenueName
     publicName: offerers_schemas.VenuePublicName | None
-    postalCode: offerers_schemas.VenuePostalCode
     siret: offerers_schemas.VenueSiret | None
     venueLabelId: int | None
     venueTypeCode: str
@@ -92,28 +81,6 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
 
     class Config:
         extra = "forbid"
-
-    @validator("latitude", pre=True)
-    @classmethod
-    def validate_latitude(cls, raw_latitude: str) -> str:
-        try:
-            latitude = Decimal(raw_latitude)
-        except InvalidOperation:
-            raise ValueError("Format incorrect")
-        if not -MAX_LATITUDE < latitude < MAX_LATITUDE:
-            raise ValueError("La latitude doit être comprise entre -90.0 et +90.0")
-        return raw_latitude
-
-    @validator("longitude", pre=True)
-    @classmethod
-    def validate_longitude(cls, raw_longitude: str) -> str:
-        try:
-            longitude = Decimal(raw_longitude)
-        except InvalidOperation:
-            raise ValueError("Format incorrect")
-        if not -MAX_LONGITUDE < longitude < MAX_LONGITUDE:
-            raise ValueError("La longitude doit être comprise entre -180.0 et +180.0")
-        return raw_longitude
 
     @validator("siret", always=True)
     @classmethod
