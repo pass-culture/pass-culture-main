@@ -1,6 +1,6 @@
 import typing
 
-from pcapi.routes.adage.v1.serialization.config import AdageBaseResponseModel
+from pcapi.core.educational.schemas import AdageBaseResponseModel
 
 
 if typing.TYPE_CHECKING:

@@ -3,27 +3,26 @@ from datetime import datetime
 import decimal
 
 from pcapi.core.educational import models
-from pcapi.routes.adage.v1.serialization.config import AdageBaseResponseModel
-from pcapi.routes.native.v1.serialization.common_models import Coordinates
+import pcapi.core.educational.schemas as educational_schemas
 
 
 class CollectiveOfferNotAssociatedToInstitution(Exception):
     pass
 
 
-class AdageCollectiveOfferContact(AdageBaseResponseModel):
+class AdageCollectiveOfferContact(educational_schemas.AdageBaseResponseModel):
     email: str | None
     phone: str | None
 
 
-class AdageRedactor(AdageBaseResponseModel):
+class AdageRedactor(educational_schemas.AdageBaseResponseModel):
     email: str | None
     redactorCivility: str | None
     redactorFirstName: str | None
     redactorLastName: str | None
 
 
-class AdageCollectiveOffer(AdageBaseResponseModel):
+class AdageCollectiveOffer(educational_schemas.AdageBaseResponseModel):
     UAICode: str
     address: str
     beginningDatetime: datetime
@@ -31,7 +30,7 @@ class AdageCollectiveOffer(AdageBaseResponseModel):
     endDatetime: datetime
     city: str
     contact: AdageCollectiveOfferContact
-    coordinates: Coordinates
+    coordinates: educational_schemas.Coordinates
     description: str | None
     durationMinutes: float | None
     id: int
@@ -67,7 +66,7 @@ def serialize_collective_offer(collective_offer: models.CollectiveOffer) -> Adag
         endDatetime=stock.endDatetime,
         city=venue.city,  # type: ignore[arg-type]  # TODO: check that it cannot be None
         contact=AdageCollectiveOfferContact(phone=collective_offer.contactPhone, email=collective_offer.contactEmail),
-        coordinates=Coordinates(latitude=venue.latitude, longitude=venue.longitude),
+        coordinates=educational_schemas.Coordinates(latitude=venue.latitude, longitude=venue.longitude),
         description=collective_offer.description,
         durationMinutes=collective_offer.durationMinutes,
         id=collective_offer.id,
@@ -114,7 +113,7 @@ def _get_collective_offer_address(offer: models.CollectiveOffer) -> str:
     return default_address
 
 
-class AdageEducationalInstitution(AdageBaseResponseModel):
+class AdageEducationalInstitution(educational_schemas.AdageBaseResponseModel):
     uai: str
     sigle: str
     libelle: str
@@ -124,7 +123,7 @@ class AdageEducationalInstitution(AdageBaseResponseModel):
     codePostal: str
 
 
-class AdageCollectiveRequest(AdageBaseResponseModel):
+class AdageCollectiveRequest(educational_schemas.AdageBaseResponseModel):
     redactorEmail: str
     requestPhoneNumber: str | None
     requestedDate: date | None

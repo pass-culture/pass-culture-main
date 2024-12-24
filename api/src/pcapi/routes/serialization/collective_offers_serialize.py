@@ -13,6 +13,7 @@ from pydantic.v1 import validator
 
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational.models import OfferAddressType
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import validation as offers_validation
 from pcapi.models.offer_mixin import CollectiveOfferStatus
@@ -289,12 +290,6 @@ class GetCollectiveOfferVenueResponseModel(BaseModel):
         orm_mode = True
         json_encoders = {datetime: format_into_utc_date}
         allow_population_by_field_name = True
-
-
-class OfferAddressType(enum.Enum):
-    OFFERER_VENUE = "offererVenue"
-    SCHOOL = "school"
-    OTHER = "other"
 
 
 class CollectiveOfferOfferVenueResponseModel(BaseModel):

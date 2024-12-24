@@ -1,7 +1,7 @@
 from pcapi.core.educational import models
 from pcapi.core.educational.adage_backends.serialize import AdageCollectiveOffer
 from pcapi.core.educational.adage_backends.serialize import AdageCollectiveRequest
-from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingResponse
+from pcapi.core.educational.schemas import EducationalBookingResponse
 
 
 AdageRequestItem = (

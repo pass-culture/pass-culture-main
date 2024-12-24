@@ -547,40 +547,6 @@ class VenuesEducationalStatusesResponseModel(BaseModel):
     statuses: list[VenuesEducationalStatusResponseModel]
 
 
-class AdageCulturalPartner(BaseModel):
-    id: int
-    venueId: int | None
-    siret: str | None
-    regionId: int | None
-    academieId: str | None
-    statutId: int | None
-    labelId: int | None
-    typeId: int | None
-    communeId: str | None
-    libelle: str
-    adresse: str | None
-    siteWeb: str | None
-    latitude: float | None
-    longitude: float | None
-    statutLibelle: str | None
-    labelLibelle: str | None
-    typeIcone: str | None
-    typeLibelle: str | None
-    communeLibelle: str | None
-    communeDepartement: str | None
-    academieLibelle: str | None
-    regionLibelle: str | None
-    domaines: str | None
-    actif: int | None
-    dateModification: datetime
-    synchroPass: int | None
-    domaineIds: str | None
-
-
-class AdageCulturalPartners(BaseModel):
-    partners: list[AdageCulturalPartner]
-
-
 class AdageCulturalPartnerResponseModel(BaseModel):
     id: int
     statutId: int | None

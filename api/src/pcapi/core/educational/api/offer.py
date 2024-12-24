@@ -21,6 +21,7 @@ from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.api import shared as api_shared
 import pcapi.core.educational.api.national_program as national_program_api
 from pcapi.core.educational.exceptions import AdageException
+from pcapi.core.educational.schemas import EducationalBookingEdition
 from pcapi.core.educational.utils import get_image_from_url
 from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.mails import transactional as transactional_mails
@@ -62,7 +63,7 @@ def notify_educational_redactor_on_collective_offer_or_stock_edit(
     if active_collective_bookings is None:
         return
 
-    data = prebooking.EducationalBookingEdition(
+    data = EducationalBookingEdition(
         **prebooking.serialize_collective_booking(active_collective_bookings).dict(),
         updatedFields=updated_fields,
     )
