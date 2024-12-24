@@ -10,6 +10,7 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational import testing as educational_testing
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import conf as finance_conf
 from pcapi.core.finance import factories as finance_factories
@@ -776,6 +777,28 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, collective_offer_id=collective_offer_to_validate.id)
         assert response.status_code == 303
+
+        expected_url = url_for("backoffice_web.collective_offer.list_collective_offers", _external=True)
+        assert response.location == expected_url
+
+        collective_offer_list_url = url_for(
+            "backoffice_web.collective_offer.list_collective_offers",
+            q=collective_offer_to_validate.id,
+            _external=True,
+        )
+        response = authenticated_client.get(collective_offer_list_url)
+        assert response.status_code == 200
+
+        assert collective_offer_to_validate.isActive is True
+        assert collective_offer_to_validate.validation == OfferValidationStatus.APPROVED
+        assert collective_offer_to_validate.lastValidationType == OfferValidationType.MANUAL
+
+    def test_validate_collective_offer_with_institution(self, legit_user, authenticated_client):
+        collective_offer_to_validate = educational_factories.PendingCollectiveOfferFactory()
+
+        response = self.post_to_endpoint(authenticated_client, collective_offer_id=collective_offer_to_validate.id)
+        assert response.status_code == 303
+        assert educational_testing.adage_requests[0].keys() == {"url", "sent_data"}
 
         expected_url = url_for("backoffice_web.collective_offer.list_collective_offers", _external=True)
         assert response.location == expected_url
