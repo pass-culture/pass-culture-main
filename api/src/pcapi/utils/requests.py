@@ -90,29 +90,25 @@ def _wrapper(
 
 
 def get(url: str, disable_synchronous_retry: bool = False, log_info: bool = True, **kwargs: Any) -> requests.Response:
-    with Session(disable_synchronous_retry=disable_synchronous_retry, log_info=log_info) as session:
-        return session.request(method="GET", url=url, **kwargs)
+    return request("GET", url, disable_synchronous_retry=disable_synchronous_retry, log_info=log_info, **kwargs)
 
 
 def post(
     url: str, hmac: str | None = None, disable_synchronous_retry: bool = False, log_info: bool = True, **kwargs: Any
 ) -> requests.Response:
-    with Session(disable_synchronous_retry=disable_synchronous_retry, log_info=log_info) as session:
-        if hmac:
-            kwargs.setdefault("headers", {}).update({"PassCulture-Signature": hmac})
-        return session.request(method="POST", url=url, **kwargs)
+    if hmac:
+        kwargs.setdefault("headers", {}).update({"PassCulture-Signature": hmac})
+    return request("POST", url, disable_synchronous_retry=disable_synchronous_retry, log_info=log_info, **kwargs)
 
 
 def put(url: str, disable_synchronous_retry: bool = False, log_info: bool = True, **kwargs: Any) -> requests.Response:
-    with Session(disable_synchronous_retry=disable_synchronous_retry, log_info=log_info) as session:
-        return session.request(method="PUT", url=url, **kwargs)
+    return request("PUT", url, disable_synchronous_retry=disable_synchronous_retry, log_info=log_info, **kwargs)
 
 
 def delete(
     url: str, disable_synchronous_retry: bool = False, log_info: bool = True, **kwargs: Any
 ) -> requests.Response:
-    with Session(disable_synchronous_retry=disable_synchronous_retry, log_info=log_info) as session:
-        return session.request(method="DELETE", url=url, **kwargs)
+    return request("DELETE", url, disable_synchronous_retry=disable_synchronous_retry, log_info=log_info, **kwargs)
 
 
 def request(

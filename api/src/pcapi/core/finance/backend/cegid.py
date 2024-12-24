@@ -1,3 +1,4 @@
+import datetime
 import json
 import logging
 import typing
@@ -5,6 +6,7 @@ import typing
 from pcapi import settings
 from pcapi.core.finance import exceptions
 from pcapi.core.finance import models as finance_models
+from pcapi.core.finance import utils as finance_utils
 from pcapi.core.finance.backend.base import BaseFinanceBackend
 from pcapi.utils import cache as cache_utils
 from pcapi.utils import requests
@@ -15,8 +17,29 @@ logger = logging.getLogger(__name__)
 COOKIES_CACHE_DURATION = 900  # in seconds = 15min
 REDIS_COOKIES_CACHE_KEY = "cache:cegid:cookies"
 
+INVENTORY_IDS = {
+    "ORINDGRANT_18": "ORIND18P000",
+    "OCINDGRANT_18": "CTIND18P000",
+    "CGINDGRANT_18": "CGIND18P000",
+    "ORINDGRANT_15_17": "ORIND18M000",
+    "OCINDGRANT_15_17": "CTIND18M000",
+    "CGINDGRANT_15_17": "CGIND18M000",
+    "ORCOLEDUC_NAT": "ORCOLEDU000",
+    "CGCOLEDUC_NAT": "CGCOLEDU000",
+    "ORCOLAGRI": "ORCOLAGR000",
+    "CGCOLAGRI": "CGCOLAGR000",
+    "ORCOLARMEES": "ORCOLARM000",
+    "CGCOLARMEES": "CGCOLARM000",
+    "ORCOLMER": "ORCOLMER000",
+    "CGCOLMER": "CGCOLMER000",
+    "ORCOLMEG": "ORCOLMEG000",
+    "CGCOLMEG": "CGCOLMEG000",
+}
+
 
 class CegidFinanceBackend(BaseFinanceBackend):
+    timeout = 20  # seconds
+
     def __init__(self) -> None:
         self.base_url = settings.CEGID_URL
         self._interface = "entity/INTERFACES/23.200.001"
@@ -43,7 +66,7 @@ class CegidFinanceBackend(BaseFinanceBackend):
 
         return json.dumps(response.cookies.get_dict())
 
-    def _request(self, method: str, *args: typing.Any, **kwargs: typing.Any) -> requests.Response:
+    def _request(self, method: str, url: str, *args: typing.Any, **kwargs: typing.Any) -> requests.Response:
         """
         Private method to operate requests:
         - Automatically reconnects in case of cookies/token expiration
@@ -51,7 +74,10 @@ class CegidFinanceBackend(BaseFinanceBackend):
         """
         force_cache_update = False
         for _ in range(2):  # In case the cookies expire, delete the stored one and re-authenticate
-            response = requests.request(method, *args, cookies=self._get_cookies(force_cache_update), **kwargs)
+            try:
+                response = requests.request(method, url, *args, cookies=self._get_cookies(force_cache_update), **kwargs)
+            except requests.exceptions.RequestException as exc:
+                raise exceptions.FinanceBackendApiError(f"Network error on Cegid API: {url}") from exc
             if response.status_code == 422:
                 raise exceptions.FinanceBackendBadRequest(response, "Invalid data body")
             if response.status_code != 401:
@@ -247,13 +273,113 @@ class CegidFinanceBackend(BaseFinanceBackend):
 
         return {}
 
+    def _get_latest_financial_period(self) -> dict:
+        url = f"{self.base_url}/{self._interface}/FinancialPeriod?$expand=Details"
+        response = self._request("GET", url)
+
+        if response.status_code != 200:
+            raise exceptions.FinanceBackendUnexpectedResponse(response, "Couldn't get the financial period")
+
+        response_json = response.json()
+
+        if len(response_json) == 0:
+            raise exceptions.FinanceBackendInconsistentDistantData(response, "No financial period found")
+
+        financial_periods = list(sorted(response_json, key=lambda x: x["rowNumber"], reverse=True))
+        periods = financial_periods[0]["Details"]
+
+        if len(periods) == 0:
+            raise exceptions.FinanceBackendInconsistentDistantData(response, "No period found")
+
+        periods = list(sorted(periods, key=lambda x: x["rowNumber"], reverse=True))
+        latest_period = periods[0]
+        return latest_period
+
     def push_invoice(self, invoice: finance_models.Invoice) -> dict:
-        # TODO: implement push invoice
-        return {}
+        """
+        Create a new invoice.
+        """
+        assert invoice.bankAccountId  # helps mypy
+        vendor = self.get_bank_account(invoice.bankAccountId)
+
+        # TODO: We use utcnow() instead of invoice.date for the moment because of the following error:
+        # 'Date': {'error': 'The financial period that corresponds to the 10/1/2024 '
+        #          'date does not exist in the master financial calendar.',
+        invoice_date = datetime.datetime.utcnow()
+        latest_period = self._get_latest_financial_period()  # TODO: find a way to have a static FinancialPeriodID
+
+        url = f"{self.base_url}/{self._interface}/Bill?$expand=Details"
+
+        invoice_lines = self.get_invoice_lines(invoice)
+        lines = [
+            {
+                # "Account": {"value": "604002"},
+                "Amount": {"value": str(finance_utils.cents_to_full_unit(line["amount"]))},
+                "Branch": {"value": "PASSCULT"},
+                "InventoryID": {"value": INVENTORY_IDS[line["product_id"]]},
+                "TransactionDescription": {"value": line["title"]},
+                "Description": {"value": line["title"]},
+                "Qty": {"value": 1},
+                "UnitCost": {"value": str(finance_utils.cents_to_full_unit(line["amount"]))},
+                "UOM": {"value": "UNITE"},
+            }
+            for line in invoice_lines
+        ]
+
+        total_amount = -sum(e["amount"] for e in invoice_lines)
+        body = {
+            # "note": {"value": ""},
+            "Amount": {"value": str(-finance_utils.cents_to_full_unit(total_amount))},
+            "ApprovedForPayment": {"value": False},
+            "Balance": {"value": str(-finance_utils.cents_to_full_unit(total_amount))},
+            "BranchID": {"value": "PASSCULT"},
+            # "CashAccount": {"value": "CD512000"},  # TODO Put a correct value here
+            "CurrencyID": {"value": "EUR"},
+            "Date": {"value": invoice_date.strftime("%Y-%m-%dT%H:%M:%S+00:00")},
+            "Description": {"value": "Justificatif de remboursement"},
+            "Details": lines,
+            "Hold": {"value": False},
+            "LocationID": {"value": vendor["VendorLocation"]["LocationID"]["value"]},
+            "PostPeriod": {"value": latest_period["FinancialPeriodID"]["value"]},
+            "ReferenceNbr": {"value": invoice.reference},  # TODO: find why this has no effect
+            "Status": {"value": "Open"},
+            "TaxTotal": {"value": "0"},
+            "Terms": {"value": "30J"},
+            "Type": {"value": "Bill"},
+            "Vendor": {"value": str(invoice.bankAccountId)},
+            "VendorRef": {"value": invoice.reference},
+        }
+
+        response = self._request("PUT", url, json=body)
+
+        if response.status_code != 200:
+            raise exceptions.FinanceBackendBadRequest(response, "Error in invoice creation payload")
+
+        return response.json()
 
     def get_invoice(self, reference: str) -> dict:
-        # TODO: implement get invoice
-        return {}
+        url = f"{self.base_url}/{self._interface}/Bill"
+        # TODO find a way to replace VendorRef with Reference as it's the real unique identifier in XRP Flex
+        response = self._request("GET", url, params={"$filter": f"VendorRef eq '{reference}'", "$expand": "Details"})
+
+        if response.status_code != 200:
+            raise exceptions.FinanceBackendUnexpectedResponse(
+                response, f"Unexpected response for Bill query of invoice '{reference}'"
+            )
+
+        response_json = response.json()
+
+        if len(response_json) < 1:
+            raise exceptions.FinanceBackendInvoiceNotFound(
+                response, f"Couldn't find invoice with reference: '{reference}'"
+            )
+
+        if len(response_json) > 1:
+            raise exceptions.FinanceBackendInconsistentDistantData(
+                response, f"Found multiple invoices with the same reference: '{reference}'"
+            )
+
+        return response_json[0]
 
     @property
     def is_configured(self) -> bool:
