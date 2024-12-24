@@ -17,6 +17,7 @@ import { computeAddressDisplayName } from 'repository/venuesService'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { RadioButton } from 'ui-kit/form/RadioButton/RadioButton'
+import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import { setFormReadOnlyFields } from '../../commons/utils'
@@ -104,7 +105,7 @@ export const OfferLocation = ({
       </p>
       <FormLayout.Row className={styles['location-row']}>
         <RadioButton
-          withBorder
+          variant={RadioVariant.BOX}
           label={venueFullText}
           name="offerLocation"
           value={venue?.address?.id_oa.toString() ?? ''}
@@ -115,7 +116,7 @@ export const OfferLocation = ({
       </FormLayout.Row>
       <FormLayout.Row className={styles['location-row']}>
         <RadioButton
-          withBorder
+          variant={RadioVariant.BOX}
           label="À une autre adresse"
           name="offerLocation"
           value={OFFER_LOCATION.OTHER_ADDRESS}

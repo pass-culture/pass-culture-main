@@ -96,7 +96,6 @@ export const DownloadBookingsModal = ({
             name="bookings-date-select"
             checked={selectedDate === eventDate}
             className={style['bookings-date-radio']}
-            withBorder={false}
             label={
               <div className={style['radio-label']}>
                 <abbr
