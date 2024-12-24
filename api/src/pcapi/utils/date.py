@@ -225,3 +225,36 @@ def days_ago_timestamp(days: int) -> int:
 
 def parse_titelive_date_to_string(date_str: str) -> str:
     return str(parse_french_date(date_str))
+
+
+def make_timezone_aware_utc(dt: datetime) -> datetime:
+    """Convert a timezone-naive datetime into a datetime in utc timezone"""
+    return dt.replace(tzinfo=tz.utc)
+
+
+def format_offset(off: timedelta | None, sep: str = ":") -> str:
+    """
+    Format datetime's offset with ability to put separator between hours and minutes.
+    Ex:
+    >>> format_offset(dt)
+    "+00:00"
+
+    This is a backport from Python 3.12
+    TODO delete this function once we upgrade to Python 3.11
+    """
+    s = ""
+    if off is not None:
+        if off.days < 0:
+            sign = "-"
+            off = -off
+        else:
+            sign = "+"
+        hh, mm = divmod(off, timedelta(hours=1))
+        mm, ss = divmod(mm, timedelta(minutes=1))  # type: ignore[assignment]
+        s += "%s%02d%s%02d" % (sign, hh, sep, mm)  # type: ignore[str-format]
+        if ss or ss.microseconds:
+            s += "%s%02d" % (sep, ss.seconds)
+
+            if ss.microseconds:
+                s += ".%06d" % ss.microseconds
+    return s

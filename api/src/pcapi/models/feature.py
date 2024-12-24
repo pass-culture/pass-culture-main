@@ -64,6 +64,9 @@ class FeatureToggle(enum.Enum):
     ENABLE_EDUCONNECT_AUTHENTICATION = "Active l'authentification via educonnect sur l'app native"
     ENABLE_FRONT_IMAGE_RESIZING = "Active le redimensionnement sur demande des images par l'app et le web"
     ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION = "Active l'utilisation du lien avec redirection pour les offres (nécessaires pour contourner des restrictions d'iOS)"
+    ENABLE_INVOICE_SYNC = (
+        "Active la synchronisation des justificatifs de remboursement avec l'outil finance externe (Cegid XRP Flex)"
+    )
     ENABLE_NATIVE_APP_RECAPTCHA = "Active le reCaptacha sur l'API native"
     ENABLE_NATIVE_CULTURAL_SURVEY = (
         "Active le Questionnaire des pratiques initiales natif (non TypeForm) sur l'app native et décli web"

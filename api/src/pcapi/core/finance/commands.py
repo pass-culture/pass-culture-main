@@ -238,7 +238,7 @@ def import_ds_bank_information_applications(ignore_previous: bool = False, since
 )
 @cron_decorators.log_cron_with_transaction
 def push_bank_accounts(count: int) -> None:
-    if not FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW or not FeatureToggle.ENABLE_BANK_ACCOUNT_SYNC:
+    if not FeatureToggle.ENABLE_BANK_ACCOUNT_SYNC:
         logger.info(
             "Sync bank account cronjob will not run. "
             "Both WIP_ENABLE_NEW_FINANCE_WORKFLOW and ENABLE_BANK_ACCOUNT_SYNC features must be activated"
@@ -246,3 +246,22 @@ def push_bank_accounts(count: int) -> None:
         return
 
     finance_external.push_bank_accounts(count)
+
+
+@blueprint.cli.command("push_invoices")
+@click.option(
+    "--count",
+    help="Number of Invoices to sync. Default = 100. Put 0 to push all Invoices with `PENDING` status",
+    type=int,
+    default=100,
+)
+@cron_decorators.log_cron_with_transaction
+def push_invoices(count: int) -> None:
+    if not FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW or not FeatureToggle.ENABLE_INVOICE_SYNC:
+        logger.info(
+            "Sync invoice cronjob with not run. "
+            "Both WIP_ENABLE_NEW_FINANCE_WORKFLOW and ENABLE_INVOICE_SYNC feature must be activated"
+        )
+        return
+
+    finance_external.push_invoices(count)

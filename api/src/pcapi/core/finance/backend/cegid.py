@@ -1,3 +1,4 @@
+import datetime
 import json
 import logging
 import typing
@@ -5,8 +6,10 @@ import typing
 from pcapi import settings
 from pcapi.core.finance import exceptions
 from pcapi.core.finance import models as finance_models
+from pcapi.core.finance import utils as finance_utils
 from pcapi.core.finance.backend.base import BaseFinanceBackend
 from pcapi.utils import cache as cache_utils
+from pcapi.utils import date as date_utils
 from pcapi.utils import requests
 
 
@@ -15,8 +18,29 @@ logger = logging.getLogger(__name__)
 COOKIES_CACHE_DURATION = 900  # in seconds = 15min
 REDIS_COOKIES_CACHE_KEY = "cache:cegid:cookies"
 
+INVENTORY_IDS = {
+    "ORINDGRANT_18": "ORIND18P0000",
+    "OCINDGRANT_18": "CTIND18P0000",
+    "CGINDGRANT_18": "CGIND18P0000",
+    "ORINDGRANT_15_17": "ORIND18M0000",
+    "OCINDGRANT_15_17": "CTIND18M0000",
+    "CGINDGRANT_15_17": "CGIND18M0000",
+    "ORCOLEDUC_NAT": "ORCOLEDU0000",
+    "CGCOLEDUC_NAT": "CGCOLEDU0000",
+    "ORCOLAGRI": "ORCOLAGR0000",
+    "CGCOLAGRI": "CGCOLAGR0000",
+    "ORCOLARMEES": "ORCOLARM0000",
+    "CGCOLARMEES": "CGCOLARM0000",
+    "ORCOLMER": "ORCOLMER0000",
+    "CGCOLMER": "CGCOLMER0000",
+    "ORCOLMEG": "ORCOLMEG0000",
+    "CGCOLMEG": "CGCOLMEG0000",
+}
+
 
 class CegidFinanceBackend(BaseFinanceBackend):
+    timeout = 20  # seconds
+
     def __init__(self) -> None:
         self.base_url = settings.CEGID_URL
         self._interface = "entity/INTERFACES/23.200.001"
@@ -43,7 +67,7 @@ class CegidFinanceBackend(BaseFinanceBackend):
 
         return json.dumps(response.cookies.get_dict())
 
-    def _request(self, method: str, *args: typing.Any, **kwargs: typing.Any) -> requests.Response:
+    def _request(self, method: str, url: str, *args: typing.Any, **kwargs: typing.Any) -> requests.Response:
         """
         Private method to operate requests:
         - Automatically reconnects in case of cookies/token expiration
@@ -51,7 +75,10 @@ class CegidFinanceBackend(BaseFinanceBackend):
         """
         force_cache_update = False
         for _ in range(2):  # In case the cookies expire, delete the stored one and re-authenticate
-            response = requests.request(method, *args, cookies=self._get_cookies(force_cache_update), **kwargs)
+            try:
+                response = requests.request(method, url, *args, cookies=self._get_cookies(force_cache_update), **kwargs)
+            except requests.exceptions.RequestException as exc:
+                raise exceptions.FinanceBackendApiError(f"Network error on Cegid API: {url}") from exc
             if response.status_code == 422:
                 raise exceptions.FinanceBackendBadRequest(response, "Invalid data body")
             if response.status_code != 401:
@@ -85,7 +112,7 @@ class CegidFinanceBackend(BaseFinanceBackend):
             )
 
         response_json = response.json()
-        response_json["vendor_location"] = self._get_vendor_location(bank_account_id)
+        response_json["VendorLocation"] = self._get_vendor_location(bank_account_id)
 
         return response_json
 
@@ -94,39 +121,47 @@ class CegidFinanceBackend(BaseFinanceBackend):
         Create or update a bank account in Flex.
         The logic of storage in Flex is different: bank account model is split into 2 entities:
          - Vendor: the actual BankAccount
-         - VendorLocation where the RIB information (IBAN and BIC) is stored
+         - VendorLocation where the RIB information (IBAN) is stored
         In order to operate a creation/update operation we have to send 3 requests:
          - PUT Vendor
          - GET VendorLocation
          - PUT VendorLocation
+         Missing : SIEN (aka siret dans cegid), famille de fournisseur (VendorClassID)
         """
         url_vendor = f"{self.base_url}/{self._interface}/Vendor"
 
         body = {
+            "CashAccount": {"value": "CD512000"},
             "CurrencyID": {"value": "EUR"},
-            "VendorClass": {"value": "STANDARD"},
-            "VendorID": {
-                "value": str(bank_account.id),
-            },
-            "VendorName": {
-                "value": bank_account.label,
-            },
-            "Status": {
-                "value": "Active",
-            },
             "LegalName": {
-                "value": bank_account.offerer.name,
+                "value": bank_account.offerer.name[:70],
             },
             "MainContact": {
                 "Address": {
                     "Country": {"value": "FR"},
+                    "City": {"value": bank_account.offerer.city},
+                    "PostalCode": {"value": bank_account.offerer.postalCode},
+                    "AddressLine1": {"value": bank_account.offerer.street[:50]},
+                    "State": {"value": bank_account.offerer.departementCode},
                 },
             },
             "NatureEco": {"value": "Exempt operations"},
             "PaymentMethod": {
                 "value": "VSEPA",
             },
+            "Siret": {"value": bank_account.offerer.siren},
+            "Status": {
+                "value": "Active",
+            },
+            "TaxZone": {"value": "EXO"},
             "Terms": {"value": "30J"},
+            "VendorClass": {"value": "ACTEURCULT"},
+            "VendorID": {
+                "value": str(bank_account.id),
+            },
+            "VendorName": {
+                "value": bank_account.label,
+            },
         }
 
         response = self._request("PUT", url_vendor, json=body)
@@ -136,19 +171,19 @@ class CegidFinanceBackend(BaseFinanceBackend):
             )
 
         response_json = response.json()
-        response_json["vendor_location"] = self._upsert_vendor_location(bank_account)
+        response_json["VendorLocation"] = self._upsert_vendor_location(bank_account)
 
         return response_json
 
     def _upsert_vendor_location(self, bank_account: finance_models.BankAccount) -> dict:
         """
-        Create or update VendorLocation where the RIB parameters are stored (IBAN and BIC)
+        Create or update VendorLocation where the RIB parameter is stored (IBAN)
         To be able to update the values for an existing entry we have to:
          - First check if there is already an existing VendorLocation
          - If not any proceed to creation
          - If any, there must be only one entry as we only have one RIB per BankAccount. (cf. _get_vendor_location)
-         - To avoid creating a new entry we have to get the VendorLocation's id as well as the id of IBAN and BIC rows
-         - Inject them in the creation body to allow Flex to identify and update them
+         - To avoid creating a new entry we have to get the VendorLocation's id as well as the id of IBAN row
+         - Inject it in the creation body to allow Flex to identify and update it
          - Send the body with ids to update the VendorLocation
         """
         iban = {
@@ -157,16 +192,10 @@ class CegidFinanceBackend(BaseFinanceBackend):
             "PaymentMethod": {"value": "VSEPA"},
             "Valeur": {"value": bank_account.iban},
         }
-        bic = {
-            "rowNumber": 2,
-            "Code": {"value": "BIC"},
-            "PaymentMethod": {"value": "VSEPA"},
-            "Valeur": {"value": bank_account.bic},
-        }
         body = {
             "LocationID": {"value": "MAIN"},
             "PaymentMethod": {"value": "VSEPA"},
-            "RIB": [iban, bic],
+            "RIB": [iban],
             "Status": {"value": "Active"},
             "VendorID": {"value": str(bank_account.id)},
         }
@@ -187,15 +216,6 @@ class CegidFinanceBackend(BaseFinanceBackend):
                     iban["id"] = old_iban["id"]
                 if "rowNumber" in old_iban:
                     iban["rowNumber"] = old_iban["rowNumber"]
-
-            old_bics = [e for e in old_rib if e.get("Code", {}).get("value") == "BIC"]
-            if len(old_bics) == 1:  # It's certainly 1 bic as the check is done in `_get_vendor_location`
-                old_bic = old_bics[0]
-                # Inject existing row's "id" and "rowNumber" fields to operate and avoid creating a new one
-                if "id" in old_bic:
-                    bic["id"] = old_bic["id"]
-                if "rowNumber" in old_bic:
-                    bic["rowNumber"] = old_bic["rowNumber"]
 
         url_vendor_location = f"{self.base_url}/{self._interface}/VendorLocation"
         params_vendor_location = {"$expand": "RIB"}
@@ -233,14 +253,7 @@ class CegidFinanceBackend(BaseFinanceBackend):
             if len(old_ibans) > 1:
                 # Shouldn't happen
                 raise exceptions.FinanceBackendInconsistentDistantData(
-                    response, f"Found multiple bic rows for VendorLocation of BankAccount #{bank_account_id}"
-                )
-
-            old_bics = [e for e in old_rib if e.get("Code", {}).get("value") == "BIC"]
-            if len(old_bics) > 1:
-                # Shouldn't happen either
-                raise exceptions.FinanceBackendInconsistentDistantData(
-                    response, f"Found multiple bic rows for VendorLocation of BankAccount #{bank_account_id}"
+                    response, f"Found multiple iban rows for VendorLocation of BankAccount #{bank_account_id}"
                 )
 
             return vendor_location
@@ -248,12 +261,102 @@ class CegidFinanceBackend(BaseFinanceBackend):
         return {}
 
     def push_invoice(self, invoice: finance_models.Invoice) -> dict:
-        # TODO: implement push invoice
-        return {}
+        """
+        Create a new invoice.
+        """
+        assert invoice.bankAccountId  # helps mypy
+        url = f"{self.base_url}/{self._interface}/Bill?$expand=Details"
+        invoice_lines = self.get_invoice_lines(invoice)
+        lines = [
+            {
+                "Amount": {"value": str(finance_utils.cents_to_full_unit(line["amount"]))},
+                "Branch": {"value": "PASSCULT"},
+                "InventoryID": {"value": INVENTORY_IDS[line["product_id"]]},
+                "TransactionDescription": {"value": line["title"]},
+                "Description": {"value": line["title"]},
+                "Qty": {"value": 1},
+                "UnitCost": {"value": str(finance_utils.cents_to_full_unit(line["amount"]))},
+                "UOM": {"value": "UNITE"},
+            }
+            for line in invoice_lines
+        ]
+
+        vendor_location = self._get_vendor_location(invoice.bankAccountId)
+        total_amount = -sum(e["amount"] for e in invoice_lines)
+        invoice_date_range = self._get_formatted_invoice_description(invoice.date)
+        body = {
+            "Amount": {"value": str(-finance_utils.cents_to_full_unit(total_amount))},
+            "ApprovedForPayment": {"value": False},
+            "Balance": {"value": str(-finance_utils.cents_to_full_unit(total_amount))},
+            "BranchID": {"value": "PASSCULT"},
+            "CurrencyID": {"value": "EUR"},
+            "Date": {"value": self.format_datetime(invoice.date)},
+            "Description": {"value": f"{invoice.reference} - {invoice_date_range}"},  # F25xxxx - <01/12-15/12>
+            "Details": lines,
+            "Hold": {"value": False},
+            "LocationID": {"value": vendor_location["LocationID"]["value"]},
+            "PostPeriod": {"value": f"{invoice.date:%m%Y}"},
+            # "ReferenceNbr": {"value": invoice.reference},  # This has no effect because XRP generates an incremental ID that cannot be overriden
+            "RefNbr": {"value": invoice.reference},
+            "Status": {"value": "Open"},
+            "TaxTotal": {"value": "0"},
+            "Terms": {"value": "30J"},
+            "Type": {"value": "ADR" if invoice.reference.startswith("A") else "INV"},
+            "Vendor": {"value": str(invoice.bankAccountId)},
+            "VendorRef": {"value": invoice.reference},
+        }
+
+        response = self._request("PUT", url, json=body)
+
+        if (
+            response.status_code == 500
+            and self._get_exception_type(response) == "PX.Api.ContractBased.OutcomeEntityHasErrorsException"
+        ):
+            raise exceptions.FinanceBackendInvoiceAlreadyExists(
+                response, f"Invoice '{invoice.reference}' already pushed"
+            )
+
+        if response.status_code != 200:
+            raise exceptions.FinanceBackendBadRequest(response, "Error in invoice creation payload")
+
+        return response.json()
+
+    def format_datetime(self, source_datetime: datetime.datetime) -> str:
+        utc_source_datetime = date_utils.make_timezone_aware_utc(source_datetime)
+
+        formatted_datetime = utc_source_datetime.strftime("%Y-%m-%dT%H:%M:%S")
+        formatted_offset = date_utils.format_offset(utc_source_datetime.utcoffset())
+        return f"{formatted_datetime}{formatted_offset}"
+
+    def _get_formatted_invoice_description(self, invoice_date: datetime.datetime) -> str:
+        start_date, end_date = self._get_invoice_daterange(invoice_date)
+        return f"{start_date:%d/%m}-{end_date:%d/%m}"
 
     def get_invoice(self, reference: str) -> dict:
-        # TODO: implement get invoice
-        return {}
+        url = f"{self.base_url}/{self._interface}/Bill"
+        # Search by using VendorRef instead of ReferenceNbr because ReferenceNbr is automatically generated by
+        # XRP Flex when creating the invoice and it's an incremental ID.
+        # We keep using VendorRef to represent the backend's reference eg. F24xxxx
+        response = self._request("GET", url, params={"$filter": f"VendorRef eq '{reference}'", "$expand": "Details"})
+
+        if response.status_code != 200:
+            raise exceptions.FinanceBackendUnexpectedResponse(
+                response, f"Unexpected response for Bill query of invoice '{reference}'"
+            )
+
+        response_json = response.json()
+
+        if len(response_json) < 1:
+            raise exceptions.FinanceBackendInvoiceNotFound(
+                response, f"Couldn't find invoice with reference: '{reference}'"
+            )
+
+        if len(response_json) > 1:
+            raise exceptions.FinanceBackendInconsistentDistantData(
+                response, f"Found multiple invoices with the same reference: '{reference}'"
+            )
+
+        return response_json[0]
 
     @property
     def is_configured(self) -> bool:
