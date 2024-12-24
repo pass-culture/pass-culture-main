@@ -1,6 +1,5 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 
 import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
@@ -72,7 +71,7 @@ describe('CollectiveDmsTimeline', () => {
       },
       hasAdageId: true,
       expectedLabel:
-        'Votre lieu a été réferencé dans ADAGE par les équipes du Ministère de l’Education Nationale',
+        'Votre lieu a été référencé dans ADAGE par les équipes du Ministère de l’Education Nationale',
     },
     {
       collectiveDmsApplication: {
