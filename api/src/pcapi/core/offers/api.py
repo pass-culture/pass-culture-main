@@ -493,6 +493,11 @@ def update_collective_offer_template(offer_id: int, new_values: dict) -> None:
     query = query.filter(educational_models.CollectiveOfferTemplate.id == offer_id)
     offer_to_update = query.first()
 
+    if FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+        educational_validation.check_collective_offer_template_action_is_allowed(
+            offer_to_update, educational_models.CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS
+        )
+
     if "venueId" in new_values and new_values["venueId"] != offer_to_update.venueId:
         new_venue = offerers_api.get_venue_by_id(new_values["venueId"])
         if not new_venue:
@@ -612,7 +617,8 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
 
 
 def archive_collective_offers(
-    offers: list[educational_models.CollectiveOffer], date_archived: datetime.datetime
+    offers: list[educational_models.CollectiveOffer] | list[educational_models.CollectiveOfferTemplate],
+    date_archived: datetime.datetime,
 ) -> None:
     for offer in offers:
         educational_validation.check_collective_offer_action_is_allowed(
@@ -623,6 +629,20 @@ def archive_collective_offers(
         offer.dateArchived = date_archived
 
     db.session.flush()
+
+
+def toggle_publish_collective_offers_template(
+    collective_offers_template: list[educational_models.CollectiveOfferTemplate],
+    is_active: bool,
+) -> None:
+    action = (
+        educational_models.CollectiveOfferTemplateAllowedAction.CAN_PUBLISH
+        if is_active
+        else educational_models.CollectiveOfferTemplateAllowedAction.CAN_HIDE
+    )
+    for offer_template in collective_offers_template:
+        educational_validation.check_collective_offer_template_action_is_allowed(offer_template, action)
+        offer_template.isActive = is_active
 
 
 def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> None:
