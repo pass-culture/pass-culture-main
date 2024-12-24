@@ -6,7 +6,6 @@ import decimal
 import functools
 import itertools
 import logging
-import math
 from math import ceil
 import re
 import secrets
@@ -2805,35 +2804,14 @@ def get_or_create_address(location_data: LocationData, is_manual_edition: bool =
 
     if address is None:
         address = geography_models.Address.query.filter(
-            geography_models.Address.street == street,
+            geography_models.Address.banId == ban_id,
             geography_models.Address.inseeCode == insee_code,
-            sa.or_(
-                geography_models.Address.isManualEdition.is_not(True),  # false or null
-                sa.and_(
-                    geography_models.Address.banId == ban_id,
-                    geography_models.Address.inseeCode == insee_code,
-                    geography_models.Address.street == street,
-                    geography_models.Address.postalCode == postal_code,
-                    geography_models.Address.city == city,
-                    geography_models.Address.latitude == latitude,
-                    geography_models.Address.longitude == longitude,
-                ),
-            ),
+            geography_models.Address.street == street,
+            geography_models.Address.postalCode == postal_code,
+            geography_models.Address.city == city,
+            geography_models.Address.latitude == latitude,
+            geography_models.Address.longitude == longitude,
         ).one()
-        if not math.isclose(float(address.latitude), float(latitude), rel_tol=0.00001) or not math.isclose(
-            float(address.longitude), float(longitude), rel_tol=0.00001
-        ):
-            logger.error(
-                "Unique constraint over street and inseeCode matched different coordinates",
-                extra={
-                    "address_id": address.id,
-                    "incoming_banId": ban_id,
-                    "address_latitude": address.latitude,
-                    "address_longitude": address.longitude,
-                    "incoming_latitude": latitude,
-                    "incoming_longitude": longitude,
-                },
-            )
 
     return address
 
