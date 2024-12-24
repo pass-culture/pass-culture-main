@@ -907,7 +907,7 @@ def _write_excel_row(
 def _serialize_csv_report(query: BaseQuery) -> str:
     output = StringIO()
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
-    writer.writerow(LEGACY_BOOKING_EXPORT_HEADER)
+    writer.writerow(booking_export_header())
     for booking in query.yield_per(1000):
         writer.writerow(
             (
@@ -952,7 +952,7 @@ def _serialize_excel_report(query: BaseQuery) -> bytes:
     worksheet = workbook.add_worksheet()
     row = 0
 
-    for col_num, title in enumerate(LEGACY_BOOKING_EXPORT_HEADER):
+    for col_num, title in enumerate(booking_export_header()):
         worksheet.write(row, col_num, title, bold)
         worksheet.set_column(col_num, col_num, col_width)
     row = 1
