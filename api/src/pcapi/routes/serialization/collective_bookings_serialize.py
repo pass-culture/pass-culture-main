@@ -77,11 +77,11 @@ class CollectiveBookingCollectiveStockResponseModel(BaseModel):
     offer_id: int
     event_beginning_datetime: str
     event_start_datetime: str
-    event_end_datetime: str | None
+    event_end_datetime: str
     offer_isbn: str | None
     offer_is_educational: bool
     number_of_tickets: int
-    booking_limit_datetime: str | None
+    booking_limit_datetime: str
 
     class Config:
         alias_generator = to_camel

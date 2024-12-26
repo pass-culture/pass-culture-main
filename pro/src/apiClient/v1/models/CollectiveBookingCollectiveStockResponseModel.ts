@@ -3,9 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 export type CollectiveBookingCollectiveStockResponseModel = {
-  bookingLimitDatetime?: string | null;
+  bookingLimitDatetime: string;
   eventBeginningDatetime: string;
-  eventEndDatetime?: string | null;
+  eventEndDatetime: string;
   eventStartDatetime: string;
   numberOfTickets: number;
   offerId: number;
