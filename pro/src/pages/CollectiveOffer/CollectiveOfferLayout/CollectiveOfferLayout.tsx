@@ -42,8 +42,8 @@ export const CollectiveOfferLayout = ({
   }>()
   let title = isCreation
     ? isFromTemplate
-      ? 'Créer une offre pour un établissement scolaire'
-      : 'Créer une nouvelle offre collective'
+      ? 'Créer une offre vitrine'
+      : 'Créer une offre réservable'
     : isSummaryPage
       ? 'Récapitulatif'
       : 'Éditer une offre collective'

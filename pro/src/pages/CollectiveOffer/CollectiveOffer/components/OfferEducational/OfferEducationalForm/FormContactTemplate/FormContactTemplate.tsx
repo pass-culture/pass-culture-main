@@ -25,7 +25,7 @@ export const FormContactTemplate = ({
   const ariaDescribedBy = 'error-contactOptions'
 
   return (
-    <FormLayout.Section title="Contact">
+    <FormLayout.Section title="Comment les enseignants peuvent-ils vous contacter ? *">
       <FieldSetLayout
         legend="Choisissez le ou les moyens par lesquels vous souhaitez être contacté par les enseignants au sujet de cette offre :"
         name="contactOptions"

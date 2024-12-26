@@ -45,7 +45,7 @@ export const FormDates = ({
     : 'désactivée'
 
   return (
-    <FormLayout.Section title="Date et heure">
+    <FormLayout.Section title="Quand votre offre peut-elle avoir lieu ? *">
       <RadioGroup
         disabled={disableForm}
         group={[

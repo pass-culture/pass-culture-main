@@ -19,7 +19,7 @@ export const FormNotifications = ({
   const { values } = useFormikContext<OfferEducationalFormValues>()
 
   return (
-    <FormLayout.Section title="Notifications">
+    <FormLayout.Section title="À quel email le pass Culture peut-il vous envoyer des notifications ? *">
       <FieldArray name="notificationEmails">
         {({ remove, push }) => (
           <>
