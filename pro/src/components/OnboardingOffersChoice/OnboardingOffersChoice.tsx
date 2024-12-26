@@ -12,11 +12,10 @@ interface CardProps {
   imageSrc: string
   title: string
   children: ReactNode
-  buttonTitle: string
-  to?: string
+  actions: ReactNode
 }
 
-const Card = ({ imageSrc, title, children, buttonTitle, to }: CardProps) => {
+const Card = ({ imageSrc, title, children, actions }: CardProps) => {
   return (
     <div className={styles['card']}>
       <div className={styles['card-content']}>
@@ -25,21 +24,7 @@ const Card = ({ imageSrc, title, children, buttonTitle, to }: CardProps) => {
           <h3 className={styles['card-title']}>{title}</h3>
           <p className={styles['card-description']}>{children}</p>
         </div>
-        <div className={styles['card-button']}>
-          {to ? (
-            <ButtonLink
-              variant={ButtonVariant.PRIMARY}
-              to={to}
-              title={buttonTitle}
-            >
-              Commencer
-            </ButtonLink>
-          ) : (
-            <Button type="submit" title={buttonTitle}>
-              Commencer
-            </Button>
-          )}
-        </div>
+        <div className={styles['card-button']}>{actions}</div>
       </div>
     </div>
   )
@@ -51,8 +36,15 @@ export const OnboardingOffersChoice = () => {
       <Card
         imageSrc={individuelle}
         title="Aux jeunes sur l’application mobile pass Culture"
-        buttonTitle="Commencer la création d’offre sur l’application mobile"
-        to={'/onboarding/individuel'}
+        actions={
+          <ButtonLink
+            variant={ButtonVariant.PRIMARY}
+            to="/onboarding/individuel"
+            title="Commencer la création d’offre sur l’application mobile"
+          >
+            Commencer
+          </ButtonLink>
+        }
       >
         Vos offres seront visibles par{' '}
         <strong className={styles['card-description-highlight']}>
@@ -64,7 +56,11 @@ export const OnboardingOffersChoice = () => {
       <Card
         imageSrc={collective}
         title="Aux enseignants sur la plateforme ADAGE"
-        buttonTitle="Commencer la création d’offre sur ADAGE"
+        actions={
+          <Button type="submit" title="Commencer la création d’offre sur ADAGE">
+            Commencer
+          </Button>
+        }
       >
         Vos offres seront visibles par{' '}
         <strong className={styles['card-description-highlight']}>
