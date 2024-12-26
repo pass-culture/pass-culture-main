@@ -13,8 +13,7 @@ interface FormContactProps {
 export const FormContact = ({ disableForm }: FormContactProps): JSX.Element => {
   return (
     <FormLayout.Section
-      description={`Ces informations sont affichées sur votre offre.\n Elles permettent aux enseignants et aux chefs d’établissement de vous contacter.`}
-      title="Contact"
+      title="Comment les enseignants peuvent-ils vous contacter ? *"
     >
       <FormLayout.Row className={styles['phone-number-row']}>
         <PhoneNumberInput

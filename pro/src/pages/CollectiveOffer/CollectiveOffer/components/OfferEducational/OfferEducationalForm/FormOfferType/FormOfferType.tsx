@@ -42,8 +42,8 @@ export const FormOfferType = ({
 
   return (
     <FormLayout.Section
-      description="Le type de l’offre permet de la caractériser et de la valoriser au mieux pour les enseignants et chefs d’établissement."
-      title="Type d’offre"
+      description=""
+      title="Quel est le type de votre offre ?"
     >
       {domainsOptions.length > 0 && (
         <FormLayout.Row>
@@ -92,7 +92,7 @@ export const FormOfferType = ({
           />
         </FormLayout.Row>
       )}
-      <FormLayout.Section title="Informations artistiques">
+      <FormLayout.Section title="Dites-nous en plus sur votre offre culturelle">
         <FormLayout.Row>
           <TextInput
             countCharacters

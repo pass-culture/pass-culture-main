@@ -63,8 +63,7 @@ export const FormVenue = ({
 
   return (
     <FormLayout.Section
-      description={`${isOfferAddressEnabled ? 'La structure' : 'Le lieu'} de rattachement permet d’associer votre compte bancaire pour le remboursement pass Culture.`}
-      title={`${isOfferAddressEnabled ? 'Structure' : 'Lieu'} de rattachement de votre offre`}
+      title="Qui propose l’offre ? *"
     >
       {isEligible === false && userOfferer !== null && (
         <Callout

@@ -28,7 +28,7 @@ export const FormImageUploader = ({
   imageOffer,
   disableForm,
 }: ImageUploaderOfferProps) => (
-  <FormLayout.Section title="Image de l’offre">
+  <FormLayout.Section title="Illustrez votre offre" description='Ajoutez une image pour que votre offre ait 4 fois plus de chances d’être consultée !'>
     <FormLayout.Row>
       <ImageUploader
         onImageUpload={onImageUpload}

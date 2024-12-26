@@ -78,7 +78,7 @@ describe('OfferEducationalForm', () => {
   it('should show the dates section if the offer is a template', async () => {
     renderOfferEducationalForm({ ...defaultProps, isTemplate: true })
     expect(
-      await screen.findByRole('heading', { name: 'Date et heure' })
+      await screen.findByRole('heading', { name: 'Quand votre offre peut-elle avoir lieu ? *' })
     ).toBeInTheDocument()
   })
 
@@ -87,7 +87,7 @@ describe('OfferEducationalForm', () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByRole('heading', { name: 'Date et heure' })
+        screen.queryByRole('heading', { name: 'Quand votre offre peut-elle avoir lieu ? *' })
       ).not.toBeInTheDocument()
     })
   })
