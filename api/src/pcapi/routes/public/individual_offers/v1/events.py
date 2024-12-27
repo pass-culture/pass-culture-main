@@ -1,6 +1,5 @@
 import copy
 
-from flask_login import current_user
 import sqlalchemy as sqla
 
 from pcapi import repository
@@ -595,7 +594,7 @@ def delete_event_stock(event_id: int, stock_id: int) -> None:
     if not stock_to_delete:
         raise api_errors.ApiErrors({"stock_id": ["No stock could be found"]}, status_code=404)
     try:
-        offers_api.delete_stock(stock_to_delete, current_user)
+        offers_api.delete_stock(stock_to_delete)
     except offers_exceptions.OfferEditionBaseException as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
