@@ -198,8 +198,8 @@ class Returns200Test:
         assert response.status_code == 201
         assert response.json.get("formats") == ["Concert"]
 
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_duplicate_collective_offer_draft_offer(self, client):
-        # Given
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
@@ -209,8 +209,6 @@ class Returns200Test:
         )
         offer_id = offer.id
         educational_factories.CollectiveStockFactory(collectiveOffer=offer)
-
-        # When
 
         response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer_id}/duplicate")
 

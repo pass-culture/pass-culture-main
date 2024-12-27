@@ -492,8 +492,10 @@ def get_collective_stock(collective_stock_id: int) -> educational_models.Collect
     return (
         educational_models.CollectiveStock.query.filter(educational_models.CollectiveStock.id == collective_stock_id)
         .options(
-            sa.orm.joinedload(educational_models.CollectiveStock.collectiveOffer).joinedload(
-                educational_models.CollectiveOffer.venue
+            sa.orm.joinedload(educational_models.CollectiveStock.collectiveOffer).options(
+                # needed to avoid a query when we call stock.collectiveOffer.collectiveStock
+                sa.orm.contains_eager(educational_models.CollectiveOffer.collectiveStock),
+                sa.orm.joinedload(educational_models.CollectiveOffer.venue),
             ),
             sa.orm.joinedload(educational_models.CollectiveStock.collectiveBookings),
         )

@@ -121,9 +121,9 @@ class Return200Test:
             "educationalPriceDetail": "Détail du prix",
         }
 
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @time_machine.travel("2020-11-17 15:00:00")
     def test_edit_collective_stock_partially(self, client):
-        # Given
         _educational_year_2021_2022 = educational_factories.EducationalYearFactory(
             beginningDate=datetime(2021, 9, 1), expirationDate=datetime(2022, 8, 31)
         )
@@ -134,13 +134,10 @@ class Return200Test:
             bookingLimitDatetime=datetime(2021, 12, 1),
             priceDetail="Détail du prix",
         )
-        educational_factories.CancelledCollectiveBookingFactory(collectiveStock=stock)
         offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=stock.collectiveOffer.venue.managingOfferer,
+            user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
         )
 
-        # When
         stock_edition_payload = {
             "beginningDatetime": "2022-01-17T22:00:00Z",
             "totalPrice": 1500,
@@ -149,7 +146,6 @@ class Return200Test:
         client.with_session_auth("user@example.com")
         response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
-        # Then
         assert response.status_code == 200
         edited_stock = CollectiveStock.query.get(stock.id)
         assert edited_stock.beginningDatetime == datetime(2022, 1, 17, 22)
@@ -352,25 +348,41 @@ class Return403Test:
             "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."]
         }
 
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_edit_collective_stocks_should_not_be_possible_when_offer_created_by_public_api(self, client):
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__provider=providers_factories.ProviderFactory(),
+            collectiveOffer__provider=providers_factories.ProviderFactory()
         )
         offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=stock.collectiveOffer.venue.managingOfferer,
+            user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
         )
-        # When
-        stock_edition_payload = {
-            "totalPrice": 1500,
-        }
+
+        stock_edition_payload = {"totalPrice": 1500}
 
         client.with_session_auth("user@example.com")
         response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
-        # Then
         assert response.status_code == 403
         assert response.json == {"global": ["Les stocks créés par l'api publique ne sont pas editables."]}
+
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    def test_edit_collective_stocks_should_not_be_possible_when_offer_created_by_public_api_with_new_satuses(
+        self, client
+    ):
+        stock = educational_factories.CollectiveStockFactory(
+            collectiveOffer__provider=providers_factories.ProviderFactory()
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
+        )
+
+        stock_edition_payload = {"totalPrice": 1500}
+
+        client.with_session_auth("user@example.com")
+        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
+
+        assert response.status_code == 403
+        assert response.json == {"global": ["Cette action n'est pas autorisée sur l'offre collective liée à ce stock."]}
 
 
 class Return400Test:
@@ -458,26 +470,19 @@ class Return400Test:
         edited_stock = CollectiveStock.query.get(stock.id)
         assert edited_stock.bookingLimitDatetime == stock.bookingLimitDatetime
 
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     @time_machine.travel("2020-11-17 15:00:00")
     def should_edit_stock_when_event_expired(self, client):
-        # Given
-        stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime.utcnow() - timedelta(minutes=1),
-        )
+        stock = educational_factories.CollectiveStockFactory(beginningDatetime=datetime.utcnow() - timedelta(minutes=1))
         offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=stock.collectiveOffer.venue.managingOfferer,
+            user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
         )
 
-        # When
-        stock_edition_payload = {
-            "totalPrice": 1500,
-        }
+        stock_edition_payload = {"totalPrice": 1500}
 
         client.with_session_auth("user@example.com")
         response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
-        # Then
         assert response.status_code == 200
 
     @time_machine.travel("2020-11-17 15:00:00")
@@ -598,18 +603,16 @@ class Return400Test:
         assert response.status_code == 400
         assert response.json == {"beginningDatetime": ["L'évènement ne peut commencer dans le passé."]}
 
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     @time_machine.travel("2020-11-17 15:00:00")
     def test_doesnot_edit_offer_if_rejected(self, client):
         offer = educational_factories.CollectiveOfferFactory(validation=offer_mixin.OfferValidationStatus.REJECTED)
         stock = educational_factories.CollectiveStockFactory(price=1200, collectiveOffer=offer)
         offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=stock.collectiveOffer.venue.managingOfferer,
+            user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
         )
 
-        stock_edition_payload = {
-            "totalPrice": 111,
-        }
+        stock_edition_payload = {"totalPrice": 111}
         response = client.with_session_auth("user@example.com").patch(
             f"/collective/stocks/{stock.id}", json=stock_edition_payload
         )

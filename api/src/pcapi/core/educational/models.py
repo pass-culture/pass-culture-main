@@ -519,7 +519,7 @@ class CollectiveOffer(
         server_default="{}",
     )
 
-    collectiveStock: "CollectiveStock" = relationship(
+    collectiveStock: sa_orm.Mapped["CollectiveStock"] = relationship(
         "CollectiveStock", back_populates="collectiveOffer", uselist=False
     )
 

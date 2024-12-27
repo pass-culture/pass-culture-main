@@ -194,6 +194,7 @@ class EditCollectiveOfferStocksTest:
     #     stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
     #     mocked_async_index_offer_ids.assert_called_once_with([stock.collectiveOfferId])
 
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_should_not_allow_stock_edition_when_booking_status_is_REIMBURSED_or_USED(self) -> None:
         # Given
         educational_factories.EducationalYearFactory(
@@ -285,6 +286,7 @@ class EditCollectiveOfferStocksTest:
         booking_updated = CollectiveBooking.query.filter_by(id=booking.id).one()
         assert booking_updated.cancellationLimitDate == datetime.datetime.utcnow()
 
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     @time_machine.travel("2020-11-17 15:00:00")
     def test_should_allow_stock_edition_and_not_modify_cancellation_limit_date_when_booking_cancelled(self) -> None:
         # Given
@@ -474,6 +476,7 @@ class EditCollectiveOfferStocksTest:
 
 @pytest.mark.usefixtures("db_session")
 class ReturnErrorTest:
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_edit_stock_of_non_approved_offer_fails(self) -> None:
         # Given
         offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.PENDING)
@@ -547,6 +550,7 @@ class ReturnErrorTest:
         stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
         assert stock.beginningDatetime == datetime.datetime(2021, 12, 10)
 
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     @time_machine.travel("2020-11-17 15:00:00")
     def test_should_allow_stock_edition_and_not_modify_cancellation_limit_date_when_booking_cancelled(self) -> None:
         # Given
@@ -586,6 +590,7 @@ class ReturnErrorTest:
         stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
         assert stock.beginningDatetime == new_event_date.replace(tzinfo=None)
 
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_edit_offer_of_cancelled_booking(self) -> None:
         # Given
         offer = educational_factories.CollectiveOfferFactory()
@@ -627,6 +632,7 @@ class ReturnErrorTest:
         assert stock.price == 1500
         assert stock.numberOfTickets == 35
 
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     @time_machine.travel("2020-01-05 10:00:00")
     def test_edit_offer_of_other_status_booking(self) -> None:
         # Given
@@ -672,6 +678,7 @@ class ReturnErrorTest:
         # Then
         assert error.value.errors == {"global": ["Les évènements passés ne sont pas modifiables"]}
 
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_edit_price_or_ticket_number_if_status_confirmed(self):
         initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=10)
         initial_booking_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=5)

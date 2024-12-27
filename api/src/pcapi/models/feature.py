@@ -174,7 +174,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_BANK_ACCOUNT_SYNC,
     FeatureToggle.ENABLE_BEAMER,
     FeatureToggle.ENABLE_CODIR_OFFERERS_REPORT,  # only for production
-    FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES,
     FeatureToggle.ENABLE_CRON_TO_UPDATE_OFFERER_STATS,  # only for production
     FeatureToggle.ENABLE_CULTURAL_SURVEY,
     FeatureToggle.ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18,
