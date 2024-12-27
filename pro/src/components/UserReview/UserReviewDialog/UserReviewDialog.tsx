@@ -34,6 +34,7 @@ export const UserReviewDialog = () => {
       await api.submitUserReview({
         offererId: selectedOffererId!,
         location: location.pathname,
+        pageTitle: document.title,
         userSatisfaction: formValues.userSatisfaction,
         userComment: formValues.userComment,
       })
