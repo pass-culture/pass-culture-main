@@ -1,11 +1,13 @@
-import { ReactNode } from 'react'
+import { ReactNode, useState } from 'react'
 
+import { Dialog } from 'components/Dialog/Dialog'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import collective from './assets/collective.jpeg'
 import individuelle from './assets/individuelle.jpeg'
+import { DMSModal } from './components/DMSModal/DMSModal'
 import styles from './OnboardingOffersChoice.module.scss'
 
 interface CardProps {
@@ -31,6 +33,8 @@ const Card = ({ imageSrc, title, children, actions }: CardProps) => {
 }
 
 export const OnboardingOffersChoice = () => {
+  const [showModal, setShowModal] = useState(false)
+
   return (
     <div className={styles['card-container']}>
       <Card
@@ -57,9 +61,23 @@ export const OnboardingOffersChoice = () => {
         imageSrc={collective}
         title="Aux enseignants sur la plateforme ADAGE"
         actions={
-          <Button type="submit" title="Commencer la création d’offre sur ADAGE">
-            Commencer
-          </Button>
+          <Dialog
+            title=""
+            onCancel={() => setShowModal(false)}
+            hideIcon={true}
+            trigger={
+              <Button
+                type="submit"
+                title="Commencer la création d’offre sur ADAGE"
+                onClick={() => setShowModal(true)}
+              >
+                Commencer
+              </Button>
+            }
+            open={showModal}
+          >
+            <DMSModal />
+          </Dialog>
         }
       >
         Vos offres seront visibles par{' '}
