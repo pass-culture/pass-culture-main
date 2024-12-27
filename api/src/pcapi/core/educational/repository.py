@@ -24,6 +24,7 @@ from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.models.feature import FeatureToggle
+from pcapi.repository import is_managed_transaction
 from pcapi.repository import repository
 from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
 from pcapi.utils.clean_accents import clean_accents
@@ -305,7 +306,11 @@ def find_or_create_redactor(information: RedactorInformation) -> educational_mod
         civility=information.civility,
     )
 
-    repository.save(redactor)
+    if is_managed_transaction():
+        db.session.add(redactor)
+    else:
+        repository.save(redactor)
+
     return redactor
 
 
