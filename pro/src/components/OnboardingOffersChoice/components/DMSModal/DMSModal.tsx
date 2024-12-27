@@ -1,8 +1,8 @@
 import cn from 'classnames'
 
-import fullLinkIcon from 'icons/full-link.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import { Button } from 'ui-kit/Button/Button'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import acceptationIcon from './assets/acceptation.svg'
@@ -17,7 +17,10 @@ interface DMSModalProps {
 
 export const DMSModal = ({ className }: DMSModalProps): JSX.Element => {
   return (
-    <div className={cn(styles[`dms-modal`], className)}>
+    <div
+      className={cn(styles[`dms-modal`], className)}
+      data-testid="onboarding-dms-modal"
+    >
       <h1 className={styles['dms-title']}>Quelles sont les étapes ?</h1>
       <p className={styles['dms-text']}>
         Pour continuer, vous devez compléter un dossier qui sera examiné par les
@@ -43,9 +46,15 @@ export const DMSModal = ({ className }: DMSModalProps): JSX.Element => {
         />
       </div>
       <div className={styles['dms-actions']}>
-        <Button className={styles['dms-button']} icon={fullLinkIcon}>
+        <ButtonLink
+          isExternal
+          opensInNewTab
+          className={styles['dms-button']}
+          variant={ButtonVariant.PRIMARY}
+          to="https://www.demarches-simplifiees.fr/commencer/demande-de-referencement-sur-adage"
+        >
           Déposer un dossier
-        </Button>
+        </ButtonLink>
         <Button
           className={styles['dms-button']}
           variant={ButtonVariant.TERNARY}

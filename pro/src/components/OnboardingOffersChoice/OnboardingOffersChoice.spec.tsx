@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
@@ -38,5 +39,15 @@ describe('OnboardingOffersChoice Component', () => {
     // Check for the second card's button
     const secondCardButton = screen.getAllByText('Commencer')[1]
     expect(secondCardButton).toBeInTheDocument()
+  })
+
+  it('displays the DMS modal when the second button is clicked', async () => {
+    await userEvent.click(
+      screen.getByTitle('Commencer la création d’offre sur ADAGE')
+    )
+
+    expect(
+      await screen.findByTestId('onboarding-dms-modal')
+    ).toBeInTheDocument()
   })
 })

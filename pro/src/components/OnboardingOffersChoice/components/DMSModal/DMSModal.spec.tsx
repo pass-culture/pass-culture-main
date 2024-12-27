@@ -21,7 +21,7 @@ describe('<DMSModal />', () => {
     ).toBeInTheDocument()
 
     expect(
-      await screen.findByRole('button', { name: /Déposer un dossier/ })
+      await screen.findByRole('link', { name: /Déposer un dossier/ })
     ).toBeInTheDocument()
 
     expect(
