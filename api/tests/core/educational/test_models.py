@@ -90,11 +90,19 @@ class CollectiveStockIsBookableTest:
         collective_stock = factories.CollectiveStockFactory()
         assert collective_stock.isBookable
 
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_bookable_if_booking_is_cancelled(self) -> None:
         collective_stock = factories.CollectiveStockFactory()
         factories.CollectiveBookingFactory(collectiveStock=collective_stock, status=CollectiveBookingStatus.CANCELLED)
 
         assert collective_stock.isBookable
+
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    def test_bookable_if_booking_is_cancelled_with_new_statuses(self) -> None:
+        collective_stock = factories.CollectiveStockFactory()
+        factories.CollectiveBookingFactory(collectiveStock=collective_stock, status=CollectiveBookingStatus.CANCELLED)
+
+        assert not collective_stock.isBookable
 
 
 class CollectiveOfferIsSoldOutTest:
@@ -695,11 +703,13 @@ class CollectiveOfferDisplayedStatusTest:
 
 
 class CollectiveOfferTemplateDisplayedStatusTest:
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     @pytest.mark.parametrize("status", set(COLLECTIVE_OFFER_TEMPLATE_STATUSES) - {CollectiveOfferDisplayedStatus.ENDED})
     def test_get_offer_displayed_status(self, status):
         offer = factories.create_collective_offer_template_by_status(status)
         assert offer.displayedStatus == status
 
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_get_offer_displayed_status_ended(self):
         # when ENABLE_COLLECTIVE_NEW_STATUSES FF is off, and ended offer is INACTIVE
         offer = factories.create_collective_offer_template_by_status(CollectiveOfferDisplayedStatus.ENDED)

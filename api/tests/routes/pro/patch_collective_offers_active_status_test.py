@@ -11,8 +11,8 @@ from pcapi.core.offers.models import OfferValidationStatus
 
 @pytest.mark.usefixtures("db_session")
 class Returns204Test:
+    @testing.override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def when_activating_existing_offers(self, client):
-        # Given
         offer1 = CollectiveOfferFactory(isActive=False)
         venue = offer1.venue
         offer2 = CollectiveOfferFactory(venue=venue, isActive=False)
@@ -20,38 +20,33 @@ class Returns204Test:
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
         client = client.with_session_auth("pro@example.com")
 
-        # When
         data = {"ids": [offer1.id, offer2.id], "isActive": True}
 
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
+        with patch("pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"):
             response = client.with_session_auth("pro@example.com").patch("/collective/offers/active-status", json=data)
 
-        # Then
         assert response.status_code == 204
         assert CollectiveOffer.query.get(offer1.id).isActive
         assert CollectiveOffer.query.get(offer2.id).isActive
 
+    @testing.override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def when_deactivating_existing_offers(self, client):
-        # Given
         offer1 = CollectiveOfferFactory()
         venue = offer1.venue
         offer2 = CollectiveOfferFactory(venue=venue)
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
-        # When
         client = client.with_session_auth("pro@example.com")
         data = {"ids": [offer1.id, offer2.id], "isActive": False}
         with testing.assert_no_duplicated_queries():
             response = client.patch("/collective/offers/active-status", json=data)
 
-        # Then
         assert response.status_code == 204
         assert not CollectiveOffer.query.get(offer1.id).isActive
         assert not CollectiveOffer.query.get(offer2.id).isActive
 
+    @testing.override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_only_approved_offers_patch(self, client):
         approved_offer = CollectiveOfferFactory(isActive=False)
         venue = approved_offer.venue
@@ -65,9 +60,7 @@ class Returns204Test:
             "isActive": True,
         }
 
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
+        with patch("pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"):
             client = client.with_session_auth("pro@example.com")
             response = client.patch("/collective/offers/active-status", json=data)
 
@@ -79,6 +72,7 @@ class Returns204Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
+    @testing.override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_when_activating_all_existing_offers_active_status_when_cultural_partners_not_found(self, client):
         # Given
         offer1 = CollectiveOfferFactory(isActive=False)
