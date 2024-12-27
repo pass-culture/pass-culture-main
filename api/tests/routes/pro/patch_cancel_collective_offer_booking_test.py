@@ -177,7 +177,7 @@ class Returns403Test:
 
 
 class Returns400Test:
-
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     @pytest.mark.parametrize(
         "status",
         [

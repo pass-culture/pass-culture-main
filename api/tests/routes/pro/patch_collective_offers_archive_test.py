@@ -37,6 +37,7 @@ class Returns204Test:
     num_queries_error = num_queries_error - 1  # "update dateArchive on collective_offer" is not run
     num_queries_error = num_queries_error + 1  # rollback due to atomic
 
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def when_archiving_existing_offers(self, client):
         offer1 = factories.CollectiveOfferFactory()
         venue = offer1.venue
@@ -83,6 +84,7 @@ class Returns204Test:
         assert not other_offer.isArchived
         assert other_offer.isActive
 
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def when_archiving_draft_offers(self, client):
         draft_offer = factories.create_collective_offer_by_status(models.CollectiveOfferDisplayedStatus.DRAFT)
         venue = draft_offer.venue
@@ -103,6 +105,7 @@ class Returns204Test:
         assert other_offer.isArchived
         assert not other_offer.isActive
 
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_archive_rejected_offer(self, client):
         offer = factories.create_collective_offer_by_status(models.CollectiveOfferDisplayedStatus.REJECTED)
         venue = offer.venue
@@ -201,6 +204,7 @@ class Returns204Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns422Test:
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def when_archiving_already_archived(self, client):
         offer_already_archived = factories.CollectiveOfferFactory(isActive=False, dateArchived=datetime.utcnow())
         venue = offer_already_archived.venue
