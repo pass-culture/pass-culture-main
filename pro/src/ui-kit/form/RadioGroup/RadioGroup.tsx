@@ -1,15 +1,19 @@
 import cn from 'classnames'
 import { useField } from 'formik'
 
+import { type EnumType } from 'commons/custom_types/utils'
+
 import { RadioButton } from '../RadioButton/RadioButton'
 import { FieldSetLayout } from '../shared/FieldSetLayout/FieldSetLayout'
 
 import styles from './RadioGroup.module.scss'
 
-export enum Direction {
-  VERTICAL = 'vertical',
-  HORIZONTAL = 'horizontal',
-}
+export const Direction = {
+  VERTICAL: 'vertical',
+  HORIZONTAL: 'horizontal',
+} as const
+// eslint-disable-next-line no-redeclare
+export type Direction = EnumType<typeof Direction>
 
 /**
  * Props for the RadioGroup component.
@@ -19,7 +23,7 @@ interface RadioGroupProps {
    * The direction in which the radio buttons should be displayed.
    * @default Direction.VERTICAL
    */
-  direction?: Direction.HORIZONTAL | Direction.VERTICAL
+  direction?: Direction
   /**
    * Whether the radio buttons are disabled.
    */

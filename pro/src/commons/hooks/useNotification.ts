@@ -3,17 +3,20 @@ import { useCallback, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
 
 import { NOTIFICATION_SHOW_DURATION } from 'commons/core/Notification/constants'
+import { type EnumType } from 'commons/custom_types/utils'
 import {
   closeNotification,
   showNotification,
 } from 'commons/store/notifications/reducer'
 
-export enum NotificationTypeEnum {
-  SUCCESS = 'success',
-  ERROR = 'error',
-  PENDING = 'pending',
-  INFORMATION = 'information',
-}
+export const NotificationTypeEnum = {
+  SUCCESS: 'success',
+  ERROR: 'error',
+  PENDING: 'pending',
+  INFORMATION: 'information',
+} as const
+// eslint-disable-next-line no-redeclare
+export type NotificationTypeEnum = EnumType<typeof NotificationTypeEnum>
 
 interface Options {
   duration?: number

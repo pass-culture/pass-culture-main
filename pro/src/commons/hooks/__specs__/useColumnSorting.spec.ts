@@ -1,16 +1,19 @@
 import { act, renderHook } from '@testing-library/react'
 
+import { type EnumType } from 'commons/custom_types/utils'
 import {
   SortingMode,
   giveSortingModeForAlly,
   useColumnSorting,
 } from 'commons/hooks/useColumnSorting'
 
-enum SomeColumns {
-  COLUMN_1 = 'column1',
-  COLUMN_2 = 'column2',
-  COLUMN_3 = 'column3',
-}
+const SomeColumns = {
+  COLUMN_1: 'column1',
+  COLUMN_2: 'column2',
+  COLUMN_3: 'column3',
+} as const
+// eslint-disable-next-line no-redeclare
+type SomeColumns = EnumType<typeof SomeColumns>
 
 describe('useColumnSorting', () => {
   it('should change sorting mode on callback call', () => {
