@@ -28,6 +28,7 @@ export const FieldSetLayout = ({
   isOptional = false,
   ariaDescribedBy,
 }: FieldSetLayoutProps): JSX.Element => {
+  const showError = Boolean(error) || !hideFooter
   return (
     <fieldset
       className={cn(styles['fieldset-layout'], className)}
@@ -42,7 +43,7 @@ export const FieldSetLayout = ({
         </legend>
       )}
       <div>{children}</div>
-      {!hideFooter && (
+      {showError && (
         <div className={styles['fieldset-layout-error']}>
           {!!error && <FieldError name={name}>{error}</FieldError>}
         </div>
