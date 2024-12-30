@@ -361,3 +361,32 @@ def get_offerer_headline_offer(
     if not offerer_headline_offer:
         raise ResourceNotFoundError()
     return offerers_serialize.OffererHeadLineOfferResponseModel.from_orm(offerer_headline_offer)
+
+@private_api.route("/offerers/<int:offerer_id>/eligibility", methods=["GET"])
+@login_required
+@atomic()
+@spectree_serialize(
+    response_model=offerers_serialize.OffererEligibilityResponseModel,
+    api=blueprint.pro_private_schema,
+    on_success_status=200,
+)
+def get_offerer_eligibility(
+    offerer_id: int,
+) -> offerers_serialize.OffererEligibilityResponseModel:
+    # check_user_has_access_to_offerer(current_user, offerer_id)
+
+    match offerer_id:
+        case 870:
+            return offerers_serialize.OffererEligibilityResponseModel(
+                offererId=offerer_id,
+                hasAdageId=False,
+                hasDsApplication=False,
+                isOnboarded=False,
+            )
+        case 869 :
+            return offerers_serialize.OffererEligibilityResponseModel(
+                offererId=offerer_id,
+                hasAdageId=True,
+                hasDsApplication=False,
+                isOnboarded=True,
+            )
