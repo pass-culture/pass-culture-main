@@ -53,7 +53,7 @@ jobs:
           fi
 
       - name: "Connect to cluster"
-        uses: pass-culture/common-workflows/actions/teleport-connect@teleport-connect/v0.1.0
+        uses: pass-culture/common-workflows/actions/teleport-connect@teleport-connect/v0.2.0
         with:
           teleport_proxy: teleport.ehp.passculture.team:443
           teleport_kubernetes_cluster: passculture-metier-ehp
