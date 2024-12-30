@@ -15,7 +15,7 @@ on:
       tag_prefix:
         required: false
         type: string
-        default: 'release'
+        default: "release"
 
       tag_number:
         # 200.0.2 for example.
@@ -41,13 +41,13 @@ jobs:
       TAG_NAME: v${{ inputs.tag_number }}
     steps:
       - name: "Authentification to Google"
-        uses: 'google-github-actions/auth@v2'
+        uses: "google-github-actions/auth@v2"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - name: "Get Secret"
-        id: 'secrets'
-        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        id: "secrets"
+        uses: "google-github-actions/get-secretmanager-secrets@v2"
         with:
           secrets: |-
             SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
@@ -100,6 +100,14 @@ jobs:
           registry: "europe-west1-docker.pkg.dev"
           username: "oauth2accesstoken"
           password: "${{ steps.openid-auth.outputs.access_token }}"
+      - name: Cache Docker layers
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
       - name: "Build and push pcapi image"
         uses: docker/build-push-action@v6
         id: docker-push-action
@@ -108,6 +116,8 @@ jobs:
           push: true
           target: pcapi
           tags: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi:${{ inputs.tag_number }},europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi:${{ inputs.tag_prefix }}-${{ inputs.tag_number }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
       - name: Sign image with a kms key
         run: cosign sign --tlog-upload=false --key gcpkms://${{ steps.secrets.outputs.COSIGN_KMS_KEY }} -a tag=${{ inputs.tag_number }} europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi@${{ steps.docker-push-action.outputs.digest }}
       - name: "Build and push pcapi-console image"
