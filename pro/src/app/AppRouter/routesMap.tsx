@@ -393,7 +393,7 @@ export const routes: RouteConfig[] = [
       import(
         'pages/Onboarding/OnboardingOfferIndividual/OnboardingOfferIndividual'
       ),
-    path: '/inscription-offre-individuelle',
+    path: '/onboarding/individuel',
     title: 'Inscription - Offre à destination des jeunes',
     featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
   },
