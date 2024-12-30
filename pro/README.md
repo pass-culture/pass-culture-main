@@ -110,3 +110,5 @@ Vous trouverez une documentation générale ainsi que des liens vers les différ
 Nous utilisons SonarCloud pour monitorer la dette technique.
 
 [Lien vers le projet Portail Pro sur SonarCloud](https://sonarcloud.io/project/overview?id=pass-culture_pass-culture-main)
+
+_Ceci est une ligne ajoutée pour déclencher les tests pro_
