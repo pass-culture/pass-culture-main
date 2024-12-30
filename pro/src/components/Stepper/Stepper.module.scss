@@ -11,19 +11,20 @@ $number-size: rem.torem(30px);
 
   color: var(--color-grey-semi-dark);
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   padding-bottom: $step-label-height;
-  flex-direction: column;
   gap: rem.torem(8px);
-
-  li:last-child {
-    flex: 0;
-  }
 
   .step-container {
     display: flex;
+    flex-direction: column;
     flex: 1;
 
+    &:last-child {
+      flex: 0;
+    }
+  
     .step {
       display: flex;
       position: relative;
@@ -115,14 +116,21 @@ $number-size: rem.torem(30px);
   @include a11y.visually-hidden;
 }
 
+// Tablet and larger screen styles
 @media (min-width: size.$tablet) {
   .stepper {
     flex-direction: row;
     gap: 0;
 
     .step-container {
+      flex-direction: row;
+      
+      .step {
+        justify-content: center;
+      }
+
       .number {
-        padding: 0 rem.torem(16px);
+        padding: 0;
       }
 
       .separator {
@@ -130,6 +138,7 @@ $number-size: rem.torem(30px);
         align-items: center;
         justify-content: center;
         flex: 1;
+        padding: 0 rem.torem(16px);
 
         &::after {
           border-radius: rem.torem(2px);
@@ -146,10 +155,6 @@ $number-size: rem.torem(30px);
         }
       }
 
-      .step {
-        justify-content: center;
-      }
-
       .label {
         position: absolute;
         width: 7rem;
@@ -160,7 +165,6 @@ $number-size: rem.torem(30px);
       }
 
       &:first-child {
-        //  so that the first label does not overlfow the list container on the left
         .label {
           width: unset;
           left: 0;
@@ -169,7 +173,6 @@ $number-size: rem.torem(30px);
       }
 
       &:last-child {
-        //  so that the last label does not overlfow the list container on the right
         .label {
           width: unset;
           right: 0;
