@@ -9,11 +9,17 @@ import { Layout } from 'app/App/layout/Layout'
 import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
+  SAVED_OFFERER_ID_KEY,
 } from 'commons/core/shared/constants'
 import { useInitReCaptcha } from 'commons/hooks/useInitReCaptcha'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useRedirectLoggedUser } from 'commons/hooks/useRedirectLoggedUser'
+import {
+  updateOffererNames,
+  updateSelectedOffererId,
+} from 'commons/store/offerer/reducer'
 import { updateUser } from 'commons/store/user/reducer'
+import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
 import { getReCaptchaToken } from 'commons/utils/recaptcha'
 
 import { SIGNIN_FORM_DEFAULT_VALUES } from './constants'
@@ -65,6 +71,25 @@ export const SignIn = (): JSX.Element => {
         password,
         captchaToken,
       })
+
+      const offerers = await api.listOfferersNames()
+      const firstOffererId = offerers.offerersNames[0]?.id
+
+      if (firstOffererId) {
+        dispatch(updateOffererNames(offerers.offerersNames))
+
+        if (localStorageAvailable()) {
+          const savedOffererId = localStorage.getItem(SAVED_OFFERER_ID_KEY)
+          dispatch(
+            updateSelectedOffererId(
+              savedOffererId ? Number(savedOffererId) : firstOffererId
+            )
+          )
+        } else {
+          dispatch(updateSelectedOffererId(firstOffererId))
+        }
+      }
+
       dispatch(updateUser(user))
       setshouldRedirect(true)
     } catch (error) {
