@@ -8,7 +8,11 @@ import { OnboardingOffersChoice } from './OnboardingOffersChoice'
 
 describe('OnboardingOffersChoice Component', () => {
   beforeEach(() => {
-    renderWithProviders(<OnboardingOffersChoice />)
+    renderWithProviders(<OnboardingOffersChoice />, {
+      storeOverrides: {
+        offerer: { selectedOffererId: 1, offererNames: [] },
+      },
+    })
   })
 
   it('should pass axe accessibility tests', async () => {

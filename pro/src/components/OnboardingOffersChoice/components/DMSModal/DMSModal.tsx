@@ -1,9 +1,16 @@
 import cn from 'classnames'
+import { useState } from 'react'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
+import { useNotification } from 'commons/hooks/useNotification'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import fullNextIcon from 'icons/full-next.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import acceptationIcon from './assets/acceptation.svg'
 import calendarIcon from './assets/calendrier.svg'
@@ -16,6 +23,34 @@ interface DMSModalProps {
 }
 
 export const DMSModal = ({ className }: DMSModalProps): JSX.Element => {
+  const [error, setError] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const currentOffererId = useSelector(selectCurrentOffererId)
+  const navigate = useNavigate()
+  const notify = useNotification()
+
+  if (currentOffererId === null) {
+    return <Spinner />
+  }
+
+  const checkEligibility = async () => {
+    try {
+      setError(false)
+      setIsLoading(true)
+      const eligibility = await api.getOffererEligibility(currentOffererId)
+      if (eligibility.isOnboarded) {
+        notify.success('Example message : Bravo ! Vous avez été activé !')
+        return navigate('/accueil')
+      }
+      // In any other case, it's an error
+      setIsLoading(false)
+      setError(true)
+    } catch (err) {
+      setIsLoading(false)
+      setError(true)
+    }
+  }
+
   return (
     <div
       className={cn(styles[`dms-modal`], className)}
@@ -59,13 +94,21 @@ export const DMSModal = ({ className }: DMSModalProps): JSX.Element => {
           className={styles['dms-button']}
           variant={ButtonVariant.TERNARY}
           icon={fullNextIcon}
+          onClick={checkEligibility}
+          disabled={isLoading}
         >
-          J’ai déposé un dossier
+          {isLoading ? (
+            <>Vérification en cours …</>
+          ) : (
+            <>J’ai déposé un dossier</>
+          )}
         </Button>
       </div>
-      <div className={styles['error-message']}>
-        Un problème est survenu, veuillez réessayer
-      </div>
+      {error && (
+        <div className={styles['error-message']}>
+          Un problème est survenu, veuillez réessayer
+        </div>
+      )}
     </div>
   )
 }

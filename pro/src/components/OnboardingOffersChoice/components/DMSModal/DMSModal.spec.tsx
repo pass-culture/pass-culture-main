@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
@@ -9,7 +10,14 @@ import {
 import { DMSModal } from './DMSModal'
 
 const renderDMSModal = (options?: RenderWithProvidersOptions) => {
-  return renderWithProviders(<DMSModal />, { ...options })
+  return renderWithProviders(<DMSModal />, {
+    storeOverrides: {
+      user: { currentUser: sharedCurrentUserFactory() },
+      offerer: { selectedOffererId: 1, offererNames: [] },
+    },
+    user: sharedCurrentUserFactory(),
+    ...options,
+  })
 }
 
 describe('<DMSModal />', () => {
