@@ -1,6 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 import * as router from 'react-router-dom'
 import { Route, Routes } from 'react-router-dom'
 
@@ -13,6 +12,7 @@ import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { getOffererNameFactory } from 'commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+import * as localStorageAvailable from 'commons/utils/localStorageAvailable'
 import * as utils from 'commons/utils/recaptcha'
 import {
   RenderWithProvidersOptions,
@@ -186,17 +186,17 @@ describe('SignIn', () => {
     renderSignIn()
 
     const email = screen.getByLabelText('Adresse email *')
-    await userEvent.type(email, 'MonPetitEmail@exemple.com')
+    await userEvent.type(email, 'MonPetitEmail@example.com')
     const password = screen.getByLabelText('Mot de passe *')
-    await userEvent.type(password, 'MCSolar85')
+    await userEvent.type(password, 'fakePassword')
     await userEvent.click(
       screen.getByRole('button', {
         name: 'Se connecter',
       })
     )
     expect(api.signin).toHaveBeenCalledWith({
-      identifier: 'MonPetitEmail@exemple.com',
-      password: 'MCSolar85',
+      identifier: 'MonPetitEmail@example.com',
+      password: 'fakePassword',
       captchaToken: 'token',
     })
   })
@@ -217,9 +217,9 @@ describe('SignIn', () => {
     renderSignIn()
 
     const email = screen.getByLabelText('Adresse email *')
-    await userEvent.type(email, 'MonPetitEmail@exemple.com')
+    await userEvent.type(email, 'MonPetitEmail@example.com')
     const password = screen.getByLabelText('Mot de passe *')
-    await userEvent.type(password, 'MCSolar85')
+    await userEvent.type(password, 'fakePassword')
 
     vi.spyOn(api, 'signin').mockRejectedValueOnce(
       new ApiError(
@@ -250,9 +250,9 @@ describe('SignIn', () => {
     renderSignIn()
 
     const email = screen.getByLabelText('Adresse email *')
-    await userEvent.type(email, 'MonPetitEmail@exemple.com')
+    await userEvent.type(email, 'MonPetitEmail@example.com')
     const password = screen.getByLabelText('Mot de passe *')
-    await userEvent.type(password, 'MCSolar85')
+    await userEvent.type(password, 'fakePassword')
 
     vi.spyOn(api, 'signin').mockRejectedValueOnce(
       new ApiError(
@@ -284,17 +284,12 @@ describe('SignIn', () => {
   })
 
   describe('sign in with new onboarding feature', () => {
-    it('should not call listOfferersNames if user is admin', () => {
-      const listOfferersNamesRequest = vi.spyOn(api, 'listOfferersNames')
-
-      renderSignIn({ user: sharedCurrentUserFactory({ isAdmin: true }) })
-
-      expect(listOfferersNamesRequest).toHaveBeenCalledTimes(0)
-    })
-
     it('should redirect to onboarding page if offerer list is empty', async () => {
       const listOfferersNamesRequest = vi
         .spyOn(api, 'listOfferersNames')
+        .mockResolvedValueOnce({
+          offerersNames: [],
+        })
         .mockResolvedValueOnce({
           offerersNames: [],
         })
@@ -302,10 +297,10 @@ describe('SignIn', () => {
       renderSignIn()
 
       const email = screen.getByLabelText('Adresse email *')
-      await userEvent.type(email, 'MonPetitEmail@exemple.com')
+      await userEvent.type(email, 'MonPetitEmail@example.com')
 
       const password = screen.getByLabelText('Mot de passe *')
-      await userEvent.type(password, 'MCSolar85')
+      await userEvent.type(password, 'fakePassword')
 
       await userEvent.click(
         screen.getByRole('button', {
@@ -313,7 +308,7 @@ describe('SignIn', () => {
         })
       )
 
-      expect(listOfferersNamesRequest).toHaveBeenCalledTimes(1)
+      expect(listOfferersNamesRequest).toHaveBeenCalledTimes(2)
       expect(screen.getByText('I’m the onboarding page')).toBeInTheDocument()
     })
 
@@ -321,10 +316,10 @@ describe('SignIn', () => {
       renderSignIn()
 
       const email = screen.getByLabelText('Adresse email *')
-      await userEvent.type(email, 'MonPetitEmail@exemple.com')
+      await userEvent.type(email, 'MonPetitEmail@example.com')
 
       const password = screen.getByLabelText('Mot de passe *')
-      await userEvent.type(password, 'MCSolar85')
+      await userEvent.type(password, 'fakePassword')
 
       await userEvent.click(
         screen.getByRole('button', {
@@ -341,10 +336,10 @@ describe('SignIn', () => {
       renderSignIn({ initialRouterEntries: ['/connexion?de=%2Foffres'] })
 
       const email = screen.getByLabelText('Adresse email *')
-      await userEvent.type(email, 'MonPetitEmail@exemple.com')
+      await userEvent.type(email, 'MonPetitEmail@example.com')
 
       const password = screen.getByLabelText('Mot de passe *')
-      await userEvent.type(password, 'MCSolar85')
+      await userEvent.type(password, 'fakePassword')
 
       await userEvent.click(
         screen.getByRole('button', {
@@ -420,5 +415,31 @@ describe('SignIn', () => {
         { from: '/connexion' }
       )
     })
+  })
+
+  it('should not read through local storage offerers if it is not available', async () => {
+    vi.spyOn(localStorageAvailable, 'localStorageAvailable').mockImplementation(
+      () => false
+    )
+
+    const getItemSpy = vi
+      .spyOn(Storage.prototype, 'getItem')
+      .mockResolvedValueOnce('')
+
+    renderSignIn()
+
+    const email = screen.getByLabelText('Adresse email *')
+    await userEvent.type(email, 'MonPetitEmail@example.com')
+
+    const password = screen.getByLabelText('Mot de passe *')
+    await userEvent.type(password, 'fakePassword')
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Se connecter',
+      })
+    )
+
+    expect(getItemSpy).not.toHaveBeenLastCalledWith('homepageSelectedOffererId')
   })
 })
