@@ -1,4 +1,3 @@
-import React from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
@@ -27,7 +26,7 @@ export const ActionsBar = ({
         <ButtonLink
           to={
             isOnboarding
-              ? '/inscription-offre-individuelle'
+              ? '/onboarding/individuel'
               : computeIndividualOffersUrl({})
           }
           variant={ButtonVariant.SECONDARY}

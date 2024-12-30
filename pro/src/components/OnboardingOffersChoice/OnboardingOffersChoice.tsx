@@ -52,7 +52,7 @@ export const OnboardingOffersChoice = () => {
         imageSrc={individuelle}
         title="Aux jeunes sur l’application mobile pass Culture"
         buttonTitle="Commencer la création d’offre sur l’application mobile"
-        to={'/inscription-offre-individuelle'}
+        to={'/onboarding/individuel'}
       >
         Vos offres seront visibles par{' '}
         <strong className={styles['card-description-highlight']}>
