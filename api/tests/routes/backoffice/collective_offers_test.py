@@ -314,11 +314,15 @@ class ListCollectiveOffersTest(GetEndpointHelper):
 
     def test_list_collective_offers_by_event_date(self, authenticated_client):
         educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime.date.today() + datetime.timedelta(days=1)
+            startDatetime=datetime.date.today() + datetime.timedelta(days=1),
+            endDatetime=datetime.date.today() + datetime.timedelta(days=1, hours=2),
         )
-        stock = educational_factories.CollectiveStockFactory(beginningDatetime=datetime.date.today())
+        stock = educational_factories.CollectiveStockFactory(
+            startDatetime=datetime.date.today(), endDatetime=datetime.date.today() + datetime.timedelta(hours=2)
+        )
         educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime.date.today() - datetime.timedelta(days=1)
+            startDatetime=datetime.date.today() - datetime.timedelta(days=1),
+            endDatetime=datetime.date.today() - datetime.timedelta(days=1, hours=-2),
         )
 
         query_args = {
@@ -1118,7 +1122,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         assert "Statut PC Pro : Réservée" in content_as_text
         assert "État : Validée" in content_as_text
         assert "Utilisateur de la dernière validation" not in content_as_text
-        assert "Date de dernière validation de l’offre" not in content_as_text
+        assert "Date de dernière validation de l'offre" not in content_as_text
         assert "Enseignant : Pacôme De Champignac" in content_as_text
         assert "Établissement : Ecole de Marcinelle" in content_as_text
         assert "Offre vitrine liée : offre Vito Cortizone pour lieu que l'on ne peut refuser" in content_as_text

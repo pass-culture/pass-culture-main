@@ -41,9 +41,9 @@ def format_booking_hours_for_email(booking: Booking | CollectiveBooking) -> str:
 
 
 def get_event_datetime(stock: CollectiveStock | Stock) -> datetime:
-    if not stock.beginningDatetime:
-        raise ValueError("Event stock is missing a beginningDatetime")
     if isinstance(stock, Stock):
+        if not stock.beginningDatetime:
+            raise ValueError("Event stock is missing a beginningDatetime")
         departement_code = stock.offer.venue.departementCode
         if feature.FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
             if stock.offer.offererAddress is not None:
@@ -51,7 +51,11 @@ def get_event_datetime(stock: CollectiveStock | Stock) -> datetime:
             elif stock.offer.venue.offererAddress is not None:
                 departement_code = stock.offer.venue.offererAddress.address.departmentCode
     else:
+        if not stock.startDatetime:
+            raise ValueError("Event stock is missing a startDatetime")
         departement_code = stock.collectiveOffer.venue.departementCode
     if not departement_code:
-        return stock.beginningDatetime
-    return utc_datetime_to_department_timezone(stock.beginningDatetime, departement_code)
+        return stock.startDatetime if isinstance(stock, CollectiveStock) else stock.beginningDatetime
+    return utc_datetime_to_department_timezone(
+        stock.startDatetime if isinstance(stock, CollectiveStock) else stock.beginningDatetime, departement_code
+    )
