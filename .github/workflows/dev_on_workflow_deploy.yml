@@ -62,7 +62,7 @@ jobs:
             API_TOKEN_GITHUB:passculture-metier-ehp/passculture-main-sa-access-token
 
       - name: "Connect to cluster"
-        uses: pass-culture/common-workflows/actions/teleport-connect@teleport-connect/v0.1.0
+        uses: pass-culture/common-workflows/actions/teleport-connect@teleport-connect/v0.2.0
         with:
           teleport_proxy: ${{ inputs.teleport_proxy }}
           teleport_kubernetes_cluster: ${{ inputs.teleport_kubernetes_cluster }}
@@ -230,7 +230,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: "Connect to cluster"
-        uses: pass-culture/common-workflows/actions/teleport-connect@teleport-connect/v0.1.0
+        uses: pass-culture/common-workflows/actions/teleport-connect@teleport-connect/v0.2.0
         with:
           teleport_proxy: ${{ inputs.teleport_proxy }}
           teleport_kubernetes_cluster: ${{ inputs.teleport_kubernetes_cluster }}
