@@ -68,7 +68,7 @@ class PCHiddenField(PCStringField):
 class PCLongHiddenField(PCHiddenField):
     validators = [
         validators.DataRequired("Information obligatoire"),
-        validators.Length(max=256, message="doit contenir au maximum %(max)d caractères"),
+        validators.Length(max=1024, message="doit contenir au maximum %(max)d caractères"),
     ]
 
 
