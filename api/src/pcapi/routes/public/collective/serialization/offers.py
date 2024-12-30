@@ -102,9 +102,8 @@ def validate_beginning_datetime(beginning_datetime: datetime, values: dict[str, 
 
 
 def validate_start_datetime(start_datetime: datetime | None, values: dict[str, Any]) -> datetime | None:
-    # we need a datetime with timezone information which is not provided by datetime.utcnow.
     if not start_datetime:
-        return None
+        raise ValueError("La date de début de l'évènement est obligatoire.")
 
     if start_datetime.tzinfo is not None:
         if start_datetime < datetime.now(timezone.utc):  # pylint: disable=datetime-now
@@ -115,15 +114,18 @@ def validate_start_datetime(start_datetime: datetime | None, values: dict[str, A
 
 
 def validate_end_datetime(end_datetime: datetime | None, values: dict[str, Any]) -> datetime | None:
-    # we need a datetime with timezone information which is not provided by datetime.utcnow.
     if not end_datetime:
-        return None
+        raise ValueError("La date de fin de l'évènement est obligatoire.")
 
+    start_datetime = values.get("start_datetime")
     if end_datetime.tzinfo is not None:
         if end_datetime < datetime.now(timezone.utc):  # pylint: disable=datetime-now
             raise ValueError("L'évènement ne peut se terminer dans le passé.")
     elif end_datetime < datetime.utcnow():
         raise ValueError("L'évènement ne peut se terminer dans le passé.")
+
+    if start_datetime and end_datetime < start_datetime:
+        raise ValueError("La date de fin de l'évènement ne peut précéder la date de début.")
     return end_datetime
 
 
@@ -282,7 +284,6 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
     mentalDisabilityCompliant: bool | None = fields.MENTAL_DISABILITY_COMPLIANT
     motorDisabilityCompliant: bool | None = fields.MOTOR_DISABILITY_COMPLIANT
     visualDisabilityCompliant: bool | None = fields.VISUAL_DISABILITY_COMPLIANT
-    beginningDatetime: str = fields.COLLECTIVE_OFFER_BEGINNING_DATETIME
     startDatetime: str = fields.COLLECTIVE_OFFER_START_DATETIME
     endDatetime: str = fields.COLLECTIVE_OFFER_END_DATETIME
     bookingLimitDatetime: str = fields.COLLECTIVE_OFFER_BOOKING_LIMIT_DATETIME
@@ -333,7 +334,6 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
             mentalDisabilityCompliant=offer.mentalDisabilityCompliant,
             motorDisabilityCompliant=offer.motorDisabilityCompliant,
             visualDisabilityCompliant=offer.visualDisabilityCompliant,
-            beginningDatetime=offer.collectiveStock.beginningDatetime.replace(microsecond=0).isoformat(),
             startDatetime=offer.collectiveStock.startDatetime.replace(microsecond=0).isoformat(),
             endDatetime=offer.collectiveStock.endDatetime.replace(microsecond=0).isoformat(),
             bookingLimitDatetime=offer.collectiveStock.bookingLimitDatetime.replace(microsecond=0).isoformat(),
