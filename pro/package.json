@@ -96,7 +96,7 @@
     "@types/react-instantsearch-dom": "^6.12.8",
     "@types/react-redux": "^7.1.34",
     "@types/react-router-dom": "^5.3.3",
-    "@typescript-eslint/eslint-plugin": "^8.18.2",
+    "@typescript-eslint/eslint-plugin": "^8.19.0",
     "@typescript-eslint/parser": "^8.18.2",
     "@vitejs/plugin-react": "^4.3.4",
     "cypress": "^13.17.0",
