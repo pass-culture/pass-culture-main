@@ -7,24 +7,19 @@
 .base-checkbox {
   display: inline-flex;
   cursor: pointer;
+  width: 100%;
 
   &-label-row {
     display: inline-flex;
-    align-items: flex-start;
-
-    &-with-description {
-      align-items: center;
-    }
+    width: 100%;
+    align-items: center;
   }
 
   &-label {
     display: flex;
     flex-direction: column;
     width: 100%;
-
-    &-with-description {
-      margin-left: rem.torem(4px);
-    }
+    justify-items: center;
   }
 
   &-description {
