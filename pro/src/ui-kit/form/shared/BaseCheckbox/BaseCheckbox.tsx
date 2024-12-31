@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { useId, useRef, ForwardedRef, forwardRef, useEffect } from 'react'
+import { useId, useRef, useEffect, ForwardedRef, forwardRef } from 'react'
 
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -20,7 +20,6 @@ export interface BaseCheckboxProps
   labelClassName?: string
   icon?: string
   withBorder?: boolean
-  ref?: React.Ref<HTMLInputElement>
   partialCheck?: boolean
   exceptionnallyHideLabelDespiteA11y?: boolean
   description?: string
@@ -52,32 +51,28 @@ export const BaseCheckbox = forwardRef(
       if (innerRef.current) {
         innerRef.current.indeterminate = partialCheck ?? false
       }
-    }, [innerRef, partialCheck])
+    }, [partialCheck])
+
+    const labelClasses = cn(
+      styles['base-checkbox-label'],
+      {
+        [styles['visually-hidden']]: exceptionnallyHideLabelDespiteA11y,
+      },
+      labelClassName
+    )
+    const containerClasses = cn(styles['base-checkbox'], className, {
+      [styles['with-border']]: withBorder,
+      [styles['has-error']]: hasError,
+      [styles['is-disabled']]: props.disabled,
+    })
 
     return (
-      <div
-        className={cn(
-          styles['base-checkbox'],
-          {
-            [styles['with-border']]: withBorder,
-            [styles['has-error']]: hasError,
-            [styles['is-disabled']]: props.disabled,
-          },
-          className
-        )}
-      >
-        <span
-          className={cn(styles['base-checkbox-label-row'], {
-            [styles['base-checkbox-label-row-with-description']]:
-              Boolean(description),
-          })}
-        >
+      <div className={containerClasses}>
+        <span className={styles['base-checkbox-label-row']}>
           <input
             ref={forwardedRef ?? innerRef}
             aria-invalid={hasError}
-            {...(ariaDescribedBy
-              ? { 'aria-describedby': ariaDescribedBy }
-              : {})}
+            {...(ariaDescribedBy && { 'aria-describedby': ariaDescribedBy })}
             type="checkbox"
             {...props}
             className={cn(styles['base-checkbox-input'], inputClassName)}
@@ -92,20 +87,14 @@ export const BaseCheckbox = forwardRef(
               />
             </span>
           )}
-          <span
-            className={cn(styles['base-checkbox-label'], labelClassName, {
-              [styles['visually-hidden']]: Boolean(exceptionnallyHideLabelDespiteA11y),
-              [styles['base-checkbox-label-with-description']]:
-                Boolean(description),
-            })}
-          >
-            <label htmlFor={id}>{label}</label>
+          <label className={labelClasses} htmlFor={id}>
+            {label}
             {description && (
               <span className={styles['base-checkbox-description']}>
                 {description}
               </span>
             )}
-          </span>
+          </label>
         </span>
       </div>
     )
