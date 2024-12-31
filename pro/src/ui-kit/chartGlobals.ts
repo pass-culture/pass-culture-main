@@ -1,6 +1,7 @@
 import { Chart } from 'chart.js/auto'
-
 import 'chartjs-adapter-date-fns'
+import * as designSystemTokens from 'design-system/dist/build/ts/index.web'
+
 import { FORMAT_DD_MM_YYYY } from 'commons/utils/date'
 
 export const chartColors = {
@@ -11,7 +12,7 @@ export const chartColors = {
 // We have only one chart for now so I put here all the options that I think
 // should be defaults but we can adapt these defaults when we add more charts
 Chart.defaults.locale = 'fr-FR'
-Chart.defaults.font.family = 'Montserrat-Regular'
+Chart.defaults.font.family = designSystemTokens.theme.typography.body.fontFamily
 Chart.defaults.maintainAspectRatio = false
 
 Chart.defaults.scales.time.time.displayFormats = {
