@@ -8,27 +8,33 @@ import { Option } from './MultiSelect'
 import styles from './MultiSelect.module.scss'
 
 type MultiSelectPanelProps = {
+  id: string
   className?: string
   label: string
   options: (Option & { checked: boolean })[]
-  onOptionSelect: (option: Option | 'all' | undefined) => void
+  hasSelectAllOptions?: boolean
+  isAllChecked: boolean
   hasSearch?: boolean
   searchExample?: string
   searchLabel?: string
-  hasSelectAllOptions?: boolean
+  onOptionSelect: (option: Option) => void
+  onSelectAll: () => void
 }
 
 export const MultiSelectPanel = ({
+  id,
   options,
   onOptionSelect,
+  onSelectAll,
   hasSearch = false,
   searchExample,
   searchLabel,
   hasSelectAllOptions,
+  isAllChecked,
 }: MultiSelectPanelProps): JSX.Element => {
   const [searchValue, setSearchValue] = useState('')
-  const [isSelectAllChecked, setIsSelectAllChecked] = useState(false)
-  const searchedValues = useMemo(
+
+  const filteredOptions = useMemo(
     () =>
       options.filter((option) =>
         option.label.toLowerCase().includes(searchValue.toLowerCase())
@@ -36,66 +42,73 @@ export const MultiSelectPanel = ({
     [options, searchValue]
   )
 
-  const onToggleAllOptions = (checked: boolean) => {
-    if (checked) {
-      onOptionSelect(undefined)
-    } else {
-      onOptionSelect('all')
-    }
-    setIsSelectAllChecked(!checked)
-  }
-
-  const onToggleOption = (option: Option, checked: boolean) => {
-    if (checked) {
-      setIsSelectAllChecked(false)
-    }
-    onOptionSelect(option)
-  }
-
   return (
-    <div className={styles['panel']}>
+    <div id={id} className={styles['panel']}>
       {hasSearch && (
-        <>
-          <label className={styles['visually-hidden']} htmlFor="search-input">
+        <div className={styles['search-input']}>
+          <label
+            className={styles['visually-hidden']}
+            htmlFor={`search-input-${id}`}
+          >
             {searchLabel}
           </label>
           <BaseInput
             type="search"
-            id="search-input"
+            id={`search-input-${id}`}
             leftIcon={strokeSearch}
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
+            aria-describedby={`search-input-example-${id}`}
+            autoComplete="off"
+            spellCheck={false}
           />
-          <span className={styles['search-example']}>{searchExample}</span>
-        </>
+          <span
+            id={`search-input-example-${id}`}
+            className={styles['search-example']}
+          >
+            {searchExample}
+          </span>
+        </div>
       )}
 
-      {searchedValues.length > 0 ? (
-        <ul className={styles['container']} aria-label="Liste des options">
-          {hasSelectAllOptions && (
-            <li key={'all-options'} className={styles['item']}>
-              <BaseCheckbox
-                label={'Tout sélectionner'}
-                checked={isSelectAllChecked}
-                onChange={() => onToggleAllOptions(isSelectAllChecked)}
-              />
-              <div className={styles['separator']} />
-            </li>
-          )}
-          {searchedValues.map((option) => (
-            <li key={option.id} className={styles.item}>
-              <BaseCheckbox
-                className={styles['checkbox']}
-                label={option.label}
-                checked={option.checked}
-                onChange={() => onToggleOption(option, option.checked)}
-              />
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <span>{'Aucun résultat trouvé pour votre recherche.'}</span>
-      )}
+      <div className={styles['panel-scrollable']}>
+        <p className={styles['visually-hidden']} role="status">
+          <span>{filteredOptions.length} résultats trouvés</span>
+        </p>
+        {filteredOptions.length > 0 ? (
+          <ul className={styles['container']} aria-label="Liste des options">
+            {hasSelectAllOptions && (
+              <li key={'all-options'} className={styles.item}>
+                <BaseCheckbox
+                  label={'Tout sélectionner'}
+                  checked={isAllChecked}
+                  labelClassName={styles['label']}
+                  inputClassName={styles['checkbox']}
+                  onChange={onSelectAll}
+                  tabIndex={0}
+                />
+                <div className={styles['separator']} />
+              </li>
+            )}
+            {filteredOptions.map((option) => (
+              <li key={option.id} className={styles.item}>
+                <BaseCheckbox
+                  labelClassName={styles['label']}
+                  inputClassName={styles['checkbox']}
+                  label={option.label}
+                  checked={option.checked}
+                  onChange={() => onOptionSelect(option)}
+                  tabIndex={0}
+                />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <span className={styles['empty-search']}>
+            {'Aucun résultat trouvé pour votre recherche.'}
+          </span>
+        )}
+      </div>
     </div>
   )
 }

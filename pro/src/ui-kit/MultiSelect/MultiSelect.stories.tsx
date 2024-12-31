@@ -18,17 +18,28 @@ export default {
 }
 
 const defaultOptions = [
-  { id: '1', label: '78 - Yvelines' },
-  { id: '2', label: '75 - Paris' },
-  { id: '3', label: '44 - Nantes' },
-  { id: '4', label: '76 - Rouen' },
-  { id: '5', label: '77 - Seine et Marne' },
+  { id: '1', label: '01 - Ain' },
+  { id: '2', label: '02 - Aisne' },
+  { id: '3', label: '03 - Allier' },
+  { id: '4', label: '04 - Alpes-de-Haute-Provence' },
+  { id: '5', label: '05 - Hautes-Alpes' },
+  { id: '6', label: '06 - Alpes-Maritimes' },
+  { id: '7', label: '07 - Ardèche' },
+  { id: '8', label: '08 - Ardennes' },
+  { id: '9', label: '09 - Ariège' },
+  { id: '10', label: '10 - Aube' },
+  { id: '11', label: '11 - Aude' },
+  { id: '12', label: '12 - Aveyron' },
+  { id: '13', label: '13 - Bouches-du-Rhône' },
+  { id: '14', label: '14 - Calvados' },
+  { id: '15', label: '15 - Cantal' },
 ]
 
 const defaultProps = {
   options: defaultOptions,
   legend: 'Département',
-  label: 'Selectionner un département',
+  label:
+    'Sélectionner un département Sélectionner un département Sélectionner un département',
 }
 
 export const Default: StoryObj<typeof MultiSelect> = {
@@ -54,6 +65,27 @@ export const WithSearchInput: StoryObj<typeof MultiSelect> = {
     searchExample: 'Ex : 44 - Nantes',
     searchLabel: 'Rechercher des départements',
     legend: 'Départements',
-    label: 'Selectionner des départements',
+    label: 'Sélectionner des départements',
+  },
+}
+
+export const WithSelectAllOption: StoryObj<typeof MultiSelect> = {
+  args: {
+    ...defaultProps,
+    hasSelectAllOptions: true,
+    legend: 'Départements',
+    label: 'Sélectionner des départements',
+  },
+}
+
+export const WithSearchInputAndSelectAllOption: StoryObj<typeof MultiSelect> = {
+  args: {
+    ...defaultProps,
+    hasSearch: true,
+    searchExample: 'Ex : 44 - Nantes',
+    searchLabel: 'Rechercher des départements',
+    hasSelectAllOptions: true,
+    legend: 'Départements',
+    label: 'Sélectionner des départements',
   },
 }
