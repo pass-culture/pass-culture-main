@@ -124,7 +124,7 @@ export const MultiSelect = ({
       )}
 
       <SelectedValuesTags
-        disabled={disabled}
+        disabled={false}
         selectedOptions={selectedItems.map((item) => item.id)}
         removeOption={handleRemoveItem}
         fieldName="tags"
@@ -137,8 +137,7 @@ export const MultiSelect = ({
   )
 }
 
-{
-  /* <fieldset>
+/* <fieldset>
 	<legend><button aria-controls="control-id" aria-expanded=...>Label du bouton</button></legend>
 	<div id="control-id">
 		<label class="visually-hidden" for="id-input">Rechercher des ...</label>
@@ -169,10 +168,8 @@ export const MultiSelect = ({
   <div role="option" id="listbox1-6">Pervenche</div>
 </div>
 */
-}
 
-{
-  /* <div className={styles.container} role="listbox" aria-label="Liste des départements">
+/* <div className={styles.container} role="listbox" aria-label="Liste des départements">
       {departments.map(department => (
         <label key={department.id} className={styles.item}>
           <div className={styles.checkbox}>
@@ -188,4 +185,3 @@ export const MultiSelect = ({
         </label>
       ))}
     </div> */
-}

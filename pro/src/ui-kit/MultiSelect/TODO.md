@@ -7,6 +7,7 @@ Fonctionnel
 Design
 
 - [] corriger la zone de clic sur BaseCheckbox
+- [] Passer les selected tag en violet
 - [] corriger le curseur de BaseCheckbox
 - [] ajuster la hauteur des checkbox
 - [] utiliser les fonts du design system
