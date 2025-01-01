@@ -182,14 +182,6 @@
     "@jridgewell/gen-mapping" "^0.3.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@ampproject/remapping@^2.3.0":
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/@ampproject/remapping/-/remapping-2.3.0.tgz#ed441b6fa600072520ce18b43d2c8cc8caecc7f4"
-  integrity sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==
-  dependencies:
-    "@jridgewell/gen-mapping" "^0.3.5"
-    "@jridgewell/trace-mapping" "^0.3.24"
-
 "@apidevtools/json-schema-ref-parser@^11.5.4":
   version "11.5.4"
   resolved "https://registry.yarnpkg.com/@apidevtools/json-schema-ref-parser/-/json-schema-ref-parser-11.5.4.tgz#6a90caf2140834025cf72651280c46084de187ae"
@@ -555,11 +547,6 @@
   dependencies:
     "@babel/helper-string-parser" "^7.25.9"
     "@babel/helper-validator-identifier" "^7.25.9"
-
-"@bcoe/v8-coverage@^0.2.3":
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
-  integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
 "@colors/colors@1.5.0":
   version "1.5.0"
@@ -2434,24 +2421,6 @@
     test-exclude "^7.0.1"
     tinyrainbow "^1.2.0"
 
-"@vitest/coverage-v8@^2.1.7":
-  version "2.1.7"
-  resolved "https://registry.yarnpkg.com/@vitest/coverage-v8/-/coverage-v8-2.1.7.tgz#63a3d246b6e516ae0746e40e5fe7feaec305a777"
-  integrity sha512-deQ4J+yu6nEjmEfcBndbgrRM95IZoRpV1dDVRbZhjUcgYVZz/Wc4YaLiDDt9Sy5qcikrJUZMlrUxDy7dBojebg==
-  dependencies:
-    "@ampproject/remapping" "^2.3.0"
-    "@bcoe/v8-coverage" "^0.2.3"
-    debug "^4.3.7"
-    istanbul-lib-coverage "^3.2.2"
-    istanbul-lib-report "^3.0.1"
-    istanbul-lib-source-maps "^5.0.6"
-    istanbul-reports "^3.1.7"
-    magic-string "^0.30.12"
-    magicast "^0.3.5"
-    std-env "^3.8.0"
-    test-exclude "^7.0.1"
-    tinyrainbow "^1.2.0"
-
 "@vitest/expect@2.1.7":
   version "2.1.7"
   resolved "https://registry.yarnpkg.com/@vitest/expect/-/expect-2.1.7.tgz#5ada3ec9f3060821c8f57880017a7cfb151a259b"
@@ -2605,17 +2574,24 @@ algoliasearch@>=4:
     "@algolia/requester-node-http" "4.19.1"
     "@algolia/transporter" "4.19.1"
 
-allure-cypress@^3.0.6:
-  version "3.0.6"
-  resolved "https://registry.yarnpkg.com/allure-cypress/-/allure-cypress-3.0.6.tgz#411ac9beadd998f84646341feebbbccd32bbab95"
-  integrity sha512-d+bIy2VJeP5iLskAZwrN7fLUgAJyXcAwIl9+hD1JDcxbU42clePWduQ0fa95qeIHGKOm+3TZbwodqT/PHoWKxg==
+allure-cypress@^3.0.7:
+  version "3.0.7"
+  resolved "https://registry.yarnpkg.com/allure-cypress/-/allure-cypress-3.0.7.tgz#94ec0094425d3a88e1e14c663d9a2f3fbc1daeba"
+  integrity sha512-vwX0YhIh279lBewmMXxT2WZA1QG+99GCLt9/Fg9J/BZzIDieRkK/FIt5vsiaKgg9cWw3EPVbl3K4x10ghBVi+A==
   dependencies:
-    allure-js-commons "3.0.6"
+    allure-js-commons "3.0.7"
 
-allure-js-commons@3.0.6, allure-js-commons@^3.0.6:
+allure-js-commons@3.0.6:
   version "3.0.6"
   resolved "https://registry.yarnpkg.com/allure-js-commons/-/allure-js-commons-3.0.6.tgz#c89b60e08be9804a1a32920e6036962b50b4c87b"
   integrity sha512-q3r3Cj3sG6hR7jH8SGkfNleLJK+yFAGwzyFDGzIfu+WLZ4yeFcBZHkWuq7QreRpxvsZWNby/38jhrj5yYFwQ2g==
+  dependencies:
+    md5 "^2.3.0"
+
+allure-js-commons@3.0.7, allure-js-commons@^3.0.6:
+  version "3.0.7"
+  resolved "https://registry.yarnpkg.com/allure-js-commons/-/allure-js-commons-3.0.7.tgz#01452f6e39e636b6956bae05213184df86e2be10"
+  integrity sha512-keHlPAtmzdtEK8FT5W0mOMYh9ZrdlhbrDyaaAKMNHipF/EsFak18XdbLiAKhnHbHiicE+n3BrmBU4rfQEoFHzA==
   dependencies:
     md5 "^2.3.0"
 

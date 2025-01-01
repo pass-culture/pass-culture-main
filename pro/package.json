@@ -101,7 +101,7 @@
     "@vitejs/plugin-react": "^4.3.4",
     "cypress": "^13.17.0",
     "@vitest/runner": "^2.1.7",
-    "allure-cypress": "^3.0.6",
+    "allure-cypress": "^3.0.7",
     "allure-js-commons": "^3.0.6",
     "allure-vitest": "^3.0.6",
     "cypress-fail-fast": "^7.1.1",
