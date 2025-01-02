@@ -4,6 +4,7 @@
     "description": "storybook is looking for a package.json at the root of the repo to build",
     "private": true,
     "dependencies": {
-        "allure-cypress": "3.0.6"
+        "allure-cypress": "3.0.6",
+        "vitest": "2.1.7"
     }
 }
