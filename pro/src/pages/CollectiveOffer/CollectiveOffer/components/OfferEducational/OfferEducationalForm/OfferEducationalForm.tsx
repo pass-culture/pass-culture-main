@@ -26,8 +26,6 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import { OfferEducationalProps } from '../OfferEducational'
-
 import { FormAccessibility } from './FormAccessibility/FormAccessibility'
 import { FormContact } from './FormContact/FormContact'
 import { FormContactTemplate } from './FormContactTemplate/FormContactTemplate'
@@ -40,7 +38,6 @@ import { FormNotifications } from './FormNotifications/FormNotifications'
 import { FormOfferType } from './FormOfferType/FormOfferType'
 import { FormParticipants } from './FormParticipants/FormParticipants'
 import { FormPracticalInformation } from './FormPracticalInformation/FormPracticalInformation'
-import { FormPriceDetails } from './FormPriceDetails/FormPriceDetails'
 import { FormVenue } from './FormVenue/FormVenue'
 import styles from './OfferEducationalForm.module.scss'
 
@@ -85,7 +82,15 @@ export const OfferEducationalForm = ({
     'ENABLE_COLLECTIVE_NEW_STATUSES'
   )
 
-  const canEditDetails = areCollectiveNewStatusesEnabled && offer ? isActionAllowedOnCollectiveOffer(offer, isCollectiveOffer(offer) ? CollectiveOfferAllowedAction.CAN_EDIT_DETAILS : CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS) : mode !== Mode.READ_ONLY
+  const canEditDetails =
+    areCollectiveNewStatusesEnabled && offer
+      ? isActionAllowedOnCollectiveOffer(
+          offer,
+          isCollectiveOffer(offer)
+            ? CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
+            : CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS
+        )
+      : mode !== Mode.READ_ONLY
 
   useEffect(() => {
     async function handleOffererValues() {
@@ -154,6 +159,7 @@ export const OfferEducationalForm = ({
               domainsOptions={domainsOptions}
               nationalPrograms={nationalPrograms}
               disableForm={!canEditDetails}
+              isTemplate={isTemplate}
             />
             <FormImageUploader
               onImageDelete={onImageDelete}
@@ -172,9 +178,6 @@ export const OfferEducationalForm = ({
               venuesOptions={venuesOptions}
               disableForm={!canEditDetails}
             />
-            {isTemplate && (
-              <FormPriceDetails disableForm={!canEditDetails} />
-            )}
             <FormParticipants
               disableForm={!canEditDetails}
               isTemplate={isTemplate}

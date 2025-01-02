@@ -1,5 +1,5 @@
 import { useFormikContext } from 'formik'
-import { ChangeEvent } from 'react'
+import { ChangeEvent, useId } from 'react'
 
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
@@ -28,6 +28,9 @@ export const FormDates = ({
   const areNewStatusesEnabled = useActiveFeature(
     'ENABLE_COLLECTIVE_NEW_STATUSES'
   )
+
+  const subtitleId = useId()
+
   const minBeginningDate = dateCreated ? new Date(dateCreated) : new Date()
   const minDateForEndingDate = isDateValid(values.beginningDate)
     ? new Date(values.beginningDate)
@@ -45,7 +48,10 @@ export const FormDates = ({
     : 'désactivée'
 
   return (
-    <FormLayout.Section title="Quand votre offre peut-elle avoir lieu ? *">
+    <div className={styles['container']}>
+      <h2 id={subtitleId} className={styles['subtitle']}>
+        Quand votre offre peut-elle avoir lieu ? *
+      </h2>
       <RadioGroup
         disabled={disableForm}
         group={[
@@ -54,12 +60,12 @@ export const FormDates = ({
             value: 'permanent',
           },
           {
-            label: 'Pendant une période précise uniquement',
+            label: 'À une date ou une période précise',
             value: 'specific_dates',
           },
         ]}
         variant={RadioVariant.BOX}
-        legend="Quand votre offre peut-elle avoir lieu ?"
+        describedBy={subtitleId}
         name="datesType"
       />
       {values.datesType === 'specific_dates' && (
@@ -68,7 +74,7 @@ export const FormDates = ({
             {`Votre offre sera ${deactivateWording} automatiquement à l’issue des dates
             précisées ci-dessous.`}
           </Callout>
-          <FormLayout.Row className={styles.container}>
+          <FormLayout.Row className={styles['row-container']}>
             <DatePicker
               name="beginningDate"
               label="Date de début"
@@ -94,6 +100,6 @@ export const FormDates = ({
           </FormLayout.Row>
         </>
       )}
-    </FormLayout.Section>
+    </div>
   )
 }

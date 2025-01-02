@@ -12,22 +12,19 @@ import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import { getNationalProgramsForDomains } from '../../constants/getNationalProgramsForDomains'
-import {
-  DESCRIPTION_LABEL,
-  DURATION_LABEL,
-  TITLE_LABEL,
-} from '../../constants/labels'
 
 export interface FormTypeProps {
   domainsOptions: SelectOption[]
   nationalPrograms: SelectOption<number>[]
   disableForm: boolean
+  isTemplate: boolean
 }
 
 export const FormOfferType = ({
   domainsOptions,
   nationalPrograms,
   disableForm,
+  isTemplate,
 }: FormTypeProps): JSX.Element => {
   const { values } = useFormikContext<OfferEducationalFormValues>()
 
@@ -41,62 +38,64 @@ export const FormOfferType = ({
   )
 
   return (
-    <FormLayout.Section
-      description=""
-      title="Quel est le type de votre offre ?"
-    >
-      {domainsOptions.length > 0 && (
+    <>
+      <FormLayout.Section
+        description=""
+        title="Quel est le type de votre offre ?"
+      >
+        {domainsOptions.length > 0 && (
+          <FormLayout.Row>
+            <SelectAutocomplete
+              multi
+              label="Ajoutez un ou plusieurs domaines artistiques"
+              name="domains"
+              options={domainsOptions}
+              disabled={disableForm}
+            />
+          </FormLayout.Row>
+        )}
         <FormLayout.Row>
           <SelectAutocomplete
             multi
-            label="Domaine artistique et culturel"
-            name="domains"
-            options={domainsOptions}
+            options={eacFormatOptions}
+            label="Ajoutez un ou plusieurs formats"
+            placeholder="Sélectionner un format"
+            name="formats"
             disabled={disableForm}
           />
         </FormLayout.Row>
-      )}
-      <FormLayout.Row>
-        <SelectAutocomplete
-          multi
-          options={eacFormatOptions}
-          label="Format"
-          placeholder="Sélectionner un format"
-          name="formats"
-          disabled={disableForm}
-        />
-      </FormLayout.Row>
 
-      {nationalPrograms.length > 0 && (
-        <FormLayout.Row
-          sideComponent={
-            <InfoBox>
-              Un dispositif national est un type de programme d’éducation
-              artistique et culturelle auquel sont rattachées certaines offres.
-              Si c’est le cas de cette offre, merci de le renseigner.
-            </InfoBox>
-          }
-        >
-          <Select
-            options={[
-              {
-                label: 'Sélectionnez un dispositif national',
-                value: '',
-              },
-              ...nationalProgramsForDomains,
-            ]}
-            label="Dispositif national"
-            name="nationalProgramId"
-            isOptional
-            disabled={disableForm}
-          />
-        </FormLayout.Row>
-      )}
+        {nationalPrograms.length > 0 && (
+          <FormLayout.Row
+            sideComponent={
+              <InfoBox>
+                Un dispositif national est un type de programme d’éducation
+                artistique et culturelle auquel sont rattachées certaines
+                offres. Si c’est le cas de cette offre, merci de le renseigner.
+              </InfoBox>
+            }
+          >
+            <Select
+              options={[
+                {
+                  label: 'Sélectionnez un dispositif national',
+                  value: '',
+                },
+                ...nationalProgramsForDomains,
+              ]}
+              label="Dispositif national"
+              name="nationalProgramId"
+              isOptional
+              disabled={disableForm}
+            />
+          </FormLayout.Row>
+        )}
+      </FormLayout.Section>
       <FormLayout.Section title="Dites-nous en plus sur votre offre culturelle">
         <FormLayout.Row>
           <TextInput
             countCharacters
-            label={TITLE_LABEL}
+            label="Titre de l’offre"
             maxLength={110}
             name="title"
             disabled={disableForm}
@@ -116,23 +115,34 @@ export const FormOfferType = ({
           }
         >
           <TextArea
-            label={DESCRIPTION_LABEL}
+            label="Décrivez ici votre projet et son interêt pédagogique"
             maxLength={MAX_DETAILS_LENGTH}
             name="description"
-            description="Détaillez ici votre projet et son interêt pédagogique."
             disabled={disableForm}
           />
         </FormLayout.Row>
+        {isTemplate && (
+          <FormLayout.Row>
+            <TextArea
+              disabled={disableForm}
+              isOptional
+              label="Indiquez le tarif de votre offre"
+              maxLength={MAX_DETAILS_LENGTH}
+              name="priceDetail"
+              description="Exemple : par élève ou par groupe scolaire, politique tarifaire REP/REP+ et accompagnateurs..."
+            />
+          </FormLayout.Row>
+        )}
         <FormLayout.Row>
           <TextInput
             isOptional
-            label={DURATION_LABEL}
+            label="Indiquez la durée de l’évènement"
             name="duration"
             description="Format : HH:MM"
             disabled={disableForm}
           />
         </FormLayout.Row>
       </FormLayout.Section>
-    </FormLayout.Section>
+    </>
   )
 }

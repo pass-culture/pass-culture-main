@@ -66,7 +66,7 @@ describe('CollectiveOfferCreation', () => {
     ).toBeInTheDocument()
     expect(
       screen.getByRole('heading', {
-        name: 'Qui propose l’offre ? *',
+        name: 'Qui propose l’offre ?',
       })
     ).toBeInTheDocument()
   })
