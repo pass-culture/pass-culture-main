@@ -155,6 +155,14 @@ jobs:
           app_name: redis-pr-${{ github.event.pull_request.number }}
           argocd_app_wait: true
 
+      - name: "Sync ArgoCD pcapi configmaps and secrets"
+        uses: pass-culture/common-workflows/actions/argocd-sync@PC-33758-argocd-extra-flags
+        with:
+          app_name: pcapi-pr-${{ github.event.pull_request.number }}
+          argocd_app_wait: false
+          prune: true
+          extra_flags: --resource ':ConfigMap:*' --resource '*:ExternalSecret:*'
+
       - name: "Init local database"
         run: |
           set -e
