@@ -2,7 +2,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_size.scss" as size;
 @use "styles/variables/_z-index.scss" as zIndex;
-@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 
 $connect-as-header-height: rem.torem(52px);
 
@@ -10,14 +9,26 @@ $connect-as-header-height: rem.torem(52px);
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: var(--color-background-accent-light);
+  background-color: var(--color-background-subtle);
+}
+
+.theme-select {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 20;
+
+  select {
+    padding: 5px 10px;
+  }
 }
 
 .page-layout {
   display: flex;
   height: 100%;
   overflow: hidden;
-  border: rem.torem(1px) solid var(--color-grey-medium);
+  border-right: rem.torem(1px) solid var(--separator-color-default);
+  border-left: rem.torem(1px) solid var(--separator-color-default);
   border-top: none;
 
   &-funnel,
@@ -47,7 +58,7 @@ $connect-as-header-height: rem.torem(52px);
   flex-grow: 1;
   width: 100%;
   overflow-y: auto;
-  background-color: var(--color-white);
+  background-color: var(--color-background-default);
 
   &-side {
     @media screen and (min-width: size.$tablet) {
@@ -85,7 +96,7 @@ $connect-as-header-height: rem.torem(52px);
   width: 100%;
   flex-grow: 1;
   padding: size.$main-content-padding-xs size.$main-content-padding-xs 0;
-  background-color: var(--color-white);
+  background-color: var(--color-background-default);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -112,7 +123,7 @@ $connect-as-header-height: rem.torem(52px);
 }
 
 .content {
-  background-color: var(--color-white);
+  background-color: var(--color-background-default);
   max-width: 100%;
   border: none;
   margin: 0;
@@ -171,7 +182,7 @@ $connect-as-header-height: rem.torem(52px);
   }
 
   &-title {
-    @include fonts-design-system.title1;
+    @include fonts.title1;
   }
 
   &-back-to-nav-link {

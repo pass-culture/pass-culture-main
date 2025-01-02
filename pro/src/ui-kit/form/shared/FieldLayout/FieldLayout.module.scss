@@ -24,7 +24,7 @@
   }
 
   &-small-label &-label {
-    @include fonts.caption;
+    @include fonts.body-accent-xs;
 
     display: block;
     min-height: forms.$input-label-min-height;
@@ -64,11 +64,10 @@
   }
 
   &-input-description {
-    @include fonts.caption;
+    @include fonts.body-xs;
 
     display: block;
-    min-height: forms.$input-description-min-height;
-    color: var(--color-grey-dark);
+    color: var(--color-text-subtle);
   }
 }
 

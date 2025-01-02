@@ -6,7 +6,7 @@
 
 .offers-table-cell {
   &-mobile-label {
-    @include fonts.caption;
+    @include fonts.body-accent-xs;
 
     margin-right: rem.torem(8px);
   }
@@ -40,7 +40,7 @@
 }
 
 .title-column {
-  @include fonts.body-exergue;
+  @include fonts.body-accent;
 
   grid-area: title;
 
@@ -91,13 +91,13 @@
 }
 
 .isbn {
-  @include fonts.caption;
+  @include fonts.body-accent-xs;
 
   color: var(--color-grey-dark);
 }
 
 .stocks {
-  @include fonts.caption;
+  @include fonts.body-accent-xs;
 
   color: var(--color-grey-dark);
   display: flex;
@@ -262,7 +262,7 @@
   flex-direction: column;
 
   &-hours {
-    @include fonts.caption;
+    @include fonts.body-accent-xs;
   }
 }
 

@@ -27,7 +27,7 @@
     flex-wrap: wrap;
 
     &-waiting {
-      @include fonts.caption;
+      @include fonts.body-accent-xs;
 
       display: flex;
       align-items: center;
@@ -35,7 +35,7 @@
     }
 
     &-days-badge {
-      @include fonts.caption;
+      @include fonts.body-accent-xs;
 
       background-color: var(--color-alert-dark);
       display: flex;

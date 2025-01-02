@@ -49,27 +49,28 @@
   }
 
   &:focus-visible {
-    outline: rem.torem(1px) solid var(--color-input-text-color);
+    outline: rem.torem(1px) solid var(--color-outline-default);
     outline-offset: rem.torem(2px);
   }
 
   &-primary {
     min-height: rem.torem(40px);
     align-items: center;
-    color: var(--color-white);
-    background-color: var(--color-primary);
-    border-color: var(--color-primary);
+    color: var(--button-color-text-default);
+    background-color: var(--button-color-background-default);
+    border-color: var(--button-color-border-default);
 
     &:hover {
-      background-color: var(--color-primary-dark);
-      border-color: var(--color-primary-dark);
+      color: var(--button-color-text-default-hovered);
+      background-color: var(--button-color-background-default-hovered);
+      border-color: var(--button-color-border-default-hovered);
     }
 
     &:disabled,
     &.button-disabled {
-      background-color: var(--color-grey-light);
-      color: var(--color-grey-dark);
-      border-color: var(--color-grey-light);
+      color: var(--color-text-disabled);
+      background-color: var(--color-background-disabled);
+      border-color: var(--color-border-disabled);
 
       .button-icon {
         color: var(--color-grey-semi-dark);
@@ -84,25 +85,21 @@
   &-secondary {
     min-height: rem.torem(40px);
     align-items: center;
-    color: var(--color-primary);
-    background-color: var(--color-white);
-    border-color: var(--color-primary);
+    color: var(--button-color-text-subtle);
+    background-color: var(--button-color-background-subtle);
+    border-color: var(--button-color-border-default);
 
     &:hover {
-      color: var(--color-white);
-      background-color: var(--color-primary-dark);
-      border-color: var(--color-primary-dark);
-
-      .button-icon {
-        color: var(--color-white);
-      }
+      color: var(--button-color-text-default-hovered);
+      background-color: var(--button-color-background-default-hovered);
+      border-color: var(--button-color-border-default-hovered);
     }
 
     &:disabled,
     &.button-disabled {
-      background-color: var(--color-grey-light);
-      color: var(--color-grey-dark);
-      border-color: var(--color-grey-light);
+      color: var(--color-text-disabled);
+      background-color: var(--color-background-disabled);
+      border-color: var(--color-border-disabled);
     }
 
     &:disabled .button-icon,
@@ -119,7 +116,7 @@
   &-quaternary,
   &-ternary-pink,
   &-quaternary-pink {
-    color: var(--color-black);
+    color: var(--color-text-default);
     align-items: flex-start;
     justify-content: flex-start;
     background-color: transparent;
@@ -128,9 +125,9 @@
     border: none;
     height: auto;
 
-    &-pink {
+    /* &-pink {
       color: var(--color-primary);
-    }
+    } */
 
     &:hover,
     &:focus-visible {
@@ -149,7 +146,7 @@
     }
 
     .button-icon:not(.has-tooltip) {
-      height: rem.torem(20px);
+      height: var(--typography-body-line-height);
       width: rem.torem(20px);
       margin-right: rem.torem(8px);
     }
@@ -162,14 +159,13 @@
   }
 
   &-quaternary {
-    @include fonts.caption;
+    @include fonts.body-accent-xs;
 
     margin-top: rem.torem(6px);
     margin-bottom: rem.torem(6px);
-    color: var(--color-black);
 
     .button-icon:not(.has-tooltip) {
-      height: rem.torem(16px);
+      height: var(--typography-body-xs-line-height);
       width: rem.torem(16px);
       margin-right: rem.torem(4px);
     }

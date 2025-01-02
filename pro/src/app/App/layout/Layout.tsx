@@ -42,6 +42,10 @@ export const Layout = ({
   const currentUser = useSelector(selectCurrentUser)
   const [lateralPanelOpen, setLateralPanelOpen] = useState(false)
 
+  const [theme, setTheme] = useState(
+    document.body.getAttribute('data-theme') || 'clair'
+  )
+
   const openButtonRef = useRef<HTMLButtonElement>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const navPanel = useRef<HTMLDivElement>(null)
@@ -58,10 +62,12 @@ export const Layout = ({
   const mainHeadingWrapper = mainHeading && (
     <div className={styles['main-heading-wrapper']}>
       <h1 className={styles['main-heading-title']}>{mainHeading}</h1>
-      {isConnected && <BackToNavLink
-        isMobileScreen={isMobileScreen}
-        className={styles['main-heading-back-to-nav-link']}
-      />}
+      {isConnected && (
+        <BackToNavLink
+          isMobileScreen={isMobileScreen}
+          className={styles['main-heading-back-to-nav-link']}
+        />
+      )}
     </div>
   )
 
@@ -92,6 +98,19 @@ export const Layout = ({
             </div>
           </aside>
         )}
+        <div className={styles['theme-select']}>
+          <select
+            value={theme}
+            onChange={(e) => {
+              document.body.setAttribute('data-theme', e.target.value)
+              setTheme(e.target.value)
+            }}
+          >
+            <option value="clair">Thème clair</option>
+            <option value="dark">Thème sobmre</option>
+            <option value="binary">Thème binaire</option>
+          </select>
+        </div>
         {(layout === 'basic' ||
           layout === 'sticky-actions' ||
           layout === 'sticky-onboarding') && (
