@@ -124,8 +124,6 @@ def save_industrial_sandbox() -> None:
             user.deposit.expirationDate = datetime.utcnow()
             repository.save(user.deposit)
 
-    create_industrial_invoices()
-
     create_industrial_pro_users_api_keys(offerers_by_name)
 
     create_industrial_search_indexed_objects()
@@ -173,6 +171,8 @@ def save_industrial_sandbox() -> None:
     create_industrial_bookings_for_statistics()
 
     create_user_account_update_requests()
+
+    create_industrial_invoices()
 
     # should be the last function called to create invoices
     build_many_extra_invoices()
