@@ -1,6 +1,6 @@
 {
   "name": "pass-culture-pro",
-  "version": "0.0.0",
+  "version": "321.0.0",
   "private": true,
   "homepage": "/",
   "type": "module",
@@ -99,6 +99,7 @@
     "@typescript-eslint/eslint-plugin": "^8.19.0",
     "@typescript-eslint/parser": "^8.19.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "@vitest/coverage-istanbul": "^2.1.8",
     "cypress": "^13.17.0",
     "cypress-fail-fast": "^7.1.1",
     "eslint": "9.17.0",
@@ -129,8 +130,7 @@
     "vitest": "^2.1.5",
     "vitest-axe": "^0.1.0",
     "vitest-canvas-mock": "^0.3.3",
-    "vitest-fetch-mock": "^0.4.3",
-    "@vitest/coverage-istanbul": "^2.1.8"
+    "vitest-fetch-mock": "^0.4.3"
   },
   "resolutions": {
     "@babel/traverse": ">=7.23.2"
