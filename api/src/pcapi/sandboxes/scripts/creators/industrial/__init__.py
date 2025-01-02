@@ -23,6 +23,9 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_eac_data impo
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_occurrences import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_offers import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_stocks import *
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_headline_offers import (
+    create_industrial_headline_offers,
+)
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_incidents import create_industrial_incidents
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_individual_offerers import (
     create_industrial_individual_offerers,
@@ -101,6 +104,8 @@ def save_industrial_sandbox() -> None:
     create_industrial_thing_stocks(thing_offers_by_name)
 
     create_industrial_mediations(offers_by_name)
+
+    create_industrial_headline_offers(offers_by_name)
 
     criteria_by_name = create_industrial_criteria()
 

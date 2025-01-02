@@ -217,11 +217,6 @@ class OfferFactory(BaseFactory):
 
         return super()._create(model_class, *args, **kwargs)
 
-    @factory.post_generation
-    def is_headline_offer(self, create: bool, is_headline_offer: bool = False, **kwargs: typing.Any) -> None:
-        if is_headline_offer:
-            HeadlineOfferFactory(offer=self, venue=self.venue)
-
 
 class ArtistProductLinkFactory(BaseFactory):
     class Meta:

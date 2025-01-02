@@ -34,8 +34,6 @@ def create_industrial_thing_offers(
         physical_venue_name = virtual_venue.name.replace(" (Offre numérique)", "")
         physical_venue = venues_by_name.get(physical_venue_name)
 
-        headline_offer_limit_per_offerer = 1
-
         for venue_thing_index in range(0, THINGS_PER_OFFERER):
             thing_venue = None
             subcategory_index = (venue_thing_index + thing_index) % len(thing_subcategories)
@@ -65,12 +63,9 @@ def create_industrial_thing_offers(
                 url="http://example.com" if subcategory.is_online_only else None,
                 idAtProvider=str(id_at_provider),
                 extraData=offers_factories.build_extra_data_from_subcategory(subcategory.id, set_all_fields=False),
-                is_headline_offer=bool(headline_offer_limit_per_offerer and not thing_venue.has_headline_offer),
             )
             offer_index += 1
             id_at_provider += 1
-            # FIXME : 6.12.2024 ogeber : decrement headline_offer_limit_per_offerer (limit 0) if original limit is > 1
-            headline_offer_limit_per_offerer = 0
 
         thing_index += THINGS_PER_OFFERER
 
