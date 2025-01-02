@@ -166,6 +166,7 @@ export const OfferEducationalForm = ({
               onImageUpload={onImageUpload}
               imageOffer={imageOffer}
               disableForm={!canEditDetails}
+              isTemplate={isTemplate}
             />
             {isTemplate && (
               <FormDates
