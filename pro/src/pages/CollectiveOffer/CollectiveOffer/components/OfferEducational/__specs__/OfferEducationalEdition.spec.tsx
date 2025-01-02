@@ -1,5 +1,4 @@
 import { screen, waitFor } from '@testing-library/react'
-import React from 'react'
 
 import { Mode } from 'commons/core/OfferEducational/types'
 import {
@@ -14,11 +13,9 @@ import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { defaultEditionProps } from '../__tests-utils__/defaultProps'
 import {
-  DURATION_LABEL,
   EMAIL_LABEL,
   INTERVENTION_AREA_LABEL,
   NOTIFICATIONS_EMAIL_LABEL,
-  TITLE_LABEL,
   VENUE_LABEL,
 } from '../constants/labels'
 import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
@@ -50,9 +47,11 @@ describe('screens | OfferEducational', () => {
     await screen.findByLabelText(`${VENUE_LABEL} *`)
 
     const inputs = [
-      screen.getByLabelText(`Format *`),
-      screen.getByLabelText(`${TITLE_LABEL} *`),
-      screen.getByLabelText(DURATION_LABEL, { exact: false }),
+      screen.getByLabelText(`Ajoutez un ou plusieurs formats *`),
+      screen.getByLabelText(`Titre de l’offre *`),
+      screen.getByLabelText('Indiquez la durée de l’évènement', {
+        exact: false,
+      }),
       screen.getByLabelText(`${VENUE_LABEL} *`),
       screen.getByLabelText('Autre'), // one of every option
       screen.getByLabelText('Collège - 3e'), // one of every option

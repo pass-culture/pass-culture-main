@@ -106,7 +106,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
       renderOfferEducational(props)
 
       const offerTypeTitle = await screen.findByRole('heading', {
-        name: 'Type d’offre',
+        name: 'Quel est le type de votre offre ?',
       })
 
       const venueSelect = await screen.findByLabelText('Lieu *')
@@ -152,7 +152,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
 
       expect(
         screen.queryByRole('heading', {
-          name: 'Type d’offre',
+          name: 'Quel est le type de votre offre ?',
         })
       ).not.toBeInTheDocument()
 
@@ -173,7 +173,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
 
       expect(
         await screen.findByRole('heading', {
-          name: 'Type d’offre',
+          name: 'Quel est le type de votre offre ?',
         })
       ).toBeInTheDocument()
     })

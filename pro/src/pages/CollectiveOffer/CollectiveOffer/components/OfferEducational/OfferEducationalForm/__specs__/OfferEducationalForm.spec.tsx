@@ -2,11 +2,13 @@ import { screen, waitFor } from '@testing-library/react'
 import { Formik } from 'formik'
 import { describe, expect } from 'vitest'
 
+import { CollectiveOfferTemplateAllowedAction } from 'apiClient/v1'
 import { DEFAULT_EAC_FORM_VALUES } from 'commons/core/OfferEducational/constants'
 import {
   Mode,
   OfferEducationalFormValues,
 } from 'commons/core/OfferEducational/types'
+import { getCollectiveOfferTemplateFactory } from 'commons/utils/factories/collectiveApiFactories'
 import {
   managedVenueFactory,
   userOffererFactory,
@@ -61,7 +63,7 @@ describe('OfferEducationalForm', () => {
     renderOfferEducationalForm({ ...defaultProps, isTemplate: true })
 
     expect(
-      await screen.findByRole('heading', { name: 'Prix' })
+      await screen.findByText('Indiquez le tarif de votre offre')
     ).toBeInTheDocument()
   })
 
@@ -70,7 +72,7 @@ describe('OfferEducationalForm', () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByRole('heading', { name: 'Prix' })
+        screen.queryByText('Indiquez le tarif de votre offre')
       ).not.toBeInTheDocument()
     })
   })
@@ -78,7 +80,9 @@ describe('OfferEducationalForm', () => {
   it('should show the dates section if the offer is a template', async () => {
     renderOfferEducationalForm({ ...defaultProps, isTemplate: true })
     expect(
-      await screen.findByRole('heading', { name: 'Quand votre offre peut-elle avoir lieu ? *' })
+      await screen.findByRole('heading', {
+        name: 'Quand votre offre peut-elle avoir lieu ? *',
+      })
     ).toBeInTheDocument()
   })
 
@@ -87,7 +91,9 @@ describe('OfferEducationalForm', () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByRole('heading', { name: 'Quand votre offre peut-elle avoir lieu ? *' })
+        screen.queryByRole('heading', {
+          name: 'Quand votre offre peut-elle avoir lieu ?',
+        })
       ).not.toBeInTheDocument()
     })
   })
@@ -127,6 +133,27 @@ describe('OfferEducationalForm', () => {
     expect(saveButton).toBeDisabled()
   })
 
+  it('should not disable form fields if the FF ENABLE_COLLECTIVE_NEW_STATUSES is active', async () => {
+    renderOfferEducationalForm(
+      {
+        ...defaultProps,
+        isTemplate: true,
+        offer: {
+          ...getCollectiveOfferTemplateFactory(),
+          allowedActions: [
+            CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS,
+          ],
+        },
+        mode: Mode.EDITION,
+      },
+      { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] }
+    )
+
+    expect(
+      await screen.findByRole('checkbox', { name: 'Par email' })
+    ).not.toBeDisabled()
+  })
+
   it('should display unsaved information in the action bar when the value is not the default value', async () => {
     renderOfferEducationalForm(defaultProps)
 
@@ -135,41 +162,5 @@ describe('OfferEducationalForm', () => {
     expect(
       await screen.findByRole('button', { name: 'Enregistrer et continuer' })
     ).toBeInTheDocument()
-  })
-
-  describe('OA feature flag', () => {
-    it('should display the right wording without the OA FF', async () => {
-      renderOfferEducationalForm(defaultProps)
-      await waitFor(() => {
-        expect(screen.getByText('Enregistrer et continuer')).toBeEnabled()
-      })
-
-      expect(
-        screen.getAllByText('Sélectionner un lieu').length
-      ).toBeGreaterThan(0)
-      expect(
-        screen.getByText(
-          /Le lieu de rattachement permet d’associer votre compte/
-        )
-      ).toBeInTheDocument()
-    })
-
-    it('should display the right wording with the OA FF', async () => {
-      renderOfferEducationalForm(defaultProps, {
-        features: ['WIP_ENABLE_OFFER_ADDRESS'],
-      })
-      await waitFor(() => {
-        expect(screen.getByText('Enregistrer et continuer')).toBeInTheDocument()
-        expect(
-          screen.getAllByText(/Sélectionner une structure/).length
-        ).toBeGreaterThan(0)
-      })
-
-      expect(
-        screen.getByText(
-          /La structure de rattachement permet d’associer votre compte/
-        )
-      ).toBeInTheDocument()
-    })
   })
 })

@@ -23,6 +23,7 @@ describe('FormOfferType', () => {
     disableForm: false,
     domainsOptions: [],
     nationalPrograms: [],
+    isTemplate: false,
   }
 
   it('should offer the national program oprtions filtered for the selected domains', async () => {
