@@ -440,21 +440,8 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel, author: users_
     if utils_regions.NON_DIFFUSIBLE_TAG in address.street:
         address_info = api_adresse.get_municipality_centroid(address.city, address.postalCode)
         address_info.street = utils_regions.NON_DIFFUSIBLE_TAG
-        location_data = LocationData(
-            city=address_info.city,
-            postal_code=address_info.postcode,
-            latitude=address_info.latitude,
-            longitude=address_info.longitude,
-            street=address_info.street,
-            insee_code=address_info.citycode,
-            ban_id=address_info.id,
-        )
-    else:
-        if not address.isManualEdition:
-            address_info = api_adresse.get_address(
-                address=address.street, postcode=address.postalCode, city=address.city
-            )
-            location_data = LocationData(
+        address = get_or_create_address(
+            LocationData(
                 city=address_info.city,
                 postal_code=address_info.postcode,
                 latitude=address_info.latitude,
@@ -463,27 +450,11 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel, author: users_
                 insee_code=address_info.citycode,
                 ban_id=address_info.id,
             )
-        else:
-            insee_code = None
-            if address.city and address.postalCode:
-                # Address entered manually does not provide INSEE code, find it
-                try:
-                    insee_code = api_adresse.get_municipality_centroid(address.city, address.postalCode).citycode
-                except api_adresse.AdresseException:
-                    pass
+        )
+        offerer_address = create_offerer_address(venue_data.managingOffererId, address.id)
+    else:
+        offerer_address = get_offerer_address_from_address(venue.managingOffererId, address)
 
-            location_data = LocationData(
-                city=typing.cast(str, address.city),
-                postal_code=typing.cast(str, address.postalCode),
-                latitude=typing.cast(float, address.latitude),
-                longitude=typing.cast(float, address.longitude),
-                street=address.street,
-                ban_id=address.banId,
-                insee_code=insee_code,
-            )
-
-    address = get_or_create_address(location_data, is_manual_edition=address.isManualEdition)
-    offerer_address = create_offerer_address(venue_data.managingOffererId, address.id)
     venue.offererAddressId = offerer_address.id
 
     data = venue_data.dict(by_alias=True)
@@ -2976,6 +2947,19 @@ def create_offerer_address_from_address_api(address: offerers_schemas.AddressBod
             ban_id=address_info.id,
         )
     return get_or_create_address(location_data, is_manual_edition=address.isManualEdition)
+
+
+def get_offerer_address_from_address(
+    offerer_id: int, address: offerers_schemas.AddressBodyModel
+) -> offerers_models.OffererAddress:
+    if not address.label:
+        address.label = None
+    address_from_api = create_offerer_address_from_address_api(address)
+    return get_or_create_offerer_address(
+        offerer_id,
+        address_from_api.id,
+        label=address.label,
+    )
 
 
 def update_fraud_info(

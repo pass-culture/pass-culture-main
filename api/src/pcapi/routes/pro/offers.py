@@ -15,6 +15,7 @@ from pcapi.core.external import subcategory_suggestion
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
+import pcapi.core.offerers.api as offerers_api
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
 from pcapi.core.offers import schemas as offers_schemas
@@ -319,7 +320,9 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Ge
     )
     offerer_address: offerers_models.OffererAddress | None = None
     offerer_address = (
-        offers_api.get_offerer_address_from_address(venue, body.address) if body.address else venue.offererAddress
+        offerers_api.get_offerer_address_from_address(venue.managingOffererId, body.address)
+        if body.address
+        else venue.offererAddress
     )
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     try:
