@@ -343,13 +343,6 @@ def _batch_validate_or_reject_collective_offers(
             else:
                 collective_offer.rejectionReason = reason
 
-            try:
-                db.session.flush()
-            except Exception:  # pylint: disable=broad-except
-                mark_transaction_as_invalid()
-                collective_offer_update_failed_ids.append(collective_offer.id)
-                continue
-
             collective_offer_update_succeed_ids.append(collective_offer.id)
 
             recipients = (
@@ -372,6 +365,14 @@ def _batch_validate_or_reject_collective_offers(
             if validation is offer_mixin.OfferValidationStatus.APPROVED and collective_offer.institutionId is not None:
                 try:
                     adage_client.notify_institution_association(serialize_collective_offer(collective_offer))
+                except educational_exceptions.AdageInvalidEmailException:
+                    # in the case of an invalid institution email, adage is not notified but we still want to validate of reject the offer
+                    flash(
+                        Markup("Email invalide pour l'offre {offer_id}, Adage n'a pas été notifié").format(
+                            offer_id=collective_offer.id
+                        )
+                    )
+                    # we will continue and flush the collective_offer modifications
                 except educational_exceptions.AdageException as exp:
                     flash(
                         Markup("Erreur Adage pour l'offre {offer_id}: {message}").format(
@@ -380,7 +381,15 @@ def _batch_validate_or_reject_collective_offers(
                     )
                     mark_transaction_as_invalid()
                     collective_offer_update_failed_ids.append(collective_offer.id)
+                    # we need to continue to next iteration and not flush the collective_offer modifications
                     continue
+
+            # we flush the collective_offer modifications
+            try:
+                db.session.flush()
+            except Exception:  # pylint: disable=broad-except
+                mark_transaction_as_invalid()
+                collective_offer_update_failed_ids.append(collective_offer.id)
 
     if len(collective_offer_update_succeed_ids) == 1:
         flash(

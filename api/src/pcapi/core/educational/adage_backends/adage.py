@@ -16,14 +16,25 @@ from pcapi.utils import requests
 
 
 logger = logging.getLogger(__name__)
+
 STATUS_CODE_FOR_INSTITUTION_WITHOUT_EMAIL = 404
 ERROR_CODE_FOR_INSTITUTION_WITHOUT_EMAIL = "EMAIL_ADDRESS_DOES_NOT_EXIST"
+
+STATUS_CODE_FOR_INVALID_INSTITUTION_EMAIL = 450
+ERROR_CODE_FOR_INVALID_INSTITUTION_EMAIL = "EMAIL_ADRESS_INCORRECT"  # check error code
 
 
 def is_adage_institution_without_email(api_response: requests.Response) -> bool:
     return (
         api_response.status_code == STATUS_CODE_FOR_INSTITUTION_WITHOUT_EMAIL
         and dict(api_response.json()).get("detail") == ERROR_CODE_FOR_INSTITUTION_WITHOUT_EMAIL
+    )
+
+
+def is_adage_institution_email_invalid(api_response: requests.Response) -> bool:
+    return (
+        api_response.status_code == STATUS_CODE_FOR_INVALID_INSTITUTION_EMAIL
+        and dict(api_response.json()).get("detail") == ERROR_CODE_FOR_INVALID_INSTITUTION_EMAIL
     )
 
 
@@ -34,7 +45,11 @@ class AdageHttpClient(AdageClient):
         super().__init__()
 
     @staticmethod
-    def _get_api_adage_exception(api_response: requests.Response, message: str) -> exceptions.AdageException:
+    def _get_api_adage_exception(
+        api_response: requests.Response,
+        message: str,
+        exception_class: type[exceptions.AdageException] = exceptions.AdageException,
+    ) -> exceptions.AdageException:
         try:
             json_response = api_response.json()
         except JSONDecodeError:
@@ -50,7 +65,7 @@ class AdageHttpClient(AdageClient):
         if detail:
             full_message = f"{full_message} - error code: {detail}"
 
-        return exceptions.AdageException(
+        return exception_class(
             message=full_message, status_code=api_response.status_code, response_text=api_response.text
         )
 
@@ -166,8 +181,17 @@ class AdageHttpClient(AdageClient):
             logger.info("could not connect to adage, error: %s", traceback.format_exc())
             raise self._get_connection_error_adage_exception() from exp
 
-        if api_response.status_code != 201 and not is_adage_institution_without_email(api_response):
-            raise self._get_api_adage_exception(api_response, "Error getting Adage API")
+        if api_response.status_code != 201:
+            if is_adage_institution_email_invalid(api_response):
+                logger.warning("Invalid email sent in adage offre-assoc call for offer %s", data.id)
+                raise self._get_api_adage_exception(
+                    api_response,
+                    "Error getting Adage API because of invalid email",
+                    exception_class=exceptions.AdageInvalidEmailException,
+                )
+
+            if not is_adage_institution_without_email(api_response):
+                raise self._get_api_adage_exception(api_response, "Error getting Adage API")
 
     def get_cultural_partner(self, siret: str) -> venues_serialize.AdageCulturalPartner:
         api_url = f"{self.base_url}/v1/etablissement-culturel/{siret}"
