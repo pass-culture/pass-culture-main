@@ -168,6 +168,37 @@ def save_industrial_sandbox() -> None:
     create_industrial_bookings_for_statistics()
 
     create_user_account_update_requests()
+    
+    import sqlalchemy.orm as sa_orm
+
+    from pcapi.core.offerers.models import Venue
+    from pcapi.core.bookings.models import BookingStatus
+    from pcapi.core.bookings.models import Booking
+
+    def venues_with_a_used_booking():
+        def used_booking_or_none(bookings):
+            if not bookings:
+                return None
+
+            used_booking = [b for b in venue.bookings if b.status == BookingStatus.USED][:1]
+            if used_booking:
+                return used_booking[0]
+
+            return None
+
+        query = Venue.query.options(sa_orm.selectinload(Venue.bookings).load_only(Booking.status))
+        venues_with_a_used_booking = {
+            venue: used_booking_or_none(venue.bookings)
+            for venue in query
+        }
+
+        return {
+            venue: bookings
+            for venue, bookings in venues_with_a_used_booking.items()
+            if bookings
+        }
+
+    import ipdb; ipdb.set_trace()
 
     # should be the last function called to create invoices
     build_many_extra_invoices()
