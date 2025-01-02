@@ -7,7 +7,7 @@
   justify-content: center;
   gap: rem.torem(16px);
 
-  @include fonts.caption;
+  @include fonts.body-accent-xs;
 }
 
 .button {

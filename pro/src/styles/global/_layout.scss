@@ -17,9 +17,9 @@ textarea {
 }
 
 strong {
-  @include fonts.body-exergue;
+  font-family: var(--typography-body-accent-font-family);
 }
 
 em {
-  @include fonts.body-italic;
+  font-family: var(--typography-body-italic-font-family);
 }

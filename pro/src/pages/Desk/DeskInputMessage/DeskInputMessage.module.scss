@@ -1,7 +1,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .desk-message {
-  @include fonts.caption;
+  @include fonts.body-accent-xs;
 
   white-space: pre-line;
   color: var(--color-valid);
