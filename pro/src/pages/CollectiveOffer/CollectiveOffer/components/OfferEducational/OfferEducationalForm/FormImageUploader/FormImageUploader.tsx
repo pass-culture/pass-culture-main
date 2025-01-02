@@ -12,6 +12,7 @@ export interface ImageUploaderOfferProps {
   onImageDelete: () => void
   imageOffer: OfferCollectiveImage | null
   disableForm: boolean
+  isTemplate: boolean
 }
 
 const buildInitialValues = (
@@ -27,8 +28,9 @@ export const FormImageUploader = ({
   onImageDelete,
   imageOffer,
   disableForm,
+  isTemplate
 }: ImageUploaderOfferProps) => (
-  <FormLayout.Section title="Illustrez votre offre" description='Ajoutez une image pour que votre offre ait 4 fois plus de chances d’être consultée !'>
+  <FormLayout.Section title="Illustrez votre offre" description={isTemplate ? 'Ajoutez une image pour que votre offre ait 2 fois plus de chances d’être consultée !' : ''}>
     <FormLayout.Row>
       <ImageUploader
         onImageUpload={onImageUpload}
