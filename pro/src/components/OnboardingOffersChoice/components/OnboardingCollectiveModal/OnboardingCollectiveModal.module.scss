@@ -4,25 +4,25 @@
 @use "styles/mixins/_a11y.scss" as a11y;
 @use "styles/mixins/_size.scss" as size;
 
-.dms-modal {
+.onboarding-collective-modal {
   max-width: rem.torem(910px);
   padding: rem.torem(16px);
 }
 
-.dms-title {
+.onboarding-collective-title {
   @include fonts-design-system.title1;
 
   margin-bottom: rem.torem(16px);
 }
 
-.dms-text {
+.onboarding-collective-text {
   @include fonts-design-system.body;
 
   line-height: var(--line-height-m);
   margin-bottom: rem.torem(32px);
 }
 
-.dms-steps {
+.onboarding-collective-steps {
   display: grid;
   grid-template-columns: 1fr;
   justify-items: center;
@@ -41,7 +41,7 @@
   }
 }
 
-.dms-step {
+.onboarding-collective-step {
   max-width: rem.torem(177px);
 
   &-icon {
@@ -56,13 +56,13 @@
   }
 }
 
-.dms-actions {
+.onboarding-collective-actions {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
 }
 
-.dms-button {
+.onboarding-collective-button {
   margin-bottom: rem.torem(24px);
 }
 

@@ -16,13 +16,15 @@ import acceptationIcon from './assets/acceptation.svg'
 import calendarIcon from './assets/calendrier.svg'
 import offerCreationIcon from './assets/creation_offre.svg'
 import fileSubmissionIcon from './assets/depot_dossier.svg'
-import styles from './DMSModal.module.scss'
+import styles from './OnboardingCollectiveModal.module.scss'
 
-interface DMSModalProps {
+interface OnboardingCollectiveModalProps {
   className?: string
 }
 
-export const DMSModal = ({ className }: DMSModalProps): JSX.Element => {
+export const OnboardingCollectiveModal = ({
+  className,
+}: OnboardingCollectiveModalProps): JSX.Element => {
   const [error, setError] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const currentOffererId = useSelector(selectCurrentOffererId)
@@ -53,45 +55,47 @@ export const DMSModal = ({ className }: DMSModalProps): JSX.Element => {
 
   return (
     <div
-      className={cn(styles[`dms-modal`], className)}
-      data-testid="onboarding-dms-modal"
+      className={cn(styles[`onboarding-collective-modal`], className)}
+      data-testid="onboarding-collective-modal"
     >
-      <h1 className={styles['dms-title']}>Quelles sont les étapes ?</h1>
-      <p className={styles['dms-text']}>
+      <h1 className={styles['onboarding-collective-title']}>
+        Quelles sont les étapes ?
+      </h1>
+      <p className={styles['onboarding-collective-text']}>
         Pour continuer, vous devez compléter un dossier qui sera examiné par les
         services d’État pour vérifier votre éligibilité au dispositif pass
         Culture.
       </p>
-      <div className={styles['dms-steps']}>
-        <DMSStep
+      <div className={styles['onboarding-collective-steps']}>
+        <ModalStep
           icon={fileSubmissionIcon}
           text="Dépôt du dossier de présentation de votre structure"
         />
-        <DMSStep
+        <ModalStep
           icon={acceptationIcon}
           text="Étude et validation du dossier en commission de votre territoire"
         />
-        <DMSStep
+        <ModalStep
           icon={offerCreationIcon}
           text="Création de vos offres sur le pass Culture Pro"
         />
-        <DMSStep
+        <ModalStep
           icon={calendarIcon}
           text="Réservation de vos offres par les enseignants sur ADAGE"
         />
       </div>
-      <div className={styles['dms-actions']}>
+      <div className={styles['onboarding-collective-actions']}>
         <ButtonLink
           isExternal
           opensInNewTab
-          className={styles['dms-button']}
+          className={styles['onboarding-collective-button']}
           variant={ButtonVariant.PRIMARY}
           to="https://www.demarches-simplifiees.fr/commencer/demande-de-referencement-sur-adage"
         >
           Déposer un dossier
         </ButtonLink>
         <Button
-          className={styles['dms-button']}
+          className={styles['onboarding-collective-button']}
           variant={ButtonVariant.TERNARY}
           icon={fullNextIcon}
           onClick={checkEligibility}
@@ -113,11 +117,15 @@ export const DMSModal = ({ className }: DMSModalProps): JSX.Element => {
   )
 }
 
-function DMSStep({ icon, text }: { icon: string; text: string }) {
+function ModalStep({ icon, text }: { icon: string; text: string }) {
   return (
-    <div className={styles['dms-step']}>
-      <img src={icon} alt="" className={styles['dms-step-icon']} />
-      <p className={styles['dms-step-text']}>{text}</p>
+    <div className={styles['onboarding-collective-step']}>
+      <img
+        src={icon}
+        alt=""
+        className={styles['onboarding-collective-step-icon']}
+      />
+      <p className={styles['onboarding-collective-step-text']}>{text}</p>
     </div>
   )
 }

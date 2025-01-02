@@ -10,10 +10,12 @@ import {
   RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
 
-import { DMSModal } from './DMSModal'
+import { OnboardingCollectiveModal } from './OnboardingCollectiveModal'
 
-const renderDMSModal = (options?: RenderWithProvidersOptions) => {
-  return renderWithProviders(<DMSModal />, {
+const renderOnboardingCollectiveModal = (
+  options?: RenderWithProvidersOptions
+) => {
+  return renderWithProviders(<OnboardingCollectiveModal />, {
     storeOverrides: {
       user: { currentUser: sharedCurrentUserFactory() },
       offerer: { selectedOffererId: 1, offererNames: [] },
@@ -23,9 +25,9 @@ const renderDMSModal = (options?: RenderWithProvidersOptions) => {
   })
 }
 
-describe('<DMSModal />', () => {
+describe('<OnboardingCollectiveModal />', () => {
   it('should render correctly', async () => {
-    renderDMSModal()
+    renderOnboardingCollectiveModal()
 
     expect(
       await screen.findByRole('heading', { name: /Quelles sont les étapes ?/ })
@@ -41,7 +43,7 @@ describe('<DMSModal />', () => {
   })
 
   it('should not have accessibility violations', async () => {
-    const { container } = renderDMSModal()
+    const { container } = renderOnboardingCollectiveModal()
 
     expect(await axe(container)).toHaveNoViolations()
   })
@@ -59,7 +61,7 @@ describe('<DMSModal />', () => {
     }))
 
     it('should request the API when clicking on "J’ai déposé un dossier"', async () => {
-      renderDMSModal()
+      renderOnboardingCollectiveModal()
 
       await userEvent.click(
         await screen.findByRole('button', { name: /J’ai déposé un dossier/ })
@@ -76,7 +78,7 @@ describe('<DMSModal />', () => {
         isOnboarded: true,
       })
 
-      renderDMSModal()
+      renderOnboardingCollectiveModal()
 
       await userEvent.click(
         await screen.findByRole('button', { name: /J’ai déposé un dossier/ })
@@ -91,7 +93,7 @@ describe('<DMSModal />', () => {
         isOnboarded: false,
       })
 
-      renderDMSModal()
+      renderOnboardingCollectiveModal()
 
       await userEvent.click(
         await screen.findByRole('button', { name: /J’ai déposé un dossier/ })

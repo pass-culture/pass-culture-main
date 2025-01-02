@@ -7,7 +7,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 
 import collective from './assets/collective.jpeg'
 import individuelle from './assets/individuelle.jpeg'
-import { DMSModal } from './components/DMSModal/DMSModal'
+import { OnboardingCollectiveModal } from './components/OnboardingCollectiveModal/OnboardingCollectiveModal'
 import styles from './OnboardingOffersChoice.module.scss'
 
 interface CardProps {
@@ -76,7 +76,7 @@ export const OnboardingOffersChoice = () => {
             }
             open={showModal}
           >
-            <DMSModal />
+            <OnboardingCollectiveModal />
           </Dialog>
         }
       >

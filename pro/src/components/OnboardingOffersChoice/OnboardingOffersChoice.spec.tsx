@@ -45,13 +45,13 @@ describe('OnboardingOffersChoice Component', () => {
     expect(secondCardButton).toBeInTheDocument()
   })
 
-  it('displays the DMS modal when the second button is clicked', async () => {
+  it('displays the onboarding collective modal when the second button is clicked', async () => {
     await userEvent.click(
       screen.getByTitle('Commencer la création d’offre sur ADAGE')
     )
 
     expect(
-      await screen.findByTestId('onboarding-dms-modal')
+      await screen.findByTestId('onboarding-collective-modal')
     ).toBeInTheDocument()
   })
 })
