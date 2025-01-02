@@ -94,6 +94,7 @@ def _process_dms_application(
     state: dms_models.GraphQLApplicationStates,
     user: users_models.User,
 ) -> None:
+    breakpoint()
     birth_date_error = _compute_birth_date_error_details(fraud_check, application_content)
 
     if state == dms_models.GraphQLApplicationStates.draft:
@@ -134,6 +135,7 @@ def _process_dms_application(
 def handle_dms_application(
     dms_application: dms_models.DmsApplicationResponse,
 ) -> fraud_models.BeneficiaryFraudCheck | None:
+    breakpoint()
     application_number = dms_application.number
     user_email = email_utils.sanitize_email(dms_application.applicant.email or dms_application.profile.email)
     application_scalar_id = dms_application.id
