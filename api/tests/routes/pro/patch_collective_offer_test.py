@@ -534,6 +534,18 @@ class Returns400Test:
             "bookingEmails.2": ["Le format d'email est incorrect."],
         }
 
+    def test_patch_collective_offer_replacing_by_venue_with_no_pricing_point(self, auth_client, venue):
+        offer = educational_factories.ActiveCollectiveOfferFactory(venue=venue)
+
+        other_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+
+        endpoint = "Private API.edit_collective_offer"
+        patch_path = "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"
+        with patch(patch_path):
+            response = auth_client.patch(url_for(endpoint, offer_id=offer.id), json={"venueId": other_venue.id})
+            assert response.status_code == 400
+            assert response.json == {"venueId": ["No venue with a pricing point found for the destination venue."]}
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
