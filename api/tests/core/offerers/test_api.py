@@ -1845,6 +1845,7 @@ def test_get_offerer_stats_dashboard_url():
 
 class GetOffererTotalRevenueTest:
     def _create_data(self):
+        today = datetime.datetime.now(datetime.timezone.utc)
         offerer = offerers_factories.OffererFactory()
         bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer, stock__price=10)
         bookings_factories.UsedBookingFactory(
@@ -1860,7 +1861,9 @@ class GetOffererTotalRevenueTest:
             collectiveStock__collectiveOffer__venue__managingOfferer=offerer, collectiveStock__price=1333
         )
         educational_factories.UsedCollectiveBookingFactory(
-            collectiveStock__collectiveOffer__venue__managingOfferer=offerer, collectiveStock__price=1444
+            dateUsed=today,
+            collectiveStock__collectiveOffer__venue__managingOfferer=offerer,
+            collectiveStock__price=1444,
         )
         educational_factories.ReimbursedCollectiveBookingFactory(
             collectiveStock__collectiveOffer__venue__managingOfferer=offerer,

@@ -110,7 +110,7 @@ class CheckOffererTest:
                     "Attestation IS",
                     "Forme juridique",
                     "Offres réservables",
-                    "CA 2024",
+                    f"CA {datetime.date.today().year}",
                     "Lien Backoffice",
                 ],
                 [
