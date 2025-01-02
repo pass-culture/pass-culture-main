@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { SaveNewOnboardingDataQueryModel, Target, AddressBodyModel } from 'apiClient/v1'
+import { SaveNewOnboardingDataQueryModel, Target } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_VENUE_TYPES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { DEFAULT_ACTIVITY_VALUES } from 'commons/context/SignupJourneyContext/constants'
@@ -14,6 +14,7 @@ import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
 } from 'commons/core/shared/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { useInitReCaptcha } from 'commons/hooks/useInitReCaptcha'
 import { useNotification } from 'commons/hooks/useNotification'
@@ -37,6 +38,7 @@ export const Validation = (): JSX.Element => {
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const navigate = useNavigate()
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   const { activity, offerer } = useSignupJourneyContext()
   useInitReCaptcha()
 
@@ -101,6 +103,9 @@ export const Validation = (): JSX.Element => {
           city: offerer.city,
           postalCode: offerer.postalCode,
           street: offerer.street,
+          ...(isOfferAddressEnabled && {
+            isManualEdition: offerer.manuallySetAddress,
+          }),
         },
         token,
       }
