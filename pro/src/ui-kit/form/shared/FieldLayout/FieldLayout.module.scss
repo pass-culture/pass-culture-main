@@ -64,10 +64,10 @@
   }
 
   &-input-description {
-    @include fonts.body-accent-xs;
+    @include fonts.body-xs;
 
     display: block;
-    color: var(--color-grey-dark);
+    color: var(--color-text-subtle);
   }
 }
 

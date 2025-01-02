@@ -11,12 +11,11 @@
   appearance: none;
   min-height: size.$input-min-height;
   line-height: 1.3;
-  border: solid size.$input-border-width var(--color-input-border-color);
+  border: solid size.$input-border-width var(--color-interactive-border-default);
   border-radius: rem.torem(forms.$input-border-radius);
-  background-color: var(--color-input-bg-color);
+  background-color: var(--color-background-default);
   padding: 0 rem.torem(16px);
-  color: var(--color-input-text-color);
-  box-shadow: 0 0 0 0 var(--color-black);
+  color: var(--color-text-default);
   transition:
     background 150ms ease,
     box-shadow 150ms ease;
@@ -24,13 +23,8 @@
 
 @mixin input-theme-nested {
   &:focus {
-    outline: solid size.$input-border-width
-      var(--color-input-border-color-focus);
-    border-color: var(--color-input-border-color-focus);
-  }
-
-  &:hover:not(:focus) {
-    box-shadow: forms.$input-hover-shadow;
+    outline: solid size.$input-border-width var(--color-border-focused);
+    border-color: var(--color-border-focused);
   }
 
   &:disabled {
@@ -39,10 +33,6 @@
     color: var(--color-input-text-color-disabled);
     opacity: 1;
     border-color: var(--color-input-border-color-disabled);
-
-    &:hover {
-      box-shadow: none;
-    }
   }
 
   &::placeholder {
@@ -60,8 +50,8 @@
 }
 
 @mixin input-theme-error {
-  border-color: var(--color-input-border-color-error);
-  outline-color: var(--color-input-border-color-error);
+  border-color: var(--color-border-error);
+  outline-color: var(--color-border-error);
 }
 
 @mixin input-icon-wrapper(

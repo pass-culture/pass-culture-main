@@ -45,8 +45,8 @@
 
   &-input {
     appearance: none;
-    background-color: var(--color-input-bg-color);
-    border: rem.torem(2px) solid var(--color-grey-dark);
+    background-color: var(--color-background-default);
+    border: rem.torem(2px) solid var(--color-border-default);
     border-radius: rem.torem(3px);
     transition:
       border 150ms ease,
