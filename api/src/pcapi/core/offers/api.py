@@ -47,7 +47,6 @@ import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.offerers.models as offerers_models
-import pcapi.core.offerers.schemas as offerers_schemas
 from pcapi.core.offers import models as offers_models
 import pcapi.core.offers.validation as offers_validation
 from pcapi.core.providers.allocine import get_allocine_products_provider
@@ -336,19 +335,6 @@ def create_offer(
     return offer
 
 
-def get_offerer_address_from_address(
-    venue: offerers_models.Venue, address: offerers_schemas.AddressBodyModel
-) -> offerers_models.OffererAddress:
-    if not address.label:
-        address.label = None
-    address_from_api = offerers_api.create_offerer_address_from_address_api(address)
-    return offerers_api.get_or_create_offerer_address(
-        venue.managingOffererId,
-        address_from_api.id,
-        label=address.label,
-    )
-
-
 def update_offer(
     offer: models.Offer,
     body: offers_schemas.UpdateOffer,
@@ -364,7 +350,9 @@ def update_offer(
         if address.isVenueAddress:
             fields["offererAddress"] = offer.venue.offererAddress
         else:
-            fields["offererAddress"] = get_offerer_address_from_address(offer.venue, body.address)
+            fields["offererAddress"] = offerers_api.get_offerer_address_from_address(
+                offer.venue.managingOffererId, body.address
+            )
         fields.pop("address", None)
 
     should_send_mail = fields.pop("shouldSendMail", False)
