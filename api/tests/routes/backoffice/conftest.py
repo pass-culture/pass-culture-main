@@ -501,8 +501,9 @@ def offerer_stocks_fixture(offerer_active_individual_offers):
 
 
 @pytest.fixture(name="individual_offerer_bookings")
-def individual_offerer_bookings_fixture(offerer_stocks):
+def individual_offerer_bookings_fixture(offerer_stocks, today):
     used_simple = bookings_factories.UsedBookingFactory(
+        dateUsed=today,
         quantity=1,
         amount=10,
         stock=offerer_stocks[0],
@@ -531,12 +532,18 @@ def collective_offerer_booking_fixture(venue_with_educational_status):
     return used, cancelled
 
 
+@pytest.fixture(name="today", scope="module")
+def today_fixture():
+    return datetime.datetime.now(datetime.timezone.utc)
+
+
 @pytest.fixture(name="collective_venue_booking")
-def collective_venue_booking_fixture(venue_with_accepted_bank_account):
+def collective_venue_booking_fixture(venue_with_accepted_bank_account, today):
     educational_status = offerers_factories.VenueEducationalStatusFactory()
     venue_with_accepted_bank_account.venueEducationalStatusId = educational_status.id
     stock = educational_factories.CollectiveStockFactory(price=42)
     used = educational_factories.UsedCollectiveBookingFactory(
+        dateUsed=today,
         collectiveStock=stock,
         venue=venue_with_accepted_bank_account,
     )
