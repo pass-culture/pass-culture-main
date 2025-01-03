@@ -12,10 +12,6 @@ from pcapi.core.finance import models as finance_models
 logger = logging.getLogger(__name__)
 
 
-def are_cashflows_being_generated() -> bool:
-    return bool(app.redis_client.exists(conf.REDIS_PUSH_BANK_ACCOUNT_LOCK))
-
-
 def push_bank_accounts(count: int) -> None:
     if bool(app.redis_client.exists(conf.REDIS_PUSH_BANK_ACCOUNT_LOCK)):
         return
@@ -60,3 +56,43 @@ def push_bank_accounts(count: int) -> None:
                 time.sleep(time_to_sleep)
     finally:
         app.redis_client.delete(conf.REDIS_PUSH_BANK_ACCOUNT_LOCK)
+
+
+def push_invoices(count: int) -> None:
+    invoices_query = finance_models.Invoice.query.filter(
+        finance_models.Invoice.status == finance_models.InvoiceStatus.PENDING,
+    ).with_entities(finance_models.Invoice.id)
+    if count != 0:
+        invoices_query = invoices_query.limit(count)
+
+    invoices = invoices_query.all()
+
+    if not invoices:
+        return
+
+    app.redis_client.set(conf.REDIS_PUSH_INVOICE_LOCK, "1", ex=conf.REDIS_PUSH_INVOICE_LOCK_TIMEOUT)
+
+    try:
+        invoice_ids = [e[0] for e in invoices]
+        for invoice_id in invoice_ids:
+            try:
+                backend_name = finance_backend.get_backend_name()
+                logger.info("Push invoice", extra={"invoice_id": invoice_id, "backend": backend_name})
+                finance_backend.push_invoice(invoice_id)
+            except Exception as exc:  # pylint: disable=broad-except
+                logger.exception(
+                    "Unable to push invoice",
+                    extra={
+                        "invoice_id": invoice_id,
+                        "exc": str(exc),
+                    },
+                )
+                # Wait until next cron run to continue sync process
+                break
+            else:
+                finance_models.Invoice.query.filter(finance_models.Invoice.id == invoice_id).update(
+                    {"status": finance_models.InvoiceStatus.PENDING_PAYMENT},
+                    synchronize_session=False,
+                )
+    finally:
+        app.redis_client.delete(conf.REDIS_PUSH_INVOICE_LOCK)
