@@ -2,6 +2,7 @@ import pytest
 
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
+from pcapi.utils.postal_code import INELIGIBLE_POSTAL_CODES
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -34,6 +35,7 @@ class SettingsTest:
             "isRecaptchaEnabled": True,
             "objectStorageUrl": "http://localhost/storage",
             "accountUnsuspensionLimit": 60,
+            "ineligiblePostalCodes": INELIGIBLE_POSTAL_CODES,
         }
 
     @override_features(
@@ -62,4 +64,5 @@ class SettingsTest:
             "isRecaptchaEnabled": False,
             "objectStorageUrl": "http://localhost/storage",
             "accountUnsuspensionLimit": 60,
+            "ineligiblePostalCodes": INELIGIBLE_POSTAL_CODES,
         }
