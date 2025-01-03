@@ -8,6 +8,7 @@ from pydantic.v1.utils import GetterDict
 from sqlalchemy.engine import Row
 import sqlalchemy.orm as sqla_orm
 
+from pcapi.serialization.utils import to_camel
 from pcapi import settings
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Target
@@ -424,3 +425,17 @@ class OffererHeadLineOfferResponseModel(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class OffererEligibilityResponseModel(BaseModel):
+    offerer_id: int
+    has_adage_id: bool | None
+    has_ds_application: bool | None
+    is_onboarded: bool | None
+
+    class Config:
+        alias_generator = to_camel
+
+    # @property
+    # def is_onboarded(self) -> bool:
+    #     return self.has_adage_id or self.has_ds_application

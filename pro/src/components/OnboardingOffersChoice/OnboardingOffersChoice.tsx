@@ -1,22 +1,23 @@
-import { ReactNode } from 'react'
+import { ReactNode, useState } from 'react'
 
+import { Dialog } from 'components/Dialog/Dialog'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import collective from './assets/collective.jpeg'
 import individuelle from './assets/individuelle.jpeg'
+import { OnboardingCollectiveModal } from './components/OnboardingCollectiveModal/OnboardingCollectiveModal'
 import styles from './OnboardingOffersChoice.module.scss'
 
 interface CardProps {
   imageSrc: string
   title: string
   children: ReactNode
-  buttonTitle: string
-  to?: string
+  actions: ReactNode
 }
 
-const Card = ({ imageSrc, title, children, buttonTitle, to }: CardProps) => {
+const Card = ({ imageSrc, title, children, actions }: CardProps) => {
   return (
     <div className={styles['card']}>
       <div className={styles['card-content']}>
@@ -25,34 +26,29 @@ const Card = ({ imageSrc, title, children, buttonTitle, to }: CardProps) => {
           <h3 className={styles['card-title']}>{title}</h3>
           <p className={styles['card-description']}>{children}</p>
         </div>
-        <div className={styles['card-button']}>
-          {to ? (
-            <ButtonLink
-              variant={ButtonVariant.PRIMARY}
-              to={to}
-              title={buttonTitle}
-            >
-              Commencer
-            </ButtonLink>
-          ) : (
-            <Button type="submit" title={buttonTitle}>
-              Commencer
-            </Button>
-          )}
-        </div>
+        <div className={styles['card-button']}>{actions}</div>
       </div>
     </div>
   )
 }
 
 export const OnboardingOffersChoice = () => {
+  const [showModal, setShowModal] = useState(false)
+
   return (
     <div className={styles['card-container']}>
       <Card
         imageSrc={individuelle}
         title="Aux jeunes sur l’application mobile pass Culture"
-        buttonTitle="Commencer la création d’offre sur l’application mobile"
-        to={'/onboarding/individuel'}
+        actions={
+          <ButtonLink
+            variant={ButtonVariant.PRIMARY}
+            to="/onboarding/individuel"
+            title="Commencer la création d’offre sur l’application mobile"
+          >
+            Commencer
+          </ButtonLink>
+        }
       >
         Vos offres seront visibles par{' '}
         <strong className={styles['card-description-highlight']}>
@@ -64,7 +60,25 @@ export const OnboardingOffersChoice = () => {
       <Card
         imageSrc={collective}
         title="Aux enseignants sur la plateforme ADAGE"
-        buttonTitle="Commencer la création d’offre sur ADAGE"
+        actions={
+          <Dialog
+            title=""
+            onCancel={() => setShowModal(false)}
+            hideIcon={true}
+            trigger={
+              <Button
+                type="submit"
+                title="Commencer la création d’offre sur ADAGE"
+                onClick={() => setShowModal(true)}
+              >
+                Commencer
+              </Button>
+            }
+            open={showModal}
+          >
+            <OnboardingCollectiveModal />
+          </Dialog>
+        }
       >
         Vos offres seront visibles par{' '}
         <strong className={styles['card-description-highlight']}>
