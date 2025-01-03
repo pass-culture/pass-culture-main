@@ -1,6 +1,7 @@
 import cn from 'classnames'
 import { useField } from 'formik'
 
+import { CheckboxVariant } from '../shared/BaseCheckbox/BaseCheckbox'
 import { FieldSetLayout } from '../shared/FieldSetLayout/FieldSetLayout'
 
 import styles from './CheckboxGroup.module.scss'
@@ -19,6 +20,7 @@ interface CheckboxGroupProps {
   className?: string
   disabled?: boolean
   isOptional?: boolean
+  variant?: CheckboxVariant
 }
 
 export const CheckboxGroup = ({
@@ -28,6 +30,7 @@ export const CheckboxGroup = ({
   className,
   disabled,
   isOptional,
+  variant,
 }: CheckboxGroupProps): JSX.Element => {
   const [, meta, helpers] = useField({ name: groupName })
   const hasError = meta.touched && !!meta.error
@@ -53,6 +56,7 @@ export const CheckboxGroup = ({
             disabled={disabled}
             onChange={item.onChange}
             {...(hasError ? { ariaDescribedBy: `error-${groupName}` } : {})}
+            variant={variant}
           />
         </div>
       ))}

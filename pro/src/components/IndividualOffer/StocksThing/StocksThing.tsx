@@ -34,6 +34,7 @@ import {
   Quantity,
   QuantityInput,
 } from 'ui-kit/form/QuantityInput/QuantityInput'
+import { CheckboxVariant } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
@@ -469,7 +470,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                   label="Accepter les réservations “Duo“"
                   name="isDuo"
                   disabled={isDisabled}
-                  withBorder
+                  variant={CheckboxVariant.BOX}
                 />
               </FormLayout.Row>
             </FormLayout.Section>
