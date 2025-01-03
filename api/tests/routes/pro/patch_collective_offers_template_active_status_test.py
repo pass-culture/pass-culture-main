@@ -5,6 +5,7 @@ import pytest
 from pcapi.core import testing
 from pcapi.core.educational.factories import CollectiveOfferFactory
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
+from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.educational.models import CollectiveOfferTemplate
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.models import OfferValidationStatus
@@ -12,6 +13,7 @@ from pcapi.core.offers.models import OfferValidationStatus
 
 @pytest.mark.usefixtures("db_session")
 class Returns204Test:
+    @testing.override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def when_activating_existing_offers(self, client):
         # Given
         offer1 = CollectiveOfferTemplateFactory(isActive=False)
@@ -34,10 +36,11 @@ class Returns204Test:
         assert CollectiveOfferTemplate.query.get(offer1.id).isActive
         assert CollectiveOfferTemplate.query.get(offer2.id).isActive
 
+    @testing.override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def when_deactivating_existing_offers(self, client):
-        # Given
         offer1 = CollectiveOfferTemplateFactory()
         venue = offer1.venue
+
         offer2 = CollectiveOfferTemplateFactory(venue=venue)
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
@@ -53,6 +56,7 @@ class Returns204Test:
         assert not CollectiveOfferTemplate.query.get(offer1.id).isActive
         assert not CollectiveOfferTemplate.query.get(offer2.id).isActive
 
+    @testing.override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_only_approved_offers_patch(self, client):
         approved_offer = CollectiveOfferTemplateFactory(isActive=False)
         venue = approved_offer.venue
@@ -80,6 +84,7 @@ class Returns204Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
+    @testing.override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_when_activating_all_existing_offers_active_status_when_cultural_partners_not_found(self, client):
         # Given
         offer1 = CollectiveOfferFactory(isActive=False)
