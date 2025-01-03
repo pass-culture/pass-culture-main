@@ -95,7 +95,7 @@ export const CollectiveOfferRow = ({
         <OfferEventDateCell
           rowId={rowId}
           offer={offer}
-          className={styles['collective-cell-expiration-date']}
+          className={styles['collective-cell-event-date']}
         />
         <OfferVenueCell
           rowId={rowId}

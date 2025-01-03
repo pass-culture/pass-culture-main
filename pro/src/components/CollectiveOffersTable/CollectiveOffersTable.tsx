@@ -52,7 +52,7 @@ export const CollectiveOffersTable = ({
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const columns: Columns[] = [
-    { ...CELLS_DEFINITIONS.INFO_ON_EXPIRATION },
+    { ...CELLS_DEFINITIONS.INFO_ON_EXPIRATION, isVisuallyHidden: true },
     { ...CELLS_DEFINITIONS.THUMB, isVisuallyHidden: true },
     { ...CELLS_DEFINITIONS.NAME, isVisuallyHidden: true },
     { ...CELLS_DEFINITIONS.EVENT_DATE, sortableProps: {

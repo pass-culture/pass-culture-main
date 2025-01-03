@@ -34,6 +34,7 @@ export function ExpirationCell({
 
   return (
     <td
+      role="cell"
       colSpan={8}
       headers={`${rowId} ${CELLS_DEFINITIONS.INFO_ON_EXPIRATION.id}`}
       className={classNames(styles['expiration-cell'], className)}

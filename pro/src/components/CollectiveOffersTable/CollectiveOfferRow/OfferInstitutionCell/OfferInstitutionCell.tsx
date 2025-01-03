@@ -27,6 +27,7 @@ export const OfferInstitutionCell = ({
 
   return (
     <td
+      role="cell"
       className={classNames(
         styles['offers-table-cell'],
         styles['institution-column'],

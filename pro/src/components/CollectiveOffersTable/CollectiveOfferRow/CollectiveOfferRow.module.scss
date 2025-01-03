@@ -8,6 +8,7 @@
   grid-template-areas:
     "check thumb thumb"
     ". title title"
+    ". event-date event-date"
     ". venue venue"
     ". stock-or-institution stock-or-institution"
     ". status actions";
@@ -29,7 +30,7 @@
     padding-top: rem.torem(16px);
   }
 
-  &-name, &-venue, &-institution {
+  &-name, &-venue, &-event-date, &-institution {
     display: block;
     overflow-wrap: anywhere;
   }
@@ -57,7 +58,7 @@
       padding-left: rem.torem(16px);
     }
 
-    &-name, &-venue, &-institution {
+    &-name, &-venue, &-event-date, &-institution {
       display: table-cell;
     }
   }

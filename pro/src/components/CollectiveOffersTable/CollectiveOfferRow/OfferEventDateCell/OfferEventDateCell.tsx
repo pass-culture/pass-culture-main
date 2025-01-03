@@ -90,7 +90,12 @@ export const OfferEventDateCell = ({
 
   return (
     <td
-      className={classNames(styles['offers-table-cell'], className)}
+      role="cell"
+      className={classNames(
+        styles['offers-table-cell'],
+        styles['event-date-column'],
+        className
+      )}
       headers={`${rowId} ${CELLS_DEFINITIONS.EVENT_DATE.id}`}
     >
       <div className={styles['offer-event']}>
