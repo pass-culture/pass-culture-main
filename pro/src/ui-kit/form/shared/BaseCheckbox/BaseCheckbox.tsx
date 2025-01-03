@@ -66,9 +66,10 @@ export const BaseCheckbox = forwardRef(
       labelClassName
     )
     const containerClasses = cn(styles['base-checkbox'], className, {
-      [styles['with-border']]: variant === CheckboxVariant.BOX,
+      [styles['box-vairant']]: variant === CheckboxVariant.BOX,
       [styles['has-error']]: hasError,
       [styles['is-disabled']]: props.disabled,
+      [styles['is-checked']]: props.checked,
     })
 
     return (
@@ -83,21 +84,21 @@ export const BaseCheckbox = forwardRef(
             className={cn(styles['base-checkbox-input'], inputClassName)}
             id={id}
           />
-          {icon && (
-            <span className={styles['base-checkbox-icon']}>
-              <SvgIcon
-                src={icon}
-                alt=""
-                className={styles['base-checkbox-icon-svg']}
-              />
-            </span>
-          )}
           <label className={labelClasses} htmlFor={id}>
+            {icon && (
+              <span className={styles['base-checkbox-icon']}>
+                <SvgIcon
+                  src={icon}
+                  alt=""
+                  className={styles['base-checkbox-icon-svg']}
+                />
+              </span>
+            )}
             {label}
             {description && (
-              <span className={styles['base-checkbox-description']}>
+              <p className={styles['base-checkbox-description']}>
                 {description}
-              </span>
+              </p>
             )}
           </label>
         </span>
