@@ -1,4 +1,4 @@
-import cn from 'classnames'
+import classNames from 'classnames'
 import { useField } from 'formik'
 
 import { CheckboxVariant } from '../shared/BaseCheckbox/BaseCheckbox'
@@ -20,6 +20,7 @@ interface CheckboxGroupProps {
   disabled?: boolean
   isOptional?: boolean
   variant?: CheckboxVariant
+  inline?: boolean
 }
 
 export const CheckboxGroup = ({
@@ -29,6 +30,7 @@ export const CheckboxGroup = ({
   disabled,
   isOptional,
   variant,
+  inline = false,
 }: CheckboxGroupProps): JSX.Element => {
   const [, meta, helpers] = useField({ name: groupName })
   const hasError = meta.touched && !!meta.error
@@ -40,7 +42,11 @@ export const CheckboxGroup = ({
       name={groupName}
       isOptional={isOptional}
     >
-      <div className={styles['checkbox-group']}>
+      <div
+        className={classNames(styles['checkbox-group'], {
+          [styles['inline']]: inline,
+        })}
+      >
         {group.map((item) => (
           <div className={styles['checkbox-group-item']} key={item.name}>
             <CheckboxGroupItem
