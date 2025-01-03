@@ -123,7 +123,7 @@ export const LinkVenuesDialog = ({
           })}
         >
           <Dialog.Title asChild>
-            <h1 id="bank-account" className={styles['dialog-title']}>
+            <h1 className={styles['dialog-title']}>
               Compte bancaire : {selectedBankAccount.label}
             </h1>
           </Dialog.Title>
