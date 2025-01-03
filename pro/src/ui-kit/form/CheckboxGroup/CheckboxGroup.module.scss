@@ -5,3 +5,7 @@
   flex-direction: column;
   gap: rem.torem(16px);
 }
+
+.inline {
+  flex-flow: row wrap;
+}
