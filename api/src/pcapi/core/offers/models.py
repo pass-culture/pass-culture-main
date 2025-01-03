@@ -6,6 +6,7 @@ import logging
 import typing
 
 from flask_sqlalchemy import BaseQuery
+import psycopg2.extras
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 import sqlalchemy.exc as sa_exc
@@ -517,16 +518,46 @@ class HeadlineOffer(PcObject, Base, Model):
     __tablename__ = "headline_offer"
 
     offerId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), nullable=False, index=True, unique=True
+        sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), nullable=False, index=True, unique=False
     )
-    offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", back_populates="headlineOffer")
-    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True, unique=True)
+    offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", back_populates="headlineOffers")
+    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True, unique=False)
     venue: sa_orm.Mapped["Venue"] = sa_orm.relationship("Venue", back_populates="headlineOffers")
 
-    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
-    dateUpdated: datetime.datetime = sa.Column(
-        sa.DateTime, nullable=False, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
+    timespan: psycopg2.extras.DateTimeRange = sa.Column(postgresql.TSRANGE, nullable=False)
+
+    __table_args__ = (
+        # One Offer can have only one active Headline Offer at a time
+        # To do so, we check that there are no overlaping HeadlineOffer for one Offer
+        # If a timespan has no upper limit, it is the active headline offer for this offer (see property below)
+        postgresql.ExcludeConstraint((offerId, "="), (timespan, "&&"), name="exclude_offer_timespan"),
+        # Likewise, for now one venue can only have one active headline offer
+        postgresql.ExcludeConstraint((venueId, "="), (timespan, "&&"), name="exclude_venue_timespan"),
     )
+
+    def __init__(self, **kwargs: typing.Any) -> None:
+        kwargs["timespan"] = db_utils.make_timerange(*kwargs["timespan"])
+        super().__init__(**kwargs)
+
+    @hybrid_property
+    def isActive(self) -> bool:
+        now = datetime.datetime.utcnow()
+        return (
+            (self.timespan.upper is None or self.timespan.upper > now)
+            and self.timespan.lower <= now
+            and self.offer.status == OfferStatus.ACTIVE
+        )
+
+    @isActive.expression  # type: ignore[no-redef]
+    def isActive(cls) -> bool:  # pylint: disable=no-self-argument
+        now = datetime.datetime.utcnow()
+        offer_alias = sa_orm.aliased(Offer)  # avoids cartesian product
+        return sa.and_(
+            sa.or_(sa.func.upper(cls.timespan) == None, (sa.func.upper(cls.timespan) > now)),
+            sa.func.lower(cls.timespan) <= now,
+            offer_alias.id == cls.offerId,
+            offer_alias.status == OfferStatus.ACTIVE,
+        )
 
 
 class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, AccessibilityMixin):
@@ -614,8 +645,8 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     reactions: list["Reaction"] = sa.orm.relationship(
         "Reaction", back_populates="offer", uselist=True, cascade="all, delete-orphan", passive_deletes=True
     )
-    headlineOffer: sa_orm.Mapped["HeadlineOffer"] = sa_orm.relationship(
-        "HeadlineOffer", back_populates="offer", uselist=False
+    headlineOffers: sa_orm.Mapped[list["HeadlineOffer"]] = sa_orm.relationship(
+        "HeadlineOffer", back_populates="offer", uselist=True, cascade="all, delete-orphan", passive_deletes=True
     )
 
     sa.Index("idx_offer_trgm_name", name, postgresql_using="gin")
@@ -988,7 +1019,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     @property
     def is_headline_offer(self) -> bool:
-        return bool(self.headlineOffer)
+        return any(headline_offer.isActive for headline_offer in self.headlineOffers)
 
 
 class ActivationCode(PcObject, Base, Model):

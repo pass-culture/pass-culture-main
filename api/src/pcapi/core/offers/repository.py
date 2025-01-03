@@ -108,7 +108,7 @@ def get_capped_offers_for_filters(
                 models.Offer.extraData,
                 models.Offer.lastProviderId,
                 models.Offer.offererAddressId,
-            ).joinedload(models.Offer.headlineOffer)
+            ).joinedload(models.Offer.headlineOffers)
         )
         .options(
             sa_orm.joinedload(models.Offer.venue)
@@ -207,6 +207,16 @@ def get_offers_data_from_top_offers(top_offers: list[dict]) -> list[dict]:
                 models.Mediation.dateCreated,
                 models.Mediation.thumbCount,
                 models.Mediation.credit,
+            )
+        )
+        .options(sa_orm.joinedload(models.Offer.headlineOffers))
+        .options(
+            sa_orm.joinedload(models.Offer.stocks).load_only(
+                models.Stock.quantity,
+                models.Stock.isSoftDeleted,
+                models.Stock.beginningDatetime,
+                models.Stock.dnBookedQuantity,
+                models.Stock.bookingLimitDatetime,
             )
         )
         .options(
@@ -1117,6 +1127,32 @@ def get_offer_reaction_count_subquery() -> sa.sql.selectable.ScalarSelect:
     )
 
 
+def get_active_headline_offer(offer_id: int) -> models.HeadlineOffer | None:
+    return (
+        models.HeadlineOffer.query.join(models.Offer)
+        .filter(
+            models.HeadlineOffer.offerId == offer_id,
+            models.HeadlineOffer.isActive == True,
+        )
+        .one_or_none()
+    )
+
+
+def get_inactive_headline_offers() -> list[models.HeadlineOffer]:
+    return (
+        models.HeadlineOffer.query.join(models.Offer, models.HeadlineOffer.offerId == models.Offer.id)
+        .filter(models.Offer.status != offer_mixin.OfferStatus.ACTIVE)
+        .filter(
+            # We don't want to fetch HeadlineOffers that have already been marked as finished
+            sa.or_(
+                sa.func.upper(models.HeadlineOffer.timespan).is_(None),
+                sa.func.upper(models.HeadlineOffer.timespan) > datetime.datetime.utcnow(),
+            ),
+        )
+        .all()
+    )
+
+
 def get_product_reaction_count_subquery() -> sa.sql.selectable.ScalarSelect:
     return (
         sa.select(sa.func.count(reactions_models.Reaction.id))
@@ -1140,7 +1176,7 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
         if "product" in load_options:
             query = query.options(sa_orm.joinedload(models.Offer.product).joinedload(models.Product.productMediations))
         if "headline_offer" in load_options:
-            query = query.options(sa_orm.joinedload(models.Offer.headlineOffer))
+            query = query.options(sa_orm.joinedload(models.Offer.headlineOffers))
         if "price_category" in load_options:
             query = query.options(
                 sa_orm.joinedload(models.Offer.priceCategories).joinedload(models.PriceCategory.priceCategoryLabel)
