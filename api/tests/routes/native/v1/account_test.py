@@ -53,6 +53,7 @@ from pcapi.notifications.sms import testing as sms_testing
 from pcapi.routes.native.v1.api_errors import account as account_errors
 from pcapi.routes.native.v1.serialization import account as account_serializers
 from pcapi.utils.date import format_into_utc_date
+from pcapi.utils.postal_code import INELIGIBLE_POSTAL_CODES
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -997,6 +998,18 @@ class UserProfileUpdateTest:
         assert response.status_code == 200
         assert user.postalCode == "38000"
         assert user.city == "Grenoble"
+
+    @pytest.mark.parametrize("postal_code", INELIGIBLE_POSTAL_CODES)
+    def test_ineligible_postal_code_update(self, client, postal_code):
+        user = users_factories.UserFactory(email=self.identifier)
+
+        response = client.with_token(email=self.identifier).patch(
+            "/native/v1/profile", json={"postalCode": postal_code, "city": "Grenoble"}
+        )
+
+        assert response.status_code == 400
+        assert response.json["code"] == "INELIGIBLE_POSTAL_CODE"
+        assert user.postalCode != postal_code
 
     @time_machine.travel("2022-03-17 09:00:00")
     def test_activity_update(self, client):

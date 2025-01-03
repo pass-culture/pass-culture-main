@@ -15,6 +15,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.notifications.push import testing as push_testing
 import pcapi.repository
+from pcapi.utils.postal_code import INELIGIBLE_POSTAL_CODES
 from pcapi.utils.string import u_nbsp
 
 
@@ -1539,6 +1540,27 @@ class UpdateProfileTest:
         response = client.post("/native/v1/subscription/profile", profile_data)
 
         assert response.status_code == 400
+
+    @pytest.mark.parametrize("postal_code", INELIGIBLE_POSTAL_CODES)
+    @pytest.mark.features(ENABLE_UBBLE=True)
+    def test_fulfill_profile_ineligible_postal_code(self, client, postal_code):
+        user = users_factories.UserFactory()
+
+        response = client.with_token(user.email).post(
+            "/native/v1/subscription/profile",
+            {
+                "firstName": "John",
+                "lastName": "Doe",
+                "address": "1 rue des rues",
+                "city": "Uneville",
+                "postalCode": postal_code,
+                "activityId": "HIGH_SCHOOL_STUDENT",
+                "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json["code"] == "INELIGIBLE_POSTAL_CODE"
 
     @pytest.mark.features(ENABLE_UBBLE=True)
     def test_fulfill_profile_valid_character(self, client):
