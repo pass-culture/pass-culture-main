@@ -55,7 +55,7 @@ export const MultiSelectPanel = ({
   return (
     <div className={styles['panel']}>
       {hasSearch && (
-        <>
+        <div className={styles['search-input']}>
           <label className={styles['visually-hidden']} htmlFor="search-input">
             {searchLabel}
           </label>
@@ -67,16 +67,18 @@ export const MultiSelectPanel = ({
             onChange={(e) => setSearchValue(e.target.value)}
           />
           <span className={styles['search-example']}>{searchExample}</span>
-        </>
+        </div>
       )}
 
       {searchedValues.length > 0 ? (
         <ul className={styles['container']} aria-label="Liste des options">
           {hasSelectAllOptions && (
-            <li key={'all-options'} className={styles['item']}>
+            <li key={'all-options'} className={styles.item}>
               <BaseCheckbox
                 label={'Tout sélectionner'}
                 checked={isSelectAllChecked}
+                labelClassName={styles['label']}
+                inputClassName={styles['checkbox']}
                 onChange={() => onToggleAllOptions(isSelectAllChecked)}
               />
               <div className={styles['separator']} />
@@ -85,7 +87,8 @@ export const MultiSelectPanel = ({
           {searchedValues.map((option) => (
             <li key={option.id} className={styles.item}>
               <BaseCheckbox
-                className={styles['checkbox']}
+                labelClassName={styles['label']}
+                inputClassName={styles['checkbox']}
                 label={option.label}
                 checked={option.checked}
                 onChange={() => onToggleOption(option, option.checked)}
