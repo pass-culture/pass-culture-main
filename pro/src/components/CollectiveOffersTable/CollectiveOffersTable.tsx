@@ -18,7 +18,7 @@ type CollectiveOffersTableProps = {
   resetFilters: () => void
   setSelectedOffer: (offer: CollectiveOfferResponseModel) => void
   toggleSelectAllCheckboxes: () => void
-  urlSearchFilters: CollectiveSearchFiltersParams
+  urlSearchFilters: Partial<CollectiveSearchFiltersParams>
   isAtLeastOneOfferChecked: boolean
   isRestrictedAsAdmin?: boolean
   selectedOffers: CollectiveOfferResponseModel[]

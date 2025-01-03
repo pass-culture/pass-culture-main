@@ -11,7 +11,7 @@ import { IndividualOffersTableBody } from './components/IndividualOffersTableBod
 
 type IndividualOffersTableProps = {
   applyUrlFiltersAndRedirect: (
-    filters: SearchFiltersParams,
+    filters: Partial<SearchFiltersParams>,
     isRefreshing: boolean
   ) => void
   areAllOffersSelected: boolean
@@ -23,7 +23,7 @@ type IndividualOffersTableProps = {
   resetFilters: () => void
   setSelectedOffer: (offer: ListOffersOfferResponseModel) => void
   toggleSelectAllCheckboxes: () => void
-  urlSearchFilters: SearchFiltersParams
+  urlSearchFilters: Partial<SearchFiltersParams>
   isAtLeastOneOfferChecked: boolean
   isRestrictedAsAdmin?: boolean
   currentPageOffersSubset: ListOffersOfferResponseModel[]

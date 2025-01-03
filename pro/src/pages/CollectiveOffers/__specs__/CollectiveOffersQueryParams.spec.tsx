@@ -32,6 +32,10 @@ vi.mock('react-router-dom', async () => ({
   useNavigate: vi.fn(),
 }))
 
+const LABELS = {
+  nameSearchInput: /Nom de l’offre/,
+}
+
 const renderOffers = async (
   filters: Partial<CollectiveSearchFiltersParams> = DEFAULT_COLLECTIVE_SEARCH_FILTERS
 ) => {
@@ -119,7 +123,9 @@ describe('route CollectiveOffers', () => {
       await renderOffers()
 
       await userEvent.type(
-        screen.getByPlaceholderText('Rechercher par nom d’offre'),
+        screen.getByRole('textbox', {
+          name: LABELS.nameSearchInput,
+        }),
         'AnyWord'
       )
       await userEvent.click(screen.getByText('Rechercher'))
@@ -136,7 +142,9 @@ describe('route CollectiveOffers', () => {
       await renderOffers()
 
       await userEvent.clear(
-        screen.getByPlaceholderText('Rechercher par nom d’offre')
+        screen.getByRole('textbox', {
+          name: LABELS.nameSearchInput,
+        }),
       )
       await userEvent.click(screen.getByText('Rechercher'))
 

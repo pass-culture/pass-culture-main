@@ -63,7 +63,7 @@ export interface CollectiveActionsCellsProps {
   rowId: string
   offer: CollectiveOfferResponseModel
   editionOfferLink: string
-  urlSearchFilters: CollectiveSearchFiltersParams
+  urlSearchFilters: Partial<CollectiveSearchFiltersParams>
   deselectOffer: (offer: CollectiveOfferResponseModel) => void
   isSelected: boolean
   className?: string

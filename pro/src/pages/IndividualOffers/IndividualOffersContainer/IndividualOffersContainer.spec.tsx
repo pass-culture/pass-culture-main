@@ -30,6 +30,10 @@ import {
   IndividualOffersContainerProps,
 } from './IndividualOffersContainer'
 
+const LABELS = {
+  nameSearchInput: /Nom de l’offre/,
+}
+
 const renderOffers = (
   props: IndividualOffersContainerProps,
   options?: RenderWithProvidersOptions
@@ -232,11 +236,15 @@ describe('IndividualOffersScreen', () => {
     await searchAndChecked({})
 
     expect(
-      screen.getByPlaceholderText('Rechercher par nom d’offre ou par EAN-13')
+      screen.getByRole('textbox', {
+        name: LABELS.nameSearchInput,
+      }),
     ).toBeInTheDocument()
 
     await userEvent.type(
-      screen.getByPlaceholderText('Rechercher par nom d’offre ou par EAN-13'),
+      screen.getByRole('textbox', {
+        name: LABELS.nameSearchInput,
+      }),
       'Test'
     )
 
