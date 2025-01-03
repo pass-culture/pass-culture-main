@@ -108,3 +108,8 @@ class ImageConversionTest:
     def test_do_not_raise_error_when_image_is_truncated(self):
         image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         assert _pre_process_image(image_as_bytes[:-25]).size == (1786, 1785)
+
+    def test_when_image_is_in_an_unsupported_format(self):
+        image_as_bytes = (IMAGES_DIR / "webp_saved_as_jpeg.jpg").read_bytes()
+        with pytest.raises(OSError):
+            _pre_process_image(image_as_bytes)
