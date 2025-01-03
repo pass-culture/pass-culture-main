@@ -509,17 +509,17 @@ def format_offer_status(status: offer_mixin.OfferStatus) -> str:
         case offer_mixin.OfferStatus.DRAFT | offer_mixin.CollectiveOfferStatus.DRAFT:
             return "Brouillon"
         case offer_mixin.OfferStatus.ACTIVE | offer_mixin.CollectiveOfferStatus.ACTIVE:
-            return "Active"
+            return "Publiée"
         case offer_mixin.OfferStatus.PENDING | offer_mixin.CollectiveOfferStatus.PENDING:
-            return "Pré-réservée"
+            return "En instruction"
         case offer_mixin.OfferStatus.EXPIRED | offer_mixin.CollectiveOfferStatus.EXPIRED:
             return "Expirée"
         case offer_mixin.OfferStatus.REJECTED | offer_mixin.CollectiveOfferStatus.REJECTED:
-            return "Rejetée"
+            return "Non conforme"
         case offer_mixin.OfferStatus.SOLD_OUT | offer_mixin.CollectiveOfferStatus.SOLD_OUT:
             return "Épuisée"
         case offer_mixin.OfferStatus.INACTIVE | offer_mixin.CollectiveOfferStatus.INACTIVE:
-            return "Inactive"
+            return "En pause"
         case offer_mixin.CollectiveOfferStatus.ARCHIVED:
             return "Archivée"
         case _:
