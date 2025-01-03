@@ -171,6 +171,98 @@ class Returns201Test:
         assert venue.action_history[0].actionType == history_models.ActionType.VENUE_CREATED
         assert venue.action_history[0].authorUser == user
 
+    @testing.override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+    @testing.override_features(ENABLE_ZENDESK_SELL_CREATION=True)
+    @patch("pcapi.connectors.api_adresse.get_municipality_centroid")
+    @patch("pcapi.connectors.api_adresse.get_address")
+    def test_register_new_venue_with_manually_edited_address(
+        self, get_adress_mock, get_municipality_centroid_mock, client, requests_mock
+    ):
+        get_municipality_centroid_mock.return_value = AddressInfo(
+            id="48250",
+            postcode="48250",
+            citycode="07136",
+            latitude=44.626322,
+            longitude=3.893166,
+            score=0.90,
+            city="Laveyrune",
+            street=None,
+            label="Laveyrune",
+        )
+
+        api_adresse_response = get_api_address_response()
+        user = ProFactory(
+            lastConnectionDate=datetime.utcnow(),
+        )
+        venue_data = create_valid_venue_data(user)
+        manually_edited_address = {"isManualEdition": True, **venue_data["address"]}
+        venue_data["address"] = manually_edited_address
+        requests_mock.get(
+            """https://api-adresse.data.gouv.fr/search?q=Chemin+de+Chaniaux+48250+Laveyrune&postcode=48250&autocomplete=0&limit=1""",
+            json=api_adresse_response,
+        )
+
+        client = client.with_session_auth(email=user.email)
+        response = client.post("/venues", json=venue_data)
+
+        assert response.status_code == 201
+
+        venue = Venue.query.filter_by(id=response.json["id"]).one()
+        address = geography_models.Address.query.one()
+        offerer_address = models.OffererAddress.query.one()
+
+        assert venue.name == venue_data["name"]
+        assert venue.publicName == venue_data["publicName"]
+        assert venue.siret == venue_data["siret"]
+        assert venue.venueTypeCode.name == "BOOKSTORE"
+        assert venue.venueLabelId == venue_data["venueLabelId"]
+        assert venue.description == venue_data["description"]
+        assert venue.audioDisabilityCompliant == venue_data["audioDisabilityCompliant"]
+        assert venue.mentalDisabilityCompliant == venue_data["mentalDisabilityCompliant"]
+        assert venue.motorDisabilityCompliant == venue_data["motorDisabilityCompliant"]
+        assert venue.visualDisabilityCompliant == venue_data["visualDisabilityCompliant"]
+        assert venue.contact.email == venue_data["contact"]["email"]
+        assert venue.dmsToken
+
+        assert not venue.isPermanent
+        assert not venue.contact.phone_number
+        assert not venue.contact.social_medias
+
+        assert len(venue.adage_addresses) == 1
+        adage_addr = venue.adage_addresses[0]
+
+        assert adage_addr.venueId == venue.id
+        assert adage_addr.adageId == venue.adageId
+        assert adage_addr.adageInscriptionDate == venue.adageInscriptionDate
+
+        assert len(external_testing.sendinblue_requests) == 1
+        assert external_testing.zendesk_sell_requests == [
+            {
+                "action": "create",
+                "type": "Venue",
+                "id": response.json["id"],
+                "parent_organization_id": zendesk_testing.TESTING_ZENDESK_ID_OFFERER,
+            }
+        ]
+
+        assert venue.offererAddressId == offerer_address.id
+        assert offerer_address.addressId == address.id
+        assert venue.timezone == address.timezone
+        assert venue.city == address.city
+        assert venue.postalCode == manually_edited_address["postalCode"]
+        assert address.street == manually_edited_address["street"]
+        assert address.inseeCode == "07136"
+        assert address.inseeCode.startswith(address.departmentCode)
+        assert address.departmentCode == "07"
+        assert address.timezone == "Europe/Paris"
+        assert address.isManualEdition is True
+        get_municipality_centroid_mock.assert_called_once()
+        get_adress_mock.assert_not_called()
+
+        assert len(venue.action_history) == 1
+        assert venue.action_history[0].actionType == history_models.ActionType.VENUE_CREATED
+        assert venue.action_history[0].authorUser == user
+
     @testing.override_settings(
         ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend",
         IS_INTEGRATION=True,
