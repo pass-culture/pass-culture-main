@@ -20,6 +20,7 @@ import { serializeApiCollectiveFilters } from 'commons/core/Offers/utils/seriali
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
 import { formatAndOrderVenues } from 'repository/venuesService'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
@@ -36,10 +37,7 @@ export const CollectiveOffers = (): JSX.Element => {
 
   const defaultCollectiveFilters = useDefaultCollectiveSearchFilters()
 
-  const urlSearchFilters = useQueryCollectiveSearchFilters({
-    ...defaultCollectiveFilters,
-    offererId: offererId ?? 'all',
-  })
+  const urlSearchFilters = useQueryCollectiveSearchFilters()
 
   const currentPageNumber = urlSearchFilters.page ?? DEFAULT_PAGE
 
@@ -61,7 +59,7 @@ export const CollectiveOffers = (): JSX.Element => {
 
   const venues = formatAndOrderVenues(data.venues)
 
-  const redirectWithUrlFilters = (filters: CollectiveSearchFiltersParams) => {
+  const redirectWithUrlFilters = (filters: Partial<CollectiveSearchFiltersParams>) => {
     navigate(computeCollectiveOffersUrl(filters, defaultCollectiveFilters), {
       replace: true,
     })
@@ -84,6 +82,7 @@ export const CollectiveOffers = (): JSX.Element => {
 
   const apiFilters: CollectiveSearchFiltersParams = {
     ...defaultCollectiveFilters,
+    ...(getStoredFilterConfig('collective').storedFilters as CollectiveSearchFiltersParams),
     ...urlSearchFilters,
     ...(isRestrictedAsAdmin ? { status: [] } : {}),
     ...{ offererId: offererId?.toString() ?? 'all' },

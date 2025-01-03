@@ -21,6 +21,7 @@ import { hasCollectiveSearchFilters } from 'commons/core/Offers/utils/hasSearchF
 import { serializeApiCollectiveFilters } from 'commons/core/Offers/utils/serializer'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
 import { TemplateCollectiveOffersScreen } from 'pages/TemplateCollectiveOffers/TemplateCollectiveOffersScreen/TemplateCollectiveOffersScreen'
 import { formatAndOrderVenues } from 'repository/venuesService'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
@@ -28,10 +29,7 @@ import { Spinner } from 'ui-kit/Spinner/Spinner'
 export const TemplateCollectiveOffers = (): JSX.Element => {
   const offererId = useSelector(selectCurrentOffererId)?.toString()
 
-  const urlSearchFilters = useQueryCollectiveSearchFilters({
-    ...DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
-    offererId: offererId ?? 'all',
-  })
+  const urlSearchFilters = useQueryCollectiveSearchFilters()
 
   const currentPageNumber = urlSearchFilters.page ?? DEFAULT_PAGE
   const navigate = useNavigate()
@@ -54,7 +52,7 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
   )
   const venues = formatAndOrderVenues(data.venues)
 
-  const redirectWithUrlFilters = (filters: CollectiveSearchFiltersParams) => {
+  const redirectWithUrlFilters = (filters: Partial<CollectiveSearchFiltersParams>) => {
     navigate(
       computeCollectiveOffersUrl(
         filters,
@@ -82,6 +80,7 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
 
   const apiFilters: CollectiveSearchFiltersParams = {
     ...DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
+    ...(getStoredFilterConfig('template').storedFilters as CollectiveSearchFiltersParams),
     ...urlSearchFilters,
     ...(isRestrictedAsAdmin ? { status: [] } : {}),
     ...{ offererId: offererId ?? '' },

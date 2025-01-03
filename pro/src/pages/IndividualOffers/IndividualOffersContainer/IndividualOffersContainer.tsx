@@ -23,12 +23,12 @@ export type IndividualOffersContainerProps = {
   isLoading: boolean
   initialSearchFilters: SearchFiltersParams
   redirectWithUrlFilters: (
-    filters: SearchFiltersParams & {
+    filters: Partial<SearchFiltersParams> & {
       page?: number
       audience?: Audience
     }
   ) => void
-  urlSearchFilters: SearchFiltersParams
+  urlSearchFilters: Partial<SearchFiltersParams>
   venues: SelectOption[]
   offererAddresses: SelectOption[]
   categories?: SelectOption[]
@@ -85,7 +85,7 @@ export const IndividualOffersContainer = ({
   const pageCount = Math.min(numberOfPages, MAX_TOTAL_PAGES)
 
   const applyUrlFiltersAndRedirect = (
-    filters: SearchFiltersParams & { audience?: Audience }
+    filters: Partial<SearchFiltersParams> & { audience?: Audience }
   ) => {
     redirectWithUrlFilters(filters)
   }

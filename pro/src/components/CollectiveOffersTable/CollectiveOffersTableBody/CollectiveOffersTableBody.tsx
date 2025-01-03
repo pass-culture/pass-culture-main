@@ -10,7 +10,7 @@ type CollectiveOffersTableBodyProps = {
   offers: CollectiveOfferResponseModel[]
   selectOffer: (offer: CollectiveOfferResponseModel) => void
   selectedOffers: CollectiveOfferResponseModel[]
-  urlSearchFilters: CollectiveSearchFiltersParams
+  urlSearchFilters: Partial<CollectiveSearchFiltersParams>
 }
 
 export const CollectiveOffersTableBody = ({

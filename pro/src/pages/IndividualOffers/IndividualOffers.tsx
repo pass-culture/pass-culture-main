@@ -54,7 +54,7 @@ export const IndividualOffers = (): JSX.Element => {
   )
 
   const redirectWithUrlFilters = (
-    filters: SearchFiltersParams & { audience?: Audience }
+    filters: Partial<SearchFiltersParams> & { audience?: Audience }
   ) => {
     navigate(computeIndividualOffersUrl(filters), { replace: true })
   }

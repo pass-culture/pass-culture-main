@@ -37,11 +37,11 @@ export type TemplateCollectiveOffersScreenProps = {
   offerer: GetOffererResponseModel | null
   initialSearchFilters: CollectiveSearchFiltersParams
   redirectWithUrlFilters: (
-    filters: CollectiveSearchFiltersParams & {
+    filters: Partial<CollectiveSearchFiltersParams> & {
       page?: number
     }
   ) => void
-  urlSearchFilters: CollectiveSearchFiltersParams
+  urlSearchFilters: Partial<CollectiveSearchFiltersParams>
   venues: SelectOption[]
   categories?: SelectOption[]
   isRestrictedAsAdmin?: boolean
@@ -118,7 +118,7 @@ export const TemplateCollectiveOffersScreen = ({
   )
 
   const applyUrlFiltersAndRedirect = (
-    filters: CollectiveSearchFiltersParams
+    filters: Partial<CollectiveSearchFiltersParams>
   ) => {
     setPage(filters.page ?? 1)
     redirectWithUrlFilters(filters)
