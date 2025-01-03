@@ -11,23 +11,41 @@ export default {
 
 export const Default: StoryObj<typeof BaseCheckbox> = {
   args: {
-    label: 'Checkbox Label',
+    label: 'Checkbox label',
     icon: strokeAccessibilityEye,
   },
 }
 
-export const WithPartialCheck: StoryObj<typeof BaseCheckbox> = {
+export const Checked: StoryObj<typeof BaseCheckbox> = {
   args: {
-    label: 'Checkbox Label',
-    icon: strokeAccessibilityEye,
+    label: 'Checkbox checked',
+    checked: true,
+    onChange: () => {},
+  },
+}
+
+export const PartialCheck: StoryObj<typeof BaseCheckbox> = {
+  args: {
+    label: 'Checkbox with partial check',
     partialCheck: true,
   },
 }
 
-export const WithBorder: StoryObj<typeof BaseCheckbox> = {
+export const Box: StoryObj<typeof BaseCheckbox> = {
   args: {
-    label: 'Checkbox Label with border',
-    icon: strokeAccessibilityEye,
+    label: 'Checkbox with border',
     variant: CheckboxVariant.BOX,
+    checked: true,
+    onChange: () => {},
+  },
+}
+
+export const BoxWithChildren: StoryObj<typeof BaseCheckbox> = {
+  args: {
+    label: 'Checkbox with border and children',
+    variant: CheckboxVariant.BOX,
+    checked: true,
+    childrenOnChecked: <span>Child content</span>,
+    onChange: () => {},
   },
 }
