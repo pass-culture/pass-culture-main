@@ -17,7 +17,6 @@ interface CheckboxGroupProps {
     icon?: string
     onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
   }[]
-  className?: string
   disabled?: boolean
   isOptional?: boolean
   variant?: CheckboxVariant
@@ -27,7 +26,6 @@ export const CheckboxGroup = ({
   group,
   groupName,
   legend,
-  className,
   disabled,
   isOptional,
   variant,
@@ -37,29 +35,30 @@ export const CheckboxGroup = ({
 
   return (
     <FieldSetLayout
-      className={cn(styles['checkbox-group'], className)}
       error={hasError ? meta.error : undefined}
       legend={legend}
       name={groupName}
       isOptional={isOptional}
     >
-      {group.map((item) => (
-        <div className={styles['checkbox-group-item']} key={item.name}>
-          <CheckboxGroupItem
-            icon={item.icon}
-            hasError={hasError}
-            label={item.label}
-            name={item.name}
-            setGroupTouched={() =>
-              !meta.touched ? helpers.setTouched(true) : null
-            }
-            disabled={disabled}
-            onChange={item.onChange}
-            {...(hasError ? { ariaDescribedBy: `error-${groupName}` } : {})}
-            variant={variant}
-          />
-        </div>
-      ))}
+      <div className={styles['checkbox-group']}>
+        {group.map((item) => (
+          <div className={styles['checkbox-group-item']} key={item.name}>
+            <CheckboxGroupItem
+              icon={item.icon}
+              hasError={hasError}
+              label={item.label}
+              name={item.name}
+              setGroupTouched={() =>
+                !meta.touched ? helpers.setTouched(true) : null
+              }
+              disabled={disabled}
+              onChange={item.onChange}
+              {...(hasError ? { ariaDescribedBy: `error-${groupName}` } : {})}
+              variant={variant}
+            />
+          </div>
+        ))}
+      </div>
     </FieldSetLayout>
   )
 }

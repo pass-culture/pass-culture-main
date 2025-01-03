@@ -6,7 +6,6 @@
 
 .base-checkbox {
   display: inline-flex;
-  cursor: pointer;
   width: 100%;
 
   &-label-row {
@@ -16,10 +15,8 @@
   }
 
   &-label {
-    display: inline-flex;
-    flex-direction: column;
     width: 100%;
-    justify-items: center;
+    cursor: pointer;
   }
 
   &-description {
@@ -32,8 +29,8 @@
   &-icon {
     margin-right: rem.torem(8px);
     display: inline-flex;
+    vertical-align: text-bottom;
     flex-direction: column;
-    vertical-align: middle;
 
     &-svg {
       width: rem.torem(20px);
@@ -43,7 +40,6 @@
 
   &-input {
     appearance: none;
-    background-color: var(--color-input-bg-color);
     border: rem.torem(2px) solid var(--color-grey-dark);
     border-radius: rem.torem(3px);
     transition:
@@ -82,9 +78,8 @@
     }
 
     &:focus-visible {
-      outline: rem.torem(1px) solid var(--color-input-text-color);
+      outline: rem.torem(1px) solid var(--color-black);
       outline-offset: rem.torem(4px);
-      border-radius: rem.torem(4px);
     }
   }
 
@@ -141,22 +136,55 @@
   }
 }
 
-.with-border {
+.box-vairant,
+.inline-box-vairant {
   border: rem.torem(1px) solid var(--color-grey-semi-dark);
-  border-radius: rem.torem(6px);
+  border-radius: rem.torem(8px);
   min-width: 100%;
   padding-left: rem.torem(16px);
-  padding-top: rem.torem(16px);
-  padding-bottom: rem.torem(16px);
+
+  &.is-checked {
+    background-color: var(--color-background-secondary);
+    border-color: var(--color-secondary);
+  }
+
+  &.is-disabled .base-checkbox-input:checked {
+    background-color: var(--color-grey-semi-dark);
+    border-color: var(--color-grey-semi-dark);
+  }
+
+  &.has-error {
+    background-color: transparent;
+    border-color: var(--color-error);
+  }
+
+  &.is-disabled {
+    background-color: var(--color-grey-light);
+    border-color: var(--color-grey-medium);
+  }
 
   .base-checkbox-input:focus-visible {
     outline: none;
   }
 
+  .base-checkbox-label {
+    padding: rem.torem(16px) rem.torem(16px) rem.torem(16px) 0;
+  }
+
   &:focus-within {
-    outline: rem.torem(1px) solid var(--color-input-text-color);
+    outline: rem.torem(1px) solid var(--color-black);
     outline-offset: rem.torem(4px);
-    border-radius: rem.torem(4px);
+  }
+
+  @supports selector(:has(*)) {
+    &:focus-within {
+      outline: none;
+    }
+
+    &:has(.base-checkbox-input:focus-visible) {
+      outline: rem.torem(1px) solid var(--color-black);
+      outline-offset: rem.torem(4px);
+    }
   }
 }
 
