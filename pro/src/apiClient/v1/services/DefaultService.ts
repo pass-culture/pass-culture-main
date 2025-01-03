@@ -56,6 +56,8 @@ import type { GetVenueListResponseModel } from '../models/GetVenueListResponseMo
 import type { GetVenueResponseModel } from '../models/GetVenueResponseModel';
 import type { GetVenuesOfOffererFromSiretResponseModel } from '../models/GetVenuesOfOffererFromSiretResponseModel';
 import type { HasInvoiceResponseModel } from '../models/HasInvoiceResponseModel';
+import type { HeadlineOfferCreationBodyModel } from '../models/HeadlineOfferCreationBodyModel';
+import type { HeadlineOfferDeleteBodyModel } from '../models/HeadlineOfferDeleteBodyModel';
 import type { InviteMemberQueryModel } from '../models/InviteMemberQueryModel';
 import type { InvoiceListV2ResponseModel } from '../models/InvoiceListV2ResponseModel';
 import type { LinkVenueToBankAccountBodyModel } from '../models/LinkVenueToBankAccountBodyModel';
@@ -1757,6 +1759,26 @@ export class DefaultService {
     });
   }
   /**
+   * delete_headline_offer <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public deleteHeadlineOffer(
+    requestBody?: HeadlineOfferDeleteBodyModel,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/offers/delete_headline',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
    * post_draft_offer <POST>
    * @param requestBody
    * @returns GetIndividualOfferResponseModel Created
@@ -1793,6 +1815,26 @@ export class DefaultService {
       path: {
         'offer_id': offerId,
       },
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * make_offer_headline_from_offers <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public makeOfferHeadlineFromOffers(
+    requestBody?: HeadlineOfferCreationBodyModel,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/offers/headline',
       body: requestBody,
       mediaType: 'application/json',
       errors: {

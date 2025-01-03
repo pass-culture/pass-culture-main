@@ -30,6 +30,7 @@ import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
+from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.core.offers import api
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories
@@ -2106,7 +2107,8 @@ class ActivateFutureOffersTest:
 @pytest.mark.usefixtures("db_session")
 class HeadlineOfferTest:
     def test_make_new_offer_headline(self):
-        offer = factories.OfferFactory(isActive=True)
+        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
+        offer = factories.OfferFactory(isActive=True, venue=venue)
         factories.StockFactory(offer=offer)
         headline_offer = api.make_offer_headline(offer=offer)
         db.session.commit()  # see comment in make_offer_headline()
@@ -2117,7 +2119,8 @@ class HeadlineOfferTest:
         assert not headline_offer.timespan.upper
 
     def test_create_offer_headline_when_another_is_still_active_should_fail(self):
-        offer = factories.OfferFactory(isActive=True)
+        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
+        offer = factories.OfferFactory(isActive=True, venue=venue)
         factories.StockFactory(offer=offer)
         api.make_offer_headline(offer=offer)
         with pytest.raises(exceptions.OfferHasAlreadyAnActiveHeadlineOffer) as error:
@@ -2125,7 +2128,7 @@ class HeadlineOfferTest:
             assert error.value.errors["headlineOffer"] == ["This offer is already an active headline offer"]
 
     def test_make_another_offer_headline_on_the_same_venue_should_fail(self):
-        venue = offerers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
         offer_1 = factories.OfferFactory(isActive=True, venue=venue)
         factories.StockFactory(offer=offer_1)
         offer_2 = factories.OfferFactory(isActive=True, venue=venue)
@@ -2143,7 +2146,8 @@ class HeadlineOfferTest:
         assert venue.has_headline_offer
 
     def test_create_offer_headline_when_another_is_still_active_should_fail(self):
-        offer = factories.OfferFactory(isActive=True)
+        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
+        offer = factories.OfferFactory(isActive=True, venue=venue)
         factories.StockFactory(offer=offer)
         api.make_offer_headline(offer=offer)
         with pytest.raises(exceptions.OfferHasAlreadyAnActiveHeadlineOffer) as error:
@@ -2151,7 +2155,8 @@ class HeadlineOfferTest:
             assert error.value.errors["headlineOffer"] == ["This offer is already an active headline offer"]
 
     def test_remove_headline_offer(self):
-        offer = factories.OfferFactory(isActive=True)
+        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
+        offer = factories.OfferFactory(isActive=True, venue=venue)
         factories.StockFactory(offer=offer)
         headline_offer = factories.HeadlineOfferFactory(offer=offer)
 
@@ -2164,7 +2169,8 @@ class HeadlineOfferTest:
 
     @time_machine.travel("2024-12-13 15:44:00")
     def test_make_offer_headline_again(self):
-        offer = factories.OfferFactory(isActive=True)
+        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
+        offer = factories.OfferFactory(isActive=True, venue=venue)
         factories.StockFactory(offer=offer)
         creation_time = datetime.utcnow()
         finished_timespan = (creation_time, creation_time + timedelta(days=10))
@@ -2182,7 +2188,7 @@ class HeadlineOfferTest:
 
     @time_machine.travel("2024-12-13 15:44:00")
     def test_make_another_offer_headline_on_same_venue(self):
-        venue = offerers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
         offer_1 = factories.OfferFactory(isActive=True, venue=venue)
         factories.StockFactory(offer=offer_1)
         offer_2 = factories.OfferFactory(isActive=True, venue=venue)
@@ -2200,7 +2206,8 @@ class HeadlineOfferTest:
         assert venue.has_headline_offer
 
     def test_headline_offer_on_offer_turned_inactive_is_inactive(self):
-        active_offer = factories.OfferFactory(isActive=True)
+        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
+        active_offer = factories.OfferFactory(isActive=True, venue=venue)
         factories.StockFactory(offer=active_offer)
 
         api.make_offer_headline(offer=active_offer)
@@ -2209,8 +2216,9 @@ class HeadlineOfferTest:
         assert not active_offer.is_headline_offer
 
     def test_headline_offer_on_sold_out_offer_is_inactive(self):
+        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
         stock = factories.StockFactory(quantity=10)
-        offer = factories.OfferFactory(isActive=True, stocks=[stock])
+        offer = factories.OfferFactory(isActive=True, stocks=[stock], venue=venue)
         api.make_offer_headline(offer=offer)
         assert offer.is_headline_offer
 
@@ -2218,6 +2226,7 @@ class HeadlineOfferTest:
         assert not offer.is_headline_offer
 
     def test_headline_offer_on_expired_offer_is_inactive(self):
+        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
         tomorrow = date.today() + timedelta(days=1)
         stock = factories.StockFactory(bookingLimitDatetime=tomorrow)
         offer = factories.OfferFactory(
@@ -2226,6 +2235,7 @@ class HeadlineOfferTest:
             stocks=[
                 stock,
             ],
+            venue=venue,
         )
         api.make_offer_headline(offer=offer)
         assert offer.is_headline_offer
@@ -2233,7 +2243,8 @@ class HeadlineOfferTest:
             assert not offer.is_headline_offer
 
     def test_headline_offer_on_rejected_offer_is_inactive(self):
-        offer = factories.OfferFactory(isActive=True)
+        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
+        offer = factories.OfferFactory(isActive=True, venue=venue)
         factories.StockFactory(offer=offer)
 
         api.make_offer_headline(offer=offer)
@@ -2241,13 +2252,13 @@ class HeadlineOfferTest:
         assert not offer.is_headline_offer
 
     def test_set_upper_timespan_of_inactive_headline_offers(self):
-        venue_1 = offerers_factories.VenueFactory()
+        venue_1 = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
         offer_1 = factories.OfferFactory(isActive=True, venue=venue_1)
         factories.StockFactory(offer=offer_1)
-        venue_2 = offerers_factories.VenueFactory()
+        venue_2 = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
         stock = factories.StockFactory(quantity=1)
         offer_2 = factories.OfferFactory(isActive=True, venue=venue_2, stocks=[stock])
-        venue_3 = offerers_factories.VenueFactory()
+        venue_3 = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
         offer_3 = factories.OfferFactory(isActive=True, venue=venue_3)
         factories.StockFactory(offer=offer_3)
 
@@ -2273,7 +2284,8 @@ class HeadlineOfferTest:
         assert headline_offer_3.timespan.upper is None
 
     def test_do_not_update_upper_timespan_of_already_inactive_headline_offers(self):
-        offer = factories.OfferFactory(isActive=True)
+        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
+        offer = factories.OfferFactory(isActive=True, venue=venue)
         factories.StockFactory(offer=offer)
         creation_time = datetime.utcnow() - timedelta(days=20)
         finished_timespan = (creation_time, creation_time + timedelta(days=10))

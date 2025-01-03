@@ -1138,6 +1138,22 @@ def get_active_headline_offer(offer_id: int) -> models.HeadlineOffer | None:
     )
 
 
+def get_offerers_active_headline_offer(offerer_id: int) -> models.HeadlineOffer | None:
+    managed_venue_ids_subquery = (
+        offerers_models.Venue.query.filter(offerers_models.Venue.managingOffererId == offerer_id)
+        .with_entities(offerers_models.Venue.id)
+        .subquery()
+    )
+    return (
+        models.HeadlineOffer.query.join(models.Offer)
+        .filter(
+            models.HeadlineOffer.venueId.in_(managed_venue_ids_subquery),
+            models.HeadlineOffer.isActive == True,
+        )
+        .one_or_none()
+    )
+
+
 def get_inactive_headline_offers() -> list[models.HeadlineOffer]:
     return (
         models.HeadlineOffer.query.join(models.Offer, models.HeadlineOffer.offerId == models.Offer.id)

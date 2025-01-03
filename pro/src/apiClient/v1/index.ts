@@ -142,6 +142,8 @@ export type { GetVenueResponseModel } from './models/GetVenueResponseModel';
 export type { GetVenuesOfOffererFromSiretResponseModel } from './models/GetVenuesOfOffererFromSiretResponseModel';
 export type { HasInvoiceQueryModel } from './models/HasInvoiceQueryModel';
 export type { HasInvoiceResponseModel } from './models/HasInvoiceResponseModel';
+export type { HeadlineOfferCreationBodyModel } from './models/HeadlineOfferCreationBodyModel';
+export type { HeadlineOfferDeleteBodyModel } from './models/HeadlineOfferDeleteBodyModel';
 export type { IndividualRevenue } from './models/IndividualRevenue';
 export type { InviteMemberQueryModel } from './models/InviteMemberQueryModel';
 export type { InvoiceListV2QueryModel } from './models/InvoiceListV2QueryModel';
