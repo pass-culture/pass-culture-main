@@ -196,7 +196,7 @@
                 <td>{{ collective_booking.dateCreated | format_date_time }}</td>
                 <td>
                   {% if collective_booking.collectiveStock %}
-                    {% set start_date = (collective_booking.collectiveStock.startDatetime or collective_booking.collectiveStock.beginningDatetime) | format_date_time %}
+                    {% set start_date = collective_booking.collectiveStock.startDatetime | format_date_time %}
                     {% set end_date = collective_booking.collectiveStock.endDatetime | format_date_time %}
                     {{ start_date }}
                     {% if end_date and end_date != start_date %}→ {{ end_date }}{% endif %}
