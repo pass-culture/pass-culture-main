@@ -37,7 +37,7 @@ export const CollectiveOfferCreation = ({
           subTitle={offer?.name}
           isCreation
           isTemplate={isTemplate}
-          isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
+          isFromTemplate={location.pathname.includes('vitrine')}
           requestId={requestId}
           offer={offer}
         >

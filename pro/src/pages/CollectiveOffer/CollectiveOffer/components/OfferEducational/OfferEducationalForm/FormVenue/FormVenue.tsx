@@ -53,7 +53,7 @@ export const FormVenue = ({
   ]
 
   const disableVenueSelection =
-  disableForm ||
+    disableForm ||
     (lastBookingStatus !== undefined &&
       lastBookingStatus !== null &&
       disableOfferSelection &&
@@ -62,10 +62,7 @@ export const FormVenue = ({
   const { values, setValues } = useFormikContext<OfferEducationalFormValues>()
 
   return (
-    <FormLayout.Section
-      description={`${isOfferAddressEnabled ? 'La structure' : 'Le lieu'} de rattachement permet d’associer votre compte bancaire pour le remboursement pass Culture.`}
-      title={`${isOfferAddressEnabled ? 'Structure' : 'Lieu'} de rattachement de votre offre`}
-    >
+    <FormLayout.Section title="Qui propose l’offre ?">
       {isEligible === false && userOfferer !== null && (
         <Callout
           links={[

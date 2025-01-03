@@ -97,7 +97,12 @@ export const CollectiveOfferVisibilityScreen = ({
     'ENABLE_COLLECTIVE_NEW_STATUSES'
   )
 
-  const canEditInstitution = areCollectiveNewStatusesEnabled ? isActionAllowedOnCollectiveOffer(offer, CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION) : mode !== Mode.READ_ONLY
+  const canEditInstitution = areCollectiveNewStatusesEnabled
+    ? isActionAllowedOnCollectiveOffer(
+        offer,
+        CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION
+      )
+    : mode !== Mode.READ_ONLY
 
   const institutionsOptions: InstitutionOption[] = useMemo(
     () =>
@@ -255,7 +260,7 @@ export const CollectiveOfferVisibilityScreen = ({
                 Offre importée automatiquement
               </BannerPublicApi>
             )}
-            <FormLayout.Section title="Établissement scolaire et enseignant">
+            <FormLayout.Section title="Renseignez l'établissement scolaire et l’enseignant">
               <p className={styles['description-text']}>
                 L’établissement et l’enseignant renseignés sont les seuls à
                 pouvoir visualiser et préréserver votre offre sur ADAGE.

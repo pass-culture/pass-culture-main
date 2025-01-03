@@ -55,17 +55,19 @@ describe('Create collective offers', () => {
 
     cy.findByLabelText('Lieu *').select(venueName)
 
-    cy.findByLabelText('Domaine artistique et culturel *').click()
+    cy.findByLabelText('Ajoutez un ou plusieurs domaines artistiques *').click()
 
     cy.get('#list-domains').find('#option-display-2').click()
-    cy.findByText('Type d’offre').click()
+    cy.findByText('Quel est le type de votre offre ?').click()
 
-    cy.findByLabelText('Format *').click()
+    cy.findByLabelText('Ajoutez un ou plusieurs formats *').click()
     cy.get('#list-formats').find('#option-display-Concert').click()
-    cy.findByText('Type d’offre').click()
+    cy.findByText('Quel est le type de votre offre ?').click()
 
     cy.findByLabelText('Titre de l’offre *').type(newOfferName)
-    cy.findByLabelText('Description *').type('Bookable draft offer')
+    cy.findByLabelText(
+      'Décrivez ici votre projet et son interêt pédagogique *'
+    ).type('Bookable draft offer')
     cy.findByText('Collège - 6e').click()
     cy.findByLabelText('Email *').type('example@passculture.app')
     cy.findByLabelText('Email auquel envoyer les notifications *').type(
@@ -89,9 +91,9 @@ describe('Create collective offers', () => {
     cy.get('#list-institution')
       .findByText(/COLLEGE 123/)
       .click()
-    cy.findByText('Établissement scolaire et enseignant').click()
+    cy.findByText("Renseignez l'établissement scolaire et l’enseignant").click()
 
-    cy.findByText('Établissement scolaire et enseignant').click()
+    cy.findByText("Renseignez l'établissement scolaire et l’enseignant").click()
 
     cy.findByText('Enregistrer et continuer').click()
     cy.findByText('Enregistrer et continuer').click()
@@ -111,9 +113,36 @@ describe('Create collective offers', () => {
     cy.wait('@collectiveOffers')
 
     const expectedResults = [
-      ['', '', '', 'Titre', 'Date de l’évènement', 'Lieu', 'Établissement', 'Statut'],
-      ['', '', '', newOfferName, '10/05/202518h30', venueName, 'COLLEGE 123', 'brouillon'],
-      ['', '', '', offerDraft.name, 'Toute l’année scolaire', offerDraft.venueName, 'DE LA TOUR', 'brouillon'],
+      [
+        '',
+        '',
+        '',
+        'Titre',
+        'Date de l’évènement',
+        'Lieu',
+        'Établissement',
+        'Statut',
+      ],
+      [
+        '',
+        '',
+        '',
+        newOfferName,
+        '10/05/202518h30',
+        venueName,
+        'COLLEGE 123',
+        'brouillon',
+      ],
+      [
+        '',
+        '',
+        '',
+        offerDraft.name,
+        'Toute l’année scolaire',
+        offerDraft.venueName,
+        'DE LA TOUR',
+        'brouillon',
+      ],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
@@ -138,8 +167,26 @@ describe('Create collective offers', () => {
     cy.findByText('Rechercher').click()
 
     const expectedNewResults = [
-      ['', '', '', 'Titre', 'Date de l’évènement', 'Lieu', 'Établissement', 'Statut'],
-      ['', '', '', newOfferName, '10/05/202518h30', venueName, 'COLLEGE 123', 'publiée'],
+      [
+        '',
+        '',
+        '',
+        'Titre',
+        'Date de l’évènement',
+        'Lieu',
+        'Établissement',
+        'Statut',
+      ],
+      [
+        '',
+        '',
+        '',
+        newOfferName,
+        '10/05/202518h30',
+        venueName,
+        'COLLEGE 123',
+        'publiée',
+      ],
     ]
 
     expectOffersOrBookingsAreFound(expectedNewResults)

@@ -1,4 +1,5 @@
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 @use "styles/variables/_forms.scss" as forms;
 @use "styles/mixins/_forms.scss" as formsM;
 @use "styles/mixins/_rem.scss" as rem;
@@ -64,11 +65,12 @@
   }
 
   &-input-description {
-    @include fonts.caption;
+    @include fonts-design-system.body-xs;
 
     display: block;
     min-height: forms.$input-description-min-height;
     color: var(--color-grey-dark);
+    margin-top: rem.torem(4px);
   }
 }
 

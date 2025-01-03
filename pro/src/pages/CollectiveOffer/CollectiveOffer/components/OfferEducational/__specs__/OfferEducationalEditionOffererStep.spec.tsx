@@ -68,7 +68,7 @@ describe('screens | OfferEducational : edition offerer step', () => {
     renderComponent(props)
 
     const offerTypeTitle = await screen.findByRole('heading', {
-      name: 'Type d’offre',
+      name: 'Quel est le type de votre offre ?',
     })
     expect(offerTypeTitle).toBeInTheDocument()
 
