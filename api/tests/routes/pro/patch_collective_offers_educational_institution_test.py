@@ -22,19 +22,17 @@ STATUSES_NOT_ALLOWING_EDIT_INSTITUTION = tuple(
 @pytest.mark.usefixtures("db_session")
 @override_settings(ADAGE_API_URL="https://adage_base_url")
 class Returns200Test:
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_create_offer_institution_link(self, client: Any) -> None:
-        # Given
         institution = factories.EducationalInstitutionFactory()
         stock = factories.CollectiveStockFactory()
         offer = stock.collectiveOffer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
 
-        # When
         client = client.with_session_auth("pro@example.com")
         data = {"educationalInstitutionId": institution.id}
         response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
 
-        # Then
         assert response.status_code == 200
         offer_db = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
         assert offer_db.institution == institution
@@ -43,26 +41,24 @@ class Returns200Test:
         assert adage_api_testing.adage_requests[0]["sent_data"] == expected_payload
         assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/offre-assoc"
 
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_create_offer_institution_link_to_teacher(self, client) -> None:
-        # Given
         institution = factories.EducationalInstitutionFactory(institutionId="0470009E")
         stock = factories.CollectiveStockFactory()
         offer = stock.collectiveOffer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
 
-        # When
         client = client.with_session_auth("pro@example.com")
         data = {"educationalInstitutionId": institution.id, "teacherEmail": "maria.sklodowska@example.com"}
         response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
 
-        # Then
         assert response.status_code == 200
         offer_db = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
         assert offer_db.institution == institution
         assert offer_db.teacher.email == "maria.sklodowska@example.com"
 
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_change_offer_institution_link(self, client: Any) -> None:
-        # Given
         institution1 = factories.EducationalInstitutionFactory()
         stock = factories.CollectiveStockFactory(
             collectiveOffer__institution=institution1,
@@ -72,19 +68,17 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
         institution2 = factories.EducationalInstitutionFactory()
 
-        # When
         client = client.with_session_auth("pro@example.com")
         data = {"educationalInstitutionId": institution2.id}
         response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
 
-        # Then
         assert response.status_code == 200
         offer_db = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
         assert offer_db.institution == institution2
         assert offer_db.teacher is None
 
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_delete_offer_institution_link(self, client: Any) -> None:
-        # Given
         institution = factories.EducationalInstitutionFactory()
         stock = factories.CollectiveStockFactory(
             collectiveOffer__institution=institution,
@@ -93,12 +87,10 @@ class Returns200Test:
         offer = stock.collectiveOffer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
 
-        # When
         client = client.with_session_auth("pro@example.com")
         data = {"educationalInstitutionId": None}
         response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
 
-        # Then
         assert response.status_code == 200
         offer_db = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
         assert offer_db.institution is None

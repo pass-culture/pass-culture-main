@@ -1320,6 +1320,7 @@ def admin_user_fixture():
 
 @pytest.mark.usefixtures("db_session")
 class GetCollectiveOffersTemplateByFiltersTest:
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_status_filter_active(self, admin_user):
         template = educational_factories.CollectiveOfferTemplateFactory()
         educational_factories.CollectiveOfferTemplateFactory(validation=offer_mixin.OfferValidationStatus.REJECTED)
@@ -1347,6 +1348,7 @@ class GetCollectiveOffersTemplateByFiltersTest:
         )
         assert result.count() == 0
 
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     @pytest.mark.parametrize(
         "offer_status",
         set(educational_models.COLLECTIVE_OFFER_TEMPLATE_STATUSES)
@@ -1366,6 +1368,7 @@ class GetCollectiveOffersTemplateByFiltersTest:
         )
         assert result.count() == 0
 
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_filter_ended(self, admin_user):
         template = educational_factories.create_collective_offer_template_by_status(
             educational_models.CollectiveOfferDisplayedStatus.ENDED
