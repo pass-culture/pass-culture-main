@@ -116,13 +116,11 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveWorkType]):
     def get_updated_titelive_pages(
         self, from_date: datetime.date, to_date: datetime.date, from_page: int
     ) -> typing.Iterator[list[TiteliveWorkType]]:
-        updated_date = from_date
         page_index = from_page
 
         days = (to_date - from_date).days
         for day_offset in range(days + 1):
-            updated_date += datetime.timedelta(days=day_offset)
-
+            updated_date = from_date + datetime.timedelta(days=day_offset)
             has_next_page = True
             while has_next_page:
                 json_response = titelive.search_products(self.titelive_base, updated_date, page_index)
