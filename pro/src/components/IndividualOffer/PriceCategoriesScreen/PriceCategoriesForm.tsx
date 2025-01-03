@@ -15,6 +15,7 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
 import { PriceInput } from 'ui-kit/form/PriceInput/PriceInput'
+import { CheckboxVariant } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
@@ -232,7 +233,7 @@ export const PriceCategoriesForm = ({
                 label="Accepter les réservations “Duo“"
                 name="isDuo"
                 disabled={isDisabled}
-                withBorder
+                variant={CheckboxVariant.BOX}
               />
             </FormLayout.Row>
           </FormLayout.Section>

@@ -11,6 +11,11 @@ export enum PartialCheck {
   UNCHECKED = 'unchecked',
 }
 
+export enum CheckboxVariant {
+  DEFAULT = 'default',
+  BOX = 'box',
+}
+
 export interface BaseCheckboxProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string | React.ReactNode
@@ -19,7 +24,7 @@ export interface BaseCheckboxProps
   inputClassName?: string
   labelClassName?: string
   icon?: string
-  withBorder?: boolean
+  variant?: CheckboxVariant
   partialCheck?: boolean
   exceptionnallyHideLabelDespiteA11y?: boolean
   description?: string
@@ -35,7 +40,7 @@ export const BaseCheckbox = forwardRef(
       inputClassName,
       labelClassName,
       icon,
-      withBorder,
+      variant = CheckboxVariant.DEFAULT,
       partialCheck,
       exceptionnallyHideLabelDespiteA11y,
       description,
@@ -61,7 +66,7 @@ export const BaseCheckbox = forwardRef(
       labelClassName
     )
     const containerClasses = cn(styles['base-checkbox'], className, {
-      [styles['with-border']]: withBorder,
+      [styles['with-border']]: variant === CheckboxVariant.BOX,
       [styles['has-error']]: hasError,
       [styles['is-disabled']]: props.disabled,
     })
