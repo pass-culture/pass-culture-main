@@ -79,16 +79,7 @@ export const PricingPointDialog = ({
           {selectedVenue.commonName}”{' '}
         </h1>
       </Dialog.Title>
-      <Callout
-        className={styles['callout']}
-        links={[
-          {
-            href: 'https://aide.passculture.app/hc/fr/articles/4413973462929--Acteurs-Culturels-Comment-rattacher-mes-points-de-remboursement-et-mes-coordonn%C3%A9es-bancaires-%C3%A0-un-SIRET-de-r%C3%A9f%C3%A9rence-',
-            isExternal: true,
-            label: `Comment ajouter vos comptes bancaires sur ${isOfferAddressEnabled ? 'une structure' : 'un lieu'} sans SIRET ?`,
-          },
-        ]}
-      >
+      <Callout className={styles['callout']}>
         Comme indiqué dans nos CGUs, le barème de remboursement se définit sur
         la base d’un établissement et donc d’un SIRET. Afin de vous faire
         rembourser les offres de{' '}
