@@ -97,10 +97,18 @@ def empty_string_if_null(data: typing.Any | None) -> str:
 
 
 def format_date(data: datetime.date | datetime.datetime | None, strformat: str = "%d/%m/%Y") -> str:
+    def get_utc_offset(dt: datetime.datetime) -> int:
+        try:
+            return int(dt.astimezone(PARIS_TZ).utcoffset().total_seconds() / 3600)  # type: ignore[union-attr]
+        except AttributeError:
+            return 0
+
     if not data:
         return ""
+
     if isinstance(data, datetime.datetime):
-        return data.astimezone(PARIS_TZ).strftime(strformat)
+        adjusted_dt = data + datetime.timedelta(hours=get_utc_offset(data))
+        return adjusted_dt.strftime(strformat)
     return data.strftime(strformat)
 
 
