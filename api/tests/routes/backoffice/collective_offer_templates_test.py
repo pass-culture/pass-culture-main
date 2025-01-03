@@ -303,7 +303,7 @@ class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
             assert response.status_code == 200
 
         content_as_text = html_parser.content_as_text(response.data)
-        assert "Statut : Active" in content_as_text
+        assert "Statut : Publiée" in content_as_text
         assert "Statut PC Pro : Publiée" in content_as_text
         assert "État : Validée" in content_as_text
         assert f"Date de création : {collectiveOfferTemplate.dateCreated.strftime('%d/%m/%Y')}" in content_as_text
