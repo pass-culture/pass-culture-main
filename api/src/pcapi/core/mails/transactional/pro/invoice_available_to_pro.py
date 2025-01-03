@@ -8,6 +8,7 @@ import pcapi.core.finance.utils as finance_utils
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offerers.models as offerers_models
+from pcapi.utils.date import get_date_formatted_for_email
 
 
 def send_invoice_available_to_pro_email(invoice: finance_models.Invoice, batch: finance_models.CashflowBatch) -> None:
@@ -17,8 +18,8 @@ def send_invoice_available_to_pro_email(invoice: finance_models.Invoice, batch: 
         template=TransactionalEmail.INVOICE_AVAILABLE_TO_PRO.value,
         params={
             "MONTANT_REMBOURSEMENT": -float(finance_utils.cents_to_full_unit(invoice.amount)),
-            "PERIODE_DEBUT": period_start.strftime("%d-%m-%Y"),
-            "PERIODE_FIN": period_end.strftime("%d-%m-%Y"),
+            "PERIODE_DEBUT": get_date_formatted_for_email(period_start),
+            "PERIODE_FIN": get_date_formatted_for_email(period_end),
         },
     )
     bank_account = (

@@ -43,7 +43,7 @@ class SendEventOfferPosponedConfirmationToProEmailTest:
         assert mails_testing.outbox[0]["params"] == {
             "OFFER_NAME": offer.name,
             "VENUE_NAME": venue.name,
-            "EVENT_DATE": "mardi 1 mars 2022",
+            "EVENT_DATE": "mardi 1er mars 2022",
             "BOOKING_COUNT": 3,
             "OFFER_ADDRESS": offer.fullAddress,
         }

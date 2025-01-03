@@ -10,14 +10,16 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import models as offerers_models
-from pcapi.utils.mailing import format_booking_date_for_email
-from pcapi.utils.mailing import format_booking_hours_for_email
+from pcapi.utils.date import get_date_formatted_for_email
+from pcapi.utils.date import get_time_formatted_for_email
+from pcapi.utils.mailing import get_event_datetime
 
 
 def get_new_booking_to_pro_email_data(
     booking: Booking, first_venue_booking: bool = False
 ) -> models.TransactionalEmailData:
-    offer = booking.stock.offer
+    stock = booking.stock
+    offer = stock.offer
 
     venue = (
         offerers_models.Venue.query.filter(offerers_models.Venue.id == offer.venueId)
@@ -42,8 +44,8 @@ def get_new_booking_to_pro_email_data(
     )
 
     if offer.isEvent:
-        event_date = format_booking_date_for_email(booking)
-        event_hour = format_booking_hours_for_email(booking)
+        event_date = get_date_formatted_for_email(get_event_datetime(stock)) if stock.beginningDatetime else ""
+        event_hour = get_time_formatted_for_email(get_event_datetime(stock)) if stock.beginningDatetime else ""
     else:
         event_date = ""
         event_hour = ""
@@ -87,23 +89,21 @@ def get_new_booking_to_pro_email_data(
             "ISBN": ean,  # TODO: update template variable to ean
             "OFFER_NAME": offer.name,
             "OFFER_SUBCATEGORY": offer_subcategory,
-            "PRICE": "Gratuit" if booking.stock.price == 0 else f"{booking.stock.price} €",
+            "PRICE": "Gratuit" if stock.price == 0 else f"{stock.price} €",
             "QUANTITY": booking.quantity,
             "USER_EMAIL": booking.user.email,
             "USER_FIRSTNAME": booking.user.firstName,
             "USER_LASTNAME": booking.user.lastName,
             "USER_PHONENUMBER": booking.user.phoneNumber or "",
-            "VENUE_NAME": venue.publicName if venue.publicName else venue.name,
+            "VENUE_NAME": venue.common_name,
             "NEEDS_BANK_INFORMATION_REMINDER": venue.current_bank_account is None,
-            "MUST_USE_TOKEN_FOR_PAYMENT": not (
-                booking.stock.price == 0 or booking.activationCode or is_booking_autovalidated
-            ),
+            "MUST_USE_TOKEN_FOR_PAYMENT": not (stock.price == 0 or booking.activationCode or is_booking_autovalidated),
             "WITHDRAWAL_PERIOD": (
                 booking_constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days
                 if offer.subcategoryId == subcategories.LIVRE_PAPIER.id
                 else booking_constants.BOOKINGS_AUTO_EXPIRY_DELAY.days
             ),
-            "FEATURES": ", ".join(booking.stock.features),
+            "FEATURES": ", ".join(stock.features),
             "OFFER_ADDRESS": offer.fullAddress,
         },
     )

@@ -17,6 +17,9 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.testing import assert_num_queries
 from pcapi.scripts.booking import handle_expired_bookings
+from pcapi.utils.date import get_date_formatted_for_email
+from pcapi.utils.date import get_time_formatted_for_email
+from pcapi.utils.mailing import get_event_datetime
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -373,8 +376,8 @@ class NotifyOfferersOfExpiredBookingsTest:
             "OFFER_NAME": "Ma première offre expirée",
             "EDUCATIONAL_INSTITUTION_NAME": institution.name,
             "VENUE_NAME": stock_one.collectiveOffer.venue.name,
-            "EVENT_DATE": date_event_1.strftime("%d/%m/%Y"),
-            "EVENT_HOUR": date_event_1.strftime("%H:%M"),
+            "EVENT_DATE": get_date_formatted_for_email(get_event_datetime(first_expired_booking.collectiveStock)),
+            "EVENT_HOUR": get_time_formatted_for_email(get_event_datetime(first_expired_booking.collectiveStock)),
             "REDACTOR_FIRSTNAME": redactor.firstName,
             "REDACTOR_LASTNAME": redactor.lastName,
             "REDACTOR_EMAIL": redactor.email,
@@ -391,8 +394,8 @@ class NotifyOfferersOfExpiredBookingsTest:
             "OFFER_NAME": "Ma deuxième offre expirée",
             "EDUCATIONAL_INSTITUTION_NAME": second_educational_institution.name,
             "VENUE_NAME": stock_two.collectiveOffer.venue.name,
-            "EVENT_DATE": date_event_2.strftime("%d/%m/%Y"),
-            "EVENT_HOUR": date_event_2.strftime("%H:%M"),
+            "EVENT_DATE": get_date_formatted_for_email(get_event_datetime(second_expired_booking.collectiveStock)),
+            "EVENT_HOUR": get_time_formatted_for_email(get_event_datetime(second_expired_booking.collectiveStock)),
             "REDACTOR_FIRSTNAME": redactor.firstName,
             "REDACTOR_LASTNAME": redactor.lastName,
             "REDACTOR_EMAIL": redactor.email,

@@ -516,7 +516,7 @@ class NotifyProUserOneDayTest:
                 assert data.params == {
                     "OFFER_NAME": booking1.collectiveStock.collectiveOffer.name,
                     "VENUE_NAME": booking1.collectiveStock.collectiveOffer.venue.name,
-                    "EVENT_HOUR": "1h",
+                    "EVENT_HOUR": "01h00",
                     "QUANTITY": 1,
                     "PRICE": str(booking1.collectiveStock.price),
                     "REDACTOR_FIRSTNAME": booking1.educationalRedactor.firstName,
@@ -530,7 +530,7 @@ class NotifyProUserOneDayTest:
                 assert data.params == {
                     "OFFER_NAME": booking3.collectiveStock.collectiveOffer.name,
                     "VENUE_NAME": booking3.collectiveStock.collectiveOffer.venue.name,
-                    "EVENT_HOUR": "1h",
+                    "EVENT_HOUR": "01h00",
                     "QUANTITY": 1,
                     "PRICE": str(booking3.collectiveStock.price),
                     "REDACTOR_FIRSTNAME": booking3.educationalRedactor.firstName,
@@ -615,8 +615,8 @@ class NotifyProUserOneDayAfterTest:
                 assert data.params == {
                     "OFFER_NAME": booking1.collectiveStock.collectiveOffer.name,
                     "VENUE_NAME": booking1.collectiveStock.collectiveOffer.venue.name,
-                    "EVENT_HOUR": "1h",
-                    "EVENT_DATE": "06-Jan-2020",
+                    "EVENT_HOUR": "01h00",
+                    "EVENT_DATE": "lundi 6 janvier 2020",
                     "EDUCATIONAL_INSTITUTION_NAME": booking1.educationalInstitution.name,
                 }
                 assert args.kwargs["recipients"] == [booking1.collectiveStock.collectiveOffer.bookingEmails[0]]
@@ -625,8 +625,8 @@ class NotifyProUserOneDayAfterTest:
                 assert data.params == {
                     "OFFER_NAME": booking3.collectiveStock.collectiveOffer.name,
                     "VENUE_NAME": booking3.collectiveStock.collectiveOffer.venue.name,
-                    "EVENT_HOUR": "1h",
-                    "EVENT_DATE": "06-Jan-2020",
+                    "EVENT_HOUR": "01h00",
+                    "EVENT_DATE": "lundi 6 janvier 2020",
                     "EDUCATIONAL_INSTITUTION_NAME": booking3.educationalInstitution.name,
                 }
                 assert args.kwargs["recipients"] == [booking3.collectiveStock.collectiveOffer.bookingEmails[0]]

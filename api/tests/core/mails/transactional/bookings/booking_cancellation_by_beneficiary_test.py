@@ -96,7 +96,7 @@ class MakeBeneficiaryBookingCancellationEmailSendinblueDataTest:
         # Then
         assert email_data.params == {
             "CAN_BOOK_AGAIN": True,
-            "EVENT_DATE": "26 novembre 2019",
+            "EVENT_DATE": "mardi 26 novembre 2019",
             "EVENT_HOUR": "19h29",
             "IS_EVENT": True,
             "IS_EXTERNAL": False,

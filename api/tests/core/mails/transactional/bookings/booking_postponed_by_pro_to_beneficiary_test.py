@@ -28,6 +28,6 @@ class GetBookingPostponedByProToBeneficiaryTest:
             "VENUE_NAME": booking.venue.name,
             "IS_EXTERNAL": False,
             "EVENT_DATE": "mardi 20 août 2019",
-            "EVENT_HOUR": "14h",
+            "EVENT_HOUR": "14h00",
             "BOOKING_LINK": f"https://webapp-v2.example.com/reservation/{booking.id}/details",
         }

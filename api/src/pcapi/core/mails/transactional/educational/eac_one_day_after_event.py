@@ -2,8 +2,9 @@ from pcapi.core import mails
 from pcapi.core.educational import models as educational_models
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.utils.mailing import format_booking_date_for_email
-from pcapi.utils.mailing import format_booking_hours_for_email
+from pcapi.utils.date import get_date_formatted_for_email
+from pcapi.utils.date import get_time_formatted_for_email
+from pcapi.utils.mailing import get_event_datetime
 
 
 def send_eac_alert_one_day_after_event(booking: educational_models.CollectiveBooking) -> None:
@@ -28,8 +29,8 @@ def get_eac_one_day_after_event_data(
         params={
             "OFFER_NAME": offer.name,
             "VENUE_NAME": offer.venue.common_name,
-            "EVENT_DATE": format_booking_date_for_email(booking),
-            "EVENT_HOUR": format_booking_hours_for_email(booking),
+            "EVENT_DATE": get_date_formatted_for_email(get_event_datetime(stock)),
+            "EVENT_HOUR": get_time_formatted_for_email(get_event_datetime(stock)),
             "EDUCATIONAL_INSTITUTION_NAME": booking.educationalInstitution.name,
         },
     )

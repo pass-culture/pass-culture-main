@@ -125,7 +125,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
         # Then
         assert email_data.params == {
             "EVENT_DATE": "samedi 20 juillet 2019",
-            "EVENT_HOUR": "14h",
+            "EVENT_HOUR": "14h00",
             "IS_EVENT": True,
             "IS_EXTERNAL": False,
             "IS_FREE_OFFER": False,
