@@ -16,6 +16,7 @@ interface CheckboxGroupItemProps {
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
   ariaDescribedBy?: string
   variant?: CheckboxVariant
+  childrenOnChecked?: JSX.Element
 }
 
 export const CheckboxGroupItem = ({
@@ -28,6 +29,7 @@ export const CheckboxGroupItem = ({
   onChange,
   ariaDescribedBy,
   variant,
+  childrenOnChecked,
 }: CheckboxGroupItemProps): JSX.Element => {
   const [field] = useField({ name, type: 'checkbox' })
 
@@ -49,6 +51,7 @@ export const CheckboxGroupItem = ({
       disabled={disabled}
       ariaDescribedBy={ariaDescribedBy}
       variant={variant}
+      childrenOnChecked={childrenOnChecked}
     />
   )
 }
