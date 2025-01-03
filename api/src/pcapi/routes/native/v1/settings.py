@@ -3,6 +3,7 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.settings import OBJECT_STORAGE_URL
+from pcapi.utils import postal_code
 
 from .. import blueprint
 from .serialization import settings as serializers
@@ -33,14 +34,15 @@ def get_settings() -> serializers.SettingsResponse:
 
     return serializers.SettingsResponse(
         account_creation_minimum_age=constants.ACCOUNT_CREATION_MINIMUM_AGE,
+        account_unsuspension_limit=constants.ACCOUNT_UNSUSPENSION_DELAY,
         app_enable_autocomplete=features[FeatureToggle.APP_ENABLE_AUTOCOMPLETE],
         display_dms_redirection=features[FeatureToggle.DISPLAY_DMS_REDIRECTION],
         enable_front_image_resizing=features[FeatureToggle.ENABLE_FRONT_IMAGE_RESIZING],
         enable_native_cultural_survey=features[FeatureToggle.ENABLE_NATIVE_CULTURAL_SURVEY],
         enable_phone_validation=features[FeatureToggle.ENABLE_PHONE_VALIDATION],
         id_check_address_autocompletion=features[FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION],
+        ineligible_postal_codes=postal_code.INELIGIBLE_POSTAL_CODES,
         is_recaptcha_enabled=features[FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA],
         object_storage_url=OBJECT_STORAGE_URL,
-        account_unsuspension_limit=constants.ACCOUNT_UNSUSPENSION_DELAY,
         wip_enable_credit_v3=features[FeatureToggle.WIP_ENABLE_CREDIT_V3],
     )

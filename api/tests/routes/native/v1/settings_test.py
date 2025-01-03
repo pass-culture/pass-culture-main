@@ -1,6 +1,7 @@
 import pytest
 
 from pcapi.core.testing import assert_num_queries
+from pcapi.utils.postal_code import INELIGIBLE_POSTAL_CODES
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -36,6 +37,7 @@ class SettingsTest:
             "accountUnsuspensionLimit": 60,
             "rates": {"pacificFrancToEuro": 0.00838},
             "wipEnableCreditV3": True,
+            "ineligiblePostalCodes": INELIGIBLE_POSTAL_CODES,
         }
 
     @pytest.mark.features(
@@ -67,4 +69,5 @@ class SettingsTest:
             "accountUnsuspensionLimit": 60,
             "rates": {"pacificFrancToEuro": 0.00838},
             "wipEnableCreditV3": False,
+            "ineligiblePostalCodes": INELIGIBLE_POSTAL_CODES,
         }
