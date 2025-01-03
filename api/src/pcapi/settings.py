@@ -22,6 +22,7 @@ IS_STAGING = ENV == "staging"
 IS_PROD = ENV == "production"
 IS_TESTING = ENV == "testing"
 IS_OPS = ENV == "ops"
+IS_TOTO = ENV == "toto"
 
 if ENV not in ("development", "integration", "staging", "production", "testing", "ops"):
     raise RuntimeError("Unknown environment")
