@@ -8,6 +8,7 @@ from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription import exceptions
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import profile_options
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
@@ -139,16 +140,22 @@ def get_profile(user: users_models.User) -> serializers.ProfileResponse | None:
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required
 def complete_profile(user: users_models.User, body: serializers.ProfileUpdateRequest) -> None:
-    subscription_api.complete_profile(
-        user,
-        first_name=body.first_name,
-        last_name=body.last_name,
-        address=body.address,
-        city=body.city,
-        postal_code=body.postal_code,
-        activity=users_models.ActivityEnum[body.activity_id.value],
-        school_type=users_models.SchoolTypeEnum[body.school_type_id.value] if body.school_type_id is not None else None,
-    )
+    try:
+        subscription_api.complete_profile(
+            user,
+            first_name=body.first_name,
+            last_name=body.last_name,
+            address=body.address,
+            city=body.city,
+            postal_code=body.postal_code,
+            activity=users_models.ActivityEnum[body.activity_id.value],
+            school_type=(
+                users_models.SchoolTypeEnum[body.school_type_id.value] if body.school_type_id is not None else None
+            ),
+        )
+    except exceptions.IneligiblePostalCodeException:
+        raise api_errors.ApiErrors({"code": "INELIGIBLE_POSTAL_CODE"})
+
     is_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
 
     if not is_activated:
