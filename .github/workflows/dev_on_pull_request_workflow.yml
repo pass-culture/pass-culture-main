@@ -301,8 +301,8 @@ jobs:
   # Deploy on firebase if pro tests are ok OR job was skipped (= no changes in pro folder)
   deploy-pro-on-firebase-pullrequest:
     name: "[PRO] Deploy PR version for validation"
-    needs: [pcapi-init-job, test-pro]
-    if: always() && (needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped')
+    needs: [pcapi-init-job, test-pro, test-pro-e2e]
+    if: always() && (needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped') && (needs.test-pro-e2e.result == 'success' || needs.test-pro-e2e.result == 'skipped')
     uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
