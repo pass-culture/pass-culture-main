@@ -10,6 +10,7 @@ def install_routes(app: Flask) -> None:
     from . import collective_stocks
     from . import features
     from . import finance
+    from . import headline_offer
     from . import national_programs
     from . import offerers
     from . import offers

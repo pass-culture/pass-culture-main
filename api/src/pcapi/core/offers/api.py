@@ -49,6 +49,7 @@ from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offerers.schemas as offerers_schemas
 from pcapi.core.offers import models as offers_models
+import pcapi.core.offers.validation as offers_validation
 from pcapi.core.providers.allocine import get_allocine_products_provider
 from pcapi.core.providers.constants import GTL_IDS_BY_MUSIC_GENRE_CODE
 from pcapi.core.providers.constants import MUSIC_SLUG_BY_GTL_ID
@@ -64,7 +65,6 @@ from pcapi.models import offer_mixin
 from pcapi.models import pc_object
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
-from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import is_managed_transaction
 from pcapi.repository import mark_transaction_as_invalid
@@ -709,9 +709,8 @@ def set_upper_timespan_of_inactive_headline_offers() -> None:
 
 
 def make_offer_headline(offer: models.Offer) -> models.HeadlineOffer:
-    if offer.status != OfferStatus.ACTIVE:
-        raise exceptions.InactiveOfferCanNotBeHeadline()
-
+    offers_validation.check_offerer_is_eligible_for_headline_offers(offer.venue.managingOffererId)
+    offers_validation.check_offer_is_eligible_to_be_headline(offer)
     try:
         headline_offer = models.HeadlineOffer(offer=offer, venue=offer.venue, timespan=(datetime.datetime.utcnow(),))
         db.session.add(headline_offer)
