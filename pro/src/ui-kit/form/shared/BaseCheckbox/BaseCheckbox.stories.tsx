@@ -2,7 +2,7 @@ import type { StoryObj } from '@storybook/react'
 
 import strokeAccessibilityEye from 'icons/stroke-accessibility-eye.svg'
 
-import { BaseCheckbox } from './BaseCheckbox'
+import { BaseCheckbox, CheckboxVariant } from './BaseCheckbox'
 
 export default {
   title: 'ui-kit/forms/shared/BaseCheckbox',
@@ -28,6 +28,6 @@ export const WithBorder: StoryObj<typeof BaseCheckbox> = {
   args: {
     label: 'Checkbox Label with border',
     icon: strokeAccessibilityEye,
-    withBorder: true,
+    variant: CheckboxVariant.BOX,
   },
 }

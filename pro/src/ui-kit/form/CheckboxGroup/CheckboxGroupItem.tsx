@@ -1,7 +1,10 @@
 import { useField } from 'formik'
 import React from 'react'
 
-import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
+import {
+  BaseCheckbox,
+  CheckboxVariant,
+} from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 
 interface CheckboxGroupItemProps {
   setGroupTouched(): void
@@ -13,6 +16,7 @@ interface CheckboxGroupItemProps {
   disabled?: boolean
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
   ariaDescribedBy?: string
+  variant?: CheckboxVariant
 }
 
 export const CheckboxGroupItem = ({
@@ -24,6 +28,7 @@ export const CheckboxGroupItem = ({
   disabled,
   onChange,
   ariaDescribedBy,
+  variant,
 }: CheckboxGroupItemProps): JSX.Element => {
   const [field] = useField({ name, type: 'checkbox' })
 
@@ -44,6 +49,7 @@ export const CheckboxGroupItem = ({
       onChange={onCustomChange}
       disabled={disabled}
       ariaDescribedBy={ariaDescribedBy}
+      variant={variant}
     />
   )
 }
