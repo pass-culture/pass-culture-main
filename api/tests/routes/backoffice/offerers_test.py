@@ -1240,7 +1240,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
     def test_get_full_sorted_history(self, authenticated_client, legit_user):
         admin = users_factories.UserFactory()
         user_offerer = offerers_factories.UserOffererFactory()
-        history_factories.ActionHistoryFactory(
+        new_offerer_action = history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 3, 13, 1),
             actionType=history_models.ActionType.OFFERER_NEW,
             authorUser=user_offerer.user,
@@ -1248,7 +1248,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
             offerer=user_offerer.offerer,
             comment=None,
         )
-        history_factories.ActionHistoryFactory(
+        pending_offerer_action = history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 4, 14, 2),
             actionType=history_models.ActionType.OFFERER_PENDING,
             authorUser=admin,
@@ -1256,7 +1256,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
             offerer=user_offerer.offerer,
             comment="Documents complémentaires demandés",
         )
-        history_factories.ActionHistoryFactory(
+        comment_action = history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 5, 15, 3),
             actionType=history_models.ActionType.COMMENT,
             authorUser=legit_user,
@@ -1264,7 +1264,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
             offerer=user_offerer.offerer,
             comment="Documents reçus",
         )
-        history_factories.ActionHistoryFactory(
+        validated_offerer_action = history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 6, 16, 4),
             actionType=history_models.ActionType.OFFERER_VALIDATED,
             authorUser=admin,
@@ -1272,7 +1272,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
             offerer=user_offerer.offerer,
             comment=None,
         )
-        history_factories.ActionHistoryFactory(
+        other_comment_action = history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 6, 17, 5),
             actionType=history_models.ActionType.COMMENT,
             authorUser=admin,
