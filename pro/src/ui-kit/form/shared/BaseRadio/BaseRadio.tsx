@@ -28,7 +28,6 @@ export const BaseRadio = ({
   ...props
 }: BaseRadioProps): JSX.Element => {
   const id = useId()
-  const childrenContainerId = useId()
 
   return (
     <div
@@ -63,13 +62,11 @@ export const BaseRadio = ({
           {label}
         </label>
       </div>
-      <div id={childrenContainerId}>
-        {childrenOnChecked && props.checked && (
-          <div className={styles['base-radio-children-on-checked']}>
-            {childrenOnChecked}
-          </div>
-        )}
-      </div>
+      {childrenOnChecked && props.checked && (
+        <div className={styles['base-radio-children-on-checked']}>
+          {childrenOnChecked}
+        </div>
+      )}
     </div>
   )
 }

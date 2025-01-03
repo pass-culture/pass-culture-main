@@ -5,9 +5,6 @@
 @use "styles/mixins/_a11y.scss" as a11y;
 
 .base-checkbox {
-  display: inline-flex;
-  width: 100%;
-
   &-label-row {
     display: inline-flex;
     width: 100%;
@@ -83,20 +80,6 @@
     }
   }
 
-  &:hover {
-    text-decoration: underline;
-
-    .base-checkbox-input {
-      border-color: var(--color-secondary-light);
-
-      &:checked,
-      &:indeterminate {
-        border-color: var(--color-grey-dark);
-        background-color: var(--color-grey-dark);
-      }
-    }
-  }
-
   &.has-error {
     .base-checkbox-input {
       border-color: var(--color-input-border-color-error);
@@ -136,8 +119,27 @@
   }
 }
 
-.box-vairant,
-.inline-box-vairant {
+.base-checkbox-row {
+  display: inline-flex;
+  width: 100%;
+
+  &:hover {
+    text-decoration: underline;
+
+    .base-checkbox-input {
+      border-color: var(--color-secondary-light);
+
+      &:checked,
+      &:indeterminate {
+        border-color: var(--color-grey-dark);
+        background-color: var(--color-grey-dark);
+      }
+    }
+  }
+}
+
+.box-variant,
+.inline-box-variant {
   border: rem.torem(1px) solid var(--color-grey-semi-dark);
   border-radius: rem.torem(8px);
   min-width: 100%;
@@ -190,4 +192,14 @@
 
 .visually-hidden {
   @include a11y.visually-hidden;
+}
+
+.base-checkbox-children-on-checked {
+  padding: 0 rem.torem(16px) rem.torem(16px) 0;
+}
+
+.base-checkbox.has-children {
+  &.is-checked:not(.is-disabled) {
+    background: none;
+  }
 }
