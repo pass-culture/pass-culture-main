@@ -17,6 +17,7 @@ export const CollectiveOfferStatusCell = ({
   className,
 }: CollectiveOfferStatusCellProps) => (
   <td
+    role="cell"
     className={cn(styles['offers-table-cell'], styles['status-column'], className)}
     headers={`${rowId} ${CELLS_DEFINITIONS.STATUS.id}`}
   >
