@@ -436,27 +436,26 @@ def upsert_venue_opening_hours(venue: models.Venue, opening_hours: serialize_bas
 
 def create_venue(venue_data: venues_serialize.PostVenueBodyModel, author: users_models.User) -> models.Venue:
     venue = models.Venue()
+    address = venue_data.address
 
-    if utils_regions.NON_DIFFUSIBLE_TAG in venue_data.street:
-        address_info = api_adresse.get_municipality_centroid(venue_data.city, venue_data.postalCode)
+    if utils_regions.NON_DIFFUSIBLE_TAG in address.street:
+        address_info = api_adresse.get_municipality_centroid(address.city, address.postalCode)
         address_info.street = utils_regions.NON_DIFFUSIBLE_TAG
+        address = get_or_create_address(
+            LocationData(
+                city=address_info.city,
+                postal_code=address_info.postcode,
+                latitude=address_info.latitude,
+                longitude=address_info.longitude,
+                street=address_info.street,
+                insee_code=address_info.citycode,
+                ban_id=address_info.id,
+            )
+        )
+        offerer_address = create_offerer_address(venue_data.managingOffererId, address.id)
     else:
-        address_info = api_adresse.get_address(
-            address=venue_data.street, postcode=venue_data.postalCode, city=venue_data.city
-        )
+        offerer_address = get_offerer_address_from_address(venue.managingOffererId, address)
 
-    address = get_or_create_address(
-        LocationData(
-            city=address_info.city,
-            postal_code=address_info.postcode,
-            latitude=address_info.latitude,
-            longitude=address_info.longitude,
-            street=address_info.street,
-            insee_code=address_info.citycode,
-            ban_id=address_info.id,
-        )
-    )
-    offerer_address = create_offerer_address(venue_data.managingOffererId, address.id)
     venue.offererAddressId = offerer_address.id
 
     data = venue_data.dict(by_alias=True)
@@ -467,6 +466,16 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel, author: users_
         if key == "contact":
             continue
         setattr(venue, key, value)
+
+    # FIXME (dramelet, 05-12-2024) Until those columns are dropped
+    # we still have to maintain the historic behavior
+    venue.street = data["address"]["street"]  # type: ignore [method-assign]
+    venue.city = data["address"]["city"]
+    venue.postalCode = data["address"]["postalCode"]
+    venue.latitude = data["address"]["latitude"]
+    venue.longitude = data["address"]["longitude"]
+    venue.banId = data["address"]["banId"]
+
     if venue_data.contact:
         upsert_venue_contact(venue, venue_data.contact)
 
@@ -2004,12 +2013,12 @@ def create_from_onboarding_data(
 
     # Create Offerer or attach user to existing Offerer
     offerer_creation_info = offerers_serialize.CreateOffererQueryModel(
-        street=onboarding_data.street,
-        city=onboarding_data.city,
-        latitude=onboarding_data.latitude,
-        longitude=onboarding_data.longitude,
+        street=onboarding_data.address.street,
+        city=onboarding_data.address.city,
+        latitude=float(onboarding_data.address.latitude),
+        longitude=float(onboarding_data.address.longitude),
         name=name,
-        postalCode=onboarding_data.postalCode,
+        postalCode=onboarding_data.address.postalCode,
         siren=onboarding_data.siret[:9],
     )
     new_onboarding_info = NewOnboardingInfo(
@@ -2022,17 +2031,15 @@ def create_from_onboarding_data(
     # Create Venue with siret if it's not in DB yet, or Venue without siret if requested
     venue = offerers_repository.find_venue_by_siret(onboarding_data.siret)
     if not venue or onboarding_data.createVenueWithoutSiret:
+        address = onboarding_data.address
+        if not address.street:
+            address = address.copy(update={"street": "n/d"})
         common_kwargs = dict(
-            street=onboarding_data.street or "n/d",  # handle empty VoieEtablissement from Sirene API
-            banId=onboarding_data.banId,
+            address=address,
             bookingEmail=user.email,
-            city=onboarding_data.city,
-            latitude=onboarding_data.latitude,
-            longitude=onboarding_data.longitude,
             managingOffererId=user_offerer.offererId,
             name=name,
             publicName=onboarding_data.publicName,
-            postalCode=onboarding_data.postalCode,
             venueLabelId=None,
             venueTypeCode=onboarding_data.venueTypeCode,
             withdrawalDetails=None,
@@ -2962,6 +2969,19 @@ def create_offerer_address_from_address_api(address: offerers_schemas.AddressBod
             ban_id=address_info.id,
         )
     return get_or_create_address(location_data, is_manual_edition=address.isManualEdition)
+
+
+def get_offerer_address_from_address(
+    offerer_id: int, address: offerers_schemas.AddressBodyModel
+) -> offerers_models.OffererAddress:
+    if not address.label:
+        address.label = None
+    address_from_api = create_offerer_address_from_address_api(address)
+    return get_or_create_offerer_address(
+        offerer_id,
+        address_from_api.id,
+        label=address.label,
+    )
 
 
 def update_fraud_info(

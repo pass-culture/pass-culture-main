@@ -1,13 +1,16 @@
 from datetime import datetime
 import pathlib
+from unittest.mock import patch
 
 import pytest
 
+from pcapi.connectors.api_adresse import AddressInfo
 from pcapi.core import testing
 from pcapi.core.external.zendesk_sell_backends import testing as zendesk_testing
 from pcapi.core.geography import models as geography_models
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models
+from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Venue
 from pcapi.core.testing import override_settings
@@ -63,15 +66,17 @@ def create_valid_venue_data(user=None):
     venue_label = offerers_factories.VenueLabelFactory(label="CAC - Centre d'art contemporain d'intérêt national")
 
     return {
+        "address": {
+            "street": "Chemin de Chaniaux 48250 Laveyrune",
+            "postalCode": "48250",
+            "city": "Laveyrune",
+            "latitude": 44.626322,
+            "longitude": 3.893166,
+        },
         "name": "MINISTERE DE LA CULTURE",
         "siret": f"{user_offerer.offerer.siren}10045",
-        "street": "Chemin de Chaniaux 48250 Laveyrune",
-        "postalCode": "48250",
         "bookingEmail": "toto@example.com",
-        "city": "Laveyrune",
         "managingOffererId": user_offerer.offerer.id,
-        "latitude": 44.626322,
-        "longitude": 3.893166,
         "publicName": "Ma venue publique",
         "venueTypeCode": "BOOKSTORE",
         "venueLabelId": venue_label.id,
@@ -166,6 +171,98 @@ class Returns201Test:
         assert venue.action_history[0].actionType == history_models.ActionType.VENUE_CREATED
         assert venue.action_history[0].authorUser == user
 
+    @testing.override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+    @testing.override_features(ENABLE_ZENDESK_SELL_CREATION=True)
+    @patch("pcapi.connectors.api_adresse.get_municipality_centroid")
+    @patch("pcapi.connectors.api_adresse.get_address")
+    def test_register_new_venue_with_manually_edited_address(
+        self, get_adress_mock, get_municipality_centroid_mock, client, requests_mock
+    ):
+        get_municipality_centroid_mock.return_value = AddressInfo(
+            id="48250",
+            postcode="48250",
+            citycode="07136",
+            latitude=44.626322,
+            longitude=3.893166,
+            score=0.90,
+            city="Laveyrune",
+            street=None,
+            label="Laveyrune",
+        )
+
+        api_adresse_response = get_api_address_response()
+        user = ProFactory(
+            lastConnectionDate=datetime.utcnow(),
+        )
+        venue_data = create_valid_venue_data(user)
+        manually_edited_address = {"isManualEdition": True, **venue_data["address"]}
+        venue_data["address"] = manually_edited_address
+        requests_mock.get(
+            """https://api-adresse.data.gouv.fr/search?q=Chemin+de+Chaniaux+48250+Laveyrune&postcode=48250&autocomplete=0&limit=1""",
+            json=api_adresse_response,
+        )
+
+        client = client.with_session_auth(email=user.email)
+        response = client.post("/venues", json=venue_data)
+
+        assert response.status_code == 201
+
+        venue = Venue.query.filter_by(id=response.json["id"]).one()
+        address = geography_models.Address.query.one()
+        offerer_address = models.OffererAddress.query.one()
+
+        assert venue.name == venue_data["name"]
+        assert venue.publicName == venue_data["publicName"]
+        assert venue.siret == venue_data["siret"]
+        assert venue.venueTypeCode.name == "BOOKSTORE"
+        assert venue.venueLabelId == venue_data["venueLabelId"]
+        assert venue.description == venue_data["description"]
+        assert venue.audioDisabilityCompliant == venue_data["audioDisabilityCompliant"]
+        assert venue.mentalDisabilityCompliant == venue_data["mentalDisabilityCompliant"]
+        assert venue.motorDisabilityCompliant == venue_data["motorDisabilityCompliant"]
+        assert venue.visualDisabilityCompliant == venue_data["visualDisabilityCompliant"]
+        assert venue.contact.email == venue_data["contact"]["email"]
+        assert venue.dmsToken
+
+        assert not venue.isPermanent
+        assert not venue.contact.phone_number
+        assert not venue.contact.social_medias
+
+        assert len(venue.adage_addresses) == 1
+        adage_addr = venue.adage_addresses[0]
+
+        assert adage_addr.venueId == venue.id
+        assert adage_addr.adageId == venue.adageId
+        assert adage_addr.adageInscriptionDate == venue.adageInscriptionDate
+
+        assert len(external_testing.sendinblue_requests) == 1
+        assert external_testing.zendesk_sell_requests == [
+            {
+                "action": "create",
+                "type": "Venue",
+                "id": response.json["id"],
+                "parent_organization_id": zendesk_testing.TESTING_ZENDESK_ID_OFFERER,
+            }
+        ]
+
+        assert venue.offererAddressId == offerer_address.id
+        assert offerer_address.addressId == address.id
+        assert venue.timezone == address.timezone
+        assert venue.city == address.city
+        assert venue.postalCode == manually_edited_address["postalCode"]
+        assert address.street == manually_edited_address["street"]
+        assert address.inseeCode == "07136"
+        assert address.inseeCode.startswith(address.departmentCode)
+        assert address.departmentCode == "07"
+        assert address.timezone == "Europe/Paris"
+        assert address.isManualEdition is True
+        get_municipality_centroid_mock.assert_called_once()
+        get_adress_mock.assert_not_called()
+
+        assert len(venue.action_history) == 1
+        assert venue.action_history[0].actionType == history_models.ActionType.VENUE_CREATED
+        assert venue.action_history[0].authorUser == user
+
     @testing.override_settings(
         ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend",
         IS_INTEGRATION=True,
@@ -212,35 +309,29 @@ class Returns400Test:
         user = ProFactory()
         venue_data = create_valid_venue_data(user)
 
-        venue_data = {
-            **venue_data,
-            "latitude": -98.82387,
-            "longitude": "112°3534",
-        }
+        venue_data["address"]["latitude"] = -98.82387
+        venue_data["address"]["longitude"] = "112°3534"
 
         client = client.with_session_auth(email=user.email)
         response = client.post("/venues", json=venue_data)
 
         assert response.status_code == 400
-        assert response.json["latitude"] == ["La latitude doit être comprise entre -90.0 et +90.0"]
-        assert response.json["longitude"] == ["Format incorrect"]
+        assert response.json["address.latitude"] == ["La latitude doit être comprise entre -90.0 et +90.0"]
+        assert response.json["address.longitude"] == ["Format incorrect"]
 
     def test_longitude_out_of_range_and_latitude_wrong_format(self, client):
         user = ProFactory()
 
         venue_data = create_valid_venue_data(user)
-        venue_data = {
-            **venue_data,
-            "latitude": "76°8237",
-            "longitude": 210.43251,
-        }
+        venue_data["address"]["latitude"] = "76°8237"
+        venue_data["address"]["longitude"] = 210.43251
 
         client = client.with_session_auth(email=user.email)
         response = client.post("/venues", json=venue_data)
 
         assert response.status_code == 400
-        assert response.json["longitude"] == ["La longitude doit être comprise entre -180.0 et +180.0"]
-        assert response.json["latitude"] == ["Format incorrect"]
+        assert response.json["address.longitude"] == ["La longitude doit être comprise entre -180.0 et +180.0"]
+        assert response.json["address.latitude"] == ["Format incorrect"]
 
     def test_mandatory_accessibility_fields(self, client):
         user = ProFactory()

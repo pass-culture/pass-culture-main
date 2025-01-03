@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type AddressBodyModel = {
+  banId?: string | null;
   city: string;
   isManualEdition?: boolean;
   isVenueAddress?: boolean;
