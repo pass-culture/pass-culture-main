@@ -1,13 +1,7 @@
 @use "styles/mixins/_rem.scss" as rem;
 
 .checkbox-group {
-  &-item {
-    // RomainC: I don't understand why it doesn't exactly match the sketch
-    margin-bottom: rem.torem(12px);
-    width: max-content;
-
-    &:last-of-type {
-      margin-bottom: 0;
-    }
-  }
+  display: flex;
+  flex-direction: column;
+  gap: rem.torem(16px);
 }

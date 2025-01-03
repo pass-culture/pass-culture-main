@@ -253,7 +253,6 @@ export const UsefulInformationForm = ({
       <FormLayout.Section title="Modalités d’accessibilité">
         <FormLayout.Row>
           <CheckboxGroup
-            className={styles['accessibility-checkbox-group']}
             group={accessibilityOptionsGroups}
             groupName="accessibility"
             disabled={readOnlyFields.includes('accessibility')}
