@@ -530,6 +530,9 @@ def complete_profile(
     last_name: str,
     school_type: users_models.SchoolTypeEnum | None = None,
 ) -> None:
+    if postal_code in postal_code_utils.INELIGIBLE_POSTAL_CODES:
+        raise exceptions.IneligiblePostalCodeException()
+
     update_payload = {
         "address": address,
         "city": city,

@@ -2,6 +2,10 @@ class SubscriptionException(Exception):
     pass
 
 
+class IneligiblePostalCodeException(SubscriptionException):
+    pass
+
+
 class InvalidEligibilityTypeException(SubscriptionException):
     pass
 

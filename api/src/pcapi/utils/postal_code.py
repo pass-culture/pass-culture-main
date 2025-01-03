@@ -12,6 +12,26 @@ SAINT_MARTIN_DEPARTEMENT_CODE = "978"
 
 POSTAL_CODE_REGEX = re.compile(r"^\d[AB0-9]\d{3,4}$")
 
+NORTH_CALEDONIAN_POSTAL_CODES = {
+    "98811": "Bélep",
+    "98813": "Canala",
+    "98815": "Hienghène",
+    "98816": "Houaïlou",
+    "98817": "Kaala-Gomen",
+    "98818": "Kouaoua",
+    "98821": "Ouégoa",
+    "98822": "Poindimié",
+    "98823": "Ponérihouen",
+    "98824": "Pouébo",
+    "98825": "Pouembout",
+    "98826": "Poum",
+    "98831": "Touho",
+    "98833": "Voh",
+    "98850": "Koumac",
+    "98860": "Koné",
+}
+INELIGIBLE_POSTAL_CODES = list(NORTH_CALEDONIAN_POSTAL_CODES)
+
 
 class PostalCode:
     postalCode: str
