@@ -25,6 +25,12 @@
     padding: rem.torem(11.2px) rem.torem(16px);
   }
 
+  .options-item-hover {
+    &:hover {
+      background: var(--color-grey-light);
+    }
+  }
+
   .label {
     padding: rem.torem(11.2px) rem.torem(16px) rem.torem(11.2px) 0;
   }
@@ -37,9 +43,5 @@
 
   .input {
     margin-left: rem.torem(16px);
-  }
-
-  .option-hovered {
-    background: var(--color-grey-light);
   }
 }

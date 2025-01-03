@@ -56,9 +56,6 @@ export const OptionsList = ({
                 aria-selected={isSelected}
                 aria-posinset={index + 1}
                 aria-setsize={displayedOptions.length}
-                className={
-                  hoveredOptionIndex === index ? styles['option-hovered'] : ''
-                }
                 data-value={value}
                 data-selected={isSelected}
                 id={`option-display-${value}`}
@@ -75,6 +72,7 @@ export const OptionsList = ({
                     onChange={() => {
                       selectOption(String(value))
                     }}
+                    className={styles['options-item-hover']}
                     labelClassName={styles['label']}
                     inputClassName={styles['input']}
                   />
@@ -83,7 +81,7 @@ export const OptionsList = ({
                     onClick={() => {
                       selectOption(String(value))
                     }}
-                    className={cx(styles['options-item'])}
+                    className={styles['options-item-hover']}
                   >
                     {label}
                   </span>
