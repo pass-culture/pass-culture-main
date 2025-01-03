@@ -1,32 +1,38 @@
 import classNames from 'classnames'
 import { useField } from 'formik'
 
+import { RequireAtLeastOne } from '../RadioGroup/RadioGroup'
 import { CheckboxVariant } from '../shared/BaseCheckbox/BaseCheckbox'
 import { FieldSetLayout } from '../shared/FieldSetLayout/FieldSetLayout'
 
 import styles from './CheckboxGroup.module.scss'
 import { CheckboxGroupItem } from './CheckboxGroupItem'
 
-interface CheckboxGroupProps {
-  groupName: string
-  legend: string
-  group: {
-    name: string
-    label: string
-    description?: string
-    icon?: string
-    onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
-  }[]
-  disabled?: boolean
-  isOptional?: boolean
-  variant?: CheckboxVariant
-  inline?: boolean
-}
+type CheckboxGroupProps = RequireAtLeastOne<
+  {
+    groupName: string
+    legend?: string
+    describedBy?: string
+    group: {
+      name: string
+      label: string
+      icon?: string
+      onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
+      childrenOnChecked?: JSX.Element
+    }[]
+    disabled?: boolean
+    isOptional?: boolean
+    variant?: CheckboxVariant
+    inline?: boolean
+  },
+  'legend' | 'describedBy'
+>
 
 export const CheckboxGroup = ({
   group,
   groupName,
   legend,
+  describedBy,
   disabled,
   isOptional,
   variant,
@@ -40,7 +46,9 @@ export const CheckboxGroup = ({
       error={hasError ? meta.error : undefined}
       legend={legend}
       name={groupName}
+      ariaDescribedBy={describedBy}
       isOptional={isOptional}
+      hideFooter
     >
       <div
         className={classNames(styles['checkbox-group'], {
@@ -61,6 +69,7 @@ export const CheckboxGroup = ({
               onChange={item.onChange}
               {...(hasError ? { ariaDescribedBy: `error-${groupName}` } : {})}
               variant={variant}
+              childrenOnChecked={item.childrenOnChecked}
             />
           </div>
         ))}
