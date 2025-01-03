@@ -22,6 +22,7 @@ describe('ExpirationCell', () => {
             <ExpirationCell
               offer={offerParam}
               bookingLimitDate={bookingLimitDate}
+              rowId="rowId"
             />
           </tr>
         </tbody>

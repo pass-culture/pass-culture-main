@@ -9,16 +9,18 @@ import { isOfferEducational } from 'commons/core/OfferEducational/types'
 import styles from 'styles/components/Cells.module.scss'
 import { Thumb } from 'ui-kit/Thumb/Thumb'
 
+import { CELLS_DEFINITIONS } from '../utils/cellDefinitions'
+
 export const ThumbCell = ({
   offer,
   offerLink,
-  headers,
+  rowId,
   inactive,
   className,
 }: {
   offer: CollectiveOfferResponseModel | ListOffersOfferResponseModel
   offerLink: string
-  headers?: string
+  rowId: string
   inactive?: boolean
   className?: string
 }) => {
@@ -29,7 +31,7 @@ export const ThumbCell = ({
         styles['offers-table-cell'],
         styles['thumb-column']
       )}
-      headers={headers}
+      headers={`${rowId} ${CELLS_DEFINITIONS.THUMB.id}`}
     >
       <Link
         title={`${offer.name} - éditer l’offre`}
