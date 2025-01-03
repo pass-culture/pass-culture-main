@@ -352,6 +352,7 @@ export const CollectiveActionsCells = ({
 
   return (
     <td
+      role="cell"
       className={cn(styles['offers-table-cell'], styles['actions-column'], className)}
       headers={`${rowId} ${CELLS_DEFINITIONS.ACTIONS.id}`}
     >
