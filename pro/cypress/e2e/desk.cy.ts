@@ -29,7 +29,7 @@ describe('Desk (Guichet) feature', () => {
   })
 
   beforeEach(() => {
-   sessionLogInAndGoToPage('Session desk', login, '/guichet')
+    sessionLogInAndGoToPage('Session desk', login, '/guichet')
   })
 
   it('I should see help information on desk page', () => {
