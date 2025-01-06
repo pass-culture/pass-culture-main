@@ -48,6 +48,7 @@ export const GET_OFFERER_QUERY_KEY = 'getOfferer'
 export const GET_OFFERER_BANKACCOUNTS_AND_ATTACHED_VENUES =
   'getOffererBankAccountsAndAttachedVenues'
 export const GET_OFFERER_NAMES_QUERY_KEY = 'getOffererNames'
+export const GET_OFFERER_V2_STATS_QUERY_KEY = 'getOffererV2Stats'
 export const GET_PROVIDERS_QUERY_KEY = 'getProviders'
 export const GET_VENUE_QUERY_KEY = 'getVenue'
 export const GET_VENUE_LABELS_QUERY_KEY = 'getVenueLabels'
