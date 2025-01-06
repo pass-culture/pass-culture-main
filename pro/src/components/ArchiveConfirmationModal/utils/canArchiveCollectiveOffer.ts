@@ -9,7 +9,7 @@ import {
 } from 'apiClient/v1'
 import { isCollectiveOfferTemplate } from 'commons/core/OfferEducational/types'
 
-// FIXME: delete the functions in this file when the ticket front is finished : https://passculture.atlassian.net/browse/PC-30662
+// TODO: delete the functions in this file when the ticket front is finished : https://passculture.atlassian.net/browse/PC-30662
 export function canArchiveCollectiveOffer(offer: CollectiveOfferResponseModel) {
   if (offer.status === CollectiveOfferStatus.ARCHIVED) {
     return false

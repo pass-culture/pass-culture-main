@@ -75,7 +75,7 @@ export const getHumanReadableApiError = (
   return defaultMessage
 }
 
-// FIXME: find a way to test this by mocking ReadableStream
+// TODO: find a way to test this by mocking ReadableStream
 // in fetch response
 /* istanbul ignore next */
 export const getFileFromURL = async (
