@@ -4,7 +4,11 @@
 
 $checkbox-size: rem.torem(40px);
 
-.checkbox input {
+.day-checkbox {
+  width: auto;
+}
+
+.day-checkbox-input {
   position: relative;
   width: $checkbox-size;
   height: $checkbox-size;
