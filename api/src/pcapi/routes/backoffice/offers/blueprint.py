@@ -398,14 +398,6 @@ def _get_offers_by_ids(
         # 1-1 relationships so join will not increase the number of SQL rows
         .join(offers_models.Offer.venue)
         .join(offerers_models.Venue.managingOfferer)
-        .outerjoin(offerers_models.OffererTagMapping)
-        .outerjoin(
-            offerers_models.OffererTag,
-            sa.and_(
-                offerers_models.OffererTag.id == offerers_models.OffererTagMapping.tagId,
-                offerers_models.OffererTag.name == "top-acteur",
-            ),
-        )
         .options(
             sa.orm.load_only(
                 offers_models.Offer.id,
@@ -433,12 +425,8 @@ def _get_offers_by_ids(
                 offerers_models.Offerer.siren,
                 offerers_models.Offerer.postalCode,
             )
-            .options(
-                sa.orm.contains_eager(offerers_models.Offerer.tags),
-                sa.orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
-                    offerers_models.OffererConfidenceRule.confidenceLevel
-                ),
-            ),
+            .joinedload(offerers_models.Offerer.confidenceRule)
+            .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
             sa.orm.contains_eager(offers_models.Offer.venue)
             .joinedload(offerers_models.Venue.confidenceRule)
             .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
@@ -942,62 +930,45 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
 @atomic()
 @utils.permission_required(perm_models.Permissions.READ_OFFERS)
 def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
-    offer_query = (
-        offers_models.Offer.query.filter(offers_models.Offer.id == offer_id)
-        .join(offerers_models.Venue)
-        .join(offerers_models.Offerer)
-        .outerjoin(offerers_models.OffererTagMapping)
-        .outerjoin(
-            offerers_models.OffererTag,
-            sa.and_(
-                offerers_models.OffererTag.id == offerers_models.OffererTagMapping.tagId,
-                offerers_models.OffererTag.name == "top-acteur",
-            ),
+    offer_query = offers_models.Offer.query.filter(offers_models.Offer.id == offer_id).options(
+        sa.orm.joinedload(offers_models.Offer.venue)
+        .load_only(
+            offerers_models.Venue.id,
+            offerers_models.Venue.name,
+            offerers_models.Venue.publicName,
+            offerers_models.Venue.managingOffererId,
         )
-        .options(
-            sa.orm.contains_eager(offers_models.Offer.venue)
-            .load_only(
-                offerers_models.Venue.id,
-                offerers_models.Venue.name,
-                offerers_models.Venue.publicName,
-                offerers_models.Venue.managingOffererId,
-            )
-            .contains_eager(offerers_models.Venue.managingOfferer)
-            .load_only(
-                offerers_models.Offerer.id,
-                offerers_models.Offerer.name,
-                offerers_models.Offerer.isActive,
-                offerers_models.Offerer.validationStatus,
-                offerers_models.Offerer.siren,
-                offerers_models.Offerer.postalCode,
-            )
-            .options(
-                sa.orm.contains_eager(offerers_models.Offerer.tags),
-                sa.orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
-                    offerers_models.OffererConfidenceRule.confidenceLevel
-                ),
-            ),
-            sa.orm.contains_eager(offers_models.Offer.venue)
-            .joinedload(offerers_models.Venue.confidenceRule)
-            .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
-            sa.orm.joinedload(offers_models.Offer.stocks)
-            .joinedload(offers_models.Stock.priceCategory)
-            .load_only(offers_models.PriceCategory.price)
-            .joinedload(offers_models.PriceCategory.priceCategoryLabel)
-            .load_only(offers_models.PriceCategoryLabel.label),
-            sa.orm.joinedload(offers_models.Offer.lastValidationAuthor).load_only(
-                users_models.User.firstName, users_models.User.lastName
-            ),
-            sa.orm.joinedload(offers_models.Offer.criteria),
-            sa.orm.joinedload(offers_models.Offer.flaggingValidationRules),
-            sa.orm.joinedload(offers_models.Offer.mediations),
-            sa.orm.joinedload(offers_models.Offer.product).joinedload(offers_models.Product.productMediations),
-            sa.orm.joinedload(offers_models.Offer.lastProvider).load_only(providers_models.Provider.name),
-            sa.orm.joinedload(offers_models.Offer.offererAddress)
-            .load_only(offerers_models.OffererAddress.label)
-            .joinedload(offerers_models.OffererAddress.address),
-            sa.orm.joinedload(offers_models.Offer.compliance),
+        .joinedload(offerers_models.Venue.managingOfferer)
+        .load_only(
+            offerers_models.Offerer.id,
+            offerers_models.Offerer.name,
+            offerers_models.Offerer.isActive,
+            offerers_models.Offerer.validationStatus,
+            offerers_models.Offerer.siren,
+            offerers_models.Offerer.postalCode,
         )
+        .joinedload(offerers_models.Offerer.confidenceRule)
+        .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
+        sa.orm.joinedload(offers_models.Offer.venue)
+        .joinedload(offerers_models.Venue.confidenceRule)
+        .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
+        sa.orm.joinedload(offers_models.Offer.stocks)
+        .joinedload(offers_models.Stock.priceCategory)
+        .load_only(offers_models.PriceCategory.price)
+        .joinedload(offers_models.PriceCategory.priceCategoryLabel)
+        .load_only(offers_models.PriceCategoryLabel.label),
+        sa.orm.joinedload(offers_models.Offer.lastValidationAuthor).load_only(
+            users_models.User.firstName, users_models.User.lastName
+        ),
+        sa.orm.joinedload(offers_models.Offer.criteria),
+        sa.orm.joinedload(offers_models.Offer.flaggingValidationRules),
+        sa.orm.joinedload(offers_models.Offer.mediations),
+        sa.orm.joinedload(offers_models.Offer.product).joinedload(offers_models.Product.productMediations),
+        sa.orm.joinedload(offers_models.Offer.lastProvider).load_only(providers_models.Provider.name),
+        sa.orm.joinedload(offers_models.Offer.offererAddress)
+        .load_only(offerers_models.OffererAddress.label)
+        .joinedload(offerers_models.OffererAddress.address),
+        sa.orm.joinedload(offers_models.Offer.compliance),
     )
     offer = offer_query.one_or_none()
 
