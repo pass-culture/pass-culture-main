@@ -1,11 +1,9 @@
-import { useEffect, useState } from 'react'
+import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import {
-  GetOffererResponseModel,
-  GetOffererV2StatsResponseModel,
-} from 'apiClient/v1'
+import { GetOffererResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
+import { GET_OFFERER_V2_STATS_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { getOffersCountToDisplay } from 'commons/utils/getOffersCountToDisplay'
@@ -61,37 +59,28 @@ const StatBlock = ({ icon, count, label, link, linkLabel }: StatBlockProps) => (
 )
 
 export const OfferStats = ({ offerer, className }: OfferStatsProps) => {
-  const [stats, setStats] = useState<GetOffererV2StatsResponseModel | null>(
-    null
-  )
-  const [isLoading, setIsLoading] = useState(false)
   const { logEvent } = useAnalytics()
   const areNewStatusesEnabled = useActiveFeature(
     'ENABLE_COLLECTIVE_NEW_STATUSES'
   )
 
-  useEffect(() => {
-    const loadStats = async () => {
-      setIsLoading(true)
-      const response = await api.getOffererV2Stats(offerer.id)
-      setStats(response)
-      setIsLoading(false)
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    loadStats()
-  }, [offerer.id])
+  const getOffererV2StatsQuery = useSWR(
+    offerer.id ? [GET_OFFERER_V2_STATS_QUERY_KEY, offerer.id] : null,
+    ([, offererId]) => api.getOffererV2Stats(offererId)
+  )
 
   const pendingOfferWording = areNewStatusesEnabled
     ? 'en instruction'
     : 'en attente'
 
+  const isLoading = getOffererV2StatsQuery.isLoading
+  const stats = getOffererV2StatsQuery.data
   return (
     <Card className={className}>
       <h3 className={styles['title']}>Vos offres publiées</h3>
 
       <div className={styles['container']}>
-        {isLoading || stats === null ? (
+        {isLoading || !stats ? (
           <>
             <div className={styles['skeleton']} />
             <div className={styles['skeleton']} />
@@ -117,7 +106,7 @@ export const OfferStats = ({ offerer, className }: OfferStatsProps) => {
         )}
       </div>
 
-      {stats !== null &&
+      {stats !== undefined &&
         (stats.pendingEducationalOffers > 0 ||
           stats.pendingPublicOffers > 0) && (
           <div className={styles['pending-offers']}>
