@@ -181,16 +181,6 @@ def _get_collective_offers(
             rules_subquery.label("rules"),
         )
         .filter(educational_models.CollectiveOffer.id.in_(_get_collective_offer_ids_query(form).subquery()))
-        .join(offerers_models.Venue)
-        .join(offerers_models.Offerer)
-        .outerjoin(offerers_models.OffererTagMapping)
-        .outerjoin(
-            offerers_models.OffererTag,
-            sa.and_(
-                offerers_models.OffererTag.id == offerers_models.OffererTagMapping.tagId,
-                offerers_models.OffererTag.name == "top-acteur",
-            ),
-        )
         .options(
             sa.orm.load_only(
                 educational_models.CollectiveOffer.id,
@@ -207,24 +197,20 @@ def _get_collective_offers(
                 educational_models.CollectiveStock.endDatetime,
                 educational_models.CollectiveStock.price,
             ),
-            sa.orm.contains_eager(educational_models.CollectiveOffer.venue).load_only(
+            sa.orm.joinedload(educational_models.CollectiveOffer.venue, innerjoin=True).load_only(
                 offerers_models.Venue.managingOffererId,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.departementCode,
             )
             # needed to check if stock is bookable and compute initial/remaining stock:
-            .contains_eager(offerers_models.Venue.managingOfferer)
+            .joinedload(offerers_models.Venue.managingOfferer, innerjoin=True)
             .load_only(
                 offerers_models.Offerer.name, offerers_models.Offerer.isActive, offerers_models.Offerer.validationStatus
             )
-            .options(
-                sa.orm.contains_eager(offerers_models.Offerer.tags),
-                sa.orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
-                    offerers_models.OffererConfidenceRule.confidenceLevel
-                ),
-            ),
-            sa.orm.contains_eager(educational_models.CollectiveOffer.venue)
+            .joinedload(offerers_models.Offerer.confidenceRule)
+            .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
+            sa.orm.joinedload(educational_models.CollectiveOffer.venue, innerjoin=True)
             .joinedload(offerers_models.Venue.confidenceRule)
             .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
             sa.orm.joinedload(educational_models.CollectiveOffer.institution).load_only(
@@ -541,48 +527,34 @@ def _is_collective_offer_price_editable(collective_offer: educational_models.Col
 @blueprint.route("/<int:collective_offer_id>/details", methods=["GET"])
 @atomic()
 def get_collective_offer_details(collective_offer_id: int) -> utils.BackofficeResponse:
-    collective_offer_query = (
-        educational_models.CollectiveOffer.query.filter(educational_models.CollectiveOffer.id == collective_offer_id)
-        .join(offerers_models.Venue)
-        .join(offerers_models.Offerer)
-        .outerjoin(offerers_models.OffererTagMapping)
-        .outerjoin(
-            offerers_models.OffererTag,
-            sa.and_(
-                offerers_models.OffererTag.id == offerers_models.OffererTagMapping.tagId,
-                offerers_models.OffererTag.name == "top-acteur",
+    collective_offer_query = educational_models.CollectiveOffer.query.filter(
+        educational_models.CollectiveOffer.id == collective_offer_id
+    ).options(
+        sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock),
+        sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
+            educational_models.CollectiveStock.collectiveBookings
+        ),
+        sa.orm.joinedload(educational_models.CollectiveOffer.venue).options(
+            sa.orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
+                offerers_models.OffererConfidenceRule.confidenceLevel
             ),
-        )
-        .options(
-            sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock),
-            sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
-                educational_models.CollectiveStock.collectiveBookings
-            ),
-            sa.orm.contains_eager(educational_models.CollectiveOffer.venue).options(
-                sa.orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
-                    offerers_models.OffererConfidenceRule.confidenceLevel
-                ),
-                sa.orm.contains_eager(offerers_models.Venue.managingOfferer).options(
-                    sa.orm.contains_eager(offerers_models.Offerer.tags),
-                    sa.orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
-                        offerers_models.OffererConfidenceRule.confidenceLevel
-                    ),
-                ),
-            ),
-            sa.orm.joinedload(educational_models.CollectiveOffer.lastValidationAuthor).load_only(
-                users_models.User.firstName, users_models.User.lastName
-            ),
-            sa.orm.joinedload(educational_models.CollectiveOffer.teacher).load_only(
-                educational_models.EducationalRedactor.firstName,
-                educational_models.EducationalRedactor.lastName,
-            ),
-            sa.orm.joinedload(educational_models.CollectiveOffer.institution).load_only(
-                educational_models.EducationalInstitution.name
-            ),
-            sa.orm.joinedload(educational_models.CollectiveOffer.template).load_only(
-                educational_models.CollectiveOfferTemplate.name,
-            ),
-        )
+            sa.orm.joinedload(offerers_models.Venue.managingOfferer)
+            .joinedload(offerers_models.Offerer.confidenceRule)
+            .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
+        ),
+        sa.orm.joinedload(educational_models.CollectiveOffer.lastValidationAuthor).load_only(
+            users_models.User.firstName, users_models.User.lastName
+        ),
+        sa.orm.joinedload(educational_models.CollectiveOffer.teacher).load_only(
+            educational_models.EducationalRedactor.firstName,
+            educational_models.EducationalRedactor.lastName,
+        ),
+        sa.orm.joinedload(educational_models.CollectiveOffer.institution).load_only(
+            educational_models.EducationalInstitution.name
+        ),
+        sa.orm.joinedload(educational_models.CollectiveOffer.template).load_only(
+            educational_models.CollectiveOfferTemplate.name,
+        ),
     )
     collective_offer = collective_offer_query.one_or_none()
     if not collective_offer:
