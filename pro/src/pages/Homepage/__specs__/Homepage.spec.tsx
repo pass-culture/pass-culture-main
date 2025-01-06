@@ -222,13 +222,13 @@ describe('Homepage', () => {
   })
 
   it('should display pending offerer banner when rattachement is pending', async () => {
-    // TODO: getOfferer called twice
     vi.spyOn(api, 'getOfferer').mockRejectedValue({ status: 403 })
 
     renderHomePage()
 
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
+    expect(api.getOfferer).toHaveBeenCalledTimes(1)
     expect(
       screen.getByText(
         'Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture'
