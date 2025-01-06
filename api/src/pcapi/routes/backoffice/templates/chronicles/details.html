@@ -33,10 +33,12 @@
               <div class="p-2 d-flex justify-content-end w-50">
                 <div class="p-2"></div>
                 <div class="p-2">
-                  {% if chronicle.isActive %}
-                    {{ build_modal_form("unpublish-chronicle-modal-" + chronicle.id|string, url_for('backoffice_web.chronicles.unpublish_chronicle', chronicle_id=chronicle.id) , chronicle_publication_form, "Dépublier", "Dépublier la chronique " + chronicle.id|string, "Dépublier") }}
-                  {% else %}
-                    {{ build_modal_form("publish-chronicle-modal-" + chronicle.id|string, url_for('backoffice_web.chronicles.publish_chronicle', chronicle_id=chronicle.id) , chronicle_publication_form, "Publier", "Publier la chronique " + chronicle.id|string, "Publier") }}
+                  {% if has_permission("MANAGE_CHRONICLE") %}
+                    {% if chronicle.isActive %}
+                      {{ build_modal_form("unpublish-chronicle-modal-" + chronicle.id|string, url_for('backoffice_web.chronicles.unpublish_chronicle', chronicle_id=chronicle.id) , chronicle_publication_form, "Dépublier", "Dépublier la chronique " + chronicle.id|string, "Dépublier") }}
+                    {% else %}
+                      {{ build_modal_form("publish-chronicle-modal-" + chronicle.id|string, url_for('backoffice_web.chronicles.publish_chronicle', chronicle_id=chronicle.id) , chronicle_publication_form, "Publier", "Publier la chronique " + chronicle.id|string, "Publier") }}
+                    {% endif %}
                   {% endif %}
                 </div>
               </div>
@@ -53,7 +55,7 @@
                     Non renseigné
                   {% endif %}
                   {% if chronicle.userId %}
-                    (<a href={{ url_for("backoffice_web.public_accounts.get_public_account", user_id=chronicle.userId) }}>Voir le profil du jeune</a>)
+                    (<a href="{{ url_for('backoffice_web.public_accounts.get_public_account', user_id=chronicle.userId) }}">Voir le profil du jeune</a>)
                   {% endif %}
                 </p>
                 <p class="mb-1">
