@@ -4,6 +4,7 @@ import {
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { cy } from 'date-fns/locale'
 import { expect } from 'vitest'
 
 import { api } from 'apiClient/api'
@@ -491,13 +492,11 @@ describe('reimbursementsWithFilters', () => {
 
     await userEvent.click(screen.getByText('Lancer la recherche'))
 
-    // TODO: this call should not occured as many times
     await waitFor(() => {
-      expect(api.getInvoicesV2).toHaveBeenCalledTimes(2 /* au render */ + 1)
+      expect(api.getInvoicesV2).toHaveBeenCalledTimes(2)
     })
 
     expect(api.getInvoicesV2).toHaveBeenLastCalledWith(
-      // 3,
       '2020-11-17',
       '2020-11-19',
       BASE_BANK_ACCOUNTS[0].id,

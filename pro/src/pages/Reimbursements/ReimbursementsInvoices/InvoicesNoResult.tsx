@@ -11,21 +11,13 @@ import { FiltersType } from './types'
 
 interface InvoicesNoResultsProps {
   areFiltersDefault: boolean
-  initialFilters: FiltersType
-  setAreFiltersDefault: Dispatch<SetStateAction<boolean>>
-  setFilters: Dispatch<SetStateAction<FiltersType>>
+  onReset: () => void
 }
 
 export const InvoicesNoResult = ({
   areFiltersDefault,
-  initialFilters,
-  setAreFiltersDefault,
-  setFilters,
+  onReset
 }: InvoicesNoResultsProps): JSX.Element => {
-  function resetFilters() {
-    setAreFiltersDefault(true)
-    setFilters(initialFilters)
-  }
 
   return (
     <div className={styles['no-refunds']}>
@@ -43,7 +35,7 @@ export const InvoicesNoResult = ({
         <br />
         <Button
           disabled={areFiltersDefault}
-          onClick={resetFilters}
+          onClick={onReset}
           variant={ButtonVariant.TERNARYPINK}
           icon={fullRefreshIcon}
         >

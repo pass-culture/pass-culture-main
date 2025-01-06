@@ -16,42 +16,24 @@ import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 import styles from './InvoicesFilters.module.scss'
 import { FiltersType } from './types'
 
-interface ReimbursementsSectionHeaderProps {
+interface InvoicesFiltersProps {
   areFiltersDefault: boolean
   filters: FiltersType
-  initialFilters: FiltersType
   selectableOptions: SelectOption[]
-  setAreFiltersDefault: Dispatch<SetStateAction<boolean>>
   setFilters: Dispatch<SetStateAction<FiltersType>>
-  setHasSearchedOnce: Dispatch<SetStateAction<boolean>>
+  onReset: () => void
+  onSearch: () => void
 }
 
 export const InvoicesFilters = ({
   areFiltersDefault,
   filters,
-  initialFilters,
   selectableOptions,
-  setAreFiltersDefault,
   setFilters,
-  setHasSearchedOnce,
-}: ReimbursementsSectionHeaderProps): JSX.Element => {
-  const [searchParams, setSearchParams] = useSearchParams()
-  const { mutate } = useSWRConfig()
-
-  const {
-    reimbursementPoint: selectedReimbursementPoint,
-    periodStart: selectedPeriodStart,
-    periodEnd: selectedPeriodEnd,
-  } = filters
-
-  function resetFilters() {
-    searchParams.set('reimbursementPoint', initialFilters.reimbursementPoint)
-    searchParams.set('periodStart', initialFilters.periodStart)
-    searchParams.set('periodEnd', initialFilters.periodEnd)
-    setSearchParams(searchParams)
-    setAreFiltersDefault(true)
-    setFilters(initialFilters)
-  }
+  onReset,
+  onSearch
+}: InvoicesFiltersProps): JSX.Element => {
+  const [searchParams] = useSearchParams()
 
   const setReimbursementPointFilter = (
     event: React.ChangeEvent<HTMLSelectElement>
@@ -61,7 +43,7 @@ export const InvoicesFilters = ({
       ...prevFilters,
       reimbursementPoint,
     }))
-    setAreFiltersDefault(false)
+    searchParams.set('reimbursementPoint', filters.reimbursementPoint)
   }
 
   const setStartDateFilter = (startDate: string) => {
@@ -69,7 +51,7 @@ export const InvoicesFilters = ({
       ...prevFilters,
       periodStart: startDate,
     }))
-    setAreFiltersDefault(false)
+    searchParams.set('periodStart', filters.periodStart)
   }
 
   const setEndDateFilter = (endDate: string) => {
@@ -77,7 +59,7 @@ export const InvoicesFilters = ({
       ...prevFilters,
       periodEnd: endDate,
     }))
-    setAreFiltersDefault(false)
+    searchParams.set('periodEnd', filters.periodEnd)
   }
 
   return (
@@ -98,7 +80,7 @@ export const InvoicesFilters = ({
                 onChange={setReimbursementPointFilter}
                 name="reimbursementPoint"
                 options={selectableOptions}
-                value={selectedReimbursementPoint}
+                value={filters.reimbursementPoint}
               />
             </FieldLayout>
           )}
@@ -109,15 +91,15 @@ export const InvoicesFilters = ({
               onBeginningDateChange={setStartDateFilter}
               onEndingDateChange={setEndDateFilter}
               maxDateEnding={getToday()}
-              periodBeginningDate={selectedPeriodStart}
-              periodEndingDate={selectedPeriodEnd}
+              periodBeginningDate={filters.periodStart}
+              periodEndingDate={filters.periodEnd}
             />
           </fieldset>
         </FormLayout.Row>
         <Button
           className={styles['reset-filters']}
           disabled={areFiltersDefault}
-          onClick={resetFilters}
+          onClick={onReset}
           variant={ButtonVariant.TERNARY}
           icon={fullRefreshIcon}
         >
@@ -134,14 +116,7 @@ export const InvoicesFilters = ({
             variant={ButtonVariant.PRIMARY}
             className={styles['button-group-search-button']}
             disabled={!filters.periodStart || !filters.periodEnd}
-            onClick={async () => {
-              setHasSearchedOnce(true)
-              searchParams.set('reimbursementPoint', filters.reimbursementPoint)
-              searchParams.set('periodStart', filters.periodStart)
-              searchParams.set('periodEnd', filters.periodEnd)
-              setSearchParams(searchParams)
-              await mutate([GET_INVOICES_QUERY_KEY])
-            }}
+            onClick={onSearch}
           >
             Lancer la recherche
           </Button>
