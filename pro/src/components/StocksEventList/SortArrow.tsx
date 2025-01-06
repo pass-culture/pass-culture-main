@@ -1,5 +1,4 @@
 import cn from 'classnames'
-import React from 'react'
 
 import { SortingMode } from 'commons/hooks/useColumnSorting'
 import fullDownIcon from 'icons/full-down.svg'

@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { CGU_URL } from 'commons/utils/config'
 import { Callout } from 'ui-kit/Callout/Callout'
 

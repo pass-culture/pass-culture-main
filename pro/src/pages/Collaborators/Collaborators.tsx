@@ -3,7 +3,7 @@
 // Component only for display (sub-components already tested)
 
 import { Form, FormikProvider, useFormik } from 'formik'
-import React, { useCallback, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 import useSWR from 'swr'

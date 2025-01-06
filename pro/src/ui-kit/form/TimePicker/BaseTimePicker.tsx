@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React, { useId } from 'react'
+import { useId } from 'react'
 
 import { isValidTime } from 'commons/utils/timezone'
 

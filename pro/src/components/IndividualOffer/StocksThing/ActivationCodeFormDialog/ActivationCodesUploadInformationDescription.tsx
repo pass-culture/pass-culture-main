@@ -1,5 +1,3 @@
-import React from 'react'
-
 import styles from './ActivationCodeFormDialog.module.scss'
 
 export const ActivationCodesUploadInformationDescription = () => {

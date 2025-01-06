@@ -1,5 +1,4 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
-import React from 'react'
 
 import { apiAdage } from 'apiClient/api'
 import {

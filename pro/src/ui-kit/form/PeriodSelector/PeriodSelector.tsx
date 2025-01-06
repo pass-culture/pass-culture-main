@@ -1,5 +1,4 @@
 import cn from 'classnames'
-import React from 'react'
 
 import { BaseDatePicker } from 'ui-kit/form/DatePicker/BaseDatePicker'
 

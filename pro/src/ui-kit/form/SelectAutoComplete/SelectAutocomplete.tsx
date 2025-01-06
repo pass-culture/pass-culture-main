@@ -1,7 +1,6 @@
 import cx from 'classnames'
 import { useField, useFormikContext } from 'formik'
 import {
-  ForwardedRef,
   KeyboardEventHandler,
   useEffect,
   useRef,

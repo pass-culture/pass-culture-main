@@ -2,7 +2,6 @@ import cn from 'classnames'
 import { ReactElement } from 'react'
 
 import {
-  CollectiveOfferStatus,
   CollectiveOfferDisplayedStatus,
 } from 'apiClient/v1'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'

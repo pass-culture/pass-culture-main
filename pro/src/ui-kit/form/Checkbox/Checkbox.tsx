@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import { useField } from 'formik'
-import React, { ForwardedRef } from 'react'
+import { ForwardedRef } from 'react'
 
 import {
   BaseCheckbox,

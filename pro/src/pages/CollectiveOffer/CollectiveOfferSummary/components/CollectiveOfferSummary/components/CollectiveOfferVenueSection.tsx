@@ -1,4 +1,3 @@
-import React from 'react'
 
 import { GetCollectiveOfferVenueResponseModel } from 'apiClient/v1'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'

@@ -1,4 +1,3 @@
-import React from 'react'
 
 import strokeRepaymentIcon from 'icons/stroke-repayment.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'

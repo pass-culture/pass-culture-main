@@ -1,6 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
 import { Form, Formik } from 'formik'
-import React from 'react'
 
 import {
   GetOffererResponseModel,

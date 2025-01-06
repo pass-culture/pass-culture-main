@@ -1,5 +1,4 @@
 import cn from 'classnames'
-import React from 'react'
 
 import strokeErrorIcon from 'icons/stroke-error.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'

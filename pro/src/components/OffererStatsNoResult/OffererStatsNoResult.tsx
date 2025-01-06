@@ -1,5 +1,4 @@
 import cn from 'classnames'
-import React from 'react'
 
 import strokePieIcon from 'icons/stroke-pie.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'

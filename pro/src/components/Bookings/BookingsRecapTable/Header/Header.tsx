@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { pluralize } from 'commons/utils/pluralize'
 import fullRefreshIcon from 'icons/full-refresh.svg'
 import { Button } from 'ui-kit/Button/Button'

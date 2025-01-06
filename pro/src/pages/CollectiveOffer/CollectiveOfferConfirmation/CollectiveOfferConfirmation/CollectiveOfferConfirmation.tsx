@@ -1,5 +1,4 @@
 import cn from 'classnames'
-import React from 'react'
 
 import { CollectiveOfferStatus } from 'apiClient/v1'
 import fullValidateIcon from 'icons/full-validate.svg'

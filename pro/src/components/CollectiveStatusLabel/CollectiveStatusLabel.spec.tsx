@@ -2,7 +2,6 @@ import { screen } from '@testing-library/react'
 
 import {
   CollectiveOfferDisplayedStatus,
-  CollectiveOfferStatus,
 } from 'apiClient/v1'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 

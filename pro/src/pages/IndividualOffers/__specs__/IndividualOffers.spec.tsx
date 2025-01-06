@@ -74,7 +74,6 @@ const renderOffers = async (
   } = DEFAULT_SEARCH_FILTERS,
   features: string[] = [],
   user = sharedCurrentUserFactory(),
-  selectedOffererId: number | null = 1
 ) => {
   const route = computeIndividualOffersUrl(filters)
 

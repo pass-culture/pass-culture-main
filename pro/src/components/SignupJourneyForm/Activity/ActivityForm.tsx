@@ -1,6 +1,5 @@
 import cn from 'classnames'
 import { FieldArray, useFormikContext } from 'formik'
-import React from 'react'
 
 import { VenueTypeResponseModel } from 'apiClient/v1'
 import { FormLayout } from 'components/FormLayout/FormLayout'

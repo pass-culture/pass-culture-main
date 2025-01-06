@@ -2,7 +2,6 @@ import { format, sub } from 'date-fns'
 
 import { api } from 'apiClient/api'
 import { getHumanReadableApiError } from 'apiClient/helpers'
-import { ApiError } from 'apiClient/v1'
 import { useNotification } from 'commons/hooks/useNotification'
 import {
   FORMAT_ISO_DATE_ONLY,

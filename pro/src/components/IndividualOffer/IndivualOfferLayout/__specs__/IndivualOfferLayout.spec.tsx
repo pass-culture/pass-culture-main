@@ -1,6 +1,5 @@
 import { screen } from '@testing-library/react'
 import { addDays } from 'date-fns'
-import React from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'

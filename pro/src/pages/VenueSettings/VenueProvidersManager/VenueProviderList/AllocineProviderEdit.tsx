@@ -1,4 +1,3 @@
-import React from 'react'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'

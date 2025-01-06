@@ -1,5 +1,4 @@
 import type { StoryObj } from '@storybook/react'
-import React from 'react'
 
 import { ImagePreview, ImagePreviewScreenProps } from '../ImagePreview'
 import { ImagePreviewsWrapper } from '../ImagePreviewsWrapper'

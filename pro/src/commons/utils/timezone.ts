@@ -1,4 +1,4 @@
-import { de, fr } from 'date-fns/locale'
+import { fr } from 'date-fns/locale'
 import {
   format,
   formatInTimeZone,

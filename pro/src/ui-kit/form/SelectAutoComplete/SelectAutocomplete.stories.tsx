@@ -1,6 +1,5 @@
 import type { StoryObj } from '@storybook/react'
 import { Formik } from 'formik'
-import React from 'react'
 
 import { searchPatternInOptions } from 'commons/utils/searchPatternInOptions'
 

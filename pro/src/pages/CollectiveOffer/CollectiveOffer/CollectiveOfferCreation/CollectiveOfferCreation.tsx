@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
 import { Layout } from 'app/App/layout/Layout'
-import { isCollectiveOffer, Mode } from 'commons/core/OfferEducational/types'
+import { Mode } from 'commons/core/OfferEducational/types'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { queryParamsFromOfferer } from 'commons/utils/queryParamsFromOfferer'
 import {
