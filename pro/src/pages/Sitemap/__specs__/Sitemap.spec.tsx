@@ -115,7 +115,7 @@ describe('Sitemap', () => {
     })
   })
 
-  // FIXME: This should be removed when the feature is permanently enabled.
+  // TODO: This should be removed when the feature is permanently enabled.
   // https://passculture.atlassian.net/browse/PC-32280
   describe('when the offerer stats v2 feature is active', () => {
     it('should not render the statistics link', () => {
