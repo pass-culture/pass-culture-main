@@ -50,7 +50,6 @@ export default tseslint.config(
   // extends ...
   eslint.configs.recommended,
   tseslint.configs.recommended,
-  // importPlugin.flatConfigs.recommended,
   cypressPlugin.configs.recommended,
   reactPlugin.configs.flat.recommended,
   reactPlugin.configs.flat['jsx-runtime'],
@@ -85,12 +84,17 @@ export default tseslint.config(
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unused-expressions': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
-      'import/no-unresolved': 'off',
-      'import/named': 'off',
       'no-unused-vars': 'off',
       'prefer-const': 'off',
       'prefer-rest-params': 'off',
       'react/react-in-jsx-scope': 'off',
+      // import/* rules turned OFF because of Typescript compiler, following
+      // https://typescript-eslint.io/troubleshooting/typed-linting/performance/#eslint-plugin-import recommendations.
+      'import/named': 'off',
+      'import/namespace': 'off',
+      'import/default': 'off',
+      'import/no-named-as-default': 'off',
+      'import/no-unresolved': 'off',
 
       // extra ERROR rules, evntually duplicate with recommended
       '@typescript-eslint/await-thenable': 'error',
@@ -114,7 +118,7 @@ export default tseslint.config(
       '@typescript-eslint/switch-exhaustiveness-check': 'error',
       'eqeqeq': 'error',
       'curly': ['error', 'all'],
-      'import/no-named-as-default': 'error',
+      'import/export': 'error',
       'import/no-default-export': 'error',
       'no-console': 'error',
       'require-await': 'error',
@@ -133,8 +137,6 @@ export default tseslint.config(
       'react-hooks/rules-of-hooks': 'error',
 
       // extra WARNING rules, evntually duplicate with recommended
-      'import/no-dynamic-require': 'warn',
-      'import/no-nodejs-modules': 'warn',
       'import/order': [
         'warn',
         {
@@ -153,6 +155,10 @@ export default tseslint.config(
           },
         },
       ],
+      'import/no-duplicates': 'warn',
+      'import/no-dynamic-require': 'warn',
+      'import/no-named-as-default-member': 'warn',
+      'import/no-nodejs-modules': 'warn',
       'react-hooks/exhaustive-deps': 'warn',
     },
     settings: {
