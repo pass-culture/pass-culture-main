@@ -192,7 +192,7 @@ def update_chronicle_content(chronicle_id: int) -> utils.BackofficeResponse:
     )
 
 
-@chronicles_blueprint.route("/<int:chronicle_id>/pubish", methods=["POST"])
+@chronicles_blueprint.route("/<int:chronicle_id>/publish", methods=["POST"])
 @atomic()
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
 def publish_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
