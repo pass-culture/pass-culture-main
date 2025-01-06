@@ -52,7 +52,6 @@ from pcapi.utils import regions as regions_utils
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.siren import is_valid_siret
 from pcapi.utils.string import to_camelcase
-from pcapi.workers.fully_sync_venue_job import fully_sync_venue_job
 
 from . import forms
 
@@ -212,7 +211,6 @@ def render_venue_details(
         edit_venue_form.tags.choices = [(criterion.id, criterion.name) for criterion in venue.criteria]
 
     delete_form = empty_forms.EmptyForm()
-    fully_sync_venue_form = empty_forms.EmptyForm()
 
     fraud_form = (
         forms.FraudForm(confidence_level=venue.confidenceLevel.value if venue.confidenceLevel else None)
@@ -237,12 +235,7 @@ def render_venue_details(
         venue=venue,
         edit_venue_form=edit_venue_form,
         region=region,
-        has_active_provider=any(
-            (venue_provider.isActive and venue_provider.provider.allow_bo_sync)
-            for venue_provider in venue.venueProviders
-        ),
         delete_form=delete_form,
-        fully_sync_venue_form=fully_sync_venue_form,
         fraud_form=fraud_form,
         active_tab=request.args.get("active_tab", "history"),
         zendesk_sell_synchronisation_form=(
@@ -649,27 +642,6 @@ def delete_venue(venue_id: int) -> utils.BackofficeResponse:
         )
     db.session.commit()
     return redirect(url_for("backoffice_web.pro.search_pro"), code=303)
-
-
-@venue_blueprint.route("/<int:venue_id>/fully-sync", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
-def fully_sync_venue(venue_id: int) -> utils.BackofficeResponse:
-    venue_exists = db.session.query(
-        offerers_models.Venue.query.join(providers_models.VenueProvider)
-        .join(providers_models.Provider)
-        .filter(providers_models.Provider.allow_bo_sync)
-        .filter(offerers_models.Venue.id == venue_id)
-        .filter(providers_models.VenueProvider.isActive.is_(True))
-        .exists()
-    ).scalar()
-
-    if not venue_exists:
-        raise NotFound()
-
-    fully_sync_venue_job.delay(venue_id)
-
-    flash("La re-synchronisation des offres a été lancée.", "success")
-    return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
 
 
 @venue_blueprint.route("/<int:venue_id>", methods=["POST"])

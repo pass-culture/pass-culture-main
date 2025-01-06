@@ -62,7 +62,7 @@ class SearchMultipleOffersTest(GetEndpointHelper):
     expected_num_queries = 5
 
     def test_search_product_with_offers(self, authenticated_client):
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         product = offers_factories.ThingProductFactory(
             name="Product with EAN",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -90,7 +90,7 @@ class SearchMultipleOffersTest(GetEndpointHelper):
         assert "EAN-13 : 9783161484100 " in left_card
 
     def test_search_product_with_offers_and_manual_offers(self, authenticated_client):
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         product = offers_factories.ThingProductFactory(
             name="Product with EAN",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -121,7 +121,7 @@ class SearchMultipleOffersTest(GetEndpointHelper):
         assert "EAN-13 : 9783161484100 " in left_card
 
     def test_search_product_without_offers(self, authenticated_client):
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         offers_factories.ThingProductFactory(
             name="Product without offer",
             extraData={"ean": "9783161484100"},
@@ -156,7 +156,7 @@ class SearchMultipleOffersTest(GetEndpointHelper):
         assert len(cards) == 0
 
     def test_search_product_without_offer(self, authenticated_client):
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         offers_factories.ThingProductFactory(
             name="Product without offer",
             extraData={"ean": "9783161484100"},
@@ -194,7 +194,7 @@ class SearchMultipleOffersTest(GetEndpointHelper):
         ],
     )
     def test_product_compatibility(self, authenticated_client, compatibility, expected_gcu_display):
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         offers_factories.ThingProductFactory(
             extraData={"ean": "9781234567890"},
             subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -211,7 +211,7 @@ class SearchMultipleOffersTest(GetEndpointHelper):
         assert f"Compatible avec les CGU : {expected_gcu_display}" in left_card
 
     def test_get_current_criteria_on_active_offers(self, authenticated_client):
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         criterion1 = criteria_models.Criterion(name="One criterion")
         criterion2 = criteria_models.Criterion(name="Another criterion")
         product = offers_factories.ThingProductFactory(extraData={"ean": "9783161484100"}, lastProvider=provider)
@@ -245,7 +245,7 @@ class AddCriteriaToOffersButtonTest(button_helpers.ButtonHelper):
 
     @property
     def path(self):
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         product = offers_factories.ThingProductFactory(extraData={"ean": "9781234567890"}, lastProvider=provider)
         offers_factories.ThingOfferFactory(product=product)
         return url_for("backoffice_web.multiple_offers.search_multiple_offers", ean="9781234567890")
@@ -297,7 +297,7 @@ class SetProductGcuIncompatibleButtonTest(button_helpers.ButtonHelper):
 
     @property
     def path(self):
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         offers_factories.ThingProductFactory(extraData={"ean": "9781234567890"}, lastProvider=provider)
         return url_for("backoffice_web.multiple_offers.search_multiple_offers", ean="9781234567890")
 
@@ -318,7 +318,7 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
         ],
     )
     def test_edit_product_gcu_compatibility(self, authenticated_client, validation_status, gcu_compatibility_type):
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         product_1 = offers_factories.ThingProductFactory(
             description="premier produit inapproprié",
             extraData={"ean": "9781234567890"},
@@ -356,7 +356,7 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
 
     @pytest.mark.usefixtures("db_session")
     def test_cancel_bookings_and_send_transactional_email(self, authenticated_client):
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         product = offers_factories.ThingProductFactory(
             description="Produit inapproprié",
             extraData={"ean": "9781234567890"},
@@ -387,7 +387,7 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
             description="Produit inapproprié",
             extraData={"ean": "9781234567890"},
             gcuCompatibilityType=offers_models.GcuCompatibilityType.COMPATIBLE,
-            lastProvider=providers_factories.APIProviderFactory(),
+            lastProvider=providers_factories.PublicApiProviderFactory(),
         )
         offer = offers_factories.OfferFactory(product=product)
         stock = offers_factories.StockFactory(offer=offer)
