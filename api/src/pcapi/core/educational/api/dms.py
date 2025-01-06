@@ -3,6 +3,7 @@ import logging
 
 import pytz
 
+from pcapi import settings
 from pcapi.connectors.dms import api as dms_api
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.educational import models as educational_models
@@ -10,6 +11,13 @@ from pcapi.models import db
 
 
 logger = logging.getLogger(__name__)
+
+EAC_DS_PROCEDURES = [
+    settings.DMS_EAC_PROCEDURE_INDEPENDANTS_CANDIDATE_ID,
+    settings.DMS_EAC_PROCEDURE_STRUCTURE_CANDIDATE_ID,
+    settings.DMS_EAC_PROCEDURE_MENJS_CANDIDATE_ID,
+    settings.DMS_EAC_PROCEDURE_MENJS_CANDIDATE_ID_V2,
+]
 
 
 def import_dms_applications(procedure_number: int, ignore_previous: bool = False) -> None:
