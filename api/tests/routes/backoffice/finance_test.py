@@ -490,19 +490,23 @@ class ValidateFinanceOverpaymentIncidentTest(PostEndpointHelper):
         ).one()
         assert last_finance_event.motive == finance_models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT
 
+        assert len(mails_testing.outbox) == 2
+        assert mails_testing.outbox[0]["To"] == venue.bookingEmail
         if force_debit_note:
-            assert len(mails_testing.outbox) == 1
+            assert (
+                mails_testing.outbox[0]["template"]
+                == TransactionalEmail.RETRIEVE_DEBIT_NOTE_ON_INDIVIDUAL_BOOKINGS.value.__dict__
+            )
         else:
-            assert len(mails_testing.outbox) == 2
-            assert mails_testing.outbox[0]["To"] == venue.bookingEmail
             assert (
                 mails_testing.outbox[0]["template"]
                 == TransactionalEmail.RETRIEVE_INCIDENT_AMOUNT_ON_INDIVIDUAL_BOOKINGS.value.__dict__
             )
-            assert mails_testing.outbox[0]["params"] == {
-                "OFFER_NAME": booking_incident.booking.stock.offer.name,
-                "VENUE_NAME": venue.publicName,
-            }
+        assert mails_testing.outbox[0]["params"] == {
+            "OFFER_NAME": booking_incident.booking.stock.offer.name,
+            "VENUE_NAME": venue.publicName,
+            "TOKEN_LIST": booking_incident.booking.token,
+        }
 
         assert mails_testing.outbox[-1]["To"] == booking_incident.booking.user.email
         assert (
@@ -2004,6 +2008,7 @@ class CancelDebitNoteTest(PostEndpointHelper):
         assert mails_testing.outbox[0]["params"] == {
             "VENUE_NAME": venue.publicName,
             "OFFER_NAME": booking.stock.offer.name,
+            "TOKEN_LIST": booking.token,
         }
         updated_finance_incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident.id).one()
         assert updated_finance_incident.forceDebitNote is False
