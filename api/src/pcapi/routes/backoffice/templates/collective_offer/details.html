@@ -113,7 +113,6 @@
                   <span class="fw-bold">Entité juridique :</span> {{ links.build_offerer_name_to_details_link(collective_offer.venue.managingOfferer) }}
                   {% if has_permission("PRO_FRAUD_ACTIONS") %}
                     {{ collective_offer.venue.managingOfferer.confidenceLevel | format_confidence_level_badge }}
-                    {{ collective_offer.venue.managingOfferer.tags | format_tag_object_list }}
                   {% endif %}
                 </p>
               </div>

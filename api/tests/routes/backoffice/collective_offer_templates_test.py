@@ -265,20 +265,6 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
         assert rows[0]["Entité juridique"] == "Offerer"
         assert rows[0]["Lieu"] == "Venue Revue manuelle"
 
-    def test_list_collective_offer_templates_with_top_acteur_offerer(self, client, pro_fraud_admin):
-        collective_offer_template_id = educational_factories.CollectiveOfferTemplateFactory(
-            venue__managingOfferer__name="Offerer",
-            venue__managingOfferer__tags=[offerers_factories.OffererTagFactory(name="top-acteur", label="Top Acteur")],
-        ).id
-
-        client = client.with_bo_session_auth(pro_fraud_admin)
-        with assert_num_queries(self.expected_num_queries):
-            response = client.get(url_for(self.endpoint, q=collective_offer_template_id))
-            assert response.status_code == 200
-
-        rows = html_parser.extract_table_rows(response.data)
-        assert rows[0]["Entité juridique"] == "Offerer Top Acteur"
-
 
 class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
     endpoint = "backoffice_web.collective_offer_template.get_collective_offer_template_details"
@@ -360,20 +346,6 @@ class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
 
         text = html_parser.extract_cards_text(response.data)[0]
         assert "Lieu : Venue Revue manuelle" in text
-
-    def test_collective_offer_template_with_top_acteur_offerer(self, authenticated_client):
-        collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
-            venue__managingOfferer__name="Offerer",
-            venue__managingOfferer__tags=[offerers_factories.OffererTagFactory(name="top-acteur", label="Top Acteur")],
-        )
-
-        url = url_for(self.endpoint, collective_offer_template_id=collective_offer_template.id)
-        with assert_num_queries(self.expected_num_queries + 1):
-            response = authenticated_client.get(url)
-            assert response.status_code == 200
-
-        text = html_parser.extract_cards_text(response.data)[0]
-        assert "Entité juridique : Offerer Top Acteur" in text
 
 
 class ValidateCollectiveOfferTemplateFromDetailsButtonTest(button_helpers.ButtonHelper):
