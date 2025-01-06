@@ -28,6 +28,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
+from pcapi.core.providers import repository as providers_repository
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.backoffice import api as backoffice_api
@@ -396,36 +397,6 @@ class GetVenueTest(GetEndpointHelper):
         response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
         assert response.status_code == 200
         assert f"/pro/venue/{venue_id}/provider/{venue_provider.provider.id}/delete".encode() in response.data
-
-    def test_display_fully_sync_provider_button(self, authenticated_client):
-        venue_provider = providers_factories.AllocineVenueProviderFactory(
-            lastSyncDate=datetime.utcnow() - timedelta(hours=4),
-            isActive=True,
-            provider=providers_factories.APIProviderFactory(),
-        )
-        venue_id = venue_provider.venue.id
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
-            assert response.status_code == 200
-
-        buttons = html_parser.extract(response.data, tag="button")
-        assert "Resynchroniser les offres" in buttons
-
-    def test_hide_fully_sync_provider_button(self, authenticated_client):
-        provider = providers_factories.APIProviderFactory(name="Praxiel")
-        venue_provider = providers_factories.AllocineVenueProviderFactory(
-            lastSyncDate=datetime.utcnow() - timedelta(hours=4),
-            isActive=True,
-            provider=provider,
-        )
-        venue_id = venue_provider.venue.id
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
-            assert response.status_code == 200
-
-        buttons = html_parser.extract(response.data, tag="button")
-        assert "Resynchroniser les offres" not in buttons
 
     def test_get_virtual_venue(self, authenticated_client):
         venue = offerers_factories.VirtualVenueFactory(managingOfferer__allowedOnAdage=True)
@@ -806,38 +777,6 @@ class GetVenueRevenueDetailsTest(GetEndpointHelper):
         assert rows[2]["Année"] == "2022"
         assert rows[2]["CA offres IND"] == "123,40 €"
         assert rows[2]["CA offres EAC"] == "1 500,00 €"
-
-
-class FullySyncVenueTest(PostEndpointHelper):
-    endpoint = "backoffice_web.venue.fully_sync_venue"
-    endpoint_kwargs = {"venue_id": 1}
-    needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
-
-    @patch("pcapi.workers.fully_sync_venue_job.fully_sync_venue_job.delay")
-    def test_fully_sync_venue(self, fully_sync_venue_job, authenticated_client):
-        provider = providers_factories.APIProviderFactory()
-        venue_provider = providers_factories.AllocineVenueProviderFactory(
-            lastSyncDate=datetime.utcnow() - timedelta(hours=5),
-            isActive=True,
-            provider=provider,
-        )
-        venue_id = venue_provider.venue.id
-
-        response = self.post_to_endpoint(authenticated_client, venue_id=venue_id)
-        assert response.status_code == 303
-        fully_sync_venue_job.assert_called_once_with(venue_id)
-
-    @patch("pcapi.workers.fully_sync_venue_job.fully_sync_venue_job.delay")
-    def test_fully_sync_venue_disabled_provider(self, fully_sync_venue_job, authenticated_client):
-        provider = providers_factories.APIProviderFactory()
-        venue_provider = providers_factories.AllocineVenueProviderFactory(
-            lastSyncDate=datetime.utcnow() - timedelta(hours=4),
-            isActive=False,
-            provider=provider,
-        )
-        venue_id = venue_provider.venue.id
-        response = self.post_to_endpoint(authenticated_client, venue_id=venue_id)
-        assert response.status_code == 404
 
 
 class DeleteVenueTest(PostEndpointHelper):

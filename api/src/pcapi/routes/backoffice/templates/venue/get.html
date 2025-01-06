@@ -21,62 +21,6 @@
             <h2 class="card-title text-primary">{{ links.build_venue_name_to_pc_pro_link(venue, public_name=false) }}</h2>
             <span class="fs-5 ps-4">{{ build_venue_badges(venue) }}</span>
             <div class="d-flex row-reverse justify-content-end flex-grow-1">
-              {% if has_permission("MANAGE_PRO_ENTITY") and has_active_provider %}
-                {% set fully_sync_venue_modal_label_id = random_hash() %}
-                <button class="btn btn-outline-primary lead fw-bold mt-2"
-                        data-bs-toggle="modal"
-                        data-bs-target=".pc-trigger-sync-modal"
-                        type="button">Resynchroniser les offres</button>
-                <div class="modal modal-lg fade pc-trigger-sync-modal"
-                     tabindex="-1"
-                     aria-describedby="{{ fully_sync_venue_modal_label_id }}"
-                     aria-hidden="true">
-                  <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                      <form action="{{ url_for('backoffice_web.venue.fully_sync_venue', venue_id=venue.id) }}"
-                            name="{{ url_for('backoffice_web.venue.fully_sync_venue', venue_id=venue.id) | action_to_name }}"
-                            method="post"
-                            data-turbo="false">
-                        <div class="modal-header"
-                             id="fully-sync-venue-modal-label">
-                          <h5 class="modal-title">
-                            Resynchroniser toutes les offres du
-                            {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-                              partenaire culturel
-                            {% else %}
-                              lieu
-                            {% endif %}
-                            {{ venue.common_name }}
-                          </h5>
-                        </div>
-                        <div class="modal-body row">
-                          <p>
-                            Tous les stocks des offres du
-                            {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-                              partenaire culturel
-                            {% else %}
-                              lieu
-                            {% endif %}
-                            <strong>{{ venue.common_name }} ({{ venue.id }})</strong>
-                            seront synchronisés depuis le provider. Les stocks existants seront remplacés.
-                          </p>
-                          <p>
-                            La mise à jour des données n'est pas immédiate. Les changements seront visibles dans les minutes qui suivent le lancement de la tâche.
-                          </p>
-                          {{ build_form_fields_group(fully_sync_venue_form) }}
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button"
-                                  class="btn btn-outline-primary"
-                                  data-bs-dismiss="modal">Annuler</button>
-                          <button type="submit"
-                                  class="btn btn-primary">Confirmer</button>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              {% endif %}
               {% if has_permission("MANAGE_PRO_ENTITY") %}
                 {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
                   {{ build_modal_form("edit-venue", url_for("backoffice_web.venue.update_venue", venue_id=venue.id) , edit_venue_form, "Modifier les informations", "Modifier les informations du partenaire culturel", "Enregistrer") }}

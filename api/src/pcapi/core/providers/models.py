@@ -6,7 +6,6 @@ import typing
 
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
-import sqlalchemy.ext.hybrid as sqla_hybrid
 import sqlalchemy.orm as sa_orm
 import sqlalchemy.sql as sa_sql
 
@@ -96,16 +95,6 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
             name=self.name,
             authentication_token=self.authToken,
         )
-
-    @sqla_hybrid.hybrid_property
-    def allow_bo_sync(self) -> bool:
-        return self.isActive and self.apiUrl != None and "praxiel" not in self.name.lower()
-
-    @allow_bo_sync.expression  # type: ignore[no-redef]
-    def allow_bo_sync(cls) -> sa_sql.elements.BooleanClauseList:  # pylint: disable=no-self-argument
-        # Praxiel API is very slow (with response times up to 30 seconds) and unstable (with frequent 50x
-        # error responses). Full synchronization very rarely succeeds, don't bother trying.
-        return sa.and_(cls.isActive.is_(True), cls.apiUrl.is_not(None), cls.name.not_ilike("%praxiel%"))
 
 
 class VenueProviderExternalUrls(PcObject, Base, Model, DeactivableMixin):
