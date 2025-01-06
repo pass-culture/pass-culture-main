@@ -1,13 +1,12 @@
-import { useEffect, useState } from 'react'
+import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { GetOfferStockResponseModel } from 'apiClient/v1'
+import { GET_STOCKS_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { useNotification } from 'commons/hooks/useNotification'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
-import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { serializeStockEvents } from 'pages/IndividualOfferWizard/Stocks/serializeStockEvents'
@@ -21,36 +20,21 @@ import styles from './StocksSummary.module.scss'
 
 export const StocksSummaryScreen = () => {
   const { offer, subCategories } = useIndividualOfferContext()
-  const [isLoading, setIsLoading] = useState(false)
-  const [stocksEvent, setStocksEvent] = useState<StocksEvent[]>([])
-  const [stockThing, setStocksThings] = useState<GetOfferStockResponseModel>()
   const notify = useNotification()
 
-  useEffect(() => {
-    async function loadStocks() {
-      if (offer) {
-        setIsLoading(true)
-        try {
-          const response = await api.getStocks(offer.id)
-
-          if (offer.isEvent) {
-            setStocksEvent(serializeStockEvents(response.stocks))
-          } else {
-            setStocksThings(response.stocks[0])
-          }
-        } catch {
-          notify.error(
-            'Une erreur est survenue lors du chargement de vos stocks.'
-          )
-        }
-        setIsLoading(false)
-      }
+  const getStocksQuery = useSWR(
+    offer?.id ? [GET_STOCKS_QUERY_KEY, offer.id] : null,
+    ([, offerId]) => api.getStocks(offerId),
+    {
+      onError: () => {
+        notify.error(
+          'Une erreur est survenue lors du chargement de vos stocks.'
+        )
+      },
     }
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    loadStocks()
-  }, [notify, offer])
+  )
 
-  if (offer === null || isLoading) {
+  if (offer === null || getStocksQuery.isLoading || !getStocksQuery.data) {
     return <Spinner />
   }
 
@@ -80,10 +64,13 @@ export const StocksSummaryScreen = () => {
       )}
 
       {offer.isEvent ? (
-        <RecurrenceSummary offer={offer} stocks={stocksEvent} />
+        <RecurrenceSummary
+          offer={offer}
+          stocks={serializeStockEvents(getStocksQuery.data.stocks)}
+        />
       ) : (
         <StockThingSection
-          stock={stockThing}
+          stock={getStocksQuery.data.stocks[0]}
           canBeDuo={canBeDuo}
           isDuo={offer.isDuo}
         />
