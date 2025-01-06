@@ -15,33 +15,58 @@ def send_finance_incident_emails(finance_incident: finance_models.FinanceInciden
         return
     booking_email = venue.bookingEmail
 
-    if finance_incident.forceDebitNote or finance_incident.kind != finance_models.IncidentType.OVERPAYMENT:
+    if finance_incident.kind != finance_models.IncidentType.OVERPAYMENT:
         return
 
-    offers = set()
+    offers_incidents: dict[
+        offers_models.Offer | educational_models.CollectiveOffer, list[finance_models.BookingFinanceIncident]
+    ] = {}
     for booking_finance_incident in finance_incident.booking_finance_incidents:
-        # this email refers to a cancelled booking (which is the case in total overpayment incidents only)
-        if booking_finance_incident.is_partial:
-            continue
-
         booking = booking_finance_incident.booking or booking_finance_incident.collectiveBooking
         if isinstance(booking, bookings_models.Booking):
             offer = booking.stock.offer
         else:
             offer = booking.collectiveStock.collectiveOffer
 
-        offers.add(offer)
+        # if a given offer has multiple incidents, we need to group them under one key
+        offers_incidents.setdefault(offer, []).append(booking_finance_incident)
 
-    for offer in offers:
+    for offer, offer_booking_incidents in offers_incidents.items():
         if isinstance(offer, offers_models.Offer):
-            template = TransactionalEmail.RETRIEVE_INCIDENT_AMOUNT_ON_INDIVIDUAL_BOOKINGS
+            if finance_incident.forceDebitNote:
+                template = TransactionalEmail.RETRIEVE_DEBIT_NOTE_ON_INDIVIDUAL_BOOKINGS
+            else:
+                template = TransactionalEmail.RETRIEVE_INCIDENT_AMOUNT_ON_INDIVIDUAL_BOOKINGS
+            data = mails_models.TransactionalEmailData(
+                template=template.value,
+                params={
+                    "OFFER_NAME": offer.name,
+                    "VENUE_NAME": venue.common_name,
+                    "TOKEN_LIST": ", ".join(
+                        [
+                            booking_incident.booking.token
+                            for booking_incident in offer_booking_incidents
+                            if booking_incident.booking
+                        ]
+                    ),
+                },
+            )
         else:
             template = TransactionalEmail.RETRIEVE_INCIDENT_AMOUNT_ON_COLLECTIVE_BOOKINGS
-
-        data = mails_models.TransactionalEmailData(
-            template=template.value,
-            params={"OFFER_NAME": offer.name, "VENUE_NAME": venue.common_name},
-        )
+            data = mails_models.TransactionalEmailData(
+                template=template.value,
+                params={
+                    "OFFER_NAME": offer.name,
+                    "VENUE_NAME": venue.common_name,
+                    "BOOKING_ID": ", ".join(
+                        [
+                            str(booking_incident.collectiveBookingId)
+                            for booking_incident in offer_booking_incidents
+                            if booking_incident.collectiveBookingId
+                        ]
+                    ),
+                },
+            )
 
         mails.send(
             recipients=[booking_email],
