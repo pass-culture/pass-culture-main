@@ -28,6 +28,7 @@ def get_booking_cancellation_by_pro_to_beneficiary_email_data(
     return models.TransactionalEmailData(
         template=TransactionalEmail.BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY.value,
         params={
+            "BOOKING_CONTACT": offer.bookingContact,
             "EVENT_DATE": event_date,
             "EVENT_HOUR": event_hour,
             "IS_EVENT": offer.isEvent,

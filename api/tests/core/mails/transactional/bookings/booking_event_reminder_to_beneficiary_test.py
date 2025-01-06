@@ -69,6 +69,7 @@ class GetBookingEventReminderToBeneficiaryEmailDataTest:
         email_data = get_booking_event_reminder_to_beneficiary_email_data(booking)
 
         assert email_data.params == {
+            "BOOKING_CONTACT": None,
             "BOOKING_LINK": f"https://webapp-v2.example.com/reservation/{booking.id}/details",
             "EVENT_DATETIME_ISO": "2032-01-01T11:30:00+01:00",
             "EVENT_DATE": "jeudi 1er janvier 2032",

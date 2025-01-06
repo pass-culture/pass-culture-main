@@ -43,6 +43,7 @@ def get_expected_base_sendinblue_email_data(booking, mediation, **overrides):
         template=TransactionalEmail.BOOKING_CONFIRMATION_BY_BENEFICIARY.value,
         params={
             "USER_FIRST_NAME": booking.firstName,
+            "BOOKING_CONTACT": None,
             "BOOKING_DATE": "vendredi 15 octobre 2032",
             "BOOKING_HOUR": "14h48",
             "OFFER_NAME": booking.stock.offer.name,

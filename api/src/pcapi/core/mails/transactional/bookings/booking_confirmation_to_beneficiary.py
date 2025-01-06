@@ -69,6 +69,7 @@ def get_booking_confirmation_to_beneficiary_email_data(
         template=TransactionalEmail.BOOKING_CONFIRMATION_BY_BENEFICIARY.value,
         params={
             "USER_FIRST_NAME": beneficiary.firstName,
+            "BOOKING_CONTACT": offer.bookingContact,
             "BOOKING_DATE": formatted_booking_date,
             "BOOKING_HOUR": formatted_booking_time,
             "OFFER_NAME": offer.name,
