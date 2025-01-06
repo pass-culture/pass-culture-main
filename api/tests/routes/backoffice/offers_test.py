@@ -1197,21 +1197,6 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Entité juridique"] == "Offerer"
         assert rows[0]["Lieu"] == "Venue Revue manuelle"
 
-    def test_list_offers_with_top_acteur_offerer(self, client, pro_fraud_admin):
-        offer = offers_factories.OfferFactory(
-            venue__managingOfferer__name="Offerer",
-            venue__managingOfferer__tags=[offerers_factories.OffererTagFactory(name="top-acteur", label="Top Acteur")],
-        )
-
-        client = client.with_bo_session_auth(pro_fraud_admin)
-        query_args = self._get_query_args_by_id(offer.id)
-        with assert_num_queries(self.expected_num_queries):
-            response = client.get(url_for(self.endpoint, **query_args))
-            assert response.status_code == 200
-
-        rows = html_parser.extract_table_rows(response.data)
-        assert rows[0]["Entité juridique"] == "Offerer Top Acteur"
-
 
 class EditOfferTest(PostEndpointHelper):
     endpoint = "backoffice_web.offer.edit_offer"

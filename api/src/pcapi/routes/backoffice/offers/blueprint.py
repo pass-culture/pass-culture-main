@@ -398,14 +398,6 @@ def _get_offers_by_ids(
         # 1-1 relationships so join will not increase the number of SQL rows
         .join(offers_models.Offer.venue)
         .join(offerers_models.Venue.managingOfferer)
-        .outerjoin(offerers_models.OffererTagMapping)
-        .outerjoin(
-            offerers_models.OffererTag,
-            sa.and_(
-                offerers_models.OffererTag.id == offerers_models.OffererTagMapping.tagId,
-                offerers_models.OffererTag.name == "top-acteur",
-            ),
-        )
         .options(
             sa.orm.load_only(
                 offers_models.Offer.id,
@@ -433,12 +425,8 @@ def _get_offers_by_ids(
                 offerers_models.Offerer.siren,
                 offerers_models.Offerer.postalCode,
             )
-            .options(
-                sa.orm.contains_eager(offerers_models.Offerer.tags),
-                sa.orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
-                    offerers_models.OffererConfidenceRule.confidenceLevel
-                ),
-            ),
+            .joinedload(offerers_models.Offerer.confidenceRule)
+            .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
             sa.orm.contains_eager(offers_models.Offer.venue)
             .joinedload(offerers_models.Venue.confidenceRule)
             .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
