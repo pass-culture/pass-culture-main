@@ -3107,9 +3107,9 @@ def _get_known_age_at_deposit(user: users_models.User) -> int | None:
         user, known_birthday_at_deposit, users_models.EligibilityType.UNDERAGE
     )
     if first_registration_date is not None:
-        return users_utils.get_age_at_date(known_birthday_at_deposit, first_registration_date)
+        return users_utils.get_age_at_date(known_birthday_at_deposit, first_registration_date, user.departementCode)
 
-    return users_utils.get_age_at_date(known_birthday_at_deposit, user.deposit.dateCreated)
+    return users_utils.get_age_at_date(known_birthday_at_deposit, user.deposit.dateCreated, user.departementCode)
 
 
 def _get_known_birthday_at_deposit(user: users_models.User) -> datetime.date | None:

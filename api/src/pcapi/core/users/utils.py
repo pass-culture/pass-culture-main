@@ -6,6 +6,7 @@ from dateutil.relativedelta import relativedelta
 import jwt
 
 from pcapi import settings
+from pcapi.utils.date import utc_datetime_to_department_timezone
 
 
 logger = logging.getLogger(__name__)
@@ -47,8 +48,10 @@ def decode_jwt_token_rs256(jwt_token: str, public_key: str | bytes) -> dict:
     return jwt.decode(jwt_token, key=public_key, algorithms=[ALGORITHM_RS_256])
 
 
-def get_age_at_date(birth_date: date, specified_datetime: datetime) -> int:
-    return max(0, relativedelta(specified_datetime, birth_date).years)
+def get_age_at_date(birth_date: date, specified_datetime: datetime, department_code: str | None = None) -> int:
+    timezoned_datetime = utc_datetime_to_department_timezone(specified_datetime, department_code)
+    timezoned_birth_date = datetime.combine(birth_date, datetime.min.time(), tzinfo=timezoned_datetime.tzinfo)
+    return max(0, relativedelta(timezoned_datetime, timezoned_birth_date).years)
 
 
 def get_age_from_birth_date(birth_date: date) -> int:
