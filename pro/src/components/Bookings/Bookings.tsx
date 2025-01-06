@@ -53,6 +53,14 @@ type BookingsProps<T> = {
 
 const MAX_LOADED_PAGES = 5
 
+function isBookingStatusFilter(
+  value: string | null
+): value is BookingStatusFilter {
+  return (
+    value !== null &&
+    Object.values(BookingStatusFilter).includes(value as BookingStatusFilter)
+  )
+}
 export const BookingsContainer = <
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 >({
@@ -165,10 +173,13 @@ export const BookingsContainer = <
         offererAddressId:
           params.get('offererAddressId') ??
           DEFAULT_PRE_FILTERS.offererAddressId,
-        // TODO typeguard this to remove the `as`
-        bookingStatusFilter:
-          (params.get('bookingStatusFilter') as BookingStatusFilter | null) ??
-          initialAppliedFilters.bookingStatusFilter,
+        bookingStatusFilter: (() => {
+          const param = params.get('bookingStatusFilter')
+          if (isBookingStatusFilter(param)) {
+            return param
+          }
+          return initialAppliedFilters.bookingStatusFilter
+        })(),
         bookingBeginningDate:
           params.get('bookingBeginningDate') ??
           (params.has('offerEventDate')
