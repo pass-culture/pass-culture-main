@@ -1519,18 +1519,35 @@ def format_finance_incident_type(incident_kind: finance_models.IncidentType) -> 
             return incident_kind.value
 
 
-def format_special_event_response_status(response_status: operations_models.SpecialEventResponseStatus) -> str:
+def format_special_event_response_status_str(response_status: operations_models.SpecialEventResponseStatus) -> str:
     match response_status:
         case operations_models.SpecialEventResponseStatus.NEW:
-            return Markup('<span class="badge text-bg-info">Nouvelle</span>')
+            return "Nouvelle"
         case operations_models.SpecialEventResponseStatus.VALIDATED:
-            return Markup('<span class="badge text-bg-success">Retenue</span>')
+            return "Retenue"
         case operations_models.SpecialEventResponseStatus.REJECTED:
-            return Markup('<span class="badge text-bg-danger">Rejetée</span>')
+            return "Rejetée"
         case operations_models.SpecialEventResponseStatus.PRESELECTED:
-            return Markup('<span class="badge border border-success text-success">Préselectionnée</span>')
+            return "Préselectionnée"
         case _:
             return response_status.value
+
+
+def format_special_event_response_status(response_status: operations_models.SpecialEventResponseStatus) -> str:
+    response_status_str = format_special_event_response_status_str(response_status)
+    match response_status:
+        case operations_models.SpecialEventResponseStatus.NEW:
+            return Markup('<span class="badge text-bg-info">{status}</span>').format(status=response_status_str)
+        case operations_models.SpecialEventResponseStatus.VALIDATED:
+            return Markup('<span class="badge text-bg-success">{status}</span>').format(status=response_status_str)
+        case operations_models.SpecialEventResponseStatus.REJECTED:
+            return Markup('<span class="badge text-bg-danger">{status}</span>').format(status=response_status_str)
+        case operations_models.SpecialEventResponseStatus.PRESELECTED:
+            return Markup('<span class="badge border border-success text-success">{status}</span>').format(
+                status=response_status_str
+            )
+        case _:
+            return response_status_str
 
 
 def field_list_get_number_from_name(field_name: str) -> str:

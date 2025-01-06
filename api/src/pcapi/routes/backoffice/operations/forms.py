@@ -4,6 +4,8 @@ from urllib.parse import urlparse
 from flask_wtf import FlaskForm
 import wtforms
 
+from pcapi.core.operations import models
+from pcapi.routes.backoffice.filters import format_special_event_response_status_str
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils
 
@@ -55,3 +57,17 @@ class CreateSpecialEventForm(FlaskForm):
             if not re.match(RE_TYPEFORM_ID, typeform_id.data):
                 raise wtforms.validators.ValidationError("Le format n'est pas reconnu")
         return typeform_id
+
+
+class OperationResponseForm(utils.PCForm):
+    class Meta:
+        csrf = False
+
+    response_status = fields.PCSelectMultipleField(
+        "État de la candidature",
+        choices=utils.choices_from_enum(
+            enum_cls=models.SpecialEventResponseStatus,
+            formatter=format_special_event_response_status_str,
+        ),
+        coerce=models.SpecialEventResponseStatus,
+    )

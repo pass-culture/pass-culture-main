@@ -1,4 +1,5 @@
 {% import "components/links.html" as links %}
+{% from "components/forms.html" import build_filters_form with context %}
 {% from "components/presentation/details/tabs.html" import build_details_tab %}
 {% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper %}
 {% from "components/presentation/details/tabs.html" import build_details_tab_content %}
@@ -46,6 +47,9 @@
         {% endcall %}
         {% call build_details_tabs_content_wrapper() %}
           {% call build_details_tab_content("responses", active_tab == 'responses') %}
+            <div class="px-3">
+              <div class="filters">{{ build_filters_form(response_form, dst_response) }}</div>
+            </div>
             <table class="table mb-4 my-4">
               <thead>
                 <tr>
@@ -129,7 +133,7 @@
                       {% for question in special_event.questions | sort(attribute='id') %}
                         <span class="fw-bold">{{ question.title }}</span>
                         <br />
-                        {{ row.full_answers.get(question.id|string) | empty_string_if_null }}
+                        {{ (row.full_answers or {}).get(question.id|string) | empty_string_if_null }}
                         <br />
                         <br />
                       {% endfor %}
