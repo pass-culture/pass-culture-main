@@ -18,6 +18,9 @@ from pcapi.utils import phone_number as phone_number_utils
 
 logger = logging.getLogger(__name__)
 
+# Avoid connection timeout when DS takes time to respond in daily or hourly cloud tasks (not in synchronous requests)
+LONG_TIMEOUT = 60
+
 
 class DsUserAccountUpdateProcredureField(enum.Enum):
     CHOICES = "Q2hhbXAtMzM0NjEyMA=="
@@ -41,7 +44,7 @@ DS_CHOICE_TO_UPDATE_TYPE = {
 def sync_instructor_ids(procedure_number: int) -> None:
     logger.info("[DS] Sync instructor ids from DS procedure %s", procedure_number)
 
-    ds_client = ds_api.DMSGraphQLClient()
+    ds_client = ds_api.DMSGraphQLClient(timeout=LONG_TIMEOUT)
     instructors = ds_client.get_instructors(procedure_number=procedure_number)
     emails = instructors.keys()
 
@@ -82,7 +85,7 @@ def sync_user_account_update_requests(
         .all()
     )
 
-    ds_client = ds_api.DMSGraphQLClient()
+    ds_client = ds_api.DMSGraphQLClient(timeout=LONG_TIMEOUT)
     application_numbers = []
 
     for node in ds_client.get_beneficiary_account_update_nodes(

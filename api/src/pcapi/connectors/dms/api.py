@@ -45,13 +45,14 @@ class DmsStats(BaseModel):
 
 
 class DMSGraphQLClient:
-    def __init__(self, retries: int = DEFAULT_RETRIES) -> None:
+    def __init__(self, retries: int = DEFAULT_RETRIES, timeout: int | None = None) -> None:
         transport = requests.CustomGqlTransport(
             url="https://www.demarches-simplifiees.fr/api/v2/graphql",
             headers={"Authorization": f"Bearer {settings.DMS_TOKEN}"},
             retries=retries,
         )
         self.client = gql.Client(transport=transport)
+        self._timeout = timeout
 
     def build_query(self, query_name: str) -> str:
         return (GRAPHQL_DIRECTORY / f"{query_name}.graphql").read_text()
@@ -60,7 +61,7 @@ class DMSGraphQLClient:
         query = self.build_query(query_name)
         logger.info("Executing dms query %s", query_name, extra=variables)
 
-        return self.client.execute(gql.gql(query), variable_values=variables)
+        return self.client.execute(gql.gql(query), variable_values=variables, timeout=self._timeout)
 
     def get_applications_with_details(
         self,
