@@ -63,8 +63,7 @@ export const Homepage = (): JSX.Element => {
     })) ?? []
   )
 
-  const selectedOffererId =
-    useSelector(selectCurrentOffererId)?.toString() ?? ''
+  const selectedOffererId = useSelector(selectCurrentOffererId)
 
   // TODO: this may need to be in the store, as it is loaded in the header dropdown
   const selectedOffererQuery = useSWR(
