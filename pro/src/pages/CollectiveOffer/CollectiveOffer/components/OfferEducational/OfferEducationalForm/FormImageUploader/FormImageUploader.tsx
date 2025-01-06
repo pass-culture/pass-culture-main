@@ -1,4 +1,3 @@
-import React from 'react'
 
 import { OfferCollectiveImage } from 'commons/core/Offers/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'

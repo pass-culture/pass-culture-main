@@ -1,5 +1,4 @@
 import { useFormikContext } from 'formik'
-import React from 'react'
 
 import { StudentLevels } from 'apiClient/adage'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'

@@ -1,7 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
-import React from 'react'
 
 import { api } from 'apiClient/api'
 import { VenueTypeResponseModel } from 'apiClient/v1'

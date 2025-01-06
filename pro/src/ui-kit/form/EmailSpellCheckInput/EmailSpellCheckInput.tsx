@@ -1,5 +1,5 @@
 import { useField, useFormikContext } from 'formik'
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 import fullNextIcon from 'icons/full-next.svg'
 import { Button } from 'ui-kit/Button/Button'

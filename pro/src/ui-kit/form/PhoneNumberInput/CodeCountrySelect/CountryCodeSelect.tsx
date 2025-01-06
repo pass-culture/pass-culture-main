@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React, { ChangeEvent } from 'react'
+import { ChangeEvent } from 'react'
 
 import fullRightIcon from 'icons/full-right.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'

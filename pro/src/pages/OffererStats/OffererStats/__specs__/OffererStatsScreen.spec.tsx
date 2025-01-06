@@ -1,6 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 
 import { api } from 'apiClient/api'
 import { CancelablePromise, GetOffererResponseModel } from 'apiClient/v1'

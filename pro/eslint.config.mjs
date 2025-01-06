@@ -83,8 +83,6 @@ export default tseslint.config(
       '@typescript-eslint/no-empty-function': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unused-expressions': 'off',
-      '@typescript-eslint/no-unused-vars': 'off',
-      'no-unused-vars': 'off',
       'prefer-const': 'off',
       'prefer-rest-params': 'off',
       'react/react-in-jsx-scope': 'off',

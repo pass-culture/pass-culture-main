@@ -1,5 +1,4 @@
 /* istanbul ignore file: DEBT, TO FIX */
-import React from 'react'
 
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'

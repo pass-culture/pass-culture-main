@@ -1,5 +1,4 @@
 import { screen } from '@testing-library/react'
-import React from 'react'
 
 import { getCollectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'

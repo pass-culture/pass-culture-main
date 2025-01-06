@@ -6,7 +6,6 @@ import createFetchMock from 'vitest-fetch-mock'
 import { api } from 'apiClient/api'
 import {
   CollectiveOfferDisplayedStatus,
-  CollectiveOfferStatus,
   CollectiveOfferAllowedAction,
   CollectiveOfferTemplateAllowedAction,
   OfferAddressType,

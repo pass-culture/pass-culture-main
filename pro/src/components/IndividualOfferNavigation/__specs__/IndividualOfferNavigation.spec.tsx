@@ -1,5 +1,4 @@
 import { screen } from '@testing-library/react'
-import React from 'react'
 
 import { IndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'

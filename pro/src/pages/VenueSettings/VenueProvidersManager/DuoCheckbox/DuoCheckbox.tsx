@@ -1,6 +1,5 @@
 import cn from 'classnames'
 import { useField } from 'formik'
-import React from 'react'
 
 import strokeDuoIcon from 'icons/stroke-duo.svg'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'

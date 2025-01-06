@@ -16,9 +16,7 @@ import {
   isOfferProductBased,
   isOfferSynchronized,
 } from 'commons/core/Offers/utils/typology'
-import { PATCH_SUCCESS_MESSAGE } from 'commons/core/shared/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import {
   isRecordStore,
@@ -66,7 +64,6 @@ export const IndividualOfferDetailsScreen = ({
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
   const { logEvent } = useAnalytics()
-  const notify = useNotification()
   const { mutate } = useSWRConfig()
   const { search } = useLocation()
   const mode = useOfferWizardMode()

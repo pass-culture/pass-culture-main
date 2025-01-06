@@ -1,4 +1,3 @@
-import React from 'react'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { useSignupJourneyContext } from 'commons/context/SignupJourneyContext/SignupJourneyContext'

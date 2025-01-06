@@ -1,5 +1,4 @@
 import { screen, waitFor } from '@testing-library/react'
-import React from 'react'
 
 import { NotificationTypeEnum } from 'commons/hooks/useNotification'
 import { Notification as NotificationType } from 'commons/store/notifications/reducer'

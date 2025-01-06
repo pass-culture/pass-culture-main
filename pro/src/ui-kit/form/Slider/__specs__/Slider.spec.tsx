@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react'
 import { Formik } from 'formik'
-import React from 'react'
 
 import { Slider, SliderProps } from '../Slider'
 

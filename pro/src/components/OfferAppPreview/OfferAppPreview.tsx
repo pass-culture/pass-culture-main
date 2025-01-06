@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { getIndividualOfferImage } from 'components/IndividualOffer/utils/getIndividualOfferImage'

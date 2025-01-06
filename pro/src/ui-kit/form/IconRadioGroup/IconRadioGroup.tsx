@@ -1,5 +1,4 @@
 import { useField } from 'formik'
-import React from 'react'
 
 import { IconRadio } from 'ui-kit/form/IconRadioGroup/IconRadio/IconRadio'
 import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
@@ -58,7 +57,7 @@ export const IconRadioGroup = ({
               label={item.label}
               value={item.value}
               hasError={hasError}
-              {...(hasError ? { ariaDescribedBy: `error-${name}` } : {})}
+              {...(hasError ? { 'aria-describedby': `error-${name}` } : {})}
             />
           ))}
           <div className={styles['icon-radio-group-scale']}>{children}</div>

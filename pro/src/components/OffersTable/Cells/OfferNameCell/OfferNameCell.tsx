@@ -7,7 +7,6 @@ import {
 } from 'apiClient/v1'
 import { isOfferEducational } from 'commons/core/OfferEducational/types'
 import {
-  OFFER_STATUS_PENDING,
   OFFER_STATUS_SOLD_OUT,
 } from 'commons/core/Offers/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
@@ -21,8 +20,6 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 import { Thumb } from 'ui-kit/Thumb/Thumb'
 import { useTooltipProps } from 'ui-kit/Tooltip/useTooltipProps'
-
-import { getDate, getRemainingTime, shouldDisplayWarning } from './utils'
 
 export interface OfferNameCellProps {
   offer: CollectiveOfferResponseModel | ListOffersOfferResponseModel

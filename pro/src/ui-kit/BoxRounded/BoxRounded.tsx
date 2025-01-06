@@ -1,5 +1,4 @@
 import cn from 'classnames'
-import React from 'react'
 
 import fullEditIcon from 'icons/full-edit.svg'
 import { Button } from 'ui-kit/Button/Button'

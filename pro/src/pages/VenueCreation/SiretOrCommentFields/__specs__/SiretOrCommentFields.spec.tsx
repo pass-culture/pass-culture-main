@@ -1,7 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
-import React from 'react'
 import { expect } from 'vitest'
 
 import * as siretApiValidate from 'commons/core/Venue/siretApiValidate'

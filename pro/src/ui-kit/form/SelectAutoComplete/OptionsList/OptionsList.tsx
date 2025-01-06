@@ -4,7 +4,6 @@ import { Ref } from 'react'
 import { SelectOption } from 'commons/custom_types/form'
 import { pluralize } from 'commons/utils/pluralize'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
-import baseCheckboxStyles from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox.module.scss'
 
 import styles from './OptionsList.module.scss'
 

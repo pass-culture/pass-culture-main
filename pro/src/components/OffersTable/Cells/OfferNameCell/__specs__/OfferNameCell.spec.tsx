@@ -156,19 +156,6 @@ describe('OfferNameCell', () => {
   })
 
   describe('departmentCode', () => {
-    // Creates an COLLECTIVE offer
-    const collectiveOffer = collectiveOfferFactory({
-      stocks: [
-        listOffersStockFactory({
-          beginningDatetime: '2024-10-01T10:00:00.000', // this datetime is UTC
-        }),
-      ],
-      name: 'Collective offer',
-      venue: listOffersVenueFactory({
-        departementCode: '75', // Paris departement code (UTC+2 EDT)
-      }),
-    })
-
     // Creates an INDIVIDUAL offer
     const individualOffer = listOffersOfferFactory({
       stocks: [

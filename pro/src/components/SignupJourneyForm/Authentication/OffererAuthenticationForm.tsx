@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { AddressSelect } from 'components/Address/Address'
 import { Address } from 'components/Address/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'

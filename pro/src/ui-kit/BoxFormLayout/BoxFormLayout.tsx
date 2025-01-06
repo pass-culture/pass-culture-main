@@ -1,5 +1,4 @@
 import cn from 'classnames'
-import React from 'react'
 
 import style from './BoxFormLayout.module.scss'
 import { Banner } from './components/BoxFormLayoutBanner'

@@ -1,5 +1,4 @@
 import { fr } from 'date-fns/locale'
-import React from 'react'
 import { Line } from 'react-chartjs-2'
 
 import { OffererViewsModel } from 'apiClient/v1'

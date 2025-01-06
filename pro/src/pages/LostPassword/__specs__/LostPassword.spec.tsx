@@ -1,6 +1,5 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 
 import * as utils from 'commons/utils/recaptcha'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'

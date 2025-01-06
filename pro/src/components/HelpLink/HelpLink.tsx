@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import fullHelpIcon from 'icons/full-help.svg'

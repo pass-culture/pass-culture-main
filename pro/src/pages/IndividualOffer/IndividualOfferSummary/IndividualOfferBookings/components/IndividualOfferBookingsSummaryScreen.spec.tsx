@@ -1,6 +1,5 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 
 import { api } from 'apiClient/api'
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'

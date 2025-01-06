@@ -1,5 +1,3 @@
-import React from 'react'
-
 import strokeLeftIcon from 'icons/stroke-left.svg'
 import strokeRightIcon from 'icons/stroke-right.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'

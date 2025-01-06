@@ -1,4 +1,3 @@
-import React from 'react'
 
 /**
  * Props for the SvgIcon component.

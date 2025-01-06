@@ -1,5 +1,4 @@
 import { useField } from 'formik'
-import React from 'react'
 
 import styles from './Slider.module.scss'
 

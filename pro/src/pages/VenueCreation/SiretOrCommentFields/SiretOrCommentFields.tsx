@@ -1,5 +1,5 @@
 import { useFormikContext } from 'formik'
-import React, { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import { apiAdresse } from 'apiClient/adresse/apiAdresse'
 import { getSiretData } from 'commons/core/Venue/getSiretData'

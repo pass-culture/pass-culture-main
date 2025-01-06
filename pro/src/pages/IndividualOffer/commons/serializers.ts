@@ -78,6 +78,7 @@ export const serializePatchOffer = ({
       editableFields.push(...allocineEditableFields)
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const filtered = asArray.filter(([key, _]) => editableFields.includes(key))
 
     sentValues = Object.fromEntries(filtered)

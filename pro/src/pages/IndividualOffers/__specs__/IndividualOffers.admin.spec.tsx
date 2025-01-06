@@ -51,7 +51,6 @@ const renderOffers = async (
     audience?: Audience
   } = DEFAULT_SEARCH_FILTERS,
   user = sharedCurrentUserFactory({ isAdmin: true }),
-  selectedOffererId: number | null = 1
 ) => {
   const route = computeIndividualOffersUrl(filters)
 

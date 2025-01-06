@@ -1,12 +1,6 @@
 import { screen } from '@testing-library/react'
 import { Route, Routes } from 'react-router-dom'
 
-import { api } from 'apiClient/api'
-import * as useAnalytics from 'app/App/analytics/firebase'
-import {
-  defaultGetOffererResponseModel,
-  getOffererNameFactory,
-} from 'commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { OfferType } from 'pages/OfferType/OfferType'

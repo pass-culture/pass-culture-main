@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
 import strokeCloseIcon from 'icons/stroke-close.svg'

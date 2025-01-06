@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 
 interface DialogStocksEventEditConfirmProps {

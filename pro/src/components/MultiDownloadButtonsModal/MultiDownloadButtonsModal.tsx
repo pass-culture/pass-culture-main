@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React, { useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { CollectivePreFiltersParams, PreFiltersParams } from 'commons/core/Bookings/types'

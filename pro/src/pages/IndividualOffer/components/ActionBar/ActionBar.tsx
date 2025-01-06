@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import { useLocation } from 'react-router-dom'
 
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'

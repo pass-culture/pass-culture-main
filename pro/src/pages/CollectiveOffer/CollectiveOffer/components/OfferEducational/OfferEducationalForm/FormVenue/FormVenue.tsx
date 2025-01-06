@@ -8,7 +8,6 @@ import {
 } from 'apiClient/v1'
 import {
   isCollectiveOffer,
-  Mode,
   OfferEducationalFormValues,
 } from 'commons/core/OfferEducational/types'
 import { applyVenueDefaultsToFormValues } from 'commons/core/OfferEducational/utils/applyVenueDefaultsToFormValues'

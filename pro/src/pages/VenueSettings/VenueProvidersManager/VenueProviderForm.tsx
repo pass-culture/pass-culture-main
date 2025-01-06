@@ -1,4 +1,3 @@
-import React from 'react'
 
 import { api } from 'apiClient/api'
 import { getHumanReadableApiError } from 'apiClient/helpers'

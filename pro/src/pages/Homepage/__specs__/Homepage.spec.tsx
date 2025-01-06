@@ -3,7 +3,6 @@ import {
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
-import React from 'react'
 
 import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'apiClient/helpers'

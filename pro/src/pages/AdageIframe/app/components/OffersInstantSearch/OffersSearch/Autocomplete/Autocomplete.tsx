@@ -7,7 +7,7 @@ import { AutocompleteQuerySuggestionsHit } from '@algolia/autocomplete-plugin-qu
 import { createLocalStorageRecentSearchesPlugin } from '@algolia/autocomplete-plugin-recent-searches'
 import algoliasearch from 'algoliasearch/lite'
 import { FormikContext } from 'formik'
-import React, {
+import {
   BaseSyntheticEvent,
   KeyboardEvent,
   MouseEvent,

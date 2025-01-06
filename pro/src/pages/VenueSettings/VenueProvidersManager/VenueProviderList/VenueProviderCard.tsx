@@ -1,4 +1,3 @@
-import React from 'react'
 
 import { GetVenueResponseModel, VenueProviderResponse } from 'apiClient/v1'
 import { getProviderInfo } from 'commons/core/Providers/utils/getProviderInfo'

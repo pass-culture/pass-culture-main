@@ -1,5 +1,3 @@
-import React from 'react'
-
 import strokeBookingHold from 'icons/stroke-booking-hold.svg'
 import strokeNoBookingIcon from 'icons/stroke-no-booking.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'

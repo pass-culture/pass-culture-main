@@ -1,7 +1,7 @@
 import { useField } from 'formik'
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import type { CountryCode } from 'libphonenumber-js'
-import React, { ChangeEvent, FocusEvent, useEffect, useState } from 'react'
+import { ChangeEvent, FocusEvent, useEffect, useState } from 'react'
 
 import { BaseInput } from '../shared/BaseInput/BaseInput'
 import { FieldError } from '../shared/FieldError/FieldError'

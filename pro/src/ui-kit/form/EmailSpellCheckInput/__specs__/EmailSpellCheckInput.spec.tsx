@@ -1,7 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
-import React from 'react'
 import * as yup from 'yup'
 
 import { emailSchema } from 'commons/utils/isValidEmail'

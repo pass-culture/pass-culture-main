@@ -1,5 +1,4 @@
 import { Formik } from 'formik'
-import React from 'react'
 
 import { EmailSpellCheckInput } from './EmailSpellCheckInput'
 

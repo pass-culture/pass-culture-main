@@ -1,6 +1,6 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import { Form, FormikProvider, useFormik } from 'formik'
-import React, { useRef } from 'react'
+import { useRef } from 'react'
 import AvatarEditor, { CroppedRect, Position } from 'react-avatar-editor'
 
 import { useGetImageBitmap } from 'commons/hooks/useGetBitmap'

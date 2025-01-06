@@ -1,6 +1,6 @@
 /* istanbul ignore file: Those are test helpers, their coverage is not relevant */
 import { render } from "@testing-library/react";
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 import { Provider } from "react-redux";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { SWRConfig } from "swr";

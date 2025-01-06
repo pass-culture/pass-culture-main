@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Formik } from 'formik'
-import React from 'react'
 
 import { QuantityInput } from './QuantityInput'
 
