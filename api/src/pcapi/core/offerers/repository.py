@@ -11,6 +11,7 @@ import sqlalchemy.orm as sqla_orm
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational.api.dms import EAC_DS_PROCEDURES
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
@@ -565,6 +566,23 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
         .exists()
     )
 
+    has_collective_ds_applications = (
+        sqla.select(1)
+        .select_from(models.Venue)
+        .join(
+            educational_models.CollectiveDmsApplication,
+            models.Venue.siret == educational_models.CollectiveDmsApplication.siret,
+        )
+        .where(
+            sqla.and_(
+                models.Venue.managingOffererId == models.Offerer.id,
+                educational_models.CollectiveDmsApplication.procedure.in_(EAC_DS_PROCEDURES),
+            )
+        )
+        .correlate(models.Offerer)
+        .exists()
+    )
+
     return (
         db.session.query(
             models.Offerer,
@@ -573,7 +591,9 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
             has_pending_bank_account_subquery.label("hasPendingBankAccount"),
             has_active_offers_subquery.label("hasActiveOffer"),
             has_bank_account_with_pending_corrections_subquery.label("hasBankAccountWithPendingCorrections"),
-            sqla.or_(has_adage_ds_application, has_non_draft_offers).label("isOnboarded"),
+            sqla.or_(has_adage_ds_application, has_collective_ds_applications, has_non_draft_offers).label(
+                "isOnboarded"
+            ),
             sqla.and_(has_offer, ~has_adage_ds_application, ~has_non_draft_offers).label("isOnboardingOngoing"),
         )
         .filter(models.Offerer.id == offerer_id)

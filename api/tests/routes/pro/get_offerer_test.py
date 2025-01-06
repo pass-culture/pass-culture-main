@@ -2,6 +2,7 @@ import datetime
 
 import pytest
 
+from pcapi import settings
 from pcapi.core import testing
 import pcapi.core.educational.factories as collective_factories
 import pcapi.core.finance.factories as finance_factories
@@ -223,30 +224,176 @@ class GetOffererTest:
         assert response.json["hasNonFreeOffer"] is True
 
     @pytest.mark.parametrize(
-        "offers_status,count_offer,adage_ds_application",
+        "offers_status,count_offer,adage_id,collective_ds_application,is_onboarded",
         [
-            (offers_models.OfferValidationStatus.DRAFT, 1, None),
-            (offers_models.OfferValidationStatus.DRAFT, 3, None),
-            (offers_models.OfferValidationStatus.APPROVED, 1, None),
-            (offers_models.OfferValidationStatus.APPROVED, 3, None),
-            (None, 0, None),
-            (None, 0, "1"),
-            (offers_models.OfferValidationStatus.DRAFT, 1, "1"),
-            (offers_models.OfferValidationStatus.DRAFT, 3, "1"),
+            (offers_models.OfferValidationStatus.DRAFT, 1, None, None, False),
+            (offers_models.OfferValidationStatus.DRAFT, 3, None, None, False),
+            (offers_models.OfferValidationStatus.APPROVED, 1, None, None, True),
+            (offers_models.OfferValidationStatus.APPROVED, 3, None, None, True),
+            (None, 0, None, None, False),
+            (None, 0, "1", None, True),
+            (offers_models.OfferValidationStatus.DRAFT, 1, "1", None, True),
+            (offers_models.OfferValidationStatus.DRAFT, 3, "1", None, True),
+            (
+                offers_models.OfferValidationStatus.DRAFT,
+                1,
+                None,
+                settings.DMS_EAC_PROCEDURE_INDEPENDANTS_CANDIDATE_ID,
+                True,
+            ),
+            (
+                offers_models.OfferValidationStatus.DRAFT,
+                3,
+                None,
+                settings.DMS_EAC_PROCEDURE_INDEPENDANTS_CANDIDATE_ID,
+                True,
+            ),
+            (
+                offers_models.OfferValidationStatus.APPROVED,
+                1,
+                None,
+                settings.DMS_EAC_PROCEDURE_INDEPENDANTS_CANDIDATE_ID,
+                True,
+            ),
+            (
+                offers_models.OfferValidationStatus.APPROVED,
+                3,
+                None,
+                settings.DMS_EAC_PROCEDURE_INDEPENDANTS_CANDIDATE_ID,
+                True,
+            ),
+            (None, 0, None, settings.DMS_EAC_PROCEDURE_INDEPENDANTS_CANDIDATE_ID, True),
+            (None, 0, "1", settings.DMS_EAC_PROCEDURE_INDEPENDANTS_CANDIDATE_ID, True),
+            (
+                offers_models.OfferValidationStatus.DRAFT,
+                1,
+                "1",
+                settings.DMS_EAC_PROCEDURE_INDEPENDANTS_CANDIDATE_ID,
+                True,
+            ),
+            (
+                offers_models.OfferValidationStatus.DRAFT,
+                3,
+                "1",
+                settings.DMS_EAC_PROCEDURE_INDEPENDANTS_CANDIDATE_ID,
+                True,
+            ),
+            (
+                offers_models.OfferValidationStatus.DRAFT,
+                1,
+                None,
+                settings.DMS_EAC_PROCEDURE_STRUCTURE_CANDIDATE_ID,
+                True,
+            ),
+            (
+                offers_models.OfferValidationStatus.DRAFT,
+                3,
+                None,
+                settings.DMS_EAC_PROCEDURE_STRUCTURE_CANDIDATE_ID,
+                True,
+            ),
+            (
+                offers_models.OfferValidationStatus.APPROVED,
+                1,
+                None,
+                settings.DMS_EAC_PROCEDURE_STRUCTURE_CANDIDATE_ID,
+                True,
+            ),
+            (
+                offers_models.OfferValidationStatus.APPROVED,
+                3,
+                None,
+                settings.DMS_EAC_PROCEDURE_STRUCTURE_CANDIDATE_ID,
+                True,
+            ),
+            (None, 0, None, settings.DMS_EAC_PROCEDURE_STRUCTURE_CANDIDATE_ID, True),
+            (None, 0, "1", settings.DMS_EAC_PROCEDURE_STRUCTURE_CANDIDATE_ID, True),
+            (
+                offers_models.OfferValidationStatus.DRAFT,
+                1,
+                "1",
+                settings.DMS_EAC_PROCEDURE_STRUCTURE_CANDIDATE_ID,
+                True,
+            ),
+            (
+                offers_models.OfferValidationStatus.DRAFT,
+                3,
+                "1",
+                settings.DMS_EAC_PROCEDURE_STRUCTURE_CANDIDATE_ID,
+                True,
+            ),
+            (offers_models.OfferValidationStatus.DRAFT, 1, None, settings.DMS_EAC_PROCEDURE_MENJS_CANDIDATE_ID, True),
+            (offers_models.OfferValidationStatus.DRAFT, 3, None, settings.DMS_EAC_PROCEDURE_MENJS_CANDIDATE_ID, True),
+            (
+                offers_models.OfferValidationStatus.APPROVED,
+                1,
+                None,
+                settings.DMS_EAC_PROCEDURE_MENJS_CANDIDATE_ID,
+                True,
+            ),
+            (
+                offers_models.OfferValidationStatus.APPROVED,
+                3,
+                None,
+                settings.DMS_EAC_PROCEDURE_MENJS_CANDIDATE_ID,
+                True,
+            ),
+            (None, 0, None, settings.DMS_EAC_PROCEDURE_MENJS_CANDIDATE_ID, True),
+            (None, 0, "1", settings.DMS_EAC_PROCEDURE_MENJS_CANDIDATE_ID, True),
+            (offers_models.OfferValidationStatus.DRAFT, 1, "1", settings.DMS_EAC_PROCEDURE_MENJS_CANDIDATE_ID, True),
+            (offers_models.OfferValidationStatus.DRAFT, 3, "1", settings.DMS_EAC_PROCEDURE_MENJS_CANDIDATE_ID, True),
+            (
+                offers_models.OfferValidationStatus.DRAFT,
+                1,
+                None,
+                settings.DMS_EAC_PROCEDURE_MENJS_CANDIDATE_ID_V2,
+                True,
+            ),
+            (
+                offers_models.OfferValidationStatus.DRAFT,
+                3,
+                None,
+                settings.DMS_EAC_PROCEDURE_MENJS_CANDIDATE_ID_V2,
+                True,
+            ),
+            (
+                offers_models.OfferValidationStatus.APPROVED,
+                1,
+                None,
+                settings.DMS_EAC_PROCEDURE_MENJS_CANDIDATE_ID_V2,
+                True,
+            ),
+            (
+                offers_models.OfferValidationStatus.APPROVED,
+                3,
+                None,
+                settings.DMS_EAC_PROCEDURE_MENJS_CANDIDATE_ID_V2,
+                True,
+            ),
+            (None, 0, None, settings.DMS_EAC_PROCEDURE_MENJS_CANDIDATE_ID_V2, True),
+            (None, 0, "1", settings.DMS_EAC_PROCEDURE_MENJS_CANDIDATE_ID_V2, True),
+            (offers_models.OfferValidationStatus.DRAFT, 1, "1", settings.DMS_EAC_PROCEDURE_MENJS_CANDIDATE_ID_V2, True),
+            (offers_models.OfferValidationStatus.DRAFT, 3, "1", settings.DMS_EAC_PROCEDURE_MENJS_CANDIDATE_ID_V2, True),
         ],
     )
-    def test_offerer_onboarding_status(self, client, offers_status, count_offer, adage_ds_application):
+    @pytest.mark.settings(
+        DMS_EAC_PROCEDURE_INDEPENDANTS_CANDIDATE_ID=1,
+        DMS_EAC_PROCEDURE_STRUCTURE_CANDIDATE_ID=2,
+        DMS_EAC_PROCEDURE_MENJS_CANDIDATE_ID=3,
+        DMS_EAC_PROCEDURE_MENJS_CANDIDATE_ID_V2=4,
+    )
+    def test_offerer_onboarding_status(
+        self, client, offers_status, count_offer, adage_id, collective_ds_application, is_onboarded
+    ):
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        adage_id = None
-        if adage_ds_application:
-            adage_id = adage_ds_application
-
-        venue_with_offer = offerers_factories.VenueFactory(managingOfferer=offerer, adageId=adage_id)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, adageId=adage_id)
+        if collective_ds_application is not None:
+            collective_factories.CollectiveDmsApplicationFactory(venue=venue, procedure=collective_ds_application)
         if count_offer:
-            offers_factories.OfferFactory.create_batch(count_offer, venue=venue_with_offer, validation=offers_status)
+            offers_factories.OfferFactory.create_batch(count_offer, venue=venue, validation=offers_status)
 
         offerer_id = offerer.id
         client = client.with_session_auth(pro.email)
@@ -263,9 +410,6 @@ class GetOffererTest:
         with testing.assert_num_queries(num_queries):
             response = client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 200
-        is_onboarded = (offers_status is not None and offers_status != offers_models.OfferValidationStatus.DRAFT) or (
-            adage_ds_application is not None
-        )
         assert response.json["isOnboarded"] is is_onboarded
 
     def test_offerer_has_inactive_non_free_offer(self, client):
