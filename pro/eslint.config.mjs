@@ -1,23 +1,32 @@
-import typescriptEslint from '@typescript-eslint/eslint-plugin'
+import { fixupPluginRules } from '@eslint/compat';
+import eslint from '@eslint/js'
+
+import importPlugin from 'eslint-plugin-import'
+import reactPlugin from 'eslint-plugin-react'
+import reactHooksPlugin from 'eslint-plugin-react-hooks'
+import cypressPlugin from 'eslint-plugin-cypress/flat'
+
+import tseslint from 'typescript-eslint';
+
 import globals from 'globals'
-import tsParser from '@typescript-eslint/parser'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import js from '@eslint/js'
-import importPlugin from 'eslint-plugin-import'
-import reactHook from 'eslint-plugin-react-hooks'
-import pluginJs from 'eslint-plugin-react'
-import pluginCypress from 'eslint-plugin-cypress/flat'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-export default [
-  js.configs.recommended,
-  importPlugin.flatConfigs.recommended,
-  pluginCypress.configs.recommended,
-  pluginJs.configs.flat.recommended,
-  pluginJs.configs.flat['jsx-runtime'], // Add this if you are using React 17+
+export default tseslint.config(
+  // register all of the plugins up-front
+  {
+    plugins: {
+      ['@typescript-eslint']: tseslint.plugin,
+      ['cypress']: cypressPlugin,
+      ['import']: importPlugin,
+      ['react']: reactPlugin,
+      ['react-hooks']: fixupPluginRules(reactHooksPlugin),
+    }
+  },
+  // config with just ignores is the replacement for `.eslintignore`
   {
     ignores: [
       'src/apiClient/*',
@@ -36,16 +45,21 @@ export default [
       '**/vite.config.ts',
       '.storybook/*',
       'src/**/*.gif',
-    ],
+    ]
   },
+  // extends ...
+  eslint.configs.recommended,
+  tseslint.configs.recommended,
+  // importPlugin.flatConfigs.recommended,
+  cypressPlugin.configs.recommended,
+  reactPlugin.configs.flat.recommended,
+  reactPlugin.configs.flat['jsx-runtime'],
+  // base config
   {
-    plugins: {
-      'react-hooks': reactHook,
-      '@typescript-eslint': typescriptEslint,
-      cypress: pluginCypress,
-    },
-
+    files: ['**/*.tsx', '**/*.ts'],
+    linterOptions: { reportUnusedDisableDirectives: false },
     languageOptions: {
+      // ecmaVersion: 6,
       globals: {
         ...globals.browser,
         ...globals.jest,
@@ -54,11 +68,8 @@ export default [
         JSX: true,
         vi: true,
       },
-
-      parser: tsParser,
-      ecmaVersion: 6,
-      sourceType: 'module',
-
+      // sourceType: 'module',
+      // parser: tsParser,
       parserOptions: {
         project: ['./tsconfig.json', './cypress/tsconfig.json'],
         tsconfigRootDir: __dirname,
@@ -67,33 +78,63 @@ export default [
         },
       },
     },
-
-    settings: {
-      react: {
-        version: 'detect',
-      },
-
-      'import/resolver': {
-        node: {
-          extensions: ['.ts', '.tsx'],
-          paths: ['.'],
-          moduleDirectory: ['node_modules', 'src'],
-        },
-      },
-    },
-
-    files: ['**/*.tsx', '**/*.ts'],
-
     rules: {
-      'react-hooks/exhaustive-deps': 'warn',
+      // OFF rules, fix them later or comment why they are off
+      '@typescript-eslint/ban-ts-comment': 'off',
+      '@typescript-eslint/no-empty-function': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-expressions': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+      'import/no-unresolved': 'off',
+      'import/named': 'off',
       'no-unused-vars': 'off',
+      'prefer-const': 'off',
+      'prefer-rest-params': 'off',
+      'react/react-in-jsx-scope': 'off',
+
+      // extra ERROR rules, evntually duplicate with recommended
+      '@typescript-eslint/await-thenable': 'error',
+      '@typescript-eslint/prefer-string-starts-ends-with': 'error',
+      '@typescript-eslint/naming-convention': [
+        'error',
+        {
+          selector: 'typeAlias',
+          format: ['PascalCase'],
+        },
+      ],
+      '@typescript-eslint/no-restricted-types': 'error',
+      '@typescript-eslint/no-empty-object-type': 'error',
+      '@typescript-eslint/no-unsafe-function-type': 'error',
+      '@typescript-eslint/no-wrapper-object-types': 'error',
+      '@typescript-eslint/no-unnecessary-type-arguments': 'error',
+      '@typescript-eslint/no-unnecessary-boolean-literal-compare': 'error',
+      '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/no-unnecessary-condition': 'error',
+      '@typescript-eslint/prefer-ts-expect-error': 'error',
+      '@typescript-eslint/switch-exhaustiveness-check': 'error',
+      'eqeqeq': 'error',
+      'curly': ['error', 'all'],
+      'import/no-named-as-default': 'error',
+      'import/no-default-export': 'error',
+      'no-console': 'error',
+      'require-await': 'error',
+      'react/no-unescaped-entities': [
+        'error',
+        {
+          forbid: [
+            {
+              char: "'",
+              alternatives: ['’'],
+            },
+          ],
+        },
+      ],
+      'react/prop-types': 'error',
+      'react-hooks/rules-of-hooks': 'error',
+
+      // extra WARNING rules, evntually duplicate with recommended
       'import/no-dynamic-require': 'warn',
       'import/no-nodejs-modules': 'warn',
-      'import/no-unresolved': 0,
-      'import/named': 0,
-      curly: ['error', 'all'],
-      'no-console': 1,
-
       'import/order': [
         'warn',
         {
@@ -106,74 +147,29 @@ export default [
             'index',
           ],
           'newlines-between': 'always',
-
           alphabetize: {
             order: 'asc',
             caseInsensitive: true,
           },
         },
       ],
-
-      '@typescript-eslint/ban-ts-comment': 'off',
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-empty-function': 'off',
-      'react/react-in-jsx-scope': 'off',
-      '@typescript-eslint/prefer-ts-expect-error': 'error',
-
-      'react/no-unescaped-entities': [
-        'error',
-        {
-          forbid: [
-            {
-              char: "'",
-              alternatives: ['’'],
-            },
-          ],
-        },
-      ],
-
-      eqeqeq: 'error',
-      'import/no-named-as-default': 'error',
-      'import/no-default-export': 'error',
-      '@typescript-eslint/await-thenable': 'error',
-      'react/prop-types': 'error',
-      '@typescript-eslint/prefer-string-starts-ends-with': 'error',
-      '@typescript-eslint/no-restricted-types': 'error',
-      '@typescript-eslint/no-empty-object-type': 'error',
-      '@typescript-eslint/no-unsafe-function-type': 'error',
-      '@typescript-eslint/no-wrapper-object-types': 'error',
-      '@typescript-eslint/no-unnecessary-type-arguments': 'error',
-      '@typescript-eslint/no-unnecessary-boolean-literal-compare': 'error',
-      '@typescript-eslint/no-floating-promises': 'error',
-      '@typescript-eslint/no-unnecessary-condition': 'error',
-      'require-await': 'error',
-      'react-hooks/rules-of-hooks': 'error',
-      '@typescript-eslint/switch-exhaustiveness-check': 'error',
-
-      // TODO turn into error
       'react-hooks/exhaustive-deps': 'warn',
-
-      'react/self-closing-comp': [
-        'error',
-        {
-          component: true,
-          html: true,
+    },
+    settings: {
+      react: {
+        version: 'detect',
+      },
+      'import/resolver': {
+        node: {
+          extensions: ['.ts', '.tsx'],
+          paths: ['.'],
+          moduleDirectory: ['node_modules', 'src'],
         },
-      ],
-      '@typescript-eslint/naming-convention': [
-        'error',
-        {
-          selector: 'typeAlias',
-          format: ['PascalCase'],
-        },
-      ],
-
-      'react-hooks/exhaustive-deps': 'warn',
+      },
     },
   },
   {
     files: ['cypress/**/*.ts'],
-
     languageOptions: {
       ecmaVersion: 6,
       sourceType: 'module',
@@ -181,9 +177,8 @@ export default [
   },
   {
     files: ['**/*.stories.tsx'],
-
     rules: {
       'import/no-default-export': 'off',
     },
   },
-]
+);

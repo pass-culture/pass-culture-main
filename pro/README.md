@@ -9,15 +9,15 @@ Il faut aller voir le README dans https://github.com/pass-culture/pass-culture-m
 Yarn est prometteur, on vous conseille de l’utiliser. Tâchez de l’installer globalement sur votre ordinateur (https://yarnpkg.com/en/docs/install), puis:
 
 ```bash
-  yarn
+yarn
 ```
 
 ## Installation et Lancement de l’application Pro
 
-- ```shell
-  yarn install
-  yarn start
-  ```
+```shell
+yarn install
+yarn start
+```
 
 #### Troubleshooting:
 
@@ -41,6 +41,20 @@ Note, si vous lancez les tests e2e hors Docker et sous OSX, Cypress tentera de c
 
 ```bash
 $ FLASK_IP="::1" python src/pcapi/app.py
+```
+
+## Lintage
+
+Il s'agit simplement de lancer la commande suivante :
+
+```shell
+yarn lint:js
+```
+
+Eslint est basé sur une configuration dite "flat" - afin qu'elle soit prise en compte par le plugin VSCode, veiller à ce que l'option suivante soit activée :
+
+```json
+"eslint.useFlatConfig": true
 ```
 
 ## ADAGE
