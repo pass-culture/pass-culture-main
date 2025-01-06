@@ -27,7 +27,6 @@ csrf = CSRFProtect()
 csrf.init_app(app)
 
 
-# fake comment
 with app.app_context():
     # pylint: disable=unused-import
     from pcapi.routes import install_all_routes
