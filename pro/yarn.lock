@@ -2574,13 +2574,6 @@ algoliasearch@>=4:
     "@algolia/requester-node-http" "4.19.1"
     "@algolia/transporter" "4.19.1"
 
-allure-cypress@^3.0.7:
-  version "3.0.7"
-  resolved "https://registry.yarnpkg.com/allure-cypress/-/allure-cypress-3.0.7.tgz#94ec0094425d3a88e1e14c663d9a2f3fbc1daeba"
-  integrity sha512-vwX0YhIh279lBewmMXxT2WZA1QG+99GCLt9/Fg9J/BZzIDieRkK/FIt5vsiaKgg9cWw3EPVbl3K4x10ghBVi+A==
-  dependencies:
-    allure-js-commons "3.0.7"
-
 allure-js-commons@3.0.7, allure-js-commons@^3.0.7:
   version "3.0.7"
   resolved "https://registry.yarnpkg.com/allure-js-commons/-/allure-js-commons-3.0.7.tgz#01452f6e39e636b6956bae05213184df86e2be10"
@@ -7267,10 +7260,10 @@ safe-regex-test@^1.1.0:
   resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
   integrity sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
 
-sass@^1.83.0:
-  version "1.83.0"
-  resolved "https://registry.yarnpkg.com/sass/-/sass-1.83.0.tgz#e36842c0b88a94ed336fd16249b878a0541d536f"
-  integrity sha512-qsSxlayzoOjdvXMVLkzF84DJFc2HZEL/rFyGIKbbilYtAvlCxyuzUeff9LawTn4btVnLKg75Z8MMr1lxU1lfGw==
+sass@^1.83.1:
+  version "1.83.1"
+  resolved "https://registry.yarnpkg.com/sass/-/sass-1.83.1.tgz#dee1ab94b47a6f9993d3195d36f556bcbda64846"
+  integrity sha512-EVJbDaEs4Rr3F0glJzFSOvtg2/oy2V/YrGFPqPY24UqcLDWcI9ZY5sN+qyO3c/QCZwzgfirvhXvINiJCE/OLcA==
   dependencies:
     chokidar "^4.0.0"
     immutable "^5.0.2"
