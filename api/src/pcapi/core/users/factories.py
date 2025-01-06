@@ -965,7 +965,9 @@ class DepositGrantFactory(BaseFactory):
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> finance_models.Deposit:
-        age = users_utils.get_age_from_birth_date(kwargs["user"].birth_date)
+        age = None
+        if kwargs["user"].birth_date:
+            age = users_utils.get_age_from_birth_date(kwargs["user"].birth_date)
         eligibility = (
             models.EligibilityType.UNDERAGE
             if age in users_constants.ELIGIBILITY_UNDERAGE_RANGE

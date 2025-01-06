@@ -1035,8 +1035,7 @@ def get_eligibility_start_datetime(
 
 
 def get_eligibility_at_date(
-    date_of_birth: datetime.date | None,
-    specified_datetime: datetime.datetime,
+    date_of_birth: datetime.date | None, specified_datetime: datetime.datetime, department_code: str | None = None
 ) -> models.EligibilityType | None:
     eligibility_start = get_eligibility_start_datetime(date_of_birth)
     eligibility_end = get_eligibility_end_datetime(date_of_birth)
@@ -1044,7 +1043,7 @@ def get_eligibility_at_date(
     if not date_of_birth or not (eligibility_start <= specified_datetime < eligibility_end):  # type: ignore[operator]
         return None
 
-    age = users_utils.get_age_at_date(date_of_birth, specified_datetime)
+    age = users_utils.get_age_at_date(date_of_birth, specified_datetime, department_code)
     if not age:
         return None
 

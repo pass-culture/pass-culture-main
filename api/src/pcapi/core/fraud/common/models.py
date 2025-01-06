@@ -3,6 +3,7 @@ import datetime
 import pydantic.v1 as pydantic_v1
 
 from pcapi.core.users import models as users_models
+from pcapi.utils import postal_code as postal_code_utils
 
 
 class IdentityCheckContent(pydantic_v1.BaseModel):
@@ -57,6 +58,8 @@ class IdentityCheckContent(pydantic_v1.BaseModel):
         if registration_datetime is None or birth_date is None:
             return None
 
-        eligibility_at_registration = users_api.get_eligibility_at_date(birth_date, registration_datetime)
+        postal_code = self.get_postal_code()  # pylint: disable=assignment-from-none
+        department = postal_code_utils.PostalCode(postal_code).get_departement_code() if postal_code else None
+        eligibility_at_registration = users_api.get_eligibility_at_date(birth_date, registration_datetime, department)
 
         return eligibility_at_registration

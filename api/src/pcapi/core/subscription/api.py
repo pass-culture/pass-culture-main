@@ -48,7 +48,7 @@ def _get_age_at_first_registration(user: users_models.User, eligibility: users_m
     if not first_registration_date:
         return user.age
 
-    age_at_registration = users_utils.get_age_at_date(user.birth_date, first_registration_date)
+    age_at_registration = users_utils.get_age_at_date(user.birth_date, first_registration_date, user.departementCode)
     if (
         eligibility == users_models.EligibilityType.UNDERAGE
         and age_at_registration not in users_constants.ELIGIBILITY_UNDERAGE_RANGE
@@ -514,7 +514,7 @@ def requires_manual_review_before_activation(
         identity_fraud_check.type == fraud_models.FraudCheckType.DMS
         and identity_fraud_check.status == fraud_models.FraudCheckStatus.OK
         and not users_api.get_eligibility_at_date(
-            user.birth_date, identity_fraud_check.get_min_date_between_creation_and_registration()
+            user.birth_date, identity_fraud_check.get_min_date_between_creation_and_registration(), user.departementCode
         )
     )
 
@@ -590,6 +590,7 @@ def _is_ubble_allowed_if_subscription_overflow(user: users_models.User) -> bool:
     future_age = users_utils.get_age_at_date(
         user.birth_date,
         datetime.datetime.utcnow() + datetime.timedelta(days=settings.UBBLE_SUBSCRIPTION_LIMITATION_DAYS),  # type: ignore[arg-type]
+        user.departementCode,
     )
     eligibility_ranges = users_constants.ELIGIBILITY_UNDERAGE_RANGE + [users_constants.ELIGIBILITY_AGE_18]
     eligibility_ranges = [age + 1 for age in eligibility_ranges]
@@ -764,7 +765,9 @@ def get_first_registration_date(
         for fraud_check in fraud_checks
         if fraud_check.eligibilityType == eligibility
         and users_api.is_user_age_compatible_with_eligibility(
-            users_utils.get_age_at_date(birth_date, fraud_check.get_min_date_between_creation_and_registration()),
+            users_utils.get_age_at_date(
+                birth_date, fraud_check.get_min_date_between_creation_and_registration(), user.departementCode
+            ),
             eligibility,
         )
     ]

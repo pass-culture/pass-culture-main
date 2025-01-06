@@ -1073,6 +1073,44 @@ class GetFirstRegistrationDateTest:
             == d1
         )
 
+    @pytest.mark.parametrize("age", [15, 16, 17])
+    def test_get_first_registration_date_underage_with_timezone(self, age):
+        years_ago = date.today() - relativedelta(years=age)
+        user = users_factories.UserFactory(dateOfBirth=years_ago)
+        today_in_utc = date.today() - relativedelta(minutes=15)  # 23:45 in UTC, so 00:45 today in Europe/Paris
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            dateCreated=today_in_utc,
+            resultContent=None,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+
+        first_registration_date = subscription_api.get_first_registration_date(
+            user, user.birth_date, users_models.EligibilityType.UNDERAGE
+        )
+
+        assert first_registration_date == today_in_utc
+
+    @pytest.mark.parametrize("age", [18, 19, 20, 21])
+    def test_get_first_registration_date_18_with_timezone(self, age):
+        years_ago = date.today() - relativedelta(years=age)
+        user = users_factories.UserFactory(dateOfBirth=years_ago)
+        today_in_utc = date.today() - relativedelta(minutes=15)  # 23:45 in UTC, so 00:45 today in Europe/Paris
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            dateCreated=today_in_utc,
+            resultContent=None,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+
+        first_registration_date = subscription_api.get_first_registration_date(
+            user, user.birth_date, users_models.EligibilityType.AGE18
+        )
+
+        assert first_registration_date == today_in_utc
+
     def test_get_first_registration_date_age_18(self):
         user = users_factories.UserFactory(dateOfBirth=datetime(2002, 1, 15))
         d1 = datetime(2018, 1, 1)

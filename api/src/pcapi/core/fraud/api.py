@@ -582,20 +582,22 @@ def decide_eligibility(
     if user_age_today == 18:
         return users_models.EligibilityType.AGE18
 
-    eligibility_today = users_api.get_eligibility_at_date(birth_date, datetime.datetime.utcnow())
+    eligibility_today = users_api.get_eligibility_at_date(birth_date, datetime.datetime.utcnow(), user.departementCode)
 
     if eligibility_today == users_models.EligibilityType.AGE18:
         return users_models.EligibilityType.AGE18
 
     eligibility_at_registration = (
-        users_api.get_eligibility_at_date(birth_date, registration_datetime) if registration_datetime else None
+        users_api.get_eligibility_at_date(birth_date, registration_datetime, user.departementCode)
+        if registration_datetime
+        else None
     )
     if eligibility_at_registration is None and eligibility_today is None and user_age_today == 19:
         earliest_identity_check_date = subscription_api.get_first_registration_date(
             user, birth_date, users_models.EligibilityType.AGE18
         )
         if earliest_identity_check_date:
-            return users_api.get_eligibility_at_date(birth_date, earliest_identity_check_date)
+            return users_api.get_eligibility_at_date(birth_date, earliest_identity_check_date, user.departementCode)
 
     return eligibility_at_registration
 

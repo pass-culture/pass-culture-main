@@ -129,7 +129,7 @@ def _ubble_not_eligible_fraud_item(
     birth_date = content.get_birth_date()
     registration_datetime = content.get_registration_datetime()
     assert birth_date and registration_datetime  # helps mypy
-    age = users_utils.get_age_at_date(birth_date, registration_datetime)
+    age = users_utils.get_age_at_date(birth_date, registration_datetime, user.departementCode)
     if age < min(users_constants.ELIGIBILITY_UNDERAGE_RANGE):
         reason_codes.append(fraud_models.FraudReasonCode.AGE_TOO_YOUNG)
         detail = _ubble_message_from_code(fraud_models.FraudReasonCode.AGE_TOO_YOUNG).format(age=age)
