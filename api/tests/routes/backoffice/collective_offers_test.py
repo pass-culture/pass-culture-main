@@ -791,6 +791,42 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
         assert collective_offer_to_validate.validation == OfferValidationStatus.APPROVED
         assert collective_offer_to_validate.lastValidationType == OfferValidationType.MANUAL
 
+    @pytest.mark.settings(
+        ADAGE_API_URL="https://adage_base_url",
+        ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
+    )
+    def test_validate_collective_offer_with_institution_connection_error(
+        self, legit_user, authenticated_client, requests_mock
+    ):
+        collective_offer_to_validate = educational_factories.PendingCollectiveOfferFactory()
+
+        adage_json = {
+            "type": "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html",
+            "title": "Error",
+            "status": 500,
+            "detail": "ERROR",
+        }
+        endpoint = requests_mock.post("https://adage_base_url/v1/offre-assoc", status_code=500, json=adage_json)
+
+        response = self.post_to_endpoint(authenticated_client, collective_offer_id=collective_offer_to_validate.id)
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice_web.collective_offer.list_collective_offers", _external=True)
+        assert response.location == expected_url
+
+        collective_offer_list_url = url_for(
+            "backoffice_web.collective_offer.list_collective_offers",
+            q=collective_offer_to_validate.id,
+            _external=True,
+        )
+        response = authenticated_client.get(collective_offer_list_url)
+        assert response.status_code == 200
+
+        assert endpoint.called
+        assert collective_offer_to_validate.isActive is False
+        assert collective_offer_to_validate.validation == OfferValidationStatus.PENDING
+        assert collective_offer_to_validate.lastValidationType == None
+
     def test_validate_collective_offer_with_institution(self, legit_user, authenticated_client):
         collective_offer_to_validate = educational_factories.PendingCollectiveOfferFactory()
 
