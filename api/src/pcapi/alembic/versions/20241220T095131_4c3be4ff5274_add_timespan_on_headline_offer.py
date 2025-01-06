@@ -17,7 +17,9 @@ def upgrade() -> None:
     op.execute('ALTER TABLE headline_offer DROP COLUMN IF EXISTS "dateUpdated"')
     op.execute('ALTER TABLE headline_offer DROP COLUMN IF EXISTS "dateCreated"')
 
-    op.execute('ALTER TABLE headline_offer ADD COLUMN IF NOT EXISTS "timespan" TSRANGE NOT NULL')
+    op.execute('ALTER TABLE headline_offer ADD COLUMN IF NOT EXISTS "timespan" TSRANGE')
+    op.execute('UPDATE headline_offer SET "timespan" = tsrange(NULL, NULL) WHERE "timespan" IS NULL')
+    op.execute('ALTER TABLE headline_offer ALTER COLUMN "timespan" SET NOT NULL')
 
     op.execute("ALTER TABLE headline_offer DROP CONSTRAINT IF EXISTS exclude_offer_timespan")
     op.execute(
