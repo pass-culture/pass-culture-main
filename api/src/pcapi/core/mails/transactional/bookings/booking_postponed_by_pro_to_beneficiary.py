@@ -34,12 +34,13 @@ def get_booking_postponed_by_pro_to_beneficiary_email_data(
     return models.TransactionalEmailData(
         template=TransactionalEmail.BOOKING_POSTPONED_BY_PRO_TO_BENEFICIARY.value,
         params={
-            "OFFER_NAME": offer.name,
-            "FIRSTNAME": booking.firstName,
-            "IS_EXTERNAL": booking.isExternal,
-            "VENUE_NAME": offer.venue.common_name,
+            "BOOKING_CONTACT": offer.bookingContact,
+            "BOOKING_LINK": booking_app_link(booking),
             "EVENT_DATE": event_date,
             "EVENT_HOUR": event_hour,
-            "BOOKING_LINK": booking_app_link(booking),
+            "FIRSTNAME": booking.firstName,
+            "IS_EXTERNAL": booking.isExternal,
+            "OFFER_NAME": offer.name,
+            "VENUE_NAME": offer.venue.common_name,
         },
     )

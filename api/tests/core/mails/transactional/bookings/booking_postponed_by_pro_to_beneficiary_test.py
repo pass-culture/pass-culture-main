@@ -23,11 +23,12 @@ class GetBookingPostponedByProToBeneficiaryTest:
 
         # Then
         assert booking_info_for_sendinblue.params == {
-            "OFFER_NAME": booking.stock.offer.name,
-            "FIRSTNAME": booking.firstName,
-            "VENUE_NAME": booking.venue.name,
-            "IS_EXTERNAL": False,
+            "BOOKING_CONTACT": None,
+            "BOOKING_LINK": f"https://webapp-v2.example.com/reservation/{booking.id}/details",
             "EVENT_DATE": "mardi 20 août 2019",
             "EVENT_HOUR": "14h00",
-            "BOOKING_LINK": f"https://webapp-v2.example.com/reservation/{booking.id}/details",
+            "FIRSTNAME": booking.firstName,
+            "IS_EXTERNAL": False,
+            "OFFER_NAME": booking.stock.offer.name,
+            "VENUE_NAME": booking.venue.name,
         }

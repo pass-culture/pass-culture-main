@@ -43,6 +43,7 @@ def get_booking_event_reminder_to_beneficiary_email_data(
     return models.TransactionalEmailData(
         template=emailTemplate.value,
         params={
+            "BOOKING_CONTACT": booking.stock.offer.bookingContact,
             "BOOKING_LINK": booking_app_link(booking),
             "EVENT_DATETIME_ISO": event_beginning_date_in_tz.isoformat(),
             "EVENT_DATE": formatted_event_beginning_date,

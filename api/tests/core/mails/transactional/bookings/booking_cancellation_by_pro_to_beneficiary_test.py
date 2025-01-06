@@ -39,6 +39,7 @@ class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
         )
         assert mails_testing.outbox[0]["To"] == "user@example.com"
         assert mails_testing.outbox[0]["params"] == {
+            "BOOKING_CONTACT": None,
             "EVENT_DATE": None,
             "EVENT_HOUR": None,
             "IS_EVENT": False,
@@ -89,6 +90,7 @@ class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
         )
         assert mails_testing.outbox[0]["To"] == "user@example.com"
         assert mails_testing.outbox[0]["params"] == {
+            "BOOKING_CONTACT": None,
             "EVENT_DATE": "vendredi 30 août 2024",
             "EVENT_HOUR": "11h12",
             "IS_EVENT": True,
@@ -124,6 +126,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
 
         # Then
         assert email_data.params == {
+            "BOOKING_CONTACT": None,
             "EVENT_DATE": "samedi 20 juillet 2019",
             "EVENT_HOUR": "14h00",
             "IS_EVENT": True,
@@ -157,6 +160,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
             id_prod=225, id_not_prod=161, tags=["jeunes_offre_annulee_pros"], send_to_ehp=False
         )
         assert email_data.params == {
+            "BOOKING_CONTACT": None,
             "EVENT_DATE": None,
             "EVENT_HOUR": None,
             "IS_EVENT": False,
@@ -187,6 +191,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
 
         # Then
         assert email_data.params == {
+            "BOOKING_CONTACT": None,
             "EVENT_DATE": None,
             "EVENT_HOUR": None,
             "IS_EVENT": False,
