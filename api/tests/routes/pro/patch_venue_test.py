@@ -17,10 +17,17 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as external_testing
 from pcapi.utils.date import timespan_str_to_numrange
 
-from tests.routes.pro.post_venue_test import venue_malformed_test_data
-
 
 pytestmark = pytest.mark.usefixtures("db_session")
+
+venue_malformed_test_data = [
+    ({"description": "a" * 1024}, "description"),
+    ({"contact": {"email": "not_an_email"}}, "contact.email"),
+    ({"contact": {"website": "not_an_url"}}, "contact.website"),
+    ({"contact": {"phoneNumber": "not_a_phone_number"}}, "contact.phoneNumber"),
+    ({"contact": {"social_medias": {"a": "b"}}}, "contact.socialMedias.__key__"),
+    ({"contact": {"social_medias": {"facebook": "not_an_url"}}}, "contact.socialMedias.facebook"),
+]
 
 
 def populate_missing_data_from_venue(venue_data: dict, venue: offerers_models.Venue) -> dict:

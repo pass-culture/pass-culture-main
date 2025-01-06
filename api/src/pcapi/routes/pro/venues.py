@@ -79,25 +79,6 @@ def get_venues(query: venues_serialize.VenueListQueryModel) -> venues_serialize.
     )
 
 
-@private_api.route("/venues", methods=["POST"])
-@login_required
-@spectree_serialize(
-    response_model=venues_serialize.VenueResponseModel, on_success_status=201, api=blueprint.pro_private_schema
-)
-def post_create_venue(body: venues_serialize.PostVenueBodyModel) -> venues_serialize.VenueResponseModel:
-    check_user_has_access_to_offerer(current_user, body.managingOffererId)
-    if body.siret:
-        validation.check_siret_does_not_exists(body.siret)
-        siret_info = sirene.get_siret(body.siret)
-        if not siret_info.active:
-            raise ApiErrors(errors={"siret": ["SIRET is no longer active"]})
-        body.name = siret_info.name  # type: ignore[assignment]
-    validation.check_accessibility_compliance(body)
-    venue = offerers_api.create_venue(body, current_user)
-
-    return venues_serialize.VenueResponseModel.from_orm(venue)
-
-
 @private_api.route("/venues/<int:venue_id>", methods=["PATCH"])
 @login_required
 @spectree_serialize(response_model=venues_serialize.GetVenueResponseModel, api=blueprint.pro_private_schema)

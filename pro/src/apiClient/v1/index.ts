@@ -202,7 +202,6 @@ export type { PostCollectiveOfferTemplateBodyModel } from './models/PostCollecti
 export type { PostDraftOfferBodyModel } from './models/PostDraftOfferBodyModel';
 export type { PostOfferBodyModel } from './models/PostOfferBodyModel';
 export type { PostOffererResponseModel } from './models/PostOffererResponseModel';
-export type { PostVenueBodyModel } from './models/PostVenueBodyModel';
 export type { PostVenueProviderBody } from './models/PostVenueProviderBody';
 export type { PriceCategoryBody } from './models/PriceCategoryBody';
 export type { PriceCategoryResponseModel } from './models/PriceCategoryResponseModel';
@@ -254,7 +253,6 @@ export type { VenueListItemResponseModel } from './models/VenueListItemResponseM
 export type { VenueListQueryModel } from './models/VenueListQueryModel';
 export type { VenueOfOffererFromSiretResponseModel } from './models/VenueOfOffererFromSiretResponseModel';
 export type { VenueProviderResponse } from './models/VenueProviderResponse';
-export type { VenueResponseModel } from './models/VenueResponseModel';
 export type { VenuesEducationalStatusesResponseModel } from './models/VenuesEducationalStatusesResponseModel';
 export type { VenuesEducationalStatusResponseModel } from './models/VenuesEducationalStatusResponseModel';
 export { VenueTypeCode } from './models/VenueTypeCode';
