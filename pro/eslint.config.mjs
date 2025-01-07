@@ -58,7 +58,6 @@ export default tseslint.config(
     files: ['**/*.tsx', '**/*.ts'],
     linterOptions: { reportUnusedDisableDirectives: false },
     languageOptions: {
-      // ecmaVersion: 6,
       globals: {
         ...globals.browser,
         ...globals.jest,
@@ -67,8 +66,6 @@ export default tseslint.config(
         JSX: true,
         vi: true,
       },
-      // sourceType: 'module',
-      // parser: tsParser,
       parserOptions: {
         project: ['./tsconfig.json', './cypress/tsconfig.json'],
         tsconfigRootDir: __dirname,

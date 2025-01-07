@@ -9,6 +9,7 @@ import {
 
 import { SelectOption } from 'commons/custom_types/form'
 
+import { SelectedValuesTags } from '../../SelectedValuesTags/SelectedValuesTags'
 import { BaseInput } from '../shared/BaseInput/BaseInput'
 import {
   FieldLayout,
@@ -17,7 +18,6 @@ import {
 
 import { OptionsList } from './OptionsList/OptionsList'
 import styles from './SelectAutocomplete.module.scss'
-import { SelectedValuesTags } from '../../SelectedValuesTags/SelectedValuesTags'
 import { Toggle } from './Toggle/Toggle'
 
 export type SelectAutocompleteProps = FieldLayoutBaseProps & {
