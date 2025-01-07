@@ -1,3 +1,4 @@
+{% import "components/badges.html" as badges with context %}
 {% import "components/links.html" as links with context %}
 {% extends "layouts/standard.html" %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
@@ -72,9 +73,7 @@
               <div class="fs-6">
                 <p class="mb-1">
                   <span class="fw-bold">Entité juridique :</span> {{ links.build_offerer_name_to_details_link(collective_offer_template.venue.managingOfferer) }}
-                  {% if has_permission("PRO_FRAUD_ACTIONS") %}
-                    {{ collective_offer_template.venue.managingOfferer.confidenceLevel | format_confidence_level_badge }}
-                  {% endif %}
+                  {{ badges.build_offer_offerer_fraud_badges(collective_offer_template.venue.managingOfferer) }}
                 </p>
               </div>
               <div class="fs-6">
@@ -86,9 +85,7 @@
                       Lieu :
                     {% endif %}
                   </span> {{ links.build_venue_name_to_details_link(collective_offer_template.venue) }}
-                  {% if has_permission("PRO_FRAUD_ACTIONS") %}
-                    {{ collective_offer_template.venue.confidenceLevel | format_confidence_level_badge }}
-                  {% endif %}
+                  {{ badges.build_offer_venue_fraud_badges(collective_offer_template.venue) }}
                 </p>
               </div>
             </div>

@@ -202,6 +202,36 @@ class OffererDepartementCodeSQLExpressionTest:
         assert models.Offerer.query.filter_by(departementCode="978").count() == 1
 
 
+class OffererIsTopActeurTest:
+    def test_is_top_acteur(self):
+        offerer = factories.OffererFactory(
+            tags=[
+                factories.OffererTagFactory(name="test", label="Test"),
+                factories.OffererTagFactory(name="top-acteur", label="Top Acteur"),
+            ]
+        )
+        assert offerer.is_top_acteur
+
+    def test_is_not_top_acteur(self):
+        offerer = factories.OffererFactory(tags=[factories.OffererTagFactory(name="test", label="Test")])
+        assert not offerer.is_top_acteur
+
+
+class OffererIsTopActeurSQLExpressionTest:
+    def test_is_top_acteur(self):
+        factories.OffererFactory(
+            tags=[
+                factories.OffererTagFactory(name="test", label="Test"),
+                factories.OffererTagFactory(name="top-acteur", label="Top Acteur"),
+            ]
+        )
+        assert models.Offerer.query.filter(models.Offerer.is_top_acteur.is_(True)).count() == 1
+
+    def test_is_not_top_acteur(self):
+        factories.OffererFactory(tags=[factories.OffererTagFactory(name="test", label="Test")])
+        assert models.Offerer.query.filter(models.Offerer.is_top_acteur.is_(True)).count() == 0
+
+
 class VenueNApprovedOffersTest:
     def test_venue_n_approved_offers(self):
         venue = factories.VenueFactory()

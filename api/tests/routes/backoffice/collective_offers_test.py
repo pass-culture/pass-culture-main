@@ -748,6 +748,25 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["Entité juridique"] == "Offerer"
         assert rows[0]["Lieu"] == "Venue Revue manuelle"
 
+    def test_list_collective_offers_with_top_acteur_offerer(self, client, pro_fraud_admin):
+        collective_offer = educational_factories.CollectiveOfferFactory(
+            venue__managingOfferer__name="Offerer",
+            venue__managingOfferer__tags=[
+                offerers_factories.OffererTagFactory(name="top-acteur", label="Top Acteur"),
+                offerers_factories.OffererTagFactory(name="test", label="Test"),
+            ],
+        )
+
+        client = client.with_bo_session_auth(pro_fraud_admin)
+        query_args = self._get_query_args_by_id(collective_offer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Entité juridique"] == "Offerer Top Acteur"
+
 
 class ValidateCollectiveOfferTest(PostEndpointHelper):
     endpoint = "backoffice_web.collective_offer.validate_collective_offer"
@@ -1210,6 +1229,23 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
 
         text = html_parser.extract_cards_text(response.data)[0]
         assert "Lieu : Venue Revue manuelle" in text
+
+    def test_collective_offer_with_top_acteur_offerer(self, authenticated_client):
+        collective_offer = educational_factories.CollectiveOfferFactory(
+            venue__managingOfferer__name="Offerer",
+            venue__managingOfferer__tags=[
+                offerers_factories.OffererTagFactory(name="top-acteur", label="Top Acteur"),
+                offerers_factories.OffererTagFactory(name="test", label="Test"),
+            ],
+        )
+
+        url = url_for(self.endpoint, collective_offer_id=collective_offer.id)
+        with assert_num_queries(self.expected_num_queries - 1):  # no _is_collective_offer_price_editable
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        text = html_parser.extract_cards_text(response.data)[0]
+        assert "Entité juridique : Offerer Top Acteur" in text
 
 
 class ValidateCollectiveOfferFromDetailsButtonTest(button_helpers.ButtonHelper):
