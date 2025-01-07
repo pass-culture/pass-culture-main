@@ -60,7 +60,7 @@
         {% endif %}
       </div>
     {% endif %}
-    {% if has_permission("MANAGE_ACCOUNT_UPDATE_REQUEST") %}
+    {% if has_permission("MANAGE_ACCOUNT_UPDATE_REQUEST") and current_user.backoffice_profile.dsInstructorId %}
       <div class="row row-cols-4 g-3 py-4">
         {{ stats_card(pending_unassigned_update_requests_count,
                 "dossier DS non affecté",

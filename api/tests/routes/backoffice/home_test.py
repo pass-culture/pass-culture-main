@@ -6,6 +6,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
+from pcapi.models import db
 from pcapi.models import offer_mixin
 
 from .helpers import html_parser
@@ -115,4 +116,19 @@ class HomePageTest:
             "0 offre collective vitrine en attente CONSULTER",
             "2 dossiers DS non affectés CONSULTER",
             "1 dossier DS suivi CONSULTER",
+        ]
+
+    def test_view_home_page_without_user_account_update_requests_stats(self, legit_user, authenticated_client):
+        legit_user.backoffice_profile.dsInstructorId = None
+        db.session.flush()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for("backoffice_web.home"))
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert cards_text == [
+            "0 offre individuelle en attente CONSULTER",
+            "0 offre collective en attente CONSULTER",
+            "0 offre collective vitrine en attente CONSULTER",
         ]

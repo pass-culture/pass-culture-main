@@ -136,7 +136,10 @@ def home() -> utils.BackofficeResponse:
     if utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
         subqueries += _get_fraud_stats()
 
-    if utils.has_current_user_permission(perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST):
+    if (
+        utils.has_current_user_permission(perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST)
+        and current_user.backoffice_profile.dsInstructorId
+    ):
         subqueries += _get_user_account_update_requests_stats()
 
     if subqueries:
