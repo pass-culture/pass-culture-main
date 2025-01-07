@@ -9,6 +9,7 @@ export default {
 
 export const Default: StoryObj<typeof RedirectDialog> = {
   args: {
+    open: true,
     title: 'title',
     redirectText: 'Go to ...',
     redirectLink: {
