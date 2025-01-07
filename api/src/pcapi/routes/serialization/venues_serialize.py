@@ -64,11 +64,11 @@ class DMSApplicationForEAC(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
 
     @classmethod
-    def from_orm(
-        cls, collective_dms_applicaiton: educational_models.CollectiveDmsApplication
+    def from_orm(  # type: ignore[override]
+        cls, collective_dms_application: educational_models.CollectiveDmsApplication, venue_id: int
     ) -> "DMSApplicationForEAC":
-        collective_dms_applicaiton.venueId = collective_dms_applicaiton.venue.id
-        return super().from_orm(collective_dms_applicaiton)
+        collective_dms_application.venueId = venue_id
+        return super().from_orm(collective_dms_application)
 
 
 class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
@@ -227,6 +227,12 @@ class GetVenueResponseGetterDict(base.VenueResponseGetterDict):
                 label=self._obj.common_name,
                 isLinkedToVenue=True,
             )
+        if key == "collectiveDmsApplications":
+            return [
+                DMSApplicationForEAC.from_orm(collective_ds_application, self._obj.id)
+                for collective_ds_application in self._obj.collectiveDmsApplications
+            ]
+
         return super().get(key, default)
 
 
