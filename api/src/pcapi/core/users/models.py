@@ -227,7 +227,9 @@ class User(PcObject, Base, Model, DeactivableMixin):
             sa.func.immutable_unaccent(firstName + " " + lastName),
             postgresql_using="gin",
         ),
-        sa.Index("ix_user_email_domain", sa.func.email_domain(email)),
+        # Index to be used with ORDER BY id LIMIT 21,
+        # otherwise an index on the single email domain is not used by the query planner
+        sa.Index("ix_user_email_domain_and_id", sa.func.email_domain(email), "id"),
     )
 
     def __init__(self, **kwargs: typing.Any) -> None:
