@@ -3,9 +3,8 @@
 // Component only for display (sub-components already tested)
 
 import { Form, FormikProvider, useFormik } from 'formik'
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import { useSelector } from 'react-redux'
-import { useLocation } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -27,7 +26,6 @@ import { EmailSpellCheckInput } from 'ui-kit/form/EmailSpellCheckInput/EmailSpel
 
 import styles from './Collaborators.module.scss'
 
-const SECTION_ID = '#attachment-invitations-section'
 const SUCCESS_MESSAGE = "L'invitation a bien été envoyée."
 const ERROR_MESSAGE = 'Une erreur est survenue lors de l’envoi de l’invitation.'
 
@@ -35,7 +33,6 @@ export const Collaborators = (): JSX.Element | null => {
   const offererId = useSelector(selectCurrentOffererId)
 
   const { logEvent } = useAnalytics()
-  const location = useLocation()
   const notify = useNotification()
   const [isLoading, setIsLoading] = useState(false)
   const [displayAllMembers, setDisplayAllMembers] = useState(false)
@@ -84,15 +81,6 @@ export const Collaborators = (): JSX.Element | null => {
     validateOnChange: false,
   })
 
-  const shouldScrollToSection = location.hash === SECTION_ID
-  const scrollToSection = useCallback((node: HTMLElement) => {
-    if (shouldScrollToSection) {
-      setTimeout(() => {
-        node.scrollIntoView()
-      }, 200)
-    }
-  }, [])
-
   const MAX_COLLABORATORS = 10
 
   if (!offererId) {
@@ -103,7 +91,7 @@ export const Collaborators = (): JSX.Element | null => {
     <Layout>
       <h1 className={styles['title']}>Collaborateurs</h1>
 
-      <section className={styles['section']} ref={scrollToSection}>
+      <section className={styles['section']}>
         <h2 className={styles['main-list-title']}>Liste des collaborateurs</h2>
 
         {members.length > 0 && (

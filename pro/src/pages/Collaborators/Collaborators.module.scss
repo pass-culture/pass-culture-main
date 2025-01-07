@@ -49,30 +49,11 @@
 
   .members-container {
     margin-bottom: rem.torem(24px);
-    max-width: 100%;
-    position: relative;
-
-    &::before {
-      content: "";
-      position: absolute;
-      display: block;
-      width: rem.torem(45px);
-      top: 0;
-      right: 0;
-      bottom: 0;
-      z-index: 2;
-      box-shadow: inset rem.torem(-45px) 0 rem.torem(15px) rem.torem(-30px)
-        white;
-    }
-
-    .members-inner {
-      overflow-x: auto;
-    }
   }
 
   .members-list {
     border-collapse: separate;
-    min-width: rem.torem(365px);
+    width: 100%;
 
     th {
       @include fonts.body-accent-xs;
@@ -97,13 +78,11 @@
 }
 
 .member-email {
-  display: flex;
-  word-break: keep-all;
+  word-break: break-word;
 }
 
 .member-status {
-  width: rem.torem(90px);
-  word-break: keep-all;
+  white-space: nowrap;
 }
 
 .display-all-members-button {
