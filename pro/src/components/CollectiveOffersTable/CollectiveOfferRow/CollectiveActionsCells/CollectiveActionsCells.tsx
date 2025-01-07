@@ -123,9 +123,9 @@ export const CollectiveActionsCells = ({
 
   const isMarseilleActive = useActiveFeature('WIP_ENABLE_MARSEILLE')
 
-  const eventDateFormated = isDateValid(offer.stocks[0].beginningDatetime)
+  const eventDateFormated = isDateValid(offer.stocks[0].startDatetime)
     ? formatBrowserTimezonedDateAsUTC(
-        new Date(offer.stocks[0].beginningDatetime),
+        new Date(offer.stocks[0].startDatetime),
         FORMAT_ISO_DATE_ONLY
       )
     : ''
@@ -361,7 +361,7 @@ export const CollectiveActionsCells = ({
             <BookingLinkCell
               bookingId={offer.booking.id}
               bookingStatus={offer.booking.booking_status}
-              offerEventDate={offer.stocks[0].beginningDatetime}
+              offerEventDate={offer.stocks[0].startDatetime}
               offerId={offer.id}
             />
           )}

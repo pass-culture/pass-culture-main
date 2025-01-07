@@ -16,7 +16,7 @@ import {
 describe('canArchiveCollectiveOffer', () => {
   const stocks: Array<CollectiveOffersStockResponseModel> = [
     {
-      beginningDatetime: String(new Date()),
+      startDatetime: String(new Date()),
       hasBookingLimitDatetimePassed: false,
       remainingQuantity: 1,
     },
@@ -106,13 +106,13 @@ describe('canArchiveCollectiveOffer', () => {
     ).toStrictEqual(true)
   })
 
-  it('should return true when collective offer with status "PENDING" and booking status "USED" and after beginningDatetime + 48h ', () => {
+  it('should return true when collective offer with status "PENDING" and booking status "USED" and after startDatetime + 48h ', () => {
     expect(
       canArchiveCollectiveOffer(
         collectiveOfferFactory({
           status: CollectiveOfferStatus.PENDING,
           stocks: [
-            { ...stocks[0], beginningDatetime: String(new Date('2020-01-01')) },
+            { ...stocks[0], startDatetime: String(new Date('2020-01-01')) },
           ],
           booking: {
             booking_status: CollectiveBookingStatus.USED,
@@ -123,12 +123,12 @@ describe('canArchiveCollectiveOffer', () => {
     ).toStrictEqual(true)
   })
 
-  it('should return false when collective offer with status "PENDING" and booking status "USED" and before beginningDatetime + 48h ', () => {
+  it('should return false when collective offer with status "PENDING" and booking status "USED" and before startDatetime + 48h ', () => {
     expect(
       canArchiveCollectiveOffer(
         collectiveOfferFactory({
           status: CollectiveOfferStatus.PENDING,
-          stocks: [{ ...stocks[0], beginningDatetime: String(new Date()) }],
+          stocks: [{ ...stocks[0], startDatetime: String(new Date()) }],
           booking: {
             booking_status: CollectiveBookingStatus.USED,
             id: 1,

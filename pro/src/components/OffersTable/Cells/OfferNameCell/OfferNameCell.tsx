@@ -42,7 +42,7 @@ export const OfferNameCell = ({
   )
 
   const getDateInformations = () => {
-    const { stocks } = offer
+    const startDatetime = offer.stocks[0] ? isOfferEducational(offer) ? offer.stocks[0].startDatetime : offer.stocks[0].beginningDatetime : undefined
 
     let departmentCode = ''
     // If that offer is not educational, it means it's an individual offer …
@@ -57,9 +57,8 @@ export const OfferNameCell = ({
       departmentCode = offer.venue.departementCode ?? ''
     }
 
-    const { beginningDatetime } = stocks[0] ?? {}
     /* istanbul ignore next: DEBT, TO FIX */
-    if (offer.isShowcase || !beginningDatetime || !departmentCode) {
+    if (offer.isShowcase || !startDatetime || !departmentCode) {
       return null
     }
 
@@ -67,7 +66,7 @@ export const OfferNameCell = ({
     const stockSize = offer.stocks.length
     return stockSize === 1
       ? formatLocalTimeDateString(
-          beginningDatetime,
+          startDatetime,
           departmentCode,
           FORMAT_DD_MM_YYYY_HH_mm
         )
