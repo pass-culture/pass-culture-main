@@ -368,14 +368,13 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         new_desc = product_offer.description + " updated"
 
         # 1. get api key
-        # 2. check FF
-        # 3. get offer and related data
-        # 4. select oa
-        # 5. update offer
-        # 6. reload provider
-        # 7. reload offer and related data (before serialization)
-        # 8. check venue offerer address
-        with assert_num_queries(8):
+        # 2. get offer and related data
+        # 3. select oa
+        # 4. update offer
+        # 5. reload provider
+        # 6. reload offer and related data (before serialization)
+        # 7. check venue offerer address
+        with assert_num_queries(7):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 "/public/offers/v1/products",
                 json={"offerId": offer_id, "name": new_name, "description": new_desc},

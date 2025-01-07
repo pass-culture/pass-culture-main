@@ -71,7 +71,7 @@ class PublicAPIEndpointBaseHelper:
 
         if self.default_path_params:
             url = url.format(**self.default_path_params)
-        with testing.assert_num_queries(2):  # Select API key + select provider
+        with testing.assert_num_queries(1):  # Select API key and provider
             response = client_method(url)
             assert response.status_code == 401
 

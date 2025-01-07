@@ -17,7 +17,6 @@ class GetEventsTest(PublicAPIVenueEndpointHelper):
     endpoint_method = "get"
 
     num_queries_with_error = 1  # select api_key, offerer and provider
-    num_queries_with_error += 1  # select features
     num_queries_with_error += 1  # check provider EXISTS
     num_queries = num_queries_with_error + 1  # select offers
 

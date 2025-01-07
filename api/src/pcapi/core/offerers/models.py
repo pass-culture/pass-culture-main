@@ -57,7 +57,6 @@ from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.deactivable_mixin import DeactivableMixin
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.has_address_mixin import HasAddressMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.pc_object import PcObject
@@ -1089,10 +1088,17 @@ class ApiKey(PcObject, Base, Model):
         if self.secret.decode("utf-8").startswith("$sha3_512$"):
             return crypto.check_public_api_key(clear_text, self.secret)
         if crypto.check_password(clear_text, self.secret):
-            if FeatureToggle.WIP_ENABLE_NEW_HASHING_ALGORITHM.is_active():
-                self.secret = crypto.hash_public_api_key(clear_text)
-                db.session.commit()
-                logger.info("Switched hash of API key from bcrypt to SHA3-512", extra={"key_id": self.id})
+            # Do not rehash api key during tests.
+            # Tests might use the real and secure (but slower) hashing
+            # algorithm and avoid this condition. However, if a faster
+            # (but insecure) one should be chosen, it would not be logical to
+            # re-hash the api using... the reald (slower) one.
+            if settings.IS_RUNNING_TESTS:
+                return True
+
+            self.secret = crypto.hash_public_api_key(clear_text)
+            db.session.commit()
+            logger.info("Switched hash of API key from bcrypt to SHA3-512", extra={"key_id": self.id})
             return True
         return False
 
