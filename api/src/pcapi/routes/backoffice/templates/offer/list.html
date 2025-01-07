@@ -1,3 +1,4 @@
+{% import "components/badges.html" as badges with context %}
 {% from "components/display_selector.html" import display_selector %}
 {% from "components/forms.html" import build_advanced_filters_form with context %}
 {% import "components/links.html" as links with context %}
@@ -227,11 +228,11 @@
                 <td>{{ offer.venue.departementCode | empty_string_if_null }}</td>
                 <td>
                   {{ links.build_offerer_name_to_details_link(offer.venue.managingOfferer) }}
-                  {% if has_permission("PRO_FRAUD_ACTIONS") %}{{ offer.venue.managingOfferer.confidenceLevel | format_confidence_level_badge }}{% endif %}
+                  {{ badges.build_offer_offerer_fraud_badges(offer.venue.managingOfferer) }}
                 </td>
                 <td>
                   {{ links.build_venue_name_to_details_link(offer.venue) }}
-                  {% if has_permission("PRO_FRAUD_ACTIONS") %}{{ offer.venue.confidenceLevel | format_confidence_level_badge }}{% endif %}
+                  {{ badges.build_offer_venue_fraud_badges(offer.venue) }}
                 </td>
                 <td>{{ links.build_venue_offers_icon_link_advanced(".list_offers", "Offres individuelles", offer.venue) }}</td>
               </tr>

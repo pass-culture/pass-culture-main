@@ -934,6 +934,24 @@ class Offerer(
 
     tags: list["OffererTag"] = sa_orm.relationship("OffererTag", secondary="offerer_tag_mapping")
 
+    # use an expression instead of joinedload(tags) to avoid multiple SQL rows returned
+    isTopActeur: sa_orm.Mapped["bool"] = sa_orm.query_expression()
+
+    @hybrid_property
+    def is_top_acteur(self) -> bool:
+        return any(tag.name == "top-acteur" for tag in self.tags)
+
+    @is_top_acteur.expression  # type: ignore[no-redef]
+    def is_top_acteur(cls) -> sa.sql.elements.BooleanClauseList:  # pylint: disable=no-self-argument
+        return (
+            sa.select(1)
+            .select_from(OffererTagMapping)
+            .join(OffererTag, OffererTag.id == OffererTagMapping.tagId)
+            .where(OffererTagMapping.offererId == cls.id, OffererTag.name == "top-acteur")
+            .limit(1)
+            .exists()
+        )
+
     offererProviders: list["OffererProvider"] = sa_orm.relationship("OffererProvider", back_populates="offerer")
     thumb_path_component = "offerers"
 
