@@ -1,3 +1,4 @@
+from datetime import date
 from datetime import datetime
 import enum
 
@@ -18,7 +19,7 @@ class SpecialEvent(PcObject, Base, Model):
     )
     externalId: str = sa.Column(sa.Text(), index=True, unique=True, nullable=False)
     title: str = sa.Column(sa.Text(), nullable=False)
-    eventDate: datetime | None = sa.Column(sa.DateTime, index=True, nullable=True)
+    eventDate: date = sa.Column(sa.Date, index=True, nullable=False, server_default=sa.func.now())
     offererId: int | None = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="SET NULL"), nullable=True)
     offerer: offerers_models.Offerer = sa.orm.relationship("Offerer", foreign_keys=[offererId])
     venueId: int | None = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id", ondelete="SET NULL"), nullable=True)

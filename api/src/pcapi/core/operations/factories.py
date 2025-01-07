@@ -16,6 +16,7 @@ class SpecialEventFactory(BaseFactory):
     externalId = factory.Sequence("ExtIdEvt{:04}".format)
     dateCreated = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=2))
     title = factory.Sequence("Opération #{}".format)
+    eventDate = factory.LazyFunction(lambda: datetime.date.today() + datetime.timedelta(days=7))
 
 
 class SpecialEventQuestionFactory(BaseFactory):
