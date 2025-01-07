@@ -1,3 +1,4 @@
+import datetime
 import re
 from urllib.parse import urlparse
 
@@ -37,7 +38,11 @@ class CreateSpecialEventForm(FlaskForm):
         validators=(wtforms.validators.DataRequired("La référence Typeform est obligatoire"),),
     )
 
-    # TODO: event date
+    event_date = fields.PCDateField(
+        "Date de l'opération",
+        validators=(wtforms.validators.DataRequired("La date de l'opération est obligatoire"),),
+    )
+
     # TODO: offerer ID
     # TODO: venue ID
     # TODO: offer ID ?
@@ -57,6 +62,13 @@ class CreateSpecialEventForm(FlaskForm):
             if not re.match(RE_TYPEFORM_ID, typeform_id.data):
                 raise wtforms.validators.ValidationError("Le format n'est pas reconnu")
         return typeform_id
+
+    def validate_event_date(self, event_date: fields.PCStringField) -> fields.PCStringField:
+        if event_date.data < datetime.date.today():
+            raise wtforms.validators.ValidationError(
+                "La date de l'évènement ne peut pas être dans le passé",
+            )
+        return event_date
 
 
 class OperationResponseForm(utils.PCForm):

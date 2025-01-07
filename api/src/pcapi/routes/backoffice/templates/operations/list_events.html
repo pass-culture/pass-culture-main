@@ -35,7 +35,8 @@
             <tr>
               <th scope="col"></th>
               <th scope="col">ID</th>
-              <th scope="col" class="col-2">Id. Typeform</th>
+              <th scope="col">Id. Typeform</th>
+              <th scope="col">Date</th>
               <th scope="col" class="col-9">Titre</th>
             </tr>
           </thead>
@@ -51,6 +52,7 @@
                      class="link-primary">
                   {{ special_event.externalId }} <i class="bi bi-box-arrow-up-right"></i></a>
                 </td>
+                <td>{{ special_event.eventDate | format_date }}</td>
                 <td>{{ special_event.title }}</td>
               </tr>
             {% endfor %}

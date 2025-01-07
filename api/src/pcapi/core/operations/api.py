@@ -1,5 +1,4 @@
-from datetime import datetime
-from datetime import timedelta
+import datetime
 import logging
 
 import sqlalchemy as sa
@@ -17,7 +16,11 @@ logger = logging.getLogger(__name__)
 
 
 def create_special_event_from_typeform(
-    form_id: str, *, event_date: datetime | None = None, offerer_id: int | None = None, venue_id: int | None = None
+    form_id: str,
+    *,
+    event_date: datetime.date,
+    offerer_id: int | None = None,
+    venue_id: int | None = None,
 ) -> models.SpecialEvent:
     if venue_id:
         venue = offerers_models.Venue.query.filter_by(id=venue_id).one_or_none()
@@ -56,7 +59,7 @@ def create_special_event_from_typeform(
 
 def retrieve_data_from_typeform() -> None:
     events = models.SpecialEvent.query.filter(
-        models.SpecialEvent.eventDate >= datetime.utcnow() - timedelta(days=7),
+        models.SpecialEvent.eventDate >= datetime.date.today() - datetime.timedelta(days=7),
     )
     for event in events:
         try:
@@ -109,7 +112,7 @@ def download_responses_from_typeform(
     event: models.SpecialEvent, questions: dict[str, models.SpecialEventQuestion]
 ) -> None:
 
-    def get_last_date_for_event() -> datetime | None:
+    def get_last_date_for_event() -> datetime.datetime | None:
         result = (
             models.SpecialEventResponse.query.with_entities(models.SpecialEventResponse.dateSubmitted)
             .filter(models.SpecialEventResponse.eventId == event.id)
