@@ -7,6 +7,7 @@ from pcapi import settings
 
 def install_commands(app: flask.Flask) -> None:
     module_paths: tuple[str, ...] = (
+        "pcapi.core.artist.commands",
         "pcapi.core.bookings.commands",
         "pcapi.core.chronicles.commands",
         "pcapi.core.educational.commands",
