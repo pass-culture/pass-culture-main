@@ -8,7 +8,6 @@ from pcapi.core.history import models as history_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 
@@ -28,12 +27,11 @@ class ListChroniclesTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.READ_CHRONICLE
     # session
     # current user
-    # FF WIP_BO_CHRONICLES
     # list chronicles
     # count chronicles
+    # feature flag
     expected_num_queries = 5
 
-    @override_features(WIP_ENABLE_CHRONICLES_IN_BO=True)
     def test_without_filters(self, authenticated_client):
         product = offers_factories.ProductFactory()
         chronicle_with_product = chronicles_factories.ChronicleFactory(products=[product])
@@ -52,7 +50,6 @@ class ListChroniclesTest(GetEndpointHelper):
         assert rows[1]["Contenu"] == chronicle_with_product.content
         assert rows[1]["Date de création"] == chronicle_with_product.dateCreated.strftime("%d/%m/%Y")
 
-    @override_features(WIP_ENABLE_CHRONICLES_IN_BO=True)
     def test_search_by_ean(self, authenticated_client):
         ean = "1234567890123"
         product = offers_factories.ProductFactory(extraData={"ean": ean})
@@ -66,7 +63,6 @@ class ListChroniclesTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["ID"] == str(chronicle_with_product.id)
 
-    @override_features(WIP_ENABLE_CHRONICLES_IN_BO=True)
     def test_search_by_content(self, authenticated_client):
         chronicle_to_find = chronicles_factories.ChronicleFactory(
             content="Deux hommes, et même dix, peuvent bien en craindre un ;",
@@ -87,7 +83,6 @@ class ListChroniclesTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["ID"] == str(chronicle_to_find.id)
 
-    @override_features(WIP_ENABLE_CHRONICLES_IN_BO=True)
     def test_search_by_product_name(self, authenticated_client):
         product = offers_factories.ProductFactory(name="My super product")
         chronicle_with_product = chronicles_factories.ChronicleFactory(products=[product])
@@ -106,7 +101,6 @@ class ListChroniclesTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["ID"] == str(chronicle_with_product.id)
 
-    @override_features(WIP_ENABLE_CHRONICLES_IN_BO=True)
     def test_search_by_creation_date(self, authenticated_client):
         chronicle_to_find = chronicles_factories.ChronicleFactory()
         chronicles_factories.ChronicleFactory(dateCreated=datetime.date(1999, 12, 12))
@@ -128,12 +122,11 @@ class GetChronicleDetailsTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.READ_CHRONICLE
     # - fetch session (1 query)
     # - fetch user (1 query)
-    # - FF WIP_BO_CHRONICLES
     # - fetch chronicle and its products
     # - fetch chronicle's action history
+    # - fetch feature flag
     expected_num_queries = 5
 
-    @override_features(WIP_ENABLE_CHRONICLES_IN_BO=True)
     def test_nominal(self, authenticated_client):
         products = [
             offers_factories.ProductFactory(extraData={"ean": "1235467890123"}),
@@ -173,7 +166,6 @@ class GetChronicleDetailsTest(GetEndpointHelper):
         assert "Accord de diffusion maison d'édition : Oui" in content_as_text
         assert chronicle.content in content_as_text
 
-    @override_features(WIP_ENABLE_CHRONICLES_IN_BO=True)
     def test_mininal(self, authenticated_client):
 
         chronicle = chronicles_factories.ChronicleFactory(isActive=False)
@@ -204,13 +196,11 @@ class UpdateChronicleContentTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_CHRONICLE
     # session
     # current user
-    # FF WIP_BO_CHRONICLES
     # get chronicle
     # update chronicle
     # GetChronicleDetailsTest.expected_num_queries (follow redirect)
-    expected_num_queries = 5 + GetChronicleDetailsTest.expected_num_queries
+    expected_num_queries = 4 + GetChronicleDetailsTest.expected_num_queries
 
-    @override_features(WIP_ENABLE_CHRONICLES_IN_BO=True)
     def test_update_chronicle_content(self, authenticated_client, legit_user):
         chronicle = chronicles_factories.ChronicleFactory(content="some old content")
 
@@ -235,14 +225,12 @@ class PublishChronicleTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_CHRONICLE
     # session
     # current user
-    # FF WIP_BO_CHRONICLES
     # get chronicle
     # update chronicle
     # reload chronicle
     # ListChroniclesTest.expected_num_queries (follow redirect)
-    expected_num_queries = 6 + ListChroniclesTest.expected_num_queries
+    expected_num_queries = 5 + ListChroniclesTest.expected_num_queries
 
-    @override_features(WIP_ENABLE_CHRONICLES_IN_BO=True)
     def test_publish_chronicle(self, authenticated_client, legit_user):
         chronicle = chronicles_factories.ChronicleFactory(
             isActive=False,
@@ -263,7 +251,6 @@ class PublishChronicleTest(PostEndpointHelper):
         assert action_log.chronicle is chronicle
         assert action_log.authorUser is legit_user
 
-    @override_features(WIP_ENABLE_CHRONICLES_IN_BO=True)
     def test_publish_chronicle_does_not_exist(self, authenticated_client):
         response = self.post_to_endpoint(
             follow_redirects=True,
@@ -280,14 +267,12 @@ class UnpublishChronicleTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_CHRONICLE
     # session
     # current user
-    # FF WIP_BO_CHRONICLES
     # get chronicle
     # update chronicle
     # reload chronicle
     # ListChroniclesTest.expected_num_queries (follow redirect)
-    expected_num_queries = 6 + ListChroniclesTest.expected_num_queries
+    expected_num_queries = 5 + ListChroniclesTest.expected_num_queries
 
-    @override_features(WIP_ENABLE_CHRONICLES_IN_BO=True)
     def test_unpublish_chronicle(self, authenticated_client, legit_user):
         chronicle = chronicles_factories.ChronicleFactory(
             isActive=True,
@@ -308,7 +293,6 @@ class UnpublishChronicleTest(PostEndpointHelper):
         assert action_log.chronicle is chronicle
         assert action_log.authorUser is legit_user
 
-    @override_features(WIP_ENABLE_CHRONICLES_IN_BO=True)
     def test_unpublish_chronicle_does_not_exist(self, authenticated_client):
         response = self.post_to_endpoint(
             follow_redirects=True,
@@ -325,15 +309,13 @@ class AttachProductTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_CHRONICLE
     # session
     # current user
-    # FF WIP_BO_CHRONICLES
     # get chronicle
     # get product
     # check if the chronicle is not already attached to the product
     # attach product to chronicle
     # GetChronicleDetailsTest.expected_num_queries (follow redirect)
-    expected_num_queries = 7 + GetChronicleDetailsTest.expected_num_queries
+    expected_num_queries = 6 + GetChronicleDetailsTest.expected_num_queries
 
-    @override_features(WIP_ENABLE_CHRONICLES_IN_BO=True)
     def test_attach_product(self, authenticated_client, legit_user):
         ean = "1234567890123"
         product = offers_factories.ProductFactory(extraData={"ean": ean})
@@ -353,7 +335,6 @@ class AttachProductTest(PostEndpointHelper):
         assert chronicle.products == [product]
         assert html_parser.extract_alerts(response.data) == [f"Le produit {product.name} a été rattaché à la chronique"]
 
-    @override_features(WIP_ENABLE_CHRONICLES_IN_BO=True)
     def test_product_not_found(self, authenticated_client, legit_user):
         chronicle = chronicles_factories.ChronicleFactory()
 
@@ -371,12 +352,10 @@ class DetachProductTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_CHRONICLE
     # session
     # current user
-    # FF WIP_BO_CHRONICLES
     # delete link between the chronicle and the product
     # GetChronicleDetailsTest.expected_num_queries (follow redirect)
-    expected_num_queries = 4 + GetChronicleDetailsTest.expected_num_queries
+    expected_num_queries = 3 + GetChronicleDetailsTest.expected_num_queries
 
-    @override_features(WIP_ENABLE_CHRONICLES_IN_BO=True)
     def test_detach_product(self, authenticated_client, legit_user):
         product = offers_factories.ProductFactory()
         chronicle = chronicles_factories.ChronicleFactory(products=[product])
@@ -395,7 +374,6 @@ class DetachProductTest(PostEndpointHelper):
         assert chronicle.products == []
         assert html_parser.extract_alerts(response.data) == ["Le produit à bien été détaché de la chronique"]
 
-    @override_features(WIP_ENABLE_CHRONICLES_IN_BO=True)
     def test_detach_unattached_product(self, authenticated_client, legit_user):
         product = offers_factories.ProductFactory()
         chronicle = chronicles_factories.ChronicleFactory()
@@ -421,13 +399,11 @@ class CommentChronicleTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.READ_CHRONICLE
     # session
     # current user
-    # FF WIP_BO_CHRONICLES
     # get chronicle
     # insert actionHistory
     # GetChronicleDetailsTest.expected_num_queries (follow redirect)
-    expected_num_queries = 5 + GetChronicleDetailsTest.expected_num_queries
+    expected_num_queries = 4 + GetChronicleDetailsTest.expected_num_queries
 
-    @override_features(WIP_ENABLE_CHRONICLES_IN_BO=True)
     def test_comment_chronicle(self, authenticated_client, legit_user):
         comment = "A very serious and concerned comment about the chronicle"
         chronicle = chronicles_factories.ChronicleFactory()

@@ -18,7 +18,6 @@ from pcapi.core.history import models as history_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import search_utils
@@ -41,10 +40,6 @@ chronicles_blueprint = utils.child_backoffice_blueprint(
 @chronicles_blueprint.route("", methods=["GET"])
 @atomic()
 def list_chronicles() -> utils.BackofficeResponse:
-
-    if not FeatureToggle.WIP_ENABLE_CHRONICLES_IN_BO.is_active():
-        raise NotFound()
-
     form = forms.GetChronicleSearchForm(formdata=utils.get_query_params())
     if not form.validate():
         mark_transaction_as_invalid()
@@ -119,9 +114,6 @@ def list_chronicles() -> utils.BackofficeResponse:
 @chronicles_blueprint.route("/<int:chronicle_id>", methods=["GET"])
 @atomic()
 def details(chronicle_id: int) -> utils.BackofficeResponse:
-    if not FeatureToggle.WIP_ENABLE_CHRONICLES_IN_BO.is_active():
-        raise NotFound()
-
     chronicle = (
         chronicles_models.Chronicle.query.filter(
             chronicles_models.Chronicle.id == chronicle_id,
@@ -170,9 +162,6 @@ def details(chronicle_id: int) -> utils.BackofficeResponse:
 @atomic()
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
 def update_chronicle_content(chronicle_id: int) -> utils.BackofficeResponse:
-    if not FeatureToggle.WIP_ENABLE_CHRONICLES_IN_BO.is_active():
-        raise NotFound()
-
     form = forms.UpdateContentForm()
     if not form.validate():
         mark_transaction_as_invalid()
@@ -196,9 +185,6 @@ def update_chronicle_content(chronicle_id: int) -> utils.BackofficeResponse:
 @atomic()
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
 def publish_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
-    if not FeatureToggle.WIP_ENABLE_CHRONICLES_IN_BO.is_active():
-        raise NotFound()
-
     chronicle = chronicles_models.Chronicle.query.get_or_404(chronicle_id)
     chronicle.isActive = True
     db.session.add(chronicle)
@@ -216,9 +202,6 @@ def publish_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
 @atomic()
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
 def unpublish_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
-    if not FeatureToggle.WIP_ENABLE_CHRONICLES_IN_BO.is_active():
-        raise NotFound()
-
     chronicle = chronicles_models.Chronicle.query.get_or_404(chronicle_id)
     chronicle.isActive = False
     db.session.add(chronicle)
@@ -236,9 +219,6 @@ def unpublish_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
 @atomic()
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
 def attach_product(chronicle_id: int) -> utils.BackofficeResponse:
-    if not FeatureToggle.WIP_ENABLE_CHRONICLES_IN_BO.is_active():
-        raise NotFound()
-
     form = forms.AttachProductForm()
     if not form.validate():
         mark_transaction_as_invalid()
@@ -285,9 +265,6 @@ def attach_product(chronicle_id: int) -> utils.BackofficeResponse:
 @atomic()
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
 def detach_product(chronicle_id: int, product_id: int) -> utils.BackofficeResponse:
-    if not FeatureToggle.WIP_ENABLE_CHRONICLES_IN_BO.is_active():
-        raise NotFound()
-
     deleted = chronicles_models.ProductChronicle.query.filter(
         chronicles_models.ProductChronicle.productId == product_id,
         chronicles_models.ProductChronicle.chronicleId == chronicle_id,
@@ -308,9 +285,6 @@ def detach_product(chronicle_id: int, product_id: int) -> utils.BackofficeRespon
 @chronicles_blueprint.route("/<int:chronicle_id>/comment", methods=["POST"])
 @atomic()
 def comment_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
-    if not FeatureToggle.WIP_ENABLE_CHRONICLES_IN_BO.is_active():
-        raise NotFound()
-
     form = forms.CommentForm()
     if not form.validate():
         mark_transaction_as_invalid()
