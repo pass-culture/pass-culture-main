@@ -88,21 +88,30 @@ class CreateEventTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(
             authenticated_client,
-            form={"typeform_id": typeform_id},
+            form={
+                "typeform_id": typeform_id,
+                "event_date": datetime.date.today().isoformat(),
+            },
             expected_num_queries=self.expected_num_queries_with_questions,
         )
         assert response.status_code == 303
 
         response = authenticated_client.get(response.location)
         assert html_parser.extract_alert(response.data) == "L'opération spéciale Jeu concours 1a2b3c4d5 a été importée."
-
-        assert operations_models.SpecialEvent.query.one().externalId == typeform_id
+        special_event = operations_models.SpecialEvent.query.one()
+        assert special_event.eventDate == datetime.date.today()
+        assert special_event.externalId == typeform_id
         assert operations_models.SpecialEventQuestion.query.count() == 3
 
     def test_create_event_already_exists(self, authenticated_client, special_events):
         # Data come from TestingBackend
         response = self.post_to_endpoint(
-            authenticated_client, form={"typeform_id": "abCd1234"}, expected_num_queries=self.expected_num_queries
+            authenticated_client,
+            form={
+                "typeform_id": "abCd1234",
+                "event_date": datetime.date.today().isoformat(),
+            },
+            expected_num_queries=self.expected_num_queries,
         )
         assert response.status_code == 303
 
@@ -114,12 +123,34 @@ class CreateEventTest(PostEndpointHelper):
     @patch("pcapi.connectors.typeform.get_form", side_effect=typeform.NotFoundException)
     def test_create_event_not_found(self, mock_get_form, authenticated_client):
         response = self.post_to_endpoint(
-            authenticated_client, form={"typeform_id": "1a2b3c4d5e"}, expected_num_queries=self.expected_num_queries
+            authenticated_client,
+            form={
+                "typeform_id": "1a2b3c4d5e",
+                "event_date": datetime.date.today().isoformat(),
+            },
+            expected_num_queries=self.expected_num_queries,
         )
         assert response.status_code == 303
 
         response = authenticated_client.get(response.location)
         assert html_parser.extract_alert(response.data) == "Le formulaire 1a2b3c4d5e n'a pas été trouvé sur Typeform."
+
+        assert operations_models.SpecialEvent.query.count() == 0
+
+    def test_create_far_in_the_past(self, authenticated_client):
+        # Data come from TestingBackend
+        event_date = datetime.date.today() - datetime.timedelta(days=12)
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "typeform_id": "abCd1234",
+                "event_date": event_date.isoformat(),
+            },
+        )
+        assert response.status_code == 303
+
+        response = authenticated_client.get(response.location)
+        assert "La date de l'évènement ne peut pas être dans le passé" in html_parser.extract_alert(response.data)
 
         assert operations_models.SpecialEvent.query.count() == 0
 
@@ -176,7 +207,7 @@ class GetEventDetailsTest(GetEndpointHelper):
         assert "Énigme des enchanteurs" in card_text
         assert f"Typeform ID : {event.externalId}" in card_text
         assert f"Créée le : {format_date(event.dateCreated, '%d/%m/%Y à %Hh%M')}" in card_text
-        assert f"Date de l'évènement : {format_date(event.eventDate, '%d/%m/%Y à %Hh%M')}" in card_text
+        assert f"Date de l'évènement : {format_date(event.eventDate, '%d/%m/%Y')}" in card_text
         assert f"Nombre de candidats : {len(event.responses)}" in card_text
 
         rows = html_parser.extract_table_rows(response.data)

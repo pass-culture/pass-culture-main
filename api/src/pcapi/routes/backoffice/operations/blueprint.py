@@ -88,7 +88,10 @@ def create_event() -> utils.BackofficeResponse:
         return redirect(url_for(".list_events"), code=303)
 
     try:
-        special_event = operations_api.create_special_event_from_typeform(form.typeform_id.data)
+        special_event = operations_api.create_special_event_from_typeform(
+            form_id=form.typeform_id.data,
+            event_date=form.event_date.data,
+        )
     except typeform.NotFoundException:
         mark_transaction_as_invalid()
         flash(

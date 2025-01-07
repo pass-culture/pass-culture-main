@@ -7,6 +7,7 @@
          class="form-control value-element-form"
          min="1900-01-01"
          max="2100-01-01"
+         {% if field.flags.required %}required {% endif +%}
          {% if field.flags.readonly %}readonly {% endif +%}
          value="{{ field.data if field.data else "" }}" />
   <label class="label-element-form"

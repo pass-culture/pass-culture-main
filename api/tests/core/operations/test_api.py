@@ -29,7 +29,7 @@ class CreateSpecialEventFromTypeformTest:
     )
     def test_create_special_event_from_typeform(self, mock_get_form):
         venue = offerers_factories.VenueFactory()
-        event_date = datetime.datetime.utcnow() + datetime.timedelta(days=15)
+        event_date = datetime.date.today() + datetime.timedelta(days=15)
 
         special_event_id = operations_api.create_special_event_from_typeform(
             "test", event_date=event_date, venue_id=venue.id
@@ -57,17 +57,30 @@ class CreateSpecialEventFromTypeformTest:
         venue = offerers_factories.VenueFactory()
 
         with pytest.raises(ValueError) as err:
-            operations_api.create_special_event_from_typeform("test", offerer_id=offerer.id, venue_id=venue.id)
+            operations_api.create_special_event_from_typeform(
+                "test",
+                event_date=datetime.date.today(),
+                offerer_id=offerer.id,
+                venue_id=venue.id,
+            )
         assert "n'appartient pas à la structure" in str(err.value)
 
     def test_check_offerer_exists(self):
         with pytest.raises(ValueError) as err:
-            operations_api.create_special_event_from_typeform("test", offerer_id=999999)
+            operations_api.create_special_event_from_typeform(
+                "test",
+                event_date=datetime.date.today(),
+                offerer_id=999999,
+            )
         assert "n'existe pas" in str(err.value)
 
     def test_check_venue_exists(self):
         with pytest.raises(ValueError) as err:
-            operations_api.create_special_event_from_typeform("test", venue_id=999999)
+            operations_api.create_special_event_from_typeform(
+                "test",
+                event_date=datetime.date.today(),
+                venue_id=999999,
+            )
         assert "n'existe pas" in str(err.value)
 
 
