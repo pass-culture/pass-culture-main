@@ -244,18 +244,28 @@ def test_index_collective_offers_templates():
         assert posted_json["requests"][2]["body"]["venue"]["departmentCode"] == "2A"
 
 
-@pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
+@pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False, WIP_ENABLE_OFFER_ADDRESS=False)
 def test_index_collective_offers_templates_legacy():
     # Same as test_index_collective_offers_templates
     backend = get_backend()
     collective_offer_template = educational_factories.CollectiveOfferTemplateFactory.build()
+    offerer_address_north_corsica = offerers_factories.OffererAddressFactory(
+        address__departmentCode=20,
+        address__postalCode="20213",
+    )
+    offerer_address_south_corsica = offerers_factories.OffererAddressFactory(
+        address__departmentCode=20,
+        address__postalCode="20113",
+    )
     collective_offer_template_north_corsica = educational_factories.CollectiveOfferTemplateFactory(
         venue__departementCode=20,
         venue__postalCode="20213",
+        venue__offererAddress=offerer_address_north_corsica,
     )
     collective_offer_template_south_corsica = educational_factories.CollectiveOfferTemplateFactory(
         venue__departementCode=20,
         venue__postalCode="20113",
+        venue__offererAddress=offerer_address_south_corsica,
     )
 
     with requests_mock.Mocker() as mock:

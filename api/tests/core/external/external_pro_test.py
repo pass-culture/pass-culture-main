@@ -113,6 +113,7 @@ def test_update_external_pro_user_attributes(
     venue1 = offerers_factories.VenueFactory(
         managingOfferer=offerer1,
         name="Cinéma de la plage",
+        street="Rue des étoiles",
         departementCode="06",
         postalCode="06590",
         city="Théoule-sur-mer",
@@ -130,6 +131,7 @@ def test_update_external_pro_user_attributes(
     venue1b = offerers_factories.VenueFactory(
         managingOfferer=offerer1,
         name="Théâtre de la plage",
+        street="Rue des molières",
         departementCode="06",
         postalCode="06590",
         city="Théoule-sur-mer",
@@ -178,6 +180,7 @@ def test_update_external_pro_user_attributes(
     venue3 = offerers_factories.VenueFactory(
         managingOfferer=offerer3,
         name="Festival de la mer",
+        street="Promenade de l'ire landaise",
         departementCode="83",
         postalCode="83700",
         city="Saint-Raphaël",
@@ -213,6 +216,7 @@ def test_update_external_pro_user_attributes(
     venue4 = offerers_factories.VenueFactory(
         managingOfferer=offerer4,
         name="Librairie du port",
+        street="Rue du phare à éon",
         departementCode="13",
         postalCode="13260",
         city="Cassis",
@@ -253,6 +257,7 @@ def test_update_external_pro_user_attributes(
     offerers_factories.VenueFactory(
         managingOfferer=inactive_offerer,
         name="Salle de concert des calanques",
+        street="Rue des myrtilles",
         departementCode="13",  # different from others
         postalCode="13260",
         city="Cassis",

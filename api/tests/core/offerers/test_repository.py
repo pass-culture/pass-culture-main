@@ -242,7 +242,7 @@ class GetOffererAddressesTest:
         offerers_factories.OffererAddressFactory(
             offerer=offerer,
             label="1ere adresse",
-            address__street="1 boulevard Poissonnière",
+            address__street="1 boulevard des Poissons",
             address__postalCode="75002",
             address__city="Paris",
         )

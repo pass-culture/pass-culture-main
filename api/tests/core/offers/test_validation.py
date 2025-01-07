@@ -829,13 +829,16 @@ class CheckBookingLimitDatetimeTest:
     )
     def test_check_booking_limit_datetime_priorisation_order(self, time_zone_expected):
         oa = (
-            offerers_factories.OffererAddressFactory(address__departmentCode="974")
+            offerers_factories.OffererAddressFactory(address__departmentCode="974", address__inseeCode="97410")
             if time_zone_expected == ZoneInfo("Indian/Reunion")
             else None
         )
         if time_zone_expected in [ZoneInfo("Indian/Reunion"), ZoneInfo("America/Guadeloupe")]:
             venue = offerers_factories.VenueFactory(
-                departementCode=71, offererAddress__address__departmentCode="971"
+                departementCode=71,
+                offererAddress__address__departmentCode="971",
+                offererAddress__address__inseeCode="97103",
+                offererAddress__address__timezone="America/Guadeloupe",
             )  # oa guadeloupe venue#france
         else:
             venue = offerers_factories.VirtualVenueFactory(departementCode=71)
