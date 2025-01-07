@@ -521,7 +521,7 @@ def test_serialize_collective_offer_template():
     }
 
 
-@pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
+@pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False, WIP_ENABLE_OFFER_ADDRESS=False)
 def test_serialize_collective_offer_template_legacy():
     # Same as test_serialize_collective_offer_template
     domain1 = educational_factories.EducationalDomainFactory(name="Danse")
@@ -534,6 +534,7 @@ def test_serialize_collective_offer_template_legacy():
         description="description formidable",
         students=[StudentLevels.CAP1, StudentLevels.CAP2],
         subcategoryId=subcategories.CONCERT.id,
+        venue__street="Place de la mairie",
         venue__postalCode="86140",
         venue__name="La Moyenne Librairie SA",
         venue__publicName="La Moyenne Librairie",

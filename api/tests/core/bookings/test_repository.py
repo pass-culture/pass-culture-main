@@ -1318,6 +1318,8 @@ class FindByProUserWithOffererAddressAsDataSourceTest:
 
         offer_in_cayenne = offers_factories.OfferFactory(
             venue__postalCode="97300",
+            venue__offererAddress__address__street="1 Rue de Rémire",
+            venue__offererAddress__address__city="Cayenne",
             venue__offererAddress__address__postalCode="97300",
             venue__managingOfferer=user_offerer.offerer,
         )
@@ -1331,6 +1333,8 @@ class FindByProUserWithOffererAddressAsDataSourceTest:
 
         offer_in_mayotte = offers_factories.OfferFactory(
             venue__postalCode="97600",
+            venue__offererAddress__address__street="Boulevard Halidi Sélémani",
+            venue__offererAddress__address__city="Mamoudzou",
             venue__offererAddress__address__postalCode="97600",
             venue__managingOfferer=user_offerer.offerer,
         )
@@ -4171,43 +4175,6 @@ class GetCsvReportTest:
         event_datetime = datetime(2020, 4, 21, 20, 00)
 
         offer_in_cayenne = offers_factories.OfferFactory(
-            venue__postalCode="97300", venue__managingOfferer=user_offerer.offerer, offererAddress=None
-        )
-        cayenne_event_datetime = datetime(2020, 4, 22, 2, 0)
-        stock_in_cayenne = offers_factories.EventStockFactory(
-            offer=offer_in_cayenne, beginningDatetime=cayenne_event_datetime
-        )
-        cayenne_booking = bookings_factories.BookingFactory(stock=stock_in_cayenne)
-
-        offer_in_mayotte = offers_factories.OfferFactory(
-            venue__postalCode="97600", venue__managingOfferer=user_offerer.offerer
-        )
-        mayotte_event_datetime = datetime(2020, 4, 20, 22, 0)
-        stock_in_mayotte = offers_factories.EventStockFactory(
-            offer=offer_in_mayotte, beginningDatetime=mayotte_event_datetime
-        )
-        mayotte_booking = bookings_factories.BookingFactory(stock=stock_in_mayotte)
-
-        bookings_csv = booking_repository.get_export(
-            user=user_offerer.user,
-            booking_period=(one_year_before_booking, one_year_after_booking),
-            event_date=event_datetime.date(),
-        )
-
-        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert len(data) == 2
-        data_dicts = [dict(zip(headers, line)) for line in data]
-        tokens = [booking["Contremarque"] for booking in data_dicts]
-        assert sorted(tokens) == sorted([cayenne_booking.token, mayotte_booking.token])
-
-    def should_consider_venue_locale_datetime_when_filtering_by_event_date_with_offerer_address_as_data_source(
-        self, app: fixture
-    ):
-
-        user_offerer = offerers_factories.UserOffererFactory()
-        event_datetime = datetime(2020, 4, 21, 20, 00)
-
-        offer_in_cayenne = offers_factories.OfferFactory(
             venue__postalCode="97300",
             venue__managingOfferer=user_offerer.offerer,
             venue__offererAddress__address__inseeCode="97300",
@@ -4311,49 +4278,10 @@ class GetCsvReportTest:
 
         offer_in_cayenne = offers_factories.OfferFactory(
             venue__postalCode="97300",
+            venue__offererAddress__address__street="1 Rue de Rémire",
+            venue__offererAddress__address__city="Cayenne",
+            venue__offererAddress__address__postalCode="97300",
             venue__managingOfferer=user_offerer.offerer,
-            offererAddress=None,
-        )
-        cayenne_booking_datetime = datetime(2020, 4, 22, 2, 0)
-        stock_in_cayenne = offers_factories.EventStockFactory(
-            offer=offer_in_cayenne,
-        )
-        cayenne_booking = bookings_factories.BookingFactory(
-            stock=stock_in_cayenne, dateCreated=cayenne_booking_datetime
-        )
-
-        offer_in_mayotte = offers_factories.OfferFactory(
-            venue__postalCode="97600", venue__managingOfferer=user_offerer.offerer
-        )
-        mayotte_booking_datetime = datetime(2020, 4, 20, 23, 0)
-        stock_in_mayotte = offers_factories.EventStockFactory(
-            offer=offer_in_mayotte,
-        )
-        mayotte_booking = bookings_factories.BookingFactory(
-            stock=stock_in_mayotte, dateCreated=mayotte_booking_datetime
-        )
-
-        bookings_csv = booking_repository.get_export(
-            user=user_offerer.user,
-            booking_period=(requested_booking_period_beginning, requested_booking_period_ending),
-        )
-
-        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert len(data) == 2
-        data_dicts = [dict(zip(headers, line)) for line in data]
-        tokens = [booking["Contremarque"] for booking in data_dicts]
-        assert sorted(tokens) == sorted([cayenne_booking.token, mayotte_booking.token])
-
-    def test_should_consider_venue_locale_datetime_when_filtering_by_booking_period_with_offerer_address_as_data_source(
-        self, app: fixture
-    ):
-
-        user_offerer = offerers_factories.UserOffererFactory()
-        requested_booking_period_beginning = datetime(2020, 4, 21, 20, 00).date()
-        requested_booking_period_ending = datetime(2020, 4, 22, 20, 00).date()
-
-        offer_in_cayenne = offers_factories.OfferFactory(
-            venue__postalCode="97300", venue__managingOfferer=user_offerer.offerer
         )
         cayenne_booking_datetime = datetime(2020, 4, 22, 2, 0)
         stock_in_cayenne = offers_factories.EventStockFactory(
@@ -4365,6 +4293,8 @@ class GetCsvReportTest:
 
         offer_in_mayotte = offers_factories.OfferFactory(
             venue__postalCode="97600",
+            venue__offererAddress__address__street="Boulevard Halidi Sélémani",
+            venue__offererAddress__address__city="Mamoudzou",
             venue__offererAddress__address__postalCode="97600",
             venue__managingOfferer=user_offerer.offerer,
         )
@@ -4387,44 +4317,7 @@ class GetCsvReportTest:
         tokens = [booking["Contremarque"] for booking in data_dicts]
         assert sorted(tokens) == sorted([cayenne_booking.token, mayotte_booking.token])
 
-    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False, WIP_ENABLE_OFFER_ADDRESS=False)
     def test_should_output_the_correct_offer_type_depending_wether_offer_educational_or_not(self, app: fixture):
-
-        pro = users_factories.ProFactory()
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-
-        booking_1 = bookings_factories.BookingFactory(
-            stock__offer__venue=venue,
-        )
-
-        booking_2 = bookings_factories.UsedBookingFactory(
-            stock__offer__venue=venue,
-        )
-
-        beginning_period = datetime.fromisoformat("2021-10-15")
-        ending_period = datetime.fromisoformat("2032-02-15")
-        bookings_csv = booking_repository.get_export(
-            user=pro,
-            booking_period=(beginning_period, ending_period),
-        )
-
-        expected_type = {
-            booking_1.stock.offer.name: "offre grand public",
-            booking_2.stock.offer.name: "offre grand public",
-        }
-
-        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert len(data) == 2
-        data_dicts = [dict(zip(headers, line)) for line in data]
-        for data_dict in data_dicts:
-            offer_name = data_dict["Nom de l’offre"]
-            assert data_dict["Type d'offre"] == expected_type[offer_name]
-
-    def test_should_output_the_correct_offer_type_depending_wether_offer_educational_or_not_with_offerer_address_as_data_source(
-        self, app: fixture
-    ):
 
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()

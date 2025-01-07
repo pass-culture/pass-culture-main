@@ -1959,7 +1959,7 @@ class UpdateOfferTest:
         new_offerer_address = offerers_factories.OffererAddressFactory(
             address__latitude=50.63153,
             address__longitude=3.06089,
-            address__postalCode=59000,
+            address__postalCode="59000",
             address__city="Lille",
         )
         offer = factories.OfferFactory()
@@ -1977,7 +1977,7 @@ class UpdateOfferTest:
         new_offerer_address = offerers_factories.OffererAddressFactory(
             address__latitude=50.63153,
             address__longitude=3.06089,
-            address__postalCode=59000,
+            address__postalCode="59000",
             address__city="Lille",
         )
         offer = factories.OfferFactory()
