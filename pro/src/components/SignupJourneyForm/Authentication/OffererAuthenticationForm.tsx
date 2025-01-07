@@ -23,8 +23,8 @@ export interface OffererAuthenticationFormValues
   publicName: string
   addressAutocomplete: string
   'search-addressAutocomplete': string
-  coords: string
-  manuallySetAddress: boolean
+  coords?: string
+  manuallySetAddress?: boolean
 }
 
 export const OffererAuthenticationForm = (): JSX.Element => {
