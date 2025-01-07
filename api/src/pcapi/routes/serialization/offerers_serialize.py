@@ -24,6 +24,16 @@ import pcapi.utils.date as date_utils
 from pcapi.utils.email import sanitize_email
 
 
+class GetOffererVenueResponseModelGetterDict(GetterDict):
+    def get(self, key: str, default: Any = None) -> Any:
+        if key == "collectiveDmsApplications":
+            return [
+                DMSApplicationForEAC.from_orm(collective_ds_application, self._obj.id)
+                for collective_ds_application in self._obj.collectiveDmsApplications
+            ]
+        return super().get(key, default)
+
+
 class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     adageInscriptionDate: datetime | None
     street: str | None
@@ -62,6 +72,7 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     class Config:
         orm_mode = True
         json_encoders = {datetime: date_utils.format_into_utc_date}
+        getter_dict = GetOffererVenueResponseModelGetterDict
 
 
 class OffererApiKey(BaseModel):
