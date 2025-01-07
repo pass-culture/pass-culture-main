@@ -7,8 +7,8 @@ import {
   CollectiveBookingStatus,
   CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
+  CollectiveOffersStockResponseModel,
   CollectiveOfferStatus,
-  ListOffersStockResponseModel,
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
@@ -20,7 +20,6 @@ import {
   collectiveOfferFactory,
   listOffersVenueFactory,
 } from 'commons/utils/factories/collectiveApiFactories'
-import { listOffersStockFactory } from 'commons/utils/factories/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
@@ -59,11 +58,12 @@ describe('ollectiveOfferRow', () => {
   let props: CollectiveOfferRowProps
   let offer: CollectiveOfferResponseModel
   const offerId = 12
-  const stocks: Array<ListOffersStockResponseModel> = [
-    listOffersStockFactory({
-      beginningDatetime: String(new Date()),
+  const stocks: Array<CollectiveOffersStockResponseModel> = [
+    {
+      startDatetime: String(new Date()),
       remainingQuantity: 0,
-    }),
+      hasBookingLimitDatetimePassed: false
+    },
   ]
 
   beforeEach(() => {
@@ -289,10 +289,11 @@ describe('ollectiveOfferRow', () => {
     props.offer = collectiveOfferFactory({
       status: CollectiveOfferStatus.SOLD_OUT,
       stocks: [
-        listOffersStockFactory({
+        {
+          startDatetime: String(new Date()),
+          hasBookingLimitDatetimePassed: false,
           remainingQuantity: 0,
-          beginningDatetime: getToday().toISOString(),
-        }),
+        },
       ],
       booking: { id: 1, booking_status: CollectiveBookingStatus.PENDING },
     })
@@ -310,10 +311,11 @@ describe('ollectiveOfferRow', () => {
     props.offer = collectiveOfferFactory({
       status: CollectiveOfferStatus.EXPIRED,
       stocks: [
-        listOffersStockFactory({
+        {
+          startDatetime: String(new Date()),
+          hasBookingLimitDatetimePassed: false,
           remainingQuantity: 0,
-          beginningDatetime: getToday().toISOString(),
-        }),
+        },
       ],
       booking: {
         id: 1,
@@ -342,10 +344,11 @@ describe('ollectiveOfferRow', () => {
       offer: collectiveOfferFactory({
         status: CollectiveOfferStatus.SOLD_OUT,
         stocks: [
-          listOffersStockFactory({
+          {
+            startDatetime: String(new Date()),
+            hasBookingLimitDatetimePassed: false,
             remainingQuantity: 0,
-            beginningDatetime: getToday().toISOString(),
-          }),
+          },
         ],
         booking: { id: 1, booking_status: CollectiveBookingStatus.PENDING },
         id: 5,

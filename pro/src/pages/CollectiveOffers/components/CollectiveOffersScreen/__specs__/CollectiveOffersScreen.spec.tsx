@@ -324,7 +324,7 @@ describe('CollectiveOffersScreen', () => {
           hasBookingLimitDatetimesPassed: true,
           stocks: [
             {
-              beginningDatetime: String(new Date()),
+              startDatetime: String(new Date()),
               hasBookingLimitDatetimePassed: true,
               remainingQuantity: 1,
             },

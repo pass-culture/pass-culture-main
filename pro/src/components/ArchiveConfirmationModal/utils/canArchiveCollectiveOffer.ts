@@ -15,7 +15,7 @@ export function canArchiveCollectiveOffer(offer: CollectiveOfferResponseModel) {
     return false
   }
 
-  const startDatetime = offer.stocks[0].beginningDatetime
+  const startDatetime = offer.stocks[0].startDatetime
 
   const canArchiveThisOffer =
     offer.status === CollectiveOfferStatus.ACTIVE ||
@@ -52,7 +52,7 @@ export function canArchiveCollectiveOfferFromSummary(
 
     return canArchiveThisOffer
   } else {
-    const startDatetime = offer.collectiveStock?.beginningDatetime
+    const startDatetime = offer.collectiveStock?.startDatetime
 
     const canArchiveThisOffer =
       offer.status === CollectiveOfferStatus.ACTIVE ||
