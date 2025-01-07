@@ -245,11 +245,12 @@ jobs:
 
   merge-allure-reports:
     name: "Merge Allure Reports and Push to Allure Repository"
-    needs: [test-pro, test-pro-e2e]
+    needs: [pcapi-init-job, test-pro, test-pro-e2e]
     runs-on: ubuntu-22.04
     if: |
       always() &&
       !cancelled() &&
+      needs.pcapi-init-job.outputs.pro-changed == 'true' &&
       (needs.test-pro.result == 'success' || needs.test-pro-e2e.result == 'success')
     steps:
       - name: "Install Allure CLI via Yarn"
