@@ -18,8 +18,8 @@ pytestmark = [
 ]
 
 
-@pytest.fixture
-def cegid_cookies(faker, cegid_config):
+@pytest.fixture(name="cegid_cookies")
+def cegid_cookies_fixture(faker, cegid_config):
     return {
         ".ASPXAUTH": faker.binary(180).hex().upper(),
         "ASP.NET_SessionId": faker.binary(12).hex(),
@@ -30,8 +30,8 @@ def cegid_cookies(faker, cegid_config):
     }
 
 
-@pytest.fixture
-def cegid_config(faker, settings):
+@pytest.fixture(name="cegid_config")
+def cegid_config_fixture(faker, settings):
     class Config(NamedTuple):
         CEGID_URL: str = faker.uri()
         CEGID_USERNAME: str = faker.user_name()
@@ -46,8 +46,8 @@ def cegid_config(faker, settings):
     yield config
 
 
-@pytest.fixture
-def mock_cegid_auth(cegid_config, requests_mock, cegid_cookies):
+@pytest.fixture(name="mock_cegid_auth")
+def mock_cegid_auth_fixture(cegid_config, requests_mock, cegid_cookies):
     yield requests_mock.register_uri(
         "POST",
         f"{cegid_config.CEGID_URL}/entity/auth/login",

@@ -21,6 +21,7 @@ from requests.auth import _basic_auth_str  # pylint: disable=wrong-requests-impo
 import requests_mock
 import sqlalchemy as sa
 
+from pcapi import settings as pcapi_settings
 import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.object_storage.testing as object_storage_testing
@@ -51,10 +52,8 @@ if typing.TYPE_CHECKING:
 
 
 def run_migrations():
-    from pcapi import settings
-
     alembic_cfg = Config("alembic.ini")
-    alembic_cfg.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+    alembic_cfg.set_main_option("sqlalchemy.url", pcapi_settings.DATABASE_URL)
     command.upgrade(alembic_cfg, "pre@head")
     command.upgrade(alembic_cfg, "post@head")
 
@@ -285,7 +284,7 @@ def ubble_mocker(settings) -> typing.Callable:
     @contextlib.contextmanager
     def ubble_mock(  # pylint: disable=redefined-outer-name
         identification_id: str, response: str, method="get", mocker: requests_mock.Mocker = None
-    ) -> None:
+    ) -> typing.Generator:
         url = f"{settings.UBBLE_API_URL}/identifications/{identification_id}/"
 
         if mocker is None:
@@ -388,11 +387,9 @@ class TestClient:
         self.auth_header = {}
 
     def with_session_auth(self, email: str) -> "TestClient":
-        from pcapi import settings
-
         response = self.post(
             "/users/signin",
-            {"identifier": email, "password": settings.TEST_DEFAULT_PASSWORD, "captchaToken": "test_token"},
+            {"identifier": email, "password": pcapi_settings.TEST_DEFAULT_PASSWORD, "captchaToken": "test_token"},
         )
         assert response.status_code == 200
 
@@ -405,10 +402,8 @@ class TestClient:
         return self
 
     def with_basic_auth(self, email: str) -> "TestClient":
-        from pcapi import settings
-
         self.auth_header = {
-            "Authorization": _basic_auth_str(email, settings.TEST_DEFAULT_PASSWORD),
+            "Authorization": _basic_auth_str(email, pcapi_settings.TEST_DEFAULT_PASSWORD),
         }
         return self
 
@@ -419,10 +414,8 @@ class TestClient:
         return self
 
     def with_eac_token(self) -> "TestClient":
-        from pcapi import settings
-
         self.auth_header = {
-            "Authorization": f"Bearer {settings.EAC_API_KEY}",
+            "Authorization": f"Bearer {pcapi_settings.EAC_API_KEY}",
         }
         return self
 
@@ -602,8 +595,8 @@ def _features_marker(request: pytest.FixtureRequest) -> None:
         request.getfixturevalue("features")
 
 
-@pytest.fixture
-def settings(request):
+@pytest.fixture(name="settings")
+def settings_fixture(request):
     from pcapi.core.testing import SettingsContext
 
     marker = request.node.get_closest_marker("settings")
@@ -631,7 +624,7 @@ def _settings_marker(request: pytest.FixtureRequest) -> None:
 
 
 @pytest.fixture
-def run_command(app, clean_database):
+def run_command(app) -> typing.Callable:
     from tests.test_utils import run_command as _run_command
 
     return functools.partial(_run_command, app)
