@@ -4,7 +4,6 @@ import {
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { cy } from 'date-fns/locale'
 import { expect } from 'vitest'
 
 import { api } from 'apiClient/api'

@@ -26,7 +26,7 @@ import { InvoiceTable } from './InvoiceTable/InvoiceTable'
 import { NoInvoicesYet } from './NoInvoicesYet'
 
 export const ReimbursementsInvoices = (): JSX.Element => {
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [, setSearchParams] = useSearchParams()
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const INITIAL_FILTERS = useMemo(() => {
