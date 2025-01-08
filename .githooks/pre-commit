@@ -320,7 +320,7 @@ if [[ ! -z "$STAGED_PYPROJECT_TOML" ]]; then
 
     # check exit code
     if [ $CHECK_DEPENDENCIES_EXIT_CODE -ne 0 ]; then
-      echo -e "❌ Please fix check-dependencies errors first. poetry.lock and pyproject.toml are not synced.\nIf the changes are wanted, run 'poetry lock' to update the dependencies and sync the lock file or 'poetry lock --no-update' to fix the lock file without updating unpinned dependencies"
+      echo -e "❌ Please fix check-dependencies errors first. poetry.lock and pyproject.toml are not synced.\nIf the changes are wanted, run 'poetry lock'"
       exit 1
     else
       echo "✅ check-dependencies all good"
