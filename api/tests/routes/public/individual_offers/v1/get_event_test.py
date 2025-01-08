@@ -19,10 +19,12 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
     endpoint_method = "get"
     default_path_params = {"event_id": 1}
 
-    num_queries_with_error = 1  # retrieve API key
-    num_queries_with_error += 1  # retrieve offer
-    num_queries_with_error += 1  # retrieve feature_flags for api key validation
-    num_queries = num_queries_with_error + 1  # future_offer (a backref)
+    num_queries_base = 1  # retrieve API key
+    num_queries_base += 1  # retrieve offer
+    num_queries_base += 1  # retrieve feature_flags for api key validation
+
+    num_queries = num_queries_base + 1  # future_offer (a backref)
+    num_queries_with_error = num_queries_base + 1  # rollback
 
     def setup_base_resource(self, venue=None) -> offers_models.Offer:
         venue = venue or self.setup_venue()
@@ -46,6 +48,7 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
         # 1. api_key
         # 2. feature
         # 3. offer
+        # 4. rollback
         with testing.assert_num_queries(self.num_queries_with_error):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(event_id=event_offer_id))
             assert response.status_code == 404
