@@ -84,6 +84,7 @@ describe('ImageUploaderOffer::tracker', () => {
       imageType: UploaderModeEnum.OFFER,
       isEdition: false,
       offerType: 'individual',
+      imageCreationStage: 'add image',
     })
   })
 })

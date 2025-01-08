@@ -113,6 +113,7 @@ export const VenueEditionHeader = ({
       venueId: venue.id,
       imageType: UploaderModeEnum.VENUE,
       isEdition: true,
+      imageCreationStage: 'add image',
     })
   }
 

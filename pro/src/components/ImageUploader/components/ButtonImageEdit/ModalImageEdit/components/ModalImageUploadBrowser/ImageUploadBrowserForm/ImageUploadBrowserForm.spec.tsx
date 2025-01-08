@@ -1,11 +1,14 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
+import * as useAnalytics from 'app/App/analytics/firebase'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { createImageFile } from 'commons/utils/testFileHelpers'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 
 import { ImageUploadBrowserForm } from './ImageUploadBrowserForm'
 
+const mockLogEvent = vi.fn()
 const onSubmit = vi.fn()
 const mockCreateImageBitmap = vi.fn()
 
@@ -17,7 +20,9 @@ Object.defineProperty(global, 'createImageBitmap', {
 const renderImageUploadBrowserForm = (
   mode: UploaderModeEnum = UploaderModeEnum.OFFER
 ) => {
-  return render(<ImageUploadBrowserForm onSubmit={onSubmit} mode={mode} />)
+  return renderWithProviders(
+    <ImageUploadBrowserForm onSubmit={onSubmit} mode={mode} />
+  )
 }
 
 describe('ImageUploadBrowserForm', () => {
@@ -46,6 +51,32 @@ describe('ImageUploadBrowserForm', () => {
 
     await userEvent.upload(fileInput, testFile)
     expect(onSubmit).toHaveBeenCalledWith({ image: testFile })
+  })
+
+  it('should log an event on when using the button', async () => {
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
+
+    renderImageUploadBrowserForm()
+    const fileInput = screen.getByLabelText(
+      'Importer une image depuis l’ordinateur'
+    )
+    expect(fileInput).toBeInTheDocument()
+
+    const testFile = createImageFile({
+      name: 'hello.png',
+      type: 'image/png',
+      sizeInMB: 9,
+      width: 400,
+      height: 600,
+    })
+
+    await userEvent.upload(fileInput, testFile)
+    expect(mockLogEvent).toHaveBeenCalledOnce()
+    expect(mockLogEvent).toHaveBeenNthCalledWith(1, 'hasClickedAddImage', {
+      imageCreationStage: 'import image',
+    })
   })
 
   it('should display error when file is too big', async () => {

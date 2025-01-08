@@ -82,6 +82,7 @@ export const PartnerPage = ({
       venueId: venue.id,
       imageType: UploaderModeEnum.VENUE,
       isEdition: true,
+      imageCreationStage: 'add image',
     })
   }
 
