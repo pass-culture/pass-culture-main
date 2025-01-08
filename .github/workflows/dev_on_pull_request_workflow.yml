@@ -299,7 +299,7 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_dependabot_auto_merge.yml
 
   deploy-pro-on-firebase-preview-env:
-    name: "[PRO] Deploy PR version for validation"
+    name: "[PRO] Deploy PR version for validation pr preview backend"
     needs: [pcapi-init-job, test-pro]
     if: |
       always() && 
@@ -317,7 +317,7 @@ jobs:
       is_pull_request: true
 
   deploy-pro-on-firebase-testing:
-    name: "[PRO] Deploy PR version for validation"
+    name: "[PRO] Deploy PR version for validation with testing backend"
     needs: [pcapi-init-job, test-pro]
     if: |
       always() && 
@@ -332,7 +332,7 @@ jobs:
       CHANNEL: ""
       REF: "${{ github.ref }}"
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
-      is_pull_request: true
+      is_pull_request: false
 
   # Push docker images to registry
   push-pcapi:
@@ -375,8 +375,8 @@ jobs:
       !cancelled() &&
       github.actor != 'dependabot[bot]' &&
       needs.pcapi-init-job.outputs.api-changed == 'true' &&
-      (needs.push-pcapi.result == 'success' && needs.push-pcapi-console.result == 'success') ||
-      (needs.pcapi-init-job.outputs.checksum-console-tag-exists == 'true' && needs.pcapi-init-job.outputs.checksum-console-tag-exists == 'true')
+      ((needs.push-pcapi.result == 'success' && needs.push-pcapi-console.result == 'success') ||
+      (needs.pcapi-init-job.outputs.checksum-console-tag-exists == 'true' && needs.pcapi-init-job.outputs.checksum-console-tag-exists == 'true'))
     uses: ./.github/workflows/dev_on_workflow_deploy_pullrequests.yml
     with:
       environment: pullrequest
