@@ -71,7 +71,7 @@ FROM builder-${network_mode} AS builder-dev-default
 
 RUN poetry check --lock
 
-RUN poetry install --only dev
+RUN poetry install --only dev --no-root
 
 ########## SOURCES ##########
 
