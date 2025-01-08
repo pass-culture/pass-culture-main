@@ -206,7 +206,7 @@ class BookOfferTest:
         assert email_data1["template"] == dataclasses.asdict(
             TransactionalEmail.FIRST_VENUE_BOOKING_TO_PRO.value
         )  # to offerer
-        email_data1["params"]["OFFER_ADDRESS"] == stock.offer.fullAddress
+        assert email_data1["params"]["OFFER_ADDRESS"] == stock.offer.fullAddress
         email_data2 = mails_testing.outbox[1]
         assert email_data2["template"] == dataclasses.asdict(
             TransactionalEmail.BOOKING_CONFIRMATION_BY_BENEFICIARY.value

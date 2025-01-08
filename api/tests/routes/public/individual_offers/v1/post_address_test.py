@@ -208,7 +208,7 @@ class CreateAddressTest(PublicAPIEndpointBaseHelper):
 
         assert result.status_code == 400
         assert result.json == {
-            "__root__": [f"No municipality found for `city=Parisse (comme disent les Anglais)` and `postalCode=75017`"]
+            "__root__": ["No municipality found for `city=Parisse (comme disent les Anglais)` and `postalCode=75017`"]
         }
 
     @patch("pcapi.connectors.api_adresse.get_municipality_centroid")

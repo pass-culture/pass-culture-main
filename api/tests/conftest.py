@@ -798,7 +798,7 @@ def db_session(_engine, _transaction, mocker, request):
 
     # No need for the fixture, `clean_database` will do the job
     if "clean_database" in request.fixturenames:
-        return
+        return None
 
     _, _, _session = _transaction
 

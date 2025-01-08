@@ -142,7 +142,7 @@ class GetEventDetailsTest(GetEndpointHelper):
         name_question = operations_factories.SpecialEventQuestionFactory(
             event=event,
             externalId="00001-abcde-00001",
-            title=f"Comment t'appelles-tu ?",
+            title="Comment t'appelles-tu ?",
         )
         chestnut_question = operations_factories.SpecialEventQuestionFactory(
             event=event,

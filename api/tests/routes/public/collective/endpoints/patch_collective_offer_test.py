@@ -1075,7 +1075,6 @@ class UpdateOfferVenueTest(PublicAPIVenueEndpointHelper):
 
     def test_should_raise_404_because_venue_provider_is_inactive(self, client):
         """Check does not exist for now"""
-        pass
 
     def setup_and_send_request(self, client, api_key, src, payload, venue_provider):
         offer = educational_factories.CollectiveStockFactory(
