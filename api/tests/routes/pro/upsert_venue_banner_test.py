@@ -5,7 +5,6 @@ from unittest.mock import patch
 import pytest
 import time_machine
 
-from pcapi.core import testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.utils.human_ids import humanize
 

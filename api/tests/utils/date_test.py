@@ -4,7 +4,6 @@ from zoneinfo import ZoneInfo
 import dateutil
 import pytest
 
-import pcapi.utils.date as utils_date
 from pcapi.utils.date import CUSTOM_TIMEZONES
 from pcapi.utils.date import FrenchParserInfo
 from pcapi.utils.date import METROPOLE_TIMEZONE

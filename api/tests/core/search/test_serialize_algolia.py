@@ -17,7 +17,6 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 from pcapi.core.providers.constants import BookFormat
 from pcapi.core.search.backends import algolia
-from pcapi.routes.adage_iframe.serialization.offers import OfferAddressType
 from pcapi.utils.human_ids import humanize
 
 

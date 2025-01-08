@@ -4,7 +4,6 @@ from pcapi.core.achievements import api as achievements_api
 from pcapi.core.achievements import models as achievements_models
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories_v2 as subcategories_v2
-from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import factories as users_factories
 
 

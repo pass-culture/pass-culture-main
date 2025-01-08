@@ -1,5 +1,4 @@
 import pcapi.core.artist.factories as artist_factories
-from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 
 
