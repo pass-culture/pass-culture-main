@@ -99,7 +99,7 @@ export const PartnerPage = ({
           onClickButtonImageAdd={logButtonAddClick}
         />
 
-        <div>
+        <div className={styles['venue']}>
           <div className={styles['venue-type']}>{venueType?.label}</div>
           <h3 className={styles['venue-name']}>
             {venue.publicName || venue.name}

@@ -10,33 +10,28 @@
 
   @media (min-width: size.$tablet) {
     flex-direction: row;
-    gap: rem.torem(32px);
+    align-items: center;
   }
 }
 
 .image-uploader {
   align-self: center;
+  margin-bottom: 0;
 }
 
-.venue-type {
-  color: var(--color-grey-dark);
-  text-transform: uppercase;
-  margin-top: rem.torem(16px);
-}
+.venue {
+  height: fit-content;
+  gap: rem.torem(8px);
+  display: flex;
+  flex-direction: column;
 
-.venue-name {
-  @include fonts.title3;
-}
+  &-type {
+    color: var(--color-grey-dark);
+    text-transform: uppercase;
+  }
 
-.venue-address {
-  margin-bottom: rem.torem(16px);
-}
-
-.venue-button {
-  width: 100%;
-
-  @media (min-width: size.$tablet) {
-    width: auto;
+  &-name {
+    @include fonts.title3;
   }
 }
 
