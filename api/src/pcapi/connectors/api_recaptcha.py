@@ -82,7 +82,5 @@ def check_native_app_recaptcha_token(token: str | None) -> None:
     check_recaptcha_token_is_valid(token, settings.NATIVE_RECAPTCHA_SECRET, ReCaptchaVersion.V2)
 
 
-def check_web_recaptcha_token(token: str | None, original_action: str, minimal_score: float) -> None:
-    check_recaptcha_token_is_valid(
-        token, settings.RECAPTCHA_SECRET, ReCaptchaVersion.V3, original_action, minimal_score
-    )
+def check_web_recaptcha_token(token: str | None, secret: str, original_action: str, minimal_score: float) -> None:
+    check_recaptcha_token_is_valid(token, secret, ReCaptchaVersion.V3, original_action, minimal_score)

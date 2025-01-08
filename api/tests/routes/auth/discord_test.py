@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch
 
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
@@ -73,6 +74,7 @@ class DiscordSigninTest:
         form_data = {
             "email": "user@test.com",
             "password": settings.TEST_DEFAULT_PASSWORD,
+            "recaptcha_token": "recaptcha_token",
         }
         user = users_factories.BeneficiaryFactory(
             email=form_data["email"], password=form_data["password"], isActive=True
@@ -82,6 +84,21 @@ class DiscordSigninTest:
 
         assert response.status_code == 302
         assert response.location == discord_connector.build_discord_redirection_uri(user.id)
+
+    @pytest.mark.settings(RECAPTCHA_IGNORE_VALIDATION=0)
+    @patch("pcapi.connectors.api_recaptcha.get_token_validation_and_score")
+    def test_discord_recaptcha_does_not_pass(self, mocked_recaptcha_validation, client):
+        mocked_recaptcha_validation.return_value = {"success": False, "error-codes": ["error"]}
+        form_data = {
+            "email": "user@test.com",
+            "password": settings.TEST_DEFAULT_PASSWORD,
+            "recaptcha_token": "recaptcha_token",
+        }
+
+        response = self.post_to_endpoint(client, form=form_data)
+
+        assert response.status_code == 401
+        assert response.json == {"recaptcha": "Erreur recaptcha"}
 
     @unittest.mock.patch(
         "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="access_token"
@@ -132,7 +149,11 @@ class DiscordSigninTest:
         )
 
     def test_account_anonymized_user_request_account_state(self, client):
-        form_data = {"email": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
+        form_data = {
+            "email": "user@test.com",
+            "password": settings.TEST_DEFAULT_PASSWORD,
+            "recaptcha_token": "recaptcha_token",
+        }
         users_factories.AnonymizedUserFactory(
             email=form_data["email"],
             password=form_data["password"],
@@ -144,7 +165,7 @@ class DiscordSigninTest:
         assert "Le compte a été anonymisé" in response_data
 
     def test_wrong_password(self, client):
-        form_data = {"email": "user@test.com", "password": "wrong_password"}
+        form_data = {"email": "user@test.com", "password": "wrong_password", "recaptcha_token": "recaptcha_token"}
         users_factories.AnonymizedUserFactory(
             email=form_data["email"],
             password=settings.TEST_DEFAULT_PASSWORD,
@@ -156,7 +177,11 @@ class DiscordSigninTest:
         assert "Identifiant ou Mot de passe incorrect" in response_data
 
     def test_account_deleted_account_state(self, client):
-        form_data = {"email": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
+        form_data = {
+            "email": "user@test.com",
+            "password": settings.TEST_DEFAULT_PASSWORD,
+            "recaptcha_token": "recaptcha_token",
+        }
         user = users_factories.UserFactory(email=form_data["email"], password=form_data["password"], isActive=False)
         history_factories.SuspendedUserActionHistoryFactory(user=user, reason=users_constants.SuspensionReason.DELETED)
 
@@ -167,7 +192,11 @@ class DiscordSigninTest:
         assert "Le compte a été supprimé" in response_data
 
     def test_inactive_user_signin(self, client):
-        form_data = {"email": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
+        form_data = {
+            "email": "user@test.com",
+            "password": settings.TEST_DEFAULT_PASSWORD,
+            "recaptcha_token": "recaptcha_token",
+        }
         users_factories.BaseUserFactory(email=form_data["email"], password=form_data["password"])
         response = self.post_to_endpoint(client, form=form_data)
         assert response.status_code == 200
@@ -178,7 +207,11 @@ class DiscordSigninTest:
         )
 
     def test_unknown_user_logs_in(self, client):
-        form_data = {"email": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
+        form_data = {
+            "email": "user@test.com",
+            "password": settings.TEST_DEFAULT_PASSWORD,
+            "recaptcha_token": "recaptcha_token",
+        }
         response = self.post_to_endpoint(client, form=form_data)
         assert response.status_code == 200
 
@@ -187,7 +220,11 @@ class DiscordSigninTest:
 
     def test_user_without_password_logs_in(self, client):
         user = users_factories.UserFactory(password=None, isActive=True)
-        form_data = {"email": user.email, "password": settings.TEST_DEFAULT_PASSWORD}
+        form_data = {
+            "email": user.email,
+            "password": settings.TEST_DEFAULT_PASSWORD,
+            "recaptcha_token": "recaptcha_token",
+        }
         response = self.post_to_endpoint(client, form=form_data)
         assert response.status_code == 200
 
