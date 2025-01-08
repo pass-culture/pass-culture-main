@@ -298,11 +298,31 @@ jobs:
     if: github.actor == 'dependabot[bot]'
     uses: ./.github/workflows/dev_on_workflow_dependabot_auto_merge.yml
 
-  # Deploy on firebase if pro tests are ok OR job was skipped (= no changes in pro folder)
-  deploy-pro-on-firebase-pullrequest:
+  deploy-pro-on-firebase-preview-env:
     name: "[PRO] Deploy PR version for validation"
     needs: [pcapi-init-job, test-pro]
-    if: always() && (needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped')
+    if: |
+      always() && 
+      (needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped') &&
+      needs.pcapi-init-job.outputs.api-changed == 'true'
+    uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
+    secrets:
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+    with:
+      ENV: "testing"
+      CHANNEL: ""
+      REF: "${{ github.ref }}"
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
+      is_pull_request: true
+
+  deploy-pro-on-firebase-testing:
+    name: "[PRO] Deploy PR version for validation"
+    needs: [pcapi-init-job, test-pro]
+    if: |
+      always() && 
+      (needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped') &&
+      needs.pcapi-init-job.outputs.api-changed == 'false'
     uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -348,19 +368,20 @@ jobs:
         pcapi-init-job,
         push-pcapi,
         push-pcapi-console,
-        deploy-pro-on-firebase-pullrequest,
+        deploy-pro-on-firebase-preview-env,
       ]
     if: |
       always() &&
       !cancelled() &&
       github.actor != 'dependabot[bot]' &&
+      needs.pcapi-init-job.outputs.api-changed == 'true' &&
       (needs.push-pcapi.result == 'success' && needs.push-pcapi-console.result == 'success') ||
       (needs.pcapi-init-job.outputs.checksum-console-tag-exists == 'true' && needs.pcapi-init-job.outputs.checksum-console-tag-exists == 'true')
     uses: ./.github/workflows/dev_on_workflow_deploy_pullrequests.yml
     with:
       environment: pullrequest
       app_version: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
-      pro_url: ${{ needs.deploy-pro-on-firebase-pullrequest.outputs.pro_url }}
+      pro_url: ${{ needs.deploy-pro-on-firebase-preview-env.outputs.pro_url }}
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
