@@ -1565,13 +1565,11 @@ class ConnectAsProUserTest(PostEndpointHelper):
             == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre"
         )
 
-    def test_connect_as_collective_offer_template_user_has_multiple_offerer(self, authenticated_client, legit_user):
+    def test_connect_as_offer_user_has_multiple_offerer(self, authenticated_client, legit_user):
         hidden_user_offerer = offerers_factories.UserOffererFactory()
         offerers_factories.UserOffererFactory(user=hidden_user_offerer.user)
         user_offerer = offerers_factories.UserOffererFactory(offerer=hidden_user_offerer.offerer)
-        offer = offers_factories.OfferFactory(
-            venue__managingOfferer=user_offerer.offerer,
-        )
+        offer = offers_factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
         form_data = {"object_type": "offer", "object_id": offer.id, "redirect": "/offer"}
         expected_token_data = {
             "user_id": user_offerer.userId,
@@ -1833,13 +1831,11 @@ class ConnectAsProUserTest(PostEndpointHelper):
             == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre collective"
         )
 
-    def test_connect_as_collective_offer_template_user_has_multiple_offerer(self, authenticated_client, legit_user):
+    def test_connect_as_collective_offer_user_has_multiple_offerer(self, authenticated_client, legit_user):
         hidden_user_offerer = offerers_factories.UserOffererFactory()
         offerers_factories.UserOffererFactory(user=hidden_user_offerer.user)
         user_offerer = offerers_factories.UserOffererFactory(offerer=hidden_user_offerer.offerer)
-        offer = educational_factories.CollectiveOfferFactory(
-            venue__managingOfferer=user_offerer.offerer,
-        )
+        offer = educational_factories.CollectiveOfferFactory(venue__managingOfferer=user_offerer.offerer)
         form_data = {"object_type": "collective_offer", "object_id": offer.id, "redirect": "/venue"}
         expected_token_data = {
             "user_id": user_offerer.userId,
@@ -1974,9 +1970,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         hidden_user_offerer = offerers_factories.UserOffererFactory()
         offerers_factories.UserOffererFactory(user=hidden_user_offerer.user)
         user_offerer = offerers_factories.UserOffererFactory(offerer=hidden_user_offerer.offerer)
-        offer = educational_factories.CollectiveOfferTemplateFactory(
-            venue__managingOfferer=user_offerer.offerer,
-        )
+        offer = educational_factories.CollectiveOfferTemplateFactory(venue__managingOfferer=user_offerer.offerer)
         form_data = {"object_type": "collective_offer_template", "object_id": offer.id, "redirect": "/venue"}
         expected_token_data = {
             "user_id": user_offerer.userId,

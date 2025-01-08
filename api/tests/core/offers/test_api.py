@@ -2142,15 +2142,6 @@ class HeadlineOfferTest:
         assert not offer_2.is_headline_offer
         assert venue.has_headline_offer
 
-    def test_create_offer_headline_when_another_is_still_active_should_fail(self):
-        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
-        offer = factories.OfferFactory(isActive=True, venue=venue)
-        factories.StockFactory(offer=offer)
-        api.make_offer_headline(offer=offer)
-        with pytest.raises(exceptions.OfferHasAlreadyAnActiveHeadlineOffer) as error:
-            api.make_offer_headline(offer=offer)
-            assert error.value.errors["headlineOffer"] == ["This offer is already an active headline offer"]
-
     def test_remove_headline_offer(self):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
         offer = factories.OfferFactory(isActive=True, venue=venue)

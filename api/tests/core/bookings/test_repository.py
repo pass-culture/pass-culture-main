@@ -1417,7 +1417,7 @@ class GetOfferBookingsByStatusCSVTest:
         assert data_dict["Code postal du bénéficiaire"] == beneficiary.postalCode
         assert data_dict["Duo"] == duo
 
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True)
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True, WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def should_return_validated_bookings_for_offer(self):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory(
@@ -1471,7 +1471,7 @@ class GetOfferBookingsByStatusCSVTest:
             dict(zip(headers, data[1])), beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non"
         )
 
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True)
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True, WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def should_return_validated_bookings_for_offer_with_old_cancelled_booking(self):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory(
@@ -1528,7 +1528,7 @@ class GetOfferBookingsByStatusCSVTest:
             dict(zip(headers, data[1])), beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non"
         )
 
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True)
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True, WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def should_return_validated_bookings_for_offer_with_duo(self):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory(
@@ -1576,7 +1576,7 @@ class GetOfferBookingsByStatusCSVTest:
             dict(zip(headers, data[2])), beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non"
         )
 
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True)
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True, WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def should_return_all_bookings_for_offer(self):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory(
@@ -1628,7 +1628,7 @@ class GetOfferBookingsByStatusCSVTest:
         )
         self._validate_csv_row(dict(zip(headers, data[3])), beneficiary_4, offer, venue, new_booking, "réservé", "Non")
 
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True)
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True, WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def should_return_all_bookings_for_offer_with_duo(self):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory(
@@ -1681,7 +1681,7 @@ class GetOfferBookingsByStatusCSVTest:
         )
 
     @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True, WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
-    def should_return_validated_bookings_for_offer(self):
+    def should_return_validated_bookings_for_offer_using_oa(self):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
@@ -1735,7 +1735,7 @@ class GetOfferBookingsByStatusCSVTest:
         )
 
     @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True, WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
-    def should_return_validated_bookings_for_offer_with_old_cancelled_booking(self):
+    def should_return_validated_bookings_for_offer_with_old_cancelled_booking_using_oa(self):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
@@ -1792,7 +1792,7 @@ class GetOfferBookingsByStatusCSVTest:
         )
 
     @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True, WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
-    def should_return_validated_bookings_for_offer_with_duo(self):
+    def should_return_validated_bookings_for_offer_with_duo_using_oa(self):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
@@ -1840,7 +1840,7 @@ class GetOfferBookingsByStatusCSVTest:
         )
 
     @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True, WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
-    def should_return_all_bookings_for_offer(self):
+    def should_return_all_bookings_for_offer_using_oa(self):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
@@ -1892,7 +1892,7 @@ class GetOfferBookingsByStatusCSVTest:
         self._validate_csv_row(dict(zip(headers, data[3])), beneficiary_4, offer, venue, new_booking, "réservé", "Non")
 
     @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True, WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
-    def should_return_all_bookings_for_offer_with_duo(self):
+    def should_return_all_bookings_for_offer_with_duo_using_oa(self):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
