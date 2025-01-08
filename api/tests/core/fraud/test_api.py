@@ -83,10 +83,29 @@ class CommonTest:
             ("1", False),
         ],
     )
-    def test_is_subscription_name_valid(self, name, is_valid, settings):
+    def test_is_subscription_name_valid(self, name, is_valid):
         assert fraud_api.is_subscription_name_valid(name) is is_valid
 
-        settings.ENABLE_PERMISSIVE_NAME_VALIDATION = True
+    @pytest.mark.settings(ENABLE_PERMISSIVE_NAME_VALIDATION=True)
+    @pytest.mark.parametrize(
+        "name",
+        [
+            "Ellingson",
+            "Ellingson2",
+            "/",
+            " ",
+            "Charles-Apollon",
+            "John O'Wick",
+            "John O’Wick",
+            "Martin king, Jr.",
+            "მარიამ",
+            "aé",
+            "&",
+            "a&",
+            "1",
+        ],
+    )
+    def test_is_subscription_name_valid_with_permissive_ff(self, name):
         assert fraud_api.is_subscription_name_valid(name) is True
 
     def test_create_profile_completion_fraud_check(self, caplog):
