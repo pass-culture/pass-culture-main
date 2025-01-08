@@ -73,9 +73,9 @@ class TiteliveArticle(BaseModel):
     gtl: TiteliveGtl | None
     has_image: bool = pydantic_v1.Field(alias="image")
     has_verso_image: bool = pydantic_v1.Field(alias="image_4")
-    imagesUrl: TiteliveImage
+    imagesUrl: TiteliveImage | None
     # TODO: (lixxday, 2024-04-17): titlelive sends an int for dispo, casting to str works ; but we probably want to change this
-    dispo: str
+    dispo: str | None
     # TODO: (lixxday, 2024-04-17): titlelive sends a float for prix, casting to str works ; but we probably want to change this
     prix: str | None
     resume: str | None

@@ -198,6 +198,8 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveWorkType]):
         for work in titelive_page:
             for article in work.article:
                 thumbnail_url_by_ean[article.gencod] = {}
+                if not article.imagesUrl:
+                    continue
                 if article.has_image:
                     thumbnail_url_by_ean[article.gencod][
                         offers_models.TiteliveImageType.RECTO
