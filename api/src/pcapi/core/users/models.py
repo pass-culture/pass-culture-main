@@ -130,8 +130,8 @@ class SchoolTypeEnum(enum.Enum):
 
 
 class GenderEnum(enum.Enum):
-    M: str = "M."
-    F: str = "Mme"
+    M = "M."
+    F = "Mme"
 
 
 class AccountState(enum.Enum):
