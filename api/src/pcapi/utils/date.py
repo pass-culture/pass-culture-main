@@ -6,7 +6,6 @@ from datetime import timezone as tz
 from zoneinfo import ZoneInfo
 
 from babel.dates import format_date
-from babel.dates import format_datetime as babel_format_datetime
 from dateutil.parser import parserinfo
 from psycopg2.extras import NumericRange
 import pytz
@@ -80,10 +79,6 @@ class FrenchParserInfo(parserinfo):
         ("nov.", "Novembre"),
         ("déc.", "Décembre"),
     ]
-
-
-def format_datetime(date_time: datetime) -> str:
-    return babel_format_datetime(date_time, format="d MMMM y, HH:mm", locale="fr")
 
 
 def get_postal_code_timezone(postal_code: str) -> str:

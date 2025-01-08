@@ -199,18 +199,3 @@ class FormatDatetimeFromUtcTimezoneToLocalTimezoneTest:
 
         # Then
         assert result == datetime.datetime(2022, 6, 24, 12, 0, tzinfo=ZoneInfo(METROPOLE_TIMEZONE))
-
-
-class FormatDatetimeTest:
-    @pytest.mark.parametrize(
-        "tz_str",
-        [
-            "America/Martinique",
-            "Europe/Paris",
-        ],
-        ids=["Martinique", "metropole"],
-    )
-    def test_tz_conversion(self, tz_str):
-        dt = datetime.datetime(2022, 6, 24, 14, 0, tzinfo=ZoneInfo(tz_str))
-        result = utils_date.format_datetime(dt)
-        assert result == "24 juin 2022, 14:00"
