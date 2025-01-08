@@ -1,17 +1,12 @@
 {
   "pylint.importStrategy": "fromEnvironment",
-  "pylint.ignorePatterns": ["**/tests/**"],
   "editor.codeActionsOnSave": {
     "source.organizeImports": "explicit"
   },
   "editor.formatOnSave": true,
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,
-  "python.testing.pytestArgs": [
-    "-vv",
-    "-s",
-    "-W ignore::DeprecationWarning"
-  ],
+  "python.testing.pytestArgs": ["-vv", "-s", "-W ignore::DeprecationWarning"],
   "black-formatter.importStrategy": "fromEnvironment",
   "liveshare.languages.allowGuestCommandControl": true,
   "liveshare.allowGuestDebugControl": true,
