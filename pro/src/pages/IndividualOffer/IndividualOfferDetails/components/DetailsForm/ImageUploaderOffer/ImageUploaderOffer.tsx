@@ -43,6 +43,7 @@ export const ImageUploaderOffer = ({
       offerType: 'individual',
       imageType: UploaderModeEnum.OFFER,
       isEdition: mode === OFFER_WIZARD_MODE.EDITION,
+      imageCreationStage: 'add image',
     })
   }
 

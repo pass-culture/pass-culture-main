@@ -1,16 +1,15 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import { userEvent } from '@testing-library/user-event'
 
+import * as useAnalytics from 'app/App/analytics/firebase'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 
-import {
-  ModalImageCrop,
-  ModalImageCropProps,
-} from '../components/ModalImageCrop/ModalImageCrop'
+import { ModalImageCrop, ModalImageCropProps } from './ModalImageCrop'
 
 const mockReplaceImage = vi.fn()
 const mockDeleteImage = vi.fn()
+const mockLogEvent = vi.fn()
 
 const defaultProps: ModalImageCropProps = {
   image: new File([], 'toto.png', {
@@ -47,5 +46,18 @@ describe('venue image edit', () => {
     const { getByText } = renderModalImageCrop()
     await userEvent.click(getByText('Supprimer l’image'))
     expect(mockDeleteImage).toHaveBeenCalledTimes(1)
+  })
+
+  it('log event on click', async () => {
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
+
+    const { getByText } = renderModalImageCrop()
+    await userEvent.click(getByText('Suivant'))
+    expect(mockLogEvent).toHaveBeenCalledOnce()
+    expect(mockLogEvent).toHaveBeenNthCalledWith(1, 'hasClickedAddImage', {
+      imageCreationStage: 'reframe image',
+    })
   })
 })

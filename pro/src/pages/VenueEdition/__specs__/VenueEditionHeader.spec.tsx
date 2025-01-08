@@ -62,6 +62,7 @@ describe('PartnerPages', () => {
       venueId: defaultGetVenue.id,
       imageType: UploaderModeEnum.VENUE,
       isEdition: true,
+      imageCreationStage: 'add image',
     })
   })
 
