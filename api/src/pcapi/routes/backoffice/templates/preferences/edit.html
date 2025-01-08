@@ -2,7 +2,9 @@
 {% extends "layouts/standard.html" %}
 {% block title %}Préférences{% endblock %}
 {% block main_content %}
-  <form action="{{ dst }}" name={{ dst | action_to_name }} method="post">
+  <form action="{{ dst }}"
+        name="{{ dst | action_to_name }}"
+        method="post">
     <div class="form-group">
       <div class="w-100 my-4">
         <p>Sélectionne les départements cochés par défaut dans le filtre de recherche des acteurs culturels.</p>

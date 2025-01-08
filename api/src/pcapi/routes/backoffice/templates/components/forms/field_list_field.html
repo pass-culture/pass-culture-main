@@ -6,7 +6,8 @@
       data-field-name="{{ field.name }}"
       class="field-list list-unstyled flex-grow">
     {% for subfield in field %}
-      <li class="d-flex align-items-start justify-content-between pt-2" data-field-number={{ subfield.name|field_list_get_number_from_name }}>
+      <li class="d-flex align-items-start justify-content-between pt-2"
+          data-field-number="{{ subfield.name|field_list_get_number_from_name }}">
         {{ subfield }}
         <button class="btn btn-primary field-list-rm-btn align-self-center ms-2"
                 type="button">

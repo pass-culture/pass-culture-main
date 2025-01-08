@@ -9,7 +9,8 @@
     <option value=""
             {% if not field.data %}selected{% endif %}>---Sélectionnez une valeur---</option>
     {% for choice_value, choice_label in field.choices %}
-      <option value="{{ choice_value }}" {{ 'selected' if field.data==choice_value else '' }}>
+      <option value="{{ choice_value }}"
+              {{ 'selected' if field.data==choice_value else '' }}>
         {{ choice_label }}
       </option>
     {% endfor %}
