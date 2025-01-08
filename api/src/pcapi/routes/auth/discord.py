@@ -5,11 +5,16 @@ from flask_wtf.csrf import CSRFProtect
 from werkzeug.wrappers.response import Response
 
 from pcapi import repository
+from pcapi import settings
 from pcapi.connectors import discord as discord_connector
+from pcapi.connectors.api_recaptcha import InvalidRecaptchaTokenException
+from pcapi.connectors.api_recaptcha import ReCaptchaException
+from pcapi.connectors.api_recaptcha import check_web_recaptcha_token
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as user_models
 from pcapi.core.users import repository as users_repo
 from pcapi.models import db
+from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 import pcapi.routes.auth.exceptions as auth_exceptions
 from pcapi.routes.auth.forms.forms import SigninForm
@@ -148,6 +153,17 @@ def discord_signin_post() -> str | Response | None:
 
     email = form.email.data
     password = form.password.data
+    recaptcha_token = form.recaptcha_token.data
+
+    try:
+        check_web_recaptcha_token(
+            recaptcha_token,
+            settings.DISCORD_RECAPTCHA_SECRET_KEY,
+            original_action="discordSignin",
+            minimal_score=settings.RECAPTCHA_MINIMAL_SCORE,
+        )
+    except (ReCaptchaException, InvalidRecaptchaTokenException):
+        raise ApiErrors({"recaptcha": "Erreur recaptcha"}, 401)
 
     try:
         user = users_repo.get_user_with_credentials(email, password, allow_inactive=True)

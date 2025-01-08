@@ -193,6 +193,7 @@ def signin(body: users_serializers.LoginUserBodyModel) -> users_serializers.Shar
         try:
             check_web_recaptcha_token(
                 body.captcha_token,
+                settings.RECAPTCHA_SECRET,
                 original_action="loginUser",
                 minimal_score=settings.RECAPTCHA_MINIMAL_SCORE,
             )

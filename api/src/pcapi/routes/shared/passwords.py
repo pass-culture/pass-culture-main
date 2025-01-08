@@ -28,6 +28,7 @@ def reset_password(body: ResetPasswordBodyModel) -> None:
     try:
         check_web_recaptcha_token(
             body.token,
+            settings.RECAPTCHA_SECRET,
             original_action="resetPassword",
             minimal_score=settings.RECAPTCHA_MINIMAL_SCORE,
         )

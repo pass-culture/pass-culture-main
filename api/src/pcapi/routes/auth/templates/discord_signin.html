@@ -19,6 +19,8 @@
                               method="post"
                               data-turbo="false">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                            <input type="hidden" id="recaptcha_token" name="recaptcha_token">
+                            <input type="hidden" name="action" value="discordSignin">
                             <div class=" col-10 gap-2 w-2  items-center">
                                 <div class="mt-2">{{ form.email }}</div>
                                 <div class="mt-2">{{ form.password }}</div>

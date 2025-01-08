@@ -4,6 +4,7 @@ import typing
 from flask_wtf import FlaskForm
 from markupsafe import Markup
 
+from pcapi import settings
 from pcapi.utils import email as email_utils
 
 
@@ -20,6 +21,10 @@ class PCForm(FlaskForm):
 
 def random_hash() -> str:
     return format(random.getrandbits(128), "x")
+
+
+def get_setting(setting_name: str) -> typing.Any:
+    return getattr(settings, setting_name)
 
 
 def build_form_error_msg(form: FlaskForm) -> str:

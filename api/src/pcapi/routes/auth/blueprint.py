@@ -21,4 +21,5 @@ auth_web.register(auth_blueprint)
 def extra_funcs() -> dict:
     return {
         "random_hash": utils.random_hash,
+        "get_setting": utils.get_setting,
     }

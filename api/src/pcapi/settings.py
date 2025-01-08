@@ -232,6 +232,8 @@ RECAPTCHA_WHITELIST = secrets_utils.getlist("RECAPTCHA_WHITELIST")
 JWT_SECRET_KEY = secrets_utils.get("JWT_SECRET_KEY")
 DISCORD_JWT_PRIVATE_KEY = secrets_utils.get("DISCORD_JWT_PRIVATE_KEY").encode("ascii")
 DISCORD_JWT_PUBLIC_KEY = secrets_utils.get("DISCORD_JWT_PUBLIC_KEY").encode("ascii")
+DISCORD_RECAPTCHA_SECRET_KEY = secrets_utils.get("DISCORD_RECAPTCHA_SECRET_KEY", "")
+DISCORD_RECAPTCHA_SITE_KEY = secrets_utils.get("DISCORD_RECAPTCHA_SITE_KEY", "")
 # default is 15 minutes
 # https://flask-jwt-extended.readthedocs.io/en/stable/options/#JWT_ACCESS_TOKEN_EXPIRES
 JWT_ACCESS_TOKEN_EXPIRES = int(os.environ.get("JWT_ACCESS_TOKEN_EXPIRES", 60 * 15))

@@ -18,6 +18,7 @@ def signup_pro_V2(body: users_serialize.ProUserCreationBodyV2Model) -> None:
     try:
         check_web_recaptcha_token(
             body.token,
+            settings.RECAPTCHA_SECRET,
             original_action="signup",
             minimal_score=settings.RECAPTCHA_MINIMAL_SCORE,
         )
