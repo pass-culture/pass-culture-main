@@ -1,5 +1,4 @@
 ARG network_mode=default
-ARG poetry_min_incompatible_version="2.0.0"
 
 ########## BUILDER ##########
 
@@ -28,11 +27,9 @@ ENV PATH=$PATH:/home/pcapi/.local/bin
 
 FROM builder AS builder-proxy
 
-ARG poetry_min_incompatible_version
-
 COPY /cacert.pem /cacert.pem
 
-RUN REQUESTS_CA_BUNDLE=/cacert.pem PIP_CERT=/cacert.pem CURL_CA_BUNDLE=/cacert.pem pip install "poetry<${poetry_min_incompatible_version}"
+RUN REQUESTS_CA_BUNDLE=/cacert.pem PIP_CERT=/cacert.pem CURL_CA_BUNDLE=/cacert.pem pip install poetry
 
 WORKDIR /home/pcapi
 
@@ -48,9 +45,7 @@ RUN REQUESTS_CA_BUNDLE=/cacert.pem PIP_CERT=/cacert.pem CURL_CA_BUNDLE=/cacert.p
 
 FROM builder AS builder-default
 
-ARG poetry_min_incompatible_version
-
-RUN pip install "poetry<${poetry_min_incompatible_version}"
+RUN pip install poetry
 
 WORKDIR /home/pcapi
 
