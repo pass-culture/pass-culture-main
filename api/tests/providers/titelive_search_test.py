@@ -976,8 +976,8 @@ class TiteliveBookSearchTest:
         assert product_with_verso_image is not None
         assert product_with_verso_image.images.get("verso") is not None
 
-    def test_does_serialize_if_no_image(self, requests_mock):
-        self.setup_api_response_fixture(requests_mock, fixtures.NO_IMAGE_IN_RESULT_FIXTURE)
+    def test_does_serialize_if_no_image(self, requests_mock, settings):
+        self.setup_api_response_fixture(requests_mock, settings, fixtures.NO_IMAGE_IN_RESULT_FIXTURE)
 
         TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
