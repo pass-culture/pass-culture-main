@@ -36,7 +36,6 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.users import api as users_api
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -2501,7 +2500,7 @@ def test_invoices_csv_commercial_gesture():
 
 @pytest.mark.usefixtures("clean_temp_files", "css_font_http_request_mock")
 @pytest.mark.parametrize("with_oa", [True, False])
-def test_invoice_pdf_commercial_gesture(monkeypatch, with_oa):
+def test_invoice_pdf_commercial_gesture(features, monkeypatch, with_oa):
     invoice_htmls = []
 
     def _store_invoice_pdf(invoice_storage_id, invoice_html) -> None:
@@ -2580,8 +2579,8 @@ def test_invoice_pdf_commercial_gesture(monkeypatch, with_oa):
 
     cutoff = datetime.datetime.utcnow() + datetime.timedelta(days=1)
     batch = api.generate_cashflows_and_payment_files(cutoff)
-    with override_features(WIP_ENABLE_OFFER_ADDRESS=with_oa):
-        api.generate_invoices_and_debit_notes(batch)
+    features.WIP_ENABLE_OFFER_ADDRESS = with_oa
+    api.generate_invoices_and_debit_notes(batch)
 
     invoices = models.Invoice.query.all()
     assert len(invoices) == 1

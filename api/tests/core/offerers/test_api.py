@@ -38,7 +38,6 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import api_errors
@@ -1779,19 +1778,19 @@ class LinkVenueToPricingPointTest:
 
 
 class HasVenueAtLeastOneBookableOfferTest:
-    @override_features(ENABLE_VENUE_STRICT_SEARCH=True)
+    @pytest.mark.features(ENABLE_VENUE_STRICT_SEARCH=True)
     def test_eligible(self):
         venue = offerers_factories.VenueFactory(isPermanent=True)
         offers_factories.EventStockFactory(offer__venue=venue)
 
         assert offerers_api.has_venue_at_least_one_bookable_offer(venue)
 
-    @override_features(ENABLE_VENUE_STRICT_SEARCH=True)
+    @pytest.mark.features(ENABLE_VENUE_STRICT_SEARCH=True)
     def test_no_offers(self):
         venue = offerers_factories.VenueFactory(isPermanent=True)
         assert not offerers_api.has_venue_at_least_one_bookable_offer(venue)
 
-    @override_features(ENABLE_VENUE_STRICT_SEARCH=True)
+    @pytest.mark.features(ENABLE_VENUE_STRICT_SEARCH=True)
     def test_managing_offerer_not_validated(self):
         venue = offerers_factories.VenueFactory(
             isPermanent=True, managingOfferer=offerers_factories.NotValidatedOffererFactory()
@@ -1800,14 +1799,14 @@ class HasVenueAtLeastOneBookableOfferTest:
 
         assert not offerers_api.has_venue_at_least_one_bookable_offer(venue)
 
-    @override_features(ENABLE_VENUE_STRICT_SEARCH=True)
+    @pytest.mark.features(ENABLE_VENUE_STRICT_SEARCH=True)
     def test_offer_without_stock(self):
         venue = offerers_factories.VenueFactory(isPermanent=True)
         offers_factories.OfferFactory(venue=venue)
 
         assert not offerers_api.has_venue_at_least_one_bookable_offer(venue)
 
-    @override_features(ENABLE_VENUE_STRICT_SEARCH=True)
+    @pytest.mark.features(ENABLE_VENUE_STRICT_SEARCH=True)
     def test_expired_event(self):
         venue = offerers_factories.VenueFactory(isPermanent=True)
 
@@ -1816,7 +1815,7 @@ class HasVenueAtLeastOneBookableOfferTest:
 
         assert not offerers_api.has_venue_at_least_one_bookable_offer(venue)
 
-    @override_features(ENABLE_VENUE_STRICT_SEARCH=True)
+    @pytest.mark.features(ENABLE_VENUE_STRICT_SEARCH=True)
     def test_only_one_bookable_offer(self):
         venue = offerers_factories.VenueFactory(isPermanent=True)
 

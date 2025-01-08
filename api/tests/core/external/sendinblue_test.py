@@ -17,9 +17,7 @@ from pcapi.core.external.sendinblue import format_pro_attributes
 from pcapi.core.external.sendinblue import format_user_attributes
 from pcapi.core.external.sendinblue import import_contacts_in_sendinblue
 from pcapi.core.external.sendinblue import make_update_request
-from pcapi.core.testing import override_features
 import pcapi.core.users.testing as sendinblue_testing
-from pcapi.models.feature import FeatureToggle
 from pcapi.tasks.serialization import sendinblue_tasks
 
 from . import common_pro_attributes
@@ -316,13 +314,13 @@ class BulkImportUsersDataTest:
         ],
     )
     @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
-    def test_add_contacts_to_list(self, mock_import_contacts, feature_flag, use_pro_subaccount):
-        with override_features(WIP_ENABLE_BREVO_PRO_SUBACCOUNT=feature_flag):
-            result = add_contacts_to_list(
-                ["eren.yeager@shinganshina.paradis", "armin.arlert@shinganshina.paradis"],
-                SENDINBLUE_AUTOMATION_TEST_CONTACT_LIST_ID,
-                use_pro_subaccount=use_pro_subaccount,
-            )
+    def test_add_contacts_to_list(self, mock_import_contacts, features, feature_flag, use_pro_subaccount):
+        features.WIP_ENABLE_BREVO_PRO_SUBACCOUNT = feature_flag
+        result = add_contacts_to_list(
+            ["eren.yeager@shinganshina.paradis", "armin.arlert@shinganshina.paradis"],
+            SENDINBLUE_AUTOMATION_TEST_CONTACT_LIST_ID,
+            use_pro_subaccount=use_pro_subaccount,
+        )
 
         mock_import_contacts.assert_called_once_with(
             RequestContactImport(
@@ -405,20 +403,20 @@ class BulkImportUsersDataTest:
             (False, False, False),
         ],
     )
-    def test_make_update_request(self, feature_flag, use_pro_subaccount, expected_use_pro_subaccount):
+    def test_make_update_request(self, features, feature_flag, use_pro_subaccount, expected_use_pro_subaccount):
         email = f"test.pro.{datetime.utcnow().strftime('%y%m%d.%H%M')}@example.net"
         attributes = format_user_attributes(common_pro_attributes)
 
-        with override_features(WIP_ENABLE_BREVO_PRO_SUBACCOUNT=feature_flag):
-            make_update_request(
-                sendinblue_tasks.UpdateSendinblueContactRequest(
-                    email=email,
-                    use_pro_subaccount=use_pro_subaccount,
-                    attributes=attributes,
-                    contact_list_ids=[] if feature_flag else [SENDINBLUE_PRO_TESTING_CONTACT_LIST_ID],
-                    emailBlacklisted=False,
-                )
+        features.WIP_ENABLE_BREVO_PRO_SUBACCOUNT = feature_flag
+        make_update_request(
+            sendinblue_tasks.UpdateSendinblueContactRequest(
+                email=email,
+                use_pro_subaccount=use_pro_subaccount,
+                attributes=attributes,
+                contact_list_ids=[] if feature_flag else [SENDINBLUE_PRO_TESTING_CONTACT_LIST_ID],
+                emailBlacklisted=False,
             )
+        )
 
         assert sendinblue_testing.sendinblue_requests[0] == {
             "email": email,

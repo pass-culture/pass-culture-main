@@ -14,7 +14,6 @@ import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
@@ -120,7 +119,7 @@ class Return200Test:
             "educationalPriceDetail": "Détail du prix",
         }
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @time_machine.travel("2020-11-17 15:00:00")
     def test_edit_collective_stock_partially(self, client):
         _educational_year_2021_2022 = educational_factories.EducationalYearFactory(
@@ -264,7 +263,7 @@ class Return200Test:
         edited_collective_booking = CollectiveBooking.query.get(collective_booking.id)
         assert edited_collective_booking.educationalYearId == educational_year_2022_2023.adageId
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_edit_collective_stock_update_booking_limit_date_with_expired_booking(self, client):
         now = datetime.utcnow()
         stock = educational_factories.CollectiveStockFactory(
@@ -292,7 +291,7 @@ class Return200Test:
         assert booking.cancellationReason == None
         assert booking.cancellationDate == None
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_edit_collective_stock_update_booking_limit_date_with_expired_booking_no_ff(self, client):
         now = datetime.utcnow()
         stock = educational_factories.CollectiveStockFactory(
@@ -347,7 +346,7 @@ class Return403Test:
             "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."]
         }
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_edit_collective_stocks_should_not_be_possible_when_offer_created_by_public_api(self, client):
         stock = educational_factories.CollectiveStockFactory(
             collectiveOffer__provider=providers_factories.ProviderFactory()
@@ -364,7 +363,7 @@ class Return403Test:
         assert response.status_code == 403
         assert response.json == {"global": ["Les stocks créés par l'api publique ne sont pas editables."]}
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_edit_collective_stocks_should_not_be_possible_when_offer_created_by_public_api_with_new_satuses(
         self, client
     ):
@@ -469,7 +468,7 @@ class Return400Test:
         edited_stock = CollectiveStock.query.get(stock.id)
         assert edited_stock.bookingLimitDatetime == stock.bookingLimitDatetime
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     @time_machine.travel("2020-11-17 15:00:00")
     def should_edit_stock_when_event_expired(self, client):
         stock = educational_factories.CollectiveStockFactory(beginningDatetime=datetime.utcnow() - timedelta(minutes=1))
@@ -602,7 +601,7 @@ class Return400Test:
         assert response.status_code == 400
         assert response.json == {"beginningDatetime": ["L'évènement ne peut commencer dans le passé."]}
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     @time_machine.travel("2020-11-17 15:00:00")
     def test_doesnot_edit_offer_if_rejected(self, client):
         offer = educational_factories.CollectiveOfferFactory(validation=offer_mixin.OfferValidationStatus.REJECTED)

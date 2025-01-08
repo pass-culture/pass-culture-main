@@ -8,7 +8,6 @@ from pcapi.core.external.automations.pro_user import pro_no_active_offers_since_
 from pcapi.core.external.automations.pro_user import pro_no_bookings_since_40_days_automation
 from pcapi.core.external.automations.pro_user import update_pro_contacts_list_for_live_show_churned_40_days_ago
 from pcapi.core.external.automations.pro_user import update_pro_contacts_list_for_live_show_last_booking_40_days_ago
-from pcapi.core.testing import override_features
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -57,13 +56,13 @@ class BaseProAutomations:
         raise NotImplementedError("subaccount_id")
 
     @pytest.mark.parametrize("with_subaccount", [False, True])
-    def test_automation(self, with_subaccount):
+    def test_automation(self, features, with_subaccount):
         with patch(self.MOCK_RUN_BQ_QUERY_PATH) as mock_run_query:
             mock_run_query.return_value = mocked_bq_rows()
 
             with patch(self.MOCK_IMPORT_CONTACT_PATH) as mock_import_contacts:
-                with override_features(WIP_ENABLE_BREVO_PRO_SUBACCOUNT=with_subaccount):
-                    assert type(self).func()
+                features.WIP_ENABLE_BREVO_PRO_SUBACCOUNT = with_subaccount
+                assert type(self).func()
 
                 expected_params = build_expected_called_params(self.get_list_id(with_subaccount))
                 mock_import_contacts.assert_called_once_with(expected_params)

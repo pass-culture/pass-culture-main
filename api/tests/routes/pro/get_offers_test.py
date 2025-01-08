@@ -8,7 +8,6 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferValidationStatus
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.models.offer_mixin import OfferStatus
 
@@ -176,7 +175,7 @@ class Returns200Test:
             offerer_address_id=None,
         )
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     @pytest.mark.parametrize("dp", ["974", "971"])
     def should_consider_the_offer_oa_timezone_for_begining_period(self, dp, client):
         pro = users_factories.ProFactory()
@@ -201,7 +200,7 @@ class Returns200Test:
             else:
                 assert response.json == []
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     @pytest.mark.parametrize("dp", ["974", "971"])
     def should_consider_the_offer_oa_timezone_for_ending_period(self, dp, client):
         pro = users_factories.ProFactory()

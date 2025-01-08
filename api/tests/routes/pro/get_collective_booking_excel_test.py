@@ -8,7 +8,6 @@ import pytest
 from pcapi.core.educational import factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.routes.serialization.collective_bookings_serialize import COLLECTIVE_BOOKING_EXPORT_HEADER
 
 
@@ -26,7 +25,7 @@ class Returns200Test:
     num_queries += 1  # Fetch the collective_booking
     num_queries += 1  # Check if WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE is active
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_complete_booking_single(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         booking = educational_factories.CollectiveBookingFactory(
@@ -71,7 +70,7 @@ class Returns200Test:
             == f"{booking.educationalInstitution.institutionType} {booking.educationalInstitution.name}"
         )
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_created_booking_single(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         booking = educational_factories.CollectiveBookingFactory(
@@ -110,7 +109,7 @@ class Returns200Test:
         assert sheet.cell(row=2, column=10).value == "réservé"
         assert sheet.cell(row=2, column=11).value == "None"
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_one_invisible_rights_booking(self, client):
         invisible_user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.CollectiveBookingFactory(
@@ -157,7 +156,7 @@ class Returns200Test:
         for i in range(1, len(COLLECTIVE_BOOKING_EXPORT_HEADER)):
             assert sheet.cell(row=3, column=i).value is None
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_one_invisible_date_range_booking(self, client):
         invisible_user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.CollectiveBookingFactory(
@@ -202,7 +201,7 @@ class Returns200Test:
         assert sheet.cell(row=2, column=10).value == "réservé"
         assert sheet.cell(row=2, column=11).value == "2021-08-11 14:00:00+02:00"
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_complete_booking_multiple(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         bookings = [
@@ -262,7 +261,7 @@ class Returns200Test:
             assert sheet.cell(row=2, column=10).value == "réservé"
             assert sheet.cell(row=i, column=11).value == "2021-08-11 14:00:00+02:00"
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_booking_status_when_used(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.UsedCollectiveBookingFactory(
@@ -283,7 +282,7 @@ class Returns200Test:
         sheet = reader_from_response(response)
         assert sheet.cell(row=2, column=10).value == "validé"
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_booking_status_when_reimbursed(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.ReimbursedCollectiveBookingFactory(
@@ -305,7 +304,7 @@ class Returns200Test:
         sheet = reader_from_response(response)
         assert sheet.cell(row=2, column=10).value == "remboursé"
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_booking_status_when_cancelled(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.CancelledCollectiveBookingFactory(
@@ -325,7 +324,7 @@ class Returns200Test:
         sheet = reader_from_response(response)
         assert sheet.cell(row=2, column=10).value == "annulé"
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_booking_status_when_pending(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.PendingCollectiveBookingFactory(
@@ -345,7 +344,7 @@ class Returns200Test:
         sheet = reader_from_response(response)
         assert sheet.cell(row=2, column=10).value == "préréservé"
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_booking_status_when_confirmed(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.ConfirmedCollectiveBookingFactory(
@@ -365,7 +364,7 @@ class Returns200Test:
         sheet = reader_from_response(response)
         assert sheet.cell(row=2, column=10).value == "confirmé"
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_complete_booking_single_with_offerer_address_as_data_source(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         booking = educational_factories.CollectiveBookingFactory(
@@ -410,7 +409,7 @@ class Returns200Test:
             == f"{booking.educationalInstitution.institutionType} {booking.educationalInstitution.name}"
         )
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_created_booking_single_with_offerer_address_as_data_source(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         booking = educational_factories.CollectiveBookingFactory(
@@ -449,7 +448,7 @@ class Returns200Test:
         assert sheet.cell(row=2, column=10).value == "réservé"
         assert sheet.cell(row=2, column=11).value == "None"
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_one_invisible_rights_booking_with_offerer_address_as_data_source(self, client):
         invisible_user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.CollectiveBookingFactory(
@@ -496,7 +495,7 @@ class Returns200Test:
         for i in range(1, len(COLLECTIVE_BOOKING_EXPORT_HEADER)):
             assert sheet.cell(row=3, column=i).value is None
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_one_invisible_date_range_booking_with_offerer_address_as_data_source(self, client):
         invisible_user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.CollectiveBookingFactory(
@@ -541,7 +540,7 @@ class Returns200Test:
         assert sheet.cell(row=2, column=10).value == "réservé"
         assert sheet.cell(row=2, column=11).value == "2021-08-11 14:00:00+02:00"
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_complete_booking_multiple_with_offerer_address_as_data_source(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         bookings = [
@@ -601,7 +600,7 @@ class Returns200Test:
             assert sheet.cell(row=2, column=10).value == "réservé"
             assert sheet.cell(row=i, column=11).value == "2021-08-11 14:00:00+02:00"
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_booking_status_when_used_with_offerer_address_as_data_source(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.UsedCollectiveBookingFactory(
@@ -622,7 +621,7 @@ class Returns200Test:
         sheet = reader_from_response(response)
         assert sheet.cell(row=2, column=10).value == "validé"
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_booking_status_when_reimbursed_with_offerer_address_as_data_source(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.ReimbursedCollectiveBookingFactory(
@@ -644,7 +643,7 @@ class Returns200Test:
         sheet = reader_from_response(response)
         assert sheet.cell(row=2, column=10).value == "remboursé"
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_booking_status_when_cancelled_with_offerer_address_as_data_source(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.CancelledCollectiveBookingFactory(
@@ -664,7 +663,7 @@ class Returns200Test:
         sheet = reader_from_response(response)
         assert sheet.cell(row=2, column=10).value == "annulé"
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_booking_status_when_pending_with_offerer_address_as_data_source(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.PendingCollectiveBookingFactory(
@@ -684,7 +683,7 @@ class Returns200Test:
         sheet = reader_from_response(response)
         assert sheet.cell(row=2, column=10).value == "préréservé"
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_booking_status_when_confirmed_with_offerer_address_as_data_source(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.ConfirmedCollectiveBookingFactory(

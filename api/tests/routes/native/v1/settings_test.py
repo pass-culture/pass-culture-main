@@ -1,14 +1,13 @@
 import pytest
 
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class SettingsTest:
-    @override_features(
+    @pytest.mark.features(
         DISPLAY_DMS_REDIRECTION=True,
         ENABLE_FRONT_IMAGE_RESIZING=True,
         ENABLE_NATIVE_APP_RECAPTCHA=True,
@@ -36,7 +35,7 @@ class SettingsTest:
             "accountUnsuspensionLimit": 60,
         }
 
-    @override_features(
+    @pytest.mark.features(
         DISPLAY_DMS_REDIRECTION=False,
         ENABLE_FRONT_IMAGE_RESIZING=False,
         ENABLE_NATIVE_APP_RECAPTCHA=False,

@@ -1,6 +1,5 @@
 import pytest
 
-from pcapi.core.testing import override_features
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils.feature import feature_required
@@ -8,7 +7,7 @@ from pcapi.utils.feature import feature_required
 
 @pytest.mark.usefixtures("db_session")
 class FeatureRequiredTest:
-    @override_features(SYNCHRONIZE_ALLOCINE=True)
+    @pytest.mark.features(SYNCHRONIZE_ALLOCINE=True)
     def when_feature_is_activated_dont_raise_error(self):
         # given
         @feature_required(FeatureToggle.SYNCHRONIZE_ALLOCINE)
@@ -21,7 +20,7 @@ class FeatureRequiredTest:
         # then
         assert result == "expected result"
 
-    @override_features(SYNCHRONIZE_ALLOCINE=False)
+    @pytest.mark.features(SYNCHRONIZE_ALLOCINE=False)
     def when_feature_is_not_activated_raise_an_error(self):
         # given
         @feature_required(FeatureToggle.SYNCHRONIZE_ALLOCINE)

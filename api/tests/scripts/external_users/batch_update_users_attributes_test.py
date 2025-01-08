@@ -7,7 +7,6 @@ from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.external.batch import BATCH_DATETIME_FORMAT
 from pcapi.core.offerers.factories import UserOffererFactory
 from pcapi.core.offerers.factories import VenueFactory
-from pcapi.core.testing import override_features
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.core.users.factories import FavoriteFactory
 from pcapi.core.users.factories import UserFactory
@@ -189,7 +188,7 @@ def test_format_sendinblue_user():
     }
 
 
-@override_features(WIP_ENABLE_BREVO_PRO_SUBACCOUNT=True)
+@pytest.mark.features(WIP_ENABLE_BREVO_PRO_SUBACCOUNT=True)
 @pytest.mark.usefixtures("db_session")
 def test_format_sendinblue_pro():
     user_offerer = UserOffererFactory()

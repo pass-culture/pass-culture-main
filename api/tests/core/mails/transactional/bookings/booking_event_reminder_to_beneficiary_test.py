@@ -14,7 +14,6 @@ from pcapi.core.mails.transactional.bookings.booking_event_reminder_to_beneficia
 )
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.testing import override_features
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -31,7 +30,7 @@ class SendEventReminderEmailToBeneficiaryTest:
             TransactionalEmail.BOOKING_EVENT_REMINDER_TO_BENEFICIARY.value
         )
 
-    @override_features(WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY=True)
+    @pytest.mark.features(WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY=True)
     def should_use_template_with_metadata_when_FF_is_enabled(self):
         booking = BookingFactory(stock=offers_factories.EventStockFactory())
 

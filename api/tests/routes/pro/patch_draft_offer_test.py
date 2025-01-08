@@ -13,7 +13,6 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferStatus
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.date import format_into_utc_date
 
@@ -49,7 +48,7 @@ class Returns200Test:
         assert updated_offer.description == "New description"
         assert not updated_offer.product
 
-    @override_features(WIP_EAN_CREATION=True)
+    @pytest.mark.features(WIP_EAN_CREATION=True)
     def test_patch_draft_offer_without_product_with_new_ean_should_succeed(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
@@ -70,7 +69,7 @@ class Returns200Test:
         updated_offer = Offer.query.get(offer.id)
         assert updated_offer.extraData["ean"] == "2222222222222"
 
-    @override_features(WIP_EAN_CREATION=True)
+    @pytest.mark.features(WIP_EAN_CREATION=True)
     def test_patch_draft_offer_without_product(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
@@ -171,7 +170,7 @@ class Returns200Test:
             "visa": "",
         }
 
-    @override_features(WIP_EAN_CREATION=False)
+    @pytest.mark.features(WIP_EAN_CREATION=False)
     def test_patch_draft_offer_linked_to_product_with_same_extra_data(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
@@ -295,8 +294,7 @@ class Returns200Test:
             "speaker": "",
         }
 
-    @override_features(WIP_ENABLE_OFFER_ADDRESS=False)
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=False, WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     @pytest.mark.parametrize(
         "is_venue_address,address_payload,return_value,expected_data",
         [
@@ -446,8 +444,7 @@ class Returns200Test:
             "label": venue.common_name if is_venue_address else "Librairie des mangas",
         }
 
-    @override_features(WIP_ENABLE_OFFER_ADDRESS=True)
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True, WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     @pytest.mark.parametrize(
         "is_venue_address,address_payload,return_value,expected_data",
         [
@@ -635,7 +632,7 @@ class Returns400Test:
         for key in forbidden_keys:
             assert key in response.json
 
-    @override_features(WIP_EAN_CREATION=True)
+    @pytest.mark.features(WIP_EAN_CREATION=True)
     def when_trying_to_patch_offer_with_product_with_new_ean(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(

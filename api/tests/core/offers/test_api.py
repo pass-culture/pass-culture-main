@@ -43,7 +43,6 @@ import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.repository as providers_repository
 import pcapi.core.reactions.factories as reactions_factories
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 from pcapi.models import api_errors
@@ -931,7 +930,7 @@ class DeleteStockTest:
             reason=search.IndexationReason.STOCK_DELETION,
         )
 
-    @override_features(WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION=False)
+    @pytest.mark.features(WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION=False)
     def test_delete_stock_cancel_bookings_and_send_emails(self):
         offerer_email = "offerer@example.com"
         stock = factories.EventStockFactory(
@@ -992,7 +991,7 @@ class DeleteStockTest:
             "can_be_asynchronously_retried": False,
         }
 
-    @override_features(WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION=True)
+    @pytest.mark.features(WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION=True)
     def test_delete_stock_cancel_bookings_and_send_emails_with_FF(self):
         offerer_email = "offerer@example.com"
         stock = factories.EventStockFactory(
@@ -1072,7 +1071,7 @@ class DeleteStockTest:
 @pytest.mark.usefixtures("db_session")
 class DeleteStockWithOffererAddressAsDataSourceTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_delete_stock_basics(self, mocked_async_index_offer_ids):
         stock = factories.EventStockFactory()
 
@@ -1085,7 +1084,7 @@ class DeleteStockWithOffererAddressAsDataSourceTest:
             reason=search.IndexationReason.STOCK_DELETION,
         )
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_delete_stock_cancel_bookings_and_send_emails(self):
         offerer_email = "offerer@example.com"
         stock = factories.EventStockFactory(
@@ -1146,7 +1145,7 @@ class DeleteStockWithOffererAddressAsDataSourceTest:
             "can_be_asynchronously_retried": False,
         }
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_can_delete_if_stock_from_provider(self):
         provider = providers_factories.APIProviderFactory()
         offer = factories.OfferFactory(lastProvider=provider, idAtProvider="1")
@@ -1157,7 +1156,7 @@ class DeleteStockWithOffererAddressAsDataSourceTest:
         stock = models.Stock.query.one()
         assert stock.isSoftDeleted
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_can_delete_if_event_ended_recently(self):
         recently = datetime.utcnow() - timedelta(days=1)
         stock = factories.EventStockFactory(beginningDatetime=recently)
@@ -1166,7 +1165,7 @@ class DeleteStockWithOffererAddressAsDataSourceTest:
         stock = models.Stock.query.one()
         assert stock.isSoftDeleted
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_cannot_delete_if_too_late(self):
         too_long_ago = datetime.utcnow() - timedelta(days=3)
         stock = factories.EventStockFactory(beginningDatetime=too_long_ago)
@@ -1276,7 +1275,7 @@ class CreateDraftOfferTest:
         assert not offer.product
         assert models.Offer.query.count() == 1
 
-    @override_features(WIP_SUGGESTED_SUBCATEGORIES=False)
+    @pytest.mark.features(WIP_SUGGESTED_SUBCATEGORIES=False)
     def test_create_draft_digitaloffer_with_virtual_venue(self):
         venue = offerers_factories.VirtualVenueFactory()
         body = offers_schemas.PostDraftOfferBodyModel(
@@ -1298,7 +1297,7 @@ class CreateDraftOfferTest:
         assert offer.motorDisabilityCompliant == None
         assert offer.visualDisabilityCompliant == None
 
-    @override_features(WIP_SUGGESTED_SUBCATEGORIES=True)
+    @pytest.mark.features(WIP_SUGGESTED_SUBCATEGORIES=True)
     def test_create_draft_physical_offer_on_virtual_venue_must_fail(self):
         physical_venue = offerers_factories.VenueFactory(isVirtual=False)
         virtual_venue = offerers_factories.VirtualVenueFactory(managingOffererId=physical_venue.managingOffererId)
@@ -1383,7 +1382,7 @@ class CreateDraftOfferTest:
 
         assert error.value.errors["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
 
-    @override_features(WIP_SUGGESTED_SUBCATEGORIES=True)
+    @pytest.mark.features(WIP_SUGGESTED_SUBCATEGORIES=True)
     def test_create_offer_with_online_subcategory_must_be_on_virtual_venue(self):
         venue = offerers_factories.VenueFactory(isVirtual=False)
         virtual_venue = offerers_factories.VirtualVenueFactory(
@@ -1397,7 +1396,7 @@ class CreateDraftOfferTest:
         offer = api.create_draft_offer(body, venue=venue)
         assert offer.venue == virtual_venue
 
-    @override_features(WIP_SUGGESTED_SUBCATEGORIES=True)
+    @pytest.mark.features(WIP_SUGGESTED_SUBCATEGORIES=True)
     def test_create_offer_with_offline_subcategory_must_be_on_physical_venue(self):
         physical_venue = offerers_factories.VenueFactory(isVirtual=False)
         virtual_venue = offerers_factories.VirtualVenueFactory(
@@ -1411,7 +1410,7 @@ class CreateDraftOfferTest:
         offer = api.create_draft_offer(body, venue=physical_venue)
         assert offer.venue == physical_venue
 
-    @override_features(WIP_SUGGESTED_SUBCATEGORIES=True)
+    @pytest.mark.features(WIP_SUGGESTED_SUBCATEGORIES=True)
     def test_create_offer_with_online_subcategory_with_no_virtual_venue_must_fail(self):
         venue = offerers_factories.VenueFactory(isVirtual=False)
         body = offers_schemas.PostDraftOfferBodyModel(
@@ -1422,7 +1421,7 @@ class CreateDraftOfferTest:
         with pytest.raises(exceptions.OffererVirtualVenueNotFound):
             api.create_draft_offer(body, venue=venue)
 
-    @override_features(WIP_SUGGESTED_SUBCATEGORIES=True)
+    @pytest.mark.features(WIP_SUGGESTED_SUBCATEGORIES=True)
     def test_create_offer_sends_complete_log_to_data(self, caplog):
         venue = offerers_factories.VenueFactory(isVirtual=False)
         body = offers_schemas.PostDraftOfferBodyModel(
@@ -3296,7 +3295,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
     DATETIME_10_DAYS_AFTER = datetime.today() + timedelta(days=10)
     DATETIME_10_DAYS_AGO = datetime.today() - timedelta(days=10)
 
-    @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+    @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
     @pytest.mark.parametrize(
         "show_id, show_beginning_datetime, api_return_value, expected_remaining_quantity",
         [
@@ -3352,7 +3351,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         else:
             mocked_async_index_offer_ids.assert_not_called()
 
-    @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+    @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
     def test_cds_with_get_showtimes_stocks_cached(
         self,
         requests_mock,
@@ -3424,7 +3423,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         assert stock.quantity == 10
         assert stock.quantity != stock.dnBookedQuantity
 
-    @override_features(ENABLE_BOOST_API_INTEGRATION=True)
+    @pytest.mark.features(ENABLE_BOOST_API_INTEGRATION=True)
     @pytest.mark.parametrize(
         "show_id, show_beginning_datetime, api_return_value, expected_remaining_quantity",
         [
@@ -3480,7 +3479,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         else:
             mocked_async_index_offer_ids.assert_not_called()
 
-    @override_features(ENABLE_BOOST_API_INTEGRATION=True)
+    @pytest.mark.features(ENABLE_BOOST_API_INTEGRATION=True)
     def test_boost_with_get_film_showtimes_stocks_cached(
         self,
         requests_mock,
@@ -3552,7 +3551,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         assert stock.quantity == 10
         assert stock.quantity != stock.dnBookedQuantity
 
-    @override_features(ENABLE_CGR_INTEGRATION=True)
+    @pytest.mark.features(ENABLE_CGR_INTEGRATION=True)
     @pytest.mark.parametrize(
         "show_id, show_beginning_datetime, api_return_value, expected_remaining_quantity",
         [
@@ -3608,7 +3607,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         else:
             mocked_async_index_offer_ids.assert_not_called()
 
-    @override_features(ENABLE_CGR_INTEGRATION=True)
+    @pytest.mark.features(ENABLE_CGR_INTEGRATION=True)
     def test_cgr_with_get_showtimes_stock_cached(
         self,
         requests_mock,
@@ -3673,7 +3672,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
 
         assert post_adapter.call_count == 2
 
-    @override_features(ENABLE_EMS_INTEGRATION=True)
+    @pytest.mark.features(ENABLE_EMS_INTEGRATION=True)
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_ems(
         self,
@@ -3710,7 +3709,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         assert stock.remainingQuantity == expected_remaining_quantity
         mocked_async_index_offer_ids.assert_not_called()
 
-    @override_features(ENABLE_EMS_INTEGRATION=True)
+    @pytest.mark.features(ENABLE_EMS_INTEGRATION=True)
     def test_ems_with_get_film_showtimes_stocks_cached(self, requests_mock, app):
         redis_client = app.redis_client
 
@@ -3764,7 +3763,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         assert stock.quantity == 10
         assert stock.quantity != stock.dnBookedQuantity
 
-    @override_features(ENABLE_EMS_INTEGRATION=True)
+    @pytest.mark.features(ENABLE_EMS_INTEGRATION=True)
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_ems_no_remaining_places_case(
         self,
@@ -3809,7 +3808,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
             log_extra={"sold_out": True},
         )
 
-    @override_features(ENABLE_CGR_INTEGRATION=True)
+    @pytest.mark.features(ENABLE_CGR_INTEGRATION=True)
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_cgr_no_remaining_places_case(
         self,
@@ -3857,7 +3856,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
             log_extra={"sold_out": True},
         )
 
-    @override_features(ENABLE_BOOST_API_INTEGRATION=True)
+    @pytest.mark.features(ENABLE_BOOST_API_INTEGRATION=True)
     @patch("pcapi.core.search.async_index_offer_ids")
     @patch("pcapi.core.offers.api.external_bookings_api.get_movie_stocks")
     def test_should_retry_when_inconsistent_stock(self, mocked_get_movie_shows_stock, mocked_async_index_offer_ids):

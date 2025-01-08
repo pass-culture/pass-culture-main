@@ -7,7 +7,6 @@ import pytest
 from pcapi import settings
 from pcapi.connectors.beneficiaries import ubble
 from pcapi.core.fraud import models as fraud_models
-from pcapi.core.testing import override_features
 from pcapi.core.users.models import GenderEnum
 from pcapi.utils import requests
 
@@ -16,7 +15,7 @@ from tests.test_utils import json_default
 
 
 class StartIdentificationV2Test:
-    @override_features(WIP_UBBLE_V2=True)
+    @pytest.mark.features(WIP_UBBLE_V2=True)
     def test_start_identification(self, requests_mock, caplog):
         requests_mock.post(
             f"{settings.UBBLE_API_URL}/v2/create-and-start-idv",
@@ -67,7 +66,7 @@ class StartIdentificationV2Test:
         assert record.extra["request_type"] == "create-and-start-idv", record.extra
         assert record.message == "Valid response from Ubble"
 
-    @override_features(WIP_UBBLE_V2=True)
+    @pytest.mark.features(WIP_UBBLE_V2=True)
     def test_start_identification_connection_error(self, requests_mock, caplog):
         requests_mock.post(f"{settings.UBBLE_API_URL}/v2/create-and-start-idv", exc=requests.exceptions.ConnectionError)
 
@@ -88,7 +87,7 @@ class StartIdentificationV2Test:
         assert record.extra["error_type"] == "network"
         assert record.message == "Ubble create-and-start-idv: Network error"
 
-    @override_features(WIP_UBBLE_V2=True)
+    @pytest.mark.features(WIP_UBBLE_V2=True)
     def test_start_identification_http_error_status(self, requests_mock, caplog):
         requests_mock.post(f"{settings.UBBLE_API_URL}/v2/create-and-start-idv", status_code=401)
 

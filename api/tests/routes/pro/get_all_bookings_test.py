@@ -13,7 +13,6 @@ from pcapi.core.external_bookings.factories import ExternalBookingFactory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
@@ -144,7 +143,7 @@ class Returns200Test:
     expected_num_queries += 1  # 4.external_booking
     expected_num_queries += 1  # 5. check if WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE is active
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_when_user_is_linked_to_a_valid_offerer(self, client: Any):
         stock = offers_factories.StockFactory(offer__extraData={"ean": "1234567891234"})
         used_booking = bookings_factories.UsedBookingFactory(
@@ -247,7 +246,7 @@ class Returns200Test:
         assert response.json["pages"] == 1
         assert response.json["total"] == 2
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def when_requested_with_event_date(self, client: Any):
         requested_date = "2020-08-12"
         stock = offers_factories.EventStockFactory(beginningDatetime=datetime(2020, 8, 12))
@@ -270,7 +269,7 @@ class Returns200Test:
         assert response.json["pages"] == 1
         assert response.json["total"] == 1
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def when_requested_with_booking_period_dates(self, client: Any):
         booking_date = datetime(2020, 8, 12, 20, 00, tzinfo=timezone.utc)
         booking_period_beginning_date = "2020-08-10"
@@ -296,7 +295,7 @@ class Returns200Test:
         assert response.json["pages"] == 1
         assert response.json["total"] == 1
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_not_return_booking_token_when_booking_is_external(self, client: Any):
         booking_date = datetime(2020, 8, 11, 10, 00, tzinfo=timezone.utc)
         externalbooking = ExternalBookingFactory(
@@ -315,7 +314,7 @@ class Returns200Test:
 
         assert response.json["bookingsRecap"][0]["bookingToken"] is None
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_when_user_is_linked_to_a_valid_offerer_with_offerer_address_as_data_source(self, client: Any):
         stock = offers_factories.StockFactory(offer__extraData={"ean": "1234567891234"})
         used_booking = bookings_factories.UsedBookingFactory(
@@ -418,7 +417,7 @@ class Returns200Test:
         assert response.json["pages"] == 1
         assert response.json["total"] == 2
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def when_requested_with_event_date_with_offerer_address_as_data_source(self, client: Any):
         requested_date = "2020-08-12"
         stock = offers_factories.EventStockFactory(beginningDatetime=datetime(2020, 8, 12))
@@ -441,7 +440,7 @@ class Returns200Test:
         assert response.json["pages"] == 1
         assert response.json["total"] == 1
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def when_requested_with_booking_period_dates_with_offerer_address_as_data_source(self, client: Any):
         booking_date = datetime(2020, 8, 12, 20, 00, tzinfo=timezone.utc)
         booking_period_beginning_date = "2020-08-10"
@@ -467,7 +466,7 @@ class Returns200Test:
         assert response.json["pages"] == 1
         assert response.json["total"] == 1
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_should_not_return_booking_token_when_booking_is_external_with_offerer_address_as_data_source(
         self, client: Any
     ):

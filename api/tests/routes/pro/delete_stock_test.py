@@ -1,9 +1,10 @@
+import pytest
+
 from pcapi.core.bookings import factories as bookings_factory
 from pcapi.core.bookings.factories import BookingFactory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferValidationStatus
-from pcapi.core.testing import override_features
 from pcapi.core.token import SecureToken
 from pcapi.core.token.serialization import ConnectAsInternalModel
 import pcapi.core.users.factories as users_factories
@@ -13,7 +14,7 @@ from tests.conftest import TestClient
 
 
 class Returns200Test:
-    @override_features(WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION=False)
+    @pytest.mark.features(WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION=False)
     def when_current_user_has_rights_on_offer(self, client, db_session):
         # given
         offer = offers_factories.OfferFactory()
@@ -42,7 +43,7 @@ class Returns200Test:
             "can_be_asynchronously_retried": False,
         }
 
-    @override_features(WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION=True)
+    @pytest.mark.features(WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION=True)
     def when_current_user_has_rights_on_offer_with_FF(self, client, db_session):
         # given
         offer = offers_factories.OfferFactory()

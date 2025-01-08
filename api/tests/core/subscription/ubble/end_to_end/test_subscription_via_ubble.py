@@ -17,7 +17,6 @@ from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.validation.routes import ubble as ubble_routes
@@ -34,7 +33,7 @@ IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 
 @pytest.mark.usefixtures("db_session")
 class UbbleV2EndToEndTest:
-    @override_features(WIP_UBBLE_V2=True)
+    @pytest.mark.features(WIP_UBBLE_V2=True)
     def test_beneficiary_activation_with_ubble_mocked_response(self, client, app, requests_mock):
         seventeen_years_ago = datetime.datetime.utcnow() - relativedelta(years=17, months=1)
         user = users_factories.UserFactory(

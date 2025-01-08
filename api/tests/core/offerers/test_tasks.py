@@ -10,7 +10,6 @@ from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.testing import override_features
 from pcapi.tasks.cloud_task import AUTHORIZATION_HEADER_KEY
 from pcapi.tasks.cloud_task import AUTHORIZATION_HEADER_VALUE
 
@@ -24,7 +23,7 @@ def siren_caduc_tag_fixture():
 
 
 class CheckOffererTest:
-    @override_features(ENABLE_CODIR_OFFERERS_REPORT=False)
+    @pytest.mark.features(ENABLE_CODIR_OFFERERS_REPORT=False)
     @patch("pcapi.connectors.googledrive.TestingBackend.append_to_spreadsheet")
     def test_active_offerer(self, mock_append_to_spreadsheet, client, siren_caduc_tag):
         offerer = offerers_factories.OffererFactory()
@@ -40,7 +39,7 @@ class CheckOffererTest:
 
         mock_append_to_spreadsheet.assert_not_called()
 
-    @override_features(ENABLE_CODIR_OFFERERS_REPORT=True)
+    @pytest.mark.features(ENABLE_CODIR_OFFERERS_REPORT=True)
     @patch("pcapi.connectors.googledrive.TestingBackend.append_to_spreadsheet", return_value=1)
     @patch("pcapi.connectors.googledrive.TestingBackend.create_spreadsheet", return_value="new-file-id")
     @patch("pcapi.connectors.googledrive.TestingBackend.search_file", return_value="report-file-id")
@@ -78,7 +77,7 @@ class CheckOffererTest:
             ],
         )
 
-    @override_features(ENABLE_CODIR_OFFERERS_REPORT=True)
+    @pytest.mark.features(ENABLE_CODIR_OFFERERS_REPORT=True)
     @patch("pcapi.connectors.googledrive.TestingBackend.append_to_spreadsheet", return_value=1)
     @patch("pcapi.connectors.googledrive.TestingBackend.create_spreadsheet", return_value="new-file-id")
     @patch("pcapi.connectors.googledrive.TestingBackend.search_file", return_value=None)
@@ -128,7 +127,7 @@ class CheckOffererTest:
             ],
         )
 
-    @override_features(ENABLE_CODIR_OFFERERS_REPORT=True)
+    @pytest.mark.features(ENABLE_CODIR_OFFERERS_REPORT=True)
     @patch("pcapi.connectors.googledrive.TestingBackend.append_to_spreadsheet", return_value=1)
     @patch("pcapi.connectors.googledrive.TestingBackend.search_file", return_value="report-file-id")
     def test_tag_inactive_offerer(self, mock_search_file, mock_append_to_spreadsheet, client, siren_caduc_tag):
@@ -171,7 +170,7 @@ class CheckOffererTest:
             ],
         )
 
-    @override_features(ENABLE_CODIR_OFFERERS_REPORT=True)
+    @pytest.mark.features(ENABLE_CODIR_OFFERERS_REPORT=True)
     @patch("pcapi.connectors.googledrive.TestingBackend.append_to_spreadsheet", return_value=1)
     @patch("pcapi.connectors.googledrive.TestingBackend.search_file", return_value="report-file-id")
     def test_inactive_offerer_already_tagged(
@@ -194,7 +193,7 @@ class CheckOffererTest:
         mock_search_file.assert_called_once()
         mock_append_to_spreadsheet.assert_called_once()
 
-    @override_features(ENABLE_CODIR_OFFERERS_REPORT=True)
+    @pytest.mark.features(ENABLE_CODIR_OFFERERS_REPORT=True)
     @patch("pcapi.connectors.googledrive.TestingBackend.append_to_spreadsheet", return_value=1)
     @patch("pcapi.connectors.googledrive.TestingBackend.search_file", return_value="report-file-id")
     def test_reject_inactive_offerer_waiting_for_validation(
@@ -246,7 +245,7 @@ class CheckOffererTest:
         mock_search_file.assert_not_called()
         mock_append_to_spreadsheet.assert_not_called()
 
-    @override_features(ENABLE_CODIR_OFFERERS_REPORT=True)
+    @pytest.mark.features(ENABLE_CODIR_OFFERERS_REPORT=True)
     @patch("pcapi.connectors.googledrive.TestingBackend.append_to_spreadsheet", return_value=1)
     @patch("pcapi.connectors.googledrive.TestingBackend.search_file", return_value="report-file-id")
     def test_active_offerer_waiting_for_validation(
@@ -268,7 +267,7 @@ class CheckOffererTest:
         mock_search_file.assert_not_called()
         mock_append_to_spreadsheet.assert_not_called()
 
-    @override_features(ENABLE_CODIR_OFFERERS_REPORT=False)
+    @pytest.mark.features(ENABLE_CODIR_OFFERERS_REPORT=False)
     def test_do_not_tag_inactive_offerer(self, client, siren_caduc_tag):
         # Using TestingBackend: SIREN makes offerer inactive (because of 99), EI
         offerer = offerers_factories.OffererFactory(siren="100099001")
@@ -282,7 +281,7 @@ class CheckOffererTest:
         assert response.status_code == 204
         assert not offerer.tags
 
-    @override_features(ENABLE_CODIR_OFFERERS_REPORT=True)
+    @pytest.mark.features(ENABLE_CODIR_OFFERERS_REPORT=True)
     @patch("pcapi.connectors.googledrive.TestingBackend.append_to_spreadsheet")
     def test_siren_not_found(self, mock_append_to_spreadsheet, client, siren_caduc_tag):
         # Using TestingBackend: SIREN filled with zeros throws UnknownEntityException

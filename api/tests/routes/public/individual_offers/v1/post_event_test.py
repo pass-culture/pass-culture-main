@@ -10,7 +10,6 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
-from pcapi.core.testing import override_features
 from pcapi.models import offer_mixin
 from pcapi.utils import human_ids
 from pcapi.utils.date import local_datetime_to_default_timezone
@@ -288,7 +287,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             "performer": "Nicolas Jaar",
         }
 
-    @override_features(ENABLE_TITELIVE_MUSIC_TYPES_IN_API_OUTPUT=True)
+    @pytest.mark.features(ENABLE_TITELIVE_MUSIC_TYPES_IN_API_OUTPUT=True)
     def test_event_creation_with_titelive_type_with_active_serialization(self, client, clear_tests_assets_bucket):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
 

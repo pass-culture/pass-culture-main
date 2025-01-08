@@ -20,28 +20,23 @@ from pcapi.core.fraud.models import FraudCheckStatus
 from pcapi.core.fraud.models import FraudCheckType
 from pcapi.core.fraud.models import UbbleContent
 from pcapi.core.fraud.ubble import constants as ubble_constants
-from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.exceptions import BeneficiaryFraudCheckMissingException
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.subscription.ubble import errors as ubble_errors
 from pcapi.core.subscription.ubble import exceptions as ubble_exceptions
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.notifications import push as push_notifications
 import pcapi.notifications.push.testing as push_testing
-from pcapi.utils import date as date_utils
 from pcapi.utils import requests as requests_utils
 from pcapi.utils.string import u_nbsp
 
 import tests
 from tests.connectors.beneficiaries.ubble_fixtures import UBBLE_IDENTIFICATION_V2_RESPONSE
-from tests.core.subscription import test_factories
 from tests.core.subscription.test_factories import IdentificationState
 from tests.core.subscription.test_factories import UbbleIdentificationIncludedDocumentsFactory
-from tests.core.subscription.test_factories import UbbleIdentificationIncludedReferenceDataChecksFactory
 from tests.core.subscription.test_factories import UbbleIdentificationResponseFactory
 from tests.test_utils import json_default
 
@@ -51,7 +46,7 @@ IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 
 @pytest.mark.usefixtures("db_session")
 class UbbleWorkflowV2Test:
-    @override_features(WIP_UBBLE_V2=True)
+    @pytest.mark.features(WIP_UBBLE_V2=True)
     def test_start_ubble_workflow(self, requests_mock):
         user = users_factories.UserFactory()
         requests_mock.post(
@@ -81,7 +76,7 @@ class UbbleWorkflowV2Test:
             "user_id": user.id,
         }
 
-    @override_features(WIP_UBBLE_V2=True)
+    @pytest.mark.features(WIP_UBBLE_V2=True)
     def test_applicant_creation_flow(self, requests_mock):
         user = users_factories.UserFactory()
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
@@ -138,7 +133,7 @@ class UbbleWorkflowV2Test:
         )
         assert attempt_identification_request.json()["redirect_url"] == "https://redirect.example.com"
 
-    @override_features(WIP_UBBLE_V2=True)
+    @pytest.mark.features(WIP_UBBLE_V2=True)
     def test_applicant_creation_flow_updates_fraud_check(self, requests_mock):
         user = users_factories.UserFactory()
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
@@ -376,7 +371,7 @@ class UbbleWorkflowV2Test:
         assert user.dateOfBirth == sixteen_years_ago
         assert user.validatedBirthDate == seventeen_years_ago
 
-    @override_features(ENABLE_PHONE_VALIDATION=False)
+    @pytest.mark.features(ENABLE_PHONE_VALIDATION=False)
     def test_ubble_workflow_updates_birth_date_on_eligibility_upgrade(self, requests_mock):
         last_year = datetime.datetime.utcnow() - relativedelta(years=1)
         with time_machine.travel(last_year):
@@ -631,7 +626,7 @@ class UbbleWorkflowV1Test:
         assert ubble_content["status"] == status.value
         assert fraud_check.status == fraud_check_status
 
-    @override_features(WIP_UBBLE_V2=True)
+    @pytest.mark.features(WIP_UBBLE_V2=True)
     @pytest.mark.parametrize("state, status, fraud_check_status", IDENTIFICATION_STATE_PARAMETERS)
     def test_update_ubble_workflow_with_v2_feature_flag(self, ubble_mocker, state, status, fraud_check_status):
         user = users_factories.UserFactory()

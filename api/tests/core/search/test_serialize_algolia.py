@@ -17,7 +17,7 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 from pcapi.core.providers.constants import BookFormat
 from pcapi.core.search.backends import algolia
-from pcapi.core.testing import override_features
+from pcapi.routes.adage_iframe.serialization.offers import OfferAddressType
 from pcapi.utils.human_ids import humanize
 
 
@@ -25,7 +25,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 @pytest.mark.settings(ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS=[1, 2, 3, 4])
-@override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+@pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
 @time_machine.travel("2024-01-01T00:00:00", tick=False)
 def test_serialize_offer():
     rayon = "Policier / Thriller format poche"  # fetched from provider
@@ -137,7 +137,7 @@ def test_serialize_offer():
 
 
 @pytest.mark.settings(ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS=[1, 2, 3, 4])
-@override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
+@pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
 @time_machine.travel("2024-01-01T00:00:00", tick=False)
 def test_serialize_offer_legacy():
     rayon = "Policier / Thriller format poche"  # fetched from provider
@@ -455,7 +455,7 @@ def test_serialize_venue_with_one_bookable_offer():
     assert serialized["has_at_least_one_bookable_offer"]
 
 
-@override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+@pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
 def test_serialize_collective_offer_template():
     domain1 = educational_factories.EducationalDomainFactory(name="Danse")
     domain2 = educational_factories.EducationalDomainFactory(name="Architecture")
@@ -521,7 +521,7 @@ def test_serialize_collective_offer_template():
     }
 
 
-@override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
+@pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
 def test_serialize_collective_offer_template_legacy():
     # Same as test_serialize_collective_offer_template
     domain1 = educational_factories.EducationalDomainFactory(name="Danse")

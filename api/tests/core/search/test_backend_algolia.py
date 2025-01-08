@@ -10,7 +10,6 @@ import pcapi.core.educational.factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.search.backends import algolia
-from pcapi.core.testing import override_features
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -200,7 +199,7 @@ def test_unindex_all_collective_offer_templates():
         assert posted.called
 
 
-@override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+@pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
 def test_index_collective_offers_templates():
     backend = get_backend()
     collective_offer_template = educational_factories.CollectiveOfferTemplateFactory.build()
@@ -245,7 +244,7 @@ def test_index_collective_offers_templates():
         assert posted_json["requests"][2]["body"]["venue"]["departmentCode"] == "2A"
 
 
-@override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
+@pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
 def test_index_collective_offers_templates_legacy():
     # Same as test_index_collective_offers_templates
     backend = get_backend()

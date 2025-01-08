@@ -17,7 +17,6 @@ from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_bene
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.testing import override_features
 
 
 @pytest.mark.usefixtures("db_session")
@@ -56,7 +55,7 @@ class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
             "REJECTED": False,
         }
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     @time_machine.travel("2024-07-31 15:12")
     def test_should_sends_email_to_beneficiary_when_pro_cancels_event_booking(self):
         # time is set because it tests a human readable EVENT_DATE and EVENT_HOUR

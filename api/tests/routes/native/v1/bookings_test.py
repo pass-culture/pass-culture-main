@@ -34,7 +34,6 @@ from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.reactions.factories import ReactionFactory
 from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 import pcapi.notifications.push.testing as push_testing
@@ -509,7 +508,7 @@ class PostBookingTest:
             "message": "External booking failed.",
         }
 
-    @override_features(ENABLE_EMS_INTEGRATION=True)
+    @pytest.mark.features(ENABLE_EMS_INTEGRATION=True)
     def test_handle_ems_empty_showtime_case(self, client, requests_mock):
         users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         ems_provider = get_provider_by_local_class("EMSStocks")
@@ -985,7 +984,7 @@ class GetBookingsTest:
         assert offer["withdrawalType"] == "on_site"
         assert offer["withdrawalDelay"] == 60 * 30
 
-    @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+    @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
     def test_get_bookings_with_external_booking_infos(self, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
 

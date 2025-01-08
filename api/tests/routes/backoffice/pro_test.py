@@ -18,7 +18,6 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.token import SecureToken
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories

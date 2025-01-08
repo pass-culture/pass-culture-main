@@ -8,7 +8,6 @@ import pcapi.core.educational.exceptions as educational_exceptions
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import CollectiveOffer
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.testing import override_features
 from pcapi.core.users import testing as sendinblue_testing
 import pcapi.core.users.factories as users_factories
 
@@ -150,7 +149,7 @@ class Returns200Test:
         # Then
         assert response.status_code == 201
 
-    @override_features(WIP_ENABLE_MARSEILLE=True)
+    @pytest.mark.features(WIP_ENABLE_MARSEILLE=True)
     def test_create_collective_offer_primary_level(self, client):
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -165,7 +164,7 @@ class Returns200Test:
         offer = CollectiveOffer.query.get(response.json["id"])
         assert offer.students == [models.StudentLevels.ECOLES_MARSEILLE_MATERNELLE]
 
-    @override_features(WIP_ENABLE_MARSEILLE=False)
+    @pytest.mark.features(WIP_ENABLE_MARSEILLE=False)
     def test_create_collective_offer_primary_level_FF_disabled(self, client):
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer

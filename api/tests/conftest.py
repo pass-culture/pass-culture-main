@@ -573,29 +573,33 @@ class TestClient:
 
 
 @pytest.fixture
-def _features(request):
-    from pcapi.core.testing import override_features
+def features(request):
+    from pcapi.core.testing import FeaturesContext
     from pcapi.models.feature import FeatureToggle
 
     marker = request.node.get_closest_marker("features")
+    _features = FeaturesContext()
     if marker:
         if kwargs := marker.kwargs:
             if invalid_features := {feature for feature in kwargs if feature not in FeatureToggle._member_names_}:
                 raise ValueError(f"Invalid features to override: {', '.join(invalid_features)}")
-            with override_features(**kwargs):
-                yield
+            for attr_name, value in kwargs.items():
+                setattr(_features, attr_name, value)
         else:
             raise ValueError(
                 "Invalid usage of `features` marker, missing features to override.\n"
                 "Eg. @pytest.mark.features(WIP_ENABLE_NEW_FEATURE=True)"
             )
+    yield _features
+
+    _features.reset()
 
 
 @pytest.fixture(autouse=True)
 def _features_marker(request: pytest.FixtureRequest) -> None:
     marker = request.node.get_closest_marker("features")
     if marker:
-        request.getfixturevalue("_features")
+        request.getfixturevalue("features")
 
 
 @pytest.fixture

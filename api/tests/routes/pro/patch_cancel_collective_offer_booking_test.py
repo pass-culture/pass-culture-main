@@ -4,7 +4,6 @@ from pcapi.core.educational import factories
 from pcapi.core.educational import models
 from pcapi.core.educational import testing as adage_api_testing
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.testing import override_features
 from pcapi.core.token import SecureToken
 from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.core.users import factories as user_factories
@@ -100,7 +99,7 @@ class Returns204Test:
         assert collective_booking.status == models.CollectiveBookingStatus.CANCELLED
         assert collective_booking.cancellationUser == admin
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", STATUSES_ALLOWING_CANCEL)
     def test_cancel_allowed_action(self, client, status):
         offer = factories.create_collective_offer_by_status(status)
@@ -112,7 +111,7 @@ class Returns204Test:
         assert response.status_code == 204
         assert offer.collectiveStock.collectiveBookings[0].status == models.CollectiveBookingStatus.CANCELLED
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_cancel_ended(self, client):
         offer = factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
@@ -158,7 +157,7 @@ class Returns403Test:
         }
         assert len(adage_api_testing.adage_requests) == 0
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", STATUSES_NOT_ALLOWING_CANCEL)
     def test_cancel_unallowed_action(self, client, status):
         offer = factories.create_collective_offer_by_status(status)
@@ -175,7 +174,7 @@ class Returns403Test:
 
 
 class Returns400Test:
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     @pytest.mark.parametrize(
         "status",
         [

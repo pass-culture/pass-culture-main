@@ -17,7 +17,6 @@ import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.models import OfferValidationStatus
 import pcapi.core.providers.factories as providers_factories
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
@@ -52,7 +51,7 @@ def auth_client_fixture(client, user_offerer):
 class Returns200Test:
     endpoint = "Private API.edit_collective_offer"
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @time_machine.travel("2019-01-01 12:00:00")
     @pytest.mark.settings(ADAGE_API_URL="https://adage_base_url")
     def test_patch_collective_offer(self, client):
@@ -145,8 +144,8 @@ class Returns200Test:
         assert adage_request["sent_data"] == expected_payload
         assert adage_request["url"] == "https://adage_base_url/v1/prereservation-edit"
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.settings(ADAGE_API_URL="https://adage_base_url")
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_patch_collective_offer_do_not_notify_educational_redactor_when_no_booking(self, client):
         offer = educational_factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
@@ -207,7 +206,7 @@ class Returns200Test:
         assert len(offer.students) == 1
         assert offer.students[0].value == "Collège - 6e"
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     @pytest.mark.parametrize(
         "factory",
         [
@@ -237,7 +236,7 @@ class Returns200Test:
         assert booking.venueId == venue.id
         assert cancelled_booking.venueId == venue.id
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_update_venue_both_offer_and_booking_with_new_statuses(self, auth_client, venue, other_related_venue):
         offer = educational_factories.CollectiveOfferFactory(venue=other_related_venue)
         stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer)
@@ -257,7 +256,7 @@ class Returns200Test:
         assert offer.venueId == venue.id
         assert booking.venueId == venue.id
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", educational_testing.STATUSES_ALLOWING_EDIT_DETAILS)
     def test_patch_collective_offer_allowed_action(self, client, status):
         offer = educational_factories.create_collective_offer_by_status(status)
@@ -293,7 +292,7 @@ class Returns200Test:
 
 
 class Returns400Test:
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_patch_non_approved_offer_fails(self, app, client):
         offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.PENDING)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
@@ -568,7 +567,7 @@ class Returns403Test:
         ]
         assert CollectiveOffer.query.get(offer.id).name == "Old name"
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_cannot_update_offer_with_used_booking(self, client):
         offer = educational_factories.CollectiveOfferFactory()
         educational_factories.UsedCollectiveBookingFactory(
@@ -584,7 +583,7 @@ class Returns403Test:
         assert response.status_code == 403
         assert response.json == {"offer": "the used or refund offer can't be edited."}
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_cannot_update_offer_created_by_public_api(self, client):
         provider = providers_factories.ProviderFactory()
         offer = educational_factories.CollectiveOfferFactory(provider=provider)
@@ -621,7 +620,7 @@ class Returns403Test:
         assert response.status_code == 403
         assert response.json == {"venueId": "New venue needs to have the same offerer"}
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_update_collective_offer_venue_of_reimbursed_offer_fails(self, client, other_related_venue):
         offer = educational_factories.ReimbursedCollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
@@ -677,7 +676,7 @@ class Returns403Test:
         assert booking.venueId == other_related_venue.id
         assert finance_event.venueId == other_related_venue.id
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", educational_testing.STATUSES_NOT_ALLOWING_EDIT_DETAILS)
     def test_patch_collective_offer_unallowed_action(self, client, status):
         offer = educational_factories.create_collective_offer_by_status(status)
@@ -697,7 +696,7 @@ class Returns403Test:
         assert offer.name == previous_name
         assert offer.description == previous_description
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_patch_collective_offer_ended(self, client):
         offer = educational_factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)

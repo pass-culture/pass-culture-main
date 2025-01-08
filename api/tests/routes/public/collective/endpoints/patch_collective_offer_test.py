@@ -12,7 +12,6 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers import factories as provider_factories
-from pcapi.core.testing import override_features
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.utils import date as date_utils
@@ -868,7 +867,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 400
         assert "nationalProgramId" in response.json
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_should_update_expired_booking(self, client):
         now = datetime.utcnow()
         limit = now - timedelta(days=2)
@@ -904,7 +903,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert booking.cancellationDate == None
         assert booking.confirmationLimitDate == new_limit
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_should_not_update_expired_booking(self, client):
         now = datetime.utcnow()
         limit = now - timedelta(days=2)

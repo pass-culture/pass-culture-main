@@ -14,7 +14,6 @@ from pcapi.core.educational.factories import EducationalYearFactory
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import Ministry
-from pcapi.core.testing import override_features
 from pcapi.routes.adage.v1.serialization import constants
 
 from tests.routes.adage.v1.conftest import expected_serialized_prebooking
@@ -70,7 +69,7 @@ class Returns200Test:
         )
 
     @time_machine.travel("2021-10-15 09:00:00")
-    @override_features(ENABLE_EAC_FINANCIAL_PROTECTION=True)
+    @pytest.mark.features(ENABLE_EAC_FINANCIAL_PROTECTION=True)
     def test_insufficient_ministry_fund_other_ministry(self, client) -> None:
         educational_institution = EducationalInstitutionFactory()
         educational_institution2 = EducationalInstitutionFactory()
@@ -263,7 +262,7 @@ class ReturnsErrorTest:
         assert response.json == {"code": "INSUFFICIENT_FUND"}
 
     @time_machine.travel("2021-10-15 09:00:00")
-    @override_features(ENABLE_EAC_FINANCIAL_PROTECTION=True)
+    @pytest.mark.features(ENABLE_EAC_FINANCIAL_PROTECTION=True)
     def test_insufficient_ministry_fund_for_collective_bookings(self, client) -> None:
         educational_institution = EducationalInstitutionFactory()
         educational_institution2 = EducationalInstitutionFactory()

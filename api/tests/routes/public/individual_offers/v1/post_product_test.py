@@ -13,7 +13,6 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
-from pcapi.core.testing import override_features
 from pcapi.models import offer_mixin
 from pcapi.utils import date as date_utils
 from pcapi.utils import human_ids
@@ -320,7 +319,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert created_offer.extraData == {"ean": "1234567891234"}
 
     @pytest.mark.usefixtures("db_session")
-    @override_features(WIP_ENABLE_OFFER_ADDRESS=True)
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True)
     def test_physical_product_attached_to_digital_venue(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue(is_virtual=True)
 

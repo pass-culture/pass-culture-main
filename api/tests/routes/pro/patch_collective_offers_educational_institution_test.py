@@ -7,7 +7,6 @@ from pcapi.core.educational import models
 from pcapi.core.educational import testing as adage_api_testing
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.testing import override_features
 
 
 STATUSES_ALLOWING_EDIT_INSTITUTION = (models.CollectiveOfferDisplayedStatus.DRAFT,)
@@ -21,7 +20,7 @@ STATUSES_NOT_ALLOWING_EDIT_INSTITUTION = tuple(
 @pytest.mark.usefixtures("db_session")
 @pytest.mark.settings(ADAGE_API_URL="https://adage_base_url")
 class Returns200Test:
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_create_offer_institution_link(self, client: Any) -> None:
         institution = factories.EducationalInstitutionFactory()
         stock = factories.CollectiveStockFactory()
@@ -40,7 +39,7 @@ class Returns200Test:
         assert adage_api_testing.adage_requests[0]["sent_data"] == expected_payload
         assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/offre-assoc"
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_create_offer_institution_link_to_teacher(self, client) -> None:
         institution = factories.EducationalInstitutionFactory(institutionId="0470009E")
         stock = factories.CollectiveStockFactory()
@@ -56,7 +55,7 @@ class Returns200Test:
         assert offer_db.institution == institution
         assert offer_db.teacher.email == "maria.sklodowska@example.com"
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_change_offer_institution_link(self, client: Any) -> None:
         institution1 = factories.EducationalInstitutionFactory()
         stock = factories.CollectiveStockFactory(
@@ -76,7 +75,7 @@ class Returns200Test:
         assert offer_db.institution == institution2
         assert offer_db.teacher is None
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_delete_offer_institution_link(self, client: Any) -> None:
         institution = factories.EducationalInstitutionFactory()
         stock = factories.CollectiveStockFactory(
@@ -97,7 +96,7 @@ class Returns200Test:
 
         assert len(adage_api_testing.adage_requests) == 0
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", STATUSES_ALLOWING_EDIT_INSTITUTION)
     def test_change_institution_allowed_action(self, client, status) -> None:
         institution1 = factories.EducationalInstitutionFactory()
@@ -214,7 +213,7 @@ class Returns403Test:
         offer_db = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
         assert offer_db.institution == institution1
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", STATUSES_NOT_ALLOWING_EDIT_INSTITUTION)
     def test_change_institution_unallowed_action(self, client, status) -> None:
         institution1 = factories.EducationalInstitutionFactory()
@@ -231,7 +230,7 @@ class Returns403Test:
         offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
         assert offer.institution == institution1
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_change_institution_ended(self, client) -> None:
         institution1 = factories.EducationalInstitutionFactory()
         offer = factories.EndedCollectiveOfferFactory(booking_is_confirmed=True, institution=institution1)

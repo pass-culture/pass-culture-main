@@ -10,7 +10,6 @@ from pcapi.core.bookings.external.booking_notifications import notify_users_book
 from pcapi.core.bookings.external.booking_notifications import send_today_events_notifications_metropolitan_france
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers import factories as offers_factories
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.notifications.push import testing
 
@@ -19,7 +18,7 @@ from pcapi.notifications.push import testing
 # Set time to evening so that `send_today_events_notifications_metropolitan_france()`
 # finds test stock in its `13:00 - 24:00` window.
 @time_machine.travel("20:00:00")
-@override_features(WIP_DISABLE_TODAY_STOCK_NOTIFICATION=False)
+@pytest.mark.features(WIP_DISABLE_TODAY_STOCK_NOTIFICATION=False)
 def test_send_today_events_notifications_only_to_individual_bookings_users():
     """
     Test that each stock that is linked to an offer that occurs today and
@@ -58,7 +57,7 @@ def test_send_today_events_notifications_only_to_individual_bookings_users():
 # Set time to evening so that `send_today_events_notifications_metropolitan_france()`
 # finds test stock in its `13:00 - 24:00` window.
 @time_machine.travel("20:00:00")
-@override_features(WIP_DISABLE_TODAY_STOCK_NOTIFICATION=True)
+@pytest.mark.features(WIP_DISABLE_TODAY_STOCK_NOTIFICATION=True)
 def test_send_today_events_notifications_only_to_individual_bookings_users_with_FF():
     """
     Test that each stock that is linked to an offer that occurs today and
@@ -91,7 +90,7 @@ def test_send_today_events_notifications_only_to_individual_bookings_users_with_
 
 @pytest.mark.usefixtures("db_session")
 @pytest.mark.settings(SOON_EXPIRING_BOOKINGS_DAYS_BEFORE_EXPIRATION=3)
-@override_features(WIP_DISABLE_NOTIFY_USERS_BOOKINGS_NOT_RETRIEVED=False)
+@pytest.mark.features(WIP_DISABLE_NOTIFY_USERS_BOOKINGS_NOT_RETRIEVED=False)
 def test_notify_users_bookings_not_retrieved() -> None:
     user = users_factories.BeneficiaryGrant18Factory()
     stock = offers_factories.ThingStockFactory()
@@ -113,7 +112,7 @@ def test_notify_users_bookings_not_retrieved() -> None:
 
 @pytest.mark.usefixtures("db_session")
 @pytest.mark.settings(SOON_EXPIRING_BOOKINGS_DAYS_BEFORE_EXPIRATION=3)
-@override_features(WIP_DISABLE_NOTIFY_USERS_BOOKINGS_NOT_RETRIEVED=True)
+@pytest.mark.features(WIP_DISABLE_NOTIFY_USERS_BOOKINGS_NOT_RETRIEVED=True)
 def test_notify_users_bookings_not_retrieved_with_FF() -> None:
     user = users_factories.BeneficiaryGrant18Factory()
     stock = offers_factories.ThingStockFactory()
