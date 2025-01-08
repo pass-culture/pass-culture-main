@@ -1,8 +1,8 @@
 import { GetVenueResponseModel } from 'apiClient/v1'
 import { AccessibilityEnum } from 'commons/core/shared/types'
-import { DEFAULT_INTITIAL_OPENING_HOURS } from 'pages/VenueCreation/constants'
+import { DEFAULT_INTITIAL_OPENING_HOURS } from 'pages/VenueEdition/constants'
 
-import { DayValues, VenueEditionFormValues, Day } from './types'
+import { Day, DayValues, VenueEditionFormValues } from './types'
 
 export const setInitialFormValues = (
   venue: GetVenueResponseModel

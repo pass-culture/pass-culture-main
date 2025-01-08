@@ -8,11 +8,12 @@ import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { handleAddressSelect } from 'components/Address/Address'
 import { serializeAdressData } from 'components/Address/serializer'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { VenueCreationFormValues } from 'pages/VenueCreation/types'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 import { Toggle } from 'ui-kit/Toggle/Toggle'
+
+import { VenueSettingsFormValues } from '../types'
 
 import { isSiretStartingWithSiren, valideSiretLength } from './validationSchema'
 
@@ -36,7 +37,7 @@ export const SiretOrCommentFields = ({
   const [isSiretSelected, setIsSiretSelected] = useState(
     !isToggleDisabled || initialSiret.length > 0
   )
-  const { setFieldValue } = useFormikContext<VenueCreationFormValues>()
+  const { setFieldValue } = useFormikContext<VenueSettingsFormValues>()
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   /* istanbul ignore next: DEBT, TO FIX */

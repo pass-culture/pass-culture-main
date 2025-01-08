@@ -99,7 +99,7 @@ export const routes: RouteConfig[] = [
     title: 'Détails de la structure',
   },
   {
-    lazy: () => import('pages/VenueCreation/VenueCreation'),
+    element: <Navigate to="/parcours-inscription/structure" />,
     path: '/structures/:offererId/lieux/creation',
     title: 'Créer un lieu',
   },

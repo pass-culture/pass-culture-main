@@ -7,7 +7,7 @@ import {
   RenderWithProvidersOptions,
   renderWithProviders,
 } from 'commons/utils/renderWithProviders'
-import { VenueCreationFormValues } from 'pages/VenueCreation/types'
+import { VenueEditionFormValues } from 'pages/VenueEdition/types'
 import { Button } from 'ui-kit/Button/Button'
 
 import { Accessibility, AccessiblityProps } from '../Accessibility'
@@ -15,7 +15,7 @@ import { Accessibility, AccessiblityProps } from '../Accessibility'
 const onSubmit = vi.fn()
 
 const renderAccessibility = (
-  initialValues: Partial<VenueCreationFormValues>,
+  initialValues: Partial<VenueEditionFormValues>,
   props: Partial<AccessiblityProps> = {},
   overrides: RenderWithProvidersOptions = {}
 ) => {
@@ -33,7 +33,7 @@ const renderAccessibility = (
 }
 
 describe('Accessibility', () => {
-  let initialValues: Partial<VenueCreationFormValues>
+  let initialValues: Partial<VenueEditionFormValues>
 
   beforeEach(() => {
     initialValues = {
