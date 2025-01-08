@@ -1,13 +1,14 @@
 from decimal import Decimal
 from unittest import mock
 
+import pytest
+
 from pcapi.connectors.clickhouse import queries as clickhouse_queries
 from pcapi.connectors.clickhouse import query_mock
-from pcapi.core.testing import override_settings
 
 
 class GetYearlyAggregatedOffererRevenueTest:
-    @override_settings(CLICKHOUSE_BACKEND="pcapi.connectors.clickhouse.testing_backend.TestingBackend")
+    @pytest.mark.settings(CLICKHOUSE_BACKEND="pcapi.connectors.clickhouse.testing_backend.TestingBackend")
     def test_get_yearly_revenue(self):
         venue_ids = [1, 2]
 

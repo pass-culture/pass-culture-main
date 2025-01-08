@@ -5,7 +5,6 @@ import pytest
 from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 from pcapi.core.history import models as history_models
 import pcapi.core.offerers.models as offerers_models
-from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 
 from tests.connectors import sirene_test_data
@@ -90,7 +89,7 @@ class Returns200Test:
             "name": "MINISTERE DE LA CULTURE",
         }
 
-    @override_settings(IS_INTEGRATION=True)
+    @pytest.mark.settings(IS_INTEGRATION=True)
     def test_validated_in_integration(self, client):
         user = users_factories.UserFactory(email="pro@example.com")
 
@@ -132,7 +131,7 @@ class Returns400Test:
         assert offerers_models.UserOfferer.query.count() == 0
         assert offerers_models.Venue.query.count() == 0
 
-    @override_settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
+    @pytest.mark.settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
     def test_inactive_siret(self, requests_mock, client):
         siret = REQUEST_BODY["siret"]
 

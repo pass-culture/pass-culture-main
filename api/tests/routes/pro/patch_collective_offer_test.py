@@ -17,7 +17,6 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.models import OfferValidationStatus
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
@@ -55,7 +54,7 @@ class Returns200Test:
 
     @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @time_machine.travel("2019-01-01 12:00:00")
-    @override_settings(ADAGE_API_URL="https://adage_base_url")
+    @pytest.mark.settings(ADAGE_API_URL="https://adage_base_url")
     def test_patch_collective_offer(self, client):
         offer = educational_factories.CollectiveOfferFactory(
             mentalDisabilityCompliant=False,
@@ -147,7 +146,7 @@ class Returns200Test:
         assert adage_request["url"] == "https://adage_base_url/v1/prereservation-edit"
 
     @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
-    @override_settings(ADAGE_API_URL="https://adage_base_url")
+    @pytest.mark.settings(ADAGE_API_URL="https://adage_base_url")
     def test_patch_collective_offer_do_not_notify_educational_redactor_when_no_booking(self, client):
         offer = educational_factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
@@ -475,7 +474,7 @@ class Returns400Test:
         assert response.status_code == 400
 
     @time_machine.travel("2019-01-01T12:00:00Z")
-    @override_settings(ADAGE_API_URL="https://adage_base_url")
+    @pytest.mark.settings(ADAGE_API_URL="https://adage_base_url")
     def test_update_collective_offer_with_unknown_national_program(self, client):
         offer = educational_factories.CollectiveOfferFactory(
             mentalDisabilityCompliant=False,

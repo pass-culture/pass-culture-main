@@ -4,7 +4,6 @@ from flask import url_for
 import pytest
 
 from pcapi import settings
-from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 
@@ -55,7 +54,7 @@ class UserGenerationGetRouteTest(GetEndpointWithoutPermissionHelper):
         assert response.status_code == 200
         assert "Aller sur l'app" not in html_parser.content_as_text(response.data)
 
-    @override_settings(UBBLE_MOCK_CONFIG_URL=None)
+    @pytest.mark.settings(UBBLE_MOCK_CONFIG_URL=None)
     def test_does_not_contain_link_to_ubble_mock_if_not_url(self, authenticated_client):
         generated_user = users_factories.BaseUserFactory()
 
@@ -64,14 +63,14 @@ class UserGenerationGetRouteTest(GetEndpointWithoutPermissionHelper):
         assert response.status_code == 200
         assert "Configuration du mock Ubble pour l'utilisateur" not in html_parser.content_as_text(response.data)
 
-    @override_settings(UBBLE_MOCK_CONFIG_URL="http://mock-ubble.team")
+    @pytest.mark.settings(UBBLE_MOCK_CONFIG_URL="http://mock-ubble.team")
     def test_does_not_contain_link_to_ubble_mock_if_url_and_not_user(self, authenticated_client):
         response = authenticated_client.get(url_for(self.endpoint, userId=999999999))
 
         assert response.status_code == 200
         assert "Configuration du mock Ubble pour l'utilisateur" not in html_parser.content_as_text(response.data)
 
-    @override_settings(UBBLE_MOCK_CONFIG_URL="http://mock-ubble.team/")
+    @pytest.mark.settings(UBBLE_MOCK_CONFIG_URL="http://mock-ubble.team/")
     def test_contains_link_to_ubble_mock_if_url_and_user_id(self, authenticated_client):
         generated_user = users_factories.BaseUserFactory()
         link_to_ubble_mock = (
@@ -89,7 +88,7 @@ class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermis
     endpoint = "backoffice_web.dev.generate_user"
     needed_permission = None
 
-    @override_settings(ENABLE_TEST_USER_GENERATION=False)
+    @pytest.mark.settings(ENABLE_TEST_USER_GENERATION=False)
     def test_returns_not_found_if_generation_disabled(self, authenticated_client):
         form = {"age": "18", "id_provider": "UBBLE", "step": "BENEFICIARY"}
         response = self.post_to_endpoint(authenticated_client, form=form)
@@ -164,7 +163,7 @@ class UserDeletionPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermissi
         assert users_models.User.query.filter(users_models.User.id == user.id).one_or_none() is not None
         assert urllib.parse.urlparse(response.headers["location"]).path == url_for("backoffice_web.dev.delete_user")
 
-    @override_settings(ENABLE_TEST_USER_GENERATION=0)
+    @pytest.mark.settings(ENABLE_TEST_USER_GENERATION=0)
     def test_user_deletion_disabled(self, authenticated_client):
         user = users_factories.BeneficiaryFactory()
 
@@ -178,12 +177,12 @@ class ComponentsTest(GetEndpointWithoutPermissionHelper):
     endpoint = "backoffice_web.dev.components"
     needed_permission = None
 
-    @override_settings(ENABLE_BO_COMPONENT_PAGE=1)
+    @pytest.mark.settings(ENABLE_BO_COMPONENT_PAGE=1)
     def test_returns_user_data(self, authenticated_client):
         response = authenticated_client.get(url_for(self.endpoint))
         assert response.status_code == 200
 
-    @override_settings(ENABLE_BO_COMPONENT_PAGE=0)
+    @pytest.mark.settings(ENABLE_BO_COMPONENT_PAGE=0)
     def test_returns_user_data(self, authenticated_client):
         response = authenticated_client.get(url_for(self.endpoint))
         assert response.status_code == 404

@@ -14,7 +14,6 @@ from unittest.mock import patch
 import pytest
 import time_machine
 
-from pcapi import settings
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 from pcapi.core import search
 import pcapi.core.bookings.factories as bookings_factories
@@ -45,7 +44,6 @@ import pcapi.core.providers.repository as providers_repository
 import pcapi.core.reactions.factories as reactions_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 from pcapi.models import api_errors
@@ -1184,7 +1182,7 @@ class CreateMediationV2Test:
     THUMBS_DIR = BASE_THUMBS_DIR / "thumbs" / "mediations"
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    @override_settings(LOCAL_STORAGE_DIR=BASE_THUMBS_DIR)
+    @pytest.mark.settings(LOCAL_STORAGE_DIR=BASE_THUMBS_DIR)
     @pytest.mark.usefixtures("db_session")
     def test_ok(self, mocked_async_index_offer_ids, clear_tests_assets_bucket):
         # Given
@@ -1207,7 +1205,7 @@ class CreateMediationV2Test:
             reason=search.IndexationReason.MEDIATION_CREATION,
         )
 
-    @override_settings(LOCAL_STORAGE_DIR=BASE_THUMBS_DIR)
+    @pytest.mark.settings(LOCAL_STORAGE_DIR=BASE_THUMBS_DIR)
     @pytest.mark.usefixtures("db_session")
     def test_erase_former_mediations(self, clear_tests_assets_bucket):
         # Given
@@ -1239,7 +1237,7 @@ class CreateMediationV2Test:
         assert (self.THUMBS_DIR / (thumb_3_id + ".type")).exists()
 
     @mock.patch("pcapi.core.object_storage.store_public_object", side_effect=Exception)
-    @override_settings(LOCAL_STORAGE_DIR=BASE_THUMBS_DIR)
+    @pytest.mark.settings(LOCAL_STORAGE_DIR=BASE_THUMBS_DIR)
     @pytest.mark.usefixtures("clean_database")
     # this test needs "clean_database" instead of "db_session" fixture because with the latter, the mediation would still be present in databse
     def test_rollback_if_exception(self, mock_store_public_object, clear_tests_assets_bucket):
@@ -3060,7 +3058,7 @@ class ResolveOfferValidationRuleTest:
 @pytest.mark.usefixtures("db_session")
 class UnindexExpiredOffersTest:
     @time_machine.travel("2020-01-05 10:00:00")
-    @override_settings(ALGOLIA_DELETING_OFFERS_CHUNK_SIZE=2)
+    @pytest.mark.settings(ALGOLIA_DELETING_OFFERS_CHUNK_SIZE=2)
     @mock.patch("pcapi.core.search.unindex_offer_ids")
     def test_default_run(self, mock_unindex_offer_ids):
         # Given
@@ -3098,9 +3096,8 @@ class UnindexExpiredOffersTest:
 
 @pytest.mark.usefixtures("db_session")
 class WhitelistExistingProductTest:
-    @override_settings(TITELIVE_EPAGINE_API_USERNAME="test@example.com")
-    @override_settings(TITELIVE_EPAGINE_API_PASSWORD="qwerty123")
-    def test_modify_product_if_existing_and_not_gcu_compatible(self, requests_mock):
+    @pytest.mark.settings(TITELIVE_EPAGINE_API_USERNAME="test@example.com", TITELIVE_EPAGINE_API_PASSWORD="qwerty123")
+    def test_modify_product_if_existing_and_not_gcu_compatible(self, requests_mock, settings):
         ean = "9782070455379"
         requests_mock.post(
             f"{settings.TITELIVE_EPAGINE_API_AUTH_URL}/login/test@example.com/token",
@@ -3156,9 +3153,8 @@ class WhitelistExistingProductTest:
         assert product.extraData["gtl_id"] == "01050000"
         assert product.extraData["code_clil"] == "3665"
 
-    @override_settings(TITELIVE_EPAGINE_API_USERNAME="test@example.com")
-    @override_settings(TITELIVE_EPAGINE_API_PASSWORD="qwerty123")
-    def test_create_product_if_not_existing(self, requests_mock):
+    @pytest.mark.settings(TITELIVE_EPAGINE_API_USERNAME="test@example.com", TITELIVE_EPAGINE_API_PASSWORD="qwerty123")
+    def test_create_product_if_not_existing(self, requests_mock, settings):
         ean = "9782070455379"
         requests_mock.post(
             f"{settings.TITELIVE_EPAGINE_API_AUTH_URL}/login/test@example.com/token",

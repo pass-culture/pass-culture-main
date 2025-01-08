@@ -23,7 +23,6 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as sendinblue_testing
@@ -192,7 +191,7 @@ class SigninTest:
         }
 
     @override_features(ENABLE_NATIVE_APP_RECAPTCHA=False)
-    @override_settings(RECAPTCHA_IGNORE_VALIDATION=0)
+    @pytest.mark.settings(RECAPTCHA_IGNORE_VALIDATION=0)
     @patch("pcapi.connectors.api_recaptcha.get_token_validation_and_score")
     def should_not_check_recaptcha_when_feature_flag_is_disabled(self, mocked_recaptcha_validation, client):
         mocked_recaptcha_validation.return_value = {"success": False, "error-codes": []}
@@ -207,7 +206,7 @@ class SigninTest:
 
         assert response.status_code == 200
 
-    @override_settings(RECAPTCHA_IGNORE_VALIDATION=0)
+    @pytest.mark.settings(RECAPTCHA_IGNORE_VALIDATION=0)
     @patch("pcapi.connectors.api_recaptcha.get_token_validation_and_score")
     @pytest.mark.parametrize("error", ["invalid-input-response", "timeout-or-duplicate"])
     def test_fail_when_recaptcha_token_is_invalid(self, mocked_recaptcha_validation, error, client):
@@ -224,7 +223,7 @@ class SigninTest:
         assert response.status_code == 401
         assert response.json == {"token": "Le token est invalide"}
 
-    @override_settings(RECAPTCHA_IGNORE_VALIDATION=0)
+    @pytest.mark.settings(RECAPTCHA_IGNORE_VALIDATION=0)
     def test_fail_when_recaptcha_token_is_missing(self, client):
         data = {
             "identifier": "user@test.com",

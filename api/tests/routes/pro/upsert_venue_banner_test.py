@@ -19,7 +19,7 @@ IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 class Returns201Test:
     @time_machine.travel("2020-10-15 00:00:00")
     @patch("pcapi.core.search.async_index_venue_ids")
-    def test_upload_image(self, mock_search_async_index_venue_ids, client, tmpdir):
+    def test_upload_image(self, mock_search_async_index_venue_ids, client, tmpdir, settings):
         """
         Check that the image upload works for a legit file (size and type):
             * API returns a 201 status code
@@ -40,28 +40,28 @@ class Returns201Test:
         # Override storage url otherwise it would be, well, an URL
         # (like http://localhost) and make some checks more difficult.
         # Override local storage and use a temporary directory instead.
-        with testing.override_settings(
-            OBJECT_STORAGE_URL=tmpdir.dirname, LOCAL_STORAGE_DIR=pathlib.Path(tmpdir.dirname)
-        ):
-            response = client.post(url, files=file)
-            assert response.status_code == 201
+        settings.OBJECT_STORAGE_URL = tmpdir.dirname
+        settings.LOCAL_STORAGE_DIR = pathlib.Path(tmpdir.dirname)
 
-            url_prefix = pathlib.Path(tmpdir.dirname) / "thumbs" / "venues"
+        response = client.post(url, files=file)
+        assert response.status_code == 201
 
-            banner_url_timestamp = 1602720000
-            assert response.json["bannerUrl"] == str(url_prefix / f"{humanize(venue.id)}_{banner_url_timestamp}")
+        url_prefix = pathlib.Path(tmpdir.dirname) / "thumbs" / "venues"
 
-            original_banner_url_timestamp = 1602720001
-            assert response.json["bannerMeta"] == {
-                "image_credit": "none",
-                "original_image_url": str(url_prefix / f"{humanize(venue.id)}_{original_banner_url_timestamp}"),
-                "crop_params": {
-                    "x_crop_percent": 0.0,
-                    "y_crop_percent": 0.0,
-                    "height_crop_percent": 0.6,
-                    "width_crop_percent": 0.9,
-                },
-            }
+        banner_url_timestamp = 1602720000
+        assert response.json["bannerUrl"] == str(url_prefix / f"{humanize(venue.id)}_{banner_url_timestamp}")
+
+        original_banner_url_timestamp = 1602720001
+        assert response.json["bannerMeta"] == {
+            "image_credit": "none",
+            "original_image_url": str(url_prefix / f"{humanize(venue.id)}_{original_banner_url_timestamp}"),
+            "crop_params": {
+                "x_crop_percent": 0.0,
+                "y_crop_percent": 0.0,
+                "height_crop_percent": 0.6,
+                "width_crop_percent": 0.9,
+            },
+        }
 
 
 class Returns400Test:
@@ -92,7 +92,7 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["code"] == "INVALID_BANNER_PARAMS"
 
-    def test_upload_image_bad_ratio(self, client, tmpdir):
+    def test_upload_image_bad_ratio(self, client, tmpdir, settings):
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
@@ -108,9 +108,9 @@ class Returns400Test:
         # Override storage url otherwise it would be, well, an URL
         # (like http://localhost) and make some checks more difficult.
         # Override local storage and use a temporary directory instead.
-        with testing.override_settings(
-            OBJECT_STORAGE_URL=tmpdir.dirname, LOCAL_STORAGE_DIR=pathlib.Path(tmpdir.dirname)
-        ):
-            response = client.post(url, files=file)
-            assert response.status_code == 400
-            assert response.json["code"] == "BAD_IMAGE_RATIO"
+        settings.OBJECT_STORAGE_URL = (tmpdir.dirname,)
+        settings.LOCAL_STORAGE_DIR = pathlib.Path(tmpdir.dirname)
+
+        response = client.post(url, files=file)
+        assert response.status_code == 400
+        assert response.json["code"] == "BAD_IMAGE_RATIO"

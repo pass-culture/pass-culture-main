@@ -24,7 +24,6 @@ from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.routes.backoffice.bookings import forms
@@ -939,7 +938,7 @@ class CancelBookingTest(PostEndpointHelper):
         )
 
     @override_features(ENABLE_EMS_INTEGRATION=True)
-    @override_settings(EMS_SUPPORT_EMAIL_ADDRESS="ems.support@example.com")
+    @pytest.mark.settings(EMS_SUPPORT_EMAIL_ADDRESS="ems.support@example.com")
     def test_ems_cancel_external_booking_from_backoffice(self, authenticated_client, requests_mock):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         ems_provider = get_provider_by_local_class("EMSStocks")

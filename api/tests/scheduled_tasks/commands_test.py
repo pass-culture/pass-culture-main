@@ -14,7 +14,6 @@ from pcapi.core.mails.transactional.bookings.booking_event_reminder_to_beneficia
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 import pcapi.notifications.push.testing as notifications_testing
 from pcapi.scheduled_tasks.commands import _send_notification_favorites_not_booked
 from pcapi.scheduled_tasks.commands import send_email_reminder_tomorrow_event_to_beneficiaries
@@ -115,7 +114,7 @@ class SendNotificationFavoritesNotBookedTest:
         user_ids = {*requests[0]["user_ids"], *requests[1]["user_ids"]}
         assert user_ids == {1, 2, 3}
 
-    @override_settings(BATCH_MAX_USERS_PER_TRANSACTIONAL_NOTIFICATION=2)
+    @pytest.mark.settings(BATCH_MAX_USERS_PER_TRANSACTIONAL_NOTIFICATION=2)
     @override_features(WIP_DISABLE_SEND_NOTIFICATIONS_FAVORITES_NOT_BOOKED=False)
     def test_send_with_split_because_too_many_users(self):
         rows = [

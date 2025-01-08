@@ -9,12 +9,11 @@ import requests_mock
 from pcapi import settings
 from pcapi.connectors.entreprise import api
 from pcapi.connectors.entreprise import exceptions
-from pcapi.core.testing import override_settings
 
 from . import api_entreprise_test_data
 
 
-@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siren_without_address():
     siren = "123456789"
     with requests_mock.Mocker() as mock:
@@ -35,7 +34,7 @@ def test_get_siren_without_address():
         assert siren_info.creation_date == datetime.date(2019, 7, 23)
 
 
-@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siren_with_address():
     siren = "123456789"
     with requests_mock.Mocker() as mock:
@@ -62,7 +61,7 @@ def test_get_siren_with_address():
     assert siren_info.siren == siren
 
 
-@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siren_of_entreprise_individuelle():
     siren = "111222333"
     with requests_mock.Mocker() as mock:
@@ -85,7 +84,7 @@ def test_get_siren_of_entreprise_individuelle():
         assert siren_info.creation_date == datetime.date(2024, 1, 1)
 
 
-@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siren_with_non_public_data():
     siren = "123456789"
     with requests_mock.Mocker() as mock:
@@ -97,7 +96,7 @@ def test_get_siren_with_non_public_data():
             api.get_siren(siren, with_address=False)
 
 
-@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siren_with_non_public_data_do_not_raise():
     siren = "987654321"
     with requests_mock.Mocker() as mock:
@@ -120,7 +119,7 @@ def test_get_siren_with_non_public_data_do_not_raise():
         assert siren_info.creation_date == datetime.date(2021, 4, 12)
 
 
-@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siren_of_inactive_company():
     siren = "777899888"
     with requests_mock.Mocker() as mock:
@@ -141,7 +140,7 @@ def test_get_siren_of_inactive_company():
         assert siren_info.creation_date == datetime.date(2010, 1, 1)
 
 
-@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siren_without_ape():
     siren = "194700936"
     with requests_mock.Mocker() as mock:
@@ -155,7 +154,7 @@ def test_get_siren_without_ape():
         assert siren_info.ape_code is None
 
 
-@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siren_without_creation_date():
     siren = "123456789"
     with requests_mock.Mocker() as mock:
@@ -169,7 +168,7 @@ def test_get_siren_without_creation_date():
         assert siren_info.creation_date is None
 
 
-@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siren_invalid_parameter():
     siren = "111111111"
     with requests_mock.Mocker() as mock:
@@ -183,7 +182,7 @@ def test_get_siren_invalid_parameter():
         assert str(error.value) == "Le numéro de siren n'est pas correctement formatté"
 
 
-@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siren_pass_culture():
     siren = settings.PASS_CULTURE_SIRET[:9]
     with pytest.raises(exceptions.EntrepriseException) as error:
@@ -191,7 +190,7 @@ def test_get_siren_pass_culture():
     assert str(error.value) == "Pass Culture"
 
 
-@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siren_reached_rate_limit():
     siren = "194700936"
     with requests_mock.Mocker() as mock:
@@ -210,7 +209,7 @@ def test_get_siren_reached_rate_limit():
         assert str(error.value) == "Vous avez effectué trop de requêtes"
 
 
-@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siret():
     siret = "12345678900017"
     with requests_mock.Mocker() as mock:
@@ -235,7 +234,7 @@ def test_get_siret():
     assert siret_info.siret == siret
 
 
-@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siret_of_entreprise_individuelle():
     siret = "12345678900045"
     with requests_mock.Mocker() as mock:
@@ -256,7 +255,7 @@ def test_get_siret_of_entreprise_individuelle():
         assert siret_info.diffusible is True
 
 
-@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siret_with_non_public_data():
     siret = "12345678900017"
     with requests_mock.Mocker() as mock:
@@ -268,7 +267,7 @@ def test_get_siret_with_non_public_data():
             api.get_siret(siret)
 
 
-@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siret_with_non_public_data_do_not_raise():
     siret = "12345678900017"
     with requests_mock.Mocker() as mock:
@@ -289,7 +288,7 @@ def test_get_siret_with_non_public_data_do_not_raise():
         assert siret_info.diffusible is False
 
 
-@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siret_of_inactive_company():
     siret = "77789988800021"
     with requests_mock.Mocker() as mock:
@@ -326,7 +325,7 @@ def test_get_siret_of_inactive_company():
         (504, exceptions.ApiException),
     ],
 )
-@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_error_handling(status_code, expected_exception):
     siret = "invalid"
     with requests_mock.Mocker() as mock:
@@ -338,7 +337,7 @@ def test_error_handling(status_code, expected_exception):
             api.get_siret(siret)
 
 
-@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_error_handling_on_non_json_response():
     siret = "anything"
     with requests_mock.Mocker() as mock:
@@ -351,7 +350,7 @@ def test_error_handling_on_non_json_response():
             api.get_siret(siret)
 
 
-@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_rcs_registered():
     siren = "123456789"
     with requests_mock.Mocker() as mock:
@@ -374,7 +373,7 @@ def test_get_rcs_registered():
         assert not rcs_info.observations
 
 
-@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_rcs_deregistered():
     siren = "123456789"
     with requests_mock.Mocker() as mock:
@@ -397,7 +396,7 @@ def test_get_rcs_deregistered():
         assert rcs_info.observations[1].label == "DEUXIEME OBSERVATION"
 
 
-@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_rcs_not_registered():
     siren = "123456789"
     with requests_mock.Mocker() as mock:
@@ -410,7 +409,7 @@ def test_get_rcs_not_registered():
         assert rcs_info.registered is False
 
 
-@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_urssaf_ok():
     siren = "123456789"
     with requests_mock.Mocker() as mock:
@@ -431,7 +430,7 @@ def test_get_urssaf_ok():
         assert urssaf_info.verification_code == "ABCD1234EFGH567"
 
 
-@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_urssaf_refused():
     siren = "123456789"
     with requests_mock.Mocker() as mock:
@@ -451,7 +450,7 @@ def test_get_urssaf_refused():
         assert urssaf_info.verification_code is None
 
 
-@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_urssaf_not_found():
     siren = "123456789"
     with requests_mock.Mocker() as mock:
@@ -465,7 +464,7 @@ def test_get_urssaf_not_found():
         assert str(error.value) == "Le siren est inconnu du SI Attestations, radié ou hors périmètre"
 
 
-@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_dgfip_ok():
     siren = "123456789"
     with requests_mock.Mocker() as mock:
@@ -477,7 +476,7 @@ def test_get_dgfip_ok():
         assert dgfip_info.attestation_delivered is True
 
 
-@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_dgfip_entreprise_individuelle():
     siren = "123456789"
     with requests_mock.Mocker() as mock:
@@ -495,7 +494,7 @@ def test_get_dgfip_entreprise_individuelle():
         )
 
 
-@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_dgfip_inactive_company():
     siren = "123456789"
     with requests_mock.Mocker() as mock:
@@ -512,7 +511,7 @@ def test_get_dgfip_inactive_company():
         )
 
 
-@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 @unittest.mock.patch("time.sleep")
 @unittest.mock.patch("flask.current_app.redis_client.set")
 @unittest.mock.patch("flask.current_app.redis_client.ttl", return_value=-1)
@@ -539,7 +538,7 @@ def test_check_rate_limit_ok(mock_redis_client_ttl, mock_redis_client_set, mock_
     assert caplog.records == []
 
 
-@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 @pytest.mark.parametrize("seconds", [15, 0])
 @unittest.mock.patch("flask.current_app.redis_client.set")
 def test_check_rate_limit_near_limit(mock_redis_client_set, seconds, caplog):
@@ -572,7 +571,7 @@ def test_check_rate_limit_near_limit(mock_redis_client_set, seconds, caplog):
     assert caplog.records[0].extra["percent"] == 82.0
 
 
-@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 @unittest.mock.patch("time.sleep")
 @unittest.mock.patch("flask.current_app.redis_client.set")
 @unittest.mock.patch("flask.current_app.redis_client.ttl", side_effect=[20, -1])
@@ -596,7 +595,7 @@ def test_rate_limit_locked(mock_redis_client_ttl, mock_redis_client_set, mock_sl
     assert mock_redis_client_set.call_count == 1  # cached data only
 
 
-@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 @unittest.mock.patch("time.sleep")
 @unittest.mock.patch("flask.current_app.redis_client.set")
 @unittest.mock.patch("flask.current_app.redis_client.ttl", return_value=20)

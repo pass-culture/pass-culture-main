@@ -1,7 +1,6 @@
 import pytest
 
 from pcapi.core.auth.api import extract_roles_from_google_workspace_groups
-from pcapi.core.testing import override_settings
 
 from .factories import GoogleWorkspaceGroup
 from .factories import GoogleWorkspaceGroupList
@@ -10,7 +9,7 @@ from .factories import GoogleWorkspaceGroupList
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-@override_settings(ENV="staging")
+@pytest.mark.settings(ENV="staging")
 def test_can_extract_roles_from_google_workspace_groups():
     # given
     backoffice_groups = ["backoffice-staging-admin", "backoffice-testing-pro_support"]

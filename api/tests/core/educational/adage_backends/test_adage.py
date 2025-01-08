@@ -6,7 +6,6 @@ from pcapi.core.educational.adage_backends.serialize import serialize_collective
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer_request
 from pcapi.core.educational.exceptions import AdageException
 from pcapi.core.educational.exceptions import AdageInvalidEmailException
-from pcapi.core.testing import override_settings
 from pcapi.routes.adage.v1.serialization import prebooking
 
 
@@ -35,7 +34,7 @@ ADAGE_RESPONSE_FOR_ERROR = {
 
 
 @pytest.mark.usefixtures("db_session")
-@override_settings(ADAGE_API_URL=MOCK_API_URL)
+@pytest.mark.settings(ADAGE_API_URL=MOCK_API_URL)
 class AdageHttpClientTest:
     def test_notify_prebooking_success_if_201(self, requests_mock):
         adage_client = AdageHttpClient()

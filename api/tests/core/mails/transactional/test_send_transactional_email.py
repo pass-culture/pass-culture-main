@@ -10,7 +10,6 @@ from pcapi.core.mails import models
 from pcapi.core.mails.transactional.send_transactional_email import send_transactional_email
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.email_address_change_confirmation import send_email_confirmation_email
-from pcapi.core.testing import override_settings
 import pcapi.core.users.constants as users_constants
 import pcapi.core.users.factories as users_factories
 from pcapi.tasks.serialization.sendinblue_tasks import SendTransactionalEmailRequest
@@ -193,7 +192,7 @@ class TransactionalEmailWithTemplateTest:
         }
         assert mock_send_transac_email.call_args[0][0].headers == {"X-List-Unsub": "disabled"}
 
-    @override_settings(EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend")
+    @pytest.mark.settings(EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend")
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_primary_task.delay")
     def test_to_dev_send_email_confirmation_email(self, mock_send_transactional_email_task, db_session):
         user = users_factories.UserFactory(email="john.stiles@gmail.com")

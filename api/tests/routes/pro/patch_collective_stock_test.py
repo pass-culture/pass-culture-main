@@ -14,7 +14,6 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
@@ -157,7 +156,7 @@ class Return200Test:
         assert len(adage_api_testing.adage_requests) == 0
 
     @time_machine.travel("2020-11-17 15:00:00")
-    @override_settings(ADAGE_API_URL="https://adage_base_url")
+    @pytest.mark.settings(ADAGE_API_URL="https://adage_base_url")
     def test_edit_collective_stock_with_pending_booking(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory(
@@ -202,7 +201,7 @@ class Return200Test:
         assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/prereservation-edit"
 
     @time_machine.travel("2020-11-17 15:00:00")
-    @override_settings(ADAGE_API_URL="https://adage_base_url")
+    @pytest.mark.settings(ADAGE_API_URL="https://adage_base_url")
     def test_edit_collective_stock_does_not_send_notification_when_no_modification(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory(
@@ -228,7 +227,7 @@ class Return200Test:
         assert len(adage_api_testing.adage_requests) == 0
 
     @time_machine.travel("2020-11-17 15:00:00")
-    @override_settings(ADAGE_API_URL="https://adage_base_url")
+    @pytest.mark.settings(ADAGE_API_URL="https://adage_base_url")
     def test_edit_collective_stock_update_booking_educational_year(self, client):
         # Given
         educational_year_2021_2022 = educational_factories.EducationalYearFactory(

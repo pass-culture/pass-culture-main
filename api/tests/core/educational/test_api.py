@@ -15,7 +15,6 @@ from pcapi.core.educational.api.offer import unindex_expired_collective_offers_t
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
 from pcapi.core.offers import exceptions as offers_exceptions
-from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.serialization import collective_stock_serialize
@@ -94,7 +93,7 @@ class CreateCollectiveOfferStocksTest:
 @pytest.mark.usefixtures("db_session")
 class UnindexExpiredOffersTest:
     @time_machine.travel("2020-01-05 10:00:00")
-    @override_settings(ALGOLIA_DELETING_COLLECTIVE_OFFERS_CHUNK_SIZE=2)
+    @pytest.mark.settings(ALGOLIA_DELETING_COLLECTIVE_OFFERS_CHUNK_SIZE=2)
     @mock.patch("pcapi.core.search.unindex_collective_offer_template_ids")
     def test_default_run_template(self, mock_unindex_collective_offer_template_ids) -> None:
         # Given

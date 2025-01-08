@@ -8,7 +8,6 @@ import pytest
 
 from pcapi.core import token as token_utils
 import pcapi.core.mails.testing as mails_testing
-from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 import pcapi.core.users.constants as users_constants
@@ -40,7 +39,7 @@ class UpdateUserEmailTest:
 
         assert response.status_code == 401, response.json
 
-    @override_settings(MAX_EMAIL_UPDATE_ATTEMPTS=1)
+    @pytest.mark.settings(MAX_EMAIL_UPDATE_ATTEMPTS=1)
     @patch("pcapi.core.users.email.update.check_no_ongoing_email_update_request")
     def test_update_email_too_many_attempts(self, _ongoing_email_check_mock, client):
         user = users_factories.UserFactory()

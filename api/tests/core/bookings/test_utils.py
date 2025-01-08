@@ -7,7 +7,6 @@ import time_machine
 
 import pcapi.core.bookings.utils as utils
 from pcapi.core.categories import subcategories_v2 as subcategories
-from pcapi.core.testing import override_settings
 
 
 @pytest.mark.parametrize(
@@ -25,7 +24,7 @@ def test_get_cooldown_datetime_by_subcategories(subcategory_id, cooldown_datetim
     assert utils.get_cooldown_datetime_by_subcategories(subcategory_id) == cooldown_datetime
 
 
-@override_settings(SUGGEST_REACTION_SHORT_COOLDOWN_IN_SECONDS=30, SUGGEST_REACTION_LONG_COOLDOWN_IN_SECONDS=300)
+@pytest.mark.settings(SUGGEST_REACTION_SHORT_COOLDOWN_IN_SECONDS=30, SUGGEST_REACTION_LONG_COOLDOWN_IN_SECONDS=300)
 def test_get_cooldown_datetime_by_subcategories_env():
     # Reload utils to recalculate SUGGEST_REACTION_COOLDOWN_IN_SECONDS impacted by env vars
     importlib.reload(utils)

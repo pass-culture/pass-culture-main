@@ -8,7 +8,6 @@ from pcapi import settings
 from pcapi.connectors.beneficiaries import ubble
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 from pcapi.core.users.models import GenderEnum
 from pcapi.utils import requests
 
@@ -179,7 +178,7 @@ class StartIdentificationV1Test:
 
 
 class ShouldUseMockTest:
-    @override_settings(UBBLE_MOCK_API_URL="")
+    @pytest.mark.settings(UBBLE_MOCK_API_URL="")
     @mock.patch("pcapi.utils.requests.get")
     def test_return_early_false_if_mock_url_not_defined(self, mock_get):
         result = ubble._should_use_mock("id")
@@ -187,7 +186,7 @@ class ShouldUseMockTest:
         assert result is False
         assert mock_get.call_count == 0
 
-    @override_settings(UBBLE_MOCK_API_URL="http://mock-ubble.com")
+    @pytest.mark.settings(UBBLE_MOCK_API_URL="http://mock-ubble.com")
     @mock.patch("pcapi.utils.requests.get")
     def test_return_early_false_if_id_not_provided(self, mock_get):
         result = ubble._should_use_mock()
@@ -195,7 +194,7 @@ class ShouldUseMockTest:
         assert result is False
         assert mock_get.call_count == 0
 
-    @override_settings(UBBLE_MOCK_API_URL="http://mock-ubble.com")
+    @pytest.mark.settings(UBBLE_MOCK_API_URL="http://mock-ubble.com")
     @pytest.mark.parametrize("id_,status_code,expected_result", [("whatever", 200, True), ("whatever", 404, False)])
     @mock.patch("pcapi.utils.requests.get")
     def test_calls_mock_route_and_decide_base_url(self, mock_get, id_, status_code, expected_result):
@@ -212,19 +211,19 @@ class ShouldUseMockTest:
 
 
 class BuildUrlTest:
-    @override_settings(UBBLE_API_URL="http://example.com/partial/path")
+    @pytest.mark.settings(UBBLE_API_URL="http://example.com/partial/path")
     def test_add_slash_if_missing(self):
         url = ubble.build_url("and/end")
 
         assert url == "http://example.com/partial/path/and/end"
 
-    @override_settings(UBBLE_API_URL="http://example.com/partial/path")
+    @pytest.mark.settings(UBBLE_API_URL="http://example.com/partial/path")
     def test_dont_add_slash_if_given(self):
         url = ubble.build_url("/and/end")
 
         assert url == "http://example.com/partial/path/and/end"
 
-    @override_settings(UBBLE_API_URL="http://example.com/partial/path/")
+    @pytest.mark.settings(UBBLE_API_URL="http://example.com/partial/path/")
     def test_remove_slash_if_given_twice(self):
         url = ubble.build_url("/and/end")
 

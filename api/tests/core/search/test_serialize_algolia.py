@@ -17,7 +17,6 @@ import pcapi.core.offers.models as offers_models
 from pcapi.core.providers.constants import BookFormat
 from pcapi.core.search.backends import algolia
 from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 from pcapi.routes.adage_iframe.serialization.offers import OfferAddressType
 from pcapi.utils.human_ids import humanize
 
@@ -25,7 +24,7 @@ from pcapi.utils.human_ids import humanize
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-@override_settings(ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS=[1, 2, 3, 4])
+@pytest.mark.settings(ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS=[1, 2, 3, 4])
 @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
 @time_machine.travel("2024-01-01T00:00:00", tick=False)
 def test_serialize_offer():
@@ -137,7 +136,7 @@ def test_serialize_offer():
     }
 
 
-@override_settings(ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS=[1, 2, 3, 4])
+@pytest.mark.settings(ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS=[1, 2, 3, 4])
 @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
 @time_machine.travel("2024-01-01T00:00:00", tick=False)
 def test_serialize_offer_legacy():
@@ -268,7 +267,7 @@ def test_serialize_offer_extra_data(
     assert serialized["offer"].get("bookMacroSection") == expected_macro_section
 
 
-@override_settings(ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS=[1, 2, 3, 4])
+@pytest.mark.settings(ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS=[1, 2, 3, 4])
 @pytest.mark.parametrize(
     "bookings_count, expected_range",
     (

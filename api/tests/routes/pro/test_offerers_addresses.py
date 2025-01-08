@@ -7,7 +7,6 @@ import pcapi.core.geography.models as geography_models
 from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 
 from tests.connectors.api_adresse import fixtures
@@ -167,7 +166,7 @@ class CreateOffererAddressesTest:
         assert content["address"]["latitude"] == expected_data["latitude"] == float(address.latitude)
         assert content["address"]["longitude"] == expected_data["longitude"] == float(address.longitude)
 
-    @override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+    @pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
     @pytest.mark.usefixtures("db_session")
     def test_we_dont_want_to_get_false_positive_because_of_rounding(self, client, caplog, requests_mock):
         pro_user = users_factories.ProFactory()
@@ -338,7 +337,7 @@ class CreateOffererAddressesTest:
         assert not geography_models.Address.query.count()
         assert not offerers_models.OffererAddress.query.count()
 
-    @override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+    @pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
     @pytest.mark.usefixtures("db_session")
     def test_check_consistency_between_address_and_coordinates(self, client, requests_mock):
         payload = {
@@ -397,7 +396,7 @@ class CreateOffererAddressesTest:
         assert content["address"]["latitude"] == expected_data["latitude"] == float(address.latitude)
         assert content["address"]["longitude"] == expected_data["longitude"] == float(address.longitude)
 
-    @override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+    @pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
     @pytest.mark.usefixtures("db_session")
     def test_inexisting_address_return_proper_error_message(self, client, requests_mock):
         payload = {
@@ -434,7 +433,7 @@ class CreateOffererAddressesTest:
         assert response.json == {"address": "Cette adresse n'existe pas"}
         assert not geography_models.Address.query.all()
 
-    @override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+    @pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
     @pytest.mark.usefixtures("db_session")
     def test_creating_offerer_address_when_only_municipality_centroid_is_the_default(self, client, requests_mock):
         payload = {

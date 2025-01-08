@@ -6,7 +6,6 @@ from flask import url_for
 import pytest
 
 from pcapi.core.permissions import models as perm_models
-from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 
@@ -42,9 +41,11 @@ class AuthorizePageTest:
         assert response.status_code == 302
         assert response.location == url_for("backoffice_web.home", _external=True)
 
-    @override_settings(BACKOFFICE_ROLES_WITHOUT_GOOGLE_GROUPS=0)
-    @override_settings(GOOGLE_CLIENT_ID="some client id")
-    @override_settings(GOOGLE_CLIENT_SECRET="some client secret")
+    @pytest.mark.settings(
+        BACKOFFICE_ROLES_WITHOUT_GOOGLE_GROUPS=0,
+        GOOGLE_CLIENT_ID="some client id",
+        GOOGLE_CLIENT_SECRET="some client secret",
+    )
     @patch("pcapi.routes.backoffice.auth.fetch_user_roles_from_google_workspace")
     @patch("pcapi.routes.backoffice.auth.backoffice_oauth.google.parse_id_token")
     @patch("pcapi.routes.backoffice.auth.backoffice_oauth.google.authorize_access_token")
@@ -82,9 +83,11 @@ class AuthorizePageTest:
 
         assert user_role_names == expected_role_names
 
-    @override_settings(BACKOFFICE_ROLES_WITHOUT_GOOGLE_GROUPS=0)
-    @override_settings(GOOGLE_CLIENT_ID="some client id")
-    @override_settings(GOOGLE_CLIENT_SECRET="some client secret")
+    @pytest.mark.settings(
+        BACKOFFICE_ROLES_WITHOUT_GOOGLE_GROUPS=0,
+        GOOGLE_CLIENT_ID="some client id",
+        GOOGLE_CLIENT_SECRET="some client secret",
+    )
     @patch("pcapi.routes.backoffice.auth.fetch_user_roles_from_google_workspace")
     @patch("pcapi.routes.backoffice.auth.backoffice_oauth.google.parse_id_token")
     @patch("pcapi.routes.backoffice.auth.backoffice_oauth.google.authorize_access_token")
@@ -113,9 +116,11 @@ class AuthorizePageTest:
         assert response.location == url_for("backoffice_web.home", _external=True)
         assert "Successful authentication attempt" in caplog.messages
 
-    @override_settings(BACKOFFICE_ROLES_WITHOUT_GOOGLE_GROUPS=0)
-    @override_settings(GOOGLE_CLIENT_ID="some client id")
-    @override_settings(GOOGLE_CLIENT_SECRET="some client secret")
+    @pytest.mark.settings(
+        BACKOFFICE_ROLES_WITHOUT_GOOGLE_GROUPS=0,
+        GOOGLE_CLIENT_ID="some client id",
+        GOOGLE_CLIENT_SECRET="some client secret",
+    )
     @patch("pcapi.routes.backoffice.auth.fetch_user_roles_from_google_workspace")
     @patch("pcapi.routes.backoffice.auth.backoffice_oauth.google.parse_id_token")
     @patch("pcapi.routes.backoffice.auth.backoffice_oauth.google.authorize_access_token")

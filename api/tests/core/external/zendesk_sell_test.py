@@ -12,7 +12,6 @@ from pcapi.core.external.zendesk_sell_backends.zendesk_sell import ZendeskSellRe
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -273,7 +272,7 @@ def test_create_venue_and_parent_offerer():
 
 
 @patch("pcapi.core.external.zendesk_sell.zendesk_backend", ZendeskSellBackend())
-@override_settings(ZENDESK_SELL_API_KEY="test")
+@pytest.mark.settings(ZENDESK_SELL_API_KEY="test")
 def test_update_offerer_multiple_results_none_has_id():
     offerer = offerers_factories.OffererFactory()
 
@@ -315,7 +314,7 @@ def test_update_offerer_multiple_results_none_has_id():
 
 
 @patch("pcapi.core.external.zendesk_sell.zendesk_backend", ZendeskSellBackend())
-@override_settings(ZENDESK_SELL_API_KEY="test")
+@pytest.mark.settings(ZENDESK_SELL_API_KEY="test")
 def test_update_offerer_multiple_results_one_has_id():
     offerer = offerers_factories.OffererFactory()
 
@@ -365,7 +364,7 @@ def test_update_offerer_multiple_results_one_has_id():
 
 
 @patch("pcapi.core.external.zendesk_sell.zendesk_backend", ZendeskSellBackend())
-@override_settings(ZENDESK_SELL_API_KEY="test")
+@pytest.mark.settings(ZENDESK_SELL_API_KEY="test")
 def test_update_venue_multiple_results_none_has_id():
     venue = offerers_factories.VenueFactory()
 
@@ -409,7 +408,7 @@ def test_update_venue_multiple_results_none_has_id():
 
 
 @patch("pcapi.core.external.zendesk_sell.zendesk_backend", ZendeskSellBackend())
-@override_settings(ZENDESK_SELL_API_KEY="test")
+@pytest.mark.settings(ZENDESK_SELL_API_KEY="test")
 def test_update_venue_multiple_results_one_has_id():
     venue = offerers_factories.VenueFactory()
 
@@ -498,7 +497,7 @@ def test_update_venue_when_parent_found_is_the_same_contact(caplog):
 
 
 @patch("pcapi.core.external.zendesk_sell.zendesk_backend", ZendeskSellReadOnlyBackend())
-@override_settings(ZENDESK_SELL_API_KEY="test")
+@pytest.mark.settings(ZENDESK_SELL_API_KEY="test")
 def test_update_offerer_from_staging():
     offerer = offerers_factories.OffererFactory()
 
@@ -538,7 +537,7 @@ def test_update_offerer_from_staging():
 
 
 @patch("pcapi.core.external.zendesk_sell.zendesk_backend", ZendeskSellReadOnlyBackend())
-@override_settings(ZENDESK_SELL_API_KEY="test")
+@pytest.mark.settings(ZENDESK_SELL_API_KEY="test")
 def test_do_update_venue_from_staging():
     venue = offerers_factories.VenueFactory()
 

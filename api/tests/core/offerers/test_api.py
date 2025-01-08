@@ -39,7 +39,6 @@ from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import api_errors
@@ -841,7 +840,7 @@ class CreateOffererTest:
         created_offerer = created_user_offerer.offerer
         assert created_offerer.name == offerer_informations.name
 
-    @override_settings(NATIONAL_PARTNERS_EMAIL_DOMAINS="howdy.com,partner.com")
+    @pytest.mark.settings(NATIONAL_PARTNERS_EMAIL_DOMAINS="howdy.com,partner.com")
     def test_create_offerer_national_partner_autotagging(self):
         # Given
         national_partner_tag = offerers_factories.OffererTagFactory(name="partenaire-national")
@@ -1594,105 +1593,109 @@ class VenueBannerTest:
 
     @time_machine.travel("2020-10-15 00:00:00", tick=False)
     @patch("pcapi.core.search.async_index_venue_ids")
-    def test_save_venue_banner_when_no_default_available(self, mock_search_async_index_venue_ids, tmpdir):
+    def test_save_venue_banner_when_no_default_available(self, mock_search_async_index_venue_ids, tmpdir, settings):
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory()
         image_content = (VenueBannerTest.IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         directory = pathlib.Path(tmpdir.dirname) / "thumbs" / "venues"
 
-        with override_settings(OBJECT_STORAGE_URL=tmpdir.dirname, LOCAL_STORAGE_DIR=pathlib.Path(tmpdir.dirname)):
-            offerers_api.save_venue_banner(user, venue, image_content, image_credit="none")
+        settings.OBJECT_STORAGE_URL = tmpdir.dirname
+        settings.LOCAL_STORAGE_DIR = pathlib.Path(tmpdir.dirname)
+        offerers_api.save_venue_banner(user, venue, image_content, image_credit="none")
 
-            updated_venue = Venue.query.get(venue.id)
-            with open(updated_venue.bannerUrl, mode="rb") as f:
-                # test that image size has been reduced
-                assert len(f.read()) < len(image_content)
+        updated_venue = Venue.query.get(venue.id)
+        with open(updated_venue.bannerUrl, mode="rb") as f:
+            # test that image size has been reduced
+            assert len(f.read()) < len(image_content)
 
-            assert updated_venue.bannerMeta == {
-                "author_id": user.id,
-                "image_credit": "none",
-                "original_image_url": str(directory / f"{humanize(venue.id)}_1602720001"),
-                "crop_params": None,
-                "updated_at": "2020-10-15T00:00:00",
-            }
+        assert updated_venue.bannerMeta == {
+            "author_id": user.id,
+            "image_credit": "none",
+            "original_image_url": str(directory / f"{humanize(venue.id)}_1602720001"),
+            "crop_params": None,
+            "updated_at": "2020-10-15T00:00:00",
+        }
 
-            mock_search_async_index_venue_ids.assert_called_once_with(
-                [venue.id],
-                reason=search.IndexationReason.VENUE_BANNER_UPDATE,
-            )
+        mock_search_async_index_venue_ids.assert_called_once_with(
+            [venue.id],
+            reason=search.IndexationReason.VENUE_BANNER_UPDATE,
+        )
 
     @time_machine.travel("2020-10-15 00:00:00", tick=False)
     @patch("pcapi.core.search.async_index_venue_ids")
-    def test_save_venue_banner_when_default_available(self, mock_search_async_index_venue_ids, tmpdir):
+    def test_save_venue_banner_when_default_available(self, mock_search_async_index_venue_ids, tmpdir, settings):
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.MOVIE)
         image_content = (VenueBannerTest.IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         directory = pathlib.Path(tmpdir.dirname) / "thumbs" / "venues"
 
-        with override_settings(OBJECT_STORAGE_URL=tmpdir.dirname, LOCAL_STORAGE_DIR=pathlib.Path(tmpdir.dirname)):
-            offerers_api.save_venue_banner(user, venue, image_content, image_credit="none")
+        settings.OBJECT_STORAGE_URL = tmpdir.dirname
+        settings.LOCAL_STORAGE_DIR = pathlib.Path(tmpdir.dirname)
+        offerers_api.save_venue_banner(user, venue, image_content, image_credit="none")
 
-            updated_venue = Venue.query.get(venue.id)
-            with open(updated_venue.bannerUrl, mode="rb") as f:
-                # test that image size has been reduced
-                assert len(f.read()) < len(image_content)
+        updated_venue = Venue.query.get(venue.id)
+        with open(updated_venue.bannerUrl, mode="rb") as f:
+            # test that image size has been reduced
+            assert len(f.read()) < len(image_content)
 
-            assert updated_venue.bannerMeta == {
-                "author_id": user.id,
-                "image_credit": "none",
-                "original_image_url": str(directory / f"{humanize(venue.id)}_1602720001"),
-                "crop_params": None,
-                "updated_at": "2020-10-15T00:00:00",
-            }
+        assert updated_venue.bannerMeta == {
+            "author_id": user.id,
+            "image_credit": "none",
+            "original_image_url": str(directory / f"{humanize(venue.id)}_1602720001"),
+            "crop_params": None,
+            "updated_at": "2020-10-15T00:00:00",
+        }
 
-            mock_search_async_index_venue_ids.assert_called_once_with(
-                [venue.id],
-                reason=search.IndexationReason.VENUE_BANNER_UPDATE,
-            )
+        mock_search_async_index_venue_ids.assert_called_once_with(
+            [venue.id],
+            reason=search.IndexationReason.VENUE_BANNER_UPDATE,
+        )
 
     @patch("pcapi.core.search.async_index_venue_ids")
-    def test_replace_venue_banner(self, mock_search_async_index_venue_ids, tmpdir):
+    def test_replace_venue_banner(self, mock_search_async_index_venue_ids, tmpdir, settings):
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory()
         first_image_content = (VenueBannerTest.IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         second_image_content = (VenueBannerTest.IMAGES_DIR / "mouette_landscape.jpg").read_bytes()
         directory = pathlib.Path(tmpdir.dirname) / "thumbs" / "venues"
 
-        with override_settings(OBJECT_STORAGE_URL=tmpdir.dirname, LOCAL_STORAGE_DIR=pathlib.Path(tmpdir.dirname)):
-            with time_machine.travel("2020-10-15 00:00:00"):
-                offerers_api.save_venue_banner(user, venue, first_image_content, image_credit="first_image")
+        settings.OBJECT_STORAGE_URL = tmpdir.dirname
+        settings.LOCAL_STORAGE_DIR = pathlib.Path(tmpdir.dirname)
+        with time_machine.travel("2020-10-15 00:00:00"):
+            offerers_api.save_venue_banner(user, venue, first_image_content, image_credit="first_image")
 
-            with time_machine.travel("2020-10-15 00:00:05"):
-                offerers_api.save_venue_banner(user, venue, second_image_content, image_credit="second_image")
+        with time_machine.travel("2020-10-15 00:00:05"):
+            offerers_api.save_venue_banner(user, venue, second_image_content, image_credit="second_image")
 
-            files = set(os.listdir(directory))
+        files = set(os.listdir(directory))
 
-            # old banner and its original image
-            assert f"{humanize(venue.id)}_1602720000" not in files
-            assert f"{humanize(venue.id)}_1602720001" not in files
+        # old banner and its original image
+        assert f"{humanize(venue.id)}_1602720000" not in files
+        assert f"{humanize(venue.id)}_1602720001" not in files
 
-            # new banner and its original image
-            assert f"{humanize(venue.id)}_1602720005" in files
-            assert f"{humanize(venue.id)}_1602720006" in files
+        # new banner and its original image
+        assert f"{humanize(venue.id)}_1602720005" in files
+        assert f"{humanize(venue.id)}_1602720006" in files
 
     @patch("pcapi.core.search.async_index_venue_ids")
-    def test_replace_venue_legacy_banner(self, mock_search_async_index_venue_ids, tmpdir):
+    def test_replace_venue_legacy_banner(self, mock_search_async_index_venue_ids, tmpdir, settings):
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory()
         first_image_content = (VenueBannerTest.IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         second_image_content = (VenueBannerTest.IMAGES_DIR / "mouette_landscape.jpg").read_bytes()
         directory = pathlib.Path(tmpdir.dirname) / "thumbs" / "venues"
 
-        with override_settings(OBJECT_STORAGE_URL=tmpdir.dirname, LOCAL_STORAGE_DIR=pathlib.Path(tmpdir.dirname)):
-            with time_machine.travel("2020-10-15 00:00:00"):
-                offerers_api.save_venue_banner(user, venue, first_image_content, image_credit="first_image")
-                move_venue_banner_to_legacy_location(venue, directory, "1602720000")
-            with time_machine.travel("2020-10-15 00:00:01"):
-                offerers_api.save_venue_banner(user, venue, second_image_content, image_credit="second_image")
+        settings.OBJECT_STORAGE_URL = tmpdir.dirname
+        settings.LOCAL_STORAGE_DIR = pathlib.Path(tmpdir.dirname)
+        with time_machine.travel("2020-10-15 00:00:00"):
+            offerers_api.save_venue_banner(user, venue, first_image_content, image_credit="first_image")
+            move_venue_banner_to_legacy_location(venue, directory, "1602720000")
+        with time_machine.travel("2020-10-15 00:00:01"):
+            offerers_api.save_venue_banner(user, venue, second_image_content, image_credit="second_image")
 
-            files = set(os.listdir(directory))
-            assert f"{humanize(venue.id)}" not in files
-            assert f"{humanize(venue.id)}_1602720001" in files
+        files = set(os.listdir(directory))
+        assert f"{humanize(venue.id)}" not in files
+        assert f"{humanize(venue.id)}_1602720001" in files
 
 
 def move_venue_banner_to_legacy_location(venue, directory, timestamp):
@@ -1827,7 +1830,7 @@ class HasVenueAtLeastOneBookableOfferTest:
         assert offerers_api.has_venue_at_least_one_bookable_offer(venue)
 
 
-@override_settings(METABASE_SECRET_KEY="metabase secret key")
+@pytest.mark.settings(METABASE_SECRET_KEY="metabase secret key")
 def test_get_offerer_stats_dashboard_url():
     venue = offerers_factories.VenueFactory()
     offerer = venue.managingOfferer
@@ -1982,7 +1985,7 @@ class CreateFromOnboardingDataTest:
             token="token",
         )
 
-    @override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+    @pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
     def test_new_siren_new_siret(self, requests_mock):
         api_adresse_response = {
             "type": "FeatureCollection",

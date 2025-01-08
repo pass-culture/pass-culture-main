@@ -7,7 +7,6 @@ import time_machine
 from pcapi.connectors.dms import api as api_dms
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
-from pcapi.core.testing import override_settings
 from pcapi.scripts.subscription.dms.handle_inactive_dms_applications import _has_inactivity_delay_expired
 from pcapi.scripts.subscription.dms.handle_inactive_dms_applications import _is_never_eligible_applicant
 from pcapi.scripts.subscription.dms.handle_inactive_dms_applications import handle_inactive_dms_applications
@@ -20,7 +19,7 @@ class HandleInactiveApplicationTest:
     @patch.object(api_dms.DMSGraphQLClient, "mark_without_continuation")
     @patch.object(api_dms.DMSGraphQLClient, "make_on_going")
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
-    @override_settings(DMS_ENROLLMENT_INSTRUCTOR="SomeInstructorId")
+    @pytest.mark.settings(DMS_ENROLLMENT_INSTRUCTOR="SomeInstructorId")
     def test_mark_without_continuation(self, dms_applications_mock, make_on_going_mock, mark_without_continuation_mock):
         active_application = make_parsed_graphql_application(
             application_number=1,
@@ -94,7 +93,7 @@ class HandleInactiveApplicationTest:
     @patch.object(api_dms.DMSGraphQLClient, "make_on_going")
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
     @time_machine.travel("2022-04-27")
-    @override_settings(DMS_ENROLLMENT_INSTRUCTOR="SomeInstructorId")
+    @pytest.mark.settings(DMS_ENROLLMENT_INSTRUCTOR="SomeInstructorId")
     def test_duplicated_application_can_be_cancelled(
         self, dms_applications_mock, make_on_going_mock, mark_without_continuation_mock
     ):

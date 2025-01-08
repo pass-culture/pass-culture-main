@@ -7,7 +7,6 @@ import pytest
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 from pcapi.models import api_errors
 from pcapi.utils.crypto import check_public_api_key
 from pcapi.utils.crypto import hash_password
@@ -173,28 +172,28 @@ class ApiKeyRequiredTest:
         hash_public_api_key_function,
         check_public_api_key_function,
         use_fast_and_insecure_password_hashing_algorithm,
+        settings,
     ):
-        with override_settings(
-            USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM=use_fast_and_insecure_password_hashing_algorithm
-        ):
-            api_key = offerers_factories.ApiKeyFactory()
-            old_secret = api_key.secret
-            if use_fast_and_insecure_password_hashing_algorithm:
-                # md5 hashing
-                assert not old_secret.decode("utf-8").startswith("$2b$")
-                assert not old_secret.decode("utf-8").startswith("$sha3_512$")
-            else:
-                assert old_secret.decode("utf-8").startswith("$2b$")  # testing that the secret is hashed with bcrypt
-            app = self._make_app()
-            client = TestClient(app.test_client())
-            headers = {"Authorization": "Bearer development_prefix_clearSecret"}
-            response = client.get("/test", headers=headers)
-            assert response.status_code == 200
-            assert api_key.secret.decode("utf-8") == old_secret.decode("utf-8")
-            check_public_api_key_function.assert_not_called()
-            hash_public_api_key_function.assert_not_called()
+        settings.USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM = use_fast_and_insecure_password_hashing_algorithm
 
-    @override_settings(
+        api_key = offerers_factories.ApiKeyFactory()
+        old_secret = api_key.secret
+        if use_fast_and_insecure_password_hashing_algorithm:
+            # md5 hashing
+            assert not old_secret.decode("utf-8").startswith("$2b$")
+            assert not old_secret.decode("utf-8").startswith("$sha3_512$")
+        else:
+            assert old_secret.decode("utf-8").startswith("$2b$")  # testing that the secret is hashed with bcrypt
+        app = self._make_app()
+        client = TestClient(app.test_client())
+        headers = {"Authorization": "Bearer development_prefix_clearSecret"}
+        response = client.get("/test", headers=headers)
+        assert response.status_code == 200
+        assert api_key.secret.decode("utf-8") == old_secret.decode("utf-8")
+        check_public_api_key_function.assert_not_called()
+        hash_public_api_key_function.assert_not_called()
+
+    @pytest.mark.settings(
         USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM=False,
     )
     @override_features(WIP_ENABLE_NEW_HASHING_ALGORITHM=True)
@@ -214,7 +213,7 @@ class ApiKeyRequiredTest:
         assert check_public_api_key("clearSecret", api_key.secret)
         db_session.flush()
 
-    @override_settings(
+    @pytest.mark.settings(
         USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM=False,
     )
     @override_features(WIP_ENABLE_NEW_HASHING_ALGORITHM=True)
@@ -233,7 +232,7 @@ class ApiKeyRequiredTest:
         mock_check_password.assert_called()
         mock_check_public_api_key.assert_not_called()
 
-    @override_settings(
+    @pytest.mark.settings(
         USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM=True,
     )
     @override_features(WIP_ENABLE_NEW_HASHING_ALGORITHM=True)
@@ -251,7 +250,7 @@ class ApiKeyRequiredTest:
         assert check_public_api_key("clearSecret", api_key.secret)
         db_session.flush()
 
-    @override_settings(
+    @pytest.mark.settings(
         USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM=False,
     )
     def test_switching_ff(self, db_session):

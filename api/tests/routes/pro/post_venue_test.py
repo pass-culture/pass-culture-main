@@ -10,7 +10,6 @@ from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Venue
-from pcapi.core.testing import override_settings
 from pcapi.core.users import testing as external_testing
 from pcapi.core.users.factories import ProFactory
 
@@ -95,7 +94,7 @@ venue_malformed_test_data = [
 
 
 class Returns201Test:
-    @testing.override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+    @pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
     @testing.override_features(ENABLE_ZENDESK_SELL_CREATION=True)
     def test_register_new_venue(self, client, requests_mock):
         api_adresse_response = get_api_address_response()
@@ -166,7 +165,7 @@ class Returns201Test:
         assert venue.action_history[0].actionType == history_models.ActionType.VENUE_CREATED
         assert venue.action_history[0].authorUser == user
 
-    @testing.override_settings(
+    @pytest.mark.settings(
         ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend",
         IS_INTEGRATION=True,
     )
@@ -312,7 +311,7 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["withdrawalDetails"] == ["ensure this value has at most 500 characters"]
 
-    @override_settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
+    @pytest.mark.settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
     def test_with_inactive_siret(self, requests_mock, client):
         siret = "30255917810045"
         requests_mock.get(

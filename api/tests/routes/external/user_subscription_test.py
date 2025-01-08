@@ -636,7 +636,7 @@ class DmsWebhookApplicationTest:
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
-    @testing.override_settings(ENABLE_PERMISSIVE_NAME_VALIDATION=False)
+    @pytest.mark.settings(ENABLE_PERMISSIVE_NAME_VALIDATION=False)
     def test_dms_first_name_error(self, send_user_message, execute_query, client):
         user = users_factories.UserFactory()
         execute_query.return_value = make_single_application(
@@ -680,7 +680,7 @@ class DmsWebhookApplicationTest:
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
-    @testing.override_settings(ENABLE_PERMISSIVE_NAME_VALIDATION=False)
+    @pytest.mark.settings(ENABLE_PERMISSIVE_NAME_VALIDATION=False)
     def test_dms_full_name_error(self, send_user_message, execute_query, client):
         user = users_factories.UserFactory()
         execute_query.return_value = make_single_application(
@@ -831,7 +831,7 @@ class DmsWebhookApplicationTest:
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
     @time_machine.travel("2021-12-20 09:00:00")
-    @testing.override_settings(ENABLE_PERMISSIVE_NAME_VALIDATION=False)
+    @pytest.mark.settings(ENABLE_PERMISSIVE_NAME_VALIDATION=False)
     def test_on_going_birth_date_and_first_name_error(self, send_user_message, execute_query, client):
         user = users_factories.UserFactory()
         execute_query.return_value = make_single_application(
@@ -1460,7 +1460,7 @@ class UbbleWebhookTest:
         assert user.has_beneficiary_role is False
         assert fraud_check.status == fraud_models.FraudCheckStatus.KO
 
-    @testing.override_settings(ENABLE_UBBLE_TEST_EMAIL=False)
+    @pytest.mark.settings(ENABLE_UBBLE_TEST_EMAIL=False)
     def test_ubble_test_emails_not_actives_on_production(self, client, ubble_mocker, mocker):
         email = "whatever+ubble_test@example.com"
         subscription_birth_date = datetime.datetime.combine(

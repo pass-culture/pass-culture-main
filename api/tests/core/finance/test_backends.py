@@ -11,7 +11,6 @@ from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance.backend.dummy import bank_accounts as dummy_bank_accounts
 from pcapi.core.finance.backend.dummy import invoices as dummy_invoices
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.testing import override_settings
 
 
 pytestmark = [
@@ -32,7 +31,7 @@ def cegid_cookies(faker, cegid_config):
 
 
 @pytest.fixture
-def cegid_config(faker):
+def cegid_config(faker, settings):
     class Config(NamedTuple):
         CEGID_URL: str = faker.uri()
         CEGID_USERNAME: str = faker.user_name()
@@ -40,8 +39,11 @@ def cegid_config(faker):
         CEGID_COMPANY: str = "passculture"
 
     config = Config()
-    with override_settings(**config._asdict()):
-        yield config
+    settings.CEGID_URL = config.CEGID_URL
+    settings.CEGID_USERNAME = config.CEGID_USERNAME
+    settings.CEGID_PASSWORD = config.CEGID_PASSWORD
+    settings.CEGID_COMPANY = config.CEGID_COMPANY
+    yield config
 
 
 @pytest.fixture
@@ -81,7 +83,7 @@ class DummyFinanceBackendTest:
         assert bank_account_dict == bank_account.__dict__
 
 
-@override_settings(
+@pytest.mark.settings(
     CEGID_URL="",
     CEGID_USERNAME="",
     CEGID_PASSWORD="",

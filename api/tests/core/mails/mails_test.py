@@ -8,7 +8,6 @@ from urllib3.response import HTTPResponse
 from pcapi.core.mails import models
 from pcapi.core.mails import send
 from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.tasks.serialization import sendinblue_tasks
@@ -39,7 +38,7 @@ class SendinblueBackendTest:
     def _get_backend_for_test(self):
         return import_string("pcapi.core.mails.backends.sendinblue.SendinblueBackend")
 
-    @override_settings(
+    @pytest.mark.settings(
         WHITELISTED_EMAIL_RECIPIENTS=[
             "lucy.ellingson@example.com",
             "avery.kelly@example.com",
@@ -163,7 +162,7 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
     def _get_backend_for_test(self):
         return import_string("pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend")
 
-    @override_settings(WHITELISTED_EMAIL_RECIPIENTS=["test@example.com"])
+    @pytest.mark.settings(WHITELISTED_EMAIL_RECIPIENTS=["test@example.com"])
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
     def test_send_mail_to_dev(self, mock_send_transactional_email_secondary_task):
         backend = self._get_backend_for_test()
@@ -196,7 +195,7 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
         "recipient",
         ["avery.kelly@example.com", "sandy.zuko@passculture-test.app"],
     )
-    @override_settings(WHITELISTED_EMAIL_RECIPIENTS=["avery.kelly@example.com", "*@passculture-test.app"])
+    @pytest.mark.settings(WHITELISTED_EMAIL_RECIPIENTS=["avery.kelly@example.com", "*@passculture-test.app"])
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
     def test_send_mail_whitelisted(self, mock_send_transactional_email_secondary_task, recipient):
         backend = self._get_backend_for_test()
@@ -208,7 +207,7 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
         task_param = mock_send_transactional_email_secondary_task.call_args[0][0]
         assert list(task_param.recipients) == [recipient]
 
-    @override_settings(IS_STAGING=True, IS_E2E_TESTS=True, END_TO_END_TESTS_EMAIL_ADDRESS="qa-test@passculture.app")
+    @pytest.mark.settings(IS_STAGING=True, IS_E2E_TESTS=True, END_TO_END_TESTS_EMAIL_ADDRESS="qa-test@passculture.app")
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
     def test_send_mail_whitelisted_qa_staging(self, mock_send_transactional_email_secondary_task):
         recipient = "qa-test+123@passculture.app"
@@ -221,7 +220,7 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
         task_param = mock_send_transactional_email_secondary_task.call_args[0][0]
         assert list(task_param.recipients) == [recipient]
 
-    @override_settings(IS_TESTING=True, IS_E2E_TESTS=True, END_TO_END_TESTS_EMAIL_ADDRESS="qa-test@passculture.app")
+    @pytest.mark.settings(IS_TESTING=True, IS_E2E_TESTS=True, END_TO_END_TESTS_EMAIL_ADDRESS="qa-test@passculture.app")
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
     def test_send_mail_whitelisted_qa_testing(
         self, mock_send_transactional_email_secondary_task, recipient="qa-test+123@passculture.app"
@@ -237,8 +236,7 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
 
 
 class SendTest:
-    @override_settings(IS_TESTING=True)
-    @override_settings(EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend")
+    @pytest.mark.settings(IS_TESTING=True, EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend")
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
     def test_send_to_ehp_false_in_testing(self, mock_send_transactional_email_secondary_task, caplog):
         mock_template_send_ehp_false = models.Template(
@@ -260,8 +258,7 @@ class SendTest:
             "'reply_to': {'email': 'reply_to@example.com', 'name': 'Tom S.'}, 'params': {}}"
         )
 
-    @override_settings(IS_TESTING=True)
-    @override_settings(EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend")
+    @pytest.mark.settings(IS_TESTING=True, EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend")
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
     def test_send_to_ehp_true_in_testing(self, mock_send_transactional_email_secondary_task, caplog):
         mock_template_send_ehp_true = models.Template(
@@ -286,7 +283,7 @@ class SendTest:
             (False, models.Template, False),
         ],
     )
-    @override_settings(EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.SendinblueBackend")
+    @pytest.mark.settings(EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.SendinblueBackend")
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
     def test_send_mail_to_pro_with_FF(
         self,
@@ -324,8 +321,7 @@ class SendTest:
             (False, models.Template, True, False),
         ],
     )
-    @override_settings(IS_TESTING=True)
-    @override_settings(EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.SendinblueBackend")
+    @pytest.mark.settings(IS_TESTING=True, EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.SendinblueBackend")
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
     def test_send_mail_to_pro_with_FF_in_ehp(
         self,
