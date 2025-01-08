@@ -7,7 +7,6 @@ import {
   GetOffererAddressResponseModel,
   ListOffersOfferResponseModel,
   OfferStatus,
-  SharedCurrentUserResponseModel,
 } from 'apiClient/v1'
 import {
   ALL_OFFERER_ADDRESS_OPTION,
@@ -107,7 +106,6 @@ vi.mock('apiClient/api', () => ({
 
 describe('IndividualOffersScreen', () => {
   let props: IndividualOffersContainerProps
-  let currentUser: SharedCurrentUserResponseModel
   let offersRecap: ListOffersOfferResponseModel[]
 
   const mockNotifyError = vi.fn()
@@ -162,8 +160,12 @@ describe('IndividualOffersScreen', () => {
       offers: [firstOffer, secondOffer],
     })
 
-    expect(screen.getByLabelText(`Sélectionner l'offre "${firstOffer.name}"`)).toBeInTheDocument()
-    expect(screen.getByLabelText(`Sélectionner l'offre "${secondOffer.name}"`)).toBeInTheDocument()
+    expect(
+      screen.getByLabelText(`Sélectionner l'offre "${firstOffer.name}"`)
+    ).toBeInTheDocument()
+    expect(
+      screen.getByLabelText(`Sélectionner l'offre "${secondOffer.name}"`)
+    ).toBeInTheDocument()
   })
 
   it('should display an unchecked by default checkbox to select all offers when user is not admin', () => {
@@ -483,16 +485,13 @@ describe('IndividualOffersScreen', () => {
     })
 
     it('should be able to check all offers because, a offerer being filtered, there are no performance issues', () => {
-      renderOffers(
-        {
-          ...props,
-          initialSearchFilters: {
-            ...DEFAULT_SEARCH_FILTERS,
-            offererId: 'A4',
-          },
+      renderOffers({
+        ...props,
+        initialSearchFilters: {
+          ...DEFAULT_SEARCH_FILTERS,
+          offererId: 'A4',
         },
-        { user: currentUser }
-      )
+      })
 
       const selectAllOffersCheckbox = screen.getByLabelText('Tout sélectionner')
       expect(selectAllOffersCheckbox).not.toBeDisabled()
@@ -520,17 +519,23 @@ describe('IndividualOffersScreen', () => {
       offers: offers,
     })
 
-    expect(screen.queryByLabelText(`Sélectionner l'offre "${offers[0].name}"`)).toBeDisabled()
-    expect(screen.queryByLabelText(`Sélectionner l'offre "${offers[1].name}"`)).toBeDisabled()
-    expect(screen.queryByLabelText(`Sélectionner l'offre "${offers[2].name}"`)).toBeEnabled()
+    expect(
+      screen.queryByLabelText(`Sélectionner l'offre "${offers[0].name}"`)
+    ).toBeDisabled()
+    expect(
+      screen.queryByLabelText(`Sélectionner l'offre "${offers[1].name}"`)
+    ).toBeDisabled()
+    expect(
+      screen.queryByLabelText(`Sélectionner l'offre "${offers[2].name}"`)
+    ).toBeEnabled()
   })
 
   it('should display actionsBar when at least one offer is selected', async () => {
-    renderWithProviders(<IndividualOffersContainer {...props} />, {
-      user: currentUser,
-    })
+    renderWithProviders(<IndividualOffersContainer {...props} />)
 
-    const checkbox = screen.getByLabelText(`Sélectionner l'offre "${offersRecap[0].name}"`)
+    const checkbox = screen.getByLabelText(
+      `Sélectionner l'offre "${offersRecap[0].name}"`
+    )
     await userEvent.click(checkbox)
 
     const actionBar = await screen.findByTestId('actions-bar')
@@ -604,10 +609,18 @@ describe('IndividualOffersScreen', () => {
         offers: offers,
       })
 
-      const firstOfferCheckbox = screen.getByLabelText(`Sélectionner l'offre "${offers[0].name}"`)
-      const secondOfferCheckbox = screen.getByLabelText(`Sélectionner l'offre "${offers[1].name}"`)
-      const thirdOfferCheckbox = screen.getByLabelText(`Sélectionner l'offre "${offers[2].name}"`)
-      const fourthOfferCheckbox = screen.getByLabelText(`Sélectionner l'offre "${offers[3].name}"`)
+      const firstOfferCheckbox = screen.getByLabelText(
+        `Sélectionner l'offre "${offers[0].name}"`
+      )
+      const secondOfferCheckbox = screen.getByLabelText(
+        `Sélectionner l'offre "${offers[1].name}"`
+      )
+      const thirdOfferCheckbox = screen.getByLabelText(
+        `Sélectionner l'offre "${offers[2].name}"`
+      )
+      const fourthOfferCheckbox = screen.getByLabelText(
+        `Sélectionner l'offre "${offers[3].name}"`
+      )
 
       await userEvent.click(screen.getByLabelText('Tout sélectionner'))
 
