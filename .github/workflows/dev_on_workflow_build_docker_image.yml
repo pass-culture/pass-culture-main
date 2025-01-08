@@ -40,7 +40,7 @@ jobs:
           git add version.txt
 
       - name: "Install poetry"
-        run: pip install "poetry<2.0.0"
+        run: pip install poetry
 
       - name: "check poetry lock is up to date"
         working-directory: api
