@@ -511,7 +511,7 @@ class Returns200Test:
 
         assert response.status_code == 200
         assert response.json["id"] == offer.id
-        updated_offer = Offer.query.get(offer.id)
+        Offer.query.get(offer.id)
         assert offer.offererAddressId == venue.offererAddressId
 
     @patch("pcapi.connectors.api_adresse.get_municipality_centroid")

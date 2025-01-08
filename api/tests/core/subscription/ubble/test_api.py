@@ -136,7 +136,7 @@ class UbbleWorkflowV2Test:
     @pytest.mark.features(WIP_UBBLE_V2=True)
     def test_applicant_creation_flow_updates_fraud_check(self, requests_mock):
         user = users_factories.UserFactory()
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+        fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.UBBLE,
             user=user,
             thirdPartyId="",

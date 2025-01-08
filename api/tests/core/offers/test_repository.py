@@ -2641,24 +2641,23 @@ class GetHeadlineOfferFiltersTest:
 
         active_offer = factories.OfferFactory(isActive=True)
         factories.StockFactory(offer=active_offer)
-        active_offer_headline_offer = factories.HeadlineOfferFactory(offer=active_offer)
+        # active offer headline offer:
+        factories.HeadlineOfferFactory(offer=active_offer)
 
         finished_timespan = (
             datetime.datetime.utcnow() - datetime.timedelta(days=20),
             datetime.datetime.utcnow() - datetime.timedelta(days=10),
         )
-        already_inactive_offer_headline_offer = factories.HeadlineOfferFactory(
-            offer=active_offer, timespan=finished_timespan
-        )
+        # alreeady inactive offer headline offer:
+        factories.HeadlineOfferFactory(offer=active_offer, timespan=finished_timespan)
 
         another_active_offer = factories.OfferFactory(isActive=True)
         timespan_finishing_in_the_future = (
             datetime.datetime.utcnow() - datetime.timedelta(days=3),
             datetime.datetime.utcnow() + datetime.timedelta(days=3),
         )
-        soon_to_be_inactive_timespan = factories.HeadlineOfferFactory(
-            offer=another_active_offer, timespan=timespan_finishing_in_the_future
-        )
+        # soon to be inactive offer headline offer:
+        factories.HeadlineOfferFactory(offer=another_active_offer, timespan=timespan_finishing_in_the_future)
 
         headline_offer_query_result = repository.get_inactive_headline_offers()
         assert headline_offer_query_result == [inactive_offer_headline_offer]

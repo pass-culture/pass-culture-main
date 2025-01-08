@@ -344,9 +344,7 @@ class SaveBookClubChronicleTest:
         assert chronicle.userId == user.id
 
     def test_save_book_club_chronicle_refuse_publication(self):
-        user = users_factories.UserFactory(
-            email="email@mail.test",
-        )
+        users_factories.UserFactory(email="email@mail.test")
         form = typeform.TypeformResponse(
             response_id=random_string(),
             date_submitted=datetime.datetime(2024, 10, 24),
@@ -417,13 +415,11 @@ class SaveBookClubChronicleTest:
 
 @pytest.mark.usefixtures("db_session")
 class BookClubFormsGeneratorTest:
-
     def test_empty_answer(self):
         list_expected = []
 
         with patch("pcapi.core.chronicles.api.typeform.get_responses", return_value=list_expected) as typeform_mock:
-            for result in api._book_club_forms_generator():
-                assert False
+            assert len(list(api._book_club_forms_generator())) == 0
 
             typeform_mock.assert_called_once_with(
                 form_id=constants.BookClub.FORM_ID.value,

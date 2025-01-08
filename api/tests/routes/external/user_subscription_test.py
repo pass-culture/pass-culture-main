@@ -970,7 +970,7 @@ class UbbleWebhookV2Test:
         ],
     )
     def test_ignore_events_before_identification_conclusion(self, client, requests_mock, status):
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+        fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.UBBLE,
             thirdPartyId="idv_qwerty123",
             status=fraud_models.FraudCheckStatus.STARTED,

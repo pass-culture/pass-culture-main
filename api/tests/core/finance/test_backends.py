@@ -325,7 +325,6 @@ class CegidFinanceBackendTest:
         offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318459")
         bank_account = finance_factories.BankAccountFactory(offerer=offerer)
         vendor_uuid = str(uuid.uuid4())
-        main_contact_uuid = str(uuid.uuid4())
         iban_uuid = str(uuid.uuid4())
         bic_uuid = str(uuid.uuid4())
         iso_now = f"{datetime.datetime.utcnow().isoformat()}+00"
