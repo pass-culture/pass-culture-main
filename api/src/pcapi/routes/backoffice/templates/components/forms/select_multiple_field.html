@@ -8,7 +8,8 @@
           data-original-name="{{ field.name }}"
           size="2">
     {% for value, label, selected, _ in field.iter_choices() %}
-      <option value="{{ value }}" {{ "selected" if selected else "" }}>
+      <option value="{{ value }}"
+              {{ "selected" if selected else "" }}>
         {{ label }}
       </option>
     {% endfor %}
@@ -27,7 +28,8 @@
             data-original-name="{{ field.name }}"
             size="2">
       {% for value, label, selected, _ in field.iter_choices() %}
-        <option value="{{ value }}" {{ "selected" if selected else "" }}>
+        <option value="{{ value }}"
+                {{ "selected" if selected else "" }}>
           {{ label }}
         </option>
       {% endfor %}
