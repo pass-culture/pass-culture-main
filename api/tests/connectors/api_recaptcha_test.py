@@ -11,7 +11,6 @@ from pcapi.connectors.api_recaptcha import ReCaptchaException
 from pcapi.connectors.api_recaptcha import ReCaptchaVersion
 from pcapi.connectors.api_recaptcha import check_recaptcha_token_is_valid
 from pcapi.connectors.api_recaptcha import get_token_validation_and_score
-from pcapi.core.testing import override_settings
 
 
 ORIGINAL_ACTION = "submit"
@@ -28,7 +27,7 @@ def generate_fake_token() -> str:
 
 
 class GetTokenValidationAndScoreTest:
-    @override_settings(RECAPTCHA_SECRET="recaptcha-secret")
+    @pytest.mark.settings(RECAPTCHA_SECRET="recaptcha-secret")
     @patch("pcapi.connectors.api_recaptcha.requests.post")
     def test_should_call_captcha_api_using_secret(self, request_post):
         # Given
@@ -45,7 +44,7 @@ class GetTokenValidationAndScoreTest:
             log_info=False,
         )
 
-    @override_settings(RECAPTCHA_SECRET="recaptcha-secret")
+    @pytest.mark.settings(RECAPTCHA_SECRET="recaptcha-secret")
     @patch("pcapi.connectors.api_recaptcha.requests.post")
     def test_should_return_validation_fields_for_v3(self, request_post):
         # Given
@@ -60,7 +59,7 @@ class GetTokenValidationAndScoreTest:
         # Then
         assert result == {"score": 0.9, "success": True, "action": "ACTION", "error-codes": []}
 
-    @override_settings(RECAPTCHA_SECRET="recaptcha-secret")
+    @pytest.mark.settings(RECAPTCHA_SECRET="recaptcha-secret")
     @patch("pcapi.connectors.api_recaptcha.requests.post")
     def test_should_return_validation_fields_for_v2(self, request_post):
         # Given
@@ -76,7 +75,7 @@ class GetTokenValidationAndScoreTest:
         assert result == {"score": None, "success": True, "action": None, "error-codes": []}
 
 
-@override_settings(RECAPTCHA_IGNORE_VALIDATION=0)
+@pytest.mark.settings(RECAPTCHA_IGNORE_VALIDATION=0)
 class CheckRecaptchaTokenIsValidTest:
     @patch("pcapi.connectors.api_recaptcha.get_token_validation_and_score")
     def test_v2_should_be_ok(self, recaptcha_response):

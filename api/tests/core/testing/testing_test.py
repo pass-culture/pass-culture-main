@@ -1,10 +1,9 @@
 import pytest
 
-from pcapi import settings
+from pcapi import settings as pcapi_settings
 import pcapi.core.bookings.models as bookings_models
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 from pcapi.models.feature import FeatureToggle
 
 
@@ -28,26 +27,27 @@ class AssertNoDuplicatedQueriesTest:
                 self._run_dummy_query()
 
 
-@override_settings(IS_RUNNING_TESTS=2)
+@pytest.mark.settings(IS_RUNNING_TESTS=2)
 def test_override_settings_on_function():
-    assert settings.IS_RUNNING_TESTS == 2
+    assert pcapi_settings.IS_RUNNING_TESTS == 2
 
 
-def test_override_settings_as_context_manager():
-    assert settings.IS_RUNNING_TESTS is True
-    with override_settings(IS_RUNNING_TESTS=2):
-        assert settings.IS_RUNNING_TESTS == 2
-    assert settings.IS_RUNNING_TESTS is True
+def test_override_settings_as_context_manager(settings):
+    assert pcapi_settings.IS_RUNNING_TESTS is True
+    settings.IS_RUNNING_TESTS = 2
+    assert pcapi_settings.IS_RUNNING_TESTS == 2
+    settings.IS_RUNNING_TESTS = True
+    assert pcapi_settings.IS_RUNNING_TESTS is True
 
 
-@override_settings(IS_RUNNING_TESTS=2)
+@pytest.mark.settings(IS_RUNNING_TESTS=2)
 class OverrideSettingsOnClassTest:
     def test_class_level_override(self):
-        assert settings.IS_RUNNING_TESTS == 2
+        assert pcapi_settings.IS_RUNNING_TESTS == 2
 
-    @override_settings(IS_RUNNING_TESTS=3)
+    @pytest.mark.settings(IS_RUNNING_TESTS=3)
     def test_method_level_override(self):
-        assert settings.IS_RUNNING_TESTS == 3
+        assert pcapi_settings.IS_RUNNING_TESTS == 3
 
 
 @override_features(ENABLE_NATIVE_APP_RECAPTCHA=False)

@@ -7,13 +7,12 @@ from pcapi.connectors import acceslibre
 from pcapi.connectors.acceslibre import AcceslibreActivity
 from pcapi.connectors.acceslibre import AcceslibreWidgetData
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
-from pcapi.core.testing import override_settings
 from pcapi.utils import requests
 
 from tests.connectors.acceslibre import fixtures
 
 
-@override_settings(ACCESLIBRE_BACKEND="pcapi.connectors.acceslibre.AcceslibreBackend")
+@pytest.mark.settings(ACCESLIBRE_BACKEND="pcapi.connectors.acceslibre.AcceslibreBackend")
 class AcceslibreTest:
     def test_venue_known_banid(self, requests_mock):
         name = "Le Livre Bateau"

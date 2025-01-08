@@ -37,7 +37,6 @@ import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.models as subscription_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users import testing as users_testing
@@ -1271,7 +1270,7 @@ class UpdateUserEmailTest:
         assert user.email == self.identifier
         assert mails_testing.outbox == email_sent
 
-    @override_settings(MAX_EMAIL_UPDATE_ATTEMPTS=1)
+    @pytest.mark.settings(MAX_EMAIL_UPDATE_ATTEMPTS=1)
     @patch("pcapi.core.users.email.update.check_no_ongoing_email_update_request")
     def test_update_email_too_many_attempts(self, _mock, client):
         """
@@ -1929,7 +1928,7 @@ class SendPhoneValidationCodeTest:
         user = users_models.User.query.get(user.id)
         assert user.is_phone_validated
 
-    @override_settings(MAX_SMS_SENT_FOR_PHONE_VALIDATION=1)
+    @pytest.mark.settings(MAX_SMS_SENT_FOR_PHONE_VALIDATION=1)
     def test_send_phone_validation_code_too_many_attempts(self, client):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5),
@@ -2080,7 +2079,7 @@ class SendPhoneValidationCodeTest:
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.INVALID_PHONE_COUNTRY_CODE]
         assert fraud_check.type == fraud_models.FraudCheckType.PHONE_VALIDATION
 
-    @override_settings(BLACKLISTED_SMS_RECIPIENTS={"+33601020304"})
+    @pytest.mark.settings(BLACKLISTED_SMS_RECIPIENTS={"+33601020304"})
     def test_blocked_phone_number(self, client):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5),
@@ -2182,7 +2181,7 @@ class ValidatePhoneNumberTest:
         assert user.is_phone_validated
         assert user.has_beneficiary_role
 
-    @override_settings(MAX_PHONE_VALIDATION_ATTEMPTS=1)
+    @pytest.mark.settings(MAX_PHONE_VALIDATION_ATTEMPTS=1)
     def test_validate_phone_number_too_many_attempts(self, client, app):
         user = users_factories.UserFactory(
             phoneNumber="+33607080900",
@@ -2219,7 +2218,7 @@ class ValidatePhoneNumberTest:
             assert fraud_check.reason == expected_reason
             assert content["phone_number"] == "+33607080900"
 
-    @override_settings(MAX_SMS_SENT_FOR_PHONE_VALIDATION=1)
+    @pytest.mark.settings(MAX_SMS_SENT_FOR_PHONE_VALIDATION=1)
     @time_machine.travel("2022-05-17 15:00")
     def test_phone_validation_remaining_attempts(self, client):
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5))

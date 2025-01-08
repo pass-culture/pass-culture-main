@@ -18,7 +18,6 @@ from pcapi.core.external.sendinblue import format_user_attributes
 from pcapi.core.external.sendinblue import import_contacts_in_sendinblue
 from pcapi.core.external.sendinblue import make_update_request
 from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 import pcapi.core.users.testing as sendinblue_testing
 from pcapi.models.feature import FeatureToggle
 from pcapi.tasks.serialization import sendinblue_tasks
@@ -342,7 +341,7 @@ class BulkImportUsersDataTest:
         assert result is True
 
     @pytest.mark.skip(reason="For dev and debug only - this test sends data to sendinblue")
-    # @override_settings(API_URL="http://dev.external.ip:5001", SENDINBLUE_API_KEY="...")
+    # @pytest.mark.settings(API_URL="http://dev.external.ip:5001", SENDINBLUE_API_KEY="...")
     def test_add_contacts_to_list_without_mock(self):
         # Avoid pytest.PytestUnraisableExceptionWarning: Exception ignored in: <ssl.SSLSocket ...>
         warnings.filterwarnings(action="ignore", message="unclosed", category=ResourceWarning)
@@ -367,20 +366,20 @@ class BulkImportUsersDataTest:
         assert result is True
 
     @pytest.mark.skip(reason="For dev and debug only - this test sends data to sendinblue")
-    # @override_settings(API_URL="http://dev.external.ip:5001", SENDINBLUE_API_KEY="...")
+    # @pytest.mark.settings(API_URL="http://dev.external.ip:5001", SENDINBLUE_API_KEY="...")
     def test_add_200k_contacts_to_list_without_mock(self):
         # 200k contacts: a single 8MB import request
         self._test_add_many_contacts_to_list_without_mock(200000, "200k")
 
     @pytest.mark.skip(reason="For dev and debug only - this test sends data to sendinblue")
-    # @override_settings(API_URL="http://dev.external.ip:5001", SENDINBLUE_API_KEY="...")
+    # @pytest.mark.settings(API_URL="http://dev.external.ip:5001", SENDINBLUE_API_KEY="...")
     def test_add_500k_contacts_to_list_without_mock(self):
         # 500k contacts: several import requests
         # Use with caution, ingestion may take 10, 20, 25 minutes... before calling webhook
         self._test_add_many_contacts_to_list_without_mock(500000, "500k")
 
     @pytest.mark.skip(reason="For dev and debug only - this test sends data to sendinblue")
-    @override_settings(IS_RUNNING_TESTS=False, IS_DEV=False, IS_TESTING=True)
+    @pytest.mark.settings(IS_RUNNING_TESTS=False, IS_DEV=False, IS_TESTING=True)
     def test_update_pro_contact_without_mock(self):
         # Avoid pytest.PytestUnraisableExceptionWarning: Exception ignored in: <ssl.SSLSocket ...>
         warnings.filterwarnings(action="ignore", message="unclosed", category=ResourceWarning)

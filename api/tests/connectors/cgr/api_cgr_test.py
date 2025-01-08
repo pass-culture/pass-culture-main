@@ -6,7 +6,6 @@ from pcapi.connectors.cgr.cgr import get_cgr_service_proxy
 from pcapi.connectors.cgr.cgr import get_seances_pass_culture
 import pcapi.core.external_bookings.cgr.exceptions as cgr_exceptions
 import pcapi.core.providers.factories as providers_factories
-from pcapi.core.testing import override_settings
 from pcapi.utils.crypto import encrypt
 
 from tests.connectors.cgr import soap_definitions
@@ -56,7 +55,7 @@ def _get_seances_pass_culture_xml_response_template(body_response: str) -> str:
 
 @pytest.mark.usefixtures("db_session")
 class CGRGetSeancesPassCultureTest:
-    @override_settings(CGR_API_USER="pass_user")
+    @pytest.mark.settings(CGR_API_USER="pass_user")
     def test_should_return_pass_culture_shows(self, requests_mock):
         requests_mock.get("http://example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION)
         requests_mock.post(
@@ -74,7 +73,7 @@ class CGRGetSeancesPassCultureTest:
         assert result.ObjetRetour.NumCine == 999
         assert isinstance(result.ObjetRetour.Films, list)
 
-    @override_settings(CGR_API_USER="pass_user")
+    @pytest.mark.settings(CGR_API_USER="pass_user")
     def test_should_raise_if_error(self, requests_mock):
         requests_mock.get("http://example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION)
         json_response = {"CodeErreur": -1, "IntituleErreur": "Expectation failed", "ObjetRetour": None}
@@ -88,7 +87,7 @@ class CGRGetSeancesPassCultureTest:
         assert isinstance(exc.value, cgr_exceptions.CGRAPIException)
         assert str(exc.value) == "Error on CGR API on GetSeancesPassCulture : Expectation failed"
 
-    @override_settings(CGR_API_USER="pass_user")
+    @pytest.mark.settings(CGR_API_USER="pass_user")
     def test_should_call_with_the_right_password(self, requests_mock):
         requests_mock.get("http://example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION)
         get_seances_adapter = requests_mock.post(

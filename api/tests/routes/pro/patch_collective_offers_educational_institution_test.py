@@ -8,7 +8,6 @@ from pcapi.core.educational import testing as adage_api_testing
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 
 
 STATUSES_ALLOWING_EDIT_INSTITUTION = (models.CollectiveOfferDisplayedStatus.DRAFT,)
@@ -20,7 +19,7 @@ STATUSES_NOT_ALLOWING_EDIT_INSTITUTION = tuple(
 
 
 @pytest.mark.usefixtures("db_session")
-@override_settings(ADAGE_API_URL="https://adage_base_url")
+@pytest.mark.settings(ADAGE_API_URL="https://adage_base_url")
 class Returns200Test:
     @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_create_offer_institution_link(self, client: Any) -> None:
@@ -116,7 +115,7 @@ class Returns200Test:
 
 
 @pytest.mark.usefixtures("db_session")
-@override_settings(ADAGE_API_URL="https://adage_base_url")
+@pytest.mark.settings(ADAGE_API_URL="https://adage_base_url")
 class Returns404Test:
     def test_offer_not_found(self, client: Any) -> None:
         # Given
@@ -153,7 +152,7 @@ class Returns404Test:
 
 
 @pytest.mark.usefixtures("db_session")
-@override_settings(ADAGE_API_URL="https://adage_base_url")
+@pytest.mark.settings(ADAGE_API_URL="https://adage_base_url")
 class Returns403Test:
     def test_change_institution_on_uneditable_offer_booking_confirmed(self, client: Any) -> None:
         # Given

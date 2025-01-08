@@ -5,7 +5,6 @@ from pcapi.core.educational import models
 from pcapi.core.educational import testing as adage_api_testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 from pcapi.core.token import SecureToken
 from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.core.users import factories as user_factories
@@ -27,8 +26,7 @@ STATUSES_NOT_ALLOWING_CANCEL = tuple(
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-@override_settings(ADAGE_API_URL="https://adage_base_url")
-@override_settings(ADAGE_API_KEY="adage-api-key")
+@pytest.mark.settings(ADAGE_API_URL="https://adage_base_url", ADAGE_API_KEY="adage-api-key")
 class Returns204Test:
     def test_cancel_pending_booking(self, client):
         user = user_factories.UserFactory()

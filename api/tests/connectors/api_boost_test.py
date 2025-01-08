@@ -8,7 +8,6 @@ from pcapi import settings
 from pcapi.connectors import boost
 import pcapi.core.external_bookings.boost.exceptions as boost_exceptions
 import pcapi.core.providers.factories as providers_factories
-from pcapi.core.testing import override_settings
 from pcapi.routes.serialization import BaseModel
 
 
@@ -43,7 +42,7 @@ class BoostLoginTest:
         assert token == cinema_details.token == "new-token"
         assert cinema_details.tokenExpirationDate == datetime.datetime(2022, 10, 13, 17, 9, 25)
 
-    @override_settings(BOOST_API_PASSWORD="wrong_password")
+    @pytest.mark.settings(BOOST_API_PASSWORD="wrong_password")
     def test_wrong_credentials(self, requests_mock):
         cinema_details = providers_factories.BoostCinemaDetailsFactory(
             cinemaUrl="https://cinema.example.com/",

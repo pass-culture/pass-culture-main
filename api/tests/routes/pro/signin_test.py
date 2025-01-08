@@ -6,7 +6,6 @@ import pytest
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.repository import db
@@ -116,7 +115,7 @@ class Returns200Test:
 
     # Fixme : (mageoffray, 2023-12-14)
     # Remove this test - https://passculture.atlassian.net/browse/PC-26462
-    @override_settings(RECAPTCHA_WHITELIST=["whitelisted@email.com", "alsoWithelisted@test.com"])
+    @pytest.mark.settings(RECAPTCHA_WHITELIST=["whitelisted@email.com", "alsoWithelisted@test.com"])
     @pytest.mark.usefixtures("db_session")
     def when_account_is_whitelisted_for_recaptcha(self, client):
         user = users_factories.UserFactory(email="whitelisted@email.com")

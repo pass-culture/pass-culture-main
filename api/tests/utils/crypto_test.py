@@ -1,6 +1,5 @@
 import pytest
 
-from pcapi.core.testing import override_settings
 from pcapi.utils import crypto
 
 
@@ -28,7 +27,7 @@ class DevEnvironmentPasswordHasherTest:
         assert "user@AZERTY123" not in str(exception), str(exception)
 
 
-@override_settings(USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM=False)
+@pytest.mark.settings(USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM=False)
 class ProdEnvironmentPasswordHasherTest:
     def test_hash_password_uses_bcrypt(self):
         hashed = crypto.hash_password("secret")

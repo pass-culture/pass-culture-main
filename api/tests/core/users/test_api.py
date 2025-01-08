@@ -43,7 +43,6 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exceptions
@@ -1113,7 +1112,7 @@ class CreateProUserTest:
         assert not pro_user.has_beneficiary_role
         assert not pro_user.deposits
 
-    @override_settings(MAKE_PROS_BENEFICIARIES_IN_APP=True)
+    @pytest.mark.settings(MAKE_PROS_BENEFICIARIES_IN_APP=True)
     def test_create_pro_user_in_integration(self):
         pro_user_creation_body = users_serialization.ProUserCreationBodyV2Model(**self.data)
 

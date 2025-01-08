@@ -9,7 +9,6 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.reactions.factories import ReactionFactory
 from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.utils.date import format_into_utc_date
 

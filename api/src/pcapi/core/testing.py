@@ -207,36 +207,6 @@ class SettingsContext:
             setattr(settings, attr_name, value)
 
 
-class override_settings(TestContextDecorator):
-    """A context manager/function decorator that temporarily changes a
-    setting.
-
-    Usage:
-
-        with override_settings(OBJECT_STORAGE_URL="https://example.com/storage"):
-            call_some_function()
-
-        @override_settings(
-            OBJECT_STORAGE_URL="https://example.com/storage",
-            OTHER_SETTING=4,
-        ):
-        def test_some_function():
-            pass  # [...]
-    """
-
-    def __init__(self, **overrides: dict[str, typing.Any]) -> None:
-        self.overrides = overrides
-
-    def enable(self) -> None:
-        self.initial_state = {name: getattr(settings, name) for name in self.overrides}
-        for name, new_value in self.overrides.items():
-            setattr(settings, name, new_value)
-
-    def disable(self) -> None:
-        for name, initial_value in self.initial_state.items():
-            setattr(settings, name, initial_value)
-
-
 class override_features(TestContextDecorator):
     """A context manager that temporarily enables and/or disables features.
 

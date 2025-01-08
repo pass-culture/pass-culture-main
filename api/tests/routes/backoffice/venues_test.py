@@ -30,7 +30,6 @@ from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.backoffice import api as backoffice_api
 from pcapi.models import db
@@ -2069,7 +2068,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert response.status_code == 303
         match_acceslibre_job.assert_called_once_with(venue.id)
 
-    @override_settings(ACCESLIBRE_BACKEND="pcapi.connectors.acceslibre.AcceslibreBackend")
+    @pytest.mark.settings(ACCESLIBRE_BACKEND="pcapi.connectors.acceslibre.AcceslibreBackend")
     def test_update_venue_unexisting_acceslibre_url_must_not_update_accessibility_provider(self, authenticated_client):
         venue = offerers_factories.VenueFactory(isPermanent=True)
         offerers_factories.AccessibilityProviderFactory(

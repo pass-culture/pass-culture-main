@@ -5,7 +5,6 @@ import pytest
 import pcapi.core.history.models as history_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
-from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.testing as users_testing
 from pcapi.models.validation_status_mixin import ValidationStatus
@@ -201,7 +200,7 @@ def test_create_offerer_action_is_logged(client):
     assert action.offererId == response.json["id"]
 
 
-@override_settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
+@pytest.mark.settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
 def test_with_inactive_siren(requests_mock, client):
     siren = "123456789"
     requests_mock.get(
@@ -230,7 +229,7 @@ def test_with_inactive_siren(requests_mock, client):
 
 
 @pytest.mark.usefixtures("db_session")
-@override_settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
+@pytest.mark.settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
 def test_saint_martin_offerer_creation_without_postal_code_is_successfull(requests_mock, client):
     siren = "123456789"
     requests_mock.get(

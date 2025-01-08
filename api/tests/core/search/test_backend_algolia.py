@@ -11,7 +11,6 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.search.backends import algolia
 from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -297,20 +296,20 @@ def test_remove_stopwords():
 
 
 class IndexationLimitTest:
-    @override_settings(ALGOLIA_OFFERS_INDEX_MAX_SIZE=-1)
+    @pytest.mark.settings(ALGOLIA_OFFERS_INDEX_MAX_SIZE=-1)
     def should_index_offers_if_no_limit(self):
         backend = get_backend()
         backend.enqueue_offer_ids([1, 2])
         backend.enqueue_offer_ids([3, 4])
         assert backend.redis_client.smembers(algolia.REDIS_OFFER_IDS_NAME) == {"1", "2", "3", "4"}
 
-    @override_settings(ALGOLIA_OFFERS_INDEX_MAX_SIZE=0)
+    @pytest.mark.settings(ALGOLIA_OFFERS_INDEX_MAX_SIZE=0)
     def should_not_index_offers_if_limit_is_already_exceeded(self):
         backend = get_backend()
         backend.enqueue_offer_ids([1])
         assert backend.redis_client.smembers(algolia.REDIS_OFFER_IDS_NAME) == set()
 
-    @override_settings(ALGOLIA_OFFERS_INDEX_MAX_SIZE=2)
+    @pytest.mark.settings(ALGOLIA_OFFERS_INDEX_MAX_SIZE=2)
     def should_index_offers_if_limit_is_not_reached(self):
         backend = get_backend()
         backend.enqueue_offer_ids([1, 2, 3])

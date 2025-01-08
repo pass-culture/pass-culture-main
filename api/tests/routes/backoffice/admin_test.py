@@ -8,7 +8,6 @@ from pcapi.core.history import models as history_models
 from pcapi.core.permissions import factories as perm_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_settings
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -195,7 +194,7 @@ class UpdateRoleTest(PostEndpointHelper):
 
         assert history_models.ActionHistory.query.count() == 0
 
-    @override_settings(BACKOFFICE_ROLES_WITHOUT_GOOGLE_GROUPS=0)
+    @pytest.mark.settings(BACKOFFICE_ROLES_WITHOUT_GOOGLE_GROUPS=0)
     def test_comment_is_mandatory_in_production(self, authenticated_client):
         role_to_edit = perm_factories.RoleFactory()
 

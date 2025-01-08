@@ -9,7 +9,6 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as users_testing
 from pcapi.core.users.models import Favorite
@@ -438,7 +437,7 @@ class PostTest:
         sendinblue_data = users_testing.sendinblue_requests[0]
         assert sendinblue_data["attributes"]["LAST_FAVORITE_CREATION_DATE"] is not None
 
-    @override_settings(MAX_FAVORITES=1)
+    @pytest.mark.settings(MAX_FAVORITES=1)
     def when_user_creates_one_favorite_above_the_limit(self, client):
         user = users_factories.UserFactory()
         offer = offers_factories.EventOfferFactory()

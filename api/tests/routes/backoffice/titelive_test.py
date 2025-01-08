@@ -13,7 +13,6 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_settings
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.backoffice.filters import format_titelive_id_lectorat
 
@@ -289,8 +288,7 @@ class AddProductWhitelistTest(PostEndpointHelper):
         assert "a été ajouté dans la whitelist" in alert
         mock_whitelist_product.assert_called_with(self.endpoint_kwargs["ean"])
 
-    @override_settings(TITELIVE_EPAGINE_API_USERNAME="test@example.com")
-    @override_settings(TITELIVE_EPAGINE_API_PASSWORD="qwerty123")
+    @pytest.mark.settings(TITELIVE_EPAGINE_API_USERNAME="test@example.com", TITELIVE_EPAGINE_API_PASSWORD="qwerty123")
     def test_fail_add_product_whitelist_not_existing(self, requests_mock, authenticated_client):
         requests_mock.post(
             f"{settings.TITELIVE_EPAGINE_API_AUTH_URL}/login/test@example.com/token",
@@ -313,8 +311,7 @@ class AddProductWhitelistTest(PostEndpointHelper):
 
         assert "n'existe pas chez Titelive" in alert
 
-    @override_settings(TITELIVE_EPAGINE_API_USERNAME="test@example.com")
-    @override_settings(TITELIVE_EPAGINE_API_PASSWORD="qwerty123")
+    @pytest.mark.settings(TITELIVE_EPAGINE_API_USERNAME="test@example.com", TITELIVE_EPAGINE_API_PASSWORD="qwerty123")
     def test_fail_no_gtl_id(self, requests_mock, authenticated_client):
         requests_mock.post(
             f"{settings.TITELIVE_EPAGINE_API_AUTH_URL}/login/test@example.com/token",

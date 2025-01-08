@@ -1,12 +1,12 @@
+import pytest
 import requests_mock
 
 from pcapi import settings
-from pcapi.core.testing import override_settings
 from pcapi.tasks.cloud_task import AUTHORIZATION_HEADER_KEY
 from pcapi.tasks.cloud_task import AUTHORIZATION_HEADER_VALUE
 
 
-@override_settings(PUSH_NOTIFICATION_BACKEND="pcapi.notifications.push.backends.batch.BatchBackend")
+@pytest.mark.settings(PUSH_NOTIFICATION_BACKEND="pcapi.notifications.push.backends.batch.BatchBackend")
 def test_batch_task_ios(client):
     with requests_mock.Mocker() as mock:
         posted = mock.post("https://api.batch.com/1.0/fake_ios_api_key/data/users/123")
@@ -21,7 +21,7 @@ def test_batch_task_ios(client):
     assert posted_json == {"overwrite": False, "values": {"TEXTE_À": True}}
 
 
-@override_settings(PUSH_NOTIFICATION_BACKEND="pcapi.notifications.push.backends.batch.BatchBackend")
+@pytest.mark.settings(PUSH_NOTIFICATION_BACKEND="pcapi.notifications.push.backends.batch.BatchBackend")
 def test_batch_task_android(client):
     with requests_mock.Mocker() as mock:
         posted = mock.post("https://api.batch.com/1.0/fake_android_api_key/data/users/123")
@@ -36,7 +36,7 @@ def test_batch_task_android(client):
     assert posted_json == {"overwrite": False, "values": {"TEXTE_À": True}}
 
 
-@override_settings(PUSH_NOTIFICATION_BACKEND="pcapi.notifications.push.backends.batch.BatchBackend")
+@pytest.mark.settings(PUSH_NOTIFICATION_BACKEND="pcapi.notifications.push.backends.batch.BatchBackend")
 def test_batch_task_retry(client, caplog):
     with requests_mock.Mocker() as mock:
         mock.post(
@@ -53,7 +53,7 @@ def test_batch_task_retry(client, caplog):
     assert caplog.records[1].message == "Exception with Batch update_user_attributes API"
 
 
-@override_settings(PUSH_NOTIFICATION_BACKEND="pcapi.notifications.push.backends.batch.BatchBackend")
+@pytest.mark.settings(PUSH_NOTIFICATION_BACKEND="pcapi.notifications.push.backends.batch.BatchBackend")
 def test_batch_bad_request_must_not_be_retried(caplog, client):
     with requests_mock.Mocker() as mock:
         mock.post("https://api.batch.com/1.0/fake_android_api_key/data/users/123", status_code=400)

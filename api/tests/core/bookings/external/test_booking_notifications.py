@@ -11,7 +11,6 @@ from pcapi.core.bookings.external.booking_notifications import send_today_events
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.notifications.push import testing
 
@@ -91,7 +90,7 @@ def test_send_today_events_notifications_only_to_individual_bookings_users_with_
 
 
 @pytest.mark.usefixtures("db_session")
-@override_settings(SOON_EXPIRING_BOOKINGS_DAYS_BEFORE_EXPIRATION=3)
+@pytest.mark.settings(SOON_EXPIRING_BOOKINGS_DAYS_BEFORE_EXPIRATION=3)
 @override_features(WIP_DISABLE_NOTIFY_USERS_BOOKINGS_NOT_RETRIEVED=False)
 def test_notify_users_bookings_not_retrieved() -> None:
     user = users_factories.BeneficiaryGrant18Factory()
@@ -113,7 +112,7 @@ def test_notify_users_bookings_not_retrieved() -> None:
 
 
 @pytest.mark.usefixtures("db_session")
-@override_settings(SOON_EXPIRING_BOOKINGS_DAYS_BEFORE_EXPIRATION=3)
+@pytest.mark.settings(SOON_EXPIRING_BOOKINGS_DAYS_BEFORE_EXPIRATION=3)
 @override_features(WIP_DISABLE_NOTIFY_USERS_BOOKINGS_NOT_RETRIEVED=True)
 def test_notify_users_bookings_not_retrieved_with_FF() -> None:
     user = users_factories.BeneficiaryGrant18Factory()

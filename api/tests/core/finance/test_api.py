@@ -37,7 +37,6 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 from pcapi.core.users import api as users_api
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -1295,7 +1294,7 @@ class CancelLatestEventTest:
         assert event3.status == models.FinanceEventStatus.READY
         assert not event3.pricings
 
-    def test_cannot_delete_dependent_pricings_that_are_not_deletable_with_override(self):
+    def test_cannot_delete_dependent_pricings_that_are_not_deletable_with_override(self, settings):
         event1 = factories.UsedBookingFinanceEventFactory(
             booking__stock__offer__venue__pricing_point="self",
             status=models.FinanceEventStatus.PRICED,
@@ -1331,8 +1330,9 @@ class CancelLatestEventTest:
         assert event3.status == models.FinanceEventStatus.PRICED
         assert event3.pricings[0].status == models.PricingStatus.VALIDATED
 
-        with override_settings(FINANCE_OVERRIDE_PRICING_ORDERING_ON_PRICING_POINTS=[ppoint.id]):
-            api._delete_dependent_pricings(event1, "test_cannot_delete_dependent_pricings_that_are_not_deletable")
+        settings.FINANCE_OVERRIDE_PRICING_ORDERING_ON_PRICING_POINTS = [ppoint.id]
+        api._delete_dependent_pricings(event1, "test_cannot_delete_dependent_pricings_that_are_not_deletable")
+
         db.session.refresh(event2)
         db.session.refresh(event3)
 
@@ -3815,7 +3815,7 @@ class StoreInvoicePdfTest:
     STORAGE_DIR = pathlib.Path(tests.__path__[0]) / ".." / "src" / "pcapi" / "static" / "object_store_data"
     INVOICES_DIR = STORAGE_DIR / "invoices"
 
-    @override_settings(OBJECT_STORAGE_URL=STORAGE_DIR)
+    @pytest.mark.settings(OBJECT_STORAGE_URL=STORAGE_DIR)
     def test_basics(self, clear_tests_invoices_bucket):
         invoice = factories.InvoiceFactory()
         html = "<p>Trust me, I am an invoice.<p>"

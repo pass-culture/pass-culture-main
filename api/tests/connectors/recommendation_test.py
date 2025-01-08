@@ -4,12 +4,11 @@ import urllib.parse
 import pytest
 
 from pcapi.connectors import recommendation
-from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.utils import requests
 
 
-@override_settings(
+@pytest.mark.settings(
     RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
     RECOMMENDATION_API_AUTHENTICATION_TOKEN="secret token",
     RECOMMENDATION_API_URL="https://example.com/recommendation/",
@@ -80,7 +79,7 @@ class GetSimilarOffersTest:
         assert str(err.value) == "too many redirects"
 
 
-@override_settings(
+@pytest.mark.settings(
     RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
     RECOMMENDATION_API_AUTHENTICATION_TOKEN="secret token",
     RECOMMENDATION_API_URL="https://example.com/recommendation/",

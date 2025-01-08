@@ -22,7 +22,6 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.models.offer_mixin import CollectiveOfferStatus
@@ -820,8 +819,10 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
         assert collective_offer_to_validate.validation == OfferValidationStatus.APPROVED
         assert collective_offer_to_validate.lastValidationType == OfferValidationType.MANUAL
 
-    @override_settings(ADAGE_API_URL="https://adage_base_url")
-    @override_settings(ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient")
+    @pytest.mark.settings(
+        ADAGE_API_URL="https://adage_base_url",
+        ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
+    )
     def test_validate_collective_offer_with_institution_invalid_email(
         self, legit_user, authenticated_client, requests_mock
     ):

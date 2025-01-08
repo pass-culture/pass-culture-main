@@ -14,7 +14,6 @@ from pcapi.core.history import models as history_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as external_testing
 from pcapi.utils.date import timespan_str_to_numrange
@@ -1187,18 +1186,16 @@ class Returns400Test:
     side_effect=entreprise_exceptions.UnknownEntityException(),
 )
 def test_with_inconsistent_siret(
-    mock_siret_is_active, client, enforce_siret_check, disable_siret_check, expected_result
+    mock_siret_is_active, client, enforce_siret_check, disable_siret_check, expected_result, settings
 ):
     venue = offerers_factories.VenueFactory(siret="00112233900040", managingOfferer__siren="001122339")
     user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
 
     venue_data = populate_missing_data_from_venue({"siret": "00112233900049"}, venue)
 
-    with override_settings(ENFORCE_SIRET_CHECK=enforce_siret_check):
-        with override_features(DISABLE_SIRET_CHECK=disable_siret_check):
-            response = client.with_session_auth(email=user_offerer.user.email).patch(
-                f"/venues/{venue.id}", json=venue_data
-            )
+    settings.ENFORCE_SIRET_CHECK = enforce_siret_check
+    with override_features(DISABLE_SIRET_CHECK=disable_siret_check):
+        response = client.with_session_auth(email=user_offerer.user.email).patch(f"/venues/{venue.id}", json=venue_data)
 
     assert response.status_code == expected_result, response.json
     if expected_result == 400:
