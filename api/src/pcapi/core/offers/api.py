@@ -71,6 +71,7 @@ from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.utils import db as db_utils
 from pcapi.utils import image_conversion
+from pcapi.utils import rest
 import pcapi.utils.cinema_providers as cinema_providers_utils
 from pcapi.utils.custom_keys import get_field
 from pcapi.utils.custom_logic import OPERATIONS
@@ -439,7 +440,7 @@ def update_offer(
     return offer
 
 
-def update_collective_offer(offer_id: int, new_values: dict) -> None:
+def update_collective_offer(offer_id: int, new_values: dict, user: users_models.User) -> None:
     offer_to_update = educational_models.CollectiveOffer.query.filter(
         educational_models.CollectiveOffer.id == offer_id
     ).first()
@@ -467,7 +468,7 @@ def update_collective_offer(offer_id: int, new_values: dict) -> None:
     if new_venue:
         move_collective_offer_venue(offer_to_update, new_venue)
 
-    updated_fields = _update_collective_offer(offer=offer_to_update, new_values=new_values)
+    updated_fields = _update_collective_offer(offer=offer_to_update, new_values=new_values, user=user)
 
     on_commit(
         partial(
@@ -478,10 +479,12 @@ def update_collective_offer(offer_id: int, new_values: dict) -> None:
     )
 
 
-def update_collective_offer_template(offer_id: int, new_values: dict) -> None:
-    query = educational_models.CollectiveOfferTemplate.query
-    query = query.filter(educational_models.CollectiveOfferTemplate.id == offer_id)
-    offer_to_update = query.one()
+def update_collective_offer_template(offer_id: int, new_values: dict, user: users_models.User) -> None:
+    offer_to_update: educational_models.CollectiveOfferTemplate = (
+        educational_models.CollectiveOfferTemplate.query.filter(
+            educational_models.CollectiveOfferTemplate.id == offer_id
+        ).one()
+    )
 
     if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
         educational_validation.check_collective_offer_template_action_is_allowed(
@@ -512,7 +515,7 @@ def update_collective_offer_template(offer_id: int, new_values: dict) -> None:
         else:
             offer_to_update.dateRange = None
 
-    _update_collective_offer(offer=offer_to_update, new_values=new_values)
+    _update_collective_offer(offer=offer_to_update, new_values=new_values, user=user)
 
     on_commit(
         partial(
@@ -523,9 +526,29 @@ def update_collective_offer_template(offer_id: int, new_values: dict) -> None:
     )
 
 
-def _update_collective_offer(offer: educational_api_offer.AnyCollectiveOffer, new_values: dict) -> list[str]:
+def _update_collective_offer(
+    offer: educational_api_offer.AnyCollectiveOffer, new_values: dict, user: users_models.User
+) -> list[str]:
     validation.check_validation_status(offer)
     validation.check_contact_request(offer, new_values)
+
+    offer_venue = new_values.get("offerVenue")
+    if offer_venue:
+        match offer_venue["addressType"]:
+            case educational_models.OfferAddressType.SCHOOL:
+                new_values["locationType"] = educational_models.CollectiveLocationType.SCHOOL
+                new_values["offererAddressId"] = None
+
+            case educational_models.OfferAddressType.OFFERER_VENUE:
+                new_values["locationType"] = educational_models.CollectiveLocationType.VENUE
+                location_venue = offerers_repository.get_venue_by_id(offer_venue["venueId"])
+                rest.check_user_has_access_to_offerer(user, offerer_id=location_venue.managingOffererId)
+                new_values["offererAddressId"] = location_venue.offererAddressId
+
+            case _:
+                new_values["locationType"] = None
+                new_values["offererAddressId"] = None
+
     # This variable is meant for Adage mailing
     updated_fields = []
     for key, value in new_values.items():
@@ -2125,7 +2148,6 @@ def move_collective_offer_venue(
     )
 
     collective_offer.venue = destination_venue
-    collective_offer.offererAddressId = destination_venue.offererAddressId
     db.session.add(collective_offer)
 
     for collective_booking in collective_bookings:

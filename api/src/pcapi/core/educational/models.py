@@ -305,6 +305,13 @@ class PlaylistType(enum.Enum):
     NEW_OFFERER = "Nouveaux partenaires culturels"
 
 
+class CollectiveLocationType(enum.Enum):
+    VENUE = "VENUE"
+    SCHOOL = "SCHOOL"
+    ADDRESS = "ADDRESS"
+    TO_BE_DEFINED = "TO_BE_DEFINED"
+
+
 @sa.orm.declarative_mixin
 class HasImageMixin:
     BASE_URL = f"{settings.OBJECT_STORAGE_URL}/{settings.THUMBS_FOLDER_NAME}"
@@ -617,10 +624,17 @@ class CollectiveOffer(
 
     isNonFreeOffer: sa_orm.Mapped["bool | None"] = sa.orm.query_expression()
 
-    offererAddressId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=True, index=True)
+    offererAddressId: sa_orm.Mapped[int | None] = sa.Column(
+        sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=True, index=True
+    )
     offererAddress: sa_orm.Mapped["OffererAddress"] = relationship(
         "OffererAddress", foreign_keys=offererAddressId, uselist=False
     )
+
+    locationType: sa_orm.Mapped[CollectiveLocationType | None] = sa.Column(
+        MagicEnum(CollectiveLocationType), nullable=True, server_default=None, default=None
+    )
+    locationComment: sa_orm.Mapped[str | None] = sa.Column(sa.Text(), nullable=True)
 
     @declared_attr
     def __table_args__(self):
@@ -636,6 +650,10 @@ class CollectiveOffer(
             sa.CheckConstraint(
                 f"length(description) <= {MAX_COLLECTIVE_DESCRIPTION_LENGTH}",
                 name="collective_offer_description_constraint",
+            ),
+            sa.CheckConstraint(
+                '"locationComment" IS NULL OR length("locationComment") <= 200',
+                name="collective_offer_location_comment_constraint",
             ),
         ]
 
@@ -1152,10 +1170,17 @@ class CollectiveOfferTemplate(
         MagicEnum(CollectiveOfferRejectionReason), default=None
     )
 
-    offererAddressId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=True, index=True)
+    offererAddressId: sa_orm.Mapped[int | None] = sa.Column(
+        sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=True, index=True
+    )
     offererAddress: sa_orm.Mapped["OffererAddress | None"] = relationship(
         "OffererAddress", foreign_keys=[offererAddressId], uselist=False
     )
+
+    locationType: sa_orm.Mapped[CollectiveLocationType | None] = sa.Column(
+        MagicEnum(CollectiveLocationType), nullable=True, server_default=None, default=None
+    )
+    locationComment: sa_orm.Mapped[str | None] = sa.Column(sa.Text(), nullable=True)
 
     dateArchived: datetime | None = sa.Column(sa.DateTime, nullable=True)
 
@@ -1189,6 +1214,10 @@ class CollectiveOfferTemplate(
             sa.CheckConstraint(
                 f"length(description) <= {MAX_COLLECTIVE_DESCRIPTION_LENGTH}",
                 name="collective_offer_tmpl_description_constraint",
+            ),
+            sa.CheckConstraint(
+                '"locationComment" IS NULL OR length("locationComment") <= 200',
+                name="collective_offer_tmpl_location_comment_constraint",
             ),
         ]
 

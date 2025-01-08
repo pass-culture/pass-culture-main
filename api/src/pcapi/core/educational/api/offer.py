@@ -28,6 +28,7 @@ from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.object_storage import store_public_object
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation as offer_validation
 from pcapi.core.users.models import User
@@ -184,10 +185,26 @@ def get_educational_domains_from_ids(
     return educational_domains
 
 
+def _get_location_type_and_oa_id(
+    address_type: educational_models.OfferAddressType, venue_id: int | None, user: User
+) -> tuple[educational_models.CollectiveLocationType | None, int | None]:
+    match address_type:
+        case educational_models.OfferAddressType.SCHOOL:
+            return (educational_models.CollectiveLocationType.SCHOOL, None)
+
+        case educational_models.OfferAddressType.OFFERER_VENUE:
+            assert venue_id is not None  # for mypy - venue_id is present when address_type is venue
+            location_venue = offerers_repository.get_venue_by_id(venue_id)
+            rest.check_user_has_access_to_offerer(user, offerer_id=location_venue.managingOffererId)
+
+            return (educational_models.CollectiveLocationType.VENUE, location_venue.offererAddressId)
+
+        case _:
+            return (None, None)
+
+
 def create_collective_offer_template(
-    offer_data: collective_offers_serialize.PostCollectiveOfferTemplateBodyModel,
-    user: User,
-    offer_id: int | None = None,
+    offer_data: collective_offers_serialize.PostCollectiveOfferTemplateBodyModel, user: User
 ) -> educational_models.CollectiveOfferTemplate:
     venue = get_venue_and_check_access_for_offer_creation(offer_data, user)
     educational_domains = get_educational_domains_from_ids(offer_data.domains)
@@ -198,10 +215,14 @@ def create_collective_offer_template(
     if offer_data.contact_url and offer_data.contact_form:
         raise offers_exceptions.UrlandFormBothSetError()
 
+    offer_venue = offer_data.offer_venue.dict()
+    location_type, offerer_address_id = _get_location_type_and_oa_id(
+        offer_venue["addressType"], venue_id=offer_venue["venueId"], user=user
+    )
+
     collective_offer_template = educational_models.CollectiveOfferTemplate(
         venueId=venue.id,
         name=offer_data.name,
-        offerId=offer_id,
         description=offer_data.description,
         domains=educational_domains,
         durationMinutes=offer_data.duration_minutes,
@@ -211,7 +232,7 @@ def create_collective_offer_template(
         contactPhone=offer_data.contact_phone,
         contactUrl=offer_data.contact_url,
         contactForm=offer_data.contact_form,
-        offerVenue=offer_data.offer_venue.dict(),
+        offerVenue=offer_venue,
         validation=offer_mixin.OfferValidationStatus.DRAFT,
         audioDisabilityCompliant=offer_data.audio_disability_compliant,
         mentalDisabilityCompliant=offer_data.mental_disability_compliant,
@@ -219,8 +240,11 @@ def create_collective_offer_template(
         visualDisabilityCompliant=offer_data.visual_disability_compliant,
         interventionArea=offer_data.intervention_area or [],
         priceDetail=offer_data.price_detail,
+        bookingEmails=offer_data.booking_emails,  # type: ignore[arg-type]
         formats=offer_data.formats,  # type: ignore[arg-type]
         author=user,
+        locationType=location_type,
+        offererAddressId=offerer_address_id,
     )
 
     if offer_data.dates:
@@ -230,7 +254,6 @@ def create_collective_offer_template(
             offer_data.dates.start, offer_data.dates.end
         )
 
-    collective_offer_template.bookingEmails = offer_data.booking_emails
     db.session.add(collective_offer_template)
     db.session.flush()
 
@@ -238,11 +261,7 @@ def create_collective_offer_template(
         national_program_api.link_or_unlink_offer_to_program(offer_data.nationalProgramId, collective_offer_template)
 
     logger.info(
-        "Collective offer template has been created",
-        extra={
-            "collectiveOfferTemplate": collective_offer_template.id,
-            "offerId": offer_id,
-        },
+        "Collective offer template has been created", extra={"collectiveOfferTemplate": collective_offer_template.id}
     )
     return collective_offer_template
 
@@ -261,6 +280,11 @@ def create_collective_offer(
             template, educational_models.CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER
         )
 
+    offer_venue = offer_data.offer_venue.dict()
+    location_type, offerer_address_id = _get_location_type_and_oa_id(
+        offer_venue["addressType"], venue_id=offer_venue["venueId"], user=user
+    )
+
     collective_offer = educational_models.CollectiveOffer(
         isActive=False,  # a DRAFT offer cannot be active
         venueId=venue.id,
@@ -273,7 +297,7 @@ def create_collective_offer(
         students=offer_data.students,
         contactEmail=offer_data.contact_email,
         contactPhone=offer_data.contact_phone,
-        offerVenue=offer_data.offer_venue.dict(),
+        offerVenue=offer_venue,
         validation=offer_mixin.OfferValidationStatus.DRAFT,
         audioDisabilityCompliant=offer_data.audio_disability_compliant,
         mentalDisabilityCompliant=offer_data.mental_disability_compliant,
@@ -281,15 +305,15 @@ def create_collective_offer(
         visualDisabilityCompliant=offer_data.visual_disability_compliant,
         interventionArea=offer_data.intervention_area or [],
         templateId=offer_data.template_id,
+        bookingEmails=offer_data.booking_emails,  # type: ignore[arg-type]
         formats=offer_data.formats,  # type: ignore[arg-type]
         author=user,
+        locationType=location_type,
+        offererAddressId=offerer_address_id,
     )
 
-    emails = offer_data.booking_emails
-    collective_offer.bookingEmails = emails
-
     # we update pro email data in sendinblue
-    for email in emails:
+    for email in collective_offer.bookingEmails:
         update_external_pro(email)
 
     db.session.add(collective_offer)

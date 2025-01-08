@@ -7,10 +7,12 @@ from pcapi.core.educational import models
 from pcapi.core.educational import testing as educational_testing
 import pcapi.core.educational.exceptions as educational_exceptions
 import pcapi.core.educational.factories as educational_factories
-from pcapi.core.educational.models import CollectiveOffer
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.users import testing as sendinblue_testing
 import pcapi.core.users.factories as users_factories
+
+
+PATCH_CAN_CREATE_OFFER_PATH = "pcapi.core.offerers.api.can_offerer_create_educational_offer"
 
 
 def base_offer_payload(
@@ -97,14 +99,14 @@ class Returns200Test:
         data = base_offer_payload(venue=venue)
 
         # When
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         # Then
         assert response.status_code == 201
 
         offer_id = response.json["id"]
-        offer = CollectiveOffer.query.get(offer_id)
+        offer = models.CollectiveOffer.query.get(offer_id)
 
         assert_offer_values(offer, data, user, offerer)
 
@@ -119,14 +121,14 @@ class Returns200Test:
 
         # When
         data = {**base_offer_payload(venue=venue), "students": ["Collège - 6e"]}
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         # Then
         assert response.status_code == 201
 
         offer_id = response.json["id"]
-        offer = CollectiveOffer.query.get(offer_id)
+        offer = models.CollectiveOffer.query.get(offer_id)
 
         assert_offer_values(offer, data, user, offerer)
 
@@ -144,7 +146,7 @@ class Returns200Test:
         data["interventionArea"] = []
         data["offerVenue"] = {"addressType": "offererVenue", "otherAddress": "", "venueId": venue.id}
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         # Then
@@ -157,12 +159,12 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         data = {**base_offer_payload(venue=venue), "students": ["Écoles Marseille - Maternelle"]}
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 201
 
-        offer = CollectiveOffer.query.get(response.json["id"])
+        offer = models.CollectiveOffer.query.get(response.json["id"])
         assert offer.students == [models.StudentLevels.ECOLES_MARSEILLE_MATERNELLE]
 
     @pytest.mark.features(WIP_ENABLE_MARSEILLE=False)
@@ -172,7 +174,7 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         data = {**base_offer_payload(venue=venue), "students": ["Écoles Marseille - Maternelle"]}
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
@@ -195,6 +197,57 @@ class Returns200Test:
 
         assert response.status_code == 201
 
+    def test_offerer_address_venue(self, client):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
+
+        data = {
+            **base_offer_payload(venue=venue),
+            "offerVenue": {"addressType": "offererVenue", "otherAddress": "", "venueId": venue.id},
+        }
+
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+
+        assert response.status_code == 201
+        offer = models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        assert offer.offererAddressId == venue.offererAddressId
+        assert offer.locationType == models.CollectiveLocationType.VENUE
+
+    def test_offerer_address_school(self, client):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
+
+        data = {
+            **base_offer_payload(venue=venue),
+            "offerVenue": {"addressType": "school", "otherAddress": "", "venueId": None},
+        }
+
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+
+        assert response.status_code == 201
+        offer = models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        assert offer.offererAddressId == None
+        assert offer.locationType == models.CollectiveLocationType.SCHOOL
+
+    def test_offerer_address_other(self, client):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
+
+        data = {
+            **base_offer_payload(venue=venue),
+            "offerVenue": {"addressType": "other", "otherAddress": "In Paris", "venueId": None},
+        }
+
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+
+        assert response.status_code == 201
+        offer = models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        assert offer.offererAddressId == None
+        assert offer.locationType == None
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
@@ -207,12 +260,12 @@ class Returns403Test:
 
         # When
         data = base_offer_payload(venue=venue)
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
 
         # Then
         assert response.status_code == 403
-        assert CollectiveOffer.query.count() == 0
+        assert models.CollectiveOffer.query.count() == 0
 
     def test_create_collective_offer_no_adage_offerer(self, client):
         # Given
@@ -225,12 +278,29 @@ class Returns403Test:
 
         # When
         data = base_offer_payload(venue=venue)
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer", side_effect=raise_ac):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH, side_effect=raise_ac):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         # Then
         assert response.status_code == 403
-        assert CollectiveOffer.query.count() == 0
+        assert models.CollectiveOffer.query.count() == 0
+
+    def test_offerer_address_venue_not_allowed(self, client):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
+        other_venue = offerers_factories.VenueFactory()
+
+        data = {
+            **base_offer_payload(venue=venue),
+            "offerVenue": {"addressType": "offererVenue", "otherAddress": "", "venueId": other_venue.id},
+        }
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+
+        assert response.status_code == 403
+        assert response.json == {
+            "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."]
+        }
 
 
 @pytest.mark.usefixtures("db_session")
@@ -244,12 +314,12 @@ class Returns400Test:
 
         # When
         data = base_offer_payload(venue=venue, subcategory_id="pouet")
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
 
         # Then
         assert response.status_code == 400
-        assert CollectiveOffer.query.count() == 0
+        assert models.CollectiveOffer.query.count() == 0
 
     def test_create_collective_offer_unselectable_category(self, client):
         # Given
@@ -260,12 +330,12 @@ class Returns400Test:
 
         # When
         data = base_offer_payload(venue=venue, subcategory_id=subcategories.OEUVRE_ART.id)
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
 
         # Then
         assert response.status_code == 400
-        assert CollectiveOffer.query.count() == 0
+        assert models.CollectiveOffer.query.count() == 0
 
     def test_create_collective_offer_no_collective_category(self, client):
         # Given
@@ -276,12 +346,12 @@ class Returns400Test:
 
         # When
         data = base_offer_payload(venue=venue, subcategory_id=subcategories.SUPPORT_PHYSIQUE_FILM.id)
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
 
         # Then
         assert response.status_code == 400
-        assert CollectiveOffer.query.count() == 0
+        assert models.CollectiveOffer.query.count() == 0
 
     def test_create_collective_offer_empty_domains(self, client):
         # Given
@@ -292,12 +362,12 @@ class Returns400Test:
 
         # When
         data = base_offer_payload(venue=venue, domains=[])
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
 
         # Then
         assert response.status_code == 400
-        assert CollectiveOffer.query.count() == 0
+        assert models.CollectiveOffer.query.count() == 0
 
     def test_create_collective_offer_booking_emails_invalid(self, client):
         user = users_factories.UserFactory()
@@ -306,7 +376,7 @@ class Returns400Test:
 
         data = base_offer_payload(venue=venue)
         data["bookingEmails"] = ["test@testmail.com", "test@test", "test"]
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
 
         assert response.status_code == 400
@@ -314,55 +384,55 @@ class Returns400Test:
             "bookingEmails.1": ["Le format d'email est incorrect."],
             "bookingEmails.2": ["Le format d'email est incorrect."],
         }
-        assert CollectiveOffer.query.count() == 0
+        assert models.CollectiveOffer.query.count() == 0
 
     def test_create_collective_offer_no_booking_email(self, client):
         venue = offerers_factories.VenueFactory()
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
 
         data = {**base_offer_payload(venue=venue), "bookingEmails": []}
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
         assert response.json == {"bookingEmails": ["Un email doit etre renseigné."]}
-        assert CollectiveOffer.query.count() == 0
+        assert models.CollectiveOffer.query.count() == 0
 
     def test_create_collective_offer_no_intervention_area(self, client):
         venue = offerers_factories.VenueFactory()
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
 
         data = {**base_offer_payload(venue=venue), "interventionArea": []}
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
         assert response.json == {"interventionArea": ["intervention_area must have at least one value"]}
-        assert CollectiveOffer.query.count() == 0
+        assert models.CollectiveOffer.query.count() == 0
 
     def test_create_collective_offer_no_domains(self, client):
         venue = offerers_factories.VenueFactory()
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
 
         data = {**base_offer_payload(venue=venue), "domains": []}
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
         assert response.json == {"domains": ["domains must have at least one value"]}
-        assert CollectiveOffer.query.count() == 0
+        assert models.CollectiveOffer.query.count() == 0
 
     def test_create_collective_offer_description_invalid(self, client):
         venue = offerers_factories.VenueFactory()
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
 
         data = {**base_offer_payload(venue=venue), "description": "too_long" * 200}
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
         assert response.json == {"description": ["La description de l’offre doit faire au maximum 1500 caractères."]}
-        assert CollectiveOffer.query.count() == 0
+        assert models.CollectiveOffer.query.count() == 0
 
 
 @pytest.mark.usefixtures("db_session")
@@ -377,7 +447,7 @@ class Returns404Test:
         # When
         data = base_offer_payload(venue=venue, domains=[0, domain.id])
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         # Then
@@ -393,7 +463,7 @@ class Returns404Test:
         # When
         data = base_offer_payload(venue=venue, national_program_id=-1)
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         # Then
@@ -409,7 +479,7 @@ class Returns404Test:
         # When
         data = base_offer_payload(venue=venue, template_id=1234567890)
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         # Then

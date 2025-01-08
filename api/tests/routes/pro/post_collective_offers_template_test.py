@@ -5,10 +5,10 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.core.categories import subcategories_v2 as subcategories
-import pcapi.core.educational.exceptions as educational_exceptions
-import pcapi.core.educational.factories as educational_factories
-from pcapi.core.educational.models import CollectiveOfferTemplate
-import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.educational import exceptions as educational_exceptions
+from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational import models
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -118,7 +118,7 @@ class Returns200Test:
         assert response.status_code == 201
 
         offer_id = response.json["id"]
-        offer = CollectiveOfferTemplate.query.get(offer_id)
+        offer = models.CollectiveOfferTemplate.query.get(offer_id)
 
         assert offer.bookingEmails == ["offer1@example.com", "offer2@example.com"]
         assert offer.subcategoryId == subcategories.SPECTACLE_REPRESENTATION.id
@@ -158,7 +158,7 @@ class Returns200Test:
         assert response.status_code == 201
 
         offer_id = response.json["id"]
-        offer = CollectiveOfferTemplate.query.get(offer_id)
+        offer = models.CollectiveOfferTemplate.query.get(offer_id)
 
         assert offer.contactEmail is None
         assert offer.contactPhone == "01 99 00 25 68"
@@ -197,9 +197,42 @@ class Returns200Test:
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 201
-        offer = CollectiveOfferTemplate.query.filter_by(id=response.json["id"]).one()
+        offer = models.CollectiveOfferTemplate.query.filter_by(id=response.json["id"]).one()
         assert offer.dateRange.lower == now
         assert offer.dateRange.upper == now + timedelta(seconds=1)
+
+    def test_offerer_address_venue(self, pro_client, payload, venue):
+        data = {**payload, "offerVenue": {"addressType": "offererVenue", "otherAddress": "", "venueId": venue.id}}
+
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 201
+        offer = models.CollectiveOfferTemplate.query.filter_by(id=response.json["id"]).one()
+        assert offer.offererAddressId == venue.offererAddressId
+        assert offer.locationType == models.CollectiveLocationType.VENUE
+
+    def test_offerer_address_school(self, pro_client, payload):
+        data = {**payload, "offerVenue": {"addressType": "school", "otherAddress": "", "venueId": None}}
+
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 201
+        offer = models.CollectiveOfferTemplate.query.filter_by(id=response.json["id"]).one()
+        assert offer.offererAddressId == None
+        assert offer.locationType == models.CollectiveLocationType.SCHOOL
+
+    def test_offerer_address_other(self, pro_client, payload):
+        data = {**payload, "offerVenue": {"addressType": "other", "otherAddress": "In Paris", "venueId": None}}
+
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 201
+        offer = models.CollectiveOfferTemplate.query.filter_by(id=response.json["id"]).one()
+        assert offer.offererAddressId == None
+        assert offer.locationType == None
 
 
 class Returns403Test:
@@ -210,7 +243,7 @@ class Returns403Test:
             response = client.with_session_auth(user.email).post("/collective/offers-template", json=payload)
 
         assert response.status_code == 403
-        assert CollectiveOfferTemplate.query.count() == 0
+        assert models.CollectiveOfferTemplate.query.count() == 0
 
     def test_no_adage_offerer(self, pro_client, payload):
         def raise_ac(*args, **kwargs):
@@ -220,7 +253,19 @@ class Returns403Test:
             response = pro_client.post("/collective/offers-template", json=payload)
 
         assert response.status_code == 403
-        assert CollectiveOfferTemplate.query.count() == 0
+        assert models.CollectiveOfferTemplate.query.count() == 0
+
+    def test_offerer_address_venue_not_allowed(self, pro_client, payload):
+        venue = offerers_factories.VenueFactory()
+        data = {**payload, "offerVenue": {"addressType": "offererVenue", "otherAddress": "", "venueId": venue.id}}
+
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 403
+        assert response.json == {
+            "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."]
+        }
 
 
 class Returns400Test:
@@ -235,7 +280,7 @@ class Returns400Test:
             "subcategory": ["Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie"]
         }
 
-        assert CollectiveOfferTemplate.query.count() == 0
+        assert models.CollectiveOfferTemplate.query.count() == 0
 
     def test_no_collective_category(self, pro_client, payload):
         data = {**payload, "subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id}
@@ -246,7 +291,7 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {"offer": ["Cette catégorie d'offre n'est pas éligible aux offres éducationnelles"]}
 
-        assert CollectiveOfferTemplate.query.count() == 0
+        assert models.CollectiveOfferTemplate.query.count() == 0
 
     def test_empty_domains(self, pro_client, payload):
         data = {**payload, "domains": []}
@@ -257,7 +302,7 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {"domains": ["domains must have at least one value"]}
 
-        assert CollectiveOfferTemplate.query.count() == 0
+        assert models.CollectiveOfferTemplate.query.count() == 0
 
     def test_too_long_price_details(self, pro_client, payload):
         data = {**payload, "priceDetail": "a" * 1001}
@@ -268,7 +313,7 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {"priceDetail": ["ensure this value has at most 1000 characters"]}
 
-        assert CollectiveOfferTemplate.query.count() == 0
+        assert models.CollectiveOfferTemplate.query.count() == 0
 
     def test_empty_contact(self, pro_client, payload, venue):
         data = {
