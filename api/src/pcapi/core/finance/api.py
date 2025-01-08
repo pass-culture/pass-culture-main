@@ -1184,9 +1184,6 @@ def generate_payment_files(batch: models.CashflowBatch) -> None:
     logger.info("Generating payments file")
     file_paths["payments"] = _generate_payments_file(batch)
 
-    logger.info("Generating new-caledonian payments file")
-    file_paths["payments_nc"] = _generate_payments_file(batch, only_caledonian=True)
-
     logger.info(
         "Finance files have been generated",
         extra={"paths": [str(path) for path in file_paths.values()]},
@@ -1406,7 +1403,7 @@ def _clean_for_accounting(value: str) -> str:
     return value.strip().replace('"', "").replace(";", "").replace("\n", "")
 
 
-def _generate_payments_file(batch: models.CashflowBatch, only_caledonian: bool = False) -> pathlib.Path:
+def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
     batch_id = batch.id
     header = [
         "Identifiant humanisé des coordonnées bancaires",
@@ -1444,14 +1441,9 @@ def _generate_payments_file(batch: models.CashflowBatch, only_caledonian: bool =
                 ).label("offerer_siren"),
                 models.Deposit.type.label("deposit_type"),
                 sa.case((offerers_models.Offerer.is_caledonian == True, "NC"), else_=None).label("caledonian_label"),
-                sqla_func.sum(models.Pricing.xpf_amount if only_caledonian else models.Pricing.amount).label(
-                    "pricing_amount"
-                ),
+                sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
             )
         )
-
-        if only_caledonian:
-            individual_data_query = individual_data_query.filter(offerers_models.Offerer.is_caledonian)
 
         return individual_data_query
 
@@ -1541,31 +1533,28 @@ def _generate_payments_file(batch: models.CashflowBatch, only_caledonian: bool =
         .join(models.BookingFinanceIncident.collectiveBooking)
     )
 
-    if only_caledonian:
-        collective_data = []
-    else:
-        collective_data = (
-            collective_query.union_all(collective_incident_query)
-            .group_by(
-                sa.column("bank_account_id"),
-                sa.column("bank_account_label"),
-                sa.column("offerer_name"),
-                sa.column("offerer_siren"),
-                sa.column("ministry"),
-            )
-            .with_entities(
-                sa.column("bank_account_id"),
-                sa.column("bank_account_label"),
-                sa.column("offerer_name"),
-                sa.column("offerer_siren"),
-                sa.column("ministry"),
-                sqla_func.sum(sa.column("pricing_amount")).label("pricing_amount"),
-            )
-            .all()
+    collective_data = (
+        collective_query.union_all(collective_incident_query)
+        .group_by(
+            sa.column("bank_account_id"),
+            sa.column("bank_account_label"),
+            sa.column("offerer_name"),
+            sa.column("offerer_siren"),
+            sa.column("ministry"),
         )
+        .with_entities(
+            sa.column("bank_account_id"),
+            sa.column("bank_account_label"),
+            sa.column("offerer_name"),
+            sa.column("offerer_siren"),
+            sa.column("ministry"),
+            sqla_func.sum(sa.column("pricing_amount")).label("pricing_amount"),
+        )
+        .all()
+    )
 
     return _write_csv(
-        f"down_payment{'_nc' if only_caledonian else ''}_{batch.label}",
+        f"down_payment_{batch.label}",
         header,
         rows=itertools.chain(indiv_data, collective_data),
         row_formatter=_payment_details_row_formatter,
