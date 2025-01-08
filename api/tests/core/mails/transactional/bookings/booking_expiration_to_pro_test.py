@@ -58,9 +58,9 @@ class SendExpiredBookingsRecapEmailToOffererTest:
 
         assert len(mails_testing.outbox) == 2
         email1, email2 = mails_testing.outbox  # pylint: disable=unbalanced-tuple-unpacking
-        # FIXME: the following two statements have no effect -- assert fails when added
-        email1["params"]["OFFER_ADDRESS"] == oa.address.fullAddress if has_offerer_address else None
-        email2["params"]["OFFER_ADDRESS"] == oa.address.fullAddress if has_offerer_address else None
+        if has_offerer_address:
+            assert email1["params"]["OFFER_ADDRESS"] == expired_today_book_booking.stock.offer.fullAddress
+            assert email2["params"]["OFFER_ADDRESS"] == expired_today_dvd_booking.stock.offer.fullAddress
         assert email1["template"] == TransactionalEmail.BOOKING_EXPIRATION_TO_PRO.value.__dict__
         assert email1["params"]["WITHDRAWAL_PERIOD"] == 10
         assert len(email1["params"]["BOOKINGS"]) == 1
