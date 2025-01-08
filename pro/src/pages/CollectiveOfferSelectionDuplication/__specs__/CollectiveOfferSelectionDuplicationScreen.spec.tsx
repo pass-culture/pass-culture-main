@@ -48,7 +48,7 @@ vi.mock('commons/core/OfferEducational/utils/createOfferFromTemplate', () => ({
 }))
 
 describe('CollectiveOfferConfirmation', () => {
-  let initialValues: { searchFilter: string; templateOfferId: string }
+  let initialValues = { searchFilter: 'string', templateOfferId: 'string' }
   const onSubmit = vi.fn()
   const notifyError = vi.fn()
 
