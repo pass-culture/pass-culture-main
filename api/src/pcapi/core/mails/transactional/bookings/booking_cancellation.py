@@ -9,7 +9,8 @@ from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.repository import find_ongoing_bookings_by_stock
 from pcapi.core.mails import models
 from pcapi.repository import on_commit
-from pcapi.utils.date import format_datetime
+from pcapi.utils.date import get_date_formatted_for_email
+from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.mailing import get_event_datetime
 
 from .booking_cancellation_by_beneficiary import send_booking_cancellation_by_beneficiary_email
@@ -80,8 +81,11 @@ def get_booking_cancellation_confirmation_by_pro_email_data(
     stock_date_time = None
     booking_is_on_event = booking.stock.beginningDatetime is not None
     if booking_is_on_event:
-        date_in_tz = get_event_datetime(booking.stock)
-        stock_date_time = format_datetime(date_in_tz)
+        stock_date_time = (
+            get_date_formatted_for_email(get_event_datetime(booking.stock))
+            + ", "
+            + get_time_formatted_for_email(get_event_datetime(booking.stock))
+        )
     email_html = render_template(
         "mails/offerer_recap_email_after_offerer_cancellation.html",
         booking_is_on_event=booking_is_on_event,
