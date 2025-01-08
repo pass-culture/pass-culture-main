@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-import { valideSiretLength } from 'pages/VenueCreation/SiretOrCommentFields/validationSchema'
+import { valideSiretLength } from 'pages/VenueSettings/SiretOrCommentFields/validationSchema'
 
 export const validationSchema = yup.object().shape({
   siret: yup

@@ -8,8 +8,7 @@ import {
   renderWithProviders,
   RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
-import { VenueCreationFormValues } from 'pages/VenueCreation/types'
-import { VenueEditionFormValues } from 'pages/VenueEdition/types'
+import { VenueSettingsFormValues } from 'pages/VenueSettings/types'
 import { Button } from 'ui-kit/Button/Button'
 
 import {
@@ -34,7 +33,7 @@ const renderSiretOrComment = async ({
   validationSchema,
   options,
 }: {
-  initialValues: Partial<VenueEditionFormValues>
+  initialValues: Partial<VenueSettingsFormValues>
   onSubmit: () => void
   props: SiretOrCommentFieldsProps
   validationSchema: any
@@ -70,7 +69,7 @@ const renderSiretOrComment = async ({
 
 describe('components | SiretOrCommentFields', () => {
   let props: SiretOrCommentFieldsProps
-  let initialValues: Partial<VenueCreationFormValues>
+  let initialValues: Partial<VenueSettingsFormValues>
   let validationSchema: any
   const onSubmit = vi.fn()
 

@@ -10,8 +10,6 @@ import { CalloutVariant } from 'ui-kit/Callout/types'
 import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
 import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
 
-import { VenueCreationFormValues } from '../types'
-
 import styles from './Accessibility.module.scss'
 
 export interface AccessiblityProps {
@@ -23,9 +21,8 @@ export const Accessibility = ({
   isCreatingVenue,
   isVenuePermanent,
 }: AccessiblityProps) => {
-  const { values, setFieldValue, initialValues } = useFormikContext<
-    VenueCreationFormValues | VenueEditionFormValues
-  >()
+  const { values, setFieldValue, initialValues } =
+    useFormikContext<VenueEditionFormValues>()
 
   const hasChangedSinceLastSubmit = useMemo(
     () => !isEqual(values.accessibility, initialValues.accessibility),

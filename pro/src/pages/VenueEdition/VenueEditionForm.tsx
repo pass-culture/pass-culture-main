@@ -1,5 +1,5 @@
 import { Form, Formik, FormikConfig, FormikConsumer } from 'formik'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -18,15 +18,15 @@ import { PhoneNumberInput } from 'ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
-import { Accessibility } from '../VenueCreation/Accessibility/Accessibility'
-import { VenueFormActionBar } from '../VenueCreation/VenueFormActionBar/VenueFormActionBar'
 
+import { Accessibility } from './Accessibility/Accessibility'
 import { OpeningHoursForm } from './OpeningHoursForm/OpeningHoursForm'
 import { RouteLeavingGuardVenueEdition } from './RouteLeavingGuardVenueEdition'
 import { serializeEditVenueBodyModel } from './serializers'
 import { setInitialFormValues } from './setInitialFormValues'
 import { VenueEditionFormValues } from './types'
 import { getValidationSchema } from './validationSchema'
+import { VenueFormActionBar } from './VenueFormActionBar/VenueFormActionBar'
 
 interface VenueFormProps {
   venue: GetVenueResponseModel

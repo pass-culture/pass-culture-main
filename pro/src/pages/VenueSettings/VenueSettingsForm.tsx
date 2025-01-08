@@ -18,18 +18,18 @@ import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfte
 import fullBackIcon from 'icons/full-back.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import { ReimbursementFields } from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
-import { buildVenueTypesOptions } from 'pages/VenueCreation/buildVenueTypesOptions'
-import { SiretOrCommentFields } from 'pages/VenueCreation/SiretOrCommentFields/SiretOrCommentFields'
-import { VenueFormActionBar } from 'pages/VenueCreation/VenueFormActionBar/VenueFormActionBar'
-import { WithdrawalDetails } from 'pages/VenueCreation/WithdrawalDetails/WithdrawalDetails'
-import { OffersSynchronization } from 'pages/VenueSettings/VenueProvidersManager/OffersSynchronization/OffersSynchronization'
+import { buildVenueTypesOptions } from 'pages/VenueEdition/buildVenueTypesOptions'
+import { VenueFormActionBar } from 'pages/VenueEdition/VenueFormActionBar/VenueFormActionBar'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
+import { SiretOrCommentFields } from './SiretOrCommentFields/SiretOrCommentFields'
 import { VenueSettingsFormValues } from './types'
+import { OffersSynchronization } from './VenueProvidersManager/OffersSynchronization/OffersSynchronization'
+import { WithdrawalDetails } from './WithdrawalDetails/WithdrawalDetails'
 
 interface VenueFormProps {
   offerer: GetOffererResponseModel

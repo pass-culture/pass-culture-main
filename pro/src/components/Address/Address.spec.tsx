@@ -4,7 +4,7 @@ import { Form, Formik } from 'formik'
 import * as yup from 'yup'
 
 import { apiAdresse } from 'apiClient/adresse/apiAdresse'
-import { VenueCreationFormValues } from 'pages/VenueCreation/types'
+import { VenueSettingsFormValues } from 'pages/VenueSettings/types'
 import { Button } from 'ui-kit/Button/Button'
 
 import { AddressSelect } from './Address'
@@ -44,7 +44,7 @@ const renderAddress = ({
   initialValues,
   onSubmit = vi.fn(),
 }: {
-  initialValues: Partial<VenueCreationFormValues>
+  initialValues: Partial<VenueSettingsFormValues>
   onSubmit: () => void
 }) => {
   const validationSchema = yup.object().shape(addressValidationSchema)
@@ -74,7 +74,7 @@ const renderAddress = ({
 }
 
 describe('AddressSelect', () => {
-  let initialValues: Partial<VenueCreationFormValues>
+  let initialValues: Partial<VenueSettingsFormValues>
   const onSubmit = vi.fn()
 
   beforeEach(() => {
@@ -83,8 +83,8 @@ describe('AddressSelect', () => {
       'search-addressAutocomplete': '',
       city: '',
       postalCode: '',
-      latitude: 0,
-      longitude: 0,
+      latitude: '',
+      longitude: '',
       street: '',
     }
     vi.spyOn(apiAdresse, 'getDataFromAddress').mockResolvedValue(mockAdressData)

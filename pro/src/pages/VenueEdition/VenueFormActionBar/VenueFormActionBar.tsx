@@ -1,11 +1,12 @@
 import { useFormikContext } from 'formik'
 
 import { GetVenueResponseModel } from 'apiClient/v1'
+import { VenueSettingsFormValues } from 'pages/VenueSettings/types'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import { VenueCreationFormValues } from '../types'
+import { VenueEditionFormValues } from '../types'
 
 import styles from './VenueFormActionBar.module.scss'
 
@@ -14,7 +15,9 @@ export interface VenueFormActionBarProps {
 }
 
 export const VenueFormActionBar = ({ venue }: VenueFormActionBarProps) => {
-  const { isSubmitting } = useFormikContext<VenueCreationFormValues>()
+  const { isSubmitting } = useFormikContext<
+    VenueEditionFormValues | VenueSettingsFormValues
+  >()
 
   return (
     <div className={styles['action-bar']}>
