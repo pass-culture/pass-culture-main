@@ -1,5 +1,3 @@
-import json
-
 import pytest
 
 from pcapi.core.bookings import factories as bookings_factories

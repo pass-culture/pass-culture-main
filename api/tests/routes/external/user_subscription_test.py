@@ -16,7 +16,6 @@ from pcapi import settings
 from pcapi.connectors.dms import api as api_dms
 from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.serialization import ubble_serializers
-from pcapi.core import testing
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
@@ -37,7 +36,6 @@ from pcapi.repository import repository
 from pcapi.validation.routes import ubble as ubble_routes
 
 from tests.core.subscription import test_factories
-from tests.core.subscription.ubble.end_to_end import fixtures
 from tests.scripts.beneficiary.fixture import make_single_application
 from tests.test_utils import json_default
 

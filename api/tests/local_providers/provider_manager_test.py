@@ -1,13 +1,9 @@
-from decimal import Decimal
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import pytest
 import requests_mock
 
-import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.categories import subcategories_v2 as subcategories
-import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class

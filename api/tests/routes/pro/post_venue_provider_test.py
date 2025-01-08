@@ -10,14 +10,12 @@ from pcapi.connectors.serialization.cine_digital_service_serializers import Show
 from pcapi.core.external_bookings.models import Movie
 from pcapi.core.history import models as history_models
 import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.providers.api as providers_api
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.factories import CinemaProviderPivotFactory
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
 import pcapi.core.providers.repository as providers_repository
 from pcapi.core.users import factories as user_factories
-from pcapi.models.api_errors import ApiErrors
 
 from tests.local_providers.cinema_providers.cds import fixtures as cds_fixtures
 
