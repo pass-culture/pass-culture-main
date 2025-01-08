@@ -286,6 +286,56 @@ class Returns200Test:
             assert offer.name == "New name"
             assert offer.description == "Ma super description"
 
+    def test_offerer_address_venue(self, client):
+        offer_ctx = build_offer_context()
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+
+        venue = offerers_factories.VenueFactory(managingOfferer=offer_ctx.venue.managingOfferer)
+
+        payload = {"offerVenue": {"addressType": "offererVenue", "otherAddress": "", "venueId": venue.id}}
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+
+        assert response.status_code == 200
+        offer = educational_models.CollectiveOfferTemplate.query.filter(
+            educational_models.CollectiveOfferTemplate.id == offer_id
+        ).one()
+        assert offer.offererAddressId == venue.offererAddressId
+        assert offer.locationType == educational_models.CollectiveLocationType.VENUE
+
+    def test_offerer_address_school(self, client):
+        offer_ctx = build_offer_context()
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+
+        payload = {"offerVenue": {"addressType": "school", "otherAddress": "", "venueId": None}}
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+
+        assert response.status_code == 200
+        offer = educational_models.CollectiveOfferTemplate.query.filter(
+            educational_models.CollectiveOfferTemplate.id == offer_id
+        ).one()
+        assert offer.offererAddressId == None
+        assert offer.locationType == educational_models.CollectiveLocationType.SCHOOL
+
+    def test_offerer_address_other(self, client):
+        offer_ctx = build_offer_context()
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+
+        payload = {"offerVenue": {"addressType": "other", "otherAddress": "In Paris", "venueId": None}}
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+
+        assert response.status_code == 200
+        offer = educational_models.CollectiveOfferTemplate.query.filter(
+            educational_models.CollectiveOfferTemplate.id == offer_id
+        ).one()
+        assert offer.offererAddressId == None
+        assert offer.locationType == None
+
 
 class InvalidDatesTest:
     def test_missing_start(self, client):
@@ -554,6 +604,22 @@ class InvalidDatesTest:
 
         assert response.status_code == 403
         assert response.json == {"Partner": "User not in Adage can't edit the offer"}
+
+    def test_offerer_address_venue_not_allowed(self, client):
+        offer_ctx = build_offer_context()
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+
+        venue = offerers_factories.VenueFactory()
+
+        payload = {"offerVenue": {"addressType": "offererVenue", "otherAddress": "", "venueId": venue.id}}
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+
+        assert response.status_code == 403
+        assert response.json == {
+            "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."]
+        }
 
 
 class Returns403Test:

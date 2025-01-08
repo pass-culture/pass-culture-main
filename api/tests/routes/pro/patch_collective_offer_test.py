@@ -8,6 +8,7 @@ import time_machine
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import CollectiveBookingStatus
+from pcapi.core.educational.models import CollectiveLocationType
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.educational.schemas import EducationalBookingEdition
@@ -23,6 +24,8 @@ from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
+
+PATCH_CAN_CREATE_OFFER_PATH = "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"
 
 
 @pytest.fixture(name="venue")
@@ -89,9 +92,7 @@ class Returns200Test:
         }
 
         client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
@@ -152,7 +153,7 @@ class Returns200Test:
         data = {"name": "New name"}
 
         client = client.with_session_auth("user@example.com")
-        with patch("pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
@@ -176,9 +177,7 @@ class Returns200Test:
 
         # WHEN
         client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         # Then
@@ -196,9 +195,7 @@ class Returns200Test:
 
         # WHEN
         client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         # Then
@@ -223,7 +220,7 @@ class Returns200Test:
             venue=other_related_venue, collectiveStock=stock
         )
 
-        patch_path = "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"
+        patch_path = PATCH_CAN_CREATE_OFFER_PATH
         with patch(patch_path):
             response = auth_client.patch(url_for(self.endpoint, offer_id=offer.id), json={"venueId": venue.id})
             assert response.status_code == 200
@@ -245,7 +242,7 @@ class Returns200Test:
             venue=other_related_venue, collectiveStock=stock
         )
 
-        patch_path = "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"
+        patch_path = PATCH_CAN_CREATE_OFFER_PATH
         with patch(patch_path):
             response = auth_client.patch(url_for(self.endpoint, offer_id=offer.id), json={"venueId": venue.id})
             assert response.status_code == 200
@@ -273,7 +270,7 @@ class Returns200Test:
             "interventionArea": ["01", "2A"],
             "formats": [subcategories.EacFormat.CONCERT.value],
         }
-        patch_path = "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"
+        patch_path = PATCH_CAN_CREATE_OFFER_PATH
         auth_client = client.with_session_auth("user@example.com")
         with patch(patch_path):
             response = auth_client.patch(url_for(self.endpoint, offer_id=offer.id), json=data)
@@ -290,6 +287,48 @@ class Returns200Test:
         assert offer.interventionArea == ["01", "2A"]
         assert offer.formats == [subcategories.EacFormat.CONCERT]
 
+    def test_offerer_address_venue(self, client):
+        offer = educational_factories.CollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+        data = {"offerVenue": {"addressType": "offererVenue", "otherAddress": "", "venueId": offer.venue.id}}
+
+        client = client.with_session_auth("user@example.com")
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 200
+        offer = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
+        assert offer.offererAddressId == offer.venue.offererAddressId
+        assert offer.locationType == CollectiveLocationType.VENUE
+
+    def test_offerer_address_school(self, client):
+        offer = educational_factories.CollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+        data = {"offerVenue": {"addressType": "school", "otherAddress": "", "venueId": None}}
+
+        client = client.with_session_auth("user@example.com")
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 200
+        offer = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
+        assert offer.offererAddressId == None
+        assert offer.locationType == CollectiveLocationType.SCHOOL
+
+    def test_offerer_address_other(self, client):
+        offer = educational_factories.CollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+        data = {"offerVenue": {"addressType": "other", "otherAddress": "In Paris", "venueId": None}}
+
+        client = client.with_session_auth("user@example.com")
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 200
+        offer = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
+        assert offer.offererAddressId == None
+        assert offer.locationType == None
+
 
 class Returns400Test:
     @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
@@ -299,7 +338,7 @@ class Returns400Test:
 
         data = {"visualDisabilityCompliant": True}
         client = client.with_session_auth("user@example.com")
-        with patch("pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 400
@@ -316,9 +355,7 @@ class Returns400Test:
 
         # WHEN
         client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         # Then
@@ -350,9 +387,7 @@ class Returns400Test:
 
         # WHEN
         client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         # Then
@@ -373,9 +408,7 @@ class Returns400Test:
 
         # WHEN
         client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
         # Then
         assert response.status_code == 400
@@ -395,9 +428,7 @@ class Returns400Test:
 
         # WHEN
         client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         # Then
@@ -418,9 +449,7 @@ class Returns400Test:
 
         # WHEN
         client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         # Then
@@ -441,9 +470,7 @@ class Returns400Test:
 
         # WHEN
         client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         # Then
@@ -464,9 +491,7 @@ class Returns400Test:
 
         # WHEN
         client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         # Then
@@ -506,9 +531,7 @@ class Returns400Test:
 
         # WHEN
         client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         # Then
@@ -521,9 +544,7 @@ class Returns400Test:
 
         data = {"bookingEmails": ["test@testmail.com", "test@test", "test"]}
         client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 400
@@ -538,7 +559,7 @@ class Returns400Test:
         other_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
 
         endpoint = "Private API.edit_collective_offer"
-        patch_path = "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"
+        patch_path = PATCH_CAN_CREATE_OFFER_PATH
         with patch(patch_path):
             response = auth_client.patch(url_for(endpoint, offer_id=offer.id), json={"venueId": other_venue.id})
             assert response.status_code == 400
@@ -548,8 +569,7 @@ class Returns400Test:
         offer = educational_factories.ActiveCollectiveOfferFactory(venue=venue)
 
         endpoint = "Private API.edit_collective_offer"
-        patch_path = "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"
-        with patch(patch_path):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = auth_client.patch(url_for(endpoint, offer_id=offer.id), json={"description": "too_long" * 200})
 
         assert response.status_code == 400
@@ -566,9 +586,7 @@ class Returns403Test:
         data = {"name": "New name"}
         # WHEN
         client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         # Then
@@ -588,7 +606,7 @@ class Returns403Test:
         data = {"name": "New name"}
 
         client = client.with_session_auth("user@example.com")
-        with patch("pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 403
@@ -602,7 +620,7 @@ class Returns403Test:
         data = {"name": "New name"}
 
         client = client.with_session_auth("user@example.com")
-        with patch("pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 403
@@ -622,9 +640,7 @@ class Returns403Test:
 
         # WHEN
         client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         # Then
@@ -638,9 +654,7 @@ class Returns403Test:
 
         data = {"venueId": other_related_venue.id}
         client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 403
@@ -674,7 +688,7 @@ class Returns403Test:
         )
 
         endpoint = "Private API.edit_collective_offer"
-        patch_path = "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"
+        patch_path = PATCH_CAN_CREATE_OFFER_PATH
         with patch(patch_path):
             response = auth_client.patch(url_for(endpoint, offer_id=offer.id), json={"venueId": venue.id})
             assert response.status_code == 403
@@ -696,7 +710,7 @@ class Returns403Test:
         previous_name = offer.name
         previous_description = offer.description
         data = {"name": "New name", "description": "Ma super description"}
-        patch_path = "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"
+        patch_path = PATCH_CAN_CREATE_OFFER_PATH
         auth_client = client.with_session_auth("user@example.com")
         with patch(patch_path):
             response = auth_client.patch(f"/collective/offers/{offer.id}", json=data)
@@ -715,7 +729,7 @@ class Returns403Test:
         previous_name = offer.name
         previous_description = offer.description
         data = {"name": "New name", "description": "Ma super description"}
-        patch_path = "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"
+        patch_path = PATCH_CAN_CREATE_OFFER_PATH
         auth_client = client.with_session_auth("user@example.com")
         with patch(patch_path):
             response = auth_client.patch(f"/collective/offers/{offer.id}", json=data)
@@ -725,6 +739,21 @@ class Returns403Test:
         db.session.refresh(offer)
         assert offer.name == previous_name
         assert offer.description == previous_description
+
+    def test_offerer_address_venue_not_allowed(self, client):
+        offer = educational_factories.CollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+        venue = offerers_factories.VenueFactory()
+        data = {"offerVenue": {"addressType": "offererVenue", "otherAddress": "", "venueId": venue.id}}
+
+        client = client.with_session_auth("user@example.com")
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 403
+        assert response.json == {
+            "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."]
+        }
 
 
 class Returns404Test:
@@ -753,9 +782,7 @@ class Returns404Test:
 
         # WHEN
         client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         # Then
@@ -776,9 +803,7 @@ class Returns404Test:
 
         # WHEN
         client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer", return_value=False
-        ):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH, return_value=False):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         # THEN
@@ -797,9 +822,7 @@ class Returns404Test:
 
         # WHEN
         client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         # Then

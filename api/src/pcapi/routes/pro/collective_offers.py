@@ -271,7 +271,7 @@ def edit_collective_offer(
         raise ApiErrors({"Partner": "User not in Adage can't edit the offer"}, status_code=403)
 
     try:
-        offers_api.update_collective_offer(offer_id=offer_id, new_values=new_values)
+        offers_api.update_collective_offer(offer_id=offer_id, new_values=new_values, user=current_user)
     except offers_exceptions.SubcategoryNotEligibleForEducationalOffer:
         raise ApiErrors({"subcategoryId": "this subcategory is not educational"}, 400)
     except offers_exceptions.OfferUsedOrReimbursedCantBeEdit:
@@ -353,7 +353,7 @@ def edit_collective_offer_template(
         raise ApiErrors({"Partner": "User not in Adage can't edit the offer"}, status_code=403)
 
     try:
-        offers_api.update_collective_offer_template(offer_id=offer_id, new_values=new_values)
+        offers_api.update_collective_offer_template(offer_id=offer_id, new_values=new_values, user=current_user)
     except educational_exceptions.CollectiveOfferTemplateForbiddenAction:
         raise ApiErrors({"global": ["Cette action n'est pas autorisée sur cette offre"]}, 403)
     except educational_exceptions.UpdateCollectiveOfferTemplateError as err:
