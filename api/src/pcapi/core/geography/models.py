@@ -28,9 +28,8 @@ class Address(PcObject, Base, Model):
     longitude: Decimal = sa.Column(sa.Numeric(8, 5), nullable=False)
     departmentCode = sa.Column(sa.Text(), nullable=True, index=True)
     timezone: str = sa.Column(sa.Text(), nullable=False, default=METROPOLE_TIMEZONE, server_default=METROPOLE_TIMEZONE)
-    # TODO(prouzet, 2024-06-25) make isManualEdition not nullable after post migration is done on all platforms
     isManualEdition: bool = sa.Column(
-        sa.Boolean, nullable=True, server_default=sa.sql.expression.false(), default=False
+        sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
     )
 
     @property
