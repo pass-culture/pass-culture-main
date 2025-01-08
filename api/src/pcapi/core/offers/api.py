@@ -453,7 +453,7 @@ def update_offer(
     withdrawal_updated = updates_set & withdrawal_fields
     oa_updated = "offererAddress" in updates
     if should_send_mail and (withdrawal_updated or oa_updated):
-        transactional_mails.send_email_for_each_ongoing_booking(offer)
+        on_commit(partial(transactional_mails.send_email_for_each_ongoing_booking, offer))
 
     on_commit(
         partial(
@@ -743,9 +743,13 @@ def create_stock(
         offer.lastValidationPrice = price
     repository.add_to_session(created_stock, *created_activation_codes, offer)
     db.session.flush()
-    search.async_index_offer_ids(
-        [offer.id],
-        reason=search.IndexationReason.STOCK_CREATION,
+
+    on_commit(
+        partial(
+            search.async_index_offer_ids,
+            [offer.id],
+            reason=search.IndexationReason.STOCK_CREATION,
+        )
     )
 
     return created_stock
@@ -853,7 +857,10 @@ def edit_stock(
         "provider_id": editing_provider.id if editing_provider else None,
         "changes": {**changes},
     }
-    logger.info("Successfully updated stock", extra=log_extra_data, technical_message_id="stock.updated")
+
+    on_commit(
+        partial(logger.info, "Successfully updated stock", extra=log_extra_data, technical_message_id="stock.updated")
+    )
 
     return stock, "beginningDatetime" in modifications
 
@@ -862,8 +869,10 @@ def handle_stocks_edition(edited_stocks: list[tuple[models.Stock, bool]]) -> Non
     for stock, is_beginning_datetime_updated in edited_stocks:
         if is_beginning_datetime_updated:
             bookings = bookings_repository.find_not_cancelled_bookings_by_stock(stock)
-            _notify_pro_upon_stock_edit_for_event_offer(stock, bookings)
-            _notify_beneficiaries_upon_stock_edit(stock, bookings)
+
+            on_commit(partial(_notify_pro_upon_stock_edit_for_event_offer, stock, bookings))
+
+            on_commit(partial(_notify_beneficiaries_upon_stock_edit, stock, bookings))
 
 
 def _format_publication_date(publication_date: datetime.datetime | None, timezone: str) -> datetime.datetime | None:
@@ -910,10 +919,13 @@ def publish_offer(
                 reason=search.IndexationReason.OFFER_PUBLICATION,
             )
         )
-        logger.info(
-            "Offer has been published",
-            extra={"offer_id": offer.id, "venue_id": offer.venueId, "offer_status": offer.status},
-            technical_message_id="offer.published",
+        on_commit(
+            partial(
+                logger.info,
+                "Offer has been published",
+                extra={"offer_id": offer.id, "venue_id": offer.venueId, "offer_status": offer.status},
+                technical_message_id="offer.published",
+            )
         )
     return offer
 

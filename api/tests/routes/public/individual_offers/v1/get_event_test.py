@@ -19,13 +19,13 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
     endpoint_method = "get"
     default_path_params = {"event_id": 1}
 
-    num_queries_with_error = 1  # retrieve API key
-    num_queries_with_error += 1  # retrieve offer
+    num_queries_base = 1  # retrieve API key
+    num_queries_base += 1  # retrieve offer
 
     # fetch stocks (1 query)
     # fetch mediations (1 query)
     # fetch price categories (1 query)
-    num_queries = num_queries_with_error + 3
+    num_queries = num_queries_base + 3
 
     # fetch product (1 query)
     num_queries_full = num_queries + 1
@@ -49,10 +49,8 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
         plain_api_key, _ = self.setup_provider()
         event_offer_id = self.setup_base_resource().id
 
-        # 1. api_key
-        # 2. feature
-        # 3. offer
-        with testing.assert_num_queries(self.num_queries_with_error):
+        expected_queries_count = self.num_queries_base + 1 # rollback
+        with testing.assert_num_queries(expected_queries_count):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(event_id=event_offer_id))
             assert response.status_code == 404
 
@@ -60,10 +58,8 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
         plain_api_key, venue_provider = self.setup_inactive_venue_provider()
         event_offer_id = self.setup_base_resource(venue_provider.venue).id
 
-        # 1. api_key
-        # 2. feature
-        # 3. offer
-        with testing.assert_num_queries(self.num_queries_with_error):
+        expected_queries_count = self.num_queries_base + 1 # rollback
+        with testing.assert_num_queries(expected_queries_count):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(event_id=event_offer_id))
             assert response.status_code == 404
 
