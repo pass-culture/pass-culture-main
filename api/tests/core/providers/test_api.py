@@ -18,13 +18,11 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import StockFactory
 import pcapi.core.offers.models as offers_models
-from pcapi.core.offers.models import Offer
 from pcapi.core.providers import api
 from pcapi.core.providers import exceptions
 from pcapi.core.providers import models as providers_models
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.users import factories as users_factories
-from pcapi.models import db
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
 
 
