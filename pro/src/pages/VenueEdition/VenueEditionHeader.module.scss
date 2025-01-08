@@ -10,12 +10,12 @@
 
   @media (min-width: size.$tablet) {
     flex-direction: row;
-    gap: rem.torem(32px);
   }
 }
 
 .image-uploader {
   align-self: center;
+  margin-bottom: 0;
 
   @media (min-width: size.$tablet) {
     align-self: flex-start;
@@ -33,7 +33,15 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: flex-start;
+  justify-content: center;
+  gap: rem.torem(24px);
+
+  &-links,
+  &-main {
+    display: flex;
+    flex-direction: column;
+    gap: rem.torem(8px);
+  }
 }
 
 .venue-type {
