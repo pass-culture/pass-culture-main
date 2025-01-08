@@ -48,7 +48,6 @@ from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.repository import atomic
-from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
@@ -155,7 +154,7 @@ def _anonymyze_user(user: users_models.User, author: users_models.User) -> None:
         db.session.flush()
         flash("Les informations de l'utilisateur ont été anonymisées", "success")
     else:
-        mark_transaction_as_invalid()
+        atomic.mark_transaction_as_invalid()
         flash("Une erreur est survenue lors de l'anonymisation de l'utilisateur", "warning")
 
 
@@ -171,7 +170,7 @@ def _pre_anonymize_user(user: users_models.User, author: users_models.User) -> N
         try:
             users_api.pre_anonymize_user(user, author, is_backoffice_action=True)
         except users_exceptions.UserAlreadyHasPendingAnonymization:
-            mark_transaction_as_invalid()
+            atomic.mark_transaction_as_invalid()
             flash("L'utilisateur est déjà en attente pour être anonymisé le jour de ses 21 ans", "warning")
         else:
             db.session.flush()
@@ -1147,7 +1146,7 @@ def review_public_account(user_id: int) -> utils.BackofficeResponse:
             reviewed_eligibility=eligibility,
         )
     except (fraud_api.FraudCheckError, fraud_api.EligibilityError) as err:
-        mark_transaction_as_invalid()
+        atomic.mark_transaction_as_invalid()
         flash(escape(str(err)), "warning")
     else:
         flash("Validation réussie", "success")
