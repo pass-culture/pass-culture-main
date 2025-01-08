@@ -52,6 +52,7 @@ logger = logging.getLogger(__name__)
     api=blueprint.api,
 )
 @authenticated_and_active_user_required
+@atomic()
 def get_user_profile(user: users_models.User) -> serializers.UserProfileResponse:
     return serializers.UserProfileResponse.from_orm(user)
 
