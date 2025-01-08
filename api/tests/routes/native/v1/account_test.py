@@ -36,7 +36,6 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.models as subscription_models
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users import testing as users_testing
@@ -90,7 +89,7 @@ class AccountTest:
         assert response.json["email"] == ["Utilisateur introuvable"]
 
     @time_machine.travel("2018-06-01", tick=False)
-    @override_features(ENABLE_NATIVE_CULTURAL_SURVEY=True)
+    @pytest.mark.features(ENABLE_NATIVE_CULTURAL_SURVEY=True)
     def test_get_user_profile(self, client, app):
         USER_DATA = {
             "email": self.identifier,
@@ -235,7 +234,7 @@ class AccountTest:
             me_response = client.get("/native/v1/me")
             assert me_response.json["recreditAmountToShow"] == 3000
 
-    @override_features(ENABLE_UBBLE=False)
+    @pytest.mark.features(ENABLE_UBBLE=False)
     def test_maintenance_message(self, client):
         """
         Test that when a user has no subscription message and when the
@@ -303,25 +302,25 @@ class AccountTest:
         assert msg["popOverIcon"] is None
 
     @pytest.mark.parametrize(
-        "feature_flags",
-        [
-            {"ENABLE_CULTURAL_SURVEY": True, "ENABLE_NATIVE_CULTURAL_SURVEY": False},
-            {"ENABLE_CULTURAL_SURVEY": False, "ENABLE_NATIVE_CULTURAL_SURVEY": True},
-        ],
+        "enable_cultural_survey,enable_native_cultural_survey",
+        [(True, False), (False, True)],
     )
-    def test_user_should_need_to_fill_cultural_survey(self, client, feature_flags):
+    def test_user_should_need_to_fill_cultural_survey(
+        self, features, client, enable_cultural_survey, enable_native_cultural_survey
+    ):
         user = users_factories.UserFactory(age=18)
 
         expected_num_queries = 7  # user + booking + deposit + feature + beneficiary_fraud_review * 2 + achievement
 
         client.with_token(user.email)
-        with override_features(**feature_flags):
-            with assert_num_queries(expected_num_queries):
-                response = client.get("/native/v1/me")
+        features.ENABLE_CULTURAL_SURVEY = enable_cultural_survey
+        features.ENABLE_NATIVE_CULTURAL_SURVEY = enable_native_cultural_survey
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v1/me")
 
         assert response.json["needsToFillCulturalSurvey"] == True
 
-    @override_features(ENABLE_CULTURAL_SURVEY=True, ENABLE_NATIVE_CULTURAL_SURVEY=True)
+    @pytest.mark.features(ENABLE_CULTURAL_SURVEY=True, ENABLE_NATIVE_CULTURAL_SURVEY=True)
     def test_not_eligible_user_should_not_need_to_fill_cultural_survey(self, client):
         user = users_factories.UserFactory(age=4)
 
@@ -333,7 +332,7 @@ class AccountTest:
 
         assert not response.json["needsToFillCulturalSurvey"]
 
-    @override_features(ENABLE_CULTURAL_SURVEY=False, ENABLE_NATIVE_CULTURAL_SURVEY=False)
+    @pytest.mark.features(ENABLE_CULTURAL_SURVEY=False, ENABLE_NATIVE_CULTURAL_SURVEY=False)
     def test_cultural_survey_disabled(self, client):
         user = users_factories.UserFactory(age=18)
 

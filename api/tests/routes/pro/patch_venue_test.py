@@ -13,7 +13,6 @@ from pcapi.core.geography import models as geography_models
 from pcapi.core.history import models as history_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as external_testing
 from pcapi.utils.date import timespan_str_to_numrange
@@ -338,8 +337,7 @@ class Returns200Test:
             "old_info": "75000",
         }
 
-    @override_features(WIP_ENABLE_OFFER_ADDRESS=True)
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True, WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_update_venue_location_with_manual_edition_and_oa(self, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
         address = geography_factories.AddressFactory(
@@ -1186,7 +1184,7 @@ class Returns400Test:
     side_effect=entreprise_exceptions.UnknownEntityException(),
 )
 def test_with_inconsistent_siret(
-    mock_siret_is_active, client, enforce_siret_check, disable_siret_check, expected_result, settings
+    mock_siret_is_active, client, features, settings, enforce_siret_check, disable_siret_check, expected_result
 ):
     venue = offerers_factories.VenueFactory(siret="00112233900040", managingOfferer__siren="001122339")
     user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
@@ -1194,8 +1192,8 @@ def test_with_inconsistent_siret(
     venue_data = populate_missing_data_from_venue({"siret": "00112233900049"}, venue)
 
     settings.ENFORCE_SIRET_CHECK = enforce_siret_check
-    with override_features(DISABLE_SIRET_CHECK=disable_siret_check):
-        response = client.with_session_auth(email=user_offerer.user.email).patch(f"/venues/{venue.id}", json=venue_data)
+    features.DISABLE_SIRET_CHECK = disable_siret_check
+    response = client.with_session_auth(email=user_offerer.user.email).patch(f"/venues/{venue.id}", json=venue_data)
 
     assert response.status_code == expected_result, response.json
     if expected_result == 400:

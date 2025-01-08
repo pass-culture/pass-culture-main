@@ -15,7 +15,6 @@ from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.utils.human_ids import humanize
 
 from .helpers import button as button_helpers
@@ -331,7 +330,7 @@ class DownloadReimbursementDetailsTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
     @pytest.mark.parametrize("is_use_offer_address_ff_active", [True, False])
-    def test_download_reimbursement_details(self, is_use_offer_address_ff_active, authenticated_client):
+    def test_download_reimbursement_details(self, features, is_use_offer_address_ff_active, authenticated_client):
         venue = offerers_factories.VenueFactory(pricing_point="self")
         booking = bookings_factories.UsedBookingFactory(stock__offer__venue=venue)
         bank_account = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
@@ -392,12 +391,12 @@ class DownloadReimbursementDetailsTest(PostEndpointHelper):
             bankAccount=bank_account, pricings=[second_pricing], amount=-1010
         )
         second_invoice = finance_factories.InvoiceFactory(cashflows=[second_cashflow], bankAccount=bank_account)
-        with override_features(WIP_ENABLE_OFFER_ADDRESS=is_use_offer_address_ff_active):
-            response = self.post_to_endpoint(
-                authenticated_client,
-                bank_account_id=bank_account.id,
-                form={"object_ids": f"{invoice.id}, {second_invoice.id}"},
-            )
+        features.WIP_ENABLE_OFFER_ADDRESS = is_use_offer_address_ff_active
+        response = self.post_to_endpoint(
+            authenticated_client,
+            bank_account_id=bank_account.id,
+            form={"object_ids": f"{invoice.id}, {second_invoice.id}"},
+        )
         assert response.status_code == 200
 
         expected_length = 1  # headers

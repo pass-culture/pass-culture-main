@@ -42,7 +42,6 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exceptions
@@ -1222,7 +1221,7 @@ class BeneficiaryInformationUpdateTest:
         users_api.update_user_information_from_external_source(user, dms_data)
         assert user.idPieceNumber == "140767100016"
 
-    @override_features(ENABLE_PHONE_VALIDATION=True)
+    @pytest.mark.features(ENABLE_PHONE_VALIDATION=True)
     def test_phone_number_does_not_update(self):
         user = users_factories.UserFactory(phoneNumber="+33611111111")
         dms_data = fraud_factories.DMSContentFactory(phoneNumber="+33622222222")
@@ -1231,7 +1230,7 @@ class BeneficiaryInformationUpdateTest:
 
         assert user.phoneNumber == "+33611111111"
 
-    @override_features(ENABLE_PHONE_VALIDATION=False)
+    @pytest.mark.features(ENABLE_PHONE_VALIDATION=False)
     def test_phone_number_does_not_update_if_not_empty(self):
         user = users_factories.UserFactory(phoneNumber="+33611111111")
         dms_data = fraud_factories.DMSContentFactory(phone="+33622222222")

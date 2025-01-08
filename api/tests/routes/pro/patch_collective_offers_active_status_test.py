@@ -11,7 +11,7 @@ from pcapi.core.offers.models import OfferValidationStatus
 
 @pytest.mark.usefixtures("db_session")
 class Returns204Test:
-    @testing.override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def when_activating_existing_offers(self, client):
         offer1 = CollectiveOfferFactory(isActive=False)
         venue = offer1.venue
@@ -29,7 +29,7 @@ class Returns204Test:
         assert CollectiveOffer.query.get(offer1.id).isActive
         assert CollectiveOffer.query.get(offer2.id).isActive
 
-    @testing.override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def when_deactivating_existing_offers(self, client):
         offer1 = CollectiveOfferFactory()
         venue = offer1.venue
@@ -46,7 +46,7 @@ class Returns204Test:
         assert not CollectiveOffer.query.get(offer1.id).isActive
         assert not CollectiveOffer.query.get(offer2.id).isActive
 
-    @testing.override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_only_approved_offers_patch(self, client):
         approved_offer = CollectiveOfferFactory(isActive=False)
         venue = approved_offer.venue
@@ -72,7 +72,7 @@ class Returns204Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
-    @testing.override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_when_activating_all_existing_offers_active_status_when_cultural_partners_not_found(self, client):
         # Given
         offer1 = CollectiveOfferFactory(isActive=False)
@@ -96,7 +96,7 @@ class Returns403Test:
         assert response.json == {"Partner": ["User not in Adage can't edit the offer"]}
         assert offer1.isActive is False
 
-    @testing.override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_patch_active_status(self, client):
         offer = CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)

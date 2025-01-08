@@ -7,7 +7,6 @@ import pytest
 from pcapi.core.educational import factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -25,7 +24,7 @@ class Returns200Test:
     num_queries += 1  # Select collective_booking
     num_queries += 1  # Check if WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE is active
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_complete_booking_single(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         booking = educational_factories.CollectiveBookingFactory(
@@ -65,7 +64,7 @@ class Returns200Test:
             == f"{booking.educationalInstitution.institutionType} {booking.educationalInstitution.name}"
         )
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_created_booking_single(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         booking = educational_factories.CollectiveBookingFactory(
@@ -99,7 +98,7 @@ class Returns200Test:
         assert reader[0]["Prix de la réservation"] == booking.collectiveStock.price
         assert reader[0]["Date et heure de remboursement"] == ""
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_one_invisible_rights_booking(self, client):
         invisible_user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.CollectiveBookingFactory(
@@ -138,7 +137,7 @@ class Returns200Test:
         assert reader[0]["Prix de la réservation"] == booking.collectiveStock.price
         assert reader[0]["Date et heure de remboursement"] == "2021-08-11 14:00:00+02:00"
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_one_invisible_date_range_booking(self, client):
         invisible_user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.CollectiveBookingFactory(
@@ -178,7 +177,7 @@ class Returns200Test:
         assert reader[0]["Prix de la réservation"] == booking.collectiveStock.price
         assert reader[0]["Date et heure de remboursement"] == "2021-08-11 14:00:00+02:00"
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_complete_booking_multiple(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         bookings = [
@@ -235,7 +234,7 @@ class Returns200Test:
             assert reader[i]["Prix de la réservation"] == bookings[i].collectiveStock.price
             assert reader[i]["Date et heure de remboursement"] == "2021-08-11 14:00:00+02:00"
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_complete_booking_single_with_offerer_address_as_data_source(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         booking = educational_factories.CollectiveBookingFactory(
@@ -275,7 +274,7 @@ class Returns200Test:
             == f"{booking.educationalInstitution.institutionType} {booking.educationalInstitution.name}"
         )
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_created_booking_single_with_offerer_address_as_data_source(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         booking = educational_factories.CollectiveBookingFactory(
@@ -309,7 +308,7 @@ class Returns200Test:
         assert reader[0]["Prix de la réservation"] == booking.collectiveStock.price
         assert reader[0]["Date et heure de remboursement"] == ""
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_one_invisible_rights_booking_with_offerer_address_as_data_source(self, client):
         invisible_user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.CollectiveBookingFactory(
@@ -348,7 +347,7 @@ class Returns200Test:
         assert reader[0]["Prix de la réservation"] == booking.collectiveStock.price
         assert reader[0]["Date et heure de remboursement"] == "2021-08-11 14:00:00+02:00"
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_one_invisible_date_range_booking_with_offerer_address_as_source(self, client):
         invisible_user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.CollectiveBookingFactory(
@@ -388,7 +387,7 @@ class Returns200Test:
         assert reader[0]["Prix de la réservation"] == booking.collectiveStock.price
         assert reader[0]["Date et heure de remboursement"] == "2021-08-11 14:00:00+02:00"
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_complete_booking_multiple_with_offerer_address_as_data_source(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         bookings = [

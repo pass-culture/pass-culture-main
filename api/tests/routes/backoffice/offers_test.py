@@ -31,7 +31,6 @@ from pcapi.core.permissions import factories as perm_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
@@ -3337,7 +3336,7 @@ class DownloadBookingsCSVTest(GetEndpointHelper):
     expected_num_queries = 4
 
     @pytest.mark.parametrize("is_oa_as_data_source_ff_active", (False, True))
-    def test_download_bookings_csv(self, legit_user, authenticated_client, is_oa_as_data_source_ff_active):
+    def test_download_bookings_csv(self, features, legit_user, authenticated_client, is_oa_as_data_source_ff_active):
         offerer = offerers_factories.UserOffererFactory().offerer  # because of join on UserOfferers
         offer = offers_factories.ThingOfferFactory(venue__managingOfferer=offerer)
         bookings_factories.UsedBookingFactory(stock__offer=offer)
@@ -3347,10 +3346,8 @@ class DownloadBookingsCSVTest(GetEndpointHelper):
 
         url = url_for(self.endpoint, offer_id=offer.id)
 
-        with (
-            override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=is_oa_as_data_source_ff_active),
-            assert_num_queries(self.expected_num_queries),
-        ):
+        features.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE = is_oa_as_data_source_ff_active
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -3370,7 +3367,7 @@ class DownloadBookingsXLSXTest(GetEndpointHelper):
         return wb.active
 
     @pytest.mark.parametrize("is_oa_as_data_source_ff_active", (False, True))
-    def test_download_bookings_xlsx(self, authenticated_client, is_oa_as_data_source_ff_active):
+    def test_download_bookings_xlsx(self, features, authenticated_client, is_oa_as_data_source_ff_active):
         offerer = offerers_factories.UserOffererFactory().offerer  # because of join on UserOfferers
         offer = offers_factories.EventOfferFactory(venue__managingOfferer=offerer)
         booking1 = bookings_factories.UsedBookingFactory(stock__offer=offer)
@@ -3379,10 +3376,8 @@ class DownloadBookingsXLSXTest(GetEndpointHelper):
 
         url = url_for(self.endpoint, offer_id=offer.id)
 
-        with (
-            override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=is_oa_as_data_source_ff_active),
-            assert_num_queries(self.expected_num_queries),
-        ):
+        features.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE = is_oa_as_data_source_ff_active
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 

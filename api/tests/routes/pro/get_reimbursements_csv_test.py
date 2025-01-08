@@ -1,7 +1,6 @@
 import csv
 import datetime
 from io import StringIO
-import urllib.parse
 
 import pytest
 
@@ -13,7 +12,6 @@ import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offers import models as offers_models
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementDetails
 from pcapi.utils.date import utc_datetime_to_department_timezone
@@ -140,7 +138,7 @@ def test_with_venue_filter_with_pricings(client, cutoff, fortnight):
     assert row["Montant remboursé"] == "{:.2f}".format(-pricing.amount / 100).replace(".", ",")
 
 
-@override_features(WIP_ENABLE_OFFER_ADDRESS=False)
+@pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=False)
 @pytest.mark.usefixtures("db_session")
 @pytest.mark.parametrize(
     "cutoff,fortnight",
@@ -255,7 +253,7 @@ def test_with_reimbursement_period_filter_with_pricings(client, cutoff, fortnigh
         assert row["Montant remboursé"] == "{:.2f}".format(-pricing.amount / 100).replace(".", ",")
 
 
-@override_features(WIP_ENABLE_OFFER_ADDRESS=True)
+@pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True)
 @pytest.mark.usefixtures("db_session")
 @pytest.mark.parametrize(
     "cutoff,fortnight",
@@ -595,7 +593,7 @@ def test_with_reimbursement_period_filter_with_pricings_collective_use_case(clie
         assert row["Montant remboursé"] == "{:.2f}".format(-pricing.amount / 100).replace(".", ",")
 
 
-@testing.override_features(WIP_ENABLE_OFFER_ADDRESS=True)
+@pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True)
 @pytest.mark.usefixtures("db_session")
 @pytest.mark.parametrize(
     "offer_has_oa, len_offerer_addresses, expected_address",

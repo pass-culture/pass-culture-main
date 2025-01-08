@@ -19,7 +19,6 @@ from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import repository as subscription_repository
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
@@ -86,7 +85,7 @@ class RequiresIdCheckTest:
 class EduconnectFlowTest:
     @time_machine.travel("2021-10-10")
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_saml_client")
-    @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=True)
+    @pytest.mark.features(ENABLE_EDUCONNECT_AUTHENTICATION=True)
     def test_educonnect_subscription(self, mock_get_educonnect_saml_client, client, app):
         ine_hash = "5ba682c0fc6a05edf07cd8ed0219258f"
         user = users_factories.UserFactory(dateOfBirth=datetime(2004, 1, 1), firstName=None, lastName=None)
@@ -214,7 +213,7 @@ class NextSubscriptionStepTest:
             subscription_models.SubscriptionStep.HONOR_STATEMENT,
         )
 
-    @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=True)
+    @pytest.mark.features(ENABLE_EDUCONNECT_AUTHENTICATION=True)
     def test_next_subscription_step_underage_profile_completion(self):
         user = users_factories.UserFactory(
             dateOfBirth=self.fifteen_years_ago,
@@ -225,7 +224,7 @@ class NextSubscriptionStepTest:
             == subscription_models.SubscriptionStep.PROFILE_COMPLETION
         )
 
-    @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=True)
+    @pytest.mark.features(ENABLE_EDUCONNECT_AUTHENTICATION=True)
     def test_next_subscription_step_underage_honor_statement(self):
         user = users_factories.UserFactory(
             dateOfBirth=self.fifteen_years_ago,
@@ -247,7 +246,7 @@ class NextSubscriptionStepTest:
             == subscription_models.SubscriptionStep.HONOR_STATEMENT
         )
 
-    @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=True)
+    @pytest.mark.features(ENABLE_EDUCONNECT_AUTHENTICATION=True)
     def test_next_subscription_step_underage_finished(self):
         user = users_factories.UserFactory(
             dateOfBirth=self.fifteen_years_ago,
@@ -430,11 +429,12 @@ class NextSubscriptionStepTest:
             ),
         ],
     )
-    def test_get_allowed_identity_check_methods(self, feature_flags, user_age, expected_result):
+    def test_get_allowed_identity_check_methods(self, features, feature_flags, user_age, expected_result):
         dateOfBirth = datetime.today() - relativedelta(years=user_age, months=1)
         user = users_factories.UserFactory(dateOfBirth=dateOfBirth)
-        with override_features(**feature_flags):
-            assert subscription_api.get_allowed_identity_check_methods(user) == expected_result
+        for feature_name in feature_flags:
+            setattr(features, feature_name, feature_flags[feature_name])
+        assert subscription_api.get_allowed_identity_check_methods(user) == expected_result
 
     @pytest.mark.parametrize(
         "feature_flags,user_age,expected_result",
@@ -462,11 +462,12 @@ class NextSubscriptionStepTest:
         ],
     )
     @patch("pcapi.core.subscription.api.get_allowed_identity_check_methods", return_value=[])
-    def test_get_maintenance_page_type(self, _, feature_flags, user_age, expected_result):
+    def test_get_maintenance_page_type(self, _, features, feature_flags, user_age, expected_result):
         dateOfBirth = datetime.today() - relativedelta(years=user_age, months=1)
         user = users_factories.UserFactory(dateOfBirth=dateOfBirth)
-        with override_features(**feature_flags):
-            assert subscription_api.get_maintenance_page_type(user) == expected_result
+        for feature_name in feature_flags:
+            setattr(features, feature_name, feature_flags[feature_name])
+        assert subscription_api.get_maintenance_page_type(user) == expected_result
 
     @time_machine.travel("2019-01-01")
     def test_next_step_phone_validation_after_dms_succeded_at_19(self):
@@ -527,7 +528,7 @@ class NextSubscriptionStepTest:
 
 @pytest.mark.usefixtures("db_session")
 class OverflowSubscriptionLimitationTest:
-    @override_features(ENABLE_UBBLE_SUBSCRIPTION_LIMITATION=True)
+    @pytest.mark.features(ENABLE_UBBLE_SUBSCRIPTION_LIMITATION=True)
     @pytest.mark.parametrize("age", [15, 16, 17, 18])
     def test__is_ubble_allowed_if_subscription_overflow(self, age):
         # user birthday is in settings.UBBLE_SUBSCRIPTION_LIMITATION_DAYS days
@@ -547,7 +548,7 @@ class OverflowSubscriptionLimitationTest:
         assert subscription_api._is_ubble_allowed_if_subscription_overflow(user_approching_birthday)
         assert not subscription_api._is_ubble_allowed_if_subscription_overflow(user_not_allowed)
 
-    @override_features(ENABLE_UBBLE_SUBSCRIPTION_LIMITATION=False)
+    @pytest.mark.features(ENABLE_UBBLE_SUBSCRIPTION_LIMITATION=False)
     def test_subscription_is_possible_if_flag_is_false(self):
         user = users_factories.UserFactory()
         assert subscription_api._is_ubble_allowed_if_subscription_overflow(user)
@@ -720,7 +721,7 @@ class SubscriptionItemTest:
             == subscription_models.SubscriptionItemStatus.TODO
         )
 
-    @override_features(ENABLE_PHONE_VALIDATION=True)
+    @pytest.mark.features(ENABLE_PHONE_VALIDATION=True)
     def test_phone_validation_item_with_eligible_user_validation_todo(self):
         user = users_factories.UserFactory(dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE, _phoneNumber="0123456789")
         assert (
@@ -728,7 +729,7 @@ class SubscriptionItemTest:
             == subscription_models.SubscriptionItemStatus.TODO
         )
 
-    @override_features(ENABLE_PHONE_VALIDATION=False)
+    @pytest.mark.features(ENABLE_PHONE_VALIDATION=False)
     def test_phone_validation_item_with_eligible_user_done_without_validation(self):
         user = users_factories.UserFactory(dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE, _phoneNumber="0123456789")
         assert (
@@ -1684,7 +1685,7 @@ class SubscriptionMessageTest:
 
         assert subscription_api.get_user_subscription_state(user_needing_honor_statement).subscription_message is None
 
-    @override_features(ENABLE_UBBLE=False)
+    @pytest.mark.features(ENABLE_UBBLE=False)
     def test_maintenance(self):
         user_needing_identity_check = users_factories.UserFactory(
             dateOfBirth=datetime.utcnow() - relativedelta(years=18),

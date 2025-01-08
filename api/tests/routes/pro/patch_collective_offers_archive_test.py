@@ -6,7 +6,6 @@ from pcapi.core.educational import factories
 from pcapi.core.educational import models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.models import db
 
 
@@ -37,7 +36,7 @@ class Returns204Test:
     num_queries_error = num_queries_error - 1  # "update dateArchive on collective_offer" is not run
     num_queries_error = num_queries_error + 1  # rollback due to atomic
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def when_archiving_existing_offers(self, client):
         offer1 = factories.CollectiveOfferFactory()
         venue = offer1.venue
@@ -84,7 +83,7 @@ class Returns204Test:
         assert not other_offer.isArchived
         assert other_offer.isActive
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def when_archiving_draft_offers(self, client):
         draft_offer = factories.create_collective_offer_by_status(models.CollectiveOfferDisplayedStatus.DRAFT)
         venue = draft_offer.venue
@@ -105,7 +104,7 @@ class Returns204Test:
         assert other_offer.isArchived
         assert not other_offer.isActive
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_archive_rejected_offer(self, client):
         offer = factories.create_collective_offer_by_status(models.CollectiveOfferDisplayedStatus.REJECTED)
         venue = offer.venue
@@ -122,7 +121,7 @@ class Returns204Test:
         assert offer.isArchived
         assert not offer.isActive
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", STATUSES_ALLOWING_ARCHIVE)
     def test_archive_offer_allowed_action(self, client, status):
         offer = factories.create_collective_offer_by_status(status)
@@ -142,7 +141,7 @@ class Returns204Test:
         assert offer.isArchived
         assert not offer.isActive
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", STATUSES_NOT_ALLOWING_ARCHIVE)
     def test_archive_offer_unallowed_action(self, client, status):
         offer = factories.create_collective_offer_by_status(status)
@@ -163,7 +162,7 @@ class Returns204Test:
         assert offer.isArchived == offer_was_archived
         assert offer.isActive == offer_was_active
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_archive_offer_ended(self, client):
         offer = factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
         venue = offer.venue
@@ -181,7 +180,7 @@ class Returns204Test:
         assert offer.isArchived == False
         assert offer.isActive == True
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_archive_offer_unallowed_action_on_one_offer(self, client):
         allowed_offer = factories.DraftCollectiveOfferFactory()
         venue = allowed_offer.venue
@@ -204,7 +203,7 @@ class Returns204Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns422Test:
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def when_archiving_already_archived(self, client):
         offer_already_archived = factories.CollectiveOfferFactory(isActive=False, dateArchived=datetime.utcnow())
         venue = offer_already_archived.venue

@@ -10,12 +10,11 @@ from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.testing import override_features
 
 
 @pytest.mark.usefixtures("db_session")
 class EducationalWorkflowTest:
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_collective_workflow(self, db_session):
         now = datetime.datetime.utcnow()
         beginning_datetime = now + datetime.timedelta(days=1)

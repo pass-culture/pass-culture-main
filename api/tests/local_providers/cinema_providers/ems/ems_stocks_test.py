@@ -19,7 +19,6 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers.repository import get_provider_by_local_class
-from pcapi.core.testing import override_features
 from pcapi.local_providers.cinema_providers.ems.ems_stocks import EMSStocks
 from pcapi.local_providers.provider_manager import collect_elligible_venues_and_activate_ems_sync
 from pcapi.local_providers.provider_manager import synchronize_ems_venue_providers
@@ -761,7 +760,7 @@ class EMSSyncSitesTest:
         job_mocked.assert_not_called()
         assert not history_models.ActionHistory.query.count()
 
-    @override_features(LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC=True)
+    @pytest.mark.features(LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC=True)
     @pytest.mark.usefixtures("db_session")
     @mock.patch("pcapi.connectors.googledrive.TestingBackend.create_file")
     @mock.patch("pcapi.core.providers.api.update_venue_synchronized_offers_active_status_job.delay")

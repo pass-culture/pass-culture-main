@@ -207,49 +207,27 @@ class SettingsContext:
             setattr(settings, attr_name, value)
 
 
-class override_features(TestContextDecorator):
-    """A context manager that temporarily enables and/or disables features.
+class FeaturesContext:
+    def __init__(self) -> None:
+        # Use `object.__setattr__` because `__setattr__` method is overriden
+        object.__setattr__(self, "_initial_features", {})
 
-    It can also be used as a function decorator.
-
-    Usage:
-
-        with override_features(ENABLE_FROBULATION=False):
-            call_some_function()
-
-        @override_features(ENABLE_FROBULATION=True)
-        def test_something():
-            pass  # [...]
-    """
-
-    # The `db_session` fixture does not play well with the decorator
-    # when the latter is used on a class: changes made by the
-    # decorator (during `setup_method()`) are not seen when in the
-    # tests.
-    CAN_BE_USED_ON_CLASSES = False
-
-    def __init__(self, **overrides: bool) -> None:
-        self.overrides = overrides
-
-    def enable(self) -> None:
-        state = dict(
-            Feature.query.filter(Feature.name.in_(self.overrides)).with_entities(Feature.name, Feature.isActive).all()
+    def __setattr__(self, attr_name: str, value: typing.Any) -> None:
+        self._initial_features[attr_name] = (
+            Feature.query.filter(Feature.name == attr_name).with_entities(Feature.isActive).one().isActive
         )
-        # Yes, the following may perform multiple SQL queries. It's fine,
-        # we will probably not toggle thousands of features in each call.
-        self.apply_to_revert = {}
-        for name, status in self.overrides.items():
-            if status != state[name]:
-                self.apply_to_revert[name] = not status
-                Feature.query.filter_by(name=name).update({"isActive": status})
-                db.session.commit()
+        Feature.query.filter(Feature.name == attr_name).update({"isActive": value})
+        db.session.commit()
         # Clear the feature cache on request if any
         if flask.has_request_context():
             if hasattr(flask.request, "_cached_features"):
                 del flask.request._cached_features
 
-    def disable(self) -> None:
-        for name, status in self.apply_to_revert.items():
+    def __getattr__(self, attr_name: str) -> typing.Any:
+        return Feature.query.filter(Feature.name == attr_name).with_entities(Feature.isActive).one().isActive
+
+    def reset(self) -> None:
+        for name, status in self._initial_features.items():
             Feature.query.filter_by(name=name).update({"isActive": status})
             db.session.commit()
         # Clear the feature cache on request if any

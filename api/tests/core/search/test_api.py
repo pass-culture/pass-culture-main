@@ -16,7 +16,6 @@ from pcapi.core.search.backends import algolia
 import pcapi.core.search.testing as search_testing
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -195,7 +194,7 @@ class ReindexOfferIdsTest:
         error_queue = algolia.REDIS_OFFER_IDS_IN_ERROR_NAME
         assert app.redis_client.smembers(error_queue) == {str(offer.id)}
 
-    @override_features(ENABLE_VENUE_STRICT_SEARCH=True)
+    @pytest.mark.features(ENABLE_VENUE_STRICT_SEARCH=True)
     def test_reindex_venues_after_reindexing_offers(self, app):
         offer = make_bookable_offer()
         assert search_testing.search_store["offers"] == {}
@@ -208,8 +207,8 @@ class ReindexOfferIdsTest:
         venue_ids = [int(venue_id) for venue_id in venue_ids]
         assert venue_ids == [offer.venueId]
 
-    @override_features(ALGOLIA_BOOKINGS_NUMBER_COMPUTATION=True)
     @pytest.mark.settings(ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS=[3, 6, 9, 12])
+    @pytest.mark.features(ALGOLIA_BOOKINGS_NUMBER_COMPUTATION=True)
     def test_index_last_30_days_bookings(self, app):
         offer = make_booked_offer()
         assert search_testing.search_store["offers"] == {}
@@ -221,8 +220,8 @@ class ReindexOfferIdsTest:
             == algolia.Last30DaysBookingsRange.MEDIUM.value
         )
 
-    @override_features(ALGOLIA_BOOKINGS_NUMBER_COMPUTATION=False)
     @pytest.mark.settings(ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS=[3, 6, 9, 12])
+    @pytest.mark.features(ALGOLIA_BOOKINGS_NUMBER_COMPUTATION=False)
     def test_last_30_days_bookings_computation_feature_toggle(self, app):
         offer = make_booked_offer()
         assert search_testing.search_store["offers"] == {}
@@ -321,7 +320,7 @@ class IndexOffersInQueueTest:
         assert app.redis_client.smembers(queue) <= set(str(id_) for id_ in items)
 
 
-@override_features(ENABLE_VENUE_STRICT_SEARCH=True)
+@pytest.mark.features(ENABLE_VENUE_STRICT_SEARCH=True)
 def test_unindex_offer_ids(app):
     offer1 = make_bookable_offer()
     offer2 = make_bookable_offer()

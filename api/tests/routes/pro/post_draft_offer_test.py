@@ -5,7 +5,6 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.schemas import VenueTypeCode
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 
 
@@ -58,7 +57,7 @@ class Returns201Test:
         assert response_dict["isDuo"] == True
         assert not offer.product
 
-    @override_features(WIP_EAN_CREATION=False)
+    @pytest.mark.features(WIP_EAN_CREATION=False)
     def test_create_offer_cd_without_product_venue_record_store_should_succeed(self, client):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.RECORD_STORE)
         offerer = venue.managingOfferer
@@ -307,7 +306,7 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
 
-    @override_features(WIP_EAN_CREATION=True)
+    @pytest.mark.features(WIP_EAN_CREATION=True)
     def test_fail_if_venue_is_record_store_offer_is_cd_without_product(self, client):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.RECORD_STORE)
         offerer = venue.managingOfferer
@@ -324,7 +323,7 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["ean"] == ["EAN non reconnu. Assurez-vous qu'il n'y ait pas d'erreur de saisie."]
 
-    @override_features(WIP_EAN_CREATION=True)
+    @pytest.mark.features(WIP_EAN_CREATION=True)
     def test_fail_if_venue_is_record_store_offer_is_cd_with_unknown_product(self, client):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.RECORD_STORE)
         offerer = venue.managingOfferer

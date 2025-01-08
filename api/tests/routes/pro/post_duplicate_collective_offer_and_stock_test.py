@@ -11,7 +11,6 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.exceptions import CantGetImageFromUrl
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import models as offers_models
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as user_factories
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
@@ -198,7 +197,7 @@ class Returns200Test:
         assert response.status_code == 201
         assert response.json.get("formats") == ["Concert"]
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_duplicate_collective_offer_draft_offer(self, client):
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
@@ -215,7 +214,7 @@ class Returns200Test:
         assert response.status_code == 403
         assert response.json == {"validation": ["l'offre ne passe pas la validation"]}
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", STATUSES_ALLOWING_DUPLIATE)
     def test_duplicate_allowed_action(self, client, status):
         offerer = offerers_factories.OffererFactory()
@@ -229,7 +228,7 @@ class Returns200Test:
         duplicate = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
         assert duplicate.name == offer.name
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_duplicate_ended(self, client):
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
@@ -242,7 +241,7 @@ class Returns200Test:
         duplicate = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
         assert duplicate.name == offer.name
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", STATUSES_NOT_ALLOWING_DUPLIATE)
     def test_duplicate_unallowed_action(self, client, status):
         offerer = offerers_factories.OffererFactory()

@@ -12,7 +12,6 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.geography.factories import AddressFactory
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.offerers.factories import OffererAddressFactory
-from pcapi.core.offerers.factories import OffererFactory
 from pcapi.core.offerers.factories import VenueFactory
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferReport
@@ -24,7 +23,6 @@ from pcapi.core.reactions.factories import ReactionFactory
 from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.factories import UserFactory
 import pcapi.local_providers.cinema_providers.constants as cinema_providers_constants
@@ -329,7 +327,7 @@ class OffersTest:
         ],
     )
     def test_offer_external_booking_is_disabled_by_ff(
-        self, client, provider_class, ff_name, ff_value, booking_disabled
+        self, features, client, provider_class, ff_name, ff_value, booking_disabled
     ):
         provider = get_provider_by_local_class(provider_class)
         product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.SEANCE_CINE.id)
@@ -342,19 +340,19 @@ class OffersTest:
         providers_factories.VenueProviderFactory(venue=offer.venue, provider=provider)
 
         offer_id = offer.id
-        with override_features(**{ff_name: ff_value}):
-            # 1. select offer
-            # 2. select stocks
-            # 3. select mediations
-            # 4. check cinema venue_provider exists
-            # 5. select active cinema provider
-            # 6. check offer is from current cinema provider
-            # 7. update offer (deactivate)
-            # 8. select feature
-            with assert_num_queries(8):
-                with assert_no_duplicated_queries():
-                    response = client.get(f"/native/v1/offer/{offer_id}")
-                    assert response.status_code == 200
+        setattr(features, ff_name, ff_value)
+        # 1. select offer
+        # 2. select stocks
+        # 3. select mediations
+        # 4. check cinema venue_provider exists
+        # 5. select active cinema provider
+        # 6. check offer is from current cinema provider
+        # 7. update offer (deactivate)
+        # 8. select feature
+        with assert_num_queries(8):
+            with assert_no_duplicated_queries():
+                response = client.get(f"/native/v1/offer/{offer_id}")
+                assert response.status_code == 200
 
         assert response.json["isExternalBookingsDisabled"] is booking_disabled
 
@@ -440,7 +438,7 @@ class OffersTest:
             response = client.get(f"/native/v1/offer/{offer_id}")
             assert response.status_code == 404
 
-    @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+    @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
     @patch("pcapi.core.offers.api.external_bookings_api.get_shows_stock")
     def test_get_cds_sync_offer_updates_stock(self, mocked_get_shows_stock, client):
         movie_id = 54
@@ -485,7 +483,7 @@ class OffersTest:
         assert response.json["stocks"][0]["isSoldOut"]
 
     @time_machine.travel("2023-01-01")
-    @override_features(ENABLE_BOOST_API_INTEGRATION=True)
+    @pytest.mark.features(ENABLE_BOOST_API_INTEGRATION=True)
     @patch("pcapi.connectors.boost.requests.get")
     def test_get_boost_sync_offer_updates_stock(self, request_get, client):
         movie_id = 207
@@ -539,7 +537,7 @@ class OffersTest:
         assert first_show_stock.remainingQuantity == 96
         assert will_be_sold_out_show_stock.remainingQuantity == 0
 
-    @override_features(ENABLE_CGR_INTEGRATION=True)
+    @pytest.mark.features(ENABLE_CGR_INTEGRATION=True)
     def test_get_cgr_sync_offer_updates_stock(self, requests_mock, client):
         allocine_movie_id = 234099
         still_scheduled_show = 182021
@@ -594,7 +592,7 @@ class OffersTest:
         assert still_scheduled_show_stock.remainingQuantity == 95
         assert descheduled_show_stock.remainingQuantity == 0
 
-    @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+    @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
     def test_get_inactive_cinema_provider_offer(self, client):
         cds_provider = get_provider_by_local_class("CDSStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider, isActive=False)
@@ -1041,7 +1039,7 @@ class OffersV2Test:
         ],
     )
     def test_offer_external_booking_is_disabled_by_ff(
-        self, client, provider_class, ff_name, ff_value, booking_disabled
+        self, features, client, provider_class, ff_name, ff_value, booking_disabled
     ):
         provider = get_provider_by_local_class(provider_class)
         product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.SEANCE_CINE.id)
@@ -1054,17 +1052,17 @@ class OffersV2Test:
         providers_factories.VenueProviderFactory(venue=offer.venue, provider=provider)
 
         offer_id = offer.id
-        with override_features(**{ff_name: ff_value}):
-            # 1. select offer (joined with a lot of stuff)
-            # 2. select stocks
-            # 3. select mediation
-            # 4. select EXISTS venue_provider
-            # 5. select EXISTS provider
-            # 6. select cinema_provider_pivot
-            # 7. update offer
-            # 8. select feature
-            with assert_num_queries(8):
-                response = client.get(f"/native/v2/offer/{offer_id}")
+        setattr(features, ff_name, ff_value)
+        # 1. select offer (joined with a lot of stuff)
+        # 2. select stocks
+        # 3. select mediation
+        # 4. select EXISTS venue_provider
+        # 5. select EXISTS provider
+        # 6. select cinema_provider_pivot
+        # 7. update offer
+        # 8. select feature
+        with assert_num_queries(8):
+            response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
         assert response.json["isExternalBookingsDisabled"] is booking_disabled
@@ -1155,7 +1153,7 @@ class OffersV2Test:
             response = client.get(f"/native/v2/offer/{offer_id}")
             assert response.status_code == 404
 
-    @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+    @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
     @patch("pcapi.core.offers.api.external_bookings_api.get_shows_stock")
     def test_get_cds_sync_offer_updates_stock(self, mocked_get_shows_stock, client):
         movie_id = 54
@@ -1199,7 +1197,7 @@ class OffersV2Test:
         assert response.json["stocks"][0]["isSoldOut"]
 
     @time_machine.travel("2023-01-01")
-    @override_features(ENABLE_BOOST_API_INTEGRATION=True)
+    @pytest.mark.features(ENABLE_BOOST_API_INTEGRATION=True)
     @patch("pcapi.connectors.boost.requests.get")
     def test_get_boost_sync_offer_updates_stock(self, request_get, client):
         movie_id = 207
@@ -1253,7 +1251,7 @@ class OffersV2Test:
         assert first_show_stock.remainingQuantity == 96
         assert will_be_sold_out_show_stock.remainingQuantity == 0
 
-    @override_features(ENABLE_CGR_INTEGRATION=True)
+    @pytest.mark.features(ENABLE_CGR_INTEGRATION=True)
     def test_get_cgr_sync_offer_updates_stock(self, requests_mock, client):
         allocine_movie_id = 234099
         still_scheduled_show = 182021
@@ -1308,7 +1306,7 @@ class OffersV2Test:
         assert still_scheduled_show_stock.remainingQuantity == 95
         assert descheduled_show_stock.remainingQuantity == 0
 
-    @override_features(ENABLE_EMS_INTEGRATION=True)
+    @pytest.mark.features(ENABLE_EMS_INTEGRATION=True)
     @patch("pcapi.connectors.ems.requests.post")
     def test_offer_route_does_not_crash_when_ems_errors(self, requests_post, client):
         requests_post.return_value = mock.MagicMock(status_code=500)
@@ -1351,7 +1349,7 @@ class OffersV2Test:
         assert response.status_code == 200
         assert offer.stocks[0].remainingQuantity == 1
 
-    @override_features(ENABLE_CGR_INTEGRATION=True)
+    @pytest.mark.features(ENABLE_CGR_INTEGRATION=True)
     def test_offer_route_does_not_crash_when_cgr_errors(self, requests_mock, client):
         requests_mock.get("https://cgr-cinema-0.example.com/?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION)
         requests_mock.post("https://cgr-cinema-0.example.com/", text="", status_code=500)
@@ -1395,7 +1393,7 @@ class OffersV2Test:
         assert response.status_code == 200
         assert offer.stocks[0].remainingQuantity == 1
 
-    @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+    @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
     @patch("pcapi.connectors.cine_digital_service.requests.get")
     def test_offer_route_does_not_crash_when_cds_errors(self, requests_get, client):
         requests_get.return_value = mock.MagicMock(status_code=500)
@@ -1431,7 +1429,7 @@ class OffersV2Test:
         assert response.status_code == 200
         assert offer.stocks[0].remainingQuantity == 1
 
-    @override_features(ENABLE_BOOST_API_INTEGRATION=True)
+    @pytest.mark.features(ENABLE_BOOST_API_INTEGRATION=True)
     @patch("pcapi.connectors.boost.requests.get")
     def test_offer_route_does_not_crash_when_boost_errors(self, requests_get, client):
         requests_get.return_value = mock.MagicMock(status_code=500)
@@ -1477,7 +1475,7 @@ class OffersV2Test:
         assert response.status_code == 200
         assert offer.stocks[0].remainingQuantity == 1
 
-    @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+    @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
     def test_get_inactive_cinema_provider_offer(self, client):
         cds_provider = get_provider_by_local_class("CDSStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider, isActive=False)
@@ -2229,7 +2227,7 @@ class SendOfferWebAppLinkTest:
         mail = self.send_request(client)
         assert mail["params"]["OFFER_WEBAPP_LINK"].startswith(settings.WEBAPP_V2_URL)
 
-    @override_features(ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION=True)
+    @pytest.mark.features(ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION=True)
     def test_send_offer_webapp_link_by_email_with_redirection_link(self, client):
         """
         Test that the redirection domain is used, once the FF has been

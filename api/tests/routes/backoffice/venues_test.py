@@ -29,7 +29,6 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.backoffice import api as backoffice_api
 from pcapi.models import db
@@ -677,7 +676,7 @@ class GetVenueStatsTest(GetEndpointHelper):
 
         assert "0,00 € de CA" in html_parser.extract_cards_text(response.data)
 
-    @override_features(WIP_ENABLE_CLICKHOUSE_IN_BO=True)
+    @pytest.mark.features(WIP_ENABLE_CLICKHOUSE_IN_BO=True)
     @patch(
         "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
         return_value=[clickhouse_queries.TotalAggregatedRevenueModel(expectedRevenue=70.48)],
@@ -767,7 +766,7 @@ class GetVenueRevenueDetailsTest(GetEndpointHelper):
         assert current_revenues["CA offres IND"] == "20,00 €"
         assert current_revenues["CA offres EAC"] == "0,00 €"
 
-    @override_features(WIP_ENABLE_CLICKHOUSE_IN_BO=True)
+    @pytest.mark.features(WIP_ENABLE_CLICKHOUSE_IN_BO=True)
     @patch(
         "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
         return_value=[

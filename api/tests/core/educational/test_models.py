@@ -20,7 +20,6 @@ from pcapi.core.educational.models import HasImageMixin
 from pcapi.core.educational.models import TEMPLATE_ALLOWED_ACTIONS_BY_DISPLAYED_STATUS
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
-from pcapi.core.testing import override_features
 from pcapi.models import db
 from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -90,14 +89,14 @@ class CollectiveStockIsBookableTest:
         collective_stock = factories.CollectiveStockFactory()
         assert collective_stock.isBookable
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_bookable_if_booking_is_cancelled(self) -> None:
         collective_stock = factories.CollectiveStockFactory()
         factories.CollectiveBookingFactory(collectiveStock=collective_stock, status=CollectiveBookingStatus.CANCELLED)
 
         assert collective_stock.isBookable
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_bookable_if_booking_is_cancelled_with_new_statuses(self) -> None:
         collective_stock = factories.CollectiveStockFactory()
         factories.CollectiveBookingFactory(collectiveStock=collective_stock, status=CollectiveBookingStatus.CANCELLED)
@@ -632,32 +631,32 @@ class CollectiveOfferDisplayedStatusTest:
 
         assert offer.displayedStatus == status
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_get_offer_displayed_status_cancelled_with_new_statuses(self):
         offer = factories.CancelledWithoutBookingCollectiveOfferFactory()
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.CANCELLED
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_get_offer_displayed_status_cancelled_without_new_statuses(self):
         offer = factories.CancelledWithoutBookingCollectiveOfferFactory()
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.EXPIRED
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_get_offer_displayed_status_cancelled_with_booking_with_new_statuses(self):
         offer = factories.CancelledWithBookingCollectiveOfferFactory()
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.CANCELLED
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_get_offer_displayed_status_cancelled_with_booking_without_new_statuses(self):
         offer = factories.CancelledWithBookingCollectiveOfferFactory()
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.EXPIRED
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_get_offer_displayed_status_reimbursed_with_new_statuses(self):
         offer = factories.ReimbursedCollectiveOfferFactory()
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.REIMBURSED
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_get_offer_displayed_status_reimbursed_without_new_statuses(self):
         offer = factories.ReimbursedCollectiveOfferFactory()
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ENDED
@@ -685,7 +684,7 @@ class CollectiveOfferDisplayedStatusTest:
 
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ENDED
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_get_displayed_status_for_offer_with_cancelled_booking(self):
         yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
 
@@ -703,25 +702,25 @@ class CollectiveOfferDisplayedStatusTest:
 
 
 class CollectiveOfferTemplateDisplayedStatusTest:
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     @pytest.mark.parametrize("status", set(COLLECTIVE_OFFER_TEMPLATE_STATUSES) - {CollectiveOfferDisplayedStatus.ENDED})
     def test_get_offer_displayed_status(self, status):
         offer = factories.create_collective_offer_template_by_status(status)
         assert offer.displayedStatus == status
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_get_offer_displayed_status_ended(self):
         # when ENABLE_COLLECTIVE_NEW_STATUSES FF is off, and ended offer is INACTIVE
         offer = factories.create_collective_offer_template_by_status(CollectiveOfferDisplayedStatus.ENDED)
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.INACTIVE
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", COLLECTIVE_OFFER_TEMPLATE_STATUSES)
     def test_get_offer_displayed_status_new_statuses(self, status):
         offer = factories.create_collective_offer_template_by_status(status)
         assert offer.displayedStatus == status
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_get_displayed_status_for_inactive_offer_due_to_end_date_passed(self):
         offer = factories.CollectiveOfferTemplateFactory(
             validation=OfferValidationStatus.APPROVED,
@@ -732,7 +731,7 @@ class CollectiveOfferTemplateDisplayedStatusTest:
         )
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.INACTIVE
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_get_displayed_status_for_inactive_offer_with_end_date_passed(self):
         offer = factories.CollectiveOfferTemplateFactory(
             validation=OfferValidationStatus.APPROVED,
@@ -749,13 +748,13 @@ class CollectiveOfferTemplateDisplayedStatusTest:
 
 
 class CollectiveOfferAllowedActionsTest:
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", ALL_DISPLAYED_STATUSES - {CollectiveOfferDisplayedStatus.ENDED})
     def test_get_offer_allowed_actions(self, status):
         offer = factories.create_collective_offer_by_status(status)
         assert offer.allowedActions == list(ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[status])
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_get_ended_offer_allowed_actions(self):
         offer = factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
 
@@ -766,7 +765,7 @@ class CollectiveOfferAllowedActionsTest:
             CollectiveOfferAllowedAction.CAN_CANCEL,
         ]
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_get_ended_offer_two_days_past_allowed_actions(self):
         offer = factories.EndedCollectiveOfferFactory()
 
@@ -775,7 +774,7 @@ class CollectiveOfferAllowedActionsTest:
             CollectiveOfferAllowedAction.CAN_DUPLICATE,
         ]
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", ALL_DISPLAYED_STATUSES - {CollectiveOfferDisplayedStatus.ENDED})
     def test_get_offer_allowed_actions_public_api(self, status):
         offer = factories.create_collective_offer_by_status(status)
@@ -788,7 +787,7 @@ class CollectiveOfferAllowedActionsTest:
             CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
         }
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_get_offer_ended_allowed_actions_public_api(self):
         offer = factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
         offer.provider = providers_factories.ProviderFactory()
@@ -799,7 +798,7 @@ class CollectiveOfferAllowedActionsTest:
             CollectiveOfferAllowedAction.CAN_CANCEL,
         ]
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_get_offer_ended_two_days_past_allowed_actions_public_api(self):
         offer = factories.EndedCollectiveOfferFactory()
         offer.provider = providers_factories.ProviderFactory()
@@ -807,28 +806,28 @@ class CollectiveOfferAllowedActionsTest:
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ENDED
         assert offer.allowedActions == [CollectiveOfferAllowedAction.CAN_DUPLICATE]
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_get_offer_allowed_actions_for_cancelled_with_booking(self):
         offer = factories.CancelledWithBookingCollectiveOfferFactory()
         assert offer.allowedActions == list(
             ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[CollectiveOfferDisplayedStatus.CANCELLED]
         )
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_get_offer_allowed_actions_for_cancelled_without_booking(self):
         offer = factories.CancelledWithoutBookingCollectiveOfferFactory()
         assert offer.allowedActions == list(
             ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[CollectiveOfferDisplayedStatus.CANCELLED]
         )
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_get_offer_allowed_actions_for_cancelled_due_to_expiration(self):
         offer = factories.CancelledDueToExpirationCollectiveOfferFactory()
         assert offer.allowedActions == list(
             ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[CollectiveOfferDisplayedStatus.CANCELLED]
         )
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_is_two_days_past_end(self):
         offer = factories.CollectiveOfferFactory()
         factories.CollectiveStockFactory(collectiveOffer=offer)
@@ -842,7 +841,7 @@ class CollectiveOfferAllowedActionsTest:
         offer.collectiveStock.endDatetime = datetime.datetime.utcnow() - datetime.timedelta(days=3)
         assert offer.is_two_days_past_end
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", COLLECTIVE_OFFER_TEMPLATE_STATUSES)
     def test_get_offer_template_allowed_actions(self, status):
         offer = factories.create_collective_offer_template_by_status(status)

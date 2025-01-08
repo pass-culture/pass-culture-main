@@ -46,7 +46,6 @@ import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.users.constants import SuspensionReason
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
@@ -444,7 +443,7 @@ class BookOfferTest:
 
     class WithExternalBookingApiTest:
         @patch("pcapi.core.bookings.api.external_bookings_api.book_cinema_ticket")
-        @override_features(ENABLE_EMS_INTEGRATION=True)
+        @pytest.mark.features(ENABLE_EMS_INTEGRATION=True)
         def test_ems_solo_external_booking(self, mocked_book_ticket):
             mocked_book_ticket.return_value = [
                 Ticket(
@@ -484,7 +483,7 @@ class BookOfferTest:
             }
 
         @patch("pcapi.core.bookings.api.external_bookings_api.book_cinema_ticket")
-        @override_features(ENABLE_EMS_INTEGRATION=True)
+        @pytest.mark.features(ENABLE_EMS_INTEGRATION=True)
         def test_ems_duo_external_booking(self, mocked_book_ticket):
             mocked_book_ticket.return_value = [
                 Ticket(
@@ -547,7 +546,7 @@ class BookOfferTest:
         @patch("pcapi.core.external_bookings.ems.client.current_app.redis_client.rpop")
         @patch("pcapi.core.bookings.api.generate_booking_token")
         @patch("pcapi.core.external_bookings.ems.client.EMSClientAPI.cancel_booking_with_tickets")
-        @override_features(ENABLE_EMS_INTEGRATION=True, EMS_CANCEL_PENDING_EXTERNAL_BOOKING=True)
+        @pytest.mark.features(ENABLE_EMS_INTEGRATION=True, EMS_CANCEL_PENDING_EXTERNAL_BOOKING=True)
         @pytest.mark.parametrize("exception", [requests_exception.Timeout, requests_exception.ReadTimeout])
         def test_timeout_during_ems_external_booking_trigger_a_cancel_call(
             self,
@@ -657,7 +656,7 @@ class BookOfferTest:
         @patch("pcapi.core.external_bookings.ems.client.current_app.redis_client.rpop")
         @patch("pcapi.core.bookings.api.generate_booking_token")
         @patch("pcapi.core.external_bookings.ems.client.EMSClientAPI.cancel_booking_with_tickets")
-        @override_features(ENABLE_EMS_INTEGRATION=True, EMS_CANCEL_PENDING_EXTERNAL_BOOKING=True)
+        @pytest.mark.features(ENABLE_EMS_INTEGRATION=True, EMS_CANCEL_PENDING_EXTERNAL_BOOKING=True)
         @pytest.mark.parametrize("exception", [requests_exception.Timeout, requests_exception.ReadTimeout])
         def test_we_dont_cancel_too_early_failing_booking(
             self,
@@ -739,7 +738,7 @@ class BookOfferTest:
         @patch("pcapi.core.external_bookings.ems.client.current_app.redis_client.rpop")
         @patch("pcapi.core.bookings.api.generate_booking_token")
         @patch("pcapi.core.external_bookings.ems.client.EMSClientAPI.cancel_booking_with_tickets")
-        @override_features(ENABLE_EMS_INTEGRATION=True, EMS_CANCEL_PENDING_EXTERNAL_BOOKING=False)
+        @pytest.mark.features(ENABLE_EMS_INTEGRATION=True, EMS_CANCEL_PENDING_EXTERNAL_BOOKING=False)
         @pytest.mark.parametrize("exception", [requests_exception.Timeout, requests_exception.ReadTimeout])
         def test_timeout_during_ems_external_booking_dont_do_anything_if_ff_deactivated(
             self,
@@ -802,7 +801,7 @@ class BookOfferTest:
         @patch("flask.current_app.redis_client.llen")
         @patch("pcapi.core.external_bookings.ems.client.current_app.redis_client.rpop")
         @patch("pcapi.core.external_bookings.ems.client.EMSClientAPI.cancel_booking_with_tickets")
-        @override_features(ENABLE_EMS_INTEGRATION=True, EMS_CANCEL_PENDING_EXTERNAL_BOOKING=True)
+        @pytest.mark.features(ENABLE_EMS_INTEGRATION=True, EMS_CANCEL_PENDING_EXTERNAL_BOOKING=True)
         @pytest.mark.parametrize(
             "exception", [requests_exception.Timeout, requests_exception.ReadTimeout, EMSAPIException]
         )
@@ -876,7 +875,7 @@ class BookOfferTest:
                 assert "Fail to cancel external booking due to EMSAPIException: " in caplog.messages
 
         @patch("pcapi.core.bookings.api.external_bookings_api.book_cinema_ticket")
-        @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+        @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
         def test_solo_external_booking(self, mocked_book_cinema_ticket):
             mocked_book_cinema_ticket.return_value = [Ticket(barcode="testbarcode", seat_number="A_1")]
 
@@ -903,7 +902,7 @@ class BookOfferTest:
             assert booking.externalBookings[0].seat == "A_1"
 
         @patch("pcapi.core.bookings.api.external_bookings_api.book_cinema_ticket")
-        @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+        @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
         def test_duo_external_booking(self, mocked_book_cinema_ticket):
             mocked_book_cinema_ticket.return_value = [
                 Ticket(barcode="barcode1", seat_number="B_1"),
@@ -932,7 +931,7 @@ class BookOfferTest:
             assert booking.externalBookings[1].barcode == "barcode2"
             assert booking.externalBookings[1].seat == "B_2"
 
-        @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+        @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
         def test_error_if_offer_from_inactive_cinema_venue_provider(self):
             cds_provider = get_provider_by_local_class("CDSStocks")
             venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider, isActive=False)
@@ -953,7 +952,7 @@ class BookOfferTest:
             assert str(exc.value) == f"No active cinema venue provider found for venue #{venue_provider.venue.id}"
 
         @patch("pcapi.core.bookings.api.external_bookings_api.book_cinema_ticket")
-        @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+        @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
         def test_no_booking_if_external_booking_fails(
             self,
             mocked_book_cinema_ticket,
@@ -979,7 +978,7 @@ class BookOfferTest:
 
             assert Booking.query.count() == 0
 
-        @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+        @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
         def test_book_manual_offer(self):
             beneficiary = users_factories.BeneficiaryGrant18Factory()
             cds_provider = get_provider_by_local_class("CDSStocks")
@@ -1050,7 +1049,7 @@ class BookOfferTest:
             assert not models.Booking.query.count()
             assert stock.quantity == 11  # dnBookedQuantity + 1
 
-        @override_features(DISABLE_CDS_EXTERNAL_BOOKINGS=True)
+        @pytest.mark.features(DISABLE_CDS_EXTERNAL_BOOKINGS=True)
         def test_should_raise_error_when_cds_external_bookings_are_disabled(self):
             beneficiary = users_factories.BeneficiaryGrant18Factory()
             cds_provider = get_provider_by_local_class("CDSStocks")
@@ -1071,7 +1070,7 @@ class BookOfferTest:
             assert Booking.query.count() == 0
             assert str(exc.value) == "DISABLE_CDS_EXTERNAL_BOOKINGS is active"
 
-        @override_features(DISABLE_BOOST_EXTERNAL_BOOKINGS=True)
+        @pytest.mark.features(DISABLE_BOOST_EXTERNAL_BOOKINGS=True)
         def test_should_raise_error_when_boost_external_bookings_are_disabled(self):
             beneficiary = users_factories.BeneficiaryGrant18Factory()
             boost_provider = get_provider_by_local_class("BoostStocks")
@@ -1092,7 +1091,7 @@ class BookOfferTest:
             assert Booking.query.count() == 0
             assert str(exc.value) == "DISABLE_BOOST_EXTERNAL_BOOKINGS is active"
 
-        @override_features(ENABLE_CGR_INTEGRATION=True, DISABLE_CGR_EXTERNAL_BOOKINGS=True)
+        @pytest.mark.features(ENABLE_CGR_INTEGRATION=True, DISABLE_CGR_EXTERNAL_BOOKINGS=True)
         def test_should_raise_error_when_cgr_external_bookings_are_disabled(self):
             beneficiary = users_factories.BeneficiaryGrant18Factory()
             boost_provider = get_provider_by_local_class("CGRStocks")
@@ -1349,7 +1348,7 @@ class CancelByBeneficiaryTest:
         assert booking.stock.remainingQuantity == "unlimited"
 
     @patch("pcapi.core.bookings.api.external_bookings_api.cancel_booking")
-    @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+    @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
     def test_cds_cancel_external_booking(self, mocked_cancel_booking):
         cds_provider = get_provider_by_local_class("CDSStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
@@ -1367,7 +1366,7 @@ class CancelByBeneficiaryTest:
 
         mocked_cancel_booking.assert_called()
 
-    @override_features(ENABLE_EMS_INTEGRATION=True)
+    @pytest.mark.features(ENABLE_EMS_INTEGRATION=True)
     def test_ems_cancel_external_booking(self, requests_mock):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         ems_provider = get_provider_by_local_class("EMSStocks")
@@ -1439,7 +1438,7 @@ class CancelByBeneficiaryTest:
 
 @pytest.mark.usefixtures("db_session")
 class CancelByOffererTest:
-    @override_features(WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION=False)
+    @pytest.mark.features(WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION=False)
     def test_cancel(self):
         booking = bookings_factories.BookingFactory()
 
@@ -1464,7 +1463,7 @@ class CancelByOffererTest:
             "can_be_asynchronously_retried": False,
         }
 
-    @override_features(WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION=True)
+    @pytest.mark.features(WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION=True)
     def test_cancel_with_FF(self):
         booking = bookings_factories.BookingFactory()
 
@@ -2006,7 +2005,7 @@ class AutoMarkAsUsedAfterEventTest:
         assert collectiveBooking.status is CollectiveBookingStatus.CANCELLED
         assert collectiveBooking.dateUsed is None
 
-    @override_features(UPDATE_BOOKING_USED=False)
+    @pytest.mark.features(UPDATE_BOOKING_USED=False)
     def test_raise_if_feature_flag_is_deactivated(self):
         with pytest.raises(ValueError):
             api.auto_mark_as_used_after_event()

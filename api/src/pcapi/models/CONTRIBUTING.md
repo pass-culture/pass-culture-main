@@ -84,7 +84,7 @@ Si la valeur initiale est `False`, ajouter une ligne dans le tuple `FEATURES_DIS
 
 3. ⚠️ Dans le cas d'utilisation _ajout d'une fonctionnalité activée une fois que les développements sont finis_, **créer un ticket** pour supprimer le feature flag, ou a mininima pour modifier sa valeur initiale, une fois le chantier fini. En effet, cela peut avoir un impact sur :
 
-- la qualité des tests : c'est la valeur par défaut qui est utilisée (sauf si `@override_features` est utilisé)
+- la qualité des tests : c'est la valeur par défaut qui est utilisée (sauf si `@pytest.mark.features` est utilisé)
 - les bugs sur l'environnement `testing` : les données sont périodiquement regénérées et les Feature Flag sont alors réinitialisés avec leur valeur par défaut.
 
 ### Transmettre un Feature Flag à l'app jeune

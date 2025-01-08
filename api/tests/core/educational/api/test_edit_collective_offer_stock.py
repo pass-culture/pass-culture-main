@@ -3,7 +3,6 @@ import datetime
 import pytest
 import time_machine
 
-from pcapi.core import testing
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import testing as educational_testing
@@ -14,7 +13,6 @@ from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.offers import exceptions as offers_exceptions
-from pcapi.core.testing import override_features
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.serialization import collective_stock_serialize
 
@@ -194,7 +192,7 @@ class EditCollectiveOfferStocksTest:
     #     stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
     #     mocked_async_index_offer_ids.assert_called_once_with([stock.collectiveOfferId])
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_should_not_allow_stock_edition_when_booking_status_is_REIMBURSED_or_USED(self) -> None:
         # Given
         educational_factories.EducationalYearFactory(
@@ -286,7 +284,7 @@ class EditCollectiveOfferStocksTest:
         booking_updated = CollectiveBooking.query.filter_by(id=booking.id).one()
         assert booking_updated.cancellationLimitDate == datetime.datetime.utcnow()
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     @time_machine.travel("2020-11-17 15:00:00")
     def test_should_allow_stock_edition_and_not_modify_cancellation_limit_date_when_booking_cancelled(self) -> None:
         # Given
@@ -325,7 +323,7 @@ class EditCollectiveOfferStocksTest:
         stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
         assert stock.beginningDatetime == new_event_date.replace(tzinfo=None)
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_should_update_expired_booking(self) -> None:
         now = datetime.datetime.utcnow()
         limit = now - datetime.timedelta(days=2)
@@ -350,7 +348,7 @@ class EditCollectiveOfferStocksTest:
         assert booking.cancellationDate == None
         assert booking.confirmationLimitDate == new_limit
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_should_not_update_expired_booking(self) -> None:
         now = datetime.datetime.utcnow()
         limit = now - datetime.timedelta(days=2)
@@ -376,7 +374,7 @@ class EditCollectiveOfferStocksTest:
         assert booking.cancellationDate == now - datetime.timedelta(days=1)
         assert booking.confirmationLimitDate == limit
 
-    @testing.override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", educational_testing.STATUSES_ALLOWING_EDIT_DETAILS)
     def test_can_increase_price(self, status):
         offer = educational_factories.create_collective_offer_by_status(status)
@@ -394,7 +392,7 @@ class EditCollectiveOfferStocksTest:
         assert offer.collectiveStock.price == price + 100
 
     @time_machine.travel("2020-11-17 15:00:00", tick=False)
-    @testing.override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", STATUSES_ALLOWING_EDIT_DATES)
     def test_can_edit_dates(self, status):
         educational_factories.EducationalYearFactory(
@@ -437,7 +435,7 @@ class EditCollectiveOfferStocksTest:
         if booking:
             assert booking.confirmationLimitDate == new_limit.replace(tzinfo=None)
 
-    @testing.override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", STATUSES_ALLOWING_EDIT_DISCOUNT)
     def test_can_lower_price_and_edit_price_details(self, status):
         offer = educational_factories.create_collective_offer_by_status(status)
@@ -457,7 +455,7 @@ class EditCollectiveOfferStocksTest:
         assert offer.collectiveStock.priceDetail == "yes"
         assert offer.collectiveStock.numberOfTickets == 1200
 
-    @testing.override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_can_lower_price_and_edit_price_details_ended(self):
         offer = educational_factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
 
@@ -476,7 +474,7 @@ class EditCollectiveOfferStocksTest:
 
 @pytest.mark.usefixtures("db_session")
 class ReturnErrorTest:
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_edit_stock_of_non_approved_offer_fails(self) -> None:
         # Given
         offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.PENDING)
@@ -550,7 +548,7 @@ class ReturnErrorTest:
         stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
         assert stock.beginningDatetime == datetime.datetime(2021, 12, 10)
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     @time_machine.travel("2020-11-17 15:00:00")
     def test_should_allow_stock_edition_and_not_modify_cancellation_limit_date_when_booking_cancelled(self) -> None:
         # Given
@@ -590,7 +588,7 @@ class ReturnErrorTest:
         stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
         assert stock.beginningDatetime == new_event_date.replace(tzinfo=None)
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_edit_offer_of_cancelled_booking(self) -> None:
         # Given
         offer = educational_factories.CollectiveOfferFactory()
@@ -632,7 +630,7 @@ class ReturnErrorTest:
         assert stock.price == 1500
         assert stock.numberOfTickets == 35
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     @time_machine.travel("2020-01-05 10:00:00")
     def test_edit_offer_of_other_status_booking(self) -> None:
         # Given
@@ -678,7 +676,7 @@ class ReturnErrorTest:
         # Then
         assert error.value.errors == {"global": ["Les évènements passés ne sont pas modifiables"]}
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_edit_price_or_ticket_number_if_status_confirmed(self):
         initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=10)
         initial_booking_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=5)
@@ -705,7 +703,7 @@ class ReturnErrorTest:
         stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
         assert stock.price == 1200
 
-    @testing.override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", educational_testing.STATUSES_NOT_ALLOWING_EDIT_DETAILS)
     def test_cannot_increase_price(self, status):
         offer = educational_factories.create_collective_offer_by_status(status)
@@ -721,7 +719,7 @@ class ReturnErrorTest:
                 stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
             )
 
-    @testing.override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_cannot_increase_price_ended(self):
         offer = educational_factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
         price = offer.collectiveStock.price
@@ -732,7 +730,7 @@ class ReturnErrorTest:
                 stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
             )
 
-    @testing.override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", STATUSES_NOT_ALLOWING_EDIT_DATES)
     def test_cannot_edit_dates(self, status):
         offer = educational_factories.create_collective_offer_by_status(status)
@@ -750,7 +748,7 @@ class ReturnErrorTest:
                     stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
                 )
 
-    @testing.override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_cannot_edit_dates_ended(self):
         offer = educational_factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
 
@@ -764,7 +762,7 @@ class ReturnErrorTest:
                     stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
                 )
 
-    @testing.override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", STATUSES_NOT_ALLOWING_EDIT_DISCOUNT)
     def test_cannot_lower_price_and_edit_price_details(self, status):
         offer = educational_factories.create_collective_offer_by_status(status)

@@ -28,7 +28,6 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users import testing
@@ -873,7 +872,7 @@ class GetOffererStatsTest(GetEndpointHelper):
         assert expected_revenue_text in cards_text[0]
         assert "3 offres actives ( 1 IND / 2 EAC ) 0 offres inactives ( 0 IND / 0 EAC )" in cards_text
 
-    @override_features(WIP_ENABLE_CLICKHOUSE_IN_BO=True)
+    @pytest.mark.features(WIP_ENABLE_CLICKHOUSE_IN_BO=True)
     @patch(
         "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
         return_value=[clickhouse_queries.TotalAggregatedRevenueModel(expectedRevenue=70.48)],
@@ -1032,7 +1031,7 @@ class GetOffererRevenueDetailsTest(GetEndpointHelper):
     # check feature flag: WIP_ENABLE_CLICKHOUSE_IN_BO
     expected_num_queries_when_clickhouse_enabled = 4
 
-    @override_features(WIP_ENABLE_CLICKHOUSE_IN_BO=True)
+    @pytest.mark.features(WIP_ENABLE_CLICKHOUSE_IN_BO=True)
     @patch(
         "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
         return_value=[

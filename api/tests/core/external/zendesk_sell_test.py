@@ -11,7 +11,6 @@ from pcapi.core.external.zendesk_sell_backends.zendesk_sell import ZendeskSellBa
 from pcapi.core.external.zendesk_sell_backends.zendesk_sell import ZendeskSellReadOnlyBackend
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
-from pcapi.core.testing import override_features
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -165,7 +164,7 @@ def test_update_venue():
 
 
 @patch("pcapi.core.external.zendesk_sell.zendesk_backend", ZendeskSellBackend())
-@override_features(ENABLE_ZENDESK_SELL_CREATION=False)
+@pytest.mark.features(ENABLE_ZENDESK_SELL_CREATION=False)
 def test_create_venue_without_parent_offerer():
     # Offerer is not found in Zendesk, but feature flag prevents from creating it
     ret_id = 10
@@ -212,7 +211,7 @@ def test_create_venue_without_parent_offerer():
 
 
 @patch("pcapi.core.external.zendesk_sell.zendesk_backend", ZendeskSellBackend())
-@override_features(ENABLE_ZENDESK_SELL_CREATION=True)
+@pytest.mark.features(ENABLE_ZENDESK_SELL_CREATION=True)
 def test_create_venue_and_parent_offerer():
     # Offerer is not found in Zendesk, create it before the venue
     ret_id = 10

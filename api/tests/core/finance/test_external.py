@@ -8,7 +8,6 @@ from pcapi.core.finance import external
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance.backend.dummy import bank_accounts as dummy_bank_accounts
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.testing import override_features
 from pcapi.models import db
 
 
@@ -45,13 +44,11 @@ class ExternalFinanceCommandTest:
         "enable_new_finance_workflow,enable_bank_account_sync", [(False, True), (True, False), (False, False)]
     )
     def test_push_bank_accounts_command_feature_toggle(
-        self, run_command, enable_new_finance_workflow, enable_bank_account_sync
+        self, features, run_command, enable_new_finance_workflow, enable_bank_account_sync
     ):
-        with override_features(
-            ENABLE_BANK_ACCOUNT_SYNC=enable_bank_account_sync,
-            WIP_ENABLE_NEW_FINANCE_WORKFLOW=enable_new_finance_workflow,
-        ):
-            with patch("pcapi.core.finance.external.push_bank_accounts") as push_bank_accounts_mock:
-                run_command("push_bank_accounts", raise_on_error=True)
+        features.ENABLE_BANK_ACCOUNT_SYNC = enable_bank_account_sync
+        features.WIP_ENABLE_NEW_FINANCE_WORKFLOW = enable_new_finance_workflow
+        with patch("pcapi.core.finance.external.push_bank_accounts") as push_bank_accounts_mock:
+            run_command("push_bank_accounts", raise_on_error=True)
 
         assert push_bank_accounts_mock.call_count == 0
