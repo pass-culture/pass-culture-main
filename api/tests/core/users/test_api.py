@@ -3136,6 +3136,7 @@ def generate_minimal_beneficiary():
     db.session.add(
         users_models.UserAccountUpdateRequest(
             dsApplicationId="111111",
+            dsTechnicalId="abc-def-ghi-jkl",
             status=dms_models.GraphQLApplicationStates.on_going,
             dateCreated=now,
             dateLastStatusUpdate=now,
