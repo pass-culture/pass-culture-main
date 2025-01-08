@@ -4,6 +4,7 @@ import logging
 
 from dateutil.relativedelta import relativedelta
 import pytest
+import sqlalchemy as sa
 
 from pcapi import settings
 from pcapi.core.finance import models as finance_models
@@ -95,16 +96,18 @@ class ReadFileTest:
 
         offerer = offerers_models.Offerer.query.one()
         assert offerer.siren == "111222337"
-        assert offerer.name == "Structure Pro"
-        assert offerer.postalCode == "06000"
-        assert offerer.city == "MA VILLE"
+        assert offerer.name == "Test Pierre Pro"
+        assert offerer.postalCode == "75001"
+        assert offerer.city == "PARIS"
         assert offerer.isValidated
+        assert offerer.allowedOnAdage
 
-        venue = offerers_models.Venue.query.filter_by(name="Lieu Pro").one()
+        venue = offerers_models.Venue.query.filter_by(name="Structure Pierre Pro").one()
         assert venue.siret == "11122233700011"
-        assert venue.postalCode == "06000"
-        assert venue.city == "MA VILLE"
+        assert venue.postalCode == "75001"
+        assert venue.city == "PARIS"
         assert venue.managingOfferer == offerer
+        assert venue.adageId is not None
 
         digital_venue = offerers_models.Venue.query.filter_by(name="Offre numérique").one()
         assert digital_venue.siret is None
@@ -120,7 +123,13 @@ class ReadFileTest:
             else:
                 assert not bank_account.venueLinks
 
-        assert pierre.checkPassword("PierrePro$123")
+        offerer_addresses = offerers_models.OffererAddress.query.options(
+            sa.orm.joinedload(offerers_models.OffererAddress.address)
+        ).all()
+        assert len(offerer_addresses) == 2
+        assert {oa.address.postalCode for oa in offerer_addresses} == {"75001", "06400"}
+
+        assert pierre.checkPassword("PierrePro$123")  # ggignore
 
         admin = User.query.filter_by(email="admin@example.com").one()
         assert admin.has_admin_role

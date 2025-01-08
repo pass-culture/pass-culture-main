@@ -86,6 +86,8 @@ def _create_beneficiary(row: dict, role: UserRole | None) -> User:
 
 
 def _create_pro_user(row: dict) -> User:
+    now = datetime.datetime.utcnow()
+
     user = users_api.create_pro_user(
         ProUserCreationBodyV2Model(  # type: ignore[call-arg]
             email=row["Mail"],
@@ -99,14 +101,15 @@ def _create_pro_user(row: dict) -> User:
     )
 
     siret = _get_siret(row["SIREN"])
+    gps = (48.865987, 2.3232)
     offerer_creation_info = offerers_serialize.CreateOffererQueryModel(
-        city="MA VILLE",
-        latitude=46.126,
-        longitude=-3.033,
-        name=f'Structure {row["Nom"]}',
-        postalCode=row["Code postal"],
+        city="PARIS",
+        latitude=gps[0],
+        longitude=gps[1],
+        name=f'{(row["Type"] or "test").split(":")[-1].capitalize()} {row["Prénom"]} {row["Nom"]}',
+        postalCode="75001",
         siren=siret[:9],
-        street="1 avenue de la Culture",
+        street="1 place de la Concorde",
     )
     new_onboarding_info = offerers_api.NewOnboardingInfo(
         target=offerers_models.Target.INDIVIDUAL_AND_EDUCATIONAL,
@@ -120,7 +123,8 @@ def _create_pro_user(row: dict) -> User:
     # Validate offerer
     offerer = user_offerer.offerer
     offerer.validationStatus = ValidationStatus.VALIDATED
-    offerer.dateValidated = datetime.datetime.utcnow()
+    offerer.dateValidated = now
+    offerer.allowedOnAdage = True
     db.session.add(offerer)
 
     history_api.add_action(
@@ -131,18 +135,21 @@ def _create_pro_user(row: dict) -> User:
         comment="Validée automatiquement par le script de création",
     )
 
+    # Most of offerers are not validated on staging without this commit() - TODO: is this related to atomic? oa?
+    db.session.commit()
+
     venue_creation_info = venues_serialize.PostVenueBodyModel(
         street=offerers_schemas.VenueAddress(offerer_creation_info.street),
-        banId=None,
+        banId=offerers_schemas.VenueBanId("75101_2259_00001"),  # 1 place de la Concorde
         bookingEmail=offerers_schemas.VenueBookingEmail(user.email),
         city=offerers_schemas.VenueCity(offerer_creation_info.city),
         comment=None,
-        latitude=46.126,
-        longitude=-3.033,
+        latitude=gps[0],
+        longitude=gps[1],
         managingOffererId=offerer.id,
-        name=offerers_schemas.VenueName(f'Lieu {row["Nom"]}'),
+        name=offerers_schemas.VenueName(f'Structure {row["Prénom"]} {row["Nom"]}'),
         publicName=None,
-        postalCode=row["Code postal"],
+        postalCode=offerers_schemas.VenuePostalCode(offerer_creation_info.postalCode),
         siret=offerers_schemas.VenueSiret(siret),
         venueLabelId=None,
         venueTypeCode=offerers_models.VenueTypeCode.ADMINISTRATIVE.name,
@@ -156,6 +163,9 @@ def _create_pro_user(row: dict) -> User:
     )
     venue = offerers_api.create_venue(venue_creation_info, user)
     offerers_api.create_venue_registration(venue.id, new_onboarding_info.target, new_onboarding_info.webPresence)
+    venue.adageId = f"TEST{venue.id}"
+    venue.adageInscriptionDate = now
+    db.session.add(venue)
 
     for i, status in enumerate(finance_models.BankAccountApplicationStatus, start=1):
         bank_account = finance_models.BankAccount(
@@ -168,11 +178,22 @@ def _create_pro_user(row: dict) -> User:
         )
         db.session.add(bank_account)
         if status is finance_models.BankAccountApplicationStatus.ACCEPTED:
-            db.session.add(
-                offerers_models.VenueBankAccountLink(
-                    venue=venue, bankAccount=bank_account, timespan=(datetime.datetime.utcnow(),)
-                )
-            )
+            db.session.add(offerers_models.VenueBankAccountLink(venue=venue, bankAccount=bank_account, timespan=(now,)))
+
+    # Create a second address linked to the offerer in another region
+    address = offerers_api.get_or_create_address(
+        offerers_api.LocationData(
+            street="1 Boulevard de la Croisette",
+            postal_code="06400",
+            city="Cannes",
+            latitude=43.551407,
+            longitude=7.017984,
+            insee_code="06029",
+            ban_id="06029_0880_00001",
+        ),
+        is_manual_edition=False,
+    )
+    offerers_api.get_or_create_offerer_address(offerer.id, address.id, label="Palais des Festivals")
 
     if row["Type"] == "externe:bug-bounty":
         _create_provider(venue, row)
