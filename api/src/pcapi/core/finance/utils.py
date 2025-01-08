@@ -20,8 +20,7 @@ def to_cents(amount_in_euros: decimal.Decimal | float) -> int:
     return int(100 * decimal.Decimal(f"{amount_in_euros}").quantize(exponent, ROUNDING))
 
 
-def cents_to_full_unit(amount_in_cents: int) -> decimal.Decimal:
-    exponent = decimal.Decimal("0.01")
+def cents_to_full_unit(amount_in_cents: int, exponent: decimal.Decimal = decimal.Decimal("0.01")) -> decimal.Decimal:
     return decimal.Decimal(amount_in_cents / 100).quantize(exponent)
 
 
@@ -53,10 +52,12 @@ def fr_percentage_filter(decimal_rate: decimal.Decimal) -> str:
 def fr_currency_filter(cents: int, use_xpf: bool = False) -> str:
     """Returns a localized str without currency symbol"""
     if use_xpf:
-        amount = cents_to_full_unit(euros_to_xpf(cents))
+        amount = cents_to_full_unit(euros_to_xpf(cents), decimal.Decimal("1"))
+        str_format = "#,##0"
     else:
         amount = cents_to_full_unit(cents)
-    return numbers.format_decimal(amount, format="#,##0.00", locale="fr_FR")
+        str_format = "#,##0.00"
+    return numbers.format_decimal(amount, format=str_format, locale="fr_FR")
 
 
 def fr_currency_opposite_filter(cents: int, use_xpf: bool = False) -> str:

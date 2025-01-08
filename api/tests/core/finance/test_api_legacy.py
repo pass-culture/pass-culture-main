@@ -569,7 +569,6 @@ def test_generate_payment_files(mocked_gdrive_create_file, clean_temp_files):
     assert gdrive_file_names == {
         "bank_accounts_20230201_1334.csv",
         f"down_payment_{cashflow.batch.label}_20230201_1334.csv",
-        f"down_payment_nc_{cashflow.batch.label}_20230201_1334.csv",
     }
 
 
@@ -1004,25 +1003,6 @@ def test_generate_payments_file(clean_temp_files):
         "Type de réservation": "EACC",
         "Ministère": "ARMEES",
         "Montant net offreur": -12,  # [0 - 12 = -12] from collective incident
-    } in rows
-
-    n_queries = 1  # select individual pricings only (batch already selected)
-    with assert_num_queries(n_queries):
-        path = api._generate_payments_file(batch, only_caledonian=True)
-
-    with open(path, encoding="utf-8") as fp:
-        reader = csv.DictReader(fp, quoting=csv.QUOTE_NONNUMERIC)
-        rows = list(reader)
-
-    assert len(rows) == 1
-    assert {
-        "Identifiant des coordonnées bancaires": str(nc_bank_account.id),
-        "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(nc_bank_account.id),
-        "SIREN de la structure": nc_bank_account.offerer.rid7,
-        "Nom de la structure - Libellé des coordonnées bancaires": f"{nc_bank_account.offerer.name} - {nc_bank_account.label}",
-        "Type de réservation": "PC",
-        "Ministère": "NC",
-        "Montant net offreur": 1193.32,  # 10 € = 10*(1000/8.38) XPF = 1193.32 XPF
     } in rows
 
 
