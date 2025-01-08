@@ -1,5 +1,3 @@
-import { Dispatch, SetStateAction } from 'react'
-
 import fullRefreshIcon from 'icons/full-refresh.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import { Button } from 'ui-kit/Button/Button'
@@ -7,7 +5,6 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './InvoicesNoResult.module.scss'
-import { FiltersType } from './types'
 
 interface InvoicesNoResultsProps {
   areFiltersDefault: boolean

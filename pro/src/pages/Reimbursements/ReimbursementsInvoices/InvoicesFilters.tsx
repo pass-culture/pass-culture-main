@@ -1,8 +1,6 @@
 import { Dispatch, SetStateAction } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { useSWRConfig } from 'swr'
 
-import { GET_INVOICES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { SelectOption } from 'commons/custom_types/form'
 import { getToday } from 'commons/utils/date'
 import { FormLayout } from 'components/FormLayout/FormLayout'
