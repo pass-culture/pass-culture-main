@@ -2,11 +2,9 @@ import pytest
 from requests import HTTPError
 
 from pcapi.connectors import harvestr
-from pcapi.core.testing import override_settings
 
 
-@override_settings(ENV="pro")
-@override_settings(PRO_URL="https://passculture.pro")
+@pytest.mark.settings(PRO_URL="https://passculture.pro", ENV="pro")
 class HarvestrConnectorTest:
     def test_create_message_success(self, requests_mock):
         requests_mock.post("https://rest.harvestr.io/v1/message")
