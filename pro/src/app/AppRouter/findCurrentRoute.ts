@@ -1,7 +1,10 @@
 import { matchPath, Location } from 'react-router-dom'
 
 import { RouteConfig, routes } from 'app/AppRouter/routesMap'
-import { routesIndividualOfferWizard } from 'app/AppRouter/subroutesIndividualOfferWizardMap'
+import {
+  routesIndividualOfferWizard,
+  routesOnboardingIndividualOfferWizard,
+} from 'app/AppRouter/subroutesIndividualOfferWizardMap'
 import { routesSignupJourney } from 'app/AppRouter/subroutesSignupJourneyMap'
 import { routesSignup } from 'app/AppRouter/subroutesSignupMap'
 import { routesVenueEdition } from 'pages/VenueEdition/subroutesVenueEdition'
@@ -12,6 +15,7 @@ export const findCurrentRoute = (location: Location): RouteConfig | undefined =>
   [
     ...routes,
     ...routesIndividualOfferWizard,
+    ...routesOnboardingIndividualOfferWizard,
     ...routesSignup,
     ...routesSignupJourney,
     ...routesReimbursements,
