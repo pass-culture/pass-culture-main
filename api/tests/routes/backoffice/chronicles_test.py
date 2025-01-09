@@ -333,7 +333,39 @@ class AttachProductTest(PostEndpointHelper):
         content_as_text = html_parser.content_as_text(response.data)
         assert product.name in content_as_text
         assert chronicle.products == [product]
-        assert html_parser.extract_alerts(response.data) == [f"Le produit {product.name} a été rattaché à la chronique"]
+        assert html_parser.extract_alerts(response.data) == [
+            f"Le produit {product.name} a été rattaché à toutes les chroniques sur la même œuvre que celle-ci"
+        ]
+
+    def test_attach_product_to_multiple_chronicles(self, authenticated_client, legit_user):
+        ean = "1234567890123"
+        product = offers_factories.ProductFactory(extraData={"ean": ean})
+        chronicles_to_update = chronicles_factories.ChronicleFactory.create_batch(2, ean="0123456789123")
+        untouched_chronicle = chronicles_factories.ChronicleFactory()
+
+        # second request to retrieve all chronicles with that ean
+        expected_num_queries = self.expected_num_queries + 1
+        # update the second chronicle
+        expected_num_queries += 1
+        response = self.post_to_endpoint(
+            follow_redirects=True,
+            expected_num_queries=expected_num_queries,
+            chronicle_id=chronicles_to_update[0].id,
+            client=authenticated_client,
+            form={"ean": ean},
+        )
+        db.session.refresh(untouched_chronicle)
+        db.session.refresh(chronicles_to_update[0])
+        db.session.refresh(chronicles_to_update[1])
+
+        content_as_text = html_parser.content_as_text(response.data)
+        assert product.name in content_as_text
+        assert html_parser.extract_alerts(response.data) == [
+            f"Le produit {product.name} a été rattaché à toutes les chroniques sur la même œuvre que celle-ci"
+        ]
+        assert chronicles_to_update[0].products == [product]
+        assert chronicles_to_update[1].products == [product]
+        assert untouched_chronicle.products == []
 
     def test_product_not_found(self, authenticated_client, legit_user):
         chronicle = chronicles_factories.ChronicleFactory()
@@ -352,9 +384,10 @@ class DetachProductTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_CHRONICLE
     # session
     # current user
+    # get current chronicle
     # delete link between the chronicle and the product
     # GetChronicleDetailsTest.expected_num_queries (follow redirect)
-    expected_num_queries = 3 + GetChronicleDetailsTest.expected_num_queries
+    expected_num_queries = 4 + GetChronicleDetailsTest.expected_num_queries
 
     def test_detach_product(self, authenticated_client, legit_user):
         product = offers_factories.ProductFactory()
@@ -372,7 +405,34 @@ class DetachProductTest(PostEndpointHelper):
         content_as_text = html_parser.content_as_text(response.data)
         assert product.name not in content_as_text
         assert chronicle.products == []
-        assert html_parser.extract_alerts(response.data) == ["Le produit à bien été détaché de la chronique"]
+        assert html_parser.extract_alerts(response.data) == [
+            "Le produit a bien été détaché de toutes les chroniques sur la même œuvre que celle-ci"
+        ]
+
+    def test_detach_product_from_multiple_chronicles(self, authenticated_client, legit_user):
+        product = offers_factories.ProductFactory()
+        chronicles = chronicles_factories.ChronicleFactory.create_batch(2, ean="1234567890123", products=[product])
+        untouched_chronicle = chronicles_factories.ChronicleFactory(ean="0123456789012", products=[product])
+
+        response = self.post_to_endpoint(
+            follow_redirects=True,
+            expected_num_queries=self.expected_num_queries,
+            chronicle_id=chronicles[0].id,
+            product_id=product.id,
+            client=authenticated_client,
+        )
+        db.session.refresh(chronicles[0])
+        db.session.refresh(chronicles[1])
+        db.session.refresh(untouched_chronicle)
+
+        content_as_text = html_parser.content_as_text(response.data)
+        assert product.name not in content_as_text
+        assert chronicles[0].products == []
+        assert chronicles[1].products == []
+        assert untouched_chronicle.products == [product]
+        assert html_parser.extract_alerts(response.data) == [
+            "Le produit a bien été détaché de toutes les chroniques sur la même œuvre que celle-ci"
+        ]
 
     def test_detach_unattached_product(self, authenticated_client, legit_user):
         product = offers_factories.ProductFactory()

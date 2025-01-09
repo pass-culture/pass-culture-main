@@ -225,7 +225,12 @@ def attach_product(chronicle_id: int) -> utils.BackofficeResponse:
         flash(utils.build_form_error_msg(form), "warning")
         redirect(url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id), code=303)
 
-    chronicle = chronicles_models.Chronicle.query.get_or_404(chronicle_id)
+    selected_chronicle = chronicles_models.Chronicle.query.get_or_404(chronicle_id)
+    chronicles = [selected_chronicle]
+    if selected_chronicle.ean:
+        chronicles = chronicles_models.Chronicle.query.filter(
+            chronicles_models.Chronicle.ean == selected_chronicle.ean
+        ).all()
     products = offers_models.Product.query.filter(offers_models.Product.extraData["ean"].astext == form.ean.data).all()
 
     if not products:
@@ -236,22 +241,23 @@ def attach_product(chronicle_id: int) -> utils.BackofficeResponse:
         )
 
     for product in products:
-        chronicle.products.append(product)
-        db.session.add(product)
+        for chronicle in chronicles:
+            chronicle.products.append(product)
+            db.session.add(product)
 
     if len(products) > 1:
         product_names = ", ".join(product.name for product in products)
         flash(
-            Markup("Les produits <b>{product_names}</b> ont été rattachés à la chronique").format(
-                product_names=product_names
-            ),
+            Markup(
+                "Les produits <b>{product_names}</b> ont été rattachés à toutes les chroniques sur la même œuvre que celle-ci"
+            ).format(product_names=product_names),
             "success",
         )
     else:
         flash(
-            Markup("Le produit <b>{product_name}</b> a été rattaché à la chronique").format(
-                product_name=products[0].name
-            ),
+            Markup(
+                "Le produit <b>{product_name}</b> a été rattaché à toutes les chroniques sur la même œuvre que celle-ci"
+            ).format(product_name=products[0].name),
             "success",
         )
     db.session.flush()
@@ -265,14 +271,24 @@ def attach_product(chronicle_id: int) -> utils.BackofficeResponse:
 @atomic()
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
 def detach_product(chronicle_id: int, product_id: int) -> utils.BackofficeResponse:
+    selected_chronicle = chronicles_models.Chronicle.query.get_or_404(chronicle_id)
+    chronicles_subquery = chronicles_models.Chronicle.query.filter(
+        sa.or_(
+            sa.and_(
+                chronicles_models.Chronicle.ean == selected_chronicle.ean,
+                ~chronicles_models.Chronicle.ean.is_(None),
+            ),
+            chronicles_models.Chronicle.id == chronicle_id,
+        )
+    ).with_entities(chronicles_models.Chronicle.id)
     deleted = chronicles_models.ProductChronicle.query.filter(
         chronicles_models.ProductChronicle.productId == product_id,
-        chronicles_models.ProductChronicle.chronicleId == chronicle_id,
+        chronicles_models.ProductChronicle.chronicleId.in_(chronicles_subquery),
     ).delete(synchronize_session=False)
     db.session.flush()
 
     if deleted:
-        flash("Le produit à bien été détaché de la chronique", "success")
+        flash("Le produit a bien été détaché de toutes les chroniques sur la même œuvre que celle-ci", "success")
     else:
         mark_transaction_as_invalid()
         flash("Le produit n'existe pas ou n'était pas attaché à la chronique", "warning")
