@@ -55,7 +55,7 @@ def create_venue_provider(
     elif provider.localClass in providers_constants.CINEMA_PROVIDER_NAMES:
         new_venue_provider = connect_venue_to_cinema_provider(venue, provider, payload)
     else:
-        new_venue_provider = connect_venue_to_provider(venue, provider, payload.venueIdAtOfferProvider)
+        new_venue_provider = connect_venue_to_provider(venue, provider)
 
     if (
         provider.isActive
@@ -215,19 +215,12 @@ def update_allocine_venue_provider(
 
 
 def connect_venue_to_provider(
-    venue: offerers_models.Venue, provider: providers_models.Provider, venueIdAtOfferProvider: str | None = None
+    venue: offerers_models.Venue,
+    provider: providers_models.Provider,
 ) -> providers_models.VenueProvider:
-    if provider.hasOffererProvider:
-        id_at_provider = None
-    else:
-        id_at_provider = _get_siret(venueIdAtOfferProvider, venue.siret)
-
-    _check_provider_can_be_connected(provider, id_at_provider)
-
     venue_provider = providers_models.VenueProvider()
     venue_provider.venue = venue
     venue_provider.provider = provider
-    venue_provider.venueIdAtOfferProvider = id_at_provider
 
     repository.save(venue_provider)
 
@@ -389,39 +382,6 @@ def update_venue_provider_external_urls(
     repository.save(venue_provider_external_urls)
 
     return
-
-
-def _check_provider_can_be_connected(provider: providers_models.Provider, id_at_provider: str | None) -> None:
-    if provider.hasOffererProvider:
-        return
-    if not provider.implements_provider_api:
-        raise providers_exceptions.ProviderWithoutApiImplementation()
-
-    if not _siret_can_be_synchronized(id_at_provider, provider):
-        raise providers_exceptions.VenueSiretNotRegistered(provider.name, id_at_provider)
-    return
-
-
-def _siret_can_be_synchronized(
-    siret: str | None,
-    provider: providers_models.Provider,
-) -> bool:
-    if not siret:
-        return False
-
-    if provider.implements_provider_api:
-        provider_api = provider.getProviderAPI()
-        return provider_api.is_siret_registered(siret)
-
-    return False
-
-
-def _get_siret(venue_id_at_offer_provider: str | None, siret: str | None) -> str:
-    if venue_id_at_offer_provider is not None:
-        return venue_id_at_offer_provider
-    if siret is not None:
-        return siret
-    raise providers_exceptions.NoSiretSpecified()
 
 
 def disable_offers_linked_to_provider(provider_id: int, current_user: typing.Any) -> None:

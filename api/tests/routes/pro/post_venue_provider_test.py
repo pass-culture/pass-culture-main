@@ -10,6 +10,7 @@ from pcapi.connectors.serialization.cine_digital_service_serializers import Show
 from pcapi.core.external_bookings.models import Movie
 from pcapi.core.history import models as history_models
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.providers.api as providers_api
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.factories import CinemaProviderPivotFactory
 from pcapi.core.providers.models import Provider
@@ -24,22 +25,18 @@ from tests.local_providers.cinema_providers.cds import fixtures as cds_fixtures
 class Returns201Test:
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
-    @patch("pcapi.core.providers.api._siret_can_be_synchronized")
-    def test_when_venue_provider_is_successfully_created(
-        self, mock_siret_can_be_synchronized, mock_synchronize_venue_provider, client
-    ):
+    def test_when_venue_provider_is_successfully_created(self, mock_synchronize_venue_provider, client):
         # Given
         venue = offerers_factories.VenueFactory(siret="12345678912345")
         user = user_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
 
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
 
         venue_provider_data = {
             "providerId": provider.id,
             "venueId": venue.id,
         }
-        mock_siret_can_be_synchronized.return_value = True
 
         auth_request = client.with_session_auth(email=user.email)
 
@@ -51,7 +48,6 @@ class Returns201Test:
         venue_provider = VenueProvider.query.one()
         assert venue_provider.venueId == venue.id
         assert venue_provider.providerId == provider.id
-        assert venue_provider.venueIdAtOfferProvider == "12345678912345"
         assert "id" in response.json
         action = history_models.ActionHistory.query.one()
         assert action.actionType == history_models.ActionType.SYNC_VENUE_TO_PROVIDER
@@ -127,16 +123,13 @@ class Returns201Test:
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
-    @patch("pcapi.core.providers.api._siret_can_be_synchronized")
-    def test_when_no_regression_on_format(
-        self, mock_siret_can_be_synchronized, mock_synchronize_venue_provider, client
-    ):
+    def test_when_no_regression_on_format(self, mock_synchronize_venue_provider, client):
         # Given
         venue = offerers_factories.VenueFactory(siret="12345678912345")
         user = user_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
 
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
 
         venue_provider_data = {
             "providerId": provider.id,
@@ -144,7 +137,6 @@ class Returns201Test:
         }
 
         auth_request = client.with_session_auth(email=user.email)
-        mock_siret_can_be_synchronized.return_value = True
 
         # When
         response = auth_request.post("/venueProviders", json=venue_provider_data)
@@ -173,16 +165,13 @@ class Returns201Test:
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
-    @patch("pcapi.core.providers.api._siret_can_be_synchronized")
-    def test_when_venue_id_at_offer_provider_is_ignored_for_pro(
-        self, mock_siret_can_be_synchronized, mock_synchronize_venue_provider, client
-    ):
+    def test_when_venue_id_at_offer_provider_is_ignored_for_pro(self, mock_synchronize_venue_provider, client):
         # Given
         venue = offerers_factories.VenueFactory(siret="12345678912345")
         user = user_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
 
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
 
         venue_provider_data = {
             "providerId": provider.id,
@@ -191,7 +180,6 @@ class Returns201Test:
         }
 
         auth_request = client.with_session_auth(email=user.email)
-        mock_siret_can_be_synchronized.return_value = True
 
         # When
         response = auth_request.post("/venueProviders", json=venue_provider_data)
@@ -201,16 +189,15 @@ class Returns201Test:
         venue_provider = VenueProvider.query.one()
         assert venue_provider.venueId == venue.id
         assert venue_provider.providerId == provider.id
-        assert venue_provider.venueIdAtOfferProvider == "12345678912345"
         assert "id" in response.json
         venue_provider_id = response.json["id"]
         mock_synchronize_venue_provider.assert_called_once_with(venue_provider_id)
 
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.core.providers.api._siret_can_be_synchronized", lambda *args: True)
     def test_when_add_same_provider(self, client):
         # Given
-        venue_provider = providers_factories.VenueProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
+        venue_provider = providers_factories.VenueProviderFactory(provider=provider, venueIdAtOfferProvider=None)
         user = user_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=venue_provider.venue.managingOfferer)
 
@@ -453,7 +440,7 @@ class Returns404Test:
         # Given
         user = user_factories.ProFactory()
 
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
 
         venue_provider_data = {
             "providerId": provider.id,
@@ -500,53 +487,16 @@ class Returns404Test:
         assert VenueProvider.query.count() == 0
 
 
-class Returns422Test:
-    @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.core.providers.api._siret_can_be_synchronized")
-    def test_when_provider_api_not_available(self, mock_siret_can_be_synchronized, client):
-        # Given
-        venue = offerers_factories.VenueFactory(siret="12345678912345")
-        user = user_factories.ProFactory()
-        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
-
-        provider = providers_factories.APIProviderFactory()
-
-        venue_provider_data = {"providerId": provider.id, "venueId": venue.id}
-
-        auth_request = client.with_session_auth(email=user.email)
-
-        errors = ApiErrors()
-        errors.status_code = 422
-        errors.add_error(
-            "provider",
-            "L’importation d’offres avec LesLibraires n’est pas disponible pour le SIRET 12345678912345",
-        )
-        mock_siret_can_be_synchronized.side_effect = [errors]
-
-        # When
-        response = auth_request.post("/venueProviders", json=venue_provider_data)
-
-        # Then
-        assert response.status_code == 422
-        assert response.json["provider"] == [
-            "L’importation d’offres avec LesLibraires n’est pas disponible pour le SIRET 12345678912345"
-        ]
-        assert VenueProvider.query.count() == 0
-
-
 class ConnectProviderToVenueTest:
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.core.providers.api._siret_can_be_synchronized")
     @patch("pcapi.core.providers.api.connect_venue_to_provider")
-    def test_should_inject_the_appropriate_repository_to_the_usecase(
-        self, mocked_connect_venue_to_provider, mock_siret_can_be_synchronized, client
-    ):
+    def test_should_inject_the_appropriate_repository_to_the_usecase(self, mocked_connect_venue_to_provider, client):
         # Given
         venue = offerers_factories.VenueFactory(siret="12345678912345")
         user = user_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
 
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
 
         venue_provider_data = {
             "providerId": provider.id,
@@ -554,13 +504,12 @@ class ConnectProviderToVenueTest:
         }
 
         auth_request = client.with_session_auth(email=user.email)
-        mock_siret_can_be_synchronized.return_value = True
 
         # When
         auth_request.post("/venueProviders", json=venue_provider_data)
 
         # Then
-        mocked_connect_venue_to_provider.assert_called_once_with(venue, provider, None)
+        mocked_connect_venue_to_provider.assert_called_once_with(venue, provider)
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.venue_provider_job")

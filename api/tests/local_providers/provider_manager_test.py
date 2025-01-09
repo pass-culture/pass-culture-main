@@ -128,7 +128,7 @@ class SynchronizeDataForProviderTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_call_do_update_for_specified_provider(self, mock_get_provider_class, mock_updateObjects, app):
         # Given
-        provider_test = providers_factories.APIProviderFactory()
+        provider_test = providers_factories.AllocineProviderFactory()
         repository.save(provider_test)
         mock_get_provider_class.return_value = TestLocalProvider
 
