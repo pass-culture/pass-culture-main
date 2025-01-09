@@ -19,21 +19,25 @@ import { computeCollectiveOffersUrl } from 'commons/core/Offers/utils/computeCol
 import { getCollectiveOffersSwrKeys } from 'commons/core/Offers/utils/getCollectiveOffersSwrKeys'
 import { hasCollectiveSearchFilters } from 'commons/core/Offers/utils/hasSearchFilters'
 import { serializeApiCollectiveFilters } from 'commons/core/Offers/utils/serializer'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
 import { TemplateCollectiveOffersScreen } from 'pages/TemplateCollectiveOffers/TemplateCollectiveOffersScreen/TemplateCollectiveOffersScreen'
 import { formatAndOrderVenues } from 'repository/venuesService'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 export const TemplateCollectiveOffers = (): JSX.Element => {
+  const isToggleAndMemorizeFiltersEnabled = useActiveFeature('WIP_COLLAPSED_MEMORIZED_FILTERS')
+  const urlSearchFilters = useQueryCollectiveSearchFilters()
+  const { storedFilters } = getStoredFilterConfig('template')
+  const finalSearchFilters = {
+    ...urlSearchFilters,
+    ...isToggleAndMemorizeFiltersEnabled ? (storedFilters as Partial<CollectiveSearchFiltersParams>) : {}
+  }
   const offererId = useSelector(selectCurrentOffererId)?.toString()
 
-  const urlSearchFilters = useQueryCollectiveSearchFilters({
-    ...DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
-    offererId: offererId ?? 'all',
-  })
-
-  const currentPageNumber = urlSearchFilters.page ?? DEFAULT_PAGE
+  const currentPageNumber = finalSearchFilters.page ?? DEFAULT_PAGE
   const navigate = useNavigate()
   const { currentUser } = useCurrentUser()
 
@@ -54,7 +58,7 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
   )
   const venues = formatAndOrderVenues(data.venues)
 
-  const redirectWithUrlFilters = (filters: CollectiveSearchFiltersParams) => {
+  const redirectWithUrlFilters = (filters: Partial<CollectiveSearchFiltersParams>) => {
     navigate(
       computeCollectiveOffersUrl(
         filters,
@@ -66,7 +70,7 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
   }
 
   const isFilterByVenueOrOfferer = hasCollectiveSearchFilters(
-    urlSearchFilters,
+    finalSearchFilters,
     DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
     ['venueId', 'offererId']
   )
@@ -76,13 +80,13 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
   const collectiveOffersQueryKeys = getCollectiveOffersSwrKeys({
     isNewOffersAndBookingsActive: true,
     isInTemplateOffersPage: true,
-    urlSearchFilters,
+    urlSearchFilters: finalSearchFilters,
     selectedOffererId: offererId ?? '',
   })
 
   const apiFilters: CollectiveSearchFiltersParams = {
     ...DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
-    ...urlSearchFilters,
+    ...finalSearchFilters,
     ...(isRestrictedAsAdmin ? { status: [] } : {}),
     ...{ offererId: offererId ?? '' },
   }

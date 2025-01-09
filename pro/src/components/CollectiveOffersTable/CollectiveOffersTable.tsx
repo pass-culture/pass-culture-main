@@ -1,8 +1,6 @@
 import { CollectiveOfferResponseModel } from 'apiClient/v1'
 import { CollectiveOffersSortingColumn } from 'commons/core/OfferEducational/types'
-import { useDefaultCollectiveSearchFilters } from 'commons/core/Offers/hooks/useDefaultCollectiveSearchFilters'
 import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
-import { hasCollectiveSearchFilters } from 'commons/core/Offers/utils/hasSearchFilters'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { SortingMode } from 'commons/hooks/useColumnSorting'
 import { OffersTable } from 'components/OffersTable/OffersTable'
@@ -12,13 +10,14 @@ import { CELLS_DEFINITIONS } from 'components/OffersTable/utils/cellDefinitions'
 import { CollectiveOffersTableBody } from './CollectiveOffersTableBody/CollectiveOffersTableBody'
 
 type CollectiveOffersTableProps = {
+  hasFilters: boolean
   areAllOffersSelected: boolean
   hasOffers: boolean
   isLoading: boolean
   resetFilters: () => void
   setSelectedOffer: (offer: CollectiveOfferResponseModel) => void
   toggleSelectAllCheckboxes: () => void
-  urlSearchFilters: CollectiveSearchFiltersParams
+  urlSearchFilters: Partial<CollectiveSearchFiltersParams>
   isAtLeastOneOfferChecked: boolean
   isRestrictedAsAdmin?: boolean
   selectedOffers: CollectiveOfferResponseModel[]
@@ -32,6 +31,7 @@ type CollectiveOffersTableProps = {
 }
 
 export const CollectiveOffersTable = ({
+  hasFilters,
   areAllOffersSelected,
   hasOffers,
   isLoading,
@@ -48,7 +48,6 @@ export const CollectiveOffersTable = ({
   currentSortingMode,
   currentPageItems,
 }: CollectiveOffersTableProps) => {
-  const defaultCollectiveFilters = useDefaultCollectiveSearchFilters()
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const columns: Columns[] = [
@@ -68,10 +67,7 @@ export const CollectiveOffersTable = ({
   return (
     <OffersTable
       hasOffers={hasOffers}
-      hasFilters={hasCollectiveSearchFilters(
-        urlSearchFilters,
-        defaultCollectiveFilters
-      )}
+      hasFilters={hasFilters}
       offersCount={offers.length}
       isLoading={isLoading}
       resetFilters={resetFilters}

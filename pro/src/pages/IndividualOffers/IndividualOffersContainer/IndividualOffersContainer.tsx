@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import { ListOffersOfferResponseModel, OfferStatus } from 'apiClient/v1'
 import {
@@ -13,6 +13,7 @@ import { Audience } from 'commons/core/shared/types'
 import { SelectOption } from 'commons/custom_types/form'
 import { isSameOffer } from 'commons/utils/isSameOffer'
 import { NoData } from 'components/NoData/NoData'
+import { useStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
 
 import { IndividualOffersActionsBar } from './components/IndividualOffersActionsBar/IndividualOffersActionsBar'
 import { IndividualOffersSearchFilters } from './components/IndividualOffersSearchFilters/IndividualOffersSearchFilters'
@@ -22,13 +23,12 @@ export type IndividualOffersContainerProps = {
   currentPageNumber: number
   isLoading: boolean
   initialSearchFilters: SearchFiltersParams
-  redirectWithUrlFilters: (
-    filters: SearchFiltersParams & {
+  redirectWithSelectedFilters: (
+    filters: Partial<SearchFiltersParams> & {
       page?: number
       audience?: Audience
     }
   ) => void
-  urlSearchFilters: SearchFiltersParams
   venues: SelectOption[]
   offererAddresses: SelectOption[]
   categories?: SelectOption[]
@@ -40,18 +40,25 @@ export const IndividualOffersContainer = ({
   currentPageNumber,
   isLoading,
   initialSearchFilters,
-  redirectWithUrlFilters,
-  urlSearchFilters,
+  redirectWithSelectedFilters,
   venues,
   offererAddresses,
   categories,
   isRestrictedAsAdmin,
   offers = [],
 }: IndividualOffersContainerProps): JSX.Element => {
+  const {
+    onApplyFilters,
+    onResetFilters,
+  } = useStoredFilterConfig('individual')
   const [selectedOffers, setSelectedOffers] = useState<
     ListOffersOfferResponseModel[]
   >([])
   const [selectedFilters, setSelectedFilters] = useState(initialSearchFilters)
+
+  useEffect(() => {
+    setSelectedFilters(initialSearchFilters)
+  }, [initialSearchFilters])
 
   const currentPageOffersSubset = offers.slice(
     (currentPageNumber - 1) * NUMBER_OF_OFFERS_PER_PAGE,
@@ -60,8 +67,8 @@ export const IndividualOffersContainer = ({
 
   const hasOffers = currentPageOffersSubset.length > 0
 
-  const userHasNoOffers =
-    !isLoading && !hasOffers && !hasSearchFilters(urlSearchFilters)
+  const hasFilters = hasSearchFilters(initialSearchFilters)
+  const userHasNoOffers = !isLoading && !hasOffers && !hasFilters
 
   const areAllOffersSelected =
     selectedOffers.length > 0 && selectedOffers.length === offers.length
@@ -74,24 +81,25 @@ export const IndividualOffersContainer = ({
     setSelectedOffers(areAllOffersSelected ? [] : offers)
   }
 
-  const resetFilters = () => {
-    setSelectedFilters(DEFAULT_SEARCH_FILTERS)
-    applyUrlFiltersAndRedirect({
-      ...DEFAULT_SEARCH_FILTERS,
-    })
-  }
-
   const numberOfPages = Math.ceil(offers.length / NUMBER_OF_OFFERS_PER_PAGE)
   const pageCount = Math.min(numberOfPages, MAX_TOTAL_PAGES)
 
-  const applyUrlFiltersAndRedirect = (
-    filters: SearchFiltersParams & { audience?: Audience }
+  const applySelectedFiltersAndRedirect = (
+    filters: Partial<SearchFiltersParams> & { audience?: Audience }
   ) => {
-    redirectWithUrlFilters(filters)
+    redirectWithSelectedFilters(filters)
   }
 
   const applyFilters = (filters: SearchFiltersParams) => {
-    applyUrlFiltersAndRedirect({ ...filters, page: DEFAULT_PAGE })
+    onApplyFilters(filters)
+    applySelectedFiltersAndRedirect({ ...filters, page: DEFAULT_PAGE })
+  }
+
+  const resetFilters = () => {
+    onResetFilters()
+    applySelectedFiltersAndRedirect({
+      ...DEFAULT_SEARCH_FILTERS,
+    })
   }
 
   function onSetSelectedOffer(offer: ListOffersOfferResponseModel) {
@@ -124,6 +132,7 @@ export const IndividualOffersContainer = ({
   return (
     <div>
       <IndividualOffersSearchFilters
+        hasFilters={hasFilters}
         applyFilters={applyFilters}
         categories={categories}
         disableAllFilters={userHasNoOffers}
@@ -139,7 +148,7 @@ export const IndividualOffersContainer = ({
       ) : (
         <>
           <IndividualOffersTable
-            applyUrlFiltersAndRedirect={applyUrlFiltersAndRedirect}
+            applySelectedFiltersAndRedirect={applySelectedFiltersAndRedirect}
             areAllOffersSelected={areAllOffersSelected}
             currentPageNumber={currentPageNumber}
             currentPageOffersSubset={currentPageOffersSubset}
@@ -151,7 +160,8 @@ export const IndividualOffersContainer = ({
             selectedOffers={selectedOffers}
             setSelectedOffer={onSetSelectedOffer}
             toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
-            urlSearchFilters={urlSearchFilters}
+            hasFilters={hasFilters}
+            selectedFilters={selectedFilters}
             isAtLeastOneOfferChecked={selectedOffers.length > 1}
             isRestrictedAsAdmin={isRestrictedAsAdmin}
           />

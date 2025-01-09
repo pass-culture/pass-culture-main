@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import {
   CollectiveOfferResponseModel,
@@ -22,6 +22,7 @@ import { sortCollectiveOffers } from 'commons/utils/sortCollectiveOffers'
 import { CollectiveOffersActionsBar } from 'components/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
 import { CollectiveOffersTable } from 'components/CollectiveOffersTable/CollectiveOffersTable'
 import { NoData } from 'components/NoData/NoData'
+import { useStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
 
 import styles from './TemplateCollectiveOffersScreen.module.scss'
@@ -37,11 +38,11 @@ export type TemplateCollectiveOffersScreenProps = {
   offerer: GetOffererResponseModel | null
   initialSearchFilters: CollectiveSearchFiltersParams
   redirectWithUrlFilters: (
-    filters: CollectiveSearchFiltersParams & {
+    filters: Partial<CollectiveSearchFiltersParams> & {
       page?: number
     }
   ) => void
-  urlSearchFilters: CollectiveSearchFiltersParams
+  urlSearchFilters: Partial<CollectiveSearchFiltersParams>
   venues: SelectOption[]
   categories?: SelectOption[]
   isRestrictedAsAdmin?: boolean
@@ -60,10 +61,18 @@ export const TemplateCollectiveOffersScreen = ({
   isRestrictedAsAdmin,
   offers,
 }: TemplateCollectiveOffersScreenProps): JSX.Element => {
+  const {
+    onApplyFilters,
+    onResetFilters,
+  } = useStoredFilterConfig('template')
   const [selectedOffers, setSelectedOffers] = useState<
     CollectiveOfferResponseModel[]
   >([])
   const [selectedFilters, setSelectedFilters] = useState(initialSearchFilters)
+
+  useEffect(() => {
+    setSelectedFilters(initialSearchFilters)
+  }, [initialSearchFilters])
 
   const currentPageOffersSubset = offers.slice(
     (currentPageNumber - 1) * NUMBER_OF_OFFERS_PER_PAGE,
@@ -94,11 +103,6 @@ export const TemplateCollectiveOffersScreen = ({
     )
   }
 
-  const resetFilters = () => {
-    setSelectedFilters(DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS)
-    applyUrlFiltersAndRedirect(DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS)
-  }
-
   const numberOfPages = Math.ceil(offers.length / NUMBER_OF_OFFERS_PER_PAGE)
   const pageCount = Math.min(numberOfPages, MAX_TOTAL_PAGES)
 
@@ -118,17 +122,23 @@ export const TemplateCollectiveOffersScreen = ({
   )
 
   const applyUrlFiltersAndRedirect = (
-    filters: CollectiveSearchFiltersParams
+    filters: Partial<CollectiveSearchFiltersParams>
   ) => {
     setPage(filters.page ?? 1)
     redirectWithUrlFilters(filters)
   }
 
   const applyFilters = (filters: CollectiveSearchFiltersParams) => {
+    onApplyFilters(filters)
     applyUrlFiltersAndRedirect({
       ...filters,
       page: DEFAULT_PAGE,
     })
+  }
+
+  const resetFilters = () => {
+    onResetFilters()
+    applyUrlFiltersAndRedirect(DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS)
   }
 
   function onSetSelectedOffer(offer: CollectiveOfferResponseModel) {
@@ -147,10 +157,16 @@ export const TemplateCollectiveOffersScreen = ({
     }
   }
 
+  const hasFilters = hasCollectiveSearchFilters(
+    initialSearchFilters,
+    DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS
+  )
+
   return (
     <div>
       <h1 className={styles['title']}>Offres vitrines</h1>
       <TemplateOffersSearchFilters
+        hasFilters={hasFilters}
         applyFilters={applyFilters}
         categories={categories}
         disableAllFilters={userHasNoOffers}
@@ -167,6 +183,7 @@ export const TemplateCollectiveOffersScreen = ({
       ) : (
         <>
           <CollectiveOffersTable
+            hasFilters={hasFilters}
             areAllOffersSelected={areAllOffersSelected}
             hasOffers={hasOffers}
             isLoading={isLoading}
@@ -191,12 +208,14 @@ export const TemplateCollectiveOffersScreen = ({
                 onPreviousPageClick={() => {
                   applyUrlFiltersAndRedirect({
                     ...urlSearchFilters,
+                    offererId: offerer?.id.toString() ?? '',
                     page: page - 1,
                   })
                 }}
                 onNextPageClick={() => {
                   applyUrlFiltersAndRedirect({
                     ...urlSearchFilters,
+                    offererId: offerer?.id.toString() ?? '',
                     page: page + 1,
                   })
                 }}

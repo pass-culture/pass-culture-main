@@ -14,7 +14,7 @@ import { CollectiveSearchFiltersParams } from '../types'
 export type GetCollectiveOffersSwrKeysProps = {
   isNewOffersAndBookingsActive: boolean
   isInTemplateOffersPage: boolean
-  urlSearchFilters: CollectiveSearchFiltersParams
+  urlSearchFilters: Partial<CollectiveSearchFiltersParams>
   selectedOffererId?: string | null
 }
 

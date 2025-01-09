@@ -1,6 +1,6 @@
 import { api } from 'apiClient/api'
 import { toISOStringWithoutMilliseconds } from 'commons/utils/date'
-import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
+import { storageAvailable } from 'commons/utils/storageAvailable'
 
 export enum Consents {
   FIREBASE = 'firebase',
@@ -53,7 +53,7 @@ export const orejimeConfig = {
             return app
           }),
       },
-      deviceId: localStorageAvailable()
+      deviceId: storageAvailable('localStorage')
         ? (localStorage.getItem(LOCAL_STORAGE_DEVICE_ID_KEY) ?? 'NODEVICEID')
         : 'NODEVICEID',
     }

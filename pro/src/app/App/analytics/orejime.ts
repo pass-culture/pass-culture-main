@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { v4 as uuidv4 } from 'uuid'
 
-import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
 import { sendSentryCustomError } from 'commons/utils/sendSentryCustomError'
+import { storageAvailable } from 'commons/utils/storageAvailable'
 
 import {
   Consents,
@@ -25,7 +25,7 @@ export const useOrejime = () => {
     if (location.pathname.indexOf('/adage-iframe') === -1) {
       setTimeout(() => {
         if (
-          localStorageAvailable() &&
+          storageAvailable('localStorage') &&
           localStorage.getItem(LOCAL_STORAGE_DEVICE_ID_KEY) === null
         ) {
           localStorage.setItem(LOCAL_STORAGE_DEVICE_ID_KEY, uuidv4())

@@ -70,6 +70,11 @@ const offererAddress: GetOffererAddressResponseModel[] = [
     city: 'New York',
   }),
 ]
+
+const LABELS = {
+  nameSearchInput: /Nom de l’offre/,
+}
+
 const renderOffers = async (
   filters: Partial<SearchFiltersParams> & {
     page?: number
@@ -220,9 +225,9 @@ describe('route Offers', () => {
       it('should load offers with written offer name filter', async () => {
         await renderOffers()
         await userEvent.type(
-          screen.getByPlaceholderText(
-            'Rechercher par nom d’offre ou par EAN-13'
-          ),
+          screen.getByRole('textbox', {
+            name: LABELS.nameSearchInput,
+          }),
           'Any word'
         )
 
@@ -402,9 +407,9 @@ describe('route Offers', () => {
 
     it('should store search value', async () => {
       await renderOffers()
-      const searchInput = screen.getByPlaceholderText(
-        'Rechercher par nom d’offre ou par EAN-13'
-      )
+      const searchInput = screen.getByRole('textbox', {
+        name: LABELS.nameSearchInput,
+      })
 
       await userEvent.type(searchInput, 'search string')
       await userEvent.click(screen.getByText('Rechercher'))
@@ -429,7 +434,9 @@ describe('route Offers', () => {
       await renderOffers()
 
       await userEvent.clear(
-        screen.getByPlaceholderText('Rechercher par nom d’offre ou par EAN-13')
+        screen.getByRole('textbox', {
+          name: LABELS.nameSearchInput,
+        })
       )
       await userEvent.click(screen.getByText('Rechercher'))
       await waitFor(() => {

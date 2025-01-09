@@ -205,11 +205,6 @@
         var(--color-medium-shadow);
     }
 
-    .button-arrow-content {
-      flex-grow: 1;
-      text-align: left;
-    }
-
     .button-icon {
       &:not(.button-icon-arrow) {
         color: var(--color-primary);

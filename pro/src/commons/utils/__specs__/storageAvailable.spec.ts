@@ -1,8 +1,8 @@
-import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
+import { storageAvailable } from 'commons/utils/storageAvailable'
 
-describe('localStorageAvailable', () => {
+describe('storageAvailable', () => {
   it('should check that localstorage is available', () => {
-    expect(localStorageAvailable()).toBeTruthy()
+    expect(storageAvailable('localStorage')).toBeTruthy()
   })
 
   it('should check that localstorage is not available', () => {
@@ -12,7 +12,7 @@ describe('localStorageAvailable', () => {
       }
     )
 
-    expect(localStorageAvailable()).toBeFalsy()
+    expect(storageAvailable('localStorage')).toBeFalsy()
   })
 
   it('should check that localstorage is not available on Firefox', () => {
@@ -22,6 +22,6 @@ describe('localStorageAvailable', () => {
       }
     )
 
-    expect(localStorageAvailable()).toBeFalsy()
+    expect(storageAvailable('localStorage')).toBeFalsy()
   })
 })

@@ -47,6 +47,10 @@ const proVenues = [
   }),
 ]
 
+const LABELS = {
+  nameSearchInput: /Nom de l’offre/,
+}
+
 const renderOffers = async (
   filters: Partial<CollectiveSearchFiltersParams> = DEFAULT_COLLECTIVE_SEARCH_FILTERS,
   features: string[] = []
@@ -205,7 +209,9 @@ describe('route CollectiveOffers', () => {
       it('should load offers with written offer name filter', async () => {
         await renderOffers()
         await userEvent.type(
-          screen.getByPlaceholderText('Rechercher par nom d’offre'),
+          screen.getByRole('textbox', {
+            name: LABELS.nameSearchInput,
+          }),
           'Any word'
         )
 
@@ -228,9 +234,9 @@ describe('route CollectiveOffers', () => {
 
       it('should store search value', async () => {
         await renderOffers()
-        const searchInput = screen.getByPlaceholderText(
-          'Rechercher par nom d’offre'
-        )
+        const searchInput = screen.getByRole('textbox', {
+          name: LABELS.nameSearchInput,
+        })
 
         await userEvent.type(searchInput, 'search string')
         await userEvent.click(screen.getByText('Rechercher'))

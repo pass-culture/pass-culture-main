@@ -211,7 +211,9 @@ describe('route TemplateCollectiveOffers', () => {
       it('should load offers with written offer name filter', async () => {
         await renderOffers()
         await userEvent.type(
-          screen.getByPlaceholderText('Rechercher par nom d’offre'),
+          screen.getByRole('textbox', {
+            name: 'Nom de l’offre',
+          }),
           'Any word'
         )
 

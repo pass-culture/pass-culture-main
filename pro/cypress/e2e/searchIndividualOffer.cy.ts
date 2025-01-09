@@ -45,7 +45,7 @@ describe('Search individual offers', () => {
 
   it('I should be able to search with a name and see expected results', () => {
     cy.stepLog({ message: 'I search with the text "Une super offre"' })
-    cy.findByPlaceholderText('Rechercher par nom d’offre ou par EAN-13').type(
+    cy.findByRole('textbox', { name: /Nom de l’offre/ }).type(
       offerName1
     )
 
@@ -66,7 +66,7 @@ describe('Search individual offers', () => {
     const ean = '1234567891234'
 
     cy.stepLog({ message: 'I search with the text:' + ean })
-    cy.findByPlaceholderText('Rechercher par nom d’offre ou par EAN-13').type(
+    cy.findByRole('textbox', { name: /Nom de l’offre/ }).type(
       ean
     )
 
@@ -151,7 +151,7 @@ describe('Search individual offers', () => {
 
   it('I should be able to search combining several filters and see expected results', () => {
     cy.stepLog({ message: 'I search with the text "Livre"' })
-    cy.findByPlaceholderText('Rechercher par nom d’offre ou par EAN-13').type(
+    cy.findByRole('textbox', { name: /Nom de l’offre/ }).type(
       'incroyable'
     )
 
@@ -187,7 +187,7 @@ describe('Search individual offers', () => {
     cy.findByText('Réinitialiser les filtres').click()
 
     cy.stepLog({ message: 'All filters are empty' })
-    cy.findByPlaceholderText('Rechercher par nom d’offre ou par EAN-13').should(
+    cy.findByRole('textbox', { name: /Nom de l’offre/ }).should(
       'be.empty'
     )
     cy.findByTestId('wrapper-address').within(() => {

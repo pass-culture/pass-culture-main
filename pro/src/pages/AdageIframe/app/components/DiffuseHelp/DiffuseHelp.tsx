@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { useState } from 'react'
 
-import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
+import { storageAvailable } from 'commons/utils/storageAvailable'
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import { ShadowTipsHelpIcon } from 'ui-kit/Icons/SVGs/ShadowTipsHelpIcon'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -14,7 +14,7 @@ export const DiffuseHelp = ({
 }: {
   description: string
 }): JSX.Element => {
-  const isLocalStorageAvailable = localStorageAvailable()
+  const isLocalStorageAvailable = storageAvailable('localStorage')
   const [shouldHideDiffuseHelp, setShouldHideDiffuseHelp] = useState(
     !isLocalStorageAvailable ||
       Boolean(localStorage.getItem(LOCAL_STORAGE_HAS_SEEN_DIFFUSE_HELP_KEY))

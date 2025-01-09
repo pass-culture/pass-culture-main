@@ -20,8 +20,8 @@ import {
   updateOffererIsOnboarded,
 } from 'commons/store/offerer/reducer'
 import { updateUser } from 'commons/store/user/reducer'
-import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
 import { getReCaptchaToken } from 'commons/utils/recaptcha'
+import { storageAvailable } from 'commons/utils/storageAvailable'
 
 import { SIGNIN_FORM_DEFAULT_VALUES } from './constants'
 import styles from './Signin.module.scss'
@@ -84,7 +84,7 @@ export const SignIn = (): JSX.Element => {
       if (firstOffererId) {
         dispatch(updateOffererNames(offerers.offerersNames))
 
-        if (localStorageAvailable()) {
+        if (storageAvailable('localStorage')) {
           const savedOffererId = localStorage.getItem(SAVED_OFFERER_ID_KEY)
           dispatch(
             updateSelectedOffererId(

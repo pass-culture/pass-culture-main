@@ -1,6 +1,5 @@
 import { ListOffersOfferResponseModel } from 'apiClient/v1'
 import { SearchFiltersParams } from 'commons/core/Offers/types'
-import { hasSearchFilters } from 'commons/core/Offers/utils/hasSearchFilters'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { OffersTable } from 'components/OffersTable/OffersTable'
 import { OffersTableHead } from 'components/OffersTable/OffersTableHead/OffersTableHead'
@@ -10,8 +9,8 @@ import { Pagination } from 'ui-kit/Pagination/Pagination'
 import { IndividualOffersTableBody } from './components/IndividualOffersTableBody/IndividualOffersTableBody'
 
 type IndividualOffersTableProps = {
-  applyUrlFiltersAndRedirect: (
-    filters: SearchFiltersParams,
+  applySelectedFiltersAndRedirect: (
+    filters: Partial<SearchFiltersParams>,
     isRefreshing: boolean
   ) => void
   areAllOffersSelected: boolean
@@ -23,11 +22,12 @@ type IndividualOffersTableProps = {
   resetFilters: () => void
   setSelectedOffer: (offer: ListOffersOfferResponseModel) => void
   toggleSelectAllCheckboxes: () => void
-  urlSearchFilters: SearchFiltersParams
+  hasFilters: boolean
   isAtLeastOneOfferChecked: boolean
   isRestrictedAsAdmin?: boolean
   currentPageOffersSubset: ListOffersOfferResponseModel[]
   selectedOffers: ListOffersOfferResponseModel[]
+  selectedFilters: SearchFiltersParams
 }
 
 export const IndividualOffersTable = ({
@@ -40,24 +40,25 @@ export const IndividualOffersTable = ({
   pageCount,
   resetFilters,
   selectedOffers,
-  applyUrlFiltersAndRedirect,
+  applySelectedFiltersAndRedirect,
   setSelectedOffer,
   toggleSelectAllCheckboxes,
-  urlSearchFilters,
+  hasFilters,
   isAtLeastOneOfferChecked,
   isRestrictedAsAdmin = false,
+  selectedFilters,
 }: IndividualOffersTableProps) => {
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const onPreviousPageClick = () =>
-    applyUrlFiltersAndRedirect(
-      { ...urlSearchFilters, page: currentPageNumber - 1 },
+    applySelectedFiltersAndRedirect(
+      { ...selectedFilters, page: currentPageNumber - 1 },
       false
     )
 
   const onNextPageClick = () =>
-    applyUrlFiltersAndRedirect(
-      { ...urlSearchFilters, page: currentPageNumber + 1 },
+    applySelectedFiltersAndRedirect(
+      { ...selectedFilters, page: currentPageNumber + 1 },
       false
     )
 
@@ -71,7 +72,7 @@ export const IndividualOffersTable = ({
   return (
     <OffersTable
       hasOffers={hasOffers}
-      hasFilters={hasSearchFilters(urlSearchFilters)}
+      hasFilters={hasFilters}
       offersCount={offersCount}
       isLoading={isLoading}
       resetFilters={resetFilters}

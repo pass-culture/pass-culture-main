@@ -15,7 +15,7 @@ import {
 } from 'commons/store/offerer/selectors'
 import { selectCurrentUser } from 'commons/store/user/selectors'
 import { getSavedOffererId } from 'commons/utils/getSavedOffererId'
-import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
+import { storageAvailable } from 'commons/utils/storageAvailable'
 import { sortByLabel } from 'commons/utils/strings'
 import fulBackIcon from 'icons/full-back.svg'
 import fullCloseIcon from 'icons/full-close.svg'
@@ -78,7 +78,7 @@ export const HeaderDropdown = () => {
   const handleChangeOfferer = (newOffererId: string) => {
     if (Number(newOffererId) !== selectedOffererId) {
       dispatch(updateSelectedOffererId(Number(newOffererId)))
-      if (localStorageAvailable()) {
+      if (storageAvailable('localStorage')) {
         localStorage.setItem(SAVED_OFFERER_ID_KEY, newOffererId)
       }
     }

@@ -32,6 +32,10 @@ import {
   IndividualOffersContainerProps,
 } from './IndividualOffersContainer'
 
+const LABELS = {
+  nameSearchInput: /Nom de l’offre/,
+}
+
 const renderOffers = (
   props: IndividualOffersContainerProps,
   options?: RenderWithProvidersOptions
@@ -121,9 +125,8 @@ describe('IndividualOffersScreen', () => {
       currentPageNumber: 1,
       isLoading: false,
       offers: offersRecap,
-      urlSearchFilters: DEFAULT_SEARCH_FILTERS,
       initialSearchFilters: DEFAULT_SEARCH_FILTERS,
-      redirectWithUrlFilters: vi.fn(),
+      redirectWithSelectedFilters: vi.fn(),
       venues: proVenuesOptions,
       offererAddresses: offererAddressOptions,
       categories: categoriesAndSubcategories.categories.map(
@@ -219,14 +222,14 @@ describe('IndividualOffersScreen', () => {
   })
 
   it('should send correct information when filling filter fields', async () => {
-    const redirectWithUrlFiltersSpy = vi.spyOn(props, 'redirectWithUrlFilters')
+    const redirectWithSelectedFiltersSpy = vi.spyOn(props, 'redirectWithSelectedFilters')
 
     renderOffers(props)
 
     const searchAndChecked = async (params: Partial<SearchFiltersParams>) => {
       await userEvent.click(screen.getByText('Rechercher'))
-      expect(redirectWithUrlFiltersSpy).toHaveBeenCalled()
-      expect(redirectWithUrlFiltersSpy).toHaveBeenCalledWith(
+      expect(redirectWithSelectedFiltersSpy).toHaveBeenCalled()
+      expect(redirectWithSelectedFiltersSpy).toHaveBeenCalledWith(
         expect.objectContaining({
           ...DEFAULT_SEARCH_FILTERS,
           ...params,
@@ -237,11 +240,15 @@ describe('IndividualOffersScreen', () => {
     await searchAndChecked({})
 
     expect(
-      screen.getByPlaceholderText('Rechercher par nom d’offre ou par EAN-13')
+      screen.getByRole('textbox', {
+        name: LABELS.nameSearchInput,
+      }),
     ).toBeInTheDocument()
 
     await userEvent.type(
-      screen.getByPlaceholderText('Rechercher par nom d’offre ou par EAN-13'),
+      screen.getByRole('textbox', {
+        name: LABELS.nameSearchInput,
+      }),
       'Test'
     )
 
@@ -314,7 +321,7 @@ describe('IndividualOffersScreen', () => {
 
     await searchAndChecked({})
 
-    redirectWithUrlFiltersSpy.mockRestore()
+    redirectWithSelectedFiltersSpy.mockRestore()
   })
 
   it('should render venue filter with default option selected and given venues as options', () => {

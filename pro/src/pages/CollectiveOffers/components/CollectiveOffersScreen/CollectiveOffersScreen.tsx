@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import {
   CollectiveOfferResponseModel,
@@ -22,6 +22,7 @@ import { sortCollectiveOffers } from 'commons/utils/sortCollectiveOffers'
 import { CollectiveOffersActionsBar } from 'components/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
 import { CollectiveOffersTable } from 'components/CollectiveOffersTable/CollectiveOffersTable'
 import { NoData } from 'components/NoData/NoData'
+import { useStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
 
 import styles from './CollectiveOffersScreen.module.scss'
@@ -37,11 +38,11 @@ export type CollectiveOffersScreenProps = {
   offerer: GetOffererResponseModel | null
   initialSearchFilters: CollectiveSearchFiltersParams
   redirectWithUrlFilters: (
-    filters: CollectiveSearchFiltersParams & {
+    filters: Partial<CollectiveSearchFiltersParams> & {
       page?: number
     }
   ) => void
-  urlSearchFilters: CollectiveSearchFiltersParams
+  urlSearchFilters: Partial<CollectiveSearchFiltersParams>
   venues: SelectOption[]
   categories?: SelectOption[]
   isRestrictedAsAdmin?: boolean
@@ -60,10 +61,18 @@ export const CollectiveOffersScreen = ({
   isRestrictedAsAdmin,
   offers,
 }: CollectiveOffersScreenProps): JSX.Element => {
+  const {
+    onApplyFilters,
+    onResetFilters,
+  } = useStoredFilterConfig('collective')
   const [selectedOffers, setSelectedOffers] = useState<
     CollectiveOfferResponseModel[]
   >([])
   const [selectedFilters, setSelectedFilters] = useState(initialSearchFilters)
+
+  useEffect(() => {
+    setSelectedFilters(initialSearchFilters)
+  }, [initialSearchFilters])
 
   const defaultCollectiveFilters = useDefaultCollectiveSearchFilters()
 
@@ -74,13 +83,14 @@ export const CollectiveOffersScreen = ({
 
   const hasOffers = currentPageOffersSubset.length > 0
 
+  const hasFilters = hasCollectiveSearchFilters(
+    initialSearchFilters,
+    defaultCollectiveFilters
+  )
   const userHasNoOffers =
     !isLoading &&
     !hasOffers &&
-    !hasCollectiveSearchFilters(
-      { ...urlSearchFilters, offererId: 'all' },
-      { ...defaultCollectiveFilters, offererId: 'all' }
-    )
+    !hasFilters
 
   const areAllOffersSelected =
     selectedOffers.length > 0 &&
@@ -94,11 +104,6 @@ export const CollectiveOffersScreen = ({
     setSelectedOffers(
       areAllOffersSelected ? [] : offers.filter((offer) => offer.isEditable)
     )
-  }
-
-  const resetFilters = () => {
-    setSelectedFilters(defaultCollectiveFilters)
-    applyUrlFiltersAndRedirect(defaultCollectiveFilters)
   }
 
   const numberOfPages = Math.ceil(offers.length / NUMBER_OF_OFFERS_PER_PAGE)
@@ -120,14 +125,20 @@ export const CollectiveOffersScreen = ({
   )
 
   const applyUrlFiltersAndRedirect = (
-    filters: CollectiveSearchFiltersParams
+    filters: Partial<CollectiveSearchFiltersParams>
   ) => {
     setPage(filters.page ?? 1)
     redirectWithUrlFilters(filters)
   }
 
   const applyFilters = (filters: CollectiveSearchFiltersParams) => {
+    onApplyFilters(filters)
     applyUrlFiltersAndRedirect({ ...filters, page: DEFAULT_PAGE })
+  }
+
+  const resetFilters = () => {
+    onResetFilters()
+    applyUrlFiltersAndRedirect(defaultCollectiveFilters)
   }
 
   function onSetSelectedOffer(offer: CollectiveOfferResponseModel) {
@@ -149,6 +160,7 @@ export const CollectiveOffersScreen = ({
   return (
     <div>
       <CollectiveOffersSearchFilters
+        hasFilters={hasFilters}
         applyFilters={applyFilters}
         categories={categories}
         disableAllFilters={userHasNoOffers}
@@ -164,6 +176,7 @@ export const CollectiveOffersScreen = ({
       ) : (
         <>
           <CollectiveOffersTable
+            hasFilters={hasFilters}
             areAllOffersSelected={areAllOffersSelected}
             hasOffers={hasOffers}
             isLoading={isLoading}

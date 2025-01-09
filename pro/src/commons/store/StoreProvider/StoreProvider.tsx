@@ -11,7 +11,7 @@ import {
   updateOffererIsOnboarded,
 } from 'commons/store/offerer/reducer'
 import { updateUser } from 'commons/store/user/reducer'
-import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
+import { storageAvailable } from 'commons/utils/storageAvailable'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import styles from './StoreProvider.module.scss'
@@ -61,7 +61,7 @@ export const StoreProvider = ({
         const response = await api.listOfferersNames()
         const firstOffererId = response.offerersNames[0].id
 
-        if (localStorageAvailable()) {
+        if (storageAvailable('localStorage')) {
           const savedOffererId = localStorage.getItem(SAVED_OFFERER_ID_KEY)
           dispatch(
             updateSelectedOffererId(

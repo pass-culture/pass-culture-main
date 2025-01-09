@@ -1,11 +1,11 @@
 import { SAVED_OFFERER_ID_KEY } from 'commons/core/shared/constants'
 import { SelectOption } from 'commons/custom_types/form'
-import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
+import { storageAvailable } from 'commons/utils/storageAvailable'
 
 export const getSavedOffererId = (
   offererOptions: SelectOption[]
 ): string | null => {
-  const isLocalStorageAvailable = localStorageAvailable()
+  const isLocalStorageAvailable = storageAvailable('localStorage')
   if (!isLocalStorageAvailable) {
     return null
   }
