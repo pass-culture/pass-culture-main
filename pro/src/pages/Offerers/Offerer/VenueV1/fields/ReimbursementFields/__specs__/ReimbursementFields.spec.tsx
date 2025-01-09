@@ -61,7 +61,9 @@ describe('ReimbursementFields', () => {
 
     await renderReimbursementFields(props)
 
-    expect(screen.queryByText('Créer un lieu avec SIRET')).toBeInTheDocument()
+    expect(
+      screen.queryByText('Créer une structure avec SIRET')
+    ).toBeInTheDocument()
   })
 
   it('should not display pricing point section venue has siret', async () => {

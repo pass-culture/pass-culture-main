@@ -36,13 +36,13 @@ export const ReimbursementFields = ({
             <Callout
               links={[
                 {
-                  href: `/structures/${offerer.id}/lieux/creation`,
-                  label: 'Créer un lieu avec SIRET',
+                  href: `/parcours-inscription/structure`,
+                  label: 'Créer une structure avec SIRET',
                 },
               ]}
             >
               Afin de pouvoir ajouter de nouvelles coordonnées bancaires, vous
-              devez avoir, au minimum, un lieu rattaché à un SIRET.
+              devez avoir, au minimum, une structure rattachée à un SIRET.
             </Callout>
           ) : (
             <>

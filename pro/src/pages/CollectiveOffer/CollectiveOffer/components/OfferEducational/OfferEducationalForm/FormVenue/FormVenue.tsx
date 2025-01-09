@@ -122,9 +122,7 @@ export const FormVenue = ({
           <Callout
             links={[
               {
-                href: isOfferAddressEnabled
-                  ? '/parcours-inscription/structure'
-                  : `/structures/${values.offererId}/lieux/creation`,
+                href: '/parcours-inscription/structure',
                 label: `Renseigner ${isOfferAddressEnabled ? 'une structure' : 'un lieu'}`,
               },
             ]}

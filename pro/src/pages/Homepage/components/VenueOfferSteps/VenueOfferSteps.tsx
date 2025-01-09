@@ -46,7 +46,7 @@ export const VenueOfferSteps = ({
   const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
 
   const venueCreationUrl = isVenueCreationAvailable
-    ? `/structures/${offerer.id}/lieux/creation`
+    ? `/parcours-inscription/structure`
     : UNAVAILABLE_ERROR_PAGE
 
   /* Condition linked to add bank account banner
