@@ -23,8 +23,8 @@ import {
   getCollectiveOfferTemplateFactory,
   getCollectiveOfferVenueFactory,
 } from 'commons/utils/factories/collectiveApiFactories'
-import * as localStorageAvailable from 'commons/utils/localStorageAvailable'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import * as storageAvailable from 'commons/utils/storageAvailable'
 
 import {
   CollectiveActionsCells,
@@ -84,7 +84,7 @@ vi.mock('apiClient/api', () => ({
     patchCollectiveOffersTemplateActiveStatus: vi.fn(),
   },
 }))
-vi.spyOn(localStorageAvailable, 'localStorageAvailable').mockImplementationOnce(
+vi.spyOn(storageAvailable, 'storageAvailable').mockImplementationOnce(
   () => true
 )
 

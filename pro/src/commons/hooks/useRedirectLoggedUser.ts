@@ -7,7 +7,7 @@ import { SAVED_OFFERER_ID_KEY } from 'commons/core/shared/constants'
 import { updateSelectedOffererId } from 'commons/store/offerer/reducer'
 import { updateUser } from 'commons/store/user/reducer'
 import { selectCurrentUser } from 'commons/store/user/selectors'
-import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
+import { storageAvailable } from 'commons/utils/storageAvailable'
 import { SAVED_VENUE_ID_KEY } from 'pages/Homepage/components/Offerers/components/PartnerPages/PartnerPages'
 
 export const useRedirectLoggedUser = () => {
@@ -44,7 +44,7 @@ export const useRedirectLoggedUser = () => {
       }
     } else {
       // Reset the user and selected offerer to prevent issues when connecting
-      if (localStorageAvailable()) {
+      if (storageAvailable('localStorage')) {
         localStorage.removeItem(SAVED_OFFERER_ID_KEY)
         localStorage.removeItem(SAVED_VENUE_ID_KEY)
       }

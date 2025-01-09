@@ -20,12 +20,21 @@ import { serializeApiCollectiveFilters } from 'commons/core/Offers/utils/seriali
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
 import { formatAndOrderVenues } from 'repository/venuesService'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { CollectiveOffersScreen } from './components/CollectiveOffersScreen/CollectiveOffersScreen'
 
 export const CollectiveOffers = (): JSX.Element => {
+  const isToggleAndMemorizeFiltersEnabled = useActiveFeature('WIP_COLLAPSED_MEMORIZED_FILTERS')
+  const urlSearchFilters = useQueryCollectiveSearchFilters()
+  const { storedFilters } = getStoredFilterConfig('collective')
+  const finalSearchFilters = {
+    ...urlSearchFilters,
+    ...isToggleAndMemorizeFiltersEnabled ? (storedFilters as Partial<CollectiveSearchFiltersParams>) : {}
+  }
+
   const isNewOffersAndBookingsActive = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
   )
@@ -36,12 +45,7 @@ export const CollectiveOffers = (): JSX.Element => {
 
   const defaultCollectiveFilters = useDefaultCollectiveSearchFilters()
 
-  const urlSearchFilters = useQueryCollectiveSearchFilters({
-    ...defaultCollectiveFilters,
-    offererId: offererId ?? 'all',
-  })
-
-  const currentPageNumber = urlSearchFilters.page ?? DEFAULT_PAGE
+  const currentPageNumber = finalSearchFilters.page ?? DEFAULT_PAGE
 
   const offererQuery = useSWR(
     [GET_OFFERER_QUERY_KEY, offererId],
@@ -61,14 +65,14 @@ export const CollectiveOffers = (): JSX.Element => {
 
   const venues = formatAndOrderVenues(data.venues)
 
-  const redirectWithUrlFilters = (filters: CollectiveSearchFiltersParams) => {
+  const redirectWithUrlFilters = (filters: Partial<CollectiveSearchFiltersParams>) => {
     navigate(computeCollectiveOffersUrl(filters, defaultCollectiveFilters), {
       replace: true,
     })
   }
 
   const isFilterByVenueOrOfferer = hasCollectiveSearchFilters(
-    urlSearchFilters,
+    finalSearchFilters,
     defaultCollectiveFilters,
     ['venueId']
   )
@@ -78,13 +82,13 @@ export const CollectiveOffers = (): JSX.Element => {
   const collectiveOffersQueryKeys = getCollectiveOffersSwrKeys({
     isNewOffersAndBookingsActive,
     isInTemplateOffersPage: false,
-    urlSearchFilters,
+    urlSearchFilters: finalSearchFilters,
     selectedOffererId: offererId ?? '',
   })
 
   const apiFilters: CollectiveSearchFiltersParams = {
     ...defaultCollectiveFilters,
-    ...urlSearchFilters,
+    ...finalSearchFilters,
     ...(isRestrictedAsAdmin ? { status: [] } : {}),
     ...{ offererId: offererId?.toString() ?? 'all' },
   }

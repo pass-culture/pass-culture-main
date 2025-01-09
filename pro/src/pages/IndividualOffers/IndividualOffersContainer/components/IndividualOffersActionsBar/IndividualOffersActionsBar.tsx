@@ -15,6 +15,7 @@ import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
+import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
 import { computeActivationSuccessMessage } from 'components/OffersTable/utils/computeActivationSuccessMessage'
 import { computeSelectedOffersLabel } from 'components/OffersTable/utils/computeSelectedOffersLabel'
 import fullHideIcon from 'icons/full-hide.svg'
@@ -148,7 +149,14 @@ export const IndividualOffersActionsBar = ({
   canDeactivate,
   isRestrictedAsAdmin,
 }: IndividualOffersActionsBarProps): JSX.Element => {
+  const isToggleAndMemorizeFiltersEnabled = useActiveFeature('WIP_COLLAPSED_MEMORIZED_FILTERS')
   const urlSearchFilters = useQuerySearchFilters()
+  const { storedFilters } = getStoredFilterConfig('individual')
+  const finalSearchFilters = {
+    ...urlSearchFilters,
+    ...isToggleAndMemorizeFiltersEnabled ? (storedFilters as Partial<SearchFiltersParams>) : {}
+  }
+
   const { mutate } = useSWRConfig()
   const selectedOffererId = useSelector(selectCurrentOffererId)?.toString()
 
@@ -161,7 +169,7 @@ export const IndividualOffersActionsBar = ({
   )
 
   const apiFilters = computeIndividualApiFilters(
-    urlSearchFilters,
+    finalSearchFilters,
     selectedOffererId,
     isRestrictedAsAdmin
   )

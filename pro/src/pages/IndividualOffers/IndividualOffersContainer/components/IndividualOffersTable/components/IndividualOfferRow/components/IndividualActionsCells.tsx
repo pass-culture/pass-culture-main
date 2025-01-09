@@ -14,9 +14,12 @@ import {
 } from 'commons/core/FirebaseEvents/constants'
 import { OFFER_STATUS_DRAFT } from 'commons/core/Offers/constants'
 import { useQuerySearchFilters } from 'commons/core/Offers/hooks/useQuerySearchFilters'
+import { SearchFiltersParams } from 'commons/core/Offers/types'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
+import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
 import { CELLS_DEFINITIONS } from 'components/OffersTable/utils/cellDefinitions'
 import fullThreeDotsIcon from 'icons/full-three-dots.svg'
 import strokeTrashIcon from 'icons/stroke-trash.svg'
@@ -47,8 +50,15 @@ export const IndividualActionsCells = ({
   isRestrictedAsAdmin,
   className,
 }: IndividualActionsCellsProps) => {
-  const selectedOffererId = useSelector(selectCurrentOffererId)?.toString()
+  const isToggleAndMemorizeFiltersEnabled = useActiveFeature('WIP_COLLAPSED_MEMORIZED_FILTERS')
+  const { storedFilters } = getStoredFilterConfig('individual')
   const urlSearchFilters = useQuerySearchFilters()
+  const finalSearchFilters = {
+    ...urlSearchFilters,
+    ...isToggleAndMemorizeFiltersEnabled ? (storedFilters as Partial<SearchFiltersParams>) : {}
+  }
+
+  const selectedOffererId = useSelector(selectCurrentOffererId)?.toString()
   const { mutate } = useSWRConfig()
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
   const { logEvent } = useAnalytics()
@@ -59,9 +69,9 @@ export const IndividualActionsCells = ({
   }, [])
 
   const apiFilters = computeIndividualApiFilters(
-    urlSearchFilters,
+    finalSearchFilters,
     selectedOffererId?.toString(),
-    isRestrictedAsAdmin
+    isRestrictedAsAdmin,
   )
 
   const onConfirmDeleteDraftOffer = async () => {

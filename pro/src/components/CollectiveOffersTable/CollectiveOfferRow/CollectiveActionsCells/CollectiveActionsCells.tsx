@@ -36,7 +36,7 @@ import {
   isDateValid,
 } from 'commons/utils/date'
 import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
-import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
+import { storageAvailable } from 'commons/utils/storageAvailable'
 import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { canArchiveCollectiveOffer } from 'components/ArchiveConfirmationModal/utils/canArchiveCollectiveOffer'
 import { CancelCollectiveBookingModal } from 'components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
@@ -63,7 +63,7 @@ export interface CollectiveActionsCellsProps {
   rowId: string
   offer: CollectiveOfferResponseModel
   editionOfferLink: string
-  urlSearchFilters: CollectiveSearchFiltersParams
+  urlSearchFilters: Partial<CollectiveSearchFiltersParams>
   deselectOffer: (offer: CollectiveOfferResponseModel) => void
   isSelected: boolean
   className?: string
@@ -101,7 +101,7 @@ export const CollectiveActionsCells = ({
   const [isCancelledBookingModalOpen, setIsCancelledBookingModalOpen] =
     useState(false)
   const [isArchivedModalOpen, setIsArchivedModalOpen] = useState(false)
-  const isLocalStorageAvailable = localStorageAvailable()
+  const isLocalStorageAvailable = storageAvailable('localStorage')
   const shouldDisplayModal =
     !isLocalStorageAvailable ||
     localStorage.getItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY) !== 'true'

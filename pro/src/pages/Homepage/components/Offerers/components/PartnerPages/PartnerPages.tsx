@@ -6,7 +6,7 @@ import {
   VenueTypeResponseModel,
 } from 'apiClient/v1'
 import { SelectOption } from 'commons/custom_types/form'
-import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
+import { storageAvailable } from 'commons/utils/storageAvailable'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 
@@ -18,7 +18,7 @@ export const SAVED_VENUE_ID_KEY = 'homepageSelectedVenueId'
 export const getSavedVenueId = (
   venues: GetOffererVenueResponseModel[]
 ): string | null => {
-  const isLocalStorageAvailable = localStorageAvailable()
+  const isLocalStorageAvailable = storageAvailable('localStorage')
   if (!isLocalStorageAvailable) {
     return null
   }
@@ -81,7 +81,7 @@ export const PartnerPages = ({
               value={selectedVenueId}
               onChange={(e) => {
                 setSelectedVenueId(e.target.value)
-                if (localStorageAvailable()) {
+                if (storageAvailable('localStorage')) {
                   localStorage.setItem(SAVED_VENUE_ID_KEY, e.target.value)
                 }
               }}

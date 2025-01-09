@@ -5,16 +5,17 @@ import {
 import { SearchFiltersParams } from 'commons/core/Offers/types'
 
 export function computeIndividualApiFilters(
-  urlSearchFilters: SearchFiltersParams,
+  finalSearchFilters: Partial<SearchFiltersParams>,
   selectedOffererId?: string | null,
-  isRestrictedAsAdmin?: boolean
+  isRestrictedAsAdmin?: boolean,
 ): SearchFiltersParams {
   const apiFilters: SearchFiltersParams = {
     ...DEFAULT_SEARCH_FILTERS,
-    ...urlSearchFilters,
+    ...finalSearchFilters,
     ...(isRestrictedAsAdmin ? { status: ALL_STATUS } : {}),
     ...{ offererId: selectedOffererId?.toString() ?? '' },
   }
+
   delete apiFilters.page
   return apiFilters
 }

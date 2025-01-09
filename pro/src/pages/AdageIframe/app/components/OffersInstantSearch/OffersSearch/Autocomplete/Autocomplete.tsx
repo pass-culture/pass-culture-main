@@ -32,7 +32,7 @@ import {
   ALGOLIA_COLLECTIVE_OFFERS_INDEX,
   ALGOLIA_COLLECTIVE_OFFERS_SUGGESTIONS_INDEX,
 } from 'commons/utils/config'
-import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
+import { storageAvailable } from 'commons/utils/storageAvailable'
 import fullClearIcon from 'icons/full-clear.svg'
 import strokeBuildingIcon from 'icons/stroke-building.svg'
 import strokeClockIcon from 'icons/stroke-clock.svg'
@@ -115,7 +115,7 @@ export const Autocomplete = ({
   const { adageUser } = useAdageUser()
   const KEYWORD_QUERY_SUGGESTIONS_SOURCE_ID = 'KeywordQuerySuggestionsSource'
 
-  const isLocalStorageEnabled = localStorageAvailable()
+  const isLocalStorageEnabled = storageAvailable('localStorage')
 
   const logAutocompleteSuggestionClick = async (
     suggestionType: SuggestionType,
@@ -446,7 +446,7 @@ export const Autocomplete = ({
                         variant={ButtonVariant.QUATERNARYPINK}
                         icon={fullClearIcon}
                         onClick={() => {
-                          if (localStorageAvailable()) {
+                          if (storageAvailable('localStorage')) {
                             localStorage.removeItem(
                               AUTOCOMPLETE_LOCAL_STORAGE_KEY
                             )

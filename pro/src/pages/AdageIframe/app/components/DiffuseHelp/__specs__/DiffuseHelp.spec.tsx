@@ -1,8 +1,8 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import * as localStorageAvailable from 'commons/utils/localStorageAvailable'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import * as storageAvailable from 'commons/utils/storageAvailable'
 
 import { DiffuseHelp } from '../DiffuseHelp'
 
@@ -23,8 +23,8 @@ describe('DiffuseHelp', () => {
 
   it('should not display disffuse help if the localstorage is not available', () => {
     vi.spyOn(
-      localStorageAvailable,
-      'localStorageAvailable'
+      storageAvailable,
+      'storageAvailable'
     ).mockImplementationOnce(() => false)
 
     renderWithProviders(<DiffuseHelp description="test 123" />)

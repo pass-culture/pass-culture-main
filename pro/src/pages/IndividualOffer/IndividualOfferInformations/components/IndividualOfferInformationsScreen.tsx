@@ -22,7 +22,7 @@ import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { getOfferConditionalFields } from 'commons/utils/getOfferConditionalFields'
-import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
+import { storageAvailable } from 'commons/utils/storageAvailable'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
@@ -79,7 +79,7 @@ export const IndividualOfferInformationsScreen = ({
 
   const addToLocalStorage = () => {
     const keyName = getLocalStorageKeyName(offer)
-    if (localStorageAvailable() && localStorage.getItem(keyName) === null) {
+    if (storageAvailable('localStorage') && localStorage.getItem(keyName) === null) {
       localStorage.setItem(keyName, true.toString())
     }
   }

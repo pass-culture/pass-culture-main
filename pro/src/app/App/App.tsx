@@ -21,7 +21,7 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { updateSelectedOffererId } from 'commons/store/offerer/reducer'
 import { updateUser } from 'commons/store/user/reducer'
 import { selectCurrentUser } from 'commons/store/user/selectors'
-import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
+import { storageAvailable } from 'commons/utils/storageAvailable'
 import { Notification } from 'components/Notification/Notification'
 import { SAVED_VENUE_ID_KEY } from 'pages/Homepage/components/Offerers/components/PartnerPages/PartnerPages'
 
@@ -65,7 +65,7 @@ export const App = (): JSX.Element | null => {
   useEffect(() => {
     if (location.search.includes('logout')) {
       api.signout()
-      if (localStorageAvailable()) {
+      if (storageAvailable('localStorage')) {
         localStorage.removeItem(SAVED_OFFERER_ID_KEY)
         localStorage.removeItem(SAVED_VENUE_ID_KEY)
       }

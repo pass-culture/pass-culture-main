@@ -21,6 +21,7 @@ import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { sortByLabel } from 'commons/utils/strings'
+import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
 import {
   formatAndOrderAddresses,
   formatAndOrderVenues,
@@ -31,8 +32,15 @@ import { IndividualOffersContainer } from './IndividualOffersContainer/Individua
 import { computeIndividualApiFilters } from './utils/computeIndividualApiFilters'
 
 export const IndividualOffers = (): JSX.Element => {
+  const isToggleAndMemorizeFiltersEnabled = useActiveFeature('WIP_COLLAPSED_MEMORIZED_FILTERS')
   const urlSearchFilters = useQuerySearchFilters()
-  const currentPageNumber = urlSearchFilters.page ?? DEFAULT_PAGE
+  const { storedFilters } = getStoredFilterConfig('individual')
+  const finalSearchFilters = {
+    ...urlSearchFilters,
+    ...isToggleAndMemorizeFiltersEnabled ? (storedFilters as Partial<SearchFiltersParams>) : {}
+  }
+
+  const currentPageNumber = finalSearchFilters.page ?? DEFAULT_PAGE
   const navigate = useNavigate()
   const { currentUser } = useCurrentUser()
   const selectedOffererId = useSelector(selectCurrentOffererId)
@@ -53,8 +61,8 @@ export const IndividualOffers = (): JSX.Element => {
       }))
   )
 
-  const redirectWithUrlFilters = (
-    filters: SearchFiltersParams & { audience?: Audience }
+  const redirectWithSelectedFilters = (
+    filters: Partial<SearchFiltersParams> & { audience?: Audience }
   ) => {
     navigate(computeIndividualOffersUrl(filters), { replace: true })
   }
@@ -78,16 +86,16 @@ export const IndividualOffers = (): JSX.Element => {
   )
   const offererAddresses = formatAndOrderAddresses(offererAddressQuery.data)
 
-  const isFilterByVenueOrOfferer = hasSearchFilters(urlSearchFilters, [
+  const isFilterByVenueOrOfferer = hasSearchFilters(finalSearchFilters, [
     'venueId',
   ])
   //  Admin users are not allowed to check all offers at once or to use the status filter for performance reasons. Unless there is a venue or offerer filter active.
   const isRestrictedAsAdmin = currentUser.isAdmin && !isFilterByVenueOrOfferer
 
   const apiFilters = computeIndividualApiFilters(
-    urlSearchFilters,
+    finalSearchFilters,
     selectedOffererId?.toString(),
-    isRestrictedAsAdmin
+    isRestrictedAsAdmin,
   )
 
   const offersQuery = useSWR([GET_OFFERS_QUERY_KEY, apiFilters], () => {
@@ -131,8 +139,7 @@ export const IndividualOffers = (): JSX.Element => {
           initialSearchFilters={apiFilters}
           isLoading={offersQuery.isLoading}
           offers={offers}
-          redirectWithUrlFilters={redirectWithUrlFilters}
-          urlSearchFilters={urlSearchFilters}
+          redirectWithSelectedFilters={redirectWithSelectedFilters}
           venues={venues}
           offererAddresses={offererAddresses}
           isRestrictedAsAdmin={isRestrictedAsAdmin}

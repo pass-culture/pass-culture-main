@@ -9,6 +9,9 @@ export const hasSearchFilters = (
 ): boolean => {
   return filterNames.some(
     (filterName) =>
+      searchFilters[filterName] &&
+      filterName !== 'offererId' &&
+      filterName !== 'page' &&
       searchFilters[filterName] !== { ...DEFAULT_SEARCH_FILTERS }[filterName]
   )
 }
@@ -22,6 +25,9 @@ export const hasCollectiveSearchFilters = (
 ): boolean => {
   return filterNames.some(
     (filterName) =>
+      searchFilters[filterName] &&
+      filterName !== 'offererId' &&
+      filterName !== 'page' &&
       searchFilters[filterName] !== { ...defaultFilters }[filterName]
   )
 }

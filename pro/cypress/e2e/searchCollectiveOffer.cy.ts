@@ -57,7 +57,8 @@ describe('Search collective offers', () => {
     cy.stepLog({
       message: 'I search with the name "' + offerPublished.name + '"',
     })
-    cy.findByPlaceholderText('Rechercher par nom d’offre').type(
+
+    cy.findByRole('textbox', { name: /Nom de l’offre/ }).type(
       offerPublished.name
     )
 
@@ -179,7 +180,7 @@ describe('Search collective offers', () => {
     cy.findByLabelText('Format').select('Représentation')
 
     cy.stepLog({ message: 'I search with the name "brouillon"' })
-    cy.findByPlaceholderText('Rechercher par nom d’offre').type('brouillon')
+    cy.findByRole('textbox', { name: /Nom de l’offre/ }).type('brouillon')
 
     cy.stepLog({ message: 'I search with status "Brouillon"' })
     cy.get('#search-status').click()
@@ -203,7 +204,7 @@ describe('Search collective offers', () => {
     cy.findByText('Réinitialiser les filtres').click()
 
     cy.stepLog({ message: 'All filters are empty' })
-    cy.findByPlaceholderText('Rechercher par nom d’offre').should('be.empty')
+    cy.findByRole('textbox', { name: /Nom de l’offre/ }).should('be.empty')
     cy.get('#search-status').should('be.empty')
     cy.findByTestId('wrapper-lieu').within(() => {
       cy.get('select').invoke('val').should('eq', 'all')

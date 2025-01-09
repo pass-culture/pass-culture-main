@@ -2,11 +2,11 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { defaultAdageUser } from 'commons/utils/factories/adageFactories'
-import * as localStorageAvailable from 'commons/utils/localStorageAvailable'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
 } from 'commons/utils/renderWithProviders'
+import * as storageAvailable from 'commons/utils/storageAvailable'
 import { Notification } from 'components/Notification/Notification'
 import { AdageUserContext } from 'pages/AdageIframe/app/providers/AdageUserContext'
 
@@ -240,7 +240,7 @@ describe('Autocomplete', () => {
   it('should disable saved history when cookies are disabled', async () => {
     renderAutocomplete()
 
-    vi.spyOn(localStorageAvailable, 'localStorageAvailable').mockImplementation(
+    vi.spyOn(storageAvailable, 'storageAvailable').mockImplementation(
       () => false
     )
 

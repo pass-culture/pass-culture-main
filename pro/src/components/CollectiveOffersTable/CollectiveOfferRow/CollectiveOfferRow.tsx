@@ -23,7 +23,7 @@ export type CollectiveOfferRowProps = {
   isSelected: boolean
   offer: CollectiveOfferResponseModel
   selectOffer: (offer: CollectiveOfferResponseModel) => void
-  urlSearchFilters: CollectiveSearchFiltersParams
+  urlSearchFilters: Partial<CollectiveSearchFiltersParams>
   isFirstRow: boolean
 }
 

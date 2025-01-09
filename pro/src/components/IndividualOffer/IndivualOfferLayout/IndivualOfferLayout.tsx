@@ -4,7 +4,7 @@ import { GetIndividualOfferWithAddressResponseModel, OfferStatus } from 'apiClie
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { formatDateTimeParts, isDateValid } from 'commons/utils/date'
-import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
+import { storageAvailable } from 'commons/utils/storageAvailable'
 import { HeadlineOfferTag } from 'components/HeadlineOfferTag/HeadlineOfferTag'
 import { IndividualOfferNavigation } from 'components/IndividualOfferNavigation/IndividualOfferNavigation'
 import fullWaitIcon from 'icons/full-wait.svg'
@@ -41,7 +41,7 @@ export const IndivualOfferLayout = ({
 
   // This is used to not be able to go to next step in creation mode
   const isUsefulInformationSubmitted =
-    (localStorageAvailable() &&
+    (storageAvailable('localStorage') &&
       !!localStorage.getItem(
         `${LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED}_${offer?.id}`
       )) ||

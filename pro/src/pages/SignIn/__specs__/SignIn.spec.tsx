@@ -12,12 +12,12 @@ import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { getOffererNameFactory } from 'commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
-import * as localStorageAvailable from 'commons/utils/localStorageAvailable'
 import * as utils from 'commons/utils/recaptcha'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
 } from 'commons/utils/renderWithProviders'
+import * as storageAvailable from 'commons/utils/storageAvailable'
 import { Notification } from 'components/Notification/Notification'
 
 import { SignIn } from '../SignIn'
@@ -418,7 +418,7 @@ describe('SignIn', () => {
   })
 
   it('should not read through local storage offerers if it is not available', async () => {
-    vi.spyOn(localStorageAvailable, 'localStorageAvailable').mockImplementation(
+    vi.spyOn(storageAvailable, 'storageAvailable').mockImplementation(
       () => false
     )
 

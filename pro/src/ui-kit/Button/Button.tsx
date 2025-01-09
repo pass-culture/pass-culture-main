@@ -104,15 +104,10 @@ export const Button = forwardRef(
             width="20"
           />
         )}
-        {variant === ButtonVariant.BOX ? (
-          <div className={styles['button-arrow-content']} />
-        ) : (
-          <>
-            {isLoading && loadingDiv}
-            {!isLoading && !hasTooltip && children}
-          </>
-        )}
-
+        <>
+          {isLoading && loadingDiv}
+          {!isLoading && !hasTooltip && children}
+        </>
         {icon && !isLoading && iconPosition === IconPositionEnum.RIGHT && (
           <SvgIcon
             src={icon}
