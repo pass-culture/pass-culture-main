@@ -2,15 +2,12 @@ import logging
 from time import time
 
 import click
-import sqlalchemy as sa
 
 from pcapi.core.providers import allocine
 import pcapi.core.providers.repository as providers_repository
 from pcapi.local_providers import provider_manager
 from pcapi.utils.blueprint import Blueprint
 
-from . import models
-from . import tasks
 from .titelive_utils import generate_titelive_gtl_from_file
 
 
@@ -21,52 +18,6 @@ logger = logging.getLogger(__name__)
 @blueprint.cli.command("synchronize_allocine_products")
 def synchronize_allocine_products() -> None:
     allocine.synchronize_products()
-
-
-@blueprint.cli.command("synchronize_venue_providers_apis")
-def synchronize_venue_providers_apis() -> None:
-    _synchronize_venue_providers_apis()
-
-
-def _synchronize_venue_providers_apis() -> None:
-    providers_apis = (
-        models.Provider.query.filter(
-            models.Provider.isActive,
-            models.Provider.apiUrl.is_not(None),
-        )
-        .join(models.Provider.venueProviders)
-        .options(sa.orm.contains_eager(models.Provider.venueProviders))
-        .all()
-    )
-
-    for provider in providers_apis:
-        venue_provider_ids = [
-            venue_provider.id for venue_provider in provider.venueProviders if venue_provider.isActive
-        ]
-
-        if provider.enableParallelSynchronization:
-            for venue_provider_id in venue_provider_ids:
-                logger.info(
-                    "Enqueuing synchronization with parallel mode",
-                    extra={"provider": provider.name, "venue_provider": venue_provider_id},
-                )
-                tasks.synchronize_venue_providers_task.delay(
-                    tasks.SynchronizeVenueProvidersRequest(
-                        provider_id=provider.id,
-                        venue_provider_ids=[venue_provider_id],
-                    )
-                )
-        else:
-            logger.info(
-                "Enqueuing synchronization without parallel mode",
-                extra={"provider": provider.name, "venue_count": len(venue_provider_ids)},
-            )
-            tasks.synchronize_venue_providers_task.delay(
-                tasks.SynchronizeVenueProvidersRequest(
-                    provider_id=provider.id,
-                    venue_provider_ids=venue_provider_ids,
-                )
-            )
 
 
 @blueprint.cli.command("update_providables")
