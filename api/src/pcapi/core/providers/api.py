@@ -1,22 +1,15 @@
-from dataclasses import asdict
-from datetime import datetime
-import decimal
 import enum
 import functools
 import logging
 import typing
-from typing import Iterable
 
 from pcapi.core import search
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
-from pcapi.core.logging import log_elapsed
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.repository import find_venue_by_id
-import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.models as offers_models
-import pcapi.core.offers.repository as offers_repository
 import pcapi.core.providers.constants as providers_constants
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.models as providers_models
@@ -26,7 +19,6 @@ from pcapi.models import db
 from pcapi.repository import on_commit
 from pcapi.repository import repository
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
-from pcapi.validation.models.entity_validator import validate
 from pcapi.workers.update_all_offers_active_status_job import update_all_collective_offers_active_status_job
 from pcapi.workers.update_all_offers_active_status_job import update_venue_synchronized_offers_active_status_job
 
@@ -422,243 +414,6 @@ def _siret_can_be_synchronized(
         return provider_api.is_siret_registered(siret)
 
     return False
-
-
-def synchronize_stocks(
-    stock_details: Iterable[providers_models.StockDetail], venue: offerers_models.Venue, provider_id: int | None = None
-) -> dict[str, int]:
-    products_provider_references = [stock_detail.products_provider_reference for stock_detail in stock_details]
-    # here product.id_at_providers is the "ref" field that provider api gives use.
-    products_by_provider_reference = offers_repository.get_products_map_by_provider_reference(
-        products_provider_references
-    )
-
-    stock_details = [
-        stock for stock in stock_details if stock.products_provider_reference in products_by_provider_reference
-    ]
-
-    offers_provider_references = [stock_detail.offers_provider_reference for stock_detail in stock_details]
-    # here offers.id_at_providers is the "ref" field that provider api gives use.
-    with log_elapsed(
-        logger,
-        "get_offers_map_by_id_at_provider",
-        extra={
-            "venue": venue.id,
-            "ref_count": len(offers_provider_references),
-        },
-    ):
-        offers_by_provider_reference = offers_repository.get_offers_map_by_id_at_provider(
-            offers_provider_references, venue
-        )
-
-    products_references = [stock_detail.products_provider_reference for stock_detail in stock_details]
-    with log_elapsed(
-        logger,
-        "get_offers_map_by_venue_reference",
-        extra={
-            "venue": venue.id,
-            "ref_count": len(products_references),
-        },
-    ):
-        offers_by_venue_reference = offers_repository.get_offers_map_by_venue_reference(products_references, venue.id)
-
-    offers_update_mapping = [
-        {"id": offer_id, "lastProviderId": provider_id} for offer_id in offers_by_provider_reference.values()
-    ]
-    db.session.bulk_update_mappings(offers_models.Offer, offers_update_mapping)
-
-    new_offers = _build_new_offers_from_stock_details(
-        stock_details,
-        offers_by_provider_reference,
-        products_by_provider_reference,
-        offers_by_venue_reference,
-        venue,
-        provider_id=provider_id,
-    )
-    new_offers_references = [new_offer.idAtProvider for new_offer in new_offers if new_offer.idAtProvider]
-
-    db.session.bulk_save_objects(new_offers)
-
-    new_offers_by_provider_reference = offers_repository.get_offers_map_by_id_at_provider(new_offers_references, venue)
-    offers_by_provider_reference = {**offers_by_provider_reference, **new_offers_by_provider_reference}
-
-    stocks_provider_references = [stock.stocks_provider_reference for stock in stock_details]
-    stocks_by_provider_reference = offers_repository.get_stocks_by_id_at_providers(stocks_provider_references)
-    update_stock_mapping, new_stocks, offer_ids = _get_stocks_to_upsert(
-        stock_details,
-        stocks_by_provider_reference,
-        offers_by_provider_reference,
-        products_by_provider_reference,
-        provider_id,
-    )
-
-    db.session.bulk_save_objects(new_stocks)
-    db.session.bulk_update_mappings(offers_models.Stock, update_stock_mapping)
-
-    db.session.commit()
-
-    search.async_index_offer_ids(
-        offer_ids,
-        reason=search.IndexationReason.STOCK_SYNCHRONIZATION,
-        log_extra={"provider_id": provider_id},
-    )
-
-    return {
-        "new_offers": len(new_offers),
-        "new_stocks": len(new_stocks),
-        "updated_stocks": len(update_stock_mapping),
-    }
-
-
-def _build_new_offers_from_stock_details(
-    stock_details: list[providers_models.StockDetail],
-    existing_offers_by_provider_reference: dict[str, int],
-    products_by_provider_reference: dict[str, offers_models.Product],
-    existing_offers_by_venue_reference: dict[str, int],
-    venue: offerers_models.Venue,
-    *,
-    provider_id: int | None,
-) -> list[offers_models.Offer]:
-    new_offers = []
-    for stock_detail in stock_details:
-        if stock_detail.offers_provider_reference in existing_offers_by_provider_reference:
-            continue
-        if stock_detail.venue_reference in existing_offers_by_venue_reference:
-            logger.error(
-                "There is already an offer with same (ean,venueId) but with a different idAtProviders. Update the idAtProviders of offers and stocks attached to venue %s with update_offer_and_stock_id_at_providers method",
-                venue.id,
-                extra=asdict(stock_detail),
-            )
-            continue
-        if not stock_detail.available_quantity:
-            continue
-
-        product = products_by_provider_reference[stock_detail.products_provider_reference]
-        offer = offers_api.build_new_offer_from_product(
-            venue,
-            product,
-            id_at_provider=stock_detail.products_provider_reference,
-            provider_id=provider_id,
-        )
-
-        if not _validate_stock_or_offer(offer):
-            continue
-
-        new_offers.append(offer)
-
-    return new_offers
-
-
-def _get_stocks_to_upsert(
-    stock_details: list[providers_models.StockDetail],
-    stocks_by_provider_reference: dict[str, dict],
-    offers_by_provider_reference: dict[str, int],
-    products_by_provider_reference: dict[str, offers_models.Product],
-    provider_id: int | None,
-) -> tuple[list[dict], list[offers_models.Stock], set[int]]:
-    update_stock_mapping = []
-    new_stocks = []
-    offer_ids = set()
-
-    for stock_detail in stock_details:
-        stock_provider_reference = stock_detail.stocks_provider_reference
-        if stock_provider_reference in stocks_by_provider_reference:
-            stock = stocks_by_provider_reference[stock_provider_reference]
-
-            # We sometimes get a price of zero for books that should
-            # not be free (and are not free in our product table).
-            # This happens when the library sets a wrong price in
-            # their own software. In that case, we keep the current
-            # price.
-            if not stock_detail.price and stock["price"] != stock_detail.price:
-                logger.info(
-                    "Ignored stock price that has been changed to zero",
-                    extra={
-                        "provider": provider_id,
-                        "stock": stock["id"],
-                        "previous_stock_price": stock["price"],
-                        "new_price": stock_detail.price,
-                    },
-                )
-                stock_detail.price = stock["price"]
-
-            update_stock_mapping.append(
-                {
-                    "id": stock["id"],
-                    "quantity": stock_detail.available_quantity + stock["booking_quantity"],
-                    "rawProviderQuantity": stock_detail.available_quantity,
-                    "price": stock_detail.price,
-                    "lastProviderId": provider_id,
-                    "isSoftDeleted": False,
-                }
-            )
-            if _should_reindex_offer(stock_detail.available_quantity, stock_detail.price, stock):
-                offer_ids.add(offers_by_provider_reference[stock_detail.offers_provider_reference])
-
-        else:
-            if not stock_detail.available_quantity:
-                continue
-
-            offer_id = offers_by_provider_reference.get(stock_detail.offers_provider_reference)
-
-            if not offer_id:
-                continue
-
-            stock = _build_stock_from_stock_detail(
-                stock_detail,
-                offer_id,
-                provider_id,
-            )
-            if not _validate_stock_or_offer(stock):
-                continue
-
-            new_stocks.append(stock)
-            offer_ids.add(stock.offerId)
-
-    return update_stock_mapping, new_stocks, offer_ids
-
-
-def _build_stock_from_stock_detail(
-    stock_detail: providers_models.StockDetail, offers_id: int, provider_id: int | None
-) -> offers_models.Stock:
-    return offers_models.Stock(
-        quantity=stock_detail.available_quantity,
-        rawProviderQuantity=stock_detail.available_quantity,
-        bookingLimitDatetime=None,
-        offerId=offers_id,
-        price=stock_detail.price,
-        dateModified=datetime.utcnow(),
-        idAtProviders=stock_detail.stocks_provider_reference,
-        lastProviderId=provider_id,
-    )
-
-
-def _validate_stock_or_offer(model: offers_models.Offer | offers_models.Stock) -> bool:
-    model_api_errors = validate(model)
-    if model_api_errors.errors.keys():
-        logger.exception(
-            "[SYNC] errors while trying to add stock or offer with ref %s: %s",
-            getattr(model, "idAtProvider", None) or getattr(model, "idAtProviders", None),
-            model_api_errors.errors,
-        )
-        return False
-
-    return True
-
-
-def _should_reindex_offer(new_quantity: int, new_price: decimal.Decimal, existing_stock: dict) -> bool:
-    if existing_stock["price"] != new_price:
-        return True
-
-    is_existing_stock_empty = (
-        # Existing stock could be None (i.e. infinite) if the offerer manually overrides
-        # the quantity of this synchronized offers_models.Stock.
-        existing_stock["quantity"] is not None
-        and existing_stock["quantity"] <= existing_stock["booking_quantity"]
-    )
-    is_new_quantity_stock_empty = new_quantity == 0
-
-    return is_existing_stock_empty is not is_new_quantity_stock_empty
 
 
 def _get_siret(venue_id_at_offer_provider: str | None, siret: str | None) -> str:

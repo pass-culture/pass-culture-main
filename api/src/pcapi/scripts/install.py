@@ -33,7 +33,6 @@ def install_commands(app: flask.Flask) -> None:
         "pcapi.scripts.full_index_offers",
         "pcapi.scripts.install_data",
         "pcapi.scripts.generate_public_api_openapi_json",
-        "pcapi.scripts.provider.check_provider_api",
         "pcapi.scripts.sandbox",
         "pcapi.scripts.ubble_archive_past_identifications",
         "pcapi.scripts.offer.fix_offer_data_titelive",
