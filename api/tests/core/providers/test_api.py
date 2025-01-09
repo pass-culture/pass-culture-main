@@ -53,15 +53,10 @@ class CreateVenueProviderTest:
             (offerers_models.VenueTypeCode.DIGITAL, False),
         ),
     )
-    @patch(
-        "pcapi.infrastructure.repository.stock_provider.provider_api.ProviderAPI.is_siret_registered",
-        return_value=True,
-    )
     @patch("pcapi.core.search.async_index_venue_ids")
     def test_permanent_venue_marking(
         self,
         mocked_async_index_venue_ids,
-        _unused_mock,
         venue_type,
         is_permanent,
     ):

@@ -11,7 +11,6 @@ import sqlalchemy.sql as sa_sql
 
 from pcapi.core.offerers.models import Venue
 import pcapi.core.providers.constants as provider_constants
-from pcapi.infrastructure.repository.stock_provider.provider_api import ProviderAPI
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.deactivable_mixin import DeactivableMixin
@@ -84,17 +83,6 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
     @property
     def hasOffererProvider(self) -> bool:
         return bool(self.offererProvider)
-
-    @property
-    def implements_provider_api(self) -> bool:
-        return self.apiUrl is not None and not self.offererProvider
-
-    def getProviderAPI(self) -> ProviderAPI:
-        return ProviderAPI(
-            api_url=self.apiUrl,  # type: ignore[arg-type]
-            name=self.name,
-            authentication_token=self.authToken,
-        )
 
 
 class VenueProviderExternalUrls(PcObject, Base, Model, DeactivableMixin):
@@ -277,16 +265,6 @@ class VenueProviderCreationPayload:
     price: decimal.Decimal | None = None
     quantity: int | None = None
     venueIdAtOfferProvider: str | None = None
-
-
-@dataclass
-class StockDetail:
-    products_provider_reference: str
-    offers_provider_reference: str
-    venue_reference: str
-    stocks_provider_reference: str
-    available_quantity: int
-    price: decimal.Decimal
 
 
 class AllocinePivot(PcObject, Base, Model):
