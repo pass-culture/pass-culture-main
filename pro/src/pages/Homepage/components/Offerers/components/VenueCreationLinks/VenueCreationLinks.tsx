@@ -6,8 +6,8 @@ import { Events } from 'commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { UNAVAILABLE_ERROR_PAGE } from 'commons/utils/routes'
 import {
-  getVirtualVenueFromOfferer,
   getPhysicalVenuesFromOfferer,
+  getVirtualVenueFromOfferer,
 } from 'pages/Homepage/components/Offerers/components/VenueList/venueUtils'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -39,9 +39,7 @@ export const VenueCreationLinks = ({ offerer }: VenueCreationLinksProps) => {
   }
 
   const venueCreationUrl = isVenueCreationAvailable
-    ? isOfferAddressEnabled
-      ? `/parcours-inscription/structure`
-      : `/structures/${offerer?.id}/lieux/creation`
+    ? `/parcours-inscription/structure`
     : UNAVAILABLE_ERROR_PAGE
 
   return (

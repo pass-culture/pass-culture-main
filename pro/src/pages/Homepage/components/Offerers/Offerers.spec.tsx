@@ -2,15 +2,15 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import {
-  defaultGetOffererVenueResponseModel,
   defaultGetOffererResponseModel,
+  defaultGetOffererVenueResponseModel,
 } from 'commons/utils/factories/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
 } from 'commons/utils/renderWithProviders'
 
-import { OfferersProps, Offerers } from './Offerers'
+import { Offerers, OfferersProps } from './Offerers'
 
 const renderOfferers = (
   props: Partial<OfferersProps> = {},
@@ -85,7 +85,7 @@ describe('Offerers', () => {
 
     expect(
       screen.getByRole('link', { name: 'Ajouter un lieu' })
-    ).toHaveAttribute('href', '/structures/200/lieux/creation')
+    ).toHaveAttribute('href', '/parcours-inscription/structure')
   })
 
   it('should display the new informative modal for offer address', async () => {

@@ -1,21 +1,19 @@
 import { useFormikContext } from 'formik'
 import React, { useState } from 'react'
-import { useSelector } from 'react-redux'
 import { useDebouncedCallback } from 'use-debounce'
 
 import { api } from 'apiClient/api'
 import {
   CategoryResponseModel,
   SubcategoryResponseModel,
-  VenueListItemResponseModel,
   SuggestedSubcategoriesResponseModel,
+  VenueListItemResponseModel,
 } from 'apiClient/v1'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { CATEGORY_STATUS } from 'commons/core/Offers/constants'
 import { IndividualOfferImage } from 'commons/core/Offers/types'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useSuggestedSubcategoriesAbTest } from 'commons/hooks/useSuggestedSubcategoriesAbTest'
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OnImageUploadArgs } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import fullMoreIcon from 'icons/full-more.svg'
@@ -133,8 +131,6 @@ export const DetailsForm = ({
   const isSubCategorySelected =
     subcategoryId !== DEFAULT_DETAILS_FORM_VALUES.subcategoryId
 
-  const selectedOffererId = useSelector(selectCurrentOffererId)
-
   const showAddVenueBanner =
     !areSuggestedSubcategoriesUsed && venueOptions.length === 0
 
@@ -154,18 +150,18 @@ export const DetailsForm = ({
             <Callout
               links={[
                 {
-                  href: `/structures/${selectedOffererId}/lieux/creation`,
+                  href: `/parcours-inscription/structure`,
                   icon: {
                     src: fullMoreIcon,
                     alt: '',
                   },
-                  label: 'Ajouter un lieu',
+                  label: 'Ajouter une structure',
                 },
               ]}
               variant={CalloutVariant.ERROR}
             >
-              Pour créer une offre dans cette catégorie, ajoutez d’abord un lieu
-              à votre structure.
+              Pour créer une offre dans cette catégorie, ajoutez d’abord une
+              structure.
             </Callout>
           </FormLayout.Row>
         )}
@@ -247,18 +243,18 @@ export const DetailsForm = ({
               <Callout
                 links={[
                   {
-                    href: `/structures/${selectedOffererId}/lieux/creation`,
+                    href: `/parcours-inscription/structure`,
                     icon: {
                       src: fullMoreIcon,
                       alt: '',
                     },
-                    label: 'Ajouter un lieu',
+                    label: 'Ajouter une structure',
                   },
                 ]}
                 variant={CalloutVariant.ERROR}
               >
-                Pour créer une offre dans cette catégorie, ajoutez d’abord un
-                lieu à votre structure.
+                Pour créer une offre dans cette catégorie, ajoutez d’abord une
+                structure.
               </Callout>
             </FormLayout.Row>
           ) : (
