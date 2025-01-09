@@ -19,3 +19,9 @@
     @include forms.input-theme-error;
   }
 }
+
+.template-button {
+  position: absolute;
+  bottom: rem.torem(16px);
+  left: rem.torem(16px);
+}

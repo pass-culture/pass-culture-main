@@ -2,6 +2,9 @@ import cn from 'classnames'
 import { useField } from 'formik'
 import React, { useEffect, useRef } from 'react'
 
+import { useRemoteConfigParams } from 'app/App/analytics/firebase'
+import { Button } from 'ui-kit/Button/Button'
+
 import {
   FieldLayout,
   FieldLayoutBaseProps,
@@ -62,6 +65,14 @@ type TextAreaProps = FieldLayoutBaseProps &
      * Use the `label` or `description` props instead to provide instructions on the expected format.
      */
     placeholder?: string
+    /**
+     * Whether to display a button to insert a predefined template into the textarea.
+     */
+    hasTemplateButton?: boolean
+    /**
+     * The text or content of the template to be inserted when the template button is clicked.
+     */
+    wordingTemplate?: string
   }
 
 /**
@@ -105,10 +116,16 @@ export const TextArea = ({
   isOptional,
   smallLabel,
   rows = 7,
+  hasTemplateButton = false,
+  wordingTemplate,
   ...props
 }: TextAreaProps): JSX.Element => {
-  const [field, meta] = useField({ name })
+  const [field, meta, helpers] = useField({ name })
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
+  
+  const { AB_COLLECTIVE_DESCRIPTION_TEMPLATE: isCollectiveDescriptionTemplateActive } = useRemoteConfigParams()
+
+  const shouldDisplayTemplateButton = hasTemplateButton && isCollectiveDescriptionTemplateActive === "true"
 
   /**
    * Updates the height of the textarea based on its content.
@@ -120,20 +137,28 @@ export const TextArea = ({
       textAreaRef.current.style.height = 'unset'
 
       const scrollHeight = textAreaRef.current.scrollHeight
-      textAreaRef.current.style.height = `${scrollHeight}px`
+      textAreaRef.current.style.height = `${hasTemplateButton ? scrollHeight + 68 : scrollHeight}px`
     }
   }
 
   useEffect(() => {
     // Set the textarea height after the first render to fit the initial content
     updateTextAreaHeight()
-  }, [])
+  }, [field.value])
 
   // Constructing aria-describedby attribute
   const describedBy = [`field-characters-count-description-${name}`]
 
   if (description) {
     describedBy.unshift(`description-${name}`)
+  }
+
+  const generateTemplate = async () => {
+    await helpers.setValue(wordingTemplate)
+    if (textAreaRef.current) {
+      textAreaRef.current.focus()
+      textAreaRef.current.setSelectionRange(128, 128)
+    }
   }
 
   return (
@@ -165,11 +190,11 @@ export const TextArea = ({
         ref={textAreaRef}
         {...field}
         onChange={(event) => {
-          updateTextAreaHeight()
           field.onChange(event)
           props.onChange?.(event)
         }}
       />
+      {shouldDisplayTemplateButton && <Button className={styles['template-button']} onClick={generateTemplate} disabled={field.value?.length}>Générer un exemple</Button>}
     </FieldLayout>
   )
 }

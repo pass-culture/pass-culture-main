@@ -78,3 +78,5 @@ export const DEFAULT_VISIBILITY_FORM_VALUES: VisibilityFormValues = {
 export const MAX_DESCRIPTION_LENGTH = 1500
 
 export const MAX_PRICE_DETAILS_LENGTH = 1000
+
+export const modelTemplate = `**Thèmes et mots clefs de la proposition d’éducation artistique et culturelle :**\nQuels sujets et grandes notions sont abordés ?\n\n**Déroulé de l’action :**\nComment se compose la proposition ?\nQuelles connaissances les élèves acquièrent-ils ?\nDe quelles pratiques font-ils l’expérience ?\nQuelles démarches artistiques ou scientifiques découvrent-ils ?\n\n**Les intervenants des arts ou des sciences :**\nQui les élèves vont-ils rencontrer ?\nQuelles sont les qualifications des intervenants ?`

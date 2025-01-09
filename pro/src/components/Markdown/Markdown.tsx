@@ -24,5 +24,5 @@ export const Markdown = ({ markdownText }: { markdownText: string }) => {
     ALLOWED_TAGS: ['strong', 'em', 'a'],
     ALLOWED_ATTR: ['href', 'target', 'rel', 'class'],
   })
-  return <span dangerouslySetInnerHTML={{ __html: html }} />
+  return <span className={styles['markdown']} dangerouslySetInnerHTML={{ __html: html }} />
 }
