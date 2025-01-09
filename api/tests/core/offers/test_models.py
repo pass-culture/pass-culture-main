@@ -129,7 +129,7 @@ class OfferIsEditableTest:
         assert offer.isEditable
 
     def test_not_editabe_if_from_another_provider(self):
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         offer = factories.OfferFactory(lastProvider=provider)
         assert not offer.isEditable
 

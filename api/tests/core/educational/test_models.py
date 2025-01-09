@@ -302,7 +302,7 @@ class CollectiveOfferIsEditableByProTest:
 
     @pytest.mark.parametrize("state", OfferValidationStatus)
     def test_offer_from_public_api_for_status(self, state) -> None:
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         offer = factories.CollectiveOfferFactory(validation=state, providerId=provider.id)
         factories.CollectiveStockFactory(collectiveOffer=offer)
 

@@ -33,7 +33,7 @@ class CheckProviderCanEditStockTest:
         validation.check_provider_can_edit_stock(offer)
 
     def test_non_allocine_provider_offer(self):
-        offerer = providers_factories.APIProviderFactory()
+        offerer = providers_factories.PublicApiProviderFactory()
         provider_offer = offers_factories.OfferFactory(lastProvider=offerer, idAtProvider="1")
 
         with pytest.raises(ApiErrors) as error:
@@ -42,7 +42,7 @@ class CheckProviderCanEditStockTest:
         assert error.value.errors["global"] == ["Les offres importées ne sont pas modifiables"]
 
     def test_allowed_provider(self):
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         provider_offer = offers_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
 
         validation.check_provider_can_edit_stock(provider_offer, provider)
@@ -53,7 +53,7 @@ class CheckCanInputIdAtProviderTest:
         validation.check_can_input_id_at_provider(None, None)
 
     def test_with_id_at_provider(self):
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         validation.check_can_input_id_at_provider(provider, "an id at provider")
 
     def test_raise_when_id_at_provider_given_without_a_provider(self):
@@ -278,7 +278,7 @@ class CheckStockCanBeCreatedForOfferTest:
         assert error.value.errors["global"] == ["Les offres importées ne sont pas modifiables"]
 
     def test_allowed_provider(self, app):
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         offer = offers_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
 
         validation.check_provider_can_create_stock(offer, provider)
@@ -343,7 +343,7 @@ class CheckStockIsUpdatableTest:
             validation.check_stock_is_updatable(stock)
 
     def test_offer_from_non_allocine_provider(self):
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         offer = offers_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
         stock = offers_factories.StockFactory(offer=offer)
 
