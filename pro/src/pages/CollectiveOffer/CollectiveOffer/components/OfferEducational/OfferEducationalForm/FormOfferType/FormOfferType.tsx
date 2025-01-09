@@ -4,6 +4,7 @@ import { EacFormat } from 'apiClient/adage'
 import {
   MAX_DESCRIPTION_LENGTH,
   MAX_PRICE_DETAILS_LENGTH,
+  modelTemplate
 } from 'commons/core/OfferEducational/constants'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { SelectOption } from 'commons/custom_types/form'
@@ -122,6 +123,9 @@ export const FormOfferType = ({
             maxLength={MAX_DESCRIPTION_LENGTH}
             name="description"
             disabled={disableForm}
+            placeholder="Écrivez ici..."
+            hasTemplateButton={isTemplate}
+            wordingTemplate={modelTemplate}
           />
         </FormLayout.Row>
         {isTemplate && (
