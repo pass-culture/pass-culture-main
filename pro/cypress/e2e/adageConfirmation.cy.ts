@@ -86,7 +86,7 @@ describe('Adage confirmation', () => {
       cy.request({
         method: 'GET',
         url: 'http://localhost:5001/sandboxes/get_unique_email',
-        timeout: 60000,
+     //   timeout: 60000,
       }).then((response) => {
         expect(response.status).to.eq(200)
         expect(response.body.To).to.eq(email1 + ', ' + email2)
@@ -159,7 +159,7 @@ describe('Adage confirmation', () => {
       cy.request({
         method: 'GET',
         url: 'http://localhost:5001/sandboxes/get_unique_email',
-        timeout: 60000,
+       // timeout: 60000,
       }).then((response) => {
         expect(response.status).to.eq(200)
         expect(response.body.To).to.eq(email1)
@@ -245,7 +245,7 @@ describe('Adage confirmation', () => {
       cy.request({
         method: 'GET',
         url: 'http://localhost:5001/sandboxes/get_unique_email',
-        timeout: 60000,
+     //   timeout: 60000,
       }).then((response) => {
         expect(response.status).to.eq(200)
         expect(response.body.To).to.eq(email1)
