@@ -43,7 +43,7 @@ class OfferStockResponse(BaseModel):
     isBookable: bool
     price: int
     numberOfTickets: int | None
-    educationalPriceDetail: str | None
+    priceDetail: str | None = Field(alias="educationalPriceDetail")
 
     _convert_price = validator("price", pre=True, allow_reuse=True)(convert_to_cent)
 
