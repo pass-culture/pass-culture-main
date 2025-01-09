@@ -41,7 +41,7 @@ function getSearchIndexIdDisplayed(
     // react-instantsearch results mignt be null but the lib does not
     // export a SearchResults type that we could use to make sure of that
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (result.results?.nbHits > 0) {
+    if (result.results?.nbHits !== undefined && result.results.nbHits > 0) {
       return result.indexId
     }
   }
