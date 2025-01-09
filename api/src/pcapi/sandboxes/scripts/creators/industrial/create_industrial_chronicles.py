@@ -22,7 +22,13 @@ def create_industrial_chronicles() -> None:
         .order_by(users_models.User.id)
         .limit(10)
     )
-    products = offers_models.Product.query.order_by(offers_models.Product.id).limit(9)
+    products = (
+        offers_models.Product.query.filter(
+            ~offers_models.Product.extraData["ean"].astext.is_(None),
+        )
+        .order_by(offers_models.Product.id)
+        .limit(9)
+    )
 
     logger.info("create chronicles with all fields")
     for user, product, i in zip(itertools.cycle(users), itertools.cycle(products), range(30)):
