@@ -7,7 +7,7 @@ class MockAggregatedRevenueQueryResult:
     revenue: str
     expected_revenue: str
 
-    def __init__(  # pylint: disable=too-many-positional-arguments
+    def __init__(
         self,
         year: int = 2024,
         individual: Decimal = Decimal("12.12"),
