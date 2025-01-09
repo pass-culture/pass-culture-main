@@ -63,7 +63,7 @@ FROM builder-${network_mode} AS builder-dev-proxy
 
 RUN poetry check --lock
 
-RUN REQUESTS_CA_BUNDLE=/cacert.pem PIP_CERT=/cacert.pem CURL_CA_BUNDLE=/cacert.pem poetry install --only dev
+RUN REQUESTS_CA_BUNDLE=/cacert.pem PIP_CERT=/cacert.pem CURL_CA_BUNDLE=/cacert.pem poetry install --only dev --no-root
 
 ########## DEV BUILDER DEFAULT ##########
 
