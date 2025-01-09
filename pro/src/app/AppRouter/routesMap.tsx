@@ -121,7 +121,7 @@ export const routes: RouteConfig[] = [
   {
     lazy: () => import('pages/OfferType/OfferType'),
     path: '/onboarding/offre/creation',
-    title: 'Choix de la nature de l’offre - Créer une offre',
+    title: 'Choix de la nature de l’offre - Créer une offre - Onboarding',
     featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
   },
   {
@@ -385,7 +385,7 @@ export const routes: RouteConfig[] = [
         'pages/Onboarding/OnboardingOffersTypeChoice/OnboardingOffersTypeChoice'
       ),
     path: '/onboarding',
-    title: "Inscription - Choix du type d'offre",
+    title: 'Onboarding',
     featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
   },
   {
@@ -394,7 +394,7 @@ export const routes: RouteConfig[] = [
         'pages/Onboarding/OnboardingOfferIndividual/OnboardingOfferIndividual'
       ),
     path: '/onboarding/individuel',
-    title: 'Inscription - Offre à destination des jeunes',
+    title: 'Offre à destination des jeunes - Onboarding',
     featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
   },
   {
@@ -403,7 +403,7 @@ export const routes: RouteConfig[] = [
         'pages/Onboarding/OnboardingOfferIndividualAutomatic/OnboardingOfferIndividualAutomatic'
       ),
     path: '/onboarding/synchro',
-    title: 'Inscription - Connecter à mon logiciel',
+    title: 'Connecter à mon logiciel - Onboarding',
     featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
   },
   {
