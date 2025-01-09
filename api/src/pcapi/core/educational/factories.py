@@ -189,6 +189,7 @@ class CollectiveStockFactory(BaseFactory):
     dateModified = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1))
     numberOfTickets = 25
     price = 100
+    priceDetail = factory.LazyAttribute(lambda stock: f"Prix: {stock.price}€ pour {stock.numberOfTickets} tickets")
 
 
 class EducationalYearFactory(BaseFactory):
