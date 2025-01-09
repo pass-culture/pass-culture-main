@@ -351,7 +351,7 @@ class CreateStockTest:
 
     def test_does_not_allow_creation_on_a_synchronized_offer(self):
         # Given
-        offer = factories.ThingOfferFactory(lastProvider=providers_factories.APIProviderFactory())
+        offer = factories.ThingOfferFactory(lastProvider=providers_factories.PublicApiProviderFactory())
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
@@ -1041,7 +1041,7 @@ class DeleteStockTest:
         assert len(cancel_notification_requests) == 0
 
     def test_can_delete_if_stock_from_provider(self):
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         offer = factories.OfferFactory(lastProvider=provider, idAtProvider="1")
         stock = factories.StockFactory(offer=offer)
 
@@ -1147,7 +1147,7 @@ class DeleteStockWithOffererAddressAsDataSourceTest:
 
     @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_can_delete_if_stock_from_provider(self):
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         offer = factories.OfferFactory(lastProvider=provider, idAtProvider="1")
         stock = factories.StockFactory(offer=offer)
 
@@ -1544,7 +1544,7 @@ class CreateOfferTest:
 
     def test_create_offer_with_id_at_provider(self):
         venue = offerers_factories.VenueFactory()
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
 
         body = offers_schemas.CreateOffer(
             name="A pretty good offer",
@@ -1813,7 +1813,7 @@ class UpdateOfferTest:
         assert offer.mentalDisabilityCompliant is False
 
     def test_forbidden_on_imported_offer_on_other_fields(self):
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         offer = factories.OfferFactory(
             lastProvider=provider,
             durationMinutes=90,
@@ -2423,7 +2423,7 @@ class RejectInappropriateProductTest:
         self, mocked_send_booking_cancellation_emails_to_user_and_offerer, mocked_async_index_offer_ids
     ):
         # Given
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         product1 = factories.ThingProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "ean-de-test"}, lastProvider=provider
         )
@@ -2476,7 +2476,7 @@ class RejectInappropriateProductTest:
         self, mocked_send_booking_cancellation_emails_to_user_and_offerer
     ):
         # Given
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         product1 = factories.ThingProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "ean-de-test"}, lastProvider=provider
         )
@@ -2509,7 +2509,7 @@ class RejectInappropriateProductTest:
         self, mocked_send_booking_cancellation_emails_to_user_and_offerer, mocked_async_index_offer_ids
     ):
         # Given
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         factories.ThingProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             extraData={"ean": "ean-de-test"},
@@ -3916,7 +3916,7 @@ class ApproveProductAndRejectedOffersTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_should_approve_product_and_offers_with_no_offers(self, mocked_async_index_offer_ids):
         # Given
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         ean = "ean-de-test"
         factories.ThingProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -3938,7 +3938,7 @@ class ApproveProductAndRejectedOffersTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_should_approve_product_and_offers_on_approved_offers(self, mocked_async_index_offer_ids):
         # Given
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         ean = "ean-de-test"
         product = factories.ThingProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -3967,7 +3967,7 @@ class ApproveProductAndRejectedOffersTest:
         self, mocked_async_index_offer_ids
     ):
         # Given
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         ean = "ean-de-test"
         product = factories.ThingProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -4005,7 +4005,7 @@ class ApproveProductAndRejectedOffersTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_should_approve_product_and_offers_with_one_offer_manually_rejected(self, mocked_async_index_offer_ids):
         # Given
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         ean = "ean-de-test"
         product = factories.ThingProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -4032,7 +4032,7 @@ class ApproveProductAndRejectedOffersTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_should_approve_product_and_offers_with_one_offer_auto_rejected(self, mocked_async_index_offer_ids):
         # Given
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         ean = "ean-de-test"
         product = factories.ThingProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -4058,7 +4058,7 @@ class ApproveProductAndRejectedOffersTest:
 
     def test_should_approve_product_and_offers_with_update_exception(self):
         # Given
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         ean = "ean-de-test"
         product = factories.ThingProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
