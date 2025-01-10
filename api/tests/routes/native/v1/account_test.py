@@ -473,9 +473,7 @@ class AccountCreationTest:
 
         expected_num_queries = 1  # feature
         expected_num_queries += 1  # user
-        expected_num_queries += 1  # user
         expected_num_queries += 1  # user (insert)
-        expected_num_queries += 1  # user
         expected_num_queries += 1  # bookings
         expected_num_queries += 1  # favorites
         expected_num_queries += 1  # deposit
