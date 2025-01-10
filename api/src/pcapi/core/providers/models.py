@@ -26,16 +26,7 @@ if typing.TYPE_CHECKING:
 class Provider(PcObject, Base, Model, DeactivableMixin):
     name: str = sa.Column(sa.String(90), index=True, nullable=False)
 
-    localClass = sa.Column(
-        sa.String(60),
-        nullable=True,
-        unique=True,
-    )
-
-    # presence of this field signifies the provider implements pass Culture's provider API
-    apiUrl = sa.Column(sa.String, nullable=True)
-
-    authToken = sa.Column(sa.String, nullable=True)
+    localClass = sa.Column(sa.String(60), nullable=True, unique=True)
 
     enabledForPro: bool = sa.Column(sa.Boolean, nullable=False, default=False, server_default=sa_sql.expression.false())
 
