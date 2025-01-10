@@ -2,26 +2,26 @@ import cn from 'classnames'
 import { type ReactNode } from 'react'
 
 import { Layout } from 'app/App/layout/Layout'
-import { Header } from 'components/Header/Header'
 
 import styles from './OnboardingLayout.module.scss'
 
 interface OnboardingLayoutProps {
   className?: string
-  showFooter?: boolean
   verticallyCentered?: boolean
   children: ReactNode
+  stickyActionsAndFooter?: boolean
 }
 
 export const OnboardingLayout = ({
   className,
-  showFooter = true,
   children,
   verticallyCentered = false,
+  stickyActionsAndFooter = true,
 }: OnboardingLayoutProps): JSX.Element => {
   return (
-    <Layout layout="onboarding" showFooter={showFooter}>
-      <Header disableHomeLink={true} />
+    <Layout
+      layout={stickyActionsAndFooter ? 'sticky-onboarding' : 'onboarding'}
+    >
       <div
         className={cn(
           styles[`onboarding-layout`],

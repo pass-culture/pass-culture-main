@@ -28,7 +28,7 @@ export const OnboardingOfferIndividual = (): JSX.Element => {
   }
 
   return (
-    <OnboardingLayout verticallyCentered showFooter={false}>
+    <OnboardingLayout verticallyCentered>
       <h1 className={styles['offers-title']}>Offre à destination des jeunes</h1>
       <h2 className={styles['offers-subtitle']}>
         Comment souhaitez-vous créer votre 1ère offre ?

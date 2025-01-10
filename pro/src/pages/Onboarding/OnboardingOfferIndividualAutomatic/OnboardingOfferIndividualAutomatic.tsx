@@ -16,7 +16,7 @@ export const OnboardingOfferIndividualAutomatic = ({
   const navigate = useNavigate()
 
   return (
-    <OnboardingLayout showFooter={false}>
+    <OnboardingLayout>
       <div className={cn(className)}>
         <h1 className={styles['title']}>
           Connecter mon logiciel de gestion des stocks

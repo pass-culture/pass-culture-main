@@ -38,7 +38,7 @@ export const Layout = ({
   children,
   mainHeading,
   layout = 'basic',
-  showFooter = layout !== 'funnel' && layout !== 'sticky-onboarding',
+  showFooter = layout !== 'funnel',
 }: LayoutProps) => {
   const currentUser = useSelector(selectCurrentUser)
   const [lateralPanelOpen, setLateralPanelOpen] = useState(false)
@@ -61,10 +61,12 @@ export const Layout = ({
   const mainHeadingWrapper = mainHeading && (
     <div className={styles['main-heading-wrapper']}>
       <h1 className={styles['main-heading-title']}>{mainHeading}</h1>
-      {isConnected && <BackToNavLink
-        isMobileScreen={isMobileScreen}
-        className={styles['main-heading-back-to-nav-link']}
-      />}
+      {isConnected && (
+        <BackToNavLink
+          isMobileScreen={isMobileScreen}
+          className={styles['main-heading-back-to-nav-link']}
+        />
+      )}
     </div>
   )
 
@@ -97,6 +99,7 @@ export const Layout = ({
         )}
         {(layout === 'basic' ||
           layout === 'sticky-actions' ||
+          layout === 'onboarding' ||
           layout === 'sticky-onboarding') && (
           <Header
             lateralPanelOpen={lateralPanelOpen}
@@ -107,7 +110,9 @@ export const Layout = ({
               })
             }}
             ref={openButtonRef}
-            disableHomeLink={layout === 'sticky-onboarding'}
+            disableHomeLink={
+              layout === 'sticky-onboarding' || layout === 'onboarding'
+            }
           />
         )}
         <div
