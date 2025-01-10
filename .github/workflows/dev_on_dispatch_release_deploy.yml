@@ -91,8 +91,9 @@ jobs:
     with:
       environment: ${{ github.event.inputs.target_environment }}
       app_version: ${{ needs.version.outputs.APP_VERSION }}
-      teleport_proxy: teleport.ehp.passculture.team:443
-      teleport_kubernetes_cluster: passculture-metier-ehp
+      cluster_scope: metier
+      cluster_environment: ehp
+      workload_identity_provider_secret_name: gcp_metier_ehp_workload_identity_provider
       deploy_api: true
       deploy_pro: true
       doc-api-entrypoint: 'api/documentation'
@@ -108,8 +109,9 @@ jobs:
     with:
       environment: integration
       app_version: ${{ needs.version.outputs.APP_VERSION }}
-      teleport_proxy: teleport.ehp.passculture.team:443
-      teleport_kubernetes_cluster: passculture-metier-ehp
+      cluster_scope: metier
+      cluster_environment: ehp
+      workload_identity_provider_secret_name: gcp_metier_ehp_workload_identity_provider
       deploy_api: true
       deploy_pro: true
       doc-api-entrypoint: 'api/documentation'
@@ -125,8 +127,9 @@ jobs:
     with:
       environment: ${{ github.event.inputs.target_environment }}
       app_version: ${{ needs.version.outputs.APP_VERSION }}
-      teleport_proxy: teleport.passculture.team:443
-      teleport_kubernetes_cluster: passculture-metier-prod
+      cluster_scope: metier
+      cluster_environment: prod
+      workload_identity_provider_secret_name: gcp_metier_prod_workload_identity_provider
       deploy_api: true
       deploy_pro: true
     secrets:

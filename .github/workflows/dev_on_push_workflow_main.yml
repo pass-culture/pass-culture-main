@@ -338,8 +338,9 @@ jobs:
     with:
       environment: testing
       app_version: ${{ github.sha }}
-      teleport_proxy: teleport.ehp.passculture.team:443
-      teleport_kubernetes_cluster: passculture-metier-ehp
+      cluster_scope: metier
+      cluster_environment: ehp
+      workload_identity_provider_secret_name: gcp_metier_ehp_workload_identity_provider
       deploy_api: ${{ needs.test-api.result == 'success' }}
       deploy_pro: ${{ needs.test-pro.result == 'success' }}
     secrets:
@@ -359,8 +360,9 @@ jobs:
     with:
       environment: ops
       app_version: ${{ github.sha }}
-      teleport_proxy: teleport.ops.passculture.team:443
-      teleport_kubernetes_cluster: passculture-metier-ops
+      cluster_scope: metier
+      cluster_environment: ops
+      workload_identity_provider_secret_name: gcp_metier_ops_workload_identity_provider
       deploy_api: ${{ needs.test-api.result == 'success' }}
       deploy_pro: false
     secrets:

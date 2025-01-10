@@ -14,8 +14,9 @@ jobs:
     with:
       environment: ops
       app_version: ${{ inputs.pcapi_image_tag }}
-      teleport_proxy: teleport.ops.passculture.team:443
-      teleport_kubernetes_cluster: passculture-metier-ops
+      cluster_scope: metier
+      cluster_environment: ops
+      workload_identity_provider_secret_name: gcp_metier_ops_workload_identity_provider
       deploy_api: true
       deploy_pro: false
     secrets:
