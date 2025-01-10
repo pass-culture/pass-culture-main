@@ -1,7 +1,6 @@
 import itertools
 from urllib.parse import urlsplit
 
-import dotenv
 from flask import Flask
 from flask_cors import CORS
 import pytest

@@ -1,14 +1,10 @@
 from dataclasses import asdict
-from datetime import datetime
 
 import pytest
-from sqlalchemy.orm import joinedload
 
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.offerers.factories import OffererInvitationFactory
-from pcapi.core.users.factories import ProFactory
 from pcapi.core.users.models import User
 
 

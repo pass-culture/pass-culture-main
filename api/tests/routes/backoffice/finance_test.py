@@ -1,7 +1,6 @@
 import datetime
 import decimal
 from secrets import compare_digest
-from unittest import mock
 
 from flask import url_for
 import pytest

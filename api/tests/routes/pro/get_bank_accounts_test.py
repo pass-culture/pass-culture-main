@@ -4,7 +4,6 @@ from pcapi.core import testing
 import pcapi.core.finance.factories as finances_factories
 import pcapi.core.finance.models as finances_models
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 
 

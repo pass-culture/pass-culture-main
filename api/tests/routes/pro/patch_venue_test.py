@@ -353,8 +353,6 @@ class Returns200Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        venue_id = venue.id
-
         venue_data = populate_missing_data_from_venue(
             {
                 # Default data from api adresse TestingBackend
@@ -511,8 +509,6 @@ class Returns200Test:
             street=None,
         )
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        venue_id = venue.id
-
         venue_data = populate_missing_data_from_venue(
             {
                 # Data sent by the frontend, originated from BAN autocomplete field
@@ -588,10 +584,9 @@ class Returns200Test:
             city="Lens",
             managingOfferer=user_offerer.offerer,
         )
-        offerer_address = venue.offererAddress
         update_data = {"bookingEmail": "fakeemail@fake.com"}
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        response = auth_request.patch("/venues/%s" % venue.id, json=update_data)
+        auth_request.patch("/venues/%s" % venue.id, json=update_data)
 
         venue = offerers_models.Venue.query.one()
         offerer_addresses = offerers_models.OffererAddress.query.order_by(offerers_models.OffererAddress.id).all()

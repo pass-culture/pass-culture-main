@@ -810,7 +810,7 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
     def test_uncancel_and_mark_as_used_unlocks_achievement(self, authenticated_client, bookings):
         festival_booking = bookings[1]
 
-        response = self.post_to_endpoint(authenticated_client, booking_id=festival_booking.id)
+        self.post_to_endpoint(authenticated_client, booking_id=festival_booking.id)
 
         assert festival_booking.user.achievements
 
@@ -1216,7 +1216,7 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
     def test_batch_mark_as_used_unlocks_achievement(self, authenticated_client, bookings):
         festival_booking = bookings[1]
 
-        response = self.post_to_endpoint(authenticated_client, form={"object_ids": str(festival_booking.id)})
+        self.post_to_endpoint(authenticated_client, form={"object_ids": str(festival_booking.id)})
 
         assert festival_booking.user.achievements
 

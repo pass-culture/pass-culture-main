@@ -62,7 +62,7 @@ class BaseProAutomations:
 
             with patch(self.MOCK_IMPORT_CONTACT_PATH) as mock_import_contacts:
                 features.WIP_ENABLE_BREVO_PRO_SUBACCOUNT = with_subaccount
-                assert type(self).func()
+                assert type(self).func()  # pylint: disable=no-value-for-parameter # I don't get this code
 
                 expected_params = build_expected_called_params(self.get_list_id(with_subaccount))
                 mock_import_contacts.assert_called_once_with(expected_params)

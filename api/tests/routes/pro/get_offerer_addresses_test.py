@@ -104,7 +104,7 @@ class Return200Test:
             address__city="Paris",
             address__banId="75107_7560_00001",
         )
-        offer = offers_factories.OfferFactory(
+        offers_factories.OfferFactory(
             venue__managingOfferer=offerer,
             offererAddress=offerer_address_1,
             venue__offererAddress=offerer_address_1,
@@ -169,12 +169,15 @@ class Return200Test:
 
         if linked_to_venue:
             venue = offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress=offerer_address_1)
+            venue_public_name = venue.common_name
+        else:
+            venue_public_name = None
+
         client = client.with_session_auth(email=pro.email)
         offerer_id = offerer.id
         offerer_address_1_id = offerer_address_1.id
         offerer_address_2_id = offerer_address_2.id
         offerer_address_3_id = offerer_address_3.id
-        venue_public_name = venue.common_name if linked_to_venue else None
         with assert_num_queries(self.num_queries):
             response = client.get(f"/offerers/{offerer_id}/addresses")
             assert response.status_code == 200

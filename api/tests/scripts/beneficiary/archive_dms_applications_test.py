@@ -3,7 +3,6 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.connectors.dms import api as api_dms
-from pcapi.core import testing
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.scripts.subscription.dms import archive_dms_applications

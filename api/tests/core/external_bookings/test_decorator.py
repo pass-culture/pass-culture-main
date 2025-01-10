@@ -2,8 +2,6 @@ import logging
 from unittest.mock import Mock
 
 import pytest
-from requests.exceptions import ReadTimeout
-from requests.exceptions import Timeout
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.external_bookings import models as external_bookings_models
@@ -11,11 +9,12 @@ from pcapi.core.external_bookings.decorators import ExternalBookingDecoratorExce
 from pcapi.core.external_bookings.decorators import catch_cinema_provider_request_timeout
 from pcapi.core.external_bookings.exceptions import ExternalBookingTimeoutException
 from pcapi.core.users import models as users_models
+from pcapi.utils.requests import requests
 
 
 class FakeExternalBookingClientAPI(external_bookings_models.ExternalBookingsClientAPI):
     def __init__(self, cinema_id: str, connector) -> None:
-        self.cinema_id = cinema_id
+        super().__init__(cinema_id)
         self.connector = connector
 
     @catch_cinema_provider_request_timeout
@@ -25,6 +24,12 @@ class FakeExternalBookingClientAPI(external_bookings_models.ExternalBookingsClie
     @catch_cinema_provider_request_timeout
     def book_ticket(self, show_id, booking, beneficiary):
         return self.connector.make_request(show_id, booking, beneficiary)
+
+    def cancel_booking(self, barcodes):
+        pass
+
+    def get_shows_remaining_places(self, shows_id):
+        return {}
 
 
 class FakeClass:
@@ -52,14 +57,15 @@ class CatchCinemaProviderRequestTimeoutTest:
         client = FakeExternalBookingClientAPI(cinema_id=1, connector=Mock())
 
         with pytest.raises(TypeError) as exception:
-            client.get_film_showtimes_stocks(12, show_id=1)
+            # We ignore the pylint error because we test incorrect args here
+            client.get_film_showtimes_stocks(12, show_id=1)  # pylint: disable=unexpected-keyword-arg
             assert (
                 str(exception.value)
                 == "TypeError: get_film_showtimes_stocks() got an unexpected keyword argument 'show_id'"
             )
 
         with pytest.raises(TypeError) as exception:
-            client.get_film_showtimes_stocks(12, 13, 24)
+            client.get_film_showtimes_stocks(12, 13, 24)  # pylint: disable=too-many-function-args
             assert (
                 str(exception.value)
                 == "TypeError: get_film_showtimes_stocks() takes 1 positional arguments but 3 were given"
@@ -71,7 +77,7 @@ class CatchCinemaProviderRequestTimeoutTest:
             (
                 [12345],
                 {"booking": bookings_models.Booking(id=1), "beneficiary": users_models.User(id=3)},
-                ReadTimeout,
+                requests.exceptions.ReadTimeout,
                 Mock(url="https://provider.com/route/un/peu/instable", method="POST"),
                 {
                     "cinema_id": 789,
@@ -88,7 +94,7 @@ class CatchCinemaProviderRequestTimeoutTest:
             (
                 [678, bookings_models.Booking(id=1), users_models.User(id=3)],
                 {},
-                Timeout,
+                requests.exceptions.Timeout,
                 Mock(url="https://provider.com/route/qui/timeout", method="GET"),
                 {
                     "cinema_id": 789,
@@ -109,13 +115,12 @@ class CatchCinemaProviderRequestTimeoutTest:
                     "booking": bookings_models.Booking(id=4567),
                     "beneficiary": users_models.User(id=12345767),
                 },
-                ReadTimeout,
+                requests.exceptions.ReadTimeout,
                 Mock(url="https://provider.com/oh/zut/encore/un/timeout", method="PUT"),
                 {
                     "cinema_id": 789,
                     "method": "book_ticket",
                     "client": "FakeExternalBookingClientAPI",
-                    "cinema_id": 789,
                     "method_params": {
                         "show_id": "562",
                         "booking": "<Booking #4567>",

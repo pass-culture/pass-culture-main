@@ -7,7 +7,6 @@ from sqlalchemy.exc import IntegrityError
 from pcapi import settings
 from pcapi.core.educational import factories as educational_factories
 import pcapi.core.finance.factories as finance_factories
-import pcapi.core.finance.models as finance_models
 from pcapi.core.offerers import factories
 from pcapi.core.offerers import models
 import pcapi.core.offers.factories as offers_factories

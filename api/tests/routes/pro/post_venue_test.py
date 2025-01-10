@@ -3,7 +3,6 @@ import pathlib
 
 import pytest
 
-from pcapi.core import testing
 from pcapi.core.external.zendesk_sell_backends import testing as zendesk_testing
 from pcapi.core.geography import models as geography_models
 from pcapi.core.history import models as history_models

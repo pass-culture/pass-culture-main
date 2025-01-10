@@ -217,7 +217,7 @@ class Returns422Test:
         test_client = client.with_session_auth(email=user.email)
         num_queries = testing.AUTHENTICATION_QUERIES
         with testing.assert_num_queries(num_queries):
-            response = test_client.get(f"/get-statistics/")
+            response = test_client.get("/get-statistics/")
             assert response.status_code == 422
         assert response.json["global"] == ["Vous devez préciser au moins un ID de partenaire culturel"]
 

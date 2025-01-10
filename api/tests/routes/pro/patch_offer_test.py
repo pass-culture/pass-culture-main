@@ -7,7 +7,6 @@ import pytest
 from pcapi.connectors import api_adresse
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories_v2 as subcategories
-from pcapi.core.geography import factories as geography_factories
 from pcapi.core.geography import models as geography_models
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
@@ -512,7 +511,7 @@ class Returns200Test:
 
         assert response.status_code == 200
         assert response.json["id"] == offer.id
-        updated_offer = Offer.query.get(offer.id)
+        Offer.query.get(offer.id)
         assert offer.offererAddressId == venue.offererAddressId
 
     @patch("pcapi.connectors.api_adresse.get_municipality_centroid")

@@ -856,7 +856,7 @@ class GetOffererStatsTest(GetEndpointHelper):
             venue=venue,
             validation=offers_models.OfferValidationStatus.APPROVED.value,
         )
-        booking = bookings_factories.BookingFactory(
+        bookings_factories.BookingFactory(
             status=bookings_models.BookingStatus.USED,
             quantity=1,
             amount=10,
@@ -1239,7 +1239,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
     def test_get_full_sorted_history(self, authenticated_client, legit_user):
         admin = users_factories.UserFactory()
         user_offerer = offerers_factories.UserOffererFactory()
-        new_offerer_action = history_factories.ActionHistoryFactory(
+        history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 3, 13, 1),
             actionType=history_models.ActionType.OFFERER_NEW,
             authorUser=user_offerer.user,
@@ -1247,7 +1247,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
             offerer=user_offerer.offerer,
             comment=None,
         )
-        pending_offerer_action = history_factories.ActionHistoryFactory(
+        history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 4, 14, 2),
             actionType=history_models.ActionType.OFFERER_PENDING,
             authorUser=admin,
@@ -1255,7 +1255,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
             offerer=user_offerer.offerer,
             comment="Documents complémentaires demandés",
         )
-        comment_action = history_factories.ActionHistoryFactory(
+        history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 5, 15, 3),
             actionType=history_models.ActionType.COMMENT,
             authorUser=legit_user,
@@ -1263,7 +1263,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
             offerer=user_offerer.offerer,
             comment="Documents reçus",
         )
-        validated_offerer_action = history_factories.ActionHistoryFactory(
+        history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 6, 16, 4),
             actionType=history_models.ActionType.OFFERER_VALIDATED,
             authorUser=admin,
@@ -1271,7 +1271,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
             offerer=user_offerer.offerer,
             comment=None,
         )
-        other_comment_action = history_factories.ActionHistoryFactory(
+        history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 6, 17, 5),
             actionType=history_models.ActionType.COMMENT,
             authorUser=admin,
@@ -2304,11 +2304,11 @@ class ListOfferersToValidateTest(GetEndpointHelper):
 
             assert "Date invalide" in response.data.decode("utf-8")
 
-        @pytest.mark.parametrize("search", ["123004004", "123 004 004", "  123004004 ", "123004004\n"])
-        def test_list_search_by_siren(self, authenticated_client, offerers_to_be_validated, search):
+        @pytest.mark.parametrize("search_string", ["123004004", "123 004 004", "  123004004 ", "123004004\n"])
+        def test_list_search_by_siren(self, authenticated_client, offerers_to_be_validated, search_string):
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
-                    url_for("backoffice_web.validation.list_offerers_to_validate", q=search, status="PENDING")
+                    url_for("backoffice_web.validation.list_offerers_to_validate", q=search_string, status="PENDING")
                 )
                 assert response.status_code == 200
 
@@ -2364,11 +2364,11 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             assert {row["Nom"] for row in rows} == {"B", "D"}
             assert html_parser.extract_pagination_info(response.data) == (1, 1, 2)
 
-        @pytest.mark.parametrize("search", ["1", "1234", "123456", "12345678", "12345678912345", "  1234"])
-        def test_list_search_by_invalid_number_of_digits(self, authenticated_client, search):
+        @pytest.mark.parametrize("search_string", ["1", "1234", "123456", "12345678", "12345678912345", "  1234"])
+        def test_list_search_by_invalid_number_of_digits(self, authenticated_client, search_string):
             with assert_num_queries(self.expected_num_queries_when_no_query + 1):  # rollback transaction
                 response = authenticated_client.get(
-                    url_for("backoffice_web.validation.list_offerers_to_validate", q=search)
+                    url_for("backoffice_web.validation.list_offerers_to_validate", q=search_string)
                 )
                 assert response.status_code == 400
 

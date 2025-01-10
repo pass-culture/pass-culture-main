@@ -396,7 +396,7 @@ class Returns200Test:
             },
         }
         user_email = user_offerer.user.email
-        response = client.with_session_auth(user_email).post(f"/offers/draft", json=data)
+        response = client.with_session_auth(user_email).post("/offers/draft", json=data)
         assert response.status_code == 201
 
         draft_offer = Offer.query.one()
@@ -546,7 +546,7 @@ class Returns200Test:
             },
         }
         user_email = user_offerer.user.email
-        response = client.with_session_auth(user_email).post(f"/offers/draft", json=data)
+        response = client.with_session_auth(user_email).post("/offers/draft", json=data)
         assert response.status_code == 201
 
         draft_offer = Offer.query.one()

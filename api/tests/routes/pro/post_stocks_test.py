@@ -374,7 +374,7 @@ class Returns201Test:
             ],
         }
         with caplog.at_level(logging.INFO):
-            response = client.with_session_auth(user.email).post("/stocks/bulk/", json=stock_data)
+            client.with_session_auth(user.email).post("/stocks/bulk/", json=stock_data)
 
         created_stock = Stock.query.first()
         assert offer.id == created_stock.offerId

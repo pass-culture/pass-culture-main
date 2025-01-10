@@ -252,7 +252,7 @@ def update_venue(
     return venue
 
 
-def update_venue_location(  # pylint: disable=too-many-positional-arguments
+def update_venue_location(
     venue: models.Venue,
     modifications: dict,
     location_modifications: dict,

@@ -9,7 +9,6 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.repository import db
-from pcapi.repository import repository
 from pcapi.utils.date import format_into_utc_date
 
 

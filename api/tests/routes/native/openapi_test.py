@@ -78,14 +78,6 @@ def test_public_api(client):
                     "title": "AchievementsResponse",
                     "type": "array",
                 },
-                "MarkAchievementsAsSeenRequest": {
-                    "properties": {
-                        "achievementIds": {"items": {"type": "integer"}, "title": "Achievementids", "type": "array"}
-                    },
-                    "required": ["achievementIds"],
-                    "title": "MarkAchievementsAsSeenRequest",
-                    "type": "object",
-                },
                 "ActivityIdEnum": {
                     "description": "An enumeration.",
                     "enum": [

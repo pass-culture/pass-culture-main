@@ -286,7 +286,7 @@ class PostBookingTest:
             == hmac.new(provider.hmacKey.encode(), json.dumps(json_data).encode(), hashlib.sha256).hexdigest()
         )
 
-        now = datetime.now()
+        now = datetime.utcnow()
         json_confirmation_date = datetime.fromisoformat(json_data.pop("booking_confirmation_date"))
         json_creation_date = datetime.fromisoformat(json_data.pop("booking_creation_date"))
 
@@ -362,7 +362,7 @@ class PostBookingTest:
         assert response.status_code == 200
         json_data = json.loads(requests_mock.last_request.json())
 
-        now = datetime.now()
+        now = datetime.utcnow()
         json_confirmation_date = datetime.fromisoformat(json_data.pop("booking_confirmation_date"))
         json_creation_date = datetime.fromisoformat(json_data.pop("booking_creation_date"))
 

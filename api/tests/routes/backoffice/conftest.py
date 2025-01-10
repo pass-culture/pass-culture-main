@@ -534,7 +534,8 @@ def collective_offerer_booking_fixture(venue_with_educational_status):
 
 @pytest.fixture(name="today", scope="module")
 def today_fixture():
-    return datetime.datetime.now(datetime.timezone.utc)
+    # Disable datetime-now custom rule, here we use the timezone aware datetime at UTC
+    return datetime.datetime.now(datetime.timezone.utc)  # pylint: disable=datetime-now
 
 
 @pytest.fixture(name="collective_venue_booking")
