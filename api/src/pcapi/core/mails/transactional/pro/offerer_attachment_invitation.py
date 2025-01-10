@@ -12,7 +12,11 @@ def retrieve_data_for_offerer_attachment_invitation_new_user(
     offerer: offerers_models.Offerer,
 ) -> models.TransactionalEmailData:
     return models.TransactionalEmailData(
-        template=TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_NEW_USER.value, params={"OFFERER_NAME": offerer.name}
+        template=TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_NEW_USER.value,
+        params={
+            "OFFERER_NAME": offerer.name,
+            "REGISTRATION_LINK": f"{settings.PRO_URL}/inscription",
+        },
     )
 
 
@@ -21,7 +25,7 @@ def retrieve_data_for_offerer_attachment_invitation_existing_user_with_validated
 ) -> models.TransactionalEmailData:
     return models.TransactionalEmailData(
         template=TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_EXISTING_VALIDATED_USER_EMAIL.value,
-        params={"OFFERER_NAME": offerer.name},
+        params={"OFFERER_NAME": offerer.name, "JOIN_LINK": settings.PRO_URL},
     )
 
 

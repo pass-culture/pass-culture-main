@@ -2,6 +2,7 @@ import dataclasses
 
 import pytest
 
+from pcapi import settings
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.mails.transactional.pro.offerer_attachment_invitation as oai
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
@@ -18,7 +19,10 @@ class ProOffererAttachmentInvitationTest:
         mail_data = oai.retrieve_data_for_offerer_attachment_invitation_new_user(offerer)
 
         assert mail_data.template == TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_NEW_USER.value
-        assert mail_data.params == {"OFFERER_NAME": "Le Théâtre SAS"}
+        assert mail_data.params == {
+            "OFFERER_NAME": "Le Théâtre SAS",
+            "REGISTRATION_LINK": f"{settings.PRO_URL}/inscription",
+        }
 
     def test_email_data_existing_validated_user(self):
         offerer = offerers_factories.OffererFactory(name="Le Théâtre SAS")
@@ -28,7 +32,7 @@ class ProOffererAttachmentInvitationTest:
         assert (
             mail_data.template == TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_EXISTING_VALIDATED_USER_EMAIL.value
         )
-        assert mail_data.params == {"OFFERER_NAME": "Le Théâtre SAS"}
+        assert mail_data.params == {"OFFERER_NAME": "Le Théâtre SAS", "JOIN_LINK": settings.PRO_URL}
 
     @pytest.mark.settings(PRO_URL="http://pcpro.com")
     def test_email_data_existing_not_validated_user(self):
