@@ -291,7 +291,7 @@ describe('IndividualOfferDetails', () => {
     expect(
       await screen.findByRole('heading', { name: 'À propos de votre offre' })
     ).toBeInTheDocument()
-    expect(await screen.findByText(/Ajouter un lieu/)).toBeInTheDocument()
+    expect(await screen.findByText(/Ajouter une structure/)).toBeInTheDocument()
   })
 
   it('should render the component', async () => {

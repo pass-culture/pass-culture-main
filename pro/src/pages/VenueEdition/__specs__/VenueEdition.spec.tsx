@@ -70,6 +70,11 @@ describe('route VenueEdition', () => {
     vi.spyOn(api, 'getVenueTypes').mockResolvedValue([])
     vi.spyOn(api, 'fetchVenueLabels').mockResolvedValue([])
     vi.spyOn(api, 'listOffers').mockResolvedValue([])
+    vi.spyOn(api, 'listEducationalDomains').mockResolvedValue([])
+    vi.spyOn(api, 'getVenuesEducationalStatuses').mockResolvedValue({
+      statuses: [],
+    })
+    vi.spyOn(api, 'getEducationalPartners').mockResolvedValue({ partners: [] })
   })
 
   it('should call getVenue and display Venue Form screen on success', async () => {
@@ -95,7 +100,7 @@ describe('route VenueEdition', () => {
   it('should display the collective title', async () => {
     renderVenueEdition({
       initialRouterEntries: [
-        `/structures/${defaultGetOffererResponseModel.id}/lieux/${defaultGetVenue.id}/edition/collectif`,
+        `/structures/${defaultGetOffererResponseModel.id}/lieux/${defaultGetVenue.id}/collectif/edition`,
       ],
     })
 

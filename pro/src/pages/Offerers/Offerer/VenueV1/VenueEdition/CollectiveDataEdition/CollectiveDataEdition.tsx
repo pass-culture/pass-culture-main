@@ -1,5 +1,5 @@
 import { addDays, isBefore } from 'date-fns'
-import { Route, Routes, useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -61,6 +61,8 @@ export const CollectiveDataEdition = ({
 
   const canCreateCollectiveOffer = venue?.managingOfferer.allowedOnAdage
 
+  const location = useLocation()
+
   if (
     !venueId ||
     !offererId ||
@@ -117,28 +119,19 @@ export const CollectiveDataEdition = ({
         <>
           <hr className={styles['separator']} />
 
-          <Routes>
-            <Route
-              path=""
-              element={
-                <CollectiveDataEditionReadOnly
-                  venue={venue}
-                  culturalPartners={culturalPartners}
-                />
-              }
+          {location.pathname.includes('/edition') ? (
+            <CollectiveDataForm
+              statuses={statuses}
+              domains={domains}
+              culturalPartners={culturalPartners}
+              venue={venue}
             />
-            <Route
-              path="/edition"
-              element={
-                <CollectiveDataForm
-                  statuses={statuses}
-                  domains={domains}
-                  culturalPartners={culturalPartners}
-                  venue={venue}
-                />
-              }
+          ) : (
+            <CollectiveDataEditionReadOnly
+              venue={venue}
+              culturalPartners={culturalPartners}
             />
-          </Routes>
+          )}
         </>
       )}
     </>

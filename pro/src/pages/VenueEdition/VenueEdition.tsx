@@ -2,8 +2,6 @@ import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import {
   generatePath,
-  Route,
-  Routes,
   useLocation,
   useNavigate,
   useParams,
@@ -160,13 +158,10 @@ export const VenueEdition = (): JSX.Element | null => {
           />
         )}
 
-        <Routes>
-          <Route
-            path="collectif/*"
-            element={<CollectiveDataEdition venue={venue} />}
-          />
-          <Route path="*" element={<VenueEditionFormScreen venue={venue} />} />
-        </Routes>
+        {activeStep === 'collective' && <CollectiveDataEdition venue={venue} />}
+        {activeStep === 'individual' && (
+          <VenueEditionFormScreen venue={venue} />
+        )}
       </div>
     </Layout>
   )

@@ -105,8 +105,23 @@ export const routes: RouteConfig[] = [
   },
   {
     lazy: () => import('pages/VenueEdition/VenueEdition'),
-    path: '/structures/:offererId/lieux/:venueId/*',
+    path: '/structures/:offererId/lieux/:venueId',
     title: 'Gérer ma page sur l’application',
+  },
+  {
+    lazy: () => import('pages/VenueEdition/VenueEdition'),
+    path: '/structures/:offererId/lieux/:venueId/edition',
+    title: 'Gérer ma page sur l’application',
+  },
+  {
+    lazy: () => import('pages/VenueEdition/VenueEdition'),
+    path: '/structures/:offererId/lieux/:venueId/collectif',
+    title: 'Gérer ma page sur ADAGE',
+  },
+  {
+    lazy: () => import('pages/VenueEdition/VenueEdition'),
+    path: '/structures/:offererId/lieux/:venueId/collectif/edition',
+    title: 'Gérer ma page sur ADAGE',
   },
   {
     lazy: () => import('pages/VenueSettings/VenueSettings'),
