@@ -1,7 +1,11 @@
 import cn from 'classnames'
 
 import { TopOffersResponseData } from 'apiClient/v1'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { pluralizeString } from 'commons/utils/pluralize'
+import fullBoostedIcon from 'icons/full-boosted.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 import { Thumb } from 'ui-kit/Thumb/Thumb'
 
 import styles from './MostViewedOffers.module.scss'
@@ -15,6 +19,8 @@ export const MostViewedOffers = ({
   last30daysViews,
   topOffers,
 }: MostViewedOffersProps) => {
+  const offerHeadlineEnabled = useActiveFeature('WIP_HEADLINE_OFFER')
+
   return (
     <div className={styles['container']}>
       <div>
@@ -40,7 +46,19 @@ export const MostViewedOffers = ({
               })}
             />
             <div className={styles['top-offer-details']}>
-              <span className={styles['offer-title']}>
+              {offerHeadlineEnabled && topOffer.isHeadlineOffer && (
+                <Tag
+                  variant={TagVariant.SMALL_OUTLINE}
+                  className={styles['top-offer-headline-tag']}
+                >
+                  <SvgIcon
+                    src={fullBoostedIcon}
+                    width="20"
+                  />
+                  Offre à la une
+                </Tag>
+              )}
+              <span className={styles['top-offer-title']}>
                 {topOffer.offerName}
               </span>
               <br /> {topOffer.numberOfViews.toLocaleString('fr-FR')}{' '}
