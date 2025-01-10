@@ -711,7 +711,6 @@ def make_offer_headline(offer: models.Offer) -> models.HeadlineOffer:
         # as the TSRANGE object saves the timespan as a datetime in the database
         db.session.flush()
     except sqla_exc.IntegrityError as error:
-        db.session.rollback()
         if "exclude_offer_timespan" in str(error.orig):
             raise exceptions.OfferHasAlreadyAnActiveHeadlineOffer
         if "exclude_venue_timespan" in str(error.orig):
@@ -722,8 +721,11 @@ def make_offer_headline(offer: models.Offer) -> models.HeadlineOffer:
 
 
 def remove_headline_offer(headline_offer: models.HeadlineOffer) -> None:
-    headline_offer.timespan = db_utils.make_timerange(headline_offer.timespan.lower, datetime.datetime.utcnow())
-    db.session.flush()
+    try:
+        headline_offer.timespan = db_utils.make_timerange(headline_offer.timespan.lower, datetime.datetime.utcnow())
+        db.session.flush()
+    except sqla_exc.IntegrityError:
+        raise exceptions.CannotRemoveHeadlineOffer
 
 
 def _notify_pro_upon_stock_edit_for_event_offer(stock: models.Stock, bookings: list[bookings_models.Booking]) -> None:
