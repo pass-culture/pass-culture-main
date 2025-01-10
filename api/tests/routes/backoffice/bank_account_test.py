@@ -437,8 +437,8 @@ class DownloadReimbursementDetailsTest(PostEndpointHelper):
         ]
         if is_use_offer_address_ff_active:
             expected_header[6:10] = [
-                "SIRET du partenaire culturel",
-                "Raison sociale du partenaire culturel",
+                "SIRET de la structure",
+                "Raison sociale de la structure",
                 "Nom de l'offre",
                 "Adresse de l'offre",
             ]

@@ -329,8 +329,8 @@ def test_with_reimbursement_period_filter_with_pricings(client, cutoff, fortnigh
     reader = csv.DictReader(StringIO(response.data.decode("utf-8-sig")), delimiter=";")
     assert reader.fieldnames[:6] == ReimbursementDetails.CSV_HEADER[:6]
     assert reader.fieldnames[6:10] == [
-        "SIRET du partenaire culturel",
-        "Raison sociale du partenaire culturel",
+        "SIRET de la structure",
+        "Raison sociale de la structure",
         "Nom de l'offre",
         "Adresse de l'offre",
     ]
@@ -356,11 +356,10 @@ def test_with_reimbursement_period_filter_with_pricings(client, cutoff, fortnigh
         assert row["N° du justificatif"] == invoice.reference
         assert row["N° de virement"] == batch.label
         assert row["Intitulé du compte bancaire"] == bank_account.label
-        assert row["SIRET du partenaire culturel"] == venue.siret
         assert row["IBAN"] == bank_account.iban
-        assert row["Raison sociale du partenaire culturel"] == venue.name
+        assert row["Raison sociale de la structure"] == venue.name
         assert row["Adresse de l'offre"] == f"{venue.street} {venue.postalCode} {venue.city}"
-        assert row["SIRET du partenaire culturel"] == venue.siret
+        assert row["SIRET de la structure"] == venue.siret
         assert row["Nom de l'offre"] == offer.name
         assert row["N° de réservation (offre collective)"] == ""
         assert row["Nom (offre collective)"] == ""
@@ -670,8 +669,8 @@ def test_with_offer_address_and_venue_address(client, offer_has_oa, len_offerer_
         "N° de virement",
         "Intitulé du compte bancaire",
         "IBAN",
-        "SIRET du partenaire culturel",
-        "Raison sociale du partenaire culturel",
+        "SIRET de la structure",
+        "Raison sociale de la structure",
         "Nom de l'offre",
         "Adresse de l'offre",
         "N° de réservation (offre collective)",
