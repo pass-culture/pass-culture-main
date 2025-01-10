@@ -24,14 +24,14 @@ describe('Markdown', () => {
   it('should render urls with <a> tag', () => {
     const component = renderMarkdown('https://example.com')
     expect(component.container.innerHTML).toContain(
-      '<span><a rel="noreferrer" href="https://example.com">https://example.com</a></span>'
+      '<span><a target="_blank" rel="noreferrer" href="https://example.com" class="markdown-link">https://example.com</a></span>'
     )
   })
 
   it('should render urls without http prefix with <a> tag', () => {
     const component = renderMarkdown('www.example.com')
     expect(component.container.innerHTML).toContain(
-      '<span><a rel="noreferrer" href="https://www.example.com">www.example.com</a></span>'
+      '<span><a target="_blank" rel="noreferrer" href="https://www.example.com" class="markdown-link">www.example.com</a></span>'
     )
   })
 

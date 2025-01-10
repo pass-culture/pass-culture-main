@@ -1,4 +1,5 @@
 import DOMPurify from 'dompurify'
+import styles from './Markdown.module.scss'
 
 const BOLD_REGEXP = /\*\*(.*?)\*\*/gim
 const ITALIC_REGEXP = /_(.*?)_/gim
@@ -11,7 +12,7 @@ function markdownToHtml(markdown: string) {
   markdown = markdown.replace(ITALIC_REGEXP, '<em>$1</em>')
   markdown = markdown.replace(URL_REGEXP, (url) => {
     const href = url.match('^https?://') ? url : `https://${url}`
-    return `<a href="${href}" rel="noreferrer">${url}</a>`
+    return `<a class="${styles['markdown-link']}" href="${href}" rel="noreferrer" target="_blank">${url}</a>`
   })
   return markdown.replace(EMAIL_REGEXP, (email) => {
     return `<a href="mailto:${email}">${email}</a>`
@@ -21,7 +22,7 @@ function markdownToHtml(markdown: string) {
 export const Markdown = ({ markdownText }: { markdownText: string }) => {
   const html = DOMPurify.sanitize(markdownToHtml(markdownText), {
     ALLOWED_TAGS: ['strong', 'em', 'a'],
-    ALLOWED_ATTR: ['href', 'target', 'rel'],
+    ALLOWED_ATTR: ['href', 'target', 'rel', 'class'],
   })
   return <span dangerouslySetInnerHTML={{ __html: html }} />
 }

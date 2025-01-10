@@ -99,3 +99,11 @@
   background-image: none;
   background-color: var(--color-grey-light);
 }
+
+a[href^="mailto:"] {
+  font-family: var(--font-semi-bold-family);
+
+  &:hover {
+  text-decoration: underline;
+  }
+}
