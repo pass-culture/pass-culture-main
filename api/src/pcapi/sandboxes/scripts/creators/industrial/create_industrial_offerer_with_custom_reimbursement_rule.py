@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 def create_industrial_offerer_with_custom_reimbursement_rule() -> None:
     logger.info("create_industrial_offerer_with_custom_reimbursement_rule")
     offerer = offerers_factories.OffererFactory(name="Structure avec des tarifs dérogatoires")
+    offerers_factories.VenueFactory(name="Structure avec des tarifs dérogatoires", managingOfferer=offerer)
     finance_factories.CustomReimbursementRuleFactory(
         offerer=offerer,
         subcategories=["FESTIVAL_LIVRE", "FESTIVAL_CINE"],
@@ -49,4 +50,15 @@ def create_industrial_offerer_with_custom_reimbursement_rule() -> None:
         amount=None,
         rate=0.9,
     )
+
+    venue = offerers_factories.VenueFactory(
+        name="Partenaire avec un tarif dérogatoire", managingOfferer__name="Partenaire avec un tarif dérogatoire"
+    )
+    finance_factories.CustomReimbursementRuleFactory(
+        venue=venue,
+        timespan=[datetime.datetime.utcnow() - datetime.timedelta(days=10), None],
+        amount=None,
+        rate=0.97,
+    )
+
     logger.info("Created offerer with custom reimbursement rule")
