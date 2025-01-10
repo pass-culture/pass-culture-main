@@ -32,6 +32,7 @@ export const IndividualOfferRow = ({
 }: IndividualOfferRowProps) => {
   const rowId = `collective-offer-${offer.id}`
   const offerAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+  const offerHeadlineEnabled = useActiveFeature('WIP_HEADLINE_OFFER')
 
   const offerLink = getIndividualOfferUrl({
     offerId: offer.id,
@@ -96,6 +97,7 @@ export const IndividualOfferRow = ({
         status={offer.status}
         className={styles['individual-cell-status']}
         displayLabel
+        isHeadline={offerHeadlineEnabled && offer.isHeadlineOffer}
       />
       <IndividualActionsCells
         rowId={rowId}

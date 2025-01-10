@@ -30,8 +30,13 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-const renderOfferItem = (props: IndividualOfferRowProps) =>
-  renderWithProviders(
+const renderOfferItem = (props: IndividualOfferRowProps, isHeadlineFeatureEnabled = false) => {
+  const features = []
+  if (isHeadlineFeatureEnabled) {
+    features.push('WIP_HEADLINE_OFFER')
+  }
+
+  return renderWithProviders(
     <>
       <table>
         <tbody>
@@ -39,8 +44,10 @@ const renderOfferItem = (props: IndividualOfferRowProps) =>
         </tbody>
       </table>
       <Notification />
-    </>
+    </>,
+    { features }
   )
+}
 
 const LABELS = {
   openActions: /Voir les actions/,
@@ -352,6 +359,15 @@ describe('IndividualOfferRow', () => {
       expect(
         screen.queryByText('2 dates épuisées', { selector: 'span' })
       ).toBeInTheDocument()
+    })
+
+    describe('when offer is headline', () => {
+      it('should display the boosted icon', () => {
+        props.offer.isHeadlineOffer = true
+        renderOfferItem(props, true)
+
+        expect(screen.getByRole('img', { name: 'Offre à la une' })).toBeInTheDocument()
+      })
     })
   })
 

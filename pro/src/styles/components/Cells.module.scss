@@ -78,6 +78,21 @@
 
 .status-column {
   grid-area: status;
+  min-width: rem.torem(160px);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  &-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  &-boosted-icon {
+    margin-left: rem.torem(16px);
+    color: var(--color-secondary-light);
+  }
 }
 
 .actions-column {
@@ -166,6 +181,10 @@
 
   .venue-column {
     min-width: rem.torem(200px);
+  }
+
+  .status-column {
+    display: table-cell;
   }
 
   .actions-column {

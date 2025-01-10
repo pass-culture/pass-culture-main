@@ -4,6 +4,7 @@ import fullArchiveIcon from 'icons/full-archive.svg'
 import fullArrowLeftIcon from 'icons/full-arrow-left.svg'
 import fullArrowRightIcon from 'icons/full-arrow-right.svg'
 import fullBackIcon from 'icons/full-back.svg'
+import fullBoostedIcon from 'icons/full-boosted.svg'
 import fullBurgerkIcon from 'icons/full-burger.svg'
 import fullCheckIcon from 'icons/full-check.svg'
 import fullClearIcon from 'icons/full-clear.svg'
@@ -62,6 +63,7 @@ import strokeArticleIcon from 'icons/stroke-article.svg'
 import strokeBarcodeIcon from 'icons/stroke-barcode.svg'
 import strokeBookedIcon from 'icons/stroke-booked.svg'
 import strokeBookingHold from 'icons/stroke-booking-hold.svg'
+import strokeBoostIcon from 'icons/stroke-boost.svg'
 import strokeBuildingIcon from 'icons/stroke-building.svg'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
 import strokeCheckIcon from 'icons/stroke-check.svg'
@@ -190,6 +192,7 @@ export const fullIcons: IconListItem[] = [
   { src: fullThreeDotsIcon },
   { src: fullSwitchIcon },
   { src: fullArchiveIcon },
+  { src: fullBoostedIcon },
 ]
 
 export const strokeIcons: IconListItem[] = [
@@ -270,6 +273,7 @@ export const strokeIcons: IconListItem[] = [
   { src: strokeCollaboratorIcon },
   { src: strokeBarcodeIcon },
   { src: strokePageNotFoundIcon, viewBox: '0 0 130 100' },
+  { src: strokeBoostIcon },
 ]
 
 export const otherIcons: IconListItem[] = [
