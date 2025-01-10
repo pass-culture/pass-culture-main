@@ -50,9 +50,44 @@
             <div class="px-3">
               <div class="filters">{{ build_filters_form(response_form, dst_response) }}</div>
             </div>
-            <table class="table mb-4 my-4">
+            <div class="d-flex flex-row-reverse">
+              <div class="align-self-center flex-row-reverse"
+                   data-toggle="pc-batch-confirm-btn-group"
+                   data-toggle-id="table-container-operation-responses-btn-group"
+                   data-pc-table-multi-select-id="table-operation-responses-multiselect"
+                   data-input-ids-name="object_ids">
+                <button disabled
+                        type="button"
+                        class="btn btn-outline-primary"
+                        data-modal-selector="#batch-validate-response-modal"
+                        data-mode="fetch"
+                        data-fetch-url="{{ url_for('backoffice_web.operations.get_batch_validate_responses_form', special_event_id=special_event.id) }}"
+                        data-use-confirmation-modal="true">Retenir</button>
+                <button disabled
+                        type="button"
+                        class="btn btn-outline-primary"
+                        data-modal-selector="#batch-preselect-response-modal"
+                        data-mode="fetch"
+                        data-fetch-url="{{ url_for('backoffice_web.operations.get_batch_preselect_responses_form', special_event_id=special_event.id) }}"
+                        data-use-confirmation-modal="true">Présélectionner</button>
+                <button disabled
+                        type="button"
+                        class="btn btn-outline-primary"
+                        data-modal-selector="#batch-reject-response-modal"
+                        data-mode="fetch"
+                        data-fetch-url="{{ url_for('backoffice_web.operations.get_batch_reject_responses_form', special_event_id=special_event.id) }}"
+                        data-use-confirmation-modal="true">Rejeter</button>
+              </div>
+            </div>
+            <table class="table mb-4 my-4"
+                   data-table-multi-select-id="table-operation-responses-multiselect">
               <thead>
                 <tr>
+                  <th scope="col">
+                    <input type="checkbox"
+                           class="form-check-input"
+                           name="pc-table-multi-select-check-all" />
+                  </th>
                   <th scope="col"></th>
                   <th scope="col">Candidat</th>
                   <th scope="col">Email</th>
@@ -67,6 +102,12 @@
                 {% for row in response_rows %}
                   {% set response = row.SpecialEventResponse %}
                   <tr>
+                    <td>
+                      <input type="checkbox"
+                             class="form-check-input"
+                             name="pc-table-multi-select-check-{{ response.id }}"
+                             data-id="{{ response.id }}" />
+                    </td>
                     <td>
                       <div class="dropdown">
                         <button type="button"
@@ -94,7 +135,7 @@
                                     method="post">
                                 {{ csrf_token }}
                                 <button type="submit"
-                                        class="btn btn-sm d-block w-100 text-start px-3">Préselectionner la candidature</button>
+                                        class="btn btn-sm d-block w-100 text-start px-3">Présélectionner la candidature</button>
                               </form>
                             </li>
                           {% endif %}
@@ -142,6 +183,9 @@
                 {% endfor %}
               </tbody>
             </table>
+            {{ build_lazy_modal(url_for("backoffice_web.operations.get_batch_validate_responses_form", special_event_id=special_event.id) , "batch-validate-response-modal", "eager") }}
+            {{ build_lazy_modal(url_for("backoffice_web.operations.get_batch_preselect_responses_form", special_event_id=special_event.id) , "batch-preselect-response-modal", "eager") }}
+            {{ build_lazy_modal(url_for("backoffice_web.operations.get_batch_reject_responses_form", special_event_id=special_event.id) , "batch-reject-response-modal", "eager") }}
           {% endcall %}
         {% endcall %}
       </div>

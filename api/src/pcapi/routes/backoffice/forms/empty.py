@@ -18,4 +18,6 @@ class BatchForm(FlaskForm):
 
     @property
     def object_ids_list(self) -> list[int]:
-        return [int(id) for id in self.object_ids.data.split(",")]
+        object_ids_str = self.object_ids.data or ""
+        object_ids_str_list = [id_str for id_str in object_ids_str.split(",") if id_str]
+        return [int(id) for id in object_ids_str_list]

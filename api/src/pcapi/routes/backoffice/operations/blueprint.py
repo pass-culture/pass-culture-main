@@ -20,6 +20,7 @@ from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.utils.clean_accents import clean_accents
 
 from . import forms as operations_forms
@@ -226,6 +227,177 @@ def reject_response(special_event_id: int, response_id: int) -> utils.Backoffice
     response.status = operations_models.SpecialEventResponseStatus.REJECTED
     db.session.add(response)
 
+    return redirect(
+        request.referrer or url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id),
+        303,
+    )
+
+
+@operations_blueprint.route("/<int:special_event_id>/responses/batch/validate", methods=["GET", "POST"])
+@atomic()
+def get_batch_validate_responses_form(special_event_id: int) -> utils.BackofficeResponse:
+    event = (
+        operations_models.SpecialEvent.query.filter_by(id=special_event_id)
+        .with_entities(operations_models.SpecialEvent.id)
+        .one_or_none()
+    )
+    if not event:
+        raise NotFound()
+
+    alert = None
+    form: empty_forms.BatchForm | None = empty_forms.BatchForm()
+    if form and (response_ids := form.object_ids_list):
+        responses = (
+            operations_models.SpecialEventResponse.query.filter(
+                operations_models.SpecialEventResponse.id.in_(response_ids),
+            )
+            .with_entities(operations_models.SpecialEventResponse.id, operations_models.SpecialEventResponse.status)
+            .all()
+        )
+        if len(responses) != len(response_ids) or len(responses) == 0:
+            alert = "Certaines candidatures selectionnées sont introuvables."
+            form = None
+        if all(response.status == operations_models.SpecialEventResponseStatus.VALIDATED for response in responses):
+            alert = "Toutes les candidatures séléctionnées ont déjà été retenues. L'action n'aura aucun effet."
+            form = None
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_web.operations.batch_validate_responses", special_event_id=special_event_id),
+        div_id="batch-validate-response-modal",
+        title="Voulez-vous retenir les candidatures sélectionnées ?",
+        button_text="Valider" if form else None,
+        alert=alert,
+    )
+
+
+@operations_blueprint.route("/<int:special_event_id>/responses/batch-validate", methods=["POST"])
+@atomic()
+def batch_validate_responses(special_event_id: int) -> utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(utils.build_form_error_msg(form), "warning")
+        return redirect(request.referrer, 303)
+
+    responses = operations_models.SpecialEventResponse.query.filter(
+        operations_models.SpecialEventResponse.id.in_(form.object_ids_list)
+    ).all()
+    for response in responses:
+        response.status = operations_models.SpecialEventResponseStatus.VALIDATED
+        db.session.add(response)
+    flash("Les candidatures ont été retenues.", "success")
+    return redirect(
+        request.referrer or url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id),
+        303,
+    )
+
+
+@operations_blueprint.route("/<int:special_event_id>/responses/batch/preselect", methods=["GET", "POST"])
+@atomic()
+def get_batch_preselect_responses_form(special_event_id: int) -> utils.BackofficeResponse:
+    event = operations_models.SpecialEvent.query.filter_by(id=special_event_id).one_or_none()
+    if not event:
+        raise NotFound()
+
+    alert = None
+    form: empty_forms.BatchForm | None = empty_forms.BatchForm()
+    if form and (response_ids := form.object_ids_list):
+        responses = operations_models.SpecialEventResponse.query.filter(
+            operations_models.SpecialEventResponse.id.in_(response_ids)
+        ).all()
+        if len(responses) != len(response_ids) or len(responses) == 0:
+            alert = "Certaines candidatures selectionnées sont introuvables."
+            form = None
+        if all(response.status == operations_models.SpecialEventResponseStatus.PRESELECTED for response in responses):
+            alert = (
+                'Toutes les candidatures séléctionnées sont déjà à l\'état "préselectionné". '
+                "L'action n'aura aucun effet."
+            )
+            form = None
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_web.operations.batch_preselect_responses", special_event_id=special_event_id),
+        div_id="batch-preselect-response-modal",
+        title='Voulez-vous passer l\'état les candidatures sélectionnées en "présélectionné" ?',
+        button_text="Valider" if form else None,
+        alert=alert,
+    )
+
+
+@operations_blueprint.route("/<int:special_event_id>/responses/batch-preselect", methods=["POST"])
+@atomic()
+def batch_preselect_responses(special_event_id: int) -> utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(utils.build_form_error_msg(form), "warning")
+        return redirect(request.referrer, 303)
+
+    responses = operations_models.SpecialEventResponse.query.filter(
+        operations_models.SpecialEventResponse.id.in_(form.object_ids_list),
+        operations_models.SpecialEventResponse.status != operations_models.SpecialEventResponseStatus.PRESELECTED,
+    ).all()
+    for response in responses:
+        response.status = operations_models.SpecialEventResponseStatus.PRESELECTED
+        db.session.add(response)
+    flash("Les candidatures ont été préselectionnées.", "success")
+    return redirect(
+        request.referrer or url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id),
+        303,
+    )
+
+
+@operations_blueprint.route("/<int:special_event_id>/responses/batch/reject", methods=["GET", "POST"])
+@atomic()
+def get_batch_reject_responses_form(special_event_id: int) -> utils.BackofficeResponse:
+    event = operations_models.SpecialEvent.query.filter_by(id=special_event_id).one_or_none()
+    if not event:
+        raise NotFound()
+
+    alert = None
+    form: empty_forms.BatchForm | None = empty_forms.BatchForm()
+    if form and (response_ids := form.object_ids_list):
+        responses = operations_models.SpecialEventResponse.query.filter(
+            operations_models.SpecialEventResponse.id.in_(response_ids)
+        ).all()
+        if len(responses) != len(response_ids) or len(responses) == 0:
+            alert = "Certaines candidatures selectionnées sont introuvables."
+            form = None
+        if all(response.status == operations_models.SpecialEventResponseStatus.REJECTED for response in responses):
+            alert = "Toutes les candidatures séléctionnées ont déjà été rejetées. L'action n'aura aucun effet."
+            form = None
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_web.operations.batch_reject_responses", special_event_id=special_event_id),
+        div_id="batch-reject-response-modal",
+        title="Voulez-vous rejeter les candidatures sélectionnées ?",
+        button_text="Valider" if form else None,
+        alert=alert,
+    )
+
+
+@operations_blueprint.route("/<int:special_event_id>/responses/batch-reject", methods=["POST"])
+@atomic()
+def batch_reject_responses(special_event_id: int) -> utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(utils.build_form_error_msg(form), "warning")
+        return redirect(request.referrer, 303)
+
+    responses = operations_models.SpecialEventResponse.query.filter(
+        operations_models.SpecialEventResponse.id.in_(form.object_ids_list)
+    ).all()
+    for response in responses:
+        response.status = operations_models.SpecialEventResponseStatus.REJECTED
+        db.session.add(response)
+    flash("Les candidatures ont été rejetées.", "success")
     return redirect(
         request.referrer or url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id),
         303,
