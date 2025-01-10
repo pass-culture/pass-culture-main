@@ -24,7 +24,7 @@ class Returns200Test:
             "offerId": offer.id,
         }
         client = client.with_session_auth(pro_user.email)
-        response = client.post("/offers/headline", json=data)
+        response = client.post("/offers/upsert_headline", json=data)
 
         assert response.status_code == 204
         assert offer.is_headline_offer
@@ -49,10 +49,32 @@ class Returns200Test:
             "offerId": offer.id,
         }
         client = client.with_session_auth(pro_user.email)
-        response = client.post("/offers/headline", json=data)
+        response = client.post("/offers/upsert_headline", json=data)
 
         assert response.status_code == 204
         assert offer.is_headline_offer
+        assert offers_models.HeadlineOffer.query.count() == 2
+
+    def test_make_another_offer_headline(self, client):
+        pro_user = users_factories.ProFactory()
+        venue = offerers_factories.VenueFactory(isPermanent=True)
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=venue.managingOfferer)
+        offer = offers_factories.OfferFactory(venue=venue)
+        another_offer = offers_factories.OfferFactory(venue=venue)
+        offers_factories.StockFactory(offer=another_offer)
+        offers_factories.MediationFactory(offer=another_offer)
+        offers_factories.HeadlineOfferFactory(offer=offer, create_mediation=True)
+
+        data = {
+            "offerId": another_offer.id,
+        }
+        client = client.with_session_auth(pro_user.email)
+        response = client.post("/offers/upsert_headline", json=data)
+
+        assert response.status_code == 204
+
+        assert not offer.is_headline_offer
+        assert another_offer.is_headline_offer
         assert offers_models.HeadlineOffer.query.count() == 2
 
 
@@ -68,32 +90,10 @@ class Returns400Test:
             "offerId": offer.id,
         }
         client = client.with_session_auth(pro_user.email)
-        response = client.post("/offers/headline", json=data)
+        response = client.post("/offers/upsert_headline", json=data)
 
         assert response.status_code == 400
         assert response.json["global"] == ["Cette offre est déjà mise à la une"]
-
-        assert offer.is_headline_offer
-        assert offers_models.HeadlineOffer.query.one()
-
-    def test_only_one_headline_offer_by_venue(self, client):
-        pro_user = users_factories.ProFactory()
-        venue = offerers_factories.VenueFactory(isPermanent=True)
-        offerers_factories.UserOffererFactory(user=pro_user, offerer=venue.managingOfferer)
-        offer = offers_factories.OfferFactory(venue=venue)
-        another_offer = offers_factories.OfferFactory(venue=venue)
-        offers_factories.HeadlineOfferFactory(offer=offer, create_mediation=True)
-        offers_factories.StockFactory(offer=another_offer)
-        offers_factories.MediationFactory(offer=another_offer)
-
-        data = {
-            "offerId": another_offer.id,
-        }
-        client = client.with_session_auth(pro_user.email)
-        response = client.post("/offers/headline", json=data)
-
-        assert response.status_code == 400
-        assert response.json["global"] == ["Cette structure possède déjà une offre à la une"]
 
         assert offer.is_headline_offer
         assert offers_models.HeadlineOffer.query.one()
@@ -110,7 +110,7 @@ class Returns400Test:
             "offerId": offer.id,
         }
         client = client.with_session_auth(pro_user.email)
-        response = client.post("/offers/headline", json=data)
+        response = client.post("/offers/upsert_headline", json=data)
 
         assert response.status_code == 400
         assert response.json["global"] == ["Cette offre est inactive et ne peut pas être mise à la une"]
@@ -132,7 +132,7 @@ class Returns400Test:
             "offerId": offer.id,
         }
         client = client.with_session_auth(pro_user.email)
-        response = client.post("/offers/headline", json=data)
+        response = client.post("/offers/upsert_headline", json=data)
 
         assert response.status_code == 400
         assert response.json["global"] == [
@@ -155,7 +155,7 @@ class Returns400Test:
             "offerId": offer.id,
         }
         client = client.with_session_auth(pro_user.email)
-        response = client.post("/offers/headline", json=data)
+        response = client.post("/offers/upsert_headline", json=data)
 
         assert response.status_code == 400
         assert response.json["global"] == ["Une offre virtuelle ne peut pas être mise à la une"]
@@ -168,7 +168,7 @@ class Returns400Test:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
         venue = offerers_factories.VenueFactory(isPermanent=True, managingOfferer=offerer)
-        offer = offers_factories.DigitalOfferFactory(venue=venue)
+        offer = offers_factories.OfferFactory(venue=venue)
         offers_factories.StockFactory(offer=offer)
 
         assert not offer.images
@@ -177,10 +177,7 @@ class Returns400Test:
             "offerId": offer.id,
         }
         client = client.with_session_auth(pro_user.email)
-        response = client.post("/offers/headline", json=data)
+        response = client.post("/offers/upsert_headline", json=data)
 
         assert response.status_code == 400
         assert response.json["global"] == ["Une offre doit avoir une image pour être mise à la une"]
-
-        assert not offer.is_headline_offer
-        assert offers_models.HeadlineOffer.query.count() == 0

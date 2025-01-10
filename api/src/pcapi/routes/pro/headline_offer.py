@@ -19,14 +19,14 @@ from . import blueprint
 logger = logging.getLogger(__name__)
 
 
-@private_api.route("/offers/headline", methods=["POST"])
+@private_api.route("/offers/upsert_headline", methods=["POST"])
 @login_required
 @spectree_serialize(
     on_success_status=204,
     api=blueprint.pro_private_schema,
 )
 @atomic()
-def make_offer_headline_from_offers(body: headline_offer_serialize.HeadlineOfferCreationBodyModel) -> None:
+def upsert_headline_offer(body: headline_offer_serialize.HeadlineOfferCreationBodyModel) -> None:
 
     offer = offers_repository.get_offer_by_id(body.offer_id, load_options=["headline_offer"])
 
@@ -35,6 +35,14 @@ def make_offer_headline_from_offers(body: headline_offer_serialize.HeadlineOffer
     offerer_id = offer.venue.managingOffererId
 
     rest.check_user_has_access_to_offerer(current_user, offerer_id)
+    try:
+        headline_offer = offers_repository.get_offerers_active_headline_offer(offer.venue.managingOffererId)
+        if headline_offer and headline_offer.offerId != offer.id:
+            offers_api.remove_headline_offer(headline_offer)
+    except exceptions.CannotRemoveHeadlineOffer:
+        raise api_errors.ApiErrors(
+            errors={"global": ["Une erreur est survenue au moment du retrait de l'offre à la une"]},
+        )
     try:
         offers_api.make_offer_headline(offer)
     except exceptions.OffererCanNotHaveHeadlineOffer:
