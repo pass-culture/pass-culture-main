@@ -72,9 +72,7 @@ def sync_instructor_ids(procedure_number: int) -> None:
     db.session.flush()
 
 
-def sync_user_account_update_requests(
-    procedure_number: int, since: datetime.datetime | None, archived: bool = False
-) -> list:
+def sync_user_account_update_requests(procedure_number: int, since: datetime.datetime | None) -> list:
     logger.info("[DS] Started processing User Update Account procedure %s", procedure_number)
 
     # Fetch instructors' User IDs only once
@@ -88,9 +86,7 @@ def sync_user_account_update_requests(
     ds_client = ds_api.DMSGraphQLClient(timeout=LONG_TIMEOUT)
     application_numbers = []
 
-    for node in ds_client.get_beneficiary_account_update_nodes(
-        procedure_number=procedure_number, since=since, archived=archived
-    ):
+    for node in ds_client.get_beneficiary_account_update_nodes(procedure_number=procedure_number, since=since):
         try:
             ds_application_id = _sync_ds_application(procedure_number, node, user_id_by_email)
         except Exception:  # pylint: disable=broad-exception-caught
@@ -265,6 +261,30 @@ def _sync_ds_application(procedure_number: int, node: dict, user_id_by_email: di
         raise
 
     return ds_application_id
+
+
+def sync_deleted_user_account_update_requests(procedure_number: int, since: datetime.datetime | None = None) -> list:
+    logger.info("[DS] Started processing User Update Account to delete, procedure %s", procedure_number)
+
+    ds_client = ds_api.DMSGraphQLClient(timeout=LONG_TIMEOUT)
+    application_numbers = []
+    count_deleted = 0
+
+    for deleted_application in ds_client.get_deleted_applications(procedure_number, deletedSince=since):
+        application_numbers.append(deleted_application.number)
+
+    if application_numbers:
+        count_deleted = users_models.UserAccountUpdateRequest.query.filter(
+            users_models.UserAccountUpdateRequest.dsApplicationId.in_(application_numbers)
+        ).delete()
+
+    logger.info(
+        "[DS] Finished deleting User Update Account procedure %s.",
+        procedure_number,
+        extra={"procedure_number": procedure_number, "count_deleted": count_deleted},
+    )
+
+    return application_numbers
 
 
 def update_state(
