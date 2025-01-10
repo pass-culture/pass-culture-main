@@ -321,12 +321,8 @@ class DMSGraphQLClient:
         state: dms_models.GraphQLApplicationStates | None = None,
         since: datetime.datetime | None = None,
         page_token: str | None = None,
-        archived: bool = False,
     ) -> Generator[dict, None, None]:
-        variables: dict[str, int | str] = {
-            "demarcheNumber": procedure_number,
-            "archived": archived,
-        }
+        variables: dict[str, int | str] = {"demarcheNumber": procedure_number}
         if state:
             variables["state"] = state.value
         if since:

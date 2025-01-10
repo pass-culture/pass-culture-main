@@ -60,7 +60,7 @@ class SyncUserAccountUpdateRequestsTest:
         users_ds.sync_user_account_update_requests(104118, None)
 
         mocked_get_applications.assert_called_once_with(
-            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118, "archived": False}
+            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
         )
 
         uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
@@ -96,7 +96,7 @@ class SyncUserAccountUpdateRequestsTest:
         users_ds.sync_user_account_update_requests(104118, None)
 
         mocked_get_applications.assert_called_once_with(
-            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118, "archived": False}
+            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
         )
 
         uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
@@ -132,7 +132,7 @@ class SyncUserAccountUpdateRequestsTest:
         users_ds.sync_user_account_update_requests(104118, None)
 
         mocked_get_applications.assert_called_once_with(
-            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118, "archived": False}
+            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
         )
 
         assert users_models.UserAccountUpdateRequest.query.count() == 2
@@ -191,7 +191,7 @@ class SyncUserAccountUpdateRequestsTest:
         users_ds.sync_user_account_update_requests(104118, None)
 
         mocked_get_applications.assert_called_once_with(
-            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118, "archived": False}
+            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
         )
 
         uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
@@ -227,7 +227,7 @@ class SyncUserAccountUpdateRequestsTest:
         users_ds.sync_user_account_update_requests(104118, None)
 
         mocked_get_applications.assert_called_once_with(
-            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118, "archived": False}
+            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
         )
 
         uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
@@ -263,7 +263,7 @@ class SyncUserAccountUpdateRequestsTest:
         users_ds.sync_user_account_update_requests(104118, None)
 
         mocked_get_applications.assert_called_once_with(
-            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118, "archived": False}
+            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
         )
 
         uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
@@ -302,7 +302,7 @@ class SyncUserAccountUpdateRequestsTest:
         users_ds.sync_user_account_update_requests(104118, None)
 
         mocked_get_applications.assert_called_once_with(
-            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118, "archived": False}
+            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
         )
 
         uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
@@ -339,7 +339,7 @@ class SyncUserAccountUpdateRequestsTest:
         users_ds.sync_user_account_update_requests(104118, None)
 
         mocked_get_applications.assert_called_once_with(
-            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118, "archived": False}
+            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
         )
 
         uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
@@ -362,7 +362,7 @@ class SyncUserAccountUpdateRequestsTest:
         users_ds.sync_user_account_update_requests(104118, None)
 
         mocked_get_applications.assert_called_once_with(
-            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118, "archived": False}
+            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
         )
 
         uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
@@ -376,13 +376,34 @@ class SyncUserAccountUpdateRequestsTest:
     def test_delete_archived(self, mocked_get_applications):
         users_factories.EmailUpdateRequestFactory(dsApplicationId=21168276)
 
-        users_ds.sync_user_account_update_requests(104118, None, archived=True)
+        users_ds.sync_user_account_update_requests(104118, None)
 
         mocked_get_applications.assert_called_once_with(
-            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118, "archived": True}
+            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
         )
 
         assert users_models.UserAccountUpdateRequest.query.count() == 0
+
+
+class SyncDeletedUserAccountUpdateRequestsTest:
+    @patch(
+        "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+        return_value=ds_fixtures.DS_RESPONSE_DELETED_APPLICATIONS,
+    )
+    def test_delete_update_requests(self, mocked_get_applications):
+        users_factories.EmailUpdateRequestFactory(dsApplicationId=10000001)
+        users_factories.EmailUpdateRequestFactory(dsApplicationId=10000002)
+        users_factories.EmailUpdateRequestFactory(dsApplicationId=10000003)
+
+        users_ds.sync_deleted_user_account_update_requests(104118)
+
+        mocked_get_applications.assert_called_once_with(
+            dms_api.GET_DELETED_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
+        )
+
+        remaining_requests = users_models.UserAccountUpdateRequest.query.all()
+        assert len(remaining_requests) == 1
+        assert remaining_requests[0].dsApplicationId == 10000002
 
 
 class UpdateStateTest:

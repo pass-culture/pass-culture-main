@@ -85,3 +85,19 @@ def test_sync_ds_user_account_update_requests_disabled(mocked_get_applications, 
     run_command(app, "sync_ds_user_account_update_requests")
 
     mocked_get_applications.assert_not_called()
+
+
+@pytest.mark.usefixtures("clean_database")
+@pytest.mark.features(ENABLE_DS_SYNC_FOR_USER_ACCOUNT_UPDATE_REQUESTS=True)
+@patch(
+    "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+    return_value={"demarche": {"dossiers": {"pageInfo": {"hasNextPage": False}, "nodes": []}}},
+)
+def test_sync_ds_deleted_user_account_update_requests(mocked_get_applications, app):
+    run_command(app, "sync_ds_deleted_user_account_update_requests")
+
+    mocked_get_applications.assert_called_once()
+    assert mocked_get_applications.call_args.args == (dms_api.GET_DELETED_APPLICATIONS_QUERY_NAME,)
+    assert mocked_get_applications.call_args.kwargs["variables"] == {
+        "demarcheNumber": int(settings.DS_USER_ACCOUNT_UPDATE_PROCEDURE_ID)
+    }
