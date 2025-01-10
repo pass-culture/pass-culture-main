@@ -135,9 +135,9 @@ def _create_pro_user(row: dict) -> User:
         comment="Validée automatiquement par le script de création",
     )
 
-# Most of offerers are not validated on staging without this commit() - TODO: is this related to atomic? oa?
+    # Most of offerers are not validated on staging without this commit() - TODO: is this related to atomic? oa?
     db.session.commit()
-    
+
     address = offerers_schemas.AddressBodyModel(
         street=offerers_schemas.VenueAddress(offerer_creation_info.street),
         city=offerers_schemas.VenueCity(offerer_creation_info.city),
