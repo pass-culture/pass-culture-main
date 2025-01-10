@@ -12,18 +12,14 @@ on:
       pro_url:
         type: string
         required: true
-      teleport_version:
+      cluster_scope:
         type: string
         required: false
-        default: 15.2.5
-      teleport_proxy:
+        default: metier
+      cluster_environment:
         type: string
         required: false
-        default: teleport.ehp.passculture.team:443
-      teleport_kubernetes_cluster:
-        type: string
-        required: false
-        default: passculture-metier-ehp
+        default: ehp
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
         required: true
@@ -49,24 +45,33 @@ jobs:
 
       # Get github api token that will be used to commit and push app_version to pass-culture-deployment repository
       - name: "Get secrets (github)"
-        id: 'get-github-token'
+        id: 'secrets'
         uses: 'google-github-actions/get-secretmanager-secrets@v2'
         with:
           secrets: |-
             API_TOKEN_GITHUB:passculture-metier-ehp/passculture-main-sa-access-token
+            DEPLOYMENT_SA:passculture-metier-ehp/pcapi-testing_deploy-service-account
+            DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/gcp_metier_ehp_workload_identity_provider
+
+      - name: "Authentification to Google"
+        uses: 'google-github-actions/auth@v2'
+        with:
+          service_account : ${{ steps.secrets.outputs.DEPLOYMENT_SA }}
+          workload_identity_provider: ${{ steps.secrets.outputs.DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER }}
 
       - name: "Connect to cluster"
-        uses: pass-culture/common-workflows/actions/teleport-connect@teleport-connect/v0.2.0
+        uses: pass-culture/common-workflows/actions/pc-k8s-connect@pc-k8s-connect/v0.1.0
         with:
-          teleport_proxy: ${{ inputs.teleport_proxy }}
-          teleport_kubernetes_cluster: ${{ inputs.teleport_kubernetes_cluster }}
+          cluster_scope: ${{ inputs.cluster_scope }}
+          cluster_environment: ${{ inputs.cluster_environment }}
+          api_token_github: ${{ steps.secrets.outputs.API_TOKEN_GITHUB }}
 
       # Checkout pass-culture-deployment repository containing pcapi helm value files
       - uses: actions/checkout@v4.2.1
         with:
           repository: pass-culture/pass-culture-deployment
           ref: master
-          token: ${{ steps.get-github-token.outputs.API_TOKEN_GITHUB }}
+          token: ${{ steps.secrets.outputs.API_TOKEN_GITHUB }}
           path: ./pass-culture-deployment
 
       # Get pcapi secrets from source code, to be passed later as a helmfile parameter.
@@ -106,6 +111,20 @@ jobs:
           rendered_manifests_target_branch: "pcapi/pullrequests"
           is_pull_request: true
           pro_url: ${{ inputs.pro_url }}
+
+      # We have to reauthenticate to GCP because render-manifests removes previous authenthication
+      - name: "Authentification to Google"
+        uses: 'google-github-actions/auth@v2'
+        with:
+          service_account : ${{ steps.secrets.outputs.DEPLOYMENT_SA }}
+          workload_identity_provider: ${{ steps.secrets.outputs.DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER }}
+
+      - name: "Connect to cluster"
+        uses: pass-culture/common-workflows/actions/pc-k8s-connect@pc-k8s-connect/v0.1.0
+        with:
+          cluster_scope: ${{ inputs.cluster_scope }}
+          cluster_environment: ${{ inputs.cluster_environment }}
+          api_token_github: ${{ steps.secrets.outputs.API_TOKEN_GITHUB }}
 
       # Wait for ApplicationSet Controller to create applications
       # TODO : Change to webhook once appset controller ingress gets proper Health endpoint

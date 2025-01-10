@@ -24,17 +24,19 @@ jobs:
 
       # Get github api token
       - name: "Get secrets (github)"
-        id: 'get-github-token'
+        id: 'secrets'
         uses: 'google-github-actions/get-secretmanager-secrets@v2'
         with:
           secrets: |-
             API_TOKEN_GITHUB:passculture-metier-ehp/passculture-main-sa-access-token
+            DEPLOYMENT_SA:passculture-metier-ehp/pcapi-testing_deploy-service-account
+            DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/gcp_metier_ehp_workload_identity_provider
 
       # Checkout rendered-manifests repository
       - uses: actions/checkout@v4.2.1
         with:
           repository: pass-culture/rendered-manifests
-          token: ${{ steps.get-github-token.outputs.API_TOKEN_GITHUB }}
+          token: ${{ steps.secrets.outputs.API_TOKEN_GITHUB }}
           path: ./rendered-manifests
           ref: 'pcapi/pullrequests'
 
@@ -53,11 +55,18 @@ jobs:
             git push
           fi
 
-      - name: "Connect to cluster"
-        uses: pass-culture/common-workflows/actions/teleport-connect@teleport-connect/v0.2.0
+      - name: "Authentification to Google"
+        uses: 'google-github-actions/auth@v2'
         with:
-          teleport_proxy: teleport.ehp.passculture.team:443
-          teleport_kubernetes_cluster: passculture-metier-ehp
+          service_account : ${{ steps.secrets.outputs.DEPLOYMENT_SA }}
+          workload_identity_provider: ${{ steps.secrets.outputs.DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER }}
+
+      - name: "Connect to cluster"
+        uses: pass-culture/common-workflows/actions/pc-k8s-connect@pc-k8s-connect/v0.1.0
+        with:
+          cluster_scope: metier
+          cluster_environment: ehp
+          api_token_github: ${{ steps.secrets.outputs.API_TOKEN_GITHUB }}
 
       - name: "Wait for argocd applications to be deleted; delete namespace"
         continue-on-error: true
