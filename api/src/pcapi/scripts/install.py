@@ -37,7 +37,6 @@ def install_commands(app: flask.Flask) -> None:
         "pcapi.scripts.ubble_archive_past_identifications",
         "pcapi.scripts.offer.fix_offer_data_titelive",
         "pcapi.scripts.offer.fix_product_gtl_id_titelive",
-        "pcapi.scripts.provider_migration.commands",
         "pcapi.utils.db",
         "pcapi.utils.human_ids",
         "pcapi.utils.secrets",
