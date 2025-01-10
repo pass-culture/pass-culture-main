@@ -28,16 +28,21 @@ import {
 } from 'repository/venuesService'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
+import { IndividualOffersContextProvider } from './context/IndividualOffersContext'
 import { IndividualOffersContainer } from './IndividualOffersContainer/IndividualOffersContainer'
 import { computeIndividualApiFilters } from './utils/computeIndividualApiFilters'
 
 export const IndividualOffers = (): JSX.Element => {
-  const isToggleAndMemorizeFiltersEnabled = useActiveFeature('WIP_COLLAPSED_MEMORIZED_FILTERS')
+  const isToggleAndMemorizeFiltersEnabled = useActiveFeature(
+    'WIP_COLLAPSED_MEMORIZED_FILTERS'
+  )
   const urlSearchFilters = useQuerySearchFilters()
   const { storedFilters } = getStoredFilterConfig('individual')
   const finalSearchFilters = {
     ...urlSearchFilters,
-    ...isToggleAndMemorizeFiltersEnabled ? (storedFilters as Partial<SearchFiltersParams>) : {}
+    ...(isToggleAndMemorizeFiltersEnabled
+      ? (storedFilters as Partial<SearchFiltersParams>)
+      : {}),
   }
 
   const currentPageNumber = finalSearchFilters.page ?? DEFAULT_PAGE
@@ -77,6 +82,12 @@ export const IndividualOffers = (): JSX.Element => {
     api.getVenues(null, null, selectedOffererId)
   )
   const venues = formatAndOrderVenues(data?.venues ?? [])
+
+  const nonVirtualVenues =
+    data?.venues.filter((venue) => !venue.isVirtual) || []
+  const isHeadlineOfferAllowedForOfferer =
+    nonVirtualVenues.length === 1 && nonVirtualVenues[0].isPermanent
+
   const offererAddressQuery = useSWR(
     selectedOffererId && isOfferAddressEnabled
       ? [GET_OFFERER_ADDRESS_QUERY_KEY, selectedOffererId]
@@ -95,7 +106,7 @@ export const IndividualOffers = (): JSX.Element => {
   const apiFilters = computeIndividualApiFilters(
     finalSearchFilters,
     selectedOffererId?.toString(),
-    isRestrictedAsAdmin,
+    isRestrictedAsAdmin
   )
 
   const offersQuery = useSWR([GET_OFFERS_QUERY_KEY, apiFilters], () => {
@@ -133,17 +144,21 @@ export const IndividualOffers = (): JSX.Element => {
       {isLoadingVenues || isValidatingVenues ? (
         <Spinner />
       ) : (
-        <IndividualOffersContainer
-          categories={categoriesOptions}
-          currentPageNumber={currentPageNumber}
-          initialSearchFilters={apiFilters}
-          isLoading={offersQuery.isLoading}
-          offers={offers}
-          redirectWithSelectedFilters={redirectWithSelectedFilters}
-          venues={venues}
-          offererAddresses={offererAddresses}
-          isRestrictedAsAdmin={isRestrictedAsAdmin}
-        />
+        <IndividualOffersContextProvider
+          isHeadlineOfferAllowedForOfferer={isHeadlineOfferAllowedForOfferer}
+        >
+          <IndividualOffersContainer
+            categories={categoriesOptions}
+            currentPageNumber={currentPageNumber}
+            initialSearchFilters={apiFilters}
+            isLoading={offersQuery.isLoading}
+            offers={offers}
+            redirectWithSelectedFilters={redirectWithSelectedFilters}
+            venues={venues}
+            offererAddresses={offererAddresses}
+            isRestrictedAsAdmin={isRestrictedAsAdmin}
+          />
+        </IndividualOffersContextProvider>
       )}
     </Layout>
   )

@@ -1795,26 +1795,6 @@ export class DefaultService {
     });
   }
   /**
-   * make_offer_headline_from_offers <POST>
-   * @param requestBody
-   * @returns void
-   * @throws ApiError
-   */
-  public makeOfferHeadlineFromOffers(
-    requestBody?: HeadlineOfferCreationBodyModel,
-  ): CancelablePromise<void> {
-    return this.httpRequest.request({
-      method: 'POST',
-      url: '/offers/headline',
-      body: requestBody,
-      mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
    * get_music_types <GET>
    * @returns GetMusicTypesResponse OK
    * @throws ApiError
@@ -1912,6 +1892,26 @@ export class DefaultService {
       path: {
         'offer_id': offerId,
       },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * upsert_headline_offer <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public upsertHeadlineOffer(
+    requestBody?: HeadlineOfferCreationBodyModel,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/offers/upsert_headline',
+      body: requestBody,
+      mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
