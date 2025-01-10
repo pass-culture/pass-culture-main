@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 
 import { GetVenueResponseModel } from 'apiClient/v1'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
@@ -18,6 +18,8 @@ export const VenueEditionFormScreen = ({
   venue,
 }: VenueEditionProps): JSX.Element => {
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+
+  const location = useLocation()
 
   if (venue.isVirtual) {
     return (
@@ -52,10 +54,11 @@ export const VenueEditionFormScreen = ({
         </>
       )}
 
-      <Routes>
-        <Route path="" element={<VenueEditionReadOnly venue={venue} />} />
-        <Route path="/edition" element={<VenueEditionForm venue={venue} />} />
-      </Routes>
+      {location.pathname.includes('/edition') ? (
+        <VenueEditionForm venue={venue} />
+      ) : (
+        <VenueEditionReadOnly venue={venue} />
+      )}
 
       {venue.externalAccessibilityData && (
         <>
