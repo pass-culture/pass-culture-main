@@ -2,6 +2,7 @@ from dataclasses import asdict
 import datetime
 from decimal import Decimal
 import enum
+from functools import partial
 from io import BytesIO
 import itertools
 import logging
@@ -66,6 +67,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications import push as push_api
 from pcapi.repository import is_managed_transaction
+from pcapi.repository import on_commit
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.serialization import users as users_serialization
@@ -187,6 +189,7 @@ def create_account(
         phoneNumber=phone_number,
         lastConnectionDate=datetime.datetime.utcnow(),
     )
+    db.session.add(user)
 
     if not user.age or user.age < constants.ACCOUNT_CREATION_MINIMUM_AGE:
         raise exceptions.UnderAgeUserException()
@@ -202,14 +205,14 @@ def create_account(
     if firebase_pseudo_id:
         user.externalIds["firebase_pseudo_id"] = firebase_pseudo_id
 
-    repository.save(user)
-    logger.info("Created user account", extra={"user": user.id})
-
+    db.session.flush()
     if remote_updates:
         external_attributes_api.update_external_user(user)
 
     if not user.isEmailValidated and send_activation_mail:
         request_email_confirmation(user)
+
+    logger.info("Created user account", extra={"user": user.id})
 
     return user
 
@@ -311,7 +314,7 @@ def request_email_confirmation(user: models.User) -> None:
         constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
         user.id,
     )
-    transactional_mails.send_email_confirmation_email(user, token=token)
+    on_commit(partial(transactional_mails.send_email_confirmation_email, user.email, token=token))
 
 
 def _email_validation_resends_key(user: models.User) -> str:

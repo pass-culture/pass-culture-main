@@ -201,7 +201,7 @@ class TransactionalEmailWithTemplateTest:
             ttl=users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
             user_id=user.id,
         )
-        send_email_confirmation_email(user, token=token)
+        send_email_confirmation_email(user.email, token=token)
         mock_send_transactional_email_task.assert_called_once()
 
 

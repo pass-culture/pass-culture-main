@@ -21,7 +21,7 @@ class SendinblueAddressEmailChangeConfirmationTest:
         )
 
         # When
-        activation_email_data = get_email_confirmation_email_data(user, token)
+        activation_email_data = get_email_confirmation_email_data(user.email, token)
 
         # Then
         assert activation_email_data.template == TransactionalEmail.EMAIL_CONFIRMATION.value
