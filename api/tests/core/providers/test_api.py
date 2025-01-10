@@ -65,7 +65,6 @@ class CreateVenueProviderTest:
         provider = providers_factories.ProviderFactory(
             enabledForPro=True,
             isActive=True,
-            apiUrl="https://example.com/api",
             localClass=None,
         )
         author = users_factories.UserFactory()

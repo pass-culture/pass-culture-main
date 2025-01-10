@@ -95,11 +95,6 @@ UPDATE invoice SET token = 'anonymized-' || id::text;
 UPDATE activation_code SET code = 'FAKE-' || id::text ;
 
 UPDATE provider
-SET "authToken" = 'anonymized, you may have to set it if you want to use this provider'
-WHERE "authToken" IS NOT NULL
-;
-
-UPDATE provider
 SET 
     "bookingExternalUrl" = 'http://mock-api-billeterie.mock-api-billeterie.svc.cluster.local:5003/tickets/create',
     "cancelExternalUrl" = 'http://mock-api-billeterie.mock-api-billeterie.svc.cluster.local:5003/tickets/cancel'

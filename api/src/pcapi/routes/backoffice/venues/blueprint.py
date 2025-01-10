@@ -154,7 +154,6 @@ def get_venue(venue_id: int) -> offerers_models.Venue:
             providers_models.Provider.id,
             providers_models.Provider.name,
             providers_models.Provider.localClass,
-            providers_models.Provider.apiUrl,
             providers_models.Provider.isActive,
         ),
         sa.orm.joinedload(offerers_models.Venue.accessibilityProvider).load_only(
