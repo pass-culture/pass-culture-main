@@ -71,7 +71,7 @@ class ListCustomReimbursementRulesTest(GetEndpointHelper):
         assert rows[1]["ID règle"] == str(venue_rule.id)
         assert rows[1]["Entité juridique"] == venue_rule.venue.managingOfferer.name
         assert rows[1]["SIREN"] == venue_rule.venue.managingOfferer.siren
-        assert rows[1]["Lieu"] == f"{venue_rule.venue.name} - {venue_rule.venue.siret}"
+        assert rows[1]["Lieu"] == venue_rule.venue.name
         assert rows[1]["Offre"] == ""
         assert rows[1]["Taux de remboursement"] == "98,00 %"
         assert rows[1]["Montant remboursé"] == ""
@@ -164,6 +164,9 @@ class ListCustomReimbursementRulesTest(GetEndpointHelper):
         finance_factories.CustomReimbursementRuleFactory(offerer=other_offerer)
         offer = offers_factories.OfferFactory(venue__managingOfferer=offerer_1)
         offerer_rule_3 = finance_factories.CustomReimbursementRuleFactory(offer=offer)
+        venue_rule = finance_factories.CustomReimbursementRuleFactory(
+            venue=offerers_factories.VenueFactory(managingOfferer=offerer_1)
+        )
 
         offerer_ids = [offerer_1.id, offerer_2.id]
         with assert_num_queries(self.expected_num_queries + 1):
@@ -171,7 +174,12 @@ class ListCustomReimbursementRulesTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID règle"]) for row in rows) == {offerer_rule_1.id, offerer_rule_2.id, offerer_rule_3.id}
+        assert set(int(row["ID règle"]) for row in rows) == {
+            offerer_rule_1.id,
+            offerer_rule_2.id,
+            offerer_rule_3.id,
+            venue_rule.id,
+        }
 
     def test_list_rules_more_than_max(self, authenticated_client):
         finance_factories.CustomReimbursementRuleFactory.create_batch(30)
