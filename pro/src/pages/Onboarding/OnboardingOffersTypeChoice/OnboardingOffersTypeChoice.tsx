@@ -9,7 +9,7 @@ import styles from './OnboardingOffersTypeChoice.module.scss'
 
 export const OnboardingOffersTypeChoice = () => {
   return (
-    <OnboardingLayout verticallyCentered>
+    <OnboardingLayout verticallyCentered stickyActionsAndFooter={false}>
       <div className={styles['onboarding-offer-container']}>
         <div className={styles['onboarding-offer-header']}>
           <h1 className={styles['onboarding-offer-header-title']}>

@@ -22,6 +22,10 @@
     height: size.$footer-height;
   }
 
+  &-layout-sticky-onboarding {
+    margin-bottom: 0;
+  }
+
   @media (min-width: size.$tablet) {
     min-height: size.$footer-height;
   }

@@ -104,9 +104,8 @@ $connect-as-header-height: rem.torem(52px);
   }
 
   &-sticky-onboarding {
-    max-width: size.$main-content-width;
     margin: 0 auto size.$action-bar-sticky-height auto;
-    padding: size.$main-content-padding;
+    padding: 0;
   }
 }
 
@@ -139,6 +138,9 @@ $connect-as-header-height: rem.torem(52px);
   &-sticky-onboarding {
     display: flex;
     justify-content: center;
+    max-width: size.$main-content-width;
+    padding: size.$main-content-padding size.$main-content-padding 0;
+    margin: 0 auto;
   }
 }
 
