@@ -239,8 +239,8 @@ class ReimbursementDetails:
             return (
                 cls.CSV_HEADER[0:6]
                 + [
-                    "SIRET du partenaire culturel",
-                    "Raison sociale du partenaire culturel",
+                    "SIRET de la structure",
+                    "Raison sociale de la structure",
                     "Nom de l'offre",
                     "Adresse de l'offre",
                 ]
