@@ -3620,3 +3620,63 @@ class ExtractBeneficiaryDataCommandTest(StorageFolderManager):
 
         assert not redis.exists(users_constants.GDPR_EXTRACT_DATA_LOCK)
         assert redis.get(users_constants.GDPR_EXTRACT_DATA_COUNTER) == "3"
+
+
+class BypassEmailConfirmationTest:
+    @pytest.mark.settings(ENABLE_EMAIL_CONFIRMATION_BYPASS=False)
+    def test_send_confirmation_email_if_env_var_is_disabled(self):
+        mails_testing.outbox = []
+
+        user = users_api.create_account(
+            email="email+e2e@quinousinteresse.fr",
+            password="random123",
+            birthdate=datetime.date.today() - relativedelta(years=18),
+            is_email_validated=False,
+        )
+
+        assert len(mails_testing.outbox) == 1
+        assert not user.isEmailValidated
+
+    @pytest.mark.settings(ENABLE_EMAIL_CONFIRMATION_BYPASS=True)
+    def test_dont_send_confirmation_email_when_e2e_test(self):
+        mails_testing.outbox = []
+
+        user = users_api.create_account(
+            email="email+e2e@quinousinteresse.fr",
+            password="random123",
+            birthdate=datetime.date.today() - relativedelta(years=18),
+            is_email_validated=False,
+        )
+        db.session.flush()  # helps teardown session
+
+        assert len(mails_testing.outbox) == 0
+        assert user.isEmailValidated
+
+    @pytest.mark.settings(ENABLE_EMAIL_CONFIRMATION_BYPASS=True)
+    def test_send_confirmation_with_normal_email(self):
+        mails_testing.outbox = []
+
+        user = users_api.create_account(
+            email="e2e@quinousinteresse.fr",
+            password="random123",
+            birthdate=datetime.date.today() - relativedelta(years=18),
+            is_email_validated=False,
+        )
+
+        assert len(mails_testing.outbox) == 1
+        assert not user.isEmailValidated
+
+    @pytest.mark.settings(ENABLE_EMAIL_CONFIRMATION_BYPASS=True)
+    def test_dont_confirm_e2e_test_email_when_email_sending_is_not_required(self):
+        mails_testing.outbox = []
+
+        user = users_api.create_account(
+            email="email+e2e@quinousinteresse.fr",
+            password="random123",
+            birthdate=datetime.date.today() - relativedelta(years=18),
+            is_email_validated=False,
+            send_activation_mail=False,
+        )
+
+        assert len(mails_testing.outbox) == 0
+        assert not user.isEmailValidated

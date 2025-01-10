@@ -122,6 +122,8 @@ class T_UNCHANGED(enum.Enum):
 
 UNCHANGED = T_UNCHANGED.TOKEN
 
+EMAIL_CONFIRMATION_TEST_EMAIL_PATTERN = "+e2e@"
+
 
 logger = logging.getLogger(__name__)
 
@@ -209,12 +211,19 @@ def create_account(
     if remote_updates:
         external_attributes_api.update_external_user(user)
 
-    if not user.isEmailValidated and send_activation_mail:
-        request_email_confirmation(user)
+    if send_activation_mail and not user.isEmailValidated:
+        if _bypass_email_confirmation(user.email):
+            user.isEmailValidated = True
+        else:
+            request_email_confirmation(user)
 
     logger.info("Created user account", extra={"user": user.id})
 
     return user
+
+
+def _bypass_email_confirmation(email: str) -> bool:
+    return settings.ENABLE_EMAIL_CONFIRMATION_BYPASS and EMAIL_CONFIRMATION_TEST_EMAIL_PATTERN in email
 
 
 def setup_login(
