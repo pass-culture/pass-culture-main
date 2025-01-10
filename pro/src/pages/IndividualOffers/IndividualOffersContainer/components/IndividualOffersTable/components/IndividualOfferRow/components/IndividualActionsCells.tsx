@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
-import { ListOffersOfferResponseModel } from 'apiClient/v1'
+import { ListOffersOfferResponseModel, OfferStatus } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_OFFERS_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import {
@@ -22,7 +22,9 @@ import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
 import { CELLS_DEFINITIONS } from 'components/OffersTable/utils/cellDefinitions'
 import fullThreeDotsIcon from 'icons/full-three-dots.svg'
+import strokeStarIcon from 'icons/stroke-star.svg'
 import strokeTrashIcon from 'icons/stroke-trash.svg'
+import { useIndividualOffersContext } from 'pages/IndividualOffers/context/IndividualOffersContext'
 import { computeDeletionErrorMessage } from 'pages/IndividualOffers/utils/computeDeletionErrorMessage'
 import { computeDeletionSuccessMessage } from 'pages/IndividualOffers/utils/computeDeletionSuccessMessage'
 import { computeIndividualApiFilters } from 'pages/IndividualOffers/utils/computeIndividualApiFilters'
@@ -32,6 +34,7 @@ import { DropdownMenuWrapper } from 'ui-kit/DropdownMenuWrapper/DropdownMenuWrap
 import { DeleteDraftCell } from './DeleteDraftCell'
 import { EditOfferCell } from './EditOfferCell'
 import { EditStocksCell } from './EditStocksCell'
+import { HeadlineOfferCell } from './HeadlineOfferCell/HeadlineOfferCell'
 
 interface IndividualActionsCellsProps {
   rowId: string
@@ -50,28 +53,45 @@ export const IndividualActionsCells = ({
   isRestrictedAsAdmin,
   className,
 }: IndividualActionsCellsProps) => {
-  const isToggleAndMemorizeFiltersEnabled = useActiveFeature('WIP_COLLAPSED_MEMORIZED_FILTERS')
+  const isToggleAndMemorizeFiltersEnabled = useActiveFeature(
+    'WIP_COLLAPSED_MEMORIZED_FILTERS'
+  )
   const { storedFilters } = getStoredFilterConfig('individual')
+  const { isHeadlineOfferAllowedForOfferer, upsertHeadlineOffer } =
+    useIndividualOffersContext()
+  const isHeadlineOfferEnabled = useActiveFeature('WIP_HEADLINE_OFFER')
+  const selectedOffererId = useSelector(selectCurrentOffererId)
   const urlSearchFilters = useQuerySearchFilters()
   const finalSearchFilters = {
     ...urlSearchFilters,
-    ...isToggleAndMemorizeFiltersEnabled ? (storedFilters as Partial<SearchFiltersParams>) : {}
+    ...(isToggleAndMemorizeFiltersEnabled
+      ? (storedFilters as Partial<SearchFiltersParams>)
+      : {}),
   }
 
-  const selectedOffererId = useSelector(selectCurrentOffererId)?.toString()
   const { mutate } = useSWRConfig()
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
+  const [isConfirmDialogDeleteDraftOpen, setIsConfirmDialogDeleteDraftOpen] =
+    useState(false)
+  const [
+    isConfirmDialogReplaceHeadlineOfferOpen,
+    setIsConfirmDialogReplaceHeadlineOfferOpen,
+  ] = useState(false)
   const { logEvent } = useAnalytics()
   const notification = useNotification()
+
   const closeDeleteDraftDialog = useCallback(() => {
     /* istanbul ignore next */
-    setIsConfirmDialogOpen(false)
+    setIsConfirmDialogDeleteDraftOpen(false)
+  }, [])
+  const closeReplaceHeadlineOfferDialog = useCallback(() => {
+    /* istanbul ignore next */
+    setIsConfirmDialogReplaceHeadlineOfferOpen(false)
   }, [])
 
   const apiFilters = computeIndividualApiFilters(
     finalSearchFilters,
     selectedOffererId?.toString(),
-    isRestrictedAsAdmin,
+    isRestrictedAsAdmin
   )
 
   const onConfirmDeleteDraftOffer = async () => {
@@ -92,7 +112,12 @@ export const IndividualActionsCells = ({
       notification.error(computeDeletionErrorMessage(1))
     }
 
-    setIsConfirmDialogOpen(false)
+    setIsConfirmDialogDeleteDraftOpen(false)
+  }
+
+  const onConfirmReplaceHeadlineOffer = async () => {
+    await upsertHeadlineOffer(offer.id)
+    setIsConfirmDialogReplaceHeadlineOfferOpen(false)
   }
 
   return (
@@ -116,14 +141,26 @@ export const IndividualActionsCells = ({
               <EditOfferCell editionOfferLink={editionOfferLink} />
               {offer.status === OFFER_STATUS_DRAFT ? (
                 <DeleteDraftCell
-                  setIsConfirmDialogOpen={setIsConfirmDialogOpen}
+                  setIsConfirmDialogOpen={setIsConfirmDialogDeleteDraftOpen}
                 />
               ) : (
                 <EditStocksCell
                   offer={offer}
                   editionStockLink={editionStockLink}
                 />
-              )}
+              )}{' '}
+              {isHeadlineOfferEnabled &&
+                isHeadlineOfferAllowedForOfferer &&
+                offer.status === OfferStatus.ACTIVE &&
+                !offer.isDigital && (
+                  <HeadlineOfferCell
+                    offer={offer}
+                    isRestrictedAsAdmin={isRestrictedAsAdmin}
+                    setIsConfirmDialogOpen={
+                      setIsConfirmDialogReplaceHeadlineOfferOpen
+                    }
+                  />
+                )}
             </>
           </DropdownMenuWrapper>
         </div>
@@ -135,7 +172,18 @@ export const IndividualActionsCells = ({
         onCancel={closeDeleteDraftDialog}
         onConfirm={onConfirmDeleteDraftOffer}
         title={`Voulez-vous supprimer le brouillon : "${offer.name}" ?`}
-        open={isConfirmDialogOpen}
+        open={isConfirmDialogDeleteDraftOpen}
+      />
+      <ConfirmDialog
+        icon={strokeStarIcon}
+        cancelText="Annuler"
+        confirmText="Confirmer"
+        onCancel={closeReplaceHeadlineOfferDialog}
+        onConfirm={onConfirmReplaceHeadlineOffer}
+        title={
+          'Vous êtes sur le point de remplacer votre offre à la une par une nouvelle offre.'
+        }
+        open={isConfirmDialogReplaceHeadlineOfferOpen}
       />
     </>
   )

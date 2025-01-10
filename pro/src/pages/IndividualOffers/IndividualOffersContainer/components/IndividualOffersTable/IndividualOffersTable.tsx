@@ -62,12 +62,14 @@ export const IndividualOffersTable = ({
       false
     )
 
-  const pagination = <Pagination
-    currentPage={currentPageNumber}
-    pageCount={pageCount}
-    onPreviousPageClick={onPreviousPageClick}
-    onNextPageClick={onNextPageClick}
-  />
+  const pagination = (
+    <Pagination
+      currentPage={currentPageNumber}
+      pageCount={pageCount}
+      onPreviousPageClick={onPreviousPageClick}
+      onNextPageClick={onNextPageClick}
+    />
+  )
 
   return (
     <OffersTable
@@ -85,9 +87,11 @@ export const IndividualOffersTable = ({
         toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
         columns={[
           CELLS_DEFINITIONS.NAME,
-          isOfferAddressEnabled ? CELLS_DEFINITIONS.ADDRESS : CELLS_DEFINITIONS.VENUE,
+          isOfferAddressEnabled
+            ? CELLS_DEFINITIONS.ADDRESS
+            : CELLS_DEFINITIONS.VENUE,
           CELLS_DEFINITIONS.STOCKS,
-          CELLS_DEFINITIONS.STATUS
+          CELLS_DEFINITIONS.STATUS,
         ]}
       />
       <IndividualOffersTableBody

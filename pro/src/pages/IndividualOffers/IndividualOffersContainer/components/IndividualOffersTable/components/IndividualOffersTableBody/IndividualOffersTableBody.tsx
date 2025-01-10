@@ -20,7 +20,7 @@ export const IndividualOffersTableBody = ({
 }: IndividualOffersTableBodyProps) => {
   return (
     <tbody role="rowgroup" className={styles['individual-tbody']}>
-      {offers.map(offer => {
+      {offers.map((offer) => {
         const isSelected = selectedOffers.some((selectedOffer) =>
           isSameOffer(selectedOffer, offer)
         )
