@@ -64,7 +64,7 @@ LEGACY_BOOKINGS_CSV_HEADER = [
     "Duo",
 ]
 BOOKINGS_CSV_HEADER = [
-    "Partenaire culturel",
+    "Structure",
     "Nom de l’offre",
     "Date de l'évènement",
     "EAN",
@@ -1372,7 +1372,7 @@ class GetOfferBookingsByStatusCSVTest:
     def _validate_csv_row(
         self, data_dict: dict, beneficiary: User, offer: Offer, venue: Venue, booking: Booking, status: str, duo: str
     ):
-        assert data_dict["Partenaire culturel"] == venue.name
+        assert data_dict["Structure"] == venue.name
         assert data_dict["Nom de l’offre"] == offer.name
         booking.venueDepartmentCode = booking.venue.departementCode
         if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():

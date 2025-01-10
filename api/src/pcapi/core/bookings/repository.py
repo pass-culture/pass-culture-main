@@ -90,7 +90,7 @@ LEGACY_BOOKING_EXPORT_HEADER = [
 ]
 
 BOOKING_EXPORT_HEADER = [
-    "Partenaire culturel",
+    "Structure",
     "Nom de l’offre",
     "Date de l'évènement",
     "EAN",
