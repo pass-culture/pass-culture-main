@@ -96,7 +96,7 @@ export const RequestFormDialog = ({
 
   const getDescriptionElement = () => {
     if (contactEmail && !contactPhone && !contactUrl && !contactForm) {
-      return renderContactElement('par mail', contactEmail)
+      return renderContactElement('par mail', contactEmail, 'mail')
     }
     if (!contactEmail && contactPhone && !contactUrl && !contactForm) {
       return renderContactElement('par téléphone', contactPhone)
@@ -119,13 +119,23 @@ export const RequestFormDialog = ({
 
   const renderContactElement = (
     description: string,
-    value: string | null | undefined
+    value: string | null | undefined,
+    type?: string
   ) => (
     <div>
       <span className={styles['form-description']}>
         Il vous propose de le faire {description} :
       </span>
-      <span className={styles['form-description-text-contact']}>{value}</span>
+      {type === 'mail' ? (
+        <a
+          href={`mailto:${value}`}
+          className={styles['form-description-text-contact']}
+        >
+          {value}
+        </a>
+      ) : (
+        <span className={styles['form-description-text-contact']}>{value}</span>
+      )}
     </div>
   )
 
@@ -143,9 +153,12 @@ export const RequestFormDialog = ({
         {contactEmail && (
           <li>
             par mail :{' '}
-            <span className={styles['form-description-text-value']}>
+            <a
+              href={`mailto:${contactEmail}`}
+              className={styles['form-description-text-value']}
+            >
               {contactEmail}
-            </span>
+            </a>
           </li>
         )}
         {contactPhone && (
