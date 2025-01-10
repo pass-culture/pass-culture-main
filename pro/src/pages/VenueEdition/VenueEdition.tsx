@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import {
   generatePath,
@@ -55,10 +56,11 @@ export const VenueEdition = (): JSX.Element | null => {
   )
   const venueTypes = venueTypesQuery.data
 
-  if (selectedOffererId?.toString() !== offererId) {
-    navigate('/accueil')
-    return null
-  }
+  useEffect(() => {
+    if (selectedOffererId?.toString() !== offererId) {
+      navigate('/accueil')
+    }
+  }, [selectedOffererId, offererId])
 
   if (
     venueQuery.isLoading ||
