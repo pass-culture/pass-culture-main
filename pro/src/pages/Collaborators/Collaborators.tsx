@@ -2,6 +2,7 @@
 
 // Component only for display (sub-components already tested)
 
+import classNames from 'classnames'
 import { Form, FormikProvider, useFormik } from 'formik'
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -99,9 +100,13 @@ export const Collaborators = (): JSX.Element | null => {
             <div className={styles['members-inner']}>
               <table className={styles['members-list']}>
                 <thead>
-                  <tr>
-                    <th scope="col">Email</th>
-                    <th scope="col">Statut</th>
+                  <tr className={styles['members-list-tr']}>
+                    <th scope="col" className={styles['members-list-th']}>
+                      Email
+                    </th>
+                    <th scope="col" className={styles['members-list-th']}>
+                      Statut
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -110,9 +115,21 @@ export const Collaborators = (): JSX.Element | null => {
                       !(
                         !displayAllMembers && index > MAX_COLLABORATORS - 1
                       ) && (
-                        <tr key={email}>
-                          <td className={styles['member-email']}>{email}</td>
-                          <td className={styles['member-status']}>
+                        <tr key={email} className={styles['members-list-tr']}>
+                          <td
+                            className={classNames(
+                              styles['member-email'],
+                              styles['members-list-td']
+                            )}
+                          >
+                            {email}
+                          </td>
+                          <td
+                            className={classNames(
+                              styles['member-status'],
+                              styles['members-list-td']
+                            )}
+                          >
                             {status === OffererMemberStatus.VALIDATED
                               ? 'Validé'
                               : 'En attente'}

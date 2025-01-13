@@ -5,75 +5,79 @@
   margin-bottom: rem.torem(32px);
   padding-bottom: 0;
   padding-top: 0;
+}
 
-  .main-list-title {
-    @include fonts.title2;
+.main-list-title {
+  @include fonts.title2;
 
-    margin: rem.torem(32px) 0;
+  margin: rem.torem(32px) 0;
+}
+
+.subtitle {
+  @include fonts.title4;
+
+  margin-bottom: rem.torem(8px);
+}
+
+.description {
+  margin-bottom: rem.torem(24px);
+}
+
+.invitation-form {
+  margin-bottom: rem.torem(32px);
+}
+
+.invitation-email-wrapper {
+  display: flex;
+  align-items: flex-end;
+  gap: rem.torem(8px);
+}
+
+.invitation-email-field {
+  width: 100%;
+  margin-bottom: rem.torem(8px);
+}
+
+.add-member-button {
+  margin-bottom: rem.torem(32px);
+
+  @media (width <= 414px) {
+    &[data-error="true"] {
+      margin-bottom: rem.torem(48px);
+    }
   }
+}
 
-  .subtitle {
-    @include fonts.title4;
+.members-container {
+  margin-bottom: rem.torem(24px);
+}
 
-    margin-bottom: rem.torem(8px);
-  }
+.members-list {
+  border-collapse: separate;
+  width: 100%;
 
-  .description {
-    margin-bottom: rem.torem(24px);
-  }
+  &-th {
+    @include fonts.body-accent-xs;
 
-  .invitation-form {
-    margin-bottom: rem.torem(32px);
-  }
+    padding-bottom: rem.torem(16px);
+    vertical-align: middle;
+    text-align: left;
 
-  .invitation-email-wrapper {
-    display: flex;
-    align-items: flex-end;
-    gap: rem.torem(8px);
-  }
-
-  .invitation-email-field {
-    width: 100%;
-    margin-bottom: rem.torem(8px);
-  }
-
-  .add-member-button {
-    margin-bottom: rem.torem(32px);
-
-    @media (width <= 414px) {
-      &[data-error="true"] {
-        margin-bottom: rem.torem(48px);
-      }
+    &:first-of-type {
+      width: rem.torem(350px);
     }
   }
 
-  .members-container {
-    margin-bottom: rem.torem(24px);
+  &-td {
+    @include fonts.body;
+
+    vertical-align: baseline;
+    text-align: left;
+    padding-right: rem.torem(16px);
   }
 
-  .members-list {
-    border-collapse: separate;
-    width: 100%;
-
-    th {
-      @include fonts.body-accent-xs;
-
-      padding-bottom: rem.torem(16px);
-      vertical-align: middle;
-      text-align: left;
-    }
-
-    td {
-      @include fonts.body;
-
-      vertical-align: baseline;
-      text-align: left;
-      padding-right: rem.torem(16px);
-    }
-
-    tr:not(:last-child) td {
-      padding-bottom: rem.torem(12px);
-    }
+  &-tr:not(:last-child) &-td {
+    padding-bottom: rem.torem(12px);
   }
 }
 
