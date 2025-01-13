@@ -1,7 +1,8 @@
 import { Formik } from 'formik'
 
-import { CheckboxGroup } from './CheckboxGroup'
 import { CheckboxVariant } from '../shared/BaseCheckbox/BaseCheckbox'
+
+import { CheckboxGroup } from './CheckboxGroup'
 
 export default {
   title: 'ui-kit/forms/CheckboxGroup',
@@ -9,7 +10,19 @@ export default {
   decorators: [
     (Story: any) => (
       <Formik
-        initialValues={{ checkBoxes: { foo: true, bar: false, baz: false } }}
+        initialValues={{
+          checkBoxes: {
+            foo: true,
+            bar: false,
+            baz: false,
+            'sub-foo-0': true,
+            'sub-bar-0': false,
+            'sub-foo-1': false,
+            'sub-bar-1': false,
+            'sub-foo-2': false,
+            'sub-bar-2': false,
+          },
+        }}
         onSubmit={() => {}}
       >
         {({ getFieldProps }) => {
@@ -28,50 +41,41 @@ export const Default = {
     })),
     groupName: 'checkBoxes',
     legend: 'This is the legend',
+    disabled: false,
   },
 }
 
 export const Box = {
   args: {
-    group: ['foo', 'bar', 'baz'].map((item) => ({
-      label: item,
-      name: `checkBoxes.${item}`,
-    })),
+    ...Default.args,
     variant: CheckboxVariant.BOX,
-    groupName: 'checkBoxes',
-    legend: 'This is the legend',
   },
 }
 
 export const BoxInline = {
   args: {
-    group: ['foo', 'bar', 'baz'].map((item) => ({
-      label: item,
-      name: `checkBoxes.${item}`,
-    })),
+    ...Default.args,
     inline: true,
     variant: CheckboxVariant.BOX,
-    groupName: 'checkBoxes',
-    legend: 'This is the legend',
   },
 }
 
 export const BoxWithChildren = {
   args: {
+    ...Default.args,
     group: ['foo', 'bar', 'baz'].map((item) => ({
       label: item,
       name: `checkBoxes.${item}`,
       childrenOnChecked: <span>Child content for {item}</span>,
     })),
     variant: CheckboxVariant.BOX,
-    groupName: 'checkBoxes',
-    legend: 'This is the legend',
   },
 }
 
 export const BoxWithCheckboxGroupChildren = {
   args: {
-    group: ['foo', 'bar', 'baz'].map((item) => ({
+    ...Default.args,
+    group: ['foo', 'bar', 'baz'].map((item, i) => ({
       label: item,
       name: `checkBoxes.${item}`,
       childrenOnChecked: (
@@ -79,23 +83,22 @@ export const BoxWithCheckboxGroupChildren = {
           legend="Sub group legend"
           groupName="sub-name"
           group={[
-            { label: 'sub-foo', name: 'checkBoxes.sub-foo' },
-            { label: 'sub-bar', name: 'checkBoxes.sub-bar' },
+            { label: 'sub-foo', name: `checkBoxes.sub-foo-${i}` },
+            { label: 'sub-bar', name: `checkBoxes.sub-bar-${i}` },
           ]}
           variant={CheckboxVariant.BOX}
         />
       ),
     })),
     variant: CheckboxVariant.BOX,
-    groupName: 'checkBoxes',
-    legend: 'This is the legend',
   },
 }
 
 export const BoxWithCheckboxGroupChildrenNoLegend = {
   args: {
+    ...Default.args,
     group: ['foo', 'bar', 'baz'].map((item, i) => ({
-      label: <span id="parent-name-id">{item}</span>,
+      label: <span>{item}</span>,
       name: `checkBoxes.${item}`,
       childrenOnChecked: (
         <CheckboxGroup
@@ -107,6 +110,31 @@ export const BoxWithCheckboxGroupChildrenNoLegend = {
           ]}
           variant={CheckboxVariant.BOX}
           inline={i === 0}
+        />
+      ),
+    })),
+    variant: CheckboxVariant.BOX,
+  },
+}
+
+export const BoxWithCheckboxGroupChildrenDisabled = {
+  args: {
+    ...Default.args,
+    disabled: true,
+    group: ['foo', 'bar', 'baz'].map((item, i) => ({
+      label: <span>{item}</span>,
+      name: `checkBoxes.${item}`,
+      childrenOnChecked: (
+        <CheckboxGroup
+          describedBy="parent-name-id"
+          groupName="sub-name"
+          group={[
+            { label: 'sub-foo', name: `checkBoxes.sub-foo-${i}` },
+            { label: 'sub-bar', name: `checkBoxes.sub-bar-${i}` },
+          ]}
+          variant={CheckboxVariant.BOX}
+          inline={i === 0}
+          disabled={true}
         />
       ),
     })),
