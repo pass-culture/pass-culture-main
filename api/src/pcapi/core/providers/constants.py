@@ -10,6 +10,7 @@ class BookFormat(enum.Enum):
     BEAUX_LIVRES = "BEAUX LIVRES"
     LIVRE_AUDIO = "LIVRE + CD AUDIO"
     LIVRE_CASSETTE = "LIVRE + CASSETTE"
+    MOOK = "MOOK"
     MOYEN_FORMAT = "MOYEN FORMAT"
     POCHE = "POCHE"
     REVUE = "REVUE"
@@ -565,6 +566,7 @@ TITELIVE_BOOK_SUPPORTS: list[TiteliveBookSupport] = [
         "is_allowed": True,
         "book_format": BookFormat.BANDE_DESSINEE,
     },
+    {"codesupport": "BL", "libelle": "Beau livre", "is_allowed": True, "book_format": BookFormat.BEAUX_LIVRES},
     {"codesupport": "C", "libelle": "Carte et plan", "is_allowed": False, "book_format": None},
     {"codesupport": "CA", "libelle": "CD audio", "is_allowed": False, "book_format": None},
     {"codesupport": "CB", "libelle": "Coffret et boîte", "is_allowed": False, "book_format": None},
@@ -600,6 +602,7 @@ TITELIVE_BOOK_SUPPORTS: list[TiteliveBookSupport] = [
         "is_allowed": True,
         "book_format": BookFormat.MOYEN_FORMAT,
     },
+    {"codesupport": "MK", "libelle": "Mook", "is_allowed": True, "book_format": BookFormat.MOOK},
     {"codesupport": "O", "libelle": "objet", "is_allowed": False, "book_format": None},
     {"codesupport": "P", "libelle": "poche", "is_allowed": True, "book_format": BookFormat.POCHE},
     {"codesupport": "PC", "libelle": "papeterie / consommable", "is_allowed": False, "book_format": None},
@@ -608,7 +611,6 @@ TITELIVE_BOOK_SUPPORTS: list[TiteliveBookSupport] = [
     {"codesupport": "T", "libelle": "livre papier (hors spécificité)", "is_allowed": True, "book_format": None},
     {"codesupport": "TL", "libelle": "livre papier (hors spécificité)", "is_allowed": True, "book_format": None},
     {"codesupport": "TR", "libelle": "transparents", "is_allowed": False, "book_format": None},
-    {"codesupport": "BL", "libelle": "Beau livre", "is_allowed": True, "book_format": BookFormat.BEAUX_LIVRES},
 ]
 
 TITELIVE_BOOK_SUPPORTS_BY_CODE = {support["codesupport"]: support for support in TITELIVE_BOOK_SUPPORTS}
