@@ -7,6 +7,7 @@ from unittest.mock import patch
 import uuid
 
 from dateutil import relativedelta
+import ecdsa
 import pytest
 import pytz
 import time_machine
@@ -36,6 +37,7 @@ from pcapi.repository import repository
 from pcapi.validation.routes import ubble as ubble_routes
 
 from tests.core.subscription import test_factories
+from tests.core.subscription.ubble.end_to_end import fixtures
 from tests.scripts.beneficiary.fixture import make_single_application
 from tests.test_utils import json_default
 
@@ -970,7 +972,7 @@ class UbbleWebhookV2Test:
             ubble_serializers.UbbleIdentificationStatus.CAPTURE_IN_PROGRESS,
         ],
     )
-    def test_ignore_events_before_identification_conclusion(self, client, requests_mock, status):
+    def test_ignore_events_before_identification_conclusion(self, ubble_client, status):
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.UBBLE,
             thirdPartyId="idv_qwerty123",
@@ -980,12 +982,72 @@ class UbbleWebhookV2Test:
         with patch(
             "pcapi.core.subscription.ubble.api.update_ubble_workflow",
         ) as mocked_update:
-            client.post(
+            response = ubble_client.post(
                 "/webhooks/ubble/v2/application_status",
-                json={"identity_verification_id": "idv_qwerty123", "status": status.value},
+                json={"data": {"identity_verification_id": "idv_qwerty123", "status": status.value}},
             )
 
-            mocked_update.assert_not_called()
+        assert response.status_code == 200, response.json
+        mocked_update.assert_not_called()
+
+    def test_webhook_signature_missing(self, client):
+        response = client.post(
+            "/webhooks/ubble/v2/application_status",
+            json={
+                "data": {
+                    "identity_verification_id": "idv_qwerty123",
+                    "status": ubble_serializers.UbbleIdentificationStatus.PENDING.value,
+                }
+            },
+        )
+
+        assert response.status_code == 403
+        assert response.json == {"signature": ["Missing signature"]}
+
+    def test_webhook_signature_invalid_structure(self, client):
+        response = client.post(
+            "/webhooks/ubble/v2/application_status",
+            headers={"Cko-Signature": "invalid signature"},
+            json={
+                "data": {
+                    "identity_verification_id": "idv_qwerty123",
+                    "status": ubble_serializers.UbbleIdentificationStatus.PENDING.value,
+                }
+            },
+        )
+
+        assert response.status_code == 403
+        assert response.json == {"signature": ["Invalid signature structure"]}
+
+    def test_webhook_signature_undecodable(self, ubble_client):
+        response = ubble_client.post(
+            "/webhooks/ubble/v2/application_status",
+            headers={"Cko-Signature": "123:test:invalid"},
+            json={
+                "data": {
+                    "identity_verification_id": "idv_qwerty123",
+                    "status": ubble_serializers.UbbleIdentificationStatus.PENDING.value,
+                }
+            },
+        )
+
+        assert response.status_code == 403
+        assert response.json == {"signature": ["Invalid signature"]}
+
+    def test_webhook_signature_invalid(self, ubble_client):
+        ubble_client.signing_key = ecdsa.SigningKey.generate()
+        response = ubble_client.post(
+            "/webhooks/ubble/v2/application_status",
+            json={
+                "data": {
+                    "identity_verification_id": "idv_qwerty123",
+                    "status": ubble_serializers.UbbleIdentificationStatus.PENDING.value,
+                }
+            },
+        )
+
+        assert response.status_code == 403
+        assert response.json == {"signature": ["Invalid signature"]}
 
 
 @pytest.mark.usefixtures("db_session")

@@ -1,9 +1,13 @@
+import base64
 import contextlib
 import functools
+import hashlib
+import json as json_lib
 import os
 from pathlib import Path
 from pprint import pprint
 import sys
+import time
 import typing
 from unittest.mock import MagicMock
 from unittest.mock import patch
@@ -11,6 +15,7 @@ import urllib.parse
 
 from alembic import command
 from alembic.config import Config
+import ecdsa
 from faker import Faker
 from flask import Flask
 from flask import g
@@ -300,6 +305,20 @@ def ubble_mocker(settings) -> typing.Callable:
     return ubble_mock
 
 
+@pytest.fixture(name="ubble_client")
+def ubble_client(app: Flask, settings):
+    signing_key = ecdsa.SigningKey.generate()
+
+    public_key = signing_key.verifying_key
+    with open(settings.UBBLE_SIGNATURE_KEY_PATH, "wb") as ubble_signature_key_file:
+        ubble_signature_key_file.write(public_key.to_pem())
+
+    yield UbbleTestClient(app.test_client(), signing_key)
+
+    if os.path.exists(settings.UBBLE_SIGNATURE_KEY_PATH):
+        os.remove(settings.UBBLE_SIGNATURE_KEY_PATH)
+
+
 @pytest.fixture
 def css_font_http_request_mock():
     """Intercept requests to fonts.googleapis.com and return an empty
@@ -570,6 +589,39 @@ class TestClient:
             pprint(result.json)
 
         print("===========================================\n")
+
+
+class UbbleTestClient(TestClient):
+    def __init__(self, client: FlaskClient, signing_key: ecdsa.SigningKey):
+        super().__init__(client)
+        self.signing_key = signing_key
+
+    def post(
+        self,
+        route: str,
+        json: dict = None,
+        raw_json: str = None,
+        form: dict = None,
+        files: dict = None,
+        headers: dict = None,
+        follow_redirects: bool = False,
+    ):
+        assert json, "only posts using json are supported"
+        ubble_signature_header = {"Cko-Signature": self._compute_signature(json)}
+        if headers is None:
+            headers = {}
+        return super().post(route, json, raw_json, form, files, {**ubble_signature_header, **headers}, follow_redirects)
+
+    def _compute_signature(self, json: dict):
+        timestamp = time.time()
+        signed_payload = (f"{timestamp}:{json_lib.dumps(json)}").encode("utf-8")
+        raw_signature = self.signing_key.sign(
+            signed_payload,
+            hashfunc=hashlib.sha512,
+            sigencode=ecdsa.util.sigencode_der,
+        )
+        signature = base64.b64encode(raw_signature).decode("utf-8")
+        return f"{timestamp}:877-test-v1:{signature}"
 
 
 @pytest.fixture

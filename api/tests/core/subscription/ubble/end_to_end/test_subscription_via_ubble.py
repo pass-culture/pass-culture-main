@@ -34,7 +34,7 @@ IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 @pytest.mark.usefixtures("db_session")
 class UbbleV2EndToEndTest:
     @pytest.mark.features(WIP_UBBLE_V2=True)
-    def test_beneficiary_activation_with_ubble_mocked_response(self, client, app, requests_mock):
+    def test_beneficiary_activation_with_ubble_mocked_response(self, client, ubble_client, requests_mock):
         seventeen_years_ago = datetime.datetime.utcnow() - relativedelta(years=17, months=1)
         user = users_factories.UserFactory(
             dateOfBirth=seventeen_years_ago,
@@ -57,16 +57,16 @@ class UbbleV2EndToEndTest:
         )
 
         self._start_ubble_workflow(user, client, requests_mock)
-        self._receive_and_ignore_verification_pending_webhook_notification(user, app)
-        self._receive_and_ignore_capture_in_progress_webhook_notification(user, app)
-        self._receive_and_handle_verification_refused_webhook_notification(user, client, app, requests_mock)
+        self._receive_and_ignore_verification_pending_webhook_notification(user, ubble_client)
+        self._receive_and_ignore_capture_in_progress_webhook_notification(user, ubble_client)
+        self._receive_and_handle_verification_refused_webhook_notification(user, client, ubble_client, requests_mock)
 
         assert user.eligibility == users_models.EligibilityType.UNDERAGE
 
         self._retry_ubble_workflow(user, client, requests_mock)
-        self._receive_and_ignore_capture_in_progress_webhook_notification(user, app)
-        self._receive_and_handle_checks_in_progress_webhook_notification(user, client, app, requests_mock)
-        self._receive_and_handle_verification_approved_webhook_notification(user, client, app, requests_mock)
+        self._receive_and_ignore_capture_in_progress_webhook_notification(user, ubble_client)
+        self._receive_and_handle_checks_in_progress_webhook_notification(user, client, ubble_client, requests_mock)
+        self._receive_and_handle_verification_approved_webhook_notification(user, client, ubble_client, requests_mock)
 
         assert user.eligibility == users_models.EligibilityType.AGE18
 
@@ -90,35 +90,37 @@ class UbbleV2EndToEndTest:
 
         assert response.status_code == 200, response.json
 
-    def _receive_and_ignore_verification_pending_webhook_notification(self, user, app) -> None:
+    def _receive_and_ignore_verification_pending_webhook_notification(self, user, ubble_client) -> None:
         with patch(
             "pcapi.core.subscription.ubble.api.update_ubble_workflow",
         ) as mocked_update:
-            response = TestClient(app.test_client()).post(
+            response = ubble_client.post(
                 "/webhooks/ubble/v2/application_status", json=fixtures.ID_VERIFICATION_PENDING_WEBHOOK_BODY
             )
 
             assert response.status_code == 200, response.json
             mocked_update.assert_not_called()
 
-    def _receive_and_ignore_capture_in_progress_webhook_notification(self, user, app) -> None:
+    def _receive_and_ignore_capture_in_progress_webhook_notification(self, user, ubble_client) -> None:
         with patch(
             "pcapi.core.subscription.ubble.api.update_ubble_workflow",
         ) as mocked_update:
-            response = TestClient(app.test_client()).post(
+            response = ubble_client.post(
                 "/webhooks/ubble/v2/application_status", json=fixtures.ID_CAPTURE_IN_PROGRESS_WEBHOOK_BODY
             )
 
             assert response.status_code == 200, response.json
             mocked_update.assert_not_called()
 
-    def _receive_and_handle_verification_refused_webhook_notification(self, user, client, app, requests_mock) -> None:
+    def _receive_and_handle_verification_refused_webhook_notification(
+        self, user, client, ubble_client, requests_mock
+    ) -> None:
         requests_mock.get(
             f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fixtures.ID_VERIFICATION_CREATION_RESPONSE['id']}",
             json=fixtures.ID_VERIFICATION_REFUSED_RESPONSE,
         )
 
-        response = TestClient(app.test_client()).post(
+        response = ubble_client.post(
             "/webhooks/ubble/v2/application_status", json=fixtures.ID_VERIFICATION_REFUSED_WEBHOOK_BODY
         )
         assert response.status_code == 200, response.json
@@ -142,13 +144,15 @@ class UbbleV2EndToEndTest:
 
         assert response.status_code == 200, response.json
 
-    def _receive_and_handle_checks_in_progress_webhook_notification(self, user, client, app, requests_mock) -> None:
+    def _receive_and_handle_checks_in_progress_webhook_notification(
+        self, user, client, ubble_client, requests_mock
+    ) -> None:
         requests_mock.get(
             f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fixtures.ID_VERIFICATION_CREATION_RESPONSE['id']}",
             json=fixtures.ID_CHECKS_IN_PROGRESS_RESPONSE,
         )
 
-        response = TestClient(app.test_client()).post(
+        response = ubble_client.post(
             "/webhooks/ubble/v2/application_status", json=fixtures.ID_CHECKS_IN_PROGRESS_WEBHOOK_BODY
         )
         assert response.status_code == 200, response.json
@@ -160,13 +164,15 @@ class UbbleV2EndToEndTest:
         ]
         assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.PENDING
 
-    def _receive_and_handle_verification_approved_webhook_notification(self, user, client, app, requests_mock) -> None:
+    def _receive_and_handle_verification_approved_webhook_notification(
+        self, user, client, ubble_client, requests_mock
+    ) -> None:
         requests_mock.get(
             f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fixtures.ID_VERIFICATION_CREATION_RESPONSE['id']}",
             json=fixtures.ID_VERIFICATION_APPROVED_RESPONSE,
         )
 
-        response = TestClient(app.test_client()).post(
+        response = ubble_client.post(
             "/webhooks/ubble/v2/application_status", json=fixtures.ID_VERIFICATION_APPROVED_WEBHOOK_BODY
         )
         assert response.status_code == 200, response.json
