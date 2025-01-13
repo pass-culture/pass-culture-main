@@ -75,4 +75,6 @@ export const DEFAULT_VISIBILITY_FORM_VALUES: VisibilityFormValues = {
   teacher: null,
 }
 
-export const MAX_DETAILS_LENGTH = 1000
+export const MAX_DESCRIPTION_LENGTH = 1500
+
+export const MAX_PRICE_DETAILS_LENGTH = 1000

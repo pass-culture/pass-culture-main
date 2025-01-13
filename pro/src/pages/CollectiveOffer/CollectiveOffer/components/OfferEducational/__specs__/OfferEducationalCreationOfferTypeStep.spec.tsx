@@ -53,7 +53,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
     expect(descriptionTextArea).toHaveValue('')
 
     expect(await screen.findByTestId('counter-description')).toHaveTextContent(
-      '0/1000'
+      '0/1500'
     )
 
     const durationInput = screen.getByLabelText(
@@ -187,9 +187,9 @@ describe('screens | OfferEducational : creation offer type step', () => {
       expect(titleInput.getAttribute('value')).toHaveLength(titleMaxLength)
     })
 
-    it('should require a description with less than 1000 chars (and truncate longer strings)', async () => {
+    it('should require a description with less than 1500 chars (and truncate longer strings)', async () => {
       renderComponent(props)
-      const descMaxLength = 1000
+      const descMaxLength = 1500
 
       const description = await screen.findByLabelText(
         /Décrivez ici votre projet et son interêt pédagogique */
@@ -201,7 +201,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
 
       const descriptionString =
         'my description that is valid' +
-        Array.from({ length: 50 }).map(() => 'description pour tester')
+        Array.from({ length: 70 }).map(() => 'description pour tester')
 
       // hack - to be fixed
       await userEvent.click(description)

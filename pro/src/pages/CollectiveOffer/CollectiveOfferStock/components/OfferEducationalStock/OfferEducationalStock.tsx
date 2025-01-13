@@ -10,7 +10,7 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
-import { MAX_DETAILS_LENGTH } from 'commons/core/OfferEducational/constants'
+import { MAX_PRICE_DETAILS_LENGTH } from 'commons/core/OfferEducational/constants'
 import {
   OfferEducationalStockFormValues,
   isCollectiveOffer,
@@ -201,7 +201,7 @@ export const OfferEducationalStock = <
                   className={styles['price-details']}
                   disabled={!canEditDiscount}
                   label={DETAILS_PRICE_LABEL}
-                  maxLength={MAX_DETAILS_LENGTH}
+                  maxLength={MAX_PRICE_DETAILS_LENGTH}
                   name="priceDetail"
                   description={PRICE_DETAIL_PLACEHOLDER}
                 />

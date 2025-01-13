@@ -1,7 +1,10 @@
 import { useFormikContext } from 'formik'
 
 import { EacFormat } from 'apiClient/adage'
-import { MAX_DETAILS_LENGTH } from 'commons/core/OfferEducational/constants'
+import {
+  MAX_DESCRIPTION_LENGTH,
+  MAX_PRICE_DETAILS_LENGTH,
+} from 'commons/core/OfferEducational/constants'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { SelectOption } from 'commons/custom_types/form'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -116,7 +119,7 @@ export const FormOfferType = ({
         >
           <TextArea
             label="Décrivez ici votre projet et son interêt pédagogique"
-            maxLength={MAX_DETAILS_LENGTH}
+            maxLength={MAX_DESCRIPTION_LENGTH}
             name="description"
             disabled={disableForm}
           />
@@ -127,7 +130,7 @@ export const FormOfferType = ({
               disabled={disableForm}
               isOptional
               label="Indiquez le tarif de votre offre"
-              maxLength={MAX_DETAILS_LENGTH}
+              maxLength={MAX_PRICE_DETAILS_LENGTH}
               name="priceDetail"
               description="Exemple : par élève ou par groupe scolaire, politique tarifaire REP/REP+ et accompagnateurs..."
             />

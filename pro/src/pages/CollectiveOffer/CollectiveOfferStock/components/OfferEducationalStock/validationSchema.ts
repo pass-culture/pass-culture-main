@@ -1,7 +1,7 @@
 import { isBefore, isSameDay } from 'date-fns'
 import * as yup from 'yup'
 
-import { MAX_DETAILS_LENGTH } from 'commons/core/OfferEducational/constants'
+import { MAX_PRICE_DETAILS_LENGTH } from 'commons/core/OfferEducational/constants'
 
 import { getMaxEndDateInSchoolYear } from './utils/getMaxEndDateInSchoolYear'
 
@@ -132,10 +132,10 @@ export const generateValidationSchema = (
     priceDetail: yup
       .string()
       .required('L’information sur le prix est obligatoire')
-      .max(MAX_DETAILS_LENGTH),
+      .max(MAX_PRICE_DETAILS_LENGTH),
   })
 }
 
 export const showcaseOfferValidationSchema = yup
   .object()
-  .shape({ priceDetail: yup.string().nullable().max(MAX_DETAILS_LENGTH) })
+  .shape({ priceDetail: yup.string().nullable().max(MAX_PRICE_DETAILS_LENGTH) })
