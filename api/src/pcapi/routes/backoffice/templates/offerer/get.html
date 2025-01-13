@@ -267,7 +267,7 @@
           {% endif %}
           {% if has_offerer_address %}
             {# tab is hidden when there is no address in database; so it does not need a FF until migration #}
-            {{ build_details_tab("addresses", "Adresses", active_tab == 'addresses') }}
+            {{ build_details_tab("addresses", "Localisations", active_tab == 'addresses') }}
           {% endif %}
           {% if not offerer.is_caledonian %}{{ build_details_tab("dms-adage", "Dossiers DMS ADAGE", active_tab == 'dms_adage') }}{% endif %}
           {{ build_details_tab("bank-accounts", "Comptes bancaires", active_tab == 'bank_accounts') }}

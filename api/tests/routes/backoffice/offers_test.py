@@ -2317,7 +2317,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         text = html_parser.extract_cards_text(response.data)[0]
-        assert "Adresse : Champ de Mars 1v Place Jacques Rueff 75007 Paris 48.85605, 2.29800" in text
+        assert "Localisation : Champ de Mars 1v Place Jacques Rueff 75007 Paris 48.85605, 2.29800" in text
 
     def test_get_offer_details_with_offerer_confidence_rule(self, authenticated_client):
         rule = offerers_factories.ManualReviewOffererConfidenceRuleFactory(offerer__name="Offerer")
