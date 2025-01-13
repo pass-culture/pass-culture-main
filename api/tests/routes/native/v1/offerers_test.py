@@ -211,8 +211,7 @@ class OffererHeadlineOfferTest:
         offerer = user_offerer.offerer
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = offers_factories.OfferFactory(venue=venue)
-        offers_factories.StockFactory(offer=offer)
-        offers_factories.HeadlineOfferFactory(offer=offer, venue=venue)
+        offers_factories.HeadlineOfferFactory(offer=offer, venue=venue, create_mediation=True)
 
         client = client.with_session_auth(email=pro.email)
         with assert_num_queries(self.num_queries):
@@ -222,7 +221,10 @@ class OffererHeadlineOfferTest:
         assert response.json == {
             "name": offer.name,
             "id": offer.id,
-            "image": offer.image,
+            "image": {
+                "credit": offer.image.credit,
+                "url": offer.image.url,
+            },
         }
 
     def test_get_offerer_headline_offer_not_found(self, client):
