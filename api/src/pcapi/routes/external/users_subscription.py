@@ -29,6 +29,7 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
 
 
 @public_api.route("/webhooks/ubble/v2/application_status", methods=["POST"])
+@ubble_validation.require_ubble_v2_signature
 @spectree_serialize(
     on_success_status=200,
     response_model=ubble_serializers.WebhookDummyReponse,  # type: ignore[arg-type]
