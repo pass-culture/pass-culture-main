@@ -21,11 +21,11 @@ interface RadioButtonWithImageProps {
   /**
    * The icon to display alongside the radio button.
    */
-  icon: string
+  icon?: string
   /**
    * The label text for the radio button.
    */
-  label: string
+  label: string | React.ReactNode
   /**
    * An optional description for the radio button.
    */
@@ -81,7 +81,7 @@ interface RadioButtonWithImageProps {
 export const RadioButtonWithImage = ({
   name,
   isChecked,
-  icon,
+  icon = undefined,
   label,
   description,
   onChange,
@@ -107,7 +107,7 @@ export const RadioButtonWithImage = ({
       {isChecked ? <RadioButtonCheckedSVG /> : <RadioButtonUncheckedSVG />}
     </div>
 
-    <SvgIcon src={icon} className={styles['button-icon']} alt="" />
+    {icon && <SvgIcon src={icon} className={styles['button-icon']} alt="" />}
 
     <input
       checked={isChecked}
