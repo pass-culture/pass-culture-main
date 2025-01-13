@@ -1157,12 +1157,21 @@ def get_offerers_active_headline_offer(offerer_id: int) -> models.HeadlineOffer 
 def get_inactive_headline_offers() -> list[models.HeadlineOffer]:
     return (
         models.HeadlineOffer.query.join(models.Offer, models.HeadlineOffer.offerId == models.Offer.id)
-        .filter(models.Offer.status != offer_mixin.OfferStatus.ACTIVE)
+        .outerjoin(models.Mediation, models.Mediation.offerId == models.Offer.id)
+        .outerjoin(models.Product, models.Offer.productId == models.Product.id)
+        .outerjoin(models.ProductMediation, models.ProductMediation.productId == models.Product.id)
         .filter(
-            # We don't want to fetch HeadlineOffers that have already been marked as finished
             sa.or_(
+                models.Offer.status != offer_mixin.OfferStatus.ACTIVE,
+                sa.and_(  # type: ignore
+                    models.ProductMediation.id.is_(None),
+                    models.Mediation.id.is_(None),
+                ),
+            ),
+            sa.or_(
+                # We don't want to fetch HeadlineOffers that have already been marked as finished
+                sa.func.upper(models.HeadlineOffer.timespan) > datetime.datetime.utcnow(),
                 sa.func.upper(models.HeadlineOffer.timespan).is_(None),
-                sa.func.upper(models.HeadlineOffer.timespan) <= datetime.datetime.utcnow(),
             ),
         )
         .all()
