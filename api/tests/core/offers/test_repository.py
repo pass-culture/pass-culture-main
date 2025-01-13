@@ -2637,18 +2637,18 @@ class GetHeadlineOfferFiltersTest:
 
     def test_get_inactive_headline_offers_basic(self):
         inactive_offer = factories.OfferFactory(isActive=False)
-        inactive_offer_headline_offer = factories.HeadlineOfferFactory(offer=inactive_offer)
+        inactive_offer_headline_offer = factories.HeadlineOfferFactory(offer=inactive_offer, create_mediation=True)
 
         active_offer = factories.OfferFactory(isActive=True)
         factories.StockFactory(offer=active_offer)
-        active_offer_headline_offer = factories.HeadlineOfferFactory(offer=active_offer)
+        active_offer_headline_offer = factories.HeadlineOfferFactory(offer=active_offer, create_mediation=True)
 
         finished_timespan = (
             datetime.datetime.utcnow() - datetime.timedelta(days=20),
             datetime.datetime.utcnow() - datetime.timedelta(days=10),
         )
         already_inactive_offer_headline_offer = factories.HeadlineOfferFactory(
-            offer=active_offer, timespan=finished_timespan
+            offer=active_offer, timespan=finished_timespan, create_mediation=True
         )
 
         another_active_offer = factories.OfferFactory(isActive=True)
@@ -2666,7 +2666,7 @@ class GetHeadlineOfferFiltersTest:
     def test_get_inactive_headline_offers_empty_result(self):
         offer = factories.OfferFactory(isActive=True)
         factories.StockFactory(offer=offer)
-        factories.HeadlineOfferFactory(offer=offer)
+        factories.HeadlineOfferFactory(offer=offer, create_mediation=True)
 
         headline_offer_query_result = repository.get_inactive_headline_offers()
         assert headline_offer_query_result == []

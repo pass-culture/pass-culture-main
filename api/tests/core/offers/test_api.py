@@ -2161,9 +2161,7 @@ class HeadlineOfferTest:
             assert error.value.errors["headlineOffer"] == ["This offer is already an active headline offer"]
 
     def test_remove_headline_offer(self):
-        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
-        offer = factories.OfferFactory(isActive=True, venue=venue)
-        factories.StockFactory(offer=offer)
+        offer = factories.OfferFactory(isActive=True)
         headline_offer = factories.HeadlineOfferFactory(offer=offer)
 
         api.remove_headline_offer(headline_offer)
@@ -2258,30 +2256,17 @@ class HeadlineOfferTest:
         assert not offer.is_headline_offer
 
     def test_set_upper_timespan_of_inactive_headline_offers(self):
-        venue_1 = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
-        offer_1 = factories.OfferFactory(isActive=True, venue=venue_1)
-        factories.StockFactory(offer=offer_1)
-        factories.MediationFactory(offer=offer_1)
-        venue_2 = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
-        stock = factories.StockFactory(quantity=1)
-        offer_2 = factories.OfferFactory(isActive=True, venue=venue_2, stocks=[stock])
-        factories.MediationFactory(offer=offer_2)
-        venue_3 = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
-        offer_3 = factories.OfferFactory(isActive=True, venue=venue_3)
-        factories.StockFactory(offer=offer_3)
-        factories.MediationFactory(offer=offer_3)
-
-        headline_offer_1 = factories.HeadlineOfferFactory(offer=offer_1)
-        headline_offer_2 = factories.HeadlineOfferFactory(offer=offer_2)
-        headline_offer_3 = factories.HeadlineOfferFactory(offer=offer_3)
+        headline_offer_1 = factories.HeadlineOfferFactory(create_mediation=True)
+        headline_offer_3 = factories.HeadlineOfferFactory(create_mediation=True)
+        headline_offer_2 = factories.HeadlineOfferFactory(create_mediation=True)
 
         assert headline_offer_1.isActive
         assert headline_offer_1.timespan.upper is None
         assert headline_offer_2.isActive
         assert headline_offer_2.timespan.upper is None
 
-        offer_1.validation = models.OfferValidationStatus.REJECTED
-        stock.quantity = 0
+        headline_offer_1.offer.validation = models.OfferValidationStatus.REJECTED
+        headline_offer_2.offer.stocks[0].quantity = 0
 
         api.set_upper_timespan_of_inactive_headline_offers()
         assert not headline_offer_1.isActive
@@ -2292,23 +2277,41 @@ class HeadlineOfferTest:
         assert headline_offer_3.isActive
         assert headline_offer_3.timespan.upper is None
 
+    def test_do_not_deactivate_headline_offer_with_product_mediation(self):
+        product_without_mediation = factories.ProductFactory()
+        product_with_mediation = factories.ProductFactory()
+        factories.ProductMediationFactory(product=product_with_mediation)
+        offer_with_product_mediation = factories.OfferFactory(product=product_with_mediation)
+        offer_without_product_mediation = factories.OfferFactory(product=product_without_mediation)
+        headline_offer_with_product_mediation = factories.HeadlineOfferFactory(
+            offer=offer_with_product_mediation, create_mediation=False
+        )
+        headline_offer_without_product_mediation = factories.HeadlineOfferFactory(
+            offer=offer_without_product_mediation, create_mediation=False
+        )
+
+        assert headline_offer_with_product_mediation.offer.images
+        assert not headline_offer_without_product_mediation.offer.images
+
+        api.set_upper_timespan_of_inactive_headline_offers()
+        assert headline_offer_with_product_mediation.isActive
+        assert headline_offer_with_product_mediation.timespan.upper is None
+
+        assert not headline_offer_without_product_mediation.isActive
+        assert not headline_offer_without_product_mediation.timespan.upper is None
+
     def test_do_not_update_upper_timespan_of_already_inactive_headline_offers(self):
-        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
-        offer = factories.OfferFactory(isActive=True, venue=venue)
-        factories.StockFactory(offer=offer)
-        factories.MediationFactory(offer=offer)
         creation_time = datetime.utcnow() - timedelta(days=20)
         finished_timespan = (creation_time, creation_time + timedelta(days=10))
-        old_headline_offer = factories.HeadlineOfferFactory(offer=offer, timespan=finished_timespan)
+        old_headline_offer = factories.HeadlineOfferFactory(timespan=finished_timespan, create_mediation=True)
+
         api.set_upper_timespan_of_inactive_headline_offers()
         assert old_headline_offer.timespan.lower.date() == creation_time.date()
         assert old_headline_offer.timespan.upper.date() == (creation_time + timedelta(days=10)).date()
 
     def test_set_upper_timespan_of_inactive_headline_offers_without_image(self):
-        offer = factories.OfferFactory(isActive=True)
-        factories.StockFactory(offer=offer)
+        headline_offer = factories.HeadlineOfferFactory(create_mediation=False)
 
-        headline_offer = factories.HeadlineOfferFactory(offer=offer)
         assert headline_offer.isActive
 
         api.set_upper_timespan_of_inactive_headline_offers()
