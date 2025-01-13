@@ -11,6 +11,7 @@ import pcapi.core.artist.models as artist_models
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.factories import BaseFactory
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offerers.schemas import VenueTypeCode
 import pcapi.core.offers.models as offers_models
 from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
 from pcapi.core.providers.titelive_gtl import GTLS
@@ -263,9 +264,25 @@ class HeadlineOfferFactory(BaseFactory):
     class Meta:
         model = models.HeadlineOffer
 
-    offer = factory.SubFactory(OfferFactory)
+    offer = factory.SubFactory(
+        OfferFactory,
+        isActive=True,
+        venue=factory.SubFactory(offerers_factories.VenueFactory, venueTypeCode=VenueTypeCode.LIBRARY),
+    )
     venue = factory.SelfAttribute("offer.venue")
     timespan = (datetime.datetime.utcnow(),)
+
+    @factory.post_generation
+    def create_mediation(
+        self,
+        create: bool,
+        create_mediation: bool = False,
+        **_kwargs: typing.Any,
+    ) -> None:
+        if create:
+            StockFactory(offer=self.offer)
+            if create_mediation:
+                MediationFactory(offer=self.offer)
 
 
 class PriceCategoryLabelFactory(BaseFactory):

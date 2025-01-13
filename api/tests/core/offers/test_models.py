@@ -706,21 +706,15 @@ class HeadlineOfferTest:
     next_month = today + datetime.timedelta(days=30)
 
     def test_headline_offer_is_active(self):
-        offer = factories.OfferFactory(isActive=True)
-        factories.StockFactory(offer=offer)
-        headline_offer = factories.HeadlineOfferFactory(offer=offer, timespan=(self.today, None))
+        headline_offer = factories.HeadlineOfferFactory(timespan=(self.today, None))
         assert headline_offer.isActive
 
     def test_headline_offer_with_ending_time_in_the_future_is_active(self):
-        offer = factories.OfferFactory(isActive=True)
-        factories.StockFactory(offer=offer)
-        headline_offer = factories.HeadlineOfferFactory(offer=offer, timespan=(self.today, self.day_after_tomorrow))
+        headline_offer = factories.HeadlineOfferFactory(timespan=(self.today, self.day_after_tomorrow))
         assert headline_offer.isActive
 
     def test_headline_offer_is_not_active(self):
-        offer = factories.OfferFactory(isActive=True)
-        factories.StockFactory(offer=offer)
-        headline_offer = factories.HeadlineOfferFactory(offer=offer, timespan=(self.today, self.day_after_tomorrow))
+        headline_offer = factories.HeadlineOfferFactory(timespan=(self.today, self.day_after_tomorrow))
         with time_machine.travel(self.next_month):
             assert not headline_offer.isActive
 
@@ -735,7 +729,6 @@ class HeadlineOfferTest:
     )
     def test_unicity_headline_offer(self, timespan, overlaping_timespan):
         offer = factories.OfferFactory(isActive=True)
-        factories.StockFactory(offer=offer)
         factories.HeadlineOfferFactory(offer=offer, timespan=timespan)
         with pytest.raises(exc.IntegrityError):
             factories.HeadlineOfferFactory(offer=offer, timespan=overlaping_timespan)
