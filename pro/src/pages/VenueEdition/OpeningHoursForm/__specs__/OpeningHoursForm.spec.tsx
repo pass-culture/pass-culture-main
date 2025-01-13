@@ -83,41 +83,6 @@ describe('OpeningHoursForm', () => {
           morningStartingHour: '08:00',
           isAfternoonOpen: true,
         },
-        saturday: {
-          afternoonEndingHour: '',
-          afternoonStartingHour: '',
-          morningEndingHour: '',
-          morningStartingHour: '',
-          isAfternoonOpen: false,
-        },
-        sunday: {
-          afternoonEndingHour: '',
-          afternoonStartingHour: '',
-          morningEndingHour: '',
-          morningStartingHour: '',
-          isAfternoonOpen: false,
-        },
-        thursday: {
-          afternoonEndingHour: '',
-          afternoonStartingHour: '',
-          morningEndingHour: '',
-          morningStartingHour: '',
-          isAfternoonOpen: false,
-        },
-        tuesday: {
-          afternoonEndingHour: '',
-          afternoonStartingHour: '',
-          morningEndingHour: '',
-          morningStartingHour: '',
-          isAfternoonOpen: false,
-        },
-        wednesday: {
-          afternoonEndingHour: '',
-          afternoonStartingHour: '',
-          morningEndingHour: '',
-          morningStartingHour: '',
-          isAfternoonOpen: false,
-        },
       }),
       expect.anything()
     )

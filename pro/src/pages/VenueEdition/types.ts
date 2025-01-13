@@ -16,13 +16,13 @@ export interface VenueEditionFormValues {
   phoneNumber: string | null
   webSite: string | null
   days: Day[]
-  monday: DayValues
-  tuesday: DayValues
-  wednesday: DayValues
-  thursday: DayValues
-  friday: DayValues
-  saturday: DayValues
-  sunday: DayValues
+  monday?: DayValues
+  tuesday?: DayValues
+  wednesday?: DayValues
+  thursday?: DayValues
+  friday?: DayValues
+  saturday?: DayValues
+  sunday?: DayValues
 }
 
 export type Day =
