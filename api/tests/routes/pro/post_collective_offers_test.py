@@ -334,6 +334,18 @@ class Returns400Test:
         assert response.json == {"domains": ["domains must have at least one value"]}
         assert CollectiveOffer.query.count() == 0
 
+    def test_create_collective_offer_description_invalid(self, client):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
+
+        data = {**base_offer_payload(venue=venue), "description": "too_long" * 200}
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"description": ["La description de l’offre doit faire au maximum 1500 caractères."]}
+        assert CollectiveOffer.query.count() == 0
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns404Test:

@@ -311,6 +311,14 @@ class Returns400Test:
             "bookingEmails.2": ["Le format d'email est incorrect."],
         }
 
+    def test_description_invalid(self, pro_client, payload):
+        data = {**payload, "description": "too_long" * 200}
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"description": ["La description de l’offre doit faire au maximum 1500 caractères."]}
+
 
 class InvalidDatesTest:
     def test_missing_start(self, pro_client, payload, template_end):

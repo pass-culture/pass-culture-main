@@ -6,10 +6,9 @@ from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
 from pcapi.core.educational import repository
-from pcapi.core.educational.models import OfferAddressType
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation as offers_validation
-from pcapi.models.api_errors import ApiErrors
+from pcapi.models import api_errors
 
 
 if TYPE_CHECKING:
@@ -20,30 +19,27 @@ def validate_offer_venue(offer_venue: "OfferVenueModel | None") -> None:
     if offer_venue is None:
         return
     errors = {}
-    if offer_venue.addressType == OfferAddressType.OFFERER_VENUE:
+    if offer_venue.addressType == models.OfferAddressType.OFFERER_VENUE:
         if offer_venue.venueId is None:
             errors["offerVenue.venueId"] = (
-                "Ce champ est obligatoire si 'addressType' vaut " f"'{OfferAddressType.OFFERER_VENUE.value}'"
+                "Ce champ est obligatoire si 'addressType' vaut " f"'{models.OfferAddressType.OFFERER_VENUE.value}'"
             )
     elif offer_venue.venueId is not None:
         errors["offerVenue.venueId"] = (
-            "Ce champ est interdit si 'addressType' ne vaut pas " f"'{OfferAddressType.OFFERER_VENUE.value}'"
+            "Ce champ est interdit si 'addressType' ne vaut pas " f"'{models.OfferAddressType.OFFERER_VENUE.value}'"
         )
 
-    if offer_venue.addressType == OfferAddressType.OTHER:
+    if offer_venue.addressType == models.OfferAddressType.OTHER:
         if not offer_venue.otherAddress:
             errors["offerVenue.otherAddress"] = (
-                "Ce champ est obligatoire si 'addressType' vaut " f"'{OfferAddressType.OTHER.value}'"
+                "Ce champ est obligatoire si 'addressType' vaut " f"'{models.OfferAddressType.OTHER.value}'"
             )
     elif offer_venue.otherAddress:
         errors["offerVenue.otherAddress"] = (
-            "Ce champ est interdit si 'addressType' ne vaut pas " f"'{OfferAddressType.OTHER.value}'"
+            "Ce champ est interdit si 'addressType' ne vaut pas " f"'{models.OfferAddressType.OTHER.value}'"
         )
     if errors:
-        raise ApiErrors(
-            errors=errors,
-            status_code=404,
-        )
+        raise api_errors.ApiErrors(errors=errors, status_code=404)
 
 
 def check_institution_fund(
@@ -156,3 +152,23 @@ def check_collective_offer_template_action_is_allowed(
 ) -> None:
     if action not in offer.allowedActions:
         raise exceptions.CollectiveOfferTemplateForbiddenAction(action=action)
+
+
+def check_collective_offer_name_length_is_valid(offer_name: str) -> None:
+    if len(offer_name) > models.MAX_COLLECTIVE_NAME_LENGTH:
+        raise api_errors.ApiErrors(
+            errors={
+                "name": [f"Le titre de l’offre doit faire au maximum {models.MAX_COLLECTIVE_NAME_LENGTH} caractères."]
+            }
+        )
+
+
+def check_collective_offer_description_length_is_valid(offer_description: str) -> None:
+    if len(offer_description) > models.MAX_COLLECTIVE_DESCRIPTION_LENGTH:
+        raise api_errors.ApiErrors(
+            {
+                "description": [
+                    f"La description de l’offre doit faire au maximum {models.MAX_COLLECTIVE_DESCRIPTION_LENGTH} caractères."
+                ]
+            }
+        )

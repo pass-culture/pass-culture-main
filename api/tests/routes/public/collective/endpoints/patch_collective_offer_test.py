@@ -939,6 +939,21 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert booking.cancellationDate == now - timedelta(days=1)
         assert booking.confirmationLimitDate == limit
 
+    def test_description_invalid(self, client):
+        key, venue_provider = self.setup_active_venue_provider()
+        client_with_token = client.with_explicit_token(key)
+        offer = educational_factories.CollectiveOfferFactory(
+            venue=venue_provider.venue, provider=venue_provider.provider
+        )
+
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client_with_token.patch(
+                self.endpoint_url.format(offer_id=offer.id), json={"description": "too_long" * 200}
+            )
+
+        assert response.status_code == 400
+        assert response.json == {"description": ["La description de l’offre doit faire au maximum 1500 caractères."]}
+
 
 @pytest.mark.usefixtures("db_session")
 class UpdateOfferVenueTest(PublicAPIVenueEndpointHelper):

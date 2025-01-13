@@ -415,6 +415,21 @@ class Returns400Test:
             "bookingEmails.2": ["Le format d'email est incorrect."],
         }
 
+    def test_description_invalid(self, client):
+        offer_ctx = build_offer_context()
+        payload_ctx = build_payload_context()
+
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+        payload = payload_ctx.payload
+
+        payload["description"] = "too_long" * 200
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"description": ["La description de l’offre doit faire au maximum 1500 caractères."]}
+
 
 class InvalidDatesTest:
     def test_missing_start(self, client):

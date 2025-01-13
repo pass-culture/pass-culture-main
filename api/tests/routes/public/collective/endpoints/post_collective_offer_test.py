@@ -323,6 +323,15 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         assert response.status_code == 400
         assert response.json == {"formats": ["field required"]}
 
+    def test_description_invalid(self, public_client, payload):
+        payload["description"] = "too_long" * 200
+
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"description": ["La description de l’offre doit faire au maximum 1500 caractères."]}
+
 
 @pytest.mark.usefixtures("db_session")
 class CollectiveOffersPublicPostOfferMinimalTest:
