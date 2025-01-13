@@ -185,8 +185,7 @@ def edit_collective_stock(
     api_shared.update_collective_stock_booking(
         stock=stock,
         current_booking=current_booking,
-        datetime_has_changed="startDatetime" in stock_data,
-        datetime_column="startDatetime",
+        start_datetime_has_changed="startDatetime" in stock_data,
     )
 
     db.session.flush()

@@ -47,7 +47,6 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
                 child.unlink()
 
     def test_patch_offer(self, client):
-        # Given
         venue_provider = provider_factories.VenueProviderFactory()
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
         venue2 = offerers_factories.VenueFactory(venueProviders=[venue_provider])
@@ -93,7 +92,8 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             "imageCredit": "a great artist",
             "nationalProgramId": national_program.id,
             # stock part
-            "beginningDatetime": stock.beginningDatetime.isoformat(timespec="seconds"),
+            "startDatetime": stock.startDatetime.isoformat(timespec="seconds"),
+            "endDatetime": stock.endDatetime.isoformat(timespec="seconds"),
             "bookingLimitDatetime": stock.bookingLimitDatetime.isoformat(timespec="seconds"),
             "totalPrice": 96.25,
             "numberOfTickets": 30,
@@ -102,13 +102,11 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             "educationalInstitutionId": educational_institution.id,
         }
 
-        # When
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
 
-        # Then
         assert response.status_code == 200
 
         offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
@@ -137,7 +135,8 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert offer.imageCredit == "a great artist"
         assert offer.nationalProgramId == national_program.id
 
-        assert offer.collectiveStock.beginningDatetime == datetime.fromisoformat(payload["beginningDatetime"])
+        assert offer.collectiveStock.startDatetime == datetime.fromisoformat(payload["startDatetime"])
+        assert offer.collectiveStock.endDatetime == datetime.fromisoformat(payload["endDatetime"])
         assert offer.collectiveStock.bookingLimitDatetime == datetime.fromisoformat(payload["bookingLimitDatetime"])
         assert offer.collectiveStock.price == Decimal(payload["totalPrice"])
         assert offer.collectiveStock.priceDetail == payload["educationalPriceDetail"]
@@ -348,6 +347,36 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 400
         assert response.json == {"endDatetime": ["La date de fin de l'évènement ne peut précéder la date de début."]}
 
+    def test_should_raise_400_because_booking_limit_is_after_start(self, client):
+        venue_provider = provider_factories.VenueProviderFactory()
+        venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
+
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+        offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
+        stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer)
+
+        new_start = datetime.utcnow().replace(second=0, microsecond=0) + timedelta(days=30)
+        new_end = new_start + timedelta(days=10)
+        new_limit = new_start + timedelta(days=5)
+
+        payload = {
+            "startDatetime": date_utils.utc_datetime_to_department_timezone(new_start, None).isoformat(),
+            "endDatetime": date_utils.utc_datetime_to_department_timezone(new_end, None).isoformat(),
+            "bookingLimitDatetime": date_utils.utc_datetime_to_department_timezone(new_limit, None).isoformat(),
+        }
+
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+            )
+
+        assert response.status_code == 400
+        assert response.json == {
+            "bookingLimitDatetime": [
+                "La date limite de réservation ne peut être postérieure à la date de début de l'évènement"
+            ]
+        }
+
     def test_patch_offer_uai_and_institution_id(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -381,7 +410,6 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert offer.institutionId is None
 
     def test_patch_offer_invalid_domain(self, client):
-        # Given
         venue_provider = provider_factories.VenueProviderFactory()
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
 
@@ -409,7 +437,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
                 "otherAddress": None,
             },
             # stock part
-            "beginningDatetime": stock.beginningDatetime.isoformat(timespec="seconds"),
+            "startDatetime": stock.startDatetime.isoformat(timespec="seconds"),
             "bookingLimitDatetime": stock.bookingLimitDatetime.isoformat(timespec="seconds"),
             "totalPrice": 21,
             "numberOfTickets": 30,
@@ -418,14 +446,13 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             "educationalInstitutionId": educational_institution.id,
         }
 
-        # When
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
 
-        # Then
         assert response.status_code == 404
+        assert response.json == {"domains": ["Domaine scolaire non trouvé."]}
 
     def test_patch_offer_invalid_api_key(self, client):
         # Given
@@ -475,7 +502,6 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 401
 
     def test_patch_offer_invalid_offerer(self, client):
-        # Given
         venue_provider = provider_factories.VenueProviderFactory()
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
 
@@ -502,7 +528,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
                 "otherAddress": None,
             },
             # stock part
-            "beginningDatetime": stock.beginningDatetime.isoformat(timespec="seconds"),
+            "startDatetime": stock.startDatetime.isoformat(timespec="seconds"),
             "bookingLimitDatetime": stock.bookingLimitDatetime.isoformat(timespec="seconds"),
             "totalPrice": 35621,
             "numberOfTickets": 30,
@@ -511,14 +537,15 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             "educationalInstitutionId": educational_institution.id,
         }
 
-        # When
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
 
-        # Then
         assert response.status_code == 403
+        assert response.json == {
+            "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à " "cette offre collective."]
+        }
 
     def test_patch_offer_invalid_phone_number(self, client):
         # Given
@@ -805,7 +832,6 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert offer.institutionId
 
     def test_unknown_national_program(self, client):
-        # Given
         venue_provider = provider_factories.VenueProviderFactory()
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
         venue2 = offerers_factories.VenueFactory(venueProviders=[venue_provider])
@@ -847,7 +873,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             "isActive": False,
             "imageCredit": "a great artist",
             # stock part
-            "beginningDatetime": stock.beginningDatetime.isoformat(timespec="seconds"),
+            "startDatetime": stock.startDatetime.isoformat(timespec="seconds"),
             "bookingLimitDatetime": stock.bookingLimitDatetime.isoformat(timespec="seconds"),
             "totalPrice": 96.25,
             "numberOfTickets": 30,
@@ -857,15 +883,13 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             "nationalProgramId": 0,
         }
 
-        # When
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
 
-        # Then
         assert response.status_code == 400
-        assert "nationalProgramId" in response.json
+        assert response.json == {"nationalProgramId": ["Dispositif inconnu"]}
 
     @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_should_update_expired_booking(self, client):

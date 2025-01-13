@@ -1811,12 +1811,6 @@
             },
             "CollectiveOffersResponseModel": {
                 "properties": {
-                    "beginningDatetime": {
-                        "description": "[DEPRECATED - Will be removed in upcoming release. Please use `startDatetime` instead.] Collective offer beginning datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2025-07-24T14:00:00+02:00",
-                        "title": "Beginningdatetime",
-                        "type": "string"
-                    },
                     "bookings": {
                         "items": {
                             "$ref": "#/components/schemas/CollectiveBookingResponseModel"
@@ -1825,7 +1819,7 @@
                         "type": "array"
                     },
                     "endDatetime": {
-                        "description": "Collective offer end datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "description": "Collective offer end datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime). When creating a collective offer, the value of `startDatetime` will be copied to `endDatetime` if `endDatetime` is not provided.",
                         "example": "2025-07-24T14:00:00+02:00",
                         "title": "Enddatetime",
                         "type": "string"
@@ -1837,7 +1831,7 @@
                         "type": "integer"
                     },
                     "startDatetime": {
-                        "description": "Collective offer start datetime. Replaces beginning dateime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "description": "Collective offer start datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime). When creating a collective offer, the value of `startDatetime` will be copied to `endDatetime` if `endDatetime` is not provided.",
                         "example": "2025-07-24T14:00:00+02:00",
                         "title": "Startdatetime",
                         "type": "string"
@@ -1857,7 +1851,6 @@
                 },
                 "required": [
                     "id",
-                    "beginningDatetime",
                     "startDatetime",
                     "endDatetime",
                     "status",
@@ -4138,12 +4131,6 @@
                         "title": "Audiodisabilitycompliant",
                         "type": "boolean"
                     },
-                    "beginningDatetime": {
-                        "description": "[DEPRECATED - Will be removed in upcoming release. Please use `startDatetime` instead.] Collective offer beginning datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2025-07-24T14:00:00+02:00",
-                        "title": "Beginningdatetime",
-                        "type": "string"
-                    },
                     "bookingEmails": {
                         "description": "Recipient emails for notifications about bookings, cancellations, etc.",
                         "example": [
@@ -4158,7 +4145,7 @@
                         "type": "array"
                     },
                     "bookingLimitDatetime": {
-                        "description": "Booking limit datetime. It must be anterior to the `beginning_datetime`. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "description": "Booking limit datetime. It must be anterior to the `start_datetime`. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
                         "example": "2025-07-24T14:00:00+02:00",
                         "title": "Bookinglimitdatetime",
                         "type": "string"
@@ -4235,7 +4222,7 @@
                         "type": "string"
                     },
                     "endDatetime": {
-                        "description": "Collective offer end datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "description": "Collective offer end datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime). When creating a collective offer, the value of `startDatetime` will be copied to `endDatetime` if `endDatetime` is not provided.",
                         "example": "2025-07-24T14:00:00+02:00",
                         "title": "Enddatetime",
                         "type": "string"
@@ -4334,7 +4321,7 @@
                         "$ref": "#/components/schemas/OfferVenueModel"
                     },
                     "startDatetime": {
-                        "description": "Collective offer start datetime. Replaces beginning dateime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "description": "Collective offer start datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime). When creating a collective offer, the value of `startDatetime` will be copied to `endDatetime` if `endDatetime` is not provided.",
                         "example": "2025-07-24T14:00:00+02:00",
                         "title": "Startdatetime",
                         "type": "string"
@@ -4385,7 +4372,6 @@
                     "hasBookingLimitDatetimesPassed",
                     "isSoldOut",
                     "venueId",
-                    "beginningDatetime",
                     "startDatetime",
                     "endDatetime",
                     "bookingLimitDatetime",
@@ -5731,14 +5717,6 @@
                         "title": "Audiodisabilitycompliant",
                         "type": "boolean"
                     },
-                    "beginningDatetime": {
-                        "description": "[DEPRECATED - Will be removed in upcoming release. Please use `startDatetime` instead.] Collective offer beginning datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2025-07-24T14:00:00+02:00",
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Beginningdatetime",
-                        "type": "string"
-                    },
                     "bookingEmails": {
                         "description": "Recipient emails for notifications about bookings, cancellations, etc.",
                         "example": [
@@ -5753,7 +5731,7 @@
                         "type": "array"
                     },
                     "bookingLimitDatetime": {
-                        "description": "Booking limit datetime. It must be anterior to the `beginning_datetime`. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "description": "Booking limit datetime. It must be anterior to the `start_datetime`. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
                         "example": "2025-07-24T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
@@ -5823,7 +5801,7 @@
                         "type": "string"
                     },
                     "endDatetime": {
-                        "description": "Collective offer end datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "description": "Collective offer end datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime). When creating a collective offer, the value of `startDatetime` will be copied to `endDatetime` if `endDatetime` is not provided.",
                         "example": "2025-07-24T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
@@ -5915,7 +5893,7 @@
                         "title": "OfferVenueModel"
                     },
                     "startDatetime": {
-                        "description": "Collective offer start datetime. Replaces beginning dateime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "description": "Collective offer start datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime). When creating a collective offer, the value of `startDatetime` will be copied to `endDatetime` if `endDatetime` is not provided.",
                         "example": "2025-07-24T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
@@ -5995,13 +5973,6 @@
                         "title": "Audiodisabilitycompliant",
                         "type": "boolean"
                     },
-                    "beginningDatetime": {
-                        "description": "[DEPRECATED - Will be removed in upcoming release. Please use `startDatetime` instead.] Collective offer beginning datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2025-07-24T14:00:00+02:00",
-                        "format": "date-time",
-                        "title": "Beginningdatetime",
-                        "type": "string"
-                    },
                     "bookingEmails": {
                         "description": "Recipient emails for notifications about bookings, cancellations, etc.",
                         "example": [
@@ -6015,7 +5986,7 @@
                         "type": "array"
                     },
                     "bookingLimitDatetime": {
-                        "description": "Booking limit datetime. It must be anterior to the `beginning_datetime`. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "description": "Booking limit datetime. It must be anterior to the `start_datetime`. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
                         "example": "2025-07-24T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Bookinglimitdatetime",
@@ -6080,7 +6051,7 @@
                         "type": "string"
                     },
                     "endDatetime": {
-                        "description": "Collective offer end datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "description": "Collective offer end datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime). When creating a collective offer, the value of `startDatetime` will be copied to `endDatetime` if `endDatetime` is not provided.",
                         "example": "2025-07-24T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
@@ -6152,10 +6123,9 @@
                         "$ref": "#/components/schemas/OfferVenueModel"
                     },
                     "startDatetime": {
-                        "description": "Collective offer start datetime. Replaces beginning dateime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "description": "Collective offer start datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime). When creating a collective offer, the value of `startDatetime` will be copied to `endDatetime` if `endDatetime` is not provided.",
                         "example": "2025-07-24T14:00:00+02:00",
                         "format": "date-time",
-                        "nullable": true,
                         "title": "Startdatetime",
                         "type": "string"
                     },
@@ -6204,7 +6174,7 @@
                     "students",
                     "offerVenue",
                     "isActive",
-                    "beginningDatetime",
+                    "startDatetime",
                     "bookingLimitDatetime",
                     "totalPrice",
                     "numberOfTickets"

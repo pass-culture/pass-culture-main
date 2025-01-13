@@ -511,9 +511,9 @@ def create_collective_offer_public(
 
     collective_stock = educational_models.CollectiveStock(
         collectiveOffer=collective_offer,
-        beginningDatetime=body.beginning_datetime,
-        startDatetime=body.start_datetime or body.beginning_datetime,
-        endDatetime=body.end_datetime or body.beginning_datetime,
+        beginningDatetime=body.start_datetime,  # TODO: this field is still required, the column will be removed later
+        startDatetime=body.start_datetime,
+        endDatetime=body.end_datetime or body.start_datetime,
         bookingLimitDatetime=body.booking_limit_datetime,
         price=body.total_price,
         numberOfTickets=body.number_of_tickets,
@@ -600,7 +600,7 @@ def edit_collective_offer_public(
             offer.offerVenue["otherAddress"] = value.get("otherAddress") or ""
         elif key == "bookingLimitDatetime" and value is None:
             offer.collectiveStock.bookingLimitDatetime = new_values.get(
-                "beginningDatetime", offer.collectiveStock.beginningDatetime
+                "startDatetime", offer.collectiveStock.startDatetime
             )
         elif key in stock_fields:
             setattr(offer.collectiveStock, key, value)
@@ -612,16 +612,12 @@ def edit_collective_offer_public(
     api_shared.update_collective_stock_booking(
         stock=offer.collectiveStock,
         current_booking=collective_stock_unique_booking,
-        datetime_has_changed="beginningDatetime" in new_values,
-        datetime_column="beginningDatetime",
+        start_datetime_has_changed="startDatetime" in new_values,
     )
 
     db.session.commit()
 
-    notify_educational_redactor_on_collective_offer_or_stock_edit(
-        offer.id,
-        updated_fields,
-    )
+    notify_educational_redactor_on_collective_offer_or_stock_edit(offer.id, updated_fields)
     return offer
 
 
