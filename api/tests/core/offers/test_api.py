@@ -2261,12 +2261,15 @@ class HeadlineOfferTest:
         venue_1 = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
         offer_1 = factories.OfferFactory(isActive=True, venue=venue_1)
         factories.StockFactory(offer=offer_1)
+        factories.MediationFactory(offer=offer_1)
         venue_2 = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
         stock = factories.StockFactory(quantity=1)
         offer_2 = factories.OfferFactory(isActive=True, venue=venue_2, stocks=[stock])
+        factories.MediationFactory(offer=offer_2)
         venue_3 = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
         offer_3 = factories.OfferFactory(isActive=True, venue=venue_3)
         factories.StockFactory(offer=offer_3)
+        factories.MediationFactory(offer=offer_3)
 
         headline_offer_1 = factories.HeadlineOfferFactory(offer=offer_1)
         headline_offer_2 = factories.HeadlineOfferFactory(offer=offer_2)
@@ -2293,12 +2296,41 @@ class HeadlineOfferTest:
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
         offer = factories.OfferFactory(isActive=True, venue=venue)
         factories.StockFactory(offer=offer)
+        factories.MediationFactory(offer=offer)
         creation_time = datetime.utcnow() - timedelta(days=20)
         finished_timespan = (creation_time, creation_time + timedelta(days=10))
         old_headline_offer = factories.HeadlineOfferFactory(offer=offer, timespan=finished_timespan)
         api.set_upper_timespan_of_inactive_headline_offers()
         assert old_headline_offer.timespan.lower.date() == creation_time.date()
         assert old_headline_offer.timespan.upper.date() == (creation_time + timedelta(days=10)).date()
+
+    def test_set_upper_timespan_of_inactive_headline_offers_without_image(self):
+        offer = factories.OfferFactory(isActive=True)
+        factories.StockFactory(offer=offer)
+
+        headline_offer = factories.HeadlineOfferFactory(offer=offer)
+        assert headline_offer.isActive
+
+        api.set_upper_timespan_of_inactive_headline_offers()
+
+        assert not headline_offer.isActive
+        assert headline_offer.timespan.upper is not None
+
+    def test_should_not_change_upper_timespan_of_already_deactivated_offers(self):
+        creation_time_1 = datetime.utcnow() - timedelta(days=3)
+        ending_time_1 = datetime.utcnow() - timedelta(days=2)
+        creation_time_2 = datetime.utcnow() - timedelta(days=1)
+        finished_timespan = (creation_time_1, ending_time_1)
+        unfinished_timespan = (creation_time_2, None)
+        old_headline_offer = factories.HeadlineOfferFactory(timespan=finished_timespan, create_mediation=True)
+        current_headline_offer = factories.HeadlineOfferFactory(timespan=unfinished_timespan, create_mediation=False)
+
+        api.set_upper_timespan_of_inactive_headline_offers()
+
+        assert old_headline_offer.timespan.lower == creation_time_1
+        assert old_headline_offer.timespan.upper == ending_time_1
+        assert current_headline_offer.timespan.lower == creation_time_2
+        assert current_headline_offer.timespan.upper is not None
 
 
 @pytest.mark.usefixtures("db_session")
