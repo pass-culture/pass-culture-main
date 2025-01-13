@@ -130,12 +130,6 @@ class DMSGraphQLClient:
             )
             return None
 
-    def archive_application(self, application_techid: str, instructeur_techid: str) -> Any:
-        return self.execute_query(
-            ARCHIVE_APPLICATION_QUERY_NAME,
-            variables={"input": {"dossierId": application_techid, "instructeurId": instructeur_techid}},
-        )
-
     def _execute_mutation(
         self,
         mutation_name: str,
@@ -145,13 +139,14 @@ class DMSGraphQLClient:
         application_techid: str,
         instructeur_techid: str,
         motivation: str | None = None,
-        disable_notification: bool = False,
+        disable_notification: bool | None = False,
     ) -> dict:
-        params = {
+        params: dict[str, str | bool] = {
             "dossierId": application_techid,
             "instructeurId": instructeur_techid,
-            "disableNotification": disable_notification,
         }
+        if disable_notification is not None:
+            params["disableNotification"] = disable_notification
         if motivation is not None:
             params["motivation"] = motivation
 
@@ -207,7 +202,11 @@ class DMSGraphQLClient:
         )
 
     def mark_without_continuation(
-        self, application_techid: str, instructeur_techid: str, motivation: str | None
+        self,
+        application_techid: str,
+        instructeur_techid: str,
+        motivation: str | None,
+        disable_notification: bool = False,
     ) -> Any:
         return self._execute_mutation(
             MARK_WITHOUT_CONTINUATION_MUTATION_NAME,
@@ -216,7 +215,17 @@ class DMSGraphQLClient:
             application_techid=application_techid,
             instructeur_techid=instructeur_techid,
             motivation=motivation,
-            disable_notification=False,
+            disable_notification=disable_notification,
+        )
+
+    def archive_application(self, application_techid: str, instructeur_techid: str) -> Any:
+        return self._execute_mutation(
+            ARCHIVE_APPLICATION_QUERY_NAME,
+            key="dossierArchiver",
+            log_state="archive",
+            application_techid=application_techid,
+            instructeur_techid=instructeur_techid,
+            disable_notification=None,
         )
 
     def get_single_application_details(self, application_number: int) -> dms_models.DmsApplicationResponse:

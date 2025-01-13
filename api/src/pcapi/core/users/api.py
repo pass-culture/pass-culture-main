@@ -56,6 +56,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription.dms import api as dms_subscription_api
 import pcapi.core.subscription.phone_validation.exceptions as phone_validation_exceptions
 import pcapi.core.users.constants as users_constants
+import pcapi.core.users.ds as users_ds
 import pcapi.core.users.repository as users_repository
 import pcapi.core.users.utils as users_utils
 from pcapi.domain.password import check_password_strength
@@ -1564,6 +1565,12 @@ def anonymize_user(user: models.User, *, author: models.User | None = None, forc
         },
         synchronize_session=False,
     )
+
+    for update_request in models.UserAccountUpdateRequest.query.filter(
+        models.UserAccountUpdateRequest.userId == user.id
+    ).all():
+        # UserAccountUpdateRequest objects are deleted after being archived in DS
+        users_ds.archive(update_request, motivation="Anonymisation du compte")
 
     user.password = b"Anonymized"  # ggignore
     user.firstName = f"Anonymous_{user.id}"

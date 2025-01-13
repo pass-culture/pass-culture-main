@@ -935,3 +935,26 @@ DS_RESPONSE_UPDATE_STATE_ON_GOING_TO_ACCEPTED = {
 DS_RESPONSE_UPDATE_STATE_DRAFT_TO_ACCEPTED = {
     "dossierAccepter": {"dossier": None, "errors": [{"message": "Le dossier est d\u00e9j\u00e0 en construction"}]}
 }
+
+
+DS_RESPONSE_MARK_WITHOUT_CONTINUATION = {
+    "dossierClasserSansSuite": {"dossier": {"id": "RG9zc2llci0yMTgzNTc0OQ=="}, "errors": None}
+}
+
+DS_RESPONSE_ARCHIVE = {
+    "dossierArchiver": {
+        "dossier": {
+            "id": "RG9zc2llci0yMTgzNTc0OQ==",
+        },
+        "errors": None,
+    }
+}
+
+DS_RESPONSE_ARCHIVE_ERROR_NOT_INSTRUCTED = {
+    "dossierArchiver": {
+        "dossier": None,
+        "errors": [
+            {"message": "Un dossier ne peut être déplacé dans « à archiver » qu’une fois le traitement terminé"}
+        ],
+    }
+}
