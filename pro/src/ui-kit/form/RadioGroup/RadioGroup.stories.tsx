@@ -111,3 +111,27 @@ export const InnerRadioGroupWithNoLegend = {
     ],
   },
 }
+
+export const WithChildrenDisabled = {
+  args: {
+    ...defaultArgs,
+    disabled: true,
+    variant: RadioVariant.BOX,
+    group: defaultArgs.group.map((g, i) => ({
+      ...g,
+      childrenOnChecked: (
+        <RadioGroup
+          legend="Choisir une sous-option"
+          name="name 4"
+          variant={RadioVariant.BOX}
+          group={[
+            { label: `Sous-option ${i + 1} 1`, value: `option${i}1` },
+            { label: `Sous-option ${i + 1} 2`, value: `option${i}2` },
+          ]}
+          disabled={true}
+        />
+      ),
+    })),
+    name: 'name 3',
+  },
+}
