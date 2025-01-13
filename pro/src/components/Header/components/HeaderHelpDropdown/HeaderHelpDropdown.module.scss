@@ -6,10 +6,6 @@
   gap: 0;
 }
 
-.dropdown-button {
-  margin-right: rem.torem(32px);
-}
-
 .pop-in {
   @media screen and (min-width: size.$tablet) {
     width: auto;

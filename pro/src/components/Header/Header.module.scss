@@ -80,6 +80,13 @@
   }
 }
 
+.top-right-menu {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: rem.torem(32px);
+}
+
 .tablet-and-above {
   display: none;
 

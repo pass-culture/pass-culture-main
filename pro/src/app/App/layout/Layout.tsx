@@ -2,14 +2,12 @@ import cn from 'classnames'
 import React, { useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useMediaQuery } from 'commons/hooks/useMediaQuery'
 import { selectCurrentUser } from 'commons/store/user/selectors'
 import { BackToNavLink } from 'components/BackToNavLink/BackToNavLink'
 import { Footer } from 'components/Footer/Footer'
 import { Header } from 'components/Header/Header'
 import { SkipLinks } from 'components/SkipLinks/SkipLinks'
-import { UserReview } from 'components/UserReview/UserReview'
 import fullInfoIcon from 'icons/full-info.svg'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -48,15 +46,7 @@ export const Layout = ({
   const navPanel = useRef<HTMLDivElement>(null)
 
   const isMobileScreen = useMediaQuery('(max-width: 46.5rem)')
-  const isProFeedbackEnabled = useActiveFeature('ENABLE_PRO_FEEDBACK')
   const isConnected = !!currentUser
-
-  const shouldDisplayUserReview =
-    isProFeedbackEnabled &&
-    layout !== 'funnel' &&
-    layout !== 'onboarding' &&
-    layout !== 'logged-out' &&
-    layout !== 'sticky-onboarding'
 
   const mainHeadingWrapper = mainHeading && (
     <div className={styles['main-heading-wrapper']}>
@@ -139,7 +129,6 @@ export const Layout = ({
               [styles['content-wrapper-side']]: layout === 'logged-out',
             })}
           >
-            {shouldDisplayUserReview && <UserReview />}
             {layout === 'logged-out' && (
               <header className={styles['content-wrapper-side-logo']}>
                 <SvgIcon

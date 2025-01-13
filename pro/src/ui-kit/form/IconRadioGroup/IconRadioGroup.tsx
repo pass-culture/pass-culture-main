@@ -1,7 +1,6 @@
 import { useField } from 'formik'
 
 import { IconRadio } from 'ui-kit/form/IconRadioGroup/IconRadio/IconRadio'
-import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
 
 import { FieldSetLayout } from '../shared/FieldSetLayout/FieldSetLayout'
 
@@ -61,13 +60,6 @@ export const IconRadioGroup = ({
             />
           ))}
           <div className={styles['icon-radio-group-scale']}>{children}</div>
-        </div>
-        <div className={styles['fieldset-layout-error']}>
-          {!!meta.error && (
-            <FieldError name={`icon-radio-group-${name}`}>
-              {meta.error}
-            </FieldError>
-          )}
         </div>
       </FieldSetLayout>
     </>
