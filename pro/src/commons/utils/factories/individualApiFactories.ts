@@ -58,6 +58,7 @@ export const listOffersOfferFactory = (
     status: OfferStatus.ACTIVE,
     subcategoryId: SubcategoryIdEnum.CINE_PLEIN_AIR,
     isActive: true,
+    isDigital: false,
     hasBookingLimitDatetimesPassed: true,
     isEducational: false,
     name: `offer name ${offerId}`,
@@ -247,6 +248,7 @@ export const venueListItemFactory = (
     mentalDisabilityCompliant: true,
     motorDisabilityCompliant: true,
     audioDisabilityCompliant: true,
+    isPermanent: true,
     ...customVenueListItem,
   }
 }
