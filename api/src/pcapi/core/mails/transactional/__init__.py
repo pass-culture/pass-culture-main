@@ -79,3 +79,6 @@ from .users.reset_password import send_reset_password_email_to_user
 from .users.suspicious_login_email import send_suspicious_login_email
 from .users.ubble.subscription_document_error import send_subscription_document_error_email
 from .users.unsuspension import send_unsuspension_email
+from .users.update_request_set_to_without_continuation import (
+    send_beneficiary_update_request_set_to_without_continuation,
+)

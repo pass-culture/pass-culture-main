@@ -2,11 +2,13 @@ import datetime
 import enum
 import logging
 
+from dateutil.relativedelta import relativedelta
 import sqlalchemy as sa
 
 from pcapi import settings
 from pcapi.connectors.dms import api as ds_api
 from pcapi.connectors.dms import models as dms_models
+import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.core.users import models as users_models
@@ -73,7 +75,11 @@ def sync_instructor_ids(procedure_number: int) -> None:
     db.session.flush()
 
 
-def sync_user_account_update_requests(procedure_number: int, since: datetime.datetime | None) -> list:
+def sync_user_account_update_requests(
+    procedure_number: int,
+    since: datetime.datetime | None,
+    set_without_continuation: bool = False,
+) -> list:
     logger.info("[DS] Started processing User Update Account procedure %s", procedure_number)
 
     # Fetch instructors' User IDs only once
@@ -89,7 +95,7 @@ def sync_user_account_update_requests(procedure_number: int, since: datetime.dat
 
     for node in ds_client.get_beneficiary_account_update_nodes(procedure_number=procedure_number, since=since):
         try:
-            ds_application_id = _sync_ds_application(procedure_number, node, user_id_by_email)
+            ds_application_id = _sync_ds_application(procedure_number, node, user_id_by_email, set_without_continuation)
         except Exception:  # pylint: disable=broad-exception-caught
             # If we don't rollback here, we will persist in the faulty transaction
             # and we won't be able to commit at the end of the process and to set the current import `isProcessing` attr to False
@@ -139,7 +145,45 @@ def _get_updated_data(node: dict) -> dict:
     }
 
 
-def _sync_ds_application(procedure_number: int, node: dict, user_id_by_email: dict) -> int | None:
+def check_set_without_continuation(user_request: users_models.UserAccountUpdateRequest, node: dict, data: dict) -> None:
+    last_user_action_date = (
+        max([_from_ds_date(node["dateDerniereModificationChamps"]), data["dateLastUserMessage"]])
+        if data["dateLastUserMessage"]
+        else _from_ds_date(node["dateDerniereModificationChamps"])
+    )
+
+    if (
+        user_request.status
+        in (
+            dms_models.GraphQLApplicationStates.draft,
+            dms_models.GraphQLApplicationStates.on_going,
+        )
+        and data["dateLastInstructorMessage"] is not None
+        and data["dateLastInstructorMessage"]
+        + relativedelta(days=settings.DS_MARK_WITHOUT_CONTINUATION_UDPATE_REQUEST_DEADLINE)
+        < datetime.datetime.utcnow().astimezone(datetime.timezone.utc)
+        and data["dateLastInstructorMessage"] > last_user_action_date
+    ):
+        if user_request.status == dms_models.GraphQLApplicationStates.draft:
+            update_state(
+                user_request,
+                new_state=dms_models.GraphQLApplicationStates.on_going,
+                instructor=user_request.lastInstructor,
+            )
+        update_state(
+            user_request,
+            new_state=dms_models.GraphQLApplicationStates.without_continuation,
+            instructor=user_request.lastInstructor,
+            motivation=f"Dossier classé sans suite car pas de correction apportée au dossier depuis {settings.DS_MARK_WITHOUT_CONTINUATION_UDPATE_REQUEST_DEADLINE} jours",
+        )
+        transactional_mails.send_beneficiary_update_request_set_to_without_continuation(
+            user_request.user.email if user_request.user else data["email"]
+        )
+
+
+def _sync_ds_application(
+    procedure_number: int, node: dict, user_id_by_email: dict, set_without_continuation: bool
+) -> int | None:
     try:
         ds_application_id = node["number"]
         fields = node.get("champs", [])
@@ -250,6 +294,11 @@ def _sync_ds_application(procedure_number: int, node: dict, user_id_by_email: di
             else:
                 user_request = users_models.UserAccountUpdateRequest(dsApplicationId=ds_application_id, **data)
             db.session.add(user_request)
+            db.session.flush()
+
+            if set_without_continuation:
+                check_set_without_continuation(user_request, node, data)
+
     except Exception as exc:
         logger.exception(
             "[DS] Application parsing failed with error %s",
@@ -292,20 +341,30 @@ def update_state(
     user_request: users_models.UserAccountUpdateRequest,
     *,
     new_state: dms_models.GraphQLApplicationStates,
-    instructor: users_models.User,
+    instructor: users_models.User | None,
     motivation: str | None = None,
 ) -> None:
     ds_client = ds_api.DMSGraphQLClient()
+    if instructor is not None:
+        instructor_id = instructor.backoffice_profile.dsInstructorId
+    else:
+        instructor_id = settings.DMS_INSTRUCTOR_ID
 
     if new_state == dms_models.GraphQLApplicationStates.on_going:
         node = ds_client.make_on_going(
             application_techid=user_request.dsTechnicalId,
-            instructeur_techid=instructor.backoffice_profile.dsInstructorId,
+            instructeur_techid=instructor_id,
         )
     elif new_state == dms_models.GraphQLApplicationStates.accepted:
         node = ds_client.make_accepted(
             application_techid=user_request.dsTechnicalId,
-            instructeur_techid=instructor.backoffice_profile.dsInstructorId,
+            instructeur_techid=instructor_id,
+            motivation=motivation,
+        )
+    elif new_state == dms_models.GraphQLApplicationStates.without_continuation:
+        node = ds_client.mark_without_continuation(
+            application_techid=user_request.dsTechnicalId,
+            instructeur_techid=instructor_id,
             motivation=motivation,
         )
     else:
