@@ -8,7 +8,8 @@ from pydantic.v1 import Field
 from pydantic.v1 import root_validator
 from pydantic.v1 import validator
 
-import pcapi.core.categories.subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.educational import validation as educational_validation
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import OfferAddressType
@@ -22,7 +23,6 @@ from pcapi.routes.shared.collective.serialization import offers as shared_offers
 from pcapi.routes.shared.validation import phone_number_validator
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import email as email_utils
-from pcapi.validation.routes.offers import check_collective_offer_name_length_is_valid
 
 
 class ListCollectiveOffersQueryModel(BaseModel):
@@ -413,10 +413,15 @@ class PostCollectiveOfferBodyModel(BaseModel):
     def validate_students(cls, students: list[str]) -> list[StudentLevels]:
         return shared_offers.validate_students(students)
 
-    @validator("name", pre=True)
+    @validator("name")
     def validate_name(cls, name: str) -> str:
-        check_collective_offer_name_length_is_valid(name)
+        educational_validation.check_collective_offer_name_length_is_valid(name)
         return name
+
+    @validator("description")
+    def validate_description(cls, description: str) -> str:
+        educational_validation.check_collective_offer_description_length_is_valid(description)
+        return description
 
     @validator("domains", pre=True)
     def validate_domains(cls, domains: list[str]) -> list[str]:
@@ -535,8 +540,14 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     @validator("name", allow_reuse=True)
     def validate_name(cls, name: str | None) -> str | None:
         assert name is not None and name.strip() != ""
-        check_collective_offer_name_length_is_valid(name)
+        educational_validation.check_collective_offer_name_length_is_valid(name)
         return name
+
+    @validator("description")
+    def validate_description(cls, description: str | None) -> str | None:
+        assert description is not None
+        educational_validation.check_collective_offer_description_length_is_valid(description)
+        return description
 
     @validator("domains")
     def validate_domains_collective_offer_edition(cls, domains: list[int] | None) -> list[int] | None:

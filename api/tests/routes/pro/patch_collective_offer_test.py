@@ -544,6 +544,17 @@ class Returns400Test:
             assert response.status_code == 400
             assert response.json == {"venueId": ["No venue with a pricing point found for the destination venue."]}
 
+    def test_patch_collective_offer_description_invalid(self, auth_client, venue):
+        offer = educational_factories.ActiveCollectiveOfferFactory(venue=venue)
+
+        endpoint = "Private API.edit_collective_offer"
+        patch_path = "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"
+        with patch(patch_path):
+            response = auth_client.patch(url_for(endpoint, offer_id=offer.id), json={"description": "too_long" * 200})
+
+        assert response.status_code == 400
+        assert response.json == {"description": ["La description de l’offre doit faire au maximum 1500 caractères."]}
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:

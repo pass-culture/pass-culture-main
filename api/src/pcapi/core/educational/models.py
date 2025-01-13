@@ -54,6 +54,9 @@ logger = logging.getLogger(__name__)
 
 BIG_NUMBER_FOR_SORTING_OFFERS = 9999
 
+MAX_COLLECTIVE_NAME_LENGTH: typing.Final = 110
+MAX_COLLECTIVE_DESCRIPTION_LENGTH: typing.Final = 1500
+
 
 if typing.TYPE_CHECKING:
     from pcapi.core.offerers.models import Offerer
@@ -619,6 +622,25 @@ class CollectiveOffer(
         "OffererAddress", foreign_keys=offererAddressId, uselist=False
     )
 
+    @declared_attr
+    def __table_args__(self):
+        parent_args = []
+        # Retrieves indexes from parent mixins defined in __table_args__
+        for base_class in self.__mro__:
+            try:
+                parent_args += super(base_class, self).__table_args__
+            except (AttributeError, TypeError):
+                pass
+
+        parent_args += [
+            sa.CheckConstraint(
+                f"length(description) <= {MAX_COLLECTIVE_DESCRIPTION_LENGTH}",
+                name="collective_offer_description_constraint",
+            ),
+        ]
+
+        return tuple(parent_args)
+
     # TODO(jeremieb): remove this property once the front end client
     # does not need this field anymore.
     @property
@@ -1163,6 +1185,10 @@ class CollectiveOfferTemplate(
             sa.CheckConstraint(
                 '("contactUrl" IS NULL OR "contactForm" IS NULL)',
                 name="collective_offer_tmpl_contact_form_switch_constraint",
+            ),
+            sa.CheckConstraint(
+                f"length(description) <= {MAX_COLLECTIVE_DESCRIPTION_LENGTH}",
+                name="collective_offer_tmpl_description_constraint",
             ),
         ]
 

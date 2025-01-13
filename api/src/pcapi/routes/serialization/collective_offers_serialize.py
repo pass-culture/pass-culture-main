@@ -13,7 +13,7 @@ from pydantic.v1 import validator
 
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import models as educational_models
-from pcapi.core.educational.models import OfferAddressType
+from pcapi.core.educational import validation as educational_validation
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import validation as offers_validation
 from pcapi.models.offer_mixin import CollectiveOfferStatus
@@ -27,7 +27,6 @@ from pcapi.serialization import utils
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.image_conversion import CropParams
-from pcapi.validation.routes.offers import check_collective_offer_name_length_is_valid
 
 
 def validate_venue_id(venue_id: int | str | None) -> int | None:
@@ -293,7 +292,7 @@ class GetCollectiveOfferVenueResponseModel(BaseModel):
 
 
 class CollectiveOfferOfferVenueResponseModel(BaseModel):
-    addressType: OfferAddressType
+    addressType: educational_models.OfferAddressType
     otherAddress: str
     venueId: int | None
 
@@ -447,7 +446,7 @@ class CollectiveOfferResponseIdModel(BaseModel):
 
 
 class CollectiveOfferVenueBodyModel(BaseModel):
-    addressType: OfferAddressType
+    addressType: educational_models.OfferAddressType
     otherAddress: str
     venueId: int | None
 
@@ -465,7 +464,7 @@ def is_intervention_area_valid(
     if intervention_area is None:
         return False
 
-    if offer_venue is not None and offer_venue.addressType == OfferAddressType.OFFERER_VENUE:
+    if offer_venue is not None and offer_venue.addressType == educational_models.OfferAddressType.OFFERER_VENUE:
         return True
 
     if len(intervention_area) == 0:
@@ -571,10 +570,15 @@ class PostCollectiveOfferBodyModel(BaseModel):
         values["formats"] = subcategory.formats
         return values
 
-    @validator("name", pre=True)
+    @validator("name")
     def validate_name(cls, name: str) -> str:
-        check_collective_offer_name_length_is_valid(name)
+        educational_validation.check_collective_offer_name_length_is_valid(name)
         return name
+
+    @validator("description")
+    def validate_description(cls, description: str) -> str:
+        educational_validation.check_collective_offer_description_length_is_valid(description)
+        return description
 
     @validator("domains")
     def validate_domains(cls, domains: list[str]) -> list[str]:
@@ -609,10 +613,6 @@ class PostCollectiveOfferTemplateBodyModel(PostCollectiveOfferBodyModel):
     contact_email: EmailStr | None  # type: ignore[assignment]
     contact_url: AnyHttpUrl | None
     contact_form: educational_models.OfferContactFormEnum | None
-
-    # TODO(jeremieb) | None is temporary
-    # when the frontend clients are up to date, dateRange should
-    # become mandatory
     dates: DateRangeOnCreateModel | None
 
     class Config:
@@ -659,16 +659,17 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
             return None
         return shared_offers.validate_students(students)
 
-    @validator("name", allow_reuse=True)
+    @validator("name")
     def validate_name(cls, name: str | None) -> str | None:
         assert name is not None and name.strip() != ""
-        check_collective_offer_name_length_is_valid(name)
+        educational_validation.check_collective_offer_name_length_is_valid(name)
         return name
 
-    @validator("description", allow_reuse=True)
+    @validator("description")
     def validate_description(cls, description: str | None) -> str | None:
         if description is None:
             raise ValueError("Description cannot be NULL.")
+        educational_validation.check_collective_offer_description_length_is_valid(description)
         return description
 
     @validator("domains")
