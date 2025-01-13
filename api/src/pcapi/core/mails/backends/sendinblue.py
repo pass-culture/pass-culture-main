@@ -7,9 +7,12 @@ import brevo_python
 from brevo_python.rest import ApiException as SendinblueApiException
 
 from pcapi import settings
+from pcapi.celery_tasks.sendinblue import send_transactional_email_primary_task_celery
+from pcapi.celery_tasks.sendinblue import send_transactional_email_secondary_task_celery
 from pcapi.core.users.repository import find_user_by_email
-from pcapi.tasks.sendinblue_tasks import send_transactional_email_primary_task
-from pcapi.tasks.sendinblue_tasks import send_transactional_email_secondary_task
+from pcapi.models.feature import FeatureToggle
+from pcapi.tasks.sendinblue_tasks import send_transactional_email_primary_task_cloud_tasks
+from pcapi.tasks.sendinblue_tasks import send_transactional_email_secondary_task_cloud_tasks
 import pcapi.tasks.serialization.sendinblue_tasks as serializers
 from pcapi.utils import email as email_utils
 from pcapi.utils.email import is_email_whitelisted
@@ -54,9 +57,9 @@ class SendinblueBackend(BaseBackend):
                 use_pro_subaccount=data.template.use_pro_subaccount,
             )
             if data.template.use_priority_queue:
-                send_transactional_email_primary_task.delay(payload)
+                send_transactional_email_primary_task_cloud_tasks.delay(payload)
             else:
-                send_transactional_email_secondary_task.delay(payload)
+                send_transactional_email_secondary_task_cloud_tasks.delay(payload)
 
         elif isinstance(data, models.TransactionalWithoutTemplateEmailData):
             payload = serializers.SendTransactionalEmailRequest(
@@ -71,7 +74,7 @@ class SendinblueBackend(BaseBackend):
                 params=None,
                 tags=None,
             )
-            send_transactional_email_secondary_task.delay(payload)
+            send_transactional_email_secondary_task_cloud_tasks.delay(payload)
 
         else:
             raise ValueError(f"Tried sending an email via sendinblue, but received incorrectly formatted data: {data}")
