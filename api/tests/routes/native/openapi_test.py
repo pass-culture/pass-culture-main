@@ -550,6 +550,30 @@ def test_public_api(client):
                     "title": "ChangePasswordRequest",
                     "type": "object",
                 },
+                "ChronicleAuthor": {
+                    "properties": {
+                        "age": {"nullable": True, "title": "Age", "type": "integer"},
+                        "city": {"nullable": True, "title": "City", "type": "string"},
+                        "firstName": {"nullable": True, "title": "Firstname", "type": "string"},
+                    },
+                    "title": "ChronicleAuthor",
+                    "type": "object",
+                },
+                "ChroniclePreview": {
+                    "properties": {
+                        "author": {
+                            "anyOf": [{"$ref": "#/components/schemas/ChronicleAuthor"}],
+                            "nullable": True,
+                            "title": "ChronicleAuthor",
+                        },
+                        "contentPreview": {"title": "Contentpreview", "type": "string"},
+                        "dateCreated": {"format": "date-time", "title": "Datecreated", "type": "string"},
+                        "id": {"title": "Id", "type": "integer"},
+                    },
+                    "required": ["id", "contentPreview", "dateCreated"],
+                    "title": "ChroniclePreview",
+                    "type": "object",
+                },
                 "Consent": {
                     "properties": {
                         "accepted": {
@@ -1418,6 +1442,11 @@ def test_public_api(client):
                             "nullable": True,
                             "title": "OfferAddressResponse",
                         },
+                        "chronicles": {
+                            "items": {"$ref": "#/components/schemas/ChroniclePreview"},
+                            "title": "Chronicles",
+                            "type": "array",
+                        },
                         "description": {"nullable": True, "title": "Description", "type": "string"},
                         "expenseDomains": {"items": {"$ref": "#/components/schemas/ExpenseDomain"}, "type": "array"},
                         "externalTicketOfficeUrl": {
@@ -1460,6 +1489,7 @@ def test_public_api(client):
                     "required": [
                         "id",
                         "accessibility",
+                        "chronicles",
                         "expenseDomains",
                         "isExpired",
                         "isExternalBookingsDisabled",
@@ -1486,6 +1516,11 @@ def test_public_api(client):
                             "anyOf": [{"$ref": "#/components/schemas/OfferAddressResponse"}],
                             "nullable": True,
                             "title": "OfferAddressResponse",
+                        },
+                        "chronicles": {
+                            "items": {"$ref": "#/components/schemas/ChroniclePreview"},
+                            "title": "Chronicles",
+                            "type": "array",
                         },
                         "description": {"nullable": True, "title": "Description", "type": "string"},
                         "expenseDomains": {"items": {"$ref": "#/components/schemas/ExpenseDomain"}, "type": "array"},
@@ -1530,6 +1565,7 @@ def test_public_api(client):
                     "required": [
                         "id",
                         "accessibility",
+                        "chronicles",
                         "expenseDomains",
                         "isExpired",
                         "isExternalBookingsDisabled",

@@ -1,6 +1,7 @@
 from datetime import date
 from datetime import datetime
 import logging
+import textwrap
 from typing import Any
 from typing import Callable
 from typing import TypeVar
@@ -230,6 +231,9 @@ class ReactionCount(BaseModel):
     likes: int
 
 
+MAX_PREVIEW_CHRONICLES = 5
+
+
 class BaseOfferResponseGetterDict(GetterDict):
     def get(self, key: str, default: Any = None) -> Any:
         offer = self._obj
@@ -304,6 +308,10 @@ class BaseOfferResponseGetterDict(GetterDict):
                 timezone=address.timezone,
             )
 
+        if key == "chronicles":
+            published_chronicles = [chronicle for chronicle in offer.chronicles if chronicle.isPublished]
+            return sorted(published_chronicles, key=lambda c: c.id, reverse=True)[:MAX_PREVIEW_CHRONICLES]
+
         return super().get(key, default)
 
 
@@ -319,10 +327,44 @@ class OfferAddressResponse(ConfiguredBaseModel):
         orm_mode = True
 
 
+class ChronicleGetterDict(GetterDict):
+    def get(self, key: str, default: Any = None) -> Any:
+        chronicle = self._obj
+        if key == "author":
+            if chronicle.isIdentityDiffusible:
+                return ChronicleAuthor(
+                    first_name=chronicle.firstName,
+                    age=chronicle.age,
+                    city=chronicle.city,
+                )
+            return None
+        if key == "content_preview":
+            return textwrap.shorten(chronicle.content, width=255, placeholder="…")
+
+        return super().get(key, default)
+
+
+class ChronicleAuthor(ConfiguredBaseModel):
+    first_name: str | None
+    age: int | None
+    city: str | None
+
+
+class ChroniclePreview(ConfiguredBaseModel):
+    id: int
+    content_preview: str
+    date_created: datetime
+    author: ChronicleAuthor | None
+
+    class Config:
+        getter_dict = ChronicleGetterDict
+
+
 class BaseOfferResponse(ConfiguredBaseModel):
     id: int
     accessibility: OfferAccessibilityResponse
     address: OfferAddressResponse | None
+    chronicles: list[ChroniclePreview]
     description: str | None
     expense_domains: list[ExpenseDomain]
     externalTicketOfficeUrl: str | None
