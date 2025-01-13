@@ -378,6 +378,7 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     venueTypeCode: offerers_models.VenueTypeCode
     externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModel | None
     address: address_serialize.AddressResponseIsLinkedToVenueModel | None
+    isPermanent: bool
 
     @classmethod
     def from_orm(

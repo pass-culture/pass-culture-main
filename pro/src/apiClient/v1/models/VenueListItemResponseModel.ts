@@ -13,6 +13,7 @@ export type VenueListItemResponseModel = {
   externalAccessibilityData?: ExternalAccessibilityDataModel | null;
   hasCreatedOffer: boolean;
   id: number;
+  isPermanent: boolean;
   isVirtual: boolean;
   managingOffererId: number;
   mentalDisabilityCompliant?: boolean | null;

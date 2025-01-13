@@ -108,6 +108,7 @@ def get_capped_offers_for_filters(
                 models.Offer.extraData,
                 models.Offer.lastProviderId,
                 models.Offer.offererAddressId,
+                models.Offer.url,
             ).joinedload(models.Offer.headlineOffers)
         )
         .options(

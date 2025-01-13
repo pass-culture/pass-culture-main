@@ -245,6 +245,7 @@ class ListOffersOfferResponseModel(BaseModel):
     status: OfferStatus
     isShowcase: bool | None
     address: AddressResponseIsLinkedToVenueModel | None
+    isDigital: bool
 
     class Config:
         json_encoders = {datetime.datetime: format_into_utc_date}

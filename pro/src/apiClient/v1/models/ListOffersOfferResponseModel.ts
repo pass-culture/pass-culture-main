@@ -12,6 +12,7 @@ export type ListOffersOfferResponseModel = {
   hasBookingLimitDatetimesPassed: boolean;
   id: number;
   isActive: boolean;
+  isDigital: boolean;
   isEditable: boolean;
   isEducational: boolean;
   isEvent: boolean;
