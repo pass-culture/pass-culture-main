@@ -322,6 +322,7 @@ export const defaultGetVenue: GetVenueResponseModel = {
   timezone: 'Europe/Paris',
   venueTypeCode: VenueTypeCode.CENTRE_CULTUREL,
   visualDisabilityCompliant: true,
+  openingHours: null,
 }
 
 export const defaultGetCollectiveOfferRequest: GetCollectiveOfferRequestResponseModel =

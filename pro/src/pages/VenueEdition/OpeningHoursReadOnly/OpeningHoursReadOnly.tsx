@@ -30,8 +30,9 @@ export function OpeningHoursReadOnly({ openingHours }: OpeningHours) {
         shouldShowDivider={false}
       >
         <p>
-          Vous n’avez pas renseigné d’horaire d’ouverture. Votre établissement
-          est indiqué comme fermé sur l’application.
+          {openingHours === null
+            ? 'Non renseigné'
+            : `Vous n’avez pas renseigné d’horaire d’ouverture. Votre établissement est indiqué comme fermé sur l’application.`}
         </p>
       </SummarySubSection>
     )

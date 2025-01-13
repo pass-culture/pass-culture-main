@@ -1,10 +1,12 @@
 import { EditVenueBodyModel } from 'apiClient/v1'
+import { DEFAULT_INTITIAL_OPENING_HOURS } from 'pages/VenueCreation/constants'
 
 import { VenueEditionFormValues, Day } from './types'
 
 export const serializeEditVenueBodyModel = (
   formValues: VenueEditionFormValues,
-  hideSiret: boolean
+  hideSiret: boolean,
+  alreadyHasOpeningHours: boolean = false
 ): EditVenueBodyModel => {
   const payload: EditVenueBodyModel = {
     audioDisabilityCompliant: formValues.accessibility.audio,
@@ -20,7 +22,7 @@ export const serializeEditVenueBodyModel = (
     },
     isAccessibilityAppliedOnAllOffers:
       formValues.isAccessibilityAppliedOnAllOffers,
-    openingHours: serializeOpeningHours(formValues),
+    openingHours: serializeOpeningHours(formValues, alreadyHasOpeningHours),
   }
 
   if (hideSiret) {
@@ -33,7 +35,8 @@ export const serializeEditVenueBodyModel = (
 }
 
 function serializeOpeningHours(
-  formValues: VenueEditionFormValues
+  formValues: VenueEditionFormValues,
+  alreadyHasOpeningHours: boolean
 ): EditVenueBodyModel['openingHours'] {
   const returnValue = []
   const days: Day[] = [
@@ -45,7 +48,20 @@ function serializeOpeningHours(
     'saturday',
     'sunday',
   ]
+
+  if (
+    !alreadyHasOpeningHours &&
+    days.filter((d) => formValues[d]?.morningEndingHour).length === 0
+  ) {
+    //  If the opening hours have never been set yet, and if none of the days have a timespan set on the form,
+    //  do not set the openingHours in the PATCH on the venue. Otherwise, the venue would appear "closed".
+    return null
+  }
+
   for (const day of days) {
+    if (!formValues[day]) {
+      formValues[day] = DEFAULT_INTITIAL_OPENING_HOURS
+    }
     const dayValues = formValues[day]
     const timespan = []
     const morning = []
