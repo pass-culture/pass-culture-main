@@ -4,14 +4,18 @@ import { NavLink, useLocation } from 'react-router-dom'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import fullBurgerIcon from 'icons/full-burger.svg'
+import fullSmsIcon from 'icons/full-sms.svg'
 import logoPassCultureProIcon from 'icons/logo-pass-culture-pro.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { HeaderDropdown } from './components/HeaderDropdown/HeaderDropdown'
 import { HeaderHelpDropdown } from './components/HeaderHelpDropdown/HeaderHelpDropdown'
+import { UserReviewDialog } from './components/UserReviewDialog/UserReviewDialog'
 import styles from './Header.module.scss'
 
 type HeaderProps = {
@@ -33,6 +37,8 @@ export const Header = forwardRef(
   ) => {
     const { logEvent } = useAnalytics()
     const location = useLocation()
+
+    const isProFeedbackEnabled = useActiveFeature('ENABLE_PRO_FEEDBACK')
 
     return (
       <header className={styles['top-menu']} id="top-navigation">
@@ -81,10 +87,28 @@ export const Header = forwardRef(
               </NavLink>
             )}
           </div>
-          <div className={styles['tablet-and-above']}>
-            <HeaderHelpDropdown />
+          <div className={styles['top-right-menu']}>
+            <div className={styles['tablet-and-above']}>
+              {isProFeedbackEnabled && (
+                <DialogBuilder
+                  trigger={
+                    <Button
+                      variant={ButtonVariant.QUATERNARY}
+                      icon={fullSmsIcon}
+                    >
+                      Donner mon avis
+                    </Button>
+                  }
+                >
+                  <UserReviewDialog />
+                </DialogBuilder>
+              )}
+            </div>
+            <div className={styles['tablet-and-above']}>
+              <HeaderHelpDropdown />
+            </div>
+            <HeaderDropdown />
           </div>
-          <HeaderDropdown />
         </div>
       </header>
     )

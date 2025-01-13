@@ -9,7 +9,8 @@ import {
   currentOffererFactory,
 } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { UserReviewDialog } from 'components/UserReview/UserReviewDialog/UserReviewDialog'
+
+import { UserReviewDialog } from './UserReviewDialog'
 
 const notifyError = vi.fn()
 
