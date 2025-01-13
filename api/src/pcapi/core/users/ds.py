@@ -4,6 +4,7 @@ import logging
 
 import sqlalchemy as sa
 
+from pcapi import settings
 from pcapi.connectors.dms import api as ds_api
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.permissions import models as perm_models
@@ -314,4 +315,30 @@ def update_state(
         setattr(user_request, key, value)
     user_request.lastInstructor = instructor
     db.session.add(user_request)
+    db.session.flush()
+
+
+def archive(user_request: users_models.UserAccountUpdateRequest, *, motivation: str) -> None:
+    ds_client = ds_api.DMSGraphQLClient()
+
+    if user_request.status in (dms_models.GraphQLApplicationStates.draft, dms_models.GraphQLApplicationStates.on_going):
+        if user_request.status == dms_models.GraphQLApplicationStates.draft:
+            ds_client.make_on_going(
+                application_techid=user_request.dsTechnicalId,
+                instructeur_techid=settings.DMS_INSTRUCTOR_ID,
+                disable_notification=True,
+            )
+        ds_client.mark_without_continuation(
+            application_techid=user_request.dsTechnicalId,
+            instructeur_techid=settings.DMS_INSTRUCTOR_ID,
+            motivation=motivation,
+            disable_notification=True,
+        )
+
+    ds_client.archive_application(
+        application_techid=user_request.dsTechnicalId,
+        instructeur_techid=settings.DMS_INSTRUCTOR_ID,
+    )
+
+    db.session.delete(user_request)
     db.session.flush()

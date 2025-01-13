@@ -3,6 +3,7 @@ import datetime
 import os
 import re
 from unittest import mock
+from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
 from flask import url_for
@@ -10,6 +11,7 @@ import pytest
 import pytz
 
 from pcapi import settings
+from pcapi.connectors.dms import models as dms_models
 from pcapi.core import token as token_utils
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories_v2 as subcategories
@@ -2855,6 +2857,33 @@ class AnonymizePublicAccountTest(PostEndpointHelper, StorageFolderManager):
             "L'utilisateur sera anonymisé quand il aura plus de 21 ans et 5 ans après sa suspension pour fraude"
             in html_parser.extract_alert(response.data)
         )
+
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application", return_value={})
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation", return_value={})
+    def test_anonymize_public_account_with_user_account_update_request(
+        self,
+        mocked_mark_without_continuation,
+        mocked_archive_application,
+        legit_user,
+        authenticated_client,
+    ):
+        user = users_factories.UserFactory()
+        users_factories.PhoneNumberUpdateRequestFactory(user=user, status=dms_models.GraphQLApplicationStates.accepted)
+        users_factories.FirstNameUpdateRequestFactory(user=user)
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id)
+        assert response.status_code == 302
+
+        assert user.roles == [users_models.UserRole.ANONYMIZED]
+
+        mocked_mark_without_continuation.assert_called_once()
+        mocked_archive_application.assert_called()
+        assert mocked_archive_application.call_count == 2
+
+        assert users_models.UserAccountUpdateRequest.query.count() == 0
+
+        response = authenticated_client.get(response.location)
+        assert "Les informations de l'utilisateur ont été anonymisées" in html_parser.extract_alert(response.data)
 
 
 class ExtractPublicAccountTest(PostEndpointHelper):

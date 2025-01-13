@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi import settings as pcapi_settings
 from pcapi.connectors.dms import api as dms_api
 from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.connectors.dms import models as dms_models
@@ -525,3 +526,144 @@ class UpdateStateTest:
 
         assert error.value.message == "Le dossier est déjà en construction"
         assert uaur.lastInstructor != instructor
+
+
+class ArchiveTest:
+    @patch(
+        "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+        return_value=ds_fixtures.DS_RESPONSE_ARCHIVE,
+    )
+    def test_archive_accepted(self, mocked_execute_query, instructor):
+        uaur = users_factories.EmailUpdateRequestFactory(
+            dsApplicationId=21835749,
+            dsTechnicalId="RG9zc2llci0yMTgzNTc0OQ==",
+            status=dms_models.GraphQLApplicationStates.accepted,
+        )
+        other_uaur = users_factories.EmailUpdateRequestFactory()
+
+        users_ds.archive(uaur, motivation="Test")
+
+        mocked_execute_query.assert_called_once_with(
+            dms_api.ARCHIVE_APPLICATION_QUERY_NAME,
+            variables={
+                "input": {
+                    "dossierId": uaur.dsTechnicalId,
+                    "instructeurId": pcapi_settings.DMS_INSTRUCTOR_ID,
+                }
+            },
+        )
+
+        assert users_models.UserAccountUpdateRequest.query.one() == other_uaur
+
+    @patch(
+        "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+        side_effect=[
+            ds_fixtures.DS_RESPONSE_MARK_WITHOUT_CONTINUATION,
+            ds_fixtures.DS_RESPONSE_ARCHIVE,
+        ],
+    )
+    def test_archive_on_going(self, mocked_execute_query, instructor):
+        uaur = users_factories.EmailUpdateRequestFactory(
+            dsApplicationId=21835749,
+            dsTechnicalId="RG9zc2llci0yMTgzNTc0OQ==",
+            status=dms_models.GraphQLApplicationStates.on_going,
+        )
+
+        users_ds.archive(uaur, motivation="Test")
+
+        mocked_execute_query.assert_called()
+        assert mocked_execute_query.call_count == 2
+        assert mocked_execute_query.call_args_list[0].args == (dms_api.MARK_WITHOUT_CONTINUATION_MUTATION_NAME,)
+        assert mocked_execute_query.call_args_list[0].kwargs == {
+            "variables": {
+                "input": {
+                    "dossierId": uaur.dsTechnicalId,
+                    "instructeurId": pcapi_settings.DMS_INSTRUCTOR_ID,
+                    "motivation": "Test",
+                    "disableNotification": True,
+                }
+            }
+        }
+        assert mocked_execute_query.call_args_list[1].args == (dms_api.ARCHIVE_APPLICATION_QUERY_NAME,)
+        assert mocked_execute_query.call_args_list[1].kwargs == {
+            "variables": {"input": {"dossierId": uaur.dsTechnicalId, "instructeurId": pcapi_settings.DMS_INSTRUCTOR_ID}}
+        }
+
+        assert users_models.UserAccountUpdateRequest.query.count() == 0
+
+    @patch(
+        "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+        side_effect=[
+            ds_fixtures.DS_RESPONSE_UPDATE_STATE_DRAFT_TO_ON_GOING,
+            ds_fixtures.DS_RESPONSE_MARK_WITHOUT_CONTINUATION,
+            ds_fixtures.DS_RESPONSE_ARCHIVE,
+        ],
+    )
+    def test_archive_draft(self, mocked_execute_query, instructor):
+        uaur = users_factories.EmailUpdateRequestFactory(
+            dsApplicationId=21835749,
+            dsTechnicalId="RG9zc2llci0yMTgzNTc0OQ==",
+            status=dms_models.GraphQLApplicationStates.draft,
+        )
+
+        users_ds.archive(uaur, motivation="Test")
+
+        mocked_execute_query.assert_called()
+        assert mocked_execute_query.call_count == 3
+        assert mocked_execute_query.call_args_list[0].args == (dms_api.MAKE_ON_GOING_MUTATION_NAME,)
+        assert mocked_execute_query.call_args_list[0].kwargs == {
+            "variables": {
+                "input": {
+                    "dossierId": uaur.dsTechnicalId,
+                    "instructeurId": pcapi_settings.DMS_INSTRUCTOR_ID,
+                    "disableNotification": True,
+                }
+            }
+        }
+        assert mocked_execute_query.call_args_list[1].args == (dms_api.MARK_WITHOUT_CONTINUATION_MUTATION_NAME,)
+        assert mocked_execute_query.call_args_list[1].kwargs == {
+            "variables": {
+                "input": {
+                    "dossierId": uaur.dsTechnicalId,
+                    "instructeurId": pcapi_settings.DMS_INSTRUCTOR_ID,
+                    "motivation": "Test",
+                    "disableNotification": True,
+                }
+            }
+        }
+        assert mocked_execute_query.call_args_list[2].args == (dms_api.ARCHIVE_APPLICATION_QUERY_NAME,)
+        assert mocked_execute_query.call_args_list[2].kwargs == {
+            "variables": {"input": {"dossierId": uaur.dsTechnicalId, "instructeurId": pcapi_settings.DMS_INSTRUCTOR_ID}}
+        }
+
+        assert users_models.UserAccountUpdateRequest.query.count() == 0
+
+    @patch(
+        "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+        return_value=ds_fixtures.DS_RESPONSE_ARCHIVE_ERROR_NOT_INSTRUCTED,
+    )
+    def test_archive_error_not_instructed(self, mocked_execute_query, instructor):
+        uaur = users_factories.EmailUpdateRequestFactory(
+            dsApplicationId=21835749,
+            dsTechnicalId="RG9zc2llci0yMTgzNTc0OQ==",
+            status=dms_models.GraphQLApplicationStates.accepted,  # wrong status in database
+        )
+
+        with pytest.raises(dms_exceptions.DmsGraphQLApiError) as error:
+            users_ds.archive(uaur, motivation="Test")
+
+        mocked_execute_query.assert_called_once_with(
+            dms_api.ARCHIVE_APPLICATION_QUERY_NAME,
+            variables={
+                "input": {
+                    "dossierId": uaur.dsTechnicalId,
+                    "instructeurId": pcapi_settings.DMS_INSTRUCTOR_ID,
+                }
+            },
+        )
+
+        assert (
+            error.value.message
+            == "Un dossier ne peut être déplacé dans « à archiver » qu’une fois le traitement terminé"
+        )
+        assert users_models.UserAccountUpdateRequest.query.count() == 1
