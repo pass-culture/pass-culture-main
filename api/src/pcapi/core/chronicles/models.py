@@ -36,7 +36,7 @@ class Chronicle(PcObject, Base, Model, DeactivableMixin):
     isIdentityDiffusible = sa.Column(
         sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
     )
-    isSocialMediaDiffusible = sa.Column(
+    isSocialMediaDiffusible: bool = sa.Column(
         sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
     )
     products: list[sa_orm.Mapped["Product"]] = sa.orm.relationship(
@@ -52,6 +52,10 @@ class Chronicle(PcObject, Base, Model, DeactivableMixin):
         nullable=False,
     )
     __table_args__ = (sa.Index("ix_chronicle_content___ts_vector__", __content_ts_vector__, postgresql_using="gin"),)
+
+    @property
+    def isPublished(self) -> bool:
+        return self.isActive and self.isSocialMediaDiffusible
 
 
 class ProductChronicle(PcObject, Base, Model):

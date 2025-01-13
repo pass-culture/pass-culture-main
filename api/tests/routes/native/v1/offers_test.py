@@ -9,6 +9,7 @@ import time_machine
 from pcapi import settings
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.categories import subcategories_v2 as subcategories
+import pcapi.core.chronicles.factories as chronicles_factories
 from pcapi.core.geography.factories import AddressFactory
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.offerers.factories import OffererAddressFactory
@@ -28,6 +29,8 @@ from pcapi.core.users.factories import UserFactory
 import pcapi.local_providers.cinema_providers.constants as cinema_providers_constants
 from pcapi.models.offer_mixin import OfferValidationStatus
 import pcapi.notifications.push.testing as notifications_testing
+from pcapi.routes.native.v1.serialization.offers import MAX_PREVIEW_CHRONICLES
+from pcapi.utils import date as date_utils
 
 from tests.connectors.cgr import soap_definitions
 from tests.local_providers.cinema_providers.boost import fixtures as boost_fixtures
@@ -1793,6 +1796,80 @@ class OffersV2Test:
             response = client.get(f"/native/v2/offer/{offer_id}")
         assert response.status_code == 200
         assert response.json["extraData"]["bookFormat"] == "MOYEN FORMAT"
+
+    def test_offer_with_chronicles(self, client):
+        offer = offers_factories.OfferFactory()
+        chronicle = chronicles_factories.ChronicleFactory(
+            offers=[offer], content="a " * 150, isActive=True, isSocialMediaDiffusible=True, isIdentityDiffusible=True
+        )
+
+        # The following should not be displayed in the response
+        chronicles_factories.ChronicleFactory(
+            offers=[offer], isActive=False, isSocialMediaDiffusible=True
+        )  # Not yet published by pass culture (isActive)
+        chronicles_factories.ChronicleFactory(
+            offers=[offer], isActive=True, isSocialMediaDiffusible=False
+        )  # Not marked OK for publication by the author (isSocialMediaDiffusible)
+
+        offer_id = offer.id
+        nb_queries = 1  # select offer
+        nb_queries += 1  # select stocks
+        nb_queries += 1  # select mediations
+        nb_queries += 1  # select chronicles
+        with assert_num_queries(nb_queries):
+            response = client.get(f"/native/v2/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert response.json["chronicles"] == [
+            {
+                "id": chronicle.id,
+                "contentPreview": "a " * 126 + "a…",
+                "dateCreated": date_utils.format_into_utc_date(chronicle.dateCreated),
+                "author": {"firstName": chronicle.firstName, "age": chronicle.age, "city": chronicle.city},
+            }
+        ]
+
+    def test_offer_with_n_chronicles(self, client):
+        offer = offers_factories.OfferFactory()
+        chronicles_factories.ChronicleFactory.create_batch(
+            MAX_PREVIEW_CHRONICLES + 5, offers=[offer], isActive=True, isSocialMediaDiffusible=True
+        )
+
+        offer_id = offer.id
+        nb_queries = 1  # select offer
+        nb_queries += 1  # select stocks
+        nb_queries += 1  # select mediations
+        nb_queries += 1  # select chronicles
+        with assert_num_queries(nb_queries):
+            response = client.get(f"/native/v2/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert len(response.json["chronicles"]) == MAX_PREVIEW_CHRONICLES
+
+    def test_anonymize_author_of_chronicles(self, client):
+        offer = offers_factories.OfferFactory()
+        chronicle = chronicles_factories.ChronicleFactory(
+            offers=[offer],
+            isActive=True,
+            isSocialMediaDiffusible=True,
+            firstName="Angharad",
+            age=42,
+            city="Dijon",
+            isIdentityDiffusible=False,
+        )
+
+        offer_id = offer.id
+        nb_queries = 1  # select offer
+        nb_queries += 1  # select stocks
+        nb_queries += 1  # select mediations
+        nb_queries += 1  # select chronicles
+        with assert_num_queries(nb_queries):
+            response = client.get(f"/native/v2/offer/{offer_id}")
+            assert response.status_code == 200
+            assert len(response.json["chronicles"]) == 1
+
+        chronicle = response.json["chronicles"][0]
+        assert chronicle["author"] is None
 
 
 class OffersStocksTest:
