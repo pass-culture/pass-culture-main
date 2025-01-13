@@ -158,7 +158,7 @@ class NextStepTest:
                 {
                     "callToAction": {
                         "callToActionIcon": "RETRY",
-                        "callToActionLink": "passculture://verification-identite",
+                        "callToActionLink": f"{settings.WEBAPP_V2_URL}/verification-identite",
                         "callToActionTitle": "Réessayer la vérification de mon identité",
                     },
                     "popOverIcon": None,
@@ -939,7 +939,7 @@ class StepperTest:
                 {
                     "callToAction": {
                         "callToActionIcon": "RETRY",
-                        "callToActionLink": "passculture://verification-identite",
+                        "callToActionLink": f"{settings.WEBAPP_V2_URL}/verification-identite",
                         "callToActionTitle": "Réessayer la vérification de mon identité",
                     },
                     "messageSummary": "Tu n’as pas déposé le bon type de document.",

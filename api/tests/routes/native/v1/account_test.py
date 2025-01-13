@@ -296,7 +296,7 @@ class AccountTest:
         )
         assert msg["callToAction"] == {
             "callToActionIcon": "RETRY",
-            "callToActionLink": "passculture://verification-identite",
+            "callToActionLink": f"{settings.WEBAPP_V2_URL}/verification-identite",
             "callToActionTitle": "Réessayer la vérification de mon identité",
         }
         assert msg["popOverIcon"] is None

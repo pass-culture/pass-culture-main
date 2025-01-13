@@ -3,6 +3,7 @@ import datetime
 import pytest
 import time_machine
 
+from pcapi import settings
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import models as subscription_models
@@ -32,7 +33,7 @@ class SubscriptionMessageTest:
             user_message="Ton dossier a été refusé. La date de naissance sur ton compte Éduconnect (06/04/1991) indique que tu n'as pas entre 15 et 17 ans.",
             call_to_action=subscription_models.CallToActionMessage(
                 title="Réessayer la vérification de mon identité",
-                link="passculture://verification-identite",
+                link=f"{settings.WEBAPP_V2_URL}/verification-identite",
                 icon=subscription_models.CallToActionIcon.RETRY,
             ),
             updated_at=fraud_check.updatedAt,
@@ -51,7 +52,7 @@ class SubscriptionMessageTest:
             user_message="La vérification de ton identité a échoué. Tu peux réessayer.",
             call_to_action=subscription_models.CallToActionMessage(
                 title="Réessayer la vérification de mon identité",
-                link="passculture://verification-identite",
+                link=f"{settings.WEBAPP_V2_URL}/verification-identite",
                 icon=subscription_models.CallToActionIcon.RETRY,
             ),
             updated_at=fraud_check.updatedAt,

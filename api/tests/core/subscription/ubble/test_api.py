@@ -1306,7 +1306,7 @@ class SubscriptionMessageTest:
             action_hint=ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_action_hint,
             call_to_action=subscription_models.CallToActionMessage(
                 title="Réessayer la vérification de mon identité",
-                link="passculture://verification-identite",
+                link=f"{settings.WEBAPP_V2_URL}/verification-identite",
                 icon=subscription_models.CallToActionIcon.RETRY,
             ),
             pop_over_icon=None,
@@ -1369,7 +1369,7 @@ class SubscriptionMessageTest:
             user_message=ubble_errors.UBBLE_DEFAULT.not_retryable_user_message,
             call_to_action=subscription_models.CallToActionMessage(
                 title="Accéder au site Démarches-Simplifiées",
-                link="passculture://verification-identite/demarches-simplifiees",
+                link=f"{settings.WEBAPP_V2_URL}/verification-identite/demarches-simplifiees",
                 icon=subscription_models.CallToActionIcon.EXTERNAL,
             ),
             pop_over_icon=None,
@@ -1419,7 +1419,7 @@ class SubscriptionMessageTest:
             user_message=ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code].not_retryable_user_message,
             call_to_action=subscription_models.CallToActionMessage(
                 title="Accéder au site Démarches-Simplifiées",
-                link="passculture://verification-identite/demarches-simplifiees",
+                link=f"{settings.WEBAPP_V2_URL}/verification-identite/demarches-simplifiees",
                 icon=subscription_models.CallToActionIcon.EXTERNAL,
             ),
             pop_over_icon=None,
