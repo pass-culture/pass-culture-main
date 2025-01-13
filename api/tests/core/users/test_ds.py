@@ -1,13 +1,18 @@
+import copy
+from dataclasses import asdict
 from datetime import date
 from datetime import datetime
 from unittest.mock import patch
 
 import pytest
+import time_machine
 
 from pcapi import settings as pcapi_settings
 from pcapi.connectors.dms import api as dms_api
 from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.connectors.dms import models as dms_models
+import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.users import ds as users_ds
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -385,6 +390,243 @@ class SyncUserAccountUpdateRequestsTest:
 
         assert users_models.UserAccountUpdateRequest.query.count() == 0
 
+    @time_machine.travel("2025-01-16 17:12")
+    @patch(
+        "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+        side_effect=[
+            ds_fixtures.DS_RESPONSE_EMAIL_CHANGED_WITH_SET_WITHOUT_CONTINUATION,
+            ds_fixtures.DS_RESPONSE_UPDATE_STATE_ON_GOING_TO_WITHOUT_CONTINUATION,
+        ],
+    )
+    @pytest.mark.parametrize(
+        "with_found_user,expected_email", [(True, "other@example.com"), (False, "beneficiaire@example.com")]
+    )
+    def test_sync_with_set_without_continuation(
+        self, mocked_execute_query, instructor, with_found_user, expected_email
+    ):
+        if with_found_user:
+            beneficiary = users_factories.BeneficiaryGrant18Factory(email="other@example.com")
+        else:
+            beneficiary = None
+
+        uaur = users_factories.EmailUpdateRequestFactory(
+            dsApplicationId=21163559,
+            dsTechnicalId="UHJvY4VkdXKlLTI5NTgw",
+            status=dms_models.GraphQLApplicationStates.on_going,
+            user=beneficiary,
+        )
+
+        users_ds.sync_user_account_update_requests(104118, None, set_without_continuation=True)
+
+        mocked_execute_query.assert_called()
+        assert mocked_execute_query.call_count == 2
+        mocked_execute_query.call_args_list[0].assert_called_once_with(
+            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
+        )
+
+        assert mocked_execute_query.call_args_list[1].args == (dms_api.MARK_WITHOUT_CONTINUATION_MUTATION_NAME,)
+        assert mocked_execute_query.call_args_list[1].kwargs == {
+            "variables": {
+                "input": {
+                    "dossierId": uaur.dsTechnicalId,
+                    "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                    "disableNotification": False,
+                    "motivation": "Dossier classé sans suite car pas de correction apportée au dossier depuis 30 jours",
+                }
+            }
+        }
+
+        assert uaur.status == dms_models.GraphQLApplicationStates.without_continuation
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == expected_email
+        assert mails_testing.outbox[0]["template"] == asdict(
+            TransactionalEmail.UPDATE_REQUEST_MARKED_WITHOUT_CONTINUATION.value
+        )
+
+    @time_machine.travel("2025-01-16 17:12")
+    def test_sync_with_set_without_continuation_without_user_message(self, instructor):
+        beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiaire@example.com")
+
+        uaur = users_factories.EmailUpdateRequestFactory(
+            dsApplicationId=21163559,
+            dsTechnicalId="UHJvY4VkdXKlLTI5NTgw",
+            status=dms_models.GraphQLApplicationStates.on_going,
+            user=beneficiary,
+        )
+
+        sync_response = copy.deepcopy(ds_fixtures.DS_RESPONSE_EMAIL_CHANGED_WITH_SET_WITHOUT_CONTINUATION)
+        for message in sync_response["demarche"]["dossiers"]["nodes"][0]["messages"]:
+            if message["email"] == sync_response["demarche"]["dossiers"]["nodes"][0]["usager"]["email"]:
+                message["email"] = None  # "removes" the message
+
+        with patch(
+            "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+            side_effect=[
+                sync_response,
+                ds_fixtures.DS_RESPONSE_UPDATE_STATE_ON_GOING_TO_WITHOUT_CONTINUATION,
+            ],
+        ) as mocked_execute_query:
+
+            users_ds.sync_user_account_update_requests(104118, None, set_without_continuation=True)
+
+            mocked_execute_query.assert_called()
+            assert mocked_execute_query.call_count == 2
+            mocked_execute_query.call_args_list[0].assert_called_once_with(
+                dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
+            )
+
+            assert mocked_execute_query.call_args_list[1].args == (dms_api.MARK_WITHOUT_CONTINUATION_MUTATION_NAME,)
+            assert mocked_execute_query.call_args_list[1].kwargs == {
+                "variables": {
+                    "input": {
+                        "dossierId": uaur.dsTechnicalId,
+                        "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                        "disableNotification": False,
+                        "motivation": "Dossier classé sans suite car pas de correction apportée au dossier depuis 30 jours",
+                    }
+                }
+            }
+
+        assert uaur.status == dms_models.GraphQLApplicationStates.without_continuation
+        assert len(mails_testing.outbox) == 1
+
+    @time_machine.travel("2025-01-16 17:12")
+    @patch(
+        "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+        side_effect=[
+            ds_fixtures.DS_RESPONSE_EMAIL_CHANGED_FROM_DRAFT_WITH_SET_WITHOUT_CONTINUATION,
+            ds_fixtures.DS_RESPONSE_UPDATE_STATE_DRAFT_TO_ON_GOING,
+            ds_fixtures.DS_RESPONSE_UPDATE_STATE_ON_GOING_TO_WITHOUT_CONTINUATION,
+        ],
+    )
+    def test_sync_from_draft_with_set_without_continuation(self, mocked_execute_query, instructor):
+        beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiaire@example.com")
+
+        uaur = users_factories.EmailUpdateRequestFactory(
+            dsApplicationId=21163559,
+            dsTechnicalId="UHJvY4VkdXKlLTI5NTgw",
+            status=dms_models.GraphQLApplicationStates.draft,
+            user=beneficiary,
+        )
+
+        users_ds.sync_user_account_update_requests(104118, None, set_without_continuation=True)
+
+        mocked_execute_query.assert_called()
+        assert mocked_execute_query.call_count == 3
+        mocked_execute_query.call_args_list[0].assert_called_once_with(
+            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
+        )
+
+        assert mocked_execute_query.call_args_list[1].args == (dms_api.MAKE_ON_GOING_MUTATION_NAME,)
+        assert mocked_execute_query.call_args_list[1].kwargs == {
+            "variables": {
+                "input": {
+                    "dossierId": uaur.dsTechnicalId,
+                    "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                    "disableNotification": False,
+                }
+            }
+        }
+
+        assert mocked_execute_query.call_args_list[2].args == (dms_api.MARK_WITHOUT_CONTINUATION_MUTATION_NAME,)
+        assert mocked_execute_query.call_args_list[2].kwargs == {
+            "variables": {
+                "input": {
+                    "dossierId": uaur.dsTechnicalId,
+                    "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                    "disableNotification": False,
+                    "motivation": "Dossier classé sans suite car pas de correction apportée au dossier depuis 30 jours",
+                }
+            }
+        }
+
+        assert uaur.status == dms_models.GraphQLApplicationStates.without_continuation
+
+    @time_machine.travel("2025-01-16 17:12")
+    @pytest.mark.parametrize(
+        "status,date_last_instructor_message,date_last_user_message,date_derniere_modification_champs",
+        [
+            (
+                dms_models.GraphQLApplicationStates.refused,
+                "2024-12-12T12:12:00+01:00",  # now - 35
+                "2024-12-07T12:12:00+01:00",  # now - 40
+                "2024-12-10T17:12:00+01:00",  # now - 37
+            ),
+            (
+                dms_models.GraphQLApplicationStates.on_going,
+                "2024-12-27T12:12:00+01:00",  # now - 20
+                "2024-12-07T12:12:00+01:00",  # now - 40
+                "2024-12-10T17:12:00+01:00",  # now - 37
+            ),
+            (
+                dms_models.GraphQLApplicationStates.on_going,
+                "2024-12-12T12:12:00+01:00",  # now - 35
+                "2024-12-13T12:12:00+01:00",  # now - 34
+                "2024-12-10T17:12:00+01:00",  # now - 37
+            ),
+            (
+                dms_models.GraphQLApplicationStates.on_going,
+                "2024-12-12T12:12:00+01:00",  # now - 35
+                "2024-12-07T12:12:00+01:00",  # now - 40
+                "2024-12-13T17:12:00+01:00",  # now - 34
+            ),
+            (
+                dms_models.GraphQLApplicationStates.on_going,
+                None,
+                "2024-12-07T12:12:00+01:00",  # now - 40
+                "2024-12-10T17:12:00+01:00",  # now - 37
+            ),
+            (
+                dms_models.GraphQLApplicationStates.on_going,
+                "2024-12-12T12:12:00+01:00",  # now - 35
+                None,
+                "2024-12-13T17:12:00+01:00",  # now - 34
+            ),
+        ],
+    )
+    def test_sync_unconcerned_by_set_without_continuation(
+        self,
+        status,
+        date_last_instructor_message,
+        date_last_user_message,
+        date_derniere_modification_champs,
+        instructor,
+    ):
+        beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiaire@example.com")
+
+        uaur = users_factories.EmailUpdateRequestFactory(
+            dsApplicationId=21163559, dsTechnicalId="UHJvY4VkdXKlLTI5NTgw", status=status, user=beneficiary
+        )
+        return_value = copy.deepcopy(ds_fixtures.DS_RESPONSE_EMAIL_CHANGED_WITH_SET_WITHOUT_CONTINUATION)
+        return_value["demarche"]["dossiers"]["nodes"][0]["state"] = status.value
+        return_value["demarche"]["dossiers"]["nodes"][0][
+            "dateDerniereModificationChamps"
+        ] = date_derniere_modification_champs
+        for message in return_value["demarche"]["dossiers"]["nodes"][0]["messages"]:
+            if message["email"] == beneficiary.email:
+                if date_last_user_message is None:
+                    message["email"] = None  # "removes" the message
+                else:
+                    message["createdAt"] = date_last_user_message
+            elif message["email"] == instructor.email:
+                if date_last_instructor_message is None:
+                    message["email"] = None  # "removes" the message
+                else:
+                    message["createdAt"] = date_last_instructor_message
+
+        with patch(
+            "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+            return_value=return_value,
+        ) as mocked_execute_query:
+
+            users_ds.sync_user_account_update_requests(104118, None, set_without_continuation=True)
+
+            mocked_execute_query.assert_called_once_with(
+                dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
+            )
+
+        assert uaur.status == status
+
 
 class SyncDeletedUserAccountUpdateRequestsTest:
     @patch(
@@ -414,8 +656,8 @@ class UpdateStateTest:
     )
     def test_from_draft_to_on_going(self, mocked_update_state, instructor):
         uaur = users_factories.EmailUpdateRequestFactory(
-            dsApplicationId=21273773,
-            dsTechnicalId="RG9zc2llci0yMTI3Mzc3Mw==",
+            dsApplicationId=21163559,
+            dsTechnicalId="UHJvY4VkdXKlLTI5NTgw",
             status=dms_models.GraphQLApplicationStates.draft,
         )
 
@@ -444,9 +686,9 @@ class UpdateStateTest:
     )
     def test_from_remote_on_going_to_on_going(self, mocked_update_state, instructor):
         uaur = users_factories.EmailUpdateRequestFactory(
-            dsApplicationId=21273773,
-            dsTechnicalId="RG9zc2llci0yMTI3Mzc3Mw==",
-            status=dms_models.GraphQLApplicationStates.draft,
+            dsApplicationId=21163559,
+            dsTechnicalId="UHJvY4VkdXKlLTI5NTgw",
+            status=dms_models.GraphQLApplicationStates.on_going,
         )
 
         with pytest.raises(dms_exceptions.DmsGraphQLApiError) as error:
@@ -527,6 +769,96 @@ class UpdateStateTest:
         assert error.value.message == "Le dossier est déjà en construction"
         assert uaur.lastInstructor != instructor
 
+    @patch(
+        "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+        return_value=ds_fixtures.DS_RESPONSE_UPDATE_STATE_ON_GOING_TO_WITHOUT_CONTINUATION,
+    )
+    def test_from_remote_on_going_to_without_continuation(self, mocked_update_state, instructor):
+        uaur = users_factories.EmailUpdateRequestFactory(
+            dsApplicationId=21163559,
+            dsTechnicalId="UHJvY4VkdXKlLTI5NTgw",
+            status=dms_models.GraphQLApplicationStates.on_going,
+        )
+
+        users_ds.update_state(
+            uaur,
+            new_state=dms_models.GraphQLApplicationStates.without_continuation,
+            instructor=instructor,
+            motivation="Test",
+        )
+
+        mocked_update_state.assert_called_once_with(
+            dms_api.MARK_WITHOUT_CONTINUATION_MUTATION_NAME,
+            variables={
+                "input": {
+                    "dossierId": uaur.dsTechnicalId,
+                    "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                    "disableNotification": False,
+                    "motivation": "Test",
+                }
+            },
+        )
+
+        db.session.refresh(uaur)
+        assert uaur.status == dms_models.GraphQLApplicationStates.without_continuation
+        assert uaur.dateCreated == datetime(2025, 1, 15, 15, 28, 45)
+        assert uaur.dateLastStatusUpdate == datetime(2025, 1, 15, 16, 54, 59)
+        assert uaur.lastInstructor == instructor
+
+    @pytest.mark.parametrize(
+        "status,return_value,expected_error",
+        [
+            (
+                dms_models.GraphQLApplicationStates.accepted,
+                ds_fixtures.DS_RESPONSE_UPDATE_STATE_ACCEPTED_TO_WITHOUT_CONTINUATION,
+                "Le dossier est déjà accepté",
+            ),
+            (
+                dms_models.GraphQLApplicationStates.refused,
+                ds_fixtures.DS_RESPONSE_UPDATE_STATE_REFUSED_TO_WITHOUT_CONTINUATION,
+                "Le dossier est déjà refusé",
+            ),
+            (
+                dms_models.GraphQLApplicationStates.draft,
+                ds_fixtures.DS_RESPONSE_UPDATE_STATE_DRAFT_TO_WITHOUT_CONTINUATION,
+                "Le dossier est déjà en\xa0construction",
+            ),
+        ],
+    )
+    def test_from_remote_invalid_state_to_without_continuation(self, instructor, status, return_value, expected_error):
+        uaur = users_factories.EmailUpdateRequestFactory(
+            dsApplicationId=21163559,
+            dsTechnicalId="UHJvY4VkdXKlLTI5NTgw",
+            status=status,
+        )
+
+        with patch(
+            "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+            return_value=return_value,
+        ) as mocked_update_state:
+            with pytest.raises(dms_exceptions.DmsGraphQLApiError) as error:
+                users_ds.update_state(
+                    uaur,
+                    new_state=dms_models.GraphQLApplicationStates.without_continuation,
+                    instructor=instructor,
+                    motivation="Test",
+                )
+
+            mocked_update_state.assert_called_once_with(
+                dms_api.MARK_WITHOUT_CONTINUATION_MUTATION_NAME,
+                variables={
+                    "input": {
+                        "dossierId": uaur.dsTechnicalId,
+                        "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                        "disableNotification": False,
+                        "motivation": "Test",
+                    }
+                },
+            )
+
+        assert error.value.message == expected_error
+        assert uaur.lastInstructor != instructor
+
 
 class ArchiveTest:
     @patch(
@@ -558,7 +890,7 @@ class ArchiveTest:
     @patch(
         "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
         side_effect=[
-            ds_fixtures.DS_RESPONSE_MARK_WITHOUT_CONTINUATION,
+            ds_fixtures.DS_RESPONSE_UPDATE_STATE_ON_GOING_TO_WITHOUT_CONTINUATION,
             ds_fixtures.DS_RESPONSE_ARCHIVE,
         ],
     )
@@ -595,7 +927,7 @@ class ArchiveTest:
         "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
         side_effect=[
             ds_fixtures.DS_RESPONSE_UPDATE_STATE_DRAFT_TO_ON_GOING,
-            ds_fixtures.DS_RESPONSE_MARK_WITHOUT_CONTINUATION,
+            ds_fixtures.DS_RESPONSE_UPDATE_STATE_ON_GOING_TO_WITHOUT_CONTINUATION,
             ds_fixtures.DS_RESPONSE_ARCHIVE,
         ],
     )

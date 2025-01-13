@@ -11,8 +11,9 @@ logger = logging.getLogger(__name__)
 
 def import_ds_applications(
     procedure_number: int,
-    callback: typing.Callable[[int, datetime.datetime | None], list],
+    callback: typing.Callable[[int, datetime.datetime | None, bool], list],
     ignore_previous: bool = False,
+    set_without_continuation: bool = False,
     forced_since: datetime.datetime | None = None,
 ) -> None:
     logger.info("[DS] Start import of all applications from Démarches Simplifiées for procedure %s", procedure_number)
@@ -53,7 +54,7 @@ def import_ds_applications(
         db.session.add(current_import)
         db.session.commit()
 
-        application_numbers = callback(procedure_number, since)
+        application_numbers = callback(procedure_number, since, set_without_continuation)
 
         current_import.processedApplications = application_numbers
         current_import.isProcessing = False

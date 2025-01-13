@@ -820,6 +820,151 @@ DS_RESPONSE_INVALID_VALUE = {
     }
 }
 
+
+DS_RESPONSE_EMAIL_CHANGED_WITH_SET_WITHOUT_CONTINUATION = {
+    "demarche": {
+        "number": 104118,
+        "dossiers": {
+            "pageInfo": {
+                "hasNextPage": False,
+                "endCursor": "MjAyNC0xMS0yNlQwODozMTozNS4yNzgyMDMwMDBaOzIxMTYzNTU5",
+            },
+            "nodes": [
+                {
+                    "id": "UHJvY4VkdXKlLTI5NTgw",
+                    "number": 21163559,
+                    "archived": False,
+                    "state": "en_instruction",
+                    "dateDerniereModification": "2024-12-10T17:12:00+01:00",
+                    "dateDepot": "2025-01-16T09:31:35+01:00",
+                    "datePassageEnConstruction": "2025-01-16T09:31:35+01:00",
+                    "datePassageEnInstruction": "2025-01-16T10:31:35+01:00",
+                    "dateTraitement": None,
+                    "dateExpiration": "2025-11-26T09:31:35+01:00",
+                    "dateSuppressionParUsager": None,
+                    "dateDerniereCorrectionEnAttente": None,
+                    "dateDerniereModificationChamps": "2024-12-10T17:12:00+01:00",
+                    "dateDerniereModificationAnnotations": "2025-01-16T09:24:22+01:00",
+                    "usager": {"email": "beneficiaire@example.com"},
+                    "prenomMandataire": None,
+                    "nomMandataire": None,
+                    "deposeParUnTiers": False,
+                    "demandeur": {
+                        "nom": "B\u00e9n\u00e9ficiaire",
+                        "prenom": "Jeune",
+                        "email": None,
+                    },
+                    "demarche": {"revision": {"id": "UHJvY2VkdXJlUmV2aXNpb24tMTYyOTUz"}},
+                    "instructeurs": [{"id": "SW5zdHJ1Y3RldXItMTAyOTgz", "email": "instructeur@example.com"}],
+                    "champs": [
+                        {"id": "Q2hhbXAtMzM0NjAwOA==", "value": None},
+                        {"id": "Q2hhbXAtMzM0NjAwOQ==", "date": "2006-06-05"},
+                        {"id": "Q2hhbXAtMzM0NjEyMA==", "values": ["changement d'adresse de mail"]},
+                        {"id": "Q2hhbXAtMzM0NjEzOA==", "grantType": "piece_justificative"},
+                        {"id": "Q2hhbXAtMzM0NjE0Mw==", "grantType": "piece_justificative"},
+                        {"id": "Q2hhbXAtMzM0NjE0NA==", "value": "other@example.com"},
+                        {"id": "Q2hhbXAtMzM0NjE2MA==", "value": "Nouvelle.Adresse@example.com"},
+                        {"id": "Q2hhbXAtMzM0NjIzNQ==", "value": None},
+                        {"id": "Q2hhbXAtMzM0NjIzOA==", "checked": True},
+                        {"id": "Q2hhbXAtMzM0NjI0MQ==", "checked": True},
+                        {"id": "Q2hhbXAtMzM0NjI1Mw==", "checked": True},
+                        {"id": "Q2hhbXAtMzM0NjI1NA==", "value": None},
+                    ],
+                    "messages": [
+                        {
+                            "email": "contact@demarches-simplifiees.fr",
+                            "createdAt": "2025-01-16T09:31:35+01:00",
+                            "correction": None,
+                        },
+                        {
+                            "email": "instructeur@example.com",
+                            "createdAt": "2024-12-12T12:12:00+01:00",
+                            "correction": None,
+                        },
+                        {
+                            "email": "beneficiaire@example.com",
+                            "createdAt": "2024-12-07T12:12:00+01:00",
+                            "correction": None,
+                        },
+                    ],
+                }
+            ],
+        },
+    }
+}
+
+DS_RESPONSE_EMAIL_CHANGED_FROM_DRAFT_WITH_SET_WITHOUT_CONTINUATION = {
+    "demarche": {
+        "number": 104118,
+        "dossiers": {
+            "pageInfo": {
+                "hasNextPage": False,
+                "endCursor": "MjAyNC0xMS0yNlQwODozMTozNS4yNzgyMDMwMDBaOzIxMTYzNTU5",
+            },
+            "nodes": [
+                {
+                    "id": "UHJvY4VkdXKlLTI5NTgw",
+                    "number": 21163559,
+                    "archived": False,
+                    "state": "en_construction",
+                    "dateDerniereModification": "2024-12-10T17:12:00+01:00",
+                    "dateDepot": "2025-01-16T09:31:35+01:00",
+                    "datePassageEnConstruction": "2025-01-16T09:31:35+01:00",
+                    "datePassageEnInstruction": "2025-01-16T10:31:35+01:00",
+                    "dateTraitement": None,
+                    "dateExpiration": "2025-11-26T09:31:35+01:00",
+                    "dateSuppressionParUsager": None,
+                    "dateDerniereCorrectionEnAttente": None,
+                    "dateDerniereModificationChamps": "2024-12-10T17:12:00+01:00",
+                    "dateDerniereModificationAnnotations": "2025-01-16T09:24:22+01:00",
+                    "usager": {"email": "beneficiaire@example.com"},
+                    "prenomMandataire": None,
+                    "nomMandataire": None,
+                    "deposeParUnTiers": False,
+                    "demandeur": {
+                        "nom": "B\u00e9n\u00e9ficiaire",
+                        "prenom": "Jeune",
+                        "email": None,
+                    },
+                    "demarche": {"revision": {"id": "UHJvY2VkdXJlUmV2aXNpb24tMTYyOTUz"}},
+                    "instructeurs": [{"id": "SW5zdHJ1Y3RldXItMTAyOTgz", "email": "instructeur@example.com"}],
+                    "champs": [
+                        {"id": "Q2hhbXAtMzM0NjAwOA==", "value": None},
+                        {"id": "Q2hhbXAtMzM0NjAwOQ==", "date": "2006-06-05"},
+                        {"id": "Q2hhbXAtMzM0NjEyMA==", "values": ["changement d'adresse de mail"]},
+                        {"id": "Q2hhbXAtMzM0NjEzOA==", "grantType": "piece_justificative"},
+                        {"id": "Q2hhbXAtMzM0NjE0Mw==", "grantType": "piece_justificative"},
+                        {"id": "Q2hhbXAtMzM0NjE0NA==", "value": "beneficiaire@example.com"},
+                        {"id": "Q2hhbXAtMzM0NjE2MA==", "value": "Nouvelle.Adresse@example.com"},
+                        {"id": "Q2hhbXAtMzM0NjIzNQ==", "value": None},
+                        {"id": "Q2hhbXAtMzM0NjIzOA==", "checked": True},
+                        {"id": "Q2hhbXAtMzM0NjI0MQ==", "checked": True},
+                        {"id": "Q2hhbXAtMzM0NjI1Mw==", "checked": True},
+                        {"id": "Q2hhbXAtMzM0NjI1NA==", "value": None},
+                    ],
+                    "messages": [
+                        {
+                            "email": "contact@demarches-simplifiees.fr",
+                            "createdAt": "2025-01-16T09:31:35+01:00",
+                            "correction": None,
+                        },
+                        {
+                            "email": "instructeur@example.com",
+                            "createdAt": "2024-12-12T12:12:00+01:00",
+                            "correction": None,
+                        },
+                        {
+                            "email": "beneficiaire@example.com",
+                            "createdAt": "2024-12-07T12:12:00+01:00",
+                            "correction": None,
+                        },
+                    ],
+                }
+            ],
+        },
+    }
+}
+
 DS_RESPONSE_ARCHIVED = {
     "demarche": {
         "number": 104118,
@@ -931,8 +1076,8 @@ DS_RESPONSE_DELETED_APPLICATIONS = {
 DS_RESPONSE_UPDATE_STATE_DRAFT_TO_ON_GOING = {
     "dossierPasserEnInstruction": {
         "dossier": {
-            "id": "RG9zc2llci0yMTI3Mzc3Mw==",
-            "number": 21273773,
+            "id": "UHJvY4VkdXKlLTI5NTgw",
+            "number": 21163559,
             "state": "en_instruction",
             "dateDerniereModification": "2024-12-02T18:20:53+01:00",
             "dateDepot": "2024-12-02T18:16:50+01:00",
@@ -973,8 +1118,37 @@ DS_RESPONSE_UPDATE_STATE_DRAFT_TO_ACCEPTED = {
 }
 
 
-DS_RESPONSE_MARK_WITHOUT_CONTINUATION = {
-    "dossierClasserSansSuite": {"dossier": {"id": "RG9zc2llci0yMTgzNTc0OQ=="}, "errors": None}
+DS_RESPONSE_UPDATE_STATE_ON_GOING_TO_WITHOUT_CONTINUATION = {
+    "dossierClasserSansSuite": {
+        "dossier": {
+            "id": "UHJvY4VkdXKlLTI5NTgw",
+            "number": 21163559,
+            "state": "sans_suite",
+            "dateDerniereModification": "2025-01-15T17:54:59+01:00",
+            "dateDepot": "2025-01-15T16:28:45+01:00",
+            "datePassageEnConstruction": "2025-01-15T17:20:09+01:00",
+            "datePassageEnInstruction": "2025-01-15T17:52:58+01:00",
+            "dateTraitement": "2025-01-15T17:54:59+01:00",
+            "dateDerniereCorrectionEnAttente": None,
+            "dateDerniereModificationChamps": "2025-01-15T17:20:53+01:00",
+        },
+        "errors": None,
+    }
+}
+
+DS_RESPONSE_UPDATE_STATE_ACCEPTED_TO_WITHOUT_CONTINUATION = {
+    "dossierClasserSansSuite": {"dossier": None, "errors": [{"message": "Le dossier est déjà accepté"}]}
+}
+
+DS_RESPONSE_UPDATE_STATE_REFUSED_TO_WITHOUT_CONTINUATION = {
+    "dossierClasserSansSuite": {"dossier": None, "errors": [{"message": "Le dossier est déjà refusé"}]}
+}
+
+DS_RESPONSE_UPDATE_STATE_DRAFT_TO_WITHOUT_CONTINUATION = {
+    "dossierClasserSansSuite": {
+        "dossier": None,
+        "errors": [{"message": "Le dossier est déjà en\xa0construction"}],
+    }
 }
 
 DS_RESPONSE_ARCHIVE = {

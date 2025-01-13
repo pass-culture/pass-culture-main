@@ -17,7 +17,11 @@ logger = logging.getLogger(__name__)
 MARK_WITHOUT_CONTINUATION_MOTIVATION = "Marked without continuation & archived through automatic process (PC-24035)"
 
 
-def update_ds_applications_for_procedure(procedure_number: int, since: datetime.datetime | None) -> list:
+def update_ds_applications_for_procedure(
+    procedure_number: int,
+    since: datetime.datetime | None,
+    set_without_continuation: bool = False,
+) -> list:
     logger.info("[DS] Started processing Bank Account procedure %s", procedure_number)
 
     ds_client = ds_api.DMSGraphQLClient()
