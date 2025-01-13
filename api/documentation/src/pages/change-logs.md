@@ -5,22 +5,6 @@ title: Pass Culture API change logs
 # Change logs
 
 :::warning
-💡 The `beginningDatetime` field is going to be removed in the following endpoints:
-
-Removed from the return value:
-- [**Get Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/GetCollectiveOfferPublic)
-- [**Get Collective Offers endpoint**](/rest-api#tag/Collective-Offers/operation/GetCollectiveOffersPublic)
-
-Removed from the input body and the return value:
-- [**Create Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PostCollectiveOfferPublic)
-- [**Update Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PatchCollectiveOfferPublic)
-
-Please use the `startDatetime` and `endDatetime` fields instead.
-
-The `startDatetime` field will be required when creating a collective offer and its value will be copied to `endDatetime` if `endDatetime` is not provided.
-:::
-
-:::warning
 💡 Important notice some old resources are going to be removed in the coming months.
 
 - If you were using `/v2/venue/<venue_id>/stocks` to manage stocks, you will have to migrate to this endpoint : [/public/offers/v1/products/ean](/rest-api#tag/Product-Offer-Bulk-Operations/operation/PostProductOfferByEan). The endpoint `/v2/stock` will not be available anymore starting from September, the 31st 2024.
@@ -28,6 +12,17 @@ The `startDatetime` field will be required when creating a collective offer and 
 
 **You can find a migration tutorial [here](/docs/tutorials/migrate-to-the-new-api).**
 :::
+
+## January 2025
+- The `beginningDatetime` has been removed from the following endpoints:
+  - Removed from the return value:
+    - [**Get Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/GetCollectiveOfferPublic)
+    - [**Get Collective Offers endpoint**](/rest-api#tag/Collective-Offers/operation/GetCollectiveOffersPublic)
+  - Removed from the input body and the return value:
+    - [**Create Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PostCollectiveOfferPublic)
+    - [**Update Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PatchCollectiveOfferPublic)
+  Please use the `startDatetime` and `endDatetime` fields instead.
+  The `startDatetime` field will be required when creating a collective offer and its value will be copied to `endDatetime` if `endDatetime` is not provided.
 
 ## December 2024
 

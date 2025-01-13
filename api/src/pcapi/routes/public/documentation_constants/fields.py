@@ -262,20 +262,16 @@ class _FIELDS:
         description=f"Id of the national program linked to your offer. The national programs list can be found on **[this endpoint (`Get all known national programs`)]({GET_NATIONAL_PROGRAMS_ANCHOR})**",
     )
     COLLECTIVE_OFFER_DATE_CREATED = Field(description="Collective offer creation date")
-    COLLECTIVE_OFFER_BEGINNING_DATETIME = Field(
-        description="[DEPRECATED - Will be removed in upcoming release. Please use `startDatetime` instead.] Collective offer beginning datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-        example=_example_datetime_with_tz,
-    )
     COLLECTIVE_OFFER_START_DATETIME = Field(
-        description="Collective offer start datetime. Replaces beginning dateime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+        description="Collective offer start datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime). When creating a collective offer, the value of `startDatetime` will be copied to `endDatetime` if `endDatetime` is not provided.",
         example=_example_datetime_with_tz,
     )
     COLLECTIVE_OFFER_END_DATETIME = Field(
-        description="Collective offer end datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+        description="Collective offer end datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime). When creating a collective offer, the value of `startDatetime` will be copied to `endDatetime` if `endDatetime` is not provided.",
         example=_example_datetime_with_tz,
     )
     COLLECTIVE_OFFER_BOOKING_LIMIT_DATETIME = Field(
-        description="Booking limit datetime. It must be anterior to the `beginning_datetime`. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+        description="Booking limit datetime. It must be anterior to the `start_datetime`. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
         example=_example_datetime_with_tz,
     )
     COLLECTIVE_OFFER_TOTAL_PRICE = Field(example=100.00, description="Collective offer price (in €)")

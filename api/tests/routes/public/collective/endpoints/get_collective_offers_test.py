@@ -43,7 +43,6 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
             {
                 "id": offer1.id,
                 "venueId": offer1.venueId,
-                "beginningDatetime": stock1.beginningDatetime.isoformat(timespec="seconds"),
                 "startDatetime": stock1.startDatetime.isoformat(timespec="seconds"),
                 "endDatetime": stock1.endDatetime.isoformat(timespec="seconds"),
                 "status": offer1.status.name,
@@ -52,7 +51,6 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
             {
                 "id": offer2.id,
                 "venueId": offer2.venueId,
-                "beginningDatetime": offer2.collectiveStock.beginningDatetime.isoformat(timespec="seconds"),
                 "startDatetime": offer2.collectiveStock.startDatetime.isoformat(timespec="seconds"),
                 "endDatetime": offer2.collectiveStock.endDatetime.isoformat(timespec="seconds"),
                 "status": offer2.status.name,
@@ -102,7 +100,6 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
             {
                 "id": offer1.id,
                 "venueId": offer1.venueId,
-                "beginningDatetime": "2043-05-02T15:00:00",
                 "startDatetime": "2043-05-02T15:00:00",
                 "endDatetime": "2043-05-02T15:00:00",
                 "status": "ACTIVE",
@@ -111,7 +108,6 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
             {
                 "id": offer2.id,
                 "venueId": offer2.venueId,
-                "beginningDatetime": "2043-05-02T15:00:00",
                 "startDatetime": "2043-05-02T15:00:00",
                 "endDatetime": "2043-05-02T15:00:00",
                 "status": "ACTIVE",
@@ -147,7 +143,6 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
             {
                 "id": offer.id,
                 "venueId": offer.venueId,
-                "beginningDatetime": stock.beginningDatetime.isoformat(timespec="seconds"),
                 "startDatetime": stock.startDatetime.isoformat(timespec="seconds"),
                 "endDatetime": stock.endDatetime.isoformat(timespec="seconds"),
                 "status": offer.status.name,
@@ -175,7 +170,6 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
             {
                 "id": offer1.id,
                 "venueId": offer1.venueId,
-                "beginningDatetime": stock1.beginningDatetime.isoformat(timespec="seconds"),
                 "startDatetime": stock1.startDatetime.isoformat(timespec="seconds"),
                 "endDatetime": stock1.endDatetime.isoformat(timespec="seconds"),
                 "status": offer1.status.name,
@@ -204,7 +198,6 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
             {
                 "id": offer1.id,
                 "venueId": offer1.venueId,
-                "beginningDatetime": stock1.beginningDatetime.isoformat(timespec="seconds"),
                 "startDatetime": stock1.startDatetime.isoformat(timespec="seconds"),
                 "endDatetime": stock1.endDatetime.isoformat(timespec="seconds"),
                 "status": offer1.status.name,

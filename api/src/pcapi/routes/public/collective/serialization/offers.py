@@ -83,22 +83,12 @@ def validate_price(price: float | None) -> float:
 
 def validate_booking_limit_datetime(booking_limit_datetime: datetime | None, values: dict[str, Any]) -> datetime | None:
     if (
-        booking_limit_datetime
-        and "beginning_datetime" in values
-        and booking_limit_datetime > values["beginning_datetime"]
+        booking_limit_datetime is not None
+        and "start_datetime" in values
+        and booking_limit_datetime > values["start_datetime"]
     ):
         raise ValueError("La date limite de réservation ne peut être postérieure à la date de début de l'évènement")
     return booking_limit_datetime
-
-
-def validate_beginning_datetime(beginning_datetime: datetime, values: dict[str, Any]) -> datetime:
-    # we need a datetime with timezone information which is not provided by datetime.utcnow.
-    if beginning_datetime.tzinfo is not None:
-        if beginning_datetime < datetime.now(timezone.utc):  # pylint: disable=datetime-now
-            raise ValueError("L'évènement ne peut commencer dans le passé.")
-    elif beginning_datetime < datetime.utcnow():
-        raise ValueError("L'évènement ne peut commencer dans le passé.")
-    return beginning_datetime
 
 
 def validate_start_datetime(start_datetime: datetime | None, values: dict[str, Any]) -> datetime | None:
@@ -156,10 +146,6 @@ def booking_limit_datetime_validator(field_name: str) -> classmethod:
     return validator(field_name, allow_reuse=True)(validate_booking_limit_datetime)
 
 
-def beginning_datetime_validator(field_name: str) -> classmethod:
-    return validator(field_name, allow_reuse=True)(validate_beginning_datetime)
-
-
 def start_datetime_validator(field_name: str) -> classmethod:
     return validator(field_name, allow_reuse=True)(validate_start_datetime)
 
@@ -199,7 +185,6 @@ class CollectiveBookingResponseModel(BaseModel):
 
 class CollectiveOffersResponseModel(BaseModel):
     id: int = fields.COLLECTIVE_OFFER_ID
-    beginningDatetime: str = fields.COLLECTIVE_OFFER_BEGINNING_DATETIME
     startDatetime: str = fields.COLLECTIVE_OFFER_START_DATETIME
     endDatetime: str = fields.COLLECTIVE_OFFER_END_DATETIME
     status: str = fields.COLLECTIVE_OFFER_STATUS
@@ -216,7 +201,6 @@ class CollectiveOffersResponseModel(BaseModel):
         ]
         return cls(
             id=offer.id,
-            beginningDatetime=offer.collectiveStock.beginningDatetime.replace(microsecond=0).isoformat(),
             startDatetime=offer.collectiveStock.startDatetime.replace(microsecond=0).isoformat(),
             endDatetime=offer.collectiveStock.endDatetime.replace(microsecond=0).isoformat(),
             status=offer.status.value,
@@ -282,7 +266,6 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
     mentalDisabilityCompliant: bool | None = fields.MENTAL_DISABILITY_COMPLIANT
     motorDisabilityCompliant: bool | None = fields.MOTOR_DISABILITY_COMPLIANT
     visualDisabilityCompliant: bool | None = fields.VISUAL_DISABILITY_COMPLIANT
-    beginningDatetime: str = fields.COLLECTIVE_OFFER_BEGINNING_DATETIME
     startDatetime: str = fields.COLLECTIVE_OFFER_START_DATETIME
     endDatetime: str = fields.COLLECTIVE_OFFER_END_DATETIME
     bookingLimitDatetime: str = fields.COLLECTIVE_OFFER_BOOKING_LIMIT_DATETIME
@@ -333,7 +316,6 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
             mentalDisabilityCompliant=offer.mentalDisabilityCompliant,
             motorDisabilityCompliant=offer.motorDisabilityCompliant,
             visualDisabilityCompliant=offer.visualDisabilityCompliant,
-            beginningDatetime=offer.collectiveStock.beginningDatetime.replace(microsecond=0).isoformat(),
             startDatetime=offer.collectiveStock.startDatetime.replace(microsecond=0).isoformat(),
             endDatetime=offer.collectiveStock.endDatetime.replace(microsecond=0).isoformat(),
             bookingLimitDatetime=offer.collectiveStock.bookingLimitDatetime.replace(microsecond=0).isoformat(),
@@ -386,8 +368,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     image_credit: str | None = fields.IMAGE_CREDIT
     nationalProgramId: int | None = fields.COLLECTIVE_OFFER_NATIONAL_PROGRAM_ID
     # stock part
-    beginning_datetime: datetime = fields.COLLECTIVE_OFFER_BEGINNING_DATETIME
-    start_datetime: datetime | None = fields.COLLECTIVE_OFFER_START_DATETIME
+    start_datetime: datetime = fields.COLLECTIVE_OFFER_START_DATETIME
     end_datetime: datetime | None = fields.COLLECTIVE_OFFER_END_DATETIME
     booking_limit_datetime: datetime = fields.COLLECTIVE_OFFER_BOOKING_LIMIT_DATETIME
     total_price: decimal.Decimal = fields.COLLECTIVE_OFFER_TOTAL_PRICE
@@ -399,7 +380,6 @@ class PostCollectiveOfferBodyModel(BaseModel):
 
     _validate_number_of_tickets = number_of_tickets_validator("number_of_tickets")
     _validate_total_price = price_validator("total_price")
-    _validate_beginning_datetime = beginning_datetime_validator("beginning_datetime")
     _validate_start_datetime = start_datetime_validator("start_datetime")
     _validate_end_datetime = end_datetime_validator("end_datetime")
     _validate_booking_limit_datetime = booking_limit_datetime_validator("booking_limit_datetime")
@@ -496,7 +476,6 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     imageFile: str | None = fields.IMAGE_FILE
     nationalProgramId: int | None = fields.COLLECTIVE_OFFER_NATIONAL_PROGRAM_ID
     # stock part
-    beginningDatetime: datetime | None = fields.COLLECTIVE_OFFER_BEGINNING_DATETIME
     startDatetime: datetime | None = fields.COLLECTIVE_OFFER_START_DATETIME
     endDatetime: datetime | None = fields.COLLECTIVE_OFFER_END_DATETIME
     bookingLimitDatetime: datetime | None = fields.COLLECTIVE_OFFER_BOOKING_LIMIT_DATETIME
@@ -515,7 +494,6 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     _validate_number_of_tickets = number_of_tickets_validator("numberOfTickets")
     _validate_total_price = price_validator("price")
     _validate_educational_price_detail = price_detail_validator("educationalPriceDetail")
-    _validate_beginning_datetime = beginning_datetime_validator("beginningDatetime")
     _validate_start_datetime = start_datetime_validator("startDatetime")
     _validate_end_datetime = end_datetime_validator("endDatetime")
     _validate_contact_phone = phone_number_validator("contactPhone")
@@ -560,19 +538,10 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     def validate_booking_limit_datetime(
         cls, booking_limit_datetime: datetime | None, values: dict[str, Any]
     ) -> datetime | None:
-        if (
-            booking_limit_datetime
-            and values.get("beginningDatetime", None) is not None
-            and booking_limit_datetime > values["beginningDatetime"]
-        ):
+        start = values.get("startDatetime")
+        if booking_limit_datetime is not None and start is not None and booking_limit_datetime > start:
             raise ValueError("La date limite de réservation ne peut être postérieure à la date de début de l'évènement")
         return booking_limit_datetime
-
-    @validator("beginningDatetime", pre=True)
-    def validate_beginning_limit_datetime(cls, beginningDatetime: datetime | None) -> datetime | None:
-        if beginningDatetime is None:
-            raise ValueError("La date de début de l'évènement ne peut pas être nulle.")
-        return beginningDatetime
 
     @validator("startDatetime", pre=True)
     def validate_start_limit_datetime(cls, startDatetime: datetime | None) -> datetime | None:
