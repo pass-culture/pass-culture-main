@@ -3,7 +3,10 @@ import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import * as yup from 'yup'
 
 import { OfferAddressType } from 'apiClient/v1'
-import { MAX_DETAILS_LENGTH } from 'commons/core/OfferEducational/constants'
+import {
+  MAX_DESCRIPTION_LENGTH,
+  MAX_PRICE_DETAILS_LENGTH,
+} from 'commons/core/OfferEducational/constants'
 import {
   OfferEducationalFormValues,
   OfferDatesType,
@@ -47,7 +50,7 @@ export function getOfferEducationalValidationSchema(
         message: 'Veuillez renseigner une description',
         test: isNotEmpty,
       })
-      .max(MAX_DETAILS_LENGTH),
+      .max(MAX_DESCRIPTION_LENGTH),
     duration: yup
       .string()
       .matches(
@@ -204,7 +207,7 @@ export function getOfferEducationalValidationSchema(
         },
         then: (schema) => schema.required(),
       }),
-    priceDetail: yup.string().max(MAX_DETAILS_LENGTH),
+    priceDetail: yup.string().max(MAX_PRICE_DETAILS_LENGTH),
     beginningDate: yup.string().when(['isTemplate', 'datesType'], {
       is: (isTemplate: boolean, datesType: OfferDatesType) =>
         isTemplate && datesType === 'specific_dates',
