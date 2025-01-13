@@ -2089,7 +2089,7 @@ class UbbleWebhookTest:
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
         assert message.user_message == ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_user_message
-        assert message.call_to_action.link == "passculture://verification-identite"
+        assert message.call_to_action.link == f"{settings.WEBAPP_V2_URL}/verification-identite"
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
         assert message.call_to_action.title == "Réessayer la vérification de mon identité"
 
@@ -2170,7 +2170,7 @@ class UbbleWebhookTest:
                 fraud_models.FraudReasonCode.ID_CHECK_EXPIRED
             ].retryable_user_message
         )
-        assert message.call_to_action.link == "passculture://verification-identite"
+        assert message.call_to_action.link == f"{settings.WEBAPP_V2_URL}/verification-identite"
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
         assert message.call_to_action.title == "Réessayer la vérification de mon identité"
 
@@ -2240,7 +2240,7 @@ class UbbleWebhookTest:
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
         assert message.user_message == ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_user_message
-        assert message.call_to_action.link == "passculture://verification-identite"
+        assert message.call_to_action.link == f"{settings.WEBAPP_V2_URL}/verification-identite"
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
         assert message.call_to_action.title == "Réessayer la vérification de mon identité"
 
@@ -2275,7 +2275,7 @@ class UbbleWebhookTest:
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
         assert message.user_message == ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_user_message
-        assert message.call_to_action.link == "passculture://verification-identite"
+        assert message.call_to_action.link == f"{settings.WEBAPP_V2_URL}/verification-identite"
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
         assert message.call_to_action.title == "Réessayer la vérification de mon identité"
 
@@ -2344,7 +2344,7 @@ class UbbleWebhookTest:
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
         assert message.user_message == ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code].not_retryable_user_message
-        assert message.call_to_action.link == "passculture://verification-identite/demarches-simplifiees"
+        assert message.call_to_action.link == f"{settings.WEBAPP_V2_URL}/verification-identite/demarches-simplifiees"
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.EXTERNAL
         assert message.call_to_action.title == "Accéder au site Démarches-Simplifiées"
 
@@ -2420,7 +2420,7 @@ class UbbleWebhookTest:
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
         assert message.user_message == ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_user_message
-        assert message.call_to_action.link == "passculture://verification-identite"
+        assert message.call_to_action.link == f"{settings.WEBAPP_V2_URL}/verification-identite"
 
         assert len(mails_testing.outbox) == 1
 
@@ -2511,7 +2511,7 @@ class UbbleWebhookTest:
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
         assert message.user_message == ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_user_message
-        assert message.call_to_action.link == "passculture://verification-identite"
+        assert message.call_to_action.link == f"{settings.WEBAPP_V2_URL}/verification-identite"
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
         assert message.call_to_action.title == "Réessayer la vérification de mon identité"
 

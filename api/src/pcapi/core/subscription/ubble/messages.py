@@ -1,6 +1,7 @@
 import datetime
 import typing
 
+from pcapi import settings
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.common import models as common_fraud_models
 from pcapi.core.subscription import messages as subscription_messages
@@ -12,7 +13,7 @@ from . import errors
 
 REDIRECT_TO_IDENTIFICATION = subscription_models.CallToActionMessage(
     title="Réessayer la vérification de mon identité",
-    link="passculture://verification-identite/identification",
+    link=f"{settings.WEBAPP_V2_URL}/verification-identite/identification",
     icon=subscription_models.CallToActionIcon.RETRY,
 )
 
