@@ -79,8 +79,9 @@ dependencies = [
 "werkzeug==2.0.3",
 "wtforms-sqlalchemy==0.4.2",
 "wtforms==3.2.1",
-"xlsxwriter==3.2.2",
+"xlsxwriter>=3.2.0",
 "zeep==4.3.1",
+"celery[redis] (>=5.4.0,<6.0.0)"
 ]
 
 [tool.poetry.group.dev]

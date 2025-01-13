@@ -18,17 +18,17 @@ SENDINBLUE_TRANSACTIONAL_EMAILS_SECONDARY_QUEUE_NAME = settings.GCP_SENDINBLUE_T
 
 
 @task(SENDINBLUE_CONTACTS_QUEUE_NAME, "/sendinblue/update_contact_attributes")  # type: ignore[arg-type]
-def update_contact_attributes_task(payload: UpdateSendinblueContactRequest) -> None:
+def update_contact_attributes_task_cloud_tasks(payload: UpdateSendinblueContactRequest) -> None:
     sendinblue.make_update_request(payload)
 
 
 @task(SENDINBLUE_TRANSACTIONAL_EMAILS_PRIMARY_QUEUE_NAME, "/sendinblue/send-transactional-email-primary")  # type: ignore[arg-type]
-def send_transactional_email_primary_task(payload: SendTransactionalEmailRequest) -> None:
+def send_transactional_email_primary_cloud_tasks(payload: SendTransactionalEmailRequest) -> None:
     send_transactional_email(payload)
 
 
 @task(SENDINBLUE_TRANSACTIONAL_EMAILS_SECONDARY_QUEUE_NAME, "/sendinblue/send-transactional-email-secondary")  # type: ignore[arg-type]
-def send_transactional_email_secondary_task(payload: SendTransactionalEmailRequest) -> None:
+def send_transactional_email_secondary_task_cloud_tasks(payload: SendTransactionalEmailRequest) -> None:
     send_transactional_email(payload)
 
 

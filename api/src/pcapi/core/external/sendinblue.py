@@ -15,11 +15,13 @@ from brevo_python.models.created_process_id import CreatedProcessId
 from brevo_python.rest import ApiException as SendinblueApiException
 
 from pcapi import settings
+from pcapi.celery_tasks.sendinblue import update_contact_attributes_task_celery
 from pcapi.core import mails as mails_api
 from pcapi.core.cultural_survey import models as cultural_survey_models
 from pcapi.core.external.attributes import models as attributes_models
 import pcapi.core.users.models as users_models
-from pcapi.tasks.sendinblue_tasks import update_contact_attributes_task
+from pcapi.models.feature import FeatureToggle
+from pcapi.tasks.sendinblue_tasks import update_contact_attributes_task_cloud_tasks
 from pcapi.tasks.serialization.sendinblue_tasks import UpdateSendinblueContactRequest
 
 
@@ -121,9 +123,9 @@ def update_contact_email(user: users_models.User, old_email: str, new_email: str
     )
 
     if asynchronous:
-        update_contact_attributes_task.delay(contact_request)
+        update_contact_attributes_task_cloud_tasks.delay(contact_request)
     else:
-        update_contact_attributes_task(contact_request)
+        update_contact_attributes_task_cloud_tasks(contact_request)
 
 
 def update_contact_attributes(
@@ -151,7 +153,7 @@ def update_contact_attributes(
     )
 
     if asynchronous:
-        update_contact_attributes_task.delay(contact_request)
+        update_contact_attributes_task_cloud_tasks.delay(contact_request)
     else:
         make_update_request(contact_request)
 
