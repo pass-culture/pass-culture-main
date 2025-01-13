@@ -641,3 +641,6 @@ EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS = int(os.environ.get("EXTERNAL_BOOKINGS_TIM
 
 # HARVESTR
 HARVESTR_API_KEY = secrets_utils.get("HARVESTR_API_KEY", "")
+
+# PROXY configuration
+PROXY_CERT_BUNDLE = os.environ.get("PROXY_CERT_BUNDLE", None)
