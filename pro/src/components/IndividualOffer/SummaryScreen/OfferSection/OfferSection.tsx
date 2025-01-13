@@ -232,6 +232,7 @@ export const OfferSection = ({
         {!offerData.isVenueVirtual && isOfferAddressEnabled && (
           <SummarySubSection title="Localisation de l’offre">
             <SummaryDescriptionList
+              listDataTestId="localisation-offer-details"
               descriptions={[
                 {
                   title: 'Intitulé',
