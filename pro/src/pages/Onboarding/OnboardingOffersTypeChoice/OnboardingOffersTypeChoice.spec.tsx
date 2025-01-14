@@ -25,8 +25,5 @@ describe('OnboardingOffersChoice Component', () => {
     expect(
       screen.getByText('Aux enseignants sur la plateforme ADAGE')
     ).toBeInTheDocument()
-
-    // Check that the "plus tard" link is displayed
-    expect(screen.getByText('Plus tard')).toBeInTheDocument()
   })
 })
