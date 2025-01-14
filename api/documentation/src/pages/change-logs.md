@@ -13,6 +13,22 @@ title: Pass Culture API change logs
 **You can find a migration tutorial [here](/docs/tutorials/migrate-to-the-new-api).**
 :::
 
+:::warning
+💡 The `beginningDatetime` field is going to be removed in the following endpoints:
+
+Removed from the return value:
+- [**Get Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/GetCollectiveOfferPublic)
+- [**Get Collective Offers endpoint**](/rest-api#tag/Collective-Offers/operation/GetCollectiveOffersPublic)
+
+Removed from the input body and the return value:
+- [**Create Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PostCollectiveOfferPublic)
+- [**Update Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PatchCollectiveOfferPublic)
+
+Please use the `startDatetime` and `endDatetime` fields instead.
+
+The `startDatetime` field will be required when creating a collective offer and its value will be copied to `endDatetime` if `endDatetime` is not provided.
+:::
+
 ## December 2024
 
 ### Individual offers endpoints
