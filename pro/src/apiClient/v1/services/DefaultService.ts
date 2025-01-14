@@ -1384,32 +1384,6 @@ export class DefaultService {
     });
   }
   /**
-   * get_offerer_addresses <GET>
-   * @param offererId
-   * @param onlyWithOffers
-   * @returns GetOffererAddressesResponseModel OK
-   * @throws ApiError
-   */
-  public getOffererAddresses(
-    offererId: number,
-    onlyWithOffers: boolean = false,
-  ): CancelablePromise<GetOffererAddressesResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/offerers/{offerer_id}/addresses',
-      path: {
-        'offerer_id': offererId,
-      },
-      query: {
-        'onlyWithOffers': onlyWithOffers,
-      },
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
    * get_offerer_bank_accounts_and_attached_venues <GET>
    * @param offererId
    * @returns GetOffererBankAccountsResponseModel OK
@@ -1539,6 +1513,32 @@ export class DefaultService {
       url: '/offerers/{offerer_id}/members',
       path: {
         'offerer_id': offererId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * get_offerer_addresses <GET>
+   * @param offererId
+   * @param onlyWithOffers
+   * @returns GetOffererAddressesResponseModel OK
+   * @throws ApiError
+   */
+  public getOffererAddresses(
+    offererId: number,
+    onlyWithOffers: boolean = false,
+  ): CancelablePromise<GetOffererAddressesResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/offerers/{offerer_id}/offerer_addresses',
+      path: {
+        'offerer_id': offererId,
+      },
+      query: {
+        'onlyWithOffers': onlyWithOffers,
       },
       errors: {
         403: `Forbidden`,

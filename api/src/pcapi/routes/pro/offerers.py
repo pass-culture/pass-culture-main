@@ -285,7 +285,7 @@ def get_offerer_v2_stats(offerer_id: int) -> offerers_serialize.GetOffererV2Stat
     return offerers_serialize.GetOffererV2StatsResponseModel.from_orm(stats)
 
 
-@private_api.route("/offerers/<int:offerer_id>/addresses", methods=["GET"])
+@private_api.route("/offerers/<int:offerer_id>/offerer_addresses", methods=["GET"])
 @login_required
 @spectree_serialize(
     on_success_status=200,
