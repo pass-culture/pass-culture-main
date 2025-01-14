@@ -1,5 +1,3 @@
-@use "styles/mixins/_rem.scss" as rem;
-
 @mixin button() {
   font-family: var(--typography-button-font-family), system-ui, sans-serif;
   font-size: var(--typography-button-font-size);
