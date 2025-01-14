@@ -926,13 +926,23 @@ class CheckOffererIsEligibleForHeadlineOffersTest:
         virtual_venue = offerers_factories.VirtualVenueFactory(isPermanent=False, managingOfferer=offerer)
         offer = offers_factories.ThingOfferFactory(venue=permanent_venue)
         offers_factories.StockFactory(offer=offer)
+        offers_factories.MediationFactory(offer=offer)
         digital_offer = offers_factories.DigitalOfferFactory(venue=virtual_venue)
         offers_factories.StockFactory(offer=digital_offer)
+        offers_factories.MediationFactory(offer=digital_offer)
+        offers_factories.MediationFactory(offer=digital_offer)
+        offer_without_image = offers_factories.OfferFactory(venue=permanent_venue)
+        offers_factories.StockFactory(offer=offer_without_image)
 
         assert validation.check_offerer_is_eligible_for_headline_offers(offerer.id) is None
         assert validation.check_offer_is_eligible_to_be_headline(offer) is None
 
         with pytest.raises(exceptions.VirtualOfferCanNotBeHeadline) as exc:
             validation.check_offer_is_eligible_to_be_headline(digital_offer)
-            msg = "Digital offers can not be made headline"
+            msg = "Digital offers can not be set to the headline"
+            assert exc.value.errors["headlineOffer"] == [msg]
+
+        with pytest.raises(exceptions.OfferWithoutImageCanNotBeHeadline) as exc:
+            validation.check_offer_is_eligible_to_be_headline(offer_without_image)
+            msg = "Offers without images can not be set to the headline"
             assert exc.value.errors["headlineOffer"] == [msg]

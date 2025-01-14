@@ -901,6 +901,8 @@ def check_offerer_is_eligible_for_headline_offers(offerer_id: int) -> None:
 def check_offer_is_eligible_to_be_headline(offer: models.Offer) -> None:
     if offer.status != OfferStatus.ACTIVE:
         raise exceptions.InactiveOfferCanNotBeHeadline()
+    if not offer.images:
+        raise exceptions.OfferWithoutImageCanNotBeHeadline()
     # FIXME: ogeber 03.01.2025 - when venue regularisation is done, this
     # validation can be removed and virtual offers can be made headline
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer.subcategoryId]
