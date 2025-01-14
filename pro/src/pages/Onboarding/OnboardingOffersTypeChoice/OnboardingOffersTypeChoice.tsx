@@ -1,7 +1,4 @@
 import { OnboardingOffersChoice } from 'components/OnboardingOffersChoice/OnboardingOffersChoice'
-import fullWaitIcon from 'icons/full-wait.svg'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { OnboardingLayout } from '../components/OnboardingLayout/OnboardingLayout'
 
@@ -20,13 +17,6 @@ export const OnboardingOffersTypeChoice = () => {
           </h2>
         </div>
         <OnboardingOffersChoice />
-        <ButtonLink
-          icon={fullWaitIcon}
-          to="/my-path"
-          variant={ButtonVariant.TERNARY}
-        >
-          Plus tard
-        </ButtonLink>
       </div>
     </OnboardingLayout>
   )
