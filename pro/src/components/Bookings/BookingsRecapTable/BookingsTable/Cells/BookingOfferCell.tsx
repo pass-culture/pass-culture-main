@@ -48,7 +48,9 @@ export const BookingOfferCell = ({
         step: OFFER_WIZARD_STEP_IDS.DETAILS,
       })
 
-  const eventBeginningDatetime = booking.stock.eventBeginningDatetime
+  const eventBeginningDatetime = isCollectiveBooking(booking)
+    ? booking.stock.eventStartDatetime
+    : booking.stock.eventBeginningDatetime
 
   const eventDatetimeFormatted = eventBeginningDatetime
     ? format(
