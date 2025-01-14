@@ -75,19 +75,17 @@ export const CollectiveTimeLine = ({
   const cancellationLimitDate = getDateToFrenchText(
     bookingRecap.bookingCancellationLimitDate
   )
-  const eventDate = getDateToFrenchText(
-    bookingRecap.stock.eventBeginningDatetime
-  )
+  const eventDate = getDateToFrenchText(bookingRecap.stock.eventStartDatetime)
 
   const eventEndDatetime = bookingRecap.stock.eventEndDatetime
     ? bookingRecap.stock.eventEndDatetime
-    : bookingRecap.stock.eventBeginningDatetime
+    : bookingRecap.stock.eventStartDatetime
 
   const eventDatePlusTwoDays = getDateToFrenchText(
     addDays(new Date(eventEndDatetime), 2).toString()
   )
   const eventHasPassed = isBefore(
-    new Date(bookingRecap.stock.eventBeginningDatetime),
+    new Date(bookingRecap.stock.eventStartDatetime),
     new Date()
   )
   const lastHistoryDate = getDateToFrenchText(
