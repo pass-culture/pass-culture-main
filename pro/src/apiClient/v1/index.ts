@@ -14,7 +14,6 @@ export type { AdageCulturalPartnersResponseModel } from './models/AdageCulturalP
 export type { Address } from './models/Address';
 export type { AddressBodyModel } from './models/AddressBodyModel';
 export type { AddressResponseIsLinkedToVenueModel } from './models/AddressResponseIsLinkedToVenueModel';
-export type { AddressResponseModel } from './models/AddressResponseModel';
 export type { AggregatedRevenueModel } from './models/AggregatedRevenueModel';
 export type { AttachImageFormModel } from './models/AttachImageFormModel';
 export type { AttachImageResponseModel } from './models/AttachImageResponseModel';
@@ -178,8 +177,6 @@ export type { NewPasswordBodyModel } from './models/NewPasswordBodyModel';
 export { OfferAddressType } from './models/OfferAddressType';
 export { OfferContactFormEnum } from './models/OfferContactFormEnum';
 export type { OfferDomain } from './models/OfferDomain';
-export type { OffererAddressRequestModel } from './models/OffererAddressRequestModel';
-export type { OffererAddressResponseModel } from './models/OffererAddressResponseModel';
 export type { OffererApiKey } from './models/OffererApiKey';
 export type { OffererHeadLineOfferResponseModel } from './models/OffererHeadLineOfferResponseModel';
 export { OffererMemberStatus } from './models/OffererMemberStatus';
