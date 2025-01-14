@@ -190,7 +190,6 @@ export const collectiveBookingCollectiveStockFactory = (
   customCollectiveBookingCollectiveStock: Partial<CollectiveBookingCollectiveStockResponseModel> = {}
 ): CollectiveBookingCollectiveStockResponseModel => ({
   bookingLimitDatetime: new Date().toISOString(),
-  eventBeginningDatetime: new Date().toISOString(),
   eventStartDatetime: new Date().toISOString(),
   eventEndDatetime: new Date().toISOString(),
   numberOfTickets: 1,
@@ -238,7 +237,6 @@ export const collectiveBookingByIdFactory = (
   const currentBookingDetailsId = bookingDetailsId++
   return {
     bankAccountStatus: CollectiveBookingBankAccountStatus.ACCEPTED,
-    beginningDatetime: new Date().toISOString(),
     startDatetime: new Date().toISOString(),
     endDatetime: new Date().toISOString(),
     educationalInstitution: {

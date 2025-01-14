@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type OfferStockResponse = {
-  beginningDatetime?: string | null;
   bookingLimitDatetime?: string | null;
   educationalPriceDetail?: string | null;
   endDatetime?: string | null;

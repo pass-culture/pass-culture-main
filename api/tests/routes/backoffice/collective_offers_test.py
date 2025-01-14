@@ -44,7 +44,7 @@ pytestmark = [
 @pytest.fixture(scope="function", name="collective_offers")
 def collective_offers_fixture() -> tuple:
     collective_offer_1 = educational_factories.CollectiveStockFactory(
-        beginningDatetime=datetime.date.today() + datetime.timedelta(days=1),
+        startDatetime=datetime.date.today() + datetime.timedelta(days=1),
         collectiveOffer__author=users_factories.UserFactory(),
         collectiveOffer__institution=educational_factories.EducationalInstitutionFactory(),
         collectiveOffer__formats=[subcategories.EacFormat.ATELIER_DE_PRATIQUE],
@@ -53,7 +53,6 @@ def collective_offers_fixture() -> tuple:
         price=10.1,
     ).collectiveOffer
     collective_offer_2 = educational_factories.CollectiveStockFactory(
-        beginningDatetime=datetime.date.today() + datetime.timedelta(days=3),
         startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=3),
         endDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=24),
         collectiveOffer__institution=collective_offer_1.institution,
@@ -64,7 +63,6 @@ def collective_offers_fixture() -> tuple:
         price=11,
     ).collectiveOffer
     collective_offer_3 = educational_factories.CollectiveStockFactory(
-        beginningDatetime=datetime.date.today(),
         startDatetime=datetime.datetime.utcnow(),
         endDatetime=datetime.datetime.utcnow(),
         collectiveOffer__dateCreated=datetime.date.today() - datetime.timedelta(days=2),
@@ -314,13 +312,9 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["ID"] == str(should_be_displayed_offer.id)
 
     def test_list_collective_offers_by_event_date(self, authenticated_client):
-        educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime.date.today() + datetime.timedelta(days=1)
-        )
-        stock = educational_factories.CollectiveStockFactory(beginningDatetime=datetime.date.today())
-        educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime.date.today() - datetime.timedelta(days=1)
-        )
+        educational_factories.CollectiveStockFactory(startDatetime=datetime.date.today() + datetime.timedelta(days=1))
+        stock = educational_factories.CollectiveStockFactory(startDatetime=datetime.date.today())
+        educational_factories.CollectiveStockFactory(startDatetime=datetime.date.today() - datetime.timedelta(days=1))
 
         query_args = {
             "search-2-search_field": "EVENT_DATE",
@@ -1153,7 +1147,6 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         start_date = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         end_date = start_date + datetime.timedelta(days=28)
         collective_booking = educational_factories.CollectiveBookingFactory(
-            collectiveStock__beginningDatetime=start_date,
             collectiveStock__startDatetime=start_date,
             collectiveStock__endDatetime=end_date,
             collectiveStock__collectiveOffer__teacher=educational_factories.EducationalRedactorFactory(
@@ -1189,7 +1182,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
     def test_processed_pricing(self, legit_user, authenticated_client):
         pricing = finance_factories.CollectivePricingFactory(
             status=finance_models.PricingStatus.PROCESSED,
-            collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime(1970, 1, 1),
+            collectiveBooking__collectiveStock__startDatetime=datetime.datetime(1970, 1, 1),
         )
         url = url_for(self.endpoint, collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id)
 
@@ -1202,7 +1195,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
     def test_invoiced_pricing(self, legit_user, authenticated_client):
         pricing = finance_factories.CollectivePricingFactory(
             status=finance_models.PricingStatus.INVOICED,
-            collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime(1970, 1, 1),
+            collectiveBooking__collectiveStock__startDatetime=datetime.datetime(1970, 1, 1),
         )
         url = url_for(self.endpoint, collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id)
 
@@ -1214,7 +1207,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
 
     def test_cashflow_pending(self, legit_user, authenticated_client, app):
         pricing = finance_factories.CollectivePricingFactory(
-            collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime(1970, 1, 1),
+            collectiveBooking__collectiveStock__startDatetime=datetime.datetime(1970, 1, 1),
         )
         url = url_for(self.endpoint, collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id)
         app.redis_client.set(finance_conf.REDIS_GENERATE_CASHFLOW_LOCK, "1", 600)
@@ -1231,7 +1224,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         event_date = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         validation_date = datetime.datetime.utcnow()
         collective_booking = educational_factories.CollectiveBookingFactory(
-            collectiveStock__beginningDatetime=event_date,
+            collectiveStock__startDatetime=event_date,
             collectiveStock__collectiveOffer__lastValidationDate=validation_date,
             collectiveStock__collectiveOffer__validation=offers_models.OfferValidationStatus.APPROVED,
             collectiveStock__collectiveOffer__lastValidationAuthor=legit_user,
@@ -1249,7 +1242,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         event_date = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         validation_date = datetime.datetime.utcnow()
         collective_booking = educational_factories.CollectiveBookingFactory(
-            collectiveStock__beginningDatetime=event_date,
+            collectiveStock__startDatetime=event_date,
             collectiveStock__collectiveOffer__lastValidationDate=validation_date,
             collectiveStock__collectiveOffer__validation=offers_models.OfferValidationStatus.REJECTED,
             collectiveStock__collectiveOffer__lastValidationAuthor=legit_user,
@@ -1356,7 +1349,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         collective_booking = educational_factories.UsedCollectiveBookingFactory(
             collectiveStock__price=Decimal(100.00),
             collectiveStock__numberOfTickets=25,
-            collectiveStock__beginningDatetime=date_used,
+            collectiveStock__startDatetime=date_used,
             venue=venue,
             dateUsed=date_used,
         )
@@ -1384,7 +1377,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
             status=finance_models.PricingStatus.PROCESSED,
             collectiveBooking__collectiveStock__price=Decimal(100.00),
             collectiveBooking__collectiveStock__numberOfTickets=25,
-            collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime(1970, 1, 1),
+            collectiveBooking__collectiveStock__startDatetime=datetime.datetime(1970, 1, 1),
         )
         url = url_for(self.endpoint, collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id)
         authenticated_client.get(url)
@@ -1408,7 +1401,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
             status=finance_models.PricingStatus.INVOICED,
             collectiveBooking__collectiveStock__price=Decimal(100.00),
             collectiveBooking__collectiveStock__numberOfTickets=25,
-            collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime(1970, 1, 1),
+            collectiveBooking__collectiveStock__startDatetime=datetime.datetime(1970, 1, 1),
         )
         url = url_for(self.endpoint, collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id)
         authenticated_client.get(url)
@@ -1442,7 +1435,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
             status=pricing_status,
             collectiveBooking__collectiveStock__price=Decimal(100.00),
             collectiveBooking__collectiveStock__numberOfTickets=25,
-            collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime(1970, 1, 1),
+            collectiveBooking__collectiveStock__startDatetime=datetime.datetime(1970, 1, 1),
         )
 
         response = self.post_to_endpoint(
@@ -1465,7 +1458,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         collective_booking = educational_factories.CollectiveBookingFactory(
             collectiveStock__price=Decimal(100.00),
             collectiveStock__numberOfTickets=25,
-            collectiveStock__beginningDatetime=event_date,
+            collectiveStock__startDatetime=event_date,
         )
         app.redis_client.set(finance_conf.REDIS_GENERATE_CASHFLOW_LOCK, "1", 600)
         try:
@@ -1499,7 +1492,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         collective_booking = educational_factories.CollectiveBookingFactory(
             collectiveStock__price=Decimal(100.00),
             collectiveStock__numberOfTickets=25,
-            collectiveStock__beginningDatetime=now,
+            collectiveStock__startDatetime=now,
             status=booking_status,
             dateUsed=now,
             confirmationDate=now,
@@ -1540,7 +1533,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         collective_booking = educational_factories.CollectiveBookingFactory(
             collectiveStock__price=Decimal(100.00),
             collectiveStock__numberOfTickets=25,
-            collectiveStock__beginningDatetime=now,
+            collectiveStock__startDatetime=now,
             status=booking_status,
             dateUsed=now,
             confirmationDate=now,

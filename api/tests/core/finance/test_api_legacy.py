@@ -763,7 +763,7 @@ def test_generate_payments_file(clean_temp_files):
         amount=-300,  # rate = 100 %
         collectiveBooking__collectiveStock__price=3,
         collectiveBooking__dateUsed=used_date,
-        collectiveBooking__collectiveStock__beginningDatetime=used_date,
+        collectiveBooking__collectiveStock__startDatetime=used_date,
         collectiveBooking__collectiveStock__collectiveOffer__name="Une histoire plutôt bien",
         collectiveBooking__collectiveStock__collectiveOffer__subcategoryId=subcategories.CINE_PLEIN_AIR.id,
         collectiveBooking__collectiveStock__collectiveOffer__venue=venue1,
@@ -774,7 +774,7 @@ def test_generate_payments_file(clean_temp_files):
         amount=-700,  # rate = 100 %
         collectiveBooking__collectiveStock__price=7,
         collectiveBooking__dateUsed=used_date,
-        collectiveBooking__collectiveStock__beginningDatetime=used_date,
+        collectiveBooking__collectiveStock__startDatetime=used_date,
         collectiveBooking__collectiveStock__collectiveOffer__name="Une histoire plutôt bien 2",
         collectiveBooking__collectiveStock__collectiveOffer__subcategoryId=subcategories.CINE_PLEIN_AIR.id,
         collectiveBooking__collectiveStock__collectiveOffer__venue=venue1,
@@ -785,7 +785,7 @@ def test_generate_payments_file(clean_temp_files):
         amount=-300,  # rate = 100 %
         collectiveBooking__collectiveStock__price=3,
         collectiveBooking__dateUsed=used_date,
-        collectiveBooking__collectiveStock__beginningDatetime=used_date,
+        collectiveBooking__collectiveStock__startDatetime=used_date,
         collectiveBooking__collectiveStock__collectiveOffer__name="Une histoire militaire plutôt bien",
         collectiveBooking__collectiveStock__collectiveOffer__subcategoryId=subcategories.CINE_PLEIN_AIR.id,
         collectiveBooking__collectiveStock__collectiveOffer__venue=venue1,
@@ -796,7 +796,7 @@ def test_generate_payments_file(clean_temp_files):
         amount=-500,  # rate = 100 %
         collectiveBooking__collectiveStock__price=5,
         collectiveBooking__dateUsed=used_date,
-        collectiveBooking__collectiveStock__beginningDatetime=used_date,
+        collectiveBooking__collectiveStock__startDatetime=used_date,
         collectiveBooking__collectiveStock__collectiveOffer__name="Une histoire militaire plutôt marseillaise",
         collectiveBooking__collectiveStock__collectiveOffer__subcategoryId=subcategories.CINE_PLEIN_AIR.id,
         collectiveBooking__collectiveStock__collectiveOffer__venue=venue1,
@@ -892,7 +892,7 @@ def test_generate_payments_file(clean_temp_files):
     collective_booking = educational_factories.ReimbursedCollectiveBookingFactory(
         collectiveStock__price=12,
         dateUsed=datetime.datetime(actual_year, 1, 30),
-        collectiveStock__beginningDatetime=used_date,
+        collectiveStock__startDatetime=used_date,
         collectiveStock__collectiveOffer__name="Une histoire militaire plutôt bien sur un autre compte bancaire",
         collectiveStock__collectiveOffer__subcategoryId=subcategories.CINE_PLEIN_AIR.id,
         collectiveStock__collectiveOffer__venue=venue2,
@@ -1372,7 +1372,7 @@ def test_generate_invoice_file(clean_temp_files):
     pricing3 = factories.CollectivePricingFactory(
         amount=-3000,
         collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
-        collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
+        collectiveBooking__collectiveStock__startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
         collectiveBooking__educationalInstitution=deposit.educationalInstitution,
         collectiveBooking__educationalYear=deposit.educationalYear,
         status=models.PricingStatus.VALIDATED,
@@ -1397,7 +1397,7 @@ def test_generate_invoice_file(clean_temp_files):
     pricing4 = factories.CollectivePricingFactory(
         amount=-2345,
         collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
-        collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=8),
+        collectiveBooking__collectiveStock__startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=8),
         collectiveBooking__educationalInstitution=educational_institution_with_program,
         collectiveBooking__educationalYear=deposit_with_program.educationalYear,
         status=models.PricingStatus.VALIDATED,
@@ -2237,12 +2237,12 @@ class GenerateInvoiceTest:
         indiv_booking2 = indiv_finance_event2.booking
         past = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         collective_finance_event1 = factories.UsedCollectiveBookingFinanceEventFactory(
-            collectiveBooking__collectiveStock__beginningDatetime=past,
+            collectiveBooking__collectiveStock__startDatetime=past,
             collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
         )
         collective_booking1 = collective_finance_event1.collectiveBooking
         collective_finance_event2 = factories.UsedCollectiveBookingFinanceEventFactory(
-            collectiveBooking__collectiveStock__beginningDatetime=past,
+            collectiveBooking__collectiveStock__startDatetime=past,
             collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
         )
         collective_booking2 = collective_finance_event2.collectiveBooking
@@ -2629,22 +2629,19 @@ class GenerateInvoiceHtmlTest:
         only_collective_booking_finance_event = factories.UsedCollectiveBookingFinanceEventFactory(
             collectiveBooking__collectiveStock__price=666,
             collectiveBooking__collectiveStock__collectiveOffer__venue=only_educational_venue,
-            collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime.utcnow()
-            - datetime.timedelta(days=1),
+            collectiveBooking__collectiveStock__startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
             collectiveBooking__venue=only_educational_venue,
         )
         collective_booking_finance_event1 = factories.UsedCollectiveBookingFinanceEventFactory(
             collectiveBooking__collectiveStock__price=5000,
             collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
-            collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime.utcnow()
-            - datetime.timedelta(days=1),
+            collectiveBooking__collectiveStock__startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
             collectiveBooking__venue=venue,
         )
         collective_booking_finance_event2 = factories.UsedCollectiveBookingFinanceEventFactory(
             collectiveBooking__collectiveStock__price=250,
             collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
-            collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime.utcnow()
-            - datetime.timedelta(days=1),
+            collectiveBooking__collectiveStock__startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
             collectiveBooking__venue=venue,
         )
         api.price_event(only_collective_booking_finance_event)

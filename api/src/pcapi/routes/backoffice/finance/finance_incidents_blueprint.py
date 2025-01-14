@@ -443,7 +443,7 @@ def get_collective_booking_overpayment_creation_form(collective_booking_id: int)
             ),
             sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock)
             .load_only(
-                educational_models.CollectiveStock.beginningDatetime, educational_models.CollectiveStock.numberOfTickets
+                educational_models.CollectiveStock.startDatetime, educational_models.CollectiveStock.numberOfTickets
             )
             .joinedload(educational_models.CollectiveStock.collectiveOffer)
             .load_only(educational_models.CollectiveOffer.name),
@@ -497,7 +497,7 @@ def get_collective_booking_commercial_gesture_creation_form(collective_booking_i
             ),
             sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock)
             .load_only(
-                educational_models.CollectiveStock.beginningDatetime, educational_models.CollectiveStock.numberOfTickets
+                educational_models.CollectiveStock.startDatetime, educational_models.CollectiveStock.numberOfTickets
             )
             .joinedload(educational_models.CollectiveStock.collectiveOffer)
             .load_only(educational_models.CollectiveOffer.name),
@@ -773,7 +773,7 @@ def _initialize_collective_booking_additional_data(collective_booking: education
         "ID de la réservation": collective_booking.id,
         "Statut de la réservation": filters.format_booking_status(collective_booking),
         "Nom de l'offre": collective_booking.collectiveStock.collectiveOffer.name,
-        "Date de l'offre": filters.format_date_time(collective_booking.collectiveStock.beginningDatetime),
+        "Date de l'offre": filters.format_date_time(collective_booking.collectiveStock.startDatetime),
         "Établissement": collective_booking.educationalInstitution.name,
         "Nombre d'élèves": collective_booking.collectiveStock.numberOfTickets,
         "Montant de la réservation": filters.format_amount(collective_booking.total_amount),
@@ -1179,7 +1179,7 @@ def _get_incident(finance_incident_id: int, **args: typing.Any) -> finance_model
                     # collective booking offer info
                     sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock)
                     .load_only(
-                        educational_models.CollectiveStock.beginningDatetime, educational_models.CollectiveStock.price
+                        educational_models.CollectiveStock.startDatetime, educational_models.CollectiveStock.price
                     )
                     .joinedload(educational_models.CollectiveStock.collectiveOffer)
                     .load_only(

@@ -54,7 +54,7 @@
                 <p class="mb-1">
                   <span class="fw-bold">Date de l'évènement :</span>
                   {% if collective_offer.collectiveStock %}
-                    {% set start_date = (collective_offer.start or collective_offer.collectiveStock.beginningDatetime) | format_date %}
+                    {% set start_date = collective_offer.start | format_date %}
                     {% set end_date = collective_offer.end | format_date %}
                     {{ start_date }}
                     {% if end_date and end_date != start_date %}→ {{ end_date }}{% endif %}

@@ -49,7 +49,6 @@ def _get_collective_bookings(
             sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock)
             .load_only(
                 educational_models.CollectiveStock.collectiveOfferId,
-                educational_models.CollectiveStock.beginningDatetime,
                 educational_models.CollectiveStock.startDatetime,
                 educational_models.CollectiveStock.endDatetime,
                 educational_models.CollectiveStock.bookingLimitDatetime,
@@ -138,7 +137,7 @@ def list_collective_bookings() -> utils.BackofficeResponse:
     bookings = utils.limit_rows(
         bookings,
         form.limit.data,
-        sort_key=lambda booking: booking.collectiveStock.beginningDatetime,
+        sort_key=lambda booking: booking.collectiveStock.startDatetime,
         sort_reverse=True,
     )
 

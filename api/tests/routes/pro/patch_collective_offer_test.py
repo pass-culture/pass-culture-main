@@ -67,7 +67,7 @@ class Returns200Test:
         )
         booking = educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer=offer,
-            collectiveStock__beginningDatetime=datetime(2020, 1, 1),
+            collectiveStock__startDatetime=datetime(2020, 1, 1),
             status=CollectiveBookingStatus.PENDING,
         )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)

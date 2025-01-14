@@ -684,7 +684,7 @@ class BookCollectiveOfferTest(PublicAPIRestrictedEnvEndpointHelper):
         db.session.refresh(offer)
         assert not offer.collectiveStock.collectiveBookings
 
-    def test_cannot_book_offer_if_no_educational_year_matches_beginning(self, client):
+    def test_cannot_book_offer_if_no_educational_year_matches_start(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         auth_client = client.with_explicit_token(plain_api_key)
 
@@ -694,8 +694,8 @@ class BookCollectiveOfferTest(PublicAPIRestrictedEnvEndpointHelper):
             collectiveOffer__venue=venue_provider.venue,
             # deposit creates an educational year
             collectiveOffer__institution=deposit.educationalInstitution,
-            # beginning will not match the educational year
-            beginningDatetime=datetime.now(timezone.utc) + timedelta(weeks=512),
+            # start will not match the educational year
+            startDatetime=datetime.now(timezone.utc) + timedelta(weeks=512),
         ).collectiveOffer
 
         self.assert_request_has_expected_result(

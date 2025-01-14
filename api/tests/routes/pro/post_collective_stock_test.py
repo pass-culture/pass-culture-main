@@ -29,7 +29,7 @@ class Return200Test:
         # When
         stock_payload = {
             "offerId": offer.id,
-            "beginningDatetime": "2022-01-17T22:00:00Z",
+            "startDatetime": "2022-01-17T22:00:00Z",
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "totalPrice": 1500.12,
             "numberOfTickets": 38,
@@ -48,7 +48,6 @@ class Return200Test:
         assert created_stock.price == decimal.Decimal("1500.12")
         assert created_stock.priceDetail == "Détail du prix"
         assert offer.validation == OfferValidationStatus.DRAFT
-        assert created_stock.beginningDatetime == datetime.datetime(2022, 1, 17, 22, 0, 0)
         assert created_stock.startDatetime == datetime.datetime(2022, 1, 17, 22, 0, 0)
         assert created_stock.endDatetime == datetime.datetime(2022, 1, 17, 22, 0, 0)
 
@@ -88,7 +87,6 @@ class Return200Test:
         assert created_stock.price == decimal.Decimal("1500.12")
         assert created_stock.priceDetail == "Détail du prix"
         assert offer.validation == OfferValidationStatus.DRAFT
-        assert created_stock.beginningDatetime == datetime.datetime(2022, 1, 17, 22, 0, 0)
         assert created_stock.startDatetime == datetime.datetime(2022, 1, 17, 22, 0, 0)
         assert created_stock.endDatetime == datetime.datetime(2022, 1, 18, 18, 0, 0)
 
@@ -105,7 +103,7 @@ class Return400Test:
         # When
         stock_payload = {
             "offerId": offer.id,
-            "beginningDatetime": "2022-01-17T22:00:00Z",
+            "startDatetime": "2022-01-17T22:00:00Z",
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "totalPrice": 1500,
             "numberOfTickets": 38,
@@ -132,7 +130,7 @@ class Return400Test:
         # When
         stock_payload = {
             "offerId": offer.id,
-            "beginningDatetime": "2022-01-17T22:00:00Z",
+            "startDatetime": "2022-01-17T22:00:00Z",
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "totalPrice": 1500,
             "numberOfTickets": -1,
@@ -157,7 +155,7 @@ class Return400Test:
         # When
         stock_payload = {
             "offerId": offer.id,
-            "beginningDatetime": "2022-01-17T22:00:00Z",
+            "startDatetime": "2022-01-17T22:00:00Z",
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "totalPrice": -1500,
             "numberOfTickets": 30,
@@ -182,7 +180,7 @@ class Return400Test:
         # When
         stock_payload = {
             "offerId": offer.id,
-            "beginningDatetime": "2022-01-17T22:00:00Z",
+            "startDatetime": "2022-01-17T22:00:00Z",
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "totalPrice": settings.EAC_OFFER_PRICE_LIMIT + 1,
             "numberOfTickets": 1,
@@ -207,7 +205,7 @@ class Return400Test:
         # When
         stock_payload = {
             "offerId": offer.id,
-            "beginningDatetime": "2022-01-17T22:00:00Z",
+            "startDatetime": "2022-01-17T22:00:00Z",
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "totalPrice": 100,
             "numberOfTickets": settings.EAC_NUMBER_OF_TICKETS_LIMIT + 1,
@@ -221,7 +219,7 @@ class Return400Test:
         assert response.json == {"numberOfTickets": ["Le nombre de places est trop élevé."]}
 
     @time_machine.travel("2020-11-17 15:00:00")
-    def should_not_accept_payload_with_bookingLimitDatetime_after_beginningDatetime(self, client):
+    def should_not_accept_payload_with_bookingLimitDatetime_after_startDatetime(self, client):
         # Given
         offer = educational_factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(
@@ -232,7 +230,7 @@ class Return400Test:
         # When
         stock_payload = {
             "offerId": offer.id,
-            "beginningDatetime": "2022-01-17T22:00:00Z",
+            "startDatetime": "2022-01-17T22:00:00Z",
             "bookingLimitDatetime": "2022-01-18T20:00:00Z",
             "totalPrice": 1500,
             "numberOfTickets": 30,
@@ -261,7 +259,7 @@ class Return400Test:
         # When
         stock_payload = {
             "offerId": offer.id,
-            "beginningDatetime": "2022-01-17T22:00:00Z",
+            "startDatetime": "2022-01-17T22:00:00Z",
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "totalPrice": 1500,
             "numberOfTickets": 38,
@@ -287,7 +285,7 @@ class Return400Test:
         # When
         stock_payload = {
             "offerId": offer.id,
-            "beginningDatetime": "2022-01-17T22:00:00Z",
+            "startDatetime": "2022-01-17T22:00:00Z",
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "totalPrice": 1500,
             "numberOfTickets": 38,
@@ -301,7 +299,7 @@ class Return400Test:
         assert response.status_code == 400
         assert response.json == {"code": "EDUCATIONAL_STOCK_ALREADY_EXISTS"}
 
-    def test_create_valid_stock_for_collective_offer(self, client):
+    def test_create_invalid_stock_for_collective_offer(self, client):
         # Given
         offer = educational_factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(
@@ -312,7 +310,7 @@ class Return400Test:
         # When
         stock_payload = {
             "offerId": offer.id,
-            "beginningDatetime": "1970-12-01T00:00:00Z",
+            "startDatetime": "1970-12-01T00:00:00Z",
             "bookingLimitDatetime": "1970-01-31T20:00:00Z",
             "totalPrice": 1500,
             "numberOfTickets": 38,
@@ -324,7 +322,7 @@ class Return400Test:
 
         # Then
         assert response.status_code == 400
-        assert response.json == {"beginningDatetime": ["L'évènement ne peut commencer dans le passé."]}
+        assert response.json == {"startDatetime": ["L'évènement ne peut commencer dans le passé."]}
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_accept_payload_with_startDatetime_after_endDatetime(self, client):

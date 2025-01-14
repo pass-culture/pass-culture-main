@@ -582,7 +582,8 @@ def edit_collective_offer_public(
     api_shared.update_collective_stock_booking(
         stock=offer.collectiveStock,
         current_booking=collective_stock_unique_booking,
-        beginning_datetime_has_changed="beginningDatetime" in new_values,
+        datetime_has_changed="beginningDatetime" in new_values,
+        datetime_column="beginningDatetime",
     )
 
     db.session.commit()
@@ -709,7 +710,7 @@ def duplicate_offer_and_stock(
 
     if original_offer.collectiveStock is not None:
         educational_models.CollectiveStock(
-            beginningDatetime=original_offer.collectiveStock.beginningDatetime,
+            beginningDatetime=original_offer.collectiveStock.startDatetime,  # TODO: needed for now as the field is required, it will be removed later
             startDatetime=original_offer.collectiveStock.startDatetime,
             endDatetime=original_offer.collectiveStock.endDatetime,
             collectiveOffer=offer,

@@ -16,9 +16,9 @@ logger = logging.getLogger(__name__)
 
 
 def compute_educational_booking_cancellation_limit_date(
-    event_beginning: datetime, booking_creation_date: datetime
+    event_start: datetime, booking_creation_date: datetime
 ) -> datetime:
-    return max(event_beginning - timedelta(days=30), booking_creation_date)
+    return max(event_start - timedelta(days=30), booking_creation_date)
 
 
 def get_hashed_user_id(email: str) -> str:

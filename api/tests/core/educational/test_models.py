@@ -75,9 +75,9 @@ class CollectiveStockIsBookableTest:
         collective_stock = factories.CollectiveStockFactory(collectiveOffer__isActive=False)
         assert not collective_stock.isBookable
 
-    def test_not_bookable_if_offer_is_event_with_passed_begining_datetime(self) -> None:
+    def test_not_bookable_if_offer_is_event_with_passed_start_datetime(self) -> None:
         past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
-        collective_stock = factories.CollectiveStockFactory(beginningDatetime=past)
+        collective_stock = factories.CollectiveStockFactory(startDatetime=past)
         assert not collective_stock.isBookable
 
     def test_not_bookable_if_no_remaining_stock(self) -> None:
@@ -673,12 +673,12 @@ class CollectiveOfferDisplayedStatusTest:
 
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.PREBOOKED
 
-    def test_get_displayed_status_for_offer_when_in_between_beginningDatetime_endDatetime(self):
+    def test_get_displayed_status_for_offer_when_in_between_startDatetime_endDatetime(self):
         offer = factories.CollectiveOfferFactory()
         yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         futur = datetime.datetime.utcnow() + datetime.timedelta(days=2)
         stock = factories.CollectiveStockFactory(
-            collectiveOffer=offer, beginningDatetime=yesterday, endDatetime=futur, bookingLimitDatetime=futur
+            collectiveOffer=offer, startDatetime=yesterday, endDatetime=futur, bookingLimitDatetime=futur
         )
         _booking = factories.UsedCollectiveBookingFactory(collectiveStock=stock)
 
@@ -689,9 +689,7 @@ class CollectiveOfferDisplayedStatusTest:
         yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
 
         offer = factories.CollectiveOfferFactory()
-        stock = factories.CollectiveStockFactory(
-            collectiveOffer=offer, beginningDatetime=yesterday, endDatetime=yesterday
-        )
+        stock = factories.CollectiveStockFactory(collectiveOffer=offer, startDatetime=yesterday, endDatetime=yesterday)
         factories.CancelledCollectiveBookingFactory(
             collectiveStock=stock, dateCreated=yesterday - datetime.timedelta(days=3)
         )

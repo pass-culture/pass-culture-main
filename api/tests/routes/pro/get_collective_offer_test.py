@@ -200,7 +200,7 @@ class Returns200Test:
 
     def test_inactive_offer(self, client):
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime.utcnow() + timedelta(days=125),
+            startDatetime=datetime.utcnow() + timedelta(days=125),
             bookingLimitDatetime=datetime.utcnow() - timedelta(days=125),
         )
         offer = educational_factories.CollectiveOfferFactory(
@@ -269,7 +269,7 @@ class Returns200Test:
         beginningDate = datetime.utcnow() + timedelta(days=100)
         endDate = datetime.utcnow() + timedelta(days=125)
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=beginningDate,
+            startDatetime=beginningDate,
             endDatetime=endDate,
         )
         offer = educational_factories.CollectiveOfferFactory(

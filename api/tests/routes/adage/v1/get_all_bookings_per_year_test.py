@@ -20,6 +20,8 @@ def expected_serialized_booking(booking) -> dict:
         "confirmationLimitDate": format_into_utc_date(booking.confirmationLimitDate),
         "totalAmount": booking.collectiveStock.price,
         "beginningDatetime": format_into_utc_date(booking.collectiveStock.beginningDatetime),
+        "startDatetime": format_into_utc_date(booking.collectiveStock.startDatetime),
+        "endDatetime": format_into_utc_date(booking.collectiveStock.endDatetime),
         "venueTimezone": booking.collectiveStock.collectiveOffer.venue.timezone,
         "name": booking.collectiveStock.collectiveOffer.name,
         "redactorEmail": booking.educationalRedactor.email,

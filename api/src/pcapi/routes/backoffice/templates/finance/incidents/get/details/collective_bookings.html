@@ -31,10 +31,10 @@
             data-bs-parent=".table">
           <td colspan="7">
             <div class="card shadow-sm p-3">
-              {% if booking_finance_incident.collectiveBooking.collectiveStock.beginningDatetime %}
+              {% if booking_finance_incident.collectiveBooking.collectiveStock.startDatetime %}
                 <p class="mb-1">
                   <span class="fw-bold">Date de l'évènement :</span>
-                  {{ booking_finance_incident.collectiveBooking.collectiveStock.beginningDatetime | format_date_time }}
+                  {{ booking_finance_incident.collectiveBooking.collectiveStock.startDatetime | format_date_time }}
                 </p>
               {% endif %}
               {% if booking_finance_incident.collectiveBooking.is_used_or_reimbursed %}

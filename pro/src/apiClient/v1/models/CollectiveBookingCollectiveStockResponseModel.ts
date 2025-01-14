@@ -4,7 +4,6 @@
 /* eslint-disable */
 export type CollectiveBookingCollectiveStockResponseModel = {
   bookingLimitDatetime: string;
-  eventBeginningDatetime: string;
   eventEndDatetime: string;
   eventStartDatetime: string;
   numberOfTickets: number;

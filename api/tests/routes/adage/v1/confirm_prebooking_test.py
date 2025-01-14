@@ -200,7 +200,7 @@ class Returns200Test:
             educationalYear=educational_year,
             status=CollectiveBookingStatus.PENDING,
             confirmationLimitDate=datetime(2022, 2, 15, 10),
-            collectiveStock__beginningDatetime=datetime(2022, 3, 15, 10),
+            collectiveStock__startDatetime=datetime(2022, 3, 15, 10),
         )
 
         client = client.with_eac_token()

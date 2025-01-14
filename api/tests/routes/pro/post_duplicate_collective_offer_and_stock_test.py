@@ -140,7 +140,7 @@ class Returns200Test:
                 "id": duplicate.collectiveStock.id,
                 "isBooked": False,
                 "isCancellable": False,
-                "beginningDatetime": format_into_utc_date(offer.collectiveStock.beginningDatetime),
+                "startDatetime": format_into_utc_date(offer.collectiveStock.startDatetime),
                 "endDatetime": format_into_utc_date(offer.collectiveStock.endDatetime),
                 "startDatetime": format_into_utc_date(offer.collectiveStock.startDatetime),
                 "bookingLimitDatetime": format_into_utc_date(offer.collectiveStock.bookingLimitDatetime),

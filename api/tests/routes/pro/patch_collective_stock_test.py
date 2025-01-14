@@ -31,7 +31,7 @@ class Return200Test:
         )
 
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime(2021, 12, 18),
+            startDatetime=datetime(2021, 12, 18),
             price=1200,
             numberOfTickets=32,
             bookingLimitDatetime=datetime(2021, 12, 1),
@@ -44,7 +44,7 @@ class Return200Test:
 
         # When
         stock_edition_payload = {
-            "beginningDatetime": "2022-01-17T22:00:00Z",
+            "startDatetime": "2022-01-17T22:00:00Z",
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "totalPrice": 1500,
             "numberOfTickets": 38,
@@ -57,14 +57,13 @@ class Return200Test:
         # Then
         assert response.status_code == 200
         edited_stock = CollectiveStock.query.get(stock.id)
-        assert edited_stock.beginningDatetime == datetime(2022, 1, 17, 22)
+        assert edited_stock.startDatetime == datetime(2022, 1, 17, 22)
         assert edited_stock.bookingLimitDatetime == datetime(2021, 12, 31, 20)
         assert edited_stock.price == 1500
         assert edited_stock.numberOfTickets == 38
         assert edited_stock.priceDetail == "Nouvelle description du prix"
 
         assert response.json == {
-            "beginningDatetime": "2022-01-17T22:00:00Z",
             "startDatetime": "2022-01-17T22:00:00Z",
             "endDatetime": "2022-01-17T22:00:00Z",
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
@@ -76,13 +75,13 @@ class Return200Test:
         }
 
     @time_machine.travel("2020-11-17 15:00:00")
-    def test_edit_collective_stock_begining_datedame_same_day(self, client):
+    def test_edit_collective_stock_start_datetime_same_day(self, client):
         # Given
         _educational_year_2021_2022 = educational_factories.EducationalYearFactory(
             beginningDate=datetime(2021, 9, 1), expirationDate=datetime(2022, 8, 31)
         )
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime(2021, 12, 18, 18, 22, 12),
+            startDatetime=datetime(2021, 12, 18, 18, 22, 12),
             price=1200,
             numberOfTickets=32,
             bookingLimitDatetime=datetime(2021, 12, 18, 18, 22, 11),
@@ -95,7 +94,7 @@ class Return200Test:
 
         # When
         stock_edition_payload = {
-            "beginningDatetime": "2021-12-18T00:00:00Z",
+            "startDatetime": "2021-12-18T00:00:00Z",
         }
 
         client.with_session_auth("user@example.com")
@@ -104,11 +103,10 @@ class Return200Test:
         # Then
         assert response.status_code == 200
         edited_stock = CollectiveStock.query.get(stock.id)
-        assert edited_stock.beginningDatetime == datetime(2021, 12, 18, 00)
+        assert edited_stock.startDatetime == datetime(2021, 12, 18, 00)
         assert edited_stock.bookingLimitDatetime == datetime(2021, 12, 18, 00)
 
         assert response.json == {
-            "beginningDatetime": "2021-12-18T00:00:00Z",
             "startDatetime": "2021-12-18T00:00:00Z",
             "endDatetime": "2021-12-18T00:00:00Z",
             "bookingLimitDatetime": "2021-12-18T00:00:00Z",
@@ -126,7 +124,7 @@ class Return200Test:
             beginningDate=datetime(2021, 9, 1), expirationDate=datetime(2022, 8, 31)
         )
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime(2021, 12, 18),
+            startDatetime=datetime(2021, 12, 18),
             price=1200,
             numberOfTickets=32,
             bookingLimitDatetime=datetime(2021, 12, 1),
@@ -137,7 +135,7 @@ class Return200Test:
         )
 
         stock_edition_payload = {
-            "beginningDatetime": "2022-01-17T22:00:00Z",
+            "startDatetime": "2022-01-17T22:00:00Z",
             "totalPrice": 1500,
         }
 
@@ -146,7 +144,7 @@ class Return200Test:
 
         assert response.status_code == 200
         edited_stock = CollectiveStock.query.get(stock.id)
-        assert edited_stock.beginningDatetime == datetime(2022, 1, 17, 22)
+        assert edited_stock.startDatetime == datetime(2022, 1, 17, 22)
         assert edited_stock.bookingLimitDatetime == datetime(2021, 12, 1)
         assert edited_stock.price == 1500
         assert edited_stock.numberOfTickets == 32
@@ -159,7 +157,7 @@ class Return200Test:
     def test_edit_collective_stock_with_pending_booking(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime(2021, 12, 18),
+            startDatetime=datetime(2021, 12, 18),
             price=1200,
             numberOfTickets=32,
             bookingLimitDatetime=datetime(2021, 12, 1),
@@ -185,7 +183,7 @@ class Return200Test:
         assert response.status_code == 200
         edited_stock = CollectiveStock.query.get(stock.id)
         edited_booking = CollectiveBooking.query.get(booking.id)
-        assert edited_stock.beginningDatetime == datetime(2021, 12, 18)
+        assert edited_stock.startDatetime == datetime(2021, 12, 18)
         assert edited_stock.bookingLimitDatetime == datetime(2021, 12, 1)
         assert edited_stock.price == 1500
         assert edited_stock.numberOfTickets == 38
@@ -204,7 +202,7 @@ class Return200Test:
     def test_edit_collective_stock_does_not_send_notification_when_no_modification(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime(2021, 12, 18),
+            startDatetime=datetime(2021, 12, 18),
             price=1200,
             numberOfTickets=32,
             bookingLimitDatetime=datetime(2021, 12, 1),
@@ -236,7 +234,7 @@ class Return200Test:
             beginningDate=datetime(2022, 9, 1), expirationDate=datetime(2023, 8, 31)
         )
         collective_stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime(2021, 12, 18),
+            startDatetime=datetime(2021, 12, 18),
             price=1200,
             numberOfTickets=32,
             bookingLimitDatetime=datetime(2021, 12, 1),
@@ -253,7 +251,7 @@ class Return200Test:
 
         # When
         stock_edition_payload = {
-            "beginningDatetime": "2023-01-17T22:00:00Z",
+            "startDatetime": "2023-01-17T22:00:00Z",
         }
 
         client.with_session_auth("user@example.com")
@@ -267,7 +265,7 @@ class Return200Test:
     def test_edit_collective_stock_update_booking_limit_date_with_expired_booking(self, client):
         now = datetime.utcnow()
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=now + timedelta(days=5), bookingLimitDatetime=now - timedelta(days=2)
+            startDatetime=now + timedelta(days=5), bookingLimitDatetime=now - timedelta(days=2)
         )
         booking = educational_factories.CollectiveBookingFactory(
             collectiveStock=stock,
@@ -295,7 +293,7 @@ class Return200Test:
     def test_edit_collective_stock_update_booking_limit_date_with_expired_booking_no_ff(self, client):
         now = datetime.utcnow()
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=now + timedelta(days=5), bookingLimitDatetime=now - timedelta(days=2)
+            startDatetime=now + timedelta(days=5), bookingLimitDatetime=now - timedelta(days=2)
         )
         booking = educational_factories.CollectiveBookingFactory(
             collectiveStock=stock,
@@ -324,7 +322,7 @@ class Return403Test:
     @time_machine.travel("2020-11-17 15:00:00")
     def test_edit_collective_stocks_should_not_be_possible_when_user_not_linked_to_offerer(self, client):
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime(2021, 12, 18),
+            startDatetime=datetime(2021, 12, 18),
             price=1200,
         )
         offerers_factories.UserOffererFactory(
@@ -333,7 +331,7 @@ class Return403Test:
 
         # When
         stock_edition_payload = {
-            "beginningDatetime": "2022-01-17T22:00:00Z",
+            "startDatetime": "2022-01-17T22:00:00Z",
             "totalPrice": 1500,
         }
 
@@ -388,7 +386,7 @@ class Return400Test:
     def should_not_allow_number_of_tickets_to_be_negative_on_edition(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime(2021, 12, 18),
+            startDatetime=datetime(2021, 12, 18),
             price=1200,
             numberOfTickets=32,
             bookingLimitDatetime=datetime(2021, 12, 1),
@@ -400,7 +398,7 @@ class Return400Test:
 
         # When
         stock_edition_payload = {
-            "beginningDatetime": "2022-01-17T22:00:00Z",
+            "startDatetime": "2022-01-17T22:00:00Z",
             "numberOfTickets": -10,
         }
 
@@ -416,7 +414,7 @@ class Return400Test:
     def should_not_allow_price_to_be_negative_on_creation(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime(2021, 12, 18),
+            startDatetime=datetime(2021, 12, 18),
             price=1200,
             numberOfTickets=32,
             bookingLimitDatetime=datetime(2021, 12, 1),
@@ -428,7 +426,7 @@ class Return400Test:
 
         # When
         stock_edition_payload = {
-            "beginningDatetime": "2022-01-17T22:00:00Z",
+            "startDatetime": "2022-01-17T22:00:00Z",
             "totalPrice": -10,
         }
 
@@ -441,10 +439,10 @@ class Return400Test:
         assert edited_stock.price == 1200
 
     @time_machine.travel("2020-11-17 15:00:00")
-    def should_not_accept_payload_with_bookingLimitDatetime_after_beginningDatetime(self, client):
+    def should_not_accept_payload_with_bookingLimitDatetime_after_startDatetime(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime(2021, 12, 18),
+            startDatetime=datetime(2021, 12, 18),
             price=1200,
             numberOfTickets=32,
             bookingLimitDatetime=datetime(2021, 12, 1),
@@ -456,7 +454,7 @@ class Return400Test:
 
         # When
         stock_edition_payload = {
-            "beginningDatetime": "2021-12-20T22:00:00Z",
+            "startDatetime": "2021-12-20T22:00:00Z",
             "bookingLimitDatetime": "2021-12-31T22:00:00Z",
         }
 
@@ -471,7 +469,7 @@ class Return400Test:
     @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     @time_machine.travel("2020-11-17 15:00:00")
     def should_edit_stock_when_event_expired(self, client):
-        stock = educational_factories.CollectiveStockFactory(beginningDatetime=datetime.utcnow() - timedelta(minutes=1))
+        stock = educational_factories.CollectiveStockFactory(startDatetime=datetime.utcnow() - timedelta(minutes=1))
         offerers_factories.UserOffererFactory(
             user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
         )
@@ -526,7 +524,7 @@ class Return400Test:
         assert response.json == {"totalPrice": ["Le prix ne peut pas être nul."]}
 
     @time_machine.travel("2020-11-17 15:00:00")
-    def should_not_allow_stock_edition_when_beginnningDatetime_has_been_set_to_none(self, client):
+    def should_not_allow_stock_edition_when_startDatetime_has_been_set_to_none(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory()
         offerers_factories.UserOffererFactory(
@@ -536,7 +534,7 @@ class Return400Test:
 
         # When
         stock_edition_payload = {
-            "beginningDatetime": None,
+            "startDatetime": None,
         }
 
         client.with_session_auth("user@example.com")
@@ -544,13 +542,13 @@ class Return400Test:
 
         # Then
         assert response.status_code == 400
-        assert response.json == {"beginningDatetime": ["La date de début de l'évènement ne peut pas être nulle."]}
+        assert response.json == {"startDatetime": ["La date de début de l'évènement ne peut pas être nulle."]}
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_raise_error_when_educational_price_detail_length_is_greater_than_1000(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime(2021, 12, 18),
+            startDatetime=datetime(2021, 12, 18),
             price=1200,
             numberOfTickets=32,
             bookingLimitDatetime=datetime(2021, 12, 1),
@@ -577,7 +575,7 @@ class Return400Test:
     def test_create_valid_stock_for_collective_offer(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime(2021, 12, 18),
+            startDatetime=datetime(2021, 12, 18),
             price=1200,
             numberOfTickets=32,
             bookingLimitDatetime=datetime(2021, 12, 1),
@@ -590,7 +588,7 @@ class Return400Test:
 
         # When
         stock_edition_payload = {
-            "beginningDatetime": "1970-12-01T00:00:00Z",
+            "startDatetime": "1970-12-01T00:00:00Z",
             "bookingLimitDatetime": "1970-01-31T20:00:00Z",
         }
 
@@ -599,7 +597,7 @@ class Return400Test:
 
         # Then
         assert response.status_code == 400
-        assert response.json == {"beginningDatetime": ["L'évènement ne peut commencer dans le passé."]}
+        assert response.json == {"startDatetime": ["L'évènement ne peut commencer dans le passé."]}
 
     @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     @time_machine.travel("2020-11-17 15:00:00")
@@ -624,7 +622,6 @@ class Return400Test:
         startDatetime = datetime(2021, 12, 18)
         endDatetime = datetime(2021, 12, 19)
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime(2021, 12, 18),
             startDatetime=startDatetime,
             endDatetime=endDatetime,
             price=1200,
@@ -665,7 +662,6 @@ class Return400Test:
         endDatetime = datetime(2021, 12, 19)
 
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime(2021, 12, 18),
             startDatetime=startDatetime,
             endDatetime=endDatetime,
             price=1200,
@@ -714,7 +710,6 @@ class Return400Test:
         endDatetime = datetime(2021, 12, 19)
 
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime(2021, 12, 18),
             startDatetime=startDatetime,
             endDatetime=endDatetime,
             price=1200,
@@ -765,7 +760,6 @@ class Return400Test:
         endDatetime = datetime(2022, 12, 19)
 
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime(2021, 12, 18),
             startDatetime=startDatetime,
             endDatetime=endDatetime,
             price=1200,

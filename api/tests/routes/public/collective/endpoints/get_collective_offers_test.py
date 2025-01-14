@@ -83,12 +83,12 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
 
         stock1 = educational_factories.CollectiveStockFactory(
             collectiveOffer__provider=venue_provider.provider,
-            beginningDatetime=datetime(2043, 5, 2, 15),
+            startDatetime=datetime(2043, 5, 2, 15),
         )
         offer1 = stock1.collectiveOffer
         stock2 = educational_factories.CollectiveStockFactory(
             collectiveOffer__provider=venue_provider.provider,
-            beginningDatetime=datetime(2043, 5, 2, 15),
+            startDatetime=datetime(2043, 5, 2, 15),
         )
         offer2 = stock2.collectiveOffer
 

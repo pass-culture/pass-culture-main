@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type CollectiveOffersStockResponseModel = {
-  beginningDatetime?: string | null;
   bookingLimitDatetime?: string | null;
   endDatetime?: string | null;
   hasBookingLimitDatetimePassed: boolean;

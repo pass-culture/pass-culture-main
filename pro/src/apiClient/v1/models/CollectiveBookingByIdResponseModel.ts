@@ -9,7 +9,6 @@ import type { EducationalInstitutionResponseModel } from './EducationalInstituti
 import type { StudentLevels } from './StudentLevels';
 export type CollectiveBookingByIdResponseModel = {
   bankAccountStatus: CollectiveBookingBankAccountStatus;
-  beginningDatetime: string;
   educationalInstitution: EducationalInstitutionResponseModel;
   educationalRedactor: CollectiveBookingEducationalRedactorResponseModel;
   endDatetime: string;

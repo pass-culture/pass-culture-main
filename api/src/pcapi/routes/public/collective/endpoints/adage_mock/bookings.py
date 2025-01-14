@@ -383,7 +383,9 @@ def _get_booking_or_raise_404(booking_id: int) -> models.CollectiveBooking:
         .filter(providers_models.VenueProvider.isActive == True)
         .options(
             sa.orm.joinedload(models.CollectiveBooking.collectiveStock)
-            .load_only(models.CollectiveStock.id, models.CollectiveStock.beginningDatetime)
+            .load_only(
+                models.CollectiveStock.id, models.CollectiveStock.startDatetime, models.CollectiveStock.endDatetime
+            )
             .joinedload(models.CollectiveStock.collectiveOffer)
             .load_only(models.CollectiveOffer.id),
         )

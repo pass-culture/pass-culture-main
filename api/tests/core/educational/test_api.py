@@ -25,23 +25,27 @@ from pcapi.utils import db as db_utils
 class CreateCollectiveOfferStocksTest:
     @time_machine.travel("2020-11-17 15:00:00")
     def should_create_one_stock_on_collective_offer_stock_creation(self) -> None:
-        # Given
+        start_date = dateutil.parser.parse("2021-12-15T20:00:00Z")
+        educational_factories.EducationalYearFactory(
+            beginningDate=start_date - datetime.timedelta(days=100),
+            expirationDate=start_date + datetime.timedelta(days=100),
+        )
         user_pro = users_factories.ProFactory()
         offer = educational_factories.CollectiveOfferFactory()
         new_stock = collective_stock_serialize.CollectiveStockCreationBodyModel(
             offerId=offer.id,
-            beginningDatetime=dateutil.parser.parse("2021-12-15T20:00:00Z"),
+            startDatetime=start_date,
+            endDatetime=start_date,
             bookingLimitDatetime=dateutil.parser.parse("2021-12-05T00:00:00Z"),
             totalPrice=1200,
             numberOfTickets=35,
+            educationalPriceDetail="hello",
         )
 
-        # When
         stock_created = educational_api_stock.create_collective_stock(stock_data=new_stock, user=user_pro)
 
-        # Then
         stock = educational_models.CollectiveStock.query.filter_by(id=stock_created.id).one()
-        assert stock.beginningDatetime == datetime.datetime.fromisoformat("2021-12-15T20:00:00")
+        assert stock.startDatetime == datetime.datetime.fromisoformat("2021-12-15T20:00:00")
         assert stock.bookingLimitDatetime == datetime.datetime.fromisoformat("2021-12-05T00:00:00")
         assert stock.price == 1200
         assert stock.numberOfTickets == 35
@@ -49,41 +53,49 @@ class CreateCollectiveOfferStocksTest:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_set_booking_limit_datetime_to_beginning_datetime_when_not_provided(self) -> None:
-        # Given
+        start_date = dateutil.parser.parse("2021-12-15T20:00:00Z")
+        educational_factories.EducationalYearFactory(
+            beginningDate=start_date - datetime.timedelta(days=100),
+            expirationDate=start_date + datetime.timedelta(days=100),
+        )
         user_pro = users_factories.ProFactory()
         offer = educational_factories.CollectiveOfferFactory()
         new_stock = collective_stock_serialize.CollectiveStockCreationBodyModel(
             offerId=offer.id,
-            beginningDatetime=dateutil.parser.parse("2021-12-15T20:00:00Z"),
+            startDatetime=start_date,
+            endDatetime=start_date,
             totalPrice=1200,
             numberOfTickets=35,
+            educationalPriceDetail="hello",
         )
 
-        # When
         stock_created = educational_api_stock.create_collective_stock(stock_data=new_stock, user=user_pro)
 
-        # Then
         stock = educational_models.CollectiveStock.query.filter_by(id=stock_created.id).one()
         assert stock.bookingLimitDatetime == dateutil.parser.parse("2021-12-15T20:00:00")
 
     @time_machine.travel("2020-11-17 15:00:00")
     def test_create_stock_for_non_approved_offer_fails(self) -> None:
-        # Given
+        start_date = dateutil.parser.parse("2022-01-17T22:00:00Z")
+        educational_factories.EducationalYearFactory(
+            beginningDate=start_date - datetime.timedelta(days=100),
+            expirationDate=start_date + datetime.timedelta(days=100),
+        )
         user = users_factories.ProFactory()
         offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.PENDING)
         created_stock_data = collective_stock_serialize.CollectiveStockCreationBodyModel(
             offerId=offer.id,
-            beginningDatetime=dateutil.parser.parse("2022-01-17T22:00:00Z"),
+            startDatetime=start_date,
+            endDatetime=start_date,
             bookingLimitDatetime=dateutil.parser.parse("2021-12-31T20:00:00Z"),
             totalPrice=1500,
             numberOfTickets=38,
+            educationalPriceDetail="hello",
         )
 
-        # When
         with pytest.raises(offers_exceptions.RejectedOrPendingOfferNotEditable) as error:
             educational_api_stock.create_collective_stock(stock_data=created_stock_data, user=user)
 
-        # Then
         assert error.value.errors == {
             "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
         }
@@ -460,28 +472,28 @@ class NotifyProUserOneDayTest:
         booking1 = educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__name="booking1",
             collectiveStock__collectiveOffer__bookingEmails=["booking1@example.com", "booking1-2@example.com"],
-            collectiveStock__beginningDatetime=datetime.datetime(2020, 1, 6),
+            collectiveStock__startDatetime=datetime.datetime(2020, 1, 6),
             status=educational_models.CollectiveBookingStatus.CONFIRMED,
         )
         # cancelled should not send email
         educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__name="booking2",
             collectiveStock__collectiveOffer__bookingEmails=["booking2+1@example.com", "booking2+2@example.com"],
-            collectiveStock__beginningDatetime=datetime.datetime(2020, 1, 6),
+            collectiveStock__startDatetime=datetime.datetime(2020, 1, 6),
             status=educational_models.CollectiveBookingStatus.CANCELLED,
         )
         # should send email (linked to a cancelled one)
         booking3 = educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__name="booking3",
             collectiveStock__collectiveOffer__bookingEmails=["booking3+2@example.com", "booking3+1@example.com"],
-            collectiveStock__beginningDatetime=datetime.datetime(2020, 1, 6),
+            collectiveStock__startDatetime=datetime.datetime(2020, 1, 6),
             status=educational_models.CollectiveBookingStatus.CONFIRMED,
         )
         # cancelled should not send email (linked to a good one)
         educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__name="booking4",
             collectiveStock__collectiveOffer__bookingEmails=["booking4+1@example.com", "booking4+2@example.com"],
-            collectiveStock__beginningDatetime=datetime.datetime(2020, 1, 6),
+            collectiveStock__startDatetime=datetime.datetime(2020, 1, 6),
             collectiveStock=booking3.collectiveStock,
             status=educational_models.CollectiveBookingStatus.CANCELLED,
         )
@@ -489,21 +501,21 @@ class NotifyProUserOneDayTest:
         educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__name="booking5",
             collectiveStock__collectiveOffer__bookingEmails=[],
-            collectiveStock__beginningDatetime=datetime.datetime(2020, 1, 6),
+            collectiveStock__startDatetime=datetime.datetime(2020, 1, 6),
             status=educational_models.CollectiveBookingStatus.CONFIRMED,
         )
         # old booking should not be selected
         educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__name="booking6",
             collectiveStock__collectiveOffer__bookingEmails=["booking6+1@example.com", "booking6+2@example.com"],
-            collectiveStock__beginningDatetime=datetime.datetime(2019, 1, 6),
+            collectiveStock__startDatetime=datetime.datetime(2019, 1, 6),
             status=educational_models.CollectiveBookingStatus.CONFIRMED,
         )
         # too far in the future to be selected
         educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__name="booking7",
             collectiveStock__collectiveOffer__bookingEmails=["booking7+1@example.com", "booking7+2@example.com"],
-            collectiveStock__beginningDatetime=datetime.datetime(2021, 1, 6),
+            collectiveStock__startDatetime=datetime.datetime(2021, 1, 6),
             status=educational_models.CollectiveBookingStatus.CONFIRMED,
         )
         educational_api_booking.notify_pro_users_one_day_before()
@@ -550,28 +562,28 @@ class NotifyProUserOneDayAfterTest:
         booking1 = educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__name="booking1",
             collectiveStock__collectiveOffer__bookingEmails=["booking1@example.com", "booking1-2@example.com"],
-            collectiveStock__beginningDatetime=datetime.datetime(2020, 1, 6),
+            collectiveStock__startDatetime=datetime.datetime(2020, 1, 6),
             status=educational_models.CollectiveBookingStatus.CONFIRMED,
         )
         # cancelled should not send email
         educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__name="booking2",
             collectiveStock__collectiveOffer__bookingEmails=["booking2+1@example.com", "booking2+2@example.com"],
-            collectiveStock__beginningDatetime=datetime.datetime(2020, 1, 6),
+            collectiveStock__startDatetime=datetime.datetime(2020, 1, 6),
             status=educational_models.CollectiveBookingStatus.CANCELLED,
         )
         # should send email (linked to a cancelled one)
         booking3 = educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__name="booking3",
             collectiveStock__collectiveOffer__bookingEmails=["booking3+2@example.com", "booking3+1@example.com"],
-            collectiveStock__beginningDatetime=datetime.datetime(2020, 1, 6),
+            collectiveStock__startDatetime=datetime.datetime(2020, 1, 6),
             status=educational_models.CollectiveBookingStatus.CONFIRMED,
         )
         # cancelled should not send email (linked to a good one)
         educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__name="booking4",
             collectiveStock__collectiveOffer__bookingEmails=["booking4+1@example.com", "booking4+2@example.com"],
-            collectiveStock__beginningDatetime=datetime.datetime(2020, 1, 6),
+            collectiveStock__startDatetime=datetime.datetime(2020, 1, 6),
             collectiveStock=booking3.collectiveStock,
             status=educational_models.CollectiveBookingStatus.CANCELLED,
         )
@@ -579,28 +591,28 @@ class NotifyProUserOneDayAfterTest:
         educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__name="booking5",
             collectiveStock__collectiveOffer__bookingEmails=[],
-            collectiveStock__beginningDatetime=datetime.datetime(2020, 1, 6),
+            collectiveStock__startDatetime=datetime.datetime(2020, 1, 6),
             status=educational_models.CollectiveBookingStatus.CONFIRMED,
         )
         # old booking should not be selected
         educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__name="booking6",
             collectiveStock__collectiveOffer__bookingEmails=["booking6+1@example.com", "booking6+2@example.com"],
-            collectiveStock__beginningDatetime=datetime.datetime(2019, 1, 6),
+            collectiveStock__startDatetime=datetime.datetime(2019, 1, 6),
             status=educational_models.CollectiveBookingStatus.CONFIRMED,
         )
         # too far in the future to be selected
         educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__name="booking7",
             collectiveStock__collectiveOffer__bookingEmails=["booking7+1@example.com", "booking7+2@example.com"],
-            collectiveStock__beginningDatetime=datetime.datetime(2021, 1, 6),
+            collectiveStock__startDatetime=datetime.datetime(2021, 1, 6),
             status=educational_models.CollectiveBookingStatus.CONFIRMED,
         )
         # should not send email only the endDate should be taken into account
         educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__name="booking8",
             collectiveStock__collectiveOffer__bookingEmails=["booking1@example.com", "booking1-2@example.com"],
-            collectiveStock__beginningDatetime=datetime.datetime(2020, 1, 6),
+            collectiveStock__startDatetime=datetime.datetime(2020, 1, 6),
             collectiveStock__endDatetime=datetime.datetime(2020, 1, 9),  # -> a different endDatetime
             status=educational_models.CollectiveBookingStatus.CONFIRMED,
         )

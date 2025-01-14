@@ -155,13 +155,13 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
         collectiveOffer__name="Taylor à l'école",
         collectiveOffer__venue=first_venue,
         collectiveOffer__provider=provider,
-        beginningDatetime=in_five_days,
+        startDatetime=in_five_days,
     )
     educational_factories.CollectiveStockFactory(
         collectiveOffer__name="Taylor au lycée",
         collectiveOffer__venue=second_venue,
         collectiveOffer__provider=provider,
-        beginningDatetime=in_five_days,
+        startDatetime=in_five_days,
     )
 
 

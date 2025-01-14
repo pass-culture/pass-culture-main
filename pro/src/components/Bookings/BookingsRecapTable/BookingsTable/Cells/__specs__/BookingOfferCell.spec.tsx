@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import { add } from 'date-fns'
 
 import { collectiveBookingFactory } from 'commons/utils/factories/collectiveApiFactories'
-import { bookingRecapFactory } from 'commons/utils/factories/individualApiFactories'
+import { bookingRecapFactory, bookingRecapStockFactory } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { BookingOfferCell, BookingOfferCellProps } from '../BookingOfferCell'
@@ -14,18 +14,14 @@ describe('bookings offer cell', () => {
   const offerId = 1
   it('offer name and ean with a link to the offer when stock is a book', () => {
     const props: BookingOfferCellProps = {
-      booking: collectiveBookingFactory({
-        stock: {
+      booking: bookingRecapFactory({
+        stock: bookingRecapStockFactory({
           offerId: offerId,
           offerIsbn: '97834567654',
           offerName: 'La Guitare pour les nuls',
           offerIsEducational: false,
-          bookingLimitDatetime: new Date().toISOString(),
           eventBeginningDatetime: new Date().toISOString(),
-          eventStartDatetime: new Date().toISOString(),
-          eventEndDatetime: new Date().toISOString(),
-          numberOfTickets: 1,
-        },
+        }),
       }),
     }
 
@@ -40,17 +36,13 @@ describe('bookings offer cell', () => {
 
   it('offer name with a link to the offer when stock is a thing', () => {
     const props: BookingOfferCellProps = {
-      booking: collectiveBookingFactory({
-        stock: {
+      booking: bookingRecapFactory({
+        stock: bookingRecapStockFactory({
           offerId: offerId,
           offerName: 'Guitare acoustique',
           offerIsEducational: false,
-          bookingLimitDatetime: new Date().toISOString(),
           eventBeginningDatetime: new Date().toISOString(),
-          eventStartDatetime: new Date().toISOString(),
-          eventEndDatetime: new Date().toISOString(),
-          numberOfTickets: 1,
-        },
+        }),
       }),
     }
 
@@ -63,17 +55,14 @@ describe('bookings offer cell', () => {
 
   it('offer name and event beginning datetime in venue timezone when stock is an event', () => {
     const props: BookingOfferCellProps = {
-      booking: collectiveBookingFactory({
-        stock: {
-          bookingLimitDatetime: '2020-05-12T11:03:28.564687+04:00',
+      booking: bookingRecapFactory({
+        stock: bookingRecapStockFactory({
           eventBeginningDatetime: '2020-05-12T11:03:28.564687+04:00',
-          eventStartDatetime: new Date().toISOString(),
-          eventEndDatetime: new Date().toISOString(),
           offerId: offerId,
           offerName: 'La danse des poireaux',
           offerIsEducational: false,
-          numberOfTickets: 1,
-        },
+          offerIsbn: null
+        }),
       }),
     }
 
@@ -93,7 +82,6 @@ describe('bookings offer cell', () => {
     const booking = collectiveBookingFactory({
       stock: {
         bookingLimitDatetime: tomorrowFns.toISOString(),
-        eventBeginningDatetime: new Date().toISOString(),
         eventStartDatetime: new Date().toISOString(),
         eventEndDatetime: new Date().toISOString(),
         numberOfTickets: 1,
@@ -104,9 +92,7 @@ describe('bookings offer cell', () => {
       },
     })
 
-    renderOfferCell({
-      booking,
-    })
+    renderOfferCell({ booking })
 
     expect(screen.getByRole('img', { name: 'Attention' })).toBeInTheDocument()
   })
@@ -119,19 +105,16 @@ describe('bookings offer cell', () => {
     const booking = collectiveBookingFactory({
       stock: {
         bookingLimitDatetime: eightDaysFns.toISOString(),
-        eventBeginningDatetime: new Date().toISOString(),
         eventStartDatetime: new Date().toISOString(),
         eventEndDatetime: new Date().toISOString(),
         numberOfTickets: 1,
         offerId: offerId,
-        offerIsEducational: false,
+        offerIsEducational: true,
         offerIsbn: null,
         offerName: 'ma super offre collective 2',
       },
     })
-    renderOfferCell({
-      booking,
-    })
+    renderOfferCell({ booking })
 
     expect(
       screen.queryByRole('img', { name: 'Attention' })
@@ -144,9 +127,7 @@ describe('bookings offer cell', () => {
       bookingPriceCategoryLabel: 'Plein tarif',
     })
 
-    renderOfferCell({
-      booking,
-    })
+    renderOfferCell({ booking })
 
     expect(screen.getByText('Plein tarif - 12,00 €')).toBeInTheDocument()
   })

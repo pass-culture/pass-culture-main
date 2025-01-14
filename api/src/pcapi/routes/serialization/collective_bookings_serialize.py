@@ -75,7 +75,6 @@ class BookingStatusHistoryResponseModel(BaseModel):
 class CollectiveBookingCollectiveStockResponseModel(BaseModel):
     offer_name: str
     offer_id: int
-    event_beginning_datetime: str
     event_start_datetime: str
     event_end_datetime: str
     offer_isbn: str | None
@@ -217,12 +216,6 @@ def serialize_collective_booking_stock(
     return CollectiveBookingCollectiveStockResponseModel(  # type: ignore[call-arg]
         offerName=collective_booking.collectiveStock.collectiveOffer.name,
         offerId=collective_booking.collectiveStock.collectiveOfferId,
-        eventBeginningDatetime=typing.cast(
-            datetime,
-            convert_real_booking_dates_utc_to_venue_timezone(
-                collective_booking.collectiveStock.beginningDatetime, collective_booking
-            ),
-        ).isoformat(),
         eventStartDatetime=typing.cast(
             datetime,
             convert_real_booking_dates_utc_to_venue_timezone(
@@ -361,7 +354,7 @@ def serialize_collective_booking_csv_report(query: BaseQuery) -> str:
                 collective_booking.venueName,
                 collective_booking.offerName,
                 convert_collective_booking_dates_utc_to_venue_timezone(
-                    collective_booking.stockBeginningDatetime, collective_booking
+                    collective_booking.stockStartDatetime, collective_booking
                 ),
                 collective_booking.firstName,
                 collective_booking.lastName,
@@ -404,7 +397,7 @@ def serialize_collective_booking_excel_report(query: BaseQuery) -> bytes:
             2,
             str(
                 convert_collective_booking_dates_utc_to_venue_timezone(
-                    collective_booking.stockBeginningDatetime, collective_booking
+                    collective_booking.stockStartDatetime, collective_booking
                 )
             ),
         )
@@ -457,7 +450,6 @@ class CollectiveBookingEducationalRedactorResponseModel(BaseModel):
 class CollectiveBookingByIdResponseModel(BaseModel):
     id: int
     offerVenue: CollectiveOfferOfferVenueResponseModel
-    beginningDatetime: datetime
     startDatetime: datetime
     endDatetime: datetime
     students: list[models.StudentLevels]
@@ -494,7 +486,6 @@ class CollectiveBookingByIdResponseModel(BaseModel):
         return cls(
             id=booking.id,
             offerVenue=booking.collectiveStock.collectiveOffer.offerVenue,  # type: ignore[arg-type]
-            beginningDatetime=booking.collectiveStock.beginningDatetime,
             startDatetime=booking.collectiveStock.startDatetime,
             endDatetime=booking.collectiveStock.endDatetime,
             students=booking.collectiveStock.collectiveOffer.students,

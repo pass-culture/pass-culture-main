@@ -157,7 +157,7 @@ def create_offers_base_list(
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
                 collectiveOffer__author=user_factory.ProFactory(email="eac_1_lieu@example.com"),
                 collectiveOffer__formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
-                beginningDatetime=datetime.utcnow() + timedelta(days=60),
+                startDatetime=datetime.utcnow() + timedelta(days=60),
             )
             offers.append(stock.collectiveOffer)
 
@@ -176,7 +176,7 @@ def create_offers_base_list(
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
                 collectiveOffer__author=user_factory.ProFactory(email="eac_1_lieu@example.com"),
                 collectiveOffer__formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
-                beginningDatetime=datetime.utcnow() + timedelta(days=60),
+                startDatetime=datetime.utcnow() + timedelta(days=60),
             )
             offers.append(stock.collectiveOffer)
 
@@ -188,7 +188,7 @@ def create_offers_base_list(
                 collectiveOffer__venue=next(venue_iterator),
                 collectiveOffer__institution=next(institution_iterator),
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
-                beginningDatetime=datetime.utcnow() + timedelta(days=60),
+                startDatetime=datetime.utcnow() + timedelta(days=60),
             )
             add_image_to_offer(stock.collectiveOffer, next(image_iterator))
             offers.append(stock.collectiveOffer)
@@ -216,7 +216,7 @@ def create_offers_base_list(
                 collectiveOffer__institution=institution,
                 collectiveOffer__teacher=redactor,
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
-                beginningDatetime=datetime.utcnow() + timedelta(days=60),
+                startDatetime=datetime.utcnow() + timedelta(days=60),
             )
             offers.append(stock.collectiveOffer)
 
@@ -231,7 +231,7 @@ def create_offers_base_list(
                 collectiveOffer__interventionArea=[],
                 collectiveOffer__provider=provider,
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
-                beginningDatetime=datetime.utcnow() + timedelta(days=60),
+                startDatetime=datetime.utcnow() + timedelta(days=60),
             )
             offers.append(stock.collectiveOffer)
 
@@ -244,7 +244,7 @@ def create_offers_base_list(
                 collectiveOffer__institution=next(institution_iterator),
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
                 bookingLimitDatetime=datetime.utcnow() - timedelta(days=2),
-                beginningDatetime=datetime.utcnow(),
+                startDatetime=datetime.utcnow(),
             )
             offers.append(stock.collectiveOffer)
 
@@ -257,7 +257,7 @@ def create_offers_base_list(
                 collectiveOffer__institution=next(institution_iterator),
                 collectiveOffer__validation=OfferValidationStatus.PENDING,
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
-                beginningDatetime=datetime.utcnow() + timedelta(days=60),
+                startDatetime=datetime.utcnow() + timedelta(days=60),
             )
             offers.append(stock.collectiveOffer)
 
@@ -271,7 +271,7 @@ def create_offers_base_list(
                 collectiveOffer__venue=next(venue_iterator),
                 collectiveOffer__institution=next(institution_iterator),
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
-                beginningDatetime=datetime(target_year, 3, 18),
+                startDatetime=datetime(target_year, 3, 18),
                 bookingLimitDatetime=datetime(target_year, 3, 3),
             )
             offers.append(stock.collectiveOffer)
@@ -285,7 +285,7 @@ def create_offers_base_list(
                 collectiveOffer__institution=next(institution_iterator),
                 collectiveOffer__interventionArea=["56"],
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
-                beginningDatetime=datetime.utcnow() + timedelta(days=60),
+                startDatetime=datetime.utcnow() + timedelta(days=60),
             )
             offers.append(stock.collectiveOffer)
 
@@ -298,7 +298,7 @@ def create_offers_base_list(
                 collectiveOffer__institution=next(institution_iterator),
                 collectiveOffer__interventionArea=["91"],
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
-                beginningDatetime=datetime.utcnow() + timedelta(days=60),
+                startDatetime=datetime.utcnow() + timedelta(days=60),
             )
             offers.append(stock.collectiveOffer)
 
@@ -325,7 +325,7 @@ def create_offers_base_list(
                     collectiveOffer__institution=next(institution_iterator),
                     collectiveOffer__nationalProgram=next(national_program_iterator),
                     collectiveOffer__bookingEmails=["toto@totoland.com"],
-                    beginningDatetime=datetime.utcnow() + timedelta(days=60),
+                    startDatetime=datetime.utcnow() + timedelta(days=60),
                 )
 
     if image_template:
@@ -398,41 +398,41 @@ def create_offers_booking_with_different_displayed_status(
         # no bookings
         "Amsterdam": {
             "bookingLimitDatetime": in_two_weeks,
-            "beginningDatetime": in_four_weeks,
+            "startDatetime": in_four_weeks,
             "endDatetime": in_four_weeks,
         },
         "Athènes": {
             "bookingLimitDatetime": two_weeks_ago,
-            "beginningDatetime": in_two_weeks,
+            "startDatetime": in_two_weeks,
             "endDatetime": in_two_weeks,
         },
         "Berlin": {
             "bookingLimitDatetime": four_weeks_ago,
-            "beginningDatetime": two_weeks_ago,
+            "startDatetime": two_weeks_ago,
             "endDatetime": in_two_weeks,
         },
         "Bratislava": {
             "bookingLimitDatetime": four_weeks_ago,
-            "beginningDatetime": four_weeks_ago,
+            "startDatetime": four_weeks_ago,
             "endDatetime": four_weeks_ago,
         },
         # with a pending booking
         "Bruxelles": {
             "bookingLimitDatetime": in_two_weeks,
-            "beginningDatetime": in_four_weeks,
+            "startDatetime": in_four_weeks,
             "endDatetime": in_four_weeks,
             "bookingFactory": educational_factories.PendingCollectiveBookingFactory,
         },
         "Bucarest": {
             "bookingLimitDatetime": two_weeks_ago,
-            "beginningDatetime": in_two_weeks,
+            "startDatetime": in_two_weeks,
             "endDatetime": in_two_weeks,
             "bookingFactory": educational_factories.PendingCollectiveBookingFactory,
         },
         # with a cancelled booking due to expiration
         "Budapest": {
             "bookingLimitDatetime": two_weeks_ago,
-            "beginningDatetime": in_two_weeks,
+            "startDatetime": in_two_weeks,
             "endDatetime": in_two_weeks,
             "bookingFactory": educational_factories.CancelledCollectiveBookingFactory,
             "cancellationReason": educational_models.CollectiveBookingCancellationReasons.EXPIRED,
@@ -440,7 +440,7 @@ def create_offers_booking_with_different_displayed_status(
         },
         "Copenhague": {
             "bookingLimitDatetime": four_weeks_ago,
-            "beginningDatetime": two_weeks_ago,
+            "startDatetime": two_weeks_ago,
             "endDatetime": in_two_weeks,
             "bookingFactory": educational_factories.CancelledCollectiveBookingFactory,
             "cancellationReason": educational_models.CollectiveBookingCancellationReasons.EXPIRED,
@@ -449,66 +449,66 @@ def create_offers_booking_with_different_displayed_status(
         # with a confirmed booking
         "Dublin": {
             "bookingLimitDatetime": in_two_weeks,
-            "beginningDatetime": in_four_weeks,
+            "startDatetime": in_four_weeks,
             "endDatetime": in_four_weeks,
             "bookingFactory": educational_factories.ConfirmedCollectiveBookingFactory,
         },
         "Helsinki": {
             "bookingLimitDatetime": two_weeks_ago,
-            "beginningDatetime": in_two_weeks,
+            "startDatetime": in_two_weeks,
             "endDatetime": in_two_weeks,
             "bookingFactory": educational_factories.ConfirmedCollectiveBookingFactory,
         },
         "La Valette": {
             "bookingLimitDatetime": four_weeks_ago,
-            "beginningDatetime": two_weeks_ago,
+            "startDatetime": two_weeks_ago,
             "endDatetime": in_two_weeks,
             "bookingFactory": educational_factories.ConfirmedCollectiveBookingFactory,
         },
         "Lisbonne": {
             "bookingLimitDatetime": four_weeks_ago,
-            "beginningDatetime": yesterday,
+            "startDatetime": yesterday,
             "endDatetime": yesterday,
             "bookingFactory": educational_factories.ConfirmedCollectiveBookingFactory,
         },
         # with a used booking
         "Ljubljana": {
             "bookingLimitDatetime": four_weeks_ago,
-            "beginningDatetime": four_weeks_ago,
+            "startDatetime": four_weeks_ago,
             "endDatetime": four_weeks_ago,
             "bookingFactory": educational_factories.UsedCollectiveBookingFactory,
         },
         "Luxembourg": {
             "bookingLimitDatetime": four_weeks_ago,
-            "beginningDatetime": four_weeks_ago,
+            "startDatetime": four_weeks_ago,
             "endDatetime": four_weeks_ago,
             "bookingFactory": educational_factories.ReimbursedCollectiveBookingFactory,
         },
         # with a cancelled booking
         "Madrid": {
             "bookingLimitDatetime": in_two_weeks,
-            "beginningDatetime": in_four_weeks,
+            "startDatetime": in_four_weeks,
             "endDatetime": in_four_weeks,
             "bookingFactory": educational_factories.CancelledCollectiveBookingFactory,
             "cancellationReason": educational_models.CollectiveBookingCancellationReasons.OFFERER,
         },
         "Nicosie": {
             "bookingLimitDatetime": two_weeks_ago,
-            "beginningDatetime": in_two_weeks,
+            "startDatetime": in_two_weeks,
             "endDatetime": in_two_weeks,
             "bookingFactory": educational_factories.CancelledCollectiveBookingFactory,
             "cancellationReason": educational_models.CollectiveBookingCancellationReasons.OFFERER,
         },
         "Paris": {
             "bookingLimitDatetime": four_weeks_ago,
-            "beginningDatetime": two_weeks_ago,
+            "startDatetime": two_weeks_ago,
             "endDatetime": in_two_weeks,
             "bookingFactory": educational_factories.CancelledCollectiveBookingFactory,
             "cancellationReason": educational_models.CollectiveBookingCancellationReasons.OFFERER,
         },
         "Prague": {
             "bookingLimitDatetime": four_weeks_ago,
-            "beginningDatetime": four_weeks_ago,
+            "startDatetime": four_weeks_ago,
             "endDatetime": four_weeks_ago,
             "bookingFactory": educational_factories.CancelledCollectiveBookingFactory,
             "cancellationReason": educational_models.CollectiveBookingCancellationReasons.OFFERER,
@@ -517,13 +517,13 @@ def create_offers_booking_with_different_displayed_status(
         "Londres": {
             "isActive": False,
             "bookingLimitDatetime": in_two_weeks,
-            "beginningDatetime": in_four_weeks,
+            "startDatetime": in_four_weeks,
             "endDatetime": in_four_weeks,
         },
-        # with a different end date than the beginning date
+        # with a different end date than the start date
         "Reykjavik": {
             "bookingLimitDatetime": four_weeks_ago,
-            "beginningDatetime": yesterday,
+            "startDatetime": yesterday,
             "endDatetime": tomorrow,
             "bookingFactory": educational_factories.ConfirmedCollectiveBookingFactory,
         },
@@ -531,21 +531,21 @@ def create_offers_booking_with_different_displayed_status(
         "Rome": {
             "validation": OfferValidationStatus.DRAFT,
             "bookingLimitDatetime": in_two_weeks,
-            "beginningDatetime": in_four_weeks,
+            "startDatetime": in_four_weeks,
             "endDatetime": in_four_weeks,
         },
         # pending
         "Sarajevo": {
             "validation": OfferValidationStatus.PENDING,
             "bookingLimitDatetime": in_two_weeks,
-            "beginningDatetime": in_four_weeks,
+            "startDatetime": in_four_weeks,
             "endDatetime": in_four_weeks,
         },
         # rejected
         "Sofia": {
             "validation": OfferValidationStatus.REJECTED,
             "bookingLimitDatetime": in_two_weeks,
-            "beginningDatetime": in_four_weeks,
+            "startDatetime": in_four_weeks,
             "endDatetime": in_four_weeks,
         },
         # archived
@@ -553,14 +553,14 @@ def create_offers_booking_with_different_displayed_status(
             "dateArchived": yesterday,
             "isActive": False,
             "bookingLimitDatetime": in_two_weeks,
-            "beginningDatetime": in_four_weeks,
+            "startDatetime": in_four_weeks,
             "endDatetime": in_four_weeks,
         },
     }
 
     for city, attributes in options.items():
         booking_factory = attributes.get("bookingFactory")
-        beginning_datetime = attributes["beginningDatetime"]
+        start_datetime = attributes["startDatetime"]
         end_datetime = attributes["endDatetime"]
         booking_limit_datetime = attributes["bookingLimitDatetime"]
         institution = next(institution_iterator)
@@ -576,8 +576,7 @@ def create_offers_booking_with_different_displayed_status(
             collectiveOffer__institution=institution,
             collectiveOffer__formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
             collectiveOffer__provider=provider,
-            beginningDatetime=beginning_datetime,
-            startDatetime=beginning_datetime,
+            startDatetime=start_datetime,
             endDatetime=end_datetime,
             bookingLimitDatetime=booking_limit_datetime,
             priceDetail="Some details",
@@ -674,7 +673,7 @@ def create_booking_base_list(
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
                 collectiveStock__collectiveOffer__educational_domains=[next(domains_iterator)],
                 collectiveStock__bookingLimitDatetime=datetime.utcnow() + timedelta(15),
-                collectiveStock__beginningDatetime=datetime.utcnow() + timedelta(days=20),
+                collectiveStock__startDatetime=datetime.utcnow() + timedelta(days=20),
                 educationalYear=current_ansco,
                 educationalInstitution=next(institution_iterator),
                 status=educational_models.CollectiveBookingStatus.PENDING,
@@ -690,7 +689,7 @@ def create_booking_base_list(
                 collectiveStock__collectiveOffer__name=f"BOOKED offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
                 collectiveStock__collectiveOffer__educational_domains=[next(domains_iterator)],
-                collectiveStock__beginningDatetime=datetime.utcnow() + timedelta(days=20),
+                collectiveStock__startDatetime=datetime.utcnow() + timedelta(days=20),
                 collectiveStock__bookingLimitDatetime=datetime.utcnow() + timedelta(days=15),
                 educationalYear=current_ansco,
                 educationalInstitution=next(institution_iterator),
@@ -706,7 +705,7 @@ def create_booking_base_list(
                 collectiveStock__collectiveOffer__name=f"CONFIRMED offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
                 collectiveStock__collectiveOffer__educational_domains=[next(domains_iterator)],
-                collectiveStock__beginningDatetime=datetime.utcnow() + timedelta(days=20),
+                collectiveStock__startDatetime=datetime.utcnow() + timedelta(days=20),
                 collectiveStock__bookingLimitDatetime=datetime.utcnow() - timedelta(days=5),
                 educationalYear=current_ansco,
                 educationalInstitution=next(institution_iterator),
@@ -722,7 +721,7 @@ def create_booking_base_list(
                 collectiveStock__collectiveOffer__name=f"USED offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
                 collectiveStock__collectiveOffer__educational_domains=[next(domains_iterator)],
-                collectiveStock__beginningDatetime=datetime.utcnow()
+                collectiveStock__startDatetime=datetime.utcnow()
                 - timedelta(days=i + 2),  # all USED booking must be at least 2 days old
                 collectiveStock__bookingLimitDatetime=datetime.utcnow() - timedelta(days=15),
                 educationalYear=current_ansco,
@@ -741,7 +740,7 @@ def create_booking_base_list(
                 collectiveStock__collectiveOffer__name=f"REIMBURSED offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
                 collectiveStock__collectiveOffer__educational_domains=[next(domains_iterator)],
-                collectiveStock__beginningDatetime=datetime.utcnow() - timedelta(days=15),
+                collectiveStock__startDatetime=datetime.utcnow() - timedelta(days=15),
                 collectiveStock__bookingLimitDatetime=datetime.utcnow() - timedelta(days=18),
                 educationalYear=current_ansco,
                 educationalInstitution=next(institution_iterator),
@@ -763,7 +762,7 @@ def create_booking_base_list(
                 collectiveStock__collectiveOffer__name=f"CANCELLED BY AC offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
                 collectiveStock__collectiveOffer__educational_domains=[next(domains_iterator)],
-                collectiveStock__beginningDatetime=datetime.utcnow() + timedelta(days=20),
+                collectiveStock__startDatetime=datetime.utcnow() + timedelta(days=20),
                 collectiveStock__bookingLimitDatetime=datetime.utcnow() + timedelta(days=15),
                 educationalYear=current_ansco,
                 educationalInstitution=next(institution_iterator),
@@ -781,7 +780,7 @@ def create_booking_base_list(
                 collectiveStock__collectiveOffer__name=f"CANCELLED BY EPLE offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
                 collectiveStock__collectiveOffer__educational_domains=[next(domains_iterator)],
-                collectiveStock__beginningDatetime=datetime.utcnow() + timedelta(days=20),
+                collectiveStock__startDatetime=datetime.utcnow() + timedelta(days=20),
                 collectiveStock__bookingLimitDatetime=datetime.utcnow() + timedelta(days=15),
                 educationalYear=current_ansco,
                 educationalInstitution=next(institution_iterator),
@@ -800,7 +799,7 @@ def create_booking_base_list(
                 collectiveStock__collectiveOffer__name=f"CANCELLED AUTOMATICALLY offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
                 collectiveStock__collectiveOffer__educational_domains=[next(domains_iterator)],
-                collectiveStock__beginningDatetime=datetime.utcnow() + timedelta(days=20),
+                collectiveStock__startDatetime=datetime.utcnow() + timedelta(days=20),
                 collectiveStock__bookingLimitDatetime=datetime.utcnow() - timedelta(days=15),
                 educationalYear=current_ansco,
                 educationalInstitution=next(institution_iterator),

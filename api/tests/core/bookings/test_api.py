@@ -1892,8 +1892,8 @@ class AutoMarkAsUsedAfterEventTest:
         event_date = datetime.utcnow() - timedelta(days=3)
         bookings_factories.BookingFactory(stock__beginningDatetime=event_date)
         bookings_factories.BookingFactory(stock__beginningDatetime=event_date)
-        educational_factories.CollectiveBookingFactory(collectiveStock__beginningDatetime=event_date)
-        educational_factories.CollectiveBookingFactory(collectiveStock__beginningDatetime=event_date)
+        educational_factories.CollectiveBookingFactory(collectiveStock__startDatetime=event_date)
+        educational_factories.CollectiveBookingFactory(collectiveStock__startDatetime=event_date)
 
         queries = 1  # select feature flag
         queries += 1  # select individual bookings
@@ -1959,7 +1959,7 @@ class AutoMarkAsUsedAfterEventTest:
 
     def test_update_collective_booking_when_not_used_and_event_date_is_3_days_before(self, caplog):
         event_date = datetime.utcnow() - timedelta(days=3)
-        educational_factories.CollectiveBookingFactory(collectiveStock__beginningDatetime=event_date)
+        educational_factories.CollectiveBookingFactory(collectiveStock__startDatetime=event_date)
 
         with caplog.at_level(logging.INFO):
             api.auto_mark_as_used_after_event()
@@ -1996,7 +1996,7 @@ class AutoMarkAsUsedAfterEventTest:
     def test_does_not_update_collective_booking_when_cancelled(self):
         event_date = datetime.utcnow() - timedelta(days=3)
         educational_factories.CollectiveBookingFactory(
-            collectiveStock__beginningDatetime=event_date, status=CollectiveBookingStatus.CANCELLED
+            collectiveStock__startDatetime=event_date, status=CollectiveBookingStatus.CANCELLED
         )
 
         api.auto_mark_as_used_after_event()
