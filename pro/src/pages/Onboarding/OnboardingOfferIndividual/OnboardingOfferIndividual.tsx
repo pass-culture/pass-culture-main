@@ -1,41 +1,24 @@
-import { useState } from 'react'
 import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { ListOffersOfferResponseModel } from 'apiClient/v1'
 import { OfferStatus } from 'apiClient/v1/models/OfferStatus'
 import { GET_OFFERS_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import editFullIcon from 'icons/full-edit.svg'
 import connectStrokeIcon from 'icons/stroke-connect.svg'
-import { RadioButtonWithImage } from 'ui-kit/RadioButtonWithImage/RadioButtonWithImage'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
-import { ActionBar } from '../components/ActionBar/ActionBar'
+// import { ActionBar } from '../components/ActionBar/ActionBar'
 import { OnboardingLayout } from '../components/OnboardingLayout/OnboardingLayout'
 
+import { CardLink } from './CardLink/CardLink'
 import { DraftOffers } from './DraftOffers/DraftOffers'
 import styles from './OnboardingOfferIndividual.module.scss'
 
-type OnboardingOfferProcedure = 'MANUAL' | 'AUTOMATIC'
-
-// Mapping the redirect URLs to the corresponding offer type
-const urls: Record<OnboardingOfferProcedure, string> = {
-  MANUAL: '/onboarding/offre/creation',
-  AUTOMATIC: '/onboarding/synchro',
-} as const
-
 export const OnboardingOfferIndividual = (): JSX.Element => {
-  const [offerType, setOfferType] = useState<OnboardingOfferProcedure>('MANUAL')
-  const navigate = useNavigate()
-
-  const onChangeOfferType = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setOfferType(e.target.value as OnboardingOfferProcedure)
-  }
-
+  // const navigate = useNavigate()
   const selectedOffererId = useSelector(selectCurrentOffererId)
   const offersQuery = useSWR(
     [GET_OFFERS_QUERY_KEY, { status: 'DRAFT' }],
@@ -49,9 +32,6 @@ export const OnboardingOfferIndividual = (): JSX.Element => {
     },
     { fallbackData: [] }
   )
-
-  const [selectedDraft, setSelectedDraft] =
-    useState<null | ListOffersOfferResponseModel>(null)
 
   if (offersQuery.isLoading) {
     return <Spinner />
@@ -69,56 +49,35 @@ export const OnboardingOfferIndividual = (): JSX.Element => {
       </h2>
 
       <FormLayout>
-        <FormLayout.Section className={styles['offers-description']}>
-          <FormLayout.Row
-            inline
-            mdSpaceAfter
-            className={styles['individual-radio-button']}
-          >
-            <RadioButtonWithImage
-              name="individualOfferSubtype"
+        <FormLayout.Section className={styles['form-section']}>
+          <div className={styles['offer-choices']}>
+            <CardLink
+              to="/onboarding/offre/creation"
               icon={editFullIcon}
-              isChecked={offerType === 'MANUAL'}
-              label={`Créer une offre manuellement`}
-              onChange={onChangeOfferType}
-              value={'MANUAL'}
-              className={styles['individual-radio-label']}
+              label="Manuellement"
+              direction="vertical"
+              className={styles['offer-choice']}
             />
-          </FormLayout.Row>
 
-          <FormLayout.Row
-            inline
-            mdSpaceAfter
-            className={styles['individual-radio-button']}
-          >
-            <RadioButtonWithImage
-              name="individualOfferSubtype"
+            <CardLink
+              to="/onboarding/synchro"
               icon={connectStrokeIcon}
-              isChecked={offerType === 'AUTOMATIC'}
-              label={`Créer automatiquement des offres via mon logiciel de gestion des stocks`}
-              onChange={onChangeOfferType}
-              value={'AUTOMATIC'}
-              className={styles['individual-radio-label']}
+              label="Automatiquement"
+              description="(via mon logiciel de gestion des stocks)"
+              direction="vertical"
+              className={styles['offer-choice']}
             />
-          </FormLayout.Row>
+          </div>
         </FormLayout.Section>
 
         {draftOffers.length > 0 && (
-          <DraftOffers
-            offers={draftOffers}
-            onDraftChange={(draft) => {
-              setSelectedDraft(draft)
-            }}
-          />
+          <FormLayout.Section className={styles['form-section']}>
+            <DraftOffers offers={draftOffers} />
+          </FormLayout.Section>
         )}
       </FormLayout>
 
-      <ActionBar
-        withNextButton
-        disableRightButton={draftOffers.length > 0 && selectedDraft === null}
-        onLeftButtonClick={() => navigate('/onboarding')}
-        onRightButtonClick={() => navigate(urls[offerType])}
-      />
+      {/* <ActionBar onLeftButtonClick={() => navigate('/onboarding')} /> */}
     </OnboardingLayout>
   )
 }
