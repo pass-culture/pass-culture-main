@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { ChangeEvent } from 'react'
+import { ChangeEvent, useId } from 'react'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
@@ -37,6 +37,9 @@ export const FilterByOmniSearch = ({
   audience,
 }: FilterByOmniSearchProps) => {
   const { logEvent } = useAnalytics()
+
+  const searchInputId = useId()
+
   const omnisearchFilters =
     audience === Audience.INDIVIDUAL
       ? INDIVIDUAL_OMNISEARCH_FILTERS
@@ -91,10 +94,6 @@ export const FilterByOmniSearch = ({
     })
   }
 
-  const placeholderText = omnisearchFilters.find(
-    (criteria) => criteria.id === selectedOmniSearchCriteria
-  )?.placeholderText
-
   return (
     <fieldset
       className={cn(styles['omnisearch-container'], {
@@ -121,22 +120,21 @@ export const FilterByOmniSearch = ({
         options={omnisearchFiltersOptions}
       />
 
-      <span className={styles['vertical-bar']} />
-
-      <label htmlFor="text-filter-input" className={styles['visually-hidden']}>
+      <label htmlFor={searchInputId} className={styles['visually-hidden']}>
         Texte à rechercher
       </label>
 
-      <BaseInput
-        type="text"
-        className={styles['omnisearch-filter-input']}
-        disabled={isDisabled}
-        id="text-filter-input"
-        data-testid="omnisearch-filter-input-text"
-        onChange={handleOmniSearchChange}
-        placeholder={placeholderText}
-        value={keywords}
-      />
+      <div className={styles['omnisearch-filter-input-container']}>
+        <BaseInput
+          type="search"
+          className={styles['omnisearch-filter-input']}
+          disabled={isDisabled}
+          id={searchInputId}
+          data-testid="omnisearch-filter-input-text"
+          onChange={handleOmniSearchChange}
+          value={keywords}
+        />
+      </div>
     </fieldset>
   )
 }

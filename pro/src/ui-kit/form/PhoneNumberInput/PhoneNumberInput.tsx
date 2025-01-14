@@ -1,14 +1,14 @@
 import { useField } from 'formik'
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import type { CountryCode } from 'libphonenumber-js'
-import { ChangeEvent, FocusEvent, useEffect, useState } from 'react'
+import { ChangeEvent, FocusEvent, useEffect, useId, useState } from 'react'
 
 import { BaseInput } from '../shared/BaseInput/BaseInput'
 import { FieldError } from '../shared/FieldError/FieldError'
 import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
 
 import { CountryCodeSelect } from './CodeCountrySelect/CountryCodeSelect'
-import { PHONE_CODE_COUNTRY_CODE_OPTIONS, PLACEHOLDER_MAP } from './constants'
+import { PHONE_CODE_COUNTRY_CODE_OPTIONS, PHONE_EXAMPLE_MAP } from './constants'
 import styles from './PhoneNumberInput.module.scss'
 import { getPhoneNumberInputAndCountryCode } from './utils/getPhoneNumberInputAndCountryCode'
 
@@ -61,6 +61,8 @@ export const PhoneNumberInput = ({
   maxLength = 25,
 }: PhoneNumberInputProps) => {
   const [field, meta, helpers] = useField({ name })
+
+  const formatId = useId()
 
   const [countryCode, setCountryCode] = useState<CountryCode>(
     PHONE_CODE_COUNTRY_CODE_OPTIONS[0].value
@@ -145,39 +147,44 @@ export const PhoneNumberInput = ({
       <legend className={styles['phone-number-input-legend']}>
         {label} {!isOptional && '*'}
       </legend>
-      <label htmlFor="countryCode" className={styles['visually-hidden']}>
-        Indicatif téléphonique
-      </label>
-      <CountryCodeSelect
-        disabled={Boolean(disabled)}
-        options={PHONE_CODE_COUNTRY_CODE_OPTIONS}
-        className={styles['country-code-select']}
-        value={countryCode}
-        onChange={onPhoneCodeChange}
-      />
+      <p className={styles['phone-format']} id={formatId}>
+        Par exemple : {PHONE_EXAMPLE_MAP[countryCode]}
+      </p>
+      <div className={styles['phone-number-inpus']}>
+        <label htmlFor="countryCode" className={styles['visually-hidden']}>
+          Indicatif téléphonique
+        </label>
+        <CountryCodeSelect
+          disabled={Boolean(disabled)}
+          options={PHONE_CODE_COUNTRY_CODE_OPTIONS}
+          className={styles['country-code-select']}
+          value={countryCode}
+          onChange={onPhoneCodeChange}
+        />
 
-      <label htmlFor={name} className={styles['visually-hidden']}>
-        Numéro de téléphone
-      </label>
-      <BaseInput
-        disabled={disabled}
-        hasError={meta.touched && !!meta.error}
-        placeholder={PLACEHOLDER_MAP[countryCode]}
-        type="text"
-        name={name}
-        value={phoneInputValue}
-        onChange={onPhoneNumberChange}
-        className={styles['phone-number-input']}
-        onBlur={onPhoneNumberBlur}
-        autoComplete="tel-national"
-        maxLength={maxLength}
-      />
-      <div className={styles['phone-number-input-footer']}>
-        {meta.error && meta.touched && (
-          <div className={styles['phone-number-input-error']}>
-            <FieldError name={name}>{meta.error}</FieldError>
-          </div>
-        )}
+        <label htmlFor={name} className={styles['visually-hidden']}>
+          Numéro de téléphone
+        </label>
+        <BaseInput
+          disabled={disabled}
+          hasError={meta.touched && !!meta.error}
+          type="text"
+          name={name}
+          value={phoneInputValue}
+          onChange={onPhoneNumberChange}
+          className={styles['phone-number-input']}
+          onBlur={onPhoneNumberBlur}
+          autoComplete="tel-national"
+          maxLength={maxLength}
+          aria-describedby={formatId}
+        />
+        <div className={styles['phone-number-input-footer']}>
+          {meta.error && meta.touched && (
+            <div className={styles['phone-number-input-error']}>
+              <FieldError name={name}>{meta.error}</FieldError>
+            </div>
+          )}
+        </div>
       </div>
     </fieldset>
   )

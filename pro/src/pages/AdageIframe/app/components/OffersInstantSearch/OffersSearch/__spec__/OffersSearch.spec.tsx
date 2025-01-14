@@ -183,9 +183,7 @@ describe('offersSearch component', () => {
     })
 
     // When
-    const textInput = screen.getByPlaceholderText(
-      'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
-    )
+    const textInput = screen.getByRole('searchbox', { name: 'Rechercher' })
     await userEvent.type(textInput, 'Paris')
     await userEvent.click(launchSearchButton)
 
@@ -204,9 +202,7 @@ describe('offersSearch component', () => {
     })
 
     // When
-    const textInput = screen.getByPlaceholderText(
-      'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
-    )
+    const textInput = screen.getByRole('searchbox', { name: 'Rechercher' })
     await userEvent.type(textInput, 'Paris')
     await userEvent.click(launchSearchButton)
 

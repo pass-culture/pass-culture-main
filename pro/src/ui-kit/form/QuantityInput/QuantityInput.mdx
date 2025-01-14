@@ -1,44 +1,30 @@
 {/* QuantityInput.mdx */}
 
-import { Meta, Primary, Controls, Story } from '@storybook/blocks';
+import { Meta, Primary, Controls, Story } from '@storybook/blocks'
 
-import * as QuantityInputStories from './QuantityInput.stories';
+import * as QuantityInputStories from './QuantityInput.stories'
 
 <Meta of={QuantityInputStories} />
 
 # QuantityInput
 
-A QuantityInput component is a combinaison of a TextInput and a Checkbox
-to define **quantities**. This component should be used when undefined quantity
-is meant to be interpreted as unlimited.
+A QuantityInput component is a combinaison of a TextInput and a Checkbox to define **quantities**. This component should be used when undefined quantity is meant to be interpreted as unlimited.
 
 ## Using QuantityInput over TextInput
-  
+
 ```jsx
 <TextInput
   label="Quantity"
-  placeholder="Illimité"
   type="number"
   value={quantity}
   onChange={setQuantity}
 />
 ```
 
-This lacks accessibility support.
-Placeholders are generally something to avoid since they disappear when the input is focused,
-or when the user starts typing.
-They tend to be stylised with a lighter color, which can be hard to read for some users.
-In this case, the placeholder was used to indicate that the quantity was unlimited,
-which is not a placeholder's purpose.
-> "The placeholder text should provide a brief hint to the user as to the expected type of data that should be entered into the control."  
-> -- [MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#attr-placeholder)
-
 If undefined quantity is meant to be interpreted as unlimited, the QuantityInput component should always be used.  
 Otherwise, using TextInput is fine enough (mind min, max, and step props attributes).
 
-## Extending props 
+## Extending props
 
-The QuantityInput component picks a few props from the TextInput component,
-which itself sees its props extended from FieldLayoutBase and BaseInput.  
-It's best to choose what needs to be picked than extending the props from the TextInput component
-so the QuantityInput component can be more flexible and easier to maintain.
+The QuantityInput component picks a few props from the TextInput component, which itself sees its props extended from FieldLayoutBase and BaseInput.  
+It's best to choose what needs to be picked than extending the props from the TextInput component so the QuantityInput component can be more flexible and easier to maintain.

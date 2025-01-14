@@ -1,11 +1,6 @@
 import cx from 'classnames'
 import { useField, useFormikContext } from 'formik'
-import {
-  KeyboardEventHandler,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
+import { KeyboardEventHandler, useEffect, useRef, useState } from 'react'
 
 import { SelectOption } from 'commons/custom_types/form'
 
@@ -28,7 +23,6 @@ export type SelectAutocompleteProps = FieldLayoutBaseProps & {
   maxHeight?: number
   multi?: boolean
   options: SelectOption[]
-  placeholder?: string
   resetOnOpen?: boolean
   onSearch?: (pattern: string) => void
   searchInOptions?: (options: SelectOption[], pattern: string) => SelectOption[]
@@ -62,7 +56,6 @@ export const SelectAutocomplete = ({
   label,
   multi = false,
   options,
-  placeholder,
   smallLabel = false,
   resetOnOpen = true,
   description,
@@ -273,10 +266,6 @@ export const SelectAutocomplete = ({
     await setFieldTouched(name, true)
   }
 
-  const selectedOptionAsPlaceholder = !Array.isArray(field.value)
-    ? optionsLabelById[field.value]
-    : ''
-  const finalPlaceholder = placeholder || selectedOptionAsPlaceholder
   return (
     <FieldLayout
       className={className}
@@ -302,7 +291,6 @@ export const SelectAutocomplete = ({
           })}
           onClick={openFieldOnClick}
           onFocus={openFieldOnFocus}
-          placeholder={finalPlaceholder}
           style={{
             paddingLeft:
               (multi && field.value.length > 0) || leftIcon ? '2.2rem' : '1rem',

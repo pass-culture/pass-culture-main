@@ -95,9 +95,9 @@ describe('CollectiveOfferConfirmation', () => {
       await screen.findByText('Les dernières offres vitrines créées')
     ).toBeInTheDocument()
 
-    const searchField = screen.getByPlaceholderText(
-      'Rechercher une offre vitrine'
-    )
+    const searchField = screen.getByRole('searchbox', {
+      name: 'Rechercher l’offre vitrine à dupliquer',
+    })
 
     await userEvent.type(searchField, 'Le nom de l’offre 3')
 
@@ -194,9 +194,9 @@ describe('CollectiveOfferConfirmation', () => {
       ).toBeInTheDocument()
     )
 
-    const searchField = screen.getByPlaceholderText(
-      'Rechercher une offre vitrine'
-    )
+    const searchField = screen.getByRole('searchbox', {
+      name: 'Rechercher l’offre vitrine à dupliquer',
+    })
 
     await userEvent.type(searchField, 'Le nom de l’offre 3')
 

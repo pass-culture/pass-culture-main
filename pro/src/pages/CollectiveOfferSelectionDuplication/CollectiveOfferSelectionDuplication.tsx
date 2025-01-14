@@ -151,10 +151,11 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                     label="Offre vitrine à dupliquer"
                     isLabelHidden
                     name="searchFilter"
-                    placeholder="Rechercher une offre vitrine"
+                    type="search"
                     className={styles['search-input']}
                     aria-labelledby="search-filter"
                     isOptional
+                    leftIcon={strokeSearchIcon}
                   />
                   <Button
                     type="submit"

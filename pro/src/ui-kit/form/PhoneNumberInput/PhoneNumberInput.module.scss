@@ -27,7 +27,6 @@ $input-phone-number-padding-left: calc(
     }
 
     &-legend {
-      margin-bottom: rem.torem(forms.$label-space-before-input);
       display: flex;
       width: 100%;
       justify-content: space-between;
@@ -55,4 +54,15 @@ $input-phone-number-padding-left: calc(
 
 .visually-hidden {
   @include a11y.visually-hidden;
+}
+
+.phone-format {
+  @include fonts.body-xs;
+
+  color: var(--color-grey-dark);
+  margin-bottom: rem.torem(forms.$label-space-before-input);
+}
+
+.phone-number-inpus {
+  position: relative;
 }

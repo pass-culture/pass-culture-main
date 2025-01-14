@@ -190,12 +190,7 @@ export const OffersSearch = ({
   return (
     <>
       <FormikContext.Provider value={formik}>
-        <Autocomplete
-          initialQuery={adageQueryFromSelector ?? ''}
-          placeholder={
-            'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
-          }
-        />
+        <Autocomplete initialQuery={adageQueryFromSelector ?? ''} />
         <div className={styles['separator']} />
         <div ref={offerFilterRef}>
           <OfferFilters
