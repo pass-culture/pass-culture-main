@@ -1,4 +1,5 @@
-import { Form, FormikProvider, useFormik } from 'formik'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useForm, Controller } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 
 import { api } from 'apiClient/api'
@@ -28,6 +29,17 @@ export const UserIdentityForm = ({
   const { currentUser } = useCurrentUser()
   const dispatch = useDispatch()
 
+  // Initialize React Hook Form
+  const {
+    control,
+    handleSubmit,
+    setError,
+    formState: { isSubmitting, errors },
+  } = useForm<UserIdentityFormValues>({
+    defaultValues: initialValues,
+    resolver: yupResolver(validationSchema),
+  })
+
   const onSubmit = async (values: UserIdentityFormValues) => {
     try {
       const response = await api.patchUserIdentity(values)
@@ -40,23 +52,16 @@ export const UserIdentityForm = ({
       closeForm()
     } catch (error) {
       if (isErrorAPIError(error)) {
+        // Handle server-side errors and set field errors
         for (const field in error.body) {
-          formik.setFieldError(field, error.body[field])
+          console.log(field)
+          setError(field, { type: 'server', message: error.body[field] })
         }
       }
     }
-    formik.setSubmitting(false)
   }
 
-  const formik = useFormik({
-    initialValues,
-    onSubmit,
-    validationSchema,
-    validateOnChange: false,
-  })
-
   const onCancel = () => {
-    formik.resetForm()
     closeForm()
   }
 
@@ -64,27 +69,45 @@ export const UserIdentityForm = ({
     <>
       <BoxFormLayout.RequiredMessage />
       <BoxFormLayout.Fields>
-        <FormikProvider value={formik}>
-          <Form onSubmit={formik.handleSubmit}>
-            <FormLayout>
-              <FormLayout.Row>
-                <TextInput label="Prénom" name="firstName" />
-              </FormLayout.Row>
-              <FormLayout.Row>
-                <TextInput label="Nom" name="lastName" />
-              </FormLayout.Row>
-            </FormLayout>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <FormLayout>
+            <FormLayout.Row>
+              <Controller
+                control={control}
+                name="firstName"
+                render={({ field }) => (
+                  <TextInput
+                    label="Prénom"
+                    {...field}
+                    externalError={errors.firstName?.message}
+                  />
+                )}
+              />
+            </FormLayout.Row>
+            <FormLayout.Row>
+              <Controller
+                control={control}
+                name="lastName"
+                render={({ field }) => (
+                  <TextInput
+                    label="Nom"
+                    {...field}
+                    externalError={errors.lastName?.message}
+                  />
+                )}
+              />
+            </FormLayout.Row>
+          </FormLayout>
 
-            <div className={styles['buttons-field']}>
-              <Button onClick={onCancel} variant={ButtonVariant.SECONDARY}>
-                Annuler
-              </Button>
-              <Button type="submit" isLoading={formik.isSubmitting}>
-                Enregistrer
-              </Button>
-            </div>
-          </Form>
-        </FormikProvider>
+          <div className={styles['buttons-field']}>
+            <Button onClick={onCancel} variant={ButtonVariant.SECONDARY}>
+              Annuler
+            </Button>
+            <Button type="submit" isLoading={isSubmitting}>
+              Enregistrer
+            </Button>
+          </div>
+        </form>
       </BoxFormLayout.Fields>
     </>
   )

@@ -1,4 +1,3 @@
-import { useField } from 'formik'
 import React, { ForwardedRef } from 'react'
 
 import { BaseInput, BaseInputProps } from '../shared/BaseInput/BaseInput'
@@ -8,6 +7,7 @@ import {
 } from '../shared/FieldLayout/FieldLayout'
 
 import styles from './TextInput.module.scss'
+import meta from './TextInput.stories'
 
 /**
  * Props for the TextInput component.
@@ -124,16 +124,11 @@ export const TextInput = ({
   InputExtension,
   ...props
 }: TextInputProps): JSX.Element => {
-  const [field, meta] = useField({
-    name,
-    type,
-  })
-
   // Regex patterns for input validation
   const regexHasDecimal = /[0-9,.]/
   const regexHasNotDecimal = /[0-9]/
   const regexIsNavigationKey = /Tab|Backspace|Enter/
-  const showError = !!externalError || (meta.touched && !!meta.error)
+  const showError = !!externalError
 
   // Constructing aria-describedby attribute
   const describedBy = []
@@ -146,43 +141,44 @@ export const TextInput = ({
     describedBy.push(`field-characters-count-description-${name}`)
   }
 
-  const input = <BaseInput
-    disabled={disabled}
-    hasError={showError}
-    maxLength={maxLength}
-    placeholder={placeholder}
-    step={step}
-    type={type}
-    rightButton={rightButton}
-    ref={refForInput}
-    rightIcon={rightIcon}
-    leftIcon={leftIcon}
-    aria-required={!isOptional}
-    aria-describedby={describedBy.join(' ') || undefined}
-    onKeyDown={(event) => {
-      // Restrict input for number types
-      if (type === 'number') {
-        if (regexIsNavigationKey.test(event.key)) {
-          return
+  const input = (
+    <BaseInput
+      disabled={disabled}
+      hasError={showError}
+      maxLength={maxLength}
+      placeholder={placeholder}
+      step={step}
+      type={type}
+      rightButton={rightButton}
+      ref={refForInput}
+      rightIcon={rightIcon}
+      leftIcon={leftIcon}
+      aria-required={!isOptional}
+      aria-describedby={describedBy.join(' ') || undefined}
+      onKeyDown={(event) => {
+        // Restrict input for number types
+        if (type === 'number') {
+          if (regexIsNavigationKey.test(event.key)) {
+            return
+          }
+          const testInput = hasDecimal
+            ? !regexHasDecimal.test(event.key)
+            : !regexHasNotDecimal.test(event.key)
+          if (testInput) {
+            event.preventDefault()
+          }
         }
-        const testInput = hasDecimal
-          ? !regexHasDecimal.test(event.key)
-          : !regexHasNotDecimal.test(event.key)
-        if (testInput) {
-          event.preventDefault()
+      }}
+      // Disable changing input value on scroll over a number input
+      onWheel={(event) => {
+        if (type === 'number') {
+          // Blur the input to prevent value change on scroll
+          event.currentTarget.blur()
         }
-      }
-    }}
-    // Disable changing input value on scroll over a number input
-    onWheel={(event) => {
-      if (type === 'number') {
-        // Blur the input to prevent value change on scroll
-        event.currentTarget.blur()
-      }
-    }}
-    {...field}
-    {...props}
-  />
+      }}
+      {...props}
+    />
+  )
 
   return (
     <FieldLayout
@@ -190,8 +186,8 @@ export const TextInput = ({
       classNameLabel={classNameLabel}
       classNameFooter={classNameFooter}
       classNameInput={classNameInput}
-      count={countCharacters ? field.value.length : undefined}
-      error={externalError || meta.error}
+      count={countCharacters ? props.value?.toString.length : undefined}
+      error={externalError}
       isOptional={isOptional}
       showMandatoryAsterisk={showMandatoryAsterisk}
       label={label}
@@ -218,7 +214,9 @@ export const TextInput = ({
             {InputExtension}
           </div>
         </div>
-      ) : input}
+      ) : (
+        input
+      )}
     </FieldLayout>
   )
 }
