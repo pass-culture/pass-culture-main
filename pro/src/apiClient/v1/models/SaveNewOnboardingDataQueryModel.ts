@@ -7,6 +7,7 @@ import type { Target } from './Target';
 export type SaveNewOnboardingDataQueryModel = {
   address: AddressBodyModel;
   createVenueWithoutSiret?: boolean;
+  isOpenToPublic?: boolean | null;
   publicName?: string | null;
   siret: string;
   target: Target;

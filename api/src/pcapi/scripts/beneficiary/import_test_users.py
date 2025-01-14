@@ -165,6 +165,7 @@ def _create_pro_user(row: dict) -> User:
         mentalDisabilityCompliant=False,
         motorDisabilityCompliant=False,
         visualDisabilityCompliant=False,
+        isOpenToPublic=True,
     )
     venue = offerers_api.create_venue(venue_creation_info, user)
     offerers_api.create_venue_registration(venue.id, new_onboarding_info.target, new_onboarding_info.webPresence)
