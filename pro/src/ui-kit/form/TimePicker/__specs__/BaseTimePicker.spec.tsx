@@ -18,6 +18,7 @@ const renderBaseTimePicker = ({
         suggestedTimeList={suggestedTimeList}
         value={value}
         onChange={vi.fn()}
+        aria-label="my time label"
       />
     </Formik>
   )
@@ -27,7 +28,7 @@ describe('BaseTimePicker', () => {
   it('should render a time input and a 15min interval datalist as default', () => {
     renderBaseTimePicker()
 
-    const input = screen.getByPlaceholderText('HH:MM')
+    const input = screen.getByLabelText('my time label')
     expect(input).toBeInTheDocument()
     expect(input.tagName).toBe('INPUT')
     expect(input).toHaveAttribute('type', 'time')
@@ -78,14 +79,14 @@ describe('BaseTimePicker', () => {
   it('should not init input with provided value if it is invalid', () => {
     renderBaseTimePicker({ value: 'invalid' })
 
-    const input = screen.getByPlaceholderText('HH:MM')
+    const input = screen.getByLabelText('my time label')
     expect(input).toHaveValue('')
   })
 
   it('should init input with provided value and pad it if needed if it is valid', () => {
     renderBaseTimePicker({ value: '9:00' })
 
-    const input = screen.getByPlaceholderText('HH:MM')
+    const input = screen.getByLabelText('my time label')
     expect(input).toHaveValue('09:00')
   })
 })

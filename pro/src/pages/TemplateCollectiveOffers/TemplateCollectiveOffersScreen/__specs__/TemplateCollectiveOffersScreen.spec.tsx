@@ -242,7 +242,7 @@ describe('TemplateCollectiveOffersScreen', () => {
   it('should display event period filter with no default option', () => {
     renderOffers(props)
 
-    const eventPeriodSelect = screen.queryAllByPlaceholderText('JJ/MM/AAAA')
+    const eventPeriodSelect = screen.queryAllByLabelText(/période/)
     expect(eventPeriodSelect).toHaveLength(2)
   })
 

@@ -62,7 +62,6 @@ export const BaseTimePicker = ({
       <BaseInput
         type="time"
         {...(hasTimeOptions ? { list: optionsListId } : {})}
-        placeholder="HH:MM"
         autoComplete="off"
         {...props}
         value={formattedValue}

@@ -16,7 +16,6 @@ interface PasswordInputProps {
   label: string
   name: string
   description?: string
-  placeholder?: string
   withErrorPreview?: boolean
   autoComplete?: string
 }
@@ -25,7 +24,6 @@ export const PasswordInput = ({
   label,
   name,
   description,
-  placeholder,
   withErrorPreview = false,
   autoComplete,
   ...props
@@ -50,7 +48,6 @@ export const PasswordInput = ({
         className={styles['password-input']}
         label={label}
         name={name}
-        placeholder={placeholder}
         description={description}
         type={isPasswordHidden ? 'password' : 'text'}
         autoComplete={autoComplete}

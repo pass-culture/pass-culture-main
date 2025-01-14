@@ -14,7 +14,6 @@ import styles from './EmailSpellCheckInput.module.scss'
 type EmailSpellCheckInputProps<FormType> = FieldLayoutBaseProps & {
   // `Extract` needed so the key is a string. See https://stackoverflow.com/a/51808262
   name: Extract<keyof FormType, string>
-  placeholder?: string
   description: string
   label: string
   overrideInitialTip?: string | null
@@ -24,7 +23,6 @@ type EmailSpellCheckInputProps<FormType> = FieldLayoutBaseProps & {
 
 export const EmailSpellCheckInput = <FormType,>({
   name,
-  placeholder,
   description,
   label,
   className,
@@ -64,7 +62,6 @@ export const EmailSpellCheckInput = <FormType,>({
       <TextInput
         label={label}
         name={name}
-        placeholder={placeholder}
         description={description}
         onBlur={handleEmailValidation}
         onFocus={resetEmailValidation}

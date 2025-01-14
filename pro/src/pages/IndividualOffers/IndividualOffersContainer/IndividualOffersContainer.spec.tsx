@@ -298,8 +298,7 @@ describe('IndividualOffersScreen', () => {
 
     expect(screen.getByText(/Période de l’évènement/)).toBeInTheDocument()
 
-    const [beginningDate, endingDate] =
-      screen.getAllByPlaceholderText('JJ/MM/AAAA')
+    const [beginningDate, endingDate] = screen.queryAllByLabelText(/période/)
     await userEvent.type(beginningDate, '2025-02-02')
     await userEvent.type(endingDate, '2025-02-03')
     expect(beginningDate).toHaveValue('2025-02-02')
@@ -438,7 +437,7 @@ describe('IndividualOffersScreen', () => {
   it('should display event period filter with no default option', () => {
     renderOffers(props)
 
-    const eventPeriodSelect = screen.queryAllByPlaceholderText('JJ/MM/AAAA')
+    const eventPeriodSelect = screen.queryAllByLabelText(/période/)
     expect(eventPeriodSelect).toHaveLength(2)
   })
 

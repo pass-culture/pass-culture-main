@@ -29,7 +29,6 @@ export const BaseDatePicker = ({
 
   return (
     <BaseInput
-      placeholder="JJ/MM/AAAA"
       type="date"
       min={minDateFormatted}
       max={maxDateFormatted}
