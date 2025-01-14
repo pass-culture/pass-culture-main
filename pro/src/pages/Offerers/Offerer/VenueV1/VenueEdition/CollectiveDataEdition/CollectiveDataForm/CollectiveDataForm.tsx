@@ -135,7 +135,6 @@ export const CollectiveDataForm = ({
                     name="collectiveStudents"
                     label="Public cible"
                     options={studentOptions}
-                    placeholder="Sélectionner un public cible"
                     hideTags
                     isOptional
                   />
@@ -165,7 +164,6 @@ export const CollectiveDataForm = ({
                     options={domains}
                     name="collectiveDomains"
                     label="Domaine artistique et culturel"
-                    placeholder="Sélectionner un ou plusieurs domaine(s)"
                     isOptional
                   />
                 </FormLayout.Row>
@@ -177,7 +175,6 @@ export const CollectiveDataForm = ({
                     options={venueInterventionOptions}
                     name="collectiveInterventionArea"
                     label="Zone de mobilité"
-                    placeholder="Sélectionner une ou plusieurs zone(s) de mobilité"
                     isOptional
                   />
                 </FormLayout.Row>

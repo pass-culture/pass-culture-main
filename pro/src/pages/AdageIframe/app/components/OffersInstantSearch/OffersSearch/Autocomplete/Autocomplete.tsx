@@ -47,7 +47,6 @@ import { Highlight } from './Highlight'
 
 type AutocompleteProps = {
   initialQuery: string
-  placeholder: string
 }
 
 export type SuggestionItem = AutocompleteQuerySuggestionsHit & {
@@ -86,10 +85,7 @@ const addSuggestionToHistory = (suggestion: string) => {
   )
 }
 
-export const Autocomplete = ({
-  initialQuery,
-  placeholder,
-}: AutocompleteProps) => {
+export const Autocomplete = ({ initialQuery }: AutocompleteProps) => {
   const dispatch = useDispatch()
 
   const { refine } = useSearchBox()
@@ -282,14 +278,13 @@ export const Autocomplete = ({
           dispatch(setAdageQuery(state.query))
           dispatch(setAdagePageSaved(0))
         },
-        placeholder,
         plugins: [
           ...(isLocalStorageEnabled ? [recentSearchesPlugin] : []),
           venuesSuggestionsPlugin,
           querySuggestionsPlugin,
         ],
       }),
-    [placeholder, refine, isLocalStorageEnabled]
+    [refine, isLocalStorageEnabled]
   )
 
   useEffect(() => {
@@ -403,7 +398,7 @@ export const Autocomplete = ({
                   className={styles['form-input-span']}
                   {...autocomplete.getLabelProps({})}
                 >
-                  <SvgIcon src={strokeSearchIcon} alt="" width="16" />
+                  <SvgIcon src={strokeSearchIcon} alt="Rechercher" width="16" />
                 </span>
               </div>
 

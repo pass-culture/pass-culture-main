@@ -3,7 +3,10 @@ import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 
-import { PHONE_CODE_COUNTRY_CODE_OPTIONS, PLACEHOLDER_MAP } from '../constants'
+import {
+  PHONE_CODE_COUNTRY_CODE_OPTIONS,
+  PHONE_EXAMPLE_MAP,
+} from '../constants'
 import { PhoneNumberInput } from '../PhoneNumberInput'
 
 vi.mock('libphonenumber-js', () => ({
@@ -24,12 +27,12 @@ describe('PhoneNumberInput', () => {
     renderPhoneNumberInput()
 
     const defaultCountryCodeOption = PHONE_CODE_COUNTRY_CODE_OPTIONS[0]
-    const defaultPlaceholder = PLACEHOLDER_MAP[defaultCountryCodeOption.value]
+    const defaultExample = PHONE_EXAMPLE_MAP[defaultCountryCodeOption.value]
 
     expect(screen.getByText(defaultCountryCodeOption.label)).toBeInTheDocument()
-    expect(defaultPlaceholder).toBeDefined()
+    expect(defaultExample).toBeDefined()
     expect(
-      screen.getByPlaceholderText(defaultPlaceholder as string)
+      screen.getByText(`Par exemple : ${defaultExample}`)
     ).toBeInTheDocument()
   })
 
@@ -39,10 +42,10 @@ describe('PhoneNumberInput', () => {
 
     await userEvent.selectOptions(countryCodeSelect, '+590')
 
-    const guadeloupePlaceholder = PLACEHOLDER_MAP['GP']
-    expect(guadeloupePlaceholder).toBeDefined()
+    const guadeloupeExample = PHONE_EXAMPLE_MAP['GP']
+    expect(guadeloupeExample).toBeDefined()
     expect(
-      screen.getByPlaceholderText(guadeloupePlaceholder as string)
+      screen.getByText(`Par exemple : ${guadeloupeExample}`)
     ).toBeInTheDocument()
   })
 

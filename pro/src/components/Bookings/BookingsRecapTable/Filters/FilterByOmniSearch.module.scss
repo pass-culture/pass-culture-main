@@ -3,62 +3,51 @@
 @use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_a11y.scss" as a11y;
 
-.vertical-bar {
-  background-color: var(--color-grey-medium);
-  height: rem.torem(40px);
-  width: rem.torem(1px);
-}
-
 $border-radius: rem.torem(20px);
 $input-height: rem.torem(40px);
 
 .omnisearch-container {
   border-radius: $border-radius;
   display: flex;
+  flex-direction: column;
+  gap: rem.torem(16px);
   justify-content: flex-start;
   margin-bottom: rem.torem(32px);
 
   &-disabled {
     box-shadow: none;
   }
-
-  &:focus-within {
-    .vertical-bar {
-      margin-right: 0;
-      width: rem.torem(2px);
-    }
-  }
-
-  .vertical-bar {
-    margin-right: rem.torem(1px);
-  }
 }
 
 .omnisearch-filter-select {
   @include fonts.button;
 
-  border-radius: $border-radius 0 0 $border-radius;
-  border-right: none;
   height: $input-height;
   padding-left: rem.torem(16px);
-  width: rem.torem(49px);
 }
 
 .visually-hidden {
   @include a11y.visually-hidden;
 }
 
+.omnisearch-filter-input-container {
+  flex: 1;
+}
+
 @media screen and (min-width: size.$tablet) {
+  .omnisearch-container {
+    flex-direction: row;
+    gap: 0;
+  }
+
   .omnisearch-filter-select {
     min-width: rem.torem(175px);
     width: initial;
+    border-right: none;
+    border-radius: $border-radius 0 0 $border-radius;
   }
-}
 
-.omnisearch-filter-input {
-  border-left: none;
-  border-radius: 0 $border-radius $border-radius 0;
-  flex-grow: 1;
-  height: $input-height;
-  padding: rem.torem(8px) rem.torem(16px);
+  .omnisearch-filter-input {
+    border-radius: 0 $border-radius $border-radius 0;
+  }
 }

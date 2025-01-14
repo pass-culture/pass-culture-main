@@ -276,7 +276,7 @@ export const CollectiveOfferVisibilityScreen = ({
                       type="search"
                       options={institutionsOptions}
                       label="Nom de l’établissement scolaire ou code UAI"
-                      placeholder="Ex : Lycee General Simone Weil ou 010456E ou Le Havre"
+                      description="Ex : Lycee General Simone Weil ou 010456E ou Le Havre"
                       hideArrow
                       onReset={async () => {
                         setTeachersOptions([])
@@ -306,7 +306,7 @@ export const CollectiveOfferVisibilityScreen = ({
                   options={teachersOptions}
                   label="Prénom et nom de l’enseignant (au moins 3 caractères)"
                   isOptional
-                  placeholder="Ex: Camille Dupont"
+                  description="Ex: Camille Dupont"
                   hideArrow
                   disabled={!canEditInstitution || !selectedInstitution}
                   onSearch={async () => {

@@ -39,9 +39,7 @@ describe('CollectiveDataForm', () => {
       features: ['WIP_ENABLE_MARSEILLE'],
     }
     renderCollectiveDataForm(featureOverrides)
-    await userEvent.click(
-      screen.getByPlaceholderText('Sélectionner un public cible')
-    )
+    await userEvent.click(screen.getByLabelText('Public cible'))
     expect(
       screen.getByRole('option', { name: 'Écoles Marseille - Maternelle' })
     ).toBeInTheDocument()
@@ -49,9 +47,7 @@ describe('CollectiveDataForm', () => {
 
   it('should show student levels without Marseille options when WIP_ENABLE_MARSEILLE is off', async () => {
     renderCollectiveDataForm()
-    await userEvent.click(
-      screen.getByPlaceholderText('Sélectionner un public cible')
-    )
+    await userEvent.click(screen.getByLabelText('Public cible'))
     expect(
       screen.queryByText('Écoles Marseille - Maternelle')
     ).not.toBeInTheDocument()

@@ -19,7 +19,7 @@ import styles from './TextArea.module.scss'
  * @extends React.InputHTMLAttributes<HTMLTextAreaElement>
  */
 type TextAreaProps = FieldLayoutBaseProps &
-  React.InputHTMLAttributes<HTMLTextAreaElement> & {
+  Omit<React.InputHTMLAttributes<HTMLTextAreaElement>, 'placeholder'> & {
     /**
      * The name of the textarea field.
      */
@@ -71,11 +71,6 @@ type TextAreaProps = FieldLayoutBaseProps &
 /**
  * The TextArea component is a customizable textarea field that integrates with Formik for form state management.
  * It supports features like dynamic resizing based on content, character counting, and accessibility enhancements.
- *
- * ---
- * **Important: Do not use the `placeholder` to indicate the format of the field.**
- * Use the `label` or `description` props instead to provide instructions on the expected format.
- * ---
  *
  * @param {TextAreaProps} props - The props for the TextArea component.
  * @returns {JSX.Element} The rendered TextArea component.

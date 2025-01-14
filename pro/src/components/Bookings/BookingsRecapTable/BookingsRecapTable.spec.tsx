@@ -80,7 +80,7 @@ describe('components | BookingsRecapTable', () => {
     // 2 lines = 10 cells
     expect(screen.getAllByRole('cell')).toHaveLength(10)
 
-    await userEvent.type(screen.getByRole('textbox'), 'Le nom de l’offre 2')
+    await userEvent.type(screen.getByRole('searchbox'), 'Le nom de l’offre 2')
     await waitFor(() => {
       // 1 line = 5 cells
       expect(screen.getAllByRole('cell')).toHaveLength(5)
@@ -90,13 +90,13 @@ describe('components | BookingsRecapTable', () => {
       screen.getByRole('combobox'),
       screen.getByRole('option', { name: 'Bénéficiaire' })
     )
-    await userEvent.clear(screen.getByRole('textbox'))
+    await userEvent.clear(screen.getByRole('searchbox'))
 
     await waitFor(() => {
       // 2 lines = 10 cells
       expect(screen.getAllByRole('cell')).toHaveLength(10)
     })
-    await userEvent.type(screen.getByRole('textbox'), 'Parjeot')
+    await userEvent.type(screen.getByRole('searchbox'), 'Parjeot')
     await waitFor(() => {
       // 1 line = 5
       expect(screen.getAllByRole('cell')).toHaveLength(5)
@@ -401,7 +401,7 @@ describe('components | BookingsRecapTable', () => {
 
     renderBookingRecap(props)
 
-    await userEvent.type(screen.getByRole('textbox'), 'Le nom de l’offre 2')
+    await userEvent.type(screen.getByRole('searchbox'), 'Le nom de l’offre 2')
 
     const displayAllBookingsButton = screen.getByRole('button', {
       name: /Afficher toutes les réservations/i,
@@ -409,7 +409,7 @@ describe('components | BookingsRecapTable', () => {
 
     await userEvent.click(displayAllBookingsButton)
 
-    const offerName = screen.getByRole('textbox')
+    const offerName = screen.getByRole('searchbox')
     expect(offerName).toHaveValue('')
   })
 
@@ -422,7 +422,7 @@ describe('components | BookingsRecapTable', () => {
     await userEvent.click(screen.getAllByRole('button')[1])
 
     // when
-    await userEvent.type(screen.getByRole('textbox'), 'not findable')
+    await userEvent.type(screen.getByRole('searchbox'), 'not findable')
 
     // then
     expect(screen.queryByText('Page 1/1')).not.toBeInTheDocument()

@@ -45,11 +45,6 @@ export type QuantityInputProps = Pick<
  * The QuantityInput component is a combination of a TextInput and a BaseCheckbox to define quantities.
  * It integrates with Formik for form state management and is used when an undefined quantity is meant to be interpreted as unlimited.
  *
- * ---
- * **Important: Always use QuantityInput instead of a simple TextInput when dealing with unlimited quantities.**
- * Placeholder text is not accessible, as it disappears when the input is focused or when the user starts typing.
- * ---
- *
  * @param {QuantityInputProps} props - The props for the QuantityInput component.
  * @returns {JSX.Element} The rendered QuantityInput component.
  *

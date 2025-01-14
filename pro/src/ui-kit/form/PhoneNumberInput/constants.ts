@@ -13,7 +13,7 @@ export const PHONE_CODE_COUNTRY_CODE_OPTIONS: {
   { label: '+687', value: 'NC' },
 ]
 
-export const PLACEHOLDER_MAP: Partial<Record<CountryCode, string>> = {
+export const PHONE_EXAMPLE_MAP: Partial<Record<CountryCode, string>> = {
   FR: '6 12 34 56 78',
   RE: '692 12 34 56',
   PM: '55 12 34',

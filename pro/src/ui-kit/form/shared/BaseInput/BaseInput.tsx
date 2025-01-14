@@ -6,7 +6,9 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import styles from './BaseInput.module.scss'
 
 export interface BaseInputProps
-  extends Partial<React.InputHTMLAttributes<HTMLInputElement>> {
+  extends Partial<
+    Omit<React.InputHTMLAttributes<HTMLInputElement>, 'placeholder'>
+  > {
   className?: string
   hasError?: boolean
   filterVariant?: boolean

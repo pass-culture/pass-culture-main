@@ -232,7 +232,6 @@ export const CollectiveOffersSearchFilters = ({
             name="status"
             label="Statut"
             options={statusFilterOptions}
-            placeholder="Statuts"
             isOptional
             disabled={disableAllFilters || isRestrictedAsAdmin}
           />

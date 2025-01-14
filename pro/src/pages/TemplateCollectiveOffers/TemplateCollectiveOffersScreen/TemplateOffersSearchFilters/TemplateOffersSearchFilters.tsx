@@ -150,7 +150,7 @@ export const TemplateOffersSearchFilters = ({
 
   return (
     <OffersTableSearch
-      type='template'
+      type="template"
       onSubmit={requestFilteredOffers}
       isDisabled={disableAllFilters}
       hasActiveFilters={hasFilters}
@@ -182,7 +182,12 @@ export const TemplateOffersSearchFilters = ({
           value={selectedFilters.format}
         />
       </FieldLayout>
-      <FieldLayout label="Période de l’évènement" name="period" isOptional className={styles['offers-table-search-filter-full-width']}>
+      <FieldLayout
+        label="Période de l’évènement"
+        name="period"
+        isOptional
+        className={styles['offers-table-search-filter-full-width']}
+      >
         <PeriodSelector
           onBeginningDateChange={onBeginningDateChange}
           onEndingDateChange={onEndingDateChange}
@@ -197,7 +202,6 @@ export const TemplateOffersSearchFilters = ({
           name="status"
           label="Statut"
           options={collectiveFilterStatus}
-          placeholder="Statuts"
           isOptional
           disabled={disableAllFilters || isRestrictedAsAdmin}
         />

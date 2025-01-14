@@ -49,13 +49,6 @@ export type TextInputProps = FieldLayoutBaseProps &
      */
     externalError?: string
     /**
-     * The placeholder text for the input field.
-     *
-     * **Important: Do not use the `placeholder` to indicate the format of the field.**
-     * Use the `label` or `description` props instead to provide instructions on the expected format.
-     */
-    placeholder?: string
-    /**
      * A custom component to be displayed next to the input.
      * It can be used to display additional information or related actions like
      * a checkbox to reset the input value.
@@ -84,7 +77,6 @@ export type TextInputProps = FieldLayoutBaseProps &
  * />
  *
  * @accessibility
- * - **Do not use the `placeholder` to indicate the format**: Placeholders are not always announced by screen readers and disappear once the user starts typing. Use `label` or `description` to provide information about the expected format.
  * - **Labels and ARIA**: Always provide the `label` prop so the field is correctly identified by assistive technologies. The component uses `aria-required` to indicate if the field is optional or required.
  * - **Descriptions**: If you use the `description` prop, it will be linked to the input via `aria-describedby`, providing additional information to users.
  * - **Character Counting**: When `countCharacters` is enabled, the number of characters entered is displayed, and a description is added for assistive technologies.

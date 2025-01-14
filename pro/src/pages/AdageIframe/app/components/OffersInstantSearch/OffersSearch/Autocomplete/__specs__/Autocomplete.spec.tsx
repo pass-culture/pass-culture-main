@@ -120,12 +120,7 @@ const renderAutocomplete = (
       <AdageUserContext.Provider value={{ adageUser: defaultAdageUser }}>
         <div>
           <a href="#">First element</a>
-          <Autocomplete
-            initialQuery={initialQuery}
-            placeholder={
-              'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
-            }
-          />
+          <Autocomplete initialQuery={initialQuery} />
           <a href="#">Second element</a>
         </div>
       </AdageUserContext.Provider>
@@ -139,10 +134,10 @@ describe('Autocomplete', () => {
   it('should renders the Autocomplete component with placeholder and search button', async () => {
     renderAutocomplete()
 
-    const inputElement = screen.getByPlaceholderText(
-      'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
-    )
-    const searchButton = await screen.findByText('Rechercher')
+    const inputElement = screen.getByRole('searchbox', { name: 'Rechercher' })
+    const searchButton = await screen.findByRole('button', {
+      name: 'Rechercher',
+    })
 
     expect(inputElement).toBeInTheDocument()
     expect(searchButton).toBeInTheDocument()
@@ -151,11 +146,11 @@ describe('Autocomplete', () => {
   it('should close autocomplete panel when escape key pressed  ', async () => {
     renderAutocomplete()
 
-    const inputElement = screen.getByPlaceholderText(
-      'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
-    )
+    const inputElement = screen.getByRole('searchbox', { name: 'Rechercher' })
 
-    const searchButton = screen.getByText('Rechercher')
+    const searchButton = await screen.findByRole('button', {
+      name: 'Rechercher',
+    })
     const dialogElement = screen.getByTestId('dialog')
 
     await userEvent.type(inputElement, 'test')
@@ -171,11 +166,11 @@ describe('Autocomplete', () => {
   it('should close autocomplete panel when focus outside form ', async () => {
     renderAutocomplete()
 
-    const inputElement = screen.getByPlaceholderText(
-      'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
-    )
+    const inputElement = screen.getByRole('searchbox', { name: 'Rechercher' })
 
-    const searchButton = screen.getByText('Rechercher')
+    const searchButton = await screen.findByRole('button', {
+      name: 'Rechercher',
+    })
     const dialogElement = screen.getByTestId('dialog')
 
     await userEvent.click(searchButton)
@@ -191,10 +186,10 @@ describe('Autocomplete', () => {
   it('should call refine function when the form is submitted', async () => {
     renderAutocomplete()
 
-    const inputElement = screen.getByPlaceholderText(
-      'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
-    )
-    const searchButton = screen.getByText('Rechercher')
+    const inputElement = screen.getByRole('searchbox', { name: 'Rechercher' })
+    const searchButton = await screen.findByRole('button', {
+      name: 'Rechercher',
+    })
 
     await userEvent.type(inputElement, 'test query')
 
@@ -206,13 +201,13 @@ describe('Autocomplete', () => {
   it('should set an initial search value on init', async () => {
     renderAutocomplete('test query 2')
 
-    const searchButton = screen.getByText('Rechercher')
+    const searchButton = await screen.findByRole('button', {
+      name: 'Rechercher',
+    })
 
     await userEvent.click(searchButton)
 
-    const inputElement = screen.getByPlaceholderText(
-      'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
-    )
+    const inputElement = screen.getByRole('searchbox', { name: 'Rechercher' })
 
     expect(inputElement).toHaveValue('test query 2')
     expect(refineMock).toHaveBeenCalledWith('test query 2')
@@ -221,10 +216,10 @@ describe('Autocomplete', () => {
   it('should clear recent search when clear button is clicked', async () => {
     renderAutocomplete()
 
-    const inputElement = screen.getByPlaceholderText(
-      'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
-    )
-    const searchButton = screen.getByText('Rechercher')
+    const inputElement = screen.getByRole('searchbox', { name: 'Rechercher' })
+    const searchButton = await screen.findByRole('button', {
+      name: 'Rechercher',
+    })
 
     await userEvent.click(searchButton)
 
@@ -244,10 +239,10 @@ describe('Autocomplete', () => {
       () => false
     )
 
-    const inputElement = screen.getByPlaceholderText(
-      'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
-    )
-    const searchButton = screen.getByText('Rechercher')
+    const inputElement = screen.getByRole('searchbox', { name: 'Rechercher' })
+    const searchButton = await screen.findByRole('button', {
+      name: 'Rechercher',
+    })
 
     await userEvent.type(inputElement, 'test query')
 
@@ -265,9 +260,7 @@ describe('Autocomplete', () => {
   it('should display venue suggestion when user start to type', async () => {
     renderAutocomplete()
 
-    const inputElement = screen.getByPlaceholderText(
-      'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
-    )
+    const inputElement = screen.getByRole('searchbox', { name: 'Rechercher' })
 
     await userEvent.type(inputElement, 'M')
 
@@ -282,9 +275,7 @@ describe('Autocomplete', () => {
 
     renderAutocomplete('')
 
-    const inputElement = screen.getByPlaceholderText(
-      'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
-    )
+    const inputElement = screen.getByRole('searchbox', { name: 'Rechercher' })
 
     await userEvent.type(inputElement, 'mock')
 
@@ -299,9 +290,7 @@ describe('Autocomplete', () => {
 
     renderAutocomplete('mock keyword 1')
 
-    const inputElement = screen.getByPlaceholderText(
-      'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
-    )
+    const inputElement = screen.getByRole('searchbox', { name: 'Rechercher' })
 
     await userEvent.click(inputElement)
 
