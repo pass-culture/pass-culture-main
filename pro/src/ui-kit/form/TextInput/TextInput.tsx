@@ -103,7 +103,6 @@ export const TextInput = ({
   hideFooter,
   label,
   isLabelHidden = false,
-  placeholder,
   countCharacters,
   maxLength = 255,
   smallLabel,
@@ -147,7 +146,6 @@ export const TextInput = ({
       disabled={disabled}
       hasError={showError}
       maxLength={maxLength}
-      placeholder={placeholder}
       step={step}
       type={type}
       rightButton={rightButton}

@@ -43,7 +43,6 @@ export const Icons = () => {
         <BaseInput
           name="search"
           onChange={(event) => setSearchInput(event.target.value)}
-          placeholder="Rechercher ..."
           value={searchInput}
         />
 
@@ -51,7 +50,6 @@ export const Icons = () => {
           type="color"
           name="fillColor"
           onChange={(event) => setFillColorInput(event.target.value)}
-          placeholder="#000000, red...."
           value={fillColorInput}
           className={styles['color-input']}
         />
@@ -60,7 +58,6 @@ export const Icons = () => {
           type="color"
           name="backgroundColor"
           onChange={(event) => setBackgroundColorInput(event.target.value)}
-          placeholder="#000000, red...."
           value={backgroundColorInput}
           className={styles['color-input']}
         />

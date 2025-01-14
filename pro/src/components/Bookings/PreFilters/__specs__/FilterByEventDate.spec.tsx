@@ -17,13 +17,13 @@ describe('components | FilterByEventDate', () => {
   it('should display a DatePicker', () => {
     render(<FilterByEventDate {...props} />)
 
-    expect(screen.getByPlaceholderText('JJ/MM/AAAA')).toBeInTheDocument()
+    expect(screen.getByLabelText('Date de l’évènement')).toBeInTheDocument()
   })
 
   it('should apply offerDate filter when choosing an offer date', async () => {
     const selectedDate = '2020-05-20'
     render(<FilterByEventDate {...props} />)
-    const offerDateInput = screen.getByPlaceholderText('JJ/MM/AAAA')
+    const offerDateInput = screen.getByLabelText('Date de l’évènement')
 
     await userEvent.type(offerDateInput, selectedDate)
 
