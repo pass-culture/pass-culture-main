@@ -18,6 +18,7 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=pro_user, offerer=venue.managingOfferer)
         offer = offers_factories.OfferFactory(venue=venue)
         offers_factories.StockFactory(offer=offer)
+        offers_factories.MediationFactory(offer=offer)
 
         data = {
             "offerId": offer.id,
@@ -34,13 +35,13 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(isPermanent=True)
         offerers_factories.UserOffererFactory(user=pro_user, offerer=venue.managingOfferer)
         offer = offers_factories.OfferFactory(venue=venue)
-        offers_factories.StockFactory(offer=offer)
         offers_factories.HeadlineOfferFactory(
             offer=offer,
             timespan=(
                 datetime.datetime.utcnow() - datetime.timedelta(days=20),
                 datetime.datetime.utcnow() - datetime.timedelta(days=10),
             ),
+            create_mediation=True,
         )
         assert not offer.is_headline_offer
 
@@ -61,8 +62,7 @@ class Returns400Test:
         venue = offerers_factories.VenueFactory(isPermanent=True)
         offerers_factories.UserOffererFactory(user=pro_user, offerer=venue.managingOfferer)
         offer = offers_factories.OfferFactory(venue=venue)
-        offers_factories.StockFactory(offer=offer)
-        offers_factories.HeadlineOfferFactory(offer=offer)
+        offers_factories.HeadlineOfferFactory(offer=offer, create_mediation=True)
 
         data = {
             "offerId": offer.id,
@@ -82,9 +82,9 @@ class Returns400Test:
         offerers_factories.UserOffererFactory(user=pro_user, offerer=venue.managingOfferer)
         offer = offers_factories.OfferFactory(venue=venue)
         another_offer = offers_factories.OfferFactory(venue=venue)
-        offers_factories.StockFactory(offer=offer)
+        offers_factories.HeadlineOfferFactory(offer=offer, create_mediation=True)
         offers_factories.StockFactory(offer=another_offer)
-        offers_factories.HeadlineOfferFactory(offer=offer)
+        offers_factories.MediationFactory(offer=another_offer)
 
         data = {
             "offerId": another_offer.id,
@@ -104,6 +104,7 @@ class Returns400Test:
         offerers_factories.UserOffererFactory(user=pro_user, offerer=venue.managingOfferer)
         offer = offers_factories.OfferFactory(venue=venue, isActive=False)
         offers_factories.StockFactory(offer=offer)
+        offers_factories.MediationFactory(offer=offer)
 
         data = {
             "offerId": offer.id,
@@ -125,6 +126,7 @@ class Returns400Test:
         offerers_factories.VenueFactory(isPermanent=False, managingOfferer=offerer)
         offer = offers_factories.OfferFactory(venue=venue)
         offers_factories.StockFactory(offer=offer)
+        offers_factories.MediationFactory(offer=offer)
 
         data = {
             "offerId": offer.id,
@@ -147,6 +149,7 @@ class Returns400Test:
         venue = offerers_factories.VenueFactory(isPermanent=True, managingOfferer=offerer)
         offer = offers_factories.DigitalOfferFactory(venue=venue)
         offers_factories.StockFactory(offer=offer)
+        offers_factories.MediationFactory(offer=offer)
 
         data = {
             "offerId": offer.id,
@@ -156,6 +159,28 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json["global"] == ["Une offre virtuelle ne peut pas être mise à la une"]
+
+        assert not offer.is_headline_offer
+        assert offers_models.HeadlineOffer.query.count() == 0
+
+    def test_offer_without_image_can_not_be_headline(self, client):
+        pro_user = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        venue = offerers_factories.VenueFactory(isPermanent=True, managingOfferer=offerer)
+        offer = offers_factories.DigitalOfferFactory(venue=venue)
+        offers_factories.StockFactory(offer=offer)
+
+        assert not offer.images
+
+        data = {
+            "offerId": offer.id,
+        }
+        client = client.with_session_auth(pro_user.email)
+        response = client.post("/offers/headline", json=data)
+
+        assert response.status_code == 400
+        assert response.json["global"] == ["Une offre doit avoir une image pour être mise à la une"]
 
         assert not offer.is_headline_offer
         assert offers_models.HeadlineOffer.query.count() == 0

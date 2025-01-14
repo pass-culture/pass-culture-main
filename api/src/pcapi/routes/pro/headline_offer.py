@@ -61,6 +61,10 @@ def make_offer_headline_from_offers(body: headline_offer_serialize.HeadlineOffer
         raise api_errors.ApiErrors(
             errors={"global": ["Cette offre est inactive et ne peut pas être mise à la une"]},
         )
+    except exceptions.OfferWithoutImageCanNotBeHeadline:
+        raise api_errors.ApiErrors(
+            errors={"global": ["Une offre doit avoir une image pour être mise à la une"]},
+        )
 
 
 @private_api.route("/offers/delete_headline", methods=["POST"])

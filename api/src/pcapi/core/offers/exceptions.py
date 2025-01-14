@@ -393,7 +393,7 @@ class UrlandFormBothSetError(CollectiveOfferContactRequestError):
 
 class InactiveOfferCanNotBeHeadline(Exception):
     def __init__(self) -> None:
-        super().__init__("headlineOffer", "This offer is inactive and can not be made headline")
+        super().__init__("headlineOffer", "This offer is inactive and can not be set to the headline")
 
 
 class OfferHasAlreadyAnActiveHeadlineOffer(Exception):
@@ -408,9 +408,15 @@ class OffererCanNotHaveHeadlineOffer(Exception):
 
 class VirtualOfferCanNotBeHeadline(Exception):
     def __init__(self) -> None:
-        super().__init__("headlineOffer", "Digital offers can not be made headline")
+        super().__init__("headlineOffer", "Digital offers can not be set to the headline")
 
 
 class VenueHasAlreadyAnActiveHeadlineOffer(Exception):
     def __init__(self) -> None:
         super().__init__("headlineOffer", "This venue has already an active headline offer")
+
+
+class OfferWithoutImageCanNotBeHeadline(Exception):
+
+    def __init__(self) -> None:
+        super().__init__("headlineOffer", "Offers without images can not be set to the headline")

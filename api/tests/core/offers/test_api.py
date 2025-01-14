@@ -2116,6 +2116,7 @@ class HeadlineOfferTest:
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
         offer = factories.OfferFactory(isActive=True, venue=venue)
         factories.StockFactory(offer=offer)
+        factories.MediationFactory(offer=offer)
         headline_offer = api.make_offer_headline(offer=offer)
         db.session.commit()  # see comment in make_offer_headline()
 
@@ -2128,6 +2129,7 @@ class HeadlineOfferTest:
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
         offer = factories.OfferFactory(isActive=True, venue=venue)
         factories.StockFactory(offer=offer)
+        factories.MediationFactory(offer=offer)
         api.make_offer_headline(offer=offer)
         with pytest.raises(exceptions.OfferHasAlreadyAnActiveHeadlineOffer) as error:
             api.make_offer_headline(offer=offer)
@@ -2137,8 +2139,10 @@ class HeadlineOfferTest:
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
         offer_1 = factories.OfferFactory(isActive=True, venue=venue)
         factories.StockFactory(offer=offer_1)
+        factories.MediationFactory(offer=offer_1)
         offer_2 = factories.OfferFactory(isActive=True, venue=venue)
         factories.StockFactory(offer=offer_2)
+        factories.MediationFactory(offer=offer_2)
 
         api.make_offer_headline(offer=offer_1)
         assert venue.has_headline_offer
@@ -2155,6 +2159,7 @@ class HeadlineOfferTest:
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
         offer = factories.OfferFactory(isActive=True, venue=venue)
         factories.StockFactory(offer=offer)
+        factories.MediationFactory(offer=offer)
         api.make_offer_headline(offer=offer)
         with pytest.raises(exceptions.OfferHasAlreadyAnActiveHeadlineOffer) as error:
             api.make_offer_headline(offer=offer)
@@ -2162,7 +2167,7 @@ class HeadlineOfferTest:
 
     def test_remove_headline_offer(self):
         offer = factories.OfferFactory(isActive=True)
-        headline_offer = factories.HeadlineOfferFactory(offer=offer)
+        headline_offer = factories.HeadlineOfferFactory(offer=offer, create_mediation=True)
 
         api.remove_headline_offer(headline_offer)
         db.session.commit()  # see comment in make_offer_headline()
@@ -2175,10 +2180,11 @@ class HeadlineOfferTest:
     def test_make_offer_headline_again(self):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
         offer = factories.OfferFactory(isActive=True, venue=venue)
-        factories.StockFactory(offer=offer)
         creation_time = datetime.utcnow()
         finished_timespan = (creation_time, creation_time + timedelta(days=10))
-        old_headline_offer = factories.HeadlineOfferFactory(offer=offer, timespan=finished_timespan)
+        old_headline_offer = factories.HeadlineOfferFactory(
+            offer=offer, timespan=finished_timespan, create_mediation=True
+        )
 
         one_eternity_later = creation_time + timedelta(days=1000)
         with time_machine.travel(one_eternity_later):
@@ -2194,13 +2200,15 @@ class HeadlineOfferTest:
     def test_make_another_offer_headline_on_same_venue(self):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
         offer_1 = factories.OfferFactory(isActive=True, venue=venue)
-        factories.StockFactory(offer=offer_1)
         offer_2 = factories.OfferFactory(isActive=True, venue=venue)
         factories.StockFactory(offer=offer_2)
+        factories.MediationFactory(offer=offer_2)
 
         ten_days_ago = datetime.utcnow() - timedelta(days=10)
         finished_timespan = (ten_days_ago, ten_days_ago + timedelta(days=1))
-        old_headline_offer = factories.HeadlineOfferFactory(offer=offer_1, timespan=finished_timespan)
+        old_headline_offer = factories.HeadlineOfferFactory(
+            offer=offer_1, timespan=finished_timespan, create_mediation=True
+        )
         new_headline_offer = api.make_offer_headline(offer=offer_2)
         db.session.commit()  # see comment in make_offer_headline()
         assert not old_headline_offer.isActive
@@ -2213,6 +2221,7 @@ class HeadlineOfferTest:
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
         active_offer = factories.OfferFactory(isActive=True, venue=venue)
         factories.StockFactory(offer=active_offer)
+        factories.MediationFactory(offer=active_offer)
 
         api.make_offer_headline(offer=active_offer)
 
@@ -2222,7 +2231,9 @@ class HeadlineOfferTest:
     def test_headline_offer_on_sold_out_offer_is_inactive(self):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
         stock = factories.StockFactory(quantity=10)
-        offer = factories.OfferFactory(isActive=True, stocks=[stock], venue=venue)
+        mediation = factories.MediationFactory()
+        offer = factories.OfferFactory(isActive=True, stocks=[stock], mediations=[mediation], venue=venue)
+
         api.make_offer_headline(offer=offer)
         assert offer.is_headline_offer
 
@@ -2233,6 +2244,7 @@ class HeadlineOfferTest:
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
         tomorrow = date.today() + timedelta(days=1)
         stock = factories.StockFactory(bookingLimitDatetime=tomorrow)
+        mediation = factories.MediationFactory()
         offer = factories.OfferFactory(
             validation=models.OfferValidationStatus.APPROVED,
             isActive=True,
@@ -2240,6 +2252,7 @@ class HeadlineOfferTest:
                 stock,
             ],
             venue=venue,
+            mediations=[mediation],
         )
         api.make_offer_headline(offer=offer)
         assert offer.is_headline_offer
@@ -2250,6 +2263,7 @@ class HeadlineOfferTest:
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
         offer = factories.OfferFactory(isActive=True, venue=venue)
         factories.StockFactory(offer=offer)
+        factories.MediationFactory(offer=offer)
 
         api.make_offer_headline(offer=offer)
         offer.validation = models.OfferValidationStatus.REJECTED
@@ -2334,6 +2348,18 @@ class HeadlineOfferTest:
         assert old_headline_offer.timespan.upper == ending_time_1
         assert current_headline_offer.timespan.lower == creation_time_2
         assert current_headline_offer.timespan.upper is not None
+
+    def test_set_upper_timespan_of_inactive_headline_offers_without_image(self):
+        offer = factories.OfferFactory(isActive=True)
+        factories.StockFactory(offer=offer)
+
+        headline_offer = factories.HeadlineOfferFactory(offer=offer)
+        assert headline_offer.isActive
+
+        api.set_upper_timespan_of_inactive_headline_offers()
+
+        assert not headline_offer.isActive
+        assert headline_offer.timespan.upper is not None
 
 
 @pytest.mark.usefixtures("db_session")
