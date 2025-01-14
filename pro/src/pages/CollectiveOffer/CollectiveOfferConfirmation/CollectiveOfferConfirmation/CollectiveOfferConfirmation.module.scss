@@ -31,12 +31,12 @@
     max-width: rem.torem(486px);
     margin: rem.torem(40px) auto 0;
     display: flex;
+    flex-wrap: wrap;
+    gap: rem.torem(24px);
     justify-content: center;
   }
 
   &-action {
-    flex: 1;
-    margin-left: rem.torem(24px);
     text-align: center;
 
     &:first-child {
