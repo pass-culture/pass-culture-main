@@ -59,13 +59,6 @@ type TextAreaProps = FieldLayoutBaseProps &
      */
     disabled?: boolean
     /**
-     * The placeholder text for the textarea.
-     *
-     * **Important: Do not use the `placeholder` to indicate the format of the field.**
-     * Use the `label` or `description` props instead to provide instructions on the expected format.
-     */
-    placeholder?: string
-    /**
      * Whether to display a button to insert a predefined template into the textarea.
      */
     hasTemplateButton?: boolean
@@ -92,12 +85,10 @@ type TextAreaProps = FieldLayoutBaseProps &
  *   name="message"
  *   label="Your Message"
  *   description="Please enter your message."
- *   placeholder="Type your message here..."
  *   maxLength={500}
  * />
  *
  * @accessibility
- * - **Do not use the `placeholder` to indicate the format**: Placeholders are not always announced by screen readers and disappear once the user starts typing. Use `label` or `description` to provide information about the expected input.
  * - **Labels and ARIA**: Always provide the `label` prop so the field is correctly identified by assistive technologies. The component uses `aria-required` to indicate if the field is optional or required.
  * - **Descriptions**: If you use the `description` prop, it will be linked to the textarea via `aria-describedby`, providing additional information to users.
  * - **Character Counting**: The component displays the number of characters entered, helping users stay within the maximum allowed.
@@ -110,7 +101,6 @@ export const TextArea = ({
   className,
   disabled,
   description,
-  placeholder,
   label,
   maxLength = 1000,
   isOptional,
@@ -122,10 +112,13 @@ export const TextArea = ({
 }: TextAreaProps): JSX.Element => {
   const [field, meta, helpers] = useField({ name })
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
-  
-  const { AB_COLLECTIVE_DESCRIPTION_TEMPLATE: isCollectiveDescriptionTemplateActive } = useRemoteConfigParams()
 
-  const shouldDisplayTemplateButton = hasTemplateButton && isCollectiveDescriptionTemplateActive === "true"
+  const {
+    AB_COLLECTIVE_DESCRIPTION_TEMPLATE: isCollectiveDescriptionTemplateActive,
+  } = useRemoteConfigParams()
+
+  const shouldDisplayTemplateButton =
+    hasTemplateButton && isCollectiveDescriptionTemplateActive === 'true'
 
   /**
    * Updates the height of the textarea based on its content.
@@ -185,7 +178,6 @@ export const TextArea = ({
         id={name}
         rows={rows}
         maxLength={maxLength}
-        placeholder={placeholder}
         aria-required={!isOptional}
         aria-controls={props['aria-controls']}
         ref={textAreaRef}
@@ -195,7 +187,15 @@ export const TextArea = ({
           props.onChange?.(event)
         }}
       />
-      {shouldDisplayTemplateButton && <Button className={styles['template-button']} onClick={generateTemplate} disabled={field.value?.length}>Générer un exemple</Button>}
+      {shouldDisplayTemplateButton && (
+        <Button
+          className={styles['template-button']}
+          onClick={generateTemplate}
+          disabled={field.value?.length}
+        >
+          Générer un exemple
+        </Button>
+      )}
     </FieldLayout>
   )
 }
