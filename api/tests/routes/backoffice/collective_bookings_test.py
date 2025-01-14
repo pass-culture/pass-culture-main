@@ -37,7 +37,7 @@ def collective_bookings_fixture() -> tuple:
         educationalInstitution=institution2,
         collectiveStock__collectiveOffer__name="Offer n°1",
         collectiveStock__collectiveOffer__formats=[subcategories.EacFormat.CONFERENCE_RENCONTRE],
-        collectiveStock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=6),
+        collectiveStock__startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=6),
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=4),
         venue=venue,
     )
@@ -50,7 +50,6 @@ def collective_bookings_fixture() -> tuple:
         collectiveStock__collectiveOffer__name="Visite des locaux primitifs du pass Culture",
         collectiveStock__collectiveOffer__formats=[subcategories.EacFormat.VISITE_GUIDEE],
         collectiveStock__bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=2),
-        collectiveStock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=3),
         collectiveStock__startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=3),
         collectiveStock__endDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=24),
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=3),
@@ -63,7 +62,7 @@ def collective_bookings_fixture() -> tuple:
         collectiveStock__collectiveOffer__name="Offer n°2",
         collectiveStock__collectiveOffer__formats=[subcategories.EacFormat.CONCERT],
         collectiveStock__bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=3),
-        collectiveStock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=7),
+        collectiveStock__startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=7),
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=2),
         venue=venue,
     )
@@ -72,7 +71,7 @@ def collective_bookings_fixture() -> tuple:
         educationalInstitution=institution3,
         collectiveStock__collectiveOffer__name="Offer n°3",
         collectiveStock__collectiveOffer__formats=[subcategories.EacFormat.PROJECTION_AUDIOVISUELLE],
-        collectiveStock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=5),
+        collectiveStock__startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=5),
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1),
     )
     # 4
@@ -574,7 +573,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        # beginningDatetime at J+7, J+6, J+5, J+3, J+1
+        # startDatetime at J+7, J+6, J+5, J+3, J+1
         assert [row["ID résa"] for row in rows] == [str(collective_bookings[idx].id) for idx in (2, 0, 3, 1, 4)]
 
     @pytest.mark.parametrize("field", ["offerer", "venue", "cashflow_batches"])

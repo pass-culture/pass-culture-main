@@ -45,7 +45,7 @@ class CollectiveOfferTest:
         institution = educational_factories.EducationalInstitutionFactory(institutionId=UAI)
         stocks = educational_factories.CollectiveStockFactory.create_batch(
             3,
-            beginningDatetime=START_DATE,
+            startDatetime=START_DATE,
             collectiveOffer__institution=institution,
             collectiveOffer__offerVenue={
                 "venueId": venue.id,
@@ -59,7 +59,7 @@ class CollectiveOfferTest:
 
         # cancelled booking should appear in the result when the feature toggle is disabled
         stock_with_cancelled_booking = educational_factories.CollectiveStockFactory(
-            beginningDatetime=START_DATE,
+            startDatetime=START_DATE,
             collectiveOffer__institution=institution,
             collectiveOffer__offerVenue={
                 "venueId": venue.id,
@@ -92,7 +92,7 @@ class CollectiveOfferTest:
         institution = educational_factories.EducationalInstitutionFactory(institutionId=UAI)
         stocks = educational_factories.CollectiveStockFactory.create_batch(
             3,
-            beginningDatetime=START_DATE,
+            startDatetime=START_DATE,
             collectiveOffer__institution=institution,
             collectiveOffer__offerVenue={
                 "venueId": venue.id,
@@ -106,7 +106,7 @@ class CollectiveOfferTest:
 
         # cancelled booking should not appear in the result when the feature toggle is enabled
         stock_with_cancelled_booking = educational_factories.CollectiveStockFactory(
-            beginningDatetime=START_DATE,
+            startDatetime=START_DATE,
             collectiveOffer__institution=institution,
             collectiveOffer__offerVenue={
                 "venueId": venue.id,

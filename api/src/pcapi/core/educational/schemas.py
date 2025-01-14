@@ -72,6 +72,7 @@ class Redactor(AdageBaseResponseModel):
 class EducationalBookingBaseResponse(AdageBaseResponseModel):
     accessibility: str = Field(description="Accessibility of the offer")
     address: str = Field(description="Adresse of event")
+    # TODO: once Adage has made the switch to startDatetime, we can remove beginningDatetime here
     beginningDatetime: datetime = Field(description="Beginnning date of event")
     startDatetime: datetime = Field(description="Start date of event")
     endDatetime: datetime = Field(description="End date of event")

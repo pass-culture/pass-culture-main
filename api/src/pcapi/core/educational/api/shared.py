@@ -1,4 +1,5 @@
 import datetime
+import typing
 
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
@@ -10,7 +11,8 @@ from pcapi.models import feature
 def update_collective_stock_booking(
     stock: educational_models.CollectiveStock,
     current_booking: educational_models.CollectiveBooking | None,
-    beginning_datetime_has_changed: bool,
+    datetime_has_changed: bool,
+    datetime_column: typing.Literal["startDatetime"] | typing.Literal["beginningDatetime"],
 ) -> None:
     """When a collective stock is updated, we also update some fields of its related booking"""
 
@@ -32,9 +34,10 @@ def update_collective_stock_booking(
     if booking_to_update:
         booking_to_update.confirmationLimitDate = booking_limit_value
 
-        if beginning_datetime_has_changed:
-            _update_collective_booking_cancellation_limit_date(booking_to_update, stock.beginningDatetime)
-            _update_collective_booking_educational_year_id(booking_to_update, stock.beginningDatetime)
+        if datetime_has_changed:
+            start = getattr(stock, datetime_column)
+            _update_collective_booking_cancellation_limit_date(booking_to_update, start)
+            _update_collective_booking_educational_year_id(booking_to_update, start)
 
 
 def _update_collective_booking_educational_year_id(

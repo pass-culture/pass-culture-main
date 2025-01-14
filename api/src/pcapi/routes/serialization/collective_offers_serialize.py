@@ -89,7 +89,6 @@ class ListCollectiveOffersQueryModel(BaseModel):
 class CollectiveOffersStockResponseModel(BaseModel):
     hasBookingLimitDatetimePassed: bool
     remainingQuantity: int | str
-    beginningDatetime: datetime | None
     bookingLimitDatetime: datetime | None
     startDatetime: datetime | None
     endDatetime: datetime | None
@@ -219,7 +218,6 @@ def _serialize_stock(stock: educational_models.CollectiveStock | None = None) ->
             "id": stock.id,
             "hasBookingLimitDatetimePassed": stock.hasBookingLimitDatetimePassed,
             "remainingQuantity": 0 if stock.isSoldOut else 1,
-            "beginningDatetime": stock.beginningDatetime,
             "startDatetime": stock.startDatetime,
             "endDatetime": stock.endDatetime,
             "bookingLimitDatetime": stock.bookingLimitDatetime,
@@ -227,7 +225,6 @@ def _serialize_stock(stock: educational_models.CollectiveStock | None = None) ->
     return {
         "hasBookingLimitDatetimePassed": False,
         "remainingQuantity": 1,
-        "beginningDatetime": None,
         "startDatetime": None,
         "endDatetime": None,
         "bookingLimitDatetime": None,
@@ -307,9 +304,6 @@ class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
     id: int
     isSoldOut: bool = Field(alias="isBooked")
     is_cancellable_from_offerer: bool = Field(alias="isCancellable")
-    # beginningDatetime is deprecated and replaced with
-    # startDatetime and endDatetime
-    beginningDatetime: datetime | None
     startDatetime: datetime | None
     endDatetime: datetime | None
     bookingLimitDatetime: datetime | None

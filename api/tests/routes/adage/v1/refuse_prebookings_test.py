@@ -31,7 +31,7 @@ class Returns200Test:
         )
         collective_stock: CollectiveStock = CollectiveStockFactory(
             collectiveOffer__bookingEmails=["test_collective@mail.com", "test2_collective@mail.com"],
-            beginningDatetime=datetime(2020, 1, 1, 12, 53, 00),
+            startDatetime=datetime(2020, 1, 1, 12, 53, 00),
         )
         collective_booking = CollectiveBookingFactory(
             status=CollectiveBookingStatus.PENDING,

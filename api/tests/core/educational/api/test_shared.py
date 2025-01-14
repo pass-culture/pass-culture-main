@@ -12,7 +12,7 @@ class SharedTest:
     def test_update_cancellation_limit_date_naive(self) -> None:
         now = datetime.datetime.utcnow()
         start = now + datetime.timedelta(days=35)
-        stock = educational_factories.CollectiveStockFactory(beginningDatetime=start)
+        stock = educational_factories.CollectiveStockFactory(startDatetime=start)
         booking = educational_factories.CollectiveBookingFactory(collectiveStock=stock)
         assert booking.cancellationLimitDate == start - datetime.timedelta(days=30)
 
@@ -29,7 +29,7 @@ class SharedTest:
         now_aware = datetime.datetime.now(datetime.timezone.utc)  # pylint: disable=datetime-now
         now_naive = now_aware.replace(tzinfo=None)
         start = now_naive + datetime.timedelta(days=35)
-        stock = educational_factories.CollectiveStockFactory(beginningDatetime=start)
+        stock = educational_factories.CollectiveStockFactory(startDatetime=start)
         booking = educational_factories.CollectiveBookingFactory(collectiveStock=stock)
         assert booking.cancellationLimitDate == start - datetime.timedelta(days=30)
 

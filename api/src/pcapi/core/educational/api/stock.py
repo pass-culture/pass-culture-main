@@ -31,7 +31,6 @@ def create_collective_stock(
     offer_id: int | None = None,
 ) -> educational_models.CollectiveStock | None:
     offer_id = offer_id or stock_data.offer_id
-    beginning = stock_data.beginning_datetime
     start = stock_data.start_datetime
     end = stock_data.end_datetime
     booking_limit_datetime = stock_data.booking_limit_datetime
@@ -39,17 +38,10 @@ def create_collective_stock(
     number_of_tickets = stock_data.number_of_tickets
     educational_price_detail = stock_data.educational_price_detail
 
-    assert beginning or (start and end)
-
-    if not beginning:
-        assert start and end  # helps mypy
-        beginning = start
-
+    if end:
         _check_start_and_end_dates_in_same_educational_year(start, end)
-
-    if not start or not end:
-        assert beginning  # helps mypy
-        start, end = beginning, beginning
+    else:
+        end = start
 
     collective_offer = (
         educational_models.CollectiveOffer.query.filter_by(id=offer_id)
@@ -60,11 +52,11 @@ def create_collective_stock(
     validation.check_collective_offer_number_of_collective_stocks(collective_offer)
     offer_validation.check_validation_status(collective_offer)
     if booking_limit_datetime is None:
-        booking_limit_datetime = beginning
+        booking_limit_datetime = start
 
     collective_stock = educational_models.CollectiveStock(
         collectiveOffer=collective_offer,
-        beginningDatetime=beginning,
+        beginningDatetime=start,  # TODO: this field is still required, the column will be removed later
         startDatetime=start,
         endDatetime=end,
         bookingLimitDatetime=booking_limit_datetime,
@@ -92,7 +84,7 @@ def edit_collective_stock(
         # with FF ON this is included in the allowed actions
         validation.check_if_offer_is_not_public_api(stock.collectiveOffer)
 
-    date_fields = ("beginningDatetime", "startDatetime", "endDatetime", "bookingLimitDatetime")
+    date_fields = ("startDatetime", "endDatetime", "bookingLimitDatetime")
     is_editing_dates = any(field in stock_data for field in date_fields)
 
     if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active() and is_editing_dates:
@@ -100,23 +92,13 @@ def edit_collective_stock(
             stock.collectiveOffer, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DATES
         )
 
-    beginning = stock_data.get("beginningDatetime")
-    beginning = serialization_utils.as_utc_without_timezone(beginning) if beginning else None
     start_datetime = stock_data.get("startDatetime")
     start_datetime = serialization_utils.as_utc_without_timezone(start_datetime) if start_datetime else None
     end_datetime = stock_data.get("endDatetime")
     end_datetime = serialization_utils.as_utc_without_timezone(end_datetime) if end_datetime else None
 
-    assert not (beginning and start_datetime)
-
-    if not beginning and start_datetime:
-        beginning = start_datetime
-
-    if not start_datetime and beginning:
-        start_datetime = beginning
-
-    if not end_datetime and beginning:
-        end_datetime = beginning
+    if start_datetime and not end_datetime:
+        end_datetime = start_datetime
 
     if start_datetime or end_datetime:
         after_update_start_datetime = start_datetime or stock.startDatetime
@@ -130,33 +112,27 @@ def edit_collective_stock(
     updatable_fields = _extract_updatable_fields_from_stock_data(
         stock,
         stock_data,
-        beginning=beginning,
         start_datetime=start_datetime,
         end_datetime=end_datetime,
         booking_limit_datetime=booking_limit,
     )
 
-    check_beginning = beginning
-    check_booking_limit_datetime = booking_limit
+    check_start = start_datetime or stock.startDatetime
+    check_booking_limit_datetime = booking_limit or stock.bookingLimitDatetime
 
-    if beginning is None:
-        check_beginning = stock.beginningDatetime
-    if booking_limit is None:
-        check_booking_limit_datetime = stock.bookingLimitDatetime
-
-    # bypass check because when beginning and booking_limit_datetime are on the
-    # same day, booking_limit_datetime is set to beginning
+    # bypass check because when start and booking_limit_datetime are on the
+    # same day, booking_limit_datetime is set to start
     should_bypass_check_booking_limit_datetime = False
 
     if stock.collectiveOffer.venue.departementCode is not None:
-        check_beginning_with_tz = date.utc_datetime_to_department_timezone(
-            check_beginning, stock.collectiveOffer.venue.departementCode  # type: ignore[arg-type]
+        check_start_with_tz = date.utc_datetime_to_department_timezone(
+            check_start, stock.collectiveOffer.venue.departementCode
         )
         check_booking_limit_datetime_with_tz = date.utc_datetime_to_department_timezone(
-            check_booking_limit_datetime, stock.collectiveOffer.venue.departementCode  # type: ignore[arg-type]
+            check_booking_limit_datetime, stock.collectiveOffer.venue.departementCode
         )
         should_bypass_check_booking_limit_datetime = (
-            check_beginning_with_tz.date() == check_booking_limit_datetime_with_tz.date()
+            check_start_with_tz.date() == check_booking_limit_datetime_with_tz.date()
         )
 
     current_booking = stock.get_unique_non_cancelled_booking()
@@ -178,11 +154,7 @@ def edit_collective_stock(
                 stock.collectiveOffer, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
             )
     else:
-        if (
-            "beginningDatetime" not in stock_data
-            and "startDatetime" not in stock_data
-            and "bookingLimitDatetime" not in stock_data
-        ):
+        if "startDatetime" not in stock_data and "bookingLimitDatetime" not in stock_data:
             price = updatable_fields.get("price")
             if current_booking and current_booking.status == CollectiveBookingStatus.CONFIRMED:
                 if price is not None:
@@ -197,12 +169,12 @@ def edit_collective_stock(
                 validation.check_collective_booking_status_pending(current_booking)
 
     if is_editing_dates and not should_bypass_check_booking_limit_datetime:
-        offer_validation.check_booking_limit_datetime(stock, check_beginning, check_booking_limit_datetime)
+        offer_validation.check_booking_limit_datetime(stock, check_start, check_booking_limit_datetime)
 
-    # due to check_booking_limit_datetime the only reason beginning < booking_limit_dt is when they are on the same day
+    # due to check_booking_limit_datetime the only reason start < booking_limit_dt is when they are on the same day
     # in the venue timezone
-    if beginning is not None and beginning < updatable_fields["bookingLimitDatetime"]:
-        updatable_fields["bookingLimitDatetime"] = updatable_fields["beginningDatetime"]
+    if start_datetime is not None and start_datetime < updatable_fields["bookingLimitDatetime"]:
+        updatable_fields["bookingLimitDatetime"] = updatable_fields["startDatetime"]
 
     stock = educational_repository.get_and_lock_collective_stock(stock_id=stock.id)
     for attribute, new_value in updatable_fields.items():
@@ -213,7 +185,8 @@ def edit_collective_stock(
     api_shared.update_collective_stock_booking(
         stock=stock,
         current_booking=current_booking,
-        beginning_datetime_has_changed="beginningDatetime" in stock_data,
+        datetime_has_changed="startDatetime" in stock_data,
+        datetime_column="startDatetime",
     )
 
     db.session.flush()
@@ -253,20 +226,18 @@ def _extract_updatable_fields_from_stock_data(
     stock: educational_models.CollectiveStock,
     stock_data: dict,
     *,
-    beginning: datetime.datetime | None,
     start_datetime: datetime.datetime | None,
     end_datetime: datetime.datetime | None,
     booking_limit_datetime: datetime.datetime | None,
 ) -> dict:
     # if booking_limit_datetime is provided but null, set it to default value which is event datetime
     if "bookingLimitDatetime" in stock_data.keys() and booking_limit_datetime is None:
-        booking_limit_datetime = beginning if beginning else stock.beginningDatetime
+        booking_limit_datetime = start_datetime if start_datetime else stock.startDatetime
 
     if "bookingLimitDatetime" not in stock_data.keys():
         booking_limit_datetime = stock.bookingLimitDatetime
 
     updatable_fields = {
-        "beginningDatetime": beginning,
         "startDatetime": start_datetime,
         "endDatetime": end_datetime,
         "bookingLimitDatetime": booking_limit_datetime,

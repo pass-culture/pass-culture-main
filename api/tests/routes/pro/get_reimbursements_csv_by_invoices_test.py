@@ -190,7 +190,7 @@ def test_with_pricings_collective_use_case(client):
     assert row["Prénom (offre collective)"] == redactor.firstName
     assert row["Nom de l'établissement (offre collective)"] == institution.name
     assert row["Date de l'évènement (offre collective)"] == utc_datetime_to_department_timezone(
-        collective_booking.collectiveStock.beginningDatetime, venue1.departementCode
+        collective_booking.collectiveStock.startDatetime, venue1.departementCode
     ).strftime("%d/%m/%Y %H:%M")
     assert row["Contremarque"] == ""
     assert row["Date de validation de la réservation"] == collective_booking.dateUsed.strftime("%Y-%m-%d %H:%M:%S")

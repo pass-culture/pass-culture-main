@@ -432,7 +432,7 @@ class CollectiveStatusMixin:
             return offer_mixin.CollectiveOfferStatus.INACTIVE
 
         if self.validation == offer_mixin.OfferValidationStatus.APPROVED:
-            if self.hasBeginningDatetimePassed:
+            if self.hasStartDatetimePassed:
                 return offer_mixin.CollectiveOfferStatus.EXPIRED
             if self.isSoldOut:
                 return offer_mixin.CollectiveOfferStatus.SOLD_OUT
@@ -463,7 +463,7 @@ class CollectiveStatusMixin:
                 offer_mixin.CollectiveOfferStatus.DRAFT.name,
             ),
             (cls.isActive.is_(False), offer_mixin.CollectiveOfferStatus.INACTIVE.name),
-            (cls.hasBeginningDatetimePassed, offer_mixin.CollectiveOfferStatus.EXPIRED.name),
+            (cls.hasStartDatetimePassed, offer_mixin.CollectiveOfferStatus.EXPIRED.name),
             (cls.isSoldOut, offer_mixin.CollectiveOfferStatus.SOLD_OUT.name),
             (cls.hasBookingLimitDatetimesPassed, offer_mixin.CollectiveOfferStatus.INACTIVE.name),
             (cls.hasEndDatePassed, offer_mixin.CollectiveOfferStatus.INACTIVE.name),
@@ -807,21 +807,6 @@ class CollectiveOffer(
         )
 
     @hybrid_property
-    def hasBeginningDatetimePassed(self) -> bool:
-        if not self.collectiveStock:
-            return False
-        return self.collectiveStock.hasBeginningDatetimePassed
-
-    @hasBeginningDatetimePassed.expression  # type: ignore[no-redef]
-    def hasBeginningDatetimePassed(cls) -> Exists:  # pylint: disable=no-self-argument
-        aliased_collective_stock = sa.orm.aliased(CollectiveStock)
-        return (
-            sa.exists()
-            .where(aliased_collective_stock.collectiveOfferId == cls.id)
-            .where(aliased_collective_stock.hasBeginningDatetimePassed.is_(True))
-        )
-
-    @hybrid_property
     def hasEndDatetimePassed(self) -> bool:
         if not self.collectiveStock:
             return False
@@ -900,7 +885,7 @@ class CollectiveOffer(
 
                 last_booking_status = self.lastBookingStatus
                 has_booking_limit_passed = self.hasBookingLimitDatetimesPassed
-                has_started = self.hasBeginningDatetimePassed
+                has_started = self.hasStartDatetimePassed
                 has_ended = self.hasEndDatetimePassed
 
                 match last_booking_status:
@@ -1045,11 +1030,11 @@ class CollectiveOffer(
 
     @hybrid_property
     def is_expired(self) -> bool:
-        return self.hasBeginningDatetimePassed
+        return self.hasStartDatetimePassed
 
     @is_expired.expression  # type: ignore[no-redef]
     def is_expired(cls) -> UnaryExpression:  # pylint: disable=no-self-argument
-        return cls.hasBeginningDatetimePassed
+        return cls.hasStartDatetimePassed
 
 
 class CollectiveOfferTemplate(
@@ -1333,12 +1318,12 @@ class CollectiveOfferTemplate(
         return sa.sql.expression.false()
 
     @hybrid_property
-    def hasBeginningDatetimePassed(self) -> bool:
+    def hasStartDatetimePassed(self) -> bool:
         # this property is here for compatibility reasons
         return False
 
-    @hasBeginningDatetimePassed.expression  # type: ignore[no-redef]
-    def hasBeginningDatetimePassed(cls) -> False_:  # pylint: disable=no-self-argument
+    @hasStartDatetimePassed.expression  # type: ignore[no-redef]
+    def hasStartDatetimePassed(cls) -> False_:  # pylint: disable=no-self-argument
         # this property is here for compatibility reasons
         return sa.sql.expression.false()
 
@@ -1467,11 +1452,11 @@ class CollectiveOfferTemplate(
 
     @hybrid_property
     def is_expired(self) -> bool:
-        return self.hasBeginningDatetimePassed
+        return self.hasStartDatetimePassed
 
     @is_expired.expression  # type: ignore[no-redef]
     def is_expired(cls) -> UnaryExpression:  # pylint: disable=no-self-argument
-        return cls.hasBeginningDatetimePassed
+        return cls.hasStartDatetimePassed
 
 
 class CollectiveStock(PcObject, Base, Model):
@@ -1553,14 +1538,6 @@ class CollectiveStock(PcObject, Base, Model):
         return cls.bookingLimitDatetime <= sa.func.now()
 
     @hybrid_property
-    def hasBeginningDatetimePassed(self) -> bool:
-        return self.beginningDatetime <= datetime.utcnow()
-
-    @hasBeginningDatetimePassed.expression  # type: ignore[no-redef]
-    def hasBeginningDatetimePassed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
-        return cls.beginningDatetime <= sa.func.now()
-
-    @hybrid_property
     def hasStartDatetimePassed(self) -> bool:
         return self.startDatetime <= datetime.utcnow()
 
@@ -1578,19 +1555,15 @@ class CollectiveStock(PcObject, Base, Model):
 
     @hybrid_property
     def isEventExpired(self) -> bool:  # todo rewrite
-        return self.beginningDatetime <= datetime.utcnow()
+        return self.startDatetime <= datetime.utcnow()
 
     @isEventExpired.expression  # type: ignore[no-redef]
     def isEventExpired(cls):  # pylint: disable=no-self-argument
-        return cls.beginningDatetime <= sa.func.now()
+        return cls.startDatetime <= sa.func.now()
 
     @property
     def isExpired(self) -> bool:
         return self.isEventExpired or self.hasBookingLimitDatetimePassed
-
-    @property
-    def isEventDeletable(self) -> bool:
-        return self.beginningDatetime >= datetime.utcnow()
 
     def get_non_cancelled_bookings(self) -> list["CollectiveBooking"]:
         return [booking for booking in self.collectiveBookings if booking.status != CollectiveBookingStatus.CANCELLED]
@@ -1866,7 +1839,7 @@ class CollectiveBooking(PcObject, Base, Model):
         self.cancellationReason = None
         self.cancellationUserId = None
         if self.confirmationDate:
-            if self.collectiveStock.beginningDatetime < datetime.utcnow():
+            if self.collectiveStock.startDatetime < datetime.utcnow():
                 self.status = CollectiveBookingStatus.USED
                 self.dateUsed = datetime.utcnow()
             else:

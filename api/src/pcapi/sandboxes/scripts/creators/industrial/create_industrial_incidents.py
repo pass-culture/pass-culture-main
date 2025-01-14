@@ -251,7 +251,7 @@ def _create_one_collective_incident(
             1,
             collectiveStock__collectiveOffer__venue=venue,
             collectiveStock__price=decimal.Decimal("19990"),
-            collectiveStock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            collectiveStock__startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
             educationalInstitution=deposit.educationalInstitution,
             educationalYear=deposit.educationalYear,
         )
@@ -260,7 +260,7 @@ def _create_one_collective_incident(
         size=2 if multiple_bookings else 1,
         collectiveStock__collectiveOffer__venue=other_venue or venue,
         collectiveStock__price=decimal.Decimal("30"),
-        collectiveStock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        collectiveStock__startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
         educationalInstitution=deposit.educationalInstitution,
         educationalYear=deposit.educationalYear,
     )
@@ -286,7 +286,7 @@ def _create_one_collective_incident(
         new_booking = educational_factories.UsedCollectiveBookingFactory(
             collectiveStock__collectiveOffer__venue=other_venue or venue,
             collectiveStock__price=decimal.Decimal("20") + decimal.Decimal(i),
-            collectiveStock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            collectiveStock__startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
             educationalInstitution=deposit.educationalInstitution,
             educationalYear=deposit.educationalYear,
         )

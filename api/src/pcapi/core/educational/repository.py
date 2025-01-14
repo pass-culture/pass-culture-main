@@ -50,7 +50,7 @@ def find_bookings_starting_in_x_days(number_of_days: int) -> list[educational_mo
     target_day = datetime.utcnow() + timedelta(days=number_of_days)
     start = datetime.combine(target_day, time.min)
     end = datetime.combine(target_day, time.max)
-    return find_bookings_in_interval(start, end, educational_models.CollectiveStock.beginningDatetime)
+    return find_bookings_in_interval(start, end, educational_models.CollectiveStock.startDatetime)
 
 
 def find_bookings_ending_in_x_days(number_of_days: int) -> list[educational_models.CollectiveBooking]:
@@ -647,7 +647,7 @@ def _get_filtered_collective_bookings_query(
 
     if event_date:
         collective_bookings_query = collective_bookings_query.filter(
-            field_to_venue_timezone(educational_models.CollectiveStock.beginningDatetime) == event_date
+            field_to_venue_timezone(educational_models.CollectiveStock.startDatetime) == event_date
         )
 
     return collective_bookings_query
@@ -676,9 +676,9 @@ def list_public_collective_offers(
     if venue_id:
         filters.append(educational_models.CollectiveOffer.venueId == venue_id)
     if period_beginning_date:
-        filters.append(educational_models.CollectiveStock.beginningDatetime >= period_beginning_date)
+        filters.append(educational_models.CollectiveStock.startDatetime >= period_beginning_date)
     if period_ending_date:
-        filters.append(educational_models.CollectiveStock.beginningDatetime <= period_ending_date)
+        filters.append(educational_models.CollectiveStock.startDatetime <= period_ending_date)
     query = query.filter(*filters)
     query = query.options(
         sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock)
@@ -791,8 +791,8 @@ def get_filtered_collective_booking_report(
         offerers_models.Offerer.postalCode.label("offererPostalCode"),
         educational_models.CollectiveOffer.name.label("offerName"),
         educational_models.CollectiveStock.price,
-        educational_models.CollectiveStock.beginningDatetime.label("stockBeginningDatetime"),
-        educational_models.CollectiveStock.beginningDatetime.label("stockBookingLimitDatetime"),
+        educational_models.CollectiveStock.startDatetime.label("stockStartDatetime"),
+        educational_models.CollectiveStock.bookingLimitDatetime.label("stockBookingLimitDatetime"),
         educational_models.EducationalRedactor.firstName,
         educational_models.EducationalRedactor.lastName,
         educational_models.EducationalRedactor.email,

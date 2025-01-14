@@ -17,7 +17,7 @@ class EducationalWorkflowTest:
     @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_collective_workflow(self, db_session):
         now = datetime.datetime.utcnow()
-        beginning_datetime = now + datetime.timedelta(days=1)
+        start_datetime = now + datetime.timedelta(days=1)
 
         venue = offerers_factories.VenueFactory(pricing_point="self")
         bank_account = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
@@ -28,14 +28,14 @@ class EducationalWorkflowTest:
         )
 
         collective_booking = educational_factories.ConfirmedCollectiveBookingFactory(
-            collectiveStock__beginningDatetime=beginning_datetime,
+            collectiveStock__startDatetime=start_datetime,
             collectiveStock__collectiveOffer=collective_offer,
         )
 
         assert collective_offer.displayedStatus == educational_models.CollectiveOfferDisplayedStatus.BOOKED
         assert collective_booking.status == educational_models.CollectiveBookingStatus.CONFIRMED
 
-        now = beginning_datetime + datetime.timedelta(days=3)
+        now = start_datetime + datetime.timedelta(days=3)
         with time_machine.travel(now) as frozen_time:
             # We change the status of the offer (but not the booking)
             assert collective_offer.displayedStatus == educational_models.CollectiveOfferDisplayedStatus.ENDED

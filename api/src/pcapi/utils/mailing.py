@@ -16,8 +16,11 @@ def build_pc_pro_reset_password_link(token_value: str) -> str:
 
 
 def get_event_datetime(stock: CollectiveStock | Stock) -> datetime:
-    if not stock.beginningDatetime:
+    start_value = stock.startDatetime if isinstance(stock, CollectiveStock) else stock.beginningDatetime
+
+    if not start_value:
         raise ValueError("Event stock is missing a beginningDatetime")
+
     if isinstance(stock, Stock):
         departement_code = stock.offer.venue.departementCode
         if feature.FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
@@ -27,6 +30,8 @@ def get_event_datetime(stock: CollectiveStock | Stock) -> datetime:
                 departement_code = stock.offer.venue.offererAddress.address.departmentCode
     else:
         departement_code = stock.collectiveOffer.venue.departementCode
+
     if not departement_code:
-        return stock.beginningDatetime
-    return utc_datetime_to_department_timezone(stock.beginningDatetime, departement_code)
+        return start_value
+
+    return utc_datetime_to_department_timezone(start_value, departement_code)
