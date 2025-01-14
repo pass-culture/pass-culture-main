@@ -39,7 +39,6 @@ const options = [
 export const Default: StoryObj<typeof AdageMultiselect> = {
   args: {
     options,
-    placeholder: 'Ex: Théâtre',
     name: 'educationalDomains',
     label: 'Rechercher un domaine artistique',
     isOpen: true,

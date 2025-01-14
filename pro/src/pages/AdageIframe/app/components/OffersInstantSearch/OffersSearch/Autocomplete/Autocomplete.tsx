@@ -397,6 +397,7 @@ export const Autocomplete = ({
                   {...autocomplete.getInputProps({
                     inputElement: inputRef.current,
                   })}
+                  placeholder="Rechercher par mot-clé, par partenaire culturel, par nom d’offre..."
                 />
                 <span
                   className={styles['form-input-span']}
