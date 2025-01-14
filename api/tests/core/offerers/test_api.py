@@ -2106,6 +2106,7 @@ class CreateFromOnboardingDataTest:
         )
         assert created_virtual_venue.isVirtual
         self.assert_common_venue_attrs(created_venue)
+        assert created_venue.isOpenToPublic is None
         assert created_venue.comment is None
         assert created_venue.siret == "85331845900031"
         assert created_venue.current_pricing_point_id == created_venue.id
@@ -2136,6 +2137,59 @@ class CreateFromOnboardingDataTest:
         self.assert_only_welcome_email_to_pro_was_sent()
         # Venue Registration
         self.assert_venue_registration_attrs(created_venue)
+
+    @pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+    @pytest.mark.parametrize("isOpenToPublic", [True, False])
+    def test_new_offerer_and_isOpenToPublic(self, isOpenToPublic, requests_mock):
+        api_adresse_response = {
+            "type": "FeatureCollection",
+            "version": "draft",
+            "features": [
+                {
+                    "type": "Feature",
+                    "geometry": {"type": "Point", "coordinates": [2.337933, 48.863666]},
+                    "properties": {
+                        "label": "3 Rue de Valois 75001 Paris",
+                        "score": 0.9652045454545454,
+                        "housenumber": "3",
+                        "id": "75101_9575_00003",
+                        "name": "3 Rue de Valois",
+                        "postcode": "75001",
+                        "citycode": "75101",
+                        "x": 651428.82,
+                        "y": 6862829.62,
+                        "city": "Paris",
+                        "district": "Paris 1er Arrondissement",
+                        "context": "75, Paris, Île-de-France",
+                        "type": "housenumber",
+                        "importance": 0.61725,
+                        "street": "Rue de Valois",
+                    },
+                }
+            ],
+            "attribution": "BAN",
+            "licence": "ETALAB-2.0",
+            "query": "3 Rue de valois, 75001 Paris",
+            "filters": {"postcode": "75001"},
+            "limit": 1,
+        }
+        requests_mock.get(
+            "https://api-adresse.data.gouv.fr/search?q=3 RUE DE VALOIS&postcode=75001&autocomplete=0&limit=1",
+            json=api_adresse_response,
+        )
+        user = users_factories.UserFactory(email="pro@example.com")
+        user.add_non_attached_pro_role()
+
+        onboarding_data = self.get_onboarding_data(create_venue_without_siret=False)
+        onboarding_data.isOpenToPublic = isOpenToPublic
+        created_user_offerer = offerers_api.create_from_onboarding_data(user, onboarding_data)
+
+        # Offerer has been created
+        created_offerer = created_user_offerer.offerer
+        created_venue, created_virtual_venue = sorted(
+            created_user_offerer.offerer.managedVenues, key=lambda v: v.isVirtual
+        )
+        assert created_venue.isOpenToPublic is isOpenToPublic
 
     def test_existing_siren_new_siret(self):
         offerer = offerers_factories.OffererFactory(siren="853318459")

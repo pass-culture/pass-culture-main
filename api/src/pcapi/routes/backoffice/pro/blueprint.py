@@ -279,6 +279,7 @@ def create_offerer() -> utils.BackofficeResponse:
         motorDisabilityCompliant=None,
         visualDisabilityCompliant=None,
         comment=None,
+        isOpenToPublic=False,
     )
     venue = offerers_api.create_venue(venue_creation_info, current_user)
     offerers_api.create_venue_registration(venue.id, new_onboarding_info.target, new_onboarding_info.webPresence)

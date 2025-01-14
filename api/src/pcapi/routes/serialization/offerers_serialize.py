@@ -268,14 +268,15 @@ class CreateOffererQueryModel(BaseModel):
 
 
 class SaveNewOnboardingDataQueryModel(BaseModel):
+    address: offerers_schemas.AddressBodyModel
     createVenueWithoutSiret: bool = False
+    isOpenToPublic: bool | None
     publicName: str | None
     siret: str
     target: Target
+    token: str
     venueTypeCode: str
     webPresence: str
-    token: str
-    address: offerers_schemas.AddressBodyModel
 
     class Config:
         extra = "forbid"
