@@ -256,9 +256,7 @@ describe('offersSearch component', () => {
     )
 
     // Then
-    expect(
-      screen.getByPlaceholderText('Ex: 59 ou Hauts-de-France')
-    ).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: '01 - Ain' })).toBeInTheDocument()
   })
 
   it('should display academies filter with departments options if user has selected academy filter', async () => {
@@ -288,7 +286,7 @@ describe('offersSearch component', () => {
     )
 
     // Then
-    expect(screen.getByPlaceholderText('Ex: Nantes')).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: 'Amiens' })).toBeInTheDocument()
   })
 
   it('should display radius input filter if user has selected around me filter', async () => {

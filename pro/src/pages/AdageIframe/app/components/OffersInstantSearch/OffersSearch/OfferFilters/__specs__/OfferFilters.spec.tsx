@@ -185,17 +185,27 @@ describe('OfferFilters', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should display departments options in localisation filter modal', () => {
+  it('should display departments options in localisation filter modal', async () => {
     renderOfferFilters(initialValues, LocalisationFilterStates.DEPARTMENTS)
 
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Localisation des partenaires' })
+    )
+
     expect(
-      screen.getByPlaceholderText('Ex: 59 ou Hauts-de-France')
+      await screen.findByRole('option', { name: '01 - Ain' })
     ).toBeInTheDocument()
   })
-  it('should display academies options in localisation filter modal', () => {
+  it('should display academies options in localisation filter modal', async () => {
     renderOfferFilters(initialValues, LocalisationFilterStates.ACADEMIES)
 
-    expect(screen.getByPlaceholderText('Ex: Nantes')).toBeInTheDocument()
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Localisation des partenaires' })
+    )
+
+    expect(
+      screen.getByRole('searchbox', { name: 'Rechercher une académie' })
+    ).toBeInTheDocument()
   })
 
   it('should display radius range input in localisation filter modal', () => {

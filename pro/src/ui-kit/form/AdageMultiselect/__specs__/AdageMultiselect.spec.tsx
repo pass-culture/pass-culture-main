@@ -24,7 +24,6 @@ const renderAdageMultiselect = (
     >
       <AdageMultiselect
         options={customOptions}
-        placeholder="Ex: Théâtre"
         name="educationalDomains"
         label="Rechercher un domaine artistique"
         isOpen={true}
@@ -37,7 +36,7 @@ describe('AdageMultiselect', () => {
   it('should filter options when user type in input', async () => {
     renderAdageMultiselect()
 
-    const input = screen.getByPlaceholderText('Ex: Théâtre')
+    const input = screen.getByRole('combobox')
     await userEvent.type(input, 'Th')
 
     expect(screen.getByText('Théatre')).toBeInTheDocument()
@@ -69,7 +68,7 @@ describe('AdageMultiselect', () => {
   it('should display all options when user erase input value', async () => {
     renderAdageMultiselect()
 
-    const input = screen.getByPlaceholderText('Ex: Théâtre')
+    const input = screen.getByRole('combobox')
 
     await userEvent.type(input, 'Th')
 

@@ -1,7 +1,8 @@
 import { useCombobox } from 'downshift'
 import { useField, useFormikContext } from 'formik'
-import { useEffect, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 
+import strokeSearch from 'icons/stroke-search.svg'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 
 import { BaseInput } from '../shared/BaseInput/BaseInput'
@@ -15,7 +16,6 @@ export interface ItemProps {
 
 interface AdageMultiselectProps {
   options: ItemProps[]
-  placeholder: string
   name: string
   label: string
   isOpen: boolean
@@ -74,7 +74,6 @@ const isIncluded = (
 
 export const AdageMultiselect = ({
   options,
-  placeholder,
   name,
   label,
   isOpen,
@@ -86,6 +85,7 @@ export const AdageMultiselect = ({
   const [field] = useField<ItemProps['value'][]>(name)
   const { setFieldValue } = useFormikContext<any>()
   const [sortedOptions, setSortedOptions] = useState<ItemProps[]>([])
+  const indicationId = useId()
 
   const {
     getLabelProps,
@@ -160,9 +160,10 @@ export const AdageMultiselect = ({
         type="search"
         name="search"
         className={styles['search-input']}
-        placeholder={placeholder}
         maxLength={filterMaxLength}
         value={inputValue}
+        aria-describedby={indicationId}
+        leftIcon={strokeSearch}
         {...getInputProps()}
       />
       <ul

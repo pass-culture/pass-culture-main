@@ -273,9 +273,8 @@ export const OfferFilters = ({
                     title="Choisir un département"
                   >
                     <AdageMultiselect
-                      placeholder="Ex: 59 ou Hauts-de-France"
                       name="departments"
-                      label="Départements"
+                      label="Rechercher un département"
                       options={departmentOptions}
                       isOpen={modalOpenStatus['localisation']}
                     />
@@ -291,9 +290,8 @@ export const OfferFilters = ({
                     title="Choisir une académie"
                   >
                     <AdageMultiselect
-                      placeholder="Ex: Nantes"
                       name="academies"
-                      label="Académies"
+                      label="Rechercher une académie"
                       options={academiesOptions}
                       isOpen={modalOpenStatus['localisation']}
                     />
@@ -336,9 +334,8 @@ export const OfferFilters = ({
                   title="Choisir un domaine artistique"
                 >
                   <AdageMultiselect
-                    placeholder="Ex: Cinéma"
                     name="domains"
-                    label="Domaine artistique"
+                    label="Rechercher un domaine artistique"
                     options={domainsOptions}
                     isOpen={modalOpenStatus['domains']}
                   />
@@ -360,9 +357,8 @@ export const OfferFilters = ({
                   title="Choisir un format"
                 >
                   <AdageMultiselect
-                    placeholder="Ex: Représentation"
                     name="formats"
-                    label="Format"
+                    label="Rechercher un format"
                     options={formatsOptions}
                     isOpen={modalOpenStatus['formats']}
                   />
@@ -381,12 +377,11 @@ export const OfferFilters = ({
                 <ModalFilterLayout
                   onClean={() => onReset('students', [])}
                   onSearch={() => onSearch('students')}
-                  title="Pour quel niveau scolaire ?"
+                  title="Choisir un niveau scolaire"
                 >
                   <AdageMultiselect
-                    placeholder="Ex: Collège"
                     name="students"
-                    label="Niveau scolaire"
+                    label="Rechercher un niveau scolaire"
                     options={studentsOptionsFiltered}
                     isOpen={modalOpenStatus['students']}
                     sortOptions={(options, selectedOptions) => {
