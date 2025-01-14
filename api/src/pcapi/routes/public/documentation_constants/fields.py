@@ -263,7 +263,7 @@ class _FIELDS:
     )
     COLLECTIVE_OFFER_DATE_CREATED = Field(description="Collective offer creation date")
     COLLECTIVE_OFFER_BEGINNING_DATETIME = Field(
-        description="Collective offer beginning datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+        description="[DEPRECATED - Will be removed in upcoming release. Please use `startDatetime` instead.] Collective offer beginning datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
         example=_example_datetime_with_tz,
     )
     COLLECTIVE_OFFER_START_DATETIME = Field(
