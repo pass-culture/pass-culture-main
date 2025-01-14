@@ -26,34 +26,33 @@
   margin-bottom: rem.torem(32px);
 }
 
-.offers-description {
+.offer-choices {
   display: flex;
-  gap: rem.torem(16px);
+  gap: rem.torem(24px);
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: stretch;
   text-align: center;
+  margin-bottom: 0;
+
+  .offer-choice {
+    min-width: rem.torem(207px);
+    flex: 1;
+    margin-bottom: 0;
+  }
+
+  @media (min-width: size.$tablet) {
+    flex-direction: row;
+    align-items: stretch;
+  }
+}
+
+.form-section {
   margin-bottom: 0;
 
   // TODO: Fixing <FormLayout.Section> 's description container that have a min-height, even though the prop is empty
   // It would be better to fix the <FormLayout.Section> component itself, but it's a bit too much work for now
   & > div:empty {
     display: none;
-  }
-
-  .individual-radio-label {
-    justify-content: flex-start;
-  }
-
-  .individual-radio-button {
-    margin-bottom: 0;
-    min-height: rem.torem(186px);
-    max-width: rem.torem(235px);
-    text-align: center;
-  }
-
-  @media (min-width: size.$tablet) {
-    flex-direction: row;
-    align-items: flex-start;
   }
 }

@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -8,14 +7,14 @@ import {
   SubcategoryResponseModel,
 } from 'apiClient/v1'
 import { GET_CATEGORIES_QUERY_KEY } from 'commons/config/swrQueryKeys'
-import { RadioButtonWithImage } from 'ui-kit/RadioButtonWithImage/RadioButtonWithImage'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
+
+import { CardLink } from '../CardLink/CardLink'
 
 import styles from './DraftOffers.module.scss'
 
 interface DraftOffersProps {
   offers: ListOffersOfferResponseModel[]
-  onDraftChange: (offer: ListOffersOfferResponseModel) => void
 }
 
 const extractOfferCategoriesData = (
@@ -28,12 +27,7 @@ const extractOfferCategoriesData = (
   return { category, subcategory }
 }
 
-export const DraftOffers = ({
-  offers,
-  onDraftChange,
-}: DraftOffersProps): JSX.Element => {
-  const [selectedDraftId, setSelectedDraftId] = useState<null | string>(null)
-
+export const DraftOffers = ({ offers }: DraftOffersProps): JSX.Element => {
   const categoriesQuery = useSWR(
     [GET_CATEGORIES_QUERY_KEY],
     () => api.getCategories(),
@@ -47,13 +41,6 @@ export const DraftOffers = ({
   const categories = categoriesQuery.data.categories
   const subcategories = categoriesQuery.data.subcategories
 
-  const onSelectDraft = (offer: ListOffersOfferResponseModel) => {
-    return (event: React.ChangeEvent<HTMLInputElement>) => {
-      setSelectedDraftId(event.target.value)
-      onDraftChange(offer)
-    }
-  }
-
   return (
     <>
       <h2 className={styles['title-drafts']}>
@@ -66,18 +53,18 @@ export const DraftOffers = ({
           categories,
           subcategories
         )
-        const categoryLabel = `${category?.proLabel} -> ${subcategory?.proLabel}`
+        const categoryLabel = `${category?.proLabel} - ${subcategory?.proLabel}`
 
         return (
-          <RadioButtonWithImage
+          <CardLink
+            to={`/onboarding/offre/individuelle/${offer.id}/creation/details`}
             className={styles['offer']}
             key={offer.id}
-            name={`draft_${offer.id}`}
-            isChecked={Number(selectedDraftId) === offer.id}
             label={offer.name}
+            accessibleLabel={`Titre : ${offer.name}`}
             description={categoryLabel}
-            onChange={onSelectDraft(offer)}
-            value={String(offer.id)}
+            accessibleDescription={`Catégorie : ${categoryLabel}`}
+            direction="horizontal"
           />
         )
       })}

@@ -12,7 +12,7 @@ type ActionBarProps = {
   disableRightButton?: boolean
   withNextButton?: boolean
   onLeftButtonClick: (evt: React.MouseEvent<HTMLButtonElement>) => void
-  onRightButtonClick: (evt: React.MouseEvent<HTMLButtonElement>) => void
+  onRightButtonClick?: (evt: React.MouseEvent<HTMLButtonElement>) => void
 }
 
 export const ActionBar = ({
@@ -36,17 +36,19 @@ export const ActionBar = ({
           Retour
         </Button>
       </ActionsBarSticky.Left>
-      <ActionsBarSticky.Right>
-        <Button
-          type="submit"
-          icon={withNextButton ? fullRightIcon : undefined}
-          iconPosition={IconPositionEnum.RIGHT}
-          disabled={disableRightButton}
-          onClick={onRightButtonClick}
-        >
-          {withNextButton ? 'Étape suivante' : 'Valider'}
-        </Button>
-      </ActionsBarSticky.Right>
+      {onRightButtonClick && (
+        <ActionsBarSticky.Right>
+          <Button
+            type="submit"
+            icon={withNextButton ? fullRightIcon : undefined}
+            iconPosition={IconPositionEnum.RIGHT}
+            disabled={disableRightButton}
+            onClick={onRightButtonClick}
+          >
+            {withNextButton ? 'Étape suivante' : 'Valider'}
+          </Button>
+        </ActionsBarSticky.Right>
+      )}
     </ActionsBarSticky>
   )
 }
