@@ -769,6 +769,15 @@ def set_upper_timespan_of_inactive_headline_offers() -> None:
     inactive_headline_offers = offers_repository.get_inactive_headline_offers()
     for headline_offer in inactive_headline_offers:
         headline_offer.timespan = db_utils.make_timerange(headline_offer.timespan.lower, datetime.datetime.utcnow())
+        logger.info(
+            "Headline Offer Deactivation",
+            extra={
+                "analyticsSource": "app-pro",
+                "HeadlineOfferId": headline_offer.id,
+                "Reason": "Offer is not active anymore, or image has been removed",
+            },
+            technical_message_id="headline_offer_deactivation",
+        )
 
     db.session.commit()
 
