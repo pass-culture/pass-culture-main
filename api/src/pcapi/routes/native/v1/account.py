@@ -52,6 +52,7 @@ logger = logging.getLogger(__name__)
     api=blueprint.api,
 )
 @authenticated_and_active_user_required
+@atomic()
 def get_user_profile(user: users_models.User) -> serializers.UserProfileResponse:
     return serializers.UserProfileResponse.from_orm(user)
 
@@ -140,6 +141,7 @@ def update_user_email(user: users_models.User, body: serializers.UserProfileEmai
     deprecated=True,
 )
 @authenticated_and_active_user_required
+@atomic()
 def get_email_update_status(user: users_models.User) -> serializers.EmailUpdateStatus:
     latest_email_update_event = email_repository.get_email_update_latest_event(user)
     if not latest_email_update_event:
@@ -221,12 +223,14 @@ def validate_user_email(body: serializers.ChangeBeneficiaryEmailBody) -> seriali
 @blueprint.native_route("/profile/token_expiration", methods=["GET"])
 @spectree_serialize(on_success_status=200, api=blueprint.api, response_model=serializers.UpdateEmailTokenExpiration)
 @authenticated_and_active_user_required
+@atomic()
 def get_email_update_token_expiration_date(user: users_models.User) -> serializers.UpdateEmailTokenExpiration:
     return serializers.UpdateEmailTokenExpiration(expiration=email_api.get_active_token_expiration(user))
 
 
 @blueprint.native_route("/account", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
+@atomic()
 def create_account(body: serializers.AccountRequest) -> None:
     if FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active():
         try:
@@ -352,6 +356,7 @@ def resend_email_validation(body: serializers.ResendEmailValidationRequest) -> N
 
 @blueprint.native_route("/email_validation_remaining_resends/<email>", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=serializers.EmailValidationRemainingResendsResponse)
+@atomic()
 def email_validation_remaining_resends(email: str) -> serializers.EmailValidationRemainingResendsResponse | None:
     user = find_user_by_email(email)
     if not user:
@@ -454,6 +459,7 @@ def validate_phone_number(user: users_models.User, body: serializers.ValidatePho
 @blueprint.native_route("/phone_validation/remaining_attempts", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=serializers.PhoneValidationRemainingAttemptsRequest)
 @authenticated_and_active_user_required
+@atomic()
 def phone_validation_remaining_attempts(user: users_models.User) -> serializers.PhoneValidationRemainingAttemptsRequest:
     remaining_attempts = sending_limit.get_remaining_sms_sending_attempts(app.redis_client, user)
     expiration_time = sending_limit.get_attempt_limitation_expiration_time(app.redis_client, user)
@@ -465,6 +471,7 @@ def phone_validation_remaining_attempts(user: users_models.User) -> serializers.
 @blueprint.native_route("/account/suspend", methods=["POST"])
 @spectree_serialize(api=blueprint.api, on_success_status=204)
 @authenticated_and_active_user_required
+@atomic()
 def suspend_account(user: users_models.User) -> None:
     try:
         api.suspend_account(user, reason=constants.SuspensionReason.UPON_USER_REQUEST, actor=user)
@@ -472,7 +479,7 @@ def suspend_account(user: users_models.User) -> None:
         raise api_errors.ResourceGoneError()
     except bookings_exceptions.BookingIsAlreadyRefunded:
         raise api_errors.ForbiddenError()
-    transactional_mails.send_user_request_to_delete_account_reception_email(user)
+    on_commit(partial(transactional_mails.send_user_request_to_delete_account_reception_email, user))
 
 
 @blueprint.native_route("/account/suspend_for_hack_suspicion", methods=["POST"])
@@ -499,6 +506,7 @@ def suspend_account_for_suspicious_login(body: serializers.SuspendAccountForSusp
 
 @blueprint.native_route("/account/suspend/token_validation/<token>", methods=["GET"])
 @spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400, 401])
+@atomic()
 def account_suspension_token_validation(token: str) -> None:
     try:
         token_utils.Token.load_and_check(token, token_utils.TokenType.SUSPENSION_SUSPICIOUS_LOGIN)
@@ -528,6 +536,7 @@ def anonymize_account(user: users_models.User) -> None:
 @blueprint.native_route("/account/suspension_date", methods=["GET"])
 @spectree_serialize(response_model=serializers.UserSuspensionDateResponse, api=blueprint.api, on_success_status=200)
 @authenticated_maybe_inactive_user_required
+@atomic()
 def get_account_suspension_date(user: users_models.User) -> serializers.UserSuspensionDateResponse:
     reason = user.suspension_reason
     if reason != constants.SuspensionReason.UPON_USER_REQUEST:
@@ -541,6 +550,7 @@ def get_account_suspension_date(user: users_models.User) -> serializers.UserSusp
 @blueprint.native_route("/account/suspension_status", methods=["GET"])
 @spectree_serialize(response_model=serializers.UserSuspensionStatusResponse, api=blueprint.api, on_success_status=200)
 @authenticated_maybe_inactive_user_required
+@atomic()
 def get_account_suspension_status(user: users_models.User) -> serializers.UserSuspensionStatusResponse:
     return serializers.UserSuspensionStatusResponse(status=user.account_state)
 
