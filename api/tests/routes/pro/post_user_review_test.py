@@ -52,6 +52,34 @@ class PostUserReviewTest:
         )
 
     @mock.patch("pcapi.connectors.harvestr.create_message")
+    def test_harvestr_is_not_called_when_user_has_no_leaved_any_comment(self, harvestr_create_message, client, caplog):
+        user = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
+
+        expected_data = {
+            "userSatisfaction": "Bonne",
+            "userComment": "",
+            "pageTitle": "Un très beau titre",
+            "offererId": offerer.id,
+            "location": f"/offerers/{offerer.id}",
+        }
+
+        client = client.with_session_auth(user.email)
+
+        with caplog.at_level(logging.INFO):
+            response = client.post("/users/log-user-review", json=expected_data)
+
+        assert response.status_code == 204
+        assert "User submitting review" in caplog.messages
+        assert caplog.records[0].extra["offerer_id"] == offerer.id
+        assert caplog.records[0].extra["user_satisfaction"] == expected_data["userSatisfaction"]
+        assert caplog.records[0].extra["user_comment"] == expected_data["userComment"]
+        assert caplog.records[0].extra["source_page"] == f"/offerers/{offerer.id}"
+        assert caplog.records[0].technical_message_id == "user_review"
+        harvestr_create_message.assert_not_called()
+
+    @mock.patch("pcapi.connectors.harvestr.create_message")
     def test_user_cannot_submit_review_for_foreign_offerer(self, harvestr_create_message, client, caplog):
         user = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()

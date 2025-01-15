@@ -341,16 +341,17 @@ def submit_user_review(body: users_serializers.SubmitReviewRequestModel) -> None
 
     check_user_has_access_to_offerer(current_user, body.offererId)
 
-    harvestr.create_message(
-        title=f"Retour - {body.pageTitle}",
-        content=body.userComment,
-        requester=harvestr.HaverstrRequester(
-            name=current_user.full_name,
-            externalUid=str(current_user.id),
-            email=current_user.email,
-        ),
-        labels=["AC", f"location: {body.location}"],
-    )
+    if body.userComment:
+        harvestr.create_message(
+            title=f"Retour - {body.pageTitle}",
+            content=body.userComment,
+            requester=harvestr.HaverstrRequester(
+                name=current_user.full_name,
+                externalUid=str(current_user.id),
+                email=current_user.email,
+            ),
+            labels=["AC", f"location: {body.location}"],
+        )
 
     logger.info(
         "User submitting review",
