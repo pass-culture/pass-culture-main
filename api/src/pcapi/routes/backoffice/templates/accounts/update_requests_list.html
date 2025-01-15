@@ -83,7 +83,10 @@
                     {% endif %}
                   {% endif %}
                 </td>
-                <td>{{ links.build_ds_application_external_link(update_request.dsApplicationId, procedure_id) }}</td>
+                <td>
+                  {% set subpath = "/pieces_jointes" if update_request.status in (update_request.status.draft, update_request.status.on_going) else "" %}
+                  {{ links.build_ds_application_external_link(update_request.dsApplicationId, procedure_id, "", subpath) }}
+                </td>
                 <td>
                   {{ update_request.status | format_dms_application_status_badge }}
                   <br />
