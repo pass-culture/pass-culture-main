@@ -17,6 +17,7 @@ import { useRedirectLoggedUser } from 'commons/hooks/useRedirectLoggedUser'
 import {
   updateOffererNames,
   updateSelectedOffererId,
+  updateOffererIsOnboarded,
 } from 'commons/store/offerer/reducer'
 import { updateUser } from 'commons/store/user/reducer'
 import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
@@ -72,6 +73,11 @@ export const SignIn = (): JSX.Element => {
         captchaToken,
       })
 
+      const inisializeOffererIsOnboarded = async (offererId: number) => {
+        const response = await api.getOfferer(offererId)
+        dispatch(updateOffererIsOnboarded(response.isOnboarded))
+      }
+
       const offerers = await api.listOfferersNames()
       const firstOffererId = offerers.offerersNames[0]?.id
 
@@ -85,8 +91,12 @@ export const SignIn = (): JSX.Element => {
               savedOffererId ? Number(savedOffererId) : firstOffererId
             )
           )
+          await inisializeOffererIsOnboarded(
+            savedOffererId ? Number(savedOffererId) : firstOffererId
+          )
         } else {
           dispatch(updateSelectedOffererId(firstOffererId))
+          await inisializeOffererIsOnboarded(firstOffererId)
         }
       }
 

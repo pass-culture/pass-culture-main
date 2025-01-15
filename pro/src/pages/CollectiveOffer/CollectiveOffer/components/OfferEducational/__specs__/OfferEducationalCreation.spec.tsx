@@ -40,7 +40,7 @@ function renderComponent(props: OfferEducationalProps, route?: string) {
       user: {
         currentUser: user,
       },
-      offerer: { selectedOffererId: 1, offererNames: [] },
+      offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: true },
     },
     initialRouterEntries: route ? [route] : undefined,
   })

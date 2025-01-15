@@ -10,7 +10,10 @@ import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
-import { getOffererNameFactory } from 'commons/utils/factories/individualApiFactories'
+import {
+  getOffererNameFactory,
+  defaultGetOffererResponseModel,
+} from 'commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import * as localStorageAvailable from 'commons/utils/localStorageAvailable'
 import * as utils from 'commons/utils/recaptcha'
@@ -27,6 +30,7 @@ vi.mock('apiClient/api', () => ({
     getProfile: vi.fn(),
     signin: vi.fn(),
     listOfferersNames: vi.fn(),
+    getOfferer: vi.fn(),
   },
 }))
 
@@ -89,6 +93,10 @@ describe('SignIn', () => {
         }),
       ],
     })
+
+    vi.spyOn(api, 'getOfferer').mockResolvedValue(
+      defaultGetOffererResponseModel
+    )
   })
 
   it('should display 2 inputs and one link to account creation and one button to login', () => {
@@ -330,6 +338,8 @@ describe('SignIn', () => {
       expect(
         screen.getByText('I’m logged standard user redirect route')
       ).toBeInTheDocument()
+
+      expect(api.getOfferer).toHaveBeenCalledTimes(1)
     })
 
     it('should redirect user to offer page on signin with url parameter', async () => {

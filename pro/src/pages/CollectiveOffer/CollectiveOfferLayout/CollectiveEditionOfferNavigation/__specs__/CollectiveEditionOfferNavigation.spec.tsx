@@ -46,7 +46,7 @@ const renderCollectiveEditingOfferNavigation = (
   renderWithProviders(<CollectiveEditionOfferNavigation {...props} />, {
     storeOverrides: {
       user: { currentUser: sharedCurrentUserFactory() },
-      offerer: { selectedOffererId: 1, offererNames: [] },
+      offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: true },
     },
     ...options,
   })

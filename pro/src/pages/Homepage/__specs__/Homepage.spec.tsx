@@ -49,7 +49,7 @@ const renderHomePage = (options?: RenderWithProvidersOptions) => {
       user: {
         currentUser: user,
       },
-      offerer: { selectedOffererId: 1, offererNames: [] },
+      offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: true },
     },
     ...options,
   })

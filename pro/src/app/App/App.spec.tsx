@@ -8,6 +8,7 @@ import * as useAnalytics from 'app/App/analytics/firebase'
 import * as orejime from 'app/App/analytics/orejime'
 import { App } from 'app/App/App'
 import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import { RootState } from 'commons/store/rootReducer'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
   renderWithProviders,
@@ -45,6 +46,8 @@ const renderApp = (options?: RenderWithProvidersOptions) =>
           />
           <Route path="/broken-page" element={<TestBrokenCallComponent />} />
           <Route path="/404" element={<p>404 page</p>} />
+          <Route path="/accueil" element={<p>accueil</p>} />
+          <Route path="/onboarding" element={<p>onboarding didactique</p>} />
         </Route>
       </Routes>
     </>,
@@ -138,5 +141,57 @@ describe('App', () => {
     expect(await screen.findByText('broken page')).toBeInTheDocument()
 
     expect(await screen.findByText('404 page')).toBeInTheDocument()
+  })
+
+  describe('Onboarding status', () => {
+    const user = sharedCurrentUserFactory({ hasUserOfferer: true })
+    const overrides: Partial<RootState> = {
+      user: {
+        currentUser: user,
+      },
+      offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: false },
+    }
+
+    it('should redirect to onboarding if user is not onboarded and tries to go to home page', async () => {
+      renderApp({
+        initialRouterEntries: ['/accueil'],
+        storeOverrides: overrides,
+        user,
+        features: ['WIP_ENABLE_PRO_DIDACTIC_ONBOARDING'],
+      })
+
+      expect(
+        await screen.findByText('onboarding didactique')
+      ).toBeInTheDocument()
+    })
+
+    it('should not redirect if user is not onboarded and tries to go to offers', async () => {
+      renderApp({
+        initialRouterEntries: ['/offres'],
+        storeOverrides: overrides,
+        user,
+        features: ['WIP_ENABLE_PRO_DIDACTIC_ONBOARDING'],
+      })
+
+      expect(await screen.findByText('Offres')).toBeInTheDocument()
+    })
+
+    it('should redirect to home if user is onboarded and tries to go to onboarding', async () => {
+      renderApp({
+        initialRouterEntries: ['/onboarding'],
+        storeOverrides: {
+          ...overrides,
+          offerer: {
+            selectedOffererId: 1,
+            offererNames: [],
+            isOnboarded: true,
+          },
+        },
+        features: ['WIP_ENABLE_PRO_DIDACTIC_ONBOARDING'],
+        user,
+      })
+
+      expect(await screen.findByText('accueil')).toBeInTheDocument()
+    })
   })
 })

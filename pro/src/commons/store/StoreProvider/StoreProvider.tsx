@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
 import { api } from 'apiClient/api'
+import { HTTP_STATUS, isErrorAPIError } from 'apiClient/helpers'
 import { SAVED_OFFERER_ID_KEY } from 'commons/core/shared/constants'
 import { updateFeatures } from 'commons/store/features/reducer'
 import {
   updateOffererNames,
   updateSelectedOffererId,
+  updateOffererIsOnboarded,
 } from 'commons/store/offerer/reducer'
 import { updateUser } from 'commons/store/user/reducer'
 import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
@@ -39,6 +41,18 @@ export const StoreProvider = ({
       }
     }
 
+    const inisializeOffererIsOnboarded = async (offererId: number) => {
+      try {
+        const response = await api.getOfferer(offererId)
+        dispatch(updateOffererIsOnboarded(response.isOnboarded))
+      } catch (e) {
+        // 403 for this call means the user is not yet linked to the offerer.
+        updateOffererIsOnboarded(
+          isErrorAPIError(e) && e.status === HTTP_STATUS.FORBIDDEN
+        )
+      }
+    }
+
     const initializeUserOfferer = async () => {
       if (isAdageIframe) {
         return
@@ -54,8 +68,12 @@ export const StoreProvider = ({
               savedOffererId ? Number(savedOffererId) : firstOffererId
             )
           )
+          await inisializeOffererIsOnboarded(
+            savedOffererId ? Number(savedOffererId) : firstOffererId
+          )
         } else {
           dispatch(updateSelectedOffererId(firstOffererId))
+          await inisializeOffererIsOnboarded(firstOffererId)
         }
         dispatch(updateOffererNames(response.offerersNames))
       } catch {

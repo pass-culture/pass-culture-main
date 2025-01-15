@@ -94,7 +94,7 @@ describe('SideNavLinks', () => {
         user: {
           currentUser: sharedCurrentUserFactory({ hasPartnerPage: true }),
         },
-        offerer: { selectedOffererId: 1, offererNames: [] },
+        offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: true },
       },
     })
 
@@ -119,7 +119,7 @@ describe('SideNavLinks', () => {
         user: {
           currentUser: sharedCurrentUserFactory({ hasPartnerPage: false }),
         },
-        offerer: { selectedOffererId: 1, offererNames: [] },
+        offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: true },
       },
       user: sharedCurrentUserFactory({ hasPartnerPage: false }),
     })
