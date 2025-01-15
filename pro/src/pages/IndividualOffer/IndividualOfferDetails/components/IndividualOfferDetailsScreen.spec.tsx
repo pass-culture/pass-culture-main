@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Route, Routes } from 'react-router-dom'
 import * as router from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import { beforeEach } from 'vitest'
 
 import { api } from 'apiClient/api'
@@ -1054,7 +1054,7 @@ describe('IndividualOfferDetails', () => {
       })
       await userEvent.click(screen.getByText('Retour'))
       await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith('/onboarding/offre/creation')
+        expect(mockNavigate).toHaveBeenCalledWith(-1)
       })
     })
   })

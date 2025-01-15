@@ -7,9 +7,8 @@ import {
   SubcategoryResponseModel,
 } from 'apiClient/v1'
 import { GET_CATEGORIES_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import { CardLink } from 'ui-kit/CardLink/CardLink'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
-
-import { CardLink } from '../CardLink/CardLink'
 
 import styles from './DraftOffers.module.scss'
 
@@ -61,9 +60,7 @@ export const DraftOffers = ({ offers }: DraftOffersProps): JSX.Element => {
             className={styles['offer']}
             key={offer.id}
             label={offer.name}
-            accessibleLabel={`Titre : ${offer.name}`}
             description={categoryLabel}
-            accessibleDescription={`Catégorie : ${categoryLabel}`}
             direction="horizontal"
           />
         )
