@@ -2,97 +2,90 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
-import { MultiSelect, Option } from '../MultiSelect'
+import { MultiSelect } from '../MultiSelect'
 
 describe('<MultiSelect />', () => {
-  const options: Option[] = [
+  const options = [
     { id: '1', label: 'Option 1' },
     { id: '2', label: 'Option 2' },
     { id: '3', label: 'Option 3' },
   ]
 
-  const defaultOptions: Option[] = [{ id: '1', label: 'Option 1' }]
+  const renderMultiSelect = ({
+    hasSelectAllOptions = false,
+  }: {
+    hasSelectAllOptions?: boolean
+  } = {}) => {
+    const defaultOptions = [{ id: '1', label: 'Option 1' }]
 
-  it('should render correctly', async () => {
-    render(
+    return render(
       <MultiSelect
         options={options}
         label="Select Options"
         legend="Legend"
         defaultOptions={defaultOptions}
         hasSearch={false}
+        hasSelectAllOptions={hasSelectAllOptions}
       />
     )
+  }
 
-    expect(await screen.findByText('Select Options')).toBeInTheDocument()
+  it('should render correctly', () => {
+    renderMultiSelect()
+
+    expect(
+      screen.getByRole('button', { name: 'Select Options' })
+    ).toBeInTheDocument()
   })
 
   it('should not have accessibility violations', async () => {
-    const { container } = render(
-      <MultiSelect
-        options={options}
-        label="Select Options"
-        legend="Legend"
-        defaultOptions={defaultOptions}
-        hasSearch={false}
-      />
-    )
+    const { container } = renderMultiSelect()
 
     expect(await axe(container)).toHaveNoViolations()
 
-    const toggleButton = screen.getByText('Select Options')
+    const toggleButton = screen.getByRole('button', { name: 'Select Options' })
     await userEvent.click(toggleButton)
 
     expect(await axe(container)).toHaveNoViolations()
   })
 
   it('renders the MultiSelect component with the correct initial selected options', () => {
-    render(
-      <MultiSelect
-        options={options}
-        label="Select Options"
-        legend="Legend"
-        defaultOptions={defaultOptions}
-        hasSearch={false}
-      />
-    )
+    renderMultiSelect()
 
-    expect(screen.getByText('Option 1')).toBeInTheDocument()
+    const selectedTag = screen.getByRole('button', {
+      name: 'Supprimer Option 1',
+    })
+
+    expect(selectedTag).toBeInTheDocument()
   })
 
   it('toggles the dropdown when the trigger is clicked', async () => {
-    render(
-      <MultiSelect
-        options={options}
-        label="Select Options"
-        legend="Legend"
-        hasSelectAllOptions={true}
-        hasSearch={false}
-      />
-    )
-    const toggleButton = screen.getByText('Select Options')
+    renderMultiSelect({ hasSelectAllOptions: true })
+
+    const toggleButton = screen.getByRole('button', { name: 'Select Options' })
     await userEvent.click(toggleButton)
-    expect(screen.getByText(/Tout sélectionner/i)).toBeInTheDocument()
+
+    const selectAllCheckbox = screen.getByRole('checkbox', {
+      name: 'Tout sélectionner',
+    })
+
+    expect(selectAllCheckbox).toBeInTheDocument()
 
     await userEvent.click(toggleButton)
-    expect(screen.queryByText(/Tout sélectionner/i)).not.toBeInTheDocument()
+
+    expect(selectAllCheckbox).not.toBeInTheDocument()
   })
 
   it('selects all options when "Select All" is clicked', async () => {
-    render(
-      <MultiSelect
-        options={options}
-        label="Select Options"
-        legend="Legend"
-        hasSelectAllOptions={true}
-        hasSearch={false}
-      />
-    )
+    renderMultiSelect({ hasSelectAllOptions: true })
 
-    const toggleButton = screen.getByText('Select Options')
+    const toggleButton = screen.getByRole('button', { name: 'Select Options' })
     await userEvent.click(toggleButton)
 
-    const selectAllCheckbox = screen.getByLabelText(/Tout sélectionner/i)
+    const selectAllCheckbox = screen.getByRole('checkbox', {
+      name: 'Tout sélectionner',
+    })
+
     await userEvent.click(selectAllCheckbox)
 
     options.forEach((option) => {
@@ -101,73 +94,55 @@ describe('<MultiSelect />', () => {
   })
 
   it('removes an option from the selected items when clicked in SelectedValuesTags', async () => {
-    render(
-      <MultiSelect
-        options={options}
-        label="Select Options"
-        legend="Legend"
-        defaultOptions={defaultOptions}
-        hasSearch={false}
-      />
-    )
+    renderMultiSelect()
 
-    const selectedTag = screen.getByText('Option 1')
+    const selectedTag = screen.getByRole('button', {
+      name: 'Supprimer Option 1',
+    })
+
     await userEvent.click(selectedTag)
-    expect(screen.queryByText('Option 1')).not.toBeInTheDocument()
+
+    expect(selectedTag).not.toBeInTheDocument()
   })
 
   it('closes the dropdown when clicked outside or when Escape key is pressed', async () => {
-    render(
-      <MultiSelect
-        options={options}
-        label="Select Options"
-        legend="Legend"
-        hasSearch={false}
-      />
-    )
+    renderMultiSelect()
 
-    const toggleButton = screen.getByText('Select Options')
+    const toggleButton = screen.getByRole('button', { name: 'Select Options' })
+    toggleButton.focus()
 
     await userEvent.click(toggleButton)
-    expect(screen.queryByText('Option 1')).toBeInTheDocument()
+
+    const optionCheckbox2 = screen.getByRole('checkbox', { name: 'Option 1' })
+
+    expect(optionCheckbox2).toBeInTheDocument()
 
     await userEvent.click(document.body)
-    await waitFor(() =>
-      expect(screen.queryByText('Option 1')).not.toBeInTheDocument()
-    )
+
+    await waitFor(() => expect(optionCheckbox2).not.toBeInTheDocument())
 
     await userEvent.click(toggleButton)
     await userEvent.keyboard('[Escape]')
 
-    await waitFor(() =>
-      expect(screen.queryByText('Option 1')).not.toBeInTheDocument()
-    )
+    await waitFor(() => expect(optionCheckbox2).not.toBeInTheDocument())
   })
 
   it('should toggle dropdown with keyboard accessibility', async () => {
-    render(
-      <MultiSelect
-        options={options}
-        label="Select Options"
-        legend="Legend"
-        hasSelectAllOptions={true}
-        hasSearch={false}
-      />
-    )
+    renderMultiSelect({ hasSelectAllOptions: true })
 
     const toggleButton = screen.getByRole('button', { name: 'Select Options' })
     toggleButton.focus()
 
     await userEvent.keyboard('[Enter]')
 
-    await waitFor(() =>
-      expect(screen.getByText(/Tout sélectionner/i)).toBeInTheDocument()
-    )
+    const selectAllCheckbox = screen.getByRole('checkbox', {
+      name: 'Tout sélectionner',
+    })
+
+    await waitFor(() => expect(selectAllCheckbox).toBeInTheDocument())
 
     await userEvent.keyboard('[Escape]')
 
-    await waitFor(() =>
-      expect(screen.queryByText(/Tout sélectionner/i)).not.toBeInTheDocument()
-    )
+    await waitFor(() => expect(selectAllCheckbox).not.toBeInTheDocument())
   })
 })
