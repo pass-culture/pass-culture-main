@@ -1,9 +1,11 @@
 import cn from 'classnames'
 
-import { GetIndividualOfferResponseModel, OfferStatus } from 'apiClient/v1'
+import { GetIndividualOfferWithAddressResponseModel, OfferStatus } from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { formatDateTimeParts, isDateValid } from 'commons/utils/date'
 import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
+import { HeadlineOfferTag } from 'components/HeadlineOfferTag/HeadlineOfferTag'
 import { IndividualOfferNavigation } from 'components/IndividualOfferNavigation/IndividualOfferNavigation'
 import fullWaitIcon from 'icons/full-wait.svg'
 import { LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED } from 'pages/IndividualOffer/IndividualOfferInformations/components/IndividualOfferInformationsScreen'
@@ -19,7 +21,7 @@ export interface IndivualOfferLayoutProps {
   title: string
   withStepper?: boolean
   children: JSX.Element | JSX.Element[]
-  offer: GetIndividualOfferResponseModel | null
+  offer: GetIndividualOfferWithAddressResponseModel | null
   mode: OFFER_WIZARD_MODE
 }
 
@@ -30,6 +32,7 @@ export const IndivualOfferLayout = ({
   offer,
   mode,
 }: IndivualOfferLayoutProps) => {
+  const offerHeadlineEnabled = useActiveFeature('WIP_HEADLINE_OFFER')
   const { date: publicationDate, time: publicationTime } = formatDateTimeParts(
     offer?.publicationDate
   )
@@ -58,7 +61,12 @@ export const IndivualOfferLayout = ({
           )}
         </div>
 
-        {offer && <p className={styles['offer-title']}>{offer.name}</p>}
+        {offer && (
+          <p className={styles['offer-title']}>
+            {offer.name}
+            {offerHeadlineEnabled && offer.isHeadlineOffer && <HeadlineOfferTag className={styles['offer-title-headline-tag']} />}
+          </p>
+        )}
 
         {mode !== OFFER_WIZARD_MODE.CREATION &&
           offer?.status !== OfferStatus.ACTIVE &&

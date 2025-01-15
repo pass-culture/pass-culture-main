@@ -3,9 +3,7 @@ import cn from 'classnames'
 import { TopOffersResponseData } from 'apiClient/v1'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { pluralizeString } from 'commons/utils/pluralize'
-import fullBoostedIcon from 'icons/full-boosted.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
+import { HeadlineOfferTag } from 'components/HeadlineOfferTag/HeadlineOfferTag'
 import { Thumb } from 'ui-kit/Thumb/Thumb'
 
 import styles from './MostViewedOffers.module.scss'
@@ -47,16 +45,7 @@ export const MostViewedOffers = ({
             />
             <div className={styles['top-offer-details']}>
               {offerHeadlineEnabled && topOffer.isHeadlineOffer && (
-                <Tag
-                  variant={TagVariant.SMALL_OUTLINE}
-                  className={styles['top-offer-headline-tag']}
-                >
-                  <SvgIcon
-                    src={fullBoostedIcon}
-                    width="20"
-                  />
-                  Offre à la une
-                </Tag>
+                <HeadlineOfferTag className={styles['top-offer-headline-tag']} />
               )}
               <span className={styles['top-offer-title']}>
                 {topOffer.offerName}
