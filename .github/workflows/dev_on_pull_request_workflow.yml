@@ -243,15 +243,14 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-  merge-allure-reports:
-    name: "Merge Allure Reports and Push to Allure Repository"
-    needs: [pcapi-init-job, test-pro, test-pro-e2e]
+  merge-allure-reports-units:
+    name: "Merge Allure Reports and Push to Allure Repository units tests"
+    needs: [pcapi-init-job, test-pro]
     runs-on: ubuntu-22.04
     if: |
       always() &&
       !cancelled() &&
-      needs.pcapi-init-job.outputs.pro-changed == 'true' &&
-      (needs.test-pro.result == 'success' || needs.test-pro-e2e.result == 'success')
+      needs.pcapi-init-job.outputs.pro-changed == 'true'
     steps:
       - name: "Install Allure CLI via Yarn"
         run: yarn global add allure-commandline
@@ -262,6 +261,42 @@ jobs:
           name: allure-results-pro-unit
           path: allure-results/pro-unit
 
+      - name: "Merge Allure Results"
+        run: |
+          mkdir -p allure-results
+          cp -r allure-results/pro-unit/* allure-results/
+
+      - name: "Clone Allure Report Repository to Retrieve History"
+        env:
+          TOKEN: ${{ secrets.PAT_ALLURE_REPORTS_TEMP }}
+        run: |
+          git clone https://x-access-token:${TOKEN}@github.com/fseguin-pass/allure-reports-temp.git allure-report-temp
+          mkdir -p allure-results/history
+          if [ -d "allure-report-temp/history" ]; then
+            cp -r allure-report-temp/history/* allure-results/history/
+          fi
+
+      - name: "Generate Allure Report with History"
+        run: allure generate allure-results --single-file --clean -o allure-report
+
+      - name: "Upload Allure Report as artifact"
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: allure-report/index.html
+
+  merge-allure-reports-e2e:
+    name: "Merge Allure Reports and Push to Allure Repository e2e"
+    needs: [pcapi-init-job, test-pro-e2e]
+    runs-on: ubuntu-22.04
+    if: |
+      always() &&
+      !cancelled() &&
+      needs.pcapi-init-job.outputs.pro-changed == 'true'
+    steps:
+      - name: "Install Allure CLI via Yarn"
+        run: yarn global add allure-commandline
+
       - name: "Download Allure results artifacts for pro E2E"
         uses: actions/download-artifact@v4
         with:
@@ -271,7 +306,7 @@ jobs:
       - name: "Merge Allure Results"
         run: |
           mkdir -p allure-results
-          cp -r allure-results/pro-unit/* allure-results/
+          cp -r allure-results/pro-e2e/* allure-results/
 
       - name: "Clone Allure Report Repository to Retrieve History"
         env:
