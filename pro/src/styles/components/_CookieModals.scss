@@ -227,6 +227,10 @@ $action-gap: rem.torem(10px);
 
   &-item {
     margin-bottom: rem.torem(24px);
+
+    &:first-of-type {
+      display: none;
+    }
   }
 }
 
