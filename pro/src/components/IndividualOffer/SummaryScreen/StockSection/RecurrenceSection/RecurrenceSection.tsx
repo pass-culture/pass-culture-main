@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { StockStatsResponseModel } from 'apiClient/v1'
 import { FORMAT_DD_MM_YYYY } from 'commons/utils/date'
 import { pluralizeString } from 'commons/utils/pluralize'

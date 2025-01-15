@@ -232,13 +232,6 @@ def build_many_extra_invoices(count: int = 32) -> None:
     for various reasons.
     """
 
-    def get_latest_cashflow_batch_id() -> int:
-        cashflow_parsed_labels = [
-            int(row.label[len(finance_api.CASHFLOW_BATCH_LABEL_PREFIX) :])
-            for row in finance_models.CashflowBatch.query.all()
-        ]
-        return max(cashflow_parsed_labels)
-
     def cashflow_batch_label_generator(start: int, count: int) -> typing.Generator:
         return (finance_api.CASHFLOW_BATCH_LABEL_PREFIX + str(start + x) for x in range(1, count + 1))
 
@@ -293,14 +286,15 @@ def build_many_extra_invoices(count: int = 32) -> None:
     start = datetime.now(timezone.utc) - timedelta(days=15 * count)  # pylint: disable=datetime-now
 
     beneficiary = None
-    latest_cashflow_batch_id = get_latest_cashflow_batch_id()
 
     # since invoices and cashflow batches are built in the past,
     # the batch label generation will not work: the label is
-    # incremented based on the most recent one's.
+    # set far away after normal increment so that this ugly code
+    # does not break cashflow generation in dev and testing which
+    # next label is based on the most recent one (sorted by date).
     mock_path = "pcapi.core.finance.api._get_next_cashflow_batch_label"
     with patch(mock_path) as mock_cashflow_label:
-        mock_cashflow_label.side_effect = cashflow_batch_label_generator(latest_cashflow_batch_id, count)
+        mock_cashflow_label.side_effect = cashflow_batch_label_generator(1000, count)
 
         try:
             user = users_models.User.query.filter_by(email="activation@example.com").one_or_none()

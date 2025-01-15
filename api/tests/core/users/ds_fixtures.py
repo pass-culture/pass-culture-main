@@ -892,6 +892,42 @@ DS_RESPONSE_ARCHIVED = {
     }
 }
 
+DS_RESPONSE_DELETED_APPLICATIONS = {
+    "demarche": {
+        "id": "UHJvY2VkdXJlLTEwNDExOA==",
+        "number": 104118,
+        "deletedDossiers": {
+            "pageInfo": {
+                "endCursor": "MjAyVC0wNy2wMlQw4To1NDo0MC4CNzgyFjAwMDyaOzMzOTA4ODc",
+                "hasNextPage": False,
+            },
+            "nodes": [
+                {
+                    "dateSupression": "2025-01-01T07:23:31+02:00",
+                    "id": "RGVsZX5lZ8Rvc6NpZX5RtMGV4MT54NA==",
+                    "number": 10000001,
+                    "reason": "user_request",
+                    "state": "en_construction",
+                },
+                {
+                    "dateSupression": "2025-01-02T07:34:53+02:00",
+                    "id": "RGVsfZRlZERrKsBpZXetMTA5MTQzOQ==",
+                    "number": 10000003,
+                    "reason": "expired",
+                    "state": "accepte",
+                },
+                {
+                    "dateSupression": "2025-01-03T02:04:58+02:00",
+                    "id": "RGVsZXRlREoGS3N4ZXI4MTIrNjQ0NQ==",
+                    "number": 10000004,
+                    "reason": "expired",
+                    "state": "refuse",
+                },
+            ],
+        },
+    }
+}
+
 DS_RESPONSE_UPDATE_STATE_DRAFT_TO_ON_GOING = {
     "dossierPasserEnInstruction": {
         "dossier": {
@@ -912,4 +948,49 @@ DS_RESPONSE_UPDATE_STATE_DRAFT_TO_ON_GOING = {
 
 DS_RESPONSE_UPDATE_STATE_ON_GOING_TO_ON_GOING = {
     "dossierPasserEnInstruction": {"dossier": None, "errors": [{"message": "Le dossier est déjà en instruction"}]}
+}
+
+DS_RESPONSE_UPDATE_STATE_ON_GOING_TO_ACCEPTED = {
+    "dossierAccepter": {
+        "dossier": {
+            "id": "RG9zc2llci0yMTI2ODM4MQ==",
+            "number": 21268381,
+            "state": "accepte",
+            "dateDerniereModification": "2024-12-05T12:17:10+01:00",
+            "dateDepot": "2024-12-02T15:37:29+01:00",
+            "datePassageEnConstruction": "2024-12-05T12:15:55+01:00",
+            "datePassageEnInstruction": "2024-12-05T12:16:03+01:00",
+            "dateTraitement": "2024-12-05T12:17:10+01:00",
+            "dateDerniereCorrectionEnAttente": None,
+            "dateDerniereModificationChamps": "2024-12-02T15:37:28+01:00",
+        },
+        "errors": None,
+    }
+}
+
+DS_RESPONSE_UPDATE_STATE_DRAFT_TO_ACCEPTED = {
+    "dossierAccepter": {"dossier": None, "errors": [{"message": "Le dossier est d\u00e9j\u00e0 en construction"}]}
+}
+
+
+DS_RESPONSE_MARK_WITHOUT_CONTINUATION = {
+    "dossierClasserSansSuite": {"dossier": {"id": "RG9zc2llci0yMTgzNTc0OQ=="}, "errors": None}
+}
+
+DS_RESPONSE_ARCHIVE = {
+    "dossierArchiver": {
+        "dossier": {
+            "id": "RG9zc2llci0yMTgzNTc0OQ==",
+        },
+        "errors": None,
+    }
+}
+
+DS_RESPONSE_ARCHIVE_ERROR_NOT_INSTRUCTED = {
+    "dossierArchiver": {
+        "dossier": None,
+        "errors": [
+            {"message": "Un dossier ne peut être déplacé dans « à archiver » qu’une fois le traitement terminé"}
+        ],
+    }
 }

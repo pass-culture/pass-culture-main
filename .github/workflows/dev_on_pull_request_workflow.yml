@@ -28,7 +28,7 @@ jobs:
       checksum-tag-exists: ${{ steps.check-checksum-tag.outputs.tag-exists }}
       checksum-console-tag-exists: ${{ steps.check-console-checksum-tag.outputs.tag-exists }}
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
           fetch-tags: false
@@ -58,8 +58,8 @@ jobs:
           files: |
             api/poetry.lock
             pro/yarn.lock
-      # checkout source branch of the pull request 
-      - uses: actions/checkout@v4.2.1
+      # checkout source branch of the pull request
+      - uses: actions/checkout@v4.2.2
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
@@ -76,13 +76,13 @@ jobs:
           echo $PUSH_TAGS >> "$GITHUB_OUTPUT"
           echo $API_TAG >> "$GITHUB_OUTPUT"
       - name: "Authentification to Google"
-        uses: 'google-github-actions/auth@v2'
+        uses: "google-github-actions/auth@v2"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - name: "Get Secret"
-        id: 'secrets'
-        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        id: "secrets"
+        uses: "google-github-actions/get-secretmanager-secrets@v2"
         with:
           secrets: |-
             ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/passculture-main-gcp-workload-identity-provider
@@ -107,7 +107,7 @@ jobs:
         run: bash ./.github/workflows/scripts/check-image-tag-exists.sh
         env:
           image: pcapi
-          tag: ${{ steps.pcapi-tags.outputs.checksum-tag }} 
+          tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
           token: ${{ steps.openid-auth.outputs.access_token }}
       - name: "pcapi-console"
         id: check-console-checksum-tag
@@ -131,7 +131,7 @@ jobs:
             echo "| [pcapi] image already exists         | ${{ steps.check-checksum-tag.outputs.tag-exists }} |"
             echo "| [pcapi-console] image already exists | ${{ steps.check-console-checksum-tag.outputs.tag-exists }} |"
           } >> $GITHUB_STEP_SUMMARY
-      
+
   build-pcapi:
     name: "[pcapi] build docker image."
     needs: [pcapi-init-job]
@@ -227,15 +227,14 @@ jobs:
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-  
+
   test-pro-e2e:
     name: "Tests pro E2E"
     needs: [pcapi-init-job, build-pcapi]
     uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
-    if: 
-      always() &&
+    if: always() &&
       !cancelled() &&
-      needs.pcapi-init-job.outputs.api-changed == 'true' || 
+      needs.pcapi-init-job.outputs.api-changed == 'true' ||
       needs.pcapi-init-job.outputs.pro-changed == 'true'
     with:
       tag: ${{ needs.build-pcapi.result == 'skipped' && 'latest' || needs.pcapi-init-job.outputs.checksum-tag }}
@@ -244,17 +243,68 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
+  merge-allure-reports:
+    name: "Merge Allure Reports and Push to Allure Repository"
+    needs: [pcapi-init-job, test-pro, test-pro-e2e]
+    runs-on: ubuntu-22.04
+    if: |
+      always() &&
+      !cancelled() &&
+      needs.pcapi-init-job.outputs.pro-changed == 'true' &&
+      (needs.test-pro.result == 'success' || needs.test-pro-e2e.result == 'success')
+    steps:
+      - name: "Install Allure CLI via Yarn"
+        run: yarn global add allure-commandline
+
+      - name: "Download Allure results artifacts for pro"
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-results-pro-unit
+          path: allure-results/pro-unit
+
+      # - name: "Download Allure results artifacts for pro E2E"
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: allure-results-pro-e2e
+      #     path: allure-results/pro-e2e
+
+      - name: "Merge Allure Results"
+        run: |
+          mkdir -p allure-results
+          cp -r allure-results/pro-unit/* allure-results/
+
+      - name: "Clone Allure Report Repository to Retrieve History"
+        env:
+          TOKEN: ${{ secrets.PAT_ALLURE_REPORTS_TEMP }}
+        run: |
+          git clone https://x-access-token:${TOKEN}@github.com/fseguin-pass/allure-reports-temp.git allure-report-temp
+          mkdir -p allure-results/history
+          if [ -d "allure-report-temp/history" ]; then
+            cp -r allure-report-temp/history/* allure-results/history/
+          fi
+
+      - name: "Generate Allure Report with History"
+        run: allure generate allure-results --single-file --clean -o allure-report
+
+      - name: "Upload Allure Report as artifact"
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: allure-report/index.html
+
   dependabot-auto-merge:
     name: "Dependabot"
     needs: test-pro
     if: github.actor == 'dependabot[bot]'
     uses: ./.github/workflows/dev_on_workflow_dependabot_auto_merge.yml
 
-  # Deploy on firebase if pro tests are ok OR job was skipped (= no changes in pro folder) 
-  deploy-pro-on-firebase-pullrequest:
-    name: "[PRO] Deploy PR version for validation"
+  deploy-pro-on-firebase-preview-env:
+    name: "[PRO] Deploy PR version for validation pr preview backend"
     needs: [pcapi-init-job, test-pro]
-    if: always() && (needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped')
+    if: |
+      always() && 
+      (needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped') &&
+      needs.pcapi-init-job.outputs.api-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -265,6 +315,24 @@ jobs:
       REF: "${{ github.ref }}"
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
       is_pull_request: true
+
+  deploy-pro-on-firebase-testing:
+    name: "[PRO] Deploy PR version for validation with testing backend"
+    needs: [pcapi-init-job, test-pro]
+    if: |
+      always() && 
+      (needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped') &&
+      needs.pcapi-init-job.outputs.api-changed == 'false'
+    uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
+    secrets:
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+    with:
+      ENV: "testing"
+      CHANNEL: ""
+      REF: "${{ github.ref }}"
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
+      is_pull_request: false
 
   # Push docker images to registry
   push-pcapi:
@@ -295,18 +363,25 @@ jobs:
   # If image builds were successfull OR image was already present in registry
   deploy:
     name: "Deploy PullRequest to testing environment"
-    needs: [pcapi-init-job, push-pcapi, push-pcapi-console, deploy-pro-on-firebase-pullrequest]
+    needs:
+      [
+        pcapi-init-job,
+        push-pcapi,
+        push-pcapi-console,
+        deploy-pro-on-firebase-preview-env,
+      ]
     if: |
       always() &&
       !cancelled() &&
       github.actor != 'dependabot[bot]' &&
-      (needs.push-pcapi.result == 'success' && needs.push-pcapi-console.result == 'success') ||
-      (needs.pcapi-init-job.outputs.checksum-console-tag-exists == 'true' && needs.pcapi-init-job.outputs.checksum-console-tag-exists == 'true')
+      needs.pcapi-init-job.outputs.api-changed == 'true' &&
+      ((needs.push-pcapi.result == 'success' && needs.push-pcapi-console.result == 'success') ||
+      (needs.pcapi-init-job.outputs.checksum-console-tag-exists == 'true' && needs.pcapi-init-job.outputs.checksum-console-tag-exists == 'true'))
     uses: ./.github/workflows/dev_on_workflow_deploy_pullrequests.yml
     with:
       environment: pullrequest
       app_version: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
-      pro_url: ${{ needs.deploy-pro-on-firebase-pullrequest.outputs.pro_url }}
+      pro_url: ${{ needs.deploy-pro-on-firebase-preview-env.outputs.pro_url }}
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}

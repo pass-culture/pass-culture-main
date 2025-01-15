@@ -1,11 +1,9 @@
 import pytest
 
-from pcapi.core.educational.factories import CollectiveBookingFactory
-from pcapi.core.educational.factories import CollectiveOfferFactory
-from pcapi.core.educational.models import CollectiveBookingStatus
-import pcapi.core.educational.testing as adage_api_testing
+from pcapi.core.educational import factories
+from pcapi.core.educational import models
+from pcapi.core.educational import testing as adage_api_testing
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.testing import override_settings
 from pcapi.core.token import SecureToken
 from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.core.users import factories as user_factories
@@ -14,18 +12,28 @@ from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_
 from tests.conftest import TestClient
 
 
+STATUSES_ALLOWING_CANCEL = (
+    models.CollectiveOfferDisplayedStatus.PREBOOKED,
+    models.CollectiveOfferDisplayedStatus.BOOKED,
+)
+
+STATUSES_NOT_ALLOWING_CANCEL = tuple(
+    set(models.CollectiveOfferDisplayedStatus)
+    - {*STATUSES_ALLOWING_CANCEL, models.CollectiveOfferDisplayedStatus.INACTIVE}
+)
+
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-@override_settings(ADAGE_API_URL="https://adage_base_url")
-@override_settings(ADAGE_API_KEY="adage-api-key")
+@pytest.mark.settings(ADAGE_API_URL="https://adage_base_url", ADAGE_API_KEY="adage-api-key")
 class Returns204Test:
     def test_cancel_pending_booking(self, client):
         user = user_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
-        collective_booking = CollectiveBookingFactory(
-            status=CollectiveBookingStatus.PENDING, collectiveStock__collectiveOffer__venue__managingOfferer=offerer
+        collective_booking = factories.CollectiveBookingFactory(
+            status=models.CollectiveBookingStatus.PENDING,
+            collectiveStock__collectiveOffer__venue__managingOfferer=offerer,
         )
 
         offer_id = collective_booking.collectiveStock.collectiveOffer.id
@@ -33,7 +41,7 @@ class Returns204Test:
         response = client.patch(f"/collective/offers/{offer_id}/cancel_booking")
 
         assert response.status_code == 204
-        assert collective_booking.status == CollectiveBookingStatus.CANCELLED
+        assert collective_booking.status == models.CollectiveBookingStatus.CANCELLED
 
         expected_payload = serialize_collective_booking(collective_booking)
         assert len(adage_api_testing.adage_requests) == 1
@@ -44,8 +52,9 @@ class Returns204Test:
         user = user_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
-        collective_booking = CollectiveBookingFactory(
-            status=CollectiveBookingStatus.CONFIRMED, collectiveStock__collectiveOffer__venue__managingOfferer=offerer
+        collective_booking = factories.CollectiveBookingFactory(
+            status=models.CollectiveBookingStatus.CONFIRMED,
+            collectiveStock__collectiveOffer__venue__managingOfferer=offerer,
         )
 
         offer_id = collective_booking.collectiveStock.collectiveOffer.id
@@ -53,7 +62,7 @@ class Returns204Test:
         response = client.patch(f"/collective/offers/{offer_id}/cancel_booking")
 
         assert response.status_code == 204
-        assert collective_booking.status == CollectiveBookingStatus.CANCELLED
+        assert collective_booking.status == models.CollectiveBookingStatus.CANCELLED
         assert collective_booking.cancellationUser == user
 
         expected_payload = serialize_collective_booking(collective_booking)
@@ -66,8 +75,9 @@ class Returns204Test:
         admin = user_factories.AdminFactory(email="admin@example.com")
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
-        collective_booking = CollectiveBookingFactory(
-            status=CollectiveBookingStatus.CONFIRMED, collectiveStock__collectiveOffer__venue__managingOfferer=offerer
+        collective_booking = factories.CollectiveBookingFactory(
+            status=models.CollectiveBookingStatus.CONFIRMED,
+            collectiveStock__collectiveOffer__venue__managingOfferer=offerer,
         )
         expected_redirect_link = "https://example.com"
         secure_token = SecureToken(
@@ -86,8 +96,31 @@ class Returns204Test:
         response = client.patch(f"/collective/offers/{offer_id}/cancel_booking")
 
         assert response.status_code == 204
-        assert collective_booking.status == CollectiveBookingStatus.CANCELLED
+        assert collective_booking.status == models.CollectiveBookingStatus.CANCELLED
         assert collective_booking.cancellationUser == admin
+
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.parametrize("status", STATUSES_ALLOWING_CANCEL)
+    def test_cancel_allowed_action(self, client, status):
+        offer = factories.create_collective_offer_by_status(status)
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
+
+        client = client.with_session_auth("pro@example.com")
+        response = client.patch(f"/collective/offers/{offer.id}/cancel_booking")
+
+        assert response.status_code == 204
+        assert offer.collectiveStock.collectiveBookings[0].status == models.CollectiveBookingStatus.CANCELLED
+
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    def test_cancel_ended(self, client):
+        offer = factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
+
+        client = client.with_session_auth("pro@example.com")
+        response = client.patch(f"/collective/offers/{offer.id}/cancel_booking")
+
+        assert response.status_code == 204
+        assert offer.collectiveStock.collectiveBookings[0].status == models.CollectiveBookingStatus.CANCELLED
 
 
 class Returns404Test:
@@ -112,7 +145,7 @@ class Returns403Test:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.NotValidatedUserOffererFactory(user=user, offerer=offerer)
 
-        offer = CollectiveOfferFactory(venue__managingOfferer=offerer)
+        offer = factories.CollectiveOfferFactory(venue__managingOfferer=offerer)
 
         offer_id = offer.id
         client = client.with_session_auth(user.email)
@@ -124,18 +157,38 @@ class Returns403Test:
         }
         assert len(adage_api_testing.adage_requests) == 0
 
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.parametrize("status", STATUSES_NOT_ALLOWING_CANCEL)
+    def test_cancel_unallowed_action(self, client, status):
+        offer = factories.create_collective_offer_by_status(status)
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
+
+        client = client.with_session_auth("pro@example.com")
+        response = client.patch(f"/collective/offers/{offer.id}/cancel_booking")
+
+        assert response.status_code == 403
+        assert response.json == {
+            "code": "CANCEL_NOT_ALLOWED",
+            "message": "This collective offer status does not allow cancellation",
+        }
+
 
 class Returns400Test:
-
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     @pytest.mark.parametrize(
-        "status", [CollectiveBookingStatus.CANCELLED, CollectiveBookingStatus.USED, CollectiveBookingStatus.REIMBURSED]
+        "status",
+        [
+            models.CollectiveBookingStatus.CANCELLED,
+            models.CollectiveBookingStatus.USED,
+            models.CollectiveBookingStatus.REIMBURSED,
+        ],
     )
     def test_offer_that_cannot_be_cancelled_because_of_status(self, client: TestClient, status):
         user = user_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
 
-        educational_booking = CollectiveBookingFactory(
+        educational_booking = factories.CollectiveBookingFactory(
             status=status, collectiveStock__collectiveOffer__venue__managingOfferer=offerer
         )
         offer_id = educational_booking.collectiveStock.collectiveOffer.id

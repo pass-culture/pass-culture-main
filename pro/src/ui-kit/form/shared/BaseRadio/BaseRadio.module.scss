@@ -3,9 +3,8 @@
 @use "styles/mixins/_rem.scss" as rem;
 
 .base-radio {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  cursor: pointer;
 
   &-label {
     line-height: rem.torem(16px);
@@ -22,36 +21,24 @@
     text-decoration: underline;
   }
 
-  &:focus-within {
-    outline: rem.torem(1px) solid var(--color-input-text-color);
-    outline-offset: rem.torem(4px);
-    border-radius: rem.torem(4px);
-  }
-
   &-input {
+    display: flex;
+    align-items: center;
     height: rem.torem(20px);
+    min-width: rem.torem(20px);
     width: rem.torem(20px);
     border: rem.torem(2px) solid var(--color-grey-dark);
     border-radius: 50%;
     background-color: var(--color-white);
-    flex: 0 0 auto;
     margin-right: rem.torem(8px);
     appearance: none;
     outline: none;
     cursor: pointer;
-    transition:
-      border 150ms ease,
-      background 150ms ease,
-      box-shadow 150ms ease;
-
-    &:hover,
-    &:focus-visible {
-      border-color: var(--color-secondary-light);
-    }
 
     &:disabled {
       cursor: default;
       border-color: var(--color-input-border-color-disabled);
+      background-color: transparent;
     }
 
     &.has-error {
@@ -59,40 +46,44 @@
     }
 
     &:checked {
+      box-shadow: inset 0 0 0 rem.torem(3px) var(--color-white);
       border-color: var(--color-secondary-light);
-      background: radial-gradient(
-        var(--color-secondary-light) 0%,
-        var(--color-secondary-light) 40%,
-        transparent 50%,
-        transparent
-      );
+      background-color: var(--color-secondary-light);
 
       &:disabled {
-        box-shadow: inset 0 0 0 rem.torem(2px) var(--color-white);
-        border-color: var(--color-input-border-color-disabled);
-        background: radial-gradient(
-          var(--color-input-border-color-disabled) 0%,
-          var(--color-input-border-color-disabled) 40%,
-          transparent 50%,
-          transparent
-        );
+        box-shadow: inset 0 0 0 rem.torem(3px) var(--color-grey-light);
+        border-color: var(--color-grey-semi-dark);
+        background-color: var(--color-grey-semi-dark);
       }
 
       &.has-error {
-        box-shadow: inset 0 0 0 rem.torem(2px) var(--color-white);
+        box-shadow: inset 0 0 0 rem.torem(3px) var(--color-white);
         border-color: var(--color-input-border-color-error);
-        background: radial-gradient(
-          var(--color-input-border-color-error) 0%,
-          var(--color-input-border-color-error) 40%,
-          transparent 50%,
-          transparent
-        );
+        background-color: var(--color-input-border-color-error);
       }
     }
   }
 }
 
-.with-border {
+.radio:focus-within {
+  outline: rem.torem(1px) solid var(--color-black);
+  outline-offset: rem.torem(4px);
+  border-radius: rem.torem(8px);
+}
+
+@supports selector(:has(*)) {
+  .radio:focus-within {
+    outline: none;
+  }
+
+  .radio:has(.base-radio-input:focus-visible) {
+    outline: rem.torem(1px) solid var(--color-black);
+    outline-offset: rem.torem(4px);
+    border-radius: rem.torem(8px);
+  }
+}
+
+.radio.box-variant {
   border: rem.torem(1px) solid var(--color-grey-dark);
   border-radius: rem.torem(8px);
   padding: 0 0 0 rem.torem(16px);
@@ -101,42 +92,37 @@
     padding: rem.torem(16px) rem.torem(16px) rem.torem(16px) 0;
   }
 
-  &:focus-within {
-    outline: rem.torem(1px) solid var(--color-black);
-    outline-offset: rem.torem(4px);
-  }
-
   &:hover {
     box-shadow: forms.$input-hover-shadow;
-    cursor: pointer;
   }
 
-  .is-disabled {
-    border: none;
+  &.is-checked {
+    border-color: var(--color-secondary-light);
+    background-color: var(--color-background-secondary);
+  }
+
+  &.has-error {
+    border-color: var(--color-input-border-color-error);
+    background-color: var(--color-background-error);
+  }
+
+  &.is-disabled {
+    border-color: var(--color-input-border-color-disabled);
     background-color: var(--color-grey-light);
     color: var(--color-grey-dark);
-
-    &:focus-within {
-      outline: none;
-    }
 
     &:hover {
       box-shadow: none;
     }
   }
+}
 
-  &-checked {
-    border: rem.torem(2px) solid var(--color-secondary-light);
-    background-color: var(--color-background-secondary);
-
-    .base-radio-label {
-      @include fonts.body-exergue;
-
-      padding: rem.torem(16px) rem.torem(16px) rem.torem(16px) 0;
-    }
+.radio.has-children {
+  &.is-checked:not(.is-disabled) {
+    background: none;
   }
 }
 
-.full-width {
-  width: 100%;
+.base-radio-children-on-checked {
+  padding: 0 rem.torem(16px) rem.torem(16px) 0;
 }

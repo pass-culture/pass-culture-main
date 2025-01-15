@@ -30,9 +30,6 @@ export const serializeDurationMinutes = (
 export const serializeExtraDataForPatch = (
   formValues: Partial<IndividualOfferFormValues>
 ): PostOfferBodyModel['extraData'] | undefined => {
-  // TODO: change api create and update offer in order not to save
-  // extra data fields that's aren't link to offer subCategory
-
   const extraData: PostOfferBodyModel['extraData'] = {}
   extraData.author = formValues.author
   extraData.gtl_id = formValues.gtl_id
@@ -78,6 +75,7 @@ export const serializePatchOffer = ({
       editableFields.push(...allocineEditableFields)
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const filtered = asArray.filter(([key, _]) => editableFields.includes(key))
 
     sentValues = Object.fromEntries(filtered)

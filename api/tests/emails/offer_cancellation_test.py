@@ -12,12 +12,11 @@ from pcapi.core.mails.transactional.bookings.booking_cancellation import (
 )
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 
 
 class MakeOffererDrivenCancellationEmailForOffererTest:
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     @pytest.mark.usefixtures("db_session")
     def test_offer_cancellation_confirmation_by_offerer_event_when_no_other_booking(self, app):
         # Given
@@ -52,7 +51,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         assert booking.email in html_action
         assert f"pour {stock.offer.name}" in html_recap
         assert f"proposé par {venue.name}" in html_recap
-        assert "le 20 juillet 2019, 08:00" in html_recap
+        assert "le samedi 20 juillet 2019, 08h00" in html_recap
         assert venue.street in html_recap
         assert venue.city in html_recap
         assert venue.postalCode in html_recap
@@ -89,7 +88,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         assert booking.email in html_action
         assert f"pour {stock.offer.name}" in html_recap
         assert f"proposé par {venue.name}" in html_recap
-        assert "le 20 juillet 2019, 14:00" in html_recap
+        assert "le samedi 20 juillet 2019, 14h00" in html_recap
         assert venue.street in html_recap
         assert venue.city in html_recap
         assert venue.postalCode in html_recap

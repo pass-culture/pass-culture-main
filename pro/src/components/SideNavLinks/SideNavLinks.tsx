@@ -8,7 +8,6 @@ import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'apiClient/helpers'
 import { GET_OFFERER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { hasStatusCode } from 'commons/core/OfferEducational/utils/hasStatusCode'
-import { SAVED_OFFERER_ID_KEY } from 'commons/core/shared/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import {
   SIDE_NAV_MIN_HEIGHT_COLLAPSE_MEDIA_QUERY,
@@ -22,11 +21,8 @@ import {
   selectIsCollectiveSectionOpen,
   selectIsIndividualSectionOpen,
 } from 'commons/store/nav/selector'
-import {
-  selectCurrentOffererId,
-  selectCurrentUser,
-} from 'commons/store/user/selectors'
-import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import { selectCurrentUser } from 'commons/store/user/selectors'
 import fullDownIcon from 'icons/full-down.svg'
 import fullUpIcon from 'icons/full-up.svg'
 import strokeCollaboratorIcon from 'icons/stroke-collaborator.svg'
@@ -111,9 +107,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
     }
   }, [sideNavCollapseSize, dispatch, location.pathname])
 
-  const offererId = localStorageAvailable()
-    ? localStorage.getItem(SAVED_OFFERER_ID_KEY)
-    : null
+  const offererId = useSelector(selectCurrentOffererId)
 
   return (
     <div

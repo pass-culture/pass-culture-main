@@ -21,7 +21,8 @@ class Returns403Test:
     # get user
     # get offer
     # check user_offerer exists
-    num_queries = 4
+    # rollback
+    num_queries = 5
 
     def test_access_by_beneficiary(self, client):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -177,6 +178,7 @@ class Returns200Test:
             "isDuo": False,
             "isEditable": True,
             "isEvent": True,
+            "isHeadlineOffer": False,
             "isNational": False,
             "isThing": False,
             "lastProvider": None,

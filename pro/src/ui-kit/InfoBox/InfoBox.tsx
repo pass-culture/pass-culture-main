@@ -1,8 +1,9 @@
 import cn from 'classnames'
-import React, { ReactNode } from 'react'
+import { ReactNode } from 'react'
 
 import fullLinkIcon from 'icons/full-link.svg'
 import { ButtonLink, LinkProps } from 'ui-kit/Button/ButtonLink'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { ShadowTipsHelpIcon } from 'ui-kit/Icons/SVGs/ShadowTipsHelpIcon'
 
 import styles from './InfoBox.module.scss'
@@ -72,6 +73,7 @@ export const InfoBox = ({ children, link }: InfoBoxProps): JSX.Element => {
           {...link}
           icon={fullLinkIcon}
           className={styles['info-box-link']}
+          variant={ButtonVariant.QUATERNARY}
         >
           {link.text}
         </ButtonLink>

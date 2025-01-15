@@ -135,3 +135,53 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
     title: 'Réservations - Consulter une offre individuelle',
   },
 ]
+
+export const routesOnboardingIndividualOfferWizard: RouteConfig[] = [
+  // details pages
+  {
+    lazy: () =>
+      import(
+        'pages/IndividualOffer/IndividualOfferDetails/IndividualOfferDetails'
+      ),
+    path: '/onboarding/offre/individuelle/creation/details',
+    title: 'Détails de l’offre - Créer une offre individuelle - Onboarding',
+    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
+  },
+  {
+    lazy: () =>
+      import(
+        'pages/IndividualOffer/IndividualOfferDetails/IndividualOfferDetails'
+      ),
+    path: '/onboarding/offre/individuelle/:offerId/creation/details',
+    title: 'Détails de l’offre - Créer une offre individuelle - Onboarding',
+    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
+  },
+  {
+    lazy: () =>
+      import(
+        'pages/IndividualOffer/IndividualOfferInformations/IndividualOfferInformations'
+      ),
+    path: '/onboarding/offre/individuelle/:offerId/creation/pratiques',
+    title: 'Informations pratiques - Créer une offre individuelle - Onboarding',
+    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
+  },
+  {
+    lazy: () =>
+      import('pages/IndividualOfferWizard/PriceCategories/PriceCategories'),
+    path: '/onboarding/offre/individuelle/:offerId/creation/tarifs',
+    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
+    title: 'Tarifs - Créer une offre individuelle - Onboarding',
+  },
+  {
+    lazy: () => import('pages/IndividualOfferWizard/Stocks/Stocks'),
+    path: '/onboarding/offre/individuelle/:offerId/creation/stocks',
+    title: 'Stocks et prix - Créer une offre individuelle - Onboarding',
+    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
+  },
+  {
+    lazy: () => import('pages/IndividualOfferWizard/Summary/Summary'),
+    path: '/onboarding/offre/individuelle/:offerId/creation/recapitulatif',
+    title: 'Récapitulatif - Créer une offre individuelle - Onboarding',
+    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
+  },
+]

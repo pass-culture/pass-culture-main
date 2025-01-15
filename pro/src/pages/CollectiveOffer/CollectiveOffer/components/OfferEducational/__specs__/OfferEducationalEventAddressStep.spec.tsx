@@ -18,9 +18,9 @@ function renderOfferEducational(props: OfferEducationalProps) {
     user,
     storeOverrides: {
       user: {
-        selectedOffererId: 1,
         currentUser: user,
       },
+      offerer: { selectedOffererId: 1, offererNames: [] },
     },
   })
 }
@@ -98,7 +98,7 @@ describe('screens | OfferEducational : event address step', () => {
       ).toBeInTheDocument()
     })
   })
-  // TO DO: move this test, it does not belong to Address step
+  // TODO: move this test, it does not belong to Address step
   describe('when there are multiple venues managed by the offerer', () => {
     const firstVenueId = '12'
     const secondVenueId = '23'

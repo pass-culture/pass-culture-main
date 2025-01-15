@@ -1,6 +1,6 @@
 import { useCombobox } from 'downshift'
 import { useField, useFormikContext } from 'formik'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 
@@ -100,17 +100,17 @@ export const AdageMultiselect = ({
     stateReducer(_state, actionAndChanges) {
       const { changes, type } = actionAndChanges
       /* istanbul ignore next: no need to test all case here, downshift behaviour */
-      switch (type) {
-        case useCombobox.stateChangeTypes.InputKeyDownEnter:
-        case useCombobox.stateChangeTypes.ItemClick:
-          return {
-            ...changes,
-            // We force isOpen to true because we always want to display the list of options
-            isOpen: true,
-          }
-        default:
-          return changes
+      if (
+        type === useCombobox.stateChangeTypes.InputKeyDownEnter ||
+        type === useCombobox.stateChangeTypes.ItemClick
+      ) {
+        return {
+          ...changes,
+          // We force isOpen to true because we always want to display the list of options
+          isOpen: true,
+        }
       }
+      return changes
     },
     onInputValueChange: ({ inputValue: newInputValue }) => {
       setInputValue(newInputValue || '')
@@ -149,7 +149,11 @@ export const AdageMultiselect = ({
 
   return (
     <div className={styles['container']}>
-      <label htmlFor="search" className="visually-hidden" {...getLabelProps()}>
+      <label
+        htmlFor="search"
+        className={styles['visually-hidden']}
+        {...getLabelProps()}
+      >
         {label}
       </label>
       <BaseInput
@@ -170,6 +174,7 @@ export const AdageMultiselect = ({
         {filterItems(sortedOptions, inputValue).map((item, index) => {
           // we cannot pass down the ref to basecheckbox as it is a function component
 
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { ref, ...itemProps } = getItemProps({ item, index })
           const liValueKey = Array.isArray(item.value)
             ? item.value.join('_')

@@ -6,7 +6,6 @@ import re
 import pytest
 import time_machine
 
-from pcapi import settings
 from pcapi.connectors import titelive
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import BookingStatus
@@ -22,7 +21,6 @@ import pcapi.core.providers.repository as providers_repository
 from pcapi.core.providers.titelive_book_search import TiteliveBookSearch
 from pcapi.core.providers.titelive_book_search import extract_eans_from_titelive_response
 from pcapi.core.providers.titelive_music_search import TiteliveMusicSearch
-from pcapi.core.testing import override_settings
 from pcapi.core.users.factories import FavoriteFactory
 from pcapi.core.users.models import Favorite
 from pcapi.domain import music_types
@@ -34,7 +32,7 @@ import tests
 from tests.connectors.titelive import fixtures
 
 
-def _configure_login_and_images(requests_mock):
+def _configure_login_and_images(requests_mock, settings):
     requests_mock.post(
         f"{settings.TITELIVE_EPAGINE_API_AUTH_URL}/login/test@example.com/token",
         json={"token": "XYZ"},
@@ -44,12 +42,11 @@ def _configure_login_and_images(requests_mock):
         requests_mock.get(re.compile("image"), content=thumb_file.read())
 
 
-@override_settings(TITELIVE_EPAGINE_API_USERNAME="test@example.com")
-@override_settings(TITELIVE_EPAGINE_API_PASSWORD="qwerty123")
+@pytest.mark.settings(TITELIVE_EPAGINE_API_USERNAME="test@example.com", TITELIVE_EPAGINE_API_PASSWORD="qwerty123")
 @pytest.mark.usefixtures("db_session")
 class TiteliveSearchTest:
-    def test_titelive_music_sync(self, requests_mock):
-        _configure_login_and_images(requests_mock)
+    def test_titelive_music_sync(self, requests_mock, settings):
+        _configure_login_and_images(requests_mock, settings)
         requests_mock.get(f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=1", json=fixtures.MUSIC_SEARCH_FIXTURE)
         requests_mock.get(
             f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=2", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE
@@ -147,8 +144,8 @@ class TiteliveSearchTest:
         assert "prix_musique" not in vinyle_product.extraData
 
     @time_machine.travel("2023-01-01", tick=False)
-    def test_titelive_sync_event(self, requests_mock):
-        _configure_login_and_images(requests_mock)
+    def test_titelive_sync_event(self, requests_mock, settings):
+        _configure_login_and_images(requests_mock, settings)
         requests_mock.get(f"{settings.TITELIVE_EPAGINE_API_URL}/search", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE)
         titelive_epagine_provider = providers_repository.get_provider_by_name(
             providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME
@@ -173,8 +170,8 @@ class TiteliveSearchTest:
         assert stop_event.type == providers_models.LocalProviderEventType.SyncEnd
         assert start_event.type == providers_models.LocalProviderEventType.SyncStart
 
-    def test_titelive_sync_failure_event(self, requests_mock):
-        _configure_login_and_images(requests_mock)
+    def test_titelive_sync_failure_event(self, requests_mock, settings):
+        _configure_login_and_images(requests_mock, settings)
         requests_mock.get(f"{settings.TITELIVE_EPAGINE_API_URL}/search", exc=requests.exceptions.RequestException)
         titelive_epagine_provider = providers_repository.get_provider_by_name(
             providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME
@@ -208,8 +205,8 @@ class TiteliveSearchTest:
         )
         assert error_sync_events_query.count() == 1
 
-    def test_sync_skips_products_already_synced_by_other_provider(self, requests_mock):
-        _configure_login_and_images(requests_mock)
+    def test_sync_skips_products_already_synced_by_other_provider(self, requests_mock, settings):
+        _configure_login_and_images(requests_mock, settings)
         requests_mock.get(f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=1", json=fixtures.MUSIC_SEARCH_FIXTURE)
         requests_mock.get(
             f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=2", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE
@@ -232,8 +229,8 @@ class TiteliveSearchTest:
         )
         assert titelive_synced_products_query.count() == 2
 
-    def test_sync_thumbnails(self, requests_mock):
-        _configure_login_and_images(requests_mock)
+    def test_sync_thumbnails(self, requests_mock, settings):
+        _configure_login_and_images(requests_mock, settings)
         requests_mock.get(f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=1", json=fixtures.MUSIC_SEARCH_FIXTURE)
         requests_mock.get(
             f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=2", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE
@@ -251,8 +248,8 @@ class TiteliveSearchTest:
             for synced_product in synced_products
         )
 
-    def test_sync_thumbnails_deletes_old_mediations(self, requests_mock):
-        _configure_login_and_images(requests_mock)
+    def test_sync_thumbnails_deletes_old_mediations(self, requests_mock, settings):
+        _configure_login_and_images(requests_mock, settings)
         requests_mock.get(f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=1", json=fixtures.MUSIC_SEARCH_FIXTURE)
         requests_mock.get(
             f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=2", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE
@@ -271,8 +268,8 @@ class TiteliveSearchTest:
         assert all(old_mediation not in new_mediations for old_mediation in old_mediations)
         assert all(mediation.uuid is not None for mediation in new_mediations)
 
-    def test_sync_thumbnails_network_failure_is_silent(self, requests_mock):
-        _configure_login_and_images(requests_mock)
+    def test_sync_thumbnails_network_failure_is_silent(self, requests_mock, settings):
+        _configure_login_and_images(requests_mock, settings)
         requests_mock.get(f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=1", json=fixtures.MUSIC_SEARCH_FIXTURE)
         requests_mock.get(
             f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=2", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE
@@ -308,8 +305,8 @@ class TiteliveSearchTest:
             == 0
         )
 
-    def test_sync_thumbnails_open_failure_is_silent(self, requests_mock):
-        _configure_login_and_images(requests_mock)
+    def test_sync_thumbnails_open_failure_is_silent(self, requests_mock, settings):
+        _configure_login_and_images(requests_mock, settings)
         requests_mock.get(f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=1", json=fixtures.MUSIC_SEARCH_FIXTURE)
         requests_mock.get(
             f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=2", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE
@@ -332,8 +329,8 @@ class TiteliveSearchTest:
             == 0
         )
 
-    def test_sync_skips_unallowed_format(self, requests_mock):
-        _configure_login_and_images(requests_mock)
+    def test_sync_skips_unallowed_format(self, requests_mock, settings):
+        _configure_login_and_images(requests_mock, settings)
         not_fully_allowed_response = copy.deepcopy(fixtures.MUSIC_SEARCH_FIXTURE)
         not_fully_allowed_response["result"][-1]["article"]["1"]["codesupport"] = 35
         del not_fully_allowed_response["result"][0]["article"]["2"]["codesupport"]
@@ -348,28 +345,47 @@ class TiteliveSearchTest:
         synced_product = offers_models.Product.query.one()
         assert synced_product.idAtProviders == "3700187679323"
 
-    def test_titelive_music_sync_from_page(self, requests_mock):
-        _configure_login_and_images(requests_mock)
+    def test_titelive_music_sync_from_page(self, requests_mock, settings):
+        _configure_login_and_images(requests_mock, settings)
         requests_mock.get(f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=1", json=fixtures.MUSIC_SEARCH_FIXTURE)
         requests_mock.get(
             f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=2", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE
         )
 
-        TiteliveMusicSearch().synchronize_products(datetime.date(2022, 12, 1), 2)
+        TiteliveMusicSearch().synchronize_products(datetime.date(2022, 12, 1), from_page=2)
 
         assert offers_models.Product.query.count() == 0
 
+    def test_titelive_music_sync_on_multiple_days(self, requests_mock, settings):
+        _configure_login_and_images(requests_mock, settings)
+        requests_mock.get(
+            f"{settings.TITELIVE_EPAGINE_API_URL}/search?datemaxm=01/12/2022", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE
+        )
+        requests_mock.get(
+            f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=1&datemaxm=02/12/2022",
+            json=fixtures.MUSIC_SEARCH_FIXTURE,
+        )
+        requests_mock.get(
+            f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=2&datemaxm=02/12/2022",
+            json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE,
+        )
 
-@override_settings(TITELIVE_EPAGINE_API_USERNAME="test@example.com")
-@override_settings(TITELIVE_EPAGINE_API_PASSWORD="qwerty123")
+        TiteliveMusicSearch().synchronize_products(
+            from_date=datetime.date(2022, 11, 30), to_date=datetime.date(2022, 12, 1)
+        )
+
+        assert offers_models.Product.query.count() == 3
+
+
+@pytest.mark.settings(TITELIVE_EPAGINE_API_USERNAME="test@example.com", TITELIVE_EPAGINE_API_PASSWORD="qwerty123")
 @pytest.mark.usefixtures("db_session")
 class TiteliveBookSearchTest:
     EAN_TEST = "9782370730541"
     SCHOLAR_BOOK_GTL_ID = providers_constants.GTL_LEVEL_01_SCHOOL + "040300"
     EXTRACURRICULAR_GTL_ID = providers_constants.GTL_LEVEL_01_EXTRACURRICULAR + "080000"
 
-    def setup_api_response_fixture(self, requests_mock, fixture, eans=None):
-        _configure_login_and_images(requests_mock)
+    def setup_api_response_fixture(self, requests_mock, settings, fixture, eans=None):
+        _configure_login_and_images(requests_mock, settings)
         requests_mock.get(f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=1", json=fixture)
         requests_mock.get(
             f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=2", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE
@@ -402,11 +418,11 @@ class TiteliveBookSearchTest:
         )
         return product
 
-    def test_create_1_thing(self, requests_mock):
-        self.setup_api_response_fixture(requests_mock, fixtures.build_titelive_one_book_response())
+    def test_create_1_thing(self, requests_mock, settings):
+        self.setup_api_response_fixture(requests_mock, settings, fixtures.build_titelive_one_book_response())
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         product = offers_models.Product.query.one()
@@ -421,16 +437,16 @@ class TiteliveBookSearchTest:
         assert product.extraData.get("rayon") == closest_csr.get("label")
         assert product.extraData.get("code_clil") == "3774"
 
-    def test_handle_bad_product_by_truncating_it(self, requests_mock):
+    def test_handle_bad_product_by_truncating_it(self, requests_mock, settings):
         TWO_BOOKS_RESPONSE_FIXTURE_WITH_LONG_TITLE = copy.deepcopy(fixtures.TWO_BOOKS_RESPONSE_FIXTURE)
         TWO_BOOKS_RESPONSE_FIXTURE_WITH_LONG_TITLE["result"][0][
             "titre"
         ] = "L'Arabe du futur Tome 2 : une jeunesse au Moyen-Orient (1984-1985) - Edition spéciale avec un titre très long pour tester la longueur de la description"
 
-        self.setup_api_response_fixture(requests_mock, TWO_BOOKS_RESPONSE_FIXTURE_WITH_LONG_TITLE)
+        self.setup_api_response_fixture(requests_mock, settings, TWO_BOOKS_RESPONSE_FIXTURE_WITH_LONG_TITLE)
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         product = offers_models.Product.query.order_by(offers_models.Product.name).all()
@@ -441,13 +457,13 @@ class TiteliveBookSearchTest:
         )
         assert product[1].name == "Mortelle Adèle Tome 1 : tout ça finira mal"
 
-    def test_create_1_thing_when_gtl_not_has_lpad_zero(self, requests_mock):
+    def test_create_1_thing_when_gtl_not_has_lpad_zero(self, requests_mock, settings):
         self.setup_api_response_fixture(
-            requests_mock, fixtures.build_titelive_one_book_response(gtl_id="03020300", gtl_level=3)
+            requests_mock, settings, fixtures.build_titelive_one_book_response(gtl_id="03020300", gtl_level=3)
         )
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         product = offers_models.Product.query.one()
@@ -462,39 +478,64 @@ class TiteliveBookSearchTest:
         assert product.extraData.get("rayon") == closest_csr.get("label")
         assert product.extraData.get("code_clil") == "3774"
 
-    def test_does_not_create_product_when_product_is_gtl_school_book(self, requests_mock):
+    def test_create_1_thing_when_syncing_on_multiple_days(self, requests_mock, settings):
+        _configure_login_and_images(requests_mock, settings)
+        requests_mock.get(
+            f"{settings.TITELIVE_EPAGINE_API_URL}/search?datemaxm=01/12/2022", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE
+        )
+        fixture = fixtures.build_titelive_one_book_response()
+        requests_mock.get(f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=1&datemaxm=02/12/2022", json=fixture)
+        requests_mock.get(
+            f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=2&datemaxm=02/12/2022",
+            json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE,
+        )
+        eans = extract_eans_from_titelive_response(fixture["result"])
+        requests_mock.get(f"{settings.TITELIVE_EPAGINE_API_URL}/ean?in=ean={'|'.join(eans)}", json=fixture)
+
+        TiteliveBookSearch().synchronize_products(
+            from_date=datetime.date(2022, 11, 30), to_date=datetime.date(2022, 12, 1)
+        )
+
+        assert offers_models.Product.query.one()
+
+    def test_does_not_create_product_when_product_is_gtl_school_book(self, requests_mock, settings):
         # Given
         self.setup_api_response_fixture(
-            requests_mock, fixtures.build_titelive_one_book_response(gtl_id=self.SCHOLAR_BOOK_GTL_ID, gtl_level=3)
+            requests_mock,
+            settings,
+            fixtures.build_titelive_one_book_response(gtl_id=self.SCHOLAR_BOOK_GTL_ID, gtl_level=3),
         )
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         assert offers_models.Product.query.count() == 0
 
     @pytest.mark.parametrize("taux_tva", ["20", "20.00"])
-    def test_does_not_create_product_when_product_is_vat_20(self, requests_mock, taux_tva):
+    def test_does_not_create_product_when_product_is_vat_20(self, requests_mock, settings, taux_tva):
         # Given
         self.setup_api_response_fixture(
             requests_mock,
+            settings,
             fixtures.build_titelive_one_book_response(taux_tva=taux_tva, code_tva="4"),  # TODO: find real values
         )
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         assert offers_models.Product.query.count() == 0
 
-    def test_does_not_create_product_when_product_is_extracurricular(self, requests_mock):
+    def test_does_not_create_product_when_product_is_extracurricular(self, requests_mock, settings):
         self.setup_api_response_fixture(
-            requests_mock, fixtures.build_titelive_one_book_response(gtl_id=self.EXTRACURRICULAR_GTL_ID, gtl_level=2)
+            requests_mock,
+            settings,
+            fixtures.build_titelive_one_book_response(gtl_id=self.EXTRACURRICULAR_GTL_ID, gtl_level=2),
         )
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         assert offers_models.Product.query.count() == 0
@@ -509,23 +550,26 @@ class TiteliveBookSearchTest:
             providers_constants.OBJECT_SUPPORT_CODE,
         ],
     )
-    def test_does_not_create_product_when_product_is_non_eligible_support_code(self, requests_mock, support_code):
+    def test_does_not_create_product_when_product_is_non_eligible_support_code(
+        self, requests_mock, settings, support_code
+    ):
         # Given
         self.setup_api_response_fixture(
-            requests_mock, fixtures.build_titelive_one_book_response(support_code=support_code)
+            requests_mock, settings, fixtures.build_titelive_one_book_response(support_code=support_code)
         )
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         assert offers_models.Product.query.count() == 0
 
-    def test_create_product_when_product_is_gtl_school_book_but_in_product_whitelist(self, requests_mock):
+    def test_create_product_when_product_is_gtl_school_book_but_in_product_whitelist(self, requests_mock, settings):
         # Given
         whitelisted_ean = self.EAN_TEST
         self.setup_api_response_fixture(
             requests_mock,
+            settings,
             fixtures.build_titelive_one_book_response(
                 ean=whitelisted_ean, gtl_id=self.SCHOLAR_BOOK_GTL_ID, gtl_level=3
             ),
@@ -534,21 +578,22 @@ class TiteliveBookSearchTest:
         ProductWhitelistFactory(ean=whitelisted_ean)
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         # the assertion on the content is made in the previous tests
         assert offers_models.Product.query.count() == 1
 
-    def test_does_not_create_product_when_product_is_lectorat_eighteen(self, requests_mock):
+    def test_does_not_create_product_when_product_is_lectorat_eighteen(self, requests_mock, settings):
         # Given
         self.setup_api_response_fixture(
             requests_mock,
+            settings,
             fixtures.build_titelive_one_book_response(id_lectorat=providers_constants.LECTORAT_EIGHTEEN_ID),
         )
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         assert offers_models.Product.query.count() == 0
@@ -560,15 +605,15 @@ class TiteliveBookSearchTest:
             providers_constants.GTL_LEVEL_02_AFTER_3_AND_BEFORE_6,
         ],
     )
-    def test_does_not_create_product_when_product_is_small_young(self, requests_mock, level_02_code_gtl):
+    def test_does_not_create_product_when_product_is_small_young(self, requests_mock, settings, level_02_code_gtl):
         # Given
         young_gtl_id = providers_constants.GTL_LEVEL_01_YOUNG + level_02_code_gtl + "0000"
         self.setup_api_response_fixture(
-            requests_mock, fixtures.build_titelive_one_book_response(gtl_id=young_gtl_id, gtl_level=2)
+            requests_mock, settings, fixtures.build_titelive_one_book_response(gtl_id=young_gtl_id, gtl_level=2)
         )
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         assert offers_models.Product.query.count() == 0
@@ -580,17 +625,17 @@ class TiteliveBookSearchTest:
             "toefl yes we can",
         ],
     )
-    def test_does_not_create_product_when_product_is_toeic_or_toefl(self, requests_mock, title):
+    def test_does_not_create_product_when_product_is_toeic_or_toefl(self, requests_mock, settings, title):
         # Given
-        self.setup_api_response_fixture(requests_mock, fixtures.build_titelive_one_book_response(title=title))
+        self.setup_api_response_fixture(requests_mock, settings, fixtures.build_titelive_one_book_response(title=title))
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         assert offers_models.Product.query.count() == 0
 
-    def test_should_not_create_product_when_product_is_paper_press(self, requests_mock):
+    def test_should_not_create_product_when_product_is_paper_press(self, requests_mock, settings):
         # When
         # One book press with tva
         edited_fixture = copy.deepcopy(fixtures.TWO_BOOKS_RESPONSE_FIXTURE)
@@ -605,35 +650,36 @@ class TiteliveBookSearchTest:
         edited_fixture["result"][1]["article"]["1"]["taux_tva"] = "2.10"
         edited_fixture["result"][1]["article"]["1"]["code_tva"] = "1"
         edited_fixture["result"][1]["article"]["1"]["gencod"] = self.EAN_TEST
-        self.setup_api_response_fixture(requests_mock, edited_fixture)
+        self.setup_api_response_fixture(requests_mock, settings, edited_fixture)
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         product = offers_models.Product.query.one()
         assert product.extraData.get("ean") == self.EAN_TEST
 
     # UPDATE
-    def test_update_1_thing(self, requests_mock):
+    def test_update_1_thing(self, requests_mock, settings):
         # Given
         self.build_previously_synced_book_product()
         fixture_data = fixtures.build_titelive_one_book_response(ean=self.EAN_TEST)
-        self.setup_api_response_fixture(requests_mock, fixture_data)
+        self.setup_api_response_fixture(requests_mock, settings, fixture_data)
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         product = offers_models.Product.query.one()
         assert product.extraData.get("ean") == self.EAN_TEST
         assert product.name == fixture_data["result"][0]["titre"]
 
-    def test_should_reject_product_when_gtl_changes_to_school_related_product(self, requests_mock):
+    def test_should_reject_product_when_gtl_changes_to_school_related_product(self, requests_mock, settings):
         # Given
         product = self.build_previously_synced_book_product()
         self.setup_api_response_fixture(
             requests_mock,
+            settings,
             fixtures.build_titelive_one_book_response(ean=self.EAN_TEST, gtl_id=self.SCHOLAR_BOOK_GTL_ID, gtl_level=3),
         )
 
@@ -642,7 +688,7 @@ class TiteliveBookSearchTest:
         assert offer.validation != offers_models.OfferValidationStatus.REJECTED
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         product = offers_models.Product.query.one()
@@ -652,11 +698,12 @@ class TiteliveBookSearchTest:
         assert offer.validation == offers_models.OfferValidationStatus.REJECTED
         assert offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT
 
-    def test_should_reject_product_when_gtl_changes_to_extracurricular_related_product(self, requests_mock):
+    def test_should_reject_product_when_gtl_changes_to_extracurricular_related_product(self, requests_mock, settings):
 
         # Given
         self.setup_api_response_fixture(
             requests_mock,
+            settings,
             fixtures.build_titelive_one_book_response(
                 ean=self.EAN_TEST, gtl_id=self.EXTRACURRICULAR_GTL_ID, gtl_level=2
             ),
@@ -668,7 +715,7 @@ class TiteliveBookSearchTest:
         assert offer.validation != offers_models.OfferValidationStatus.REJECTED
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         product = offers_models.Product.query.one()
@@ -678,40 +725,42 @@ class TiteliveBookSearchTest:
         assert offer.validation == offers_models.OfferValidationStatus.REJECTED
         assert offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT
 
-    def test_should_reject_product_when_non_valid_product_type(self, requests_mock):
+    def test_should_reject_product_when_non_valid_product_type(self, requests_mock, settings):
         product = self.build_previously_synced_book_product()
         self.setup_api_response_fixture(
             requests_mock,
+            settings,
             fixtures.build_titelive_one_book_response(
                 ean=self.EAN_TEST, gtl_id="04050505", gtl_level=4, title="jeux de société", support_code="O"
             ),
         )
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         product = offers_models.Product.query.one()
         assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
 
-    def test_should_reject_product_when_it_changes_to_paper_press_product(self, requests_mock):
+    def test_should_reject_product_when_it_changes_to_paper_press_product(self, requests_mock, settings):
         product = self.build_previously_synced_book_product()
         self.setup_api_response_fixture(
             requests_mock,
+            settings,
             fixtures.build_titelive_one_book_response(
                 ean=self.EAN_TEST, support_code="R", taux_tva="2.10", code_tva="1"
             ),
         )
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         product = offers_models.Product.query.one()
         assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
 
     def test_should_not_reject_product_and_deactivate_associated_offer_when_it_changes_to_paper_press_product(
-        self, requests_mock
+        self, requests_mock, settings
     ):
         product = self.build_previously_synced_book_product()
         offerer = offerers_factories.OffererFactory(siren="123456789")
@@ -722,11 +771,12 @@ class TiteliveBookSearchTest:
 
         self.setup_api_response_fixture(
             requests_mock,
+            settings,
             fixtures.build_titelive_one_book_response(ean=self.EAN_TEST, support_code="R", taux_tva="2.10"),
         )
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         offer = offers_models.Offer.query.one()
@@ -736,28 +786,29 @@ class TiteliveBookSearchTest:
         product = offers_models.Product.query.one()
         assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
 
-    def test_update_should_not_override_fraud_incompatibility(self, requests_mock):
+    def test_update_should_not_override_fraud_incompatibility(self, requests_mock, settings):
         product = self.build_previously_synced_book_product(
             gcuCompatibilityType=offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
         )
         self.setup_api_response_fixture(
             requests_mock,
+            settings,
             fixtures.build_titelive_one_book_response(id_lectorat=providers_constants.LECTORAT_EIGHTEEN_ID),
         )
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         product = offers_models.Product.query.one()
         assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
 
-    def test_update_offers_extra_data_from_thing(self, requests_mock):
+    def test_update_offers_extra_data_from_thing(self, requests_mock, settings):
         product = self.build_previously_synced_book_product()
-        self.setup_api_response_fixture(requests_mock, fixtures.build_titelive_one_book_response())
+        self.setup_api_response_fixture(requests_mock, settings, fixtures.build_titelive_one_book_response())
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         product = offers_models.Product.query.one()
@@ -773,23 +824,24 @@ class TiteliveBookSearchTest:
         assert product.extraData.get("code_clil") == "3774"
 
     # APPROVAL
-    def test_approve_product_from_inappropriate_thing(self, requests_mock):
+    def test_approve_product_from_inappropriate_thing(self, requests_mock, settings):
         product = self.build_previously_synced_book_product(
             gcuCompatibilityType=offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
         )
         self.setup_api_response_fixture(
             requests_mock,
+            settings,
             fixtures.build_titelive_one_book_response(ean=self.EAN_TEST),
         )
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         product = offers_models.Product.query.one()
         assert product.isGcuCompatible
 
-    def test_approve_product_and_offers_from_inappropriate_thing(self, requests_mock):
+    def test_approve_product_and_offers_from_inappropriate_thing(self, requests_mock, settings):
         product = self.build_previously_synced_book_product(
             gcuCompatibilityType=offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
         )
@@ -801,11 +853,12 @@ class TiteliveBookSearchTest:
 
         self.setup_api_response_fixture(
             requests_mock,
+            settings,
             fixtures.build_titelive_one_book_response(ean=self.EAN_TEST),
         )
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         product = offers_models.Product.query.one()
@@ -826,37 +879,40 @@ class TiteliveBookSearchTest:
             (1234, None),  # invalid type
         ],
     )
-    def test_handles_all_authors_formats(self, requests_mock, auteurs_multi, expected_author):
+    def test_handles_all_authors_formats(self, requests_mock, settings, auteurs_multi, expected_author):
         # Given
         self.setup_api_response_fixture(
-            requests_mock, fixtures.build_titelive_one_book_response(auteurs_multi=auteurs_multi)
+            requests_mock, settings, fixtures.build_titelive_one_book_response(auteurs_multi=auteurs_multi)
         )
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         product = offers_models.Product.query.one()
         assert product.extraData.get("author") == expected_author
 
-    def test_approval_should_not_override_fraud_incompatibility(self, requests_mock):
+    def test_approval_should_not_override_fraud_incompatibility(self, requests_mock, settings):
         product = self.build_previously_synced_book_product(
             gcuCompatibilityType=offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
         )
         self.setup_api_response_fixture(
             requests_mock,
+            settings,
             fixtures.build_titelive_one_book_response(ean=self.EAN_TEST),
         )
 
         # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         # Then
         product = offers_models.Product.query.one()
         assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
 
-    def test_get_information_from_titelive_multiple_ean_route(self, requests_mock):
-        self.setup_api_response_fixture(requests_mock, fixtures.BOOKS_BY_MULTIPLE_EANS_FIXTURE, eans=["1", "2"])
+    def test_get_information_from_titelive_multiple_ean_route(self, requests_mock, settings):
+        self.setup_api_response_fixture(
+            requests_mock, settings, fixtures.BOOKS_BY_MULTIPLE_EANS_FIXTURE, eans=["1", "2"]
+        )
 
         products = TiteliveBookSearch().get_product_info_from_eans(eans=["1", "2"])
 
@@ -864,10 +920,10 @@ class TiteliveBookSearchTest:
         assert products[1].article[0].gencod == "9782335010046"
         assert len(products) == 2
 
-    def test_get_information_from_titelive_multiple_ean_route_with_dict_response(self, requests_mock):
+    def test_get_information_from_titelive_multiple_ean_route_with_dict_response(self, requests_mock, settings):
         dict_result_response = copy.deepcopy(fixtures.BOOKS_BY_MULTIPLE_EANS_FIXTURE)
         dict_result_response["result"] = {str(i): result for i, result in enumerate(dict_result_response["result"])}
-        self.setup_api_response_fixture(requests_mock, dict_result_response, eans=["1", "2"])
+        self.setup_api_response_fixture(requests_mock, settings, dict_result_response, eans=["1", "2"])
 
         products = TiteliveBookSearch().get_product_info_from_eans(eans=["1", "2"])
 
@@ -875,18 +931,18 @@ class TiteliveBookSearchTest:
         assert products[1].article[0].gencod == "9782335010046"
         assert len(products) == 2
 
-    def test_get_information_from_titelive_single_ean_route(self, requests_mock):
-        self.setup_api_response_fixture(requests_mock, fixtures.BOOK_BY_SINGLE_EAN_FIXTURE, eans=["1"])
+    def test_get_information_from_titelive_single_ean_route(self, requests_mock, settings):
+        self.setup_api_response_fixture(requests_mock, settings, fixtures.BOOK_BY_SINGLE_EAN_FIXTURE, eans=["1"])
 
         products = TiteliveBookSearch().get_product_info_from_eans(eans=["1"])
         assert products[0].article[0].gencod == "9782070455379"
         assert len(products) == 1
 
-    def test_sync_skips_unparsable_work(self, requests_mock):
+    def test_sync_skips_unparsable_work(self, requests_mock, settings):
         not_fully_parsable_response = copy.deepcopy(fixtures.BOOKS_BY_MULTIPLE_EANS_FIXTURE)
         del not_fully_parsable_response["result"][0]["titre"]
 
-        self.setup_api_response_fixture(requests_mock, not_fully_parsable_response, eans=["1", "2"])
+        self.setup_api_response_fixture(requests_mock, settings, not_fully_parsable_response, eans=["1", "2"])
 
         products = TiteliveBookSearch().get_product_info_from_eans(eans=["1", "2"])
         assert products[0].article[0].gencod == "9782335010046"
@@ -896,12 +952,12 @@ class TiteliveBookSearchTest:
         eans = extract_eans_from_titelive_response(fixtures.TWO_BOOKS_RESPONSE_FIXTURE["result"])
         assert eans == {"9782370730541", "9782848018676"}
 
-    def test_ignores_verso_image_if_it_is_a_placeholder(self, requests_mock):
+    def test_ignores_verso_image_if_it_is_a_placeholder(self, requests_mock, settings):
         # Sometimes, titelive will link a placeholder image to the verso image
         # This image should be ignored
-        self.setup_api_response_fixture(requests_mock, fixtures.TWO_BOOKS_RESPONSE_FIXTURE)
+        self.setup_api_response_fixture(requests_mock, settings, fixtures.TWO_BOOKS_RESPONSE_FIXTURE)
 
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         products = offers_models.Product.query.all()
         ean_no_verso_image = "9782848018676"
@@ -919,3 +975,12 @@ class TiteliveBookSearchTest:
 
         assert product_with_verso_image is not None
         assert product_with_verso_image.images.get("verso") is not None
+
+    def test_does_serialize_if_no_image(self, requests_mock, settings):
+        self.setup_api_response_fixture(requests_mock, settings, fixtures.NO_IMAGE_IN_RESULT_FIXTURE)
+
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1))
+
+        (product,) = offers_models.Product.query.all()
+
+        assert product.images.get("recto") is None

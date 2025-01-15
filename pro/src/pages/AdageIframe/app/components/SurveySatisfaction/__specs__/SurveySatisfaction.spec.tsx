@@ -1,6 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 
 import { apiAdage } from 'apiClient/api'
 import * as useNotification from 'commons/hooks/useNotification'

@@ -10,7 +10,7 @@
             size: A4;
             margin: 2cm 1cm;
             @top-left {
-                content: "Relevé n°{{ invoice.reference }} du {{ invoice.date.strftime('%d/%m/%Y') }}";
+                content: "Relevé n°{{ invoice.reference }} du {{ invoice_date }}";
                 color: #870087;
                 font-size: 10pt;
                 font-style: normal;
@@ -49,7 +49,7 @@
         }
 
         title:after {
-            content: "Relevé n°{{ invoice.reference }} du {{ invoice.date.strftime('%d/%m/%Y') }}";
+            content: "Relevé n°{{ invoice.reference }} du {{ invoice_date }}";
             color: #870087;
             font-size: 10pt;
             font-style: normal;
@@ -273,7 +273,7 @@
     <tr>
         <td>Virement {{ cashflow.bankAccount.iban }}</td>
         <td class="cashflow_batch_label">{{ cashflow.batch.label }}</td>
-        <td class="cashflow_creation_date">{{ invoice.date.strftime("%d/%m/%Y") }}</td>
+        <td class="cashflow_creation_date">{{ invoice_date }}</td>
         <td>{{ cashflow.amount|fr_currency_opposite(is_caledonian_invoice) }} {{ currency_symbol }}</td>
         <td>{{ bank_account_label }}</td>
     </tr>

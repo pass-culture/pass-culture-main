@@ -1,10 +1,14 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
 import { api } from 'apiClient/api'
 import { SAVED_OFFERER_ID_KEY } from 'commons/core/shared/constants'
 import { updateFeatures } from 'commons/store/features/reducer'
-import { updateSelectedOffererId, updateUser } from 'commons/store/user/reducer'
+import {
+  updateOffererNames,
+  updateSelectedOffererId,
+} from 'commons/store/offerer/reducer'
+import { updateUser } from 'commons/store/user/reducer'
 import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
@@ -35,6 +39,30 @@ export const StoreProvider = ({
       }
     }
 
+    const initializeUserOfferer = async () => {
+      if (isAdageIframe) {
+        return
+      }
+      try {
+        const response = await api.listOfferersNames()
+        const firstOffererId = response.offerersNames[0].id
+
+        if (localStorageAvailable()) {
+          const savedOffererId = localStorage.getItem(SAVED_OFFERER_ID_KEY)
+          dispatch(
+            updateSelectedOffererId(
+              savedOffererId ? Number(savedOffererId) : firstOffererId
+            )
+          )
+        } else {
+          dispatch(updateSelectedOffererId(firstOffererId))
+        }
+        dispatch(updateOffererNames(response.offerersNames))
+      } catch {
+        dispatch(updateSelectedOffererId(null))
+      }
+    }
+
     const initializeFeatures = async () => {
       try {
         const response = await api.listFeatures()
@@ -45,16 +73,11 @@ export const StoreProvider = ({
     }
 
     const getStoreInitialState = async () => {
-      await Promise.all([initializeUser(), initializeFeatures()])
-
-      if (localStorageAvailable()) {
-        const savedOffererId = localStorage.getItem(SAVED_OFFERER_ID_KEY)
-        dispatch(
-          updateSelectedOffererId(
-            savedOffererId ? Number(savedOffererId) : null
-          )
-        )
-      }
+      await Promise.all([
+        initializeUser(),
+        initializeFeatures(),
+        initializeUserOfferer(),
+      ])
       setIsStoreInitialized(true)
     }
 

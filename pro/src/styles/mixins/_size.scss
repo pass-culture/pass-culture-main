@@ -1,0 +1,43 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_forms.scss" as forms;
+@use "styles/mixins/_fonts.scss" as fonts;
+
+$desktop: rem.torem(1440px);
+$laptop: rem.torem(1024px);
+$tablet: rem.torem(600px);
+$main-content-width: rem.torem(874px);
+$main-content-padding: rem.torem(32px);
+$main-content-padding-xs: rem.torem(24px);
+$checkbox-size: rem.torem(20px);
+$action-bar-sticky-height: rem.torem(72px);
+$input-min-height: rem.torem(40px);
+$input-border-width: rem.torem(1px);
+$input-filter-variant-horizontal-padding: rem.torem(4px);
+$signup-content-width: rem.torem(488px);
+$button-icon-size: rem.torem(20px);
+$header-nav-item-padding: rem.torem(16px);
+$logo-side-width: rem.torem(520px);
+$dialog-box-padding: rem.torem(32px);
+$full-content-min-width: rem.torem(300px);
+$full-content-max-width: rem.torem(600px);
+$top-menu-height: rem.torem(50px);
+$top-menu-border-size: rem.torem(1px);
+$footer-height: rem.torem(76px);
+$side-logo-width: 35%;
+$side-nav-width: rem.torem(268px);
+
+// Mixin used to "center" with input
+// We are using margin-top and not flex center because when there is an error the
+// input field grows at the bottom and we don't want the aligned content to move with it
+@mixin input-center-with-top-margin($content-height, $no-label: false) {
+  @if $no-label {
+    margin-top: calc((#{$input-min-height} - #{$content-height}) / 2);
+  } @else {
+    margin-top: calc(
+      #{var(--typography-body-line-height)} +
+        #{forms.$label-space-before-input} +
+        (#{$input-min-height} - #{$content-height}) /
+        2
+    );
+  }
+}

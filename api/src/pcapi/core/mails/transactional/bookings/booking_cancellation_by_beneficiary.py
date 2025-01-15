@@ -1,10 +1,12 @@
 import datetime
+from functools import partial
 
 from pcapi.core import mails
 from pcapi.core.bookings.models import Booking
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.utils import offer_app_link
+from pcapi.repository import on_commit
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.date import utc_datetime_to_department_timezone
@@ -56,4 +58,10 @@ def get_booking_cancellation_by_beneficiary_email_data(
 
 def send_booking_cancellation_by_beneficiary_email(booking: Booking) -> None:
     data = get_booking_cancellation_by_beneficiary_email_data(booking)
-    mails.send(recipients=[booking.user.email], data=data)
+    on_commit(
+        partial(
+            mails.send,
+            recipients=[booking.user.email],
+            data=data,
+        )
+    )

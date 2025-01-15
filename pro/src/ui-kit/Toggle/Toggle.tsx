@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React, { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import styles from './Toggle.module.scss'
 

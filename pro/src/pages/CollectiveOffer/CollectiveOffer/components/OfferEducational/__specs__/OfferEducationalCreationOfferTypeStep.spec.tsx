@@ -13,9 +13,9 @@ function renderComponent(props: OfferEducationalProps) {
     user,
     storeOverrides: {
       user: {
-        selectedOffererId: 1,
         currentUser: user,
       },
+      offerer: { selectedOffererId: 1, offererNames: [] },
     },
   })
 }
@@ -30,7 +30,9 @@ describe('screens | OfferEducational : creation offer type step', () => {
   it('should display the right fields and titles', async () => {
     renderComponent(props)
 
-    const formatSelect = await screen.findByLabelText('Format *')
+    const formatSelect = await screen.findByLabelText(
+      'Ajoutez un ou plusieurs formats *'
+    )
     expect(formatSelect).toBeInTheDocument()
     expect(formatSelect).toBeEnabled()
     expect(formatSelect).toHaveValue('')
@@ -44,20 +46,19 @@ describe('screens | OfferEducational : creation offer type step', () => {
       '0/110'
     )
 
-    const descriptionTextArea = await screen.findByLabelText(/Description */)
+    const descriptionTextArea = await screen.findByLabelText(
+      /Décrivez ici votre projet et son interêt pédagogique */
+    )
     expect(descriptionTextArea).toBeEnabled()
     expect(descriptionTextArea).toHaveValue('')
-    const descriptionTextAreaDesc = screen.getByTestId(
-      'description-description'
-    )
-    expect(descriptionTextAreaDesc).toHaveTextContent(
-      'Détaillez ici votre projet et son interêt pédagogique.'
-    )
+
     expect(await screen.findByTestId('counter-description')).toHaveTextContent(
       '0/1000'
     )
 
-    const durationInput = screen.getByLabelText(/Durée/)
+    const durationInput = screen.getByLabelText(
+      /Indiquez la durée de l’évènement/
+    )
     expect(durationInput).toBeInTheDocument()
     expect(durationInput).toBeEnabled()
     expect(durationInput).toHaveValue('')
@@ -80,10 +81,14 @@ describe('screens | OfferEducational : creation offer type step', () => {
     it('should require user to select a domain', async () => {
       renderComponent(props)
       await userEvent.click(
-        await screen.findByLabelText(/Domaine artistique et culturel */)
+        await screen.findByLabelText(
+          /Ajoutez un ou plusieurs domaines artistiques */
+        )
       )
 
-      await userEvent.click(screen.getByLabelText(/Format */))
+      await userEvent.click(
+        screen.getByLabelText(/Ajoutez un ou plusieurs formats */)
+      )
 
       expect(
         screen.getByText('Veuillez renseigner un domaine')
@@ -94,12 +99,16 @@ describe('screens | OfferEducational : creation offer type step', () => {
       renderComponent(props)
 
       await userEvent.click(
-        await screen.findByLabelText(/Domaine artistique et culturel */)
+        await screen.findByLabelText(
+          /Ajoutez un ou plusieurs domaines artistiques */
+        )
       )
 
       await userEvent.click(await screen.findByLabelText(/Domain 2/))
 
-      await userEvent.click(screen.getByLabelText(/Format */))
+      await userEvent.click(
+        screen.getByLabelText(/Ajoutez un ou plusieurs formats */)
+      )
 
       expect(
         screen.queryByText('Veuillez renseigner un domaine')
@@ -132,7 +141,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
     it('should be able to select a format', async () => {
       renderComponent(props)
       const selectFormat = await screen.findByRole('combobox', {
-        name: 'Format *',
+        name: 'Ajoutez un ou plusieurs formats *',
       })
 
       await userEvent.click(selectFormat)
@@ -182,7 +191,9 @@ describe('screens | OfferEducational : creation offer type step', () => {
       renderComponent(props)
       const descMaxLength = 1000
 
-      const description = await screen.findByLabelText(/Description */)
+      const description = await screen.findByLabelText(
+        /Décrivez ici votre projet et son interêt pédagogique */
+      )
       expect(description).toHaveValue('')
       expect(screen.getByTestId('counter-description')).toHaveTextContent(
         `0/${descMaxLength}`
@@ -207,7 +218,9 @@ describe('screens | OfferEducational : creation offer type step', () => {
 
     it('should have a duration field with a format of hh:mm', async () => {
       renderComponent(props)
-      const duration = await screen.findByLabelText(/Durée */)
+      const duration = await screen.findByLabelText(
+        /Indiquez la durée de l’évènement */
+      )
       expect(duration).toHaveValue('')
 
       await userEvent.type(duration, 'bad String')

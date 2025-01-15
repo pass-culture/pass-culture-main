@@ -7,7 +7,7 @@ import { AutocompleteQuerySuggestionsHit } from '@algolia/autocomplete-plugin-qu
 import { createLocalStorageRecentSearchesPlugin } from '@algolia/autocomplete-plugin-recent-searches'
 import algoliasearch from 'algoliasearch/lite'
 import { FormikContext } from 'formik'
-import React, {
+import {
   BaseSyntheticEvent,
   KeyboardEvent,
   MouseEvent,
@@ -22,7 +22,10 @@ import { useDispatch } from 'react-redux'
 
 import { SuggestionType } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import { setAdagePageSaved, setAdageQuery } from 'commons/store/adageFilter/reducer'
+import {
+  setAdagePageSaved,
+  setAdageQuery,
+} from 'commons/store/adageFilter/reducer'
 import {
   ALGOLIA_API_KEY,
   ALGOLIA_APP_ID,
@@ -270,7 +273,6 @@ export const Autocomplete = ({
         KeyboardEvent
       >({
         initialState: instantSearchUiState,
-        insights: true,
         openOnFocus: true,
         onStateChange: ({ state }) => {
           setInstantSearchUiState(state)

@@ -44,19 +44,6 @@ class ProviderFactory(BaseFactory):
     name = factory.Sequence("Provider {}".format)
     localClass = factory.Sequence("{}Stocks".format)
     hmacKey = "secret"
-    apiUrl = None
-    enabledForPro = True
-    isActive = True
-
-
-class APIProviderFactory(BaseFactory):
-    # This factory creates legacy providers.
-    # The API they uses will be dropped, do not use this factory unless you specifically want to.
-    class Meta:
-        model = models.Provider
-
-    name = factory.Sequence("API Provider {}".format)
-    apiUrl = factory.Sequence("https://{}.example.org/stocks".format)
     enabledForPro = True
     isActive = True
 
@@ -80,9 +67,8 @@ class VenueProviderFactory(BaseFactory):
         model = models.VenueProvider
 
     venue = factory.SubFactory(offerers_factories.VenueFactory)
-    provider = factory.SubFactory(APIProviderFactory)
+    provider = factory.SubFactory(PublicApiProviderFactory)
     isActive = True
-
     venueIdAtOfferProvider = factory.SelfAttribute("venue.siret")
 
 

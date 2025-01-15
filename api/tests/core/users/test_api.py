@@ -42,8 +42,6 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exceptions
@@ -106,7 +104,9 @@ class CancelBeneficiaryBookingsOnSuspendAccountTest:
 
         author = users_factories.AdminFactory()
 
-        users_api.suspend_account(booking_thing.user, reason, author, is_backoffice_action=is_backoffice_action)
+        users_api.suspend_account(
+            booking_thing.user, reason=reason, actor=author, is_backoffice_action=is_backoffice_action
+        )
 
         assert booking_thing.status is BookingStatus.CANCELLED
 
@@ -118,7 +118,7 @@ class CancelBeneficiaryBookingsOnSuspendAccountTest:
 
         author = users_factories.AdminFactory()
 
-        users_api.suspend_account(booking_thing.user, reason, author, is_backoffice_action=True)
+        users_api.suspend_account(booking_thing.user, reason=reason, actor=author, is_backoffice_action=True)
 
         assert booking_thing.status is BookingStatus.CONFIRMED
 
@@ -149,7 +149,9 @@ class CancelBeneficiaryBookingsOnSuspendAccountTest:
 
         author = users_factories.AdminFactory()
 
-        users_api.suspend_account(booking_event.user, reason, author, is_backoffice_action=is_backoffice_action)
+        users_api.suspend_account(
+            booking_event.user, reason=reason, actor=author, is_backoffice_action=is_backoffice_action
+        )
 
         assert booking_event.status is BookingStatus.CANCELLED
 
@@ -174,7 +176,7 @@ class CancelBeneficiaryBookingsOnSuspendAccountTest:
         author = users_factories.AdminFactory()
         reason = users_constants.SuspensionReason.UPON_USER_REQUEST
 
-        users_api.suspend_account(booking_event.user, reason, author)
+        users_api.suspend_account(booking_event.user, reason=reason, actor=author)
 
         assert booking_event.status is BookingStatus.CONFIRMED
 
@@ -187,7 +189,7 @@ class SuspendAccountTest:
         reason = users_constants.SuspensionReason.FRAUD_RESELL_PRODUCT
         author = users_factories.AdminFactory()
 
-        users_api.suspend_account(user, reason, author, is_backoffice_action=True)
+        users_api.suspend_account(user, reason=reason, actor=author, is_backoffice_action=True)
 
         assert user.suspension_reason == reason
         assert _datetime_within_last_5sec(user.suspension_date)
@@ -219,7 +221,7 @@ class SuspendAccountTest:
         comment = "Dossier n°12345"
         old_password_hash = user.password
 
-        users_api.suspend_account(user, reason, author, comment=comment, is_backoffice_action=True)
+        users_api.suspend_account(user, reason=reason, actor=author, comment=comment, is_backoffice_action=True)
 
         db.session.refresh(user)
 
@@ -252,7 +254,7 @@ class SuspendAccountTest:
         author = users_factories.AdminFactory()
         reason = users_constants.SuspensionReason.END_OF_CONTRACT
 
-        users_api.suspend_account(pro, reason, author, is_backoffice_action=True)
+        users_api.suspend_account(pro, reason=reason, actor=author, is_backoffice_action=True)
 
         assert not pro.isActive
         assert booking.status is BookingStatus.CONFIRMED  # not canceled
@@ -271,7 +273,9 @@ class SuspendAccountTest:
         user = users_factories.UserFactory()
         old_password_hash = user.password
 
-        users_api.suspend_account(user, users_constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER, user)
+        users_api.suspend_account(
+            user, reason=users_constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER, actor=user
+        )
 
         assert user.password != old_password_hash
 
@@ -288,7 +292,7 @@ class SuspendAccountTest:
         user = users_factories.UserFactory()
         old_password_hash = user.password
 
-        users_api.suspend_account(user, reason, user)
+        users_api.suspend_account(user, reason=reason, actor=user)
 
         assert user.password == old_password_hash
 
@@ -1107,7 +1111,7 @@ class CreateProUserTest:
         assert not pro_user.has_beneficiary_role
         assert not pro_user.deposits
 
-    @override_settings(MAKE_PROS_BENEFICIARIES_IN_APP=True)
+    @pytest.mark.settings(MAKE_PROS_BENEFICIARIES_IN_APP=True)
     def test_create_pro_user_in_integration(self):
         pro_user_creation_body = users_serialization.ProUserCreationBodyV2Model(**self.data)
 
@@ -1217,7 +1221,7 @@ class BeneficiaryInformationUpdateTest:
         users_api.update_user_information_from_external_source(user, dms_data)
         assert user.idPieceNumber == "140767100016"
 
-    @override_features(ENABLE_PHONE_VALIDATION=True)
+    @pytest.mark.features(ENABLE_PHONE_VALIDATION=True)
     def test_phone_number_does_not_update(self):
         user = users_factories.UserFactory(phoneNumber="+33611111111")
         dms_data = fraud_factories.DMSContentFactory(phoneNumber="+33622222222")
@@ -1226,7 +1230,7 @@ class BeneficiaryInformationUpdateTest:
 
         assert user.phoneNumber == "+33611111111"
 
-    @override_features(ENABLE_PHONE_VALIDATION=False)
+    @pytest.mark.features(ENABLE_PHONE_VALIDATION=False)
     def test_phone_number_does_not_update_if_not_empty(self):
         user = users_factories.UserFactory(phoneNumber="+33611111111")
         dms_data = fraud_factories.DMSContentFactory(phone="+33622222222")
@@ -3131,6 +3135,7 @@ def generate_minimal_beneficiary():
     db.session.add(
         users_models.UserAccountUpdateRequest(
             dsApplicationId="111111",
+            dsTechnicalId="abc-def-ghi-jkl",
             status=dms_models.GraphQLApplicationStates.on_going,
             dateCreated=now,
             dateLastStatusUpdate=now,

@@ -181,6 +181,8 @@ def _get_collective_offers(
             rules_subquery.label("rules"),
         )
         .filter(educational_models.CollectiveOffer.id.in_(_get_collective_offer_ids_query(form).subquery()))
+        .join(offerers_models.Venue)
+        .join(offerers_models.Offerer)
         .options(
             sa.orm.load_only(
                 educational_models.CollectiveOffer.id,
@@ -189,6 +191,7 @@ def _get_collective_offers(
                 educational_models.CollectiveOffer.validation,
                 educational_models.CollectiveOffer.formats,
                 educational_models.CollectiveOffer.authorId,
+                educational_models.CollectiveOffer.rejectionReason,
             ),
             sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).load_only(
                 educational_models.CollectiveStock.beginningDatetime,
@@ -196,22 +199,31 @@ def _get_collective_offers(
                 educational_models.CollectiveStock.endDatetime,
                 educational_models.CollectiveStock.price,
             ),
-            sa.orm.joinedload(educational_models.CollectiveOffer.venue, innerjoin=True).load_only(
-                offerers_models.Venue.managingOffererId,
-                offerers_models.Venue.name,
-                offerers_models.Venue.publicName,
-                offerers_models.Venue.departementCode,
-            )
-            # needed to check if stock is bookable and compute initial/remaining stock:
-            .joinedload(offerers_models.Venue.managingOfferer, innerjoin=True)
-            .load_only(
-                offerers_models.Offerer.name, offerers_models.Offerer.isActive, offerers_models.Offerer.validationStatus
-            )
-            .joinedload(offerers_models.Offerer.confidenceRule)
-            .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
-            sa.orm.joinedload(educational_models.CollectiveOffer.venue, innerjoin=True)
-            .joinedload(offerers_models.Venue.confidenceRule)
-            .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
+            sa.orm.contains_eager(educational_models.CollectiveOffer.venue).options(
+                sa.orm.load_only(
+                    offerers_models.Venue.managingOffererId,
+                    offerers_models.Venue.name,
+                    offerers_models.Venue.publicName,
+                    offerers_models.Venue.departementCode,
+                ),
+                sa.orm.contains_eager(offerers_models.Venue.managingOfferer).options(
+                    sa.orm.load_only(
+                        offerers_models.Offerer.name,
+                        # needed to check if stock is bookable and compute initial/remaining stock:
+                        offerers_models.Offerer.isActive,
+                        offerers_models.Offerer.validationStatus,
+                    ),
+                    sa.orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
+                        offerers_models.OffererConfidenceRule.confidenceLevel
+                    ),
+                    sa.orm.with_expression(
+                        offerers_models.Offerer.isTopActeur, offerers_models.Offerer.is_top_acteur.expression  # type: ignore[attr-defined]
+                    ),
+                ),
+                sa.orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
+                    offerers_models.OffererConfidenceRule.confidenceLevel
+                ),
+            ),
             sa.orm.joinedload(educational_models.CollectiveOffer.institution).load_only(
                 educational_models.EducationalInstitution.name,
                 educational_models.EducationalInstitution.institutionId,
@@ -290,7 +302,9 @@ def validate_collective_offer(collective_offer_id: int) -> utils.BackofficeRespo
 
 
 def _batch_validate_or_reject_collective_offers(
-    validation: offer_mixin.OfferValidationStatus, collective_offer_ids: list[int]
+    validation: offer_mixin.OfferValidationStatus,
+    collective_offer_ids: list[int],
+    reason: educational_models.CollectiveOfferRejectionReason | None = None,
 ) -> bool:
     collective_offers = educational_models.CollectiveOffer.query.filter(
         educational_models.CollectiveOffer.id.in_(collective_offer_ids),
@@ -322,6 +336,9 @@ def _batch_validate_or_reject_collective_offers(
 
             if validation is offer_mixin.OfferValidationStatus.APPROVED:
                 collective_offer.isActive = True
+                collective_offer.rejectionReason = None
+            else:
+                collective_offer.rejectionReason = reason
 
             try:
                 db.session.flush()
@@ -352,15 +369,26 @@ def _batch_validate_or_reject_collective_offers(
             if validation is offer_mixin.OfferValidationStatus.APPROVED and collective_offer.institutionId is not None:
                 try:
                     adage_client.notify_institution_association(serialize_collective_offer(collective_offer))
+                except educational_exceptions.AdageInvalidEmailException:
+                    # in the case of an invalid institution email, adage is not notified but we still want to validate of reject the offer
+                    flash(
+                        Markup("Email invalide pour l'offre {offer_id}, Adage n'a pas été notifié").format(
+                            offer_id=collective_offer.id
+                        )
+                    )
                 except educational_exceptions.AdageException as exp:
                     flash(
                         Markup("Erreur Adage pour l'offre {offer_id}: {message}").format(
                             offer_id=collective_offer.id, message=exp.message
                         )
                     )
+
                     mark_transaction_as_invalid()
+
+                    if collective_offer.id in collective_offer_update_succeed_ids:
+                        collective_offer_update_succeed_ids.remove(collective_offer.id)
+
                     collective_offer_update_failed_ids.append(collective_offer.id)
-                    continue
 
     if len(collective_offer_update_succeed_ids) == 1:
         flash(
@@ -401,7 +429,7 @@ def get_reject_collective_offer_form(collective_offer_id: int) -> utils.Backoffi
     if not collective_offer:
         raise NotFound()
 
-    form = empty_forms.EmptyForm()
+    form = forms.RejectCollectiveOfferForm()
 
     return render_template(
         "components/turbo/modal_form.html",
@@ -417,7 +445,16 @@ def get_reject_collective_offer_form(collective_offer_id: int) -> utils.Backoffi
 @atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def reject_collective_offer(collective_offer_id: int) -> utils.BackofficeResponse:
-    _batch_validate_or_reject_collective_offers(offer_mixin.OfferValidationStatus.REJECTED, [collective_offer_id])
+    form = forms.RejectCollectiveOfferForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return redirect(request.referrer or url_for("backoffice_web.collective_offer.list_collective_offers"), 303)
+
+    _batch_validate_or_reject_collective_offers(
+        offer_mixin.OfferValidationStatus.REJECTED,
+        [collective_offer_id],
+        educational_models.CollectiveOfferRejectionReason(form.reason.data),
+    )
     return redirect(request.referrer or url_for("backoffice_web.collective_offer.list_collective_offers"), 303)
 
 
@@ -440,7 +477,7 @@ def get_batch_validate_collective_offers_form() -> utils.BackofficeResponse:
 @atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_batch_reject_collective_offers_form() -> utils.BackofficeResponse:
-    form = empty_forms.BatchForm()
+    form = forms.BatchRejectCollectiveOfferForm()
     return render_template(
         "components/turbo/modal_form.html",
         form=form,
@@ -469,13 +506,16 @@ def batch_validate_collective_offers() -> utils.BackofficeResponse:
 @atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def batch_reject_collective_offers() -> utils.BackofficeResponse:
-    form = empty_forms.BatchForm()
-
+    form = forms.BatchRejectCollectiveOfferForm()
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer or url_for("backoffice_web.collective_offer.list_collective_offers"), 303)
 
-    _batch_validate_or_reject_collective_offers(offer_mixin.OfferValidationStatus.REJECTED, form.object_ids_list)
+    _batch_validate_or_reject_collective_offers(
+        offer_mixin.OfferValidationStatus.REJECTED,
+        form.object_ids_list,
+        educational_models.CollectiveOfferRejectionReason(form.reason.data),
+    )
     return redirect(request.referrer or url_for("backoffice_web.collective_offer.list_collective_offers"), 303)
 
 
@@ -516,8 +556,19 @@ def get_collective_offer_details(collective_offer_id: int) -> utils.BackofficeRe
         sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
             educational_models.CollectiveStock.collectiveBookings
         ),
-        sa.orm.joinedload(educational_models.CollectiveOffer.venue),
-        sa.orm.joinedload(educational_models.CollectiveOffer.venue).joinedload(offerers_models.Venue.managingOfferer),
+        sa.orm.joinedload(educational_models.CollectiveOffer.venue).options(
+            sa.orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
+                offerers_models.OffererConfidenceRule.confidenceLevel
+            ),
+            sa.orm.joinedload(offerers_models.Venue.managingOfferer).options(
+                sa.orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
+                    offerers_models.OffererConfidenceRule.confidenceLevel
+                ),
+                sa.orm.with_expression(
+                    offerers_models.Offerer.isTopActeur, offerers_models.Offerer.is_top_acteur.expression  # type: ignore[attr-defined]
+                ),
+            ),
+        ),
         sa.orm.joinedload(educational_models.CollectiveOffer.lastValidationAuthor).load_only(
             users_models.User.firstName, users_models.User.lastName
         ),

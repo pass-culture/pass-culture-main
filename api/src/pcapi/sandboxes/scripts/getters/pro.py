@@ -40,11 +40,11 @@ def create_regular_pro_user() -> dict:
     pro_user = users_factories.ProFactory()
     offerer = offerers_factories.OffererFactory()
     offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
-    offerers_factories.VenueFactory(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
+    venue = offerers_factories.VenueFactory(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
     offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
     offerers_factories.VenueLabelFactory(label="Musée de France")
 
-    return {"user": get_pro_user_helper(pro_user), "siren": offerer.siren}
+    return {"user": get_pro_user_helper(pro_user), "siren": offerer.siren, "venueName": venue.name}
 
 
 def create_pro_user_with_bookings() -> dict:
@@ -56,13 +56,31 @@ def create_pro_user_with_bookings() -> dict:
     stock = offers_factories.StockFactory(offer__venue=venue)
     stock_event = offers_factories.EventStockFactory(offer__venue=venue)
 
-    bookings_factories.BookingFactory(token="2XTM3W", stock=stock, status=bookings_models.BookingStatus.CONFIRMED)
-    bookings_factories.BookingFactory(token="TOSOON", stock=stock_event, status=bookings_models.BookingStatus.CONFIRMED)
-    bookings_factories.BookingFactory(token="XUSEDX", stock=stock, status=bookings_models.BookingStatus.USED)
-    bookings_factories.BookingFactory(token="CANCEL", stock=stock, status=bookings_models.BookingStatus.CANCELLED)
-    bookings_factories.BookingFactory(token="REIMBU", stock=stock, status=bookings_models.BookingStatus.REIMBURSED)
-    bookings_factories.BookingFactory(token="OTHERX")
-    return {"user": get_pro_user_helper(pro_user)}
+    bookingConfirmed = bookings_factories.BookingFactory(
+        token="2XTM3W", stock=stock, status=bookings_models.BookingStatus.CONFIRMED
+    )
+    bookingTooSoon = bookings_factories.BookingFactory(
+        token="TOSOON", stock=stock_event, status=bookings_models.BookingStatus.CONFIRMED
+    )
+    bookingUsed = bookings_factories.BookingFactory(
+        token="XUSEDX", stock=stock, status=bookings_models.BookingStatus.USED
+    )
+    bookingCanceled = bookings_factories.BookingFactory(
+        token="CANCEL", stock=stock, status=bookings_models.BookingStatus.CANCELLED
+    )
+    bookingReimbursed = bookings_factories.BookingFactory(
+        token="REIMBU", stock=stock, status=bookings_models.BookingStatus.REIMBURSED
+    )
+    bookingOtherX = bookings_factories.BookingFactory(token="OTHERX")
+    return {
+        "user": get_pro_user_helper(pro_user),
+        "tokenConfirmed": bookingConfirmed.token,
+        "tokenTooSoon": bookingTooSoon.token,
+        "tokenUsed": bookingUsed.token,
+        "tokenCanceled": bookingCanceled.token,
+        "tokenReimbursed": bookingReimbursed.token,
+        "tokenOther": bookingOtherX.token,
+    }
 
 
 def create_regular_pro_user_with_virtual_offer() -> dict:
@@ -143,7 +161,7 @@ def create_adage_environment() -> dict:
         type=educational_models.PlaylistType.NEW_OFFER,
         institution=educational_institution,
     )
-    educational_factories.PlaylistFactory(
+    newOfferer = educational_factories.PlaylistFactory(
         distanceInKm=50,
         collective_offer_template=offer,
         type=educational_models.PlaylistType.NEW_OFFERER,
@@ -163,7 +181,7 @@ def create_adage_environment() -> dict:
     )
 
     # offer result by algolia are mocked in e2e test
-    return {"offerId": offer.id}
+    return {"offerId": offer.id, "offerName": offer.name, "venueName": newOfferer.venue.name}
 
 
 def create_pro_user_with_individual_offers() -> dict:
@@ -208,12 +226,22 @@ def create_pro_user_with_individual_offers() -> dict:
         subcategoryId=subcategories.LIVRE_PAPIER.id,
     )
     offers_factories.StockFactory(offer=offer6)
-    offers_factories.ThingOfferFactory(
+    offer7 = offers_factories.ThingOfferFactory(
         venue=venue,
         name="Une offre épuisée",
         subcategoryId=subcategories.LIVRE_PAPIER.id,
     )
-    return {"user": get_pro_user_helper(pro_user)}
+    return {
+        "user": get_pro_user_helper(pro_user),
+        "venue": {"name": venue.name},
+        "offer1": {"name": offer1.name},
+        "offer2": {"name": offer2.name},
+        "offer3": {"name": offer3.name},
+        "offer4": {"name": offer4.name},
+        "offer5": {"name": offer5.name},
+        "offer6": {"name": offer6.name},
+        "offer7": {"name": offer7.name},
+    }
 
 
 def create_pro_user_with_collective_offers() -> dict:
@@ -224,14 +252,14 @@ def create_pro_user_with_collective_offers() -> dict:
     venue2 = offerers_factories.CollectiveVenueFactory(name="Mon Lieu 2", managingOfferer=offerer)
     offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
 
-    educational_factories.CollectiveOfferTemplateFactory(
+    offerPublishedTemplate = educational_factories.CollectiveOfferTemplateFactory(
         name="Mon offre collective publiée vitrine",
         venue=venue1,
         subcategoryId=subcategories.CONCERT.id,
         formats=[subcategories.EacFormat.CONCERT],
     )
 
-    educational_factories.CollectiveStockFactory(
+    offerPublished = educational_factories.CollectiveStockFactory(
         collectiveOffer__name="Mon offre collective publiée réservable",
         collectiveOffer__venue=venue1,
         collectiveOffer__subcategoryId=subcategories.CONCERT.id,
@@ -240,28 +268,28 @@ def create_pro_user_with_collective_offers() -> dict:
         endDatetime=datetime.datetime.utcnow() + datetime.timedelta(weeks=2),
     )
 
-    educational_factories.DraftCollectiveOfferFactory(
+    offerDraft = educational_factories.DraftCollectiveOfferFactory(
         name="Mon offre collective en brouillon réservable",
         venue=venue1,
         subcategoryId=subcategories.CONCERT.id,
         formats=[subcategories.EacFormat.REPRESENTATION],
     )
 
-    educational_factories.PendingCollectiveOfferFactory(
+    offerInInstruction = educational_factories.PendingCollectiveOfferFactory(
         name="Mon offre collective en instruction réservable",
         venue=venue2,
         subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id,
         formats=[subcategories.EacFormat.REPRESENTATION],
     )
 
-    educational_factories.RejectedCollectiveOfferFactory(
+    offerNotConform = educational_factories.RejectedCollectiveOfferFactory(
         name="Mon offre collective non conforme réservable",
         venue=venue2,
         subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id,
         formats=[subcategories.EacFormat.REPRESENTATION],
     )
 
-    educational_factories.ArchivedCollectiveOfferFactory(
+    offerArchived = educational_factories.ArchivedCollectiveOfferFactory(
         name="Mon offre collective archivée réservable",
         venue=venue2,
         subcategoryId=subcategories.SEANCE_CINE.id,
@@ -279,7 +307,30 @@ def create_pro_user_with_collective_offers() -> dict:
     educational_factories.EducationalYearFactory()
     educational_factories.EducationalInstitutionFactory(name="COLLEGE 123")
 
-    return {"user": get_pro_user_helper(pro_user)}
+    return {
+        "user": get_pro_user_helper(pro_user),
+        "offerPublishedTemplate": {
+            "name": offerPublishedTemplate.name,
+            "venueName": offerPublishedTemplate.venue.name,
+        },
+        "offerPublished": {
+            "name": offerPublished.collectiveOffer.name,
+            "venueName": offerPublished.collectiveOffer.venue.name,
+        },
+        "offerDraft": {
+            "name": offerDraft.name,
+            "venueName": offerDraft.venue.name,
+        },
+        "offerInInstruction": {
+            "name": offerInInstruction.name,
+            "venueName": offerInInstruction.venue.name,
+        },
+        "offerNotConform": {
+            "name": offerNotConform.name,
+            "venueName": offerNotConform.venue.name,
+        },
+        "offerArchived": {"name": offerArchived.name, "venueName": offerArchived.venue.name},
+    }
 
 
 def create_pro_user_with_active_collective_offer() -> dict:
@@ -324,6 +375,7 @@ def create_pro_user_with_active_collective_offer() -> dict:
     return {
         "user": get_pro_user_helper(pro_user),
         "offer": {"id": offer.id, "name": offer.name, "venueName": offer.venue.name},
+        "stock": {"startDatetime": datetime.datetime.utcnow() + datetime.timedelta(days=10)},
         "providerApiKey": str(clear_token),
     }
 

@@ -65,12 +65,10 @@ Cypress.Commands.add('getFakeAdageToken', () => {
     method: 'GET',
     url: 'http://localhost:5001/adage-iframe/testing/token',
   }).then((response) => {
-    Cypress.env('adageToken', response.body.token)
+    return cy.wrap(response.body.token)
   })
 })
 
-// See https://github.com/cypress-io/cypress/issues/1570#issuecomment-891244917
-// Workaround bc onChange not triggered for an input type='range' rendered by React
 Cypress.Commands.add(
   'setSliderValue',
   { prevSubject: 'element' },
@@ -87,13 +85,13 @@ Cypress.Commands.add(
   }
 )
 
-// Workaround to format log. See https://github.com/cypress-io/cypress/issues/2134
-// and https://github.com/cypress-io/cypress/issues/2134#issuecomment-1692593562
-
 /**
  *  Helper function to convert hex colors to rgb
+ *  Workaround to format log
  * @param {string} hex - hex color
  * @returns {string}
+ * @see https://github.com/cypress-io/cypress/issues/2134
+ * @see https://github.com/cypress-io/cypress/issues/2134#issuecomment-1692593562
  *
  * @example
  * // returns "255 255 255"
@@ -140,14 +138,6 @@ export function createCustomLog() {
     ` // @ts-expect-error: Object is possibly 'null'.
   Cypress.$(window.top.document.head).append(logStyle)
 }
-
-/**
- * Print in Cypress UI/Cloud a message with a formatted style
- * @param {string} log.message - The content of the message.
- *
- * @example
- * cy.stepLog({ message: 'I do this' })
- */
 
 Cypress.Commands.add('stepLog', ({ message }) => {
   createCustomLog()

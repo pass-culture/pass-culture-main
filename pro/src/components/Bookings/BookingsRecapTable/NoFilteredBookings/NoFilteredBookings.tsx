@@ -1,5 +1,3 @@
-import React from 'react'
-
 import fullRefresh from 'icons/full-refresh.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import { Button } from 'ui-kit/Button/Button'

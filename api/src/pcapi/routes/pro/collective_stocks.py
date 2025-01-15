@@ -9,6 +9,7 @@ from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models.api_errors import ApiErrors
+from pcapi.repository import atomic
 from pcapi.routes.apis import private_api
 from pcapi.routes.pro import blueprint
 from pcapi.routes.serialization import collective_stock_serialize
@@ -20,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 @private_api.route("/collective/stocks", methods=["POST"])
+@atomic()
 @login_required
 @spectree_serialize(
     on_success_status=201,
@@ -52,6 +54,7 @@ def create_collective_stock(
 
 
 @private_api.route("/collective/stocks/<int:collective_stock_id>", methods=["PATCH"])
+@atomic()
 @login_required
 @spectree_serialize(
     on_success_status=200,
@@ -80,6 +83,8 @@ def edit_collective_stock(
         return collective_stock_serialize.CollectiveStockResponseModel.from_orm(collective_stock)
     except educational_exceptions.CollectiveOfferIsPublicApi:
         raise ApiErrors({"global": ["Les stocks créés par l'api publique ne sont pas editables."]}, 403)
+    except educational_exceptions.CollectiveOfferForbiddenAction:
+        raise ApiErrors({"global": ["Cette action n'est pas autorisée sur l'offre collective liée à ce stock."]}, 403)
     except offers_exceptions.BookingLimitDatetimeTooLate:
         raise ApiErrors(
             {"educationalStock": ["La date limite de confirmation ne peut être fixée après la date de l évènement"]},

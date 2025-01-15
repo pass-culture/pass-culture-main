@@ -1,9 +1,9 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_size.scss" as size;
+@use "styles/mixins/_size.scss" as size;
 
 .booking-status-label {
-  @include fonts.caption;
+  @include fonts.body-accent-xs;
 
   border-radius: rem.torem(5px);
   padding: rem.torem(5px) rem.torem(7px);
@@ -49,13 +49,13 @@
 }
 
 .bs-offer-title {
-  @include fonts.body-exergue;
+  @include fonts.body-accent;
 
   display: block;
 }
 
 .bs-offer-amount {
-  @include fonts.caption;
+  @include fonts.body-accent-xs;
 
   display: block;
   margin-top: rem.torem(7px);

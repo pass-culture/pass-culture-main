@@ -11,6 +11,7 @@ from pcapi.core.educational import repository
 import pcapi.core.educational.api.favorites as favorites_api
 import pcapi.core.educational.api.institution as institution_api
 import pcapi.core.educational.api.playlists as playlists_api
+from pcapi.core.educational.models import OfferAddressType
 from pcapi.core.offerers.repository import get_venue_by_id
 from pcapi.models import Model
 from pcapi.models.api_errors import ApiErrors
@@ -22,7 +23,6 @@ from pcapi.routes.adage_iframe.serialization.adage_authentication import (
     get_redactor_information_from_adage_authentication,
 )
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
-from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.serialization.decorator import spectree_serialize
 
 
@@ -195,7 +195,7 @@ def new_template_offers_playlist(
                     event_distance=(
                         item.distanceInKm
                         if item.collective_offer_template.offerVenue["addressType"]
-                        == collective_offers_serialize.OfferAddressType.OFFERER_VENUE.value
+                        == OfferAddressType.OFFERER_VENUE.value
                         else None
                     ),
                     venue_distance=item.distanceInKm,

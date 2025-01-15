@@ -11,9 +11,10 @@ from faker import Faker
 import sqlalchemy as sa
 import time_machine
 
+from pcapi import settings
 from pcapi.core.bookings import factories as bookings_factory
-import pcapi.core.finance.conf as finance_conf
-import pcapi.core.finance.models as finance_models
+from pcapi.core.finance import conf as finance_conf
+from pcapi.core.finance import models as finance_models
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import factories as users_factories
@@ -283,9 +284,15 @@ def create_short_email_beneficiaries() -> dict[str, User]:
             lastName=fake.last_name(),
             needsToFillCulturalSurvey=False,
         )
-        db.session.execute(sa.text("ALTER TABLE booking DISABLE TRIGGER booking_update;"))
+        if settings.IS_DEV:
+            db.session.execute(sa.text("ALTER TABLE booking DISABLE TRIGGER booking_update;"))
+        else:
+            db.session.execute(sa.text("SELECT disable_booking_update_trigger();"))
         bookings_factory.BookingFactory(user=beneficiary_and_exunderage)
-        db.session.execute(sa.text("ALTER TABLE booking ENABLE TRIGGER booking_update;"))
+        if settings.IS_DEV:
+            db.session.execute(sa.text("ALTER TABLE booking ENABLE TRIGGER booking_update;"))
+        else:
+            db.session.execute(sa.text("SELECT enable_booking_update_trigger();"))
 
         fraud_factories.BeneficiaryFraudCheckFactory(user=beneficiary_and_exunderage)
     users_factories.DepositGrantFactory(user=beneficiary_and_exunderage)

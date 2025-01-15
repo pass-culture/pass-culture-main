@@ -11,7 +11,7 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_OFFERER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { useNotification } from 'commons/hooks/useNotification'
-import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { Card } from 'components/Card/Card'
 import { OnImageUploadArgs } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { UploadImageValues } from 'components/ImageUploader/components/ButtonImageEdit/types'
@@ -82,6 +82,7 @@ export const PartnerPage = ({
       venueId: venue.id,
       imageType: UploaderModeEnum.VENUE,
       isEdition: true,
+      imageCreationStage: 'add image',
     })
   }
 
@@ -98,7 +99,7 @@ export const PartnerPage = ({
           onClickButtonImageAdd={logButtonAddClick}
         />
 
-        <div>
+        <div className={styles['venue']}>
           <div className={styles['venue-type']}>{venueType?.label}</div>
           <h3 className={styles['venue-name']}>
             {venue.publicName || venue.name}

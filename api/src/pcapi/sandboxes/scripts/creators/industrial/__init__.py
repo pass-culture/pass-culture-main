@@ -23,6 +23,9 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_eac_data impo
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_occurrences import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_offers import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_stocks import *
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_headline_offers import (
+    create_industrial_headline_offers,
+)
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_incidents import create_industrial_incidents
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_individual_offerers import (
     create_industrial_individual_offerers,
@@ -102,6 +105,8 @@ def save_industrial_sandbox() -> None:
 
     create_industrial_mediations(offers_by_name)
 
+    create_industrial_headline_offers(offers_by_name)
+
     criteria_by_name = create_industrial_criteria()
 
     associate_criterion_to_one_offer_with_mediation(offers_by_name, criteria_by_name)
@@ -118,8 +123,6 @@ def save_industrial_sandbox() -> None:
             assert user.deposit  # helps mypy
             user.deposit.expirationDate = datetime.utcnow()
             repository.save(user.deposit)
-
-    create_industrial_invoices()
 
     create_industrial_pro_users_api_keys(offerers_by_name)
 
@@ -168,6 +171,8 @@ def save_industrial_sandbox() -> None:
     create_industrial_bookings_for_statistics()
 
     create_user_account_update_requests()
+
+    create_industrial_invoices()
 
     # should be the last function called to create invoices
     build_many_extra_invoices()

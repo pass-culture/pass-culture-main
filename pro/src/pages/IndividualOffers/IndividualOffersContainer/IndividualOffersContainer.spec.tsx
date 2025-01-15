@@ -7,7 +7,6 @@ import {
   GetOffererAddressResponseModel,
   ListOffersOfferResponseModel,
   OfferStatus,
-  SharedCurrentUserResponseModel,
 } from 'apiClient/v1'
 import {
   ALL_OFFERER_ADDRESS_OPTION,
@@ -39,9 +38,9 @@ const renderOffers = (
     user,
     storeOverrides: {
       user: {
-        selectedOffererId: 1,
         currentUser: user,
       },
+      offerer: { selectedOffererId: 1, offererNames: [] },
     },
     ...options,
   })
@@ -107,7 +106,6 @@ vi.mock('apiClient/api', () => ({
 
 describe('IndividualOffersScreen', () => {
   let props: IndividualOffersContainerProps
-  let currentUser: SharedCurrentUserResponseModel
   let offersRecap: ListOffersOfferResponseModel[]
 
   const mockNotifyError = vi.fn()
@@ -145,10 +143,12 @@ describe('IndividualOffersScreen', () => {
     renderOffers(props)
 
     const headers = screen.getAllByRole('columnheader')
-    expect(headers[1].textContent).toEqual('Lieu')
-    expect(headers[2].textContent).toEqual('Stocks')
-    expect(headers[3].textContent).toEqual('Statut')
-    expect(headers[4].textContent).toEqual('Actions')
+    expect(headers[0].textContent).toEqual('Tout sélectionner')
+    expect(headers[1].textContent).toEqual('Nom de l’offre')
+    expect(headers[2].textContent).toEqual('Lieu')
+    expect(headers[3].textContent).toEqual('Stocks')
+    expect(headers[4].textContent).toEqual('Statut')
+    expect(headers[5].textContent).toEqual('Actions')
   })
 
   it('should render as much offers as returned by the api', () => {
@@ -160,8 +160,12 @@ describe('IndividualOffersScreen', () => {
       offers: [firstOffer, secondOffer],
     })
 
-    expect(screen.getByLabelText(firstOffer.name)).toBeInTheDocument()
-    expect(screen.getByLabelText(secondOffer.name)).toBeInTheDocument()
+    expect(
+      screen.getByLabelText(`Sélectionner l'offre "${firstOffer.name}"`)
+    ).toBeInTheDocument()
+    expect(
+      screen.getByLabelText(`Sélectionner l'offre "${secondOffer.name}"`)
+    ).toBeInTheDocument()
   })
 
   it('should display an unchecked by default checkbox to select all offers when user is not admin', () => {
@@ -185,7 +189,7 @@ describe('IndividualOffersScreen', () => {
       offers: [...offersRecap, listOffersOfferFactory()],
     })
 
-    screen.getByLabelText(offersRecap[0].name)
+    screen.getByLabelText(`Sélectionner l'offre "${offersRecap[0].name}"`)
     expect(screen.getByText('2 offres')).toBeInTheDocument()
   })
 
@@ -195,7 +199,7 @@ describe('IndividualOffersScreen', () => {
       offers: offersRecap,
     })
 
-    screen.getByLabelText(offersRecap[0].name)
+    screen.getByLabelText(`Sélectionner l'offre "${offersRecap[0].name}"`)
     expect(await screen.findByText('1 offre')).toBeInTheDocument()
   })
 
@@ -207,7 +211,7 @@ describe('IndividualOffersScreen', () => {
       offers: offersRecap,
     })
 
-    screen.getByLabelText(offersRecap[0].name)
+    screen.getByLabelText(`Sélectionner l'offre "${offersRecap[0].name}"`)
     expect(await screen.findByText('500+ offres')).toBeInTheDocument()
   })
 
@@ -481,16 +485,13 @@ describe('IndividualOffersScreen', () => {
     })
 
     it('should be able to check all offers because, a offerer being filtered, there are no performance issues', () => {
-      renderOffers(
-        {
-          ...props,
-          initialSearchFilters: {
-            ...DEFAULT_SEARCH_FILTERS,
-            offererId: 'A4',
-          },
+      renderOffers({
+        ...props,
+        initialSearchFilters: {
+          ...DEFAULT_SEARCH_FILTERS,
+          offererId: 'A4',
         },
-        { user: currentUser }
-      )
+      })
 
       const selectAllOffersCheckbox = screen.getByLabelText('Tout sélectionner')
       expect(selectAllOffersCheckbox).not.toBeDisabled()
@@ -518,17 +519,23 @@ describe('IndividualOffersScreen', () => {
       offers: offers,
     })
 
-    expect(screen.queryByLabelText(offers[0].name)).toBeDisabled()
-    expect(screen.queryByLabelText(offers[1].name)).toBeDisabled()
-    expect(screen.queryByLabelText(offers[2].name)).toBeEnabled()
+    expect(
+      screen.queryByLabelText(`Sélectionner l'offre "${offers[0].name}"`)
+    ).toBeDisabled()
+    expect(
+      screen.queryByLabelText(`Sélectionner l'offre "${offers[1].name}"`)
+    ).toBeDisabled()
+    expect(
+      screen.queryByLabelText(`Sélectionner l'offre "${offers[2].name}"`)
+    ).toBeEnabled()
   })
 
   it('should display actionsBar when at least one offer is selected', async () => {
-    renderWithProviders(<IndividualOffersContainer {...props} />, {
-      user: currentUser,
-    })
+    renderWithProviders(<IndividualOffersContainer {...props} />)
 
-    const checkbox = screen.getByLabelText(offersRecap[0].name)
+    const checkbox = screen.getByLabelText(
+      `Sélectionner l'offre "${offersRecap[0].name}"`
+    )
     await userEvent.click(checkbox)
 
     const actionBar = await screen.findByTestId('actions-bar')
@@ -602,10 +609,18 @@ describe('IndividualOffersScreen', () => {
         offers: offers,
       })
 
-      const firstOfferCheckbox = screen.getByLabelText(offers[0].name)
-      const secondOfferCheckbox = screen.getByLabelText(offers[1].name)
-      const thirdOfferCheckbox = screen.getByLabelText(offers[2].name)
-      const fourthOfferCheckbox = screen.getByLabelText(offers[3].name)
+      const firstOfferCheckbox = screen.getByLabelText(
+        `Sélectionner l'offre "${offers[0].name}"`
+      )
+      const secondOfferCheckbox = screen.getByLabelText(
+        `Sélectionner l'offre "${offers[1].name}"`
+      )
+      const thirdOfferCheckbox = screen.getByLabelText(
+        `Sélectionner l'offre "${offers[2].name}"`
+      )
+      const fourthOfferCheckbox = screen.getByLabelText(
+        `Sélectionner l'offre "${offers[3].name}"`
+      )
 
       await userEvent.click(screen.getByLabelText('Tout sélectionner'))
 
@@ -646,9 +661,7 @@ describe('IndividualOffersScreen', () => {
     })
 
     await userEvent.click(screen.getByText('Tout sélectionner'))
-    await userEvent.click(
-      screen.getAllByRole('button', { name: 'Supprimer' })[2]
-    )
+    await userEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
     await userEvent.click(screen.getByText('Supprimer ces brouillons'))
 
     expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)

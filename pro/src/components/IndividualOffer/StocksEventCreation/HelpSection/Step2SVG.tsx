@@ -1,5 +1,3 @@
-import React from 'react'
-
 type Step2SVGProps = {
   className?: string
 }

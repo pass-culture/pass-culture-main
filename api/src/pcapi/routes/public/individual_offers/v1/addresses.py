@@ -65,7 +65,6 @@ def get_address(
             # errors
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
             | http_responses.HTTP_400_BAD_REQUEST
-            | http_responses.HTTP_404_MUNICIPALITY_NOT_FOUND
         )
     ),
 )
@@ -120,7 +119,6 @@ def search_addresses(query: AddressModel) -> SearchAddressResponse:
             # errors
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
             | http_responses.HTTP_400_BAD_REQUEST
-            | http_responses.HTTP_404_MUNICIPALITY_NOT_FOUND
         )
     ),
 )

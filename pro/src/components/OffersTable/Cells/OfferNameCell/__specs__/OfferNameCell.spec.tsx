@@ -48,7 +48,8 @@ describe('OfferNameCell', () => {
 
     renderOfferNameCell({
       offer: eventOffer,
-      editionOfferLink: '#',
+      offerLink: '#',
+      rowId: 'rowId',
     })
 
     expect(screen.getByText('Offre vitrine')).toBeInTheDocument()
@@ -63,7 +64,8 @@ describe('OfferNameCell', () => {
 
     renderOfferNameCell({
       offer: eventOffer,
-      editionOfferLink: '#',
+      offerLink: '#',
+      rowId: 'rowId',
     })
 
     expect(screen.getByRole('img', { name: 'Attention' })).toBeInTheDocument()
@@ -80,7 +82,8 @@ describe('OfferNameCell', () => {
 
     renderOfferNameCell({
       offer: eventOffer,
-      editionOfferLink: '#',
+      offerLink: '#',
+      rowId: 'rowId',
     })
 
     await userEvent.click(screen.getByRole('img', { name: 'Attention' }))
@@ -97,7 +100,8 @@ describe('OfferNameCell', () => {
 
     renderOfferNameCell({
       offer: eventOffer,
-      editionOfferLink: '#',
+      offerLink: '#',
+      rowId: 'rowId',
     })
 
     expect(screen.getByTestId('offer-isbn')).toBeInTheDocument()
@@ -118,7 +122,8 @@ describe('OfferNameCell', () => {
 
     renderOfferNameCell({
       offer: eventOffer,
-      editionOfferLink: '#',
+      offerLink: '#',
+      rowId: 'rowId',
     })
 
     const expectedDate = formatLocalTimeDateString(
@@ -148,7 +153,8 @@ describe('OfferNameCell', () => {
 
     renderOfferNameCell({
       offer: eventOffer,
-      editionOfferLink: '#',
+      offerLink: '#',
+      rowId: 'rowId',
     })
 
     expect(screen.queryByText('12/12/2024 14:00')).not.toBeInTheDocument()
@@ -156,19 +162,6 @@ describe('OfferNameCell', () => {
   })
 
   describe('departmentCode', () => {
-    // Creates an COLLECTIVE offer
-    const collectiveOffer = collectiveOfferFactory({
-      stocks: [
-        listOffersStockFactory({
-          beginningDatetime: '2024-10-01T10:00:00.000', // this datetime is UTC
-        }),
-      ],
-      name: 'Collective offer',
-      venue: listOffersVenueFactory({
-        departementCode: '75', // Paris departement code (UTC+2 EDT)
-      }),
-    })
-
     // Creates an INDIVIDUAL offer
     const individualOffer = listOffersOfferFactory({
       stocks: [
@@ -189,26 +182,12 @@ describe('OfferNameCell', () => {
       },
     })
 
-    it('should use collective offer’s venue department code', () => {
-      renderOfferNameCell({
-        // Using the COLLECTIVE offer that have a venue located at Paris
-        offer: collectiveOffer,
-        editionOfferLink: '#',
-      })
-
-      // We expect here to see 12h00 because for the 01/10/2024, Paris is UTC+2
-      expect(
-        screen.getByRole('cell', {
-          name: /Collective offer 01\/10\/2024 12:00/,
-        })
-      ).toBeInTheDocument()
-    })
-
     it('should use individual offer’s venue departement code', () => {
       renderOfferNameCell({
         // Using the INDIVIDUAL offer that have VENUE departement code at Saint-Denis (La Réunion)
         offer: individualOffer,
-        editionOfferLink: '#',
+        offerLink: '#',
+        rowId: 'rowId',
       })
 
       // We expect here to see 14h00 because for the 01/10/2024, Saint-Denis is UTC+4
@@ -224,7 +203,8 @@ describe('OfferNameCell', () => {
         {
           // Using the same INDIVIDUAL offer that have an address (OA) located at Fort-de-France (Martinique)
           offer: individualOffer,
-          editionOfferLink: '#',
+          offerLink: '#',
+          rowId: 'rowId',
         },
         { features: ['WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE'] }
       )

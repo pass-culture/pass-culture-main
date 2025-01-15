@@ -69,7 +69,6 @@ class FeatureToggle(enum.Enum):
     )
     ENABLE_PHONE_VALIDATION = "Active la validation du numéro de téléphone"
     ENABLE_PRO_ACCOUNT_CREATION = "Permettre l'inscription des comptes professionels"
-    ENABLE_PRO_BOOKINGS_V2 = "Activer l'affichage de la page booking avec la nouvelle architecture."
 
     ENABLE_TITELIVE_MUSIC_TYPES_IN_API_OUTPUT = "Désactiver le renvoi des genres de titelive dans l'api publique"
 
@@ -101,30 +100,25 @@ class FeatureToggle(enum.Enum):
     ENABLE_CGR_INTEGRATION = "Active la synchonisation de stocks et la réservation via CGR"
     ENABLE_SWITCH_ALLOCINE_SYNC_TO_EMS_SYNC = "Activer le passage automatique des synchronisations Allociné à EMS"
     LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC = "Stocker dans Google Drive les cinémas EMS activables"
+    ENABLE_PRO_FEEDBACK = "Activer l'envoi des commentaires du portail pro vers Harvestr"
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
     WIP_ENABLE_BREVO_PRO_SUBACCOUNT = "Activer l'utilisation du sous-compte Brevo pour les mails pros"
     WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY = "Changer le template d'email de confirmation de réservation"
-    WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY = "Activer le nouveau parcours de dépôt de coordonnées bancaires"
-    WIP_ENABLE_MOCK_UBBLE = "Utiliser le mock Ubble à la place du vrai Ubble"
-    WIP_ENABLE_GOOGLE_SSO = "Activer la connexion SSO pour les jeunes"
     WIP_ENABLE_NEW_FINANCE_WORKFLOW = "Active le nouveau workflow finance"
     WIP_ENABLE_MARSEILLE = "Activer Marseille en grand"
     WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API = (
         "Activer les nouvelles règles de création et d'édition d'offres collecrives pour l'API publique (collective)"
     )
     WIP_ENABLE_NEW_HASHING_ALGORITHM = "Activer le nouveau système de hachage des clés publiques d'API"
-    WIP_BENEFICIARY_EXTRACT_TOOL = "Activer l'extraction de données personnelles (RGPD)"
     WIP_ENABLE_OFFER_ADDRESS = "Activer l'association des offres à des adresses."
     WIP_SUGGESTED_SUBCATEGORIES = "Activer les sous-catégories suggérées par IA lors de la création d'offre"
     WIP_EAN_CREATION = "Activer la création d'offre par EAN"
     WIP_OFFERER_STATS_V2 = "Activer la nouvelle version de la page de statistiques / revenus d'une structure"
-    ENABLE_COLLECTIVE_OFFERS_EXPIRATION = "Activer la mise en avant des offres collectives sur le point d'expirer"
     ENABLE_COLLECTIVE_NEW_STATUSES = "Activer les nouveaux statuts des offres collectives"
     WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE = "Utiliser les OffererAddress comme source de données"
     WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE = (
         "Activer la nouvelle structure des offres et réservations collectives"
     )
-    WIP_ENABLE_ALGOLIA_SEARCH_IN_BO = "Activer la recherche algolia dans le BO"
     WIP_UBBLE_V2 = "Utiliser l'API v2 d'Ubble pour l'identification des bénéficiaires"
     WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION = (
         "Désactiver la notification push Batch pour l'annulation d'une réservation"
@@ -138,10 +132,10 @@ class FeatureToggle(enum.Enum):
     WIP_DISABLE_TODAY_STOCK_NOTIFICATION = (
         "Désactiver la notification push Batch pour les réservations se déroulant le jour même"
     )
-    WIP_ENABLE_PRO_ONBOARDING = "Activer le parcours d'onboarding didactique des acteurs culturels"
-    WIP_ENABLE_CHRONICLES_IN_BO = "Activer les chroniques du Book Club dans le BO"
+    WIP_ENABLE_PRO_DIDACTIC_ONBOARDING = "Activer le parcours d'onboarding didactique des acteurs culturels"
     WIP_ENABLE_CLICKHOUSE_IN_BO = "Utiliser Clickhouse pour les statistiques des acteurs culturels dans le BO"
     WIP_HEADLINE_OFFER = "Activer l'offre à la une"
+    WIP_IS_OPEN_TO_PUBLIC = "Activer l'utilisation du critère 'ouvert au public' pour les synchro"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -179,8 +173,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_BANK_ACCOUNT_SYNC,
     FeatureToggle.ENABLE_BEAMER,
     FeatureToggle.ENABLE_CODIR_OFFERERS_REPORT,  # only for production
-    FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES,
-    FeatureToggle.ENABLE_COLLECTIVE_OFFERS_EXPIRATION,
     FeatureToggle.ENABLE_CRON_TO_UPDATE_OFFERER_STATS,  # only for production
     FeatureToggle.ENABLE_CULTURAL_SURVEY,
     FeatureToggle.ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18,
@@ -189,7 +181,8 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_EAC_FINANCIAL_PROTECTION,
     FeatureToggle.ENABLE_EMS_INTEGRATION,
     FeatureToggle.ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION,
-    FeatureToggle.ENABLE_PRO_BOOKINGS_V2,
+    FeatureToggle.ENABLE_PHONE_VALIDATION,
+    FeatureToggle.ENABLE_PRO_FEEDBACK,
     FeatureToggle.ENABLE_SWITCH_ALLOCINE_SYNC_TO_EMS_SYNC,
     FeatureToggle.ENABLE_TITELIVE_MUSIC_TYPES_IN_API_OUTPUT,
     FeatureToggle.ENABLE_UBBLE_SUBSCRIPTION_LIMITATION,
@@ -198,24 +191,21 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
     FeatureToggle.LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC,
     FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,
-    FeatureToggle.WIP_ENABLE_ALGOLIA_SEARCH_IN_BO,
-    FeatureToggle.WIP_BENEFICIARY_EXTRACT_TOOL,
     FeatureToggle.WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION,
     FeatureToggle.WIP_DISABLE_NOTIFY_USERS_BOOKINGS_NOT_RETRIEVED,
     FeatureToggle.WIP_DISABLE_SEND_NOTIFICATIONS_FAVORITES_NOT_BOOKED,
     FeatureToggle.WIP_DISABLE_TODAY_STOCK_NOTIFICATION,
     FeatureToggle.WIP_EAN_CREATION,
     FeatureToggle.WIP_ENABLE_BREVO_PRO_SUBACCOUNT,
-    FeatureToggle.WIP_ENABLE_CHRONICLES_IN_BO,
     FeatureToggle.WIP_ENABLE_CLICKHOUSE_IN_BO,
-    FeatureToggle.WIP_ENABLE_MOCK_UBBLE,
     FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE,
     FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW,
     FeatureToggle.WIP_ENABLE_NEW_HASHING_ALGORITHM,
     FeatureToggle.WIP_ENABLE_OFFER_ADDRESS,
-    FeatureToggle.WIP_ENABLE_PRO_ONBOARDING,
+    FeatureToggle.WIP_ENABLE_PRO_DIDACTIC_ONBOARDING,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
     FeatureToggle.WIP_HEADLINE_OFFER,
+    FeatureToggle.WIP_IS_OPEN_TO_PUBLIC,
     FeatureToggle.WIP_OFFERER_STATS_V2,
     FeatureToggle.WIP_SUGGESTED_SUBCATEGORIES,
     FeatureToggle.WIP_UBBLE_V2,

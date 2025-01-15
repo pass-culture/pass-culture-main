@@ -50,7 +50,13 @@ export const collectiveOfferFactory = (
     isEducational: true,
     name: `offer name ${offerId}`,
     venue: listOffersVenueFactory(),
-    stocks: [{ hasBookingLimitDatetimePassed: false, remainingQuantity: 1 }],
+    stocks: [
+      {
+        hasBookingLimitDatetimePassed: false,
+        remainingQuantity: 1,
+        startDatetime: new Date().toISOString(),
+      },
+    ],
     isEditable: true,
     isEditableByPcPro: true,
     isPublicApi: false,
@@ -186,6 +192,7 @@ export const collectiveBookingCollectiveStockFactory = (
   bookingLimitDatetime: new Date().toISOString(),
   eventBeginningDatetime: new Date().toISOString(),
   eventStartDatetime: new Date().toISOString(),
+  eventEndDatetime: new Date().toISOString(),
   numberOfTickets: 1,
   offerId: 1,
   offerIsEducational: true,
@@ -321,6 +328,7 @@ export const defaultGetVenue: GetVenueResponseModel = {
   timezone: 'Europe/Paris',
   venueTypeCode: VenueTypeCode.CENTRE_CULTUREL,
   visualDisabilityCompliant: true,
+  openingHours: null,
 }
 
 export const defaultGetCollectiveOfferRequest: GetCollectiveOfferRequestResponseModel =

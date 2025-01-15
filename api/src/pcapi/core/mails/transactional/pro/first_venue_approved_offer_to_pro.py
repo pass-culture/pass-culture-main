@@ -39,7 +39,7 @@ def get_first_venue_approved_offer_email_data(offer: Offer) -> models.Transactio
         template=TransactionalEmail.FIRST_VENUE_APPROVED_OFFER_TO_PRO.value,
         params={
             "OFFER_NAME": offer.name,
-            "VENUE_NAME": offer.venue.publicName or offer.venue.name,
+            "VENUE_NAME": offer.venue.common_name,
             "IS_EVENT": offer.isEvent,
             "IS_THING": offer.isThing,
             "IS_DIGITAL": offer.isDigital,

@@ -1,6 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/variables/_size.scss" as size;
+@use "styles/mixins/_size.scss" as size;
 
 .offers-view {
   display: flex;
@@ -9,7 +9,7 @@
 }
 
 .offers-stats {
-  @include fonts.caption;
+  @include fonts.body-accent-xs;
 
   margin-top: rem.torem(24px);
 
@@ -99,8 +99,10 @@
   margin: rem.torem(24px) 0;
 }
 
-@media (max-width: size.$mobile) {
-  .offer-type-vue {
-    display: none;
+.offer-type-vue {
+  display: none;
+
+  @media screen and (min-width: size.$tablet) {
+    display: flex;
   }
 }

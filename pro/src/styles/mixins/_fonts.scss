@@ -1,54 +1,80 @@
-@use "styles/mixins/_rem.scss" as rem;
-
-// need to use em for accessibility: when root size is 200% line-height should adjust
-$body-line-height: 1.25em;
-$body-font-size: rem.torem(15px);
-$caption-line-height: rem.torem(16px);
-
 @mixin button() {
-  font-family: Montserrat-Bold, system-ui, sans-serif;
-  font-size: rem.torem(15px);
+  font-family: var(--typography-button-font-family), system-ui, sans-serif;
+  font-size: var(--typography-button-font-size);
+  line-height: var(--typography-button-line-height);
 }
 
 @mixin body() {
-  font-family: Montserrat-Regular, system-ui, sans-serif;
-  font-size: $body-font-size;
-  line-height: $body-line-height;
+  font-family: var(--typography-body-font-family), system-ui, sans-serif;
+  font-size: var(--typography-body-font-size);
+  line-height: var(--typography-body-line-height);
 }
 
-@mixin body-exergue() {
-  font-family: Montserrat-SemiBold, system-ui, sans-serif;
-  font-size: $body-font-size;
+@mixin title1() {
+  font-family: var(--typography-title1-font-family), system-ui, sans-serif;
+  font-size: var(--typography-title1-font-size);
+  line-height: var(--typography-title1-line-height);
 }
 
-@mixin caption() {
-  font-family: Montserrat-SemiBold, system-ui, sans-serif;
-  font-size: rem.torem(12px);
-  line-height: $caption-line-height;
+@mixin title2() {
+  font-family: var(--typography-title2-font-family), system-ui, sans-serif;
+  font-size: var(--typography-title2-font-size);
+  line-height: var(--typography-title2-line-height);
 }
 
-@mixin placeholder() {
-  font-family: Montserrat-RegularItalic, system-ui, sans-serif;
-  font-size: rem.torem(15px);
+@mixin title3() {
+  font-family: var(--typography-title3-font-family), system-ui, sans-serif;
+  font-size: var(--typography-title3-font-size);
+  line-height: var(--typography-title3-line-height);
+}
+
+@mixin title4() {
+  font-family: var(--typography-title4-font-family), system-ui, sans-serif;
+  font-size: var(--typography-title4-font-size);
+  line-height: var(--typography-title4-line-height);
+}
+
+@mixin body-accent() {
+  font-family: var(--typography-body-accent-font-family), system-ui, sans-serif;
+  font-size: var(--typography-body-accent-font-size);
+  line-height: var(--typography-body-accent-line-height);
 }
 
 @mixin body-italic() {
-  font-family: Montserrat-RegularItalic, system-ui, sans-serif;
-  font-size: $body-font-size;
+  font-family: var(--typography-body-italic-font-family), system-ui, sans-serif;
+  font-size: var(--typography-body-italic-font-size);
+  line-height: var(--typography-body-italic-line-height);
 }
 
-//  Legacy fonts to cover the typos weights and styles that do not fit in the new design system
-//  These should be progresively replaced with DS fonts
-//  Try not to use these !
-
-@mixin bold() {
-  font-family: Montserrat-Bold, system-ui, sans-serif;
+@mixin body-italic-accent() {
+  font-family: var(--typography-body-italic-accent-font-family), system-ui,
+    sans-serif;
+  font-size: var(--typography-body-italic-accent-font-size);
+  line-height: var(--typography-body-italic-accent-line-height);
 }
 
-@mixin semi-bold() {
-  font-family: Montserrat-SemiBold, system-ui, sans-serif;
+@mixin body-s() {
+  font-family: var(--typography-body-s-font-family), system-ui, sans-serif;
+  font-size: var(--typography-body-s-font-size);
+  line-height: var(--typography-body-s-line-height);
 }
 
-@mixin medium() {
-  font-family: Montserrat-Medium, system-ui, sans-serif;
+@mixin body-accent-s() {
+  font-family: var(--typography-body-accent-s-font-family), system-ui,
+    sans-serif;
+  font-size: var(--typography-body-accent-s-font-size);
+  line-height: var(--typography-body-accent-s-line-height);
+}
+
+@mixin body-xs() {
+  font-family: var(--typography-body-xs-font-family), system-ui, sans-serif;
+  font-size: var(--typography-body-xs-font-size);
+  line-height: var(--typography-body-xs-line-height);
+}
+
+@mixin body-accent-xs() {
+  font-family: var(--typography-body-accent-xs-font-family), system-ui,
+    sans-serif;
+  font-size: var(--typography-body-accent-xs-font-size);
+  line-height: var(--typography-body-accent-xs-line-height);
 }

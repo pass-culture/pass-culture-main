@@ -32,16 +32,16 @@ const disabilityCompliances = (
 })
 
 export const serializeDates = (
-  beginningDatetime: string,
+  startDatetime: string,
   endingDatetime: string,
   hour?: string
 ): DateRangeOnCreateModel => {
-  const beginningDateTimeInUserTimezone = buildDateTime(
-    beginningDatetime,
+  const startDatetimeInUserTimezone = buildDateTime(
+    startDatetime,
     hour || '00:00'
   )
   const startDateWithoutTz = new Date(
-    formatBrowserTimezonedDateAsUTC(beginningDateTimeInUserTimezone)
+    formatBrowserTimezonedDateAsUTC(startDatetimeInUserTimezone)
   )
   const endDateWithoutTz = new Date(
     formatBrowserTimezonedDateAsUTC(buildDateTime(endingDatetime, '23:59'))

@@ -5,16 +5,39 @@ import time_machine
 
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational import testing as educational_testing
 from pcapi.core.educational.api import stock as educational_api_stock
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
+from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.offers import exceptions as offers_exceptions
-from pcapi.core.testing import override_features
-from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.serialization import collective_stock_serialize
+
+
+STATUSES_ALLOWING_EDIT_DATES = (
+    CollectiveOfferDisplayedStatus.DRAFT,
+    CollectiveOfferDisplayedStatus.ACTIVE,
+    CollectiveOfferDisplayedStatus.PREBOOKED,
+    CollectiveOfferDisplayedStatus.EXPIRED,
+)
+
+STATUSES_NOT_ALLOWING_EDIT_DATES = tuple(
+    set(CollectiveOfferDisplayedStatus) - {*STATUSES_ALLOWING_EDIT_DATES, CollectiveOfferDisplayedStatus.INACTIVE}
+)
+
+STATUSES_ALLOWING_EDIT_DISCOUNT = (
+    CollectiveOfferDisplayedStatus.DRAFT,
+    CollectiveOfferDisplayedStatus.ACTIVE,
+    CollectiveOfferDisplayedStatus.PREBOOKED,
+    CollectiveOfferDisplayedStatus.BOOKED,
+)
+
+STATUSES_NOT_ALLOWING_EDIT_DISCOUNT = tuple(
+    set(CollectiveOfferDisplayedStatus) - {*STATUSES_ALLOWING_EDIT_DISCOUNT, CollectiveOfferDisplayedStatus.INACTIVE}
+)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -169,6 +192,7 @@ class EditCollectiveOfferStocksTest:
     #     stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
     #     mocked_async_index_offer_ids.assert_called_once_with([stock.collectiveOfferId])
 
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_should_not_allow_stock_edition_when_booking_status_is_REIMBURSED_or_USED(self) -> None:
         # Given
         educational_factories.EducationalYearFactory(
@@ -225,35 +249,6 @@ class EditCollectiveOfferStocksTest:
         booking_updated = CollectiveBooking.query.filter_by(id=booking.id).one()
         assert booking_updated.cancellationLimitDate == datetime.datetime(2021, 11, 12, 20)
 
-    def test_update_cancellation_limit_date_naive(self) -> None:
-        now = datetime.datetime.utcnow()
-        start = now + datetime.timedelta(days=35)
-        stock = educational_factories.CollectiveStockFactory(beginningDatetime=start)
-        booking = educational_factories.CollectiveBookingFactory(collectiveStock=stock)
-        assert booking.cancellationLimitDate == start - datetime.timedelta(days=30)
-
-        new_start_naive = now + datetime.timedelta(days=34)
-        assert new_start_naive.tzinfo is None
-        educational_api_stock.update_collective_booking_cancellation_limit_date(booking, new_start_naive)
-
-        booking = CollectiveBooking.query.filter(CollectiveBooking.id == booking.id).one()
-        assert booking.cancellationLimitDate == new_start_naive - datetime.timedelta(days=30)
-
-    def test_update_cancellation_limit_date_aware(self) -> None:
-        now_aware = datetime.datetime.now(datetime.timezone.utc)  # pylint: disable=datetime-now
-        now_naive = now_aware.replace(tzinfo=None)
-        start = now_naive + datetime.timedelta(days=35)
-        stock = educational_factories.CollectiveStockFactory(beginningDatetime=start)
-        booking = educational_factories.CollectiveBookingFactory(collectiveStock=stock)
-        assert booking.cancellationLimitDate == start - datetime.timedelta(days=30)
-
-        new_start_aware = now_aware + datetime.timedelta(days=34)
-        assert new_start_aware.tzinfo is datetime.timezone.utc
-        educational_api_stock.update_collective_booking_cancellation_limit_date(booking, new_start_aware)
-
-        booking = CollectiveBooking.query.filter(CollectiveBooking.id == booking.id).one()
-        assert booking.cancellationLimitDate == new_start_aware - datetime.timedelta(days=30)
-
     @time_machine.travel("2020-11-17 15:00:00", tick=False)
     def should_update_bookings_cancellation_limit_date_if_beginningDatetime_earlier(self) -> None:
         # Given
@@ -289,6 +284,7 @@ class EditCollectiveOfferStocksTest:
         booking_updated = CollectiveBooking.query.filter_by(id=booking.id).one()
         assert booking_updated.cancellationLimitDate == datetime.datetime.utcnow()
 
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     @time_machine.travel("2020-11-17 15:00:00")
     def test_should_allow_stock_edition_and_not_modify_cancellation_limit_date_when_booking_cancelled(self) -> None:
         # Given
@@ -327,40 +323,44 @@ class EditCollectiveOfferStocksTest:
         stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
         assert stock.beginningDatetime == new_event_date.replace(tzinfo=None)
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_should_update_expired_booking(self) -> None:
         now = datetime.datetime.utcnow()
+        limit = now - datetime.timedelta(days=2)
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=now + datetime.timedelta(days=5), bookingLimitDatetime=now - datetime.timedelta(days=2)
+            beginningDatetime=now + datetime.timedelta(days=5), bookingLimitDatetime=limit
         )
         booking = educational_factories.CollectiveBookingFactory(
             collectiveStock=stock,
             status=CollectiveBookingStatus.CANCELLED,
             cancellationReason=CollectiveBookingCancellationReasons.EXPIRED,
             cancellationDate=now - datetime.timedelta(days=1),
+            confirmationLimitDate=limit,
         )
 
-        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
-            bookingLimitDatetime=now + datetime.timedelta(days=1)
-        )
+        new_limit = now + datetime.timedelta(days=1)
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(bookingLimitDatetime=new_limit)
         educational_api_stock.edit_collective_stock(stock=stock, stock_data=new_stock_data.dict(exclude_unset=True))
 
-        assert stock.bookingLimitDatetime == now + datetime.timedelta(days=1)
+        assert stock.bookingLimitDatetime == new_limit
         assert booking.status == CollectiveBookingStatus.PENDING
         assert booking.cancellationReason == None
         assert booking.cancellationDate == None
+        assert booking.confirmationLimitDate == new_limit
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_should_not_update_expired_booking(self) -> None:
         now = datetime.datetime.utcnow()
+        limit = now - datetime.timedelta(days=2)
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=now + datetime.timedelta(days=5), bookingLimitDatetime=now - datetime.timedelta(days=2)
+            beginningDatetime=now + datetime.timedelta(days=5), bookingLimitDatetime=limit
         )
         booking = educational_factories.CollectiveBookingFactory(
             collectiveStock=stock,
             status=CollectiveBookingStatus.CANCELLED,
             cancellationReason=CollectiveBookingCancellationReasons.EXPIRED,
             cancellationDate=now - datetime.timedelta(days=1),
+            confirmationLimitDate=limit,
         )
 
         new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
@@ -372,10 +372,109 @@ class EditCollectiveOfferStocksTest:
         assert booking.status == CollectiveBookingStatus.CANCELLED
         assert booking.cancellationReason == CollectiveBookingCancellationReasons.EXPIRED
         assert booking.cancellationDate == now - datetime.timedelta(days=1)
+        assert booking.confirmationLimitDate == limit
+
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.parametrize("status", educational_testing.STATUSES_ALLOWING_EDIT_DETAILS)
+    def test_can_increase_price(self, status):
+        offer = educational_factories.create_collective_offer_by_status(status)
+
+        if offer.collectiveStock is None:
+            educational_factories.CollectiveStockFactory(collectiveOffer=offer)
+
+        price = offer.collectiveStock.price
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(totalPrice=price + 100)
+
+        educational_api_stock.edit_collective_stock(
+            stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
+        )
+
+        assert offer.collectiveStock.price == price + 100
+
+    @time_machine.travel("2020-11-17 15:00:00", tick=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.parametrize("status", STATUSES_ALLOWING_EDIT_DATES)
+    def test_can_edit_dates(self, status):
+        educational_factories.EducationalYearFactory(
+            beginningDate=datetime.datetime(2020, 9, 1), expirationDate=datetime.datetime(2021, 8, 31)
+        )
+        offer = educational_factories.create_collective_offer_by_status(status)
+
+        if offer.collectiveStock is None:
+            educational_factories.CollectiveStockFactory(collectiveOffer=offer)
+
+        new_limit = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=10)
+        new_start = new_limit + datetime.timedelta(days=5)
+        new_end = new_limit + datetime.timedelta(days=7)
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
+            bookingLimitDatetime=new_limit, startDatetime=new_start, endDatetime=new_end
+        )
+        educational_api_stock.edit_collective_stock(
+            stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
+        )
+
+        assert offer.collectiveStock.bookingLimitDatetime == new_limit.replace(tzinfo=None)
+        assert offer.collectiveStock.startDatetime == new_start.replace(tzinfo=None)
+        assert offer.collectiveStock.endDatetime == new_end.replace(tzinfo=None)
+
+        booking = offer.collectiveStock.lastBooking
+        if booking:
+            assert booking.confirmationLimitDate == new_limit.replace(tzinfo=None)
+
+        # beginningDatetime cannot be updated together with startDatetime, test it separately
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(beginningDatetime=new_end)
+        educational_api_stock.edit_collective_stock(
+            stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
+        )
+
+        assert offer.collectiveStock.bookingLimitDatetime == new_limit.replace(tzinfo=None)
+        assert offer.collectiveStock.startDatetime == new_end.replace(tzinfo=None)
+        assert offer.collectiveStock.endDatetime == new_end.replace(tzinfo=None)
+
+        booking = offer.collectiveStock.lastBooking
+        if booking:
+            assert booking.confirmationLimitDate == new_limit.replace(tzinfo=None)
+
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.parametrize("status", STATUSES_ALLOWING_EDIT_DISCOUNT)
+    def test_can_lower_price_and_edit_price_details(self, status):
+        offer = educational_factories.create_collective_offer_by_status(status)
+
+        if offer.collectiveStock is None:
+            educational_factories.CollectiveStockFactory(collectiveOffer=offer)
+
+        new_price = offer.collectiveStock.price - 100
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
+            totalPrice=new_price, educationalPriceDetail="yes", numberOfTickets=1200
+        )
+        educational_api_stock.edit_collective_stock(
+            stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
+        )
+
+        assert offer.collectiveStock.price == new_price
+        assert offer.collectiveStock.priceDetail == "yes"
+        assert offer.collectiveStock.numberOfTickets == 1200
+
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    def test_can_lower_price_and_edit_price_details_ended(self):
+        offer = educational_factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
+
+        new_price = offer.collectiveStock.price - 100
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
+            totalPrice=new_price, educationalPriceDetail="yes", numberOfTickets=1200
+        )
+        educational_api_stock.edit_collective_stock(
+            stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
+        )
+
+        assert offer.collectiveStock.price == new_price
+        assert offer.collectiveStock.priceDetail == "yes"
+        assert offer.collectiveStock.numberOfTickets == 1200
 
 
 @pytest.mark.usefixtures("db_session")
-class returnErrorTest:
+class ReturnErrorTest:
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_edit_stock_of_non_approved_offer_fails(self) -> None:
         # Given
         offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.PENDING)
@@ -449,6 +548,7 @@ class returnErrorTest:
         stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
         assert stock.beginningDatetime == datetime.datetime(2021, 12, 10)
 
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     @time_machine.travel("2020-11-17 15:00:00")
     def test_should_allow_stock_edition_and_not_modify_cancellation_limit_date_when_booking_cancelled(self) -> None:
         # Given
@@ -488,6 +588,7 @@ class returnErrorTest:
         stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
         assert stock.beginningDatetime == new_event_date.replace(tzinfo=None)
 
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_edit_offer_of_cancelled_booking(self) -> None:
         # Given
         offer = educational_factories.CollectiveOfferFactory()
@@ -529,6 +630,7 @@ class returnErrorTest:
         assert stock.price == 1500
         assert stock.numberOfTickets == 35
 
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     @time_machine.travel("2020-01-05 10:00:00")
     def test_edit_offer_of_other_status_booking(self) -> None:
         # Given
@@ -574,6 +676,7 @@ class returnErrorTest:
         # Then
         assert error.value.errors == {"global": ["Les évènements passés ne sont pas modifiables"]}
 
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_edit_price_or_ticket_number_if_status_confirmed(self):
         initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=10)
         initial_booking_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=5)
@@ -599,3 +702,83 @@ class returnErrorTest:
         # Then
         stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
         assert stock.price == 1200
+
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.parametrize("status", educational_testing.STATUSES_NOT_ALLOWING_EDIT_DETAILS)
+    def test_cannot_increase_price(self, status):
+        offer = educational_factories.create_collective_offer_by_status(status)
+
+        if offer.collectiveStock is None:
+            educational_factories.CollectiveStockFactory(collectiveOffer=offer)
+
+        price = offer.collectiveStock.price
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(totalPrice=price + 100)
+
+        with pytest.raises(exceptions.CollectiveOfferForbiddenAction):
+            educational_api_stock.edit_collective_stock(
+                stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
+            )
+
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    def test_cannot_increase_price_ended(self):
+        offer = educational_factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
+        price = offer.collectiveStock.price
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(totalPrice=price + 100)
+
+        with pytest.raises(exceptions.CollectiveOfferForbiddenAction):
+            educational_api_stock.edit_collective_stock(
+                stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
+            )
+
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.parametrize("status", STATUSES_NOT_ALLOWING_EDIT_DATES)
+    def test_cannot_edit_dates(self, status):
+        offer = educational_factories.create_collective_offer_by_status(status)
+
+        if offer.collectiveStock is None:
+            educational_factories.CollectiveStockFactory(collectiveOffer=offer)
+
+        new_date = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=5)
+        for date_field in ("bookingLimitDatetime", "beginningDatetime", "startDatetime", "endDatetime"):
+            kwargs = {date_field: new_date}
+            new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(**kwargs)
+
+            with pytest.raises(exceptions.CollectiveOfferForbiddenAction):
+                educational_api_stock.edit_collective_stock(
+                    stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
+                )
+
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    def test_cannot_edit_dates_ended(self):
+        offer = educational_factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
+
+        new_date = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=5)
+        for date_field in ("bookingLimitDatetime", "beginningDatetime", "startDatetime", "endDatetime"):
+            kwargs = {date_field: new_date}
+            new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(**kwargs)
+
+            with pytest.raises(exceptions.CollectiveOfferForbiddenAction):
+                educational_api_stock.edit_collective_stock(
+                    stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
+                )
+
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.parametrize("status", STATUSES_NOT_ALLOWING_EDIT_DISCOUNT)
+    def test_cannot_lower_price_and_edit_price_details(self, status):
+        offer = educational_factories.create_collective_offer_by_status(status)
+
+        if offer.collectiveStock is None:
+            educational_factories.CollectiveStockFactory(collectiveOffer=offer)
+
+        changes = [
+            {"totalPrice": offer.collectiveStock.price - 100},
+            {"educationalPriceDetail": "yes"},
+            {"numberOfTickets": 1200},
+        ]
+        for change in changes:
+            new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(**change)
+
+            with pytest.raises(exceptions.CollectiveOfferForbiddenAction):
+                educational_api_stock.edit_collective_stock(
+                    stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
+                )

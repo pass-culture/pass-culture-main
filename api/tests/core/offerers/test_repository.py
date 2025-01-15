@@ -271,3 +271,35 @@ class GetOffererAddressesTest:
         results = query.all()
         assert len(results) == 2
         assert {r.id for r in results} == {offerer_address_with_one_offer.id, offerer_address_with_two_offers.id}
+
+
+class GetOffererHeadlineOfferTest:
+    def test_return_headline_offer(self):
+        offer = offers_factories.OfferFactory()
+        offers_factories.StockFactory(offer=offer)
+        offers_factories.HeadlineOfferFactory(offer=offer, venue=offer.venue)
+
+        headline_offer = repository.get_offerer_headline_offer(offer.venue.managingOffererId)
+
+        assert headline_offer.id == offer.id
+
+    def test_shoud_not_return_several_headline_offer(self):
+        offerer = offerers_factories.OffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        other_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offer = offers_factories.OfferFactory(venue=venue)
+        offers_factories.StockFactory(offer=offer)
+        other_offer = offers_factories.OfferFactory(venue=other_venue)
+        offers_factories.StockFactory(offer=other_offer)
+        offers_factories.HeadlineOfferFactory(offer=offer, venue=venue)
+        offers_factories.HeadlineOfferFactory(offer=other_offer, venue=other_venue)
+
+        with pytest.raises(exceptions.TooManyHeadlineOffersForOfferer):
+            repository.get_offerer_headline_offer(offerer.id)
+
+    def test_returns_no_headline_offer(self):
+        offerer = offerers_factories.OffererFactory()
+
+        headline_offer = repository.get_offerer_headline_offer(offerer.id)
+
+        assert headline_offer == None

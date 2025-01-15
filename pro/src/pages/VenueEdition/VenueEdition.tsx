@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import {
   generatePath,
@@ -17,7 +18,7 @@ import {
   GET_VENUE_TYPES_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
 import { SelectOption } from 'commons/custom_types/form'
-import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { CollectiveDataEdition } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
@@ -55,10 +56,11 @@ export const VenueEdition = (): JSX.Element | null => {
   )
   const venueTypes = venueTypesQuery.data
 
-  if (selectedOffererId?.toString() !== offererId) {
-    navigate('/accueil')
-    return null
-  }
+  useEffect(() => {
+    if (selectedOffererId?.toString() !== offererId) {
+      navigate('/accueil')
+    }
+  }, [selectedOffererId, offererId])
 
   if (
     venueQuery.isLoading ||

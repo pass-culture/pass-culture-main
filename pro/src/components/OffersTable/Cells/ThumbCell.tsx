@@ -9,35 +9,39 @@ import { isOfferEducational } from 'commons/core/OfferEducational/types'
 import styles from 'styles/components/Cells.module.scss'
 import { Thumb } from 'ui-kit/Thumb/Thumb'
 
+import { CELLS_DEFINITIONS } from '../utils/cellDefinitions'
+
 export const ThumbCell = ({
   offer,
-  editionOfferLink,
-  headers,
+  offerLink,
+  rowId,
   inactive,
+  className,
 }: {
   offer: CollectiveOfferResponseModel | ListOffersOfferResponseModel
-  editionOfferLink: string
-  headers?: string
+  offerLink: string
+  rowId: string
   inactive?: boolean
+  className?: string
 }) => {
   return (
     <td
+      role="cell"
       className={classNames(
         styles['offers-table-cell'],
         styles['thumb-column']
       )}
-      headers={headers}
+      headers={`${rowId} ${CELLS_DEFINITIONS.THUMB.id}`}
     >
       <Link
-        className={styles['thumb-column-link']}
         title={`${offer.name} - éditer l’offre`}
-        to={editionOfferLink}
+        to={offerLink}
       >
         <Thumb
           url={isOfferEducational(offer) ? offer.imageUrl : offer.thumbUrl}
-          className={classNames(styles['offer-thumb'], {
-            [styles['thumb-inactive']]: inactive,
-          })}
+          className={classNames({
+            [styles['thumb-column-inactive']]: inactive,
+          }, className)}
         />
       </Link>
     </td>

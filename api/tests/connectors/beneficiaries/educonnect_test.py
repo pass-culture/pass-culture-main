@@ -4,7 +4,6 @@ import pytest
 
 from pcapi import settings
 from pcapi.connectors.beneficiaries.educonnect import educonnect_connector
-from pcapi.core.testing import override_settings
 from pcapi.utils import requests
 
 
@@ -21,7 +20,7 @@ def path(tmp_path):
 
 
 @pytest.mark.skip(reason="Should only be run locally for testing pysaml2 updates")
-@override_settings(
+@pytest.mark.settings(
     API_URL_FOR_EDUCONNECT="https://backend.staging.passculture.team",
     EDUCONNECT_METADATA_FILE="educonnect.pr4.metadata.xml",
 )

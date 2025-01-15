@@ -1,3 +1,4 @@
+{% import "components/badges.html" as badges with context %}
 {% from "components/forms.html" import build_advanced_filters_form with context %}
 {% import "components/links.html" as links with context %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
@@ -113,7 +114,13 @@
                     {% if row.rules %}{{ row.rules | join(", ") | escape }}{% endif %}
                   </td>
                 {% endif %}
-                <td>{{ collective_offer.validation | format_offer_validation_status }}</td>
+                <td>
+                  {{ collective_offer.validation | format_offer_validation_status(with_badge=True) }}
+                  {% if collective_offer.rejectionReason %}
+                    <br />
+                    {{ collective_offer.rejectionReason | format_collective_offer_rejection_reason }}
+                  {% endif %}
+                </td>
                 <td>{{ links.build_pro_user_name_to_details_link(collective_offer.authorId, collective_offer.author.full_name) }}</td>
                 <td>{{ collective_offer.dateCreated | format_date }}</td>
                 <td>
@@ -131,13 +138,11 @@
                 {% endif %}
                 <td>
                   {{ links.build_offerer_name_to_details_link(collective_offer.venue.managingOfferer) }}
-                  {% if has_permission("PRO_FRAUD_ACTIONS") %}
-                    {{ collective_offer.venue.managingOfferer.confidenceLevel | format_confidence_level_badge }}
-                  {% endif %}
+                  {{ badges.build_offer_offerer_fraud_badges(collective_offer.venue.managingOfferer) }}
                 </td>
                 <td>
                   {{ links.build_venue_name_to_details_link(collective_offer.venue) }}
-                  {% if has_permission("PRO_FRAUD_ACTIONS") %}{{ collective_offer.venue.confidenceLevel | format_confidence_level_badge }}{% endif %}
+                  {{ badges.build_offer_venue_fraud_badges(collective_offer.venue) }}
                 </td>
                 <td>{{ links.build_venue_offers_icon_link_advanced(".list_collective_offers", "Offres collectives", collective_offer.venue) }}</td>
               </tr>

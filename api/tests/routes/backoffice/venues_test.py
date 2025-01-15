@@ -10,12 +10,14 @@ import pytest
 
 from pcapi.connectors import api_adresse
 from pcapi.connectors.clickhouse import queries as clickhouse_queries
+from pcapi.connectors.clickhouse import query_mock as clickhouse_query_mock
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import factories as finance_factories
+from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
@@ -26,17 +28,14 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
+from pcapi.core.providers import repository as providers_repository
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.backoffice import api as backoffice_api
 from pcapi.models import db
 from pcapi.routes.backoffice.pro.forms import TypeOptions
 from pcapi.routes.backoffice.venues import blueprint as venues_blueprint
 from pcapi.utils import urls
-
-from tests.connectors.clickhouse import fixtures as clickhouse_fixtures
 
 from .helpers import button as button_helpers
 from .helpers import html_parser
@@ -399,36 +398,6 @@ class GetVenueTest(GetEndpointHelper):
         assert response.status_code == 200
         assert f"/pro/venue/{venue_id}/provider/{venue_provider.provider.id}/delete".encode() in response.data
 
-    def test_display_fully_sync_provider_button(self, authenticated_client):
-        venue_provider = providers_factories.AllocineVenueProviderFactory(
-            lastSyncDate=datetime.utcnow() - timedelta(hours=4),
-            isActive=True,
-            provider=providers_factories.APIProviderFactory(),
-        )
-        venue_id = venue_provider.venue.id
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
-            assert response.status_code == 200
-
-        buttons = html_parser.extract(response.data, tag="button")
-        assert "Resynchroniser les offres" in buttons
-
-    def test_hide_fully_sync_provider_button(self, authenticated_client):
-        provider = providers_factories.APIProviderFactory(name="Praxiel")
-        venue_provider = providers_factories.AllocineVenueProviderFactory(
-            lastSyncDate=datetime.utcnow() - timedelta(hours=4),
-            isActive=True,
-            provider=provider,
-        )
-        venue_id = venue_provider.venue.id
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
-            assert response.status_code == 200
-
-        buttons = html_parser.extract(response.data, tag="button")
-        assert "Resynchroniser les offres" not in buttons
-
     def test_get_virtual_venue(self, authenticated_client):
         venue = offerers_factories.VirtualVenueFactory(managingOfferer__allowedOnAdage=True)
 
@@ -678,10 +647,10 @@ class GetVenueStatsTest(GetEndpointHelper):
 
         assert "0,00 € de CA" in html_parser.extract_cards_text(response.data)
 
-    @override_features(WIP_ENABLE_CLICKHOUSE_IN_BO=True)
+    @pytest.mark.features(WIP_ENABLE_CLICKHOUSE_IN_BO=True)
     @patch(
         "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
-        return_value=[clickhouse_queries.TotalAggregatedRevenueModel(expectedRevenue=70.48)],
+        return_value=[clickhouse_queries.TotalExpectedRevenueModel(expected_revenue=70.48)],
     )
     def test_venue_total_revenue_from_clickhouse(self, mock_run_query, authenticated_client):
         venue_id = offerers_factories.VenueFactory().id
@@ -768,18 +737,18 @@ class GetVenueRevenueDetailsTest(GetEndpointHelper):
         assert current_revenues["CA offres IND"] == "20,00 €"
         assert current_revenues["CA offres EAC"] == "0,00 €"
 
-    @override_features(WIP_ENABLE_CLICKHOUSE_IN_BO=True)
+    @pytest.mark.features(WIP_ENABLE_CLICKHOUSE_IN_BO=True)
     @patch(
         "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
         return_value=[
-            clickhouse_fixtures.MockYearlyAggregatedRevenueQueryResult(
+            clickhouse_query_mock.MockAggregatedRevenueQueryResult(
                 2024,
                 individual=Decimal("246.80"),
                 expected_individual=Decimal("357.90"),
                 collective=Decimal("750"),
                 expected_collective=Decimal("1250"),
             ),
-            clickhouse_fixtures.MockYearlyAggregatedRevenueQueryResult(
+            clickhouse_query_mock.MockAggregatedRevenueQueryResult(
                 2022,
                 individual=Decimal("123.40"),
                 expected_individual=Decimal("123.40"),
@@ -808,38 +777,6 @@ class GetVenueRevenueDetailsTest(GetEndpointHelper):
         assert rows[2]["Année"] == "2022"
         assert rows[2]["CA offres IND"] == "123,40 €"
         assert rows[2]["CA offres EAC"] == "1 500,00 €"
-
-
-class FullySyncVenueTest(PostEndpointHelper):
-    endpoint = "backoffice_web.venue.fully_sync_venue"
-    endpoint_kwargs = {"venue_id": 1}
-    needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
-
-    @patch("pcapi.workers.fully_sync_venue_job.fully_sync_venue_job.delay")
-    def test_fully_sync_venue(self, fully_sync_venue_job, authenticated_client):
-        provider = providers_factories.APIProviderFactory()
-        venue_provider = providers_factories.AllocineVenueProviderFactory(
-            lastSyncDate=datetime.utcnow() - timedelta(hours=5),
-            isActive=True,
-            provider=provider,
-        )
-        venue_id = venue_provider.venue.id
-
-        response = self.post_to_endpoint(authenticated_client, venue_id=venue_id)
-        assert response.status_code == 303
-        fully_sync_venue_job.assert_called_once_with(venue_id)
-
-    @patch("pcapi.workers.fully_sync_venue_job.fully_sync_venue_job.delay")
-    def test_fully_sync_venue_disabled_provider(self, fully_sync_venue_job, authenticated_client):
-        provider = providers_factories.APIProviderFactory()
-        venue_provider = providers_factories.AllocineVenueProviderFactory(
-            lastSyncDate=datetime.utcnow() - timedelta(hours=4),
-            isActive=False,
-            provider=provider,
-        )
-        venue_id = venue_provider.venue.id
-        response = self.post_to_endpoint(authenticated_client, venue_id=venue_id)
-        assert response.status_code == 404
 
 
 class DeleteVenueTest(PostEndpointHelper):
@@ -2069,7 +2006,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert response.status_code == 303
         match_acceslibre_job.assert_called_once_with(venue.id)
 
-    @override_settings(ACCESLIBRE_BACKEND="pcapi.connectors.acceslibre.AcceslibreBackend")
+    @pytest.mark.settings(ACCESLIBRE_BACKEND="pcapi.connectors.acceslibre.AcceslibreBackend")
     def test_update_venue_unexisting_acceslibre_url_must_not_update_accessibility_provider(self, authenticated_client):
         venue = offerers_factories.VenueFactory(isPermanent=True)
         offerers_factories.AccessibilityProviderFactory(
@@ -2291,11 +2228,11 @@ class GetVenueHistoryTest(GetEndpointHelper):
 
         assert rows[0]["Type"] == "Modification des informations"
         assert "Informations modifiées : " in rows[0]["Commentaire"]
-        assert "Activité principale : Autre => Librairie " in rows[0]["Commentaire"]
+        assert "Activité principale : Autre → Librairie " in rows[0]["Commentaire"]
         assert "Site internet de contact : suppression de : https://old.website.com " in rows[0]["Commentaire"]
         assert "Conditions de retrait : ajout de : Come here!" in rows[0]["Commentaire"]
-        assert "Accessibilité handicap visuel : Non => Oui" in rows[0]["Commentaire"]
-        assert "Horaires du lundi : 14:00-19:30 => 10:00-13:00, 14:00-19:30" in rows[0]["Commentaire"]
+        assert "Accessibilité handicap visuel : Non → Oui" in rows[0]["Commentaire"]
+        assert "Horaires du lundi : 14:00-19:30 → 10:00-13:00, 14:00-19:30" in rows[0]["Commentaire"]
         assert "Horaires du mardi : suppression de : 14:00-19:30" in rows[0]["Commentaire"]
         assert rows[0]["Auteur"] == legit_user.full_name
 
@@ -2994,6 +2931,27 @@ class GetRemoveSiretFormTest(GetEndpointHelper):
         content = html_parser.content_as_text(response.data)
         assert "CA de l'année : 10 800,00 €" in content
 
+    @pytest.mark.parametrize(
+        "start_date, end_date",
+        [
+            (datetime.utcnow() - timedelta(days=10), None),
+            (datetime.utcnow() - timedelta(days=10), datetime.utcnow() + timedelta(days=10)),
+            (datetime.utcnow() + timedelta(days=10), None),
+        ],
+    )
+    def test_venue_custom_reimbursement_rule(self, authenticated_client, start_date, end_date):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        finance_factories.CustomReimbursementRuleFactory(venue=venue, timespan=(start_date, end_date))
+
+        response = authenticated_client.get(url_for(self.endpoint, venue_id=venue.id))
+
+        assert response.status_code == 200
+        assert (
+            "Ce partenaire culturel a au moins un tarif dérogatoire qui se termine dans le futur. Si vous validez l'action il sera clôturé"
+            == html_parser.extract_alert(response.data)
+        )
+
 
 class RemoveSiretTest(PostEndpointHelper):
     endpoint = "backoffice_web.venue.remove_siret"
@@ -3044,6 +3002,40 @@ class RemoveSiretTest(PostEndpointHelper):
         assert other_action.extraData["modified_info"] == {
             "pricingPointSiret": {"old_info": old_siret, "new_info": None},
         }
+
+    @pytest.mark.parametrize(
+        "start_date, end_date, update",
+        [
+            (datetime.utcnow() - timedelta(days=10), None, True),
+            (datetime.utcnow() - timedelta(days=10), datetime.utcnow() + timedelta(days=10), True),
+            (datetime.utcnow() + timedelta(days=10), None, False),
+        ],
+    )
+    def test_venue_with_custom_reimbursement_rule(self, authenticated_client, start_date, end_date, update):
+        venue = offerers_factories.VenueFactory()
+        target_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        finance_factories.CustomReimbursementRuleFactory(
+            venue=venue,
+            timespan=(start_date, end_date),
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue.id,
+            form={
+                "comment": "test",
+                "override_revenue_check": False,
+                "new_pricing_point": target_venue.id,
+            },
+        )
+
+        assert response.status_code == 303
+        rules = finance_models.CustomReimbursementRule.query.all()
+        assert bool(rules) == update
+        if update:
+            assert len(rules) == 1
+            assert rules[0].timespan.upper != end_date
+            assert rules[0].timespan.upper < datetime.utcnow() + timedelta(days=1)
 
     def test_venue_without_siret(self, authenticated_client):
         venue = offerers_factories.VenueWithoutSiretFactory()

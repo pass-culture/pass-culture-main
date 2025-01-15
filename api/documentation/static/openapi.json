@@ -68,7 +68,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -97,7 +97,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -125,7 +125,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -1090,7 +1090,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -1378,7 +1378,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -1415,7 +1415,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -1451,7 +1451,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -2184,7 +2184,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -2221,7 +2221,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -2257,7 +2257,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -3472,7 +3472,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -3509,7 +3509,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -3545,7 +3545,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -3757,10 +3757,12 @@
                         "type": "string"
                     },
                     "venueAddress": {
+                        "nullable": true,
                         "title": "Venueaddress",
                         "type": "string"
                     },
                     "venueDepartementCode": {
+                        "nullable": true,
                         "title": "Venuedepartementcode",
                         "type": "string"
                     },
@@ -3784,8 +3786,6 @@
                     "offerName",
                     "venueId",
                     "venueName",
-                    "venueAddress",
-                    "venueDepartementCode",
                     "userEmail"
                 ],
                 "title": "GetBookingResponse",
@@ -4031,6 +4031,13 @@
             },
             "GetOffersQueryParams": {
                 "properties": {
+                    "addressId": {
+                        "description": "Address id in the pass Culture DB",
+                        "example": 1,
+                        "nullable": true,
+                        "title": "Addressid",
+                        "type": "integer"
+                    },
                     "firstIndex": {
                         "default": 1,
                         "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id).**To learn more about cursor-based pagination [see this page](/docs/understanding-our-api/resources/cursor-pagination)**.",
@@ -4056,13 +4063,11 @@
                     "venueId": {
                         "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
                         "example": 535,
+                        "nullable": true,
                         "title": "Venueid",
                         "type": "integer"
                     }
                 },
-                "required": [
-                    "venueId"
-                ],
                 "title": "GetOffersQueryParams",
                 "type": "object"
             },
@@ -4346,13 +4351,6 @@
                         },
                         "title": "Students",
                         "type": "array"
-                    },
-                    "subcategoryId": {
-                        "description": "**(deprecated, use formats instead)** Event subcategory id",
-                        "example": "FESTIVAL_MUSIQUE",
-                        "nullable": true,
-                        "title": "Subcategoryid",
-                        "type": "string"
                     },
                     "totalPrice": {
                         "description": "Collective offer price (in \u20ac)",
@@ -4638,7 +4636,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -4675,7 +4673,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -4711,7 +4709,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -5110,7 +5108,7 @@
                 "title": "MUSEE_VENTE_DISTANCE_read",
                 "type": "object"
             },
-            "MusicTypeEnum": {
+            "MusicTypeEnum__deprecated_": {
                 "description": "An enumeration.",
                 "enum": [
                     "JAZZ-ACID_JAZZ",
@@ -5314,13 +5312,13 @@
                     "CHANSON_VARIETE-OTHER",
                     "OTHER"
                 ],
-                "title": "MusicTypeEnum",
+                "title": "MusicTypeEnum (deprecated)",
                 "type": "string"
             },
             "MusicTypeResponse": {
                 "properties": {
                     "id": {
-                        "$ref": "#/components/schemas/MusicTypeEnum"
+                        "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                     },
                     "label": {
                         "title": "Label",
@@ -5938,13 +5936,6 @@
                         "title": "Students",
                         "type": "array"
                     },
-                    "subcategoryId": {
-                        "description": "**(deprecated, use formats instead)** Event subcategory id",
-                        "example": "FESTIVAL_MUSIQUE",
-                        "nullable": true,
-                        "title": "Subcategoryid",
-                        "type": "string"
-                    },
                     "totalPrice": {
                         "description": "Collective offer price (in \u20ac)",
                         "example": 100.0,
@@ -6104,7 +6095,6 @@
                         "items": {
                             "$ref": "#/components/schemas/EacFormat"
                         },
-                        "nullable": true,
                         "type": "array"
                     },
                     "imageCredit": {
@@ -6182,13 +6172,6 @@
                         "title": "Students",
                         "type": "array"
                     },
-                    "subcategoryId": {
-                        "description": "**(deprecated, use formats instead)** Event subcategory id",
-                        "example": "FESTIVAL_MUSIQUE",
-                        "nullable": true,
-                        "title": "Subcategoryid",
-                        "type": "string"
-                    },
                     "totalPrice": {
                         "description": "Collective offer price (in \u20ac)",
                         "example": 100.0,
@@ -6213,6 +6196,7 @@
                     "venueId",
                     "name",
                     "description",
+                    "formats",
                     "bookingEmails",
                     "contactEmail",
                     "contactPhone",
@@ -8133,7 +8117,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -8173,7 +8157,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -8484,7 +8468,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -8525,7 +8509,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -8565,7 +8549,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum"
+                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
                             }
                         ],
                         "title": "Musictype"
@@ -9544,9 +9528,6 @@
                     "401": {
                         "description": "Authentication is necessary to use this API."
                     },
-                    "404": {
-                        "description": "The municipality could not be found on the Base Nationale d'Adresses (BAN) API."
-                    },
                     "422": {
                         "content": {
                             "application/json": {
@@ -9666,9 +9647,6 @@
                     "401": {
                         "description": "Authentication is necessary to use this API."
                     },
-                    "404": {
-                        "description": "The municipality could not be found on the Base Nationale d'Adresses (BAN) API."
-                    },
                     "422": {
                         "content": {
                             "application/json": {
@@ -9757,7 +9735,7 @@
         },
         "/public/offers/v1/events": {
             "get": {
-                "description": "Return all the events linked to given venue. Results are paginated (by default there are `50` events per page).",
+                "description": "Return filtered events.\n\nResults are paginated (by default there are `50` events per page).",
                 "operationId": "GetEvents",
                 "parameters": [
                     {
@@ -9791,10 +9769,11 @@
                         "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
                         "in": "query",
                         "name": "venueId",
-                        "required": true,
+                        "required": false,
                         "schema": {
                             "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
                             "example": 535,
+                            "nullable": true,
                             "title": "Venueid",
                             "type": "integer"
                         }
@@ -9810,6 +9789,19 @@
                             "nullable": true,
                             "title": "Idsatprovider",
                             "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Address id in the pass Culture DB",
+                        "in": "query",
+                        "name": "addressId",
+                        "required": false,
+                        "schema": {
+                            "description": "Address id in the pass Culture DB",
+                            "example": 1,
+                            "nullable": true,
+                            "title": "Addressid",
+                            "type": "integer"
                         }
                     }
                 ],
@@ -9852,7 +9844,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get Venue Event Offers",
+                "summary": "Get Event Offers",
                 "tags": [
                     "Event Offers"
                 ]
@@ -10838,7 +10830,7 @@
         },
         "/public/offers/v1/products": {
             "get": {
-                "description": "Return all products linked to a venue. Results are paginated (by default `50` products by page).",
+                "description": "Return fitered products.\n\nResults are paginated (by default `50` products by page).",
                 "operationId": "GetProducts",
                 "parameters": [
                     {
@@ -10872,10 +10864,11 @@
                         "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
                         "in": "query",
                         "name": "venueId",
-                        "required": true,
+                        "required": false,
                         "schema": {
                             "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
                             "example": 535,
+                            "nullable": true,
                             "title": "Venueid",
                             "type": "integer"
                         }
@@ -10891,6 +10884,19 @@
                             "nullable": true,
                             "title": "Idsatprovider",
                             "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Address id in the pass Culture DB",
+                        "in": "query",
+                        "name": "addressId",
+                        "required": false,
+                        "schema": {
+                            "description": "Address id in the pass Culture DB",
+                            "example": 1,
+                            "nullable": true,
+                            "title": "Addressid",
+                            "type": "integer"
                         }
                     }
                 ],
@@ -10930,7 +10936,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get Venue Products",
+                "summary": "Get Product Offers",
                 "tags": [
                     "Product Offers"
                 ]
@@ -11369,6 +11375,63 @@
                 "summary": "Get Show Types",
                 "tags": [
                     "Offer Attributes"
+                ]
+            }
+        },
+        "/public/offers/v1/venues/{siret}": {
+            "get": {
+                "description": "Return venue corresponding to the given [**SIRET number (Syst\u00e8me d'identification du r\u00e9pertoire des \u00e9tablissements)**](https://www.economie.gouv.fr/cedef/numero-siret)",
+                "operationId": "GetVenueBySiret",
+                "parameters": [
+                    {
+                        "description": "",
+                        "in": "path",
+                        "name": "siret",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VenueResponse"
+                                }
+                            }
+                        },
+                        "description": "Your request was succesful."
+                    },
+                    "401": {
+                        "description": "Authentication is necessary to use this API."
+                    },
+                    "404": {
+                        "description": "The venue could not found for your API key."
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Entity"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "summary": "Get Venue",
+                "tags": [
+                    "Venues"
                 ]
             }
         },

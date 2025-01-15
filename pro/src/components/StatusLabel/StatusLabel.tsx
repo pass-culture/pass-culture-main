@@ -1,4 +1,3 @@
-import React from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'

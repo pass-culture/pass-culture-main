@@ -45,6 +45,11 @@ from tests.serialization.serialization_decorator_test import test_blueprint
 from tests.serialization.serialization_decorator_test import test_bookings_blueprint
 
 
+if typing.TYPE_CHECKING:
+    from _pytest.config import Config as PytestConfig
+    from _pytest.nodes import Item
+
+
 def run_migrations():
     from pcapi import settings
 
@@ -219,7 +224,7 @@ def client_fixture(app: Flask):
 
 
 @pytest.fixture(name="ubble_mock")
-def ubble_mock(requests_mock):  # pylint: disable=redefined-outer-name
+def ubble_mock(requests_mock, settings):  # pylint: disable=redefined-outer-name
     """
     Mocks all Ubble requests calls to ease test
     Returns a configured requests mock matcher
@@ -227,60 +232,52 @@ def ubble_mock(requests_mock):  # pylint: disable=redefined-outer-name
     # unsure ?
     from tests.connectors.beneficiaries import ubble_fixtures
 
-    UBBLE_URL = "https://api.example.com/"
+    settings.UBBLE_API_URL = "https://api.example.com/"
+    settings.UBBLE_CLIENT_ID = "client_id"
+    settings.UBBLE_CLIENT_SECRET = "client_secret"
 
-    with pcapi.core.testing.override_settings(
-        UBBLE_API_URL=UBBLE_URL,
-        UBBLE_CLIENT_ID="client_id",
-        UBBLE_CLIENT_SECRET="client_secret",
-    ):
-        request_matcher = requests_mock.register_uri(
-            "POST",
-            "https://api.example.com/identifications/",
-            json=ubble_fixtures.UBBLE_IDENTIFICATION_RESPONSE,
-            status_code=201,
-        )
-        yield request_matcher
+    request_matcher = requests_mock.register_uri(
+        "POST",
+        "https://api.example.com/identifications/",
+        json=ubble_fixtures.UBBLE_IDENTIFICATION_RESPONSE,
+        status_code=201,
+    )
+    yield request_matcher
 
 
 @pytest.fixture(name="ubble_mock_connection_error")
-def ubble_mock_connection_error(requests_mock):  # pylint: disable=redefined-outer-name
+def ubble_mock_connection_error(requests_mock, settings):  # pylint: disable=redefined-outer-name
     """
     Mocks Ubble request which returns ConnectionError (ex Max retries exceeded, Timeout)
     """
-    UBBLE_URL = "https://api.example.com/"
 
-    with pcapi.core.testing.override_settings(
-        UBBLE_API_URL=UBBLE_URL,
-        UBBLE_CLIENT_ID="client_id",
-        UBBLE_CLIENT_SECRET="client_secret",
-    ):
-        request_matcher = requests_mock.register_uri(
-            "POST",
-            "https://api.example.com/identifications/",
-            exc=requests.exceptions.ConnectionError,
-        )
-        yield request_matcher
+    settings.UBBLE_API_URL = "https://api.example.com/"
+    settings.UBBLE_CLIENT_ID = "client_id"
+    settings.UBBLE_CLIENT_SECRET = "client_secret"
+
+    request_matcher = requests_mock.register_uri(
+        "POST",
+        "https://api.example.com/identifications/",
+        exc=requests.exceptions.ConnectionError,
+    )
+    yield request_matcher
 
 
 @pytest.fixture(name="ubble_mock_http_error_status")
-def ubble_mock_http_error_status(requests_mock):  # pylint: disable=redefined-outer-name
+def ubble_mock_http_error_status(requests_mock, settings):  # pylint: disable=redefined-outer-name
     """
     Mocks Ubble request which returns ConnectionError (ex Max retries exceeded, Timeout)
     """
-    UBBLE_URL = "https://api.example.com/"
+    settings.UBBLE_API_URL = "https://api.example.com/"
+    settings.UBBLE_CLIENT_ID = "client_id"
+    settings.UBBLE_CLIENT_SECRET = "client_secret"
 
-    with pcapi.core.testing.override_settings(
-        UBBLE_API_URL=UBBLE_URL,
-        UBBLE_CLIENT_ID="client_id",
-        UBBLE_CLIENT_SECRET="client_secret",
-    ):
-        request_matcher = requests_mock.register_uri(
-            "POST",
-            "https://api.example.com/identifications/",
-            status_code=401,
-        )
-        yield request_matcher
+    request_matcher = requests_mock.register_uri(
+        "POST",
+        "https://api.example.com/identifications/",
+        status_code=401,
+    )
+    yield request_matcher
 
 
 @pytest.fixture
@@ -576,29 +573,33 @@ class TestClient:
 
 
 @pytest.fixture
-def _features(request):
-    from pcapi.core.testing import override_features
+def features(request):
+    from pcapi.core.testing import FeaturesContext
     from pcapi.models.feature import FeatureToggle
 
     marker = request.node.get_closest_marker("features")
+    _features = FeaturesContext()
     if marker:
         if kwargs := marker.kwargs:
             if invalid_features := {feature for feature in kwargs if feature not in FeatureToggle._member_names_}:
                 raise ValueError(f"Invalid features to override: {', '.join(invalid_features)}")
-            with override_features(**kwargs):
-                yield
+            for attr_name, value in kwargs.items():
+                setattr(_features, attr_name, value)
         else:
             raise ValueError(
                 "Invalid usage of `features` marker, missing features to override.\n"
                 "Eg. @pytest.mark.features(WIP_ENABLE_NEW_FEATURE=True)"
             )
+    yield _features
+
+    _features.reset()
 
 
 @pytest.fixture(autouse=True)
 def _features_marker(request: pytest.FixtureRequest) -> None:
     marker = request.node.get_closest_marker("features")
     if marker:
-        request.getfixturevalue("_features")
+        request.getfixturevalue("features")
 
 
 @pytest.fixture
@@ -634,6 +635,19 @@ def run_command(app, clean_database):
     from tests.test_utils import run_command as _run_command
 
     return functools.partial(_run_command, app)
+
+
+@pytest.hookimpl()
+def pytest_collection_finish(session):
+    backoffice_dirs = (Path("tests/routes/backoffice"),)
+    matches = [
+        session.config.rootdir / dir in Path(item.fspath).parents for dir in backoffice_dirs for item in session.items
+    ]
+    if any(matches) and not all(matches):
+        if not session.config.option.collectonly:
+            pytest.exit("You can not run backoffice tests with non backoffice tests")
+    if all(matches):
+        session.config.option.markexpr = "backoffice"
 
 
 #################################################################################################################

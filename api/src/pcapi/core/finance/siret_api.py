@@ -2,15 +2,17 @@ from collections import defaultdict
 import datetime
 from decimal import Decimal
 
+import pytz
 import sqlalchemy as sa
 
-import pcapi.core.history.models as history_models
+from pcapi.core.finance import models as finance_models
+from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
-import pcapi.core.offerers.models as offerers_models
+from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.repository import atomic
-import pcapi.utils.db as db_utils
+from pcapi.utils import db as db_utils
 
 from . import models
 
@@ -116,6 +118,7 @@ def move_siret(
     ]
 
     with atomic():
+        _force_close_custom_reimbursement_rules_for_venue(source_venue)
         for query in queries:
             db.session.execute(
                 sa.text(query),
@@ -288,6 +291,7 @@ def remove_siret(
             db.session.begin()
 
         try:
+            _force_close_custom_reimbursement_rules_for_venue(venue)
             modified_info_by_venue: dict[int, dict[str, dict]] = defaultdict(dict)
 
             venue.siret = None
@@ -345,6 +349,28 @@ def remove_siret(
             db.session.commit()
         else:
             db.session.rollback()
+
+
+def _force_close_custom_reimbursement_rules_for_venue(venue: offerers_models.Venue) -> None:
+    now = datetime.datetime.utcnow()
+
+    custom_reimbursement_rules = finance_models.CustomReimbursementRule.query.filter(
+        finance_models.CustomReimbursementRule.venueId == venue.id,
+        sa.or_(
+            sa.func.upper(finance_models.CustomReimbursementRule.timespan).is_(None),
+            sa.func.upper(finance_models.CustomReimbursementRule.timespan) >= now,
+        ),
+    )
+    for rule in custom_reimbursement_rules:
+        if rule.timespan.lower < now:
+            rule.timespan = db_utils.make_timerange(
+                start=pytz.utc.localize(rule.timespan.lower),
+                end=now,
+            )
+            db.session.add(rule)
+        else:
+            db.session.delete(rule)
+        db.session.flush()
 
 
 def check_can_remove_pricing_point(

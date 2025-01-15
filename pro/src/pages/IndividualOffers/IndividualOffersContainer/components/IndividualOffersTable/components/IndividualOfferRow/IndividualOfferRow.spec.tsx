@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
@@ -42,6 +42,15 @@ const renderOfferItem = (props: IndividualOfferRowProps) =>
     </>
   )
 
+const LABELS = {
+  openActions: /Voir les actions/,
+  deleteAction: /Supprimer l’offre/,
+  eventStockEditAction: /Dates et capacités/,
+  physicalStockEditAction: /Stocks/,
+  deleteDraftCancel: /Annuler/,
+  deleteDraftConfirm: /Supprimer/,
+}
+
 describe('IndividualOfferRow', () => {
   let props: IndividualOfferRowProps
   let offer: ListOffersOfferResponseModel
@@ -66,40 +75,18 @@ describe('IndividualOfferRow', () => {
       offer,
       selectOffer: vi.fn(),
       isSelected: false,
-      isFirstRow: true,
       isRestrictedAsAdmin: false,
     }
   })
 
-  describe('thumb Component', () => {
-    it('should render an image with url from offer when offer has a thumb url', () => {
-      renderOfferItem(props)
-
-      expect(
-        within(
-          screen.getAllByRole('link', { name: /éditer l’offre/ })[0]
-        ).getByRole('presentation')
-      ).toHaveAttribute('src', '/my-fake-thumb')
-    })
-
-    it('should render an image with an empty url when offer does not have a thumb url', () => {
-      props.offer = listOffersOfferFactory({ thumbUrl: null })
-
-      renderOfferItem(props)
-
-      expect(
-        screen.getAllByTitle(`${props.offer.name} - éditer l’offre`)[0]
-      ).toBeInTheDocument()
-    })
-  })
-
   describe('action buttons', () => {
-    it('should display a button to show offer stocks', () => {
+    it('should display a button to show offer stocks', async () => {
       renderOfferItem(props)
 
-      const stockLink = screen.getByRole('link', {
-        name: 'Dates et capacités',
-      })
+      const openActionsButton = screen.getByRole('button', { name: LABELS.openActions })
+      await userEvent.click(openActionsButton)
+
+      const stockLink = screen.getByRole('menuitem', { name: LABELS.eventStockEditAction })
       expect(stockLink).toBeInTheDocument()
       expect(stockLink).toHaveAttribute(
         'href',
@@ -109,14 +96,17 @@ describe('IndividualOfferRow', () => {
     describe('draft delete button', () => {
       it('should display a trash icon with a confirm dialog to delete draft offer', async () => {
         props.offer.status = OfferStatus.DRAFT
-
         renderOfferItem(props)
 
-        await userEvent.click(screen.getAllByRole('button')[1])
-        const deleteButton = screen.getByRole('button', {
-          name: 'Supprimer ce brouillon',
-        })
+        const openActionsButton = screen.getByRole('button', { name: LABELS.openActions })
+        await userEvent.click(openActionsButton)
+
+        const deleteButton = screen.getByRole('menuitem', { name: LABELS.deleteAction })
         await userEvent.click(deleteButton)
+
+        const deleteConfirmButton = screen.getByRole('button', { name: LABELS.deleteDraftConfirm })
+        await userEvent.click(deleteConfirmButton)
+
         expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)
         expect(api.deleteDraftOffers).toHaveBeenCalledWith({
           ids: [offerId],
@@ -128,7 +118,6 @@ describe('IndividualOfferRow', () => {
 
       it('should display a notification in case of draft deletion error', async () => {
         props.offer.status = OfferStatus.DRAFT
-
         renderOfferItem(props)
         vi.spyOn(api, 'deleteDraftOffers').mockRejectedValue(
           new ApiError(
@@ -143,12 +132,15 @@ describe('IndividualOfferRow', () => {
           )
         )
 
-        await userEvent.click(screen.getAllByRole('button')[1])
-        await userEvent.click(
-          screen.getByRole('button', {
-            name: 'Supprimer ce brouillon',
-          })
-        )
+        const openActionsButton = screen.getByRole('button', { name: LABELS.openActions })
+        await userEvent.click(openActionsButton)
+
+        const deleteButton = screen.getByRole('menuitem', { name: LABELS.deleteAction })
+        await userEvent.click(deleteButton)
+
+        const deleteConfirmButton = screen.getByRole('button', { name: LABELS.deleteDraftConfirm })
+        await userEvent.click(deleteConfirmButton)
+
         expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)
         expect(api.deleteDraftOffers).toHaveBeenCalledWith({
           ids: [offerId],
@@ -190,11 +182,9 @@ describe('IndividualOfferRow', () => {
     it('should contain a link with the offer name and details link', () => {
       renderOfferItem(props)
 
-      const offerTitle = screen.queryByText(props.offer.name as string, {
-        selector: 'a',
-      })
-      expect(offerTitle).toBeInTheDocument()
-      expect(offerTitle).toHaveAttribute(
+      const offerTitleLink = screen.getByRole('link', { name: new RegExp(props.offer.name) })
+      expect(offerTitleLink).toBeInTheDocument()
+      expect(offerTitleLink).toHaveAttribute(
         'href',
         `/offre/individuelle/${props.offer.id}/recapitulatif/details`
       )
@@ -364,42 +354,6 @@ describe('IndividualOfferRow', () => {
       ).toBeInTheDocument()
     })
   })
-
-  it('should display the offer greyed when offer is inactive', () => {
-    props.offer.isActive = false
-
-    renderOfferItem(props)
-
-    expect(screen.getByLabelText('My little offer').closest('tr')).toHaveClass(
-      'inactive'
-    )
-  })
-
-  const greyedOfferStatusDataSet = [OfferStatus.REJECTED, OfferStatus.PENDING]
-  it.each(greyedOfferStatusDataSet)(
-    'should display the offer greyed when offer is %s',
-    (status) => {
-      props.offer.status = status
-      renderOfferItem(props)
-
-      expect(
-        screen.getByLabelText('My little offer').closest('tr')
-      ).toHaveClass('inactive')
-    }
-  )
-
-  const offerStatusDataSet = [OfferStatus.ACTIVE, OfferStatus.DRAFT]
-  it.each(offerStatusDataSet)(
-    'should not display the offer greyed when offer is %s',
-    (status) => {
-      props.offer.status = status
-      renderOfferItem(props)
-
-      expect(
-        screen.getByLabelText('My little offer').closest('tr')
-      ).not.toHaveClass('inactive')
-    }
-  )
 
   it('should have an edit link to detail page when offer is draft', () => {
     props.offer.status = OfferStatus.DRAFT

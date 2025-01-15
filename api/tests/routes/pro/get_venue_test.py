@@ -231,7 +231,6 @@ class Returns200Test:
         num_queries += 1  # select google_places_info
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select opening_hours
-        num_queries += 1  # select venue
         num_queries += 1  # select venue_bank_account_link
         num_queries += 1  # select offer
         with testing.assert_num_queries(num_queries):

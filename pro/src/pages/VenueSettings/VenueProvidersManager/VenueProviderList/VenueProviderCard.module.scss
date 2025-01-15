@@ -1,7 +1,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_size.scss" as size;
+@use "styles/mixins/_size.scss" as size;
 
 .venue-provider-card {
   display: flex;
@@ -13,16 +12,14 @@
   padding: rem.torem(16px) rem.torem(24px) rem.torem(8px);
   margin-bottom: rem.torem(16px);
   width: 100%;
-
-  @media (max-width: size.$tablet) {
-    gap: rem.torem(20px);
-  }
+  gap: rem.torem(20px);
 
   @media (min-width: size.$tablet) {
     margin-bottom: rem.torem(24px);
     margin-right: rem.torem(16px);
     width: rem.torem(520px);
     height: rem.torem(150px);
+    gap: 0;
   }
 }
 
@@ -44,7 +41,7 @@
 }
 
 .provider-name {
-  @include fonts-design-system.title4;
+  @include fonts.title4;
 
   overflow: hidden;
   text-overflow: ellipsis;
@@ -52,7 +49,7 @@
 }
 
 .venue-provider-info-container {
-  @include fonts.caption;
+  @include fonts.body-accent-xs;
 }
 
 .venue-provider-account-info {
@@ -63,32 +60,27 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-
-  @media (max-width: size.$tablet) {
-    gap: rem.torem(12px);
-  }
+  gap: rem.torem(12px);
 
   @media (min-width: size.$tablet) {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
     width: 100%;
+    gap: 0;
   }
 }
 
 .provider-actions-delete-and-inactivate {
-  gap: rem.torem(8px);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-
-  @media (max-width: size.$tablet) {
-    gap: rem.torem(12px);
-  }
+  gap: rem.torem(12px);
 
   @media (min-width: size.$tablet) {
     flex-direction: row;
     align-items: center;
+    gap: rem.torem(8px);
   }
 }
 

@@ -1,3 +1,4 @@
+{% import "components/badges.html" as badges with context %}
 {% import "components/clipboard.html" as clipboard %}
 {% import "components/links.html" as links with context %}
 {% from "components/forms.html" import build_form_fields_group with context %}
@@ -124,11 +125,6 @@
                   </p>
                 {% endif %}
                 {% if extra_data.genres %}<span class="fw-bold">Genres :</span> {{ extra_data.genres | format_string_list }}{% endif %}
-                {% if offer.withdrawalDetails %}
-                  <p class="mb-1">
-                    <span class="fw-bold">Modalités de retrait :</span> {{ offer.withdrawalDetails | replace("\n", "<br />"|safe) }}
-                  </p>
-                {% endif %}
               </div>
             </div>
             <div class="col-4">
@@ -137,7 +133,7 @@
                   <span class="fw-bold">Statut :</span> {{ offer.status | format_offer_status }}
                 </p>
                 <p class="mb-1">
-                  <span class="fw-bold">État :</span> {{ offer.validation | format_offer_validation_status }}
+                  <span class="fw-bold">État :</span> {{ offer.validation | format_offer_validation_status(with_badge=True) }}
                 </p>
                 <p class="mb-1">
                   <span class="fw-bold">Date de création :</span> {{ offer.dateCreated | format_date }}
@@ -176,6 +172,7 @@
               <div class="fs-6">
                 <p class="mb-1">
                   <span class="fw-bold">Entité juridique :</span> {{ links.build_offerer_name_to_details_link(offer.venue.managingOfferer) }}
+                  {{ badges.build_offer_offerer_fraud_badges(offer.venue.managingOfferer) }}
                 </p>
               </div>
               <div class="fs-6">
@@ -187,12 +184,13 @@
                       Lieu :
                     {% endif %}
                   </span> {{ links.build_venue_name_to_details_link(offer.venue) }}
+                  {{ badges.build_offer_venue_fraud_badges(offer.venue) }}
                 </p>
               </div>
               {% if offer.offererAddress %}
                 <div class="fs-6">
                   <p class="mb-1">
-                    <span class="fw-bold">Adresse :</span>
+                    <span class="fw-bold">Localisation :</span>
                     <span class="fst-italic">{{ offer.offererAddress.label | empty_string_if_null }}</span>
                     {% if offer.offererAddress.address.street %}
                       <br />
@@ -311,7 +309,7 @@
               <div class="d-flex justify-content-between">
                 <div class="p-2 flex-shrink-1">
                   {% if offer.idAtProvider or extra_data.ean %}
-                    <h3>Informations techniques</h3>
+                    <h3 class="mt-4">Informations techniques</h3>
                     <div class="fs-6">
                       {% if offer.idAtProvider %}
                         <p class="mb-1">
@@ -325,7 +323,7 @@
                       {% endif %}
                     </div>
                   {% endif %}
-                  <h3>Informations artistiques</h3>
+                  <h3 class="mt-4">Informations artistiques</h3>
                   <div class="fs-6">
                     {% if offer.extraData.author %}
                       <p class="mb-1">
@@ -353,10 +351,16 @@
                       </p>
                     {% endif %}
                     <p class="mb-1">
-                      <span class="fw-bold">Description :</span> {{ offer.description | empty_string_if_null | replace("\n", "<br />"| safe) }}
+                      <span class="fw-bold">Description :</span> {{ offer.description | empty_string_if_null | nl2br }}
                     </p>
                   </div>
-                  <h3>Accessibilité</h3>
+                  <h3 class="mt-4">Retrait de l'offre</h3>
+                  <div class="fs-6">
+                    <p class="mb-1">
+                      <span class="fw-bold">Informations de retrait :</span> {{ offer.withdrawalDetails | empty_string_if_null | nl2br }}
+                    </p>
+                  </div>
+                  <h3 class="mt-4">Accessibilité</h3>
                   <div class="fs-6">
                     <p class="mb-1">
                       <span class="fw-bold">Accessible aux handicaps auditifs :</span> {{ offer.audioDisabilityCompliant | format_bool("Non renseigné") }}
@@ -369,6 +373,12 @@
                     </p>
                     <p class="mb-1">
                       <span class="fw-bold">Accessible aux handicaps visuels :</span> {{ offer.visualDisabilityCompliant | format_bool("Non renseigné") }}
+                    </p>
+                  </div>
+                  <h3 class="mt-4">Notification des réservations</h3>
+                  <div class="fs-6">
+                    <p class="mb-1">
+                      <span class="fw-bold">Email auquel envoyer les notifications :</span> {{ offer.bookingEmail | empty_string_if_null }}
                     </p>
                   </div>
                 </div>

@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { ValidationError } from 'yup'
 
+import { useAnalytics } from 'app/App/analytics/firebase'
+import { Events } from 'commons/core/FirebaseEvents/constants'
 import { ConstraintCheck } from 'components/ConstraintCheck/ConstraintCheck'
 import {
   Constraint,
@@ -24,6 +26,8 @@ export const ImageUploadBrowserForm = ({
   onSubmit,
   mode,
 }: ImageUploadBrowserFormProps): JSX.Element => {
+  const { logEvent } = useAnalytics()
+
   const [errors, setErrors] = useState<string[]>([])
   const validationConstraints = modeValidationConstraints[mode]
   const preferredOrientationCaptionId = 'preferred-orientation-caption'
@@ -62,6 +66,9 @@ export const ImageUploadBrowserForm = ({
           { abortEarly: false }
         )
         onSubmit({ image: newFile })
+        logEvent(Events.CLICKED_ADD_IMAGE, {
+          imageCreationStage: 'import image',
+        })
       } catch (validationErrors) {
         setErrors(
           (validationErrors as ValidationError).inner.map(

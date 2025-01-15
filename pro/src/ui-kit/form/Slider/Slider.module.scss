@@ -1,5 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_a11y.scss" as a11y;
 
 .slider {
   accent-color: var(--color-primary);
@@ -14,14 +15,18 @@
   margin-bottom: rem.torem(12px);
 
   .input-value {
-    @include fonts.body-exergue;
+    @include fonts.body-accent;
   }
 }
 
 .min-max-container {
-  @include fonts.caption;
+  @include fonts.body-accent-xs;
 
   color: var(--color-grey-dark);
   display: flex;
   justify-content: space-between;
+}
+
+.visually-hidden {
+  @include a11y.visually-hidden;
 }

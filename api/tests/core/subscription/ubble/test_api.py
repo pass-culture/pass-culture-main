@@ -20,28 +20,23 @@ from pcapi.core.fraud.models import FraudCheckStatus
 from pcapi.core.fraud.models import FraudCheckType
 from pcapi.core.fraud.models import UbbleContent
 from pcapi.core.fraud.ubble import constants as ubble_constants
-from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.exceptions import BeneficiaryFraudCheckMissingException
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.subscription.ubble import errors as ubble_errors
 from pcapi.core.subscription.ubble import exceptions as ubble_exceptions
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.notifications import push as push_notifications
 import pcapi.notifications.push.testing as push_testing
-from pcapi.utils import date as date_utils
 from pcapi.utils import requests as requests_utils
 from pcapi.utils.string import u_nbsp
 
 import tests
 from tests.connectors.beneficiaries.ubble_fixtures import UBBLE_IDENTIFICATION_V2_RESPONSE
-from tests.core.subscription import test_factories
 from tests.core.subscription.test_factories import IdentificationState
 from tests.core.subscription.test_factories import UbbleIdentificationIncludedDocumentsFactory
-from tests.core.subscription.test_factories import UbbleIdentificationIncludedReferenceDataChecksFactory
 from tests.core.subscription.test_factories import UbbleIdentificationResponseFactory
 from tests.test_utils import json_default
 
@@ -51,7 +46,7 @@ IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 
 @pytest.mark.usefixtures("db_session")
 class UbbleWorkflowV2Test:
-    @override_features(WIP_UBBLE_V2=True)
+    @pytest.mark.features(WIP_UBBLE_V2=True)
     def test_start_ubble_workflow(self, requests_mock):
         user = users_factories.UserFactory()
         requests_mock.post(
@@ -80,6 +75,110 @@ class UbbleWorkflowV2Test:
             "event_payload": {"type": "ubble"},
             "user_id": user.id,
         }
+
+    @pytest.mark.features(WIP_UBBLE_V2=True)
+    def test_applicant_creation_flow(self, requests_mock):
+        user = users_factories.UserFactory()
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            user=user,
+            thirdPartyId="",
+            status=fraud_models.FraudCheckStatus.STARTED,
+            resultContent=fraud_factories.UbbleContentFactory(
+                status=ubble_serializers.UbbleIdentificationStatus.PENDING,
+                external_applicant_id="eaplt_61301A10000000000000000000",
+            ),
+        )
+        requests_mock.post(
+            f"{settings.UBBLE_API_URL}/v2/applicants",
+            json={
+                "id": "aplt_qwerty123",
+                "created_on": "2023-07-21T17:32:28Z",
+                "modified_on": "2023-07-21T17:40:32Z",
+                "external_applicant_id": "eaplt_61301A10000000000000000000",
+                "email": user.email,
+                "_links": {"self": {"href": "https://api.ubble.example.com/v2/applicants/aplt_qwerty123"}},
+            },
+        )
+        requests_mock.post(
+            f"{settings.UBBLE_API_URL}/v2/identity-verifications",
+            json=build_ubble_identification_v2_response(status="pending", response_codes=[], documents=[]),
+        )
+        requests_mock.post(
+            f"{settings.UBBLE_API_URL}/v2/identity-verifications/{UBBLE_IDENTIFICATION_V2_RESPONSE['id']}/attempts",
+            json=build_ubble_identification_v2_response(status="pending", response_codes=[], documents=[]),
+        )
+
+        ubble_subscription_api.start_ubble_workflow(
+            user, user.firstName, user.lastName, redirect_url="https://redirect.example.com"
+        )
+
+        create_applicant_request, create_identification_request, attempt_identification_request = (
+            requests_mock.request_history[-3:]
+        )
+        assert create_applicant_request.url == f"{settings.UBBLE_API_URL}/v2/applicants"
+        assert create_applicant_request.json() == {
+            "external_applicant_id": "eaplt_61301A10000000000000000000",
+            "email": fraud_check.user.email,
+        }
+        assert create_identification_request.url == f"{settings.UBBLE_API_URL}/v2/identity-verifications"
+        assert create_identification_request.json()["applicant_id"] == "aplt_qwerty123"
+        assert (
+            create_identification_request.json()["webhook_url"]
+            == "http://localhost/webhooks/ubble/v2/application_status"
+        )
+        assert (
+            attempt_identification_request.url
+            == f"{settings.UBBLE_API_URL}/v2/identity-verifications/{UBBLE_IDENTIFICATION_V2_RESPONSE['id']}/attempts"
+        )
+        assert attempt_identification_request.json()["redirect_url"] == "https://redirect.example.com"
+
+    @pytest.mark.features(WIP_UBBLE_V2=True)
+    def test_applicant_creation_flow_updates_fraud_check(self, requests_mock):
+        user = users_factories.UserFactory()
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            user=user,
+            thirdPartyId="",
+            status=fraud_models.FraudCheckStatus.STARTED,
+            resultContent=fraud_factories.UbbleContentFactory(
+                status=ubble_serializers.UbbleIdentificationStatus.PENDING,
+                external_applicant_id="eaplt_61301A10000000000000000000",
+            ),
+        )
+        requests_mock.post(
+            f"{settings.UBBLE_API_URL}/v2/applicants",
+            json={
+                "id": UBBLE_IDENTIFICATION_V2_RESPONSE["applicant_id"],
+                "created_on": "2023-07-21T17:32:28Z",
+                "modified_on": "2023-07-21T17:40:32Z",
+                "external_applicant_id": "eaplt_61301A10000000000000000000",
+                "email": user.email,
+                "_links": {
+                    "self": {
+                        "href": f"https://api.ubble.example.com/v2/applicants/{UBBLE_IDENTIFICATION_V2_RESPONSE['applicant_id']}"
+                    }
+                },
+            },
+        )
+        requests_mock.post(
+            f"{settings.UBBLE_API_URL}/v2/identity-verifications",
+            json=build_ubble_identification_v2_response(status="pending", response_codes=[], documents=[]),
+        )
+        requests_mock.post(
+            f"{settings.UBBLE_API_URL}/v2/identity-verifications/{UBBLE_IDENTIFICATION_V2_RESPONSE['id']}/attempts",
+            json=build_ubble_identification_v2_response(status="pending", response_codes=[], documents=[]),
+        )
+
+        ubble_subscription_api.start_ubble_workflow(
+            user, user.firstName, user.lastName, redirect_url="https://redirect.example.com"
+        )
+
+        (ubble_fraud_check,) = user.beneficiaryFraudChecks
+        ubble_content = ubble_fraud_check.resultContent
+        assert ubble_content["applicant_id"] == UBBLE_IDENTIFICATION_V2_RESPONSE["applicant_id"]
+        assert ubble_content["external_applicant_id"] == "eaplt_61301A10000000000000000000"
+        assert ubble_content["identification_id"] == UBBLE_IDENTIFICATION_V2_RESPONSE["id"]
 
     def test_ubble_checks_in_progress(self, requests_mock):
         user = users_factories.UserFactory()
@@ -236,7 +335,7 @@ class UbbleWorkflowV2Test:
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.UBBLE,
             user=user,
-            thirdPartyId="idv_qwerty1234",
+            thirdPartyId=UBBLE_IDENTIFICATION_V2_RESPONSE["id"],
             status=fraud_models.FraudCheckStatus.STARTED,
         )
         requests_mock.get(
@@ -272,7 +371,7 @@ class UbbleWorkflowV2Test:
         assert user.dateOfBirth == sixteen_years_ago
         assert user.validatedBirthDate == seventeen_years_ago
 
-    @override_features(ENABLE_PHONE_VALIDATION=False)
+    @pytest.mark.features(ENABLE_PHONE_VALIDATION=False)
     def test_ubble_workflow_updates_birth_date_on_eligibility_upgrade(self, requests_mock):
         last_year = datetime.datetime.utcnow() - relativedelta(years=1)
         with time_machine.travel(last_year):
@@ -305,7 +404,7 @@ class UbbleWorkflowV2Test:
             type=fraud_models.FraudCheckType.UBBLE,
             status=fraud_models.FraudCheckStatus.PENDING,
             user=user,
-            thirdPartyId="idv_qwerty1234",
+            thirdPartyId=UBBLE_IDENTIFICATION_V2_RESPONSE["id"],
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
         original_third_party_id = fraud_check.thirdPartyId
@@ -450,6 +549,40 @@ def build_ubble_identification_v2_response(
     return identification_response
 
 
+IDENTIFICATION_STATE_PARAMETERS = [
+    (
+        IdentificationState.INITIATED,
+        ubble_serializers.UbbleIdentificationStatus.INITIATED,
+        fraud_models.FraudCheckStatus.PENDING,
+    ),
+    (
+        IdentificationState.PROCESSING,
+        ubble_serializers.UbbleIdentificationStatus.PROCESSING,
+        fraud_models.FraudCheckStatus.PENDING,
+    ),
+    (
+        IdentificationState.VALID,
+        ubble_serializers.UbbleIdentificationStatus.PROCESSED,
+        fraud_models.FraudCheckStatus.OK,
+    ),
+    (
+        IdentificationState.INVALID,
+        ubble_serializers.UbbleIdentificationStatus.PROCESSED,
+        fraud_models.FraudCheckStatus.KO,
+    ),
+    (
+        IdentificationState.UNPROCESSABLE,
+        ubble_serializers.UbbleIdentificationStatus.PROCESSED,
+        fraud_models.FraudCheckStatus.SUSPICIOUS,
+    ),
+    (
+        IdentificationState.ABORTED,
+        ubble_serializers.UbbleIdentificationStatus.ABORTED,
+        fraud_models.FraudCheckStatus.CANCELED,
+    ),
+]
+
+
 @pytest.mark.usefixtures("db_session")
 class UbbleWorkflowV1Test:
     def test_start_ubble_workflow(self, ubble_mock):
@@ -476,42 +609,26 @@ class UbbleWorkflowV1Test:
             "user_id": user.id,
         }
 
-    @pytest.mark.parametrize(
-        "state, status, fraud_check_status",
-        [
-            (
-                IdentificationState.INITIATED,
-                ubble_serializers.UbbleIdentificationStatus.INITIATED,
-                fraud_models.FraudCheckStatus.PENDING,
-            ),
-            (
-                IdentificationState.PROCESSING,
-                ubble_serializers.UbbleIdentificationStatus.PROCESSING,
-                fraud_models.FraudCheckStatus.PENDING,
-            ),
-            (
-                IdentificationState.VALID,
-                ubble_serializers.UbbleIdentificationStatus.PROCESSED,
-                fraud_models.FraudCheckStatus.OK,
-            ),
-            (
-                IdentificationState.INVALID,
-                ubble_serializers.UbbleIdentificationStatus.PROCESSED,
-                fraud_models.FraudCheckStatus.KO,
-            ),
-            (
-                IdentificationState.UNPROCESSABLE,
-                ubble_serializers.UbbleIdentificationStatus.PROCESSED,
-                fraud_models.FraudCheckStatus.SUSPICIOUS,
-            ),
-            (
-                IdentificationState.ABORTED,
-                ubble_serializers.UbbleIdentificationStatus.ABORTED,
-                fraud_models.FraudCheckStatus.CANCELED,
-            ),
-        ],
-    )
+    @pytest.mark.parametrize("state, status, fraud_check_status", IDENTIFICATION_STATE_PARAMETERS)
     def test_update_ubble_workflow(self, ubble_mocker, state, status, fraud_check_status):
+        user = users_factories.UserFactory()
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_models.FraudCheckType.UBBLE, user=user)
+        ubble_response = UbbleIdentificationResponseFactory(identification_state=state)
+        assert user.married_name is None
+
+        with ubble_mocker(
+            fraud_check.thirdPartyId,
+            json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
+        ):
+            ubble_subscription_api.update_ubble_workflow(fraud_check)
+
+        ubble_content = fraud_check.resultContent
+        assert ubble_content["status"] == status.value
+        assert fraud_check.status == fraud_check_status
+
+    @pytest.mark.features(WIP_UBBLE_V2=True)
+    @pytest.mark.parametrize("state, status, fraud_check_status", IDENTIFICATION_STATE_PARAMETERS)
+    def test_update_ubble_workflow_with_v2_feature_flag(self, ubble_mocker, state, status, fraud_check_status):
         user = users_factories.UserFactory()
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_models.FraudCheckType.UBBLE, user=user)
         ubble_response = UbbleIdentificationResponseFactory(identification_state=state)
@@ -540,7 +657,9 @@ class UbbleWorkflowV1Test:
             type=fraud_models.FraudCheckType.HONOR_STATEMENT, user=user, status=fraud_models.FraudCheckStatus.OK
         )
         ubble_check = fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_models.FraudCheckType.UBBLE, user=user)
-        ubble_response = UbbleIdentificationResponseFactory(identification_state=IdentificationState.VALID)
+        ubble_response = UbbleIdentificationResponseFactory(
+            identification_state=IdentificationState.VALID, data__attributes__identification_id=ubble_check.thirdPartyId
+        )
 
         with ubble_mocker(
             ubble_check.thirdPartyId,

@@ -125,3 +125,9 @@ class AccountUpdateRequestSearchForm(utils.PCForm):
         validate_choice=False,
         endpoint="backoffice_web.autocomplete_bo_users",
     )
+
+    only_unassigned = fields.PCSwitchBooleanField("Uniquement les dossiers non affectés")
+
+
+class AccountUpdateRequestAcceptForm(utils.PCForm):
+    motivation = fields.PCOptCommentField("Explication facultative envoyée au demandeur sur Démarches-Simplifiées")

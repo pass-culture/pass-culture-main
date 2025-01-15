@@ -63,7 +63,7 @@ FROM builder-${network_mode} AS builder-dev-proxy
 
 RUN poetry check --lock
 
-RUN REQUESTS_CA_BUNDLE=/cacert.pem PIP_CERT=/cacert.pem CURL_CA_BUNDLE=/cacert.pem poetry install --only dev
+RUN REQUESTS_CA_BUNDLE=/cacert.pem PIP_CERT=/cacert.pem CURL_CA_BUNDLE=/cacert.pem poetry install --only dev --no-root
 
 ########## DEV BUILDER DEFAULT ##########
 
@@ -71,7 +71,7 @@ FROM builder-${network_mode} AS builder-dev-default
 
 RUN poetry check --lock
 
-RUN poetry install --only dev
+RUN poetry install --only dev --no-root
 
 ########## SOURCES ##########
 
@@ -212,4 +212,4 @@ COPY --chown=pcapi:pcapi pyproject.toml .
 USER pcapi
 
 RUN npm config set prefix "$HOME/.local/"
-RUN npm install --global squawk-cli
+RUN npm install --global squawk-cli@1.4.0

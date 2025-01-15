@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React, { ComponentProps } from 'react'
+import { ComponentProps } from 'react'
 
 import { SelectOption } from 'commons/custom_types/form'
 import strokeDownIcon from 'icons/stroke-down.svg'

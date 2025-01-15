@@ -35,8 +35,8 @@ const renderOffers = (
         currentUser: sharedCurrentUserFactory({
           isAdmin: false,
         }),
-        selectedOffererId: 1,
       },
+      offerer: { selectedOffererId: 1, offererNames: [] },
     },
     ...options,
   })
@@ -136,8 +136,8 @@ describe('CollectiveOffersScreen', () => {
       offers: [firstOffer, secondOffer],
     })
 
-    expect(screen.getByLabelText(firstOffer.name)).toBeInTheDocument()
-    expect(screen.getByLabelText(secondOffer.name)).toBeInTheDocument()
+    expect(screen.getByLabelText(`Sélectionner l'offre "${firstOffer.name}"`)).toBeInTheDocument()
+    expect(screen.getByLabelText(`Sélectionner l'offre "${secondOffer.name}"`)).toBeInTheDocument()
   })
 
   it('should display an unchecked by default checkbox to select all offers when user is not admin', () => {
@@ -162,7 +162,7 @@ describe('CollectiveOffersScreen', () => {
       offers: [...offersRecap, collectiveOfferFactory()],
     })
 
-    screen.getByLabelText(offersRecap[0].name)
+    screen.getByLabelText(`Sélectionner l'offre "${offersRecap[0].name}"`)
     expect(screen.getByText('2 offres')).toBeInTheDocument()
   })
 
@@ -172,7 +172,7 @@ describe('CollectiveOffersScreen', () => {
       offers: offersRecap,
     })
 
-    screen.getByLabelText(offersRecap[0].name)
+    screen.getByLabelText(`Sélectionner l'offre "${offersRecap[0].name}"`)
     expect(await screen.findByText('1 offre')).toBeInTheDocument()
   })
 
@@ -184,7 +184,7 @@ describe('CollectiveOffersScreen', () => {
       offers: offersRecap,
     })
 
-    screen.getByLabelText(offersRecap[0].name)
+    screen.getByLabelText(`Sélectionner l'offre "${offersRecap[0].name}"`)
     expect(await screen.findByText('500+ offres')).toBeInTheDocument()
   })
 
@@ -267,13 +267,7 @@ describe('CollectiveOffersScreen', () => {
       })
     )
 
-    await userEvent.click(
-      screen.getByRole('heading', {
-        name: 'Offres collectives',
-        level: 1,
-      })
-    )
-
+    await userEvent.click(document.body)
     expect(screen.queryByText('Afficher les offres')).not.toBeInTheDocument()
   })
 
@@ -305,7 +299,7 @@ describe('CollectiveOffersScreen', () => {
       user: currentUser,
     })
 
-    const checkbox = screen.getByLabelText(offersRecap[0].name)
+    const checkbox = screen.getByLabelText(`Sélectionner l'offre "${offersRecap[0].name}"`)
     await userEvent.click(checkbox)
 
     const actionBar = await screen.findByTestId('actions-bar')
@@ -324,7 +318,7 @@ describe('CollectiveOffersScreen', () => {
           hasBookingLimitDatetimesPassed: true,
           stocks: [
             {
-              beginningDatetime: String(new Date()),
+              startDatetime: String(new Date()),
               hasBookingLimitDatetimePassed: true,
               remainingQuantity: 1,
             },
@@ -366,10 +360,10 @@ describe('CollectiveOffersScreen', () => {
         offers: offers,
       })
 
-      const firstOfferCheckbox = screen.getByLabelText(offers[0].name)
-      const secondOfferCheckbox = screen.getByLabelText(offers[1].name)
-      const thirdOfferCheckbox = screen.getByLabelText(offers[2].name)
-      const fourthOfferCheckbox = screen.getByLabelText(offers[3].name)
+      const firstOfferCheckbox = screen.getByLabelText(`Sélectionner l'offre "${offers[0].name}"`)
+      const secondOfferCheckbox = screen.getByLabelText(`Sélectionner l'offre "${offers[1].name}"`)
+      const thirdOfferCheckbox = screen.getByLabelText(`Sélectionner l'offre "${offers[2].name}"`)
+      const fourthOfferCheckbox = screen.getByLabelText(`Sélectionner l'offre "${offers[3].name}"`)
 
       await userEvent.click(screen.getByLabelText('Tout sélectionner'))
 
@@ -419,27 +413,18 @@ describe('CollectiveOffersScreen', () => {
     )
   })
 
-  it('should display a new column "Date de l’évènement" if FF is enabled', async () => {
-    const featureOverrides = {
-      features: ['ENABLE_COLLECTIVE_OFFERS_EXPIRATION'],
-    }
-
+  it('should display a new column "Date de l’évènement"', async () => {
     renderOffers(
       {
         ...props,
         offers: [collectiveOfferFactory()],
-      },
-      featureOverrides
+      }
     )
 
     expect(await screen.findByText('Date de l’évènement'))
   })
 
   it('should filter new column "Date de l’évènement"', async () => {
-    const featureOverrides = {
-      features: ['ENABLE_COLLECTIVE_OFFERS_EXPIRATION'],
-    }
-
     renderOffers(
       {
         ...props,
@@ -457,8 +442,7 @@ describe('CollectiveOffersScreen', () => {
             },
           }),
         ],
-      },
-      featureOverrides
+      }
     )
 
     const firstOfferEventDate =

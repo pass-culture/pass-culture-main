@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
@@ -35,22 +35,21 @@ const sortBookings = (
   currentSortingColumn: CollectiveBookingsSortingColumn | null,
   sortingMode: SortingMode
 ) => {
-  switch (currentSortingColumn) {
-    case CollectiveBookingsSortingColumn.OFFER_NAME:
-      return bookings.sort(
-        (a, b) =>
-          sortByOfferName(a, b) * (sortingMode === SortingMode.ASC ? 1 : -1)
-      )
-
-    case CollectiveBookingsSortingColumn.INSTITUTION_NAME:
-      return bookings.sort(
-        (a, b) =>
-          sortByInstitutionName(a, b) *
-          (sortingMode === SortingMode.ASC ? 1 : -1)
-      )
-    default:
-      return bookings.sort((a, b) => sortByBookingDate(a, b) * -1)
+  if (currentSortingColumn === CollectiveBookingsSortingColumn.OFFER_NAME) {
+    return bookings.sort(
+      (a, b) =>
+        sortByOfferName(a, b) * (sortingMode === SortingMode.ASC ? 1 : -1)
+    )
+  } else if (
+    currentSortingColumn === CollectiveBookingsSortingColumn.INSTITUTION_NAME
+  ) {
+    return bookings.sort(
+      (a, b) =>
+        sortByInstitutionName(a, b) * (sortingMode === SortingMode.ASC ? 1 : -1)
+    )
   }
+
+  return bookings.sort((a, b) => sortByBookingDate(a, b) * -1)
 }
 
 interface CollectiveBookingsTableProps {
@@ -88,7 +87,9 @@ export const CollectiveBookingsTable = ({
   return (
     <div className={styles['table-wrapper']}>
       <table className={styles['table']}>
-        <caption className="visually-hidden">Liste des réservations</caption>
+        <caption className={styles['visually-hidden']}>
+          Liste des réservations
+        </caption>
 
         <thead className={styles['table-header']}>
           <tr className={styles['table-header-row']}>
@@ -177,7 +178,7 @@ export const CollectiveBookingsTable = ({
             </th>
 
             <th scope="col">
-              <span className="visually-hidden">Détails</span>
+              <span className={styles['visually-hidden']}>Détails</span>
             </th>
           </tr>
         </thead>

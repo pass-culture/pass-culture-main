@@ -10,6 +10,7 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational import testing as educational_testing
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import conf as finance_conf
 from pcapi.core.finance import factories as finance_factories
@@ -74,6 +75,7 @@ def collective_offers_fixture() -> tuple:
             subcategories.EacFormat.PROJECTION_AUDIOVISUELLE,
         ],
         collectiveOffer__validation=offers_models.OfferValidationStatus.REJECTED,
+        collectiveOffer__rejectionReason=educational_models.CollectiveOfferRejectionReason.WRONG_DATE,
         collectiveOffer__venue__postalCode="74000",
         collectiveOffer__venue__departementCode="74",
         price=20,
@@ -557,7 +559,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offers[2].id}
-        assert rows[0]["État"] == "Rejetée"
+        assert rows[0]["État"] == "Rejetée Date erronée"
 
     def test_list_collective_offers_by_four_filters(self, authenticated_client, collective_offers):
         venue_id = collective_offers[2].venueId
@@ -747,6 +749,25 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["Entité juridique"] == "Offerer"
         assert rows[0]["Lieu"] == "Venue Revue manuelle"
 
+    def test_list_collective_offers_with_top_acteur_offerer(self, client, pro_fraud_admin):
+        collective_offer = educational_factories.CollectiveOfferFactory(
+            venue__managingOfferer__name="Offerer",
+            venue__managingOfferer__tags=[
+                offerers_factories.OffererTagFactory(name="top-acteur", label="Top Acteur"),
+                offerers_factories.OffererTagFactory(name="test", label="Test"),
+            ],
+        )
+
+        client = client.with_bo_session_auth(pro_fraud_admin)
+        query_args = self._get_query_args_by_id(collective_offer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Entité juridique"] == "Offerer Top Acteur"
+
 
 class ValidateCollectiveOfferTest(PostEndpointHelper):
     endpoint = "backoffice_web.collective_offer.validate_collective_offer"
@@ -772,6 +793,64 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
         response = authenticated_client.get(collective_offer_list_url)
         assert response.status_code == 200
 
+        assert collective_offer_to_validate.isActive is True
+        assert collective_offer_to_validate.validation == OfferValidationStatus.APPROVED
+        assert collective_offer_to_validate.lastValidationType == OfferValidationType.MANUAL
+
+    def test_validate_collective_offer_with_institution(self, legit_user, authenticated_client):
+        collective_offer_to_validate = educational_factories.PendingCollectiveOfferFactory()
+
+        response = self.post_to_endpoint(authenticated_client, collective_offer_id=collective_offer_to_validate.id)
+        assert response.status_code == 303
+        assert educational_testing.adage_requests[0].keys() == {"url", "sent_data"}
+
+        expected_url = url_for("backoffice_web.collective_offer.list_collective_offers", _external=True)
+        assert response.location == expected_url
+
+        collective_offer_list_url = url_for(
+            "backoffice_web.collective_offer.list_collective_offers",
+            q=collective_offer_to_validate.id,
+            _external=True,
+        )
+        response = authenticated_client.get(collective_offer_list_url)
+        assert response.status_code == 200
+
+        assert collective_offer_to_validate.isActive is True
+        assert collective_offer_to_validate.validation == OfferValidationStatus.APPROVED
+        assert collective_offer_to_validate.lastValidationType == OfferValidationType.MANUAL
+
+    @pytest.mark.settings(
+        ADAGE_API_URL="https://adage_base_url",
+        ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
+    )
+    def test_validate_collective_offer_with_institution_invalid_email(
+        self, legit_user, authenticated_client, requests_mock
+    ):
+        collective_offer_to_validate = educational_factories.PendingCollectiveOfferFactory()
+
+        adage_json = {
+            "type": "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html",
+            "title": "Error",
+            "status": 450,
+            "detail": "EMAIL_ADRESS_INCORRECT",
+        }
+        endpoint = requests_mock.post("https://adage_base_url/v1/offre-assoc", status_code=450, json=adage_json)
+
+        response = self.post_to_endpoint(authenticated_client, collective_offer_id=collective_offer_to_validate.id)
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice_web.collective_offer.list_collective_offers", _external=True)
+        assert response.location == expected_url
+
+        collective_offer_list_url = url_for(
+            "backoffice_web.collective_offer.list_collective_offers",
+            q=collective_offer_to_validate.id,
+            _external=True,
+        )
+        response = authenticated_client.get(collective_offer_list_url)
+        assert response.status_code == 200
+
+        assert endpoint.called
         assert collective_offer_to_validate.isActive is True
         assert collective_offer_to_validate.validation == OfferValidationStatus.APPROVED
         assert collective_offer_to_validate.lastValidationType == OfferValidationType.MANUAL
@@ -827,7 +906,11 @@ class RejectCollectiveOfferTest(PostEndpointHelper):
             validation=OfferValidationStatus.PENDING
         )
 
-        response = self.post_to_endpoint(authenticated_client, collective_offer_id=collective_offer_to_reject.id)
+        response = self.post_to_endpoint(
+            authenticated_client,
+            collective_offer_id=collective_offer_to_reject.id,
+            form={"reason": educational_models.CollectiveOfferRejectionReason.WRONG_PRICE.value},
+        )
         assert response.status_code == 303
 
         expected_url = url_for("backoffice_web.collective_offer.list_collective_offers", _external=True)
@@ -843,13 +926,20 @@ class RejectCollectiveOfferTest(PostEndpointHelper):
         assert collective_offer_to_reject.isActive is False
         assert collective_offer_to_reject.validation == OfferValidationStatus.REJECTED
         assert collective_offer_to_reject.lastValidationType == OfferValidationType.MANUAL
+        assert (
+            collective_offer_to_reject.rejectionReason == educational_models.CollectiveOfferRejectionReason.WRONG_PRICE
+        )
 
     def test_cant_reject_non_pending_offer(self, legit_user, authenticated_client):
         collective_offer_to_reject = educational_factories.CollectiveOfferFactory(
             validation=OfferValidationStatus.APPROVED
         )
 
-        response = self.post_to_endpoint(authenticated_client, collective_offer_id=collective_offer_to_reject.id)
+        response = self.post_to_endpoint(
+            authenticated_client,
+            collective_offer_id=collective_offer_to_reject.id,
+            form={"reason": educational_models.CollectiveOfferRejectionReason.WRONG_PRICE.value},
+        )
         assert response.status_code == 303
 
         expected_url = url_for("backoffice_web.collective_offer.list_collective_offers", _external=True)
@@ -972,7 +1062,13 @@ class BatchCollectiveOffersRejectTest(PostEndpointHelper):
         )
         parameter_ids = ",".join(str(collective_offer.id) for collective_offer in collective_offers)
 
-        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "object_ids": parameter_ids,
+                "reason": educational_models.CollectiveOfferRejectionReason.WRONG_PRICE.value,
+            },
+        )
 
         assert response.status_code == 303
 
@@ -988,6 +1084,7 @@ class BatchCollectiveOffersRejectTest(PostEndpointHelper):
             assert collective_offer.lastValidationType is OfferValidationType.MANUAL
             assert collective_offer.validation is OfferValidationStatus.REJECTED
             assert collective_offer.lastValidationAuthor == legit_user
+            assert collective_offer.rejectionReason == educational_models.CollectiveOfferRejectionReason.WRONG_PRICE
 
         assert len(mails_testing.outbox) == 3
 
@@ -1156,6 +1253,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
             collectiveStock__collectiveOffer__lastValidationDate=validation_date,
             collectiveStock__collectiveOffer__validation=offers_models.OfferValidationStatus.REJECTED,
             collectiveStock__collectiveOffer__lastValidationAuthor=legit_user,
+            collectiveStock__collectiveOffer__rejectionReason=educational_models.CollectiveOfferRejectionReason.MISSING_DESCRIPTION,
         )
         url = url_for(self.endpoint, collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id)
         with assert_num_queries(self.expected_num_queries):
@@ -1165,6 +1263,48 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         content_as_text = html_parser.content_as_text(response.data)
         assert f"Utilisateur de la dernière validation : {legit_user.full_name}" in content_as_text
         assert f"Date de dernière validation : {format_date(validation_date, '%d/%m/%Y à %Hh%M')}" in content_as_text
+        assert "Raison de rejet : Description manquante" in content_as_text
+
+    def test_collective_offer_with_offerer_confidence_rule(self, authenticated_client):
+        rule = offerers_factories.ManualReviewOffererConfidenceRuleFactory(offerer__name="Offerer")
+        collective_offer = educational_factories.CollectiveOfferFactory(venue__managingOfferer=rule.offerer)
+
+        url = url_for(self.endpoint, collective_offer_id=collective_offer.id)
+        with assert_num_queries(self.expected_num_queries - 1):  # no _is_collective_offer_price_editable
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        text = html_parser.extract_cards_text(response.data)[0]
+        assert "Entité juridique : Offerer Revue manuelle" in text
+
+    def test_collective_offer_with_venue_confidence_rule(self, authenticated_client):
+        rule = offerers_factories.ManualReviewVenueConfidenceRuleFactory(venue__name="Venue")
+        collective_offer = educational_factories.CollectiveOfferFactory(venue=rule.venue)
+
+        url = url_for(self.endpoint, collective_offer_id=collective_offer.id)
+        with assert_num_queries(self.expected_num_queries - 1):  # no _is_collective_offer_price_editable
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        text = html_parser.extract_cards_text(response.data)[0]
+        assert "Lieu : Venue Revue manuelle" in text
+
+    def test_collective_offer_with_top_acteur_offerer(self, authenticated_client):
+        collective_offer = educational_factories.CollectiveOfferFactory(
+            venue__managingOfferer__name="Offerer",
+            venue__managingOfferer__tags=[
+                offerers_factories.OffererTagFactory(name="top-acteur", label="Top Acteur"),
+                offerers_factories.OffererTagFactory(name="test", label="Test"),
+            ],
+        )
+
+        url = url_for(self.endpoint, collective_offer_id=collective_offer.id)
+        with assert_num_queries(self.expected_num_queries - 1):  # no _is_collective_offer_price_editable
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        text = html_parser.extract_cards_text(response.data)[0]
+        assert "Entité juridique : Offerer Top Acteur" in text
 
 
 class ValidateCollectiveOfferFromDetailsButtonTest(button_helpers.ButtonHelper):

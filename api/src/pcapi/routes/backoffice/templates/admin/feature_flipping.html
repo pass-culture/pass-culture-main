@@ -43,7 +43,18 @@
                 {% set feature_flag_checked = feature_flag.isActive %}
                 {% if has_permission("FEATURE_FLIPPING") %}
                   <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch" data-bs-toggle="modal" data-bs-target=".pc-toggle-feature-flag-modal-{{ feature_flag.id }}" name="is_feature_flag_active" id="feature-flag-switch-{{ feature_flag.id }}" aria-label="{{ feature_flag_checked | format_bool }}" {{ "checked" if feature_flag_checked else "" }} data-description="{{ feature_flag.description }}" data-name="{{ feature_flag.name }}" data-confirm-modal=".pc-toggle-feature-flag-modal-{{ feature_flag.id }}" />
+                    <input class="form-check-input"
+                           type="checkbox"
+                           role="switch"
+                           data-bs-toggle="modal"
+                           data-bs-target=".pc-toggle-feature-flag-modal-{{ feature_flag.id }}"
+                           name="is_feature_flag_active"
+                           id="feature-flag-switch-{{ feature_flag.id }}"
+                           aria-label="{{ feature_flag_checked | format_bool }}"
+                           {{ "checked" if feature_flag_checked else "" }}
+                           data-description="{{ feature_flag.description }}"
+                           data-name="{{ feature_flag.name }}"
+                           data-confirm-modal=".pc-toggle-feature-flag-modal-{{ feature_flag.id }}" />
                   </div>
                   <div class="modal modal-lg fade pc-toggle-feature-flag-modal-{{ feature_flag.id }}"
                        tabindex="-1"
@@ -79,7 +90,11 @@
                   </div>
                 {% else %}
                   <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch" {{ "checked" if feature_flag_checked else "" }} disabled />
+                    <input class="form-check-input"
+                           type="checkbox"
+                           role="switch"
+                           {{ "checked" if feature_flag_checked else "" }}
+                           disabled />
                   </div>
                 {% endif %}
               </td>

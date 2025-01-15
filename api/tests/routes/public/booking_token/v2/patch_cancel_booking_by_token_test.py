@@ -11,14 +11,13 @@ import pcapi.core.external_bookings.factories as external_bookings_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 import pcapi.notifications.push.testing as push_testing
 
 
 class Returns204Test:
     @pytest.mark.usefixtures("db_session")
-    @override_features(WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION=False)
+    @pytest.mark.features(WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION=False)
     def test_should_returns_204_with_cancellation_allowed(self, client):
         # Given
         stock = offers_factories.EventStockFactory(offer__name="Chouette concert")
@@ -49,7 +48,7 @@ class Returns204Test:
         }
 
     @pytest.mark.usefixtures("db_session")
-    @override_features(WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION=True)
+    @pytest.mark.features(WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION=True)
     def test_should_returns_204_with_cancellation_allowed_with_FF(self, client):
         # Given
         stock = offers_factories.EventStockFactory(offer__name="Chouette concert")

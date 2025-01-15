@@ -1,5 +1,4 @@
 import cn from 'classnames'
-import React from 'react'
 
 import { GetVenueResponseModel, VenueProviderResponse } from 'apiClient/v1'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'

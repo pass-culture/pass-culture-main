@@ -16,9 +16,7 @@ import {
   isOfferProductBased,
   isOfferSynchronized,
 } from 'commons/core/Offers/utils/typology'
-import { PATCH_SUCCESS_MESSAGE } from 'commons/core/shared/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import {
   isRecordStore,
@@ -63,8 +61,9 @@ export const IndividualOfferDetailsScreen = ({
   venues,
 }: IndividualOfferDetailsScreenProps): JSX.Element => {
   const navigate = useNavigate()
+  const { pathname } = useLocation()
+  const isOnboarding = pathname.indexOf('onboarding') !== -1
   const { logEvent } = useAnalytics()
-  const notify = useNotification()
   const { mutate } = useSWRConfig()
   const { search } = useLocation()
   const mode = useOfferWizardMode()
@@ -146,6 +145,7 @@ export const IndividualOfferDetailsScreen = ({
           step: OFFER_WIZARD_STEP_IDS.DETAILS,
           offerId: receivedOfferId,
           mode,
+          isOnboarding: pathname.indexOf('onboarding') !== -1,
         }),
         { replace: true }
       )
@@ -170,6 +170,7 @@ export const IndividualOfferDetailsScreen = ({
             mode === OFFER_WIZARD_MODE.EDITION
               ? OFFER_WIZARD_MODE.READ_ONLY
               : mode,
+          isOnboarding,
         })
       )
     } catch (error) {
@@ -191,13 +192,14 @@ export const IndividualOfferDetailsScreen = ({
   })
   const handlePreviousStepOrBackToReadOnly = () => {
     if (mode === OFFER_WIZARD_MODE.CREATION) {
-      navigate('/offre/creation')
+      navigate(`${isOnboarding ? '/onboarding' : ''}/offre/creation`)
     } else {
       navigate(
         getIndividualOfferUrl({
           offerId: offer?.id,
           step: OFFER_WIZARD_STEP_IDS.DETAILS,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
+          isOnboarding,
         })
       )
     }

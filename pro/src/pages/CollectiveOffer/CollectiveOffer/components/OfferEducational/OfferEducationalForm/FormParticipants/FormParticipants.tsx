@@ -1,5 +1,4 @@
 import { useFormikContext } from 'formik'
-import React from 'react'
 
 import { StudentLevels } from 'apiClient/adage'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
@@ -42,7 +41,7 @@ export const FormParticipants = ({
       )
 
   return (
-    <FormLayout.Section title="Participants">
+    <FormLayout.Section title="À quels niveaux scolaires s’adressent votre offre ?">
       <FormLayout.Row
         sideComponent={
           <InfoBox>

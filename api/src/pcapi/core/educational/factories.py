@@ -9,6 +9,7 @@ from pcapi.core.categories.subcategories_v2 import COLLECTIVE_SUBCATEGORIES
 from pcapi.core.educational import models
 from pcapi.core.educational import utils
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
+from pcapi.core.educational.models import CollectiveOfferRejectionReason
 from pcapi.core.factories import BaseFactory
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -188,6 +189,7 @@ class CollectiveStockFactory(BaseFactory):
     dateModified = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1))
     numberOfTickets = 25
     price = 100
+    priceDetail = factory.LazyAttribute(lambda stock: f"Prix: {stock.price}€ pour {stock.numberOfTickets} tickets")
 
 
 class EducationalYearFactory(BaseFactory):
@@ -388,14 +390,31 @@ class ArchivedCollectiveOfferFactory(CollectiveOfferBaseFactory):
 
 class RejectedCollectiveOfferFactory(CollectiveOfferBaseFactory):
     validation = OfferValidationStatus.REJECTED
+    isActive = False
+
+    @factory.post_generation
+    def create_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
+        # a rejected offer has a stock because it completed the creation process
+        CollectiveStockFactory(
+            beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=10), collectiveOffer=self
+        )
 
 
 class PendingCollectiveOfferFactory(CollectiveOfferBaseFactory):
     validation = OfferValidationStatus.PENDING
+    isActive = False
+
+    @factory.post_generation
+    def create_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
+        # a pending offer has a stock because it completed the creation process
+        CollectiveStockFactory(
+            beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=10), collectiveOffer=self
+        )
 
 
 class DraftCollectiveOfferFactory(CollectiveOfferBaseFactory):
     validation = OfferValidationStatus.DRAFT
+    isActive = False
 
 
 class ActiveCollectiveOfferFactory(CollectiveOfferBaseFactory):
@@ -478,10 +497,18 @@ class BookedCollectiveOfferFactory(CollectiveOfferBaseFactory):
 
 class EndedCollectiveOfferFactory(CollectiveOfferBaseFactory):
     @factory.post_generation
-    def create_ended_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
-        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+    def booking_is_confirmed(self, _create: bool, booking_is_confirmed: bool = False, **kwargs: typing.Any) -> None:
+        if booking_is_confirmed:
+            yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        else:
+            yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=3)
+
         stock = CollectiveStockFactory(beginningDatetime=yesterday, collectiveOffer=self)
-        UsedCollectiveBookingFactory(collectiveStock=stock)
+
+        if booking_is_confirmed:
+            ConfirmedCollectiveBookingFactory(collectiveStock=stock)
+        else:
+            UsedCollectiveBookingFactory(collectiveStock=stock)
 
 
 # Reimbursed offers are relevant only when the FF ENABLE_COLLECTIVE_NEW_STATUSES is active
@@ -537,6 +564,7 @@ def create_collective_offer_template_by_status(
 
         case CollectiveOfferDisplayedStatus.REJECTED.value:
             kwargs["validation"] = OfferValidationStatus.REJECTED
+            kwargs["rejectionReason"] = CollectiveOfferRejectionReason.MISSING_PRICE
             return CollectiveOfferTemplateFactory(**kwargs)
 
         case CollectiveOfferDisplayedStatus.PENDING.value:

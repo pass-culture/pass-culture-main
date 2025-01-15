@@ -1,5 +1,4 @@
 import { useFormikContext } from 'formik'
-import React from 'react'
 
 import { humanizeSiret, unhumanizeSiret } from 'commons/core/Venue/utils'
 import { FormLayout } from 'components/FormLayout/FormLayout'

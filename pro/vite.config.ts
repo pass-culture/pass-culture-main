@@ -38,15 +38,25 @@ export default defineConfig(({ mode }) => {
     test: {
       globals: true,
       environment: 'jsdom',
-      setupFiles: './vitest.setup.ts',
+      setupFiles: ['allure-vitest/setup', './vitest.setup.ts'],
+      reporters: [
+        'verbose',
+        [
+          'allure-vitest/reporter',
+          {
+            resultsDir: '../allure-results',
+          },
+        ],
+      ],
       clearMocks: true,
       restoreMocks: true,
       cacheDir: '../.vitest_cache',
       css: { modules: { classNameStrategy: 'non-scoped' } },
       coverage: {
+        provider: 'istanbul',
         reportsDirectory: '../coverage',
         reporter: ['text', 'html', 'lcov'],
-        exclude: ['**/*.stories.tsx', ...coverageConfigDefaults.exclude],
+        exclude: ['**/*.stories.tsx', 'apiClient/adage/*','apiClient/adresse/*','apiClient/v1/*','apiClient/v2/*',...coverageConfigDefaults.exclude],
       },
       minThreads: 4,
       maxThreads: 6,

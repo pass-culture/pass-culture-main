@@ -11,7 +11,7 @@ import {
   GET_VENUE_TYPES_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
 import { hasStatusCode } from 'commons/core/OfferEducational/utils/hasStatusCode'
-import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { sortByLabel } from 'commons/utils/strings'
 import { Newsletter } from 'components/Newsletter/Newsletter'
 import { AddBankAccountCallout } from 'pages/Homepage/components/AddBankAccountCallout/AddBankAccountCallout'
@@ -63,8 +63,7 @@ export const Homepage = (): JSX.Element => {
     })) ?? []
   )
 
-  const selectedOffererId =
-    useSelector(selectCurrentOffererId)?.toString() ?? ''
+  const selectedOffererId = useSelector(selectCurrentOffererId)
 
   // TODO: this may need to be in the store, as it is loaded in the header dropdown
   const selectedOffererQuery = useSWR(

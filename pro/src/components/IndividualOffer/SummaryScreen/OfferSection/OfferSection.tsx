@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import { useLocation } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -38,6 +39,8 @@ export const OfferSection = ({
   offer,
   isEventPublicationFormShown,
 }: OfferSummaryProps): JSX.Element => {
+  const { pathname } = useLocation()
+  const isOnboarding = pathname.indexOf('onboarding') !== -1
   const mode = useOfferWizardMode()
   const { categories, subCategories } = useIndividualOfferContext()
   const musicTypesQuery = useSWR(
@@ -195,6 +198,7 @@ export const OfferSection = ({
           mode === OFFER_WIZARD_MODE.READ_ONLY
             ? OFFER_WIZARD_MODE.EDITION
             : mode,
+        isOnboarding,
       })}
       aria-label="Modifier les détails de l’offre"
       className={cn({
@@ -221,16 +225,18 @@ export const OfferSection = ({
             mode === OFFER_WIZARD_MODE.READ_ONLY
               ? OFFER_WIZARD_MODE.EDITION
               : mode,
+          isOnboarding,
         })}
         aria-label="Modifier les informations pratiques de l’offre"
       >
         {!offerData.isVenueVirtual && isOfferAddressEnabled && (
           <SummarySubSection title="Localisation de l’offre">
             <SummaryDescriptionList
+              listDataTestId="localisation-offer-details"
               descriptions={[
                 {
                   title: 'Intitulé',
-                  text: offerData.address?.label,
+                  text: offerData.address?.label ?? '-',
                 },
                 {
                   title: 'Adresse',

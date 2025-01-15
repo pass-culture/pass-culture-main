@@ -1,11 +1,14 @@
+from functools import partial
 import logging
 
 from pcapi.core import mails
 from pcapi.core.bookings.models import Booking
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.utils.mailing import format_booking_date_for_email
-from pcapi.utils.mailing import format_booking_hours_for_email
+from pcapi.repository import on_commit
+from pcapi.utils.date import get_date_formatted_for_email
+from pcapi.utils.date import get_time_formatted_for_email
+from pcapi.utils.mailing import get_event_datetime
 
 
 logger = logging.getLogger(__name__)
@@ -35,8 +38,16 @@ def get_booking_cancellation_by_beneficiary_to_pro_email_data(
         template=TransactionalEmail.BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO.value,
         params={
             "DEPARTMENT_CODE": booking.stock.offer.venue.departementCode or "numérique",
-            "EVENT_DATE": format_booking_date_for_email(booking),
-            "EVENT_HOUR": format_booking_hours_for_email(booking),
+            "EVENT_DATE": (
+                get_date_formatted_for_email(get_event_datetime(booking.stock))
+                if booking.stock.beginningDatetime
+                else ""
+            ),
+            "EVENT_HOUR": (
+                get_time_formatted_for_email(get_event_datetime(booking.stock))
+                if booking.stock.beginningDatetime
+                else ""
+            ),
             "EXTERNAL_BOOKING_INFORMATION": external_booking_information,
             "IS_EVENT": booking.stock.offer.isEvent,
             "IS_EXTERNAL": booking.isExternal,
@@ -46,7 +57,7 @@ def get_booking_cancellation_by_beneficiary_to_pro_email_data(
             "QUANTITY": booking.quantity,
             "USER_EMAIL": booking.email,
             "USER_NAME": f"{booking.firstName} {booking.lastName}",
-            "VENUE_NAME": booking.stock.offer.venue.name,
+            "VENUE_NAME": booking.stock.offer.venue.common_name,
             "OFFER_ADDRESS": booking.stock.offer.fullAddress,
         },
         reply_to=models.EmailInfo(
@@ -63,4 +74,10 @@ def send_booking_cancellation_by_beneficiary_to_pro_email(
     if not offer_booking_email:
         return
     data = get_booking_cancellation_by_beneficiary_to_pro_email_data(booking, one_side_cancellation)
-    mails.send(recipients=[offer_booking_email], data=data)
+    on_commit(
+        partial(
+            mails.send,
+            recipients=[offer_booking_email],
+            data=data,
+        )
+    )

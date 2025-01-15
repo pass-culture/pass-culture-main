@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi import settings as pcapi_settings
 from pcapi.connectors.dms import api as dms_api
 from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.connectors.dms import models as dms_models
@@ -60,7 +61,7 @@ class SyncUserAccountUpdateRequestsTest:
         users_ds.sync_user_account_update_requests(104118, None)
 
         mocked_get_applications.assert_called_once_with(
-            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118, "archived": False}
+            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
         )
 
         uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
@@ -96,7 +97,7 @@ class SyncUserAccountUpdateRequestsTest:
         users_ds.sync_user_account_update_requests(104118, None)
 
         mocked_get_applications.assert_called_once_with(
-            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118, "archived": False}
+            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
         )
 
         uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
@@ -132,7 +133,7 @@ class SyncUserAccountUpdateRequestsTest:
         users_ds.sync_user_account_update_requests(104118, None)
 
         mocked_get_applications.assert_called_once_with(
-            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118, "archived": False}
+            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
         )
 
         assert users_models.UserAccountUpdateRequest.query.count() == 2
@@ -191,7 +192,7 @@ class SyncUserAccountUpdateRequestsTest:
         users_ds.sync_user_account_update_requests(104118, None)
 
         mocked_get_applications.assert_called_once_with(
-            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118, "archived": False}
+            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
         )
 
         uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
@@ -227,7 +228,7 @@ class SyncUserAccountUpdateRequestsTest:
         users_ds.sync_user_account_update_requests(104118, None)
 
         mocked_get_applications.assert_called_once_with(
-            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118, "archived": False}
+            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
         )
 
         uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
@@ -263,7 +264,7 @@ class SyncUserAccountUpdateRequestsTest:
         users_ds.sync_user_account_update_requests(104118, None)
 
         mocked_get_applications.assert_called_once_with(
-            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118, "archived": False}
+            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
         )
 
         uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
@@ -302,7 +303,7 @@ class SyncUserAccountUpdateRequestsTest:
         users_ds.sync_user_account_update_requests(104118, None)
 
         mocked_get_applications.assert_called_once_with(
-            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118, "archived": False}
+            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
         )
 
         uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
@@ -339,7 +340,7 @@ class SyncUserAccountUpdateRequestsTest:
         users_ds.sync_user_account_update_requests(104118, None)
 
         mocked_get_applications.assert_called_once_with(
-            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118, "archived": False}
+            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
         )
 
         uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
@@ -362,7 +363,7 @@ class SyncUserAccountUpdateRequestsTest:
         users_ds.sync_user_account_update_requests(104118, None)
 
         mocked_get_applications.assert_called_once_with(
-            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118, "archived": False}
+            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
         )
 
         uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
@@ -376,13 +377,34 @@ class SyncUserAccountUpdateRequestsTest:
     def test_delete_archived(self, mocked_get_applications):
         users_factories.EmailUpdateRequestFactory(dsApplicationId=21168276)
 
-        users_ds.sync_user_account_update_requests(104118, None, archived=True)
+        users_ds.sync_user_account_update_requests(104118, None)
 
         mocked_get_applications.assert_called_once_with(
-            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118, "archived": True}
+            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
         )
 
         assert users_models.UserAccountUpdateRequest.query.count() == 0
+
+
+class SyncDeletedUserAccountUpdateRequestsTest:
+    @patch(
+        "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+        return_value=ds_fixtures.DS_RESPONSE_DELETED_APPLICATIONS,
+    )
+    def test_delete_update_requests(self, mocked_get_applications):
+        users_factories.EmailUpdateRequestFactory(dsApplicationId=10000001)
+        users_factories.EmailUpdateRequestFactory(dsApplicationId=10000002)
+        users_factories.EmailUpdateRequestFactory(dsApplicationId=10000003)
+
+        users_ds.sync_deleted_user_account_update_requests(104118)
+
+        mocked_get_applications.assert_called_once_with(
+            dms_api.GET_DELETED_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
+        )
+
+        remaining_requests = users_models.UserAccountUpdateRequest.query.all()
+        assert len(remaining_requests) == 1
+        assert remaining_requests[0].dsApplicationId == 10000002
 
 
 class UpdateStateTest:
@@ -443,3 +465,205 @@ class UpdateStateTest:
 
         assert error.value.message == "Le dossier est déjà en instruction"
         assert uaur.lastInstructor != instructor
+
+    @patch(
+        "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+        return_value=ds_fixtures.DS_RESPONSE_UPDATE_STATE_ON_GOING_TO_ACCEPTED,
+    )
+    def test_from_on_going_to_accepted(self, mocked_update_state, instructor):
+        uaur = users_factories.EmailUpdateRequestFactory(
+            dsApplicationId=21268381,
+            dsTechnicalId="RG9zc2llci0yMTI2ODM4MQ==",
+            status=dms_models.GraphQLApplicationStates.on_going,
+        )
+
+        users_ds.update_state(
+            uaur, new_state=dms_models.GraphQLApplicationStates.accepted, instructor=instructor, motivation="Test"
+        )
+
+        mocked_update_state.assert_called_once_with(
+            dms_api.MAKE_ACCEPTED_MUTATION_NAME,
+            variables={
+                "input": {
+                    "dossierId": uaur.dsTechnicalId,
+                    "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                    "motivation": "Test",
+                    "disableNotification": False,
+                }
+            },
+        )
+
+        db.session.refresh(uaur)
+        assert uaur.status == dms_models.GraphQLApplicationStates.accepted
+        assert uaur.dateCreated == datetime(2024, 12, 2, 14, 37, 29)
+        assert uaur.dateLastStatusUpdate == datetime(2024, 12, 5, 11, 17, 10)
+        assert uaur.lastInstructor == instructor
+
+    @patch(
+        "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+        return_value=ds_fixtures.DS_RESPONSE_UPDATE_STATE_DRAFT_TO_ACCEPTED,
+    )
+    def test_from_draft_to_accepted(self, mocked_update_state, instructor):
+        uaur = users_factories.EmailUpdateRequestFactory(
+            dsApplicationId=21273773,
+            dsTechnicalId="RG9zc2llci0yMTI3Mzc3Mw==",
+            status=dms_models.GraphQLApplicationStates.draft,
+        )
+
+        with pytest.raises(dms_exceptions.DmsGraphQLApiError) as error:
+            users_ds.update_state(uaur, new_state=dms_models.GraphQLApplicationStates.accepted, instructor=instructor)
+
+        mocked_update_state.assert_called_once_with(
+            dms_api.MAKE_ACCEPTED_MUTATION_NAME,
+            variables={
+                "input": {
+                    "dossierId": uaur.dsTechnicalId,
+                    "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                    "disableNotification": False,
+                }
+            },
+        )
+
+        assert error.value.message == "Le dossier est déjà en construction"
+        assert uaur.lastInstructor != instructor
+
+
+class ArchiveTest:
+    @patch(
+        "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+        return_value=ds_fixtures.DS_RESPONSE_ARCHIVE,
+    )
+    def test_archive_accepted(self, mocked_execute_query, instructor):
+        uaur = users_factories.EmailUpdateRequestFactory(
+            dsApplicationId=21835749,
+            dsTechnicalId="RG9zc2llci0yMTgzNTc0OQ==",
+            status=dms_models.GraphQLApplicationStates.accepted,
+        )
+        other_uaur = users_factories.EmailUpdateRequestFactory()
+
+        users_ds.archive(uaur, motivation="Test")
+
+        mocked_execute_query.assert_called_once_with(
+            dms_api.ARCHIVE_APPLICATION_QUERY_NAME,
+            variables={
+                "input": {
+                    "dossierId": uaur.dsTechnicalId,
+                    "instructeurId": pcapi_settings.DMS_INSTRUCTOR_ID,
+                }
+            },
+        )
+
+        assert users_models.UserAccountUpdateRequest.query.one() == other_uaur
+
+    @patch(
+        "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+        side_effect=[
+            ds_fixtures.DS_RESPONSE_MARK_WITHOUT_CONTINUATION,
+            ds_fixtures.DS_RESPONSE_ARCHIVE,
+        ],
+    )
+    def test_archive_on_going(self, mocked_execute_query, instructor):
+        uaur = users_factories.EmailUpdateRequestFactory(
+            dsApplicationId=21835749,
+            dsTechnicalId="RG9zc2llci0yMTgzNTc0OQ==",
+            status=dms_models.GraphQLApplicationStates.on_going,
+        )
+
+        users_ds.archive(uaur, motivation="Test")
+
+        mocked_execute_query.assert_called()
+        assert mocked_execute_query.call_count == 2
+        assert mocked_execute_query.call_args_list[0].args == (dms_api.MARK_WITHOUT_CONTINUATION_MUTATION_NAME,)
+        assert mocked_execute_query.call_args_list[0].kwargs == {
+            "variables": {
+                "input": {
+                    "dossierId": uaur.dsTechnicalId,
+                    "instructeurId": pcapi_settings.DMS_INSTRUCTOR_ID,
+                    "motivation": "Test",
+                    "disableNotification": True,
+                }
+            }
+        }
+        assert mocked_execute_query.call_args_list[1].args == (dms_api.ARCHIVE_APPLICATION_QUERY_NAME,)
+        assert mocked_execute_query.call_args_list[1].kwargs == {
+            "variables": {"input": {"dossierId": uaur.dsTechnicalId, "instructeurId": pcapi_settings.DMS_INSTRUCTOR_ID}}
+        }
+
+        assert users_models.UserAccountUpdateRequest.query.count() == 0
+
+    @patch(
+        "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+        side_effect=[
+            ds_fixtures.DS_RESPONSE_UPDATE_STATE_DRAFT_TO_ON_GOING,
+            ds_fixtures.DS_RESPONSE_MARK_WITHOUT_CONTINUATION,
+            ds_fixtures.DS_RESPONSE_ARCHIVE,
+        ],
+    )
+    def test_archive_draft(self, mocked_execute_query, instructor):
+        uaur = users_factories.EmailUpdateRequestFactory(
+            dsApplicationId=21835749,
+            dsTechnicalId="RG9zc2llci0yMTgzNTc0OQ==",
+            status=dms_models.GraphQLApplicationStates.draft,
+        )
+
+        users_ds.archive(uaur, motivation="Test")
+
+        mocked_execute_query.assert_called()
+        assert mocked_execute_query.call_count == 3
+        assert mocked_execute_query.call_args_list[0].args == (dms_api.MAKE_ON_GOING_MUTATION_NAME,)
+        assert mocked_execute_query.call_args_list[0].kwargs == {
+            "variables": {
+                "input": {
+                    "dossierId": uaur.dsTechnicalId,
+                    "instructeurId": pcapi_settings.DMS_INSTRUCTOR_ID,
+                    "disableNotification": True,
+                }
+            }
+        }
+        assert mocked_execute_query.call_args_list[1].args == (dms_api.MARK_WITHOUT_CONTINUATION_MUTATION_NAME,)
+        assert mocked_execute_query.call_args_list[1].kwargs == {
+            "variables": {
+                "input": {
+                    "dossierId": uaur.dsTechnicalId,
+                    "instructeurId": pcapi_settings.DMS_INSTRUCTOR_ID,
+                    "motivation": "Test",
+                    "disableNotification": True,
+                }
+            }
+        }
+        assert mocked_execute_query.call_args_list[2].args == (dms_api.ARCHIVE_APPLICATION_QUERY_NAME,)
+        assert mocked_execute_query.call_args_list[2].kwargs == {
+            "variables": {"input": {"dossierId": uaur.dsTechnicalId, "instructeurId": pcapi_settings.DMS_INSTRUCTOR_ID}}
+        }
+
+        assert users_models.UserAccountUpdateRequest.query.count() == 0
+
+    @patch(
+        "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+        return_value=ds_fixtures.DS_RESPONSE_ARCHIVE_ERROR_NOT_INSTRUCTED,
+    )
+    def test_archive_error_not_instructed(self, mocked_execute_query, instructor):
+        uaur = users_factories.EmailUpdateRequestFactory(
+            dsApplicationId=21835749,
+            dsTechnicalId="RG9zc2llci0yMTgzNTc0OQ==",
+            status=dms_models.GraphQLApplicationStates.accepted,  # wrong status in database
+        )
+
+        with pytest.raises(dms_exceptions.DmsGraphQLApiError) as error:
+            users_ds.archive(uaur, motivation="Test")
+
+        mocked_execute_query.assert_called_once_with(
+            dms_api.ARCHIVE_APPLICATION_QUERY_NAME,
+            variables={
+                "input": {
+                    "dossierId": uaur.dsTechnicalId,
+                    "instructeurId": pcapi_settings.DMS_INSTRUCTOR_ID,
+                }
+            },
+        )
+
+        assert (
+            error.value.message
+            == "Un dossier ne peut être déplacé dans « à archiver » qu’une fois le traitement terminé"
+        )
+        assert users_models.UserAccountUpdateRequest.query.count() == 1

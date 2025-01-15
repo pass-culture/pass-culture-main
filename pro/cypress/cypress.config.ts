@@ -1,6 +1,8 @@
+import fs from 'fs'
+
+// import { allureCypress } from 'allure-cypress/reporter'
 import { defineConfig } from 'cypress'
 import cypressFailFast = require('cypress-fail-fast/plugin')
-import fs from 'fs'
 
 // ts-unused-exports:disable-next-line
 export default defineConfig({
@@ -22,6 +24,9 @@ export default defineConfig({
           }
         }
       )
+      // allureCypress(on, config, {
+      //   resultsDir: '../../allure-results',
+      // })
       // Make sure to return the config object as it might have been modified by the plugin.
       return config
     },

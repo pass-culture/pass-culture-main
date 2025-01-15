@@ -70,7 +70,7 @@ describe('CollectiveOfferPreviewCreation', () => {
     )
     expect(
       screen.getByRole('heading', {
-        name: /Créer une nouvelle offre collective/,
+        name: /Créer une offre/,
       })
     ).toBeInTheDocument()
 

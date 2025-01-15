@@ -19,6 +19,7 @@ import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 import { QuantityInput } from 'ui-kit/form/QuantityInput/QuantityInput'
 import { RadioButton } from 'ui-kit/form/RadioButton/RadioButton'
 import { Select } from 'ui-kit/form/Select/Select'
+import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
@@ -148,7 +149,7 @@ export const RecurrenceForm = ({
                 label="Une seule fois"
                 name="recurrenceType"
                 value={RecurrenceType.UNIQUE}
-                withBorder
+                variant={RadioVariant.BOX}
                 onChange={onRecurrenceTypeChange}
               />
 
@@ -156,7 +157,7 @@ export const RecurrenceForm = ({
                 label="Tous les jours"
                 name="recurrenceType"
                 value={RecurrenceType.DAILY}
-                withBorder
+                variant={RadioVariant.BOX}
                 onChange={onRecurrenceTypeChange}
               />
 
@@ -164,7 +165,7 @@ export const RecurrenceForm = ({
                 label="Toutes les semaines"
                 name="recurrenceType"
                 value={RecurrenceType.WEEKLY}
-                withBorder
+                variant={RadioVariant.BOX}
                 onChange={onRecurrenceTypeChange}
               />
 
@@ -172,7 +173,7 @@ export const RecurrenceForm = ({
                 label="Tous les mois"
                 name="recurrenceType"
                 value={RecurrenceType.MONTHLY}
-                withBorder
+                variant={RadioVariant.BOX}
                 onChange={onRecurrenceTypeChange}
               />
             </div>

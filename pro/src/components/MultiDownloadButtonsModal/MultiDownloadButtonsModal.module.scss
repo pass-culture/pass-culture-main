@@ -1,7 +1,7 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_z-index.scss" as zIndex;
-@use "styles/variables/_size.scss" as size;
+@use "styles/mixins/_size.scss" as size;
 
 .download-button-box {
   z-index: zIndex.$multidownload-dropdown;
@@ -35,7 +35,7 @@
     top: rem.torem(45px);
 
     .inside-modal-button {
-      @include fonts.body-exergue;
+      @include fonts.body-accent;
 
       font-size: rem.torem(16px);
       background: var(--color-white);

@@ -1,5 +1,4 @@
 import { format } from 'date-fns-tz'
-import React from 'react'
 
 import { GetOfferStockResponseModel } from 'apiClient/v1'
 import { FORMAT_DD_MM_YYYY, toDateStrippedOfTimezone } from 'commons/utils/date'

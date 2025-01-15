@@ -5,7 +5,6 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.connectors import api_adresse
-from pcapi.core.testing import override_settings
 
 from tests.connectors.api_adresse import fixtures
 
@@ -17,7 +16,7 @@ def test_format_q():
     assert api_adresse.format_q("105 RUE DES HAIES", "PARIS 20") == "105 Rue Des Haies Paris"
 
 
-@override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+@pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
 def test_nominal_case(requests_mock):
     address = "18 Rue Duhesme"
     postcode = "75018"
@@ -40,7 +39,7 @@ def test_nominal_case(requests_mock):
     )
 
 
-@override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+@pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
 def test_municipality_centroid_with_city_less_than_3_characters(requests_mock):
     postcode = "80190"
     city = "Y"
@@ -61,7 +60,7 @@ def test_municipality_centroid_with_city_less_than_3_characters(requests_mock):
     )
 
 
-@override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+@pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
 def test_fallback_to_municipality(requests_mock):
     address = "123456789"
     postcode = "75018"
@@ -87,7 +86,7 @@ def test_fallback_to_municipality(requests_mock):
     )
 
 
-@override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+@pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
 def test_no_match(requests_mock):
     address = "123456789"
     postcode = "75018"  # not a valid code
@@ -100,7 +99,7 @@ def test_no_match(requests_mock):
         api_adresse.get_address(address, postcode=postcode, city=city)
 
 
-@override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+@pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
 def test_should_raise_if_strict_is_set_to_true_and_score_is_below_RELIABLE_SCORE_THRESHOLD(requests_mock):
     address = "123456789"
     postcode = "75018"
@@ -113,7 +112,7 @@ def test_should_raise_if_strict_is_set_to_true_and_score_is_below_RELIABLE_SCORE
         api_adresse.get_address(address, postcode=postcode, city=city, strict=True)
 
 
-@override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+@pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
 def test_should_not_fallback_to_municipality_if_strict_is_set_to_true(requests_mock):
     address = "123456789"
     postcode = "75018"
@@ -139,7 +138,7 @@ def test_should_not_fallback_to_municipality_if_strict_is_set_to_true(requests_m
         (503, api_adresse.AdresseApiException),
     ],
 )
-@override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+@pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
 def test_error_handling(status_code, expected_exception, requests_mock):
     address = "invalid"
     postcode = "75101"
@@ -153,7 +152,7 @@ def test_error_handling(status_code, expected_exception, requests_mock):
         api_adresse.get_address(address, postcode=postcode, city=city)
 
 
-@override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+@pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
 def test_error_handling_on_non_json_response(requests_mock):
     address = "anything"
     postcode = "75101"
@@ -167,7 +166,7 @@ def test_error_handling_on_non_json_response(requests_mock):
         api_adresse.get_address(address, postcode=postcode, city=city)
 
 
-@override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+@pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
 def test_search_address(requests_mock):
     address = "2 place du carrousel paris"
     requests_mock.get(
@@ -200,7 +199,30 @@ def test_search_address(requests_mock):
     )
 
 
-@override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+@pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+def test_search_address_without_postcode(requests_mock):
+    address = "Stephen Atwater Saint Barthelemy"
+    requests_mock.get(
+        "https://api-adresse.data.gouv.fr/search",
+        json=fixtures.SEARCH_ADDRESS_RESPONSE_WITHOUT_POSTCODE,
+    )
+    addresses_info = api_adresse.search_address(address)
+    assert addresses_info == [
+        api_adresse.AddressInfo(
+            id="97701_h9kt3t",
+            label="Rue Stephen Atwater Saint-Barthélemy",
+            postcode="97133",
+            citycode="97701",
+            latitude=17.897144,
+            longitude=-62.851796,
+            score=0.6843390909090907,
+            street="Rue Stephen Atwater",
+            city="Saint-Barthélemy",
+        )
+    ]
+
+
+@pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
 def test_search_csv(requests_mock):
     text = api_adresse.format_payload(fixtures.SEARCH_CSV_HEADERS, fixtures.SEARCH_CSV_RESULTS)
     requests_mock.post("https://api-adresse.data.gouv.fr/search/csv", text=text)
@@ -219,7 +241,7 @@ def test_search_csv(requests_mock):
     assert list(results) == list(csv.DictReader(StringIO(text)))
 
 
-@override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+@pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
 def test_cache_api(requests_mock):
     payload = {
         "type": "FeatureCollection",

@@ -1,5 +1,4 @@
 import cn from 'classnames'
-import React from 'react'
 
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { StatusToggleButton } from 'components/IndividualOffer/Status/StatusToggleButton'

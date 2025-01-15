@@ -1,7 +1,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_size.scss" as size;
+@use "styles/mixins/_size.scss" as size;
 
 .header {
   display: flex;
@@ -11,36 +10,28 @@
 
   @media (min-width: size.$tablet) {
     flex-direction: row;
-    gap: rem.torem(32px);
+    align-items: center;
   }
 }
 
 .image-uploader {
   align-self: center;
+  margin-bottom: 0;
 }
 
-.venue-type {
-  color: var(--color-grey-dark);
-  text-transform: uppercase;
-  margin-top: rem.torem(16px);
-}
+.venue {
+  height: fit-content;
+  gap: rem.torem(8px);
+  display: flex;
+  flex-direction: column;
 
-.venue-name {
-  @include fonts-design-system.title3;
+  &-type {
+    color: var(--color-grey-dark);
+    text-transform: uppercase;
+  }
 
-  margin-top: rem.torem(8px);
-  margin-bottom: rem.torem(8px);
-}
-
-.venue-address {
-  margin-bottom: rem.torem(16px);
-}
-
-.venue-button {
-  width: 100%;
-
-  @media (min-width: size.$tablet) {
-    width: auto;
+  &-name {
+    @include fonts.title3;
   }
 }
 
@@ -56,7 +47,7 @@
 }
 
 .details-title {
-  @include fonts-design-system.title4;
+  @include fonts.title4;
 
   display: inline-block;
   margin-right: rem.torem(8px);

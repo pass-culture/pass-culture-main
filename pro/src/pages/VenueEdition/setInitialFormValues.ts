@@ -36,17 +36,8 @@ function buildOpeningHoursValues(
     Boolean(dateAndHour[1])
   )
 
-  if (!openingHours || openingHours.length === 0) {
-    return {
-      days: [],
-      monday: { ...DEFAULT_INTITIAL_OPENING_HOURS },
-      wednesday: { ...DEFAULT_INTITIAL_OPENING_HOURS },
-      tuesday: { ...DEFAULT_INTITIAL_OPENING_HOURS },
-      thursday: { ...DEFAULT_INTITIAL_OPENING_HOURS },
-      friday: { ...DEFAULT_INTITIAL_OPENING_HOURS },
-      saturday: { ...DEFAULT_INTITIAL_OPENING_HOURS },
-      sunday: { ...DEFAULT_INTITIAL_OPENING_HOURS },
-    }
+  if (!openingHours) {
+    return { days: [] }
   }
   const days = filledDays.map((dateAndHour) =>
     dateAndHour[0].toLowerCase()

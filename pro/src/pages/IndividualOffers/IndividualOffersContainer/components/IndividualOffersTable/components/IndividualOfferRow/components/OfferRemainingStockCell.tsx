@@ -4,6 +4,7 @@ import {
   CollectiveOffersStockResponseModel,
   ListOffersStockResponseModel,
 } from 'apiClient/v1'
+import { CELLS_DEFINITIONS } from 'components/OffersTable/utils/cellDefinitions'
 import styles from 'styles/components/Cells.module.scss'
 
 const computeRemainingStockValue = (
@@ -21,19 +22,35 @@ const computeRemainingStockValue = (
 }
 
 interface OfferRemainingStockCellProps {
+  rowId: string
   stocks: (CollectiveOffersStockResponseModel | ListOffersStockResponseModel)[]
+  displayLabel?: boolean
+  className?: string
 }
 
 export const OfferRemainingStockCell = ({
+  rowId,
   stocks,
+  displayLabel,
+  className,
 }: OfferRemainingStockCellProps) => {
   return (
     <td
+      role="cell"
       className={classNames(
         styles['offers-table-cell'],
-        styles['stock-column']
+        styles['stock-column'],
+        className
       )}
+      headers={`${rowId} ${CELLS_DEFINITIONS.STOCKS.id}`}
     >
+      {displayLabel &&
+        <span
+          className={styles['offers-table-cell-mobile-label']}
+          aria-hidden={true}
+        >
+          {`${CELLS_DEFINITIONS.STOCKS.title} :`}
+        </span>}
       {computeRemainingStockValue(stocks)}
     </td>
   )

@@ -1,6 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_z-index.scss" as zIndex;
-@use "styles/variables/_size.scss" as size;
+@use "styles/mixins/_size.scss" as size;
 
 .dialog-builder-overlay {
   background-color: rgb(0 0 0 / 33%);
@@ -50,7 +50,7 @@
   }
 }
 
-@media (min-width: size.$mobile) {
+@media screen and (min-width: size.$tablet) {
   .dialog-builder-content {
     padding: size.$dialog-box-padding;
   }
@@ -61,7 +61,7 @@
   }
 }
 
-@media (min-width: size.$tablet) {
+@media screen and (min-width: size.$tablet) {
   .dialog-builder-content {
     min-width: rem.torem(534px);
   }

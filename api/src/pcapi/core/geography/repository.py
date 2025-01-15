@@ -1,7 +1,7 @@
 from decimal import Decimal
+import re
 
-from pcapi.connectors.api_adresse import NoResultException
-from pcapi.connectors.api_adresse import get_address
+from pcapi.connectors import api_adresse
 from pcapi.core.geography import models as geography_models
 from pcapi.core.geography.constants import WGS_SPATIAL_REFERENCE_IDENTIFIER
 
@@ -16,8 +16,12 @@ def get_iris_from_address(
     address: str, postcode: str | None = None, *, city: str | None = None, threshold: float = 0.45
 ) -> geography_models.IrisFrance | None:
     try:
-        result_address = get_address(address=address, postcode=postcode, city=city)
-    except NoResultException:
+        # Avoid {"code":400,"message":"q must contain between 3 and 200 chars and start with a number or a letter"}
+        if len(address) < 3 or not re.match(r"^\d|\w", address[0]):
+            result_address = api_adresse.get_municipality_centroid(postcode=postcode, city=city or "")
+        else:
+            result_address = api_adresse.get_address(address=address, postcode=postcode, city=city)
+    except api_adresse.NoResultException:
         return None
 
     if result_address.score < threshold:

@@ -1,6 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/variables/_size.scss" as size;
+@use "styles/mixins/_size.scss" as size;
 
 .expiration-cell {
   padding-top: 0;
@@ -27,7 +27,7 @@
     flex-wrap: wrap;
 
     &-waiting {
-      @include fonts.caption;
+      @include fonts.body-accent-xs;
 
       display: flex;
       align-items: center;
@@ -35,7 +35,7 @@
     }
 
     &-days-badge {
-      @include fonts.caption;
+      @include fonts.body-accent-xs;
 
       background-color: var(--color-alert-dark);
       display: flex;
@@ -50,11 +50,5 @@
 @media (min-width: size.$tablet) {
   .banner-expiration {
     gap: rem.torem(16px);
-  }
-}
-
-@media (max-width: size.$laptop) {
-  .expiration-cell {
-    display: block;
   }
 }

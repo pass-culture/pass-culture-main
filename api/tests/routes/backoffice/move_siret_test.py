@@ -1,7 +1,12 @@
+from datetime import datetime
+from datetime import timedelta
+
 from flask import url_for
 import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.finance import factories as finance_factories
+from pcapi.core.finance import models as finance_models
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
@@ -159,6 +164,37 @@ class PostMoveSiretTest(MoveSiretTestHelper):
         assert not self.venue2.siret
         assert history_models.ActionHistory.query.count() == 0
 
+    @pytest.mark.parametrize(
+        "start_date, end_date",
+        [
+            (datetime.utcnow() - timedelta(days=10), None),
+            (datetime.utcnow() - timedelta(days=10), datetime.utcnow() + timedelta(days=10)),
+            (datetime.utcnow() + timedelta(days=10), None),
+        ],
+    )
+    def test_venue_custom_reimbursement_rule(self, authenticated_client, start_date, end_date):
+        source_venue = offerers_factories.VenueFactory()
+        target_venue = offerers_factories.VenueWithoutSiretFactory(managingOfferer=source_venue.managingOfferer)
+        finance_factories.CustomReimbursementRuleFactory(
+            venue=source_venue,
+            timespan=(start_date, end_date),
+        )
+        form = {
+            "source_venue": source_venue.id,
+            "target_venue": target_venue.id,
+            "siret": source_venue.siret,
+            "comment": "plouf",
+            "override_revenue_check": True,
+        }
+
+        response = self.post_to_endpoint(authenticated_client, form=form)
+
+        assert response.status_code == 200
+        assert (
+            "Ce partenaire culturel a au moins un tarif dérogatoire qui se termine dans le futur. Si vous validez l'action il sera clôturé"
+            == html_parser.extract_alert(response.data)
+        )
+
 
 class ApplyMoveSiretTest(MoveSiretTestHelper):
     endpoint = "backoffice_web.move_siret.apply_move_siret"
@@ -178,6 +214,26 @@ class ApplyMoveSiretTest(MoveSiretTestHelper):
             assert action.offererId == self.offerer.id
             assert action.venueId in (self.venue1.id, self.venue2.id)
             assert action.extraData.get("modified_info")
+
+    def test_venue_custom_reimbursement_rule(self, authenticated_client):
+        source_venue = offerers_factories.VenueFactory()
+        target_venue = offerers_factories.VenueWithoutSiretFactory(managingOfferer=source_venue.managingOfferer)
+        finance_factories.CustomReimbursementRuleFactory(
+            venue=source_venue,
+            timespan=(datetime.utcnow() + timedelta(days=10), None),
+        )
+        form = {
+            "source_venue": source_venue.id,
+            "target_venue": target_venue.id,
+            "siret": source_venue.siret,
+            "comment": "plouf",
+            "override_revenue_check": True,
+        }
+
+        response = self.post_to_endpoint(authenticated_client, form=form)
+
+        assert response.status_code == 303
+        assert finance_models.CustomReimbursementRule.query.count() == 0
 
     @pytest.mark.skip("TODO: fix issue with test 'A transaction is already begun on this Session.'")
     def test_move_siret_ok(self, authenticated_client, override_revenue_check):

@@ -1,0 +1,59 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_a11y.scss" as a11y;
+@use "styles/mixins/_size.scss" as size;
+
+.onboarding-offer-container {
+  margin: rem.torem(32px) auto 0 auto;
+  padding: 0 rem.torem(32px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.offers-title {
+  @include fonts.title3;
+
+  text-align: center;
+  margin-bottom: rem.torem(8px);
+}
+
+.offers-subtitle {
+  @include fonts.title1;
+
+  text-align: center;
+  margin-bottom: rem.torem(32px);
+}
+
+.offers-description {
+  display: flex;
+  gap: rem.torem(16px);
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 0;
+
+  // TODO: Fixing <FormLayout.Section> 's description container that have a min-height, even though the prop is empty
+  // It would be better to fix the <FormLayout.Section> component itself, but it's a bit too much work for now
+  & > div:empty {
+    display: none;
+  }
+
+  .individual-radio-label {
+    justify-content: flex-start;
+  }
+
+  .individual-radio-button {
+    margin-bottom: 0;
+    min-height: rem.torem(186px);
+    max-width: rem.torem(235px);
+    text-align: center;
+  }
+
+  @media (min-width: size.$tablet) {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}

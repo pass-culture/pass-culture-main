@@ -1,9 +1,12 @@
 import typing
 
 import flask_sqlalchemy
+from sqlalchemy import exc as sa_exc
 
 from pcapi import settings
+from pcapi.connectors.dms import models as dms_models
 from pcapi.core.achievements import models as achievements_models
+from pcapi.core.artist import models as artist_models
 import pcapi.core.bookings.models as bookings_models
 from pcapi.core.chronicles import models as chronicles_models
 import pcapi.core.criteria.models as criteria_models
@@ -30,6 +33,9 @@ from pcapi.models.feature import install_feature_flags
 # They will be deleted in this order
 tables_to_clean: list[flask_sqlalchemy.Model] = [
     achievements_models.Achievement,
+    artist_models.Artist,
+    artist_models.ArtistAlias,
+    artist_models.ArtistProductLink,
     chronicles_models.ProductChronicle,
     chronicles_models.OfferChronicle,
     chronicles_models.Chronicle,
@@ -133,6 +139,7 @@ tables_to_clean: list[flask_sqlalchemy.Model] = [
     perm_models.Role,
     history_models.ActionHistory,
     educational_models.NationalProgram,
+    dms_models.LatestDmsImport,
 ]
 
 
@@ -141,21 +148,26 @@ def clean_all_database(*args: typing.Any, reset_ids: bool = False, **kwargs: typ
         raise ValueError(f"You cannot do this on this environment: '{settings.ENV}'")
 
     for table in tables_to_clean:
-        table.query.delete()
-        if reset_ids:
-            # Reset sequence id to 1 to have consistent ids in testing environment
-            # This is mandatory for EAC bookings which are used by Adage (external partner)
-            db.session.execute(
-                """DO $$
-                BEGIN
-                    IF EXISTS (SELECT 1 FROM pg_sequences WHERE schemaname = 'public' AND sequencename = '{table.__tablename__}_id_seq') THEN
-                        EXECUTE 'SELECT setval(''{table.__tablename__}_id_seq'', 1, false)';
-                    END IF;
-                END $$;
-            """.format(
-                    table=table
+        try:
+            table.query.delete()
+            if reset_ids:
+                # Reset sequence id to 1 to have consistent ids in testing environment
+                # This is mandatory for EAC bookings which are used by Adage (external partner)
+                db.session.execute(
+                    """DO $$
+                    BEGIN
+                        IF EXISTS (SELECT 1 FROM pg_sequences WHERE schemaname = 'public' AND sequencename = '{table.__tablename__}_id_seq') THEN
+                            EXECUTE 'SELECT setval(''{table.__tablename__}_id_seq'', 1, false)';
+                        END IF;
+                    END $$;
+                """.format(
+                        table=table
+                    )
                 )
-            )
+        except sa_exc.ProgrammingError:
+            # If the table does not exist, it will raise a ProgrammingError
+            # We don't want to fail the migration if the table does not exist, while trying to delete it
+            pass
 
     db.session.commit()
     install_feature_flags()

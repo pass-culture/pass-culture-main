@@ -1,5 +1,4 @@
 import { screen } from '@testing-library/react'
-import React from 'react'
 
 import { CollectiveOfferOfferVenue, OfferAddressType } from 'apiClient/adage'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'

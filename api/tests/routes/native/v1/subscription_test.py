@@ -11,7 +11,6 @@ from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription.models import SubscriptionStepCompletionState
 from pcapi.core.subscription.ubble import errors as ubble_errors
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.notifications.push import testing as push_testing
@@ -27,7 +26,7 @@ class NextStepTest:
         5  # user + beneficiary_fraud_review + feature + beneficiary_fraud_check + beneficiary_fraud_check(exists)
     )
 
-    @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=False)
+    @pytest.mark.features(ENABLE_EDUCONNECT_AUTHENTICATION=False)
     def test_next_subscription(self, client):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
@@ -46,7 +45,7 @@ class NextStepTest:
         assert response.json["hasIdentityCheckPending"] is False
         assert response.json["subscriptionMessage"] is None
 
-    @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=False)
+    @pytest.mark.features(ENABLE_EDUCONNECT_AUTHENTICATION=False)
     def test_next_subscription_test_profile_completion(self, client):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
@@ -66,7 +65,7 @@ class NextStepTest:
         assert not response.json["hasIdentityCheckPending"]
         assert response.json["subscriptionMessage"] is None
 
-    @override_features(
+    @pytest.mark.features(
         ENABLE_EDUCONNECT_AUTHENTICATION=False,
         ENABLE_UBBLE=False,
         ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE=True,
@@ -102,7 +101,7 @@ class NextStepTest:
             "pour la rétablir au plus vite.",
         }
 
-    @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=False)
+    @pytest.mark.features(ENABLE_EDUCONNECT_AUTHENTICATION=False)
     @pytest.mark.parametrize(
         "fraud_check_status,reason_code,ubble_status,next_step,pending_idcheck,subscription_message",
         [
@@ -168,7 +167,7 @@ class NextStepTest:
             ),
         ],
     )
-    @override_features(ENABLE_UBBLE=True)
+    @pytest.mark.features(ENABLE_UBBLE=True)
     @time_machine.travel("2022-09-08 12:01:12")
     def test_next_subscription_test_ubble(
         self, client, fraud_check_status, reason_code, ubble_status, next_step, pending_idcheck, subscription_message
@@ -234,7 +233,7 @@ class NextStepTest:
         assert response.json["hasIdentityCheckPending"] == pending_idcheck
         assert response.json["subscriptionMessage"] == subscription_message
 
-    @override_features(
+    @pytest.mark.features(
         ENABLE_EDUCONNECT_AUTHENTICATION=False,
         ENABLE_UBBLE=True,
     )
@@ -362,7 +361,7 @@ class NextStepTest:
         ubble_fraud_check.status = fraud_models.FraudCheckStatus.OK
         ubble_fraud_check.resultContent = fraud_factories.UbbleContentFactory(
             status=ubble_serializers.UbbleIdentificationStatus.PROCESSED
-        )
+        ).dict()
         pcapi.repository.repository.save(ubble_fraud_check)
         response = client.get("/native/v1/subscription/next_step")
 
@@ -373,7 +372,7 @@ class NextStepTest:
         assert response.json["hasIdentityCheckPending"] is False
         assert response.json["subscriptionMessage"] is None
 
-    @override_features(
+    @pytest.mark.features(
         ENABLE_EDUCONNECT_AUTHENTICATION=False,
         ENABLE_UBBLE=True,
     )
@@ -421,7 +420,7 @@ class NextStepTest:
         assert response.json["hasIdentityCheckPending"] is False
         assert response.json["subscriptionMessage"] is None
 
-    @override_features(
+    @pytest.mark.features(
         ENABLE_UBBLE_SUBSCRIPTION_LIMITATION=True,
         ENABLE_UBBLE=True,
         ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18=False,
@@ -493,8 +492,7 @@ class NextStepTest:
             "userMessage": "La vérification d'identité est momentanément indisponible. L'équipe du pass Culture met tout en oeuvre pour la rétablir au plus vite.",
         }
 
-    @override_features(ENABLE_UBBLE=True)
-    @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=False)
+    @pytest.mark.features(ENABLE_UBBLE=True, ENABLE_EDUCONNECT_AUTHENTICATION=False)
     def test_ubble_restart_workflow(self, client):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
@@ -656,7 +654,7 @@ class StepperTest:
             self.get_step("honor_statement_step", SubscriptionStepCompletionState.DISABLED.value),
         ]
 
-    @override_features(
+    @pytest.mark.features(
         ENABLE_EDUCONNECT_AUTHENTICATION=False,
         ENABLE_UBBLE=False,
         ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18=False,
@@ -673,7 +671,7 @@ class StepperTest:
         assert response.json["allowedIdentityCheckMethods"] == []
         assert response.json["maintenancePageType"] == "without-dms"
 
-    @override_features(
+    @pytest.mark.features(
         ENABLE_EDUCONNECT_AUTHENTICATION=False,
         ENABLE_UBBLE=False,
         ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18=True,
@@ -690,7 +688,7 @@ class StepperTest:
         assert response.json["allowedIdentityCheckMethods"] == []
         assert response.json["maintenancePageType"] == "with-dms"
 
-    @override_features(
+    @pytest.mark.features(
         ENABLE_EDUCONNECT_AUTHENTICATION=False,
         ENABLE_UBBLE=True,
         ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18=False,
@@ -809,7 +807,7 @@ class StepperTest:
             self.get_step("honor_statement_step", SubscriptionStepCompletionState.CURRENT.value),
         ]
 
-    @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=False)
+    @pytest.mark.features(ENABLE_EDUCONNECT_AUTHENTICATION=False)
     def test_next_subscription(self, client):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
@@ -827,7 +825,7 @@ class StepperTest:
         assert response.json["hasIdentityCheckPending"] is False
         assert response.json["subscriptionMessage"] is None
 
-    @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=False)
+    @pytest.mark.features(ENABLE_EDUCONNECT_AUTHENTICATION=False)
     def test_next_subscription_test_profile_completion(self, client):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
@@ -846,7 +844,7 @@ class StepperTest:
         assert not response.json["hasIdentityCheckPending"]
         assert response.json["subscriptionMessage"] is None
 
-    @override_features(
+    @pytest.mark.features(
         ENABLE_EDUCONNECT_AUTHENTICATION=False,
         ENABLE_UBBLE=False,
         ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE=True,
@@ -883,7 +881,7 @@ class StepperTest:
             "pour la rétablir au plus vite.",
         }
 
-    @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=False)
+    @pytest.mark.features(ENABLE_EDUCONNECT_AUTHENTICATION=False)
     @pytest.mark.parametrize(
         "fraud_check_status,reason_code,ubble_status,next_step,pending_idcheck,subscription_message",
         [
@@ -951,7 +949,7 @@ class StepperTest:
             ),
         ],
     )
-    @override_features(ENABLE_UBBLE=True)
+    @pytest.mark.features(ENABLE_UBBLE=True)
     @time_machine.travel("2022-09-08 12:01:12")
     def test_next_subscription_test_ubble(
         self, client, fraud_check_status, reason_code, ubble_status, next_step, pending_idcheck, subscription_message
@@ -1017,7 +1015,7 @@ class StepperTest:
         assert response.json["hasIdentityCheckPending"] == pending_idcheck
         assert response.json["subscriptionMessage"] == subscription_message
 
-    @override_features(
+    @pytest.mark.features(
         ENABLE_EDUCONNECT_AUTHENTICATION=False,
         ENABLE_UBBLE=True,
     )
@@ -1145,7 +1143,7 @@ class StepperTest:
         ubble_fraud_check.status = fraud_models.FraudCheckStatus.OK
         ubble_fraud_check.resultContent = fraud_factories.UbbleContentFactory(
             status=ubble_serializers.UbbleIdentificationStatus.PROCESSED
-        )
+        ).dict()
         pcapi.repository.repository.save(ubble_fraud_check)
         response = client.get("/native/v2/subscription/stepper")
 
@@ -1156,7 +1154,7 @@ class StepperTest:
         assert response.json["hasIdentityCheckPending"] is False
         assert response.json["subscriptionMessage"] is None
 
-    @override_features(
+    @pytest.mark.features(
         ENABLE_EDUCONNECT_AUTHENTICATION=False,
         ENABLE_UBBLE=True,
     )
@@ -1205,7 +1203,7 @@ class StepperTest:
         assert response.json["hasIdentityCheckPending"] is False
         assert response.json["subscriptionMessage"] is None
 
-    @override_features(
+    @pytest.mark.features(
         ENABLE_UBBLE_SUBSCRIPTION_LIMITATION=True,
         ENABLE_UBBLE=True,
         ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18=False,
@@ -1278,8 +1276,7 @@ class StepperTest:
             "userMessage": "La vérification d'identité est momentanément indisponible. L'équipe du pass Culture met tout en oeuvre pour la rétablir au plus vite.",
         }
 
-    @override_features(ENABLE_UBBLE=True)
-    @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=False)
+    @pytest.mark.features(ENABLE_UBBLE=True, ENABLE_EDUCONNECT_AUTHENTICATION=False)
     def test_ubble_restart_workflow(self, client):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
@@ -1393,7 +1390,7 @@ class GetProfileTest:
 
 
 class UpdateProfileTest:
-    @override_features(ENABLE_UBBLE=True)
+    @pytest.mark.features(ENABLE_UBBLE=True)
     def test_fulfill_profile(self, client):
         """
         Test that valid request:
@@ -1457,7 +1454,7 @@ class UpdateProfileTest:
         assert profile_completion_fraud_check.status == fraud_models.FraudCheckStatus.OK
         assert profile_completion_fraud_check.reason == "Completed in application step"
 
-    @override_features(ENABLE_UBBLE=True)
+    @pytest.mark.features(ENABLE_UBBLE=True)
     def test_fulfill_profile_invalid_character(self, client):
         user = users_factories.UserFactory(
             address=None,
@@ -1486,7 +1483,7 @@ class UpdateProfileTest:
 
         assert response.status_code == 400
 
-    @override_features(ENABLE_UBBLE=True)
+    @pytest.mark.features(ENABLE_UBBLE=True)
     def test_fulfill_profile_empty_field(self, client):
         user = users_factories.UserFactory(
             address=None,
@@ -1515,7 +1512,7 @@ class UpdateProfileTest:
 
         assert response.status_code == 400
 
-    @override_features(ENABLE_UBBLE=True)
+    @pytest.mark.features(ENABLE_UBBLE=True)
     def test_fulfill_profile_missing_mandatory_field(self, client):
         user = users_factories.UserFactory(
             address=None,
@@ -1543,7 +1540,7 @@ class UpdateProfileTest:
 
         assert response.status_code == 400
 
-    @override_features(ENABLE_UBBLE=True)
+    @pytest.mark.features(ENABLE_UBBLE=True)
     def test_fulfill_profile_valid_character(self, client):
         user = users_factories.UserFactory(
             address=None,
@@ -1572,7 +1569,7 @@ class UpdateProfileTest:
 
         assert response.status_code == 204
 
-    @override_features(ENABLE_UBBLE=True)
+    @pytest.mark.features(ENABLE_UBBLE=True)
     def test_fulfill_profile_activation(self, client):
         user = users_factories.UserFactory(
             address=None,

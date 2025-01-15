@@ -56,7 +56,7 @@ jobs:
             API_TOKEN_GITHUB:passculture-metier-ehp/passculture-main-sa-access-token
 
       - name: "Connect to cluster"
-        uses: pass-culture/common-workflows/actions/teleport-connect@teleport-connect/v0.1.0
+        uses: pass-culture/common-workflows/actions/teleport-connect@teleport-connect/v0.2.0
         with:
           teleport_proxy: ${{ inputs.teleport_proxy }}
           teleport_kubernetes_cluster: ${{ inputs.teleport_kubernetes_cluster }}
@@ -144,16 +144,24 @@ jobs:
           } >> $GITHUB_STEP_SUMMARY
 
       - name: "Sync ArgoCD Pgsql application"
-        uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.6.0
+        uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.7.0
         with:
           app_name: postgresql-pr-${{ github.event.pull_request.number }}
           argocd_app_wait: true
 
       - name: "Sync ArgoCD Redis application"
-        uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.6.0
+        uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.7.0
         with:
           app_name: redis-pr-${{ github.event.pull_request.number }}
           argocd_app_wait: true
+
+      - name: "Sync ArgoCD pcapi configmaps and secrets"
+        uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.7.0
+        with:
+          app_name: pcapi-pr-${{ github.event.pull_request.number }}
+          argocd_app_wait: false
+          prune: true
+          extra_flags: --resource ':ConfigMap:*' --resource '*:ExternalSecret:*'
 
       - name: "Init local database"
         run: |
@@ -227,6 +235,22 @@ jobs:
             echo "| alembic upgrade post@head    |  $duration |"
           } >> $GITHUB_STEP_SUMMARY
 
+      - name: "Sync ArgoCD pcapi application"
+        uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.7.0
+        with:
+          app_name: pcapi-pr-${{ github.event.pull_request.number }}
+          argocd_app_wait: true
+          prune: true
+
+      - name: "Run sandbox"
+        run: |
+          set -e
+          VERSION="${{ inputs.app_version }}"
+          export ENVIRONMENT="${{ inputs.environment }}"
+          IMAGE="europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi"
+          export IMAGE="${IMAGE}:${VERSION}"
+          export PRID=${{ github.event.pull_request.number }}
+
           echo "=== exec: flask sandbox -n industrial"
           export DATE=$(date +"%Y-%m-%d-%H-%M-%S")
           start=$(date +%s.%N)
@@ -241,10 +265,3 @@ jobs:
           {
             echo "| flask sandbox -n industrial    |  $duration |"
           } >> $GITHUB_STEP_SUMMARY
-
-      - name: "Sync ArgoCD pcapi application"
-        uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.6.0
-        with:
-          app_name: pcapi-pr-${{ github.event.pull_request.number }}
-          argocd_app_wait: true
-          prune: true

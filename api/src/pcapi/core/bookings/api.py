@@ -11,6 +11,7 @@ from sqlalchemy.orm import joinedload
 
 from pcapi.connectors.ems import EMSAPIException
 from pcapi.core import search
+from pcapi.core.achievements import api as achievements_api
 from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
@@ -288,6 +289,7 @@ def _book_offer(
                 finance_models.FinanceEventMotive.BOOKING_USED,
                 booking=booking,
             )
+            achievements_api.unlock_achievement(booking)
     return booking
 
 
@@ -786,11 +788,12 @@ def cancel_booking_on_user_requested_account_suspension(booking: Booking) -> Non
 
 def mark_as_used(booking: Booking, validation_author_type: BookingValidationAuthorType) -> None:
     validation.check_is_usable(booking)
+
     booking.mark_as_used(validation_author_type)
-    finance_api.add_event(
-        finance_models.FinanceEventMotive.BOOKING_USED,
-        booking=booking,
-    )
+
+    finance_api.add_event(finance_models.FinanceEventMotive.BOOKING_USED, booking=booking)
+    achievements_api.unlock_achievement(booking)
+
     repository.save(booking)
 
     logger.info(
@@ -831,10 +834,12 @@ def mark_as_used_with_uncancelling(booking: Booking, validation_author_type: Boo
         db.session.flush()
     booking.validationAuthorType = validation_author_type
     db.session.add(booking)
+
     finance_api.add_event(
         finance_models.FinanceEventMotive.BOOKING_USED_AFTER_CANCELLATION,
         booking=booking,
     )
+    achievements_api.unlock_achievement(booking)
 
     db.session.flush()
     logger.info("Booking was uncancelled and marked as used", extra={"bookingId": booking.id})
@@ -1050,8 +1055,9 @@ def auto_mark_as_used_after_event() -> None:
     # fail because of the PostgreSQL partially unique constraint on
     # `bookingId`.
     individual_bookings = Booking.query.filter_by(dateUsed=now).options(
-        sa.orm.joinedload(Booking.stock, innerjoin=True),
+        sa.orm.joinedload(Booking.stock, innerjoin=True).joinedload(Stock.offer),
         sa.orm.joinedload(Booking.venue, innerjoin=True),
+        sa.orm.joinedload(Booking.user).selectinload(User.achievements),
     )
     n_individual_bookings_updated = 0
     for booking in individual_bookings:
@@ -1059,6 +1065,7 @@ def auto_mark_as_used_after_event() -> None:
             finance_models.FinanceEventMotive.BOOKING_USED,
             booking=booking,
         )
+        achievements_api.unlock_achievement(booking)
         n_individual_bookings_updated += 1
 
     # Collective bookings: update and add a finance event for each

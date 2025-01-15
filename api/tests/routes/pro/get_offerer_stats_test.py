@@ -1,3 +1,5 @@
+import datetime
+
 import pytest
 import time_machine
 
@@ -20,12 +22,15 @@ class OffererStatsTest:
         pro_user = users_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
         product = offers_factories.ProductFactory()
-        product_mediation_url = "/product/image/my_id"
-        offers_factories.ProductMediationFactory(product=product, url=product_mediation_url)
+        product_mediation = offers_factories.ProductMediationFactory(product=product, uuid="my_id")
         offer_1 = offers_factories.OfferFactory(venue__managingOffererId=offerer.id, product=product)
         offer_2 = offers_factories.OfferFactory(venue__managingOffererId=offerer.id)
         mediation = offers_factories.MediationFactory(offer=offer_2)
         offer_3 = offers_factories.OfferFactory(venue__managingOffererId=offerer.id)
+        offers_factories.StockFactory(offer=offer_2)
+        offers_factories.HeadlineOfferFactory(
+            offer=offer_2, venue=offer_2.venue, timespan=(datetime.datetime.utcnow(),)
+        )
 
         offerers_factories.OffererStatsFactory(
             offerer=offerer,
@@ -73,7 +78,7 @@ class OffererStatsTest:
         queries = testing.AUTHENTICATION_QUERIES
         queries += 1  # check user_offerer exists
         queries += 1  # select offerer_stats
-        queries += 1  # select offers with images
+        queries += 1  # select offers with images, join on headline offer & stocks
         with testing.assert_num_queries(queries):
             response = client.get(f"/offerers/{offerer_id}/stats")
             assert response.status_code == 200
@@ -89,18 +94,26 @@ class OffererStatsTest:
                     {
                         "image": {
                             "credit": None,
-                            "url": product_mediation_url,
+                            "url": product_mediation.url,
                         },
+                        "isHeadlineOffer": False,
                         "numberOfViews": 3,
                         "offerId": offer_1.id,
                         "offerName": offer_1.name,
                     },
-                    {"image": None, "numberOfViews": 2, "offerId": offer_3.id, "offerName": offer_3.name},
+                    {
+                        "image": None,
+                        "isHeadlineOffer": False,
+                        "numberOfViews": 2,
+                        "offerId": offer_3.id,
+                        "offerName": offer_3.name,
+                    },
                     {
                         "image": {
                             "credit": None,
                             "url": f"http://localhost/storage/thumbs/mediations/{humanize(mediation.id)}",
                         },
+                        "isHeadlineOffer": True,
                         "numberOfViews": 1,
                         "offerId": offer_2.id,
                         "offerName": offer_2.name,

@@ -216,7 +216,10 @@ def cancel_email_update_request(encoded_token: str) -> None:
         raise exceptions.InvalidToken()
     new_email = token.data.get("new_email")
     api.suspend_account(
-        user, constants.SuspensionReason.FRAUD_SUSPICION, user, "Suspension suite à un changement d'email annulé"
+        user,
+        reason=constants.SuspensionReason.FRAUD_SUSPICION,
+        actor=user,
+        comment="Suspension suite à un changement d'email annulé",
     )
     transactional_mails.send_email_update_cancellation_email(user)
     models.UserEmailHistory.build_cancellation(user, new_email)

@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React, { ReactNode } from 'react'
+import { ReactNode } from 'react'
 
 import fullClearIcon from 'icons/full-clear.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
@@ -147,6 +147,8 @@ const getLineStyle = (
       return styles['line-waiting']
     case TimelineStepType.DISABLED:
       return styles['line-disabled']
+    case TimelineStepType.CANCELLED:
+    case TimelineStepType.REFUSED:
     default:
       throw new Error(`Unsupported step type: ${nextStepType}`)
   }

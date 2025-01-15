@@ -50,6 +50,8 @@ from pcapi.connectors.big_query.queries.offerer_stats import TopOffersData
 from pcapi.core.educational import models as educational_models
 import pcapi.core.finance.models as finance_models
 from pcapi.core.geography import models as geography_models
+from pcapi.core.offerers.schemas import BannerMetaModel
+from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
@@ -60,8 +62,6 @@ from pcapi.models.has_address_mixin import HasAddressMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.validation_status_mixin import ValidationStatusMixin
-from pcapi.routes.native.v1.serialization.offerers import BannerMetaModel
-from pcapi.routes.native.v1.serialization.offerers import VenueTypeCode
 from pcapi.utils import crypto
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import siren as siren_utils
@@ -388,6 +388,8 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     offererAddress: Mapped["OffererAddress | None"] = relationship(
         "OffererAddress", foreign_keys=[offererAddressId], back_populates="venues"
     )
+
+    headlineOffers: list["offers_models.HeadlineOffer"] = sa_orm.relationship("HeadlineOffer", back_populates="venue")
 
     def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:
         if street:
@@ -722,6 +724,10 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     def is_caledonian(self) -> bool:
         return self.managingOfferer.is_caledonian
 
+    @property
+    def has_headline_offer(self) -> bool:
+        return any(headline_offer.isActive for headline_offer in self.headlineOffers)
+
 
 class GooglePlacesInfo(PcObject, Base, Model):
     __tablename__ = "google_places_info"
@@ -927,6 +933,24 @@ class Offerer(
     dateValidated = Column(DateTime, nullable=True, default=None)
 
     tags: list["OffererTag"] = sa_orm.relationship("OffererTag", secondary="offerer_tag_mapping")
+
+    # use an expression instead of joinedload(tags) to avoid multiple SQL rows returned
+    isTopActeur: sa_orm.Mapped["bool"] = sa_orm.query_expression()
+
+    @hybrid_property
+    def is_top_acteur(self) -> bool:
+        return any(tag.name == "top-acteur" for tag in self.tags)
+
+    @is_top_acteur.expression  # type: ignore[no-redef]
+    def is_top_acteur(cls) -> sa.sql.elements.BooleanClauseList:  # pylint: disable=no-self-argument
+        return (
+            sa.select(1)
+            .select_from(OffererTagMapping)
+            .join(OffererTag, OffererTag.id == OffererTagMapping.tagId)
+            .where(OffererTagMapping.offererId == cls.id, OffererTag.name == "top-acteur")
+            .limit(1)
+            .exists()
+        )
 
     offererProviders: list["OffererProvider"] = sa_orm.relationship("OffererProvider", back_populates="offerer")
     thumb_path_component = "offerers"

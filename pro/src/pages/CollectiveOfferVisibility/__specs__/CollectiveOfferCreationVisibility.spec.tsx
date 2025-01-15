@@ -1,5 +1,4 @@
 import { screen } from '@testing-library/react'
-import React from 'react'
 
 import { getCollectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
@@ -41,13 +40,13 @@ describe('CollectiveOfferVisibility', () => {
 
     expect(
       await screen.findByRole('heading', {
-        name: /Créer une nouvelle offre collective/,
+        name: /Créer une offre/,
       })
     ).toBeInTheDocument()
 
     expect(
       screen.getByRole('heading', {
-        name: 'Établissement scolaire et enseignant',
+        name: "Renseignez l'établissement scolaire et l’enseignant",
       })
     ).toBeInTheDocument()
   })
@@ -59,7 +58,7 @@ describe('CollectiveOfferVisibility', () => {
 
     expect(
       await screen.findByRole('heading', {
-        name: 'Établissement scolaire et enseignant',
+        name: "Renseignez l'établissement scolaire et l’enseignant",
       })
     ).toBeInTheDocument()
   })

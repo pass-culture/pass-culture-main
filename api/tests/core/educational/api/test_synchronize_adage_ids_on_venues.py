@@ -6,14 +6,14 @@ import sys
 from unittest.mock import patch
 
 from pydantic.v1 import parse_obj_as
+import pytest
 import requests_mock
 
 from pcapi.core.educational.api import adage as educational_api_adage
+from pcapi.core.educational.schemas import AdageCulturalPartners
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.repository import get_emails_by_venue
-from pcapi.core.testing import override_settings
 from pcapi.models import db
-from pcapi.routes.serialization import venues_serialize
 
 
 BASE_DATA = {
@@ -45,7 +45,7 @@ BASE_DATA = {
 }
 
 
-@override_settings(
+@pytest.mark.settings(
     ADAGE_API_URL="https://adage-api-url",
     ADAGE_API_KEY="adage-api-key",
     ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
@@ -149,7 +149,7 @@ def test_synchronize_adage_ids_on_venues(db_session):
     assert called_venues == expected_venues
 
 
-@override_settings(
+@pytest.mark.settings(
     ADAGE_API_URL="https://adage-api-url",
     ADAGE_API_KEY="adage-api-key",
     ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
@@ -192,7 +192,7 @@ def test_synchronize_adage_ids_on_venues_with_unknown_venue(db_session):
     assert {ava.adageId for ava in venue.adage_addresses} == {str(adage_id1), str(adage_id3)}
 
 
-@override_settings(
+@pytest.mark.settings(
     ADAGE_API_URL="https://adage-api-url",
     ADAGE_API_KEY="adage-api-key",
     ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
@@ -229,7 +229,7 @@ def test_synchronize_adage_ids_on_venues_with_venue_id_missing(db_session, caplo
     assert venue.adageId == str(adage_id1)
 
 
-@override_settings(
+@pytest.mark.settings(
     ADAGE_API_URL="https://adage-api-url",
     ADAGE_API_KEY="adage-api-key",
     ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
@@ -303,7 +303,7 @@ def test_synchronize_adage_ids_on_offerers(db_session):
     assert not venue8.managingOfferer.allowedOnAdage
 
     partners = parse_obj_as(
-        venues_serialize.AdageCulturalPartners,
+        AdageCulturalPartners,
         {
             "partners": [
                 venue1_data,
@@ -331,7 +331,7 @@ def test_synchronize_adage_ids_on_offerers(db_session):
     assert not venue8.managingOfferer.allowedOnAdage
 
 
-@override_settings(
+@pytest.mark.settings(
     ADAGE_API_URL="https://adage-api-url",
     ADAGE_API_KEY="adage-api-key",
     ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
@@ -352,7 +352,7 @@ def test_synchronize_adage_ids_on_offerers_for_tricky_case(db_session):
     assert not venue1.managingOfferer.allowedOnAdage
 
     partners = parse_obj_as(
-        venues_serialize.AdageCulturalPartners,
+        AdageCulturalPartners,
         {"partners": [venue1_data]},
     ).partners
 
@@ -367,7 +367,7 @@ def test_synchronize_adage_ids_on_offerers_for_tricky_case(db_session):
     assert venue1.managingOfferer.allowedOnAdage
 
 
-@override_settings(
+@pytest.mark.settings(
     ADAGE_API_URL="https://adage-api-url",
     ADAGE_API_KEY="adage-api-key",
     ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",

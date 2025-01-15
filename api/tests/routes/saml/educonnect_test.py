@@ -14,7 +14,6 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_status
 from pcapi.core.subscription.educonnect import api as educonnect_subscription_api
-from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as user_models
 import pcapi.notifications.push.testing as push_testing
@@ -61,8 +60,10 @@ class EduconnectTest:
         assert response.headers["educonnect-redirect"].startswith("https://pr4.educonnect.phm.education.gouv.fr/idp")
         assert response.headers["Access-Control-Expose-Headers"] == "educonnect-redirect"
 
-    @override_settings(API_URL_FOR_EDUCONNECT="https://backend.passculture.app")
-    @override_settings(EDUCONNECT_METADATA_FILE="educonnect.production.metadata.xml")
+    @pytest.mark.settings(
+        API_URL_FOR_EDUCONNECT="https://backend.passculture.app",
+        EDUCONNECT_METADATA_FILE="educonnect.production.metadata.xml",
+    )
     def test_get_educonnect_login_production(self, client, app):
         user = users_factories.UserFactory(email=self.email)
         access_token = create_access_token(identity=self.email)
@@ -517,7 +518,7 @@ class EduconnectTest:
 
 
 class PerformanceTest:
-    @override_settings(IS_PERFORMANCE_TESTS=True)
+    @pytest.mark.settings(IS_PERFORMANCE_TESTS=True)
     def test_performance_tests(self, client):
         user = users_factories.UserFactory(dateOfBirth=datetime.date.today() - relativedelta(years=15))
 

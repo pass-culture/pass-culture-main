@@ -1,13 +1,12 @@
 import classNames from 'classnames'
 
 import {
+  CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
   CollectiveOfferStatus,
 } from 'apiClient/v1'
+import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
-import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { useOfferEditionURL } from 'commons/hooks/useOfferEditionURL'
 import { CheckboxCell } from 'components/OffersTable/Cells/CheckboxCell'
 import { OfferNameCell } from 'components/OffersTable/Cells/OfferNameCell/OfferNameCell'
 import { OfferVenueCell } from 'components/OffersTable/Cells/OfferVenueCell'
@@ -32,9 +31,8 @@ function isCollectiveOfferActiveOrPreBooked(
   offer: CollectiveOfferResponseModel
 ) {
   return (
-    offer.status === CollectiveOfferStatus.ACTIVE ||
-    (offer.status === CollectiveOfferStatus.SOLD_OUT &&
-      offer.booking?.booking_status === 'PENDING')
+    offer.displayedStatus === CollectiveOfferDisplayedStatus.ACTIVE ||
+    offer.displayedStatus === CollectiveOfferDisplayedStatus.PREBOOKED
   )
 }
 
@@ -45,26 +43,23 @@ export const CollectiveOfferRow = ({
   urlSearchFilters,
   isFirstRow,
 }: CollectiveOfferRowProps) => {
-  const isCollectiveOffersExpirationEnabled = useActiveFeature(
-    'ENABLE_COLLECTIVE_OFFERS_EXPIRATION'
-  )
+  const id = computeURLCollectiveOfferId(offer.id, Boolean(offer.isShowcase))
+  const rowId = `collective-offer-${id}`
 
-  const editionOfferLink = useOfferEditionURL({
-    isOfferEducational: true,
-    offerId: offer.id,
-    status: offer.status,
-    isShowcase: Boolean(offer.isShowcase),
-  })
+  const isOfferDraft =
+    offer.status === CollectiveOfferStatus.DRAFT &&
+    `/offre/collectif/${id}/creation`
 
-  const rowId = `collective-offer-${offer.isShowcase ? 'T-' : ''}${offer.id}`
+  const offerLink = isOfferDraft || `/offre/${id}/collectif/recapitulatif`
+
+  const editionOfferLink = isOfferDraft || `/offre/${id}/collectif/edition`
 
   const bookingLimitDate = offer.stocks[0]?.bookingLimitDatetime
 
   const hasExpirationRow =
-    isCollectiveOffersExpirationEnabled &&
     !offer.isShowcase &&
     isCollectiveOfferActiveOrPreBooked(offer) &&
-    bookingLimitDate
+    !!bookingLimitDate
 
   return (
     <>
@@ -75,75 +70,66 @@ export const CollectiveOfferRow = ({
         })}
         data-testid="offer-item-row"
       >
-        <th
-          rowSpan={hasExpirationRow ? 2 : 1}
-          scope="rowgroup"
-          className={styles['reference-row-head']}
-          id={rowId}
-        >
-          <span className="visually-hidden">{offer.name}</span>
-        </th>
         <CheckboxCell
+          rowId={rowId}
           offerName={offer.name}
           isSelected={isSelected}
-          disabled={isOfferDisabled(offer.status)}
+          disabled={!offer.isEditable}
           selectOffer={() => selectOffer(offer)}
-          headers={`${rowId} collective-offer-head-checkbox`}
+          className={styles['collective-cell-checkbox']}
         />
-        {isCollectiveOffersExpirationEnabled && (
-          <td className={styles['expiration-date-cell']} />
-        )}
+        <td className={styles['expiration-date-cell']} />
         <ThumbCell
+          rowId={rowId}
           offer={offer}
-          editionOfferLink={editionOfferLink}
-          inactive={isOfferDisabled(offer.status)}
-          headers={`${rowId} collective-offer-head-image`}
+          offerLink={offerLink}
+          inactive={!offer.isEditable}
+          className={styles['collective-cell-thumb']}
         />
-
         <OfferNameCell
+          rowId={rowId}
           offer={offer}
-          editionOfferLink={editionOfferLink}
-          headers={`${rowId} collective-offer-head-name`}
+          offerLink={offerLink}
+          className={styles['collective-cell-name']}
         />
-
-        {isCollectiveOffersExpirationEnabled && (
-          <OfferEventDateCell
-            offer={offer}
-            headers={`${rowId} collective-offer-head-expiration-date`}
-          />
-        )}
-
+        <OfferEventDateCell
+          rowId={rowId}
+          offer={offer}
+          className={styles['collective-cell-event-date']}
+        />
         <OfferVenueCell
+          rowId={rowId}
           venue={offer.venue}
-          headers={`${rowId} collective-offer-head-venue`}
+          className={styles['collective-cell-venue']}
         />
-
         <OfferInstitutionCell
+          rowId={rowId}
           educationalInstitution={offer.educationalInstitution}
-          headers={`${rowId} collective-offer-head-institution`}
+          className={styles['collective-cell-institution']}
         />
-
         <CollectiveOfferStatusCell
+          rowId={rowId}
           offer={offer}
-          headers={`${rowId} collective-offer-head-status`}
+          className={styles['collective-cell-status']}
         />
-
         <CollectiveActionsCells
+          rowId={rowId}
           offer={offer}
           editionOfferLink={editionOfferLink}
           urlSearchFilters={urlSearchFilters}
           isSelected={isSelected}
           deselectOffer={() => selectOffer(offer)}
-          headers={`${rowId} collective-offer-head-actions`}
+          className={styles['collective-cell-actions']}
         />
       </tr>
       {hasExpirationRow && (
         <tr className={styles['collective-row']}>
           <td colSpan={1} />
           <ExpirationCell
+            rowId={rowId}
             offer={offer}
             bookingLimitDate={bookingLimitDate}
-            headers={`${rowId} collective-offer-head-expiration`}
+            className={styles['collective-cell-expiration']}
           />
         </tr>
       )}

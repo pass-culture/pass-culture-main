@@ -11,23 +11,22 @@ from pcapi.core.object_storage import delete_public_object
 from pcapi.core.object_storage import store_public_object
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.testing import override_settings
 
 
 class StorePublicObjectTest:
-    @override_settings(OBJECT_STORAGE_PROVIDER="local")
+    @pytest.mark.settings(OBJECT_STORAGE_PROVIDER="local")
     @patch("pcapi.core.object_storage.backends.local.LocalBackend.store_public_object")
     def test_local_backend_call(self, mock_local_store_public_object):
         store_public_object("folder", "object_id", b"mouette", "image/jpeg", bucket="bucket")
         mock_local_store_public_object.assert_called_once_with("folder", "object_id", b"mouette", "image/jpeg")
 
-    @override_settings(OBJECT_STORAGE_PROVIDER="GCP")
+    @pytest.mark.settings(OBJECT_STORAGE_PROVIDER="GCP")
     @patch("pcapi.core.object_storage.backends.gcp.GCPBackend.store_public_object")
     def test_gcp_backend_call(self, mock_gcp_store_public_object):
         store_public_object("folder", "object_id", b"mouette", "image/jpeg", bucket="bucket")
         mock_gcp_store_public_object.assert_called_once_with("folder", "object_id", b"mouette", "image/jpeg")
 
-    @override_settings(OBJECT_STORAGE_PROVIDER="local,GCP")
+    @pytest.mark.settings(OBJECT_STORAGE_PROVIDER="local,GCP")
     @patch("pcapi.core.object_storage.backends.local.LocalBackend.store_public_object")
     @patch("pcapi.core.object_storage.backends.gcp.GCPBackend.store_public_object")
     def test_multiple_backends_call(self, mock_gcp_store_public_object, mock_local_store_public_object):
@@ -37,16 +36,16 @@ class StorePublicObjectTest:
 
 
 class CheckBackendSettingTest:
-    @override_settings(OBJECT_STORAGE_PROVIDER="")
+    @pytest.mark.settings(OBJECT_STORAGE_PROVIDER="")
     def test_empty_setting(self):
         with pytest.raises(RuntimeError):
             _check_backend_setting()
 
-    @override_settings(OBJECT_STORAGE_PROVIDER="local, GCP")
+    @pytest.mark.settings(OBJECT_STORAGE_PROVIDER="local, GCP")
     def test_correct_multi_values(self):
         _check_backend_setting()
 
-    @override_settings(OBJECT_STORAGE_PROVIDER="AWS")
+    @pytest.mark.settings(OBJECT_STORAGE_PROVIDER="AWS")
     def test_unknown_backend(self):
         with pytest.raises(RuntimeError):
             _check_backend_setting()
@@ -65,19 +64,19 @@ class CheckBackendsModulePathsTest:
 
 
 class DeletePublicObjectTest:
-    @override_settings(OBJECT_STORAGE_PROVIDER="local")
+    @pytest.mark.settings(OBJECT_STORAGE_PROVIDER="local")
     @patch("pcapi.core.object_storage.backends.local.LocalBackend.delete_public_object")
     def test_local_backend_call(self, mock_local_delete_public_object):
         delete_public_object("folder", "object_id", bucket="bucket")
         mock_local_delete_public_object.assert_called_once_with("folder", "object_id")
 
-    @override_settings(OBJECT_STORAGE_PROVIDER="GCP")
+    @pytest.mark.settings(OBJECT_STORAGE_PROVIDER="GCP")
     @patch("pcapi.core.object_storage.backends.gcp.GCPBackend.delete_public_object")
     def test_gcp_backend_call(self, mock_gcp_delete_public_object):
         delete_public_object("folder", "object_id", bucket="bucket")
         mock_gcp_delete_public_object.assert_called_once_with("folder", "object_id")
 
-    @override_settings(OBJECT_STORAGE_PROVIDER="GCP")
+    @pytest.mark.settings(OBJECT_STORAGE_PROVIDER="GCP")
     @patch("pcapi.core.object_storage.backends.gcp.GCPBackend.get_gcp_storage_client_bucket")
     def test_gcp_backend_call_when_gcp_return_return_not_found_error_not_raises_exception(
         self, mocked_get_gcp_storage_client_bucket
@@ -95,7 +94,7 @@ class DeletePublicObjectTest:
         except NotFound as exc:
             assert False, f"'delete_public_object' raised an exception {exc}"
 
-    @override_settings(OBJECT_STORAGE_PROVIDER="local,GCP")
+    @pytest.mark.settings(OBJECT_STORAGE_PROVIDER="local,GCP")
     @patch("pcapi.core.object_storage.backends.local.LocalBackend.delete_public_object")
     @patch("pcapi.core.object_storage.backends.gcp.GCPBackend.delete_public_object")
     def test_multiple_backends_call(self, mock_gcp_delete_public_object, mock_local_delete_public_object):

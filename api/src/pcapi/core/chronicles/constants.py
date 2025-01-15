@@ -2,7 +2,7 @@ from enum import Enum
 
 
 ANONYMIZED_EMAIL = "anonymized_email@anonymized.passculture"
-IMPORT_CHUNK_SIZE = 100
+IMPORT_CHUNK_SIZE = 500
 BOOK_CLUB_FORM_ID = "YeTcrzM0"
 
 

@@ -23,7 +23,8 @@ export const DayCheckbox = ({
       label={undefined}
       {...field}
       {...inputProps}
-      className={styles['checkbox']}
+      className={styles['day-checkbox']}
+      inputClassName={styles['day-checkbox-input']}
       aria-label={label}
       data-letter={letter}
     />

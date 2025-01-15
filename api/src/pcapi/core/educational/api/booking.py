@@ -15,6 +15,7 @@ from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational import validation
 from pcapi.core.educational.exceptions import AdageException
 from pcapi.core.educational.repository import find_pending_booking_confirmation_limit_date_in_3_days
+from pcapi.core.educational.schemas import RedactorInformation
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository
@@ -31,7 +32,6 @@ from pcapi.repository import transaction
 from pcapi.routes.adage.v1.serialization import prebooking
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_reimbursement_notification
-from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
 from pcapi.routes.serialization import collective_bookings_serialize
 
 
@@ -304,12 +304,15 @@ def cancel_collective_offer_booking(offer_id: int, author_id: int, user_connect_
     if collective_offer is None:
         raise exceptions.CollectiveOfferNotFound()
 
+    if FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+        validation.check_collective_offer_action_is_allowed(
+            collective_offer, educational_models.CollectiveOfferAllowedAction.CAN_CANCEL
+        )
+
     if collective_offer.collectiveStock is None:
         raise exceptions.CollectiveStockNotFound()
 
     collective_stock = collective_offer.collectiveStock
-
-    # Offer is reindexed in the end of this function
     cancelled_booking = _cancel_collective_booking_by_offerer(collective_stock, author_id, user_connect_as)
 
     logger.info(
@@ -372,10 +375,6 @@ def _cancel_collective_booking_by_offerer(
     author_id: int,
     user_connect_as: bool,
 ) -> educational_models.CollectiveBooking:
-    """
-    Cancel booking.
-    Note that this will not reindex the associated offer in Algolia
-    """
     booking_to_cancel: educational_models.CollectiveBooking | None = next(
         (
             collective_booking
@@ -392,11 +391,8 @@ def _cancel_collective_booking_by_offerer(
         cancellation_reason = educational_models.CollectiveBookingCancellationReasons.OFFERER_CONNECT_AS
     else:
         cancellation_reason = educational_models.CollectiveBookingCancellationReasons.OFFERER
-    _cancel_collective_booking(
-        booking_to_cancel,
-        cancellation_reason,
-        author_id,
-    )
+
+    _cancel_collective_booking(booking_to_cancel, cancellation_reason, author_id)
 
     return booking_to_cancel
 

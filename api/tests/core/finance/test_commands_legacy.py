@@ -16,7 +16,6 @@ from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
-from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.utils import human_ids
@@ -27,7 +26,7 @@ pytestmark = [
 ]
 
 
-@override_settings(SLACK_GENERATE_INVOICES_FINISHED_CHANNEL="channel")
+@pytest.mark.settings(SLACK_GENERATE_INVOICES_FINISHED_CHANNEL="channel")
 def test_generate_invoices_internal_notification(run_command, css_font_http_request_mock):
     offerer = offerers_factories.OffererFactory()
     bank_account = finance_factories.BankAccountFactory(offerer=offerer)

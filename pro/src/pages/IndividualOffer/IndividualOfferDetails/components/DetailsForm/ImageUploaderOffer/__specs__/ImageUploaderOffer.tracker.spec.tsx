@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
-import React from 'react'
 
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { IndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
@@ -51,10 +50,8 @@ const renderImageUploaderOffer = (props: ImageUploaderOfferProps) => {
     </IndividualOfferContext.Provider>,
     {
       storeOverrides: {
-        user: {
-          currentUser: sharedCurrentUserFactory(),
-          selectedOffererId: 1,
-        },
+        user: { currentUser: sharedCurrentUserFactory() },
+        offerer: { selectedOffererId: 1, offererNames: [] },
       },
     }
   )
@@ -87,6 +84,7 @@ describe('ImageUploaderOffer::tracker', () => {
       imageType: UploaderModeEnum.OFFER,
       isEdition: false,
       offerType: 'individual',
+      imageCreationStage: 'add image',
     })
   })
 })

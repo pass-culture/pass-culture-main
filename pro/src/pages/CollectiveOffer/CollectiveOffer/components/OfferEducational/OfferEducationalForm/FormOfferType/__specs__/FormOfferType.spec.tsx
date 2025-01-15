@@ -23,16 +23,8 @@ describe('FormOfferType', () => {
     disableForm: false,
     domainsOptions: [],
     nationalPrograms: [],
+    isTemplate: false,
   }
-
-  it('should render the form description', async () => {
-    renderFormOfferType(formTypeProps)
-    expect(
-      await screen.findByText(
-        'Le type de l’offre permet de la caractériser et de la valoriser au mieux pour les enseignants et chefs d’établissement.'
-      )
-    ).toBeInTheDocument()
-  })
 
   it('should offer the national program oprtions filtered for the selected domains', async () => {
     renderFormOfferType({

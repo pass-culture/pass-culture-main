@@ -11,6 +11,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.search import IndexationReason
 from pcapi.core.search import async_index_venue_ids
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils import image_conversion
 
 
@@ -55,17 +56,30 @@ def get_venues_without_photo(frequency: int) -> list[offerers_models.Venue]:
         # x % SHORTEST_MONTH_LENGTH is always < SHORTEST_MONTH_LENGTH
         return []
 
-    query = (
-        offerers_models.Venue.query.join(offerers_models.Offerer)
-        .filter(
-            offerers_models.Venue.isPermanent.is_(True),
-            offerers_models.Venue.bannerUrl.is_(None),  # type: ignore[attr-defined]
-            offerers_models.Venue.venueTypeCode != "Lieu administratif",
-            offerers_models.Offerer.isActive.is_(True),
-            offerers_models.Venue.id % (SHORTEST_MONTH_LENGTH // frequency) == (day - 1) // frequency,
+    if FeatureToggle.WIP_IS_OPEN_TO_PUBLIC.is_active():
+        query = (
+            offerers_models.Venue.query.join(offerers_models.Offerer)
+            .filter(
+                offerers_models.Venue.isOpenToPublic.is_(True),
+                offerers_models.Venue.bannerUrl.is_(None),  # type: ignore[attr-defined]
+                offerers_models.Venue.venueTypeCode != "Lieu administratif",
+                offerers_models.Offerer.isActive.is_(True),
+                offerers_models.Venue.id % (SHORTEST_MONTH_LENGTH // frequency) == (day - 1) // frequency,
+            )
+            .order_by(offerers_models.Venue.id)
         )
-        .order_by(offerers_models.Venue.id)
-    )
+    else:
+        query = (
+            offerers_models.Venue.query.join(offerers_models.Offerer)
+            .filter(
+                offerers_models.Venue.isPermanent.is_(True),
+                offerers_models.Venue.bannerUrl.is_(None),  # type: ignore[attr-defined]
+                offerers_models.Venue.venueTypeCode != "Lieu administratif",
+                offerers_models.Offerer.isActive.is_(True),
+                offerers_models.Venue.id % (SHORTEST_MONTH_LENGTH // frequency) == (day - 1) // frequency,
+            )
+            .order_by(offerers_models.Venue.id)
+        )
     return query.all()
 
 

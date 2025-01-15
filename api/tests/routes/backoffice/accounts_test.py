@@ -3,6 +3,7 @@ import datetime
 import os
 import re
 from unittest import mock
+from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
 from flask import url_for
@@ -10,6 +11,7 @@ import pytest
 import pytz
 
 from pcapi import settings
+from pcapi.connectors.dms import models as dms_models
 from pcapi.core import token as token_utils
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories_v2 as subcategories
@@ -25,7 +27,6 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription.models import SubscriptionItemStatus
 from pcapi.core.subscription.models import SubscriptionStep
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -1051,9 +1052,9 @@ class GetPublicAccountTest(GetEndpointHelper):
             (datetime.date.today() - relativedelta(days=30)).strftime("Le %d/%m/%Y à ")
         )
         assert history_rows[2]["Commentaire"].startswith("Informations modifiées :")
-        assert "Nom : Pignon => Leblanc" in history_rows[2]["Commentaire"]
+        assert "Nom : Pignon → Leblanc" in history_rows[2]["Commentaire"]
         assert "Prénom : suppression de : François" in history_rows[2]["Commentaire"]
-        assert "Date de naissance : 2001-04-14 => 2000-09-19" in history_rows[2]["Commentaire"]
+        assert "Date de naissance : 2001-04-14 → 2000-09-19" in history_rows[2]["Commentaire"]
         assert history_rows[2]["Auteur"] == admin.full_name
 
         assert history_rows[3]["Type"] == history_models.ActionType.USER_UNSUSPENDED.value
@@ -2857,15 +2858,41 @@ class AnonymizePublicAccountTest(PostEndpointHelper, StorageFolderManager):
             in html_parser.extract_alert(response.data)
         )
 
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application", return_value={})
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation", return_value={})
+    def test_anonymize_public_account_with_user_account_update_request(
+        self,
+        mocked_mark_without_continuation,
+        mocked_archive_application,
+        legit_user,
+        authenticated_client,
+    ):
+        user = users_factories.UserFactory()
+        users_factories.PhoneNumberUpdateRequestFactory(user=user, status=dms_models.GraphQLApplicationStates.accepted)
+        users_factories.FirstNameUpdateRequestFactory(user=user)
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id)
+        assert response.status_code == 302
+
+        assert user.roles == [users_models.UserRole.ANONYMIZED]
+
+        mocked_mark_without_continuation.assert_called_once()
+        mocked_archive_application.assert_called()
+        assert mocked_archive_application.call_count == 2
+
+        assert users_models.UserAccountUpdateRequest.query.count() == 0
+
+        response = authenticated_client.get(response.location)
+        assert "Les informations de l'utilisateur ont été anonymisées" in html_parser.extract_alert(response.data)
+
 
 class ExtractPublicAccountTest(PostEndpointHelper):
     endpoint = "backoffice_web.public_accounts.create_extract_user_gdpr_data"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT
 
-    expected_queries = 5  # session + user + targeted user with joined data + gdpr insert + featureflag
+    expected_queries = 4  # session + user + targeted user with joined data + gdpr insert
 
-    @override_features(WIP_BENEFICIARY_EXTRACT_TOOL=True)
     def test_extract_public_account(self, authenticated_client, legit_user):
 
         user = users_factories.BeneficiaryFactory()
@@ -2888,7 +2915,6 @@ class ExtractPublicAccountTest(PostEndpointHelper):
             in html_parser.extract_alert(response.data)
         )
 
-    @override_features(WIP_BENEFICIARY_EXTRACT_TOOL=True)
     def test_extract_public_account_extract_data_already_exists(self, authenticated_client):
         gdpr_data_extract = users_factories.GdprUserDataExtractBeneficiaryFactory()
 
@@ -2902,7 +2928,6 @@ class ExtractPublicAccountTest(PostEndpointHelper):
 
         assert 1 == users_models.GdprUserDataExtract.query.count()
 
-    @override_features(WIP_BENEFICIARY_EXTRACT_TOOL=True)
     def test_extract_public_account_with_existing_extract_data_expired(self, authenticated_client, legit_user):
         expired_gdpr_data_extract = users_factories.GdprUserDataExtractBeneficiaryFactory(
             dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=8)
@@ -2929,7 +2954,6 @@ class ExtractPublicAccountTest(PostEndpointHelper):
             in html_parser.extract_alert(response.data)
         )
 
-    @override_features(WIP_BENEFICIARY_EXTRACT_TOOL=True)
     def test_extract_public_account_no_user_found(self, authenticated_client):
 
         response = self.post_to_endpoint(authenticated_client, user_id=42)

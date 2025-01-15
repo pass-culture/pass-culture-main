@@ -48,10 +48,8 @@ const renderOfferEducationalActions = (
 ) => {
   return renderWithProviders(<OfferEducationalActions {...props} />, {
     storeOverrides: {
-      user: {
-        currentUser: sharedCurrentUserFactory(),
-        selectedOffererId: 1,
-      },
+      user: { currentUser: sharedCurrentUserFactory() },
+      offerer: { selectedOffererId: 1, offererNames: [] },
     },
     features,
   })

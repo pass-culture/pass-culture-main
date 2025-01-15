@@ -1,6 +1,5 @@
 import { screen } from '@testing-library/react'
 import { Formik } from 'formik'
-import React from 'react'
 
 import { OfferAddressType } from 'apiClient/v1'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'

@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react'
 import { Formik } from 'formik'
-import React from 'react'
 
 import { BaseTimePicker } from '../BaseTimePicker'
 import { SuggestedTimeList } from '../types'

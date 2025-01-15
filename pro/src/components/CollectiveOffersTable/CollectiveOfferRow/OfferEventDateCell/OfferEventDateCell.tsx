@@ -1,3 +1,5 @@
+import classNames from 'classnames'
+
 import {
   CollectiveOfferResponseModel,
   ListOffersVenueResponseModel,
@@ -7,11 +9,13 @@ import {
   toDateStrippedOfTimezone,
 } from 'commons/utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'commons/utils/timezone'
+import { CELLS_DEFINITIONS } from 'components/OffersTable/utils/cellDefinitions'
 import styles from 'styles/components/Cells.module.scss'
 
 export interface OfferEventDateCellProps {
   offer: CollectiveOfferResponseModel
-  headers?: string
+  rowId: string
+  className?: string
 }
 
 function getOfferDate(
@@ -25,8 +29,9 @@ function getOfferDate(
 }
 
 export const OfferEventDateCell = ({
+  rowId,
   offer,
-  headers,
+  className,
 }: OfferEventDateCellProps) => {
   function formattedTime(hour: string | null | undefined) {
     if (!hour) {
@@ -84,7 +89,15 @@ export const OfferEventDateCell = ({
   }
 
   return (
-    <td headers={headers} className={styles['offers-table-cell']}>
+    <td
+      role="cell"
+      className={classNames(
+        styles['offers-table-cell'],
+        styles['event-date-column'],
+        className
+      )}
+      headers={`${rowId} ${CELLS_DEFINITIONS.EVENT_DATE.id}`}
+    >
       <div className={styles['offer-event']}>
         {getFormattedDatesForOffer(offer).map((date) => (
           <span key={date} data-testid="offer-event-date">

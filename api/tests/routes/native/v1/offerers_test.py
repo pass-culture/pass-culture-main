@@ -1,8 +1,10 @@
 import pytest
 
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
+from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import VenueTypeCode
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 
 
@@ -196,3 +198,39 @@ class VenuesTest:
         with assert_num_queries(self.expected_num_queries):
             response = client.get(f"/native/v1/venue/{venue_id}")
             assert response.status_code == 200
+
+
+class OffererHeadlineOfferTest:
+    num_queries = testing.AUTHENTICATION_QUERIES
+    num_queries += 1  # check user_offerer
+    num_queries += 1  # get headline offer
+
+    def test_get_offerer_headline_offer_success(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        pro = user_offerer.user
+        offerer = user_offerer.offerer
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offer = offers_factories.OfferFactory(venue=venue)
+        offers_factories.StockFactory(offer=offer)
+        offers_factories.HeadlineOfferFactory(offer=offer, venue=venue)
+
+        client = client.with_session_auth(email=pro.email)
+        with assert_num_queries(self.num_queries):
+            response = client.get(f"/offerers/{offerer.id}/headline-offer")
+
+        assert response.status_code == 200
+        assert response.json == {
+            "name": offer.name,
+            "id": offer.id,
+            "image": offer.image,
+        }
+
+    def test_get_offerer_headline_offer_not_found(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        pro = user_offerer.user
+        offerer = user_offerer.offerer
+
+        client = client.with_session_auth(email=pro.email)
+        with assert_num_queries(self.num_queries + 1):  # +1 for atomic rollback
+            response = client.get(f"/offerers/{offerer.id}/headline-offer")
+            assert response.status_code == 404

@@ -1,11 +1,14 @@
 import {
   interceptSearch5Adresses,
   sessionLogInAndGoToPage,
+  expectOffersOrBookingsAreFound,
 } from '../support/helpers.ts'
 
 describe('Create individual offers', () => {
   let login: string
-  
+  let venueName: string
+  const stock = '42'
+
   before(() => {
     cy.wrap(Cypress.session.clearAllSavedSessions())
     cy.visit('/connexion')
@@ -14,6 +17,7 @@ describe('Create individual offers', () => {
       url: 'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
     }).then((response) => {
       login = response.body.user.email
+      venueName = response.body.venueName
     })
     cy.setFeatureFlags([{ name: 'WIP_ENABLE_OFFER_ADDRESS', isActive: false }])
   })
@@ -276,7 +280,7 @@ describe('Create individual offers', () => {
     cy.stepLog({ message: 'I fill in stocks' })
     cy.get('#price').type('42')
     cy.get('#bookingLimitDatetime').type('2042-05-03')
-    cy.get('#quantity').type('42')
+    cy.get('#quantity').type(stock)
 
     cy.stepLog({ message: 'I validate stocks step' })
     cy.findByText('Enregistrer et continuer').click()
@@ -303,7 +307,13 @@ describe('Create individual offers', () => {
     })
 
     cy.stepLog({ message: 'my new physical offer should be displayed' })
-    cy.contains('H2G2 Le Guide du voyageur galactique')
+    const expectedNewResults = [
+      ['', "Nom de l'offre", 'Lieu', 'Stocks', 'Statut', ''],
+      ['', offerTitle, venueName, stock, 'publiée'],
+      [],
+    ]
+
+    expectOffersOrBookingsAreFound(expectedNewResults)
     cy.get('@ean').then((ean) => {
       cy.contains(ean.toString())
     })

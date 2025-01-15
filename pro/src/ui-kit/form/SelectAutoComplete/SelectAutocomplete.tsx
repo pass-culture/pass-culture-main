@@ -1,7 +1,6 @@
 import cx from 'classnames'
 import { useField, useFormikContext } from 'formik'
 import {
-  ForwardedRef,
   KeyboardEventHandler,
   useEffect,
   useRef,
@@ -10,6 +9,7 @@ import {
 
 import { SelectOption } from 'commons/custom_types/form'
 
+import { SelectedValuesTags } from '../../SelectedValuesTags/SelectedValuesTags'
 import { BaseInput } from '../shared/BaseInput/BaseInput'
 import {
   FieldLayout,
@@ -18,7 +18,6 @@ import {
 
 import { OptionsList } from './OptionsList/OptionsList'
 import styles from './SelectAutocomplete.module.scss'
-import { SelectedValuesTags } from './SelectedValuesTags/SelectedValuesTags'
 import { Toggle } from './Toggle/Toggle'
 
 export type SelectAutocompleteProps = FieldLayoutBaseProps & {
@@ -326,7 +325,7 @@ export const SelectAutocomplete = ({
         <div
           aria-live="polite"
           aria-relevant="text"
-          className="visually-hidden"
+          className={styles['visually-hidden']}
           id={`help-${name}`}
         >
           {multi && `${field.value.length} options sélectionnées`}

@@ -316,4 +316,48 @@ describe('VenueFormScreen', () => {
       ).toBeInTheDocument()
     })
   })
+
+  it('should not send opening hours if the filed was not filled, and if there were no opening hours already added previously', async () => {
+    const editVenueSpy = vi.spyOn(api, 'editVenue')
+
+    renderForm({ ...baseVenue, openingHours: null })
+
+    await userEvent.click(screen.getByText(/Enregistrer/))
+
+    expect(editVenueSpy).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ openingHours: null })
+    )
+  })
+
+  it('should send opening hours if the filed was not filled, but the openingHours already existed', async () => {
+    const editVenueSpy = vi.spyOn(api, 'editVenue')
+
+    renderForm({
+      ...baseVenue,
+      openingHours: {
+        MONDAY: [
+          { open: '09:00', close: '12:00' },
+          { open: '13:00', close: '18:00' },
+        ],
+      },
+    })
+
+    await userEvent.click(screen.getByText(/Enregistrer/))
+
+    expect(editVenueSpy).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        openingHours: expect.arrayContaining([
+          {
+            weekday: 'monday',
+            timespan: [
+              ['09:00', '12:00'],
+              ['13:00', '18:00'],
+            ],
+          },
+        ]),
+      })
+    )
+  })
 })

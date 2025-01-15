@@ -1,7 +1,6 @@
 from datetime import date
 from datetime import datetime
 from decimal import Decimal
-import enum
 import logging
 import typing
 
@@ -12,6 +11,7 @@ from pydantic.v1.class_validators import validator
 import pcapi.core.categories.subcategories_v2 as subcategories
 from pcapi.core.categories.subcategories_v2 import EacFormat
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational.models import OfferAddressType
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.native.v1.serialization import common_models
 from pcapi.routes.serialization import BaseModel
@@ -43,7 +43,7 @@ class OfferStockResponse(BaseModel):
     isBookable: bool
     price: int
     numberOfTickets: int | None
-    educationalPriceDetail: str | None
+    priceDetail: str | None = Field(alias="educationalPriceDetail")
 
     _convert_price = validator("price", pre=True, allow_reuse=True)(convert_to_cent)
 
@@ -113,12 +113,6 @@ class EacFormatsResponseModel(BaseModel):
 
     class Config:
         use_enum_values = True
-
-
-class OfferAddressType(enum.Enum):
-    OFFERER_VENUE = "offererVenue"
-    SCHOOL = "school"
-    OTHER = "other"
 
 
 class CollectiveOfferOfferVenue(BaseModel):

@@ -36,8 +36,6 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.models as subscription_models
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users import testing as users_testing
@@ -91,7 +89,7 @@ class AccountTest:
         assert response.json["email"] == ["Utilisateur introuvable"]
 
     @time_machine.travel("2018-06-01", tick=False)
-    @override_features(ENABLE_NATIVE_CULTURAL_SURVEY=True)
+    @pytest.mark.features(ENABLE_NATIVE_CULTURAL_SURVEY=True)
     def test_get_user_profile(self, client, app):
         USER_DATA = {
             "email": self.identifier,
@@ -236,7 +234,7 @@ class AccountTest:
             me_response = client.get("/native/v1/me")
             assert me_response.json["recreditAmountToShow"] == 3000
 
-    @override_features(ENABLE_UBBLE=False)
+    @pytest.mark.features(ENABLE_UBBLE=False)
     def test_maintenance_message(self, client):
         """
         Test that when a user has no subscription message and when the
@@ -304,25 +302,25 @@ class AccountTest:
         assert msg["popOverIcon"] is None
 
     @pytest.mark.parametrize(
-        "feature_flags",
-        [
-            {"ENABLE_CULTURAL_SURVEY": True, "ENABLE_NATIVE_CULTURAL_SURVEY": False},
-            {"ENABLE_CULTURAL_SURVEY": False, "ENABLE_NATIVE_CULTURAL_SURVEY": True},
-        ],
+        "enable_cultural_survey,enable_native_cultural_survey",
+        [(True, False), (False, True)],
     )
-    def test_user_should_need_to_fill_cultural_survey(self, client, feature_flags):
+    def test_user_should_need_to_fill_cultural_survey(
+        self, features, client, enable_cultural_survey, enable_native_cultural_survey
+    ):
         user = users_factories.UserFactory(age=18)
 
         expected_num_queries = 7  # user + booking + deposit + feature + beneficiary_fraud_review * 2 + achievement
 
         client.with_token(user.email)
-        with override_features(**feature_flags):
-            with assert_num_queries(expected_num_queries):
-                response = client.get("/native/v1/me")
+        features.ENABLE_CULTURAL_SURVEY = enable_cultural_survey
+        features.ENABLE_NATIVE_CULTURAL_SURVEY = enable_native_cultural_survey
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v1/me")
 
         assert response.json["needsToFillCulturalSurvey"] == True
 
-    @override_features(ENABLE_CULTURAL_SURVEY=True, ENABLE_NATIVE_CULTURAL_SURVEY=True)
+    @pytest.mark.features(ENABLE_CULTURAL_SURVEY=True, ENABLE_NATIVE_CULTURAL_SURVEY=True)
     def test_not_eligible_user_should_not_need_to_fill_cultural_survey(self, client):
         user = users_factories.UserFactory(age=4)
 
@@ -334,7 +332,7 @@ class AccountTest:
 
         assert not response.json["needsToFillCulturalSurvey"]
 
-    @override_features(ENABLE_CULTURAL_SURVEY=False, ENABLE_NATIVE_CULTURAL_SURVEY=False)
+    @pytest.mark.features(ENABLE_CULTURAL_SURVEY=False, ENABLE_NATIVE_CULTURAL_SURVEY=False)
     def test_cultural_survey_disabled(self, client):
         user = users_factories.UserFactory(age=18)
 
@@ -426,24 +424,28 @@ class AccountTest:
         user = users_factories.UserFactory()
         now = datetime.utcnow()
         last_week = now - timedelta(days=7)
-        AchievementFactory(
+        achievement_1 = AchievementFactory(
             user=user,
             name=achievements_models.AchievementEnum.FIRST_MOVIE_BOOKING,
             unlockedDate=last_week,
             seenDate=last_week,
         )
-        AchievementFactory(user=user, name=achievements_models.AchievementEnum.FIRST_BOOK_BOOKING, unlockedDate=now)
+        achievement_2 = AchievementFactory(
+            user=user, name=achievements_models.AchievementEnum.FIRST_BOOK_BOOKING, unlockedDate=now
+        )
 
         response = client.with_token(user.email).get("/native/v1/me")
 
         assert response.status_code == 200, response.json
         assert response.json["achievements"] == [
             {
+                "id": achievement_1.id,
                 "name": achievements_models.AchievementEnum.FIRST_MOVIE_BOOKING.name,
                 "unlockedDate": format_into_utc_date(last_week),
                 "seenDate": format_into_utc_date(last_week),
             },
             {
+                "id": achievement_2.id,
                 "name": achievements_models.AchievementEnum.FIRST_BOOK_BOOKING.name,
                 "unlockedDate": format_into_utc_date(now),
                 "seenDate": None,
@@ -1267,7 +1269,7 @@ class UpdateUserEmailTest:
         assert user.email == self.identifier
         assert mails_testing.outbox == email_sent
 
-    @override_settings(MAX_EMAIL_UPDATE_ATTEMPTS=1)
+    @pytest.mark.settings(MAX_EMAIL_UPDATE_ATTEMPTS=1)
     @patch("pcapi.core.users.email.update.check_no_ongoing_email_update_request")
     def test_update_email_too_many_attempts(self, _mock, client):
         """
@@ -1925,7 +1927,7 @@ class SendPhoneValidationCodeTest:
         user = users_models.User.query.get(user.id)
         assert user.is_phone_validated
 
-    @override_settings(MAX_SMS_SENT_FOR_PHONE_VALIDATION=1)
+    @pytest.mark.settings(MAX_SMS_SENT_FOR_PHONE_VALIDATION=1)
     def test_send_phone_validation_code_too_many_attempts(self, client):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5),
@@ -2076,7 +2078,7 @@ class SendPhoneValidationCodeTest:
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.INVALID_PHONE_COUNTRY_CODE]
         assert fraud_check.type == fraud_models.FraudCheckType.PHONE_VALIDATION
 
-    @override_settings(BLACKLISTED_SMS_RECIPIENTS={"+33601020304"})
+    @pytest.mark.settings(BLACKLISTED_SMS_RECIPIENTS={"+33601020304"})
     def test_blocked_phone_number(self, client):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5),
@@ -2178,7 +2180,7 @@ class ValidatePhoneNumberTest:
         assert user.is_phone_validated
         assert user.has_beneficiary_role
 
-    @override_settings(MAX_PHONE_VALIDATION_ATTEMPTS=1)
+    @pytest.mark.settings(MAX_PHONE_VALIDATION_ATTEMPTS=1)
     def test_validate_phone_number_too_many_attempts(self, client, app):
         user = users_factories.UserFactory(
             phoneNumber="+33607080900",
@@ -2215,7 +2217,7 @@ class ValidatePhoneNumberTest:
             assert fraud_check.reason == expected_reason
             assert content["phone_number"] == "+33607080900"
 
-    @override_settings(MAX_SMS_SENT_FOR_PHONE_VALIDATION=1)
+    @pytest.mark.settings(MAX_SMS_SENT_FOR_PHONE_VALIDATION=1)
     @time_machine.travel("2022-05-17 15:00")
     def test_phone_validation_remaining_attempts(self, client):
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5))

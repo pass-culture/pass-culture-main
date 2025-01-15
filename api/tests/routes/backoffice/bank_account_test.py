@@ -1,4 +1,6 @@
+import csv
 import datetime
+from io import StringIO
 from unittest import mock
 
 from flask import url_for
@@ -327,7 +329,8 @@ class DownloadReimbursementDetailsTest(PostEndpointHelper):
     endpoint_kwargs = {"bank_account_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    def test_download_reimbursement_details(self, authenticated_client):
+    @pytest.mark.parametrize("is_use_offer_address_ff_active", [True, False])
+    def test_download_reimbursement_details(self, features, is_use_offer_address_ff_active, authenticated_client):
         venue = offerers_factories.VenueFactory(pricing_point="self")
         booking = bookings_factories.UsedBookingFactory(stock__offer__venue=venue)
         bank_account = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
@@ -388,7 +391,7 @@ class DownloadReimbursementDetailsTest(PostEndpointHelper):
             bankAccount=bank_account, pricings=[second_pricing], amount=-1010
         )
         second_invoice = finance_factories.InvoiceFactory(cashflows=[second_cashflow], bankAccount=bank_account)
-
+        features.WIP_ENABLE_OFFER_ADDRESS = is_use_offer_address_ff_active
         response = self.post_to_endpoint(
             authenticated_client,
             bank_account_id=bank_account.id,
@@ -405,6 +408,48 @@ class DownloadReimbursementDetailsTest(PostEndpointHelper):
         expected_length += 1  # empty line
 
         assert len(response.data.split(b"\n")) == expected_length
+        assert len(response.data.split(b"\n")[0].split(b";")) == 22  # headers
+
+        reader = csv.DictReader(StringIO(response.data.decode("utf-8-sig")), delimiter=";")
+        expected_header = [
+            "Réservations concernées par le remboursement",
+            "Date du justificatif",
+            "N° du justificatif",
+            "N° de virement",
+            "Intitulé du compte bancaire",
+            "IBAN",
+            "Raison sociale du lieu",
+            "Adresse du lieu",
+            "SIRET du lieu",
+            "Nom de l'offre",
+            "N° de réservation (offre collective)",
+            "Nom (offre collective)",
+            "Prénom (offre collective)",
+            "Nom de l'établissement (offre collective)",
+            "Date de l'évènement (offre collective)",
+            "Contremarque",
+            "Date de validation de la réservation",
+            "Intitulé du tarif",
+            "Montant de la réservation",
+            "Barème",
+            "Montant remboursé",
+            "Type d'offre",
+        ]
+        if is_use_offer_address_ff_active:
+            expected_header[6:10] = [
+                "SIRET de la structure",
+                "Raison sociale de la structure",
+                "Nom de l'offre",
+                "Adresse de l'offre",
+            ]
+        assert reader.fieldnames == expected_header
+
+        rows = list(reader)
+        if is_use_offer_address_ff_active:
+            assert rows[1]["Adresse de l'offre"] == booking.stock.offer.offererAddress.address.fullAddress
+        else:
+            assert rows[1]["Adresse du lieu"] == venue.offererAddress.address.fullAddress
+
         assert str(response.data).count("Incident") == 3
 
 

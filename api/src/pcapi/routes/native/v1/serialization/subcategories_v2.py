@@ -50,6 +50,7 @@ class NativeCategoryResponseModelv2(BaseModel):
     value: str | None
     genre_type: subcategories_v2.GenreType | None
     parents: list[subcategories_v2.SearchGroupNameEnumv2]
+    positions: dict[str, int] | None
 
     class Config:
         alias_generator = to_camel
@@ -90,7 +91,7 @@ class CategoryResponseModel(ConfiguredBaseModel):
     label: str
     parents: list[str]
     gtls: list[str] | None = None
-    position: int | None = None
+    positions: dict[str, int] | None
     search_filter: str | None = None
 
 

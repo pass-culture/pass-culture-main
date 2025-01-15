@@ -84,7 +84,7 @@ Si la valeur initiale est `False`, ajouter une ligne dans le tuple `FEATURES_DIS
 
 3. ⚠️ Dans le cas d'utilisation _ajout d'une fonctionnalité activée une fois que les développements sont finis_, **créer un ticket** pour supprimer le feature flag, ou a mininima pour modifier sa valeur initiale, une fois le chantier fini. En effet, cela peut avoir un impact sur :
 
-- la qualité des tests : c'est la valeur par défaut qui est utilisée (sauf si `@override_features` est utilisé)
+- la qualité des tests : c'est la valeur par défaut qui est utilisée (sauf si `@pytest.mark.features` est utilisé)
 - les bugs sur l'environnement `testing` : les données sont périodiquement regénérées et les Feature Flag sont alors réinitialisés avec leur valeur par défaut.
 
 ### Transmettre un Feature Flag à l'app jeune
@@ -97,4 +97,4 @@ Pour que cet ajout soit mis à disposition dans le contrat d'interface généré
 
 1. Enlever toute utilisation du flag
 2. Enlever la ligne de FeatureToggle
-3. Ajouter une [migration post-déploiement](https://github.com/pass-culture/pass-culture-main/blob/565610f9900585e25984c19c02aaacee68e7a49e/api/src/pcapi/alembic/versions/20221207T220341_ba38f011683b_remove_use_pricing_point_feature_flag.py) de suppression du rang concerné dans la table `feature`
+3. Pour les environnements locaux et/ou hors Docker, `flask clean_data` supprimera les FF qui sont en base mais ne sont plus utilisées. Dans les environnements déployés, la commande est automatiquement lancée en fin de déploiement.

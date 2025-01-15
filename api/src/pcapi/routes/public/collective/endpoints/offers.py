@@ -6,6 +6,7 @@ from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import validation as educational_validation
 from pcapi.core.educational.api import national_program as np_api
 from pcapi.core.educational.api import offer as educational_api_offer
+from pcapi.core.educational.models import OfferAddressType
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import exceptions as offers_exceptions
@@ -18,7 +19,6 @@ from pcapi.routes.public import utils
 from pcapi.routes.public.collective.serialization import offers as offers_serialization
 from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
-from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils.image_conversion import DO_NOT_CROP
@@ -311,7 +311,8 @@ def patch_collective_offer_public(
                 status_code=400,
             )
 
-    new_values["priceDetail"] = new_values.pop("educationalPriceDetail", None)
+    if "educationalPriceDetail" in new_values:
+        new_values["priceDetail"] = new_values.pop("educationalPriceDetail")
 
     with suppress(KeyError):
         if not new_values["formats"] and not new_values["subcategoryId"]:
@@ -370,7 +371,7 @@ def patch_collective_offer_public(
             )
 
     if new_values.get("offerVenue"):
-        if new_values["offerVenue"] == collective_offers_serialize.OfferAddressType.OFFERER_VENUE.value:
+        if new_values["offerVenue"] == OfferAddressType.OFFERER_VENUE.value:
             venue = offerers_repository.find_venue_by_id(new_values["offerVenue"]["venuId"])
             if (not venue) or (venue.managingOffererId != current_api_key.offerer.id):
                 raise ApiErrors(
@@ -398,15 +399,6 @@ def patch_collective_offer_public(
                     "imageCredit": [
                         "Les champs imageFile et imageCredit sont liés, si l'un est rempli l'autre doit l'être aussi"
                     ],
-                },
-                status_code=400,
-            )
-
-    if "price" in new_values:
-        if offer.collectiveStock.price < new_values["price"]:
-            raise ApiErrors(
-                errors={
-                    "price": ["Le prix ne peut pas etre supérieur au prix existant"],
                 },
                 status_code=400,
             )
@@ -507,13 +499,18 @@ def patch_collective_offer_public(
             },
             status_code=404,
         )
-    except educational_exceptions.CollectiveOfferNotEditable:
+    except (
+        educational_exceptions.CollectiveOfferNotEditable,
+        educational_exceptions.CollectiveOfferStockBookedAndBookingNotPending,
+    ):
+        raise ApiErrors(errors={"global": ["Offre non éditable."]}, status_code=422)
+    except educational_exceptions.CollectiveOfferForbiddenFields as e:
         raise ApiErrors(
-            errors={
-                "global": ["Offre non éditable."],
-            },
-            status_code=422,
+            errors={"global": [f"Seuls les champs {', '.join(e.allowed_fields)} peuvent être modifiés."]},
+            status_code=400,
         )
+    except educational_exceptions.PriceRequesteCantBedHigherThanActualPrice:
+        raise ApiErrors(errors={"price": ["Le prix ne peut pas etre supérieur au prix existant"]}, status_code=400)
     except offers_exceptions.UnknownOfferSubCategory:
         raise ApiErrors(
             errors={"subcategoryId": ["Sous-catégorie non trouvée."]},

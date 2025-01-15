@@ -13,7 +13,7 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_VENUE_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { useNotification } from 'commons/hooks/useNotification'
-import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { ButtonImageEdit } from 'components/ImageUploader/components/ButtonImageEdit/ButtonImageEdit'
 import { OnImageUploadArgs } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { UploadImageValues } from 'components/ImageUploader/components/ButtonImageEdit/types'
@@ -113,6 +113,7 @@ export const VenueEditionHeader = ({
       venueId: venue.id,
       imageType: UploaderModeEnum.VENUE,
       isEdition: true,
+      imageCreationStage: 'add image',
     })
   }
 
@@ -129,38 +130,42 @@ export const VenueEditionHeader = ({
       />
 
       <div className={styles['venue-details']}>
-        <div className={styles['venue-type']}>{venueType?.label}</div>
-        <h2 className={styles['venue-name']}>
-          {venue.isVirtual
-            ? `${offerer.name} (Offre numérique)`
-            : venue.publicName || venue.name}
-        </h2>
+        <div className={styles['venue-details-main']}>
+          <div className={styles['venue-type']}>{venueType?.label}</div>
+          <h2 className={styles['venue-name']}>
+            {venue.isVirtual
+              ? `${offerer.name} (Offre numérique)`
+              : venue.publicName || venue.name}
+          </h2>
 
-        {venue.street && (
-          <address className={styles['venue-address']}>
-            {venue.street}, {venue.postalCode} {venue.city}
-          </address>
-        )}
+          {venue.street && (
+            <address className={styles['venue-address']}>
+              {venue.street}, {venue.postalCode} {venue.city}
+            </address>
+          )}
+        </div>
 
-        <ButtonLink
-          variant={ButtonVariant.TERNARY}
-          icon={fullParametersIcon}
-          to={`/structures/${venue.managingOfferer.id}/lieux/${venue.id}/parametres`}
-        >
-          Paramètres généraux
-        </ButtonLink>
-
-        {imageValues.originalImageUrl && (
-          <ButtonImageEdit
-            mode={UploaderModeEnum.VENUE}
-            initialValues={imageValues}
-            onImageUpload={handleOnImageUpload}
-            onImageDelete={handleOnImageDelete}
-            onClickButtonImage={logButtonAddClick}
+        <div className={styles['venue-details-links']}>
+          <ButtonLink
+            variant={ButtonVariant.TERNARY}
+            icon={fullParametersIcon}
+            to={`/structures/${venue.managingOfferer.id}/lieux/${venue.id}/parametres`}
           >
-            Modifier l’image
-          </ButtonImageEdit>
-        )}
+            Paramètres généraux
+          </ButtonLink>
+
+          {imageValues.originalImageUrl && (
+            <ButtonImageEdit
+              mode={UploaderModeEnum.VENUE}
+              initialValues={imageValues}
+              onImageUpload={handleOnImageUpload}
+              onImageDelete={handleOnImageDelete}
+              onClickButtonImage={logButtonAddClick}
+            >
+              Modifier l’image
+            </ButtonImageEdit>
+          )}
+        </div>
       </div>
     </div>
   )

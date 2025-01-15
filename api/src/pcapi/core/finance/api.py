@@ -201,6 +201,8 @@ def add_event(
         pricingOrderingDate=pricing_ordering_date,
     )
     db.session.add(event)
+    db.session.flush()
+
     return event
 
 
@@ -1182,9 +1184,6 @@ def generate_payment_files(batch: models.CashflowBatch) -> None:
     logger.info("Generating payments file")
     file_paths["payments"] = _generate_payments_file(batch)
 
-    logger.info("Generating new-caledonian payments file")
-    file_paths["payments_nc"] = _generate_payments_file(batch, only_caledonian=True)
-
     logger.info(
         "Finance files have been generated",
         extra={"paths": [str(path) for path in file_paths.values()]},
@@ -1295,13 +1294,37 @@ def _write_csv(
 
 def _generate_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Path:
     header = (
-        "Lieux liés au compte bancaire",
-        "Identifiant humanisé des coordonnées bancaires",
+        "Numéro",
+        "Actif",
+        "Traité",
         "Identifiant des coordonnées bancaires",
-        "SIREN de la structure",
-        "Nom de la structure - Libellé des coordonnées bancaires",
+        "Nom du fournisseur - Libellé des coordonnées bancaires",
+        "Statut",
+        "Famille de fournisseurs",
+        "Condition de règlement",
+        "Cycle du relevé",
+        "Devise",
+        "Type de taux de change",
+        "Courriel",
+        "Site web",
+        "Téléphone 1",
+        "Téléphone 2",
+        "Fax",
+        "Langue",
+        "Adresse 1",
+        "Adresse 2",
+        "Ville",
+        "Pays",
+        "Département",
+        "Code postal",
+        "Mode de règlement bis",
         "IBAN",
+        "Compte de trésorerie",
+        "Nature économique",
         "BIC",
+        "SIREN",
+        "Numéro de TVA Intracom",
+        "Zone de taxes",
     )
     query = (
         models.BankAccount.query.filter(
@@ -1320,26 +1343,55 @@ def _generate_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Path:
             models.BankAccount.bic,
             offerers_models.Offerer.name,
             offerers_models.Offerer.siren,
+            offerers_models.Offerer.street,
+            offerers_models.Offerer.city,
+            offerers_models.Offerer.postalCode,
         )
         .order_by(models.BankAccount.id)
     ).with_entities(
         models.BankAccount.id,
-        sqla_func.array_agg(offerers_models.VenueBankAccountLink.venueId.distinct()).label("venue_ids"),
         offerers_models.Offerer.name.label("offerer_name"),
         offerers_models.Offerer.siren.label("offerer_siren"),
+        offerers_models.Offerer.street.label("offerer_street"),  # type: ignore[attr-defined]
+        offerers_models.Offerer.city.label("offerer_city"),
+        offerers_models.Offerer.postalCode.label("offerer_postal_code"),
         models.BankAccount.label.label("label"),
         models.BankAccount.iban.label("iban"),
         models.BankAccount.bic.label("bic"),
     )
 
     row_formatter = lambda row: (
-        ", ".join(str(venue_id) for venue_id in sorted(row.venue_ids)),
-        human_ids.humanize(row.id),
+        "",
+        "True",
+        "False",
         str(row.id),
-        _clean_for_accounting(row.offerer_siren),
         _clean_for_accounting(f"{row.offerer_name} - {row.label}"),
+        "A",
+        "ACTEURCULT",
+        "30J",
+        "15J",
+        "EUR",
+        "SPOT",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "fr-FR",
+        _clean_for_accounting(row.offerer_street),
+        "",
+        _clean_for_accounting(row.offerer_city),
+        "FR",
+        "",
+        _clean_for_accounting(row.offerer_postal_code),
+        "VSEPA",
         _clean_for_accounting(row.iban),
+        "",
+        "",
         _clean_for_accounting(row.bic),
+        _clean_for_accounting(row.offerer_siren),
+        "",
+        "EXO",
     )
     return _write_csv("bank_accounts", header, rows=query, row_formatter=row_formatter)
 
@@ -1351,7 +1403,7 @@ def _clean_for_accounting(value: str) -> str:
     return value.strip().replace('"', "").replace(";", "").replace("\n", "")
 
 
-def _generate_payments_file(batch: models.CashflowBatch, only_caledonian: bool = False) -> pathlib.Path:
+def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
     batch_id = batch.id
     header = [
         "Identifiant humanisé des coordonnées bancaires",
@@ -1389,14 +1441,9 @@ def _generate_payments_file(batch: models.CashflowBatch, only_caledonian: bool =
                 ).label("offerer_siren"),
                 models.Deposit.type.label("deposit_type"),
                 sa.case((offerers_models.Offerer.is_caledonian == True, "NC"), else_=None).label("caledonian_label"),
-                sqla_func.sum(models.Pricing.xpf_amount if only_caledonian else models.Pricing.amount).label(
-                    "pricing_amount"
-                ),
+                sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
             )
         )
-
-        if only_caledonian:
-            individual_data_query = individual_data_query.filter(offerers_models.Offerer.is_caledonian)
 
         return individual_data_query
 
@@ -1486,31 +1533,28 @@ def _generate_payments_file(batch: models.CashflowBatch, only_caledonian: bool =
         .join(models.BookingFinanceIncident.collectiveBooking)
     )
 
-    if only_caledonian:
-        collective_data = []
-    else:
-        collective_data = (
-            collective_query.union_all(collective_incident_query)
-            .group_by(
-                sa.column("bank_account_id"),
-                sa.column("bank_account_label"),
-                sa.column("offerer_name"),
-                sa.column("offerer_siren"),
-                sa.column("ministry"),
-            )
-            .with_entities(
-                sa.column("bank_account_id"),
-                sa.column("bank_account_label"),
-                sa.column("offerer_name"),
-                sa.column("offerer_siren"),
-                sa.column("ministry"),
-                sqla_func.sum(sa.column("pricing_amount")).label("pricing_amount"),
-            )
-            .all()
+    collective_data = (
+        collective_query.union_all(collective_incident_query)
+        .group_by(
+            sa.column("bank_account_id"),
+            sa.column("bank_account_label"),
+            sa.column("offerer_name"),
+            sa.column("offerer_siren"),
+            sa.column("ministry"),
         )
+        .with_entities(
+            sa.column("bank_account_id"),
+            sa.column("bank_account_label"),
+            sa.column("offerer_name"),
+            sa.column("offerer_siren"),
+            sa.column("ministry"),
+            sqla_func.sum(sa.column("pricing_amount")).label("pricing_amount"),
+        )
+        .all()
+    )
 
     return _write_csv(
-        f"down_payment{'_nc' if only_caledonian else ''}_{batch.label}",
+        f"down_payment_{batch.label}",
         header,
         rows=itertools.chain(indiv_data, collective_data),
         row_formatter=_payment_details_row_formatter,
@@ -2433,6 +2477,10 @@ def _prepare_invoice_context(invoice: models.Invoice, batch: models.CashflowBatc
     bank_account_label = bank_account.label
     bank_account_iban = bank_account.iban
 
+    if feature.FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW.is_active():
+        invoice_date = invoice.date.strftime("%d/%m/%Y")
+    else:
+        invoice_date = (invoice.date + datetime.timedelta(days=2)).strftime("%d/%m/%Y")
     period_start, period_end = get_invoice_period(batch.cutoff)
 
     ff_wording = {
@@ -2453,6 +2501,7 @@ def _prepare_invoice_context(invoice: models.Invoice, batch: models.CashflowBatc
         total_used_bookings_amount=total_used_bookings_amount,
         total_contribution_amount=total_contribution_amount,
         total_reimbursed_amount=total_reimbursed_amount,
+        invoice_date=invoice_date,
         period_start=period_start,
         period_end=period_end,
         reimbursements_by_venue=reimbursements_by_venue,

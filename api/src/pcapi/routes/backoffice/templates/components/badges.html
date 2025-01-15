@@ -59,3 +59,12 @@
     <span class="badge rounded-pill text-bg-info align-middle">Nouveau</span>
   {% endif %}
 {% endmacro %}
+{% macro build_offer_offerer_fraud_badges(offerer) %}
+  {% if has_permission("PRO_FRAUD_ACTIONS") %}
+    {{ offerer.confidenceLevel | format_confidence_level_badge }}
+    {% if offerer.isTopActeur %}<span class="badge text-bg-light shadow-sm">Top Acteur</span>{% endif %}
+  {% endif %}
+{% endmacro %}
+{% macro build_offer_venue_fraud_badges(venue) %}
+  {% if has_permission("PRO_FRAUD_ACTIONS") %}{{ venue.confidenceLevel | format_confidence_level_badge }}{% endif %}
+{% endmacro %}

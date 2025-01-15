@@ -37,8 +37,11 @@ def price_finance_events() -> None:
 @blueprint.cli.command("generate_cashflows_and_payment_files")
 @click.option("--override-feature-flag", help="Override feature flag", is_flag=True, default=False)
 @click.option("--cutoff", help="Datetime cutoff to put in UTC timezone", type=datetime.datetime, required=False)
+@click.option("--with-invoices", help="Launch invoices generation after cashflows generation", type=bool, default=True)
 @cron_decorators.log_cron_with_transaction
-def generate_cashflows_and_payment_files(override_feature_flag: bool, cutoff: datetime.datetime) -> None:
+def generate_cashflows_and_payment_files(
+    override_feature_flag: bool, cutoff: datetime.datetime, with_invoices: bool
+) -> None:
     flag = FeatureToggle.GENERATE_CASHFLOWS_BY_CRON
     if not override_feature_flag and not flag.is_active():
         logger.info("%s is not active, cronjob will not run.", flag.name)
@@ -49,6 +52,27 @@ def generate_cashflows_and_payment_files(override_feature_flag: bool, cutoff: da
     batch = finance_api.generate_cashflows_and_payment_files(cutoff)
     if FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW:
         finance_api.generate_invoices_and_debit_notes(batch)
+    elif with_invoices:
+        try:
+            finance_api.generate_invoices_and_debit_notes_legacy(batch)
+        except finance_exceptions.NoInvoiceToGenerate:
+            logger.info("Neither invoice nor debit note to generate")
+
+        if settings.SLACK_GENERATE_INVOICES_FINISHED_CHANNEL:
+            send_internal_message(
+                channel=settings.SLACK_GENERATE_INVOICES_FINISHED_CHANNEL,
+                blocks=[
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": f"La Génération de factures ({batch.label}) est terminée avec succès",
+                        },
+                    }
+                ],
+                icon_emoji=":large_green_circle:",
+            )
+        export_csv_and_send_notification_emails_job.delay(batch.id, batch.label)
 
 
 @blueprint.cli.command("generate_invoices")
@@ -175,16 +199,34 @@ def recredit_underage_users() -> None:
 
 
 @blueprint.cli.command("import_ds_bank_information_applications")
+@click.option(
+    "--ignore_previous",
+    type=bool,
+    is_flag=True,
+    default=False,
+    help="Import all application ignoring previous import date",
+)
+@click.option(
+    "--since",
+    help="Force previous import date to this date. Format: YYYY-MM-DD. Example: 2024-01-01. Default: None.",
+    type=str,
+)
 @cron_decorators.log_cron_with_transaction
-def import_ds_bank_information_applications() -> None:
+def import_ds_bank_information_applications(ignore_previous: bool = False, since: str | None = None) -> None:
     procedures = [
         settings.DS_BANK_ACCOUNT_PROCEDURE_ID,
     ]
+    forced_since = datetime.datetime.fromisoformat(since) if since else None
     for procedure in procedures:
         if not procedure:
             logger.info("Skipping DS %s because procedure id is empty", procedure)
             continue
-        import_ds_applications(int(procedure), ds.update_ds_applications_for_procedure)
+        import_ds_applications(
+            int(procedure),
+            ds.update_ds_applications_for_procedure,
+            ignore_previous=ignore_previous,
+            forced_since=forced_since,
+        )
 
 
 @blueprint.cli.command("push_bank_accounts")

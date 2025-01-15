@@ -1,10 +1,10 @@
-import enum
 import logging
 import typing
 
 import pydantic.v1 as pydantic_v1
 
 from pcapi.core.offerers import schemas as offerers_schemas
+from pcapi.core.offers import models as offers_models
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import base
@@ -12,58 +12,6 @@ from pcapi.utils import phone_number as phone_number_utils
 
 
 logger = logging.getLogger(__name__)
-
-
-class VenueTypeCode(enum.Enum):
-    ADMINISTRATIVE = "Lieu administratif"
-    ARTISTIC_COURSE = "Cours et pratique artistiques"
-    BOOKSTORE = "Librairie"
-    CONCERT_HALL = "Musique - Salle de concerts"
-    CREATIVE_ARTS_STORE = "Magasin arts créatifs"
-    CULTURAL_CENTRE = "Centre culturel"
-    DIGITAL = "Offre numérique"
-    DISTRIBUTION_STORE = "Magasin de distribution de produits culturels"
-    FESTIVAL = "Festival"
-    GAMES = "Jeux / Jeux vidéos"
-    LIBRARY = "Bibliothèque ou médiathèque"
-    MOVIE = "Cinéma - Salle de projections"
-    MUSEUM = "Musée"
-    MUSICAL_INSTRUMENT_STORE = "Musique - Magasin d’instruments"
-    OTHER = "Autre"
-    PATRIMONY_TOURISM = "Patrimoine et tourisme"
-    PERFORMING_ARTS = "Spectacle vivant"
-    RECORD_STORE = "Musique - Disquaire"
-    SCIENTIFIC_CULTURE = "Culture scientifique"
-    TRAVELING_CINEMA = "Cinéma itinérant"
-    VISUAL_ARTS = "Arts visuels, arts plastiques et galeries"
-
-    # These methods are used by pydantic in order to return the enum name and validate the value
-    # instead of returning the enum directly.
-    @classmethod
-    def __get_validators__(cls) -> typing.Iterator[typing.Callable]:
-        yield cls.validate
-
-    @classmethod
-    def validate(cls, value: str | enum.Enum) -> str:
-        if isinstance(value, enum.Enum):
-            value = value.name
-
-        if not hasattr(cls, value):
-            raise ValueError(f"{value}: invalide")
-
-        return value
-
-
-VenueTypeCodeKey = enum.Enum(  # type: ignore[misc]
-    "VenueTypeCodeKey",
-    {code.name: code.name for code in VenueTypeCode},
-)
-
-
-class BannerMetaModel(typing.TypedDict, total=False):
-    image_credit: offerers_schemas.VenueImageCredit | None
-    image_credit_url: str | None
-    is_from_google: bool
 
 
 class VenueAccessibilityModel(BaseModel):
@@ -112,10 +60,19 @@ class VenueResponse(base.BaseVenueResponse):
     id: int
     address: str | None
     accessibility: VenueAccessibilityModel
-    venueTypeCode: VenueTypeCodeKey
-    bannerMeta: BannerMetaModel | None
+    venueTypeCode: offerers_schemas.VenueTypeCodeKey
+    bannerMeta: offerers_schemas.BannerMetaModel | None
     timezone: str
     contact: VenueContactModel | None
 
     class Config:
         getter_dict = VenueResponseGetterDict
+
+
+class OffererHeadLineOfferResponseModel(BaseModel):
+    id: int
+    name: str
+    image: offers_models.OfferImage | None
+
+    class Config:
+        orm_mode = True

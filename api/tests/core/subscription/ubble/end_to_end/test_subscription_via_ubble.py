@@ -3,7 +3,9 @@ import json
 import pathlib
 import re
 import time
+from unittest.mock import patch
 
+from dateutil.relativedelta import relativedelta
 import flask
 import pytest
 import requests_mock
@@ -23,10 +25,167 @@ import tests
 from tests.conftest import TestClient
 from tests.test_utils import json_default
 
-from . import requests_data
+from . import fixtures
 
 
 IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
+
+
+@pytest.mark.usefixtures("db_session")
+class UbbleV2EndToEndTest:
+    @pytest.mark.features(WIP_UBBLE_V2=True)
+    def test_beneficiary_activation_with_ubble_mocked_response(self, client, app, requests_mock):
+        seventeen_years_ago = datetime.datetime.utcnow() - relativedelta(years=17, months=1)
+        user = users_factories.UserFactory(
+            dateOfBirth=seventeen_years_ago,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            firstName="Catherine",
+            lastName="Destivelle",
+        )
+        fraud_factories.ProfileCompletionFraudCheckFactory(
+            user=user, resultContent__first_name="Catherine", resultContent__last_name="Destivelle"
+        )
+        eighteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=18, months=1)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.STARTED,
+            thirdPartyId="",
+            resultContent=fraud_models.UbbleContent(
+                birth_date=eighteen_years_ago.date(), external_applicant_id="eaplt_61313A10000000000000000000"
+            ).dict(exclude_none=True),
+        )
+
+        self._start_ubble_workflow(user, client, requests_mock)
+        self._receive_and_ignore_verification_pending_webhook_notification(user, app)
+        self._receive_and_ignore_capture_in_progress_webhook_notification(user, app)
+        self._receive_and_handle_verification_refused_webhook_notification(user, client, app, requests_mock)
+
+        assert user.eligibility == users_models.EligibilityType.UNDERAGE
+
+        self._retry_ubble_workflow(user, client, requests_mock)
+        self._receive_and_ignore_capture_in_progress_webhook_notification(user, app)
+        self._receive_and_handle_checks_in_progress_webhook_notification(user, client, app, requests_mock)
+        self._receive_and_handle_verification_approved_webhook_notification(user, client, app, requests_mock)
+
+        assert user.eligibility == users_models.EligibilityType.AGE18
+
+        self._create_honor_statement_fraud_check(user, client)
+
+        assert user.is_beneficiary
+
+    def _start_ubble_workflow(self, user, client, requests_mock) -> None:
+        requests_mock.post(f"{settings.UBBLE_API_URL}/v2/applicants", json=fixtures.APPLICANT_CREATION_RESPONSE)
+        requests_mock.post(
+            f"{settings.UBBLE_API_URL}/v2/identity-verifications", json=fixtures.ID_VERIFICATION_CREATION_RESPONSE
+        )
+        requests_mock.post(
+            f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fixtures.ID_VERIFICATION_CREATION_RESPONSE['id']}/attempts",
+            json=fixtures.ID_VERIFICATION_ATTEMPT_RESPONSE,
+        )
+
+        response = client.with_token(user.email).post(
+            "/native/v1/ubble_identification", json={"redirectUrl": "https://redirect.example.com"}
+        )
+
+        assert response.status_code == 200, response.json
+
+    def _receive_and_ignore_verification_pending_webhook_notification(self, user, app) -> None:
+        with patch(
+            "pcapi.core.subscription.ubble.api.update_ubble_workflow",
+        ) as mocked_update:
+            response = TestClient(app.test_client()).post(
+                "/webhooks/ubble/v2/application_status", json=fixtures.ID_VERIFICATION_PENDING_WEBHOOK_BODY
+            )
+
+            assert response.status_code == 200, response.json
+            mocked_update.assert_not_called()
+
+    def _receive_and_ignore_capture_in_progress_webhook_notification(self, user, app) -> None:
+        with patch(
+            "pcapi.core.subscription.ubble.api.update_ubble_workflow",
+        ) as mocked_update:
+            response = TestClient(app.test_client()).post(
+                "/webhooks/ubble/v2/application_status", json=fixtures.ID_CAPTURE_IN_PROGRESS_WEBHOOK_BODY
+            )
+
+            assert response.status_code == 200, response.json
+            mocked_update.assert_not_called()
+
+    def _receive_and_handle_verification_refused_webhook_notification(self, user, client, app, requests_mock) -> None:
+        requests_mock.get(
+            f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fixtures.ID_VERIFICATION_CREATION_RESPONSE['id']}",
+            json=fixtures.ID_VERIFICATION_REFUSED_RESPONSE,
+        )
+
+        response = TestClient(app.test_client()).post(
+            "/webhooks/ubble/v2/application_status", json=fixtures.ID_VERIFICATION_REFUSED_WEBHOOK_BODY
+        )
+        assert response.status_code == 200, response.json
+
+        (ubble_fraud_check,) = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type == fraud_models.FraudCheckType.UBBLE
+        ]
+        assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
+
+    def _retry_ubble_workflow(self, user, client, requests_mock) -> None:
+        requests_mock.post(
+            f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fixtures.ID_VERIFICATION_CREATION_RESPONSE['id']}/attempts",
+            json=fixtures.ID_VERIFICATION_ATTEMPT_RESPONSE,
+        )
+
+        response = client.with_token(user.email).post(
+            "/native/v1/ubble_identification", json={"redirectUrl": "https://redirect.example.com"}
+        )
+
+        assert response.status_code == 200, response.json
+
+    def _receive_and_handle_checks_in_progress_webhook_notification(self, user, client, app, requests_mock) -> None:
+        requests_mock.get(
+            f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fixtures.ID_VERIFICATION_CREATION_RESPONSE['id']}",
+            json=fixtures.ID_CHECKS_IN_PROGRESS_RESPONSE,
+        )
+
+        response = TestClient(app.test_client()).post(
+            "/webhooks/ubble/v2/application_status", json=fixtures.ID_CHECKS_IN_PROGRESS_WEBHOOK_BODY
+        )
+        assert response.status_code == 200, response.json
+
+        (ubble_fraud_check,) = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type == fraud_models.FraudCheckType.UBBLE
+        ]
+        assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.PENDING
+
+    def _receive_and_handle_verification_approved_webhook_notification(self, user, client, app, requests_mock) -> None:
+        requests_mock.get(
+            f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fixtures.ID_VERIFICATION_CREATION_RESPONSE['id']}",
+            json=fixtures.ID_VERIFICATION_APPROVED_RESPONSE,
+        )
+
+        response = TestClient(app.test_client()).post(
+            "/webhooks/ubble/v2/application_status", json=fixtures.ID_VERIFICATION_APPROVED_WEBHOOK_BODY
+        )
+        assert response.status_code == 200, response.json
+
+        ubble_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type == fraud_models.FraudCheckType.UBBLE
+        ]
+        (deprecated_ubble_fraud_check, ok_ubble_fraud_check) = sorted(
+            ubble_fraud_checks, key=lambda check: check.thirdPartyId
+        )
+        assert "deprecated" in deprecated_ubble_fraud_check.thirdPartyId, [c.thirdPartyId for c in ubble_fraud_checks]
+        assert ok_ubble_fraud_check.status == fraud_models.FraudCheckStatus.OK
+
+    def _create_honor_statement_fraud_check(self, user, client) -> None:
+        response = client.with_token(user.email).post("/native/v1/subscription/honor_statement")
+
+        assert response.status_code == 204, response.json
 
 
 @pytest.mark.usefixtures("db_session")
@@ -64,7 +223,7 @@ class UbbleEndToEndTest:
 
         with requests_mock.Mocker() as requests_mocker:
             requests_mocker.post(
-                f"{settings.UBBLE_API_URL}/identifications/", json=requests_data.START_IDENTIFICATION_RESPONSE
+                f"{settings.UBBLE_API_URL}/identifications/", json=fixtures.START_IDENTIFICATION_RESPONSE
             )
 
             response = client.post(
@@ -89,24 +248,24 @@ class UbbleEndToEndTest:
             userId=user.id, type=fraud_models.FraudCheckType.UBBLE
         ).one()
 
-        assert fraud_check.thirdPartyId == requests_data.IDENTIFICATION_ID
+        assert fraud_check.thirdPartyId == fixtures.IDENTIFICATION_ID
         assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
         assert fraud_check.source_data().status == UbbleIdentificationStatus.UNINITIATED
 
         assert response.status_code == 200
-        assert response.json == {"identificationUrl": f"https://id.ubble.ai/{requests_data.IDENTIFICATION_ID}"}
+        assert response.json == {"identificationUrl": f"https://id.ubble.ai/{fixtures.IDENTIFICATION_ID}"}
 
         # Step 2: Ubble calls the webhook to inform that the identification has been initiated by user
         webhook_request_payload = {
             "configuration": {"id": 5, "name": "MyConfig"},
-            "identification_id": requests_data.IDENTIFICATION_ID,
+            "identification_id": fixtures.IDENTIFICATION_ID,
             "status": "initiated",
         }
 
         with requests_mock.Mocker() as requests_mocker:
             requests_mocker.get(
-                f"{settings.UBBLE_API_URL}/identifications/{requests_data.IDENTIFICATION_ID}/",
-                json=requests_data.INITIATED_IDENTIFICATION_RESPONSE,
+                f"{settings.UBBLE_API_URL}/identifications/{fixtures.IDENTIFICATION_ID}/",
+                json=fixtures.INITIATED_IDENTIFICATION_RESPONSE,
             )
 
             response = ubble_client.post(
@@ -129,7 +288,7 @@ class UbbleEndToEndTest:
             json={"redirectUrl": "https://passculture.app/verification-identite/fin"},
         )
         assert response.status_code == 200
-        assert response.json == {"identificationUrl": f"https://id.ubble.ai/{requests_data.IDENTIFICATION_ID}"}
+        assert response.json == {"identificationUrl": f"https://id.ubble.ai/{fixtures.IDENTIFICATION_ID}"}
 
         next_step = subscription_api.get_user_subscription_state(user).next_step
         assert next_step == subscription_models.SubscriptionStep.IDENTITY_CHECK
@@ -137,14 +296,14 @@ class UbbleEndToEndTest:
         # Step 3: Ubble calls the webhook to inform that the identification has been completed by the user
         webhook_request_payload = {
             "configuration": {"id": 5, "name": "MyConfig"},
-            "identification_id": requests_data.IDENTIFICATION_ID,
+            "identification_id": fixtures.IDENTIFICATION_ID,
             "status": "processing",
         }
 
         with requests_mock.Mocker() as requests_mocker:
             requests_mocker.get(
-                f"{settings.UBBLE_API_URL}/identifications/{requests_data.IDENTIFICATION_ID}/",
-                json=requests_data.PROCESSING_IDENTIFICATION_RESPONSE,
+                f"{settings.UBBLE_API_URL}/identifications/{fixtures.IDENTIFICATION_ID}/",
+                json=fixtures.PROCESSING_IDENTIFICATION_RESPONSE,
             )
 
             response = ubble_client.post(
@@ -178,13 +337,13 @@ class UbbleEndToEndTest:
         # Step 5: Ubble calls the webhook to inform that the identification has been manually processed
         webhook_request_payload = {
             "configuration": {"id": 5, "name": "MyConfig"},
-            "identification_id": requests_data.IDENTIFICATION_ID,
+            "identification_id": fixtures.IDENTIFICATION_ID,
             "status": "processed",
         }
         with requests_mock.Mocker() as requests_mocker:
             requests_mocker.get(
-                f"{settings.UBBLE_API_URL}/identifications/{requests_data.IDENTIFICATION_ID}/",
-                json=requests_data.PROCESSED_IDENTIFICATION_RESPONSE,
+                f"{settings.UBBLE_API_URL}/identifications/{fixtures.IDENTIFICATION_ID}/",
+                json=fixtures.PROCESSED_IDENTIFICATION_RESPONSE,
             )
             storage_path_matcher = re.compile("https://storage.ubble.ai/*")
             requests_mocker.get(storage_path_matcher)

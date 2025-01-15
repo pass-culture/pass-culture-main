@@ -2,10 +2,9 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_a11y.scss" as a11y;
-@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 
 .icon-radio-label {
-  @include fonts-design-system.body;
+  @include fonts.body;
 
   display: inline-flex;
   align-items: center;
@@ -34,7 +33,7 @@
   }
 
   &-disabled {
-    @include fonts-design-system.button;
+    @include fonts.button;
 
     background: var(--color-grey-light);
     border-color: var(--color-grey-light);
@@ -42,7 +41,7 @@
   }
 
   &-checked {
-    @include fonts-design-system.button;
+    @include fonts.button;
 
     border: 2px solid var(--color-secondary);
   }

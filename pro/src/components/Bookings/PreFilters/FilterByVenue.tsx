@@ -1,5 +1,3 @@
-import React from 'react'
-
 import {
   ALL_STRUCTURES_OPTION,
   ALL_VENUES_OPTION,

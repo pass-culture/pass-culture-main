@@ -1,6 +1,5 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -53,10 +52,8 @@ function renderBankInformations() {
   renderWithProviders(<BankInformations />, {
     user: sharedCurrentUserFactory(),
     storeOverrides: {
-      user: {
-        currentUser: sharedCurrentUserFactory(),
-        selectedOffererId: 1,
-      },
+      user: { currentUser: sharedCurrentUserFactory() },
+      offerer: { selectedOffererId: 1, offererNames: [] },
     },
   })
 }

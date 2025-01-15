@@ -148,7 +148,6 @@ export const CollectiveOffersScreen = ({
 
   return (
     <div>
-      <h1 className={styles['title']}>Offres collectives</h1>
       <CollectiveOffersSearchFilters
         applyFilters={applyFilters}
         categories={categories}

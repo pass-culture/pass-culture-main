@@ -1,4 +1,3 @@
-import React from 'react'
 
 import { Layout } from 'app/App/layout/Layout'
 import { OffererStatsScreen } from 'pages/OffererStats/OffererStats/OffererStatsScreen'

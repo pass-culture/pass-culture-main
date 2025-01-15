@@ -6,7 +6,6 @@ import decimal
 import functools
 import itertools
 import logging
-import math
 from math import ceil
 import re
 import secrets
@@ -116,6 +115,8 @@ def update_venue(
     external_accessibility_url: str | None | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
     is_manual_edition: bool = False,
 ) -> models.Venue:
+    # TODO: (pcharlet 2024-11-28) Remove new_permanent when regularisation is done. Used only to sync venues with acceslibre when update permanent from BO
+    new_open_to_public = not venue.isOpenToPublic and modifications.get("isOpenToPublic")
     new_permanent = not venue.isPermanent and modifications.get("isPermanent")
     venue_snapshot = history_api.ObjectUpdateSnapshot(venue, author)
     if not venue.isVirtual:
@@ -245,7 +246,7 @@ def update_venue(
     if contact_data and contact_data.website:
         virustotal.request_url_scan(contact_data.website, skip_if_recent_scan=True)
 
-    if new_permanent and not external_accessibility_url:
+    if (new_open_to_public or new_permanent) and not external_accessibility_url:
         match_acceslibre_job.delay(venue.id)
 
     return venue
@@ -434,27 +435,26 @@ def upsert_venue_opening_hours(venue: models.Venue, opening_hours: serialize_bas
 
 def create_venue(venue_data: venues_serialize.PostVenueBodyModel, author: users_models.User) -> models.Venue:
     venue = models.Venue()
+    address = venue_data.address
 
-    if utils_regions.NON_DIFFUSIBLE_TAG in venue_data.street:
-        address_info = api_adresse.get_municipality_centroid(venue_data.city, venue_data.postalCode)
+    if utils_regions.NON_DIFFUSIBLE_TAG in address.street:
+        address_info = api_adresse.get_municipality_centroid(address.city, address.postalCode)
         address_info.street = utils_regions.NON_DIFFUSIBLE_TAG
+        address = get_or_create_address(
+            LocationData(
+                city=address_info.city,
+                postal_code=address_info.postcode,
+                latitude=address_info.latitude,
+                longitude=address_info.longitude,
+                street=address_info.street,
+                insee_code=address_info.citycode,
+                ban_id=address_info.id,
+            )
+        )
+        offerer_address = create_offerer_address(venue_data.managingOffererId, address.id)
     else:
-        address_info = api_adresse.get_address(
-            address=venue_data.street, postcode=venue_data.postalCode, city=venue_data.city
-        )
+        offerer_address = get_offerer_address_from_address(venue.managingOffererId, address)
 
-    address = get_or_create_address(
-        LocationData(
-            city=address_info.city,
-            postal_code=address_info.postcode,
-            latitude=address_info.latitude,
-            longitude=address_info.longitude,
-            street=address_info.street,
-            insee_code=address_info.citycode,
-            ban_id=address_info.id,
-        )
-    )
-    offerer_address = create_offerer_address(venue_data.managingOffererId, address.id)
     venue.offererAddressId = offerer_address.id
 
     data = venue_data.dict(by_alias=True)
@@ -465,6 +465,16 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel, author: users_
         if key == "contact":
             continue
         setattr(venue, key, value)
+
+    # FIXME (dramelet, 05-12-2024) Until those columns are dropped
+    # we still have to maintain the historic behavior
+    venue.street = data["address"]["street"]  # type: ignore [method-assign]
+    venue.city = data["address"]["city"]
+    venue.postalCode = data["address"]["postalCode"]
+    venue.latitude = data["address"]["latitude"]
+    venue.longitude = data["address"]["longitude"]
+    venue.banId = data["address"]["banId"]
+
     if venue_data.contact:
         upsert_venue_contact(venue, venue_data.contact)
 
@@ -2002,12 +2012,12 @@ def create_from_onboarding_data(
 
     # Create Offerer or attach user to existing Offerer
     offerer_creation_info = offerers_serialize.CreateOffererQueryModel(
-        street=onboarding_data.street,
-        city=onboarding_data.city,
-        latitude=onboarding_data.latitude,
-        longitude=onboarding_data.longitude,
+        street=onboarding_data.address.street,
+        city=onboarding_data.address.city,
+        latitude=float(onboarding_data.address.latitude),
+        longitude=float(onboarding_data.address.longitude),
         name=name,
-        postalCode=onboarding_data.postalCode,
+        postalCode=onboarding_data.address.postalCode,
         siren=onboarding_data.siret[:9],
     )
     new_onboarding_info = NewOnboardingInfo(
@@ -2020,17 +2030,15 @@ def create_from_onboarding_data(
     # Create Venue with siret if it's not in DB yet, or Venue without siret if requested
     venue = offerers_repository.find_venue_by_siret(onboarding_data.siret)
     if not venue or onboarding_data.createVenueWithoutSiret:
+        address = onboarding_data.address
+        if not address.street:
+            address = address.copy(update={"street": "n/d"})
         common_kwargs = dict(
-            street=onboarding_data.street or "n/d",  # handle empty VoieEtablissement from Sirene API
-            banId=onboarding_data.banId,
+            address=address,
             bookingEmail=user.email,
-            city=onboarding_data.city,
-            latitude=onboarding_data.latitude,
-            longitude=onboarding_data.longitude,
             managingOffererId=user_offerer.offererId,
             name=name,
             publicName=onboarding_data.publicName,
-            postalCode=onboarding_data.postalCode,
             venueLabelId=None,
             venueTypeCode=onboarding_data.venueTypeCode,
             withdrawalDetails=None,
@@ -2439,22 +2447,24 @@ def set_accessibility_infos_from_provider_id(venue: models.Venue) -> None:
         db.session.add(venue.accessibilityProvider)
 
 
-def count_permanent_venues_with_accessibility_provider() -> int:
+def count_open_to_public_or_permanent_venues_with_accessibility_provider() -> int:
     return (
         offerers_models.Venue.query.join(offerers_models.AccessibilityProvider)
         .filter(
-            offerers_models.Venue.isPermanent.is_(True),
+            sa.or_(offerers_models.Venue.isOpenToPublic.is_(True), offerers_models.Venue.isPermanent.is_(True)),
             offerers_models.Venue.isVirtual.is_(False),
         )
         .count()
     )
 
 
-def get_permanent_venues_with_accessibility_provider(batch_size: int, batch_num: int) -> list[models.Venue]:
+def get_open_to_public_or_permanent_venues_with_accessibility_provider(
+    batch_size: int, batch_num: int
+) -> list[models.Venue]:
     return (
         offerers_models.Venue.query.join(offerers_models.Venue.accessibilityProvider)
         .filter(
-            offerers_models.Venue.isPermanent.is_(True),
+            sa.or_(offerers_models.Venue.isOpenToPublic.is_(True), offerers_models.Venue.isPermanent.is_(True)),
             offerers_models.Venue.isVirtual.is_(False),
         )
         .options(sa.orm.contains_eager(offerers_models.Venue.accessibilityProvider))
@@ -2465,12 +2475,12 @@ def get_permanent_venues_with_accessibility_provider(batch_size: int, batch_num:
     )
 
 
-def get_permanent_venues_without_accessibility_provider() -> list[models.Venue]:
+def get_open_to_public_or_permanent_venues_without_accessibility_provider() -> list[models.Venue]:
     return (
         offerers_models.Venue.query.outerjoin(offerers_models.Venue.accessibilityProvider)
         .filter(
-            offerers_models.Venue.isPermanent == True,
-            offerers_models.Venue.isVirtual == False,
+            sa.or_(offerers_models.Venue.isOpenToPublic.is_(True), offerers_models.Venue.isPermanent.is_(True)),
+            offerers_models.Venue.isVirtual.is_(False),
             offerers_models.AccessibilityProvider.id.is_(None),
         )
         .options(
@@ -2577,7 +2587,7 @@ def synchronize_accessibility_with_acceslibre(
 
     If externalAccessibilityId can't be found at acceslibre, we try to find a new match, cf. synchronize_accessibility_provider()
     """
-    venues_count = count_permanent_venues_with_accessibility_provider()
+    venues_count = count_open_to_public_or_permanent_venues_with_accessibility_provider()
     num_batches = ceil(venues_count / batch_size)
     if start_from_batch > num_batches:
         logger.error("Start from batch must be less than %d", num_batches)
@@ -2585,7 +2595,9 @@ def synchronize_accessibility_with_acceslibre(
 
     start_batch_index = start_from_batch - 1
     for i in range(start_batch_index, num_batches):
-        venues_list = get_permanent_venues_with_accessibility_provider(batch_size=batch_size, batch_num=i)
+        venues_list = get_open_to_public_or_permanent_venues_with_accessibility_provider(
+            batch_size=batch_size, batch_num=i
+        )
         for venue in venues_list:
             synchronize_accessibility_provider(venue, force_sync)
 
@@ -2655,13 +2667,13 @@ def match_venue_with_new_entries(
 
 def acceslibre_matching(batch_size: int, dry_run: bool, start_from_batch: int, n_days_to_fetch: int = 7) -> None:
     """
-    For all permanent venues, we are looking for a match at acceslibre
+    For all venues opened to public, we are looking for a match at acceslibre
 
     If we use the --start-from-batch option, it will start synchronization from the given batch number
     Use case: synchronization has failed with message "Could not update batch <n>"
     """
-    synchronized_venues_count_before_matching = count_permanent_venues_with_accessibility_provider()
-    venues_list = get_permanent_venues_without_accessibility_provider()
+    synchronized_venues_count_before_matching = count_open_to_public_or_permanent_venues_with_accessibility_provider()
+    venues_list = get_open_to_public_or_permanent_venues_without_accessibility_provider()
     num_batches = ceil(len(venues_list) / batch_size)
     if start_from_batch > num_batches:
         logger.info("Start from batch must be less than %d", num_batches)
@@ -2685,7 +2697,10 @@ def acceslibre_matching(batch_size: int, dry_run: bool, start_from_batch: int, n
             except sa.exc.SQLAlchemyError:
                 logger.exception("Could not update batch %d", i + 1)
                 db.session.rollback()
-    new_match_found = count_permanent_venues_with_accessibility_provider() - synchronized_venues_count_before_matching
+    new_match_found = (
+        count_open_to_public_or_permanent_venues_with_accessibility_provider()
+        - synchronized_venues_count_before_matching
+    )
     logger.info("%d new match found over last %d days", new_match_found, n_days_to_fetch)
     if dry_run:
         logger.info("Matching with acceslibre as dry run complete")
@@ -2707,9 +2722,9 @@ def find_missing_match_at_acceslibre(batch_size: int, dry_run: bool, start_from_
     Use case: synchronization has failed with message "Could not update batch <n>"
     """
 
-    count_before_match = count_permanent_venues_with_accessibility_provider()
+    count_before_match = count_open_to_public_or_permanent_venues_with_accessibility_provider()
     logger.info("Number of venue synchronized before matching %d", count_before_match)
-    venues_list = get_permanent_venues_without_accessibility_provider()
+    venues_list = get_open_to_public_or_permanent_venues_without_accessibility_provider()
     num_batches = ceil(len(venues_list) / batch_size)
     if start_from_batch > num_batches:
         logger.info("Start from batch must be less than %d", num_batches)
@@ -2729,14 +2744,14 @@ def find_missing_match_at_acceslibre(batch_size: int, dry_run: bool, start_from_
                 logger.error("Acceslibre API Error %s when trying to match venue %d", e, venue.id)
                 continue
         if dry_run:
-            count_after_match = count_permanent_venues_with_accessibility_provider()
+            count_after_match = count_open_to_public_or_permanent_venues_with_accessibility_provider()
         else:
             try:
                 db.session.commit()
             except sa.exc.SQLAlchemyError:
                 logger.exception("Could not update batch %d", i + 1)
                 db.session.rollback()
-            count_after_match = count_permanent_venues_with_accessibility_provider()
+            count_after_match = count_open_to_public_or_permanent_venues_with_accessibility_provider()
 
     logger.info("Matching complete, %s new match found", count_after_match - count_before_match)
 
@@ -2796,35 +2811,14 @@ def get_or_create_address(location_data: LocationData, is_manual_edition: bool =
 
     if address is None:
         address = geography_models.Address.query.filter(
-            geography_models.Address.street == street,
+            geography_models.Address.banId == ban_id,
             geography_models.Address.inseeCode == insee_code,
-            sa.or_(
-                geography_models.Address.isManualEdition.is_not(True),  # false or null
-                sa.and_(
-                    geography_models.Address.banId == ban_id,
-                    geography_models.Address.inseeCode == insee_code,
-                    geography_models.Address.street == street,
-                    geography_models.Address.postalCode == postal_code,
-                    geography_models.Address.city == city,
-                    geography_models.Address.latitude == latitude,
-                    geography_models.Address.longitude == longitude,
-                ),
-            ),
+            geography_models.Address.street == street,
+            geography_models.Address.postalCode == postal_code,
+            geography_models.Address.city == city,
+            geography_models.Address.latitude == latitude,
+            geography_models.Address.longitude == longitude,
         ).one()
-        if not math.isclose(float(address.latitude), float(latitude), rel_tol=0.00001) or not math.isclose(
-            float(address.longitude), float(longitude), rel_tol=0.00001
-        ):
-            logger.error(
-                "Unique constraint over street and inseeCode matched different coordinates",
-                extra={
-                    "address_id": address.id,
-                    "incoming_banId": ban_id,
-                    "address_latitude": address.latitude,
-                    "address_longitude": address.longitude,
-                    "incoming_latitude": latitude,
-                    "incoming_longitude": longitude,
-                },
-            )
 
     return address
 
@@ -2953,6 +2947,19 @@ def create_offerer_address_from_address_api(address: offerers_schemas.AddressBod
             ban_id=address_info.id,
         )
     return get_or_create_address(location_data, is_manual_edition=address.isManualEdition)
+
+
+def get_offerer_address_from_address(
+    offerer_id: int, address: offerers_schemas.AddressBodyModel
+) -> offerers_models.OffererAddress:
+    if not address.label:
+        address.label = None
+    address_from_api = create_offerer_address_from_address_api(address)
+    return get_or_create_offerer_address(
+        offerer_id,
+        address_from_api.id,
+        label=address.label,
+    )
 
 
 def update_fraud_info(

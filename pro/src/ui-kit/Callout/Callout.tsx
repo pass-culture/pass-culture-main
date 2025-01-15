@@ -1,5 +1,4 @@
 import cn from 'classnames'
-import React from 'react'
 
 import fullErrorIcon from 'icons/full-error.svg'
 import fullInfoIcon from 'icons/full-info.svg'
@@ -34,7 +33,7 @@ export const Callout = ({
   links,
   closable = false,
   onClose,
-  variant = CalloutVariant.DEFAULT,
+  variant = CalloutVariant.INFO,
 }: CalloutProps): JSX.Element => {
   let calloutIcon: CalloutVariantProps
   /* istanbul ignore next: graphic variations */
@@ -48,6 +47,7 @@ export const Callout = ({
     case CalloutVariant.ERROR:
       calloutIcon = { src: fullErrorIcon, alt: 'Erreur' }
       break
+    case CalloutVariant.INFO:
     default:
       calloutIcon = { src: fullInfoIcon, alt: 'Information' }
       break

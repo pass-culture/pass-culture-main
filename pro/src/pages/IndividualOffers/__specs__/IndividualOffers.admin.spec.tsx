@@ -51,7 +51,6 @@ const renderOffers = async (
     audience?: Audience
   } = DEFAULT_SEARCH_FILTERS,
   user = sharedCurrentUserFactory({ isAdmin: true }),
-  selectedOffererId: number | null = 1
 ) => {
   const route = computeIndividualOffersUrl(filters)
 
@@ -68,8 +67,8 @@ const renderOffers = async (
       storeOverrides: {
         user: {
           currentUser: user,
-          selectedOffererId,
         },
+        offerer: { selectedOffererId: 1, offererNames: [] },
       },
       initialRouterEntries: [route],
     }

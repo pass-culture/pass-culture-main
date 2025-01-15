@@ -6,7 +6,7 @@ export interface VenueSettingsFormValues extends AddressFormValues {
   name: string
   publicName: string
   siret: string
-  venueSiret: number | null
+  venueSiret: number | ''
   venueLabel: string | null
   venueType: string
   withdrawalDetails: string

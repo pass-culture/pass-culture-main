@@ -31,7 +31,6 @@ from pcapi.core.permissions import factories as perm_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
@@ -611,48 +610,6 @@ class ListOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert {int(row["ID"]) for row in rows} == {offer.id}
-
-    def test_list_offers_advanced_search_by_music_type_with_titelive_genres(self, authenticated_client, offers):
-        query_args = {
-            "search-3-search_field": "MUSIC_TYPE_GTL",
-            "search-3-operator": "IN",
-            "search-3-music_type_gtl": ["01", "02", "19"],
-        }
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, **query_args))
-            assert response.status_code == 200
-
-        row = html_parser.extract_table_rows(response.data)
-        assert int(row[0]["ID"]) == offers[0].id
-
-    def test_list_offers_by_show_type(self, authenticated_client, offers):
-        query_args = {
-            "search-3-search_field": "SHOW_TYPE",
-            "search-3-operator": "IN",
-            "search-3-show_type": ["200", "100", "300"],
-        }
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, **query_args))
-            assert response.status_code == 200
-
-        row = html_parser.extract_table_rows(response.data)
-        assert int(row[0]["ID"]) == offers[1].id
-
-    def test_list_offers_by_show_sub_type(self, authenticated_client, offers):
-        query_args = {
-            "search-3-search_field": "SHOW_SUB_TYPE",
-            "search-3-operator": "IN",
-            "search-3-show_sub_type": ["104", "105", "106"],
-        }
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, **query_args))
-            assert response.status_code == 200
-
-        row = html_parser.extract_table_rows(response.data)
-        assert int(row[0]["ID"]) == offers[1].id
 
     def test_list_offers_by_venue(self, authenticated_client, offers):
         venue_id = offers[1].venueId
@@ -1238,6 +1195,25 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert rows[0]["Entité juridique"] == "Offerer"
         assert rows[0]["Lieu"] == "Venue Revue manuelle"
+
+    def test_list_offers_with_top_acteur_offerer(self, client, pro_fraud_admin):
+        offer = offers_factories.OfferFactory(
+            venue__managingOfferer__name="Offerer",
+            venue__managingOfferer__tags=[
+                offerers_factories.OffererTagFactory(name="top-acteur", label="Top Acteur"),
+                offerers_factories.OffererTagFactory(name="test", label="Test"),
+            ],
+        )
+
+        client = client.with_bo_session_auth(pro_fraud_admin)
+        query_args = self._get_query_args_by_id(offer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Entité juridique"] == "Offerer Top Acteur"
 
 
 class EditOfferTest(PostEndpointHelper):
@@ -1842,7 +1818,9 @@ class GetOfferDetailsTest(GetEndpointHelper):
 
     def test_get_detail_offer(self, authenticated_client):
         offer = offers_factories.OfferFactory(
+            description="Une offre pour tester",
             withdrawalDetails="Demander à la caisse",
+            bookingEmail="offre@example.com",
             extraData={"ean": "1234567891234", "author": "Author", "editeur": "Editor", "gtl_id": "08010000"},
         )
         offers_factories.OfferComplianceFactory(
@@ -1872,10 +1850,14 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert "Date de dernière validation" not in card_text
         assert "Resynchroniser l'offre dans Algolia" in card_text
         assert "Modifier le lieu" not in card_text
-        assert "Demander à la caisse" in card_text
-        assert b"Auteur :</span> Author" in response.data
-        assert b"EAN :</span> 1234567891234" in response.data
-        assert "Éditeur :</span> Editor".encode() in response.data
+
+        content = html_parser.content_as_text(response.data)
+        assert "Auteur : Author" in content
+        assert "EAN : 1234567891234" in content
+        assert "Éditeur : Editor" in content
+        assert "Description : Une offre pour tester " in content
+        assert "Informations de retrait : Demander à la caisse " in content
+        assert "Email auquel envoyer les notifications : offre@example.com " in content
 
         assert html_parser.count_table_rows(response.data) == 0
 
@@ -1980,15 +1962,17 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert "Date de dernière validation" not in card_text
         assert "Resynchroniser l'offre dans Algolia" in card_text
         assert "Modifier le lieu" not in card_text
-        assert b"Identifiant chez le fournisseur :</span> pouet provider" in response.data
-        assert b"Langue :</span> VO" in response.data
-        assert "Durée :</span> 133 minutes".encode() in response.data
-        assert b"Accessible aux handicaps auditifs :</span> Oui" in response.data
-        assert b"Accessible aux handicaps mentaux :</span> Non" in response.data
-        assert "Accessible aux handicaps moteurs :</span> Non renseigné".encode() in response.data
-        assert b"Accessible aux handicaps visuels :</span> Non" in response.data
-        assert b"Description :</span> description" in response.data
-        assert "Interprète :</span> John Doe".encode() in response.data
+
+        content = html_parser.content_as_text(response.data)
+        assert "Identifiant chez le fournisseur : pouet provider" in content
+        assert "Langue : VO" in content
+        assert "Durée : 133 minutes" in content
+        assert "Accessible aux handicaps auditifs : Oui" in content
+        assert "Accessible aux handicaps mentaux : Non" in content
+        assert "Accessible aux handicaps moteurs : Non renseigné" in content
+        assert "Accessible aux handicaps visuels : Non" in content
+        assert "Description : description" in content
+        assert "Interprète : John Doe" in content
 
         assert html_parser.count_table_rows(response.data) == 0
 
@@ -2333,7 +2317,45 @@ class GetOfferDetailsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         text = html_parser.extract_cards_text(response.data)[0]
-        assert "Adresse : Champ de Mars 1v Place Jacques Rueff 75007 Paris 48.85605, 2.29800" in text
+        assert "Localisation : Champ de Mars 1v Place Jacques Rueff 75007 Paris 48.85605, 2.29800" in text
+
+    def test_get_offer_details_with_offerer_confidence_rule(self, authenticated_client):
+        rule = offerers_factories.ManualReviewOffererConfidenceRuleFactory(offerer__name="Offerer")
+        offer = offers_factories.OfferFactory(venue__managingOfferer=rule.offerer)
+
+        url = url_for(self.endpoint, offer_id=offer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        text = html_parser.extract_cards_text(response.data)[0]
+        assert "Entité juridique : Offerer Revue manuelle" in text
+
+    def test_get_offer_details_with_venue_confidence_rule(self, authenticated_client):
+        rule = offerers_factories.ManualReviewVenueConfidenceRuleFactory(venue__name="Venue")
+        offer = offers_factories.OfferFactory(venue=rule.venue)
+
+        url = url_for(self.endpoint, offer_id=offer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        text = html_parser.extract_cards_text(response.data)[0]
+        assert "Lieu : Venue Revue manuelle" in text
+
+    def test_collective_offer_with_top_acteur_offerer(self, authenticated_client):
+        offer = offers_factories.OfferFactory(
+            venue__managingOfferer__name="Offerer",
+            venue__managingOfferer__tags=[offerers_factories.OffererTagFactory(name="top-acteur", label="Top Acteur")],
+        )
+
+        url = url_for(self.endpoint, offer_id=offer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        text = html_parser.extract_cards_text(response.data)[0]
+        assert "Entité juridique : Offerer Top Acteur" in text
 
 
 class IndexOfferButtonTest(button_helpers.ButtonHelper):
@@ -3314,7 +3336,7 @@ class DownloadBookingsCSVTest(GetEndpointHelper):
     expected_num_queries = 4
 
     @pytest.mark.parametrize("is_oa_as_data_source_ff_active", (False, True))
-    def test_download_bookings_csv(self, legit_user, authenticated_client, is_oa_as_data_source_ff_active):
+    def test_download_bookings_csv(self, features, legit_user, authenticated_client, is_oa_as_data_source_ff_active):
         offerer = offerers_factories.UserOffererFactory().offerer  # because of join on UserOfferers
         offer = offers_factories.ThingOfferFactory(venue__managingOfferer=offerer)
         bookings_factories.UsedBookingFactory(stock__offer=offer)
@@ -3324,10 +3346,8 @@ class DownloadBookingsCSVTest(GetEndpointHelper):
 
         url = url_for(self.endpoint, offer_id=offer.id)
 
-        with (
-            override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=is_oa_as_data_source_ff_active),
-            assert_num_queries(self.expected_num_queries),
-        ):
+        features.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE = is_oa_as_data_source_ff_active
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -3347,7 +3367,7 @@ class DownloadBookingsXLSXTest(GetEndpointHelper):
         return wb.active
 
     @pytest.mark.parametrize("is_oa_as_data_source_ff_active", (False, True))
-    def test_download_bookings_xlsx(self, authenticated_client, is_oa_as_data_source_ff_active):
+    def test_download_bookings_xlsx(self, features, authenticated_client, is_oa_as_data_source_ff_active):
         offerer = offerers_factories.UserOffererFactory().offerer  # because of join on UserOfferers
         offer = offers_factories.EventOfferFactory(venue__managingOfferer=offerer)
         booking1 = bookings_factories.UsedBookingFactory(stock__offer=offer)
@@ -3356,10 +3376,8 @@ class DownloadBookingsXLSXTest(GetEndpointHelper):
 
         url = url_for(self.endpoint, offer_id=offer.id)
 
-        with (
-            override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=is_oa_as_data_source_ff_active),
-            assert_num_queries(self.expected_num_queries),
-        ):
+        features.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE = is_oa_as_data_source_ff_active
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 

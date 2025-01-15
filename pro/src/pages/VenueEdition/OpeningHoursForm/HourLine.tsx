@@ -21,7 +21,7 @@ export function HourLine({ day }: HourLineProps) {
   const { setFieldValue, values, setFieldTouched } =
     useFormikContext<VenueEditionFormValues>()
   const [isFullLineDisplayed, setIsFullLineDisplayed] = useState(
-    Boolean(values[day].afternoonStartingHour)
+    Boolean(values[day]?.afternoonStartingHour)
   )
 
   async function removeAfternoon() {
@@ -68,7 +68,7 @@ export function HourLine({ day }: HourLineProps) {
               isLabelHidden
               hideFooter
               className={styles['time-picker']}
-              min={values[day].morningStartingHour}
+              min={values[day]?.morningStartingHour}
             />
           </span>
         </td>
@@ -104,7 +104,7 @@ export function HourLine({ day }: HourLineProps) {
               isLabelHidden
               hideFooter
               className={styles['time-picker']}
-              min={values[day].morningEndingHour}
+              min={values[day]?.morningEndingHour}
             />
           </td>
           <td className={styles['hour-cell']}>
@@ -116,7 +116,7 @@ export function HourLine({ day }: HourLineProps) {
                 isLabelHidden
                 hideFooter
                 className={styles['time-picker']}
-                min={values[day].afternoonStartingHour}
+                min={values[day]?.afternoonStartingHour}
               />
             </span>
           </td>

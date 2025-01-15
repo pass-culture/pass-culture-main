@@ -8,7 +8,6 @@ from pcapi.core.history import models as history_models
 from pcapi.core.permissions import factories as perm_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_settings
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -195,7 +194,7 @@ class UpdateRoleTest(PostEndpointHelper):
 
         assert history_models.ActionHistory.query.count() == 0
 
-    @override_settings(BACKOFFICE_ROLES_WITHOUT_GOOGLE_GROUPS=0)
+    @pytest.mark.settings(BACKOFFICE_ROLES_WITHOUT_GOOGLE_GROUPS=0)
     def test_comment_is_mandatory_in_production(self, authenticated_client):
         role_to_edit = perm_factories.RoleFactory()
 
@@ -256,8 +255,8 @@ class GetRolesHistoryTest(GetEndpointHelper):
         assert history_rows[0]["Type"] == history_models.ActionType.ROLE_PERMISSIONS_CHANGED.value
         assert (
             history_rows[0]["Commentaire"] == f"Rôle : {role.name} "
-            f"Informations modifiées : {perm_models.Permissions.MANAGE_PERMISSIONS.value} : Oui => Non "
-            f"{perm_models.Permissions.READ_ADMIN_ACCOUNTS.value} : Non => Oui"
+            f"Informations modifiées : {perm_models.Permissions.MANAGE_PERMISSIONS.value} : Oui → Non "
+            f"{perm_models.Permissions.READ_ADMIN_ACCOUNTS.value} : Non → Oui"
         )
         assert history_rows[0]["Auteur"] == action.authorUser.full_name
 
@@ -568,7 +567,7 @@ class GetBoUserTest(GetEndpointHelper):
         my_id = pro_fraud_admin.id
         client = client.with_bo_session_auth(pro_fraud_admin)
 
-        with assert_num_queries(self.expected_num_queries + 1):  # FF
+        with assert_num_queries(self.expected_num_queries):
             response = client.get(url_for(self.endpoint, user_id=my_id))
             assert response.status_code == 200
 

@@ -1,7 +1,8 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_forms.scss" as forms;
-@use "styles/variables/_size.scss" as size;
+@use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_a11y.scss" as a11y;
 
 .label-input {
   width: 100%;
@@ -25,10 +26,8 @@
   padding: 0;
   height: fit-content;
   margin-top: calc(
-    forms.$input-label-min-height +
-    forms.$label-small-space-before-input +
-    (size.$input-min-height / 2) -
-    (rem.torem(24px) / 2)
+    forms.$input-label-min-height + forms.$label-small-space-before-input +
+      (size.$input-min-height / 2) - (rem.torem(24px) / 2)
   );
 
   &-svg {
@@ -46,23 +45,26 @@
   background-color: var(--color-grey-light);
 }
 
+.visually-hidden {
+  @include a11y.visually-hidden;
+}
+
 @media (min-width: size.$tablet) {
   .label-input {
     width: rem.torem(424px);
   }
 
   .price-input {
-    margin-top: calc(forms.$label-space-before-input + forms.$input-description-min-height);
+    margin-top: calc(
+      forms.$label-space-before-input + forms.$input-description-min-height
+    );
   }
 
   .delete-icon {
     margin-top: calc(
-      forms.$label-space-before-input +
-      forms.$input-description-min-height +
-      forms.$input-label-min-height +
-      forms.$label-small-space-before-input +
-      (size.$input-min-height / 2) -
-      (rem.torem(24px) / 2)
+      forms.$label-space-before-input + forms.$input-description-min-height +
+        forms.$input-label-min-height + forms.$label-small-space-before-input +
+        (size.$input-min-height / 2) - (rem.torem(24px) / 2)
     );
   }
 

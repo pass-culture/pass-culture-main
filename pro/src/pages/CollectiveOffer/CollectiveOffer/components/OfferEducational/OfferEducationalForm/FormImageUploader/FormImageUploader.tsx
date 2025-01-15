@@ -1,4 +1,3 @@
-import React from 'react'
 
 import { OfferCollectiveImage } from 'commons/core/Offers/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -12,6 +11,7 @@ export interface ImageUploaderOfferProps {
   onImageDelete: () => void
   imageOffer: OfferCollectiveImage | null
   disableForm: boolean
+  isTemplate: boolean
 }
 
 const buildInitialValues = (
@@ -27,8 +27,9 @@ export const FormImageUploader = ({
   onImageDelete,
   imageOffer,
   disableForm,
+  isTemplate
 }: ImageUploaderOfferProps) => (
-  <FormLayout.Section title="Image de l’offre">
+  <FormLayout.Section title="Illustrez votre offre" description={isTemplate ? 'Ajoutez une image pour que votre offre ait 2 fois plus de chances d’être consultée !' : ''}>
     <FormLayout.Row>
       <ImageUploader
         onImageUpload={onImageUpload}

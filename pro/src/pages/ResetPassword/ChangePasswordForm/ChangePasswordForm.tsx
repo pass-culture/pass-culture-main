@@ -1,5 +1,4 @@
 import { Form, useFormikContext } from 'formik'
-import React from 'react'
 
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'

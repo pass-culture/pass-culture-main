@@ -14,7 +14,6 @@ from unittest.mock import patch
 import pytest
 import time_machine
 
-from pcapi import settings
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 from pcapi.core import search
 import pcapi.core.bookings.factories as bookings_factories
@@ -30,6 +29,7 @@ import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
+from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.core.offers import api
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories
@@ -43,8 +43,6 @@ import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.repository as providers_repository
 import pcapi.core.reactions.factories as reactions_factories
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 from pcapi.models import api_errors
@@ -353,7 +351,7 @@ class CreateStockTest:
 
     def test_does_not_allow_creation_on_a_synchronized_offer(self):
         # Given
-        offer = factories.ThingOfferFactory(lastProvider=providers_factories.APIProviderFactory())
+        offer = factories.ThingOfferFactory(lastProvider=providers_factories.PublicApiProviderFactory())
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
@@ -932,7 +930,7 @@ class DeleteStockTest:
             reason=search.IndexationReason.STOCK_DELETION,
         )
 
-    @override_features(WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION=False)
+    @pytest.mark.features(WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION=False)
     def test_delete_stock_cancel_bookings_and_send_emails(self):
         offerer_email = "offerer@example.com"
         stock = factories.EventStockFactory(
@@ -993,7 +991,7 @@ class DeleteStockTest:
             "can_be_asynchronously_retried": False,
         }
 
-    @override_features(WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION=True)
+    @pytest.mark.features(WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION=True)
     def test_delete_stock_cancel_bookings_and_send_emails_with_FF(self):
         offerer_email = "offerer@example.com"
         stock = factories.EventStockFactory(
@@ -1043,7 +1041,7 @@ class DeleteStockTest:
         assert len(cancel_notification_requests) == 0
 
     def test_can_delete_if_stock_from_provider(self):
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         offer = factories.OfferFactory(lastProvider=provider, idAtProvider="1")
         stock = factories.StockFactory(offer=offer)
 
@@ -1073,7 +1071,7 @@ class DeleteStockTest:
 @pytest.mark.usefixtures("db_session")
 class DeleteStockWithOffererAddressAsDataSourceTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_delete_stock_basics(self, mocked_async_index_offer_ids):
         stock = factories.EventStockFactory()
 
@@ -1086,7 +1084,7 @@ class DeleteStockWithOffererAddressAsDataSourceTest:
             reason=search.IndexationReason.STOCK_DELETION,
         )
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_delete_stock_cancel_bookings_and_send_emails(self):
         offerer_email = "offerer@example.com"
         stock = factories.EventStockFactory(
@@ -1147,9 +1145,9 @@ class DeleteStockWithOffererAddressAsDataSourceTest:
             "can_be_asynchronously_retried": False,
         }
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_can_delete_if_stock_from_provider(self):
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         offer = factories.OfferFactory(lastProvider=provider, idAtProvider="1")
         stock = factories.StockFactory(offer=offer)
 
@@ -1158,7 +1156,7 @@ class DeleteStockWithOffererAddressAsDataSourceTest:
         stock = models.Stock.query.one()
         assert stock.isSoftDeleted
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_can_delete_if_event_ended_recently(self):
         recently = datetime.utcnow() - timedelta(days=1)
         stock = factories.EventStockFactory(beginningDatetime=recently)
@@ -1167,7 +1165,7 @@ class DeleteStockWithOffererAddressAsDataSourceTest:
         stock = models.Stock.query.one()
         assert stock.isSoftDeleted
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_cannot_delete_if_too_late(self):
         too_long_ago = datetime.utcnow() - timedelta(days=3)
         stock = factories.EventStockFactory(beginningDatetime=too_long_ago)
@@ -1183,7 +1181,7 @@ class CreateMediationV2Test:
     THUMBS_DIR = BASE_THUMBS_DIR / "thumbs" / "mediations"
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    @override_settings(LOCAL_STORAGE_DIR=BASE_THUMBS_DIR)
+    @pytest.mark.settings(LOCAL_STORAGE_DIR=BASE_THUMBS_DIR)
     @pytest.mark.usefixtures("db_session")
     def test_ok(self, mocked_async_index_offer_ids, clear_tests_assets_bucket):
         # Given
@@ -1206,7 +1204,7 @@ class CreateMediationV2Test:
             reason=search.IndexationReason.MEDIATION_CREATION,
         )
 
-    @override_settings(LOCAL_STORAGE_DIR=BASE_THUMBS_DIR)
+    @pytest.mark.settings(LOCAL_STORAGE_DIR=BASE_THUMBS_DIR)
     @pytest.mark.usefixtures("db_session")
     def test_erase_former_mediations(self, clear_tests_assets_bucket):
         # Given
@@ -1238,7 +1236,7 @@ class CreateMediationV2Test:
         assert (self.THUMBS_DIR / (thumb_3_id + ".type")).exists()
 
     @mock.patch("pcapi.core.object_storage.store_public_object", side_effect=Exception)
-    @override_settings(LOCAL_STORAGE_DIR=BASE_THUMBS_DIR)
+    @pytest.mark.settings(LOCAL_STORAGE_DIR=BASE_THUMBS_DIR)
     @pytest.mark.usefixtures("clean_database")
     # this test needs "clean_database" instead of "db_session" fixture because with the latter, the mediation would still be present in databse
     def test_rollback_if_exception(self, mock_store_public_object, clear_tests_assets_bucket):
@@ -1277,7 +1275,7 @@ class CreateDraftOfferTest:
         assert not offer.product
         assert models.Offer.query.count() == 1
 
-    @override_features(WIP_SUGGESTED_SUBCATEGORIES=False)
+    @pytest.mark.features(WIP_SUGGESTED_SUBCATEGORIES=False)
     def test_create_draft_digitaloffer_with_virtual_venue(self):
         venue = offerers_factories.VirtualVenueFactory()
         body = offers_schemas.PostDraftOfferBodyModel(
@@ -1299,7 +1297,7 @@ class CreateDraftOfferTest:
         assert offer.motorDisabilityCompliant == None
         assert offer.visualDisabilityCompliant == None
 
-    @override_features(WIP_SUGGESTED_SUBCATEGORIES=True)
+    @pytest.mark.features(WIP_SUGGESTED_SUBCATEGORIES=True)
     def test_create_draft_physical_offer_on_virtual_venue_must_fail(self):
         physical_venue = offerers_factories.VenueFactory(isVirtual=False)
         virtual_venue = offerers_factories.VirtualVenueFactory(managingOffererId=physical_venue.managingOffererId)
@@ -1384,7 +1382,7 @@ class CreateDraftOfferTest:
 
         assert error.value.errors["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
 
-    @override_features(WIP_SUGGESTED_SUBCATEGORIES=True)
+    @pytest.mark.features(WIP_SUGGESTED_SUBCATEGORIES=True)
     def test_create_offer_with_online_subcategory_must_be_on_virtual_venue(self):
         venue = offerers_factories.VenueFactory(isVirtual=False)
         virtual_venue = offerers_factories.VirtualVenueFactory(
@@ -1398,7 +1396,7 @@ class CreateDraftOfferTest:
         offer = api.create_draft_offer(body, venue=venue)
         assert offer.venue == virtual_venue
 
-    @override_features(WIP_SUGGESTED_SUBCATEGORIES=True)
+    @pytest.mark.features(WIP_SUGGESTED_SUBCATEGORIES=True)
     def test_create_offer_with_offline_subcategory_must_be_on_physical_venue(self):
         physical_venue = offerers_factories.VenueFactory(isVirtual=False)
         virtual_venue = offerers_factories.VirtualVenueFactory(
@@ -1412,7 +1410,7 @@ class CreateDraftOfferTest:
         offer = api.create_draft_offer(body, venue=physical_venue)
         assert offer.venue == physical_venue
 
-    @override_features(WIP_SUGGESTED_SUBCATEGORIES=True)
+    @pytest.mark.features(WIP_SUGGESTED_SUBCATEGORIES=True)
     def test_create_offer_with_online_subcategory_with_no_virtual_venue_must_fail(self):
         venue = offerers_factories.VenueFactory(isVirtual=False)
         body = offers_schemas.PostDraftOfferBodyModel(
@@ -1423,7 +1421,7 @@ class CreateDraftOfferTest:
         with pytest.raises(exceptions.OffererVirtualVenueNotFound):
             api.create_draft_offer(body, venue=venue)
 
-    @override_features(WIP_SUGGESTED_SUBCATEGORIES=True)
+    @pytest.mark.features(WIP_SUGGESTED_SUBCATEGORIES=True)
     def test_create_offer_sends_complete_log_to_data(self, caplog):
         venue = offerers_factories.VenueFactory(isVirtual=False)
         body = offers_schemas.PostDraftOfferBodyModel(
@@ -1546,7 +1544,7 @@ class CreateOfferTest:
 
     def test_create_offer_with_id_at_provider(self):
         venue = offerers_factories.VenueFactory()
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
 
         body = offers_schemas.CreateOffer(
             name="A pretty good offer",
@@ -1815,7 +1813,7 @@ class UpdateOfferTest:
         assert offer.mentalDisabilityCompliant is False
 
     def test_forbidden_on_imported_offer_on_other_fields(self):
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         offer = factories.OfferFactory(
             lastProvider=provider,
             durationMinutes=90,
@@ -2104,6 +2102,197 @@ class ActivateFutureOffersTest:
 
 
 @pytest.mark.usefixtures("db_session")
+class HeadlineOfferTest:
+    def test_make_new_offer_headline(self):
+        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
+        offer = factories.OfferFactory(isActive=True, venue=venue)
+        factories.StockFactory(offer=offer)
+        headline_offer = api.make_offer_headline(offer=offer)
+        db.session.commit()  # see comment in make_offer_headline()
+
+        assert offer.is_headline_offer
+        assert headline_offer.isActive
+        assert headline_offer.timespan.lower
+        assert not headline_offer.timespan.upper
+
+    def test_create_offer_headline_when_another_is_still_active_should_fail(self):
+        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
+        offer = factories.OfferFactory(isActive=True, venue=venue)
+        factories.StockFactory(offer=offer)
+        api.make_offer_headline(offer=offer)
+        with pytest.raises(exceptions.OfferHasAlreadyAnActiveHeadlineOffer) as error:
+            api.make_offer_headline(offer=offer)
+            assert error.value.errors["headlineOffer"] == ["This offer is already an active headline offer"]
+
+    def test_make_another_offer_headline_on_the_same_venue_should_fail(self):
+        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
+        offer_1 = factories.OfferFactory(isActive=True, venue=venue)
+        factories.StockFactory(offer=offer_1)
+        offer_2 = factories.OfferFactory(isActive=True, venue=venue)
+        factories.StockFactory(offer=offer_2)
+
+        api.make_offer_headline(offer=offer_1)
+        assert venue.has_headline_offer
+
+        with pytest.raises(exceptions.VenueHasAlreadyAnActiveHeadlineOffer) as error:
+            api.make_offer_headline(offer=offer_2)
+            assert error.value.errors["headlineOffer"] == ["This venue has already an active headline offer"]
+
+        assert offer_1.is_headline_offer
+        assert not offer_2.is_headline_offer
+        assert venue.has_headline_offer
+
+    def test_create_offer_headline_when_another_is_still_active_should_fail(self):
+        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
+        offer = factories.OfferFactory(isActive=True, venue=venue)
+        factories.StockFactory(offer=offer)
+        api.make_offer_headline(offer=offer)
+        with pytest.raises(exceptions.OfferHasAlreadyAnActiveHeadlineOffer) as error:
+            api.make_offer_headline(offer=offer)
+            assert error.value.errors["headlineOffer"] == ["This offer is already an active headline offer"]
+
+    def test_remove_headline_offer(self):
+        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
+        offer = factories.OfferFactory(isActive=True, venue=venue)
+        factories.StockFactory(offer=offer)
+        headline_offer = factories.HeadlineOfferFactory(offer=offer)
+
+        api.remove_headline_offer(headline_offer)
+        db.session.commit()  # see comment in make_offer_headline()
+
+        assert headline_offer.timespan.upper
+        assert not headline_offer.isActive
+        assert not offer.is_headline_offer
+
+    @time_machine.travel("2024-12-13 15:44:00")
+    def test_make_offer_headline_again(self):
+        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
+        offer = factories.OfferFactory(isActive=True, venue=venue)
+        factories.StockFactory(offer=offer)
+        creation_time = datetime.utcnow()
+        finished_timespan = (creation_time, creation_time + timedelta(days=10))
+        old_headline_offer = factories.HeadlineOfferFactory(offer=offer, timespan=finished_timespan)
+
+        one_eternity_later = creation_time + timedelta(days=1000)
+        with time_machine.travel(one_eternity_later):
+            new_headline_offer = api.make_offer_headline(offer=offer)
+            db.session.commit()  # see comment in make_offer_headline()
+            assert offer.is_headline_offer
+            assert not old_headline_offer.isActive
+            assert new_headline_offer.isActive
+            assert new_headline_offer.timespan.lower.date() != creation_time.date()
+            assert new_headline_offer.timespan.upper == None
+
+    @time_machine.travel("2024-12-13 15:44:00")
+    def test_make_another_offer_headline_on_same_venue(self):
+        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
+        offer_1 = factories.OfferFactory(isActive=True, venue=venue)
+        factories.StockFactory(offer=offer_1)
+        offer_2 = factories.OfferFactory(isActive=True, venue=venue)
+        factories.StockFactory(offer=offer_2)
+
+        ten_days_ago = datetime.utcnow() - timedelta(days=10)
+        finished_timespan = (ten_days_ago, ten_days_ago + timedelta(days=1))
+        old_headline_offer = factories.HeadlineOfferFactory(offer=offer_1, timespan=finished_timespan)
+        new_headline_offer = api.make_offer_headline(offer=offer_2)
+        db.session.commit()  # see comment in make_offer_headline()
+        assert not old_headline_offer.isActive
+        assert new_headline_offer.isActive
+        assert not offer_1.is_headline_offer
+        assert offer_2.is_headline_offer
+        assert venue.has_headline_offer
+
+    def test_headline_offer_on_offer_turned_inactive_is_inactive(self):
+        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
+        active_offer = factories.OfferFactory(isActive=True, venue=venue)
+        factories.StockFactory(offer=active_offer)
+
+        api.make_offer_headline(offer=active_offer)
+
+        active_offer.isActive = False
+        assert not active_offer.is_headline_offer
+
+    def test_headline_offer_on_sold_out_offer_is_inactive(self):
+        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
+        stock = factories.StockFactory(quantity=10)
+        offer = factories.OfferFactory(isActive=True, stocks=[stock], venue=venue)
+        api.make_offer_headline(offer=offer)
+        assert offer.is_headline_offer
+
+        stock.quantity = 0
+        assert not offer.is_headline_offer
+
+    def test_headline_offer_on_expired_offer_is_inactive(self):
+        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
+        tomorrow = date.today() + timedelta(days=1)
+        stock = factories.StockFactory(bookingLimitDatetime=tomorrow)
+        offer = factories.OfferFactory(
+            validation=models.OfferValidationStatus.APPROVED,
+            isActive=True,
+            stocks=[
+                stock,
+            ],
+            venue=venue,
+        )
+        api.make_offer_headline(offer=offer)
+        assert offer.is_headline_offer
+        with time_machine.travel(tomorrow + timedelta(days=1)):
+            assert not offer.is_headline_offer
+
+    def test_headline_offer_on_rejected_offer_is_inactive(self):
+        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
+        offer = factories.OfferFactory(isActive=True, venue=venue)
+        factories.StockFactory(offer=offer)
+
+        api.make_offer_headline(offer=offer)
+        offer.validation = models.OfferValidationStatus.REJECTED
+        assert not offer.is_headline_offer
+
+    def test_set_upper_timespan_of_inactive_headline_offers(self):
+        venue_1 = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
+        offer_1 = factories.OfferFactory(isActive=True, venue=venue_1)
+        factories.StockFactory(offer=offer_1)
+        venue_2 = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
+        stock = factories.StockFactory(quantity=1)
+        offer_2 = factories.OfferFactory(isActive=True, venue=venue_2, stocks=[stock])
+        venue_3 = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
+        offer_3 = factories.OfferFactory(isActive=True, venue=venue_3)
+        factories.StockFactory(offer=offer_3)
+
+        headline_offer_1 = factories.HeadlineOfferFactory(offer=offer_1)
+        headline_offer_2 = factories.HeadlineOfferFactory(offer=offer_2)
+        headline_offer_3 = factories.HeadlineOfferFactory(offer=offer_3)
+
+        assert headline_offer_1.isActive
+        assert headline_offer_1.timespan.upper is None
+        assert headline_offer_2.isActive
+        assert headline_offer_2.timespan.upper is None
+
+        offer_1.validation = models.OfferValidationStatus.REJECTED
+        stock.quantity = 0
+
+        api.set_upper_timespan_of_inactive_headline_offers()
+        assert not headline_offer_1.isActive
+        assert not headline_offer_1.timespan.upper is None
+        assert not headline_offer_2.isActive
+        assert not headline_offer_2.timespan.upper is None
+
+        assert headline_offer_3.isActive
+        assert headline_offer_3.timespan.upper is None
+
+    def test_do_not_update_upper_timespan_of_already_inactive_headline_offers(self):
+        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
+        offer = factories.OfferFactory(isActive=True, venue=venue)
+        factories.StockFactory(offer=offer)
+        creation_time = datetime.utcnow() - timedelta(days=20)
+        finished_timespan = (creation_time, creation_time + timedelta(days=10))
+        old_headline_offer = factories.HeadlineOfferFactory(offer=offer, timespan=finished_timespan)
+        api.set_upper_timespan_of_inactive_headline_offers()
+        assert old_headline_offer.timespan.lower.date() == creation_time.date()
+        assert old_headline_offer.timespan.upper.date() == (creation_time + timedelta(days=10)).date()
+
+
+@pytest.mark.usefixtures("db_session")
 class OfferExpenseDomainsTest:
     def test_offer_expense_domains(self):
         assert api.get_expense_domains(factories.OfferFactory(subcategoryId=subcategories.EVENEMENT_JEU.id)) == [
@@ -2234,7 +2423,7 @@ class RejectInappropriateProductTest:
         self, mocked_send_booking_cancellation_emails_to_user_and_offerer, mocked_async_index_offer_ids
     ):
         # Given
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         product1 = factories.ThingProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "ean-de-test"}, lastProvider=provider
         )
@@ -2287,7 +2476,7 @@ class RejectInappropriateProductTest:
         self, mocked_send_booking_cancellation_emails_to_user_and_offerer
     ):
         # Given
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         product1 = factories.ThingProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "ean-de-test"}, lastProvider=provider
         )
@@ -2320,7 +2509,7 @@ class RejectInappropriateProductTest:
         self, mocked_send_booking_cancellation_emails_to_user_and_offerer, mocked_async_index_offer_ids
     ):
         # Given
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         factories.ThingProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             extraData={"ean": "ean-de-test"},
@@ -2868,7 +3057,7 @@ class ResolveOfferValidationRuleTest:
 @pytest.mark.usefixtures("db_session")
 class UnindexExpiredOffersTest:
     @time_machine.travel("2020-01-05 10:00:00")
-    @override_settings(ALGOLIA_DELETING_OFFERS_CHUNK_SIZE=2)
+    @pytest.mark.settings(ALGOLIA_DELETING_OFFERS_CHUNK_SIZE=2)
     @mock.patch("pcapi.core.search.unindex_offer_ids")
     def test_default_run(self, mock_unindex_offer_ids):
         # Given
@@ -2906,9 +3095,8 @@ class UnindexExpiredOffersTest:
 
 @pytest.mark.usefixtures("db_session")
 class WhitelistExistingProductTest:
-    @override_settings(TITELIVE_EPAGINE_API_USERNAME="test@example.com")
-    @override_settings(TITELIVE_EPAGINE_API_PASSWORD="qwerty123")
-    def test_modify_product_if_existing_and_not_gcu_compatible(self, requests_mock):
+    @pytest.mark.settings(TITELIVE_EPAGINE_API_USERNAME="test@example.com", TITELIVE_EPAGINE_API_PASSWORD="qwerty123")
+    def test_modify_product_if_existing_and_not_gcu_compatible(self, requests_mock, settings):
         ean = "9782070455379"
         requests_mock.post(
             f"{settings.TITELIVE_EPAGINE_API_AUTH_URL}/login/test@example.com/token",
@@ -2964,9 +3152,8 @@ class WhitelistExistingProductTest:
         assert product.extraData["gtl_id"] == "01050000"
         assert product.extraData["code_clil"] == "3665"
 
-    @override_settings(TITELIVE_EPAGINE_API_USERNAME="test@example.com")
-    @override_settings(TITELIVE_EPAGINE_API_PASSWORD="qwerty123")
-    def test_create_product_if_not_existing(self, requests_mock):
+    @pytest.mark.settings(TITELIVE_EPAGINE_API_USERNAME="test@example.com", TITELIVE_EPAGINE_API_PASSWORD="qwerty123")
+    def test_create_product_if_not_existing(self, requests_mock, settings):
         ean = "9782070455379"
         requests_mock.post(
             f"{settings.TITELIVE_EPAGINE_API_AUTH_URL}/login/test@example.com/token",
@@ -3108,7 +3295,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
     DATETIME_10_DAYS_AFTER = datetime.today() + timedelta(days=10)
     DATETIME_10_DAYS_AGO = datetime.today() - timedelta(days=10)
 
-    @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+    @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
     @pytest.mark.parametrize(
         "show_id, show_beginning_datetime, api_return_value, expected_remaining_quantity",
         [
@@ -3164,7 +3351,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         else:
             mocked_async_index_offer_ids.assert_not_called()
 
-    @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+    @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
     def test_cds_with_get_showtimes_stocks_cached(
         self,
         requests_mock,
@@ -3236,7 +3423,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         assert stock.quantity == 10
         assert stock.quantity != stock.dnBookedQuantity
 
-    @override_features(ENABLE_BOOST_API_INTEGRATION=True)
+    @pytest.mark.features(ENABLE_BOOST_API_INTEGRATION=True)
     @pytest.mark.parametrize(
         "show_id, show_beginning_datetime, api_return_value, expected_remaining_quantity",
         [
@@ -3292,7 +3479,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         else:
             mocked_async_index_offer_ids.assert_not_called()
 
-    @override_features(ENABLE_BOOST_API_INTEGRATION=True)
+    @pytest.mark.features(ENABLE_BOOST_API_INTEGRATION=True)
     def test_boost_with_get_film_showtimes_stocks_cached(
         self,
         requests_mock,
@@ -3364,7 +3551,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         assert stock.quantity == 10
         assert stock.quantity != stock.dnBookedQuantity
 
-    @override_features(ENABLE_CGR_INTEGRATION=True)
+    @pytest.mark.features(ENABLE_CGR_INTEGRATION=True)
     @pytest.mark.parametrize(
         "show_id, show_beginning_datetime, api_return_value, expected_remaining_quantity",
         [
@@ -3420,7 +3607,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         else:
             mocked_async_index_offer_ids.assert_not_called()
 
-    @override_features(ENABLE_CGR_INTEGRATION=True)
+    @pytest.mark.features(ENABLE_CGR_INTEGRATION=True)
     def test_cgr_with_get_showtimes_stock_cached(
         self,
         requests_mock,
@@ -3485,7 +3672,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
 
         assert post_adapter.call_count == 2
 
-    @override_features(ENABLE_EMS_INTEGRATION=True)
+    @pytest.mark.features(ENABLE_EMS_INTEGRATION=True)
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_ems(
         self,
@@ -3522,7 +3709,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         assert stock.remainingQuantity == expected_remaining_quantity
         mocked_async_index_offer_ids.assert_not_called()
 
-    @override_features(ENABLE_EMS_INTEGRATION=True)
+    @pytest.mark.features(ENABLE_EMS_INTEGRATION=True)
     def test_ems_with_get_film_showtimes_stocks_cached(self, requests_mock, app):
         redis_client = app.redis_client
 
@@ -3576,7 +3763,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         assert stock.quantity == 10
         assert stock.quantity != stock.dnBookedQuantity
 
-    @override_features(ENABLE_EMS_INTEGRATION=True)
+    @pytest.mark.features(ENABLE_EMS_INTEGRATION=True)
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_ems_no_remaining_places_case(
         self,
@@ -3621,7 +3808,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
             log_extra={"sold_out": True},
         )
 
-    @override_features(ENABLE_CGR_INTEGRATION=True)
+    @pytest.mark.features(ENABLE_CGR_INTEGRATION=True)
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_cgr_no_remaining_places_case(
         self,
@@ -3669,7 +3856,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
             log_extra={"sold_out": True},
         )
 
-    @override_features(ENABLE_BOOST_API_INTEGRATION=True)
+    @pytest.mark.features(ENABLE_BOOST_API_INTEGRATION=True)
     @patch("pcapi.core.search.async_index_offer_ids")
     @patch("pcapi.core.offers.api.external_bookings_api.get_movie_stocks")
     def test_should_retry_when_inconsistent_stock(self, mocked_get_movie_shows_stock, mocked_async_index_offer_ids):
@@ -3729,7 +3916,7 @@ class ApproveProductAndRejectedOffersTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_should_approve_product_and_offers_with_no_offers(self, mocked_async_index_offer_ids):
         # Given
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         ean = "ean-de-test"
         factories.ThingProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -3751,7 +3938,7 @@ class ApproveProductAndRejectedOffersTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_should_approve_product_and_offers_on_approved_offers(self, mocked_async_index_offer_ids):
         # Given
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         ean = "ean-de-test"
         product = factories.ThingProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -3780,7 +3967,7 @@ class ApproveProductAndRejectedOffersTest:
         self, mocked_async_index_offer_ids
     ):
         # Given
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         ean = "ean-de-test"
         product = factories.ThingProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -3818,7 +4005,7 @@ class ApproveProductAndRejectedOffersTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_should_approve_product_and_offers_with_one_offer_manually_rejected(self, mocked_async_index_offer_ids):
         # Given
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         ean = "ean-de-test"
         product = factories.ThingProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -3845,7 +4032,7 @@ class ApproveProductAndRejectedOffersTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_should_approve_product_and_offers_with_one_offer_auto_rejected(self, mocked_async_index_offer_ids):
         # Given
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         ean = "ean-de-test"
         product = factories.ThingProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -3871,7 +4058,7 @@ class ApproveProductAndRejectedOffersTest:
 
     def test_should_approve_product_and_offers_with_update_exception(self):
         # Given
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         ean = "ean-de-test"
         product = factories.ThingProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,

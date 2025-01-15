@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { addDays, format } from 'date-fns'
 import { generatePath, Route, Routes } from 'react-router-dom'
@@ -662,6 +662,39 @@ describe('Summary', () => {
       // Both present in <VenueDetails /> and <SummaryScreen /> components
       expect(screen.getAllByText('mon adresse')).toHaveLength(2)
       expect(screen.getAllByText('ma street 1 ma ville')).toHaveLength(2)
+    })
+
+    it('should render component with new sections and empty address data', async () => {
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(
+        defaultGetOffererResponseModel
+      )
+      customContext.offer = getIndividualOfferFactory({
+        isEvent: true,
+        address: null,
+      })
+
+      renderSummary(
+        customContext,
+        generatePath(
+          getIndividualOfferPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+          { offerId: 'AA' }
+        ),
+        { features: ['WIP_ENABLE_OFFER_ADDRESS'] }
+      )
+
+      expect(await screen.findByText(/Structure/)).toBeInTheDocument()
+      expect(
+        await screen.findByText('Localisation de l’offre')
+      ).toBeInTheDocument()
+
+      expect(
+        within(screen.getByTestId('localisation-offer-details')).getAllByText(
+          '-'
+        )
+      ).toHaveLength(2)
     })
   })
 

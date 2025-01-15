@@ -1,10 +1,9 @@
-from babel.dates import format_date
-
 from pcapi.core import mails
 from pcapi.core.bookings.models import Booking
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.utils.mailing import format_booking_hours_for_email
+from pcapi.utils.date import get_date_formatted_for_email
+from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.mailing import get_event_datetime
 from pcapi.utils.urls import booking_app_link
 
@@ -26,21 +25,22 @@ def get_booking_postponed_by_pro_to_beneficiary_email_data(
     offer = stock.offer
 
     if offer.isEvent:
-        event_date = format_date(get_event_datetime(stock), format="full", locale="fr")
-        event_hour = format_booking_hours_for_email(booking)
+        event_date = get_date_formatted_for_email(get_event_datetime(stock)) if stock.beginningDatetime else ""
+        event_hour = get_time_formatted_for_email(get_event_datetime(stock)) if stock.beginningDatetime else ""
     else:
-        event_date = None
-        event_hour = None
+        event_date = ""
+        event_hour = ""
 
     return models.TransactionalEmailData(
         template=TransactionalEmail.BOOKING_POSTPONED_BY_PRO_TO_BENEFICIARY.value,
         params={
-            "OFFER_NAME": offer.name,
+            "BOOKING_CONTACT": offer.bookingContact,
+            "BOOKING_LINK": booking_app_link(booking),
+            "EVENT_DATE": event_date,
+            "EVENT_HOUR": event_hour,
             "FIRSTNAME": booking.firstName,
             "IS_EXTERNAL": booking.isExternal,
-            "VENUE_NAME": offer.venue.publicName or offer.venue.name,
-            "EVENT_DATE": event_date if event_date else "",
-            "EVENT_HOUR": event_hour if event_hour else "",
-            "BOOKING_LINK": booking_app_link(booking),
+            "OFFER_NAME": offer.name,
+            "VENUE_NAME": offer.venue.common_name,
         },
     )

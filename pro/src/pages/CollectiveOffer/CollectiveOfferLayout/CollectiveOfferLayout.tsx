@@ -7,10 +7,11 @@ import {
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
 import { HelpLink } from 'components/HelpLink/HelpLink'
-import { CollectiveOfferNavigation } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferNavigation/CollectiveOfferNavigation'
+import { CollectiveCreationOfferNavigation } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferNavigation/CollectiveCreationOfferNavigation'
 import { getActiveStep } from 'pages/CollectiveOfferRoutes/utils/getActiveStep'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
+import { CollectiveEditionOfferNavigation } from './CollectiveEditionOfferNavigation/CollectiveEditionOfferNavigation'
 import styles from './CollectiveOfferLayout.module.scss'
 
 export interface CollectiveOfferLayoutProps {
@@ -39,20 +40,13 @@ export const CollectiveOfferLayout = ({
   const { offerId: offerIdFromParams } = useParams<{
     offerId: string
   }>()
-  let title = ''
-  if (isCreation) {
-    if (isFromTemplate) {
-      title = 'Créer une offre pour un établissement scolaire'
-    } else {
-      title = 'Créer une nouvelle offre collective'
-    }
-  } else {
-    if (isSummaryPage) {
-      title = 'Récapitulatif'
-    } else {
-      title = 'Éditer une offre collective'
-    }
-  }
+  let title = isCreation
+    ? isFromTemplate
+      ? 'Créer une offre vitrine'
+      : 'Créer une offre réservable'
+    : isSummaryPage
+      ? 'Récapitulatif'
+      : 'Éditer une offre collective'
 
   const navigationProps = {
     activeStep: getActiveStep(location.pathname),
@@ -61,6 +55,7 @@ export const CollectiveOfferLayout = ({
       : Number(offerIdFromParams),
     isCreatingOffer: isCreation,
   }
+
   return (
     <div className={styles['eac-layout']}>
       <div className={styles['eac-layout-headings']}>
@@ -75,23 +70,29 @@ export const CollectiveOfferLayout = ({
         {}
         <h1 className={styles['eac-layout-heading']}>
           {title}{' '}
-          {subTitle && (
-            <span className={styles['eac-layout-sub-heading']}>{subTitle}</span>
-          )}
+          <span className={styles['eac-layout-sub-heading']}>{subTitle}</span>
         </h1>
       </div>
 
-      <CollectiveOfferNavigation
-        activeStep={navigationProps.activeStep}
-        className={cn(styles['eac-layout-navigation'], {
-          [styles['stepper-navigation']]: navigationProps.isCreatingOffer,
-        })}
-        isCreatingOffer={navigationProps.isCreatingOffer}
-        offerId={navigationProps.offerId}
-        isTemplate={isTemplate}
-        requestId={requestId}
-        offer={offer}
-      />
+      {navigationProps.isCreatingOffer ? (
+        <CollectiveCreationOfferNavigation
+          activeStep={navigationProps.activeStep}
+          className={cn(styles['eac-layout-navigation'], {
+            [styles['stepper-navigation']]: navigationProps.isCreatingOffer,
+          })}
+          offerId={navigationProps.offerId}
+          isTemplate={isTemplate}
+          requestId={requestId}
+          offer={offer}
+        />
+      ) : (
+        <CollectiveEditionOfferNavigation
+          isTemplate={isTemplate}
+          offer={offer}
+          offerId={navigationProps.offerId}
+          activeStep={navigationProps.activeStep}
+        />
+      )}
 
       {children}
       <HelpLink />

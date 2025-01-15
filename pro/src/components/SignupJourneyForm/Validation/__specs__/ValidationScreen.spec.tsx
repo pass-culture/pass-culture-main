@@ -4,7 +4,6 @@ import {
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -235,12 +234,14 @@ describe('ValidationScreen', () => {
           webPresence: 'url1, url2',
           target: Target.EDUCATIONAL,
           createVenueWithoutSiret: false,
-          street: '3 Rue de Valois',
-          banId: '75118_5995_00043',
-          city: 'Paris',
-          latitude: 0,
-          longitude: 0,
-          postalCode: '75001',
+          address: {
+            street: '3 Rue de Valois',
+            banId: '75118_5995_00043',
+            city: 'Paris',
+            latitude: 0,
+            longitude: 0,
+            postalCode: '75001',
+          },
           token: 'token',
         })
       }

@@ -6,10 +6,10 @@ from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
 from pcapi.core.educational import repository
+from pcapi.core.educational.models import OfferAddressType
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation as offers_validation
 from pcapi.models.api_errors import ApiErrors
-from pcapi.routes.serialization import collective_offers_serialize
 
 
 if TYPE_CHECKING:
@@ -20,28 +20,24 @@ def validate_offer_venue(offer_venue: "OfferVenueModel | None") -> None:
     if offer_venue is None:
         return
     errors = {}
-    if offer_venue.addressType == collective_offers_serialize.OfferAddressType.OFFERER_VENUE:
+    if offer_venue.addressType == OfferAddressType.OFFERER_VENUE:
         if offer_venue.venueId is None:
             errors["offerVenue.venueId"] = (
-                "Ce champ est obligatoire si 'addressType' vaut "
-                f"'{collective_offers_serialize.OfferAddressType.OFFERER_VENUE.value}'"
+                "Ce champ est obligatoire si 'addressType' vaut " f"'{OfferAddressType.OFFERER_VENUE.value}'"
             )
     elif offer_venue.venueId is not None:
         errors["offerVenue.venueId"] = (
-            "Ce champ est interdit si 'addressType' ne vaut pas "
-            f"'{collective_offers_serialize.OfferAddressType.OFFERER_VENUE.value}'"
+            "Ce champ est interdit si 'addressType' ne vaut pas " f"'{OfferAddressType.OFFERER_VENUE.value}'"
         )
 
-    if offer_venue.addressType == collective_offers_serialize.OfferAddressType.OTHER:
+    if offer_venue.addressType == OfferAddressType.OTHER:
         if not offer_venue.otherAddress:
             errors["offerVenue.otherAddress"] = (
-                "Ce champ est obligatoire si 'addressType' vaut "
-                f"'{collective_offers_serialize.OfferAddressType.OTHER.value}'"
+                "Ce champ est obligatoire si 'addressType' vaut " f"'{OfferAddressType.OTHER.value}'"
             )
     elif offer_venue.otherAddress:
         errors["offerVenue.otherAddress"] = (
-            "Ce champ est interdit si 'addressType' ne vaut pas "
-            f"'{collective_offers_serialize.OfferAddressType.OTHER.value}'"
+            "Ce champ est interdit si 'addressType' ne vaut pas " f"'{OfferAddressType.OTHER.value}'"
         )
     if errors:
         raise ApiErrors(
@@ -146,3 +142,17 @@ def check_if_offer_not_used_or_reimbursed(offer: models.CollectiveOffer) -> None
                 or booking.status is models.CollectiveBookingStatus.REIMBURSED
             ):
                 raise offers_exceptions.OfferUsedOrReimbursedCantBeEdit()
+
+
+def check_collective_offer_action_is_allowed(
+    offer: models.CollectiveOffer, action: models.CollectiveOfferAllowedAction
+) -> None:
+    if action not in offer.allowedActions:
+        raise exceptions.CollectiveOfferForbiddenAction(action=action)
+
+
+def check_collective_offer_template_action_is_allowed(
+    offer: models.CollectiveOfferTemplate, action: models.CollectiveOfferTemplateAllowedAction
+) -> None:
+    if action not in offer.allowedActions:
+        raise exceptions.CollectiveOfferTemplateForbiddenAction(action=action)

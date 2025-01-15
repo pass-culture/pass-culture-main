@@ -147,7 +147,7 @@ class PublicAPIVenueEndpointHelper(PublicAPIEndpointBaseHelper):
 
 
 class PublicAPIRestrictedEnvEndpointHelper(PublicAPIVenueEndpointHelper):
-    @testing.override_settings(IS_PROD=True)
+    @pytest.mark.settings(IS_PROD=True)
     def test_should_not_be_usable_from_production_env(self, client):
         plain_api_key, _ = self.setup_provider()
         authenticated_client = client.with_explicit_token(plain_api_key)

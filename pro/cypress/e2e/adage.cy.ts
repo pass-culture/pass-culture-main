@@ -1,16 +1,22 @@
 describe('ADAGE discovery', () => {
   let offerId: number
-  const offerName = 'Mon offre collective'
+  let adageToken: string
+  let offerName: string
+  let venueName: string
 
   beforeEach(() => {
     cy.stepLog({ message: 'I go to adage login page with valid token' })
-    cy.visit('/connexion')
-    cy.getFakeAdageToken()
+    cy.visit('/')
+    cy.getFakeAdageToken().then((value) => {
+      adageToken = value
+    })
     cy.request({
       method: 'GET',
       url: 'http://localhost:5001/sandboxes/pro/create_adage_environment',
     }).then((response) => {
       offerId = response.body.offerId
+      offerName = response.body.offerName
+      venueName = response.body.venueName
     })
     cy.intercept(
       'GET',
@@ -194,16 +200,24 @@ describe('ADAGE discovery', () => {
       method: 'POST',
       url: '/adage-iframe/logs/catalog-view',
     }).as('catalogView')
+    cy.intercept({ method: 'GET', url: '/adage-iframe/authenticate' }).as(
+      'authenticate'
+    )
+    cy.stepLog({ message: 'I open adage iframe' })
   })
 
   it('It should put an offer in favorite', () => {
-    cy.stepLog({ message: 'I open adage iframe' })
-    const adageToken = Cypress.env('adageToken')
-
     cy.visit(`/adage-iframe/recherche?token=${adageToken}`)
-    cy.wait('@catalogView').its('response.statusCode').should('eq', 204)
+    cy.wait(['@authenticate', '@catalogView']).then((interception) => {
+      if (interception[0].response) {
+        expect(interception[0].response.statusCode).to.equal(200)
+        if (interception[1].response) {
+          expect(interception[1].response.statusCode).to.equal(204)
+        }
+      }
+    })
     cy.findAllByTestId('spinner').should('not.exist')
-    cy.findByTestId('offer-listitem').contains('Mon offre collective')
+    cy.findByTestId('offer-listitem').contains(offerName)
 
     cy.stepLog({ message: 'I add first offer to favorites' })
     cy.findByText(offerName).parent().click()
@@ -230,9 +244,9 @@ describe('ADAGE discovery', () => {
   })
 
   it('It should redirect to adage discovery', () => {
-    cy.stepLog({ message: 'I open adage iframe' })
-    const adageToken = Cypress.env('adageToken')
     cy.visit(`/adage-iframe?token=${adageToken}`)
+
+    cy.wait('@authenticate').its('response.statusCode').should('eq', 200)
 
     cy.stepLog({ message: 'the iframe should be displayed correctly' })
     cy.url().should('include', '/decouverte')
@@ -247,10 +261,8 @@ describe('ADAGE discovery', () => {
   })
 
   it('It should redirect to a page dedicated to the offer with an active header on the discovery tab', () => {
-    // I open adage iframe
-    cy.stepLog({ message: 'I open adage iframe' })
-    const adageToken = Cypress.env('adageToken')
     cy.visit(`/adage-iframe?token=${adageToken}`)
+    cy.wait('@authenticate').its('response.statusCode').should('eq', 200)
 
     cy.stepLog({ message: 'I click on an offer' })
     cy.findByText(offerName).parent().click()
@@ -263,12 +275,11 @@ describe('ADAGE discovery', () => {
   })
 
   it('It should redirect to search page with filtered venue on click in venue card', () => {
-    cy.stepLog({ message: 'I open adage iframe' })
-    const adageToken = Cypress.env('adageToken')
     cy.visit(`/adage-iframe?token=${adageToken}`)
+    cy.wait('@authenticate').its('response.statusCode').should('eq', 200)
 
     cy.stepLog({ message: 'I click on venue' })
-    cy.findByText('Mon lieu collectif').parent().click()
+    cy.findByText(venueName).parent().click()
 
     cy.stepLog({
       message: 'the iframe search page should be displayed correctly',
@@ -281,13 +292,12 @@ describe('ADAGE discovery', () => {
     )
 
     cy.stepLog({ message: 'Venue filter should be there' })
-    cy.findByText('Lieu : Mon lieu collectif').should('be.visible')
+    cy.findByText(`Lieu : ${venueName}`).should('be.visible')
   })
 
   it('It should redirect to search page with filtered domain on click in domain card', () => {
-    cy.stepLog({ message: 'I open adage iframe' })
-    const adageToken = Cypress.env('adageToken')
     cy.visit(`/adage-iframe?token=${adageToken}`)
+    cy.wait('@authenticate').its('response.statusCode').should('eq', 200)
 
     cy.stepLog({ message: 'I select first card domain' })
     cy.findAllByText('Danse').first().click()
@@ -307,12 +317,11 @@ describe('ADAGE discovery', () => {
   })
 
   it('It should not keep filters after page change', () => {
-    cy.stepLog({ message: 'I open adage iframe' })
-    const adageToken = Cypress.env('adageToken')
     cy.visit(`/adage-iframe?token=${adageToken}`)
+    cy.wait('@authenticate').its('response.statusCode').should('eq', 200)
 
     cy.stepLog({ message: 'I click on venue' })
-    cy.findByText('Mon lieu collectif').parent().click()
+    cy.findByText(venueName).parent().click()
 
     cy.stepLog({
       message: 'the iframe search page should be displayed correctly',
@@ -325,21 +334,20 @@ describe('ADAGE discovery', () => {
     )
 
     cy.stepLog({ message: 'I go back to search page' })
-    cy.findByText('Lieu : Mon lieu collectif').should('be.visible')
+    cy.findByText(`Lieu : ${venueName}`).should('be.visible')
     cy.findByRole('link', { name: 'Découvrir' }).click()
     cy.findByRole('link', { name: 'Rechercher' }).click()
 
     cy.stepLog({ message: 'The filter has disappear' })
-    cy.findByText('Lieu : Mon lieu collectif').should('not.exist')
+    cy.findByText(`Lieu : ${venueName}`).should('not.exist')
   })
 
   it('It should not keep filter venue after page change', () => {
-    cy.stepLog({ message: 'I open adage iframe' })
-    const adageToken = Cypress.env('adageToken')
     cy.visit(`/adage-iframe?token=${adageToken}`)
+    cy.wait('@authenticate').its('response.statusCode').should('eq', 200)
 
     cy.stepLog({ message: 'I click on venue' })
-    cy.findByText('Mon lieu collectif').parent().click()
+    cy.findByText(venueName).parent().click()
 
     cy.stepLog({
       message: 'the iframe search page should be displayed correctly',
@@ -352,18 +360,25 @@ describe('ADAGE discovery', () => {
     )
 
     cy.stepLog({ message: 'I go back to search page' })
-    cy.findByText('Lieu : Mon lieu collectif').should('be.visible')
+    cy.findByText(`Lieu : ${venueName}`).should('be.visible')
     cy.findByRole('link', { name: 'Découvrir' }).click()
     cy.findByRole('link', { name: 'Rechercher' }).click()
 
     cy.stepLog({ message: 'The filter has disappear' })
-    cy.findByText('Lieu : Mon lieu collectif').should('not.exist')
+    cy.findByText(`Lieu : ${venueName}`).should('not.exist')
   })
 
   it('It should save view type in search page', () => {
-    cy.stepLog({ message: 'I open adage iframe at search page' })
-    const adageToken = Cypress.env('adageToken')
     cy.visit(`/adage-iframe/recherche?token=${adageToken}`)
+
+    cy.wait(['@authenticate', '@catalogView']).then((interception) => {
+      if (interception[0].response) {
+        expect(interception[0].response.statusCode).to.equal(200)
+        if (interception[1].response) {
+          expect(interception[1].response.statusCode).to.equal(204)
+        }
+      }
+    })
 
     cy.stepLog({ message: 'offer descriptions are displayed' })
     cy.findAllByTestId('offer-listitem')
@@ -395,12 +410,11 @@ describe('ADAGE discovery', () => {
   })
 
   it('It should save filter when page changing', () => {
-    cy.stepLog({ message: 'I open adage iframe' })
-    const adageToken = Cypress.env('adageToken')
     cy.visit(`/adage-iframe?token=${adageToken}`)
+    cy.wait('@authenticate').its('response.statusCode').should('eq', 200)
 
     cy.stepLog({ message: 'I choose my filters' })
-    cy.findByText('Mon lieu collectif').parent().click()
+    cy.findByText(venueName).parent().click()
 
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(500) // Click on "Domaine artistique" is too fast waiting api is not enough
@@ -425,13 +439,20 @@ describe('ADAGE discovery', () => {
     cy.findByRole('button', { name: 'Domaine artistique (1)' }).click()
     cy.findByLabelText('Danse').should('be.checked')
 
-    cy.findByText('Lieu : Mon lieu collectif').should('be.visible')
+    cy.findByText(`Lieu : ${venueName}`).should('be.visible')
   })
 
   it('It should save page when navigating the iframe', () => {
-    cy.stepLog({ message: 'I open adage iframe at search page' })
-    const adageToken = Cypress.env('adageToken')
     cy.visit(`/adage-iframe/recherche?token=${adageToken}`)
+
+    cy.wait(['@authenticate', '@catalogView']).then((interception) => {
+      if (interception[0].response) {
+        expect(interception[0].response.statusCode).to.equal(200)
+        if (interception[1].response) {
+          expect(interception[1].response.statusCode).to.equal(204)
+        }
+      }
+    })
 
     cy.stepLog({ message: 'I go the the next page of searched offers' })
     cy.findByTestId('next-page-button').click()

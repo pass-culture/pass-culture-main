@@ -1,4 +1,3 @@
-import React from 'react'
 
 import { useRedirectLoggedUser } from 'commons/hooks/useRedirectLoggedUser'
 import fullMailIcon from 'icons/full-mail.svg'

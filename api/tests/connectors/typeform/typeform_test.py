@@ -4,13 +4,12 @@ import pytest
 import requests_mock
 
 from pcapi.connectors import typeform
-from pcapi.core.testing import override_settings
 
 from tests.connectors.typeform import fixtures
 
 
 class SearchFormTest:
-    @override_settings(TYPEFORM_BACKEND="pcapi.connectors.typeform.TypeformBackend")
+    @pytest.mark.settings(TYPEFORM_BACKEND="pcapi.connectors.typeform.TypeformBackend")
     def test_search_forms(self):
         with requests_mock.Mocker() as mock:
             mock.get("https://api.typeform.com/forms?search=concours", json=fixtures.RESPONSE_SEARCH_FORMS)
@@ -27,13 +26,13 @@ class SearchFormTest:
         assert forms[2].form_id == "T9XBuGwX"
         assert forms[2].title == "Concours - Visite des coulisses La Cigale et la Fourmi"
 
-    @override_settings(TYPEFORM_BACKEND="pcapi.connectors.typeform.TypeformBackend")
+    @pytest.mark.settings(TYPEFORM_BACKEND="pcapi.connectors.typeform.TypeformBackend")
     def test_search_forms_no_result(self):
         pass
 
 
 class GetFormTest:
-    @override_settings(TYPEFORM_BACKEND="pcapi.connectors.typeform.TypeformBackend")
+    @pytest.mark.settings(TYPEFORM_BACKEND="pcapi.connectors.typeform.TypeformBackend")
     def test_get_form(self):
         form_id = "aBCdEF12"
         with requests_mock.Mocker() as mock:
@@ -71,7 +70,7 @@ class GetFormTest:
             == "*En participant à ce tirage, je m'engage, si je suis sélectionné.e, à honorer ma participation et à me présenter au jour et à l'horaire qui me seront communiqués.*"
         )
 
-    @override_settings(TYPEFORM_BACKEND="pcapi.connectors.typeform.TypeformBackend")
+    @pytest.mark.settings(TYPEFORM_BACKEND="pcapi.connectors.typeform.TypeformBackend")
     def test_get_form_not_found(self):
         form_id = "AaAaAa"
         with requests_mock.Mocker() as mock:
@@ -83,7 +82,7 @@ class GetFormTest:
 
 
 class GetResponsesTest:
-    @override_settings(TYPEFORM_BACKEND="pcapi.connectors.typeform.TypeformBackend")
+    @pytest.mark.settings(TYPEFORM_BACKEND="pcapi.connectors.typeform.TypeformBackend")
     def test_get_responses(self):
         form_id = "aBCdEF12"
         with requests_mock.Mocker() as mock:
@@ -141,7 +140,7 @@ class GetResponsesTest:
             == "J'ai lu et compris  les conditions. Je confirme ma participation au tirage au sort."
         )
 
-    @override_settings(TYPEFORM_BACKEND="pcapi.connectors.typeform.TypeformBackend")
+    @pytest.mark.settings(TYPEFORM_BACKEND="pcapi.connectors.typeform.TypeformBackend")
     def test_get_responses_not_found(self):
         form_id = "AaAaAa"
         with requests_mock.Mocker() as mock:

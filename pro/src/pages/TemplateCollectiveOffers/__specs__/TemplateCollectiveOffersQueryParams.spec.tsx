@@ -33,7 +33,6 @@ vi.mock('react-router-dom', async () => ({
 const renderOffers = async (
   filters: Partial<CollectiveSearchFiltersParams> = DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
   user = sharedCurrentUserFactory(),
-  selectedOffererId: number | null = 1
 ) => {
   const shouldComputeTemplateOfferUrl = true
   const route = computeCollectiveOffersUrl(
@@ -53,9 +52,9 @@ const renderOffers = async (
       initialRouterEntries: [route],
       storeOverrides: {
         user: {
-          selectedOffererId,
           currentUser: user,
         },
+        offerer: { selectedOffererId: 1, offererNames: [] },
       },
     }
   )
@@ -86,7 +85,7 @@ describe('route TemplateCollectiveOffers', () => {
   let offersRecap: CollectiveOfferResponseModel[]
   const stocks: Array<CollectiveOffersStockResponseModel> = [
     {
-      beginningDatetime: String(new Date()),
+      startDatetime: String(new Date()),
       hasBookingLimitDatetimePassed: false,
       remainingQuantity: 1,
     },

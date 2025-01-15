@@ -43,6 +43,7 @@ def get_booking_event_reminder_to_beneficiary_email_data(
     return models.TransactionalEmailData(
         template=emailTemplate.value,
         params={
+            "BOOKING_CONTACT": booking.stock.offer.bookingContact,
             "BOOKING_LINK": booking_app_link(booking),
             "EVENT_DATETIME_ISO": event_beginning_date_in_tz.isoformat(),
             "EVENT_DATE": formatted_event_beginning_date,
@@ -59,11 +60,7 @@ def get_booking_event_reminder_to_beneficiary_email_data(
             "USER_FIRST_NAME": booking.user.firstName,
             "VENUE_ADDRESS": bookings_common.get_venue_street(booking),
             "VENUE_CITY": booking.stock.offer.venue.city,
-            "VENUE_NAME": (
-                booking.stock.offer.venue.publicName
-                if booking.stock.offer.venue.publicName
-                else booking.stock.offer.venue.name
-            ),
+            "VENUE_NAME": booking.stock.offer.venue.common_name,
             "VENUE_POSTAL_CODE": booking.stock.offer.venue.postalCode,
             "OFFER_ADDRESS": booking.stock.offer.fullAddress,
         },

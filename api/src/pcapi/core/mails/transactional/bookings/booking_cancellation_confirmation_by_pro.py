@@ -1,10 +1,14 @@
+from functools import partial
+
 from pcapi.core import mails
 from pcapi.core.bookings.models import Booking
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.utils.mailing import format_booking_date_for_email
-from pcapi.utils.mailing import format_booking_hours_for_email
+from pcapi.repository import on_commit
+from pcapi.utils.date import get_date_formatted_for_email
+from pcapi.utils.date import get_time_formatted_for_email
+from pcapi.utils.mailing import get_event_datetime
 
 
 def get_booking_cancellation_confirmation_by_pro_email_data(
@@ -13,17 +17,16 @@ def get_booking_cancellation_confirmation_by_pro_email_data(
     booking = bookings[0]
     stock = booking.stock
     offer = stock.offer
-    event_date = format_booking_date_for_email(booking)
-    event_hour = format_booking_hours_for_email(booking)
+    event_date = get_date_formatted_for_email(get_event_datetime(stock)) if stock.beginningDatetime else ""
+    event_hour = get_time_formatted_for_email(get_event_datetime(stock)) if stock.beginningDatetime else ""
     offer_price = str(stock.price) if stock.price > 0 else "Gratuit"
     quantity = sum(booking.quantity for booking in bookings)
-    venue_name = offer.venue.publicName if offer.venue.publicName else offer.venue.name
 
     return models.TransactionalEmailData(
         template=TransactionalEmail.BOOKING_CANCELLATION_CONFIRMATION_BY_PRO.value,
         params={
             "OFFER_NAME": offer.name,
-            "VENUE_NAME": venue_name,
+            "VENUE_NAME": offer.venue.common_name,
             "PRICE": offer_price,
             "IS_EVENT": offer.isEvent,
             "IS_EXTERNAL": booking.isExternal,
@@ -41,16 +44,15 @@ def get_collective_booking_cancellation_confirmation_by_pro_email_data(
 ) -> models.TransactionalEmailData:
     stock = booking.collectiveStock
     offer = stock.collectiveOffer
-    event_date = format_booking_date_for_email(booking)
-    event_hour = format_booking_hours_for_email(booking)
+    event_date = get_date_formatted_for_email(get_event_datetime(stock)) if stock.beginningDatetime else ""
+    event_hour = get_time_formatted_for_email(get_event_datetime(stock)) if stock.beginningDatetime else ""
     offer_price = str(stock.price) if stock.price > 0 else "Gratuit"
-    venue_name = offer.venue.publicName if offer.venue.publicName else offer.venue.name
 
     return models.TransactionalEmailData(
         template=TransactionalEmail.BOOKING_CANCELLATION_CONFIRMATION_BY_PRO.value,
         params={
             "OFFER_NAME": offer.name,
-            "VENUE_NAME": venue_name,
+            "VENUE_NAME": offer.venue.common_name,
             "PRICE": offer_price,
             "IS_EVENT": True,
             "EVENT_DATE": event_date,
@@ -66,7 +68,13 @@ def send_booking_cancellation_confirmation_by_pro_email(bookings: list[Booking])
     if not offerer_booking_email:
         return
     data = get_booking_cancellation_confirmation_by_pro_email_data(bookings)
-    mails.send(recipients=[offerer_booking_email], data=data)
+    on_commit(
+        partial(
+            mails.send,
+            recipients=[offerer_booking_email],
+            data=data,
+        )
+    )
 
 
 def send_collective_booking_cancellation_confirmation_by_pro_email(booking: CollectiveBooking) -> None:

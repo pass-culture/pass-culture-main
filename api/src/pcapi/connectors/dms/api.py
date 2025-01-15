@@ -27,6 +27,7 @@ GET_DELETED_APPLICATIONS_QUERY_NAME = "get_deleted_applications"
 GET_SINGLE_APPLICATION_QUERY_NAME = "beneficiaries/get_single_application_details"
 GET_APPLICATIONS_WITH_DETAILS_QUERY_NAME = "beneficiaries/get_applications_with_details"
 MAKE_ON_GOING_MUTATION_NAME = "make_on_going"
+MAKE_ACCEPTED_MUTATION_NAME = "make_accepted"
 MARK_WITHOUT_CONTINUATION_MUTATION_NAME = "mark_wihtout_continuation"
 SEND_USER_MESSAGE_QUERY_NAME = "send_user_message"
 UPDATE_TEXT_ANNOTATION_QUERY_NAME = "update_text_annotation"
@@ -44,13 +45,14 @@ class DmsStats(BaseModel):
 
 
 class DMSGraphQLClient:
-    def __init__(self, retries: int = DEFAULT_RETRIES) -> None:
+    def __init__(self, retries: int = DEFAULT_RETRIES, timeout: int | None = None) -> None:
         transport = requests.CustomGqlTransport(
             url="https://www.demarches-simplifiees.fr/api/v2/graphql",
             headers={"Authorization": f"Bearer {settings.DMS_TOKEN}"},
             retries=retries,
         )
         self.client = gql.Client(transport=transport)
+        self._timeout = timeout
 
     def build_query(self, query_name: str) -> str:
         return (GRAPHQL_DIRECTORY / f"{query_name}.graphql").read_text()
@@ -59,7 +61,7 @@ class DMSGraphQLClient:
         query = self.build_query(query_name)
         logger.info("Executing dms query %s", query_name, extra=variables)
 
-        return self.client.execute(gql.gql(query), variable_values=variables)
+        return self.client.execute(gql.gql(query), variable_values=variables, timeout=self._timeout)
 
     def get_applications_with_details(
         self,
@@ -128,38 +130,41 @@ class DMSGraphQLClient:
             )
             return None
 
-    def archive_application(self, application_techid: str, instructeur_techid: str) -> Any:
-        return self.execute_query(
-            ARCHIVE_APPLICATION_QUERY_NAME,
-            variables={"input": {"dossierId": application_techid, "instructeurId": instructeur_techid}},
-        )
-
-    def make_on_going(
-        self, application_techid: str, instructeur_techid: str, disable_notification: bool | None = False
+    def _execute_mutation(
+        self,
+        mutation_name: str,
+        *,
+        key: str,
+        log_state: str,
+        application_techid: str,
+        instructeur_techid: str,
+        motivation: str | None = None,
+        disable_notification: bool | None = False,
     ) -> dict:
+        params: dict[str, str | bool] = {
+            "dossierId": application_techid,
+            "instructeurId": instructeur_techid,
+        }
+        if disable_notification is not None:
+            params["disableNotification"] = disable_notification
+        if motivation is not None:
+            params["motivation"] = motivation
+
         try:
-            response = self.execute_query(
-                MAKE_ON_GOING_MUTATION_NAME,
-                variables={
-                    "input": {
-                        "dossierId": application_techid,
-                        "instructeurId": instructeur_techid,
-                        "disableNotification": disable_notification,
-                    }
-                },
-            )
+            response = self.execute_query(mutation_name, variables={"input": params})
         except gql_exceptions.TransportQueryError as exc:
             raise exceptions.DmsGraphQLApiError(exc.errors)
         except Exception:
             logger.exception(
-                "[DMS] Unexpected error when marking on going", extra={"application_techid": application_techid}
+                "[DMS] Unexpected error when marking %s", log_state, extra={"application_techid": application_techid}
             )
             raise exceptions.DmsGraphQLApiException()
-        data = response["dossierPasserEnInstruction"]
+        data = response[key]
         errors = data["errors"]
         if errors:
             logger.error(
-                "[DMS] Error while marking application on going %s",
+                "[DMS] Error while marking application %s %s",
+                log_state,
                 errors,
                 extra={"application_techid": application_techid},
             )
@@ -167,34 +172,61 @@ class DMSGraphQLClient:
 
         return data["dossier"]
 
-    def mark_without_continuation(self, application_techid: str, instructeur_techid: str, motivation: str) -> Any:
-        try:
-            response = self.execute_query(
-                MARK_WITHOUT_CONTINUATION_MUTATION_NAME,
-                variables={
-                    "input": {
-                        "dossierId": application_techid,
-                        "instructeurId": instructeur_techid,
-                        "motivation": motivation,
-                    }
-                },
-            )
-        except gql_exceptions.TransportQueryError as exc:
-            raise exceptions.DmsGraphQLApiError(exc.errors)
-        except Exception:
-            logger.exception(
-                "[DMS] Unexpected error when marking without continuation",
-                extra={"application_techid": application_techid},
-            )
-            raise exceptions.DmsGraphQLApiException()
-        errors = response["dossierClasserSansSuite"]["errors"]
-        if errors:
-            logger.error(
-                "[DMS] Error while marking application without continuation %s",
-                errors,
-                extra={"application_techid": application_techid},
-            )
-            raise exceptions.DmsGraphQLApiError(errors)
+    def make_on_going(
+        self, application_techid: str, instructeur_techid: str, disable_notification: bool = False
+    ) -> dict:
+        return self._execute_mutation(
+            MAKE_ON_GOING_MUTATION_NAME,
+            key="dossierPasserEnInstruction",
+            log_state="on going",
+            application_techid=application_techid,
+            instructeur_techid=instructeur_techid,
+            disable_notification=disable_notification,
+        )
+
+    def make_accepted(
+        self,
+        application_techid: str,
+        instructeur_techid: str,
+        motivation: str | None,
+        disable_notification: bool = False,
+    ) -> dict:
+        return self._execute_mutation(
+            MAKE_ACCEPTED_MUTATION_NAME,
+            key="dossierAccepter",
+            log_state="accepted",
+            application_techid=application_techid,
+            instructeur_techid=instructeur_techid,
+            motivation=motivation,
+            disable_notification=disable_notification,
+        )
+
+    def mark_without_continuation(
+        self,
+        application_techid: str,
+        instructeur_techid: str,
+        motivation: str | None,
+        disable_notification: bool = False,
+    ) -> Any:
+        return self._execute_mutation(
+            MARK_WITHOUT_CONTINUATION_MUTATION_NAME,
+            key="dossierClasserSansSuite",
+            log_state="without continuation",
+            application_techid=application_techid,
+            instructeur_techid=instructeur_techid,
+            motivation=motivation,
+            disable_notification=disable_notification,
+        )
+
+    def archive_application(self, application_techid: str, instructeur_techid: str) -> Any:
+        return self._execute_mutation(
+            ARCHIVE_APPLICATION_QUERY_NAME,
+            key="dossierArchiver",
+            log_state="archive",
+            application_techid=application_techid,
+            instructeur_techid=instructeur_techid,
+            disable_notification=None,
+        )
 
     def get_single_application_details(self, application_number: int) -> dms_models.DmsApplicationResponse:
         response = self.execute_query(
@@ -298,12 +330,8 @@ class DMSGraphQLClient:
         state: dms_models.GraphQLApplicationStates | None = None,
         since: datetime.datetime | None = None,
         page_token: str | None = None,
-        archived: bool = False,
     ) -> Generator[dict, None, None]:
-        variables: dict[str, int | str] = {
-            "demarcheNumber": procedure_number,
-            "archived": archived,
-        }
+        variables: dict[str, int | str] = {"demarcheNumber": procedure_number}
         if state:
             variables["state"] = state.value
         if since:

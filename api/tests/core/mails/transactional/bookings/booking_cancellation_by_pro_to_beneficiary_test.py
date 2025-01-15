@@ -17,7 +17,6 @@ from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_bene
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.testing import override_features
 
 
 @pytest.mark.usefixtures("db_session")
@@ -39,6 +38,7 @@ class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
         )
         assert mails_testing.outbox[0]["To"] == "user@example.com"
         assert mails_testing.outbox[0]["params"] == {
+            "BOOKING_CONTACT": None,
             "EVENT_DATE": None,
             "EVENT_HOUR": None,
             "IS_EVENT": False,
@@ -55,7 +55,7 @@ class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
             "REJECTED": False,
         }
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     @time_machine.travel("2024-07-31 15:12")
     def test_should_sends_email_to_beneficiary_when_pro_cancels_event_booking(self):
         # time is set because it tests a human readable EVENT_DATE and EVENT_HOUR
@@ -89,6 +89,7 @@ class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
         )
         assert mails_testing.outbox[0]["To"] == "user@example.com"
         assert mails_testing.outbox[0]["params"] == {
+            "BOOKING_CONTACT": None,
             "EVENT_DATE": "vendredi 30 août 2024",
             "EVENT_HOUR": "11h12",
             "IS_EVENT": True,
@@ -124,8 +125,9 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
 
         # Then
         assert email_data.params == {
+            "BOOKING_CONTACT": None,
             "EVENT_DATE": "samedi 20 juillet 2019",
-            "EVENT_HOUR": "14h",
+            "EVENT_HOUR": "14h00",
             "IS_EVENT": True,
             "IS_EXTERNAL": False,
             "IS_FREE_OFFER": False,
@@ -157,6 +159,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
             id_prod=225, id_not_prod=161, tags=["jeunes_offre_annulee_pros"], send_to_ehp=False
         )
         assert email_data.params == {
+            "BOOKING_CONTACT": None,
             "EVENT_DATE": None,
             "EVENT_HOUR": None,
             "IS_EVENT": False,
@@ -187,6 +190,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
 
         # Then
         assert email_data.params == {
+            "BOOKING_CONTACT": None,
             "EVENT_DATE": None,
             "EVENT_HOUR": None,
             "IS_EVENT": False,

@@ -11,7 +11,6 @@ import pcapi.core.mails.transactional.sendinblue_template_ids as sendinblue_temp
 from pcapi.core.mails.transactional.users.ubble.reminder_emails import _find_users_to_remind
 from pcapi.core.mails.transactional.users.ubble.reminder_emails import send_reminders
 from pcapi.core.subscription.ubble import errors as ubble_errors
-from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 import pcapi.notifications.push.testing as push_testing
@@ -188,7 +187,7 @@ class SendUbbleKoReminderReminderTest:
             and set(request1["user_ids"]) == set(request2["user_ids"])
         )
 
-    @override_settings(DAYS_BEFORE_UBBLE_QUICK_ACTION_REMINDER=7)
+    @pytest.mark.settings(DAYS_BEFORE_UBBLE_QUICK_ACTION_REMINDER=7)
     def should_send_7_days_reminders(self):
         # Given
         user1 = build_user_with_ko_retryable_ubble_fraud_check(
@@ -203,18 +202,19 @@ class SendUbbleKoReminderReminderTest:
 
         # Then
         assert len(mails_testing.outbox) == 2
-        assert mails_testing.outbox[0]["To"] == user1.email
+        assert {e["To"] for e in mails_testing.outbox} == {user1.email, user2.email}
+        mail1 = [e for e in mails_testing.outbox if e["To"] == user1.email][0]
         assert (
-            mails_testing.outbox[0]["template"]
+            mail1["template"]
             == sendinblue_template.TransactionalEmail.UBBLE_KO_REMINDER_ID_CHECK_NOT_AUTHENTIC.value.__dict__
         )
-        assert mails_testing.outbox[1]["To"] == user2.email
+        mail2 = [e for e in mails_testing.outbox if e["To"] == user2.email][0]
         assert (
-            mails_testing.outbox[1]["template"]
+            mail2["template"]
             == sendinblue_template.TransactionalEmail.UBBLE_KO_REMINDER_ID_CHECK_UNPROCESSABLE.value.__dict__
         )
 
-    @override_settings(DAYS_BEFORE_UBBLE_LONG_ACTION_REMINDER=21)
+    @pytest.mark.settings(DAYS_BEFORE_UBBLE_LONG_ACTION_REMINDER=21)
     def should_send_21_days_reminders(self):
         twenty_one_days_ago = datetime.datetime.utcnow() - relativedelta(days=21)
         user1 = build_user_with_ko_retryable_ubble_fraud_check(
@@ -241,7 +241,7 @@ class SendUbbleKoReminderReminderTest:
             == sendinblue_template.TransactionalEmail.UBBLE_KO_REMINDER_ID_CHECK_EXPIRED.value.__dict__
         )
 
-    @override_settings(DAYS_BEFORE_UBBLE_QUICK_ACTION_REMINDER=7)
+    @pytest.mark.settings(DAYS_BEFORE_UBBLE_QUICK_ACTION_REMINDER=7)
     @pytest.mark.parametrize(
         "reason_code",
         [
@@ -265,7 +265,7 @@ class SendUbbleKoReminderReminderTest:
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["To"] == user.email
 
-    @override_settings(DAYS_BEFORE_UBBLE_QUICK_ACTION_REMINDER=7)
+    @pytest.mark.settings(DAYS_BEFORE_UBBLE_QUICK_ACTION_REMINDER=7)
     @pytest.mark.parametrize("reason_code", ubble_constants.REASON_CODES_FOR_QUICK_ACTION_REMINDERS)
     def should_send_email_for_quick_action_to_user(self, reason_code):
         # Given
@@ -278,7 +278,7 @@ class SendUbbleKoReminderReminderTest:
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["To"] == user.email
 
-    @override_settings(DAYS_BEFORE_UBBLE_LONG_ACTION_REMINDER=21)
+    @pytest.mark.settings(DAYS_BEFORE_UBBLE_LONG_ACTION_REMINDER=21)
     @pytest.mark.parametrize("reason_code", ubble_constants.REASON_CODES_FOR_LONG_ACTION_REMINDERS)
     def should_send_email_for_long_action_to_user(self, reason_code):
         # Given
@@ -293,7 +293,7 @@ class SendUbbleKoReminderReminderTest:
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["To"] == user.email
 
-    @override_settings(DAYS_BEFORE_UBBLE_QUICK_ACTION_REMINDER=7)
+    @pytest.mark.settings(DAYS_BEFORE_UBBLE_QUICK_ACTION_REMINDER=7)
     @pytest.mark.parametrize("reason_code", ubble_constants.REASON_CODES_FOR_QUICK_ACTION_REMINDERS)
     def should_send_email_for_most_relevant_error_to_user_for_quick_action(self, reason_code):
         # ID_CHECK_BLOCKED_OTHER is the least prioritized reason code
@@ -309,7 +309,7 @@ class SendUbbleKoReminderReminderTest:
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["To"] == user.email
 
-    @override_settings(DAYS_BEFORE_UBBLE_LONG_ACTION_REMINDER=21)
+    @pytest.mark.settings(DAYS_BEFORE_UBBLE_LONG_ACTION_REMINDER=21)
     @pytest.mark.parametrize("reason_code", ubble_constants.REASON_CODES_FOR_LONG_ACTION_REMINDERS)
     def should_send_reminder_for_most_relevant_error_to_user_for_long_action(self, reason_code):
         # ID_CHECK_BLOCKED_OTHER is the least prioritized reason code
@@ -328,7 +328,7 @@ class SendUbbleKoReminderReminderTest:
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["To"] == user.email
 
-    @override_settings(DAYS_BEFORE_UBBLE_LONG_ACTION_REMINDER=7)
+    @pytest.mark.settings(DAYS_BEFORE_UBBLE_LONG_ACTION_REMINDER=7)
     @pytest.mark.parametrize(
         "reason_code",
         [

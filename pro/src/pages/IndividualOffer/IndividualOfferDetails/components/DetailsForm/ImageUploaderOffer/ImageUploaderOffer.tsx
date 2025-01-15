@@ -1,4 +1,3 @@
-import React from 'react'
 import { useSelector } from 'react-redux'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
@@ -7,7 +6,7 @@ import { Events } from 'commons/core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { IndividualOfferImage } from 'commons/core/Offers/types'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
-import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OnImageUploadArgs } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { ImageUploader } from 'components/ImageUploader/ImageUploader'
@@ -44,6 +43,7 @@ export const ImageUploaderOffer = ({
       offerType: 'individual',
       imageType: UploaderModeEnum.OFFER,
       isEdition: mode === OFFER_WIZARD_MODE.EDITION,
+      imageCreationStage: 'add image',
     })
   }
 

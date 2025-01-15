@@ -9,6 +9,7 @@ from sqlalchemy.engine import Row
 import sqlalchemy.orm as sqla_orm
 
 from pcapi import settings
+from pcapi.core.offerers import schemas as offerers_schemas
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Target
 import pcapi.core.offerers.repository as offerers_repository
@@ -21,6 +22,16 @@ from pcapi.routes.serialization.venues_serialize import BannerMetaModel
 from pcapi.routes.serialization.venues_serialize import DMSApplicationForEAC
 import pcapi.utils.date as date_utils
 from pcapi.utils.email import sanitize_email
+
+
+class GetOffererVenueResponseModelGetterDict(GetterDict):
+    def get(self, key: str, default: Any = None) -> Any:
+        if key == "collectiveDmsApplications":
+            return [
+                DMSApplicationForEAC.from_orm(collective_ds_application, self._obj.id)
+                for collective_ds_application in self._obj.collectiveDmsApplications
+            ]
+        return super().get(key, default)
 
 
 class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
@@ -61,6 +72,7 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     class Config:
         orm_mode = True
         json_encoders = {datetime: date_utils.format_into_utc_date}
+        getter_dict = GetOffererVenueResponseModelGetterDict
 
 
 class OffererApiKey(BaseModel):
@@ -254,19 +266,14 @@ class CreateOffererQueryModel(BaseModel):
 
 
 class SaveNewOnboardingDataQueryModel(BaseModel):
-    banId: str | None
-    city: str
     createVenueWithoutSiret: bool = False
-    latitude: float
-    longitude: float
-    postalCode: str
     publicName: str | None
     siret: str
-    street: str | None
     target: Target
     venueTypeCode: str
     webPresence: str
     token: str
+    address: offerers_schemas.AddressBodyModel
 
     class Config:
         extra = "forbid"
@@ -301,6 +308,7 @@ class GetOffererBankAccountsResponseModel(BaseModel):
 class TopOffersResponseData(offerers_models.TopOffersData):
     offerName: str
     image: offers_models.OfferImage | None
+    isHeadlineOffer: bool
 
 
 class OffererStatsDataModel(BaseModel):
@@ -332,6 +340,7 @@ class GetOffererStatsResponseModel(BaseModel):
                     offerId=topOffer["offerId"],
                     image=topOffer["image"],
                     numberOfViews=topOffer["numberOfViews"],
+                    isHeadlineOffer=topOffer["isHeadlineOffer"],
                 )
                 for topOffer in topOffers
             ]
@@ -410,6 +419,15 @@ class OffererAddressResponseModel(BaseModel):
     label: str | None
     offererId: int
     address: AddressResponseModel
+
+    class Config:
+        orm_mode = True
+
+
+class OffererHeadLineOfferResponseModel(BaseModel):
+    id: int
+    name: str
+    image: offers_models.OfferImage | None
 
     class Config:
         orm_mode = True

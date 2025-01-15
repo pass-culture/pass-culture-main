@@ -29,7 +29,7 @@ import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
 import { getCollectiveOffersSwrKeys } from 'commons/core/Offers/utils/getCollectiveOffersSwrKeys'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
-import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,
@@ -40,6 +40,7 @@ import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
 import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { canArchiveCollectiveOffer } from 'components/ArchiveConfirmationModal/utils/canArchiveCollectiveOffer'
 import { CancelCollectiveBookingModal } from 'components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
+import { CELLS_DEFINITIONS } from 'components/OffersTable/utils/cellDefinitions'
 import fullClearIcon from 'icons/full-clear.svg'
 import fullCopyIcon from 'icons/full-duplicate.svg'
 import fullPenIcon from 'icons/full-edit.svg'
@@ -59,12 +60,13 @@ import { BookingLinkCell } from './BookingLinkCell'
 import { DuplicateOfferDialog } from './DuplicateOfferDialog/DuplicateOfferDialog'
 
 export interface CollectiveActionsCellsProps {
+  rowId: string
   offer: CollectiveOfferResponseModel
   editionOfferLink: string
   urlSearchFilters: CollectiveSearchFiltersParams
   deselectOffer: (offer: CollectiveOfferResponseModel) => void
   isSelected: boolean
-  headers?: string
+  className?: string
 }
 
 const LOCAL_STORAGE_HAS_SEEN_MODAL_KEY = 'DUPLICATE_OFFER_MODAL_SEEN'
@@ -82,12 +84,13 @@ function hasOfferAnyEditionActionAllowed(offer: CollectiveOfferResponseModel) {
 }
 
 export const CollectiveActionsCells = ({
+  rowId,
   offer,
   editionOfferLink,
   urlSearchFilters,
   deselectOffer,
   isSelected,
-  headers,
+  className,
 }: CollectiveActionsCellsProps) => {
   const navigate = useNavigate()
   const notify = useNotification()
@@ -121,9 +124,9 @@ export const CollectiveActionsCells = ({
 
   const isMarseilleActive = useActiveFeature('WIP_ENABLE_MARSEILLE')
 
-  const eventDateFormated = isDateValid(offer.stocks[0].beginningDatetime)
+  const eventDateFormated = isDateValid(offer.stocks[0].startDatetime)
     ? formatBrowserTimezonedDateAsUTC(
-        new Date(offer.stocks[0].beginningDatetime),
+        new Date(offer.stocks[0].startDatetime),
         FORMAT_ISO_DATE_ONLY
       )
     : ''
@@ -349,17 +352,18 @@ export const CollectiveActionsCells = ({
 
   return (
     <td
-      className={cn(styles['offers-table-cell'], styles['actions-column'])}
-      headers={headers}
+      role="cell"
+      className={cn(styles['offers-table-cell'], styles['actions-column'], className)}
+      headers={`${rowId} ${CELLS_DEFINITIONS.ACTIONS.id}`}
     >
-      <div className={styles['actions-container']}>
+      <div className={styles['actions-column-container']}>
         {(offer.status === CollectiveOfferStatus.SOLD_OUT ||
           offer.status === CollectiveOfferStatus.EXPIRED) &&
           offer.booking && (
             <BookingLinkCell
               bookingId={offer.booking.id}
               bookingStatus={offer.booking.booking_status}
-              offerEventDate={offer.stocks[0].beginningDatetime}
+              offerEventDate={offer.stocks[0].startDatetime}
               offerId={offer.id}
             />
           )}

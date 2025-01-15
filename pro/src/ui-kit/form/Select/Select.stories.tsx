@@ -1,6 +1,5 @@
 import { StoryObj } from '@storybook/react'
 import { Formik } from 'formik'
-import React from 'react'
 
 import { Select } from './Select'
 

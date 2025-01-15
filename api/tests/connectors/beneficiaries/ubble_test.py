@@ -7,8 +7,6 @@ import pytest
 from pcapi import settings
 from pcapi.connectors.beneficiaries import ubble
 from pcapi.core.fraud import models as fraud_models
-from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 from pcapi.core.users.models import GenderEnum
 from pcapi.utils import requests
 
@@ -17,7 +15,7 @@ from tests.test_utils import json_default
 
 
 class StartIdentificationV2Test:
-    @override_features(WIP_UBBLE_V2=True)
+    @pytest.mark.features(WIP_UBBLE_V2=True)
     def test_start_identification(self, requests_mock, caplog):
         requests_mock.post(
             f"{settings.UBBLE_API_URL}/v2/create-and-start-idv",
@@ -46,8 +44,7 @@ class StartIdentificationV2Test:
         )
 
         with caplog.at_level(logging.INFO):
-            response = ubble.start_identification(
-                user_id=123,
+            response = ubble.create_and_start_identity_verification(
                 first_name="Cassandre",
                 last_name="Beaugrand",
                 webhook_url="https://webhook.example.com",
@@ -69,14 +66,13 @@ class StartIdentificationV2Test:
         assert record.extra["request_type"] == "create-and-start-idv", record.extra
         assert record.message == "Valid response from Ubble"
 
-    @override_features(WIP_UBBLE_V2=True)
+    @pytest.mark.features(WIP_UBBLE_V2=True)
     def test_start_identification_connection_error(self, requests_mock, caplog):
         requests_mock.post(f"{settings.UBBLE_API_URL}/v2/create-and-start-idv", exc=requests.exceptions.ConnectionError)
 
         with pytest.raises(requests.ExternalAPIException):
             with caplog.at_level(logging.ERROR):
-                ubble.start_identification(
-                    user_id=123,
+                ubble.create_and_start_identity_verification(
                     first_name="Cassandre",
                     last_name="Beaugrand",
                     webhook_url="https://webhook.example.com",
@@ -91,13 +87,12 @@ class StartIdentificationV2Test:
         assert record.extra["error_type"] == "network"
         assert record.message == "Ubble create-and-start-idv: Network error"
 
-    @override_features(WIP_UBBLE_V2=True)
+    @pytest.mark.features(WIP_UBBLE_V2=True)
     def test_start_identification_http_error_status(self, requests_mock, caplog):
         requests_mock.post(f"{settings.UBBLE_API_URL}/v2/create-and-start-idv", status_code=401)
 
         with pytest.raises(requests.ExternalAPIException):
-            ubble.start_identification(
-                user_id=123,
+            ubble.create_and_start_identity_verification(
                 first_name="Cassandre",
                 last_name="Beaugrand",
                 webhook_url="https://webhook.example.com",
@@ -182,7 +177,7 @@ class StartIdentificationV1Test:
 
 
 class ShouldUseMockTest:
-    @override_settings(UBBLE_MOCK_API_URL="")
+    @pytest.mark.settings(UBBLE_MOCK_API_URL="")
     @mock.patch("pcapi.utils.requests.get")
     def test_return_early_false_if_mock_url_not_defined(self, mock_get):
         result = ubble._should_use_mock("id")
@@ -190,7 +185,7 @@ class ShouldUseMockTest:
         assert result is False
         assert mock_get.call_count == 0
 
-    @override_settings(UBBLE_MOCK_API_URL="http://mock-ubble.com")
+    @pytest.mark.settings(UBBLE_MOCK_API_URL="http://mock-ubble.com")
     @mock.patch("pcapi.utils.requests.get")
     def test_return_early_false_if_id_not_provided(self, mock_get):
         result = ubble._should_use_mock()
@@ -198,7 +193,7 @@ class ShouldUseMockTest:
         assert result is False
         assert mock_get.call_count == 0
 
-    @override_settings(UBBLE_MOCK_API_URL="http://mock-ubble.com")
+    @pytest.mark.settings(UBBLE_MOCK_API_URL="http://mock-ubble.com")
     @pytest.mark.parametrize("id_,status_code,expected_result", [("whatever", 200, True), ("whatever", 404, False)])
     @mock.patch("pcapi.utils.requests.get")
     def test_calls_mock_route_and_decide_base_url(self, mock_get, id_, status_code, expected_result):
@@ -215,19 +210,19 @@ class ShouldUseMockTest:
 
 
 class BuildUrlTest:
-    @override_settings(UBBLE_API_URL="http://example.com/partial/path")
+    @pytest.mark.settings(UBBLE_API_URL="http://example.com/partial/path")
     def test_add_slash_if_missing(self):
         url = ubble.build_url("and/end")
 
         assert url == "http://example.com/partial/path/and/end"
 
-    @override_settings(UBBLE_API_URL="http://example.com/partial/path")
+    @pytest.mark.settings(UBBLE_API_URL="http://example.com/partial/path")
     def test_dont_add_slash_if_given(self):
         url = ubble.build_url("/and/end")
 
         assert url == "http://example.com/partial/path/and/end"
 
-    @override_settings(UBBLE_API_URL="http://example.com/partial/path/")
+    @pytest.mark.settings(UBBLE_API_URL="http://example.com/partial/path/")
     def test_remove_slash_if_given_twice(self):
         url = ubble.build_url("/and/end")
 

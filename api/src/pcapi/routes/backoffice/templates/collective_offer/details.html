@@ -1,3 +1,4 @@
+{% import "components/badges.html" as badges with context %}
 {% import "components/clipboard.html" as clipboard %}
 {% import "components/links.html" as links with context %}
 {% extends "layouts/standard.html" %}
@@ -70,8 +71,13 @@
                   <span class="fw-bold">Statut PC Pro :</span> {{ collective_offer.displayedStatus | format_collective_offer_displayed_status }}
                 </p>
                 <p class="mb-1">
-                  <span class="fw-bold">État :</span> {{ collective_offer.validation | format_offer_validation_status }}
+                  <span class="fw-bold">État :</span> {{ collective_offer.validation | format_offer_validation_status(with_badge=True) }}
                 </p>
+                {% if collective_offer.rejectionReason %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Raison de rejet :</span> {{ collective_offer.rejectionReason | format_collective_offer_rejection_reason }}
+                  </p>
+                {% endif %}
                 {% if collective_offer.lastValidationDate %}
                   <p class="mb-1">
                     <span class="fw-bold">Date de dernière validation :</span> {{ collective_offer.lastValidationDate | format_date_time }}
@@ -106,6 +112,7 @@
               <div class="fs-6">
                 <p class="mb-1">
                   <span class="fw-bold">Entité juridique :</span> {{ links.build_offerer_name_to_details_link(collective_offer.venue.managingOfferer) }}
+                  {{ badges.build_offer_offerer_fraud_badges(collective_offer.venue.managingOfferer) }}
                 </p>
               </div>
               <div class="fs-6">
@@ -117,6 +124,7 @@
                       Lieu :
                     {% endif %}
                   </span> {{ links.build_venue_name_to_details_link(collective_offer.venue) }}
+                  {{ badges.build_offer_venue_fraud_badges(collective_offer.venue) }}
                 </p>
               </div>
               {% if collective_offer.template %}

@@ -1,5 +1,6 @@
 import datetime
 import itertools
+import uuid
 
 from dateutil.relativedelta import relativedelta
 import pytest
@@ -11,7 +12,6 @@ import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
-from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 
@@ -64,7 +64,7 @@ class CommonTest:
     def test_id_piece_number_valid_format(self, id_piece_number, procedure_number, result):
         assert result == fraud_api.validate_id_piece_number_format_fraud_item(id_piece_number, procedure_number).status
 
-    @override_settings(ENABLE_PERMISSIVE_NAME_VALIDATION=False)
+    @pytest.mark.settings(ENABLE_PERMISSIVE_NAME_VALIDATION=False)
     @pytest.mark.parametrize(
         "name,is_valid",
         [
@@ -83,10 +83,11 @@ class CommonTest:
             ("1", False),
         ],
     )
-    def test_is_subscription_name_valid(self, name, is_valid):
+    def test_is_subscription_name_valid(self, name, is_valid, settings):
         assert fraud_api.is_subscription_name_valid(name) is is_valid
-        with override_settings(ENABLE_PERMISSIVE_NAME_VALIDATION=True):
-            assert fraud_api.is_subscription_name_valid(name) is True
+
+        settings.ENABLE_PERMISSIVE_NAME_VALIDATION = True
+        assert fraud_api.is_subscription_name_valid(name) is True
 
     def test_create_profile_completion_fraud_check(self, caplog):
         user = users_factories.EligibleGrant18Factory()
@@ -319,13 +320,17 @@ class FindDuplicateUserTest:
                 "first_name": user1.firstName,
                 "last_name": user1.lastName,
                 "birth_date": user1.birth_date.isoformat(),
+                "identification_id": str(uuid.uuid4()),
             },
         )
         ubble_fraud_check3 = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user3,
             status=fraud_models.FraudCheckStatus.OK,
             type=fraud_models.FraudCheckType.UBBLE,
-            resultContent={"id_document_number": user1.idPieceNumber},
+            resultContent={
+                "id_document_number": user1.idPieceNumber,
+                "identification_id": str(uuid.uuid4()),
+            },
         )
 
         fraud_api.on_identity_fraud_check_result(user2, ubble_fraud_check2)

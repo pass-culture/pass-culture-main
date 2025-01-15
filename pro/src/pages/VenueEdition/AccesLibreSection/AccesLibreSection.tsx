@@ -1,4 +1,3 @@
-import React from 'react'
 
 import { GetVenueResponseModel } from 'apiClient/v1'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'

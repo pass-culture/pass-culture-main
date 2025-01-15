@@ -1,16 +1,18 @@
 import * as Sentry from '@sentry/react'
 import cn from 'classnames'
-import { useField } from 'formik'
-import React, { useEffect, useState } from 'react'
+import { useField, useFormikContext } from 'formik'
+import { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
 import { SENT_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
+import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import fullLinkIcon from 'icons/full-link.svg'
 import strokeValidIcon from 'icons/stroke-valid.svg'
+import { type VenueSettingsFormValues } from 'pages/VenueSettings/types'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { Callout } from 'ui-kit/Callout/Callout'
@@ -35,6 +37,7 @@ export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
   const [pricingPointSelectField] = useField({ name: 'venueSiret' })
   const [isSubmitingPricingPoint, setIsSubmitingPricingPoint] = useState(false)
   const notify = useNotification()
+  const formik = useFormikContext<VenueSettingsFormValues>()
 
   useEffect(() => {
     setCanSubmit(!pricingPointSelectField.value)
@@ -58,7 +61,7 @@ export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
       setIsSubmitingPricingPoint(false)
     }
   }
-  const pricingPointOptions = [
+  const pricingPointOptions: SelectOption[] = [
     {
       value: '',
       label: `Sélectionner ${isOfferAddressEnabled ? 'une structure' : 'un lieu'} dans la liste`,
@@ -145,7 +148,7 @@ export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
             id="venueSiret"
             name="venueSiret"
             data-testid={'pricingPointSelect'}
-            defaultValue={venue.pricingPoint ? venue.pricingPoint.id : ''}
+            onChange={formik.handleChange}
             label={`${isOfferAddressEnabled ? 'Structure avec SIRET utilisée' : 'Lieu avec SIRET utilisé'} pour le calcul de votre barème de remboursement`}
             options={pricingPointOptions}
             hideFooter

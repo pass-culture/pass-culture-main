@@ -5,7 +5,7 @@
   margin-bottom: rem.torem(24px);
 
   &-example {
-    @include fonts.caption;
+    @include fonts.body-xs;
 
     color: var(--color-grey-dark);
   }

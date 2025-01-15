@@ -1,12 +1,48 @@
 from datetime import datetime
+import decimal
 
+from pydantic.v1 import Field
 from pydantic.v1 import validator
 
+from pcapi.core.offers import models
 import pcapi.core.offers.validation as offers_validation
-from pcapi.routes.public.books_stocks import serialization
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
+
+
+######################
+
+
+class StockCreationBodyModel(BaseModel):
+    activation_codes: list[str] | None
+    activation_codes_expiration_datetime: datetime | None
+    beginning_datetime: datetime | None
+    booking_limit_datetime: datetime | None
+    price: decimal.Decimal | None
+    price_category_id: int | None
+    quantity: int | None = Field(None, ge=0, le=models.Stock.MAX_STOCK_QUANTITY)
+
+    class Config:
+        alias_generator = to_camel
+        json_encoders = {datetime: format_into_utc_date}
+        extra = "forbid"
+
+
+class StockEditionBodyModel(BaseModel):
+    beginning_datetime: datetime | None
+    booking_limit_datetime: datetime | None
+    id: int
+    price: decimal.Decimal | None
+    price_category_id: int | None
+    quantity: int | None = Field(None, ge=0, le=models.Stock.MAX_STOCK_QUANTITY)
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
+######################
 
 
 class StocksResponseModel(BaseModel):
@@ -18,12 +54,12 @@ class StocksResponseModel(BaseModel):
 
 class StocksUpsertBodyModel(BaseModel):
     offer_id: int
-    stocks: list[serialization.StockCreationBodyModel | serialization.StockEditionBodyModel]
+    stocks: list[StockCreationBodyModel | StockEditionBodyModel]
 
     @validator("stocks")
     def check_max_stocks_per_offer_limit(
-        cls, value: list[serialization.StockCreationBodyModel] | list[serialization.StockEditionBodyModel]
-    ) -> list[serialization.StockCreationBodyModel] | list[serialization.StockEditionBodyModel]:
+        cls, value: list[StockCreationBodyModel] | list[StockEditionBodyModel]
+    ) -> list[StockCreationBodyModel] | list[StockEditionBodyModel]:
         offers_validation.check_stocks_quantity(len(value))
         return value
 

@@ -56,6 +56,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription.dms import api as dms_subscription_api
 import pcapi.core.subscription.phone_validation.exceptions as phone_validation_exceptions
 import pcapi.core.users.constants as users_constants
+import pcapi.core.users.ds as users_ds
 import pcapi.core.users.repository as users_repository
 import pcapi.core.users.utils as users_utils
 from pcapi.domain.password import check_password_strength
@@ -64,6 +65,7 @@ from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications import push as push_api
+from pcapi.repository import is_managed_transaction
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.serialization import users as users_serialization
@@ -417,9 +419,11 @@ def check_can_unsuspend(user: models.User) -> None:
 
 def suspend_account(
     user: models.User,
+    *,
     reason: constants.SuspensionReason,
     actor: models.User | None,
     comment: str | None = None,
+    action_extra_data: dict | None = None,
     is_backoffice_action: bool = False,
 ) -> dict[str, int]:
     """
@@ -442,7 +446,12 @@ def suspend_account(
         db.session.add(user)
 
         history_api.add_action(
-            history_models.ActionType.USER_SUSPENDED, author=actor, user=user, reason=reason.value, comment=comment
+            history_models.ActionType.USER_SUSPENDED,
+            author=actor,
+            user=user,
+            reason=reason.value,
+            comment=comment,
+            **(action_extra_data or {}),
         )
 
         for session in models.UserSession.query.filter_by(userId=user.id):
@@ -547,7 +556,9 @@ def unsuspend_account(
 
     history_api.add_action(history_models.ActionType.USER_UNSUSPENDED, author=actor, user=user, comment=comment)
 
-    db.session.commit()
+    db.session.flush()
+    if not is_managed_transaction():
+        db.session.commit()
 
     logger.info(
         "Account has been unsuspended",
@@ -1089,7 +1100,7 @@ def _filter_user_accounts(accounts: BaseQuery, search_term: str) -> BaseQuery:
         term_filters.append(models.User.email.in_(split_terms))
     elif len(split_terms) == 1 and email_utils.is_valid_email_domain(split_terms[0]):
         # search for all emails @domain.ext
-        term_filters.append(models.User.email.like(f"%{split_terms[0]}"))
+        term_filters.append(sa.func.email_domain(models.User.email) == split_terms[0][1:])
 
     if not term_filters:
         split_term = search_term.split()
@@ -1514,7 +1525,7 @@ def anonymize_user(user: models.User, *, author: models.User | None = None, forc
         try:
             iris = get_iris_from_address(address=user.address, postcode=user.postalCode)
         except (api_adresse.AdresseApiException, api_adresse.InvalidFormatException) as exc:
-            logger.exception("Could not anonymize user", extra={"user_id": user.id, "exc": str(exc)})
+            logger.error("Could not anonymize user", extra={"user_id": user.id, "exc": str(exc)})
             return False
 
         if not iris and not force:
@@ -1525,10 +1536,10 @@ def anonymize_user(user: models.User, *, author: models.User | None = None, forc
     except ExternalAPIException as exc:
         # If is_retryable it is a real error. If this flag is False then it means the email is unknown for brevo.
         if exc.is_retryable:
-            logger.exception("Could not anonymize user", extra={"user_id": user.id, "exc": str(exc)})
+            logger.error("Could not anonymize user", extra={"user_id": user.id, "exc": str(exc)})
             return False
     except Exception as exc:  # pylint: disable=broad-exception-caught
-        logger.exception("Could not anonymize user", extra={"user_id": user.id, "exc": str(exc)})
+        logger.error("Could not anonymize user", extra={"user_id": user.id, "exc": str(exc)})
         return False
 
     for beneficiary_fraud_check in user.beneficiaryFraudChecks:
@@ -1554,6 +1565,12 @@ def anonymize_user(user: models.User, *, author: models.User | None = None, forc
         },
         synchronize_session=False,
     )
+
+    for update_request in models.UserAccountUpdateRequest.query.filter(
+        models.UserAccountUpdateRequest.userId == user.id
+    ).all():
+        # UserAccountUpdateRequest objects are deleted after being archived in DS
+        users_ds.archive(update_request, motivation="Anonymisation du compte")
 
     user.password = b"Anonymized"  # ggignore
     user.firstName = f"Anonymous_{user.id}"
@@ -1630,7 +1647,7 @@ def anonymize_non_pro_non_beneficiary_users(*, force: bool = False) -> None:
         finance_models.Deposit,
         models.User.deposits,
     ).filter(
-        ~models.User.email.like("%@passculture.app"),  # people who work or worked in the company
+        sa.func.email_domain(models.User.email) != "passculture.app",  # people who work or worked in the company
         func.array_length(models.User.roles, 1).is_(None),  # no role, not already anonymized
         finance_models.Deposit.userId.is_(None),  # no deposit
         models.User.lastConnectionDate < datetime.datetime.utcnow() - relativedelta(years=3),

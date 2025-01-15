@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import {
@@ -48,6 +49,8 @@ export const StockSection = ({
   offer,
   canBeDuo,
 }: StockSectionProps): JSX.Element => {
+  const { pathname } = useLocation()
+  const isOnboarding = pathname.indexOf('onboarding') !== -1
   const mode = useOfferWizardMode()
   const [isLoading, setIsLoading] = useState(false)
   const [stocksEventsStats, setStocksEventsStats] = useState<
@@ -91,6 +94,7 @@ export const StockSection = ({
       }
       setIsLoading(false)
     }
+
     if (offer.isEvent) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       getStocksEventsStats()
@@ -109,6 +113,7 @@ export const StockSection = ({
     step: OFFER_WIZARD_STEP_IDS.STOCKS,
     mode:
       mode === OFFER_WIZARD_MODE.READ_ONLY ? OFFER_WIZARD_MODE.EDITION : mode,
+    isOnboarding,
   })
 
   const stockWarningText = getStockWarningText(offer)

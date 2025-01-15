@@ -7,7 +7,6 @@ import typing
 from urllib3 import exceptions as urllib3_exceptions
 
 from pcapi import settings
-from pcapi.core import logging as core_logging
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offers import exceptions as offers_exceptions
 import pcapi.core.offers.models as offers_models
@@ -34,9 +33,7 @@ def get_jwt_token() -> str:
         except requests.exceptions.Timeout:
             raise
         except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
-            core_logging.log_for_supervision(
-                logger,
-                logging.ERROR,
+            logger.error(
                 "Titelive get jwt: Network error",
                 extra={
                     "exception": e,
@@ -49,9 +46,7 @@ def get_jwt_token() -> str:
 
         if not response.ok:
             if 400 <= response.status_code < 500:
-                core_logging.log_for_supervision(
-                    logger,
-                    logging.ERROR,
+                logger.error(
                     "Titelive get jwt: External error: %s",
                     response.status_code,
                     extra={
@@ -87,9 +82,7 @@ def get_by_ean13(ean13: str) -> dict[str, typing.Any]:
     except requests.exceptions.Timeout:
         raise
     except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
-        core_logging.log_for_supervision(
-            logger,
-            logging.ERROR,
+        logger.error(
             "Titelive get by ean 13: Network error",
             extra={
                 "exception": e,
@@ -105,9 +98,11 @@ def get_by_ean13(ean13: str) -> dict[str, typing.Any]:
         if response.status_code == 404:
             raise offers_exceptions.TiteLiveAPINotExistingEAN()
         if 400 <= response.status_code < 500:
-            core_logging.log_for_supervision(
-                logger,
-                logging.WARNING if response.status_code == 404 else logging.ERROR,
+            if response.status_code == 404:
+                log_func = logger.warning
+            else:
+                log_func = logger.error
+            log_func(
                 "Titelive get by ean 13: External error: %s",
                 response.status_code,
                 extra={
@@ -134,9 +129,7 @@ def get_by_ean_list(ean_list: set[str]) -> dict[str, typing.Any]:
     except requests.exceptions.Timeout:
         raise
     except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
-        core_logging.log_for_supervision(
-            logger,
-            logging.ERROR,
+        logger.error(
             "Titelive get by ean list: Network error",
             extra={
                 "exception": e,
@@ -151,9 +144,11 @@ def get_by_ean_list(ean_list: set[str]) -> dict[str, typing.Any]:
         if response.status_code == 404:
             raise offers_exceptions.TiteLiveAPINotExistingEAN()
         if 400 <= response.status_code < 500:
-            core_logging.log_for_supervision(
-                logger,
-                logging.WARNING if response.status_code == 404 else logging.ERROR,
+            if response.status_code == 404:
+                log_func = logger.warning
+            else:
+                log_func = logger.error
+            log_func(
                 "Titelive get by ean list: External error: %s",
                 response.status_code,
                 extra={
@@ -190,9 +185,7 @@ def get_new_product_from_ean13(ean: str) -> offers_models.Product:
 
     if gtl_id is None:
         # EAN without GTL exist (DVD, ...), ex: 3597660004235
-        core_logging.log_for_supervision(
-            logger,
-            logging.ERROR,
+        logger.warning(
             "Titelive get_new_product_from_ean13: External error:",
             extra={
                 "alert": "Titelive API no gtl_id",
@@ -245,9 +238,13 @@ class TiteliveBase(enum.Enum):
 MAX_RESULTS_PER_PAGE = 25
 
 
-def search_products(titelive_base: TiteliveBase, from_date: datetime.date, page_index: int) -> list[dict]:
-    """Returns Titelive oeuvres for which an article has been modified since from_date.
-    All the articles of an oeuvre are returned even if they have not been modified recently.
+def search_products(titelive_base: TiteliveBase, modified_date: datetime.date, page_index: int) -> list[dict]:
+    """
+    Returns TiteLive works for which an article has been modified at modified_date.
+    All the articles of an work are returned even if they have not been modified recently.
+
+    Because TiteLive cannot query more than 20 000 articles, their pagination is only reliable if the search
+    is done on a single day.
     """
     try:
         url = f"{settings.TITELIVE_EPAGINE_API_URL}/search"
@@ -261,7 +258,8 @@ def search_products(titelive_base: TiteliveBase, from_date: datetime.date, page_
                 "page": page_index,
                 "tri": "datemodification",
                 "tri_ordre": "asc",
-                "dateminm": date_utils.format_date_to_french_locale(from_date),
+                "dateminm": date_utils.format_date_to_french_locale(modified_date),
+                "datemaxm": date_utils.format_date_to_french_locale(modified_date + datetime.timedelta(days=1)),
             },
         )
     except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:

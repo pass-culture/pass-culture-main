@@ -1,16 +1,13 @@
 /* istanbul ignore file: Those are test helpers, their coverage is not relevant */
-import { render } from '@testing-library/react'
-import React, { ReactNode } from 'react'
-import { Provider } from 'react-redux'
-import { createMemoryRouter, RouterProvider } from 'react-router-dom'
-import { SWRConfig } from 'swr'
+import { render } from "@testing-library/react";
+import { ReactNode } from "react";
+import { Provider } from "react-redux";
+import { createMemoryRouter, RouterProvider } from "react-router-dom";
+import { SWRConfig } from "swr";
 
-import {
-  FeatureResponseModel,
-  SharedCurrentUserResponseModel,
-} from 'apiClient/v1'
-import { RootState } from 'commons/store/rootReducer'
-import { configureTestStore } from 'commons/store/testUtils'
+import { FeatureResponseModel, SharedCurrentUserResponseModel } from "apiClient/v1";
+import { RootState } from "commons/store/rootReducer";
+import { configureTestStore } from "commons/store/testUtils";
 
 export type RenderWithProvidersOptions = {
   storeOverrides?: Partial<RootState>
@@ -61,7 +58,6 @@ export const renderWithProviders = (
     },
     user: overrides?.user
       ? {
-          selectedOffererId: null,
           currentUser: overrides.user,
           ...overrides.storeOverrides?.user,
         }

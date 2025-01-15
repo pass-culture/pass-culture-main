@@ -1,4 +1,5 @@
 import datetime
+from functools import partial
 import logging
 
 import sqlalchemy as sa
@@ -6,15 +7,15 @@ import sqlalchemy as sa
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
-from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational import validation
+from pcapi.core.educational.api import shared as api_shared
 from pcapi.core.educational.api.offer import notify_educational_redactor_on_collective_offer_or_stock_edit
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.offers import validation as offer_validation
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models import feature
-from pcapi.repository import transaction
+from pcapi.repository import on_commit
 from pcapi.routes.serialization.collective_stock_serialize import CollectiveStockCreationBodyModel
 from pcapi.serialization import utils as serialization_utils
 from pcapi.utils import date
@@ -72,7 +73,10 @@ def create_collective_stock(
         priceDetail=educational_price_detail,
     )
     db.session.add(collective_stock)
-    db.session.commit()
+    db.session.flush()
+
+    # we need to refresh the stock to get the correct datetime with a naive datetime
+    db.session.refresh(collective_stock)
     logger.info(
         "Collective stock has been created",
         extra={"collective_offer": collective_offer.id, "collective_stock_id": collective_stock.id},
@@ -84,7 +88,18 @@ def create_collective_stock(
 def edit_collective_stock(
     stock: educational_models.CollectiveStock, stock_data: dict
 ) -> educational_models.CollectiveStock:
-    validation.check_if_offer_is_not_public_api(stock.collectiveOffer)
+    if not feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+        # with FF ON this is included in the allowed actions
+        validation.check_if_offer_is_not_public_api(stock.collectiveOffer)
+
+    date_fields = ("beginningDatetime", "startDatetime", "endDatetime", "bookingLimitDatetime")
+    is_editing_dates = any(field in stock_data for field in date_fields)
+
+    if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active() and is_editing_dates:
+        validation.check_collective_offer_action_is_allowed(
+            stock.collectiveOffer, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DATES
+        )
+
     beginning = stock_data.get("beginningDatetime")
     beginning = serialization_utils.as_utc_without_timezone(beginning) if beginning else None
     start_datetime = stock_data.get("startDatetime")
@@ -145,69 +160,73 @@ def edit_collective_stock(
         )
 
     current_booking = stock.get_unique_non_cancelled_booking()
-    if (
-        "beginningDatetime" not in stock_data
-        and "startDatetime" not in stock_data
-        and "bookingLimitDatetime" not in stock_data
-    ):
-        price = updatable_fields.get("price")
-        if current_booking and current_booking.status == CollectiveBookingStatus.CONFIRMED:
-            if price is not None:
-                validation.check_if_edition_lower_price_possible(stock, price)
+
+    if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+        price = updatable_fields["price"]
+        if price is not None:
+            if price > stock.price:
+                validation.check_collective_offer_action_is_allowed(
+                    stock.collectiveOffer, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
+                )
+            else:
+                validation.check_collective_offer_action_is_allowed(
+                    stock.collectiveOffer, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
+                )
+
+        if "numberOfTickets" in stock_data or "educationalPriceDetail" in stock_data:
+            validation.check_collective_offer_action_is_allowed(
+                stock.collectiveOffer, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
+            )
+    else:
+        if (
+            "beginningDatetime" not in stock_data
+            and "startDatetime" not in stock_data
+            and "bookingLimitDatetime" not in stock_data
+        ):
+            price = updatable_fields.get("price")
+            if current_booking and current_booking.status == CollectiveBookingStatus.CONFIRMED:
+                if price is not None:
+                    validation.check_if_edition_lower_price_possible(stock, price)
+            else:
+                if current_booking:
+                    validation.check_collective_booking_status_pending(current_booking)
+                validation.check_collective_stock_is_editable(stock)
         else:
+            validation.check_collective_stock_is_editable(stock)
             if current_booking:
                 validation.check_collective_booking_status_pending(current_booking)
-            validation.check_collective_stock_is_editable(stock)
-    else:
-        validation.check_collective_stock_is_editable(stock)
-        if not should_bypass_check_booking_limit_datetime:
-            offer_validation.check_booking_limit_datetime(stock, check_beginning, check_booking_limit_datetime)
-        if current_booking:
-            validation.check_collective_booking_status_pending(current_booking)
 
-    if current_booking:
-        current_booking.confirmationLimitDate = updatable_fields["bookingLimitDatetime"]
-
-        if beginning:
-            update_collective_booking_cancellation_limit_date(current_booking, beginning)
-            update_collective_booking_educational_year_id(current_booking, beginning)
-
-        if stock_data.get("price"):
-            current_booking.amount = stock_data.get("price")
+    if is_editing_dates and not should_bypass_check_booking_limit_datetime:
+        offer_validation.check_booking_limit_datetime(stock, check_beginning, check_booking_limit_datetime)
 
     # due to check_booking_limit_datetime the only reason beginning < booking_limit_dt is when they are on the same day
     # in the venue timezone
     if beginning is not None and beginning < updatable_fields["bookingLimitDatetime"]:
         updatable_fields["bookingLimitDatetime"] = updatable_fields["beginningDatetime"]
 
-    with transaction():
-        stock = educational_repository.get_and_lock_collective_stock(stock_id=stock.id)
-        for attribute, new_value in updatable_fields.items():
-            if new_value is not None and getattr(stock, attribute) != new_value:
-                setattr(stock, attribute, new_value)
-        db.session.add(stock)
+    stock = educational_repository.get_and_lock_collective_stock(stock_id=stock.id)
+    for attribute, new_value in updatable_fields.items():
+        if new_value is not None and getattr(stock, attribute) != new_value:
+            setattr(stock, attribute, new_value)
+    db.session.add(stock)
 
-        # if the booking limit date is set in the future and a PENDING booking was automatically cancelled, set it back to PENDING
-        booking_limit_value = stock.bookingLimitDatetime
-        if (
-            feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active()
-            and "bookingLimitDatetime" in stock_data
-            and booking_limit_value
-            and booking_limit_value > datetime.datetime.utcnow()
-        ):
-            booking = stock.lastBooking
-            if booking and booking.is_expired:
-                update_collective_booking_pending(booking)
-                db.session.add(booking)
-
-    logger.info("Stock has been updated", extra={"stock": stock.id})
-
-    notify_educational_redactor_on_collective_offer_or_stock_edit(
-        stock.collectiveOffer.id,
-        list(stock_data.keys()),
+    api_shared.update_collective_stock_booking(
+        stock=stock,
+        current_booking=current_booking,
+        beginning_datetime_has_changed="beginningDatetime" in stock_data,
     )
 
-    db.session.refresh(stock)
+    db.session.flush()
+    logger.info("Stock has been updated", extra={"stock": stock.id})
+
+    on_commit(
+        partial(
+            notify_educational_redactor_on_collective_offer_or_stock_edit,
+            stock.collectiveOfferId,
+            list(stock_data.keys()),
+        )
+    )
+
     return stock
 
 
@@ -257,34 +276,3 @@ def _extract_updatable_fields_from_stock_data(
     }
 
     return updatable_fields
-
-
-def update_collective_booking_educational_year_id(
-    booking: educational_models.CollectiveBooking,
-    new_beginning_datetime: datetime.datetime,
-) -> None:
-    educational_year = educational_repository.find_educational_year_by_date(new_beginning_datetime)
-    if educational_year is None:
-        raise exceptions.EducationalYearNotFound()
-
-    booking.educationalYear = educational_year
-
-
-def update_collective_booking_cancellation_limit_date(
-    booking: educational_models.CollectiveBooking, new_beginning_datetime: datetime.datetime
-) -> None:
-    # if the input date has a timezone (resp. does not have one), we need to compare it with an aware datetime (resp. a naive datetime)
-    now = (
-        datetime.datetime.utcnow()
-        if new_beginning_datetime.tzinfo is None
-        else datetime.datetime.now(datetime.timezone.utc)  # pylint: disable=datetime-now
-    )
-    booking.cancellationLimitDate = educational_utils.compute_educational_booking_cancellation_limit_date(
-        new_beginning_datetime, now
-    )
-
-
-def update_collective_booking_pending(expired_booking: educational_models.CollectiveBooking) -> None:
-    expired_booking.status = educational_models.CollectiveBookingStatus.PENDING
-    expired_booking.cancellationReason = None
-    expired_booking.cancellationDate = None

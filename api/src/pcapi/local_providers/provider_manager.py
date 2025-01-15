@@ -19,10 +19,8 @@ from pcapi.core.providers import models as provider_models
 from pcapi.core.providers import repository as providers_repository
 from pcapi.core.providers.api import update_venue_synchronized_offers_active_status_job
 from pcapi.core.providers.constants import CINEMA_PROVIDER_NAMES
-from pcapi.infrastructure.repository.stock_provider import provider_api
 import pcapi.local_providers
 from pcapi.local_providers.cinema_providers.ems.ems_stocks import EMSStocks
-from pcapi.local_providers.provider_api import synchronize_provider_api
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
@@ -59,12 +57,7 @@ def synchronize_venue_providers(venue_providers: list[provider_models.VenueProvi
                 synchronize_venue_provider(venue_provider, limit)
         except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as exception:
             logger.error("Connexion error while synchronizing venue_provider", extra=log_data | {"exc": exception})
-        except provider_api.ProviderAPIException as exception:
-            logger.error(  # pylint: disable=logging-fstring-interpolation
-                f"ProviderAPIException with code {exception.status_code} while synchronizing venue_provider",
-                extra=log_data | {"exc": exception},
-            )
-        except Exception as exception:  # pylint: disable=broad-except
+        except Exception:  # pylint: disable=broad-except
             logger.exception("Unexpected error while synchronizing venue provider", extra=log_data)
 
 
@@ -73,31 +66,27 @@ def get_local_provider_class_by_name(class_name: str) -> Callable:
 
 
 def synchronize_venue_provider(venue_provider: provider_models.VenueProvider, limit: int | None = None) -> None:
-    if venue_provider.provider.implements_provider_api and not venue_provider.provider.isCinemaProvider:
-        synchronize_provider_api.synchronize_venue_provider(venue_provider)
+    assert (
+        venue_provider.provider.localClass
+        in [
+            "AllocineStocks",
+        ]
+        + CINEMA_PROVIDER_NAMES
+    ), f"Only {', '.join(CINEMA_PROVIDER_NAMES)} or AllocineStocks should reach this code"
+    provider_class = get_local_provider_class_by_name(venue_provider.provider.localClass)
 
-    else:
-        assert (
-            venue_provider.provider.localClass
-            in [
-                "AllocineStocks",
-            ]
-            + CINEMA_PROVIDER_NAMES
-        ), f"Only {', '.join(CINEMA_PROVIDER_NAMES)} or AllocineStocks should reach this code"
-        provider_class = get_local_provider_class_by_name(venue_provider.provider.localClass)
-
-        logger.info(
-            "Starting synchronization of venue_provider=%s with provider=%s",
-            venue_provider.id,
-            venue_provider.provider.localClass,
-        )
-        provider = provider_class(venue_provider)
-        provider.updateObjects(limit)
-        logger.info(
-            "Ended synchronization of venue_provider=%s with provider=%s",
-            venue_provider.id,
-            venue_provider.provider.localClass,
-        )
+    logger.info(
+        "Starting synchronization of venue_provider=%s with provider=%s",
+        venue_provider.id,
+        venue_provider.provider.localClass,
+    )
+    provider = provider_class(venue_provider)
+    provider.updateObjects(limit)
+    logger.info(
+        "Ended synchronization of venue_provider=%s with provider=%s",
+        venue_provider.id,
+        venue_provider.provider.localClass,
+    )
 
 
 def synchronize_ems_venue_providers(from_last_version: bool = False) -> None:
@@ -134,13 +123,7 @@ def synchronize_ems_venue_providers(from_last_version: bool = False) -> None:
         except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as exception:
             logger.error("Connexion error while synchronizing venue_provider", extra=log_data | {"exc": exception})
             venues_provider_to_sync.discard(venue_provider.id)
-        except provider_api.ProviderAPIException as exception:
-            logger.error(  # pylint: disable=logging-fstring-interpolation
-                f"ProviderAPIException with code {exception.status_code} while synchronizing venue_provider",
-                extra=log_data | {"exc": exception},
-            )
-            venues_provider_to_sync.discard(venue_provider.id)
-        except Exception as exception:  # pylint: disable=broad-except
+        except Exception:  # pylint: disable=broad-except
             logger.exception("Unexpected error while synchronizing venue provider", extra=log_data)
             venues_provider_to_sync.discard(venue_provider.id)
 

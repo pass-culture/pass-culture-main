@@ -10,7 +10,7 @@ import { isCollectiveOfferArchivable } from '../isCollectiveOfferArchivable'
 describe('isCollectiveOfferArchivable', () => {
   const stocks: Array<CollectiveOffersStockResponseModel> = [
     {
-      beginningDatetime: String(new Date()),
+      startDatetime: String(new Date()),
       hasBookingLimitDatetimePassed: false,
       remainingQuantity: 1,
     },

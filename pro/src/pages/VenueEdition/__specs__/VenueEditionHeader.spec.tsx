@@ -33,7 +33,8 @@ const renderPartnerPages = (
     />,
     {
       storeOverrides: {
-        user: { currentUser: sharedCurrentUserFactory(), selectedOffererId: 1 },
+        user: { currentUser: sharedCurrentUserFactory() },
+        offerer: { selectedOffererId: 1, offererNames: [] },
       },
       ...options,
     }
@@ -61,6 +62,7 @@ describe('PartnerPages', () => {
       venueId: defaultGetVenue.id,
       imageType: UploaderModeEnum.VENUE,
       isEdition: true,
+      imageCreationStage: 'add image',
     })
   })
 
@@ -100,10 +102,8 @@ describe('PartnerPages', () => {
       {
         user: sharedCurrentUserFactory(),
         storeOverrides: {
-          user: {
-            currentUser: sharedCurrentUserFactory(),
-            selectedOffererId: 1,
-          },
+          user: { currentUser: sharedCurrentUserFactory() },
+          offerer: { selectedOffererId: 1, offererNames: [] },
         },
       }
     )

@@ -1,5 +1,6 @@
 {% import "components/forms.html" as forms with context %}
 {% import "components/links.html" as links %}
+{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% macro text_or_question_mark(value) %}
   {% if value %}
     {{ value }}
@@ -45,7 +46,7 @@
               <tr>
                 <td>
                   {% if is_instructor %}
-                    {% if update_request.status == update_request.status.draft %}
+                    {% if update_request.status == update_request.status.draft or update_request.can_be_accepted %}
                       <div class="d-flex">
                         <div class="dropdown">
                           <button type="button"
@@ -55,32 +56,38 @@
                             <i class="bi bi-three-dots-vertical"></i>
                           </button>
                           <ul class="dropdown-menu">
-                            <li class="dropdown-item p-0">
-                              <form action="{{ url_for('.instruct', ds_application_id=update_request.dsApplicationId) }}"
-                                    name="{{ url_for('.instruct', ds_application_id=update_request.dsApplicationId) | action_to_name }}"
-                                    method="post">
-                                {{ csrf_token }}
-                                <button type="submit"
-                                        class="btn btn-sm d-block w-100 text-start px-3">Passer en instruction</button>
-                              </form>
-                            </li>
+                            {% if update_request.status == update_request.status.draft %}
+                              <li class="dropdown-item p-0">
+                                <form action="{{ url_for('.instruct', ds_application_id=update_request.dsApplicationId) }}"
+                                      name="{{ url_for('.instruct', ds_application_id=update_request.dsApplicationId) | action_to_name }}"
+                                      method="post">
+                                  {{ csrf_token }}
+                                  <button type="submit"
+                                          class="btn btn-sm d-block w-100 text-start px-3">Passer en instruction</button>
+                                </form>
+                              </li>
+                            {% endif %}
+                            {% if update_request.can_be_accepted %}
+                              <li class="dropdown-item p-0">
+                                <a class="btn btn-sm d-block w-100 text-start px-3"
+                                   data-bs-toggle="modal"
+                                   data-bs-target="#accept-{{ update_request.dsApplicationId }}">Accepter le dossier</a>
+                              </li>
+                            {% endif %}
                           </ul>
                         </div>
                       </div>
+                      {% if update_request.status == update_request.status.on_going and update_request.user is not none %}
+                        {{ build_lazy_modal(url_for("backoffice_web.account_update.get_accept_form", ds_application_id=update_request.dsApplicationId) , "accept-" + update_request.dsApplicationId|string, "lazy", "xl") }}
+                      {% endif %}
                     {% endif %}
                   {% endif %}
                 </td>
-                <td>
-                  {% set link = "https://www.demarches-simplifiees.fr/procedures/" + procedure_id|string + "/dossiers/" + update_request.dsApplicationId|string %}
-                  <a href="{{ link }}"
-                     class="link-primary"
-                     target="_blank"
-                     title="Ouvrir le dossier DS">{{ update_request.dsApplicationId }} <i class="bi bi-box-arrow-up-right"></i></a>
-                </td>
+                <td>{{ links.build_ds_application_external_link(update_request.dsApplicationId, procedure_id) }}</td>
                 <td>
                   {{ update_request.status | format_dms_application_status_badge }}
                   <br />
-                  {{ update_request.correction_flags | format_user_account_update_flags }}
+                  {{ update_request.correction_flags | format_user_account_update_flags(multiline=True) }}
                 </td>
                 <td>{{ update_request.dateLastStatusUpdate | format_date_time }}</td>
                 <td>
@@ -108,13 +115,19 @@
                 </td>
                 <td>
                   {% if update_request.user %}
-                    {{ links.build_public_user_name_to_details_link(update_request.user) }}
+                    {{ links.build_public_user_name_to_details_link(update_request.user, "history") }}
                     {% if update_request.user.birth_date %}
                       <br />
                       {{ "né" | genderize(update_request.user.civility) }} le {{ update_request.user.birth_date | format_date }} ({{ update_request.user.age }} ans)
                     {% endif %}
                     <br />
                     {{ update_request.user.email }}
+                    {% if update_request.user.roles %}
+                      <br />
+                      {% for role in update_request.user.roles %}
+                        <span class="me-2 badge rounded-pill text-bg-light shadow-sm align-middle">{{ role | format_role }}</span>
+                      {% endfor %}
+                    {% endif %}
                   {% else %}
                     Compte jeune non trouvé
                   {% endif %}
@@ -123,27 +136,27 @@
                   {{ update_request.data_check_flags | format_user_account_update_flags }}
                   {% if update_request.has_email_update %}
                     <div>
-                      <span class="fw-bold">Email&nbsp;:</span> {{ text_or_question_mark(update_request.oldEmail) }} => {{ text_or_question_mark(update_request.newEmail) }}
+                      <span class="fw-bold">Email&nbsp;:</span> {{ text_or_question_mark(update_request.oldEmail) }} → {{ text_or_question_mark(update_request.newEmail) }}
                     </div>
                   {% endif %}
                   {% if update_request.has_phone_number_update %}
                     <div>
                       <span class="fw-bold">Téléphone&nbsp;:</span>
-                      {% if update_request.user and not update_request.is_accepted %}{{ update_request.user.phoneNumber | empty_string_if_null }} =>{% endif %}
+                      {% if update_request.user and not update_request.is_accepted %}{{ update_request.user.phoneNumber | empty_string_if_null }} →{% endif %}
                       {{ text_or_question_mark(update_request.newPhoneNumber) }}
                     </div>
                   {% endif %}
                   {% if update_request.has_first_name_update %}
                     <div>
                       <span class="fw-bold">Prénom&nbsp;:</span>
-                      {% if update_request.user and not update_request.is_accepted %}{{ update_request.user.firstName | empty_string_if_null }} =>{% endif %}
+                      {% if update_request.user and not update_request.is_accepted %}{{ update_request.user.firstName | empty_string_if_null }} →{% endif %}
                       {{ text_or_question_mark(update_request.newFirstName) }}
                     </div>
                   {% endif %}
                   {% if update_request.has_last_name_update %}
                     <div>
                       <span class="fw-bold">Nom&nbsp;:</span>
-                      {% if update_request.user and not update_request.is_accepted %}{{ update_request.user.lastName | empty_string_if_null }} =>{% endif %}
+                      {% if update_request.user and not update_request.is_accepted %}{{ update_request.user.lastName | empty_string_if_null }} →{% endif %}
                       {{ text_or_question_mark(update_request.newLastName) }}
                     </div>
                   {% endif %}

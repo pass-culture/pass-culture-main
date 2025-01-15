@@ -43,11 +43,12 @@ def get_expected_base_sendinblue_email_data(booking, mediation, **overrides):
         template=TransactionalEmail.BOOKING_CONFIRMATION_BY_BENEFICIARY.value,
         params={
             "USER_FIRST_NAME": booking.firstName,
-            "BOOKING_DATE": "15 octobre 2032",
+            "BOOKING_CONTACT": None,
+            "BOOKING_DATE": "vendredi 15 octobre 2032",
             "BOOKING_HOUR": "14h48",
             "OFFER_NAME": booking.stock.offer.name,
             "OFFERER_NAME": booking.offerer.name,
-            "EVENT_DATE": "14 novembre 2032",
+            "EVENT_DATE": "dimanche 14 novembre 2032",
             "EVENT_HOUR": "13h48",
             "OFFER_PRICE_CATEGORY": booking.priceCategoryLabel,
             "OFFER_PRICE": f"{booking.total_amount} €" if booking.stock.price > 0 else "Gratuit",
@@ -303,7 +304,7 @@ class DigitalOffersSendinblueTest:
             VENUE_ADDRESS="1 boulevard Poissonnière",
             VENUE_CITY="Paris",
             VENUE_POSTAL_CODE="75002",
-            BOOKING_DATE="1 janvier 2018",
+            BOOKING_DATE="lundi 1er janvier 2018",
             BOOKING_HOUR="01h00",
             EXPIRATION_DELAY=None,
         )
@@ -380,7 +381,7 @@ class DigitalOffersSendinblueTest:
             OFFER_PRICE="Gratuit",
             CAN_EXPIRE=False,
             OFFER_TOKEN="code_toto",
-            CODE_EXPIRATION_DATE="1 janvier 2030",
+            CODE_EXPIRATION_DATE="mardi 1er janvier 2030",
             HAS_OFFER_URL=True,
             DIGITAL_OFFER_URL="http://example.com",
             EXPIRATION_DELAY=None,
@@ -406,7 +407,7 @@ def test_digital_offer_without_departement_code_information_sendinblue():
     booking = BookingFactory(stock=stock, dateCreated=date_created)
 
     email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
-    assert email_data.params["BOOKING_DATE"] == "1 juillet 2032"
+    assert email_data.params["BOOKING_DATE"] == "jeudi 1er juillet 2032"
     assert email_data.params["BOOKING_HOUR"] == "12h00"
 
 

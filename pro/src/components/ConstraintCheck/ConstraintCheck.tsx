@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react'
+import { FunctionComponent } from 'react'
 
 import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
 

@@ -248,7 +248,7 @@ class Returns200Test:
 
         updated_offer = CollectiveOfferTemplate.query.filter(CollectiveOfferTemplate.id == offer.id).one()
         assert updated_offer.dateRange.lower == now
-        assert updated_offer.dateRange.upper == now.replace(second=now.second + 1)
+        assert updated_offer.dateRange.upper == now + timedelta(seconds=1)
 
     def test_contact_form_both_null_form_and_url(self, client):
         offer_ctx = build_offer_context()

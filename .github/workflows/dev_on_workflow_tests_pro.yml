@@ -21,7 +21,7 @@ jobs:
     name: "Type check / Quality check / Style quality check"
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4.2.2
       - uses: actions/setup-node@v4
         with:
           node-version-file: "pro/.nvmrc"
@@ -51,7 +51,7 @@ jobs:
     name: "Unit tests"
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
       - run: |
@@ -67,8 +67,8 @@ jobs:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - name: "Get Secret"
-        id: 'secrets'
-        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        id: "secrets"
+        uses: "google-github-actions/get-secretmanager-secrets@v2"
         with:
           secrets: |-
             SONAR_TOKEN:passculture-metier-ehp/passculture-main-sonar-token
@@ -87,6 +87,13 @@ jobs:
       - run: yarn install --immutable
       - name: Run tests with coverage
         run: yarn test:unit:ci
+
+      - name: "Upload Allure results for pro tests"
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-pro-unit
+          path: allure-results
+
       - name: SonarCloud scan
         uses: SonarSource/sonarcloud-github-action@master
         if: ${{ github.actor != 'dependabot[bot]' }}

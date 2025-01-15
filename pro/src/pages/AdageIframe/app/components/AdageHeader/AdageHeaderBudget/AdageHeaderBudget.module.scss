@@ -1,7 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
-@use "styles/variables/_size.scss" as size;
+@use "styles/mixins/_size.scss" as size;
 
 .adage-header-budget {
   border-left: none;
@@ -10,7 +9,7 @@
   width: 100%;
 
   &-link {
-    @include fonts.caption;
+    @include fonts.body-accent-xs;
 
     display: block;
     margin-bottom: rem.torem(4px);
@@ -21,7 +20,7 @@
   }
 
   &-value {
-    @include fonts-design-system.title4;
+    @include fonts.title4;
 
     white-space: nowrap;
     color: var(--color-brand);
@@ -33,7 +32,7 @@
   .adage-header-budget {
     border-left: 1px solid var(--color-grey-medium);
     border-top: none;
-    padding-left: 0 0 0 rem.torem(32px);
+    padding: 0 0 0 rem.torem(32px);
     width: unset;
 
     &-link {

@@ -1,4 +1,3 @@
-import React from 'react'
 
 import { GetCollectiveOfferTemplateResponseModel } from 'apiClient/v1'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'

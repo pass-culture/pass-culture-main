@@ -8,7 +8,6 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferValidationStatus
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.models.offer_mixin import OfferStatus
 
@@ -176,7 +175,7 @@ class Returns200Test:
             offerer_address_id=None,
         )
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     @pytest.mark.parametrize("dp", ["974", "971"])
     def should_consider_the_offer_oa_timezone_for_begining_period(self, dp, client):
         pro = users_factories.ProFactory()
@@ -201,7 +200,7 @@ class Returns200Test:
             else:
                 assert response.json == []
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     @pytest.mark.parametrize("dp", ["974", "971"])
     def should_consider_the_offer_oa_timezone_for_ending_period(self, dp, client):
         pro = users_factories.ProFactory()
@@ -307,6 +306,7 @@ class Returns200Test:
                 "id": event_offer.id,
                 "isActive": True,
                 "isEditable": True,
+                "isHeadlineOffer": False,
                 "isEvent": True,
                 "isThing": False,
                 "isEducational": False,
@@ -380,6 +380,7 @@ class Returns200Test:
                 "id": event_offer.id,
                 "isActive": True,
                 "isEditable": True,
+                "isHeadlineOffer": False,
                 "isEvent": True,
                 "isThing": False,
                 "isEducational": False,
@@ -436,6 +437,7 @@ class Returns200Test:
                 "isActive": True,
                 "isEditable": True,
                 "isEvent": True,
+                "isHeadlineOffer": False,
                 "isThing": False,
                 "isEducational": False,
                 "name": event_offer.name,
@@ -519,6 +521,7 @@ class Returns200Test:
                 "isEditable": True,
                 "isEducational": False,
                 "isEvent": True,
+                "isHeadlineOffer": False,
                 "isShowcase": False,
                 "isThing": False,
                 "name": event_offer2.name,
@@ -557,6 +560,7 @@ class Returns200Test:
                 "isActive": True,
                 "isEditable": True,
                 "isEducational": False,
+                "isHeadlineOffer": False,
                 "isEvent": True,
                 "isShowcase": False,
                 "isThing": False,
@@ -621,6 +625,7 @@ class Returns200Test:
                 "isActive": True,
                 "isEditable": True,
                 "isEvent": True,
+                "isHeadlineOffer": False,
                 "isThing": False,
                 "isEducational": False,
                 "name": "The Weeknd",
@@ -687,6 +692,7 @@ class Returns200Test:
                 "isActive": True,
                 "isEditable": True,
                 "isEvent": True,
+                "isHeadlineOffer": False,
                 "isThing": False,
                 "isEducational": False,
                 "name": "The Weeknd",

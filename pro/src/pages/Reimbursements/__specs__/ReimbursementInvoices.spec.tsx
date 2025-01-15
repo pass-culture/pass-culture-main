@@ -33,10 +33,8 @@ const renderReimbursementsInvoices = (options?: RenderWithProvidersOptions) => {
     user,
     ...options,
     storeOverrides: {
-      user: {
-        currentUser: user,
-        selectedOffererId: 1,
-      },
+      user: { currentUser: user },
+      offerer: { selectedOffererId: 1, offererNames: [] },
     },
   })
 }
@@ -139,7 +137,7 @@ describe('reimbursementsWithFilters', () => {
     expect(screen.getByText(/75,00/)).toBeInTheDocument()
   })
 
-  it('should display new invoice table if FF WIP_ENABLE_FINANCE_INCIDENT is enable', async () => {
+  it('should display the invoice table', async () => {
     vi.spyOn(api, 'getInvoicesV2').mockResolvedValue([
       {
         reference: 'J123456789',
@@ -159,9 +157,7 @@ describe('reimbursementsWithFilters', () => {
       },
     ])
 
-    renderReimbursementsInvoices({
-      features: ['WIP_ENABLE_FINANCE_INCIDENT'],
-    })
+    renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(
@@ -236,9 +232,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should contain sort informations for a11y', async () => {
-    renderReimbursementsInvoices({
-      features: ['WIP_ENABLE_FINANCE_INCIDENT'],
-    })
+    renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
@@ -324,9 +318,7 @@ describe('reimbursementsWithFilters', () => {
     ])
     vi.spyOn(api, 'getReimbursementsCsvV2')
 
-    renderReimbursementsInvoices({
-      features: ['WIP_ENABLE_FINANCE_INCIDENT'],
-    })
+    renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
@@ -499,13 +491,11 @@ describe('reimbursementsWithFilters', () => {
 
     await userEvent.click(screen.getByText('Lancer la recherche'))
 
-    // TODO: this call should not occured as many times
     await waitFor(() => {
-      expect(api.getInvoicesV2).toHaveBeenCalledTimes(2 /* au render */ + 1)
+      expect(api.getInvoicesV2).toHaveBeenCalledTimes(2)
     })
 
     expect(api.getInvoicesV2).toHaveBeenLastCalledWith(
-      // 3,
       '2020-11-17',
       '2020-11-19',
       BASE_BANK_ACCOUNTS[0].id,

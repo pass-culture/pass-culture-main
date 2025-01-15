@@ -2,11 +2,11 @@ import datetime
 import importlib
 
 import pytest
+import pytz
 import time_machine
 
 import pcapi.core.bookings.utils as utils
 from pcapi.core.categories import subcategories_v2 as subcategories
-from pcapi.core.testing import override_settings
 
 
 @pytest.mark.parametrize(
@@ -24,7 +24,7 @@ def test_get_cooldown_datetime_by_subcategories(subcategory_id, cooldown_datetim
     assert utils.get_cooldown_datetime_by_subcategories(subcategory_id) == cooldown_datetime
 
 
-@override_settings(SUGGEST_REACTION_SHORT_COOLDOWN_IN_SECONDS=30, SUGGEST_REACTION_LONG_COOLDOWN_IN_SECONDS=300)
+@pytest.mark.settings(SUGGEST_REACTION_SHORT_COOLDOWN_IN_SECONDS=30, SUGGEST_REACTION_LONG_COOLDOWN_IN_SECONDS=300)
 def test_get_cooldown_datetime_by_subcategories_env():
     # Reload utils to recalculate SUGGEST_REACTION_COOLDOWN_IN_SECONDS impacted by env vars
     importlib.reload(utils)
@@ -38,3 +38,29 @@ def test_get_cooldown_datetime_by_subcategories_env():
         subcategory_id = subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id
         cooldown_datetime = datetime.datetime(2025, 2, 1, 12, 29, 26)
         assert utils.get_cooldown_datetime_by_subcategories(subcategory_id) == cooldown_datetime
+
+
+@pytest.mark.parametrize(
+    "date_period, timezone, expected_result",
+    [
+        (
+            [datetime.date(2024, 12, 11), datetime.date(2024, 12, 12)],
+            "Europe/Paris",
+            (
+                datetime.datetime(2024, 12, 10, 23, 0, 0, tzinfo=pytz.utc),
+                datetime.datetime(2024, 12, 12, 22, 59, 59, tzinfo=pytz.utc),
+            ),
+        ),
+        (  # dates not ordered
+            [datetime.date(2024, 12, 25), datetime.date(2024, 12, 4)],
+            "Europe/Paris",
+            (
+                datetime.datetime(2024, 12, 3, 23, 0, 0, tzinfo=pytz.utc),
+                datetime.datetime(2024, 12, 25, 22, 59, 59, tzinfo=pytz.utc),
+            ),
+        ),
+    ],
+)
+def test_convert_date_period_to_utc_datetime_period(date_period, timezone, expected_result):
+    result = utils.convert_date_period_to_utc_datetime_period(date_period, timezone)
+    assert result == expected_result

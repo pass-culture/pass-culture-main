@@ -7,7 +7,9 @@ from flask_login import current_user
 from flask_login import login_required
 
 from pcapi.core.educational import exceptions as educational_exceptions
+from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational import validation as educational_validation
 from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.offerers import api as offerers_api
@@ -16,7 +18,9 @@ from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation as offers_validation
 from pcapi.models import db
+from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
+from pcapi.repository import atomic
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import collective_offers_serialize
@@ -31,6 +35,7 @@ logger = logging.getLogger(__name__)
 
 
 @private_api.route("/collective/offers", methods=["GET"])
+@atomic()
 @login_required
 @spectree_serialize(
     response_model=collective_offers_serialize.ListCollectiveOffersResponseModel,
@@ -40,12 +45,8 @@ logger = logging.getLogger(__name__)
 def get_collective_offers(
     query: collective_offers_serialize.ListCollectiveOffersQueryModel,
 ) -> collective_offers_serialize.ListCollectiveOffersResponseModel:
-    statuses = None
-
-    if query.status:
-        assert isinstance(query.status, list)
-
-        statuses = [status.value for status in query.status]
+    statuses = query.status
+    assert (statuses is None) or isinstance(statuses, list)  # ensured by query_params_as_list
 
     capped_offers = educational_api_offer.list_collective_offers_for_pro_user(
         user_id=current_user.id,
@@ -68,6 +69,7 @@ def get_collective_offers(
 
 
 @private_api.route("/collective/offers/<int:offer_id>", methods=["GET"])
+@atomic()
 @login_required
 @spectree_serialize(
     response_model=collective_offers_serialize.GetCollectiveOfferResponseModel,
@@ -93,6 +95,7 @@ def get_collective_offer(offer_id: int) -> collective_offers_serialize.GetCollec
 
 
 @private_api.route("/collective/offers-template/<int:offer_id>", methods=["GET"])
+@atomic()
 @login_required
 @spectree_serialize(
     response_model=collective_offers_serialize.GetCollectiveOfferTemplateResponseModel,
@@ -117,6 +120,7 @@ def get_collective_offer_template(offer_id: int) -> collective_offers_serialize.
 
 
 @private_api.route("/collective/offers-template/request/<int:request_id>", methods=["GET"])
+@atomic()
 @login_required
 @spectree_serialize(
     response_model=collective_offers_serialize.GetCollectiveOfferRequestResponseModel,
@@ -126,12 +130,7 @@ def get_collective_offer_request(request_id: int) -> collective_offers_serialize
     try:
         collective_offer_request = educational_api_offer.get_collective_offer_request_by_id(request_id)
     except educational_exceptions.CollectiveOfferRequestNotFound:
-        raise ApiErrors(
-            errors={
-                "global": ["Le formulaire demandé n'existe pas"],
-            },
-            status_code=404,
-        )
+        raise ApiErrors(errors={"global": ["Le formulaire demandé n'existe pas"]}, status_code=404)
 
     offerer_id = collective_offer_request.collectiveOfferTemplate.venue.managingOffererId
     check_user_has_access_to_offerer(current_user, offerer_id)
@@ -160,6 +159,7 @@ def get_collective_offer_request(request_id: int) -> collective_offers_serialize
 
 
 @private_api.route("/collective/offers", methods=["POST"])
+@atomic()
 @login_required
 @spectree_serialize(
     response_model=collective_offers_serialize.CollectiveOfferResponseIdModel,
@@ -236,15 +236,13 @@ def create_collective_offer(
             "Could not create offer: national program not found",
             extra={"offer_name": body.name, "nationalProgramId": body.nationalProgramId},
         )
-        raise ApiErrors(
-            {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_NOT_FOUND"},
-            status_code=400,
-        )
+        raise ApiErrors({"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_NOT_FOUND"}, status_code=400)
 
     return collective_offers_serialize.CollectiveOfferResponseIdModel.from_orm(offer)
 
 
 @private_api.route("/collective/offers/<int:offer_id>", methods=["PATCH"])
+@atomic()
 @login_required
 @spectree_serialize(
     response_model=collective_offers_serialize.GetCollectiveOfferResponseModel,
@@ -266,11 +264,14 @@ def edit_collective_offer(
 
     try:
         offers_api.update_collective_offer(offer_id=offer_id, new_values=new_values)
-        db.session.commit()
     except offers_exceptions.SubcategoryNotEligibleForEducationalOffer:
         raise ApiErrors({"subcategoryId": "this subcategory is not educational"}, 400)
     except offers_exceptions.OfferUsedOrReimbursedCantBeEdit:
         raise ApiErrors({"offer": "the used or refund offer can't be edited."}, 403)
+    except offers_exceptions.NoDestinationVenue:
+        raise ApiErrors({"venueId": ["No venue with a pricing point found for the destination venue."]}, 400)
+    except educational_exceptions.CollectiveOfferForbiddenAction:
+        raise ApiErrors({"offer": "This collective offer status does not allow editing details"}, 403)
     except educational_exceptions.OffererOfVenueDontMatchOfferer:
         raise ApiErrors({"venueId": "New venue needs to have the same offerer"}, 403)
     except educational_exceptions.VenueIdDontExist:
@@ -284,10 +285,7 @@ def edit_collective_offer(
             "Could not update offer: educational domains not found.",
             extra={"collective_offer_id": offer_id, "domains": body.domains},
         )
-        raise ApiErrors(
-            {"code": "EDUCATIONAL_DOMAIN_NOT_FOUND"},
-            status_code=404,
-        )
+        raise ApiErrors({"code": "EDUCATIONAL_DOMAIN_NOT_FOUND"}, status_code=404)
     except offers_exceptions.OfferEditionBaseException as error:
         raise ApiErrors(error.errors, status_code=400)
 
@@ -296,6 +294,7 @@ def edit_collective_offer(
 
 
 @private_api.route("/collective/offers-template/<int:offer_id>/", methods=["POST"])
+@atomic()
 @login_required
 @spectree_serialize(
     on_success_status=201,
@@ -317,20 +316,15 @@ def create_collective_offer_template_from_collective_offer(
             price_detail=body.price_detail, user=current_user, offer_id=offer_id
         )
     except educational_exceptions.CollectiveOfferNotFound:
-        raise ApiErrors(
-            {"code": "COLLECTIVE_OFFER_NOT_FOUND"},
-            status_code=404,
-        )
+        raise ApiErrors({"code": "COLLECTIVE_OFFER_NOT_FOUND"}, status_code=404)
     except educational_exceptions.EducationalStockAlreadyExists:
-        raise ApiErrors(
-            {"code": "EDUCATIONAL_STOCK_ALREADY_EXISTS"},
-            status_code=400,
-        )
+        raise ApiErrors({"code": "EDUCATIONAL_STOCK_ALREADY_EXISTS"}, status_code=400)
 
     return collective_offers_serialize.CollectiveOfferTemplateResponseIdModel.from_orm(collective_offer_template)
 
 
 @private_api.route("/collective/offers-template/<int:offer_id>", methods=["PATCH"])
+@atomic()
 @login_required
 @spectree_serialize(
     response_model=collective_offers_serialize.GetCollectiveOfferTemplateResponseModel,
@@ -367,10 +361,7 @@ def edit_collective_offer_template(
             "Could not update offer: educational domains not found.",
             extra={"collective_offer_id": offer_id, "domains": body.domains},
         )
-        raise ApiErrors(
-            {"code": "EDUCATIONAL_DOMAIN_NOT_FOUND"},
-            status_code=404,
-        )
+        raise ApiErrors({"code": "EDUCATIONAL_DOMAIN_NOT_FOUND"}, status_code=404)
     except offers_exceptions.OfferEditionBaseException as error:
         raise ApiErrors(error.errors, status_code=400)
     except offers_exceptions.CollectiveOfferContactRequestError as err:
@@ -381,6 +372,7 @@ def edit_collective_offer_template(
 
 
 @private_api.route("/collective/offers/active-status", methods=["PATCH"])
+@atomic()
 @login_required
 @spectree_serialize(
     on_success_status=204,
@@ -389,6 +381,9 @@ def edit_collective_offer_template(
 def patch_collective_offers_active_status(
     body: collective_offers_serialize.PatchCollectiveOfferActiveStatusBodyModel,
 ) -> None:
+    if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+        raise ApiErrors({"global": ["Cette action n'est pas autorisée sur cette offre"]}, status_code=403)
+
     if body.is_active:
         offerers_ids = educational_repository.get_offerer_ids_from_collective_offers_ids(body.ids)
         for offerer_id in offerers_ids:
@@ -400,6 +395,7 @@ def patch_collective_offers_active_status(
 
 
 @private_api.route("/collective/offers/archive", methods=["PATCH"])
+@atomic()
 @login_required
 @spectree_serialize(
     on_success_status=204,
@@ -410,13 +406,22 @@ def patch_collective_offers_archive(
 ) -> None:
     collective_query = educational_api_offer.get_query_for_collective_offers_by_ids_for_user(current_user, body.ids)
 
-    if educational_api_offer.query_has_any_archived(collective_query):
-        raise ApiErrors({"global": ["One of the offers is already archived"]}, status_code=422)
+    if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+        try:
+            offers_api.archive_collective_offers(offers=collective_query.all(), date_archived=datetime.utcnow())
+        except educational_exceptions.CollectiveOfferForbiddenAction:
+            raise ApiErrors({"global": ["Cette action n'est pas autorisée sur cette offre"]}, status_code=403)
+    else:
+        if educational_api_offer.query_has_any_archived(collective_query):
+            raise ApiErrors({"global": ["One of the offers is already archived"]}, status_code=422)
 
-    offers_api.batch_update_collective_offers(collective_query, {"isActive": False, "dateArchived": datetime.utcnow()})
+        offers_api.batch_update_collective_offers(
+            collective_query, {"isActive": False, "dateArchived": datetime.utcnow()}
+        )
 
 
 @private_api.route("/collective/offers-template/active-status", methods=["PATCH"])
+@atomic()
 @login_required
 @spectree_serialize(
     on_success_status=204,
@@ -438,6 +443,7 @@ def patch_collective_offers_template_active_status(
 
 
 @private_api.route("/collective/offers-template/archive", methods=["PATCH"])
+@atomic()
 @login_required
 @spectree_serialize(
     on_success_status=204,
@@ -455,6 +461,7 @@ def patch_collective_offers_template_archive(
 
 
 @private_api.route("/collective/offers/<int:offer_id>/educational_institution", methods=["PATCH"])
+@atomic()
 @login_required
 @spectree_serialize(
     on_success_status=200,
@@ -483,6 +490,8 @@ def patch_collective_offers_educational_institution(
         raise ApiErrors({"educationalInstitution": ["l'institution n'est pas active"]}, status_code=403)
     except educational_exceptions.CollectiveOfferNotEditable:
         raise ApiErrors({"offer": ["L'offre n'est plus modifiable"]}, status_code=403)
+    except educational_exceptions.CollectiveOfferForbiddenAction:
+        raise ApiErrors({"offer": ["Cette action n'est pas autorisée sur cette offre"]}, status_code=403)
     except educational_exceptions.EducationalRedactorNotFound:
         raise ApiErrors({"teacherEmail": ["L'enseignant n'à pas été trouvé dans cet établissement."]}, status_code=404)
     except educational_exceptions.EducationalRedcatorCannotBeLinked:
@@ -494,6 +503,7 @@ def patch_collective_offers_educational_institution(
 
 
 @private_api.route("/collective/offers/<int:offer_id>/publish", methods=["PATCH"])
+@atomic()
 @login_required
 @spectree_serialize(
     on_success_status=200,
@@ -510,15 +520,13 @@ def patch_collective_offer_publication(offer_id: int) -> collective_offers_seria
 
             check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-            offer = educational_api_offer.publish_collective_offer(
-                offer=offer,
-                user=current_user,
-            )
+            offer = educational_api_offer.publish_collective_offer(offer=offer, user=current_user)
 
             return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
 
 
 @private_api.route("/collective/offers-template/<int:offer_id>/publish", methods=["PATCH"])
+@atomic()
 @login_required
 @spectree_serialize(
     on_success_status=200,
@@ -542,6 +550,7 @@ def patch_collective_offer_template_publication(
 
 
 @private_api.route("/collective/offers-template", methods=["POST"])
+@atomic()
 @login_required
 @spectree_serialize(
     response_model=collective_offers_serialize.CollectiveOfferResponseIdModel,
@@ -573,78 +582,55 @@ def create_collective_offer_template(
             "Could not create offer: selected subcategory is unknown.",
             extra={"offer_name": body.name, "venue_id": body.venue_id},
         )
-        raise ApiErrors(
-            error.errors,
-            status_code=400,
-        )
+        raise ApiErrors(error.errors, status_code=400)
     except offers_exceptions.SubCategoryIsInactive as error:
         logger.info(
             "Could not create offer: subcategory cannot be selected.",
             extra={"offer_name": body.name, "venue_id": body.venue_id},
         )
-        raise ApiErrors(
-            error.errors,
-            status_code=400,
-        )
+        raise ApiErrors(error.errors, status_code=400)
     except offers_exceptions.SubcategoryNotEligibleForEducationalOffer as error:
         logger.info(
             "Could not create offer: subcategory is not eligible for educational offer.",
             extra={"offer_name": body.name, "venue_id": body.venue_id},
         )
-        raise ApiErrors(
-            error.errors,
-            status_code=400,
-        )
+        raise ApiErrors(error.errors, status_code=400)
     except educational_exceptions.EducationalDomainsNotFound:
         logger.info(
             "Could not create offer: educational domains not found.",
             extra={"offer_name": body.name, "venue_id": body.venue_id, "domains": body.domains},
         )
-        raise ApiErrors(
-            {"code": "EDUCATIONAL_DOMAIN_NOT_FOUND"},
-            status_code=404,
-        )
+        raise ApiErrors({"code": "EDUCATIONAL_DOMAIN_NOT_FOUND"}, status_code=404)
     except educational_exceptions.CollectiveOfferTemplateNotFound:
         logger.info(
             "Could not create offer: collective offer template not found.",
             extra={"offer_name": body.name, "venue_id": body.venue_id, "template_id": body.template_id},
         )
-        raise ApiErrors(
-            {"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"},
-            status_code=404,
-        )
+        raise ApiErrors({"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"}, status_code=404)
     except educational_exceptions.NationalProgramNotFound:
         logger.info(
             "Could not create offer: national program not found",
             extra={"offer_name": body.name, "nationalProgramId": body.nationalProgramId},
         )
-        raise ApiErrors(
-            {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_NOT_FOUND"},
-            status_code=400,
-        )
+        raise ApiErrors({"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_NOT_FOUND"}, status_code=400)
     except offers_exceptions.UrlandFormBothSetError:
         logger.info(
             "Could not set both contact url and contact form",
             extra={"offer_name": body.name},
         )
-        raise ApiErrors(
-            {"code": "COLLECTIVE_OFFER_URL_AND_FORM_BOTH_SET"},
-            status_code=400,
-        )
+        raise ApiErrors({"code": "COLLECTIVE_OFFER_URL_AND_FORM_BOTH_SET"}, status_code=400)
     except offers_exceptions.AllNullContactRequestDataError:
         logger.info(
             "At least one contact method should be set",
             extra={"offer_name": body.name},
         )
-        raise ApiErrors(
-            {"code": "COLLECTIVE_OFFER_CONTACT_NOT_SET"},
-            status_code=400,
-        )
+        raise ApiErrors({"code": "COLLECTIVE_OFFER_CONTACT_NOT_SET"}, status_code=400)
 
     return collective_offers_serialize.CollectiveOfferResponseIdModel.from_orm(offer)
 
 
 @private_api.route("/collective/offers/<int:offer_id>/image", methods=["POST"])
+@atomic()
 @login_required
 @spectree_serialize(
     on_success_status=200,
@@ -660,6 +646,14 @@ def attach_offer_image(
         raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id."]}, status_code=404)
 
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+
+    if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+        try:
+            educational_validation.check_collective_offer_action_is_allowed(
+                offer, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
+            )
+        except educational_exceptions.CollectiveOfferForbiddenAction:
+            raise ApiErrors({"global": ["Cette action n'est pas autorisée sur cette offre"]}, status_code=403)
 
     image_as_bytes = form.get_image_as_bytes(request)
 
@@ -702,6 +696,7 @@ def attach_offer_image(
 
 
 @private_api.route("/collective/offers-template/<int:offer_id>/image", methods=["POST"])
+@atomic()
 @login_required
 @spectree_serialize(
     on_success_status=200,
@@ -734,14 +729,13 @@ def attach_offer_template_image(
 
 
 @private_api.route("/collective/offers/<int:offer_id>/image", methods=["DELETE"])
+@atomic()
 @login_required
 @spectree_serialize(
     on_success_status=204,
     api=blueprint.pro_private_schema,
 )
-def delete_offer_image(
-    offer_id: int,
-) -> None:
+def delete_offer_image(offer_id: int) -> None:
     try:
         offer = educational_repository.get_collective_offer_by_id(offer_id)
     except educational_exceptions.CollectiveOfferNotFound:
@@ -749,18 +743,25 @@ def delete_offer_image(
 
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
+    if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+        try:
+            educational_validation.check_collective_offer_action_is_allowed(
+                offer, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
+            )
+        except educational_exceptions.CollectiveOfferForbiddenAction:
+            raise ApiErrors({"global": ["Cette action n'est pas autorisée sur cette offre"]}, status_code=403)
+
     educational_api_offer.delete_image(obj=offer)
 
 
 @private_api.route("/collective/offers-template/<int:offer_id>/image", methods=["DELETE"])
+@atomic()
 @login_required
 @spectree_serialize(
     on_success_status=204,
     api=blueprint.pro_private_schema,
 )
-def delete_offer_template_image(
-    offer_id: int,
-) -> None:
+def delete_offer_template_image(offer_id: int) -> None:
     try:
         offer = educational_api_offer.get_collective_offer_template_by_id(offer_id)
     except educational_exceptions.CollectiveOfferTemplateNotFound:
@@ -772,6 +773,7 @@ def delete_offer_template_image(
 
 
 @private_api.route("/collective/offers/redactors", methods=["GET"])
+@atomic()
 @login_required
 @spectree_serialize(
     response_model=educational_redactors.EducationalRedactors,
@@ -801,6 +803,7 @@ def get_autocomplete_educational_redactors_for_uai(
 
 
 @private_api.route("/collective/offers/<int:offer_id>/duplicate", methods=["POST"])
+@atomic()
 @login_required
 @spectree_serialize(
     response_model=collective_offers_serialize.GetCollectiveOfferResponseModel,
@@ -825,6 +828,8 @@ def duplicate_collective_offer(
         offer = educational_api_offer.duplicate_offer_and_stock(original_offer=original_offer)
     except educational_exceptions.ValidationFailedOnCollectiveOffer:
         raise ApiErrors({"validation": ["l'offre ne passe pas la validation"]}, status_code=403)
+    except educational_exceptions.CollectiveOfferForbiddenAction:
+        raise ApiErrors({"validation": ["Cette action n'est pas autorisée sur cette offre"]}, status_code=403)
     except educational_exceptions.OffererNotAllowedToDuplicate:
         raise ApiErrors({"offerer": ["la structure n'est pas autorisée à dupliquer l'offre"]}, status_code=403)
     except educational_exceptions.CantGetImageFromUrl:

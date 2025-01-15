@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { useId, useRef, ForwardedRef, forwardRef, useEffect } from 'react'
+import { useId, useRef, useEffect, ForwardedRef, forwardRef } from 'react'
 
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -11,18 +11,25 @@ export enum PartialCheck {
   UNCHECKED = 'unchecked',
 }
 
+export enum CheckboxVariant {
+  DEFAULT = 'default',
+  BOX = 'box',
+}
+
 export interface BaseCheckboxProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string | React.ReactNode
   hasError?: boolean
   className?: string
+  inputClassName?: string
+  labelClassName?: string
   icon?: string
-  withBorder?: boolean
-  ref?: React.Ref<HTMLInputElement>
+  variant?: CheckboxVariant
   partialCheck?: boolean
   exceptionnallyHideLabelDespiteA11y?: boolean
   description?: string
   ariaDescribedBy?: string
+  childrenOnChecked?: JSX.Element
 }
 
 export const BaseCheckbox = forwardRef(
@@ -31,12 +38,15 @@ export const BaseCheckbox = forwardRef(
       label,
       hasError,
       className,
+      inputClassName,
+      labelClassName,
       icon,
-      withBorder,
+      variant = CheckboxVariant.DEFAULT,
       partialCheck,
       exceptionnallyHideLabelDespiteA11y,
       description,
       ariaDescribedBy,
+      childrenOnChecked,
       ...props
     }: BaseCheckboxProps,
     forwardedRef: ForwardedRef<HTMLInputElement>
@@ -48,61 +58,62 @@ export const BaseCheckbox = forwardRef(
       if (innerRef.current) {
         innerRef.current.indeterminate = partialCheck ?? false
       }
-    }, [innerRef, partialCheck])
+    }, [partialCheck])
+
+    const labelClasses = cn(
+      styles['base-checkbox-label'],
+      {
+        [styles['visually-hidden']]: exceptionnallyHideLabelDespiteA11y,
+      },
+      labelClassName
+    )
+    const containerClasses = cn(styles['base-checkbox'], className, {
+      [styles['box-variant']]: variant === CheckboxVariant.BOX,
+      [styles['has-error']]: hasError,
+      [styles['is-disabled']]: props.disabled,
+      [styles['is-checked']]: props.checked,
+      [styles['has-children']]: childrenOnChecked,
+    })
 
     return (
-      <div
-        className={cn(
-          styles['base-checkbox'],
-          {
-            [styles['with-border']]: withBorder,
-            [styles['has-error']]: hasError,
-            [styles['is-disabled']]: props.disabled,
-          },
-          className
-        )}
-      >
-        <span
-          className={cn(styles['base-checkbox-label-row'], {
-            [styles['base-checkbox-label-row-with-description']]:
-              Boolean(description),
-          })}
-        >
-          <input
-            ref={forwardedRef ?? innerRef}
-            aria-invalid={hasError}
-            {...(ariaDescribedBy
-              ? { 'aria-describedby': ariaDescribedBy }
-              : {})}
-            type="checkbox"
-            {...props}
-            className={styles['base-checkbox-input']}
-            id={id}
-          />
-          {icon && (
-            <span className={styles['base-checkbox-icon']}>
-              <SvgIcon
-                src={icon}
-                alt=""
-                className={styles['base-checkbox-icon-svg']}
-              />
-            </span>
-          )}
-          <span
-            className={cn(styles['base-checkbox-label'], {
-              'visually-hidden': Boolean(exceptionnallyHideLabelDespiteA11y),
-              [styles['base-checkbox-label-with-description']]:
-                Boolean(description),
-            })}
-          >
-            <label htmlFor={id}>{label}</label>
-            {description && (
-              <span className={styles['base-checkbox-description']}>
-                {description}
-              </span>
-            )}
+      <div className={containerClasses}>
+        <div className={styles['base-checkbox-row']}>
+          <span className={styles['base-checkbox-label-row']}>
+            <input
+              ref={forwardedRef ?? innerRef}
+              aria-invalid={hasError}
+              {...(ariaDescribedBy && { 'aria-describedby': ariaDescribedBy })}
+              type="checkbox"
+              {...props}
+              className={cn(styles['base-checkbox-input'], inputClassName)}
+              id={id}
+            />
+            <label className={labelClasses} htmlFor={id}>
+              {icon && (
+                <span className={styles['base-checkbox-icon']}>
+                  <SvgIcon
+                    src={icon}
+                    alt=""
+                    className={styles['base-checkbox-icon-svg']}
+                  />
+                </span>
+              )}
+              {label}
+              {description && (
+                <p className={styles['base-checkbox-description']}>
+                  {description}
+                </p>
+              )}
+            </label>
           </span>
-        </span>
+        </div>
+        <div>
+          {childrenOnChecked && props.checked && (
+            <div className={styles['base-checkbox-children-on-checked']}>
+              {childrenOnChecked}
+            </div>
+          )}
+        </div>
       </div>
     )
   }

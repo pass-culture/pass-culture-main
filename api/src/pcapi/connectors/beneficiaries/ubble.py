@@ -1,120 +1,35 @@
 from contextlib import suppress
 import functools
 import logging
-import re
 import typing
 
-import flask
 from pydantic.v1 import networks as pydantic_networks
 from pydantic.v1 import parse_obj_as
 from urllib3 import exceptions as urllib3_exceptions
 
 from pcapi import settings
 from pcapi.connectors.serialization import ubble_serializers
-from pcapi.core import logging as core_logging
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import models as users_models
-from pcapi.models.feature import FeatureToggle
 from pcapi.utils import requests
 
 
 logger = logging.getLogger(__name__)
 
 
-INCLUDED_MODELS = {
-    "documents": ubble_serializers.UbbleIdentificationDocuments,
-    "document-checks": ubble_serializers.UbbleIdentificationDocumentChecks,
-    "reference-data-checks": ubble_serializers.UbbleIdentificationReferenceDataChecks,
-}
-
-V2_IDENTIFICATION_RE = r"^idv_\w+"
-
-
-def start_identification(
-    user_id: int, first_name: str, last_name: str, redirect_url: str, webhook_url: str | None = None
-) -> fraud_models.UbbleContent:
-    ubble_backend = _get_ubble_backend()
-    return ubble_backend.start_identification(
-        user_id=user_id, first_name=first_name, last_name=last_name, redirect_url=redirect_url, webhook_url=webhook_url
-    )
-
-
-def get_content(identification_id: str) -> fraud_models.UbbleContent:
-    if is_v2_identification(identification_id):
-        return UbbleV2Backend().get_content(identification_id)
-    return UbbleV1Backend().get_content(identification_id)
-
-
-def is_v2_identification(identification_id: str | None) -> bool:
-    if not identification_id:
-        return False
-    v2_match = re.match(V2_IDENTIFICATION_RE, identification_id)
-    return bool(v2_match)
-
-
-def download_ubble_picture(http_url: pydantic_networks.HttpUrl) -> tuple[str | None, typing.Any]:
-    try:
-        response = requests.get(http_url, stream=True)
-    except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
-        raise requests.ExternalAPIException(is_retryable=True) from e
-
-    if response.status_code == 429 or response.status_code >= 500:
-        logger.warning(
-            "Ubble picture-download: external error",
-            extra={"url": str(http_url), "status_code": response.status_code},
-        )
-        raise requests.ExternalAPIException(is_retryable=True)
-
-    if response.status_code == 403:
-        logger.error(
-            "Ubble picture-download: request has expired",
-            extra={"url": str(http_url), "status_code": response.status_code},
-        )
-        raise requests.ExternalAPIException(is_retryable=False)
-
-    if response.status_code != 200:
-        logger.error(  # pylint: disable=logging-fstring-interpolation
-            f"Ubble picture-download: unexpected error: {response.status_code}",
-            extra={"url": str(http_url)},
-        )
-        raise requests.ExternalAPIException(is_retryable=False)
-
-    return response.headers.get("content-type"), response.raw
-
-
-class UbbleBackend:
-    def start_identification(
-        self,
-        *,
-        user_id: int,
-        first_name: str,
-        last_name: str,
-        redirect_url: str,
-        webhook_url: str | None = None,
-    ) -> fraud_models.UbbleContent:
-        raise NotImplementedError()
-
-    def get_content(self, identification_id: str) -> fraud_models.UbbleContent:
-        raise NotImplementedError()
-
-
-P = typing.ParamSpec("P")
-
-
 def log_and_handle_ubble_response(
     request_type: str,
-) -> typing.Callable[[typing.Callable[P, fraud_models.UbbleContent]], typing.Callable[P, fraud_models.UbbleContent]]:
-    def log_response_status_and_reraise_if_needed(
-        ubble_content_function: typing.Callable[P, fraud_models.UbbleContent]
-    ) -> typing.Callable[P, fraud_models.UbbleContent]:
-        @functools.wraps(ubble_content_function)
-        def wrapper(*args: P.args, **kwargs: P.kwargs) -> fraud_models.UbbleContent:
+) -> typing.Callable[[typing.Callable], typing.Callable]:
+    def log_response_status_and_reraise_if_needed(ubble_function: typing.Callable) -> typing.Callable:
+        @functools.wraps(ubble_function)
+        def wrapper(*args: typing.Any, **kwargs: typing.Any) -> fraud_models.UbbleContent:
             try:
-                ubble_content = ubble_content_function(*args, **kwargs)
+                ubble_content = ubble_function(*args, **kwargs)
 
+                identification_id = getattr(ubble_content, "identification_id", None)
                 logger.info(
                     "Valid response from Ubble",
-                    extra={"identification_id": str(ubble_content.identification_id), "request_type": request_type},
+                    extra={"identification_id": str(identification_id), "request_type": request_type},
                 )
 
                 return ubble_content
@@ -166,207 +81,294 @@ def log_and_handle_ubble_response(
     return log_response_status_and_reraise_if_needed
 
 
-class UbbleV2Backend(UbbleBackend):
-    @log_and_handle_ubble_response("create-and-start-idv")
-    def start_identification(
-        self,
-        *,
-        user_id: int,
-        first_name: str,
-        last_name: str,
-        redirect_url: str,
-        webhook_url: str | None = None,
-    ) -> fraud_models.UbbleContent:
-        if webhook_url is None:
-            webhook_url = flask.url_for("Public API.ubble_v2_webhook_update_application_status", _external=True)
-        response = requests.post(
-            build_url("/v2/create-and-start-idv", user_id),
-            json={
-                "declared_data": {"name": f"{first_name} {last_name}"},
-                "webhook_url": webhook_url,
+@log_and_handle_ubble_response("applicant")
+def create_applicant(external_applicant_id: str, email: str) -> str:
+    response = requests.post(
+        build_url("/v2/applicants"),
+        json={"external_applicant_id": external_applicant_id, "email": email},
+        cert=(settings.UBBLE_CLIENT_CERTIFICATE_PATH, settings.UBBLE_CLIENT_KEY_PATH),
+    )
+    response.raise_for_status()
+
+    ubble_applicant = parse_obj_as(ubble_serializers.UbbleV2ApplicantResponse, response.json())
+
+    logger.info(
+        "Ubble applicant created",
+        extra={
+            "applicant_id": ubble_applicant.id,
+            "external_applicant_id": ubble_applicant.external_applicant_id,
+        },
+    )
+
+    return ubble_applicant.id
+
+
+@log_and_handle_ubble_response("post-identity-verifications")
+def create_identity_verification(
+    applicant_id: str, first_name: str, last_name: str, redirect_url: str, webhook_url: str
+) -> fraud_models.UbbleContent:
+    response = requests.post(
+        build_url("/v2/identity-verifications"),
+        json={
+            "applicant_id": applicant_id,
+            "declared_data": {"name": f"{first_name} {last_name}"},
+            "redirect_url": redirect_url,
+            "webhook_url": webhook_url,
+        },
+        cert=(settings.UBBLE_CLIENT_CERTIFICATE_PATH, settings.UBBLE_CLIENT_KEY_PATH),
+    )
+    response.raise_for_status()
+
+    ubble_identification = parse_obj_as(ubble_serializers.UbbleV2IdentificationResponse, response.json())
+    ubble_content = ubble_serializers.convert_identification_to_ubble_content(ubble_identification)
+
+    logger.info(
+        "Ubble identification created",
+        extra={"identification_id": ubble_identification.id, "status": str(ubble_identification.status)},
+    )
+
+    return ubble_content
+
+
+@log_and_handle_ubble_response("identity-verifications-attempt")
+def create_identity_verification_attempt(identification_id: str, redirect_url: str) -> str:
+    response = requests.post(
+        build_url(f"/v2/identity-verifications/{identification_id}/attempts"),
+        json={"redirect_url": redirect_url},
+        cert=(settings.UBBLE_CLIENT_CERTIFICATE_PATH, settings.UBBLE_CLIENT_KEY_PATH),
+    )
+    response.raise_for_status()
+
+    identification_attempt = parse_obj_as(ubble_serializers.UbbleV2AttemptResponse, response.json())
+
+    logger.info("Ubble identification attempted", extra={"identification_id": identification_attempt.id})
+
+    return identification_attempt.links.verification_url.href
+
+
+@log_and_handle_ubble_response("create-and-start-idv")
+def create_and_start_identity_verification(
+    first_name: str, last_name: str, redirect_url: str, webhook_url: str
+) -> fraud_models.UbbleContent:
+    response = requests.post(
+        build_url("/v2/create-and-start-idv"),
+        json={
+            "declared_data": {"name": f"{first_name} {last_name}"},
+            "webhook_url": webhook_url,
+            "redirect_url": redirect_url,
+        },
+        cert=(settings.UBBLE_CLIENT_CERTIFICATE_PATH, settings.UBBLE_CLIENT_KEY_PATH),
+    )
+    response.raise_for_status()
+
+    ubble_identification = parse_obj_as(ubble_serializers.UbbleV2IdentificationResponse, response.json())
+    ubble_content = ubble_serializers.convert_identification_to_ubble_content(ubble_identification)
+
+    logger.info(
+        "Ubble identification created and started",
+        extra={"identification_id": str(ubble_content.identification_id), "status": str(ubble_content.status)},
+    )
+
+    return ubble_content
+
+
+@log_and_handle_ubble_response("get-identity-verifications")
+def get_identity_verification(identification_id: str) -> fraud_models.UbbleContent:
+    response = requests.get(
+        build_url(f"/v2/identity-verifications/{identification_id}"),
+        cert=(settings.UBBLE_CLIENT_CERTIFICATE_PATH, settings.UBBLE_CLIENT_KEY_PATH),
+    )
+    response.raise_for_status()
+
+    ubble_identification = parse_obj_as(ubble_serializers.UbbleV2IdentificationResponse, response.json())
+    return ubble_serializers.convert_identification_to_ubble_content(ubble_identification)
+
+
+def request_webhook_notification(identification_id: str, webhook_url: str) -> None:
+    """
+    Request Ubble to call the webhook url with the given identification id data.
+    This function is useful for development and post-outage recovery purposes.
+    """
+    response = requests.post(
+        build_url(f"/v2/identity-verifications/{identification_id}/notify"),
+        json={"webhook_url": webhook_url},
+        cert=(settings.UBBLE_CLIENT_CERTIFICATE_PATH, settings.UBBLE_CLIENT_KEY_PATH),
+    )
+    response.raise_for_status()
+
+
+def download_ubble_picture(http_url: pydantic_networks.HttpUrl) -> tuple[str | None, typing.Any]:
+    try:
+        response = requests.get(http_url, stream=True)
+    except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
+        raise requests.ExternalAPIException(is_retryable=True) from e
+
+    if response.status_code == 429 or response.status_code >= 500:
+        logger.warning(
+            "Ubble picture-download: external error",
+            extra={"url": str(http_url), "status_code": response.status_code},
+        )
+        raise requests.ExternalAPIException(is_retryable=True)
+
+    if response.status_code == 403:
+        logger.error(
+            "Ubble picture-download: request has expired",
+            extra={"url": str(http_url), "status_code": response.status_code},
+        )
+        raise requests.ExternalAPIException(is_retryable=False)
+
+    if response.status_code != 200:
+        logger.error(  # pylint: disable=logging-fstring-interpolation
+            f"Ubble picture-download: unexpected error: {response.status_code}",
+            extra={"url": str(http_url)},
+        )
+        raise requests.ExternalAPIException(is_retryable=False)
+
+    return response.headers.get("content-type"), response.raw
+
+
+# Ubble v1 (deprecated)
+
+INCLUDED_MODELS = {
+    "documents": ubble_serializers.UbbleIdentificationDocuments,
+    "document-checks": ubble_serializers.UbbleIdentificationDocumentChecks,
+    "reference-data-checks": ubble_serializers.UbbleIdentificationReferenceDataChecks,
+}
+
+
+def start_identification(
+    user_id: int, first_name: str, last_name: str, redirect_url: str, webhook_url: str
+) -> fraud_models.UbbleContent:
+    session = configure_session()
+
+    data = {
+        "data": {
+            "type": "identifications",
+            "attributes": {
+                "identification-form": {
+                    "external-user-id": user_id,
+                    "phone-number": None,
+                },
+                "reference-data": {
+                    "first-name": first_name,
+                    "last-name": last_name,
+                },
+                "webhook": webhook_url,
                 "redirect_url": redirect_url,
             },
-            cert=(settings.UBBLE_CLIENT_CERTIFICATE_PATH, settings.UBBLE_CLIENT_KEY_PATH),
-        )
-        response.raise_for_status()
-
-        ubble_identification = parse_obj_as(ubble_serializers.UbbleV2IdentificationResponse, response.json())
-        ubble_content = ubble_serializers.convert_identification_to_ubble_content(ubble_identification)
-
-        logger.info(
-            "Ubble identification started",
-            extra={"identification_id": str(ubble_content.identification_id), "status": str(ubble_content.status)},
-        )
-
-        return ubble_content
-
-    @log_and_handle_ubble_response("identity-verifications")
-    def get_content(self, identification_id: str) -> fraud_models.UbbleContent:
-        response = requests.get(
-            build_url(f"/v2/identity-verifications/{identification_id}"),
-            cert=(settings.UBBLE_CLIENT_CERTIFICATE_PATH, settings.UBBLE_CLIENT_KEY_PATH),
-        )
-        response.raise_for_status()
-
-        ubble_identification = parse_obj_as(ubble_serializers.UbbleV2IdentificationResponse, response.json())
-        return ubble_serializers.convert_identification_to_ubble_content(ubble_identification)
-
-
-class UbbleV1Backend(UbbleBackend):
-    def start_identification(
-        self,
-        *,
-        user_id: int,
-        first_name: str,
-        last_name: str,
-        redirect_url: str,
-        webhook_url: str | None = None,
-    ) -> fraud_models.UbbleContent:
-        if webhook_url is None:
-            webhook_url = flask.url_for("Public API.ubble_webhook_update_application_status", _external=True)
-        session = configure_session()
-
-        data = {
-            "data": {
-                "type": "identifications",
-                "attributes": {
-                    "identification-form": {
-                        "external-user-id": user_id,
-                        "phone-number": None,
-                    },
-                    "reference-data": {
-                        "first-name": first_name,
-                        "last-name": last_name,
-                    },
-                    "webhook": webhook_url,
-                    "redirect_url": redirect_url,
-                },
-            }
         }
+    }
 
-        try:
-            response = session.post(build_url("/identifications/", user_id), json=data)
-        except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
-            core_logging.log_for_supervision(
-                logger,
-                logging.ERROR,
-                "Ubble start-identification: Network error",
-                extra={
-                    "exception": e,
-                    "alert": "Ubble error",
-                    "error_type": "network",
-                    "request_type": "start-identification",
-                },
-            )
-            raise requests.ExternalAPIException(is_retryable=True) from e
+    try:
+        response = session.post(build_url("/identifications/", user_id), json=data)
+    except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
+        logger.error(
+            "Ubble start-identification: Network error",
+            extra={
+                "exception": e,
+                "alert": "Ubble error",
+                "error_type": "network",
+                "request_type": "start-identification",
+            },
+        )
+        raise requests.ExternalAPIException(is_retryable=True) from e
 
-        if not response.ok:
-            # https://ubbleai.github.io/developer-documentation/#errors
-            if response.status_code == 429 or response.status_code >= 500:
-                core_logging.log_for_supervision(
-                    logger,
-                    logging.ERROR,
-                    "Ubble start-identification: External error: %s",
-                    response.status_code,
-                    extra={
-                        "alert": "Ubble error",
-                        "error_type": "http",
-                        "status_code": response.status_code,
-                        "request_type": "start-identification",
-                        "response_text": response.text,
-                    },
-                )
-                raise requests.ExternalAPIException(is_retryable=True)
-
-            core_logging.log_for_supervision(
-                logger,
-                logging.ERROR,
-                f"Ubble start-identification: Unexpected error: {response.status_code}, {response.text}",
+    if not response.ok:
+        # https://ubbleai.github.io/developer-documentation/#errors
+        if response.status_code == 429 or response.status_code >= 500:
+            logger.error(
+                "Ubble start-identification: External error: %s",
+                response.status_code,
                 extra={
                     "alert": "Ubble error",
                     "error_type": "http",
                     "status_code": response.status_code,
                     "request_type": "start-identification",
+                    "response_text": response.text,
                 },
             )
+            raise requests.ExternalAPIException(is_retryable=True)
 
-            raise requests.ExternalAPIException(is_retryable=False)
-
-        content = _extract_useful_content_from_response(response.json())
-        core_logging.log_for_supervision(
-            logger,
-            logging.INFO,
-            "Valid response from Ubble",
+        logger.error(  # pylint: disable=logging-fstring-interpolation
+            # ungroup errors on sentry
+            f"Ubble start-identification: Unexpected error: {response.status_code}, {response.text}",
             extra={
+                "alert": "Ubble error",
+                "error_type": "http",
                 "status_code": response.status_code,
-                "identification_id": str(content.identification_id),
                 "request_type": "start-identification",
             },
         )
 
-        logger.info(
-            "Ubble identification started",
-            extra={"identification_id": str(content.identification_id), "status": str(content.status)},
+        raise requests.ExternalAPIException(is_retryable=False)
+
+    content = _extract_useful_content_from_response(response.json())
+    logger.info(
+        "Valid response from Ubble",
+        extra={
+            "status_code": response.status_code,
+            "identification_id": str(content.identification_id),
+            "request_type": "start-identification",
+        },
+    )
+
+    logger.info(
+        "Ubble identification started",
+        extra={"identification_id": str(content.identification_id), "status": str(content.status)},
+    )
+
+    return content
+
+
+def get_content(identification_id: str) -> fraud_models.UbbleContent:
+    session = configure_session()
+    base_extra_log = {"request_type": "get-content", "identification_id": identification_id}
+
+    try:
+        response = session.get(build_url(f"/identifications/{identification_id}/", identification_id))
+    except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
+        logger.error(
+            "Ubble get-content: Network error",
+            extra=typing.cast(dict[str, typing.Any], {"exception": e, "error_type": "http"} | base_extra_log),
         )
+        raise requests.ExternalAPIException(is_retryable=True) from e
 
-        return content
-
-    def get_content(self, identification_id: str) -> fraud_models.UbbleContent:
-        session = configure_session()
-        base_extra_log = {"request_type": "get-content", "identification_id": identification_id}
-
-        try:
-            response = session.get(build_url(f"/identifications/{identification_id}/", identification_id))
-        except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
-            core_logging.log_for_supervision(
-                logger,
-                logging.ERROR,
-                "Ubble get-content: Network error",
-                extra={"exception": e, "error_type": "http"} | base_extra_log,
-            )
-            raise requests.ExternalAPIException(is_retryable=True) from e
-
-        if not response.ok:
-            if response.status_code >= 500 or response.status_code == 429:
-                core_logging.log_for_supervision(
-                    logger,
-                    logging.ERROR,
-                    "Ubble get-content: External error: %s",
-                    response.status_code,
-                    extra={"response_text": response.text, "error_type": "http", "status_code": response.status_code}
-                    | base_extra_log,
-                )
-                raise requests.ExternalAPIException(is_retryable=True)
-
-            core_logging.log_for_supervision(
-                logger,
-                logging.ERROR,
-                f"Ubble get-content: Unexpected error: {response.status_code}, {response.text}",  # ungroup errors on sentry
-                extra={"response_text": response.text, "status_code": response.status_code, "error_type": "http"}
+    if not response.ok:
+        if response.status_code >= 500 or response.status_code == 429:
+            logger.error(
+                "Ubble get-content: External error: %s",
+                response.status_code,
+                extra={"response_text": response.text, "error_type": "http", "status_code": response.status_code}
                 | base_extra_log,
             )
-            raise requests.ExternalAPIException(is_retryable=False)
+            raise requests.ExternalAPIException(is_retryable=True)
 
-        content = _extract_useful_content_from_response(response.json())
-        core_logging.log_for_supervision(
-            logger,
-            logging.INFO,
-            "Valid response from Ubble",
-            extra={
+        logger.error(  # pylint: disable=logging-fstring-interpolation
+            # ungroup errors on sentry
+            f"Ubble get-content: Unexpected error: {response.status_code}, {response.text}",
+            extra=typing.cast(
+                dict[str, typing.Any],
+                {"response_text": response.text, "status_code": response.status_code, "error_type": "http"}
+                | base_extra_log,
+            ),
+        )
+        raise requests.ExternalAPIException(is_retryable=False)
+
+    content = _extract_useful_content_from_response(response.json())
+    logger.info(
+        "Valid response from Ubble",
+        extra=typing.cast(
+            dict[str, typing.Any],
+            {
                 "status_code": response.status_code,
                 "score": content.score,
                 "status": content.status.value if content.status else None,
                 "document_type": content.document_type,
             }
             | base_extra_log,
-        )
-        return content
-
-
-def _get_ubble_backend() -> UbbleBackend:
-    if FeatureToggle.WIP_UBBLE_V2.is_active():
-        return UbbleV2Backend()
-    return UbbleV1Backend()
+        ),
+    )
+    return content
 
 
 def configure_session() -> requests.Session:

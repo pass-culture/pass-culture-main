@@ -12,7 +12,6 @@ from pydantic.v1.class_validators import validator
 from pydantic.v1.utils import GetterDict
 from sqlalchemy.orm import joinedload
 
-from pcapi.core.achievements import models as achievements_models
 from pcapi.core.bookings import models as bookings_models
 import pcapi.core.finance.models as finance_models
 from pcapi.core.offers import models as offers_models
@@ -24,6 +23,7 @@ from pcapi.core.users import young_status
 import pcapi.core.users.models as users_models
 from pcapi.core.users.utils import decode_jwt_token
 from pcapi.models.feature import FeatureToggle
+from pcapi.routes.native.v1.serialization import achievements as achievements_serialization
 from pcapi.routes.native.v1.serialization import subscription as subscription_serialization
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.shared.price import convert_to_cent
@@ -130,12 +130,6 @@ class YoungStatusResponse(ConfiguredBaseModel):
     subscription_status: young_status.SubscriptionStatus | None
 
 
-class AchievementResponse(ConfiguredBaseModel):
-    name: achievements_models.AchievementEnum
-    seenDate: datetime.datetime | None
-    unlockedDate: datetime.datetime
-
-
 class UserProfileGetterDict(GetterDict):
     def get(self, key: str, default: typing.Any | None = None) -> typing.Any:
         user = self._obj
@@ -197,7 +191,7 @@ class UserProfileGetterDict(GetterDict):
 
 
 class UserProfileResponse(ConfiguredBaseModel):
-    achievements: list[AchievementResponse]
+    achievements: list[achievements_serialization.AchievementResponse]
     activity_id: profile_options.ActivityIdEnum | None
     birth_date: datetime.date | None
     booked_offers: dict[str, int]

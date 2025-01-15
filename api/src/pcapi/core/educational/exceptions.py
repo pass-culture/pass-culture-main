@@ -6,6 +6,8 @@ from pcapi.models.api_errors import ApiErrors
 
 if typing.TYPE_CHECKING:
     from pcapi.core.educational.models import CollectiveBookingStatus
+    from pcapi.core.educational.models import CollectiveOfferAllowedAction
+    from pcapi.core.educational.models import CollectiveOfferTemplateAllowedAction
 
 
 class EducationalInstitutionUnknown(ClientError):
@@ -139,6 +141,24 @@ class CollectiveOfferNotEditable(Exception):
     pass
 
 
+class CollectiveOfferForbiddenAction(Exception):
+    def __init__(self, action: "CollectiveOfferAllowedAction") -> None:
+        self.action = action
+        super().__init__()
+
+
+class CollectiveOfferTemplateForbiddenAction(Exception):
+    def __init__(self, action: "CollectiveOfferTemplateAllowedAction") -> None:
+        self.action = action
+        super().__init__()
+
+
+class CollectiveOfferForbiddenFields(Exception):
+    def __init__(self, allowed_fields: list[str]) -> None:
+        self.allowed_fields = allowed_fields
+        super().__init__()
+
+
 class CollectiveStockNotBookableByUser(Exception):
     pass
 
@@ -149,6 +169,10 @@ class AdageException(Exception):
         self.status_code = status_code
         self.response_text = response_text
         super().__init__(message)
+
+
+class AdageInvalidEmailException(AdageException):
+    pass
 
 
 class CulturalPartnerNotFoundException(Exception):

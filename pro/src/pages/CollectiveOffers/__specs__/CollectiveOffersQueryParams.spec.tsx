@@ -25,8 +25,6 @@ import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { CollectiveOffers } from '../CollectiveOffers'
 
-//FIX ME : extract inital values and constant to reduce code duplication with CollectiveOffers.spec.tsx
-
 vi.mock('react-router-dom', async () => ({
   ...(await vi.importActual('react-router-dom')),
   useNavigate: vi.fn(),
@@ -81,7 +79,7 @@ describe('route CollectiveOffers', () => {
   let offersRecap: CollectiveOfferResponseModel[]
   const stocks: Array<CollectiveOffersStockResponseModel> = [
     {
-      beginningDatetime: String(new Date()),
+      startDatetime: String(new Date()),
       hasBookingLimitDatetimePassed: false,
       remainingQuantity: 1,
     },

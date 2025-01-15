@@ -13,14 +13,25 @@ from sqlalchemy.dialects import postgresql
 from werkzeug.exceptions import Forbidden
 from werkzeug.exceptions import NotFound
 
+from pcapi import settings
 from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.connectors.dms import models as dms_models
+from pcapi.core.external.attributes import api as external_attributes_api
+from pcapi.core.history import api as history_api
+from pcapi.core.history import models as history_models
+from pcapi.core.mails.transactional.users.personal_data_updated import send_beneficiary_personal_data_updated
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
+from pcapi.core.users import api as users_api
+from pcapi.core.users import constants as users_constants
 from pcapi.core.users import ds as users_ds
 from pcapi.core.users import models as users_models
+from pcapi.core.users.email import update as email_update
+from pcapi.models import db
 from pcapi.models.pc_object import BaseQuery
 from pcapi.repository import atomic
+from pcapi.repository import mark_transaction_as_invalid
+from pcapi.repository import on_commit
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
@@ -59,6 +70,7 @@ def _get_filtered_account_update_requests(form: account_forms.AccountUpdateReque
                 users_models.User.dateOfBirth,
                 users_models.User.validatedBirthDate,
                 users_models.User.civility,
+                users_models.User.roles,
             ),
             sa.orm.contains_eager(
                 users_models.UserAccountUpdateRequest.lastInstructor.of_type(aliased_instructor)
@@ -176,7 +188,10 @@ def _get_filtered_account_update_requests(form: account_forms.AccountUpdateReque
         )
 
     if form.last_instructor.data:
-        filters.append(aliased_instructor.id.in_(form.last_instructor.data))
+        filters.append(users_models.UserAccountUpdateRequest.lastInstructorId.in_(form.last_instructor.data))
+
+    if form.only_unassigned.data:
+        filters.append(users_models.UserAccountUpdateRequest.lastInstructorId.is_(None))
 
     query = query.filter(*filters)
     return query
@@ -208,6 +223,10 @@ def list_account_update_requests() -> utils.BackofficeResponse:
     )
 
 
+def _refresh_list() -> utils.BackofficeResponse:
+    return redirect(request.referrer or url_for(".list_account_update_requests"), code=303)
+
+
 @account_update_blueprint.route("<int:ds_application_id>/instruct", methods=["POST"])
 @atomic()
 def instruct(ds_application_id: int) -> utils.BackofficeResponse:
@@ -230,8 +249,187 @@ def instruct(ds_application_id: int) -> utils.BackofficeResponse:
             instructor=current_user,
         )
     except dms_exceptions.DmsGraphQLApiError as err:
-        flash(Markup("Le dossier ne peut pas passer en instruction : {message}").format(message=err.message), "warning")
+        flash(
+            Markup("Le dossier <b>{ds_application_id}</b> ne peut pas passer en instruction : {message}").format(
+                ds_application_id=ds_application_id,
+                message="dossier non trouvé" if err.code == "not_found" else err.message,
+            ),
+            "warning",
+        )
     except dms_exceptions.DmsGraphQLApiException as exc:
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
 
-    return redirect(request.referrer or url_for(".list_account_update_requests"), code=303)
+    return _refresh_list()
+
+
+def _find_duplicate(update_request: users_models.UserAccountUpdateRequest) -> users_models.User | None:
+    if not update_request.has_email_update or not update_request.newEmail:
+        return None
+
+    return (
+        users_models.User.query.filter_by(email=update_request.newEmail)
+        .options(sa.orm.joinedload(users_models.User.deposits))
+        .one_or_none()
+    )
+
+
+@account_update_blueprint.route("<int:ds_application_id>/accept", methods=["GET"])
+@atomic()
+def get_accept_form(ds_application_id: int) -> utils.BackofficeResponse:
+    if not current_user.backoffice_profile.dsInstructorId:
+        raise Forbidden()
+
+    update_request = (
+        users_models.UserAccountUpdateRequest.query.filter_by(dsApplicationId=ds_application_id)
+        .options(sa.orm.joinedload(users_models.UserAccountUpdateRequest.user))
+        .one_or_none()
+    )
+    if not update_request:  # including when no userId is linked to the request
+        raise NotFound()
+
+    alert = None
+    can_be_accepted = update_request.can_be_accepted
+    if not can_be_accepted:
+        alert = "La situation du dossier ne permet pas de l'accepter."
+
+    duplicate_user = _find_duplicate(update_request)
+    if duplicate_user:
+        if duplicate_user.is_beneficiary or duplicate_user.deposits:
+            can_be_accepted = False
+            alert = "Un compte doublon avec la nouvelle adresse demandée a déjà reçu un crédit. Le dossier ne peut donc pas être accepté."
+        elif duplicate_user.roles:
+            alert = "Attention ! Le compte doublon qui sera suspendu est un compte pro ou admin."
+
+    return render_template(
+        "accounts/modal/accept_update_request.html",
+        ds_application_id=ds_application_id,
+        update_request=update_request,
+        duplicate_user=duplicate_user,
+        can_be_accepted=can_be_accepted,
+        alert=alert,
+        form=account_forms.AccountUpdateRequestAcceptForm(),
+        dst=url_for(".accept", ds_application_id=ds_application_id),
+    )
+
+
+@account_update_blueprint.route("<int:ds_application_id>/accept", methods=["POST"])
+@atomic()
+def accept(ds_application_id: int) -> utils.BackofficeResponse:
+    if not current_user.backoffice_profile.dsInstructorId:
+        raise Forbidden()
+
+    form = account_forms.AccountUpdateRequestAcceptForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return _refresh_list()
+
+    update_request: users_models.UserAccountUpdateRequest = (
+        users_models.UserAccountUpdateRequest.query.filter_by(dsApplicationId=ds_application_id)
+        .populate_existing()
+        .with_for_update(key_share=True)
+        .one_or_none()
+    )
+    if not update_request:
+        raise NotFound()
+
+    user: users_models.User = (
+        users_models.User.query.filter_by(id=update_request.userId)
+        .populate_existing()
+        .with_for_update(key_share=True)
+        .one_or_none()
+    )
+    if not user:
+        raise NotFound()
+
+    try:
+        snapshot = users_api.update_user_info(
+            user,
+            author=current_user,
+            first_name=(update_request.newFirstName if update_request.has_first_name_update else users_api.UNCHANGED),
+            last_name=(update_request.newLastName if update_request.has_last_name_update else users_api.UNCHANGED),
+            phone_number=(
+                update_request.newPhoneNumber if update_request.has_phone_number_update else users_api.UNCHANGED
+            ),
+            commit=False,
+        )
+        snapshot.add_action()
+        db.session.flush()
+    except sa.exc.IntegrityError as exc:
+        mark_transaction_as_invalid()
+        flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
+        return _refresh_list()
+
+    if update_request.has_email_update:
+        duplicate_user = _find_duplicate(update_request)
+        if duplicate_user:
+            if duplicate_user.roles or duplicate_user.deposit:  # should be consistent but check both
+                mark_transaction_as_invalid()
+                flash(
+                    Markup(
+                        "Le dossier <b>{ds_application_id}</b> ne peut pas être accepté : l'email <b>{email}</b> "
+                        "est déjà associé à un compte bénéficiaire ou ex-bénéficiaire, pro ou admin."
+                    ).format(ds_application_id=ds_application_id, email=update_request.newEmail),
+                    "warning",
+                )
+                return _refresh_list()
+
+            users_api.suspend_account(
+                duplicate_user,
+                reason=users_constants.SuspensionReason.DUPLICATE_REPORTED_BY_USER,
+                actor=current_user,
+                action_extra_data={
+                    "ds_procedure_id": int(settings.DS_USER_ACCOUNT_UPDATE_PROCEDURE_ID),
+                    "ds_dossier_id": ds_application_id,
+                },
+                is_backoffice_action=True,
+            )
+            email_update.clear_email_by_admin(duplicate_user)
+
+        # EmailExistsError should not happen because of duplicate check above
+        email_update.full_email_update_by_admin(user, update_request.newEmail)
+        db.session.flush()
+
+    on_commit(partial(external_attributes_api.update_external_user, user))
+    on_commit(
+        partial(
+            send_beneficiary_personal_data_updated,
+            user,
+            is_first_name_updated=update_request.has_first_name_update,
+            is_last_name_updated=update_request.has_last_name_update,
+            is_email_updated=update_request.has_email_update,
+            is_phone_number_updated=update_request.has_phone_number_update,
+        ),
+    )
+
+    try:
+        users_ds.update_state(
+            update_request,
+            new_state=dms_models.GraphQLApplicationStates.accepted,
+            instructor=current_user,
+            motivation=form.motivation.data,
+        )
+    except dms_exceptions.DmsGraphQLApiError as err:
+        mark_transaction_as_invalid()
+        flash(
+            Markup("Le dossier <b>{ds_application_id}</b> ne peut pas être accepté : {message}").format(
+                ds_application_id=ds_application_id,
+                message="dossier non trouvé" if err.code == "not_found" else err.message,
+            ),
+            "warning",
+        )
+    except dms_exceptions.DmsGraphQLApiException as exc:
+        mark_transaction_as_invalid()
+        flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
+    else:
+        history_api.add_action(
+            history_models.ActionType.USER_ACCOUNT_UPDATE_INSTRUCTED,
+            author=current_user,
+            user=user,
+            comment=form.motivation.data,
+            ds_procedure_id=int(settings.DS_USER_ACCOUNT_UPDATE_PROCEDURE_ID),
+            ds_dossier_id=ds_application_id,
+            ds_status=update_request.status,
+        )
+        db.session.flush()
+
+    return _refresh_list()

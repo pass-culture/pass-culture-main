@@ -90,6 +90,8 @@ qu'api répond
 - Cliquez sur _Se connecter via Google_
 - Vous arriverez alors sur la page d'accueil du BO, en tant qu'utilisateur admin `admin@passculture.local`, avec toutes
 les permissions
+- Si vous avez besoin d'une adresse email spécifique pour l'admin local, par exemple pour le lien avec des services 
+externes, spécifiez l'email dans une variable `BACKOFFICE_LOCAL_USER_EMAIL` dans le fichier `.env.local.secret`. 
 
 
 #### pro

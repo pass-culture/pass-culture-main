@@ -1,7 +1,7 @@
 import { useField } from 'formik'
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import type { CountryCode } from 'libphonenumber-js'
-import React, { ChangeEvent, FocusEvent, useEffect, useState } from 'react'
+import { ChangeEvent, FocusEvent, useEffect, useState } from 'react'
 
 import { BaseInput } from '../shared/BaseInput/BaseInput'
 import { FieldError } from '../shared/FieldError/FieldError'
@@ -145,7 +145,7 @@ export const PhoneNumberInput = ({
       <legend className={styles['phone-number-input-legend']}>
         {label} {!isOptional && '*'}
       </legend>
-      <label htmlFor="countryCode" className="visually-hidden">
+      <label htmlFor="countryCode" className={styles['visually-hidden']}>
         Indicatif téléphonique
       </label>
       <CountryCodeSelect
@@ -156,7 +156,7 @@ export const PhoneNumberInput = ({
         onChange={onPhoneCodeChange}
       />
 
-      <label htmlFor={name} className="visually-hidden">
+      <label htmlFor={name} className={styles['visually-hidden']}>
         Numéro de téléphone
       </label>
       <BaseInput

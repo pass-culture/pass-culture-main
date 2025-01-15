@@ -1,5 +1,5 @@
 import { useFormikContext } from 'formik'
-import React, { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import { apiAdresse } from 'apiClient/adresse/apiAdresse'
 import { getSiretData } from 'commons/core/Venue/getSiretData'
@@ -89,28 +89,29 @@ export const SiretOrCommentFields = ({
       return
     }
   }
-  const [sideComponent, setSideComponent] = useState(<></>)
-  useEffect(() => {
-    setSideComponent(
-      isSiretSelected ? (
-        <InfoBox>
-          Le SIRET {isOfferAddressEnabled ? 'de la structure' : 'du lieu'} doit
-          être lié au SIREN de votre{' '}
-          {isOfferAddressEnabled ? 'entitée juridique' : 'structure'}.
-          Attention, ce SIRET ne sera plus modifiable et ne pourra plus être
-          utilisé pour{' '}
-          {isOfferAddressEnabled ? 'une autre structure' : 'un autre lieu'}.
-        </InfoBox>
-      ) : (
-        <></>
-      )
-    )
-  }, [isSiretSelected])
 
   return (
     <>
       {isCreatedEntity && (
-        <FormLayout.Row sideComponent={sideComponent}>
+        <FormLayout.Row
+          sideComponent={
+            isSiretSelected ? (
+              <InfoBox>
+                Le SIRET {isOfferAddressEnabled ? 'de la structure' : 'du lieu'}{' '}
+                doit être lié au SIREN de votre{' '}
+                {isOfferAddressEnabled ? 'entitée juridique' : 'structure'}.
+                Attention, ce SIRET ne sera plus modifiable et ne pourra plus
+                être utilisé pour{' '}
+                {isOfferAddressEnabled
+                  ? 'une autre structure'
+                  : 'un autre lieu'}
+                .
+              </InfoBox>
+            ) : (
+              <></>
+            )
+          }
+        >
           <Toggle
             label={`${isOfferAddressEnabled ? 'Cette structure' : 'Ce lieu'} possède un SIRET`}
             isActiveByDefault={isSiretSelected}

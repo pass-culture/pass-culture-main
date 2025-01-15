@@ -1,10 +1,9 @@
 import cx from 'classnames'
-import React, { Ref } from 'react'
+import { Ref } from 'react'
 
 import { SelectOption } from 'commons/custom_types/form'
 import { pluralize } from 'commons/utils/pluralize'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
-import baseCheckboxStyles from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox.module.scss'
 
 import styles from './OptionsList.module.scss'
 
@@ -75,20 +74,15 @@ export const OptionsList = ({
                     onChange={() => {
                       selectOption(String(value))
                     }}
-                    className={cx(
-                      baseCheckboxStyles['base-checkbox-label'],
-                      styles['label']
-                    )}
+                    labelClassName={styles['label']}
+                    inputClassName={styles['input']}
                   />
                 ) : (
                   <span
                     onClick={() => {
                       selectOption(String(value))
                     }}
-                    className={cx(
-                      baseCheckboxStyles['base-checkbox-label'],
-                      styles['label']
-                    )}
+                    className={cx(styles['options-item'])}
                   >
                     {label}
                   </span>

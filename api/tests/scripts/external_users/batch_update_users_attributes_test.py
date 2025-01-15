@@ -7,7 +7,6 @@ from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.external.batch import BATCH_DATETIME_FORMAT
 from pcapi.core.offerers.factories import UserOffererFactory
 from pcapi.core.offerers.factories import VenueFactory
-from pcapi.core.testing import override_features
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.core.users.factories import FavoriteFactory
 from pcapi.core.users.factories import UserFactory
@@ -159,6 +158,7 @@ def test_format_sendinblue_user():
         "IS_FORMER_BENEFICIARY": False,
         "IS_ELIGIBLE": user.is_eligible,
         "IS_EMAIL_VALIDATED": user.isEmailValidated,
+        "IS_OPEN_TO_PUBLIC": None,
         "IS_PERMANENT": None,
         "IS_PRO": False,
         "IS_UNDERAGE_BENEFICIARY": False,
@@ -188,7 +188,7 @@ def test_format_sendinblue_user():
     }
 
 
-@override_features(WIP_ENABLE_BREVO_PRO_SUBACCOUNT=True)
+@pytest.mark.features(WIP_ENABLE_BREVO_PRO_SUBACCOUNT=True)
 @pytest.mark.usefixtures("db_session")
 def test_format_sendinblue_pro():
     user_offerer = UserOffererFactory()
@@ -216,6 +216,7 @@ def test_format_sendinblue_pro():
         "IS_EAC": False,
         "IS_EAC_MEG": False,
         "IS_BOOKING_EMAIL": True,
+        "IS_OPEN_TO_PUBLIC": False,
         "IS_PERMANENT": False,
         "IS_USER_EMAIL": True,
         "IS_VIRTUAL": False,

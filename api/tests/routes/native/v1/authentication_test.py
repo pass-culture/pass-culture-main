@@ -22,8 +22,6 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as sendinblue_testing
@@ -191,8 +189,8 @@ class SigninTest:
             "password": ["Ce champ est obligatoire"],
         }
 
-    @override_features(ENABLE_NATIVE_APP_RECAPTCHA=False)
-    @override_settings(RECAPTCHA_IGNORE_VALIDATION=0)
+    @pytest.mark.settings(RECAPTCHA_IGNORE_VALIDATION=0)
+    @pytest.mark.features(ENABLE_NATIVE_APP_RECAPTCHA=False)
     @patch("pcapi.connectors.api_recaptcha.get_token_validation_and_score")
     def should_not_check_recaptcha_when_feature_flag_is_disabled(self, mocked_recaptcha_validation, client):
         mocked_recaptcha_validation.return_value = {"success": False, "error-codes": []}
@@ -207,7 +205,7 @@ class SigninTest:
 
         assert response.status_code == 200
 
-    @override_settings(RECAPTCHA_IGNORE_VALIDATION=0)
+    @pytest.mark.settings(RECAPTCHA_IGNORE_VALIDATION=0)
     @patch("pcapi.connectors.api_recaptcha.get_token_validation_and_score")
     @pytest.mark.parametrize("error", ["invalid-input-response", "timeout-or-duplicate"])
     def test_fail_when_recaptcha_token_is_invalid(self, mocked_recaptcha_validation, error, client):
@@ -224,7 +222,7 @@ class SigninTest:
         assert response.status_code == 401
         assert response.json == {"token": "Le token est invalide"}
 
-    @override_settings(RECAPTCHA_IGNORE_VALIDATION=0)
+    @pytest.mark.settings(RECAPTCHA_IGNORE_VALIDATION=0)
     def test_fail_when_recaptcha_token_is_missing(self, client):
         data = {
             "identifier": "user@test.com",
@@ -504,7 +502,7 @@ class SSOSigninTest:
         assert not token_utils.UUIDToken.token_exists(token_utils.TokenType.OAUTH_STATE, oauth_state_token.key_suffix)
 
     def test_oauth_state_token_creation(self, client):
-        with assert_num_queries(1):  # feature
+        with assert_num_queries(0):
             response = client.get("/native/v1/oauth/state")
             assert response.status_code == 200, response.json
 
@@ -529,12 +527,6 @@ class SSOSigninTest:
         )
 
         assert authorization_response.status_code == 200, authorization_response.json
-
-    @override_features(WIP_ENABLE_GOOGLE_SSO=False)
-    def test_sso_is_feature_flagged(self, client):
-        response = client.post("/native/v1/oauth/google/authorize", json={"code": "4/google_code"})
-
-        assert response.status_code == 400
 
 
 class TrustedDeviceFeatureTest:
@@ -841,7 +833,7 @@ class RequestResetPasswordTest:
         assert response.status_code == 204
 
     @patch("pcapi.connectors.api_recaptcha.check_native_app_recaptcha_token")
-    @override_features(ENABLE_NATIVE_APP_RECAPTCHA=True)
+    @pytest.mark.features(ENABLE_NATIVE_APP_RECAPTCHA=True)
     def test_request_reset_password_with_recaptcha_ok(
         self,
         mock_check_native_app_recaptcha_token,

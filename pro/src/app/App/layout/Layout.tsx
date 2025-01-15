@@ -2,16 +2,16 @@ import cn from 'classnames'
 import React, { useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useMediaQuery } from 'commons/hooks/useMediaQuery'
 import { selectCurrentUser } from 'commons/store/user/selectors'
+import { BackToNavLink } from 'components/BackToNavLink/BackToNavLink'
 import { Footer } from 'components/Footer/Footer'
 import { Header } from 'components/Header/Header'
 import { SkipLinks } from 'components/SkipLinks/SkipLinks'
 import { UserReview } from 'components/UserReview/UserReview'
-import fullGoTop from 'icons/full-go-top.svg'
 import fullInfoIcon from 'icons/full-info.svg'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
-import logoStyles from 'styles/components/_Logo.module.scss'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { LateralPanel } from './LateralPanel/LateralPanel'
@@ -24,13 +24,21 @@ export interface LayoutProps {
    * Make sure that only one heading is displayed per page.
    */
   mainHeading?: string
-  layout?: 'basic' | 'funnel' | 'onboarding' | 'sticky-actions' | 'logged-out'
+  layout?:
+    | 'basic'
+    | 'funnel'
+    | 'onboarding'
+    | 'sticky-actions'
+    | 'sticky-onboarding'
+    | 'logged-out'
+  showFooter?: boolean
 }
 
 export const Layout = ({
   children,
   mainHeading,
   layout = 'basic',
+  showFooter = layout !== 'funnel',
 }: LayoutProps) => {
   const currentUser = useSelector(selectCurrentUser)
   const [lateralPanelOpen, setLateralPanelOpen] = useState(false)
@@ -40,24 +48,25 @@ export const Layout = ({
   const navPanel = useRef<HTMLDivElement>(null)
 
   const isMobileScreen = useMediaQuery('(max-width: 46.5rem)')
+  const isProFeedbackEnabled = useActiveFeature('ENABLE_PRO_FEEDBACK')
+  const isConnected = !!currentUser
 
   const shouldDisplayUserReview =
-    layout !== 'funnel' && layout !== 'onboarding' && layout !== 'logged-out'
+    isProFeedbackEnabled &&
+    layout !== 'funnel' &&
+    layout !== 'onboarding' &&
+    layout !== 'logged-out' &&
+    layout !== 'sticky-onboarding'
 
-  const mainHeaing = mainHeading && (
+  const mainHeadingWrapper = mainHeading && (
     <div className={styles['main-heading-wrapper']}>
-      <h1 className={styles['main-heading']}>{mainHeading}</h1>
-      <a
-        id="back-to-nav-link"
-        href={isMobileScreen ? '#header-nav-toggle' : '#lateral-panel'}
-        className={styles['back-to-nav-link']}
-      >
-        <SvgIcon
-          src={fullGoTop}
-          alt="Revenir à la barre de navigation"
-          width="20"
+      <h1 className={styles['main-heading-title']}>{mainHeading}</h1>
+      {isConnected && (
+        <BackToNavLink
+          isMobileScreen={isMobileScreen}
+          className={styles['main-heading-back-to-nav-link']}
         />
-      </a>
+      )}
     </div>
   )
 
@@ -88,7 +97,10 @@ export const Layout = ({
             </div>
           </aside>
         )}
-        {(layout === 'basic' || layout === 'sticky-actions') && (
+        {(layout === 'basic' ||
+          layout === 'sticky-actions' ||
+          layout === 'onboarding' ||
+          layout === 'sticky-onboarding') && (
           <Header
             lateralPanelOpen={lateralPanelOpen}
             setLateralPanelOpen={setLateralPanelOpen}
@@ -98,14 +110,19 @@ export const Layout = ({
               })
             }}
             ref={openButtonRef}
+            disableHomeLink={
+              layout === 'sticky-onboarding' || layout === 'onboarding'
+            }
           />
         )}
         <div
-          className={cn(styles['page-layout'], {
-            [styles['page-layout-connect-as']]: currentUser?.isImpersonated,
-            [styles['page-layout-funnel']]: layout === 'funnel',
-            [styles['page-layout-onboarding']]: layout === 'onboarding',
-          })}
+          className={cn(
+            styles['page-layout'],
+            styles[`page-layout-${layout}`],
+            {
+              [styles['page-layout-connect-as']]: currentUser?.isImpersonated,
+            }
+          )}
         >
           {(layout === 'basic' || layout === 'sticky-actions') && (
             <LateralPanel
@@ -126,7 +143,7 @@ export const Layout = ({
             {layout === 'logged-out' && (
               <header className={styles['content-wrapper-side-logo']}>
                 <SvgIcon
-                  className={logoStyles['logo-unlogged']}
+                  className={styles['logo-unlogged']}
                   viewBox="0 0 282 120"
                   alt="Pass Culture pro, l’espace des acteurs culturels"
                   src={logoPassCultureProFullIcon}
@@ -135,34 +152,30 @@ export const Layout = ({
               </header>
             )}
             <div
-              className={cn(styles['content-container'], {
-                [styles['content-container-funnel']]: layout === 'funnel',
-                [styles['content-container-onboarding']]:
-                  layout === 'onboarding',
-                [styles['content-container-logged-out']]:
-                  layout === 'logged-out',
-              })}
+              className={cn(
+                styles['content-container'],
+                styles[`content-container-${layout}`]
+              )}
             >
               <main id="content">
                 {layout === 'funnel' || layout === 'onboarding' ? (
                   <>
-                    {mainHeaing}
+                    {mainHeadingWrapper}
                     {children}
                   </>
                 ) : (
                   <div
-                    className={cn(styles.content, {
-                      [styles['content-logged-out']]: layout === 'logged-out',
+                    className={cn(styles.content, styles[`content-${layout}`], {
                       [styles['content-logged-out-with-heading']]:
                         layout === 'logged-out' && mainHeading,
                     })}
                   >
-                    {mainHeaing}
+                    {mainHeadingWrapper}
                     {children}
                   </div>
                 )}
               </main>
-              {layout !== 'funnel' && <Footer layout={layout} />}
+              {showFooter && <Footer layout={layout} />}
             </div>
           </div>
         </div>

@@ -1,0 +1,5 @@
+@use "styles/mixins/_a11y.scss" as a11y;
+
+.visually-hidden {
+  @include a11y.visually-hidden;
+}

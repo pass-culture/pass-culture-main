@@ -15,6 +15,7 @@ from pcapi.core.external import subcategory_suggestion
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
+import pcapi.core.offerers.api as offerers_api
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
 from pcapi.core.offers import schemas as offers_schemas
@@ -24,6 +25,7 @@ from pcapi.core.offers.validation import check_for_duplicated_price_categories
 from pcapi.core.offers.validation import check_product_cgu_and_offerer
 from pcapi.models import api_errors
 from pcapi.models import db
+from pcapi.repository import atomic
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
@@ -45,6 +47,7 @@ logger = logging.getLogger(__name__)
     response_model=offers_serialize.ListOffersResponseModel,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serialize.ListOffersResponseModel:
     paginated_offers = offers_repository.get_capped_offers_for_filters(
         user_id=current_user.id,
@@ -70,6 +73,7 @@ def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serializ
     response_model=offers_serialize.GetIndividualOfferWithAddressResponseModel,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferWithAddressResponseModel:
 
     load_all: offers_repository.OFFER_LOAD_OPTIONS = [
@@ -81,6 +85,7 @@ def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferWithAddressRe
         "offerer_address",
         "future_offer",
         "pending_bookings",
+        "headline_offer",
     ]
     try:
         offer = offers_repository.get_offer_by_id(offer_id, load_options=load_all)
@@ -102,6 +107,7 @@ def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferWithAddressRe
     response_model=offers_serialize.GetStocksResponseModel,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offers_serialize.GetStocksResponseModel:
     try:
         offer = offers_repository.get_offer_by_id(offer_id, load_options=["offerer_address"])
@@ -145,6 +151,7 @@ def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offer
     on_success_status=204,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def delete_stocks(offer_id: int, body: offers_serialize.DeleteStockListBody) -> None:
     try:
         offer = offers_repository.get_offer_by_id(offer_id)
@@ -167,6 +174,7 @@ def delete_stocks(offer_id: int, body: offers_serialize.DeleteStockListBody) -> 
     on_success_status=204,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def delete_all_filtered_stocks(offer_id: int, body: offers_serialize.DeleteFilteredStockListBody) -> None:
     try:
         offer = offers_repository.get_offer_by_id(offer_id, load_options=["offerer_address"])
@@ -194,6 +202,7 @@ def delete_all_filtered_stocks(offer_id: int, body: offers_serialize.DeleteFilte
     response_model=offers_serialize.StockStatsResponseModel,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def get_stocks_stats(offer_id: int) -> offers_serialize.StockStatsResponseModel:
     try:
         offer = offers_repository.get_offer_by_id(offer_id)
@@ -220,6 +229,7 @@ def get_stocks_stats(offer_id: int) -> offers_serialize.StockStatsResponseModel:
     on_success_status=204,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
     if not body.ids:
         raise api_errors.ApiErrors(
@@ -239,6 +249,7 @@ def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
     on_success_status=201,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def post_draft_offer(
     body: offers_schemas.PostDraftOfferBodyModel,
 ) -> offers_serialize.GetIndividualOfferResponseModel:
@@ -258,11 +269,9 @@ def post_draft_offer(
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
     try:
-        with repository.transaction():
-            offer = offers_api.create_draft_offer(body, venue, product)
+        offer = offers_api.create_draft_offer(body, venue, product)
     except exceptions.OfferCreationBaseException as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
-
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
@@ -272,6 +281,7 @@ def post_draft_offer(
     response_model=offers_serialize.GetIndividualOfferResponseModel,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def patch_draft_offer(
     offer_id: int, body: offers_schemas.PatchDraftOfferBodyModel
 ) -> offers_serialize.GetIndividualOfferResponseModel:
@@ -285,10 +295,9 @@ def patch_draft_offer(
 
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     try:
-        with repository.transaction():
-            if body_extra_data := offers_api.deserialize_extra_data(body.extra_data, offer.subcategoryId):
-                body.extra_data = body_extra_data
-            offer = offers_api.update_draft_offer(offer, body)
+        if body_extra_data := offers_api.deserialize_extra_data(body.extra_data, offer.subcategoryId):
+            body.extra_data = body_extra_data
+        offer = offers_api.update_draft_offer(offer, body)
     except (exceptions.OfferCreationBaseException, exceptions.OfferEditionBaseException) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
@@ -302,6 +311,7 @@ def patch_draft_offer(
     on_success_status=201,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.GetIndividualOfferResponseModel:
     venue: offerers_models.Venue = (
         offerers_models.Venue.query.filter(offerers_models.Venue.id == body.venue_id)
@@ -310,20 +320,21 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Ge
     )
     offerer_address: offerers_models.OffererAddress | None = None
     offerer_address = (
-        offers_api.get_offerer_address_from_address(venue, body.address) if body.address else venue.offererAddress
+        offerers_api.get_offerer_address_from_address(venue.managingOffererId, body.address)
+        if body.address
+        else venue.offererAddress
     )
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     try:
-        with repository.transaction():
-            fields = body.dict(by_alias=True)
-            fields.pop("venueId")
-            fields.pop("address")
-            fields["extraData"] = offers_api.deserialize_extra_data(fields["extraData"], fields["subcategoryId"])
+        fields = body.dict(by_alias=True)
+        fields.pop("venueId")
+        fields.pop("address")
+        fields["extraData"] = offers_api.deserialize_extra_data(fields["extraData"], fields["subcategoryId"])
 
-            offer_body = offers_schemas.CreateOffer(**fields)
-            offer = offers_api.create_offer(
-                offer_body, venue=venue, offerer_address=offerer_address, is_from_private_api=True
-            )
+        offer_body = offers_schemas.CreateOffer(**fields)
+        offer = offers_api.create_offer(
+            offer_body, venue=venue, offerer_address=offerer_address, is_from_private_api=True
+        )
     except exceptions.OfferCreationBaseException as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
@@ -452,6 +463,7 @@ def patch_offer(
     response_model=CreateThumbnailResponseModel,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseModel:
     try:
         offer = offers_repository.get_offer_by_id(form.offer_id)
@@ -466,14 +478,13 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
 
     image_as_bytes = form.get_image_as_bytes(request)
 
-    with transaction():
-        thumbnail = offers_api.create_mediation(
-            user=current_user,
-            offer=offer,
-            credit=form.credit,
-            image_as_bytes=image_as_bytes,
-            crop_params=form.crop_params,
-        )
+    thumbnail = offers_api.create_mediation(
+        user=current_user,
+        offer=offer,
+        credit=form.credit,
+        image_as_bytes=image_as_bytes,
+        crop_params=form.crop_params,
+    )
 
     return CreateThumbnailResponseModel(id=thumbnail.id, url=thumbnail.thumbUrl, credit=thumbnail.credit)  # type: ignore[arg-type]
 
@@ -499,6 +510,7 @@ def delete_thumbnail(offer_id: int) -> None:
     response_model=offers_serialize.CategoriesResponseModel,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def get_categories() -> offers_serialize.CategoriesResponseModel:
     return offers_serialize.CategoriesResponseModel(
         categories=[
@@ -517,6 +529,7 @@ def get_categories() -> offers_serialize.CategoriesResponseModel:
     response_model=offers_serialize.SuggestedSubcategoriesResponseModel,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def get_suggested_subcategories(
     query: offers_serialize.SuggestedSubcategoriesQueryModel,
 ) -> offers_serialize.SuggestedSubcategoriesResponseModel:
@@ -532,6 +545,7 @@ def get_suggested_subcategories(
     response_model=offers_serialize.GetMusicTypesResponse,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def get_music_types() -> offers_serialize.GetMusicTypesResponse:
     return offers_serialize.GetMusicTypesResponse(
         __root__=[
@@ -624,6 +638,7 @@ def post_price_categories(
 @private_api.route("/offers/<int:offer_id>/price_categories/<int:price_category_id>", methods=["DELETE"])
 @login_required
 @spectree_serialize(api=blueprint.pro_private_schema, on_success_status=204)
+@atomic()
 def delete_price_category(offer_id: int, price_category_id: int) -> None:
     offer = models.Offer.query.get_or_404(offer_id)
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
@@ -638,6 +653,7 @@ def delete_price_category(offer_id: int, price_category_id: int) -> None:
     response_model=offers_serialize.GetProductInformations,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def get_product_by_ean(ean: str, offerer_id: int) -> offers_serialize.GetProductInformations:
     product = (
         models.Product.query.filter(models.Product.extraData["ean"].astext == ean)

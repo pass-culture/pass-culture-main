@@ -1,4 +1,3 @@
-import React from 'react'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
 import {

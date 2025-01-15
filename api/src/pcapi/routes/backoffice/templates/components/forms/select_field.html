@@ -9,7 +9,8 @@
           data-default-value="{{ field.default }}">
     {% if not field.default %}<option value="">{{ field.default_text }}</option>{% endif %}
     {% for choice_value, choice_label in field.choices %}
-      <option value="{{ choice_value }}" {{ 'selected' if field.data==choice_value else '' }}>
+      <option value="{{ choice_value }}"
+              {{ 'selected' if field.data==choice_value else '' }}>
         {{ choice_label }}
       </option>
     {% endfor %}

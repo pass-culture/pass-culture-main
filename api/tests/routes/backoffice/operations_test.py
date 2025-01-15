@@ -142,7 +142,7 @@ class GetEventDetailsTest(GetEndpointHelper):
         name_question = operations_factories.SpecialEventQuestionFactory(
             event=event,
             externalId="00001-abcde-00001",
-            title=f"Comment t'appelles-tu ?",
+            title="Comment t'appelles-tu ?",
         )
         chestnut_question = operations_factories.SpecialEventQuestionFactory(
             event=event,
@@ -199,6 +199,72 @@ class GetEventDetailsTest(GetEndpointHelper):
         assert rows[1]["Réponses"] == " ".join(
             [name_question.title, full_name_answer.text, chestnut_question.title, full_chestnut_answer.text]
         )
+
+    def test_filter_event_responses(self, authenticated_client):
+        event = operations_factories.SpecialEventFactory(
+            externalId="fake00002",
+            eventDate=datetime.datetime.utcnow() + datetime.timedelta(days=2),
+        )
+        operations_factories.SpecialEventResponseFactory.create_batch(
+            size=2,
+            event=event,
+            status=operations_models.SpecialEventResponseStatus.PRESELECTED,
+        )
+        operations_factories.SpecialEventResponseFactory.create_batch(
+            size=4,
+            event=event,
+            status=operations_models.SpecialEventResponseStatus.NEW,
+        )
+        operations_factories.SpecialEventResponseFactory.create_batch(
+            size=3,
+            event=event,
+            status=operations_models.SpecialEventResponseStatus.VALIDATED,
+        )
+        operations_factories.SpecialEventResponseFactory.create_batch(
+            size=5,
+            event=event,
+            status=operations_models.SpecialEventResponseStatus.REJECTED,
+        )
+
+        url = url_for(self.endpoint, special_event_id=event.id)
+        response = authenticated_client.get(url)
+        assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 14
+
+        response = authenticated_client.get(url, params={"response_status": "PRESELECTED"})
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+        assert {"Préselectionnée"} == {e["État de la candidature"] for e in rows}
+
+        response = authenticated_client.get(url, params={"response_status": "NEW"})
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 4
+        assert {"Nouvelle"} == {e["État de la candidature"] for e in rows}
+
+        response = authenticated_client.get(url, params={"response_status": "VALIDATED"})
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 3
+        assert {"Retenue"} == {e["État de la candidature"] for e in rows}
+
+        response = authenticated_client.get(url, params={"response_status": "REJECTED"})
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 5
+        assert {"Rejetée"} == {e["État de la candidature"] for e in rows}
+
+        response = authenticated_client.get(
+            route=url,
+            params=(("response_status", "PRESELECTED"), ("response_status", "NEW")),
+        )
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 6
+        assert {"Préselectionnée", "Nouvelle"} == {e["État de la candidature"] for e in rows}
 
 
 class ValidateResponseTest(PostEndpointHelper):

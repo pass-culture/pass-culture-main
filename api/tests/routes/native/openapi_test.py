@@ -64,12 +64,26 @@ def test_public_api(client):
                 },
                 "AchievementResponse": {
                     "properties": {
+                        "id": {"title": "Id", "type": "integer"},
                         "name": {"$ref": "#/components/schemas/AchievementEnum"},
                         "seenDate": {"format": "date-time", "nullable": True, "title": "Seendate", "type": "string"},
                         "unlockedDate": {"format": "date-time", "title": "Unlockeddate", "type": "string"},
                     },
-                    "required": ["name", "unlockedDate"],
+                    "required": ["id", "name", "unlockedDate"],
                     "title": "AchievementResponse",
+                    "type": "object",
+                },
+                "AchievementsResponse": {
+                    "items": {"$ref": "#/components/schemas/AchievementResponse"},
+                    "title": "AchievementsResponse",
+                    "type": "array",
+                },
+                "MarkAchievementsAsSeenRequest": {
+                    "properties": {
+                        "achievementIds": {"items": {"type": "integer"}, "title": "Achievementids", "type": "array"}
+                    },
+                    "required": ["achievementIds"],
+                    "title": "MarkAchievementsAsSeenRequest",
                     "type": "object",
                 },
                 "ActivityIdEnum": {
@@ -109,6 +123,15 @@ def test_public_api(client):
                     "title": "ActivityTypesResponse",
                     "type": "object",
                 },
+                "ArtistResponse": {
+                    "properties": {
+                        "id": {"title": "Id", "type": "string"},
+                        "name": {"title": "Name", "type": "string"},
+                    },
+                    "required": ["id", "name"],
+                    "title": "ArtistResponse",
+                    "type": "object",
+                },
                 "AudioDisabilityModel": {
                     "properties": {
                         "deafAndHardOfHearing": {
@@ -119,6 +142,18 @@ def test_public_api(client):
                         }
                     },
                     "title": "AudioDisabilityModel",
+                    "type": "object",
+                },
+                "AvailableReactionBooking": {
+                    "properties": {
+                        "dateUsed": {"format": "date-time", "nullable": True, "title": "Dateused", "type": "string"},
+                        "image": {"nullable": True, "title": "Image", "type": "string"},
+                        "name": {"title": "Name", "type": "string"},
+                        "offerId": {"title": "Offerid", "type": "integer"},
+                        "subcategoryId": {"title": "Subcategoryid", "type": "string"},
+                    },
+                    "required": ["name", "offerId", "subcategoryId"],
+                    "title": "AvailableReactionBooking",
                     "type": "object",
                 },
                 "Banner": {
@@ -351,8 +386,17 @@ def test_public_api(client):
                             "nullable": True,
                         },
                         "enablePopUpReaction": {"title": "Enablepopupreaction", "type": "boolean"},
+                        "canReact": {"title": "Canreact", "type": "boolean"},
                     },
-                    "required": ["id", "dateCreated", "quantity", "stock", "totalAmount", "enablePopUpReaction"],
+                    "required": [
+                        "id",
+                        "dateCreated",
+                        "quantity",
+                        "stock",
+                        "totalAmount",
+                        "enablePopUpReaction",
+                        "canReact",
+                    ],
                     "title": "BookingReponse",
                     "type": "object",
                 },
@@ -463,7 +507,12 @@ def test_public_api(client):
                         "id": {"title": "Id", "type": "string"},
                         "label": {"title": "Label", "type": "string"},
                         "parents": {"items": {"type": "string"}, "title": "Parents", "type": "array"},
-                        "position": {"nullable": True, "title": "Position", "type": "integer"},
+                        "positions": {
+                            "additionalProperties": {"type": "integer"},
+                            "nullable": True,
+                            "title": "Positions",
+                            "type": "object",
+                        },
                         "searchFilter": {"nullable": True, "title": "Searchfilter", "type": "string"},
                     },
                     "required": ["id", "label", "parents"],
@@ -970,6 +1019,19 @@ def test_public_api(client):
                     "title": "GenreTypeModel",
                     "type": "object",
                 },
+                "GetAvailableReactionsResponse": {
+                    "properties": {
+                        "bookings": {
+                            "items": {"$ref": "#/components/schemas/AvailableReactionBooking"},
+                            "title": "Bookings",
+                            "type": "array",
+                        },
+                        "numberOfReactableBookings": {"title": "Numberofreactablebookings", "type": "integer"},
+                    },
+                    "required": ["numberOfReactableBookings", "bookings"],
+                    "title": "GetAvailableReactionsResponse",
+                    "type": "object",
+                },
                 "GoogleAccountRequest": {
                     "properties": {
                         "accountCreationToken": {"title": "Accountcreationtoken", "type": "string"},
@@ -1050,6 +1112,14 @@ def test_public_api(client):
                     "description": "An enumeration.",
                     "enum": ["with-dms", "without-dms"],
                     "title": "MaintenancePageType",
+                },
+                "MarkAchievementsAsSeenRequest": {
+                    "properties": {
+                        "achievementIds": {"items": {"type": "integer"}, "title": "Achievementids", "type": "array"}
+                    },
+                    "required": ["achievementIds"],
+                    "title": "MarkAchievementsAsSeenRequest",
+                    "type": "object",
                 },
                 "MentalDisabilityModel": {
                     "properties": {
@@ -1142,6 +1212,12 @@ def test_public_api(client):
                         "genreType": {"anyOf": [{"$ref": "#/components/schemas/GenreType"}], "nullable": True},
                         "name": {"$ref": "#/components/schemas/NativeCategoryIdEnumv2"},
                         "parents": {"items": {"$ref": "#/components/schemas/SearchGroupNameEnumv2"}, "type": "array"},
+                        "positions": {
+                            "additionalProperties": {"type": "integer"},
+                            "nullable": True,
+                            "title": "Positions",
+                            "type": "object",
+                        },
                         "value": {"nullable": True, "title": "Value", "type": "string"},
                     },
                     "required": ["name", "parents"],
@@ -1253,6 +1329,23 @@ def test_public_api(client):
                         "visa": {"nullable": True, "title": "Visa", "type": "string"},
                     },
                     "title": "OfferExtraDataResponse",
+                    "type": "object",
+                },
+                "OfferImage": {
+                    "properties": {
+                        "credit": {
+                            "title": "Credit",
+                            "type": "string",
+                        },
+                        "url": {
+                            "title": "Url",
+                            "type": "string",
+                        },
+                    },
+                    "required": [
+                        "url",
+                    ],
+                    "title": "OfferImage",
                     "type": "object",
                 },
                 "OfferImageResponse": {
@@ -1531,6 +1624,32 @@ def test_public_api(client):
                     },
                     "required": ["id", "offerer", "name", "coordinates", "isPermanent", "timezone"],
                     "title": "OfferVenueResponse",
+                    "type": "object",
+                },
+                "OffererHeadLineOfferResponseModel": {
+                    "properties": {
+                        "id": {
+                            "title": "Id",
+                            "type": "integer",
+                        },
+                        "image": {
+                            "anyOf": [
+                                {
+                                    "$ref": "#/components/schemas/OfferImage",
+                                },
+                            ],
+                            "nullable": True,
+                        },
+                        "name": {
+                            "title": "Name",
+                            "type": "string",
+                        },
+                    },
+                    "required": [
+                        "id",
+                        "name",
+                    ],
+                    "title": "OffererHeadLineOfferResponseModel",
                     "type": "object",
                 },
                 "OffersStocksRequest": {
@@ -2929,6 +3048,71 @@ def test_public_api(client):
                     "tags": [],
                 }
             },
+            "/native/v1/achievements/mark_as_seen": {
+                "post": {
+                    "description": "",
+                    "operationId": "post__native_v1_achievements_mark_as_seen",
+                    "parameters": [],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {
+                                "schema": {"$ref": "#/components/schemas/MarkAchievementsAsSeenRequest"}
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/AchievementsResponse"}}
+                            },
+                            "description": "OK",
+                        },
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [{"JWTAuth": []}],
+                    "summary": "mark_achievements_as_seen <POST>",
+                    "tags": [],
+                }
+            },
+            "/native/v1/artists/{artist_id}": {
+                "get": {
+                    "description": "",
+                    "operationId": "get__native_v1_artists_{artist_id}",
+                    "parameters": [
+                        {
+                            "description": "",
+                            "in": "path",
+                            "name": "artist_id",
+                            "required": True,
+                            "schema": {"type": "string"},
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ArtistResponse"}}
+                            },
+                            "description": "OK",
+                        },
+                        "403": {"description": "Forbidden"},
+                        "404": {"description": "Not Found"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "get_artist <GET>",
+                    "tags": [],
+                }
+            },
             "/native/v1/banner": {
                 "get": {
                     "description": "",
@@ -3570,6 +3754,54 @@ def test_public_api(client):
                     "tags": [],
                 }
             },
+            "/native/v1/offerer/{offerer_id}/headline-offer": {
+                "get": {
+                    "description": "",
+                    "operationId": "get__native_v1_offerer_{offerer_id}_headline-offer",
+                    "parameters": [
+                        {
+                            "description": "",
+                            "in": "path",
+                            "name": "offerer_id",
+                            "required": True,
+                            "schema": {
+                                "format": "int32",
+                                "type": "integer",
+                            },
+                        },
+                    ],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/OffererHeadLineOfferResponseModel",
+                                    },
+                                },
+                            },
+                            "description": "OK",
+                        },
+                        "403": {
+                            "description": "Forbidden",
+                        },
+                        "404": {
+                            "description": "Not Found",
+                        },
+                        "422": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/ValidationError",
+                                    },
+                                },
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "get_offerer_headline_offer <GET>",
+                    "tags": [],
+                },
+            },
             "/native/v1/offers/reports": {
                 "get": {
                     "description": "",
@@ -3901,7 +4133,16 @@ def test_public_api(client):
                     "operationId": "get__native_v1_reaction_available",
                     "parameters": [],
                     "responses": {
-                        "200": {"description": "OK"},
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/GetAvailableReactionsResponse",
+                                    },
+                                },
+                            },
+                            "description": "OK",
+                        },
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {

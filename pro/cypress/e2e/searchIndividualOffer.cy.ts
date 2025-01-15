@@ -7,14 +7,14 @@ import {
 
 describe('Search individual offers', () => {
   let login: string
-  const venueName = 'Mon Lieu'
-  const offerName1 = 'Une super offre'
-  const offerName2 = 'Une offre avec ean'
-  const offerName3 = 'Une flûte traversière'
-  const offerName4 = "Un concert d'electro inoubliable"
-  const offerName5 = 'Une autre offre incroyable'
-  const offerName6 = 'Encore une offre incroyable'
-  const offerName7 = 'Une offre épuisée'
+  let venueName: string
+  let offerName1: string
+  let offerName2: string
+  let offerName3: string
+  let offerName4: string
+  let offerName5: string
+  let offerName6: string
+  let offerName7: string
 
   before(() => {
     cy.wrap(Cypress.session.clearAllSavedSessions())
@@ -24,6 +24,14 @@ describe('Search individual offers', () => {
       url: 'http://localhost:5001/sandboxes/pro/create_pro_user_with_individual_offers',
     }).then((response) => {
       login = response.body.user.email
+      venueName = response.body.venue.name
+      offerName1 = response.body.offer1.name
+      offerName2 = response.body.offer2.name
+      offerName3 = response.body.offer3.name
+      offerName4 = response.body.offer4.name
+      offerName5 = response.body.offer5.name
+      offerName6 = response.body.offer6.name
+      offerName7 = response.body.offer7.name
     })
   })
 
@@ -47,8 +55,8 @@ describe('Search individual offers', () => {
 
     cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
-      ['', '', 'Titre', 'Lieu', 'Stocks', 'Status'],
-      ['', '', offerName1, venueName, '1 000', 'publiée'],
+      ['', 'Titre', 'Lieu', 'Stocks', 'Status'],
+      ['', offerName1, `Lieu :${venueName}`, 'Stocks :1 000', 'Statut :publiée'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
@@ -68,8 +76,8 @@ describe('Search individual offers', () => {
 
     cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
-      ['', '', 'Titre', 'Lieu', 'Stocks', 'Status'],
-      ['', '', offerName2 + ean, venueName, '1 000', 'publiée'],
+      ['', 'Titre', 'Lieu', 'Stocks', 'Status'],
+      ['', offerName2 + ean, `Lieu :${venueName}`, 'Stocks :1 000', 'Statut :publiée'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
@@ -77,7 +85,11 @@ describe('Search individual offers', () => {
 
   it('I should be able to search with "Catégorie" filter and see expected results', () => {
     cy.stepLog({ message: 'I select "Instrument de musique" in "Catégorie"' })
-    cy.findByLabelText('Catégorie').select('Instrument de musique')
+
+    cy.findByTestId('wrapper-categorie').within(() => {
+      cy.findByLabelText('Catégorie').select('Instrument de musique')
+      cy.get('#categorie').should('have.value', 'INSTRUMENT')
+    })
 
     cy.stepLog({ message: 'I validate my filters' })
     cy.findByText('Rechercher').click()
@@ -85,8 +97,8 @@ describe('Search individual offers', () => {
 
     cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
-      ['', '', 'Titre', 'Lieu', 'Stocks', 'Status'],
-      ['', '', offerName3, venueName, '1 000', 'publiée'],
+      ['', 'Titre', 'Lieu', 'Stocks', 'Status'],
+      ['', offerName3, `Lieu :${venueName}`, 'Stocks :1 000', 'Statut :publiée'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
@@ -94,8 +106,10 @@ describe('Search individual offers', () => {
 
   it('I should be able to search by offer status and see expected results', () => {
     cy.stepLog({ message: 'I select "Publiée" in offer status' })
+
     cy.findByTestId('wrapper-status').within(() => {
-      cy.get('select').select('Publiée')
+      cy.findByLabelText('Statut').select('Publiée')
+      cy.get('#status').should('have.value', 'ACTIVE')
     })
 
     cy.stepLog({ message: 'I validate my filters' })
@@ -104,13 +118,13 @@ describe('Search individual offers', () => {
 
     cy.stepLog({ message: 'These 6 results should be displayed' })
     const expectedResults = [
-      ['', '', 'Titre', 'Lieu', 'Stocks', 'Status'],
-      ['', '', offerName6, venueName, '1 000', 'publiée'],
-      ['', '', offerName5, venueName, '1 000', 'publiée'],
-      ['', '', offerName4, venueName, '1 000', 'publiée'],
-      ['', '', offerName3, venueName, '1 000', 'publiée'],
-      ['', '', offerName2, venueName, '1 000', 'publiée'],
-      ['', '', offerName1, venueName, '1 000', 'publiée'],
+      ['', 'Titre', 'Lieu', 'Stocks', 'Status'],
+      ['', offerName6, `Lieu :${venueName}`, 'Stocks :1 000', 'Statut :publiée'],
+      ['', offerName5, `Lieu :${venueName}`, 'Stocks :1 000', 'Statut :publiée'],
+      ['', offerName4, `Lieu :${venueName}`, 'Stocks :1 000', 'Statut :publiée'],
+      ['', offerName3, `Lieu :${venueName}`, 'Stocks :1 000', 'Statut :publiée'],
+      ['', offerName2, `Lieu :${venueName}`, 'Stocks :1 000', 'Statut :publiée'],
+      ['', offerName1, `Lieu :${venueName}`, 'Stocks :1 000', 'Statut :publiée'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
@@ -128,8 +142,8 @@ describe('Search individual offers', () => {
 
     cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
-      ['', '', 'Titre', 'Lieu', 'Stocks', 'Status'],
-      ['', '', offerName4, venueName, '1 000', 'publiée'],
+      ['', 'Titre', 'Lieu', 'Stocks', 'Status'],
+      ['', offerName4, `Lieu :${venueName}`, 'Stocks :1 000', 'Statut :publiée'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
@@ -162,9 +176,9 @@ describe('Search individual offers', () => {
 
     cy.stepLog({ message: 'These 2 results should be displayed' })
     const expectedResults = [
-      ['', '', 'Titre', 'Lieu', 'Stocks', 'Status'],
-      ['', '', offerName6, venueName, '1 000', 'publiée'],
-      ['', '', offerName5, venueName, '1 000', 'publiée'],
+      ['', 'Titre', 'Lieu', 'Stocks', 'Status'],
+      ['', offerName6, `Lieu :${venueName}`, 'Stocks :1 000', 'Statut :publiée'],
+      ['', offerName5, `Lieu :${venueName}`, 'Stocks :1 000', 'Statut :publiée'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
@@ -193,14 +207,14 @@ describe('Search individual offers', () => {
 
     cy.stepLog({ message: 'These 7 results should be displayed' })
     const expectedResults2 = [
-      ['', '', 'Titre', 'Lieu', 'Stocks', 'Status'],
-      ['', '', offerName7, venueName, '0', 'épuisée'],
-      ['', '', offerName6, venueName, '1 000', 'publiée'],
-      ['', '', offerName5, venueName, '1 000', 'publiée'],
-      ['', '', offerName4, venueName, '1 000', 'publiée'],
-      ['', '', offerName3, venueName, '1 000', 'publiée'],
-      ['', '', offerName2, venueName, '1 000', 'publiée'],
-      ['', '', offerName1, venueName, '1 000', 'publiée'],
+      ['', 'Titre', 'Lieu', 'Stocks', 'Status'],
+      ['', offerName7, `Lieu :${venueName}`, 'Stocks :0', 'Statut :épuisée'],
+      ['', offerName6, `Lieu :${venueName}`, 'Stocks :1 000', 'Statut :publiée'],
+      ['', offerName5, `Lieu :${venueName}`, 'Stocks :1 000', 'Statut :publiée'],
+      ['', offerName4, `Lieu :${venueName}`, 'Stocks :1 000', 'Statut :publiée'],
+      ['', offerName3, `Lieu :${venueName}`, 'Stocks :1 000', 'Statut :publiée'],
+      ['', offerName2, `Lieu :${venueName}`, 'Stocks :1 000', 'Statut :publiée'],
+      ['', offerName1, `Lieu :${venueName}`, 'Stocks :1 000', 'Statut :publiée'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults2)

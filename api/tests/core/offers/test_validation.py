@@ -15,7 +15,6 @@ from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import WithdrawalTypeEnum
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
-from pcapi.core.testing import override_features
 from pcapi.models.api_errors import ApiErrors
 
 import tests
@@ -23,8 +22,9 @@ import tests
 
 IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 
+pytestmark = pytest.mark.usefixtures("db_session")
 
-@pytest.mark.usefixtures("db_session")
+
 class CheckProviderCanEditStockTest:
     def test_allocine_offer(self):
         provider = providers_factories.AllocineProviderFactory(localClass="AllocineStocks")
@@ -33,7 +33,7 @@ class CheckProviderCanEditStockTest:
         validation.check_provider_can_edit_stock(offer)
 
     def test_non_allocine_provider_offer(self):
-        offerer = providers_factories.APIProviderFactory()
+        offerer = providers_factories.PublicApiProviderFactory()
         provider_offer = offers_factories.OfferFactory(lastProvider=offerer, idAtProvider="1")
 
         with pytest.raises(ApiErrors) as error:
@@ -42,19 +42,18 @@ class CheckProviderCanEditStockTest:
         assert error.value.errors["global"] == ["Les offres importées ne sont pas modifiables"]
 
     def test_allowed_provider(self):
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         provider_offer = offers_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
 
         validation.check_provider_can_edit_stock(provider_offer, provider)
 
 
-@pytest.mark.usefixtures("db_session")
 class CheckCanInputIdAtProviderTest:
     def test_without_id_at_provider(self):
         validation.check_can_input_id_at_provider(None, None)
 
     def test_with_id_at_provider(self):
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         validation.check_can_input_id_at_provider(provider, "an id at provider")
 
     def test_raise_when_id_at_provider_given_without_a_provider(self):
@@ -67,7 +66,6 @@ class CheckCanInputIdAtProviderTest:
         ]
 
 
-@pytest.mark.usefixtures("db_session")
 class CheckCanInputIdAtProviderForThisVenueTest:
     def test_without_id_at_provider(self):
         venue = offerers_factories.VenueFactory()
@@ -114,7 +112,6 @@ class CheckCanInputIdAtProviderForThisVenueTest:
         assert error.value.errors["idAtProvider"] == ["`rolalala` is already taken by another venue offer"]
 
 
-@pytest.mark.usefixtures("db_session")
 class CheckPricesForStockTest:
     def test_event_prices(self):
         offer = offers_factories.EventOfferFactory()
@@ -205,7 +202,6 @@ class CheckPricesForStockTest:
         ]
 
 
-@pytest.mark.usefixtures("db_session")
 class CheckRequiredDatesForStockTest:
     def test_thing_offer_must_not_have_beginning(self):
         offer = offers_factories.ThingOfferFactory()
@@ -271,7 +267,6 @@ class CheckRequiredDatesForStockTest:
         )
 
 
-@pytest.mark.usefixtures("db_session")
 class CheckStockCanBeCreatedForOfferTest:
     def test_offer_from_provider(self, app):
         provider = providers_factories.AllocineProviderFactory()
@@ -283,13 +278,12 @@ class CheckStockCanBeCreatedForOfferTest:
         assert error.value.errors["global"] == ["Les offres importées ne sont pas modifiables"]
 
     def test_allowed_provider(self, app):
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         offer = offers_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
 
         validation.check_provider_can_create_stock(offer, provider)
 
 
-@pytest.mark.usefixtures("db_session")
 class CheckStockIsDeletableTest:
     def test_non_approved_offer(self):
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
@@ -320,7 +314,6 @@ class CheckStockIsDeletableTest:
         ]
 
 
-@pytest.mark.usefixtures("db_session")
 class CheckStockIsUpdatableTest:
     def test_approved_offer(self):
         offer = offers_factories.OfferFactory()
@@ -350,7 +343,7 @@ class CheckStockIsUpdatableTest:
             validation.check_stock_is_updatable(stock)
 
     def test_offer_from_non_allocine_provider(self):
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         offer = offers_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
         stock = offers_factories.StockFactory(offer=offer)
 
@@ -468,7 +461,6 @@ class CheckImageTest:
             )
 
 
-@pytest.mark.usefixtures("db_session")
 class CheckValidationStatusTest:
     def test_approved_offer(self):
         approved_offer = offers_factories.OfferFactory()
@@ -501,7 +493,6 @@ class CheckValidationStatusTest:
         ]
 
 
-@pytest.mark.usefixtures("db_session")
 class CheckOfferWithdrawalTest:
     def test_offer_can_have_no_withdrawal_informations(self):
         assert not validation.check_offer_withdrawal(
@@ -653,7 +644,6 @@ class CheckOfferWithdrawalTest:
             )
 
 
-@pytest.mark.usefixtures("db_session")
 class CheckOfferExtraDataTest:
     def test_invalid_ean_extra_data(self):
         with pytest.raises(ApiErrors) as error:
@@ -738,7 +728,6 @@ class CheckOfferExtraDataTest:
         )
 
 
-@pytest.mark.usefixtures("db_session")
 class CheckBookingLimitDatetimeTest:
     @pytest.mark.parametrize(
         "stock_factory, offer_factory, venue_factory",
@@ -809,7 +798,7 @@ class CheckBookingLimitDatetimeTest:
         validation.check_booking_limit_datetime(stock, beginning=None, booking_limit_datetime=booking_limit_date)
         validation.check_booking_limit_datetime(stock, beginning=beginning_date, booking_limit_datetime=None)
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     @pytest.mark.parametrize(
         "offer_factory",
         [offers_factories.OfferFactory, offers_factories.EventOfferFactory, offers_factories.DigitalOfferFactory],
@@ -829,7 +818,7 @@ class CheckBookingLimitDatetimeTest:
         except exceptions.BookingLimitDatetimeTooLate as e:
             assert False, f"Should not raise exception {e}"
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     @pytest.mark.parametrize(
         "time_zone_expected,",
         [
@@ -906,3 +895,41 @@ class CheckPublicationDateTest:
         offer = offers_factories.EventOfferFactory()
         publication_date = datetime.datetime.utcnow().replace(minute=0) + datetime.timedelta(days=30)
         assert validation.check_publication_date(offer, publication_date) is None
+
+
+class CheckOffererIsEligibleForHeadlineOffersTest:
+    def test_check_offerer_is_eligible_for_headline_offers(self):
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.VenueFactory(isPermanent=True, isVirtual=False, managingOfferer=offerer)
+        offerers_factories.VirtualVenueFactory(isPermanent=False, managingOfferer=offerer)
+
+        assert validation.check_offerer_is_eligible_for_headline_offers(offerer.id) is None
+
+        another_venue = offerers_factories.VenueFactory(isPermanent=False, isVirtual=False, managingOfferer=offerer)
+        with pytest.raises(exceptions.OffererCanNotHaveHeadlineOffer) as exc:
+            validation.check_offerer_is_eligible_for_headline_offers(offerer.id)
+            msg = "This offerer can not have headline offers"
+            assert exc.value.errors["headlineOffer"] == [msg]
+
+        another_venue.isPermanent = True
+        with pytest.raises(exceptions.OffererCanNotHaveHeadlineOffer) as exc:
+            validation.check_offerer_is_eligible_for_headline_offers(offerer.id)
+            msg = "This offerer can not have headline offers"
+            assert exc.value.errors["headlineOffer"] == [msg]
+
+    def test_check_offer_is_eligible_to_be_headline(self):
+        offerer = offerers_factories.OffererFactory()
+        permanent_venue = offerers_factories.VenueFactory(isPermanent=True, isVirtual=False, managingOfferer=offerer)
+        virtual_venue = offerers_factories.VirtualVenueFactory(isPermanent=False, managingOfferer=offerer)
+        offer = offers_factories.ThingOfferFactory(venue=permanent_venue)
+        offers_factories.StockFactory(offer=offer)
+        digital_offer = offers_factories.DigitalOfferFactory(venue=virtual_venue)
+        offers_factories.StockFactory(offer=digital_offer)
+
+        assert validation.check_offerer_is_eligible_for_headline_offers(offerer.id) is None
+        assert validation.check_offer_is_eligible_to_be_headline(offer) is None
+
+        with pytest.raises(exceptions.VirtualOfferCanNotBeHeadline) as exc:
+            validation.check_offer_is_eligible_to_be_headline(digital_offer)
+            msg = "Digital offers can not be made headline"
+            assert exc.value.errors["headlineOffer"] == [msg]

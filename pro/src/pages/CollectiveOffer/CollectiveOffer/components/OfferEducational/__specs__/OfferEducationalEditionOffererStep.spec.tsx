@@ -1,5 +1,4 @@
 import { screen } from '@testing-library/react'
-import React from 'react'
 
 import { CollectiveBookingStatus } from 'apiClient/v1'
 import { Mode } from 'commons/core/OfferEducational/types'
@@ -24,9 +23,9 @@ function renderComponent(props: OfferEducationalProps) {
     user,
     storeOverrides: {
       user: {
-        selectedOffererId: 1,
         currentUser: user,
       },
+      offerer: { selectedOffererId: 1, offererNames: [] },
     },
   })
 }
@@ -68,7 +67,7 @@ describe('screens | OfferEducational : edition offerer step', () => {
     renderComponent(props)
 
     const offerTypeTitle = await screen.findByRole('heading', {
-      name: 'Type d’offre',
+      name: 'Quel est le type de votre offre ?',
     })
     expect(offerTypeTitle).toBeInTheDocument()
 

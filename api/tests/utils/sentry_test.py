@@ -4,7 +4,6 @@ from pydantic.v1 import BaseModel
 import pytest
 
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.routes.apis import private_api
 from pcapi.utils.sentry import before_send
@@ -53,7 +52,7 @@ def testing_route_with_validation_errors(field_name, *args, **kwargs):
     TestSerializer(**payload)
 
 
-@override_settings(IS_DEV=False)
+@pytest.mark.settings(IS_DEV=False)
 def test_init_sentry_sdk():
     # There is not much to test here, except that the call does not
     # fail.
@@ -62,7 +61,7 @@ def test_init_sentry_sdk():
 
 @pytest.mark.usefixtures("db_session")
 @patch("pcapi.utils.sentry.before_send")
-@override_settings(IS_DEV=False)
+@pytest.mark.settings(IS_DEV=False)
 def test_common_errors_use_default_fingerprint(mocked_before_send, client):
     mocked_before_send.side_effect = before_send_wrapper
 
@@ -80,7 +79,7 @@ def test_common_errors_use_default_fingerprint(mocked_before_send, client):
 
 @pytest.mark.usefixtures("db_session")
 @patch("pcapi.utils.sentry.before_send")
-@override_settings(IS_DEV=False)
+@pytest.mark.settings(IS_DEV=False)
 def test_validation_erros_are_stamped_with_custom_fingerprint(mocked_before_send, client):
     mocked_before_send.side_effect = before_send_wrapper_with_custom_fingerprint
 

@@ -5,7 +5,10 @@ import { Navigate } from 'react-router-dom'
 
 import { UNAVAILABLE_ERROR_PAGE } from 'commons/utils/routes'
 
-import { routesIndividualOfferWizard } from './subroutesIndividualOfferWizardMap'
+import {
+  routesIndividualOfferWizard,
+  routesOnboardingIndividualOfferWizard,
+} from './subroutesIndividualOfferWizardMap'
 import { routesReimbursements } from './subroutesReimbursements'
 import { routesSignupJourney } from './subroutesSignupJourneyMap'
 import { routesSignup } from './subroutesSignupMap'
@@ -114,6 +117,12 @@ export const routes: RouteConfig[] = [
     lazy: () => import('pages/OfferType/OfferType'),
     path: '/offre/creation',
     title: 'Choix de la nature de l’offre - Créer une offre',
+  },
+  {
+    lazy: () => import('pages/OfferType/OfferType'),
+    path: '/onboarding/offre/creation',
+    title: 'Choix de la nature de l’offre - Créer une offre - Onboarding',
+    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
   },
   {
     lazy: () => import('pages/IndividualOffers/IndividualOffers'),
@@ -308,6 +317,12 @@ export const routes: RouteConfig[] = [
     children: routesIndividualOfferWizard,
   },
   {
+    lazy: () => import('pages/IndividualOfferWizard/IndividualOfferWizard'),
+    path: '/onboarding/offre/individuelle',
+    title: 'Offre étape par étape',
+    children: routesOnboardingIndividualOfferWizard,
+  },
+  {
     lazy: () => import('pages/Reimbursements/Reimbursements'),
     path: '/remboursements',
     title: 'Gestion financière',
@@ -366,10 +381,30 @@ export const routes: RouteConfig[] = [
   },
   {
     lazy: () =>
-      import('pages/OnboardingOffersTypeChoice/OnboardingOffersTypeChoice'),
-    path: '/inscription-choix-offre',
-    title: "Inscription - Choix du type d'offre",
-    featureName: 'WIP_ENABLE_PRO_ONBOARDING',
+      import(
+        'pages/Onboarding/OnboardingOffersTypeChoice/OnboardingOffersTypeChoice'
+      ),
+    path: '/onboarding',
+    title: 'Onboarding',
+    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
+  },
+  {
+    lazy: () =>
+      import(
+        'pages/Onboarding/OnboardingOfferIndividual/OnboardingOfferIndividual'
+      ),
+    path: '/onboarding/individuel',
+    title: 'Offre à destination des jeunes - Onboarding',
+    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
+  },
+  {
+    lazy: () =>
+      import(
+        'pages/Onboarding/OnboardingOfferIndividualAutomatic/OnboardingOfferIndividualAutomatic'
+      ),
+    path: '/onboarding/synchro',
+    title: 'Connecter à mon logiciel - Onboarding',
+    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
   },
   {
     lazy: () => import('pages/Errors/NotFound/NotFound'),

@@ -12,7 +12,9 @@
       à un autre
     </h2>
     <div class="col-12 py-4">
-      <form action="{{ dst }}" name={{ dst | action_to_name }} method="post">
+      <form action="{{ dst }}"
+            name="{{ dst | action_to_name }}"
+            method="post">
         {{ build_form_fields_group(form) }}
         <div class="d-flex justify-content-end">
           <button type="submit"

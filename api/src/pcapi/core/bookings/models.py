@@ -452,6 +452,10 @@ class Booking(PcObject, Base, Model):
             )
         return False
 
+    @property
+    def can_react(self) -> bool:
+        return self.dateUsed is not None and self.stock.offer.subcategoryId in SUBCATEGORY_IDS_WITH_REACTION_AVAILABLE
+
 
 Booking.trig_ddl = f"""
     CREATE OR REPLACE FUNCTION public.get_deposit_balance (deposit_id bigint, only_used_bookings boolean)

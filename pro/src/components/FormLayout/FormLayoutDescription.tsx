@@ -33,7 +33,7 @@ export const FormLayoutDescription = ({
         )}
       >
         <Callout
-          variant={CalloutVariant.DEFAULT}
+          variant={CalloutVariant.INFO}
           className={style['form-layout-section-description-content']}
           links={links}
         >

@@ -5,7 +5,6 @@ import pytest
 from pcapi.connectors import beamer
 from pcapi.core.external.attributes import models as attributes_models
 from pcapi.core.offerers.models import VenueTypeCode
-from pcapi.core.testing import override_settings
 
 
 PRO_ATTRIBUTES = attributes_models.ProAttributes(
@@ -19,6 +18,7 @@ PRO_ATTRIBUTES = attributes_models.ProAttributes(
     is_booking_email=True,
     is_eac=True,
     isPermanent=True,
+    isOpenToPublic=True,
     is_pro=True,
     is_active_pro=True,
     isVirtual=False,
@@ -46,6 +46,7 @@ BEAMER_ATTRIBUTES = {
     "IS_BOOKING_EMAIL": True,
     "IS_EAC": True,
     "IS_PERMANENT": True,
+    "IS_OPEN_TO_PUBLIC": True,
     "IS_PRO": True,
     "IS_VIRTUAL": False,
     "OFFERER_NAME": "offerer name 1;offerer name 2",
@@ -60,7 +61,7 @@ def test_beamer_attributes_format():
     assert BEAMER_ATTRIBUTES == beamer.format_pro_attributes(PRO_ATTRIBUTES)
 
 
-@override_settings(BEAMER_BACKEND="pcapi.connectors.beamer.BeamerBackend")
+@pytest.mark.settings(BEAMER_BACKEND="pcapi.connectors.beamer.BeamerBackend")
 class BeamerConnectorTest:
     def test_beamer_attributes(self, requests_mock):
         requests_mock.put("https://api.getbeamer.com/v0/users")

@@ -29,6 +29,7 @@ export const AppRouter = (): JSX.Element => {
           lazy: () => import('pages/Errors/NotFound/NotFound'),
           path: '*',
           title: 'Erreur 404 - Page indisponible',
+          meta: { public: true },
         },
       ],
     },

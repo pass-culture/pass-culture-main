@@ -1,5 +1,4 @@
 import { screen, waitFor } from '@testing-library/react'
-import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'

@@ -6,7 +6,6 @@ import pytest
 from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 
 
@@ -15,6 +14,7 @@ class Returns403Test:
     num_queries = testing.AUTHENTICATION_QUERIES
     num_queries += 1  # select offer
     num_queries += 1  # check user has rights on venue
+    num_queries += 1  # rollback
 
     def test_access_by_beneficiary(self, client):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -295,7 +295,7 @@ class Returns200WithOffererAddressAsDataSourceTest:
     num_queries += 1  # select count(*) from active stocks
     num_queries += 1  # select stocks
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_returns_an_event_stock(self, client):
         now = datetime.utcnow()
         booking_datetime = now + timedelta(hours=1)
@@ -358,7 +358,7 @@ class Returns200WithOffererAddressAsDataSourceTest:
             ],
         }
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_returns_a_thing_stock(self, client):
         now = datetime.utcnow()
         user_offerer = offerers_factories.UserOffererFactory()
@@ -395,7 +395,7 @@ class Returns200WithOffererAddressAsDataSourceTest:
             ],
         }
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_should_not_return_soft_deleted_stock(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.EventOfferFactory(venue__managingOfferer=user_offerer.offerer)
@@ -409,7 +409,7 @@ class Returns200WithOffererAddressAsDataSourceTest:
 
         assert len(response.json["stocks"]) == 0
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_returns_false_if_no_stocks(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.EventOfferFactory(venue__managingOfferer=user_offerer.offerer)
@@ -422,7 +422,7 @@ class Returns200WithOffererAddressAsDataSourceTest:
 
         assert response.json["hasStocks"] == False
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_returns_false_if_all_stocks_are_soft_deleted(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.EventOfferFactory(venue__managingOfferer=user_offerer.offerer)
@@ -436,7 +436,7 @@ class Returns200WithOffererAddressAsDataSourceTest:
 
         assert response.json["hasStocks"] == False
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_returns_true_if_stock_exists_outside_filter(self, client):
         date_1 = datetime.utcnow()
         date_2 = datetime.utcnow() + timedelta(days=1)
@@ -455,7 +455,7 @@ class Returns200WithOffererAddressAsDataSourceTest:
         assert len(response.json["stocks"]) == 0
         assert response.json["hasStocks"] == True
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_should_return_total_stock_count_when_unfiltered(self, client):
         date_1 = datetime.utcnow()
         date_2 = datetime.utcnow() + timedelta(days=1)
@@ -473,7 +473,7 @@ class Returns200WithOffererAddressAsDataSourceTest:
         assert response.json["stockCount"] == 5
         assert len(response.json["stocks"]) == 5
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_should_return_filtered_stock_count(self, client):
         now = datetime.utcnow()
         beginning_datetime = now + timedelta(seconds=1)
@@ -513,7 +513,7 @@ class Returns200WithOffererAddressAsDataSourceTest:
             ],
         }
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_should_return_filtered_stock_count_and_filtered_stock_list(self, client):
         date_1 = datetime.utcnow()
         date_2 = datetime.utcnow() + timedelta(days=1)
@@ -538,7 +538,7 @@ class Returns200WithOffererAddressAsDataSourceTest:
         assert response.json["stockCount"] == 3
         assert len(response.json["stocks"]) == 2
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_should_return_filtered_stock_count_and_filtered_stock_list_with_stocks_inferior_to_limit_per_page(
         self, client
     ):

@@ -1,5 +1,4 @@
 import { fr } from 'date-fns/locale'
-import React from 'react'
 import { Line } from 'react-chartjs-2'
 
 import { OffererViewsModel } from 'apiClient/v1'
@@ -99,7 +98,7 @@ export const CumulatedViews = ({ dailyViews }: CumulatedViewsProps) => {
           />
 
           {/* Wrap in visually hidden div, this class doesn't work on Chrome on <table> element */}
-          <div className="visually-hidden">
+          <div className={styles['visually-hidden']}>
             <table id="chart-description">
               <caption id="chart-title">
                 Nombre de vues cumulées de toutes vos offres sur les 6 derniers

@@ -10,6 +10,7 @@
 table {
   border-collapse: collapse;
   border-spacing: 0;
+  border-style: hidden;
 }
 
 a {
@@ -28,4 +29,8 @@ ol {
 
 fieldset {
   border: none;
+}
+
+label {
+  cursor: inherit;
 }

@@ -1,5 +1,4 @@
 import cn from 'classnames'
-import React from 'react'
 
 import { FieldError } from '../FieldError/FieldError'
 
@@ -14,6 +13,7 @@ interface FieldSetLayoutProps {
   hideFooter?: boolean
   dataTestId?: string
   isOptional?: boolean
+  ariaDescribedBy?: string
 }
 
 export const FieldSetLayout = ({
@@ -25,12 +25,15 @@ export const FieldSetLayout = ({
   hideFooter = false,
   dataTestId,
   isOptional = false,
+  ariaDescribedBy,
 }: FieldSetLayoutProps): JSX.Element => {
+  const showError = Boolean(error) || !hideFooter
   return (
     <fieldset
       className={cn(styles['fieldset-layout'], className)}
       data-testid={dataTestId}
       aria-required={!isOptional}
+      aria-describedby={ariaDescribedBy}
     >
       {legend && (
         <legend className={styles['fieldset-layout-legend']}>
@@ -39,7 +42,7 @@ export const FieldSetLayout = ({
         </legend>
       )}
       <div>{children}</div>
-      {!hideFooter && (
+      {showError && (
         <div className={styles['fieldset-layout-error']}>
           {!!error && <FieldError name={name}>{error}</FieldError>}
         </div>

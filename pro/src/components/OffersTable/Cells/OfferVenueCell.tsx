@@ -1,23 +1,35 @@
 import classNames from 'classnames'
 
 import { ListOffersVenueResponseModel } from 'apiClient/v1'
+import { CELLS_DEFINITIONS } from 'components/OffersTable/utils/cellDefinitions'
 import { computeVenueDisplayName } from 'repository/venuesService'
 import styles from 'styles/components/Cells.module.scss'
 
 interface OfferVenueCellProps {
   venue: ListOffersVenueResponseModel
-  headers?: string
+  rowId: string
+  className?: string
+  displayLabel?: boolean
 }
 
-export const OfferVenueCell = ({ venue, headers }: OfferVenueCellProps) => {
+export const OfferVenueCell = ({ venue, rowId, className, displayLabel }: OfferVenueCellProps) => {
   return (
     <td
+      role="cell"
       className={classNames(
         styles['offers-table-cell'],
-        styles['venue-column']
+        styles['venue-column'],
+        className
       )}
-      headers={headers}
+      headers={`${rowId} ${CELLS_DEFINITIONS.VENUE.id}`}
     >
+      {displayLabel &&
+        <span
+          className={styles['offers-table-cell-mobile-label']}
+          aria-hidden={true}
+        >
+          {`${CELLS_DEFINITIONS.VENUE.title} :`}
+        </span>}
       {computeVenueDisplayName(venue)}
     </td>
   )

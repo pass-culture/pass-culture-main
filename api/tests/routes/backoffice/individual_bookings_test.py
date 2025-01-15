@@ -23,8 +23,6 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.routes.backoffice.bookings import forms
@@ -619,7 +617,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert "Raison de l'annulation" in extra_data
         assert expected_text in extra_data
 
-    @override_features(WIP_ENABLE_OFFER_ADDRESS=False)
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=False)
     def test_list_bookings_venue_naming_without_oa(self, authenticated_client, bookings):
         searched_booking_id = bookings[0].id
         with assert_num_queries(self.expected_num_queries):
@@ -629,7 +627,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert "Lieux" in str(response.data)
         assert "Partenaires culturels" not in str(response.data)
 
-    @override_features(WIP_ENABLE_OFFER_ADDRESS=True)
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True)
     def test_list_bookings_venue_naming_with_oa(self, authenticated_client, bookings):
         searched_booking_id = bookings[0].id
         with assert_num_queries(self.expected_num_queries):
@@ -809,6 +807,13 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
         assert "Impossible de valider ces réservations" in alert
         assert f"- 1 réservation dont l'offre n'a plus assez de stock disponible ({booking.token})" in alert
 
+    def test_uncancel_and_mark_as_used_unlocks_achievement(self, authenticated_client, bookings):
+        festival_booking = bookings[1]
+
+        response = self.post_to_endpoint(authenticated_client, booking_id=festival_booking.id)
+
+        assert festival_booking.user.achievements
+
 
 class CancelBookingTest(PostEndpointHelper):
     endpoint = "backoffice_web.individual_bookings.mark_booking_as_cancelled"
@@ -931,8 +936,8 @@ class CancelBookingTest(PostEndpointHelper):
             in html_parser.extract_alert(redirected_response.data)
         )
 
-    @override_features(ENABLE_EMS_INTEGRATION=True)
-    @override_settings(EMS_SUPPORT_EMAIL_ADDRESS="ems.support@example.com")
+    @pytest.mark.settings(EMS_SUPPORT_EMAIL_ADDRESS="ems.support@example.com")
+    @pytest.mark.features(ENABLE_EMS_INTEGRATION=True)
     def test_ems_cancel_external_booking_from_backoffice(self, authenticated_client, requests_mock):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         ems_provider = get_provider_by_local_class("EMSStocks")
@@ -1208,6 +1213,13 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
             in alerts[1]
         )
 
+    def test_batch_mark_as_used_unlocks_achievement(self, authenticated_client, bookings):
+        festival_booking = bookings[1]
+
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": str(festival_booking.id)})
+
+        assert festival_booking.user.achievements
+
 
 class GetBatchCancelIndividualBookingsFormTest(GetEndpointHelper):
     endpoint = "backoffice_web.individual_bookings.get_batch_cancel_individual_bookings_form"
@@ -1272,13 +1284,11 @@ class GetIndividualBookingCSVDownloadTest(GetEndpointHelper):
     expected_num_queries = 4
 
     @pytest.mark.parametrize("is_oa_as_data_source_ff_active", (True, False))
-    def test_csv_length(self, authenticated_client, bookings, is_oa_as_data_source_ff_active):
+    def test_csv_length(self, features, authenticated_client, bookings, is_oa_as_data_source_ff_active):
         venue_id = bookings[0].venueId
 
-        with (
-            override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=is_oa_as_data_source_ff_active),
-            assert_num_queries(self.expected_num_queries),
-        ):
+        features.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE = is_oa_as_data_source_ff_active
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, venue=venue_id))
             assert response.status_code == 200
 
@@ -1297,13 +1307,11 @@ class GetIndividualBookingXLSXDownloadTest(GetEndpointHelper):
         return wb.active
 
     @pytest.mark.parametrize("is_oa_as_data_source_ff_active", (True, False))
-    def test_csv_length(self, authenticated_client, bookings, is_oa_as_data_source_ff_active):
+    def test_csv_length(self, features, authenticated_client, bookings, is_oa_as_data_source_ff_active):
         venue_id = bookings[0].venueId
 
-        with (
-            override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=is_oa_as_data_source_ff_active),
-            assert_num_queries(self.expected_num_queries),
-        ):
+        features.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE = is_oa_as_data_source_ff_active
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, venue=venue_id))
             assert response.status_code == 200
 

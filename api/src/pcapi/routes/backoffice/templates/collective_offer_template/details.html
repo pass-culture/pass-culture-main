@@ -1,3 +1,4 @@
+{% import "components/badges.html" as badges with context %}
 {% import "components/links.html" as links with context %}
 {% extends "layouts/standard.html" %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
@@ -36,9 +37,7 @@
                   <span class="fw-bold">Formats :</span> {{ collective_offer_template.formats | format_collective_offer_formats }}
                 </p>
                 <p class="mb-1">
-                  <span class="fw-bold">Description :</span> {{ collective_offer_template.description | empty_string_if_null | replace("\n", "
-                   <br />
-                   "|safe) }}
+                  <span class="fw-bold">Description :</span> {{ collective_offer_template.description | empty_string_if_null | nl2br }}
                 </p>
                 <p class="mb-1">
                   <span class="fw-bold">Date de création :</span> {{ collective_offer_template.dateCreated | format_date }}
@@ -55,8 +54,13 @@
                   <span class="fw-bold">Statut PC Pro :</span> {{ collective_offer_template.displayedStatus | format_collective_offer_displayed_status }}
                 </p>
                 <p class="mb-1">
-                  <span class="fw-bold">État :</span> {{ collective_offer_template.validation | format_offer_validation_status }}
+                  <span class="fw-bold">État :</span> {{ collective_offer_template.validation | format_offer_validation_status(with_badge=True) }}
                 </p>
+                {% if collective_offer_template.rejectionReason %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Raison de rejet :</span> {{ collective_offer_template.rejectionReason | format_collective_offer_rejection_reason }}
+                  </p>
+                {% endif %}
                 {% if collective_offer_template.lastValidationAuthor %}
                   <p class="mb-1">
                     <span class="fw-bold">Utilisateur de la dernière validation :</span> {{ collective_offer_template.lastValidationAuthor.full_name }}
@@ -69,6 +73,7 @@
               <div class="fs-6">
                 <p class="mb-1">
                   <span class="fw-bold">Entité juridique :</span> {{ links.build_offerer_name_to_details_link(collective_offer_template.venue.managingOfferer) }}
+                  {{ badges.build_offer_offerer_fraud_badges(collective_offer_template.venue.managingOfferer) }}
                 </p>
               </div>
               <div class="fs-6">
@@ -80,6 +85,7 @@
                       Lieu :
                     {% endif %}
                   </span> {{ links.build_venue_name_to_details_link(collective_offer_template.venue) }}
+                  {{ badges.build_offer_venue_fraud_badges(collective_offer_template.venue) }}
                 </p>
               </div>
             </div>

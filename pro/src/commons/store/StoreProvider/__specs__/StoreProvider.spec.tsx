@@ -1,5 +1,4 @@
 import { screen } from '@testing-library/react'
-import React from 'react'
 
 import { api } from 'apiClient/api'
 import { UserRole } from 'apiClient/v1'
@@ -19,6 +18,7 @@ vi.mock('apiClient/api', () => ({
   api: {
     getProfile: vi.fn(),
     listFeatures: vi.fn(),
+    listOfferersNames: vi.fn(),
   },
 }))
 
@@ -47,5 +47,12 @@ describe('src | App', () => {
 
     // Then
     expect(api.listFeatures).toHaveBeenCalled()
+  })
+  it('should load offerer names', async () => {
+    renderStoreProvider()
+    await screen.findByText('Sub component')
+
+    // Then
+    expect(api.listOfferersNames).toHaveBeenCalled()
   })
 })

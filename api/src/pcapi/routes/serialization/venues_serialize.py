@@ -1,6 +1,4 @@
 from datetime import datetime
-from decimal import Decimal
-from decimal import InvalidOperation
 import enum
 from io import BytesIO
 import typing
@@ -34,10 +32,6 @@ from pcapi.utils.image_conversion import CropParam
 from pcapi.utils.image_conversion import CropParams
 
 
-MAX_LONGITUDE = 180
-MAX_LATITUDE = 90
-
-
 class DMSApplicationstatus(enum.Enum):
     ACCEPTED = "accepte"
     DROPPED = "sans_suite"
@@ -64,25 +58,20 @@ class DMSApplicationForEAC(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
 
     @classmethod
-    def from_orm(
-        cls, collective_dms_applicaiton: educational_models.CollectiveDmsApplication
+    def from_orm(  # type: ignore[override]
+        cls, collective_dms_application: educational_models.CollectiveDmsApplication, venue_id: int
     ) -> "DMSApplicationForEAC":
-        collective_dms_applicaiton.venueId = collective_dms_applicaiton.venue.id
-        return super().from_orm(collective_dms_applicaiton)
+        collective_dms_application.venueId = venue_id
+        return super().from_orm(collective_dms_application)
 
 
 class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
-    street: offerers_schemas.VenueAddress
-    banId: offerers_schemas.VenueBanId | None
+    address: offerers_schemas.AddressBodyModel
     bookingEmail: offerers_schemas.VenueBookingEmail
-    city: offerers_schemas.VenueCity
     comment: offerers_schemas.VenueComment | None
-    latitude: float
-    longitude: float
     managingOffererId: int
     name: offerers_schemas.VenueName
     publicName: offerers_schemas.VenuePublicName | None
-    postalCode: offerers_schemas.VenuePostalCode
     siret: offerers_schemas.VenueSiret | None
     venueLabelId: int | None
     venueTypeCode: str
@@ -92,28 +81,6 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
 
     class Config:
         extra = "forbid"
-
-    @validator("latitude", pre=True)
-    @classmethod
-    def validate_latitude(cls, raw_latitude: str) -> str:
-        try:
-            latitude = Decimal(raw_latitude)
-        except InvalidOperation:
-            raise ValueError("Format incorrect")
-        if not -MAX_LATITUDE < latitude < MAX_LATITUDE:
-            raise ValueError("La latitude doit être comprise entre -90.0 et +90.0")
-        return raw_latitude
-
-    @validator("longitude", pre=True)
-    @classmethod
-    def validate_longitude(cls, raw_longitude: str) -> str:
-        try:
-            longitude = Decimal(raw_longitude)
-        except InvalidOperation:
-            raise ValueError("Format incorrect")
-        if not -MAX_LONGITUDE < longitude < MAX_LONGITUDE:
-            raise ValueError("La longitude doit être comprise entre -180.0 et +180.0")
-        return raw_longitude
 
     @validator("siret", always=True)
     @classmethod
@@ -227,6 +194,12 @@ class GetVenueResponseGetterDict(base.VenueResponseGetterDict):
                 label=self._obj.common_name,
                 isLinkedToVenue=True,
             )
+        if key == "collectiveDmsApplications":
+            return [
+                DMSApplicationForEAC.from_orm(collective_ds_application, self._obj.id)
+                for collective_ds_application in self._obj.collectiveDmsApplications
+            ]
+
         return super().get(key, default)
 
 
@@ -545,40 +518,6 @@ class VenuesEducationalStatusResponseModel(BaseModel):
 
 class VenuesEducationalStatusesResponseModel(BaseModel):
     statuses: list[VenuesEducationalStatusResponseModel]
-
-
-class AdageCulturalPartner(BaseModel):
-    id: int
-    venueId: int | None
-    siret: str | None
-    regionId: int | None
-    academieId: str | None
-    statutId: int | None
-    labelId: int | None
-    typeId: int | None
-    communeId: str | None
-    libelle: str
-    adresse: str | None
-    siteWeb: str | None
-    latitude: float | None
-    longitude: float | None
-    statutLibelle: str | None
-    labelLibelle: str | None
-    typeIcone: str | None
-    typeLibelle: str | None
-    communeLibelle: str | None
-    communeDepartement: str | None
-    academieLibelle: str | None
-    regionLibelle: str | None
-    domaines: str | None
-    actif: int | None
-    dateModification: datetime
-    synchroPass: int | None
-    domaineIds: str | None
-
-
-class AdageCulturalPartners(BaseModel):
-    partners: list[AdageCulturalPartner]
 
 
 class AdageCulturalPartnerResponseModel(BaseModel):

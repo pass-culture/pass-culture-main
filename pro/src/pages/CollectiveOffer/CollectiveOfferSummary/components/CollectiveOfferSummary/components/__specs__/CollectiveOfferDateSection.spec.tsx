@@ -1,5 +1,4 @@
 import { screen } from '@testing-library/react'
-import React from 'react'
 
 import { getCollectiveOfferTemplateFactory } from 'commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
@@ -16,14 +15,12 @@ const renderCollectiveOfferDateSection = (
 }
 
 describe('CollectiveOfferDateSection', () => {
-  let props: CollectiveOfferDateSectionProps
   it('should show the dates section if there are dates in the offer', () => {
     const offer = getCollectiveOfferTemplateFactory({
       dates: { start: '2023-10-24T09:14:00', end: '2023-10-24T09:16:00' },
     })
 
     renderCollectiveOfferDateSection({
-      ...props,
       offer,
     })
     expect(screen.getByText('Date et heure')).toBeInTheDocument()
@@ -35,7 +32,6 @@ describe('CollectiveOfferDateSection', () => {
     })
 
     renderCollectiveOfferDateSection({
-      ...props,
       offer,
     })
     expect(

@@ -1,10 +1,10 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
-import React from 'react'
 import * as yup from 'yup'
 
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
+import { emailSchema } from 'commons/utils/isValidEmail'
 import { Button } from 'ui-kit/Button/Button'
 
 import { FormNotifications } from '../FormNotifications'
@@ -20,9 +20,7 @@ const renderFormNotifications = (
       then: (schema) =>
         schema
           .required('Veuillez renseigner une adresse email')
-          .email(
-            'Veuillez renseigner un email valide, exemple : mail@exemple.com'
-          ),
+          .test(emailSchema),
     }),
   })
 

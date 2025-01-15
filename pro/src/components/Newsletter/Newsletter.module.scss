@@ -1,5 +1,5 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_size.scss" as size;
+@use "styles/mixins/_size.scss" as size;
 
 .newsletter-container {
   position: relative;
@@ -33,10 +33,6 @@
     padding-left: rem.torem(16px);
     padding-right: rem.torem(16px);
     min-height: rem.torem(53px);
-
-    // We use "em" here because em is based on element font-size
-    // and we want line-height to grow together with font-size
-    line-height: 1.25em;
 
     @media (min-width: size.$tablet) {
       padding-right: 20%;

@@ -7,7 +7,6 @@ import pytest
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -39,7 +38,7 @@ class CollectiveOfferTest:
     # 5. fetch the offerVenue's details (Venue)
     num_queries = 5
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_get_collective_offer_for_my_institution_without_feature_toggle(self, eac_client, redactor):
         START_DATE = datetime.today() + timedelta(days=3)
         venue = offerers_factories.VenueFactory()
@@ -86,7 +85,7 @@ class CollectiveOfferTest:
             assert response_data[1]["stock"]["id"] == stocks[1].id
             assert response_data[2]["id"] == stock_with_cancelled_booking.collectiveOffer.id
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_get_collective_offer_for_my_institution_with_feature_toggle(self, eac_client, redactor):
         START_DATE = datetime.today() + timedelta(days=3)
         venue = offerers_factories.VenueFactory()

@@ -31,7 +31,7 @@ class Returns200Test:
         assert user.checkPassword("N3W_p4ssw0rd") is True
         assert response.status_code == 204
         assert len(mails_testing.outbox) == 1
-        expected_params = {"EVENT_DATE": "17 novembre 2020", "EVENT_HOUR": "16h00"}
+        expected_params = {"EVENT_DATE": "mardi 17 novembre 2020", "EVENT_HOUR": "16h00"}
         assert mails_testing.outbox[0]["params"] == expected_params
 
     @time_machine.travel("2020-11-17 15:00:00")
@@ -47,7 +47,7 @@ class Returns200Test:
         client = client.with_session_auth(user.email)
         client.post("/users/password", json=data)
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0]["params"] == {"EVENT_DATE": "18 novembre 2020", "EVENT_HOUR": "03h00"}
+        assert mails_testing.outbox[0]["params"] == {"EVENT_DATE": "mercredi 18 novembre 2020", "EVENT_HOUR": "03h00"}
 
 
 class Returns400Test:

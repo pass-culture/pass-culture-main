@@ -119,6 +119,15 @@ def create_event() -> utils.BackofficeResponse:
 @operations_blueprint.route("/<int:special_event_id>", methods=["GET"])
 @atomic()
 def get_event_details(special_event_id: int) -> utils.BackofficeResponse:
+    response_form = operations_forms.OperationResponseForm(formdata=utils.get_query_params())
+    if not response_form.validate():
+        flash(utils.build_form_error_msg(response_form), "warning")
+        return redirect(url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id), 303)
+
+    response_rows_filters = [operations_models.SpecialEventResponse.eventId == special_event_id]
+    if response_status_data := response_form.response_status.data:
+        response_rows_filters.append(operations_models.SpecialEventResponse.status.in_(response_status_data))
+
     special_event_query = operations_models.SpecialEvent.query.filter(
         operations_models.SpecialEvent.id == special_event_id
     ).options(
@@ -149,7 +158,7 @@ def get_event_details(special_event_id: int) -> utils.BackofficeResponse:
             operations_models.SpecialEventResponse,
             full_answers_subquery.label("full_answers"),
         )
-        .filter(operations_models.SpecialEventResponse.eventId == special_event_id)
+        .filter(*response_rows_filters)
         .options(
             sa.orm.joinedload(operations_models.SpecialEventResponse.user).load_only(
                 users_models.User.id,
@@ -167,6 +176,7 @@ def get_event_details(special_event_id: int) -> utils.BackofficeResponse:
         "operations/details.html",
         special_event=special_event,
         response_rows=response_rows,
+        response_form=response_form,
         active_tab=request.args.get("active_tab", "responses"),
     )
 
@@ -182,10 +192,7 @@ def validate_response(special_event_id: int, response_id: int) -> utils.Backoffi
     db.session.add(response)
 
     return redirect(
-        url_for(
-            "backoffice_web.operations.get_event_details",
-            special_event_id=special_event_id,
-        ),
+        request.referrer or url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id),
         303,
     )
 
@@ -201,10 +208,7 @@ def preselect_response(special_event_id: int, response_id: int) -> utils.Backoff
     db.session.add(response)
 
     return redirect(
-        url_for(
-            "backoffice_web.operations.get_event_details",
-            special_event_id=special_event_id,
-        ),
+        request.referrer or url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id),
         303,
     )
 
@@ -220,9 +224,6 @@ def reject_response(special_event_id: int, response_id: int) -> utils.Backoffice
     db.session.add(response)
 
     return redirect(
-        url_for(
-            "backoffice_web.operations.get_event_details",
-            special_event_id=special_event_id,
-        ),
+        request.referrer or url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id),
         303,
     )

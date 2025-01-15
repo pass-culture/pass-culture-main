@@ -1,9 +1,9 @@
 from unittest import mock
 
 from google.cloud import tasks_v2
+import pytest
 
 from pcapi import settings
-from pcapi.core.testing import override_settings
 from pcapi.routes.serialization import BaseModel
 from pcapi.tasks.decorator import task
 from pcapi.utils import requests
@@ -37,7 +37,7 @@ class CloudTaskDecoratorTest:
 
         assert slow_chouquette_handler.call_args_list == [mock.call(12), mock.call(12)]
 
-    @override_settings(IS_REBUILD_STAGING=True)
+    @pytest.mark.settings(IS_REBUILD_STAGING=True)
     @mock.patch("pcapi.tasks.cloud_task.requests.post")
     def test_rebuild_staging_does_not_create_cloud_task(self, requests_post):
         # When rebuilding staging, we do not call any cloud_task
@@ -50,7 +50,7 @@ class CloudTaskDecoratorTest:
         assert slow_chouquette_handler.call_args_list == [mock.call(12), mock.call(12)]
 
     @mock.patch("pcapi.tasks.cloud_task.AUTHORIZATION_HEADER_VALUE", "Bearer secret-token")
-    @override_settings(IS_JOB_SYNCHRONOUS=False)
+    @pytest.mark.settings(IS_JOB_SYNCHRONOUS=False)
     @mock.patch("pcapi.tasks.cloud_task.requests.post")
     def test_calling_function_in_development_environment(self, requests_post):
         # When running locally ("development" environment), the
@@ -79,7 +79,7 @@ class CloudTaskDecoratorTest:
         )
 
     @mock.patch("pcapi.tasks.cloud_task.AUTHORIZATION_HEADER_VALUE", "Bearer secret-token")
-    @override_settings(IS_JOB_SYNCHRONOUS=False, CLOUD_TASK_CALL_INTERNAL_API_ENDPOINT=False)
+    @pytest.mark.settings(IS_JOB_SYNCHRONOUS=False, CLOUD_TASK_CALL_INTERNAL_API_ENDPOINT=False)
     def test_calling_function_calls_google_cloud_tasks(self, cloud_task_client):
         # When running in production, the decorated function is not
         # directly executed. Instead, we call Google Cloud Tasks and

@@ -1,6 +1,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_size.scss" as size;
+@use "styles/mixins/_size.scss" as size;
 
 .button {
   @include fonts.button;
@@ -121,6 +121,7 @@
   &-quaternary-pink {
     color: var(--color-black);
     align-items: flex-start;
+    justify-content: flex-start;
     background-color: transparent;
     border-radius: rem.torem(4px);
     padding: 0;
@@ -148,7 +149,7 @@
     }
 
     .button-icon:not(.has-tooltip) {
-      height: rem.torem(20px);
+      height: var(--typography-body-line-height);
       width: rem.torem(20px);
       margin-right: rem.torem(8px);
     }
@@ -161,14 +162,14 @@
   }
 
   &-quaternary {
-    @include fonts.caption;
+    @include fonts.body-accent-xs;
 
     margin-top: rem.torem(6px);
     margin-bottom: rem.torem(6px);
     color: var(--color-black);
 
     .button-icon:not(.has-tooltip) {
-      height: rem.torem(16px);
+      height: var(--typography-body-xs-line-height);
       width: rem.torem(16px);
       margin-right: rem.torem(4px);
     }
@@ -202,21 +203,6 @@
     &:hover:not(:disabled, .button-disabled) {
       box-shadow: rem.torem(0) rem.torem(3px) rem.torem(4px)
         var(--color-medium-shadow);
-    }
-
-    &:focus-visible {
-      &:not(.button-disabled) {
-        position: relative;
-
-        &::before {
-          display: block;
-          content: "";
-          position: absolute;
-          inset: rem.torem(-4px);
-          border: 1px solid var(--color-input-text-color);
-          border-radius: rem.torem(8px);
-        }
-      }
     }
 
     .button-arrow-content {

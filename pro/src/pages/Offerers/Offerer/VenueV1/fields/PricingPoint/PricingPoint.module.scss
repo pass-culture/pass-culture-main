@@ -5,7 +5,7 @@
   margin: rem.torem(24px) 0;
 
   .text-hightlight {
-    @include fonts.body-exergue;
+    @include fonts.body-accent;
   }
 }
 

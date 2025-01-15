@@ -1,13 +1,12 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
-@use "styles/mixins/fonts.scss" as fonts;
-@use "styles/variables/_size.scss" as size;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_size.scss" as size;
 
 .dialog {
   max-width: rem.torem(300px);
 
   &-title {
-    @include fonts-design-system.title3;
+    @include fonts.title3;
 
     margin-bottom: rem.torem(24px);
   }
@@ -23,7 +22,7 @@
     width: rem.torem(592px);
   }
 
-  @media (min-width: size.$mobile) {
+  @media screen and (min-width: size.$tablet) {
     max-width: rem.torem(592px);
   }
 }
@@ -48,7 +47,7 @@
   flex-wrap: wrap;
   gap: rem.torem(16px);
 
-  @media (min-width: size.$mobile) {
+  @media screen and (min-width: size.$tablet) {
     flex-wrap: nowrap;
   }
 }
@@ -65,7 +64,7 @@
   margin-top: rem.torem(48px);
 
   &-title {
-    @include fonts-design-system.title3;
+    @include fonts.title3;
   }
 
   &-icon {

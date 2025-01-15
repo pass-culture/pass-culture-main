@@ -41,10 +41,10 @@ class GetAvailableProvidersTest:
 
     def test_basics(self):
         self._clean()
-        provider = factories.APIProviderFactory(name="Other")
+        provider = factories.PublicApiProviderFactory(name="Other")
         _provider_allocine = factories.AllocineProviderFactory(name="Allociné")
-        _not_active = factories.APIProviderFactory(isActive=False)
-        _not_enabled_for_pro = factories.APIProviderFactory(enabledForPro=False)
+        _not_active = factories.PublicApiProviderFactory(isActive=False)
+        _not_enabled_for_pro = factories.PublicApiProviderFactory(enabledForPro=False)
 
         venue = offerers_factories.VenueFactory()
 
@@ -54,7 +54,7 @@ class GetAvailableProvidersTest:
     def test_allocine(self):
         self._clean()
         provider_allocine = factories.AllocineProviderFactory(name="Allociné")
-        provider_other = factories.APIProviderFactory(name="Other")
+        provider_other = factories.PublicApiProviderFactory(name="Other")
 
         venue = offerers_factories.VenueFactory()
         factories.AllocineTheaterFactory(siret=venue.siret)
@@ -64,7 +64,7 @@ class GetAvailableProvidersTest:
 
     def test_cinema_providers(self):
         self._clean()
-        provider_other = factories.APIProviderFactory(name="Other")
+        provider_other = factories.PublicApiProviderFactory(name="Other")
         provider_cds = factories.ProviderFactory(name="CDS", localClass="CDSStocks")
         venue = offerers_factories.VenueFactory()
         factories.CinemaProviderPivotFactory(venue=venue, provider=provider_cds)

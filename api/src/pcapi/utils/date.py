@@ -6,7 +6,6 @@ from datetime import timezone as tz
 from zoneinfo import ZoneInfo
 
 from babel.dates import format_date
-from babel.dates import format_datetime as babel_format_datetime
 from dateutil.parser import parserinfo
 from psycopg2.extras import NumericRange
 import pytz
@@ -82,10 +81,6 @@ class FrenchParserInfo(parserinfo):
     ]
 
 
-def format_datetime(date_time: datetime) -> str:
-    return babel_format_datetime(date_time, format="d MMMM y, HH:mm", locale="fr")
-
-
 def get_postal_code_timezone(postal_code: str) -> str:
     return get_department_timezone(postal_code_utils.PostalCode(postal_code).get_departement_code())
 
@@ -107,8 +102,12 @@ def format_into_utc_date(date_to_format: datetime) -> str:
     return date_to_format.isoformat() + "Z"
 
 
-def get_date_formatted_for_email(date_time: datetime) -> str:
-    return format_date(date_time, format="d MMMM YYYY", locale="fr")
+def get_date_formatted_for_email(date_time: datetime | date) -> str:
+    formatted_date = format_date(date_time, format="full", locale="fr")
+    split_date = formatted_date.split(" ")
+    if split_date[1] == "1":
+        return split_date[0] + " 1er " + " ".join(split_date[2:])
+    return formatted_date
 
 
 def get_time_formatted_for_email(date_time: datetime) -> str:

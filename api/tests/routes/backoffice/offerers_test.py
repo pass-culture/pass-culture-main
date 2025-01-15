@@ -9,6 +9,7 @@ import pytest
 
 from pcapi import settings
 from pcapi.connectors.clickhouse import queries as clickhouse_queries
+from pcapi.connectors.clickhouse import query_mock as clickhouse_query_mock
 from pcapi.connectors.entreprise.backends.testing import TestingBackend
 from pcapi.core import search
 from pcapi.core.bookings import factories as bookings_factories
@@ -27,7 +28,6 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users import testing
@@ -37,8 +37,6 @@ from pcapi.routes.backoffice.filters import format_date
 from pcapi.routes.backoffice.filters import format_date_time
 from pcapi.routes.backoffice.offerers import offerer_blueprint
 from pcapi.routes.backoffice.pro.forms import TypeOptions
-
-from tests.connectors.clickhouse import fixtures as clickhouse_fixtures
 
 from .helpers import button as button_helpers
 from .helpers import html_parser
@@ -639,10 +637,10 @@ class UpdateOffererTest(PostEndpointHelper):
         history_rows = html_parser.extract_table_rows(history_response.data)
         assert len(history_rows) == 1
         assert history_rows[0]["Type"] == history_models.ActionType.INFO_MODIFIED.value
-        assert f"Nom juridique : {old_name} => {offerer_to_edit.name}" in history_rows[0]["Commentaire"]
-        assert f"Ville : {old_city} => {offerer_to_edit.city}" in history_rows[0]["Commentaire"]
-        assert f"Code postal : {old_postal_code} => {offerer_to_edit.postalCode}" in history_rows[0]["Commentaire"]
-        assert f"Adresse : {old_street} => {offerer_to_edit.street}" in history_rows[0]["Commentaire"]
+        assert f"Nom juridique : {old_name} → {offerer_to_edit.name}" in history_rows[0]["Commentaire"]
+        assert f"Ville : {old_city} → {offerer_to_edit.city}" in history_rows[0]["Commentaire"]
+        assert f"Code postal : {old_postal_code} → {offerer_to_edit.postalCode}" in history_rows[0]["Commentaire"]
+        assert f"Adresse : {old_street} → {offerer_to_edit.street}" in history_rows[0]["Commentaire"]
 
         assert len(testing.sendinblue_requests) == 4
         assert {sendinblue_request["email"] for sendinblue_request in testing.sendinblue_requests} == {
@@ -686,7 +684,7 @@ class UpdateOffererTest(PostEndpointHelper):
         assert len(history_rows) == 1
         assert history_rows[0]["Type"] == history_models.ActionType.INFO_MODIFIED.value
         assert history_rows[0]["Auteur"] == legit_user.full_name
-        assert "Premier tag => Deuxième tag, Troisième tag" in history_rows[0]["Commentaire"]
+        assert "Premier tag → Deuxième tag, Troisième tag" in history_rows[0]["Commentaire"]
         for item in ("Adresse", "Code postal", "Ville"):
             assert item not in history_rows[0]["Commentaire"]
 
@@ -874,10 +872,10 @@ class GetOffererStatsTest(GetEndpointHelper):
         assert expected_revenue_text in cards_text[0]
         assert "3 offres actives ( 1 IND / 2 EAC ) 0 offres inactives ( 0 IND / 0 EAC )" in cards_text
 
-    @override_features(WIP_ENABLE_CLICKHOUSE_IN_BO=True)
+    @pytest.mark.features(WIP_ENABLE_CLICKHOUSE_IN_BO=True)
     @patch(
         "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
-        return_value=[clickhouse_queries.TotalAggregatedRevenueModel(expectedRevenue=70.48)],
+        return_value=[clickhouse_queries.TotalExpectedRevenueModel(expected_revenue=70.48)],
     )
     def test_offerer_total_revenue_from_clickhouse(self, mock_run_query, authenticated_client):
         offerer_id = offerers_factories.VenueFactory().managingOffererId
@@ -1033,18 +1031,18 @@ class GetOffererRevenueDetailsTest(GetEndpointHelper):
     # check feature flag: WIP_ENABLE_CLICKHOUSE_IN_BO
     expected_num_queries_when_clickhouse_enabled = 4
 
-    @override_features(WIP_ENABLE_CLICKHOUSE_IN_BO=True)
+    @pytest.mark.features(WIP_ENABLE_CLICKHOUSE_IN_BO=True)
     @patch(
         "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
         return_value=[
-            clickhouse_fixtures.MockYearlyAggregatedRevenueQueryResult(
+            clickhouse_query_mock.MockAggregatedRevenueQueryResult(
                 2024,
                 individual=Decimal("246.80"),
                 expected_individual=Decimal("357.90"),
                 collective=Decimal("750"),
                 expected_collective=Decimal("1250"),
             ),
-            clickhouse_fixtures.MockYearlyAggregatedRevenueQueryResult(
+            clickhouse_query_mock.MockAggregatedRevenueQueryResult(
                 2022,
                 individual=Decimal("123.40"),
                 expected_individual=Decimal("123.40"),
@@ -1140,7 +1138,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
         assert rows[1]["Type"] == "Fraude et Conformité"
         assert (
             rows[1]["Commentaire"]
-            == "Informations modifiées : Validation des offres : Revue manuelle => Validation auto"
+            == "Informations modifiées : Validation des offres : Revue manuelle → Validation auto"
         )
         assert rows[1]["Auteur"] == pro_fraud_admin.full_name
 
@@ -1241,7 +1239,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
     def test_get_full_sorted_history(self, authenticated_client, legit_user):
         admin = users_factories.UserFactory()
         user_offerer = offerers_factories.UserOffererFactory()
-        history_factories.ActionHistoryFactory(
+        new_offerer_action = history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 3, 13, 1),
             actionType=history_models.ActionType.OFFERER_NEW,
             authorUser=user_offerer.user,
@@ -1249,7 +1247,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
             offerer=user_offerer.offerer,
             comment=None,
         )
-        history_factories.ActionHistoryFactory(
+        pending_offerer_action = history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 4, 14, 2),
             actionType=history_models.ActionType.OFFERER_PENDING,
             authorUser=admin,
@@ -1257,7 +1255,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
             offerer=user_offerer.offerer,
             comment="Documents complémentaires demandés",
         )
-        history_factories.ActionHistoryFactory(
+        comment_action = history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 5, 15, 3),
             actionType=history_models.ActionType.COMMENT,
             authorUser=legit_user,
@@ -1265,7 +1263,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
             offerer=user_offerer.offerer,
             comment="Documents reçus",
         )
-        history_factories.ActionHistoryFactory(
+        validated_offerer_action = history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 6, 16, 4),
             actionType=history_models.ActionType.OFFERER_VALIDATED,
             authorUser=admin,
@@ -1273,7 +1271,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
             offerer=user_offerer.offerer,
             comment=None,
         )
-        history_factories.ActionHistoryFactory(
+        other_comment_action = history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 6, 17, 5),
             actionType=history_models.ActionType.COMMENT,
             authorUser=admin,

@@ -294,19 +294,18 @@ class Returns200Test:
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
     def test_access_by_unauthorized_pro_user(self, client):
-        # Given
         pro_user = users_factories.ProFactory()
         offer = educational_factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-        # When
         client = client.with_session_auth(email=pro_user.email)
         offer_id = offer.id
-        expected_num_queries = 4
+        expected_num_queries = 5
         # session
         # user
         # offerer
         # user_offerer
+        # rollback
         with assert_num_queries(expected_num_queries):
             response = client.get(f"/collective/offers/{offer_id}")
             assert response.status_code == 403
@@ -385,11 +384,12 @@ class GetCollectiveOfferRequestTest:
         )
 
         client = client.with_session_auth(email=pro_user.email)
-        expected_num_queries = 4
+        expected_num_queries = 5
         # session
         # user
         # collective_offer_request
         # user_offerer
+        # rollback
         with assert_num_queries(expected_num_queries):
             response = client.get(dst)
             assert response.status_code == 403
@@ -408,6 +408,6 @@ class GetCollectiveOfferRequestTest:
         )
 
         client = client.with_session_auth(email=pro_user.email)
-        with assert_num_queries(3):  #  session + user + collective_offer_request
+        with assert_num_queries(4):  #  session + user + collective_offer_request + rollback
             response = client.get(dst)
             assert response.status_code == 404

@@ -1,5 +1,4 @@
 import cn from 'classnames'
-import React from 'react'
 
 import { AccessibilityEnum } from 'commons/core/shared/types'
 import strokeAccessibilityBrain from 'icons/stroke-accessibility-brain.svg'

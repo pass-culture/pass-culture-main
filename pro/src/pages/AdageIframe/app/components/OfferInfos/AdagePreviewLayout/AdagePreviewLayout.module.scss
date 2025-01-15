@@ -1,5 +1,5 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_size.scss" as size;
+@use "styles/mixins/_size.scss" as size;
 
 .fake-adage-page {
   margin-top: rem.torem(32px);
@@ -13,6 +13,10 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 rem.torem(10px);
+
+    &-logo {
+      max-height: 100%;
+    }
 
     &-burger {
       border: 0.5px solid var(--color-white);
@@ -49,7 +53,7 @@
   }
 }
 
-@media (min-width: size.$mobile) {
+@media screen and (min-width: size.$tablet) {
   .fake-adage-page-pass {
     margin: rem.torem(40px);
   }

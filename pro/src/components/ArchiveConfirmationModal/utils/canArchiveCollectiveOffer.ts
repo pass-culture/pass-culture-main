@@ -9,13 +9,13 @@ import {
 } from 'apiClient/v1'
 import { isCollectiveOfferTemplate } from 'commons/core/OfferEducational/types'
 
-// FIXME: delete the functions in this file when the ticket front is finished : https://passculture.atlassian.net/browse/PC-30662
+// TODO: delete the functions in this file when the ticket front is finished : https://passculture.atlassian.net/browse/PC-30662
 export function canArchiveCollectiveOffer(offer: CollectiveOfferResponseModel) {
   if (offer.status === CollectiveOfferStatus.ARCHIVED) {
     return false
   }
 
-  const startDatetime = offer.stocks[0].beginningDatetime
+  const startDatetime = offer.stocks[0].startDatetime
 
   const canArchiveThisOffer =
     offer.status === CollectiveOfferStatus.ACTIVE ||
@@ -52,7 +52,7 @@ export function canArchiveCollectiveOfferFromSummary(
 
     return canArchiveThisOffer
   } else {
-    const startDatetime = offer.collectiveStock?.beginningDatetime
+    const startDatetime = offer.collectiveStock?.startDatetime
 
     const canArchiveThisOffer =
       offer.status === CollectiveOfferStatus.ACTIVE ||

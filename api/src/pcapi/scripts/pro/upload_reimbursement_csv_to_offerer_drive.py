@@ -78,14 +78,15 @@ def _create_and_get_csv_file(user_id: int, batch_id: int, parent_folder_id: str,
         )
         return None
 
-    reimbursement_details = find_reimbursement_details_by_invoices([invoice.reference for invoice in invoices])
-    csv_lines = [reimbursement_detail.as_csv_row() for reimbursement_detail in reimbursement_details]
     headers = ReimbursementDetails.get_csv_headers()
     local_path = pathlib.Path(tempfile.mkdtemp()) / filename
-    with open(local_path, "w+", encoding="utf-8") as fp:
+    with open(local_path, "a+", encoding="utf-8") as fp:
         writer = csv.writer(fp, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
         writer.writerow(headers)
-        writer.writerows(csv_lines)
+        for invoice in invoices:
+            reimbursement_details = find_reimbursement_details_by_invoices([invoice.reference])
+            for reimbursement_detail in reimbursement_details:
+                writer.writerow(reimbursement_detail.as_csv_row())
 
     try:
         link_to_csv = gdrive_api.create_file(

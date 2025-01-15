@@ -1,8 +1,6 @@
 from flask import url_for
 import pytest
 
-from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 from pcapi.models.feature import Feature
 
 
@@ -10,7 +8,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class FeaturesToggleTest:
-    @override_features(ENABLE_NATIVE_APP_RECAPTCHA=False)
+    @pytest.mark.features(ENABLE_NATIVE_APP_RECAPTCHA=False)
     def test_set_features(self, client):
         response = client.patch(
             "/testing/features",
@@ -37,7 +35,7 @@ def test_create_adage_jwt_fake_token(client):
     assert response.json["token"]
 
 
-@override_settings(ENABLE_TEST_ROUTES=False)
+@pytest.mark.settings(ENABLE_TEST_ROUTES=False)
 def test_route_unreachable(client):
     dst = url_for("adage_iframe.create_adage_jwt_fake_token")
     response = client.get(dst)

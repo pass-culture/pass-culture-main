@@ -6,7 +6,7 @@ import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { useNotification } from 'commons/hooks/useNotification'
-import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { sendSentryCustomError } from 'commons/utils/sendSentryCustomError'
 import strokeValidIcon from 'icons/stroke-valid.svg'
 import { Button } from 'ui-kit/Button/Button'
@@ -34,6 +34,7 @@ export const UserReviewDialog = () => {
       await api.submitUserReview({
         offererId: selectedOffererId!,
         location: location.pathname,
+        pageTitle: document.title,
         userSatisfaction: formValues.userSatisfaction,
         userComment: formValues.userComment,
       })

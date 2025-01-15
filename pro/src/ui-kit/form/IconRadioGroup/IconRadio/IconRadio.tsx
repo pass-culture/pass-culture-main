@@ -14,9 +14,6 @@ interface IconRadioProps
   icon: string | JSX.Element
   hasError?: boolean
   className?: string
-  withBorder?: boolean
-  fullWidth?: boolean
-  ariaDescribedBy?: string
 }
 
 export const IconRadio = ({
@@ -26,9 +23,6 @@ export const IconRadio = ({
   icon,
   hasError,
   className,
-  withBorder = false,
-  fullWidth = false,
-  ariaDescribedBy,
   ...props
 }: IconRadioProps): JSX.Element => {
   const id = useId()

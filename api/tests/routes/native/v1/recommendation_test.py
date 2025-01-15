@@ -1,6 +1,8 @@
 import json
 import urllib.parse
 
+import pytest
+
 from pcapi.core import testing
 import pcapi.core.users.factories as users_factories
 from pcapi.utils import requests
@@ -25,7 +27,7 @@ class SimilarOffersTest:
 
         assert response.json["results"] == ["320", "321", "322"]
 
-    @testing.override_settings(
+    @pytest.mark.settings(
         RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
         RECOMMENDATION_API_URL="https://example.com/recommendation/",
     )
@@ -38,7 +40,7 @@ class SimilarOffersTest:
         query = dict(urllib.parse.parse_qsl(mocked.last_request.query))
         assert query["longitude"] == "12.23"
 
-    @testing.override_settings(
+    @pytest.mark.settings(
         RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
         RECOMMENDATION_API_URL="https://example.com/recommendation/",
     )
@@ -52,7 +54,7 @@ class SimilarOffersTest:
         query = urllib.parse.parse_qsl(mocked.last_request.query)
         assert query == [("categories", "TEST_CATEGORY"), ("categories", "TEST_CATEGORY2")]
 
-    @testing.override_settings(
+    @pytest.mark.settings(
         RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
         RECOMMENDATION_API_URL="https://example.com/recommendation/",
     )
@@ -66,7 +68,7 @@ class SimilarOffersTest:
             assert response.status_code == 504
         assert response.json == {"code": "RECOMMENDATION_API_TIMEOUT"}
 
-    @testing.override_settings(
+    @pytest.mark.settings(
         RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
         RECOMMENDATION_API_URL="https://example.com/recommendation/",
     )
@@ -98,7 +100,7 @@ class PlaylistTest:
 
         assert response.json["playlistRecommendedOffers"] == ["300", "301", "302"]
 
-    @testing.override_settings(
+    @pytest.mark.settings(
         RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
         RECOMMENDATION_API_URL="https://example.com/recommendation/",
     )
@@ -117,7 +119,7 @@ class PlaylistTest:
         body = json.loads(mocked.last_request.body)
         assert body["isEvent"] is True
 
-    @testing.override_settings(
+    @pytest.mark.settings(
         RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
         RECOMMENDATION_API_URL="https://example.com/recommendation/",
     )
@@ -136,7 +138,7 @@ class PlaylistTest:
 
         assert response.json == {"code": "RECOMMENDATION_API_TIMEOUT"}
 
-    @testing.override_settings(
+    @pytest.mark.settings(
         RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
         RECOMMENDATION_API_URL="https://example.com/recommendation/",
     )

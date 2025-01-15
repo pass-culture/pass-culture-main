@@ -10,7 +10,7 @@
           size: A4;
           margin: 2cm 1cm;
           @top-left {
-              content: "Relevé n°{{ invoice.reference }} du {{ invoice.date.strftime('%d/%m/%Y') }}";
+              content: "Relevé n°{{ invoice.reference }} du {{ invoice_date }}";
               color: #870087;
               font-size: 10pt;
               font-style: normal;
@@ -49,7 +49,7 @@
       }
 
       title:after {
-          content: "Relevé n°{{ invoice.reference }} du {{ invoice.date.strftime('%d/%m/%Y') }}";
+          content: "Relevé n°{{ invoice.reference }} du {{ invoice_date }}";
           color: #870087;
           font-size: 10pt;
           font-style: normal;

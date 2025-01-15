@@ -7,6 +7,7 @@ import uuid
 import factory
 from factory.faker import faker
 
+import pcapi.core.artist.models as artist_models
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.factories import BaseFactory
 import pcapi.core.offerers.factories as offerers_factories
@@ -72,14 +73,8 @@ class ProductMediationFactory(BaseFactory):
         model = models.ProductMediation
 
     product = factory.SubFactory(ProductFactory)
-    url = factory.Sequence("http://example.com/product/{}".format)
+    uuid = factory.LazyFunction(lambda: str(uuid.uuid4()))
     imageType = offers_models.TiteliveImageType.RECTO
-
-    @factory.lazy_attribute
-    def uuid(self) -> None:
-        # Temporary extract the last part after the '/' in the URL.
-        # As soon as url is deleted, this can be removed.
-        return self.url.split("/")[-1]
 
 
 class EventProductFactory(ProductFactory):
@@ -223,6 +218,13 @@ class OfferFactory(BaseFactory):
         return super()._create(model_class, *args, **kwargs)
 
 
+class ArtistProductLinkFactory(BaseFactory):
+    class Meta:
+        model = artist_models.ArtistProductLink
+
+    artist_type = artist_models.ArtistType.AUTHOR
+
+
 def _check_offer_kwargs(product: models.Product, kwargs: dict[str, typing.Any]) -> None:
     if kwargs.get("name") and kwargs.get("name") != product.name:
         raise ValueError("Name of the offer and the product must be the same")
@@ -255,6 +257,15 @@ class DigitalOfferFactory(OfferFactory):
     url = factory.Sequence("http://example.com/offer/{}".format)
     venue = factory.SubFactory(offerers_factories.VirtualVenueFactory)
     offererAddress = None
+
+
+class HeadlineOfferFactory(BaseFactory):
+    class Meta:
+        model = models.HeadlineOffer
+
+    offer = factory.SubFactory(OfferFactory)
+    venue = factory.SelfAttribute("offer.venue")
+    timespan = (datetime.datetime.utcnow(),)
 
 
 class PriceCategoryLabelFactory(BaseFactory):

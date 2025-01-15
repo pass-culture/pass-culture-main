@@ -11,11 +11,11 @@ from pydantic.v1 import validator
 import pcapi.core.categories.subcategories_v2 as subcategories
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
+from pcapi.core.educational.models import OfferAddressType
 from pcapi.core.educational.models import StudentLevels
 from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.routes.public.documentation_constants.fields import fields
 from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.routes.serialization.collective_offers_serialize import validate_venue_id
 from pcapi.routes.serialization.national_programs import NationalProgramModel
 from pcapi.routes.shared.collective.serialization import offers as shared_offers
@@ -39,7 +39,7 @@ class ListCollectiveOffersQueryModel(BaseModel):
 class OfferVenueModel(BaseModel):
     venueId: int | None = fields.VENUE_ID
     otherAddress: str | None = fields.OFFER_VENUE_OTHER_ADDRESS
-    addressType: collective_offers_serialize.OfferAddressType = fields.OFFER_VENUE_ADDRESS_TYPE
+    addressType: OfferAddressType = fields.OFFER_VENUE_ADDRESS_TYPE
 
     _validated_venue_id = validator("venueId", pre=True, allow_reuse=True)(validate_venue_id)
 
@@ -266,7 +266,6 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
     status: str = fields.COLLECTIVE_OFFER_STATUS
     name: str = fields.COLLECTIVE_OFFER_NAME
     description: str | None = fields.COLLECTIVE_OFFER_DESCRIPTION
-    subcategoryId: str | None = fields.COLLECTIVE_OFFER_SUBCATEGORY_ID
     bookingEmails: list[str] | None = fields.COLLECTIVE_OFFER_BOOKING_EMAILS
     contactEmail: str = fields.COLLECTIVE_OFFER_CONTACT_EMAIL
     contactPhone: str = fields.COLLECTIVE_OFFER_CONTACT_PHONE
@@ -318,7 +317,6 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
             status=offer.status.name,
             name=offer.name,
             description=offer.description,
-            subcategoryId=offer.subcategoryId,
             bookingEmails=offer.bookingEmails,
             contactEmail=offer.contactEmail,  # type: ignore[arg-type]
             contactPhone=offer.contactPhone,  # type: ignore[arg-type]
@@ -371,8 +369,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     venue_id: int = fields.VENUE_ID
     name: str = fields.COLLECTIVE_OFFER_NAME
     description: str = fields.COLLECTIVE_OFFER_DESCRIPTION
-    subcategory_id: str | None = fields.COLLECTIVE_OFFER_SUBCATEGORY_ID
-    formats: list[subcategories.EacFormat] | None = fields.COLLECTIVE_OFFER_FORMATS
+    formats: list[subcategories.EacFormat] = fields.COLLECTIVE_OFFER_FORMATS
     booking_emails: list[str] = fields.COLLECTIVE_OFFER_BOOKING_EMAILS
     contact_email: str = fields.COLLECTIVE_OFFER_CONTACT_EMAIL
     contact_phone: str = fields.COLLECTIVE_OFFER_CONTACT_PHONE
@@ -415,24 +412,6 @@ class PostCollectiveOfferBodyModel(BaseModel):
     @validator("students")
     def validate_students(cls, students: list[str]) -> list[StudentLevels]:
         return shared_offers.validate_students(students)
-
-    @root_validator
-    def validate_formats_and_subcategory(cls, values: dict) -> dict:
-        formats = values.get("formats")
-        if formats:
-            return values
-
-        subcategory_id = values.get("subcategory_id")
-        if not subcategory_id:
-            raise ValueError("subcategory_id & formats: at least one should not be null")
-
-        try:
-            subcategory = subcategories.COLLECTIVE_SUBCATEGORIES[subcategory_id]
-        except KeyError:
-            raise ValueError("Unknown subcategory id")
-
-        values["formats"] = subcategory.formats
-        return values
 
     @validator("name", pre=True)
     def validate_name(cls, name: str) -> str:
@@ -493,7 +472,6 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     name: str | None = fields.COLLECTIVE_OFFER_NAME
     description: str | None = fields.COLLECTIVE_OFFER_DESCRIPTION
     venueId: int | None = fields.VENUE_ID
-    subcategoryId: str | None = fields.COLLECTIVE_OFFER_SUBCATEGORY_ID
     formats: list[subcategories.EacFormat] | None = fields.COLLECTIVE_OFFER_FORMATS
     bookingEmails: list[str] | None = fields.COLLECTIVE_OFFER_BOOKING_EMAILS
     contactEmail: str | None = fields.COLLECTIVE_OFFER_CONTACT_EMAIL

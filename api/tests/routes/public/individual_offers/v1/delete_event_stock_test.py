@@ -3,6 +3,8 @@ import decimal
 
 import pytest
 
+from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.bookings import models as bookings_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.models import WithdrawalTypeEnum
@@ -78,6 +80,23 @@ class DeleteEventStockTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 204
         assert response.json is None
         assert stock.isSoftDeleted is True
+
+    def test_stock_is_deleted_and_its_bookings_are_cancelled(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event, stock = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        bookings = bookings_factories.BookingFactory.create_batch(2, stock=stock)
+
+        response = client.with_explicit_token(plain_api_key).delete(
+            self.endpoint_url.format(event_id=event.id, stock_id=stock.id),
+        )
+
+        assert response.status_code == 204
+        assert response.json is None
+        assert stock.isSoftDeleted is True
+
+        for booking in bookings:
+            db.session.refresh(booking)
+            assert booking.status == bookings_models.BookingStatus.CANCELLED
 
     def test_should_raise_400_if_event_stock_beginning_date_was_more_than_two_days_ago(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()

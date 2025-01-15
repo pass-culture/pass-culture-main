@@ -1,8 +1,9 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
-import React from 'react'
 import * as yup from 'yup'
+
+import { emailSchema } from 'commons/utils/isValidEmail'
 
 import { EmailSpellCheckInput } from '../EmailSpellCheckInput'
 
@@ -18,7 +19,7 @@ const renderEmailSpellCheckInput = () => {
     <Formik
       initialValues={{ email: '' }}
       onSubmit={() => {}}
-      validationSchema={yup.string().required().email()}
+      validationSchema={yup.string().required().test(emailSchema)}
     >
       <EmailSpellCheckInput
         name="email"

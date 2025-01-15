@@ -1,8 +1,8 @@
 import cn from 'classnames'
-import React, { useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
-import { PreFiltersParams } from 'commons/core/Bookings/types'
+import { CollectivePreFiltersParams, PreFiltersParams } from 'commons/core/Bookings/types'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { useOnClickOrFocusOutside } from 'commons/hooks/useOnClickOrFocusOutside'
 import fullDownIcon from 'icons/full-down.svg'
@@ -14,12 +14,12 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import style from './MultiDownloadButtonsModal.module.scss'
 
-interface MultiDownloadButtonsModalType {
+type MultiDownloadButtonsModalType = {
   isDownloading: boolean
   isLocalLoading: boolean
   isFiltersDisabled: boolean
-  downloadFunction: (filters: PreFiltersParams, type: string) => Promise<void>
-  filters: PreFiltersParams
+  downloadFunction: (filters: PreFiltersParams | CollectivePreFiltersParams, type: 'CSV' | 'XLS') => Promise<void>
+  filters: PreFiltersParams | CollectivePreFiltersParams
   className?: string
 }
 

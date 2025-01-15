@@ -1,5 +1,4 @@
 import { useField } from 'formik'
-import React from 'react'
 
 import styles from './Slider.module.scss'
 
@@ -84,7 +83,7 @@ export const Slider = ({
       <div className={styles['slider-header']}>
         <label
           htmlFor={fieldName}
-          className={hideLabel ? 'visually-hidden' : ''}
+          className={hideLabel ? styles['visually-hidden'] : ''}
         >
           {inputAttrs.label}
         </label>
@@ -105,11 +104,11 @@ export const Slider = ({
       {displayMinMaxValues && (
         <div className={styles['min-max-container']}>
           <span>
-            <span className="visually-hidden">Entre </span>
+            <span className={styles['visually-hidden']}>Entre </span>
             {`${min} ${scale}`}
           </span>
           <span>
-            <span className="visually-hidden">et </span>
+            <span className={styles['visually-hidden']}>et </span>
             {`${max} ${scale}`}
           </span>
         </div>

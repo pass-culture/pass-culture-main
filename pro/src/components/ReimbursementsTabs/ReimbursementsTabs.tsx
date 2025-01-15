@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { GetOffererResponseModel } from 'apiClient/v1'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useActiveStep } from 'commons/hooks/useActiveStep'

@@ -26,7 +26,17 @@ class GetDateFormattedForEmailTest:
         date_formatted_for_email = get_date_formatted_for_email(december_23)
 
         # Then
-        assert date_formatted_for_email == "23 décembre 2019"
+        assert date_formatted_for_email == "lundi 23 décembre 2019"
+
+    def test_first_day_of_month_should_be_adapted_to_french(self):
+        # Given
+        december_23 = datetime.date(2019, 12, 1)
+
+        # When
+        date_formatted_for_email = get_date_formatted_for_email(december_23)
+
+        # Then
+        assert date_formatted_for_email == "dimanche 1er décembre 2019"
 
     def test_should_return_1_digit_day_when_day_is_less_than_10(self):
         # Given
@@ -36,7 +46,7 @@ class GetDateFormattedForEmailTest:
         date_formatted_for_email = get_date_formatted_for_email(december_09)
 
         # Then
-        assert date_formatted_for_email == "9 décembre 2019"
+        assert date_formatted_for_email == "lundi 9 décembre 2019"
 
 
 class GetTimeFormattedForEmailTest:
@@ -189,18 +199,3 @@ class FormatDatetimeFromUtcTimezoneToLocalTimezoneTest:
 
         # Then
         assert result == datetime.datetime(2022, 6, 24, 12, 0, tzinfo=ZoneInfo(METROPOLE_TIMEZONE))
-
-
-class FormatDatetimeTest:
-    @pytest.mark.parametrize(
-        "tz_str",
-        [
-            "America/Martinique",
-            "Europe/Paris",
-        ],
-        ids=["Martinique", "metropole"],
-    )
-    def test_tz_conversion(self, tz_str):
-        dt = datetime.datetime(2022, 6, 24, 14, 0, tzinfo=ZoneInfo(tz_str))
-        result = utils_date.format_datetime(dt)
-        assert result == "24 juin 2022, 14:00"

@@ -13,6 +13,7 @@ from sqlalchemy.sql.expression import extract
 import pcapi.core.categories.subcategories_v2 as subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational.schemas import RedactorInformation
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -25,7 +26,6 @@ from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
-from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
 from pcapi.utils.clean_accents import clean_accents
 
 
@@ -252,6 +252,7 @@ def _get_bookings_for_adage_base_query() -> BaseQuery:
                 offerers_models.Venue.latitude,
                 offerers_models.Venue.longitude,
                 offerers_models.Venue.timezone,
+                offerers_models.Venue.departementCode,
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.name,
                 offerers_models.Venue.street,
@@ -491,8 +492,10 @@ def get_collective_stock(collective_stock_id: int) -> educational_models.Collect
     return (
         educational_models.CollectiveStock.query.filter(educational_models.CollectiveStock.id == collective_stock_id)
         .options(
-            sa.orm.joinedload(educational_models.CollectiveStock.collectiveOffer).joinedload(
-                educational_models.CollectiveOffer.venue
+            sa.orm.joinedload(educational_models.CollectiveStock.collectiveOffer).options(
+                # needed to avoid a query when we call stock.collectiveOffer.collectiveStock
+                sa.orm.contains_eager(educational_models.CollectiveOffer.collectiveStock),
+                sa.orm.joinedload(educational_models.CollectiveOffer.venue),
             ),
             sa.orm.joinedload(educational_models.CollectiveStock.collectiveBookings),
         )
@@ -506,7 +509,7 @@ def get_collective_offers_for_filters(
     user_is_admin: bool,
     offers_limit: int,
     offerer_id: int | None = None,
-    statuses: list[str] | None = None,
+    statuses: list[educational_models.CollectiveOfferDisplayedStatus] | None = None,
     venue_id: int | None = None,
     category_id: str | None = None,
     name_keywords: str | None = None,
@@ -552,7 +555,7 @@ def get_collective_offers_template_for_filters(
     user_is_admin: bool,
     offers_limit: int,
     offerer_id: int | None = None,
-    statuses: list[str] | None = None,
+    statuses: list[educational_models.CollectiveOfferDisplayedStatus] | None = None,
     venue_id: int | None = None,
     category_id: str | None = None,
     name_keywords: str | None = None,
@@ -1087,12 +1090,19 @@ def get_collective_offer_templates_by_ids_for_adage(offer_ids: typing.Collection
 
 def get_query_for_collective_offers_by_ids_for_user(user: User, ids: typing.Iterable[int]) -> BaseQuery:
     query = educational_models.CollectiveOffer.query
+
     if not user.has_admin_role:
         query = query.join(offerers_models.Venue, educational_models.CollectiveOffer.venue)
         query = query.join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
         query = query.join(offerers_models.UserOfferer, offerers_models.Offerer.UserOfferers)
         query = query.filter(offerers_models.UserOfferer.userId == user.id, offerers_models.UserOfferer.isValidated)
+
     query = query.filter(educational_models.CollectiveOffer.id.in_(ids))
+    query = query.options(
+        sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
+            educational_models.CollectiveStock.collectiveBookings
+        )
+    )
     return query
 
 

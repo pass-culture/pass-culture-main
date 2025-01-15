@@ -5,9 +5,9 @@ from unittest import mock
 import urllib.parse
 
 import httplib2
+import pytest
 
 from pcapi.connectors import googledrive
-from pcapi.core.testing import override_settings
 
 
 def mock_response(mocked, response_data):
@@ -42,7 +42,7 @@ def mock_credentials(test_func):
     return wrapped
 
 
-@override_settings(GOOGLE_DRIVE_BACKEND="pcapi.connectors.googledrive.GoogleDriveBackend")
+@pytest.mark.settings(GOOGLE_DRIVE_BACKEND="pcapi.connectors.googledrive.GoogleDriveBackend")
 @mock_credentials
 @mock.patch("googleapiclient.http._retry_request")
 def test_get_folder(mocked_request):
@@ -72,7 +72,7 @@ def test_get_folder(mocked_request):
     }
 
 
-@override_settings(GOOGLE_DRIVE_BACKEND="pcapi.connectors.googledrive.GoogleDriveBackend")
+@pytest.mark.settings(GOOGLE_DRIVE_BACKEND="pcapi.connectors.googledrive.GoogleDriveBackend")
 @mock_credentials
 @mock.patch("googleapiclient.http._retry_request")
 @mock.patch(
@@ -98,7 +98,7 @@ def test_get_or_create_folder_new_folder(mocked_request):
     }
 
 
-@override_settings(GOOGLE_DRIVE_BACKEND="pcapi.connectors.googledrive.GoogleDriveBackend")
+@pytest.mark.settings(GOOGLE_DRIVE_BACKEND="pcapi.connectors.googledrive.GoogleDriveBackend")
 @mock_credentials
 @mock.patch(
     "pcapi.connectors.googledrive.GoogleDriveBackend.get_folder",
@@ -111,7 +111,7 @@ def test_get_or_create_folder_existing_folder():
     assert folder_id == "existing-id"
 
 
-@override_settings(GOOGLE_DRIVE_BACKEND="pcapi.connectors.googledrive.GoogleDriveBackend")
+@pytest.mark.settings(GOOGLE_DRIVE_BACKEND="pcapi.connectors.googledrive.GoogleDriveBackend")
 @mock_credentials
 @mock.patch("googleapiclient.http._retry_request")
 def test_create_file(mocked_request, tmpdir):
@@ -131,7 +131,7 @@ def test_create_file(mocked_request, tmpdir):
     assert b"dummy data" in mocked_request.call_args_list[0].kwargs["body"]
 
 
-@override_settings(GOOGLE_DRIVE_BACKEND="pcapi.connectors.googledrive.GoogleDriveBackend")
+@pytest.mark.settings(GOOGLE_DRIVE_BACKEND="pcapi.connectors.googledrive.GoogleDriveBackend")
 @mock_credentials
 @mock.patch("googleapiclient.http._retry_request")
 def test_download_file(mocked_request):
@@ -152,7 +152,7 @@ def test_download_file(mocked_request):
     assert query == "mimeType=text%2Fcsv&alt=media"
 
 
-@override_settings(GOOGLE_DRIVE_BACKEND="pcapi.connectors.googledrive.GoogleDriveBackend")
+@pytest.mark.settings(GOOGLE_DRIVE_BACKEND="pcapi.connectors.googledrive.GoogleDriveBackend")
 @mock_credentials
 @mock.patch("googleapiclient.http._retry_request")
 def test_search_file(mocked_request, tmpdir):
@@ -172,7 +172,7 @@ def test_search_file(mocked_request, tmpdir):
     assert mocked_request.call_args_list[0].kwargs["body"] is None
 
 
-@override_settings(GOOGLE_DRIVE_BACKEND="pcapi.connectors.googledrive.GoogleDriveBackend")
+@pytest.mark.settings(GOOGLE_DRIVE_BACKEND="pcapi.connectors.googledrive.GoogleDriveBackend")
 @mock_credentials
 @mock.patch("googleapiclient.http._retry_request")
 def test_create_spreadsheet(mocked_request, tmpdir):
@@ -192,7 +192,7 @@ def test_create_spreadsheet(mocked_request, tmpdir):
     )
 
 
-@override_settings(GOOGLE_DRIVE_BACKEND="pcapi.connectors.googledrive.GoogleDriveBackend")
+@pytest.mark.settings(GOOGLE_DRIVE_BACKEND="pcapi.connectors.googledrive.GoogleDriveBackend")
 @mock_credentials
 @mock.patch("googleapiclient.http._retry_request")
 def test_append_to_spreadsheet(mocked_request, tmpdir):

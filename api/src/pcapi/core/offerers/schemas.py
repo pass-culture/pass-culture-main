@@ -1,3 +1,6 @@
+from decimal import Decimal
+from decimal import InvalidOperation
+import enum
 import re
 import typing
 
@@ -8,6 +11,9 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import phone_number as phone_number_utils
 
+
+MAX_LONGITUDE = 180
+MAX_LATITUDE = 90
 
 SocialMedia = typing.Literal["facebook", "instagram", "snapchat", "twitter"]
 SocialMedias = dict[SocialMedia, pydantic_v1.HttpUrl]
@@ -112,10 +118,91 @@ class VenueWithdrawalDetails(pydantic_v1.ConstrainedStr):
 
 class AddressBodyModel(BaseModel):
     isVenueAddress: bool = False
+    isManualEdition: bool = False
+    banId: str | None
     city: VenueCity
     label: str | None
     latitude: float | str
     longitude: float | str
     postalCode: VenuePostalCode
     street: VenueAddress
-    isManualEdition: bool = False
+
+    @validator("city")
+    def title_city_when_manually_edited(cls, city: str, values: dict) -> str:
+        if values["isManualEdition"] is True:
+            return city.title()
+        return city
+
+    @validator("latitude", pre=True)
+    @classmethod
+    def validate_latitude(cls, raw_latitude: str) -> str:
+        try:
+            latitude = Decimal(raw_latitude)
+        except InvalidOperation:
+            raise ValueError("Format incorrect")
+        if not -MAX_LATITUDE < latitude < MAX_LATITUDE:
+            raise ValueError("La latitude doit être comprise entre -90.0 et +90.0")
+        return raw_latitude
+
+    @validator("longitude", pre=True)
+    @classmethod
+    def validate_longitude(cls, raw_longitude: str) -> str:
+        try:
+            longitude = Decimal(raw_longitude)
+        except InvalidOperation:
+            raise ValueError("Format incorrect")
+        if not -MAX_LONGITUDE < longitude < MAX_LONGITUDE:
+            raise ValueError("La longitude doit être comprise entre -180.0 et +180.0")
+        return raw_longitude
+
+
+class BannerMetaModel(typing.TypedDict, total=False):
+    image_credit: VenueImageCredit | None
+    image_credit_url: str | None
+    is_from_google: bool
+
+
+class VenueTypeCode(enum.Enum):
+    ADMINISTRATIVE = "Lieu administratif"
+    ARTISTIC_COURSE = "Cours et pratique artistiques"
+    BOOKSTORE = "Librairie"
+    CONCERT_HALL = "Musique - Salle de concerts"
+    CREATIVE_ARTS_STORE = "Magasin arts créatifs"
+    CULTURAL_CENTRE = "Centre culturel"
+    DIGITAL = "Offre numérique"
+    DISTRIBUTION_STORE = "Magasin de distribution de produits culturels"
+    FESTIVAL = "Festival"
+    GAMES = "Jeux / Jeux vidéos"
+    LIBRARY = "Bibliothèque ou médiathèque"
+    MOVIE = "Cinéma - Salle de projections"
+    MUSEUM = "Musée"
+    MUSICAL_INSTRUMENT_STORE = "Musique - Magasin d’instruments"
+    OTHER = "Autre"
+    PATRIMONY_TOURISM = "Patrimoine et tourisme"
+    PERFORMING_ARTS = "Spectacle vivant"
+    RECORD_STORE = "Musique - Disquaire"
+    SCIENTIFIC_CULTURE = "Culture scientifique"
+    TRAVELING_CINEMA = "Cinéma itinérant"
+    VISUAL_ARTS = "Arts visuels, arts plastiques et galeries"
+
+    # These methods are used by pydantic in order to return the enum name and validate the value
+    # instead of returning the enum directly.
+    @classmethod
+    def __get_validators__(cls) -> typing.Iterator[typing.Callable]:
+        yield cls.validate
+
+    @classmethod
+    def validate(cls, value: str | enum.Enum) -> str:
+        if isinstance(value, enum.Enum):
+            value = value.name
+
+        if not hasattr(cls, value):
+            raise ValueError(f"{value}: invalide")
+
+        return value
+
+
+VenueTypeCodeKey = enum.Enum(  # type: ignore[misc]
+    "VenueTypeCodeKey",
+    {code.name: code.name for code in VenueTypeCode},
+)

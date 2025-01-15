@@ -1,4 +1,3 @@
-import React from 'react'
 
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'

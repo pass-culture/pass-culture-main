@@ -66,7 +66,7 @@ ALLOWED_PRODUCT_SUBCATEGORIES = [
 
 
 MusicTypeEnum = StrEnum(  # type: ignore[call-overload]
-    "MusicTypeEnum",
+    "MusicTypeEnum (deprecated)",
     {music_sub_type_slug: music_sub_type_slug for music_sub_type_slug in music_types.MUSIC_SUB_TYPES_BY_SLUG},
 )
 
@@ -828,8 +828,9 @@ class EventOfferResponse(OfferResponse, PriceCategoriesResponse):
 
 
 class GetOffersQueryParams(IndexPaginationQueryParams):
-    venue_id: int = fields.VENUE_ID
+    venue_id: int | None = fields.VENUE_ID
     ids_at_provider: str | None = fields.IDS_AT_PROVIDER_FILTER
+    address_id: int | None = fields.ADDRESS_ID
 
     @pydantic_v1.validator("ids_at_provider")
     def validate_ids_at_provider(cls, ids_at_provider: str) -> list[str] | None:

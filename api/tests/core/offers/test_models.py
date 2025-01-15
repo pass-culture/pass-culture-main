@@ -1,6 +1,8 @@
 import datetime
 
 import pytest
+from sqlalchemy import exc
+import time_machine
 
 import pcapi.core.bookings.constants as bookings_constants
 import pcapi.core.bookings.factories as bookings_factories
@@ -127,7 +129,7 @@ class OfferIsEditableTest:
         assert offer.isEditable
 
     def test_not_editabe_if_from_another_provider(self):
-        provider = providers_factories.APIProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory()
         offer = factories.OfferFactory(lastProvider=provider)
         assert not offer.isEditable
 
@@ -695,3 +697,55 @@ class OfferfullAddressTest:
         )
         offer = factories.OfferFactory(offererAddress=oa)
         assert offer.fullAddress == expected_full_address
+
+
+class HeadlineOfferTest:
+    today = datetime.datetime.utcnow()
+    tomorrow = today + datetime.timedelta(days=1)
+    day_after_tomorrow = today + datetime.timedelta(days=2)
+    next_month = today + datetime.timedelta(days=30)
+
+    def test_headline_offer_is_active(self):
+        offer = factories.OfferFactory(isActive=True)
+        factories.StockFactory(offer=offer)
+        headline_offer = factories.HeadlineOfferFactory(offer=offer, timespan=(self.today, None))
+        assert headline_offer.isActive
+
+    def test_headline_offer_with_ending_time_in_the_future_is_active(self):
+        offer = factories.OfferFactory(isActive=True)
+        factories.StockFactory(offer=offer)
+        headline_offer = factories.HeadlineOfferFactory(offer=offer, timespan=(self.today, self.day_after_tomorrow))
+        assert headline_offer.isActive
+
+    def test_headline_offer_is_not_active(self):
+        offer = factories.OfferFactory(isActive=True)
+        factories.StockFactory(offer=offer)
+        headline_offer = factories.HeadlineOfferFactory(offer=offer, timespan=(self.today, self.day_after_tomorrow))
+        with time_machine.travel(self.next_month):
+            assert not headline_offer.isActive
+
+    @pytest.mark.parametrize(
+        "timespan,overlaping_timespan",
+        [
+            ((today, None), (tomorrow, None)),
+            ((today, None), (tomorrow, next_month)),
+            ((today, day_after_tomorrow), (tomorrow, None)),
+            ((today, day_after_tomorrow), (tomorrow, next_month)),
+        ],
+    )
+    def test_unicity_headline_offer(self, timespan, overlaping_timespan):
+        offer = factories.OfferFactory(isActive=True)
+        factories.StockFactory(offer=offer)
+        factories.HeadlineOfferFactory(offer=offer, timespan=timespan)
+        with pytest.raises(exc.IntegrityError):
+            factories.HeadlineOfferFactory(offer=offer, timespan=overlaping_timespan)
+
+    def test_unicity_headline_offer_by_venue(self):
+        venue = offerers_factories.VenueFactory()
+        offer = factories.OfferFactory(isActive=True, venue=venue)
+        another_offer_on_the_same_venue = factories.OfferFactory(isActive=True, venue=venue)
+        factories.StockFactory(offer=offer)
+        factories.StockFactory(offer=another_offer_on_the_same_venue)
+        factories.HeadlineOfferFactory(offer=offer)
+        with pytest.raises(exc.IntegrityError):
+            factories.HeadlineOfferFactory(offer=another_offer_on_the_same_venue)

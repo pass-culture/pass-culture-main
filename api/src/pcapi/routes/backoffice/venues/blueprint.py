@@ -52,7 +52,6 @@ from pcapi.utils import regions as regions_utils
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.siren import is_valid_siret
 from pcapi.utils.string import to_camelcase
-from pcapi.workers.fully_sync_venue_job import fully_sync_venue_job
 
 from . import forms
 
@@ -155,7 +154,6 @@ def get_venue(venue_id: int) -> offerers_models.Venue:
             providers_models.Provider.id,
             providers_models.Provider.name,
             providers_models.Provider.localClass,
-            providers_models.Provider.apiUrl,
             providers_models.Provider.isActive,
         ),
         sa.orm.joinedload(offerers_models.Venue.accessibilityProvider).load_only(
@@ -212,7 +210,6 @@ def render_venue_details(
         edit_venue_form.tags.choices = [(criterion.id, criterion.name) for criterion in venue.criteria]
 
     delete_form = empty_forms.EmptyForm()
-    fully_sync_venue_form = empty_forms.EmptyForm()
 
     fraud_form = (
         forms.FraudForm(confidence_level=venue.confidenceLevel.value if venue.confidenceLevel else None)
@@ -237,17 +234,12 @@ def render_venue_details(
         venue=venue,
         edit_venue_form=edit_venue_form,
         region=region,
-        has_active_provider=any(
-            (venue_provider.isActive and venue_provider.provider.allow_bo_sync)
-            for venue_provider in venue.venueProviders
-        ),
         delete_form=delete_form,
-        fully_sync_venue_form=fully_sync_venue_form,
         fraud_form=fraud_form,
         active_tab=request.args.get("active_tab", "history"),
         zendesk_sell_synchronisation_form=(
             empty_forms.EmptyForm()
-            if venue.isPermanent
+            if venue.isOpenToPublic
             and not venue.isVirtual
             and utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
             else None
@@ -342,8 +334,8 @@ def get_stats_data(venue_id: int) -> dict:
 
     if FeatureToggle.WIP_ENABLE_CLICKHOUSE_IN_BO.is_active():
         try:
-            clickhouse_result = clickhouse_queries.TotalAggregatedRevenueQuery().execute((venue_id,))
-            stats["total_revenue"] = clickhouse_result.expected_revenue
+            clickhouse_results = clickhouse_queries.TotalExpectedRevenueQuery().execute((venue_id,))
+            stats["total_revenue"] = clickhouse_results[0].expected_revenue
         except ApiErrors:
             stats["total_revenue"] = PLACEHOLDER
     elif not (is_collective_too_big or is_individual_too_big):
@@ -412,16 +404,20 @@ def get_revenue_details(venue_id: int) -> utils.BackofficeResponse:
 
     if FeatureToggle.WIP_ENABLE_CLICKHOUSE_IN_BO.is_active():
         try:
-            clickhouse_result = clickhouse_queries.YearlyAggregatedRevenueQuery().execute((venue_id,))
+            clickhouse_results = clickhouse_queries.AggregatedTotalRevenueQuery().execute((venue_id,))
             details: dict[str, dict] = {}
             future = {"individual": decimal.Decimal(0.0), "collective": decimal.Decimal(0.0)}
-            for year, yearly_data in clickhouse_result.income_by_year.items():
-                details[year] = {
-                    "individual": yearly_data.revenue.individual,  # type: ignore[union-attr]
-                    "collective": yearly_data.revenue.collective,  # type: ignore[union-attr]
+            for aggregated_revenue in clickhouse_results:
+                details[str(aggregated_revenue.year)] = {
+                    "individual": aggregated_revenue.revenue.individual,
+                    "collective": aggregated_revenue.revenue.collective,
                 }
-                future["individual"] += yearly_data.expected_revenue.individual - yearly_data.revenue.individual  # type: ignore[union-attr]
-                future["collective"] += yearly_data.expected_revenue.collective - yearly_data.revenue.collective  # type: ignore[union-attr]
+                future["individual"] += (
+                    aggregated_revenue.expected_revenue.individual - aggregated_revenue.revenue.individual
+                )
+                future["collective"] += (
+                    aggregated_revenue.expected_revenue.collective - aggregated_revenue.revenue.collective
+                )
             if sum(future.values()) > 0:
                 details["En cours"] = future
         except ApiErrors as api_error:
@@ -649,27 +645,6 @@ def delete_venue(venue_id: int) -> utils.BackofficeResponse:
         )
     db.session.commit()
     return redirect(url_for("backoffice_web.pro.search_pro"), code=303)
-
-
-@venue_blueprint.route("/<int:venue_id>/fully-sync", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
-def fully_sync_venue(venue_id: int) -> utils.BackofficeResponse:
-    venue_exists = db.session.query(
-        offerers_models.Venue.query.join(providers_models.VenueProvider)
-        .join(providers_models.Provider)
-        .filter(providers_models.Provider.allow_bo_sync)
-        .filter(offerers_models.Venue.id == venue_id)
-        .filter(providers_models.VenueProvider.isActive.is_(True))
-        .exists()
-    ).scalar()
-
-    if not venue_exists:
-        raise NotFound()
-
-    fully_sync_venue_job.delay(venue_id)
-
-    flash("La re-synchronisation des offres a été lancée.", "success")
-    return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
 
 
 @venue_blueprint.route("/<int:venue_id>", methods=["POST"])
@@ -1219,7 +1194,10 @@ def _load_venue_for_removing_siret(venue_id: int) -> offerers_models.Venue:
 
 
 def _render_remove_siret_content(
-    venue: offerers_models.Venue, form: forms.RemoveSiretForm | None = None, error: str | None = None
+    venue: offerers_models.Venue,
+    form: forms.RemoveSiretForm | None = None,
+    error: str | None = None,
+    info: str | None = None,
 ) -> utils.BackofficeResponse:
     kwargs = {}
     if form:
@@ -1245,6 +1223,19 @@ def _render_remove_siret_content(
             "CA de l'année": filters.format_amount(siret_api.get_yearly_revenue(venue.id)),
         }
     )
+
+    active_custom_reimbursement_rule_exists = db.session.query(
+        finance_models.CustomReimbursementRule.query.filter(
+            finance_models.CustomReimbursementRule.venueId == venue.id,
+            sa.or_(
+                sa.func.upper(finance_models.CustomReimbursementRule.timespan).is_(None),
+                sa.func.upper(finance_models.CustomReimbursementRule.timespan) >= datetime.utcnow(),
+            ),
+        ).exists()
+    ).scalar()
+    if active_custom_reimbursement_rule_exists:
+        info = "Ce partenaire culturel a au moins un tarif dérogatoire qui se termine dans le futur. Si vous validez l'action il sera clôturé"
+
     return (
         render_template(
             "components/turbo/modal_form.html",
@@ -1252,6 +1243,7 @@ def _render_remove_siret_content(
             title=REMOVE_SIRET_TITLE,
             additional_data=additional_data.items(),
             alert=error,
+            info=info,
             **kwargs,
         ),
         400 if error or (form and form.errors) else 200,

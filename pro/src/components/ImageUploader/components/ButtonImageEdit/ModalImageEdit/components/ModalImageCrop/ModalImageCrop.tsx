@@ -1,8 +1,10 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import { Form, FormikProvider, useFormik } from 'formik'
-import React, { useRef } from 'react'
+import { useRef } from 'react'
 import AvatarEditor, { CroppedRect, Position } from 'react-avatar-editor'
 
+import { useAnalytics } from 'app/App/analytics/firebase'
+import { Events } from 'commons/core/FirebaseEvents/constants'
 import { useGetImageBitmap } from 'commons/hooks/useGetBitmap'
 import { useNotification } from 'commons/hooks/useNotification'
 import {
@@ -23,7 +25,7 @@ import { getCropMaxDimension } from '../../utils/getCropMaxDimension'
 
 import style from './ModalImageCrop.module.scss'
 
-export interface ModalImageCropProps {
+export type ModalImageCropProps = {
   image: File
   credit: string
   onSetCredit: (credit: string) => void
@@ -56,6 +58,7 @@ export const ModalImageCrop = ({
   mode,
   showPreviewInModal,
 }: ModalImageCropProps): JSX.Element => {
+  const { logEvent } = useAnalytics()
   const { width, height } = useGetImageBitmap(image)
   const editorRef = useRef<AvatarEditor>(null)
   const notification = useNotification()
@@ -196,7 +199,14 @@ export const ModalImageCrop = ({
           <Divider />
 
           <div className={style['modal-image-crop-footer']}>
-            <Button type="submit">
+            <Button
+              type="submit"
+              onClick={() => {
+                logEvent(Events.CLICKED_ADD_IMAGE, {
+                  imageCreationStage: 'reframe image',
+                })
+              }}
+            >
               {showPreviewInModal ? 'Suivant' : 'Enregistrer'}
             </Button>
           </div>

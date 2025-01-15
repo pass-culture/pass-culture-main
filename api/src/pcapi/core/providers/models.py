@@ -6,13 +6,11 @@ import typing
 
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
-import sqlalchemy.ext.hybrid as sqla_hybrid
 import sqlalchemy.orm as sa_orm
 import sqlalchemy.sql as sa_sql
 
 from pcapi.core.offerers.models import Venue
 import pcapi.core.providers.constants as provider_constants
-from pcapi.infrastructure.repository.stock_provider.provider_api import ProviderAPI
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.deactivable_mixin import DeactivableMixin
@@ -28,16 +26,7 @@ if typing.TYPE_CHECKING:
 class Provider(PcObject, Base, Model, DeactivableMixin):
     name: str = sa.Column(sa.String(90), index=True, nullable=False)
 
-    localClass = sa.Column(
-        sa.String(60),
-        nullable=True,
-        unique=True,
-    )
-
-    # presence of this field signifies the provider implements pass Culture's provider API
-    apiUrl = sa.Column(sa.String, nullable=True)
-
-    authToken = sa.Column(sa.String, nullable=True)
+    localClass = sa.Column(sa.String(60), nullable=True, unique=True)
 
     enabledForPro: bool = sa.Column(sa.Boolean, nullable=False, default=False, server_default=sa_sql.expression.false())
 
@@ -85,27 +74,6 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
     @property
     def hasOffererProvider(self) -> bool:
         return bool(self.offererProvider)
-
-    @property
-    def implements_provider_api(self) -> bool:
-        return self.apiUrl is not None and not self.offererProvider
-
-    def getProviderAPI(self) -> ProviderAPI:
-        return ProviderAPI(
-            api_url=self.apiUrl,  # type: ignore[arg-type]
-            name=self.name,
-            authentication_token=self.authToken,
-        )
-
-    @sqla_hybrid.hybrid_property
-    def allow_bo_sync(self) -> bool:
-        return self.isActive and self.apiUrl != None and "praxiel" not in self.name.lower()
-
-    @allow_bo_sync.expression  # type: ignore[no-redef]
-    def allow_bo_sync(cls) -> sa_sql.elements.BooleanClauseList:  # pylint: disable=no-self-argument
-        # Praxiel API is very slow (with response times up to 30 seconds) and unstable (with frequent 50x
-        # error responses). Full synchronization very rarely succeeds, don't bother trying.
-        return sa.and_(cls.isActive.is_(True), cls.apiUrl.is_not(None), cls.name.not_ilike("%praxiel%"))
 
 
 class VenueProviderExternalUrls(PcObject, Base, Model, DeactivableMixin):
@@ -288,16 +256,6 @@ class VenueProviderCreationPayload:
     price: decimal.Decimal | None = None
     quantity: int | None = None
     venueIdAtOfferProvider: str | None = None
-
-
-@dataclass
-class StockDetail:
-    products_provider_reference: str
-    offers_provider_reference: str
-    venue_reference: str
-    stocks_provider_reference: str
-    available_quantity: int
-    price: decimal.Decimal
 
 
 class AllocinePivot(PcObject, Base, Model):

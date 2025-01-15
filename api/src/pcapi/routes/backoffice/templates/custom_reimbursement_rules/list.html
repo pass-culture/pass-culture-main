@@ -85,20 +85,20 @@
                 </td>
                 <td>{{ reimbursement_rule.id }}</td>
                 {% if reimbursement_rule.offerer %}
-                  <td>{{ links.build_offerer_name_to_pc_pro_link(reimbursement_rule.offerer) }}</td>
+                  <td>{{ links.build_offerer_name_to_details_link(reimbursement_rule.offerer) }}</td>
                   <td>{{ reimbursement_rule.offerer.siren }}</td>
                   <td></td>
                   <td></td>
                 {% elif reimbursement_rule.venue %}
-                  <td>{{ links.build_offerer_name_to_pc_pro_link(reimbursement_rule.venue.managingOfferer) }}</td>
+                  <td>{{ links.build_offerer_name_to_details_link(reimbursement_rule.venue.managingOfferer) }}</td>
                   <td>{{ reimbursement_rule.venue.managingOfferer.siren }}</td>
-                  <td>{{ links.build_venue_name_to_pc_pro_link(reimbursement_rule.venue, siret=true) }}</td>
+                  <td>{{ links.build_venue_name_to_details_link(reimbursement_rule.venue) }}</td>
                   <td></td>
                 {% else %}
-                  <td>{{ links.build_offerer_name_to_pc_pro_link(reimbursement_rule.offer.venue.managingOfferer) }}</td>
+                  <td>{{ links.build_offerer_name_to_details_link(reimbursement_rule.offer.venue.managingOfferer) }}</td>
                   <td>{{ reimbursement_rule.offer.venue.managingOfferer.siren }}</td>
-                  <td>{{ links.build_venue_name_to_pc_pro_link(reimbursement_rule.offer.venue) }}</td>
-                  <td>{{ links.build_offer_name_to_pc_pro_link(reimbursement_rule.offer) }}</td>
+                  <td>{{ links.build_venue_name_to_details_link(reimbursement_rule.offer.venue) }}</td>
+                  <td>{{ links.build_offer_name_to_details_link(reimbursement_rule.offer) }}</td>
                 {% endif %}
                 <td>{{ reimbursement_rule.rate | format_rate_multiply_by_100 }}</td>
                 <td>{{ reimbursement_rule.amount | format_cents if reimbursement_rule.amount else "" }}</td>

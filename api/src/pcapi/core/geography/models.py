@@ -28,9 +28,8 @@ class Address(PcObject, Base, Model):
     longitude: Decimal = sa.Column(sa.Numeric(8, 5), nullable=False)
     departmentCode = sa.Column(sa.Text(), nullable=True, index=True)
     timezone: str = sa.Column(sa.Text(), nullable=False, default=METROPOLE_TIMEZONE, server_default=METROPOLE_TIMEZONE)
-    # TODO(prouzet, 2024-06-25) make isManualEdition not nullable after post migration is done on all platforms
     isManualEdition: bool = sa.Column(
-        sa.Boolean, nullable=True, server_default=sa.sql.expression.false(), default=False
+        sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
     )
 
     @property
@@ -45,13 +44,6 @@ class Address(PcObject, Base, Model):
         return getattr(self, field) != value
 
     __table_args__ = (
-        sa.Index(
-            "ix_partial_unique_address_per_street_and_insee_code",
-            "street",
-            "inseeCode",
-            unique=True,
-            postgresql_where=sa.and_(street.is_not(None), inseeCode.is_not(None), isManualEdition.is_not(True)),
-        ),
         sa.Index(
             # FIXME (dramelet, 14-10-2024)
             # Our current version of sqlalchemy (1.4) doesn't handle

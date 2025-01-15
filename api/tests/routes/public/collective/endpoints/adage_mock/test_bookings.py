@@ -8,7 +8,6 @@ import pytest
 from pcapi.core.educational import factories
 from pcapi.core.educational import models
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 
@@ -93,7 +92,7 @@ class ConfirmCollectiveBookingTest(AdageMockEndpointHelper):
                 expected_error_json={"code": "INSUFFICIENT_FUND"},
             )
 
-    @override_features(ENABLE_EAC_FINANCIAL_PROTECTION=True)
+    @pytest.mark.features(ENABLE_EAC_FINANCIAL_PROTECTION=True)
     def test_confirm_when_insufficient_ministry_fund(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         auth_client = client.with_explicit_token(plain_api_key)

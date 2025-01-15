@@ -74,7 +74,7 @@ def _filter_non_pro_by_domain_name_query(domain_name: str) -> BaseQuery:
         sa.not_(users_models.User.isActive.is_(False)),
         sa.not_(users_models.User.has_pro_role),
         sa.not_(users_models.User.has_non_attached_pro_role),
-        users_models.User.email.like(f"%@{domain_name.lower()}"),
+        sa.func.email_domain(users_models.User.email) == domain_name.lower(),
     )
 
 
@@ -92,7 +92,7 @@ def _list_untouched_pro_accounts(domain_name: str) -> list[str]:
             users_models.User.has_pro_role,
             users_models.User.has_non_attached_pro_role,
         ),
-        users_models.User.email.like(f"%@{domain_name.lower()}"),
+        sa.func.email_domain(users_models.User.email) == domain_name.lower(),
     ).options(sa.orm.load_only(users_models.User.id, users_models.User.email))
 
     return sorted(query, key=attrgetter("email"))

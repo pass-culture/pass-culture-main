@@ -19,7 +19,7 @@ def get_bookings_expiration_to_pro_email_data(
             "BOOKINGS": _extract_bookings_information_from_bookings_list(bookings),
             "DEPARTMENT": departement_code,
             "WITHDRAWAL_PERIOD": withdrawal_period,
-            "OFFER_ADRESS": bookings[0].stock.offer.fullAddress,
+            "OFFER_ADDRESS": bookings[0].stock.offer.fullAddress,
         },
     )
 
@@ -30,11 +30,7 @@ def _extract_bookings_information_from_bookings_list(bookings: list[Booking]) ->
         bookings_info.append(
             {
                 "offer_name": booking.stock.offer.name,
-                "venue_name": (
-                    booking.stock.offer.venue.publicName
-                    if booking.stock.offer.venue.publicName
-                    else booking.stock.offer.venue.name
-                ),
+                "venue_name": booking.stock.offer.venue.common_name,
                 "price": str(booking.stock.price) if booking.stock.price > 0 else "gratuit",
                 "user_name": booking.userName,
                 "user_email": booking.email,

@@ -9,14 +9,12 @@ from pcapi.connectors import titelive
 from pcapi.connectors.titelive import GtlIdError
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.providers.constants as providers_constants
-from pcapi.core.testing import override_settings
 from pcapi.utils import date as date_utils
 
 from tests.connectors.titelive import fixtures
 
 
-@override_settings(TITELIVE_EPAGINE_API_USERNAME="test@example.com")
-@override_settings(TITELIVE_EPAGINE_API_PASSWORD="qwerty123")
+@pytest.mark.settings(TITELIVE_EPAGINE_API_USERNAME="test@example.com", TITELIVE_EPAGINE_API_PASSWORD="qwerty123")
 class TiteliveTest:
     def _configure_mock(self, requests_mock, **kwargs):
         requests_mock.post(
@@ -106,3 +104,4 @@ class TiteliveTest:
         assert requests_mock.last_request.qs["tri"] == ["datemodification"]
         assert requests_mock.last_request.qs["tri_ordre"] == ["asc"]
         assert requests_mock.last_request.qs["dateminm"] == ["01/12/2022"]
+        assert requests_mock.last_request.qs["datemaxm"] == ["02/12/2022"]

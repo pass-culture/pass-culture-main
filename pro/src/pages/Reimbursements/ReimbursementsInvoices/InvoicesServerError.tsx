@@ -1,4 +1,3 @@
-import React from 'react'
 
 import strokeWipIcon from 'icons/stroke-wip.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'

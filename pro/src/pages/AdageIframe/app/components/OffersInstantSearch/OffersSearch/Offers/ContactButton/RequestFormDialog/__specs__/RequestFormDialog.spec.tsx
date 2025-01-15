@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { format } from 'date-fns'
-import React from 'react'
 
 import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'

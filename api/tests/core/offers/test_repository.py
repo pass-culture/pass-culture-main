@@ -16,7 +16,6 @@ from pcapi.core.offers import repository
 import pcapi.core.providers.constants as providers_constants
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.models import offer_mixin
@@ -182,7 +181,7 @@ class GetCappedOffersForFiltersTest:
 
     @pytest.mark.usefixtures("db_session")
     @pytest.mark.parametrize("use_oa", (False, True))
-    def should_consider_venue_locale_datetime_when_filtering_by_date(self, use_oa):
+    def should_consider_venue_locale_datetime_when_filtering_by_date(self, features, use_oa):
         # given
         admin = users_factories.AdminFactory()
         period_beginning_date = datetime.date(2020, 4, 21)
@@ -205,14 +204,14 @@ class GetCappedOffersForFiltersTest:
         factories.EventStockFactory(offer=offer_in_mayotte, beginningDatetime=mayotte_event_datetime)
 
         # When
-        with override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=use_oa):
-            offers = repository.get_capped_offers_for_filters(
-                user_id=admin.id,
-                user_is_admin=admin.has_admin_role,
-                offers_limit=10,
-                period_beginning_date=period_beginning_date,
-                period_ending_date=period_ending_date,
-            )
+        features.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE = use_oa
+        offers = repository.get_capped_offers_for_filters(
+            user_id=admin.id,
+            user_is_admin=admin.has_admin_role,
+            offers_limit=10,
+            period_beginning_date=period_beginning_date,
+            period_ending_date=period_ending_date,
+        )
 
         # then
         offers_id = [offer.id for offer in offers]
@@ -221,23 +220,23 @@ class GetCappedOffersForFiltersTest:
         assert len(offers) == 2
 
         # Now ensures the offers are filtered out if we begin the search the day after
-        with override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=use_oa):
-            offers = repository.get_capped_offers_for_filters(
-                user_id=admin.id,
-                user_is_admin=admin.has_admin_role,
-                offers_limit=10,
-                period_beginning_date=period_beginning_date + datetime.timedelta(days=1),
-            )
+        features.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE = use_oa
+        offers = repository.get_capped_offers_for_filters(
+            user_id=admin.id,
+            user_is_admin=admin.has_admin_role,
+            offers_limit=10,
+            period_beginning_date=period_beginning_date + datetime.timedelta(days=1),
+        )
         assert len(offers) == 0
 
         # Now ensures the offers are filtered out if we end the search the day before
-        with override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=use_oa):
-            offers = repository.get_capped_offers_for_filters(
-                user_id=admin.id,
-                user_is_admin=admin.has_admin_role,
-                offers_limit=10,
-                period_ending_date=period_ending_date - datetime.timedelta(days=1),
-            )
+        features.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE = use_oa
+        offers = repository.get_capped_offers_for_filters(
+            user_id=admin.id,
+            user_is_admin=admin.has_admin_role,
+            offers_limit=10,
+            period_ending_date=period_ending_date - datetime.timedelta(days=1),
+        )
         assert len(offers) == 0
 
     class WhenUserIsAdminTest:
@@ -1178,7 +1177,7 @@ class IncomingEventStocksTest:
         assert set(stock_ids) == {self.stock_today_overseas.id}
 
     @time_machine.travel("2024-10-15 15:00:00")
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_find_today_event_stock_ids_by_departments_with_address_different_than_the_venue(self):
         self.setup_stocks()
 
@@ -1192,7 +1191,7 @@ class IncomingEventStocksTest:
         assert set(stock_ids) == {self.stock_today_overseas.id, self.stock_today.id}
 
     @time_machine.travel("2024-10-15 15:00:00")
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_find_today_event_stock_ids_by_departments_with_address_different_than_the_venue_2(self):
         self.setup_stocks()
 
@@ -1206,7 +1205,7 @@ class IncomingEventStocksTest:
         assert set(stock_ids) == {self.stock_today_overseas.id}
 
     @time_machine.travel("2024-10-15 15:00:00")
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_find_today_event_stock_ids_by_departments_with_address_different_than_the_venue_3(self):
         self.setup_stocks()
 
@@ -1220,7 +1219,7 @@ class IncomingEventStocksTest:
         assert set(stock_ids) == {self.stock_today.id}
 
     @time_machine.travel("2024-10-15 15:00:00")
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_find_today_digital_stock_ids_by_departments_with_address_different_than_the_venue(self):
         self.setup_stocks()
 
@@ -1320,61 +1319,35 @@ def admin_user_fixture():
 
 @pytest.mark.usefixtures("db_session")
 class GetCollectiveOffersTemplateByFiltersTest:
-    def test_status_filter_no_crash(self, admin_user):
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    def test_status_filter_active(self, admin_user):
         template = educational_factories.CollectiveOfferTemplateFactory()
         educational_factories.CollectiveOfferTemplateFactory(validation=offer_mixin.OfferValidationStatus.REJECTED)
 
         result = repository.get_collective_offers_template_by_filters(
             user_id=admin_user.id,
             user_is_admin=True,
-            statuses=[offer_mixin.OfferStatus.ACTIVE.name],
+            statuses=[educational_models.CollectiveOfferDisplayedStatus.ACTIVE],
         ).one()
         assert result.id == template.id
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
-    def test_status_no_result(self, admin_user):
-        template = educational_factories.CollectiveOfferTemplateFactory(
-            validation=offer_mixin.OfferValidationStatus.APPROVED
-        )
-
-        result = repository.get_collective_offers_template_by_filters(
-            user_id=admin_user.id,
-            user_is_admin=True,
-            statuses=[educational_models.CollectiveOfferDisplayedStatus.ACTIVE.value],
-        )
-        assert result.one() == template
-
-        statuses_no_result = set(educational_models.CollectiveOfferDisplayedStatus) - {
-            educational_models.CollectiveOfferDisplayedStatus.ACTIVE
-        }
-        for status in statuses_no_result:
-            result = repository.get_collective_offers_template_by_filters(
-                user_id=admin_user.id,
-                user_is_admin=True,
-                statuses=[status.value],
-            )
-            assert result.count() == 0
-
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("offer_status", educational_models.COLLECTIVE_OFFER_TEMPLATE_STATUSES)
     def test_filter_each_status_with_new_statuses(self, admin_user, offer_status):
         template = educational_factories.create_collective_offer_template_by_status(offer_status)
 
         result = repository.get_collective_offers_template_by_filters(
-            user_id=admin_user.id,
-            user_is_admin=True,
-            statuses=[offer_status.value],
+            user_id=admin_user.id, user_is_admin=True, statuses=[offer_status]
         )
         assert result.one() == template
 
         statuses_no_result = set(educational_models.CollectiveOfferDisplayedStatus) - {offer_status}
         result = repository.get_collective_offers_template_by_filters(
-            user_id=admin_user.id,
-            user_is_admin=True,
-            statuses=[s.value for s in statuses_no_result],
+            user_id=admin_user.id, user_is_admin=True, statuses=statuses_no_result
         )
         assert result.count() == 0
 
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     @pytest.mark.parametrize(
         "offer_status",
         set(educational_models.COLLECTIVE_OFFER_TEMPLATE_STATUSES)
@@ -1384,20 +1357,17 @@ class GetCollectiveOffersTemplateByFiltersTest:
         template = educational_factories.create_collective_offer_template_by_status(offer_status)
 
         result = repository.get_collective_offers_template_by_filters(
-            user_id=admin_user.id,
-            user_is_admin=True,
-            statuses=[offer_status.value],
+            user_id=admin_user.id, user_is_admin=True, statuses=[offer_status]
         )
         assert result.one() == template
 
         statuses_no_result = set(educational_models.CollectiveOfferDisplayedStatus) - {offer_status}
         result = repository.get_collective_offers_template_by_filters(
-            user_id=admin_user.id,
-            user_is_admin=True,
-            statuses=[s.value for s in statuses_no_result],
+            user_id=admin_user.id, user_is_admin=True, statuses=statuses_no_result
         )
         assert result.count() == 0
 
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_filter_ended(self, admin_user):
         template = educational_factories.create_collective_offer_template_by_status(
             educational_models.CollectiveOfferDisplayedStatus.ENDED
@@ -1407,7 +1377,7 @@ class GetCollectiveOffersTemplateByFiltersTest:
         result = repository.get_collective_offers_template_by_filters(
             user_id=admin_user.id,
             user_is_admin=True,
-            statuses=[educational_models.CollectiveOfferDisplayedStatus.INACTIVE.value],
+            statuses=[educational_models.CollectiveOfferDisplayedStatus.INACTIVE],
         )
         assert result.one() == template
 
@@ -1415,9 +1385,7 @@ class GetCollectiveOffersTemplateByFiltersTest:
             educational_models.CollectiveOfferDisplayedStatus.INACTIVE
         }
         result = repository.get_collective_offers_template_by_filters(
-            user_id=admin_user.id,
-            user_is_admin=True,
-            statuses=[s.value for s in statuses_no_result],
+            user_id=admin_user.id, user_is_admin=True, statuses=statuses_no_result
         )
         assert result.count() == 0
 
@@ -1529,7 +1497,7 @@ class GetFilteredCollectiveOffersTest:
         offers = repository.get_collective_offers_by_filters(
             user_id=user_offerer.userId,
             user_is_admin=False,
-            statuses=[educational_models.CollectiveOfferDisplayedStatus.PREBOOKED.value],
+            statuses=[educational_models.CollectiveOfferDisplayedStatus.PREBOOKED],
         )
         assert offers.all() == [collective_offer_prebooked]
 
@@ -1548,7 +1516,7 @@ class GetFilteredCollectiveOffersTest:
         offers = repository.get_collective_offers_by_filters(
             user_id=user_offerer.userId,
             user_is_admin=False,
-            statuses=[educational_models.CollectiveOfferDisplayedStatus.ENDED.value],
+            statuses=[educational_models.CollectiveOfferDisplayedStatus.ENDED],
         )
         assert offers.all() == [collective_offer_ended]
 
@@ -1583,7 +1551,7 @@ class GetFilteredCollectiveOffersTest:
         offers = repository.get_collective_offers_by_filters(
             user_id=user_offerer.userId,
             user_is_admin=False,
-            statuses=[educational_models.CollectiveOfferDisplayedStatus.ARCHIVED.value],
+            statuses=[educational_models.CollectiveOfferDisplayedStatus.ARCHIVED],
         )
         assert offers.one() == collective_offer_archived
 
@@ -1594,17 +1562,24 @@ class GetFilteredCollectiveOffersTest:
             validation=offer_mixin.OfferValidationStatus.DRAFT.value, venue__managingOfferer=user_offerer.offerer
         )
 
-        offers = repository.get_collective_offers_by_filters(
-            user_id=user_offerer.userId,
-            user_is_admin=False,
-        )
-
+        offers = repository.get_collective_offers_by_filters(user_id=user_offerer.userId, user_is_admin=False)
         with assert_num_queries(1):
             assert offers.one() == collective_offer_draft
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+        offers = repository.get_collective_offers_by_filters(
+            user_id=user_offerer.userId,
+            user_is_admin=False,
+            statuses=[educational_models.CollectiveOfferDisplayedStatus.DRAFT],
+        )
+        with assert_num_queries(1):
+            assert offers.one() == collective_offer_draft
+
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_get_collective_offers_expired(self):
         user_offerer = offerers_factories.UserOffererFactory()
+        now = datetime.datetime.utcnow()
+        future = now + datetime.timedelta(days=5)
+        past = now - datetime.timedelta(days=2)
 
         # expired offer without booking
         collective_offer_expired = educational_factories.CollectiveOfferFactory(
@@ -1612,8 +1587,7 @@ class GetFilteredCollectiveOffersTest:
         )
 
         educational_factories.CollectiveStockFactory(
-            collectiveOffer=collective_offer_expired,
-            beginningDatetime=datetime.datetime(year=2000, month=1, day=1),
+            collectiveOffer=collective_offer_expired, beginningDatetime=future, bookingLimitDatetime=past
         )
 
         # expired offer with pending booking
@@ -1622,13 +1596,12 @@ class GetFilteredCollectiveOffersTest:
         )
 
         collective_stock_prebooked_expired = educational_factories.CollectiveStockFactory(
-            collectiveOffer=collective_offer_prebooked_expired,
-            beginningDatetime=datetime.datetime(year=2000, month=1, day=1),
+            collectiveOffer=collective_offer_prebooked_expired, beginningDatetime=future, bookingLimitDatetime=past
         )
 
         educational_factories.CollectiveBookingFactory(
             collectiveStock=collective_stock_prebooked_expired,
-            confirmationLimitDate=datetime.datetime(year=2000, month=1, day=1),
+            confirmationLimitDate=past,
             status=educational_models.CollectiveBookingStatus.CANCELLED.value,
             cancellationReason=educational_models.CollectiveBookingCancellationReasons.EXPIRED.value,
         )
@@ -1636,11 +1609,67 @@ class GetFilteredCollectiveOffersTest:
         offers = repository.get_collective_offers_by_filters(
             user_id=user_offerer.userId,
             user_is_admin=False,
-            statuses=[educational_models.CollectiveOfferDisplayedStatus.CANCELLED.value],
+            statuses=[educational_models.CollectiveOfferDisplayedStatus.EXPIRED],
         )
         offers_list = offers.all()
         assert len(offers_list) == 2
         assert set(offers_list) == {collective_offer_expired, collective_offer_prebooked_expired}
+
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.parametrize(
+        "offer_status",
+        set(educational_models.CollectiveOfferDisplayedStatus)
+        - {educational_models.CollectiveOfferDisplayedStatus.INACTIVE},
+    )
+    def test_filter_each_status_with_new_statuses(self, admin_user, offer_status):
+        offer = educational_factories.create_collective_offer_by_status(offer_status)
+
+        result = repository.get_collective_offers_by_filters(
+            user_id=admin_user.id, user_is_admin=True, statuses=[offer_status]
+        )
+        assert result.one() == offer
+
+        statuses_no_result = set(educational_models.CollectiveOfferDisplayedStatus) - {offer_status}
+        result = repository.get_collective_offers_by_filters(
+            user_id=admin_user.id, user_is_admin=True, statuses=statuses_no_result
+        )
+        assert result.count() == 0
+
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    def test_filter_inactive_with_new_statuses(self, admin_user):
+        for status in educational_models.CollectiveOfferDisplayedStatus:
+            educational_factories.create_collective_offer_by_status(status)
+
+        # when ENABLE_COLLECTIVE_NEW_STATUSES FF is off, the INACTIVE filter does not correspond to any offer
+        result = repository.get_collective_offers_by_filters(
+            user_id=admin_user.id,
+            user_is_admin=True,
+            statuses=[educational_models.CollectiveOfferDisplayedStatus.INACTIVE],
+        )
+        assert result.count() == 0
+
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.parametrize(
+        "offer_status",
+        set(educational_models.CollectiveOfferDisplayedStatus)
+        - {
+            educational_models.CollectiveOfferDisplayedStatus.CANCELLED,
+            educational_models.CollectiveOfferDisplayedStatus.REIMBURSED,
+        },
+    )
+    def test_filter_each_status(self, admin_user, offer_status):
+        offer = educational_factories.create_collective_offer_by_status(offer_status)
+
+        result = repository.get_collective_offers_by_filters(
+            user_id=admin_user.id, user_is_admin=True, statuses=[offer_status]
+        )
+        assert result.one() == offer
+
+        statuses_no_result = set(educational_models.CollectiveOfferDisplayedStatus) - {offer_status}
+        result = repository.get_collective_offers_by_filters(
+            user_id=admin_user.id, user_is_admin=True, statuses=statuses_no_result
+        )
+        assert result.count() == 0
 
 
 @pytest.mark.usefixtures("db_session")
@@ -2074,7 +2103,7 @@ class GetStocksListFiltersTest:
 
 @pytest.mark.usefixtures("db_session")
 class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_basic(self):
         stock = factories.EventStockFactory()
 
@@ -2087,7 +2116,7 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         # Then
         assert stocks.count() == 1
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_filtered_stock_by_price_category(self):
         # Given
         stock = factories.EventStockFactory()
@@ -2103,7 +2132,7 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         # Then
         assert stocks.count() == 1
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_filtered_stock_by_date(self):
         # Given
         beginning_datetime = datetime.datetime(2020, 10, 15, 0, 0, 0)
@@ -2120,7 +2149,7 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         # Then
         assert stocks.count() == 1
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_filtered_stocks_by_hour(self):
         # Given
         beginning_datetime = datetime.datetime(2020, 10, 15, 12, 0, 0)
@@ -2149,7 +2178,7 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         # Then
         assert stocks.count() == 2
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_filtered_stock_by_minutes(self):
         # Given
         beginning_datetime = datetime.datetime(2020, 10, 15, 0, 0, 0)
@@ -2174,7 +2203,7 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         # Then
         assert stocks.count() == 1
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_filtered_stock_by_seconds(self):
         # Given
         beginning_datetime = datetime.datetime(2020, 10, 20, 1, 0, 0)
@@ -2205,7 +2234,7 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         # Then
         assert stocks.count() == 2
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     @time_machine.travel("2020-02-20 01:00:00")
     def test_filtered_stock_by_time_find_summer_and_winter_time_when_launch_in_winter(self):
         # Given
@@ -2241,7 +2270,7 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         # Then
         assert stocks.count() == 3
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     @time_machine.travel("2020-06-20 01:00:00")
     def test_filtered_stock_by_time_find_summer_and_winter_time_when_launch_in_summer(self):
         # Given
@@ -2278,7 +2307,7 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         # Then
         assert stocks.count() == 3
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_filtered_stocks_query_by_default(self):
         # Given
         beginning_datetime = datetime.datetime(2020, 10, 15, 0, 0, 0)
@@ -2300,7 +2329,7 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         assert stocks[1] == second_stock
         assert stocks[2] == third_stock
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_stock_pagination_limit_per_page(self):
         # Given
         beginning_datetime = datetime.datetime(2020, 10, 15, 0, 0, 0)
@@ -2324,7 +2353,7 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         # Then
         assert stocks.count() == 1
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_order_stocks_by_beginning_datetime_desc(self):
         # Given
         beginning_datetime = datetime.datetime(2020, 10, 15, 12, 0, 0)
@@ -2355,7 +2384,7 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         assert stocks[3] == stock1
         assert stocks[4] == stock4
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_order_stocks_by_date(self):
         beginning_datetime = datetime.datetime(2020, 10, 15, 12, 0, 0)
         same_hour_other_day = datetime.datetime(2020, 10, 16, 12, 0, 0)
@@ -2385,7 +2414,7 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         assert stocks[3] == stock2
         assert stocks[4] == stock3
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_order_stocks_by_time_desc(self):
         # Given
         beginning_datetime = datetime.datetime(2020, 10, 15, 12, 0, 0)
@@ -2417,7 +2446,7 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         assert stocks[3] == stock1
         assert stocks[4] == stock4
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_order_stocks_by_price_category_id(self):
         # Given
         offer = factories.OfferFactory()
@@ -2440,7 +2469,7 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         assert stocks[1] == stock3
         assert stocks[2] == stock2
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_order_stocks_by_booking_limit(self):
         # Given
         booking_limit_datetime = datetime.datetime(2020, 10, 15, 12, 0, 0)
@@ -2470,7 +2499,7 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         assert stocks[3] == stock2
         assert stocks[4] == stock3
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_order_stocks_by_remaining_quantity_desc(self):
         # Given
         offer = factories.OfferFactory()
@@ -2491,7 +2520,7 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         assert stocks[1] == stock1
         assert stocks[2] == stock2
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_order_stocks_by_dn_booked_quantity(self):
         offer = factories.OfferFactory()
         stock1 = factories.EventStockFactory(offer=offer, quantity=5, dnBookedQuantity=20)
@@ -2561,3 +2590,83 @@ class GetOfferPriceCategoriesFiltersTest:
 
         # Then
         assert len(price_categories.all()) == 0
+
+
+@pytest.mark.usefixtures("db_session")
+class GetHeadlineOfferFiltersTest:
+    def test_get_headline_offer_basic(self):
+        offer = factories.OfferFactory(isActive=True)
+        factories.StockFactory(offer=offer)
+        headline_offer = factories.HeadlineOfferFactory(offer=offer)
+
+        headline_offer_query_result = repository.get_active_headline_offer(offer.id)
+        assert headline_offer_query_result == headline_offer
+
+    def test_get_only_active_headline_offer(self):
+        offer = factories.OfferFactory(isActive=True)
+        factories.StockFactory(offer=offer)
+        creation_time = datetime.datetime.utcnow() - datetime.timedelta(days=20)
+        finished_timespan = (creation_time, creation_time + datetime.timedelta(days=10))
+        headline_offer = factories.HeadlineOfferFactory(offer=offer)
+        factories.HeadlineOfferFactory(offer=offer, timespan=finished_timespan)
+
+        headline_offer_query_result = repository.get_active_headline_offer(offer.id)
+        assert headline_offer_query_result == headline_offer
+
+    def test_get_specific_offer_active_headline_offer(self):
+        offer = factories.OfferFactory(isActive=True)
+        offer_on_another_venue = factories.OfferFactory(isActive=True)
+        factories.StockFactory(offer=offer)
+        factories.StockFactory(offer=offer_on_another_venue)
+        factories.HeadlineOfferFactory(offer=offer)
+        factories.HeadlineOfferFactory(offer=offer_on_another_venue)
+
+        headline_offer_query_result = repository.get_active_headline_offer(offer.id)
+        assert headline_offer_query_result.offer == offer
+
+    def test_should_return_no_inactive_headline_offer(self):
+        offer = factories.OfferFactory(isActive=False)
+        factories.StockFactory(offer=offer)
+        factories.HeadlineOfferFactory(offer=offer)
+        creation_time = datetime.datetime.utcnow() - datetime.timedelta(days=20)
+        finished_timespan = (creation_time, creation_time + datetime.timedelta(days=10))
+        factories.HeadlineOfferFactory(offer=offer, timespan=finished_timespan)
+
+        headline_offer_query_result = repository.get_active_headline_offer(offer.id)
+        assert headline_offer_query_result == None
+
+    def test_get_inactive_headline_offers_basic(self):
+        inactive_offer = factories.OfferFactory(isActive=False)
+        inactive_offer_headline_offer = factories.HeadlineOfferFactory(offer=inactive_offer)
+
+        active_offer = factories.OfferFactory(isActive=True)
+        factories.StockFactory(offer=active_offer)
+        active_offer_headline_offer = factories.HeadlineOfferFactory(offer=active_offer)
+
+        finished_timespan = (
+            datetime.datetime.utcnow() - datetime.timedelta(days=20),
+            datetime.datetime.utcnow() - datetime.timedelta(days=10),
+        )
+        already_inactive_offer_headline_offer = factories.HeadlineOfferFactory(
+            offer=active_offer, timespan=finished_timespan
+        )
+
+        another_active_offer = factories.OfferFactory(isActive=True)
+        timespan_finishing_in_the_future = (
+            datetime.datetime.utcnow() - datetime.timedelta(days=3),
+            datetime.datetime.utcnow() + datetime.timedelta(days=3),
+        )
+        soon_to_be_inactive_timespan = factories.HeadlineOfferFactory(
+            offer=another_active_offer, timespan=timespan_finishing_in_the_future
+        )
+
+        headline_offer_query_result = repository.get_inactive_headline_offers()
+        assert headline_offer_query_result == [inactive_offer_headline_offer]
+
+    def test_get_inactive_headline_offers_empty_result(self):
+        offer = factories.OfferFactory(isActive=True)
+        factories.StockFactory(offer=offer)
+        factories.HeadlineOfferFactory(offer=offer)
+
+        headline_offer_query_result = repository.get_inactive_headline_offers()
+        assert headline_offer_query_result == []

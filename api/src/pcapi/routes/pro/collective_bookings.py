@@ -183,3 +183,7 @@ def cancel_collective_offer_booking(offer_id: int) -> None:
         )
     except collective_exceptions.NoCollectiveBookingToCancel:
         raise ApiErrors({"code": "NO_BOOKING", "message": "This collective offer has no booking to cancel"}, 400)
+    except collective_exceptions.CollectiveOfferForbiddenAction:
+        raise ApiErrors(
+            {"code": "CANCEL_NOT_ALLOWED", "message": "This collective offer status does not allow cancellation"}, 403
+        )

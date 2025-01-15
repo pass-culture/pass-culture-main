@@ -47,9 +47,6 @@ class IndividualOffersSearchAttributes(enum.Enum):
     STATUS = "Statut"
     OFFERER = "Entité juridique"
     TAG = "Tag"
-    MUSIC_TYPE_GTL = "Type de musique"
-    SHOW_TYPE = "Type de spectacle"
-    SHOW_SUB_TYPE = "Sous-type de spectacle"
     VISA = "Visa d'exploitation"
 
 
@@ -87,9 +84,6 @@ form_field_configuration = {
     "VENUE": {"field": "venue", "operator": ["IN", "NOT_IN"]},
     "VALIDATION": {"field": "validation", "operator": ["IN", "NOT_IN"]},
     "VISA": {"field": "string", "operator": ["EQUALS", "NOT_EQUALS"]},
-    "MUSIC_TYPE_GTL": {"field": "music_type_gtl", "operator": ["IN", "NOT_IN"]},
-    "SHOW_TYPE": {"field": "show_type", "operator": ["IN", "NOT_IN"]},
-    "SHOW_SUB_TYPE": {"field": "show_sub_type", "operator": ["IN", "NOT_IN"]},
     "PRICE": {
         "field": "price",
         "operator": [
@@ -164,9 +158,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
                 "subcategory",
                 "venue",
                 "validation",
-                "music_type_gtl",
                 "show_type",
-                "show_sub_type",
                 "price",
                 "boolean",
                 "provider",
@@ -321,21 +313,9 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         search_inline=True,
         field_list_compatibility=True,
     )
-    music_type_gtl = fields.PCSelectMultipleField(
-        "Type de musique",
-        choices=[(s.gtl_id[:2], s.label) for s in categories.TITELIVE_MUSIC_TYPES],
-        search_inline=True,
-        field_list_compatibility=True,
-    )
     show_type = fields.PCSelectMultipleField(
         "Type de spectacle",
         choices=[(str(s), show_types.SHOW_TYPES_LABEL_BY_CODE[s]) for s in show_types.SHOW_TYPES_LABEL_BY_CODE],
-        search_inline=True,
-        field_list_compatibility=True,
-    )
-    show_sub_type = fields.PCSelectMultipleField(
-        "Sous-type de spectacle",
-        choices=[(str(s), show_types.SHOW_SUB_TYPES_LABEL_BY_CODE[s]) for s in show_types.SHOW_SUB_TYPES_LABEL_BY_CODE],
         search_inline=True,
         field_list_compatibility=True,
     )

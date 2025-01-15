@@ -1,5 +1,5 @@
 // react hooks and usages doc : https://reactjs.org/docs/hooks-intro.html
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 

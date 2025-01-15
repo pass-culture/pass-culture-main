@@ -11,7 +11,7 @@ import {
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
-import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { FORMAT_DD_MM_YYYY, mapDayToFrench } from 'commons/utils/date'
 import { downloadFile } from 'commons/utils/downloadFile'
 import { pluralize } from 'commons/utils/pluralize'
@@ -96,7 +96,6 @@ export const DownloadBookingsModal = ({
             name="bookings-date-select"
             checked={selectedDate === eventDate}
             className={style['bookings-date-radio']}
-            withBorder={false}
             label={
               <div className={style['radio-label']}>
                 <abbr

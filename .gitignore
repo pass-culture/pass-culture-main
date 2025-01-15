@@ -55,3 +55,6 @@ docs-build/
 
 # Script for VSCode local debugging
 /api/src/pcapi/scripts/local_debug_script.py
+
+allure-results/
+allure-report/

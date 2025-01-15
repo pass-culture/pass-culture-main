@@ -1,10 +1,11 @@
 import * as yup from 'yup'
 
 import { WithdrawalTypeEnum } from 'apiClient/v1'
+import { emailSchema } from 'commons/utils/isValidEmail'
 
 import { validationSchema as offerLocationSchema } from '../components/OfferLocation/validationSchema'
 
-// FIX ME: this regex is subject to backtracking which can lead to "catastrophic backtracking", high memory usage and slow performance
+// TODO: this regex is subject to backtracking which can lead to "catastrophic backtracking", high memory usage and slow performance
 // we cannot use the yup url validation because we need to allow {} in the url to interpolate some data
 const offerFormUrlRegex = new RegExp(
   /*eslint-disable-next-line no-useless-escape*/
@@ -60,9 +61,7 @@ export const getValidationSchema = ({
       then: (schema) =>
         schema
           .required('Veuillez renseigner une adresse email')
-          .email(
-            'Veuillez renseigner un email valide, exemple : mail@exemple.com'
-          )
+          .test(emailSchema)
           .test({
             name: 'organisationEmailNotPassCulture',
             message: 'Ce mail doit vous appartenir',
@@ -88,9 +87,7 @@ export const getValidationSchema = ({
       then: (schema) =>
         schema
           .required('Veuillez renseigner une adresse email')
-          .email(
-            'Veuillez renseigner un email valide, exemple : mail@exemple.com'
-          ),
+          .test(emailSchema),
     }),
     externalTicketOfficeUrl: yup
       .string()

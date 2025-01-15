@@ -1,5 +1,4 @@
 import { screen, waitFor } from '@testing-library/react'
-import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -111,9 +110,9 @@ describe('src | components | pages | Signup', () => {
       user,
       storeOverrides: {
         user: {
-          selectedOffererId: 1,
           currentUser: user,
         },
+        offerer: { selectedOffererId: 1, offererNames: [] },
       },
     })
 

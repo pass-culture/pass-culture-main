@@ -8,7 +8,6 @@ from pcapi.core import token as token_utils
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription.phone_validation import api as phone_validation_api
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
-from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.api import create_phone_validation_token
@@ -32,7 +31,7 @@ class EnsurePhoneNumberUnicityTest:
     @patch(
         "pcapi.notifications.sms.backends.sendinblue.sib_api_v3_sdk.TransactionalSMSApi.send_transac_sms",
     )
-    @override_settings(SMS_NOTIFICATION_BACKEND="pcapi.notifications.sms.backends.sendinblue.SendinblueBackend")
+    @pytest.mark.settings(SMS_NOTIFICATION_BACKEND="pcapi.notifications.sms.backends.sendinblue.SendinblueBackend")
     def test_send_phone_code_success_if_validated_by_not_beneficiary(self, send_sms_mock):
         already_validated_user = users_factories.EligibleUnderageFactory(
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
@@ -88,7 +87,7 @@ class SendSMSTest:
     @patch(
         "pcapi.notifications.sms.backends.sendinblue.sib_api_v3_sdk.TransactionalSMSApi.send_transac_sms",
     )
-    @override_settings(SMS_NOTIFICATION_BACKEND="pcapi.notifications.sms.backends.sendinblue.SendinblueBackend")
+    @pytest.mark.settings(SMS_NOTIFICATION_BACKEND="pcapi.notifications.sms.backends.sendinblue.SendinblueBackend")
     def test_send_sms_success(self, mock, app):
         user = users_factories.UserFactory()
 
@@ -100,7 +99,7 @@ class SendSMSTest:
         "pcapi.notifications.sms.backends.sendinblue.sib_api_v3_sdk.TransactionalSMSApi.send_transac_sms",
     )
     @patch("secrets.randbelow")
-    @override_settings(SMS_NOTIFICATION_BACKEND="pcapi.notifications.sms.backends.sendinblue.SendinblueBackend")
+    @pytest.mark.settings(SMS_NOTIFICATION_BACKEND="pcapi.notifications.sms.backends.sendinblue.SendinblueBackend")
     def test_send_sms_phone_number_with_space(self, randbelow_mock, send_sms_mock):
         user = users_factories.UserFactory()
         randbelow_mock.return_value = "123456"
@@ -120,7 +119,7 @@ class SendSMSTest:
     @patch(
         "pcapi.notifications.sms.backends.sendinblue.sib_api_v3_sdk.TransactionalSMSApi.send_transac_sms",
     )
-    @override_settings(SMS_NOTIFICATION_BACKEND="pcapi.notifications.sms.backends.sendinblue.SendinblueBackend")
+    @pytest.mark.settings(SMS_NOTIFICATION_BACKEND="pcapi.notifications.sms.backends.sendinblue.SendinblueBackend")
     def test_send_sms_bad_request(self, send_sms_mock, caplog, app):
         user = users_factories.UserFactory()
         send_sms_mock.side_effect = ApiException(status=400)
@@ -137,7 +136,7 @@ class SendSMSTest:
     @patch(
         "pcapi.notifications.sms.backends.sendinblue.sib_api_v3_sdk.TransactionalSMSApi.send_transac_sms",
     )
-    @override_settings(SMS_NOTIFICATION_BACKEND="pcapi.notifications.sms.backends.sendinblue.SendinblueBackend")
+    @pytest.mark.settings(SMS_NOTIFICATION_BACKEND="pcapi.notifications.sms.backends.sendinblue.SendinblueBackend")
     def test_retry_success(self, send_sms_mock, caplog, app):
         user = users_factories.UserFactory()
         send_sms_mock.side_effect = [SSLError(), ApiException(status=524), True]
@@ -154,7 +153,7 @@ class SendSMSTest:
 
 
 @pytest.mark.usefixtures("db_session")
-@override_settings(DISABLE_PHONE_VALIDATION_FOR_E2E_TESTS=True)
+@pytest.mark.settings(DISABLE_PHONE_VALIDATION_FOR_E2E_TESTS=True)
 class BypassPhoneValidationTest:
     def test_bypass_if_email_has_e2e_suffix(self):
         user = users_factories.UserFactory(email="x+e2e@example.com")

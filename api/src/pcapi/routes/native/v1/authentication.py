@@ -31,7 +31,6 @@ from pcapi.routes.native.v1.serialization.authentication import ResetPasswordRes
 from pcapi.routes.native.v1.serialization.authentication import ValidateEmailRequest
 from pcapi.routes.native.v1.serialization.authentication import ValidateEmailResponse
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils.feature import feature_required
 
 from .. import blueprint
 from .serialization import authentication
@@ -168,7 +167,6 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
 
 @blueprint.native_route("/oauth/state", methods=["GET"])
 @spectree_serialize(response_model=authentication.OauthStateResponse, on_success_status=200, api=blueprint.api)
-@feature_required(FeatureToggle.WIP_ENABLE_GOOGLE_SSO)
 def google_oauth_state() -> authentication.OauthStateResponse:
     encoded_oauth_state_token = users_api.create_oauth_state_token()
     return authentication.OauthStateResponse(oauth_state_token=encoded_oauth_state_token)
@@ -181,7 +179,6 @@ def google_oauth_state() -> authentication.OauthStateResponse:
     on_error_statuses=[400, 401],
     api=blueprint.api,
 )
-@feature_required(FeatureToggle.WIP_ENABLE_GOOGLE_SSO)
 def google_auth(body: authentication.GoogleSigninRequest) -> authentication.SigninResponse:
     try:
         oauth_state_token = token_utils.UUIDToken.load_and_check(

@@ -130,8 +130,8 @@ class SchoolTypeEnum(enum.Enum):
 
 
 class GenderEnum(enum.Enum):
-    M: str = "M."
-    F: str = "Mme"
+    M = "M."
+    F = "Mme"
 
 
 class AccountState(enum.Enum):
@@ -227,6 +227,9 @@ class User(PcObject, Base, Model, DeactivableMixin):
             sa.func.immutable_unaccent(firstName + " " + lastName),
             postgresql_using="gin",
         ),
+        # Index to be used with ORDER BY id LIMIT 21,
+        # otherwise an index on the single email domain is not used by the query planner
+        sa.Index("ix_user_email_domain_and_id", sa.func.email_domain(email), "id"),
     )
 
     def __init__(self, **kwargs: typing.Any) -> None:
@@ -943,8 +946,7 @@ class UserAccountUpdateFlag(enum.Enum):
 class UserAccountUpdateRequest(PcObject, Base, Model):
     __tablename__ = "user_account_update_request"
     dsApplicationId: int = sa.Column(sa.BigInteger, nullable=False, index=True, unique=True)
-    # FIXME (prouzet, 2024-12-02): make dsTechnicalId non-nullable once deployed on all platforms and data updated
-    dsTechnicalId: str = sa.Column(sa.Text, nullable=True)
+    dsTechnicalId: str = sa.Column(sa.Text, nullable=False)
     status: dms_models.GraphQLApplicationStates = sa.Column(
         MagicEnum(dms_models.GraphQLApplicationStates), nullable=False
     )
@@ -1040,6 +1042,22 @@ class UserAccountUpdateRequest(PcObject, Base, Model):
     @property
     def has_account_has_same_info_update(self) -> bool:
         return UserAccountUpdateType.ACCOUNT_HAS_SAME_INFO in self.updateTypes
+
+    @property
+    def can_be_accepted(self) -> bool:
+        return bool(
+            self.status == dms_models.GraphQLApplicationStates.on_going
+            and self.userId is not None
+            and self.updateTypes
+            and not self.updateTypes == [UserAccountUpdateType.ACCOUNT_HAS_SAME_INFO]
+            and not (
+                set(self.flags)
+                & {
+                    UserAccountUpdateFlag.MISSING_VALUE,
+                    UserAccountUpdateFlag.INVALID_VALUE,
+                }
+            )
+        )
 
 
 class UserSession(PcObject, Base, Model):

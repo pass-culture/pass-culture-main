@@ -1,5 +1,4 @@
 import { useFormikContext } from 'formik'
-import React from 'react'
 
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { useAccessibilityOptions } from 'commons/hooks/useAccessibilityOptions'
@@ -16,7 +15,7 @@ export const FormAccessibility = ({
   const { setFieldValue } = useFormikContext<OfferEducationalFormValues>()
 
   return (
-    <FormLayout.Section title="Accessibilité">
+    <FormLayout.Section title="À quel type de handicap votre offre est-elle accessible ?">
       <FormLayout.Row>
         <CheckboxGroup
           group={useAccessibilityOptions(setFieldValue)}

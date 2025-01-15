@@ -132,7 +132,7 @@ describe('FormDates', () => {
 
     expect(
       screen.getByRole('radio', {
-        name: 'Pendant une période précise uniquement',
+        name: 'À une date ou une période précise',
       })
     ).not.toBeChecked()
   })
@@ -156,7 +156,7 @@ describe('FormDates', () => {
     })
 
     const screenSpecific = screen.getByRole('radio', {
-      name: 'Pendant une période précise uniquement',
+      name: 'À une date ou une période précise',
     })
 
     await userEvent.click(radioPermanent)

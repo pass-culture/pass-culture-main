@@ -1,8 +1,7 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/variables/_size.scss" as size;
+@use "styles/mixins/_size.scss" as size;
 @use "styles/variables/_z-index.scss" as zIndex;
-@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 
 $connect-as-header-height: rem.torem(52px);
 
@@ -20,7 +19,8 @@ $connect-as-header-height: rem.torem(52px);
   border: rem.torem(1px) solid var(--color-grey-medium);
   border-top: none;
 
-  &-funnel, &-onboarding {
+  &-funnel,
+  &-onboarding {
     width: 100%;
   }
 
@@ -32,7 +32,9 @@ $connect-as-header-height: rem.torem(52px);
     margin: 0 auto;
     width: rem.torem(size.$desktop);
 
-    &-funnel, &-onboarding {
+    &-funnel,
+    &-onboarding,
+    &-sticky-onboarding {
       width: 100%;
     }
   }
@@ -47,7 +49,7 @@ $connect-as-header-height: rem.torem(52px);
   background-color: var(--color-white);
 
   &-side {
-    @media (min-width: size.$tablet) {
+    @media screen and (min-width: size.$tablet) {
       flex-direction: row;
     }
 
@@ -63,7 +65,7 @@ $connect-as-header-height: rem.torem(52px);
         var(--color-secondary)
       );
 
-      @media (min-width: size.$tablet) {
+      @media screen and (min-width: size.$tablet) {
         min-width: rem.torem(202px);
         width: size.$side-logo-width;
         min-height: 100vh;
@@ -87,16 +89,22 @@ $connect-as-header-height: rem.torem(52px);
   flex-direction: column;
   justify-content: space-between;
 
-  @media (min-width: size.$mobile) {
+  @media screen and (min-width: size.$tablet) {
     padding: size.$main-content-padding size.$main-content-padding 0;
   }
 
-  &-funnel, &-onboarding {
+  &-funnel,
+  &-onboarding {
     background-color: var(--color-white);
     padding: 0;
   }
 
   &-logged-out {
+    padding: 0;
+  }
+
+  &-sticky-onboarding {
+    margin: 0 auto size.$action-bar-sticky-height auto;
     padding: 0;
   }
 }
@@ -114,17 +122,25 @@ $connect-as-header-height: rem.torem(52px);
     display: flex;
     flex-direction: column;
     justify-content: center;
-
-    @media (min-width: size.$tablet) {
-      min-width: size.$full-content-min-width;
-      max-width: size.$full-content-max-width;
-    }
+    min-width: size.$full-content-min-width;
+    max-width: size.$full-content-max-width;
 
     &-with-heading {
       min-height: calc(
-        100vh - #{size.$footer-height} - rem.torem(32px) - var(--typography-title1-line-height)
+        100vh -
+          #{size.$footer-height} - rem.torem(32px) - var(
+            --typography-title1-line-height
+          )
       );
     }
+  }
+
+  &-sticky-onboarding {
+    display: flex;
+    justify-content: center;
+    max-width: size.$main-content-width;
+    padding: size.$main-content-padding size.$main-content-padding 0;
+    margin: 0 auto;
   }
 }
 
@@ -147,28 +163,30 @@ $connect-as-header-height: rem.torem(52px);
   }
 }
 
-.main-heading-wrapper {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin-bottom: rem.torem(32px);
-}
-
 .main-heading {
-  @include fonts-design-system.title1;
+  &-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: rem.torem(32px);
+  }
+
+  &-title {
+    @include fonts.title1;
+  }
+
+  &-back-to-nav-link {
+    margin-left: rem.torem(16px);
+  }
 }
 
-.back-to-nav-link {
-  margin-left: rem.torem(16px);
-  opacity: 0;
-  height: rem.torem(24px);
-  width: rem.torem(24px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.logo-unlogged {
+  color: var(--color-white);
+  max-width: rem.torem(135px);
 
-  &:active,
-  &:focus {
-    opacity: 1;
+  @media (min-width: size.$tablet) {
+    width: 80%;
+    min-width: rem.torem(135px);
+    max-width: rem.torem(282px);
   }
 }

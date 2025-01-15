@@ -4,11 +4,11 @@ import logging
 
 import click
 
-from pcapi import settings
 from pcapi.core import search
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api import booking as educational_api_booking
 import pcapi.core.educational.api.adage as adage_api
+from pcapi.core.educational.api.dms import EAC_DS_PROCEDURES
 from pcapi.core.educational.api.dms import import_dms_applications
 import pcapi.core.educational.api.institution as institution_api
 import pcapi.core.educational.api.playlists as playlists_api
@@ -73,8 +73,10 @@ def import_deposit_csv(*, path: str, year: int, ministry: str, conflict: str, fi
     CSV format change every time we try to work with it.
     """
     institution_api.import_deposit_institution_csv(
-        path=path, year=year, ministry=ministry, conflict=conflict, final=final, commit=not dry_run
+        path=path, year=year, ministry=ministry, conflict=conflict, final=final, program_name=None
     )
+    if not dry_run:
+        db.session.commit()
 
 
 @blueprint.cli.command("synchronize_venues_from_adage_cultural_partners")
@@ -151,14 +153,7 @@ def handle_pending_collective_booking_j3() -> None:
 @log_cron_with_transaction
 def import_eac_dms_application(ignore_previous: bool = False) -> None:
     """Import procedures from dms."""
-    procedures = [
-        settings.DMS_EAC_PROCEDURE_INDEPENDANTS_CANDIDATE_ID,
-        settings.DMS_EAC_PROCEDURE_STRUCTURE_CANDIDATE_ID,
-        settings.DMS_EAC_PROCEDURE_MENJS_CANDIDATE_ID,
-        settings.DMS_EAC_PROCEDURE_MENJS_CANDIDATE_ID_V2,
-    ]
-
-    procedures = [proc for proc in procedures if proc > 0]
+    procedures = [proc for proc in EAC_DS_PROCEDURES if proc > 0]
     for procedure_number in procedures:
         import_dms_applications(procedure_number=procedure_number, ignore_previous=ignore_previous)
 

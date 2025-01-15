@@ -10,12 +10,14 @@ from flask_wtf import FlaskForm
 import wtforms
 
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.educational import models as educational_models
 from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import constants
+from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils as forms_utils
 from pcapi.routes.backoffice.offers import forms
@@ -343,3 +345,17 @@ class EditCollectiveOfferPrice(FlaskForm):
     def validate_price(self, price: fields.PCOptSearchField) -> fields.PCOptSearchField:
         price.data = price.data.quantize(decimal.Decimal("1.00"))
         return price
+
+
+class RejectCollectiveOfferForm(FlaskForm):
+    reason = fields.PCSelectField(
+        "Raison de rejet",
+        choices=forms_utils.choices_from_enum(
+            educational_models.CollectiveOfferRejectionReason,
+            formatter=filters.format_collective_offer_rejection_reason,
+        ),
+    )
+
+
+class BatchRejectCollectiveOfferForm(empty_forms.BatchForm, RejectCollectiveOfferForm):
+    pass

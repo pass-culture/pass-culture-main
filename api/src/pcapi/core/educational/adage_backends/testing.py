@@ -6,23 +6,23 @@ from pcapi.core.educational.adage_backends.base import AdageClient
 from pcapi.core.educational.adage_backends.serialize import AdageCollectiveOffer
 from pcapi.core.educational.adage_backends.serialize import AdageCollectiveRequest
 from pcapi.core.educational.adage_backends.serialize import AdageEducationalInstitution
-from pcapi.routes.adage.v1.serialization import prebooking
-from pcapi.routes.serialization import venues_serialize
+import pcapi.core.educational.schemas as educational_schemas
 
 from .. import testing
 
 
 class AdageSpyClient(AdageClient):
-    def notify_prebooking(self, data: prebooking.EducationalBookingResponse) -> None:
+
+    def notify_prebooking(self, data: educational_schemas.EducationalBookingResponse) -> None:
         testing.adage_requests.append({"url": f"{self.base_url}/v1/prereservation", "sent_data": data})
 
-    def notify_offer_or_stock_edition(self, data: prebooking.EducationalBookingResponse) -> None:
+    def notify_offer_or_stock_edition(self, data: educational_schemas.EducationalBookingResponse) -> None:
         testing.adage_requests.append({"url": f"{self.base_url}/v1/prereservation-edit", "sent_data": data})
 
     def get_adage_offerer(self, siren: str) -> list[AdageVenue]:
         raise RuntimeError("Do not use the spy for this method, mock the get request instead")
 
-    def notify_booking_cancellation_by_offerer(self, data: prebooking.EducationalBookingResponse) -> None:
+    def notify_booking_cancellation_by_offerer(self, data: educational_schemas.EducationalBookingResponse) -> None:
         testing.adage_requests.append({"url": f"{self.base_url}/v1/prereservation-annule", "sent_data": data})
 
     def get_cultural_partners(
@@ -96,9 +96,9 @@ class AdageSpyClient(AdageClient):
     def notify_institution_association(self, data: AdageCollectiveOffer) -> None:
         testing.adage_requests.append({"url": f"{self.base_url}/v1/offre-assoc", "sent_data": data})
 
-    def get_cultural_partner(self, siret: str) -> venues_serialize.AdageCulturalPartner:
+    def get_cultural_partner(self, siret: str) -> educational_schemas.AdageCulturalPartner:
         testing.adage_requests.append({"url": f"{self.base_url}/v1/partenaire-culturel/{siret}", "sent_data": ""})
-        return venues_serialize.AdageCulturalPartner(
+        return educational_schemas.AdageCulturalPartner(
             id=128028,
             venueId=None,
             siret=siret,
@@ -177,7 +177,7 @@ class AdageSpyClient(AdageClient):
             ]
         raise exceptions.EducationalRedactorNotFound("No educational redactor found for the given UAI")
 
-    def notify_reimburse_collective_booking(self, data: prebooking.AdageReimbursementNotification) -> None:
+    def notify_reimburse_collective_booking(self, data: educational_schemas.AdageReimbursementNotification) -> None:
         api_url = f"{self.base_url}/v1/reservation-remboursement"
         testing.adage_requests.append({"url": api_url, "sent_data": ""})
 

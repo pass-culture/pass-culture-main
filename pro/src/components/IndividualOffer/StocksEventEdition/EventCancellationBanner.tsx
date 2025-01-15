@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
 import { FormLayoutDescription } from 'components/FormLayout/FormLayoutDescription'

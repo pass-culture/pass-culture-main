@@ -13,8 +13,6 @@ from pcapi.core.geography import models as geography_models
 from pcapi.core.history import models as history_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
-from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as external_testing
 from pcapi.utils.date import timespan_str_to_numrange
@@ -339,8 +337,7 @@ class Returns200Test:
             "old_info": "75000",
         }
 
-    @override_features(WIP_ENABLE_OFFER_ADDRESS=True)
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True, WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_update_venue_location_with_manual_edition_and_oa(self, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
         address = geography_factories.AddressFactory(
@@ -700,13 +697,11 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["siret"] == venue.siret
 
-    def test_should_update_permanent_venue_opening_hours(self, client) -> None:
-        # given
+    def test_should_update_open_to_public_venue_opening_hours(self, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, isPermanent=True)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, isOpenToPublic=True)
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        # when
         venue_data = populate_missing_data_from_venue(
             {
                 "openingHours": [
@@ -743,15 +738,12 @@ class Returns200Test:
         }
 
     def test_should_not_update_opening_hours_when_response_is_none(self, client) -> None:
-        # given
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, isPermanent=True)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, isOpenToPublic=True)
         auth_request = client.with_session_auth(email=user_offerer.user.email)
 
-        # when
         venue_data = populate_missing_data_from_venue({"contact": None}, venue)
 
-        # then
         response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
         assert response.status_code == 200
         assert len(venue.action_history) == 0
@@ -1192,18 +1184,16 @@ class Returns400Test:
     side_effect=entreprise_exceptions.UnknownEntityException(),
 )
 def test_with_inconsistent_siret(
-    mock_siret_is_active, client, enforce_siret_check, disable_siret_check, expected_result
+    mock_siret_is_active, client, features, settings, enforce_siret_check, disable_siret_check, expected_result
 ):
     venue = offerers_factories.VenueFactory(siret="00112233900040", managingOfferer__siren="001122339")
     user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
 
     venue_data = populate_missing_data_from_venue({"siret": "00112233900049"}, venue)
 
-    with override_settings(ENFORCE_SIRET_CHECK=enforce_siret_check):
-        with override_features(DISABLE_SIRET_CHECK=disable_siret_check):
-            response = client.with_session_auth(email=user_offerer.user.email).patch(
-                f"/venues/{venue.id}", json=venue_data
-            )
+    settings.ENFORCE_SIRET_CHECK = enforce_siret_check
+    features.DISABLE_SIRET_CHECK = disable_siret_check
+    response = client.with_session_auth(email=user_offerer.user.email).patch(f"/venues/{venue.id}", json=venue_data)
 
     assert response.status_code == expected_result, response.json
     if expected_result == 400:

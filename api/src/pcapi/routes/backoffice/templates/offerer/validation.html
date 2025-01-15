@@ -166,7 +166,14 @@
                             name="{{ url_for('backoffice_web.validation.toggle_top_actor', offerer_id=offerer.id) | action_to_name }}"
                             method="post">
                         {{ csrf_token }}
-                        <input class="form-check-input" type="checkbox" role="switch" name="is_top_actor" id="top-switch-{{ offerer.id }}" aria-label="{{ top_actor_checked | format_bool }}" onChange="this.form.submit()" {{ "checked" if top_actor_checked else "" }} />
+                        <input class="form-check-input"
+                               type="checkbox"
+                               role="switch"
+                               name="is_top_actor"
+                               id="top-switch-{{ offerer.id }}"
+                               aria-label="{{ top_actor_checked | format_bool }}"
+                               onChange="this.form.submit()"
+                               {{ "checked" if top_actor_checked else "" }} />
                       </form>
                     </div>
                   </td>
@@ -183,11 +190,7 @@
                       {% if has_read_ae_permission %}</a>{% endif %}
                   {% endif %}
                 </td>
-                <td>
-                  {{ item.last_comment | empty_string_if_null | replace("\n", "
-                                    <br />
-                                    "|safe) }}
-                </td>
+                <td>{{ item.last_comment | empty_string_if_null | nl2br }}</td>
                 <td>{{ links.build_siren_to_external_link(offerer) }}</td>
                 <td>{{ (item.creator_email) | empty_string_if_null }}</td>
                 <td>{{ links.build_pro_user_name_to_details_link(item.creator_id, item.creator_name) }}</td>

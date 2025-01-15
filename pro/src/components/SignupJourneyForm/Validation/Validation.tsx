@@ -14,10 +14,12 @@ import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
 } from 'commons/core/shared/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { useInitReCaptcha } from 'commons/hooks/useInitReCaptcha'
 import { useNotification } from 'commons/hooks/useNotification'
-import { updateSelectedOffererId, updateUser } from 'commons/store/user/reducer'
+import { updateSelectedOffererId } from 'commons/store/offerer/reducer'
+import { updateUser } from 'commons/store/user/reducer'
 import { getReCaptchaToken } from 'commons/utils/recaptcha'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'components/SignupJourneyForm/Offerer/constants'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
@@ -36,6 +38,7 @@ export const Validation = (): JSX.Element => {
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const navigate = useNavigate()
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   const { activity, offerer } = useSignupJourneyContext()
   useInitReCaptcha()
 
@@ -93,12 +96,17 @@ export const Validation = (): JSX.Element => {
           /* istanbul ignore next: the form validation already handles this */
           activity.targetCustomer ?? Target.EDUCATIONAL,
         createVenueWithoutSiret: offerer.createVenueWithoutSiret ?? false,
-        banId: offerer.banId,
-        longitude: offerer.longitude ?? 0,
-        latitude: offerer.latitude ?? 0,
-        city: offerer.city,
-        postalCode: offerer.postalCode,
-        street: offerer.street,
+        address: {
+          banId: offerer.banId,
+          longitude: offerer.longitude ?? 0,
+          latitude: offerer.latitude ?? 0,
+          city: offerer.city,
+          postalCode: offerer.postalCode,
+          street: offerer.street,
+          ...(isOfferAddressEnabled && {
+            isManualEdition: offerer.manuallySetAddress,
+          }),
+        },
         token,
       }
 

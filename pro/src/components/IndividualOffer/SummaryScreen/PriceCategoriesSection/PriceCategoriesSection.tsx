@@ -1,4 +1,4 @@
-import React from 'react'
+import { useLocation } from 'react-router-dom'
 
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
@@ -18,12 +18,15 @@ interface Props {
 
 export const PriceCategoriesSection = ({ offer, canBeDuo }: Props) => {
   const mode = useOfferWizardMode()
+  const { pathname } = useLocation()
+  const isOnboarding = pathname.indexOf('onboarding') !== -1
 
   const editLink = getIndividualOfferUrl({
     offerId: offer.id,
     step: OFFER_WIZARD_STEP_IDS.TARIFS,
     mode:
       mode === OFFER_WIZARD_MODE.READ_ONLY ? OFFER_WIZARD_MODE.EDITION : mode,
+    isOnboarding,
   })
 
   return (

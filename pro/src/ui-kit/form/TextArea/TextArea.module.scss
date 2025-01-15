@@ -4,7 +4,6 @@
 .text-area {
   @include forms.input-theme;
 
-  $line-height: 1.3;
   $padding: 16px;
 
   display: block;

@@ -5,7 +5,6 @@ from flask_login import login_required
 import sqlalchemy.orm as sqla_orm
 
 from pcapi import settings
-from pcapi.connectors import api_adresse
 from pcapi.connectors.api_recaptcha import ReCaptchaException
 from pcapi.connectors.api_recaptcha import check_web_recaptcha_token
 from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
@@ -19,7 +18,6 @@ from pcapi.core.offerers import repository
 import pcapi.core.offerers.exceptions as offerers_exceptions
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.repository as offers_repository
-from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.repository import atomic
@@ -287,7 +285,7 @@ def get_offerer_v2_stats(offerer_id: int) -> offerers_serialize.GetOffererV2Stat
     return offerers_serialize.GetOffererV2StatsResponseModel.from_orm(stats)
 
 
-@private_api.route("/offerers/<int:offerer_id>/addresses", methods=["GET"])
+@private_api.route("/offerers/<int:offerer_id>/offerer_addresses", methods=["GET"])
 @login_required
 @spectree_serialize(
     on_success_status=200,
@@ -307,34 +305,24 @@ def get_offerer_addresses(
     )
 
 
-@private_api.route("/offerers/<int:offerer_id>/addresses", methods=["POST"])
+@private_api.route("/offerers/<int:offerer_id>/headline-offer", methods=["GET"])
 @login_required
+@atomic()
 @spectree_serialize(
-    on_success_status=201,
+    response_model=offerers_serialize.OffererHeadLineOfferResponseModel,
     api=blueprint.pro_private_schema,
-    response_model=offerers_serialize.OffererAddressResponseModel,
+    on_success_status=200,
 )
-def create_offerer_address(
-    offerer_id: int, body: offerers_serialize.OffererAddressRequestModel
-) -> offerers_serialize.OffererAddressResponseModel:
+def get_offerer_headline_offer(
+    offerer_id: int,
+) -> offerers_serialize.OffererHeadLineOfferResponseModel:
     check_user_has_access_to_offerer(current_user, offerer_id)
-    try:
-        address_info = api_adresse.get_address(address=body.street, citycode=body.inseeCode)
-    except api_adresse.NoResultException:
-        raise ApiErrors({"address": "Cette adresse n'existe pas"})
 
-    with transaction():
-        with db.session.no_autoflush:
-            address = api.get_or_create_address(
-                api.LocationData(
-                    postal_code=address_info.postcode,
-                    city=address_info.city,
-                    latitude=address_info.latitude,
-                    longitude=address_info.longitude,
-                    street=address_info.street,
-                    insee_code=address_info.citycode,
-                    ban_id=address_info.id,
-                )
-            )
-            offerer_address = api.get_or_create_offerer_address(offerer_id, address.id, body.label)
-            return offerers_serialize.OffererAddressResponseModel.from_orm(offerer_address)
+    try:
+        offerer_headline_offer = repository.get_offerer_headline_offer(offerer_id)
+    except offerers_exceptions.TooManyHeadlineOffersForOfferer:
+        raise ResourceNotFoundError({"global": "Une entité juridique ne peut avoir qu’une seule offre à la une"})
+
+    if not offerer_headline_offer:
+        raise ResourceNotFoundError()
+    return offerers_serialize.OffererHeadLineOfferResponseModel.from_orm(offerer_headline_offer)

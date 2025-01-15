@@ -1,6 +1,5 @@
 /* No need to test this file */
 /* istanbul ignore file */
-import React from 'react'
 
 import { Activity } from 'components/SignupJourneyForm/Activity/Activity'
 import { OffererAuthentication } from 'components/SignupJourneyForm/Authentication/OffererAuthentication'

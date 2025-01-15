@@ -48,7 +48,9 @@ export const GET_OFFERER_QUERY_KEY = 'getOfferer'
 export const GET_OFFERER_BANKACCOUNTS_AND_ATTACHED_VENUES =
   'getOffererBankAccountsAndAttachedVenues'
 export const GET_OFFERER_NAMES_QUERY_KEY = 'getOffererNames'
+export const GET_OFFERER_V2_STATS_QUERY_KEY = 'getOffererV2Stats'
 export const GET_PROVIDERS_QUERY_KEY = 'getProviders'
+export const GET_STOCKS_QUERY_KEY = 'getStocks'
 export const GET_VENUE_QUERY_KEY = 'getVenue'
 export const GET_VENUE_LABELS_QUERY_KEY = 'getVenueLabels'
 export const GET_VENUES_OF_OFFERER_FROM_SIRET_QUERY_KEY =
@@ -59,3 +61,5 @@ export const GET_VENUES_QUERY_KEY = 'getVenues'
 export const LOG_CATALOG_VIEW_QUERY_KEY = 'logCatalogView'
 export const LOG_TRACKING_FILTER_QUERY_KEY = 'logTrackingFilter'
 export const GET_STATISTICS_QUERY_KEY = 'getStatistics'
+export const GET_DEPRECATED_STATISTIC_DASHBOARD =
+  'getDeprecatedStatisticDashboard'

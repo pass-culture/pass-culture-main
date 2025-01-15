@@ -19,6 +19,8 @@ from pcapi.core.geography.constants import MAX_LATITUDE
 from pcapi.core.geography.constants import MAX_LONGITUDE
 from pcapi.utils import cache as cache_utils
 from pcapi.utils import module_loading
+from pcapi.utils import postal_code
+from pcapi.utils import regions
 from pcapi.utils import requests
 
 
@@ -400,6 +402,17 @@ class ApiAdresseBackend(BaseBackend):
     def _is_result_empty(self, result: dict) -> bool:
         return len(result["features"]) == 0
 
+    def _get_missing_postal_code(self, citycode: str) -> str:
+        # postcode is missing in API Adresse responses in Saint-Martin and Saint-Barthélémy
+        match regions.get_department_code_from_city_code(citycode):
+            case postal_code.SAINT_BARTHELEMY_DEPARTEMENT_CODE:
+                return postal_code.SAINT_BARTHELEMY_POSTAL_CODE
+            case postal_code.SAINT_MARTIN_DEPARTEMENT_CODE:
+                return postal_code.SAINT_MARTIN_POSTAL_CODE
+
+        # Empty postal code is not supported at many places in our code, so fail and raise an alert when unexpected
+        raise ValueError("Missing postal code")
+
     def _format_result(self, data: dict) -> AddressInfo:
         # GeoJSON defines Point as [longitude, latitude]
         # https://datatracker.ietf.org/doc/html/rfc7946#appendix-A.1
@@ -417,7 +430,7 @@ class ApiAdresseBackend(BaseBackend):
             longitude=coordinates[0],
             score=properties["score"],
             label=properties["label"],
-            postcode=properties["postcode"],
+            postcode=properties.get("postcode") or self._get_missing_postal_code(properties["citycode"]),
             citycode=properties["citycode"],
             city=properties["city"],
             street=street,

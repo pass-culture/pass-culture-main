@@ -2,6 +2,7 @@
 @use "styles/variables/_forms.scss" as forms;
 @use "styles/mixins/_forms.scss" as formsM;
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_a11y.scss" as a11y;
 
 .field-layout {
   width: 100%;
@@ -23,7 +24,7 @@
   }
 
   &-small-label &-label {
-    @include fonts.caption;
+    @include fonts.body-accent-xs;
 
     display: block;
     min-height: forms.$input-label-min-height;
@@ -63,11 +64,11 @@
   }
 
   &-input-description {
-    @include fonts.caption;
+    @include fonts.body-xs;
 
     display: block;
-    min-height: forms.$input-description-min-height;
     color: var(--color-grey-dark);
+    margin-top: rem.torem(4px);
   }
 }
 
@@ -84,9 +85,6 @@ $icon-size: rem.torem(20px);
   border-radius: 50%;
   display: flex;
   align-items: center;
-
-  // Reset button styles
-  line-height: 0;
 
   &-container {
     position: absolute;
@@ -125,4 +123,8 @@ $icon-size: rem.torem(20px);
       fill: var(--color-black);
     }
   }
+}
+
+.visually-hidden {
+  @include a11y.visually-hidden;
 }

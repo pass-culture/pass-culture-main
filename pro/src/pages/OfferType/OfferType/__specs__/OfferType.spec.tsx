@@ -61,7 +61,8 @@ const renderOfferTypes = (structureId?: string, venueId?: string) => {
     </Routes>,
     {
       storeOverrides: {
-        user: { currentUser: sharedCurrentUserFactory(), selectedOffererId: 1 },
+        user: { currentUser: sharedCurrentUserFactory() },
+        offerer: { selectedOffererId: 1, offererNames: [] },
       },
       user: sharedCurrentUserFactory(),
       initialRouterEntries: [

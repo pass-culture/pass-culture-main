@@ -113,7 +113,7 @@ class GetFavoriteOfferTest:
                     "contactPhone": "+33199006328",
                     "durationMinutes": None,
                     "offerId": None,
-                    "educationalPriceDetail": None,
+                    "educationalPriceDetail": stock.priceDetail,
                     "domains": [
                         {"id": stock.collectiveOffer.domains[0].id, "name": stock.collectiveOffer.domains[0].name}
                     ],
@@ -184,7 +184,7 @@ class GetFavoriteOfferTest:
                     "contactUrl": collective_offer_template.contactUrl,
                     "contactForm": collective_offer_template.contactForm.value,
                     "durationMinutes": None,
-                    "educationalPriceDetail": None,
+                    "educationalPriceDetail": collective_offer_template.priceDetail,
                     "offerId": None,
                     "domains": [
                         {

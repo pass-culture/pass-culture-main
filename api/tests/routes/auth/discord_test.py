@@ -10,8 +10,6 @@ from pcapi import settings
 from pcapi.connectors import discord as discord_connector
 from pcapi.core.history import factories as history_factories
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import DiscordUser
@@ -70,7 +68,7 @@ class DiscordSigninTest:
             == f"https://discord.com/api/oauth2/authorize?client_id={discord_connector.DISCORD_CLIENT_ID}&redirect_uri={discord_connector.DISCORD_CALLBACK_URI}&response_type=code&scope=identify%20guilds.join&state=1"
         )
 
-    @override_settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
+    @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
     def test_redirect_to_discord_on_post(self, client):
         form_data = {
             "email": "user@test.com",
@@ -274,13 +272,13 @@ class DiscordSigninTest:
         created_discord_link = DiscordUser.query.filter_by(userId=underage_user.id).first()
         assert not created_discord_link.hasAccess
 
-    @override_features(DISCORD_ENABLE_NEW_ACCESS=False)
+    @pytest.mark.features(DISCORD_ENABLE_NEW_ACCESS=False)
     def test_discord_signin_disabled(self, client):
         response = client.get(url_for("auth.discord_signin"))
         assert response.status_code == 200
         assert "L'accès au serveur Discord du pass Culture est désactivé" in response.data.decode()
 
-    @override_features(DISCORD_ENABLE_NEW_ACCESS=False)
+    @pytest.mark.features(DISCORD_ENABLE_NEW_ACCESS=False)
     def test_discord_signin_disabled_post(self, client):
         form_data = {
             "email": "user@test.com",

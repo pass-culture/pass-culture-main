@@ -1,5 +1,4 @@
 import cn from 'classnames'
-import React from 'react'
 
 import strokeDuoIcon from 'icons/stroke-duo.svg'
 import strokePassIcon from 'icons/stroke-pass.svg'

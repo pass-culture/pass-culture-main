@@ -2,10 +2,10 @@
 
 // Component only for display (sub-components already tested)
 
+import classNames from 'classnames'
 import { Form, FormikProvider, useFormik } from 'formik'
-import React, { useCallback, useState } from 'react'
+import { useState } from 'react'
 import { useSelector } from 'react-redux'
-import { useLocation } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -16,7 +16,7 @@ import { Layout } from 'app/App/layout/Layout'
 import { GET_MEMBERS_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { OffererLinkEvents } from 'commons/core/FirebaseEvents/constants'
 import { useNotification } from 'commons/hooks/useNotification'
-import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullDownIcon from 'icons/full-down.svg'
 import fullUpIcon from 'icons/full-up.svg'
@@ -27,7 +27,6 @@ import { EmailSpellCheckInput } from 'ui-kit/form/EmailSpellCheckInput/EmailSpel
 
 import styles from './Collaborators.module.scss'
 
-const SECTION_ID = '#attachment-invitations-section'
 const SUCCESS_MESSAGE = "L'invitation a bien été envoyée."
 const ERROR_MESSAGE = 'Une erreur est survenue lors de l’envoi de l’invitation.'
 
@@ -35,7 +34,6 @@ export const Collaborators = (): JSX.Element | null => {
   const offererId = useSelector(selectCurrentOffererId)
 
   const { logEvent } = useAnalytics()
-  const location = useLocation()
   const notify = useNotification()
   const [isLoading, setIsLoading] = useState(false)
   const [displayAllMembers, setDisplayAllMembers] = useState(false)
@@ -84,15 +82,6 @@ export const Collaborators = (): JSX.Element | null => {
     validateOnChange: false,
   })
 
-  const shouldScrollToSection = location.hash === SECTION_ID
-  const scrollToSection = useCallback((node: HTMLElement) => {
-    if (shouldScrollToSection) {
-      setTimeout(() => {
-        node.scrollIntoView()
-      }, 200)
-    }
-  }, [])
-
   const MAX_COLLABORATORS = 10
 
   if (!offererId) {
@@ -103,7 +92,7 @@ export const Collaborators = (): JSX.Element | null => {
     <Layout>
       <h1 className={styles['title']}>Collaborateurs</h1>
 
-      <section className={styles['section']} ref={scrollToSection}>
+      <section className={styles['section']}>
         <h2 className={styles['main-list-title']}>Liste des collaborateurs</h2>
 
         {members.length > 0 && (
@@ -111,9 +100,13 @@ export const Collaborators = (): JSX.Element | null => {
             <div className={styles['members-inner']}>
               <table className={styles['members-list']}>
                 <thead>
-                  <tr>
-                    <th scope="col">Email</th>
-                    <th scope="col">Statut</th>
+                  <tr className={styles['members-list-tr']}>
+                    <th scope="col" className={styles['members-list-th']}>
+                      Email
+                    </th>
+                    <th scope="col" className={styles['members-list-th']}>
+                      Statut
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -122,9 +115,21 @@ export const Collaborators = (): JSX.Element | null => {
                       !(
                         !displayAllMembers && index > MAX_COLLABORATORS - 1
                       ) && (
-                        <tr key={email}>
-                          <td className={styles['member-email']}>{email}</td>
-                          <td className={styles['member-status']}>
+                        <tr key={email} className={styles['members-list-tr']}>
+                          <td
+                            className={classNames(
+                              styles['member-email'],
+                              styles['members-list-td']
+                            )}
+                          >
+                            {email}
+                          </td>
+                          <td
+                            className={classNames(
+                              styles['member-status'],
+                              styles['members-list-td']
+                            )}
+                          >
                             {status === OffererMemberStatus.VALIDATED
                               ? 'Validé'
                               : 'En attente'}

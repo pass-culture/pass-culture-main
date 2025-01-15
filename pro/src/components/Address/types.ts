@@ -5,4 +5,5 @@ export interface Address {
   postalCode: string
   street: string
   banId: string | null
+  manuallySetAddress?: boolean
 }

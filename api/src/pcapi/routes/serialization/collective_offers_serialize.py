@@ -13,6 +13,7 @@ from pydantic.v1 import validator
 
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational.models import OfferAddressType
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import validation as offers_validation
 from pcapi.models.offer_mixin import CollectiveOfferStatus
@@ -67,7 +68,6 @@ class CollectiveOfferType(enum.Enum):
 class ListCollectiveOffersQueryModel(BaseModel):
     nameOrIsbn: str | None
     offerer_id: int | None
-    # TODO: (raphaelpra, 2024-07-08): Remove the type CollectiveOfferDisplayedStatus when front only use list in request
     status: (
         list[educational_models.CollectiveOfferDisplayedStatus]
         | educational_models.CollectiveOfferDisplayedStatus
@@ -85,15 +85,6 @@ class ListCollectiveOffersQueryModel(BaseModel):
         alias_generator = to_camel
         extra = "forbid"
         arbitrary_types_allowed = True
-
-    @root_validator(pre=True)
-    def format_status(cls, values: dict) -> dict:
-        status = values.get("status")
-
-        if not isinstance(status, list) and status is not None:
-            values["status"] = [status]
-
-        return values
 
 
 class CollectiveOffersStockResponseModel(BaseModel):
@@ -299,12 +290,6 @@ class GetCollectiveOfferVenueResponseModel(BaseModel):
         orm_mode = True
         json_encoders = {datetime: format_into_utc_date}
         allow_population_by_field_name = True
-
-
-class OfferAddressType(enum.Enum):
-    OFFERER_VENUE = "offererVenue"
-    SCHOOL = "school"
-    OTHER = "other"
 
 
 class CollectiveOfferOfferVenueResponseModel(BaseModel):

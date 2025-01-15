@@ -36,8 +36,6 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 from pcapi.core.users import api as users_api
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -1295,7 +1293,7 @@ class CancelLatestEventTest:
         assert event3.status == models.FinanceEventStatus.READY
         assert not event3.pricings
 
-    def test_cannot_delete_dependent_pricings_that_are_not_deletable_with_override(self):
+    def test_cannot_delete_dependent_pricings_that_are_not_deletable_with_override(self, settings):
         event1 = factories.UsedBookingFinanceEventFactory(
             booking__stock__offer__venue__pricing_point="self",
             status=models.FinanceEventStatus.PRICED,
@@ -1331,8 +1329,9 @@ class CancelLatestEventTest:
         assert event3.status == models.FinanceEventStatus.PRICED
         assert event3.pricings[0].status == models.PricingStatus.VALIDATED
 
-        with override_settings(FINANCE_OVERRIDE_PRICING_ORDERING_ON_PRICING_POINTS=[ppoint.id]):
-            api._delete_dependent_pricings(event1, "test_cannot_delete_dependent_pricings_that_are_not_deletable")
+        settings.FINANCE_OVERRIDE_PRICING_ORDERING_ON_PRICING_POINTS = [ppoint.id]
+        api._delete_dependent_pricings(event1, "test_cannot_delete_dependent_pricings_that_are_not_deletable")
+
         db.session.refresh(event2)
         db.session.refresh(event3)
 
@@ -1932,7 +1931,6 @@ def test_generate_payment_files(mocked_gdrive_create_file, clean_temp_files):
     assert gdrive_file_names == {
         "bank_accounts_20230201_1334.csv",
         f"down_payment_{cashflow.batch.label}_20230201_1334.csv",
-        f"down_payment_nc_{cashflow.batch.label}_20230201_1334.csv",
     }
 
 
@@ -1998,15 +1996,37 @@ def test_generate_bank_accounts_file(clean_temp_files):
     assert len(rows) == 3
     for row, bank_account in zip(rows, [bank_account_2, bank_account_3, bank_account_4]):
         assert row == {
-            "Lieux liés au compte bancaire": ", ".join(
-                map(str, sorted(link.venueId for link in bank_account.venueLinks))
-            ),
+            "Numéro": "",
+            "Actif": "True",
+            "Traité": "False",
             "Identifiant des coordonnées bancaires": str(bank_account.id),
-            "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account.id),
-            "SIREN de la structure": bank_account.offerer.siren,
-            "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account.offerer.name} - {bank_account.label}",
+            "Nom du fournisseur - Libellé des coordonnées bancaires": f"{bank_account.offerer.name} - {bank_account.label}",
+            "Statut": "A",
+            "Famille de fournisseurs": "ACTEURCULT",
+            "Condition de règlement": "30J",
+            "Cycle du relevé": "15J",
+            "Devise": "EUR",
+            "Type de taux de change": "SPOT",
+            "Courriel": "",
+            "Site web": "",
+            "Téléphone 1": "",
+            "Téléphone 2": "",
+            "Fax": "",
+            "Langue": "fr-FR",
+            "Adresse 1": "1 boulevard Poissonnière",
+            "Adresse 2": "",
+            "Ville": "Paris",
+            "Pays": "FR",
+            "Département": "",
+            "Code postal": "75002",
+            "Mode de règlement bis": "VSEPA",
             "IBAN": bank_account.iban,
+            "Compte de trésorerie": "",
+            "Nature économique": "",
             "BIC": bank_account.bic,
+            "SIREN": bank_account.offerer.siren,
+            "Numéro de TVA Intracom": "",
+            "Zone de taxes": "EXO",
         }
 
 
@@ -2347,25 +2367,6 @@ def test_generate_payments_file(clean_temp_files):
         "Montant net offreur": -12,  # [0 - 12 = -12] from collective incident
     } in rows
 
-    n_queries = 1  # select individual pricings only (batch already selected)
-    with assert_num_queries(n_queries):
-        path = api._generate_payments_file(batch, only_caledonian=True)
-
-    with open(path, encoding="utf-8") as fp:
-        reader = csv.DictReader(fp, quoting=csv.QUOTE_NONNUMERIC)
-        rows = list(reader)
-
-    assert len(rows) == 1
-    assert {
-        "Identifiant des coordonnées bancaires": str(nc_bank_account.id),
-        "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(nc_bank_account.id),
-        "SIREN de la structure": nc_bank_account.offerer.rid7,
-        "Nom de la structure - Libellé des coordonnées bancaires": f"{nc_bank_account.offerer.name} - {nc_bank_account.label}",
-        "Type de réservation": "PC",
-        "Ministère": "NC",
-        "Montant net offreur": 1193.32,  # 10 € = 10*(1000/8.38) XPF = 1193.32 XPF
-    } in rows
-
 
 @pytest.mark.usefixtures("clean_temp_files", "css_font_http_request_mock")
 def test_invoices_csv_commercial_gesture():
@@ -2499,7 +2500,7 @@ def test_invoices_csv_commercial_gesture():
 
 @pytest.mark.usefixtures("clean_temp_files", "css_font_http_request_mock")
 @pytest.mark.parametrize("with_oa", [True, False])
-def test_invoice_pdf_commercial_gesture(monkeypatch, with_oa):
+def test_invoice_pdf_commercial_gesture(features, monkeypatch, with_oa):
     invoice_htmls = []
 
     def _store_invoice_pdf(invoice_storage_id, invoice_html) -> None:
@@ -2578,8 +2579,8 @@ def test_invoice_pdf_commercial_gesture(monkeypatch, with_oa):
 
     cutoff = datetime.datetime.utcnow() + datetime.timedelta(days=1)
     batch = api.generate_cashflows_and_payment_files(cutoff)
-    with override_features(WIP_ENABLE_OFFER_ADDRESS=with_oa):
-        api.generate_invoices_and_debit_notes(batch)
+    features.WIP_ENABLE_OFFER_ADDRESS = with_oa
+    api.generate_invoices_and_debit_notes(batch)
 
     invoices = models.Invoice.query.all()
     assert len(invoices) == 1
@@ -3793,7 +3794,7 @@ class StoreInvoicePdfTest:
     STORAGE_DIR = pathlib.Path(tests.__path__[0]) / ".." / "src" / "pcapi" / "static" / "object_store_data"
     INVOICES_DIR = STORAGE_DIR / "invoices"
 
-    @override_settings(OBJECT_STORAGE_URL=STORAGE_DIR)
+    @pytest.mark.settings(OBJECT_STORAGE_URL=STORAGE_DIR)
     def test_basics(self, clear_tests_invoices_bucket):
         invoice = factories.InvoiceFactory()
         html = "<p>Trust me, I am an invoice.<p>"

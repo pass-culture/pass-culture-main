@@ -52,9 +52,9 @@ const renderOffers = async (
     user,
     storeOverrides: {
       user: {
-        selectedOffererId: 1,
         currentUser: user,
       },
+      offerer: { selectedOffererId: 1, offererNames: [] },
     },
     initialRouterEntries: [route],
   })
@@ -66,7 +66,7 @@ describe('route CollectiveOffers when user is admin', () => {
   let offersRecap: CollectiveOfferResponseModel[]
   const stocks: Array<CollectiveOffersStockResponseModel> = [
     {
-      beginningDatetime: String(new Date()),
+      startDatetime: String(new Date()),
       hasBookingLimitDatetimePassed: false,
       remainingQuantity: 1,
     },

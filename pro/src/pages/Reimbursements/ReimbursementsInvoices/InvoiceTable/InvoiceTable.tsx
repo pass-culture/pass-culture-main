@@ -59,7 +59,6 @@ function sortInvoices(
           : compareAsc(new Date(b.date), new Date(a.date))
       )
 
-    // TODO : remove me when removing WIP_ENABLE_FINANCE_INCIDENT
     case InvoicesOrderedBy.REIMBURSEMENT_POINT_NAME:
       return [...invoices].sort((a, b) =>
         sortingMode === SortingMode.ASC
@@ -93,6 +92,7 @@ function sortInvoices(
           : b.cashflowLabels[0].localeCompare(a.cashflowLabels[0])
       )
 
+    case null:
     default:
       return invoices
   }
@@ -218,7 +218,7 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
         )}
       </div>
       <table role="table" className={styles['invoices-table']}>
-        <caption className="visually-hidden">
+        <caption className={styles['visually-hidden']}>
           Justificatif de remboursement ou de trop perçu
         </caption>
         <thead className={styles['header']}>
@@ -242,7 +242,7 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
                   }}
                 >
                   {currentSortingColumn === InvoicesOrderedBy.DATE && (
-                    <span className="visually-hidden">
+                    <span className={styles['visually-hidden']}>
                       Tri par date {giveSortingModeForAlly(currentSortingMode)}{' '}
                       activé.
                     </span>
@@ -269,7 +269,7 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
                   }}
                 >
                   {currentSortingColumn === InvoicesOrderedBy.DOCUMENT_TYPE && (
-                    <span className="visually-hidden">
+                    <span className={styles['visually-hidden']}>
                       Tri par type de document{' '}
                       {giveSortingModeForAlly(currentSortingMode)} activé.
                     </span>
@@ -302,7 +302,7 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
                 >
                   {currentSortingColumn ===
                     InvoicesOrderedBy.REIMBURSEMENT_POINT_NAME && (
-                    <span className="visually-hidden">
+                    <span className={styles['visually-hidden']}>
                       Tri par compte bancaire
                       {giveSortingModeForAlly(currentSortingMode)} activé.
                     </span>
@@ -329,7 +329,7 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
                 >
                   {currentSortingColumn ===
                     InvoicesOrderedBy.CASHFLOW_LABELS && (
-                    <span className="visually-hidden">
+                    <span className={styles['visually-hidden']}>
                       Tri par n° de virement{' '}
                       {giveSortingModeForAlly(currentSortingMode)} activé.
                     </span>

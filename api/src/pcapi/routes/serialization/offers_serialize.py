@@ -1,6 +1,5 @@
 import datetime
 import decimal
-import enum
 import typing
 from typing import Any
 
@@ -112,12 +111,6 @@ class PostOfferBodyModel(BaseModel):
         extra = "forbid"
 
 
-class OfferAddressType(enum.Enum):
-    OFFERER_VENUE = "offererVenue"
-    SCHOOL = "school"
-    OTHER = "other"
-
-
 class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     address: offerers_schemas.AddressBodyModel | None
     bookingContact: EmailStr | None
@@ -227,6 +220,8 @@ class ListOffersOfferResponseModelsGetterDict(GetterDict):
             return _serialize_venue(self._obj.venue)
         if key == "isShowcase":
             return False
+        if key == "isHeadlineOffer":
+            return self._obj.is_headline_offer
         if key == "address":
             return offer_address_getter_dict_helper(self._obj)
         return super().get(key, default)
@@ -240,6 +235,7 @@ class ListOffersOfferResponseModel(BaseModel):
     isEvent: bool
     isThing: bool
     isEducational: bool
+    isHeadlineOffer: bool
     name: str
     stocks: list[ListOffersStockResponseModel]
     thumbUrl: str | None
@@ -410,6 +406,8 @@ class IndividualOfferWithAddressResponseGetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
         if key == "address":
             return offer_address_getter_dict_helper(self._obj)
+        if key == "isHeadlineOffer":
+            return self._obj.is_headline_offer
         return super().get(key, default)
 
 
@@ -459,6 +457,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
 class GetIndividualOfferWithAddressResponseModel(GetIndividualOfferResponseModel):
     address: AddressResponseIsLinkedToVenueModel | None
     hasPendingBookings: bool
+    isHeadlineOffer: bool
 
     class Config:
         orm_mode = True

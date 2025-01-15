@@ -1,8 +1,5 @@
 // overwrites request.ts to handle redirection to maintenance
 
-/* istanbul ignore file */
-/* tslint:disable */
-/* eslint-disable */
 import { URL_FOR_MAINTENANCE } from 'commons/utils/config'
 import { ApiError } from './ApiError'
 import type { ApiRequestOptions } from './ApiRequestOptions'
@@ -375,6 +372,7 @@ export const request = <T>(
         // and redirect the user to the login page except if the call is made to users/signin
         if (
           !error.url.includes('/users/current') &&
+          !error.url.includes('/offerers/names') &&
           !error.url.includes('/users/signin')
         ) {
           window.location.href = '/connexion'

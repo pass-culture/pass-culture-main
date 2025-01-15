@@ -16,8 +16,6 @@ from pcapi.core.search.backends import algolia
 import pcapi.core.search.testing as search_testing
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -87,7 +85,7 @@ def test_async_index_venue_ids(app):
     assert enqueued_ids == {permanent_venue.id, other_venue.id}
 
 
-@override_settings(REDIS_VENUE_IDS_FOR_OFFERS_CHUNK_SIZE=1)
+@pytest.mark.settings(REDIS_VENUE_IDS_FOR_OFFERS_CHUNK_SIZE=1)
 def test_index_offers_of_venues_in_queue(app):
     bookable_offer = make_bookable_offer()
     venue1 = bookable_offer.venue
@@ -110,7 +108,7 @@ def test_index_offers_of_venues_in_queue(app):
     assert unbookable_offer.id not in search_testing.search_store["offers"]
 
 
-@override_settings(REDIS_VENUE_IDS_CHUNK_SIZE=1)
+@pytest.mark.settings(REDIS_VENUE_IDS_CHUNK_SIZE=1)
 def test_index_venues_in_queue(app):
     venue1 = offerers_factories.VenueFactory()
     venue2 = offerers_factories.VenueFactory()
@@ -172,7 +170,7 @@ class ReindexOfferIdsTest:
         assert set(search_testing.search_store["offers"]) == {bookable.id, multi_dates_bookable.id}
 
     @mock.patch("pcapi.core.search.backends.testing.FakeClient.save_objects", fail)
-    @override_settings(CATCH_INDEXATION_EXCEPTIONS=True)  # as on prod: don't raise errors
+    @pytest.mark.settings(CATCH_INDEXATION_EXCEPTIONS=True)  # as on prod: don't raise errors
     def test_handle_indexation_error(self, app):
         offer = make_bookable_offer()
         assert search_testing.search_store["offers"] == {}
@@ -184,7 +182,7 @@ class ReindexOfferIdsTest:
         assert app.redis_client.smembers(error_queue) == {str(offer.id)}
 
     @mock.patch("pcapi.core.search.backends.testing.FakeClient.delete_objects", fail)
-    @override_settings(CATCH_INDEXATION_EXCEPTIONS=True)  # as on prod: don't raise errors
+    @pytest.mark.settings(CATCH_INDEXATION_EXCEPTIONS=True)  # as on prod: don't raise errors
     def test_handle_unindexation_error(self, app):
         offer = make_unbookable_offer()
         search_testing.search_store["offers"][offer.id] = "dummy"
@@ -196,7 +194,7 @@ class ReindexOfferIdsTest:
         error_queue = algolia.REDIS_OFFER_IDS_IN_ERROR_NAME
         assert app.redis_client.smembers(error_queue) == {str(offer.id)}
 
-    @override_features(ENABLE_VENUE_STRICT_SEARCH=True)
+    @pytest.mark.features(ENABLE_VENUE_STRICT_SEARCH=True)
     def test_reindex_venues_after_reindexing_offers(self, app):
         offer = make_bookable_offer()
         assert search_testing.search_store["offers"] == {}
@@ -209,8 +207,8 @@ class ReindexOfferIdsTest:
         venue_ids = [int(venue_id) for venue_id in venue_ids]
         assert venue_ids == [offer.venueId]
 
-    @override_features(ALGOLIA_BOOKINGS_NUMBER_COMPUTATION=True)
-    @override_settings(ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS=[3, 6, 9, 12])
+    @pytest.mark.settings(ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS=[3, 6, 9, 12])
+    @pytest.mark.features(ALGOLIA_BOOKINGS_NUMBER_COMPUTATION=True)
     def test_index_last_30_days_bookings(self, app):
         offer = make_booked_offer()
         assert search_testing.search_store["offers"] == {}
@@ -222,8 +220,8 @@ class ReindexOfferIdsTest:
             == algolia.Last30DaysBookingsRange.MEDIUM.value
         )
 
-    @override_features(ALGOLIA_BOOKINGS_NUMBER_COMPUTATION=False)
-    @override_settings(ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS=[3, 6, 9, 12])
+    @pytest.mark.settings(ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS=[3, 6, 9, 12])
+    @pytest.mark.features(ALGOLIA_BOOKINGS_NUMBER_COMPUTATION=False)
     def test_last_30_days_bookings_computation_feature_toggle(self, app):
         offer = make_booked_offer()
         assert search_testing.search_store["offers"] == {}
@@ -276,7 +274,7 @@ class ReindexVenueIdsTest:
         assert search_testing.search_store["venues"].keys() == {indexable_venue.id}
 
 
-@override_settings(REDIS_OFFER_IDS_CHUNK_SIZE=3)
+@pytest.mark.settings(REDIS_OFFER_IDS_CHUNK_SIZE=3)
 @mock.patch("pcapi.core.search.reindex_offer_ids")
 class IndexOffersInQueueTest:
     def test_cron_behaviour(self, mocked_reindex_offer_ids, app):
@@ -322,7 +320,7 @@ class IndexOffersInQueueTest:
         assert app.redis_client.smembers(queue) <= set(str(id_) for id_ in items)
 
 
-@override_features(ENABLE_VENUE_STRICT_SEARCH=True)
+@pytest.mark.features(ENABLE_VENUE_STRICT_SEARCH=True)
 def test_unindex_offer_ids(app):
     offer1 = make_bookable_offer()
     offer2 = make_bookable_offer()
@@ -406,14 +404,14 @@ class ReadProductBookingCountTest:
 
 @mock.patch("pcapi.core.search.update_last_30_days_bookings_for_eans", return_value=list(range(101)))
 @mock.patch("pcapi.core.search.update_last_30_days_bookings_for_movies", return_value=list(range(101)))
-def test_limit_products_to_reindex_depending_on_algolia_limit(_mock_eans, _mock_movies):
-    with override_settings(ALGOLIA_OFFERS_INDEX_MAX_SIZE=-1):
-        items = search.update_booking_count_by_product()
-        assert len(items) == 202
+def test_limit_products_to_reindex_depending_on_algolia_limit(_mock_eans, _mock_movies, settings):
+    settings.ALGOLIA_OFFERS_INDEX_MAX_SIZE = -1
+    items = search.update_booking_count_by_product()
+    assert len(items) == 202
 
-    with override_settings(ALGOLIA_OFFERS_INDEX_MAX_SIZE=1):
-        items = search.update_booking_count_by_product()
-        assert len(items) == 200
+    settings.ALGOLIA_OFFERS_INDEX_MAX_SIZE = 1
+    items = search.update_booking_count_by_product()
+    assert len(items) == 200
 
 
 def test_booking_count_for_movies():

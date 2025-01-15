@@ -84,12 +84,13 @@ class ProAttributes:
     dms_application_approved: bool | None = None  # All venues have bank information approved
     isVirtual: bool | None = None  # At least one venue is virtual
     isPermanent: bool | None = None  # At least one venue is permanent
+    isOpenToPublic: bool | None = None  # At least one venue is open to public
     has_bookings: bool | None = None  # At least one venue has at least one booking not canceled, at least once
     has_collective_offers: bool | None = False  # At least one collective offer or collective offer template active
     has_individual_offers: bool | None = None  # At least one venue has at least one active offer
     has_offers: bool | None = None  # has_collective_offers or has_individual_offers
     has_banner_url: bool | None = (
-        None  # Set to False when at least one permanent venue doesn't have a banner URL, True otherwise
+        None  # Set to False when at least one venue, open to public if FF IS_OPEN_TO_PUBLIC is activated, permanent if not, doesn't have a banner URL, True otherwise
     )
     is_eac_meg: bool | None = None  # At least one collective offer with 'Marseille en Grand'
 

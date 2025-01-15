@@ -99,13 +99,12 @@ $offer-image-width: rem.torem(216px);
 }
 
 .offer-name {
-  @include fonts.body-exergue;
+  @include fonts.body-accent;
 
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
   overflow: hidden;
-  line-height: rem.torem(20px);
   margin-bottom: rem.torem(16px);
 }
 
@@ -113,11 +112,11 @@ $offer-image-width: rem.torem(216px);
   margin-bottom: rem.torem(8px);
 
   &-name {
-    @include fonts.caption;
+    @include fonts.body-accent-xs;
   }
 
   &-distance {
-    @include fonts.caption;
+    @include fonts.body-accent-xs;
 
     color: var(--color-grey-dark);
     text-transform: uppercase;

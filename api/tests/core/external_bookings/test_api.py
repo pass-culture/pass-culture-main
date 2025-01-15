@@ -21,7 +21,6 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as user_factories
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 
@@ -394,7 +393,7 @@ class BookEventTicketTest:
 
         assert str(error.value) == "External booking failed with status code 500 and message on est en carafe !!"
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     @patch("pcapi.core.external_bookings.api.requests.post")
     def test_uses_offer_address_when_available(self, requests_post):
         requests_post.return_value.status_code = 200

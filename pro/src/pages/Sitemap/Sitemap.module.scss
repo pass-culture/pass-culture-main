@@ -1,9 +1,8 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 
 .title {
-  @include fonts-design-system.title1;
+  @include fonts.title1;
 }
 
 .sitemap-list {
@@ -16,7 +15,7 @@
   }
 
   &-title {
-    @include fonts.body-exergue;
+    @include fonts.body-accent;
   }
 }
 
@@ -28,7 +27,7 @@
 }
 
 .sitemap-link {
-  @include fonts.body-exergue;
+  @include fonts.body-accent;
 
   text-decoration: underline;
 }

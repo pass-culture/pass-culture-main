@@ -1,7 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
-import React from 'react'
 
 import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
 

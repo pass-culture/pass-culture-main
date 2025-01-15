@@ -38,8 +38,6 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import api_errors
@@ -85,12 +83,14 @@ def test_new_offerer_auto_tagging(db_session, ape_code, expected_tag):
 class CreateVenueTest:
     def base_data(self, offerer):
         return {
-            "street": "rue du test",
-            "city": "Paris",
-            "postalCode": "75002",
-            "banId": "75113_1834_00007",
-            "latitude": 1,
-            "longitude": 1,
+            "address": {
+                "street": "rue du test",
+                "city": "Paris",
+                "postalCode": "75002",
+                "banId": "75113_1834_00007",
+                "latitude": 1,
+                "longitude": 1,
+            },
             "managingOffererId": offerer.id,
             "name": "La Venue",
             "venueTypeCode": "VISUAL_ARTS",
@@ -513,7 +513,11 @@ class CreateOffererTest:
         gen_offerer_tags()
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
-            name="Test Offerer", siren="777084112", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+            name="Test Offerer",
+            siren="777084112",
+            address="123 rue de Paris",
+            postalCode="93100",
+            city="Montreuil",
         )
 
         # When
@@ -547,7 +551,11 @@ class CreateOffererTest:
         # Given
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
-            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+            name="Test Offerer",
+            siren="418166096",
+            address="123 rue de Paris",
+            postalCode="93100",
+            city="Montreuil",
         )
 
         # When
@@ -562,7 +570,11 @@ class CreateOffererTest:
         # Given
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
-            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+            name="Test Offerer",
+            siren="418166096",
+            address="123 rue de Paris",
+            postalCode="93100",
+            city="Montreuil",
         )
         offerer = offerers_factories.OffererFactory(siren=offerer_informations.siren)
 
@@ -592,7 +604,11 @@ class CreateOffererTest:
         # Given
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
-            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+            name="Test Offerer",
+            siren="418166096",
+            address="123 rue de Paris",
+            postalCode="93100",
+            city="Montreuil",
         )
         offerer = offerers_factories.NotValidatedOffererFactory(
             siren=offerer_informations.siren, validationStatus=ValidationStatus.PENDING
@@ -615,7 +631,11 @@ class CreateOffererTest:
         # Given
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
-            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+            name="Test Offerer",
+            siren="418166096",
+            address="123 rue de Paris",
+            postalCode="93100",
+            city="Montreuil",
         )
         offerer = offerers_factories.RejectedOffererFactory(
             name="Rejected Offerer",
@@ -656,7 +676,11 @@ class CreateOffererTest:
         # Given
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
-            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+            name="Test Offerer",
+            siren="418166096",
+            address="123 rue de Paris",
+            postalCode="93100",
+            city="Montreuil",
         )
         offerer = offerers_factories.RejectedOffererFactory(
             name="Rejected Offerer",
@@ -687,7 +711,13 @@ class CreateOffererTest:
         # Given
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
-            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+            name="Test Offerer",
+            siren="418166096",
+            address="123 rue de Paris",
+            postalCode="93100",
+            city="Montreuil",
+            latitude=48,
+            longitude=2,
         )
         offerer = offerers_factories.RejectedOffererFactory(
             name="Rejected Offerer",
@@ -718,7 +748,11 @@ class CreateOffererTest:
         # Given
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
-            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+            name="Test Offerer",
+            siren="418166096",
+            address="123 rue de Paris",
+            postalCode="93100",
+            city="Montreuil",
         )
         offerer = offerers_factories.OffererFactory(siren=offerer_informations.siren)
         offerers_factories.RejectedUserOffererFactory(user=user, offerer=offerer)
@@ -745,7 +779,11 @@ class CreateOffererTest:
         # Given
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
-            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+            name="Test Offerer",
+            siren="418166096",
+            address="123 rue de Paris",
+            postalCode="93100",
+            city="Montreuil",
         )
         offerer = offerers_factories.OffererFactory(siren=offerer_informations.siren)
         offerers_factories.RejectedUserOffererFactory(user=user, offerer=offerer)
@@ -777,7 +815,11 @@ class CreateOffererTest:
         # Given
         user = users_factories.NonAttachedProFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
-            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+            name="Test Offerer",
+            siren="418166096",
+            address="123 rue de Paris",
+            postalCode="93100",
+            city="Montreuil",
         )
 
         # When
@@ -804,7 +846,11 @@ class CreateOffererTest:
         # Given
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
-            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+            name="Test Offerer",
+            siren="418166096",
+            address="123 rue de Paris",
+            postalCode="93100",
+            city="Montreuil",
         )
         offerer = offerers_factories.OffererFactory(siren=offerer_informations.siren)
         offerers_factories.DeletedUserOffererFactory(user=user, offerer=offerer)
@@ -831,7 +877,11 @@ class CreateOffererTest:
         # Given
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
-            name="Test Offerer", siren="777084112", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+            name="Test Offerer",
+            siren="777084112",
+            address="123 rue de Paris",
+            postalCode="93100",
+            city="Montreuil",
         )
 
         # When
@@ -841,7 +891,7 @@ class CreateOffererTest:
         created_offerer = created_user_offerer.offerer
         assert created_offerer.name == offerer_informations.name
 
-    @override_settings(NATIONAL_PARTNERS_EMAIL_DOMAINS="howdy.com,partner.com")
+    @pytest.mark.settings(NATIONAL_PARTNERS_EMAIL_DOMAINS="howdy.com,partner.com")
     def test_create_offerer_national_partner_autotagging(self):
         # Given
         national_partner_tag = offerers_factories.OffererTagFactory(name="partenaire-national")
@@ -1594,105 +1644,109 @@ class VenueBannerTest:
 
     @time_machine.travel("2020-10-15 00:00:00", tick=False)
     @patch("pcapi.core.search.async_index_venue_ids")
-    def test_save_venue_banner_when_no_default_available(self, mock_search_async_index_venue_ids, tmpdir):
+    def test_save_venue_banner_when_no_default_available(self, mock_search_async_index_venue_ids, tmpdir, settings):
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory()
         image_content = (VenueBannerTest.IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         directory = pathlib.Path(tmpdir.dirname) / "thumbs" / "venues"
 
-        with override_settings(OBJECT_STORAGE_URL=tmpdir.dirname, LOCAL_STORAGE_DIR=pathlib.Path(tmpdir.dirname)):
-            offerers_api.save_venue_banner(user, venue, image_content, image_credit="none")
+        settings.OBJECT_STORAGE_URL = tmpdir.dirname
+        settings.LOCAL_STORAGE_DIR = pathlib.Path(tmpdir.dirname)
+        offerers_api.save_venue_banner(user, venue, image_content, image_credit="none")
 
-            updated_venue = Venue.query.get(venue.id)
-            with open(updated_venue.bannerUrl, mode="rb") as f:
-                # test that image size has been reduced
-                assert len(f.read()) < len(image_content)
+        updated_venue = Venue.query.get(venue.id)
+        with open(updated_venue.bannerUrl, mode="rb") as f:
+            # test that image size has been reduced
+            assert len(f.read()) < len(image_content)
 
-            assert updated_venue.bannerMeta == {
-                "author_id": user.id,
-                "image_credit": "none",
-                "original_image_url": str(directory / f"{humanize(venue.id)}_1602720001"),
-                "crop_params": None,
-                "updated_at": "2020-10-15T00:00:00",
-            }
+        assert updated_venue.bannerMeta == {
+            "author_id": user.id,
+            "image_credit": "none",
+            "original_image_url": str(directory / f"{humanize(venue.id)}_1602720001"),
+            "crop_params": None,
+            "updated_at": "2020-10-15T00:00:00",
+        }
 
-            mock_search_async_index_venue_ids.assert_called_once_with(
-                [venue.id],
-                reason=search.IndexationReason.VENUE_BANNER_UPDATE,
-            )
+        mock_search_async_index_venue_ids.assert_called_once_with(
+            [venue.id],
+            reason=search.IndexationReason.VENUE_BANNER_UPDATE,
+        )
 
     @time_machine.travel("2020-10-15 00:00:00", tick=False)
     @patch("pcapi.core.search.async_index_venue_ids")
-    def test_save_venue_banner_when_default_available(self, mock_search_async_index_venue_ids, tmpdir):
+    def test_save_venue_banner_when_default_available(self, mock_search_async_index_venue_ids, tmpdir, settings):
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.MOVIE)
         image_content = (VenueBannerTest.IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         directory = pathlib.Path(tmpdir.dirname) / "thumbs" / "venues"
 
-        with override_settings(OBJECT_STORAGE_URL=tmpdir.dirname, LOCAL_STORAGE_DIR=pathlib.Path(tmpdir.dirname)):
-            offerers_api.save_venue_banner(user, venue, image_content, image_credit="none")
+        settings.OBJECT_STORAGE_URL = tmpdir.dirname
+        settings.LOCAL_STORAGE_DIR = pathlib.Path(tmpdir.dirname)
+        offerers_api.save_venue_banner(user, venue, image_content, image_credit="none")
 
-            updated_venue = Venue.query.get(venue.id)
-            with open(updated_venue.bannerUrl, mode="rb") as f:
-                # test that image size has been reduced
-                assert len(f.read()) < len(image_content)
+        updated_venue = Venue.query.get(venue.id)
+        with open(updated_venue.bannerUrl, mode="rb") as f:
+            # test that image size has been reduced
+            assert len(f.read()) < len(image_content)
 
-            assert updated_venue.bannerMeta == {
-                "author_id": user.id,
-                "image_credit": "none",
-                "original_image_url": str(directory / f"{humanize(venue.id)}_1602720001"),
-                "crop_params": None,
-                "updated_at": "2020-10-15T00:00:00",
-            }
+        assert updated_venue.bannerMeta == {
+            "author_id": user.id,
+            "image_credit": "none",
+            "original_image_url": str(directory / f"{humanize(venue.id)}_1602720001"),
+            "crop_params": None,
+            "updated_at": "2020-10-15T00:00:00",
+        }
 
-            mock_search_async_index_venue_ids.assert_called_once_with(
-                [venue.id],
-                reason=search.IndexationReason.VENUE_BANNER_UPDATE,
-            )
+        mock_search_async_index_venue_ids.assert_called_once_with(
+            [venue.id],
+            reason=search.IndexationReason.VENUE_BANNER_UPDATE,
+        )
 
     @patch("pcapi.core.search.async_index_venue_ids")
-    def test_replace_venue_banner(self, mock_search_async_index_venue_ids, tmpdir):
+    def test_replace_venue_banner(self, mock_search_async_index_venue_ids, tmpdir, settings):
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory()
         first_image_content = (VenueBannerTest.IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         second_image_content = (VenueBannerTest.IMAGES_DIR / "mouette_landscape.jpg").read_bytes()
         directory = pathlib.Path(tmpdir.dirname) / "thumbs" / "venues"
 
-        with override_settings(OBJECT_STORAGE_URL=tmpdir.dirname, LOCAL_STORAGE_DIR=pathlib.Path(tmpdir.dirname)):
-            with time_machine.travel("2020-10-15 00:00:00"):
-                offerers_api.save_venue_banner(user, venue, first_image_content, image_credit="first_image")
+        settings.OBJECT_STORAGE_URL = tmpdir.dirname
+        settings.LOCAL_STORAGE_DIR = pathlib.Path(tmpdir.dirname)
+        with time_machine.travel("2020-10-15 00:00:00"):
+            offerers_api.save_venue_banner(user, venue, first_image_content, image_credit="first_image")
 
-            with time_machine.travel("2020-10-15 00:00:05"):
-                offerers_api.save_venue_banner(user, venue, second_image_content, image_credit="second_image")
+        with time_machine.travel("2020-10-15 00:00:05"):
+            offerers_api.save_venue_banner(user, venue, second_image_content, image_credit="second_image")
 
-            files = set(os.listdir(directory))
+        files = set(os.listdir(directory))
 
-            # old banner and its original image
-            assert f"{humanize(venue.id)}_1602720000" not in files
-            assert f"{humanize(venue.id)}_1602720001" not in files
+        # old banner and its original image
+        assert f"{humanize(venue.id)}_1602720000" not in files
+        assert f"{humanize(venue.id)}_1602720001" not in files
 
-            # new banner and its original image
-            assert f"{humanize(venue.id)}_1602720005" in files
-            assert f"{humanize(venue.id)}_1602720006" in files
+        # new banner and its original image
+        assert f"{humanize(venue.id)}_1602720005" in files
+        assert f"{humanize(venue.id)}_1602720006" in files
 
     @patch("pcapi.core.search.async_index_venue_ids")
-    def test_replace_venue_legacy_banner(self, mock_search_async_index_venue_ids, tmpdir):
+    def test_replace_venue_legacy_banner(self, mock_search_async_index_venue_ids, tmpdir, settings):
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory()
         first_image_content = (VenueBannerTest.IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         second_image_content = (VenueBannerTest.IMAGES_DIR / "mouette_landscape.jpg").read_bytes()
         directory = pathlib.Path(tmpdir.dirname) / "thumbs" / "venues"
 
-        with override_settings(OBJECT_STORAGE_URL=tmpdir.dirname, LOCAL_STORAGE_DIR=pathlib.Path(tmpdir.dirname)):
-            with time_machine.travel("2020-10-15 00:00:00"):
-                offerers_api.save_venue_banner(user, venue, first_image_content, image_credit="first_image")
-                move_venue_banner_to_legacy_location(venue, directory, "1602720000")
-            with time_machine.travel("2020-10-15 00:00:01"):
-                offerers_api.save_venue_banner(user, venue, second_image_content, image_credit="second_image")
+        settings.OBJECT_STORAGE_URL = tmpdir.dirname
+        settings.LOCAL_STORAGE_DIR = pathlib.Path(tmpdir.dirname)
+        with time_machine.travel("2020-10-15 00:00:00"):
+            offerers_api.save_venue_banner(user, venue, first_image_content, image_credit="first_image")
+            move_venue_banner_to_legacy_location(venue, directory, "1602720000")
+        with time_machine.travel("2020-10-15 00:00:01"):
+            offerers_api.save_venue_banner(user, venue, second_image_content, image_credit="second_image")
 
-            files = set(os.listdir(directory))
-            assert f"{humanize(venue.id)}" not in files
-            assert f"{humanize(venue.id)}_1602720001" in files
+        files = set(os.listdir(directory))
+        assert f"{humanize(venue.id)}" not in files
+        assert f"{humanize(venue.id)}_1602720001" in files
 
 
 def move_venue_banner_to_legacy_location(venue, directory, timestamp):
@@ -1776,19 +1830,19 @@ class LinkVenueToPricingPointTest:
 
 
 class HasVenueAtLeastOneBookableOfferTest:
-    @override_features(ENABLE_VENUE_STRICT_SEARCH=True)
+    @pytest.mark.features(ENABLE_VENUE_STRICT_SEARCH=True)
     def test_eligible(self):
         venue = offerers_factories.VenueFactory(isPermanent=True)
         offers_factories.EventStockFactory(offer__venue=venue)
 
         assert offerers_api.has_venue_at_least_one_bookable_offer(venue)
 
-    @override_features(ENABLE_VENUE_STRICT_SEARCH=True)
+    @pytest.mark.features(ENABLE_VENUE_STRICT_SEARCH=True)
     def test_no_offers(self):
         venue = offerers_factories.VenueFactory(isPermanent=True)
         assert not offerers_api.has_venue_at_least_one_bookable_offer(venue)
 
-    @override_features(ENABLE_VENUE_STRICT_SEARCH=True)
+    @pytest.mark.features(ENABLE_VENUE_STRICT_SEARCH=True)
     def test_managing_offerer_not_validated(self):
         venue = offerers_factories.VenueFactory(
             isPermanent=True, managingOfferer=offerers_factories.NotValidatedOffererFactory()
@@ -1797,14 +1851,14 @@ class HasVenueAtLeastOneBookableOfferTest:
 
         assert not offerers_api.has_venue_at_least_one_bookable_offer(venue)
 
-    @override_features(ENABLE_VENUE_STRICT_SEARCH=True)
+    @pytest.mark.features(ENABLE_VENUE_STRICT_SEARCH=True)
     def test_offer_without_stock(self):
         venue = offerers_factories.VenueFactory(isPermanent=True)
         offers_factories.OfferFactory(venue=venue)
 
         assert not offerers_api.has_venue_at_least_one_bookable_offer(venue)
 
-    @override_features(ENABLE_VENUE_STRICT_SEARCH=True)
+    @pytest.mark.features(ENABLE_VENUE_STRICT_SEARCH=True)
     def test_expired_event(self):
         venue = offerers_factories.VenueFactory(isPermanent=True)
 
@@ -1813,7 +1867,7 @@ class HasVenueAtLeastOneBookableOfferTest:
 
         assert not offerers_api.has_venue_at_least_one_bookable_offer(venue)
 
-    @override_features(ENABLE_VENUE_STRICT_SEARCH=True)
+    @pytest.mark.features(ENABLE_VENUE_STRICT_SEARCH=True)
     def test_only_one_bookable_offer(self):
         venue = offerers_factories.VenueFactory(isPermanent=True)
 
@@ -1827,7 +1881,7 @@ class HasVenueAtLeastOneBookableOfferTest:
         assert offerers_api.has_venue_at_least_one_bookable_offer(venue)
 
 
-@override_settings(METABASE_SECRET_KEY="metabase secret key")
+@pytest.mark.settings(METABASE_SECRET_KEY="metabase secret key")
 def test_get_offerer_stats_dashboard_url():
     venue = offerers_factories.VenueFactory()
     offerer = venue.managingOfferer
@@ -1845,6 +1899,7 @@ def test_get_offerer_stats_dashboard_url():
 
 class GetOffererTotalRevenueTest:
     def _create_data(self):
+        today = datetime.datetime.now(datetime.timezone.utc)
         offerer = offerers_factories.OffererFactory()
         bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer, stock__price=10)
         bookings_factories.UsedBookingFactory(
@@ -1860,7 +1915,9 @@ class GetOffererTotalRevenueTest:
             collectiveStock__collectiveOffer__venue__managingOfferer=offerer, collectiveStock__price=1333
         )
         educational_factories.UsedCollectiveBookingFactory(
-            collectiveStock__collectiveOffer__venue__managingOfferer=offerer, collectiveStock__price=1444
+            dateUsed=today,
+            collectiveStock__collectiveOffer__venue__managingOfferer=offerer,
+            collectiveStock__price=1444,
         )
         educational_factories.ReimbursedCollectiveBookingFactory(
             collectiveStock__collectiveOffer__venue__managingOfferer=offerer,
@@ -1964,22 +2021,25 @@ class CreateFromOnboardingDataTest:
         self, create_venue_without_siret: bool
     ) -> offerers_serialize.SaveNewOnboardingDataQueryModel:
         return offerers_serialize.SaveNewOnboardingDataQueryModel(
-            banId="75101_9575_00003",
-            city="Paris",
-            createVenueWithoutSiret=create_venue_without_siret,
-            latitude=2.30829,
-            longitude=48.87171,
-            postalCode="75001",
-            publicName="Nom public de mon lieu",
+            address=offerers_schemas.AddressBodyModel(
+                label="",
+                banId="75101_9575_00003",
+                city=offerers_schemas.VenueCity("Paris"),
+                latitude=2.30829,
+                longitude=48.87171,
+                postalCode=offerers_schemas.VenuePostalCode("75001"),
+                street=offerers_schemas.VenueAddress("3 RUE DE VALOIS"),
+            ),
             siret="85331845900031",
-            street="3 RUE DE VALOIS",
+            publicName="Nom public de mon lieu",
+            createVenueWithoutSiret=create_venue_without_siret,
             target=offerers_models.Target.INDIVIDUAL,
             venueTypeCode=offerers_models.VenueTypeCode.MOVIE.name,
             webPresence="https://www.example.com, https://instagram.com/example, https://mastodon.social/@example",
             token="token",
         )
 
-    @override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+    @pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
     def test_new_siren_new_siret(self, requests_mock):
         api_adresse_response = {
             "type": "FeatureCollection",
@@ -2198,7 +2258,7 @@ class CreateFromOnboardingDataTest:
         user = users_factories.UserFactory(email="pro@example.com")
         user.add_non_attached_pro_role()
         onboarding_data = self.get_onboarding_data(create_venue_without_siret=False)
-        onboarding_data.street = None
+        onboarding_data.address.street = ""
 
         created_user_offerer = offerers_api.create_from_onboarding_data(user, onboarding_data)
 
@@ -2206,7 +2266,7 @@ class CreateFromOnboardingDataTest:
         created_offerer = created_user_offerer.offerer
         assert created_offerer.name == "MINISTERE DE LA CULTURE"
         assert created_offerer.siren == "853318459"
-        assert created_offerer.street is None
+        assert not created_offerer.street
         assert created_offerer.city == "Paris"
         assert created_offerer.postalCode == "75001"
         # 1 virtual Venue + 1 Venue with siret have been created
@@ -2222,7 +2282,7 @@ class CreateFromOnboardingDataTest:
         user = users_factories.UserFactory(email="pro@example.com")
         user.add_non_attached_pro_role()
         onboarding_data = self.get_onboarding_data(create_venue_without_siret=False)
-        onboarding_data.banId = None
+        onboarding_data.address.banId = None
 
         created_user_offerer = offerers_api.create_from_onboarding_data(user, onboarding_data)
 
@@ -2547,28 +2607,30 @@ class AccessibilityProviderTest:
         assert accessibility_provider.externalAccessibilityUrl == "https://nouvelle.adresse/nouveau-slug"
 
     def test_count_venues_with_accessibility_provider(self):
-        offerers_factories.VenueFactory.create_batch(3, isPermanent=True, isVirtual=False)
-        venue = offerers_factories.VenueFactory(isPermanent=True, isVirtual=False)
+        offerers_factories.VenueFactory.create_batch(3, isOpenToPublic=True, isVirtual=False)
+        venue = offerers_factories.VenueFactory(isOpenToPublic=True, isVirtual=False)
         offerers_factories.AccessibilityProviderFactory(venue=venue)
 
-        count = offerers_api.count_permanent_venues_with_accessibility_provider()
+        count = offerers_api.count_open_to_public_or_permanent_venues_with_accessibility_provider()
         assert count == 1
 
-    def test_get_permanent_venues_with_accessibility_provider(self):
-        offerers_factories.VenueFactory.create_batch(3, isPermanent=True, isVirtual=False)
-        venue = offerers_factories.VenueFactory(isPermanent=True, isVirtual=False)
+    def test_get_open_to_public_venues_with_accessibility_provider(self):
+        offerers_factories.VenueFactory.create_batch(3, isOpenToPublic=True, isVirtual=False)
+        venue = offerers_factories.VenueFactory(isOpenToPublic=True, isVirtual=False)
         offerers_factories.AccessibilityProviderFactory(venue=venue)
 
-        venues_list = offerers_api.get_permanent_venues_with_accessibility_provider(batch_size=10, batch_num=0)
+        venues_list = offerers_api.get_open_to_public_or_permanent_venues_with_accessibility_provider(
+            batch_size=10, batch_num=0
+        )
         assert len(venues_list) == 1
         assert venues_list[0] == venue
 
-    def test_get_permanent_venues_without_accessibility_provider(self):
-        offerers_factories.VenueFactory.create_batch(3, isPermanent=True, isVirtual=False)
-        venue = offerers_factories.VenueFactory(isPermanent=True, isVirtual=False)
+    def get_open_to_public_or_permanent_venues_without_accessibility_provider(self):
+        offerers_factories.VenueFactory.create_batch(3, isOpenToPublic=True, isVirtual=False)
+        venue = offerers_factories.VenueFactory(isOpenToPublic=True, isVirtual=False)
         offerers_factories.AccessibilityProviderFactory(venue=venue)
 
-        venues_list = offerers_api.get_permanent_venues_without_accessibility_provider()
+        venues_list = offerers_api.get_open_to_public_or_permanent_venues_without_accessibility_provider()
         assert len(venues_list) == 3
 
     @patch("pcapi.connectors.acceslibre.find_new_entries_by_activity")
@@ -2605,9 +2667,9 @@ class AccessibilityProviderTest:
             activity=acceslibre_connector.AcceslibreActivity.BIBLIOTHEQUE,
         )
 
-        venues_list = [offerers_factories.VenueFactory(isPermanent=True, isVirtual=False)]
+        venues_list = [offerers_factories.VenueFactory(isOpenToPublic=True, isVirtual=False)]
         venue = offerers_factories.VenueFactory(
-            isPermanent=True,
+            isOpenToPublic=True,
             isVirtual=False,
             name="Un lieu",
             postalCode="75001",
@@ -2621,9 +2683,9 @@ class AccessibilityProviderTest:
         assert venue.external_accessibility_id == "mon-lieu-chez-acceslibre"
 
     def test_acceslibre_matching(self):
-        venues_list = [offerers_factories.VenueFactory(isPermanent=True, isVirtual=False)]
+        venues_list = [offerers_factories.VenueFactory(isOpenToPublic=True, isVirtual=False)]
         venue = offerers_factories.VenueFactory(
-            isPermanent=True,
+            isOpenToPublic=True,
             isVirtual=False,
             name="Un lieu",
             postalCode="75001",
@@ -2647,8 +2709,8 @@ class AccessibilityProviderTest:
             acceslibre_connector.AcceslibreInfos(slug="mon-slug", url="https://mon.adresse/mon-slug"),
         ]
 
-        venue_1 = offerers_factories.VenueFactory(isPermanent=True, isVirtual=False)
-        venue_2 = offerers_factories.VenueFactory(isPermanent=True, isVirtual=False)
+        venue_1 = offerers_factories.VenueFactory(isOpenToPublic=True, isVirtual=False)
+        venue_2 = offerers_factories.VenueFactory(isOpenToPublic=True, isVirtual=False)
         venue_ids = [venue_1.id, venue_2.id]
 
         # match result is given by find_new_entries_by_activity in TestingBackend class in acceslibre connector

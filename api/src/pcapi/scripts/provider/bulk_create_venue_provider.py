@@ -29,5 +29,5 @@ def create_venue_provider(provider_id: int, venue_ids: list[int]) -> None:
         if len(venue.venueProviders):
             print(f"Venue {venue.id} already linked to a provider")
             continue
-        provider_api.connect_venue_to_provider(venue, provider, venueIdAtOfferProvider=None)
+        provider_api.connect_venue_to_provider(venue, provider)
         print(f"Venue <#{venue.id} {venue.name}> linked to provider <#{provider.id} {provider.name}>")

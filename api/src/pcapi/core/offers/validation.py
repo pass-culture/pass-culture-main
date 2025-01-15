@@ -18,6 +18,7 @@ import pcapi.core.educational.api.national_program as np_api
 from pcapi.core.finance import repository as finance_repository
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.repository import find_venue_by_id
+from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
 from pcapi.core.offers import repository
@@ -26,9 +27,9 @@ from pcapi.domain import music_types
 from pcapi.domain import show_types
 from pcapi.models import api_errors
 from pcapi.models.feature import FeatureToggle
+from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
-from pcapi.routes.native.v1.serialization.offerers import VenueTypeCode
-from pcapi.routes.public.books_stocks import serialization
+from pcapi.routes.serialization import stock_serialize as serialization
 from pcapi.utils import date
 
 
@@ -877,3 +878,31 @@ def validate_national_program(
         if not np_api.get_national_program(nationalProgramId):
             raise UnknownNationalProgram()
         raise IllegalNationalProgram()
+
+
+def check_offerer_is_eligible_for_headline_offers(offerer_id: int) -> None:
+    # FIXME: ogeber 03.01.2025 - when venue regularisation is done, we can change this validation by
+    # raising the OffererCanNotHaveHeadlineOffer only if
+    # offerers_models.Venue.query.filter(
+    #     offerers_models.Venue.managingOffererId == offerer_id
+    #     offerers_models.Venue.isPermanent.is_(True)
+    # ).count()
+    # is superior to 1 (as permanent & virtual venues won't exist anymore)
+
+    venues = offerers_models.Venue.query.filter(offerers_models.Venue.managingOffererId == offerer_id).all()
+
+    permanent_venues = [v for v in venues if v.isPermanent and not v.isVirtual]
+    non_permanent_venues = [v for v in venues if not v.isPermanent and not v.isVirtual]
+
+    if len(permanent_venues) != 1 or len(non_permanent_venues) > 0:
+        raise exceptions.OffererCanNotHaveHeadlineOffer()
+
+
+def check_offer_is_eligible_to_be_headline(offer: models.Offer) -> None:
+    if offer.status != OfferStatus.ACTIVE:
+        raise exceptions.InactiveOfferCanNotBeHeadline()
+    # FIXME: ogeber 03.01.2025 - when venue regularisation is done, this
+    # validation can be removed and virtual offers can be made headline
+    subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer.subcategoryId]
+    if subcategory.is_online_only:
+        raise exceptions.VirtualOfferCanNotBeHeadline()

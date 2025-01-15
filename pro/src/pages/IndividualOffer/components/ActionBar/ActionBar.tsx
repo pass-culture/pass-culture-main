@@ -1,3 +1,5 @@
+import { useLocation } from 'react-router-dom'
+
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { computeIndividualOffersUrl } from 'commons/core/Offers/utils/computeIndividualOffersUrl'
 import { useNotification } from 'commons/hooks/useNotification'
@@ -29,6 +31,8 @@ export const ActionBar = ({
   step,
   dirtyForm,
 }: ActionBarProps) => {
+  const { pathname } = useLocation()
+  const isOnboarding = pathname.indexOf('onboarding') !== -1
   const mode = useOfferWizardMode()
   const backOfferUrl = computeIndividualOffersUrl({})
   const notify = useNotification()
@@ -89,7 +93,7 @@ export const ActionBar = ({
           {step === OFFER_WIZARD_STEP_IDS.SUMMARY ? (
             <>
               <ButtonLink
-                to="/offres"
+                to={isOnboarding ? '/accueil' : '/offres'}
                 variant={ButtonVariant.SECONDARY}
                 onClick={() => {
                   notify.success(
@@ -123,7 +127,7 @@ export const ActionBar = ({
   }
 
   return (
-    <ActionsBarSticky>
+    <ActionsBarSticky hasSideNav={!isOnboarding}>
       <ActionsBarSticky.Left>{Left()}</ActionsBarSticky.Left>
       <ActionsBarSticky.Right
         inverseWhenSmallerThanTablet={step === OFFER_WIZARD_STEP_IDS.SUMMARY}

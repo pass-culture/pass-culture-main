@@ -1,32 +1,54 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_size.scss" as size;
+@use "styles/mixins/_size.scss" as size;
 
 .individual-row {
   display: grid;
-  grid-template-columns: rem.torem(22px) repeat(3, 1fr);
+  grid-template-columns: rem.torem(36px) repeat(2, auto);
   grid-template-areas:
-    "check thumb   head    head"
-    ".     thumb   desc    desc"
-    ".     desc2   desc3   desc3"
-    ".     desc4   desc4   desc4"
-    ".     actions actions status";
+    "check title title"
+    ". venue venue"
+    ". stock-or-institution stock-or-institution"
+    ". status actions";
+  grid-gap: rem.torem(8px) rem.torem(16px);
   border-bottom: rem.torem(1px) solid var(--color-grey-medium);
 
-  &.is-first-row {
-    td {
-      padding-top: 0;
-    }
+  &:last-child {
+    border-bottom: none;
   }
 }
 
-@media (min-width: size.$mobile) {
-  .individual-row {
-    grid-template-columns: rem.torem(22px) rem.torem(112px) 1fr rem.torem(105px);
+.individual-cell {
+  &-checkbox {
+    padding-left: rem.torem(16px);
+    padding-top: rem.torem(16px);
+  }
+
+  &-name {
+    padding-top: rem.torem(16px);
+  }
+
+  &-status, &-actions {
+    padding-bottom: rem.torem(16px);
   }
 }
 
-@media (min-width: size.$tablet) {
+@media screen and (min-width: size.$tablet) {
   .individual-row {
     display: table-row;
+  }
+
+  .individual-cell {
+    &-checkbox {
+      padding-left: rem.torem(16px);
+      padding-top: rem.torem(8px);
+    }
+
+    &-name {
+      padding-top: rem.torem(8px);
+    }
+
+    &-actions {
+      padding-right: rem.torem(16px);
+    }
   }
 }

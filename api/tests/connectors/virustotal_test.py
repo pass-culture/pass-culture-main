@@ -2,21 +2,19 @@ import pytest
 import requests_mock
 
 from pcapi.connectors import virustotal
-from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 
 from . import virustotal_test_data
 
 
 class CheckUrlIsSafeTest:
-    @override_features(ENABLE_VIRUSTOTAL=0)
+    @pytest.mark.features(ENABLE_VIRUSTOTAL=0)
     def test_with_feature_flag_disabled(self):
         with requests_mock.Mocker():
             # not request called
             virustotal.check_url_is_safe("https://example.com")
 
-    @override_features(ENABLE_VIRUSTOTAL=1)
-    @override_settings(VIRUSTOTAL_BACKEND="pcapi.connectors.virustotal.VirusTotalBackend")
+    @pytest.mark.settings(VIRUSTOTAL_BACKEND="pcapi.connectors.virustotal.VirusTotalBackend")
+    @pytest.mark.features(ENABLE_VIRUSTOTAL=1)
     def test_safe_url(self):
         url = "https://passculture.pro"
         url_id = "aHR0cHM6Ly9wYXNzY3VsdHVyZS5wcm8"
@@ -28,8 +26,8 @@ class CheckUrlIsSafeTest:
             mock.post(f"https://www.virustotal.com/api/v3/urls/{url_id}/analyse")
             virustotal.check_url_is_safe(url)
 
-    @override_features(ENABLE_VIRUSTOTAL=1)
-    @override_settings(VIRUSTOTAL_BACKEND="pcapi.connectors.virustotal.VirusTotalBackend")
+    @pytest.mark.settings(VIRUSTOTAL_BACKEND="pcapi.connectors.virustotal.VirusTotalBackend")
+    @pytest.mark.features(ENABLE_VIRUSTOTAL=1)
     def test_malicious_url(self):
         url = "https://malicious.com"
         url_id = "aHR0cHM6Ly9tYWxpY2lvdXMuY29t"
@@ -42,8 +40,8 @@ class CheckUrlIsSafeTest:
             with pytest.raises(virustotal.MaliciousUrlException):
                 virustotal.check_url_is_safe(url)
 
-    @override_features(ENABLE_VIRUSTOTAL=1)
-    @override_settings(VIRUSTOTAL_BACKEND="pcapi.connectors.virustotal.VirusTotalBackend")
+    @pytest.mark.settings(VIRUSTOTAL_BACKEND="pcapi.connectors.virustotal.VirusTotalBackend")
+    @pytest.mark.features(ENABLE_VIRUSTOTAL=1)
     def test_url_not_found(self):
         url = "https://www.not-found.com"
         url_id = "aHR0cHM6Ly93d3cubm90LWZvdW5kLmNvbQ"
@@ -58,14 +56,14 @@ class CheckUrlIsSafeTest:
 
 
 class CheckRequestUrlScanTest:
-    @override_features(ENABLE_VIRUSTOTAL=0)
+    @pytest.mark.features(ENABLE_VIRUSTOTAL=0)
     def test_with_feature_flag_disabled(self):
         with requests_mock.Mocker():
             # not request called
             virustotal.request_url_scan("https://example.com")
 
-    @override_features(ENABLE_VIRUSTOTAL=1)
-    @override_settings(VIRUSTOTAL_BACKEND="pcapi.connectors.virustotal.VirusTotalBackend")
+    @pytest.mark.settings(VIRUSTOTAL_BACKEND="pcapi.connectors.virustotal.VirusTotalBackend")
+    @pytest.mark.features(ENABLE_VIRUSTOTAL=1)
     def test_rescan_url(self):
         url = "https://passculture.pro"
         url_id = "aHR0cHM6Ly9wYXNzY3VsdHVyZS5wcm8"
@@ -80,8 +78,8 @@ class CheckRequestUrlScanTest:
             )
             virustotal.request_url_scan(url)
 
-    @override_features(ENABLE_VIRUSTOTAL=1)
-    @override_settings(VIRUSTOTAL_BACKEND="pcapi.connectors.virustotal.VirusTotalBackend")
+    @pytest.mark.settings(VIRUSTOTAL_BACKEND="pcapi.connectors.virustotal.VirusTotalBackend")
+    @pytest.mark.features(ENABLE_VIRUSTOTAL=1)
     def test_scan_new_url(self):
         url = "https://www.not-found.com"
         url_id = "aHR0cHM6Ly93d3cubm90LWZvdW5kLmNvbQ"

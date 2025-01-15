@@ -3,54 +3,70 @@ import React, { useId } from 'react'
 
 import styles from './BaseRadio.module.scss'
 
-interface BaseRadioProps
+export enum RadioVariant {
+  DEFAULT = 'DEFAULT',
+  BOX = 'BOX',
+}
+
+export interface BaseRadioProps
   extends Partial<React.InputHTMLAttributes<HTMLInputElement>> {
   label: string | JSX.Element
   hasError?: boolean
   className?: string
-  withBorder?: boolean
-  fullWidth?: boolean
+  variant?: RadioVariant
   ariaDescribedBy?: string
+  childrenOnChecked?: JSX.Element
 }
 
 export const BaseRadio = ({
   label,
   hasError,
   className,
-  withBorder = false,
-  fullWidth = false,
   ariaDescribedBy,
+  childrenOnChecked,
+  variant = RadioVariant.DEFAULT,
   ...props
 }: BaseRadioProps): JSX.Element => {
   const id = useId()
 
   return (
     <div
-      className={cn(
-        styles['base-radio'],
-        {
-          [styles[`with-border`]]: withBorder,
-          [styles[`is-disabled`]]: props.disabled,
-          [styles[`full-width`]]: fullWidth,
-          [styles[`with-border-checked`]]:
-            withBorder && props.checked && !props.disabled,
-        },
-        className
-      )}
+      className={cn(styles['radio'], {
+        [styles[`box-variant`]]: variant === RadioVariant.BOX,
+        [styles[`has-children`]]: childrenOnChecked,
+        [styles[`is-checked`]]: props.checked,
+        [styles[`is-disabled`]]: props.disabled,
+        [styles[`has-error`]]: hasError,
+      })}
     >
-      <input
-        type="radio"
-        {...props}
-        className={cn(styles[`base-radio-input`], {
-          [styles['has-error']]: hasError,
-        })}
-        {...(ariaDescribedBy ? { 'aria-describedby': ariaDescribedBy } : {})}
-        aria-invalid={hasError}
-        id={id}
-      />
-      <label htmlFor={id} className={cn(styles['base-radio-label'])}>
-        {label}
-      </label>
+      <div
+        className={cn(
+          styles['base-radio'],
+          {
+            [styles[`is-disabled`]]: props.disabled,
+          },
+          className
+        )}
+      >
+        <input
+          type="radio"
+          {...props}
+          className={cn(styles[`base-radio-input`], {
+            [styles['has-error']]: hasError,
+          })}
+          {...(ariaDescribedBy ? { 'aria-describedby': ariaDescribedBy } : {})}
+          aria-invalid={hasError}
+          id={id}
+        />
+        <label htmlFor={id} className={styles['base-radio-label']}>
+          {label}
+        </label>
+      </div>
+      {childrenOnChecked && props.checked && (
+        <div className={styles['base-radio-children-on-checked']}>
+          {childrenOnChecked}
+        </div>
+      )}
     </div>
   )
 }

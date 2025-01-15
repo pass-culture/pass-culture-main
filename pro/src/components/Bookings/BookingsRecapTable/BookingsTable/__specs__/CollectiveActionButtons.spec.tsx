@@ -47,7 +47,7 @@ describe('CollectiveActionButtons', () => {
     const bookingRecap = collectiveBookingFactory({
       bookingStatus: BOOKING_STATUS.VALIDATED,
       stock: collectiveBookingCollectiveStockFactory({
-        eventBeginningDatetime: addDays(new Date(), 3).toISOString(),
+        eventStartDatetime: addDays(new Date(), 3).toISOString(),
       }),
     })
     renderCollectiveActionButtons({

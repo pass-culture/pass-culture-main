@@ -1,6 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -34,6 +34,7 @@ import {
   Quantity,
   QuantityInput,
 } from 'ui-kit/form/QuantityInput/QuantityInput'
+import { CheckboxVariant } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
@@ -59,6 +60,8 @@ export interface StocksThingProps {
 export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const mode = useOfferWizardMode()
   const navigate = useNavigate()
+  const { pathname } = useLocation()
+  const isOnboarding = pathname.indexOf('onboarding') !== -1
   const notify = useNotification()
   const { subCategories } = useIndividualOfferContext()
   const { mutate } = useSWRConfig()
@@ -90,7 +93,12 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   /* istanbul ignore next: DEBT, TO FIX */
   const bookingsQuantity = stocks.length > 0 ? stocks[0].bookingsQuantity : 0
   const hasBookings = bookingsQuantity > 0
-  const minQuantity = mode === OFFER_WIZARD_MODE.EDITION ? (hasBookings ? bookingsQuantity : 0) : 1
+  const minQuantity =
+    mode === OFFER_WIZARD_MODE.EDITION
+      ? hasBookings
+        ? bookingsQuantity
+        : 0
+      : 1
   const isDisabled = isOfferDisabled(offer.status)
   const useOffererAddressAsDataSourceEnabled = useActiveFeature(
     'WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE'
@@ -112,6 +120,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
           : OFFER_WIZARD_STEP_IDS.SUMMARY,
       mode:
         mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
+      isOnboarding,
     })
 
     // Return when saving in edition with an empty form
@@ -181,6 +190,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
           offerId: offer.id,
           step: OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
+          isOnboarding,
         })
       )
     } else {
@@ -189,6 +199,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
           offerId: offer.id,
           step: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
           mode,
+          isOnboarding,
         })
       )
     }
@@ -459,7 +470,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                   label="Accepter les réservations “Duo“"
                   name="isDuo"
                   disabled={isDisabled}
-                  withBorder
+                  variant={CheckboxVariant.BOX}
                 />
               </FormLayout.Row>
             </FormLayout.Section>

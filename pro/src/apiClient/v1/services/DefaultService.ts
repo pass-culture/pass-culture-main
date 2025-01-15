@@ -56,6 +56,8 @@ import type { GetVenueListResponseModel } from '../models/GetVenueListResponseMo
 import type { GetVenueResponseModel } from '../models/GetVenueResponseModel';
 import type { GetVenuesOfOffererFromSiretResponseModel } from '../models/GetVenuesOfOffererFromSiretResponseModel';
 import type { HasInvoiceResponseModel } from '../models/HasInvoiceResponseModel';
+import type { HeadlineOfferCreationBodyModel } from '../models/HeadlineOfferCreationBodyModel';
+import type { HeadlineOfferDeleteBodyModel } from '../models/HeadlineOfferDeleteBodyModel';
 import type { InviteMemberQueryModel } from '../models/InviteMemberQueryModel';
 import type { InvoiceListV2ResponseModel } from '../models/InvoiceListV2ResponseModel';
 import type { LinkVenueToBankAccountBodyModel } from '../models/LinkVenueToBankAccountBodyModel';
@@ -70,8 +72,7 @@ import type { ListProviderResponse } from '../models/ListProviderResponse';
 import type { ListVenueProviderResponse } from '../models/ListVenueProviderResponse';
 import type { LoginUserBodyModel } from '../models/LoginUserBodyModel';
 import type { NewPasswordBodyModel } from '../models/NewPasswordBodyModel';
-import type { OffererAddressRequestModel } from '../models/OffererAddressRequestModel';
-import type { OffererAddressResponseModel } from '../models/OffererAddressResponseModel';
+import type { OffererHeadLineOfferResponseModel } from '../models/OffererHeadLineOfferResponseModel';
 import type { OffererStatsResponseModel } from '../models/OffererStatsResponseModel';
 import type { OfferStatus } from '../models/OfferStatus';
 import type { PatchAllOffersActiveStatusBodyModel } from '../models/PatchAllOffersActiveStatusBodyModel';
@@ -1199,7 +1200,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public getStatistics(
-    venueIds?: (Array<number> | number),
+    venueIds?: Array<number>,
   ): CancelablePromise<StatisticsModel> {
     return this.httpRequest.request({
       method: 'GET',
@@ -1383,57 +1384,6 @@ export class DefaultService {
     });
   }
   /**
-   * get_offerer_addresses <GET>
-   * @param offererId
-   * @param onlyWithOffers
-   * @returns GetOffererAddressesResponseModel OK
-   * @throws ApiError
-   */
-  public getOffererAddresses(
-    offererId: number,
-    onlyWithOffers: boolean = false,
-  ): CancelablePromise<GetOffererAddressesResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/offerers/{offerer_id}/addresses',
-      path: {
-        'offerer_id': offererId,
-      },
-      query: {
-        'onlyWithOffers': onlyWithOffers,
-      },
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
-   * create_offerer_address <POST>
-   * @param offererId
-   * @param requestBody
-   * @returns OffererAddressResponseModel Created
-   * @throws ApiError
-   */
-  public createOffererAddress(
-    offererId: number,
-    requestBody?: OffererAddressRequestModel,
-  ): CancelablePromise<OffererAddressResponseModel> {
-    return this.httpRequest.request({
-      method: 'POST',
-      url: '/offerers/{offerer_id}/addresses',
-      path: {
-        'offerer_id': offererId,
-      },
-      body: requestBody,
-      mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
    * get_offerer_bank_accounts_and_attached_venues <GET>
    * @param offererId
    * @returns GetOffererBankAccountsResponseModel OK
@@ -1504,6 +1454,27 @@ export class DefaultService {
     });
   }
   /**
+   * get_offerer_headline_offer <GET>
+   * @param offererId
+   * @returns OffererHeadLineOfferResponseModel OK
+   * @throws ApiError
+   */
+  public getOffererHeadlineOffer(
+    offererId: number,
+  ): CancelablePromise<OffererHeadLineOfferResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/offerers/{offerer_id}/headline-offer',
+      path: {
+        'offerer_id': offererId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
    * invite_member <POST>
    * @param offererId
    * @param requestBody
@@ -1542,6 +1513,32 @@ export class DefaultService {
       url: '/offerers/{offerer_id}/members',
       path: {
         'offerer_id': offererId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * get_offerer_addresses <GET>
+   * @param offererId
+   * @param onlyWithOffers
+   * @returns GetOffererAddressesResponseModel OK
+   * @throws ApiError
+   */
+  public getOffererAddresses(
+    offererId: number,
+    onlyWithOffers: boolean = false,
+  ): CancelablePromise<GetOffererAddressesResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/offerers/{offerer_id}/offerer_addresses',
+      path: {
+        'offerer_id': offererId,
+      },
+      query: {
+        'onlyWithOffers': onlyWithOffers,
       },
       errors: {
         403: `Forbidden`,
@@ -1735,6 +1732,26 @@ export class DefaultService {
     });
   }
   /**
+   * delete_headline_offer <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public deleteHeadlineOffer(
+    requestBody?: HeadlineOfferDeleteBodyModel,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/offers/delete_headline',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
    * post_draft_offer <POST>
    * @param requestBody
    * @returns GetIndividualOfferResponseModel Created
@@ -1771,6 +1788,26 @@ export class DefaultService {
       path: {
         'offer_id': offerId,
       },
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * make_offer_headline_from_offers <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public makeOfferHeadlineFromOffers(
+    requestBody?: HeadlineOfferCreationBodyModel,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/offers/headline',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -2487,28 +2524,6 @@ export class DefaultService {
       url: '/users/signout',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
-   * check_activation_token_exists <GET>
-   * @param token
-   * @returns void
-   * @throws ApiError
-   */
-  public checkActivationTokenExists(
-    token: string,
-  ): CancelablePromise<void> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/users/token/{token}',
-      path: {
-        'token': token,
-      },
-      errors: {
-        403: `Forbidden`,
-        404: `Not Found`,
         422: `Unprocessable Entity`,
       },
     });

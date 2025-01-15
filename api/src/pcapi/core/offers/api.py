@@ -47,8 +47,8 @@ import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.offerers.models as offerers_models
-import pcapi.core.offerers.schemas as offerers_schemas
 from pcapi.core.offers import models as offers_models
+import pcapi.core.offers.validation as offers_validation
 from pcapi.core.providers.allocine import get_allocine_products_provider
 from pcapi.core.providers.constants import GTL_IDS_BY_MUSIC_GENRE_CODE
 from pcapi.core.providers.constants import MUSIC_SLUG_BY_GTL_ID
@@ -65,12 +65,12 @@ from pcapi.models import pc_object
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationType
-from pcapi.repository import atomic
 from pcapi.repository import is_managed_transaction
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import on_commit
 from pcapi.repository import repository
 from pcapi.repository import transaction
+from pcapi.utils import db as db_utils
 from pcapi.utils import image_conversion
 import pcapi.utils.cinema_providers as cinema_providers_utils
 from pcapi.utils.custom_keys import get_field
@@ -335,19 +335,6 @@ def create_offer(
     return offer
 
 
-def get_offerer_address_from_address(
-    venue: offerers_models.Venue, address: offerers_schemas.AddressBodyModel
-) -> offerers_models.OffererAddress:
-    if not address.label:
-        address.label = None
-    address_from_api = offerers_api.create_offerer_address_from_address_api(address)
-    return offerers_api.get_or_create_offerer_address(
-        venue.managingOffererId,
-        address_from_api.id,
-        label=address.label,
-    )
-
-
 def update_offer(
     offer: models.Offer,
     body: offers_schemas.UpdateOffer,
@@ -363,7 +350,9 @@ def update_offer(
         if address.isVenueAddress:
             fields["offererAddress"] = offer.venue.offererAddress
         else:
-            fields["offererAddress"] = get_offerer_address_from_address(offer.venue, body.address)
+            fields["offererAddress"] = offerers_api.get_offerer_address_from_address(
+                offer.venue.managingOffererId, body.address
+            )
         fields.pop("address", None)
 
     should_send_mail = fields.pop("shouldSendMail", False)
@@ -450,15 +439,18 @@ def update_offer(
     return offer
 
 
-def update_collective_offer(
-    offer_id: int,
-    new_values: dict,
-) -> None:
+def update_collective_offer(offer_id: int, new_values: dict) -> None:
     offer_to_update = educational_models.CollectiveOffer.query.filter(
         educational_models.CollectiveOffer.id == offer_id
     ).first()
-    educational_validation.check_if_offer_is_not_public_api(offer_to_update)
-    educational_validation.check_if_offer_not_used_or_reimbursed(offer_to_update)
+
+    if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+        educational_validation.check_collective_offer_action_is_allowed(
+            offer_to_update, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
+        )
+    else:
+        educational_validation.check_if_offer_is_not_public_api(offer_to_update)
+        educational_validation.check_if_offer_not_used_or_reimbursed(offer_to_update)
 
     new_venue = None
     if "venueId" in new_values and new_values["venueId"] != offer_to_update.venueId:
@@ -470,22 +462,19 @@ def update_collective_offer(
             raise educational_exceptions.OffererOfVenueDontMatchOfferer()
 
     nationalProgramId = new_values.pop("nationalProgramId", None)
-    try:
-        national_program_api.link_or_unlink_offer_to_program(nationalProgramId, offer_to_update, commit=False)
-    except Exception:
-        db.session.rollback()
-        raise
+    national_program_api.link_or_unlink_offer_to_program(nationalProgramId, offer_to_update)
 
-    with atomic():
-        updated_fields = _update_collective_offer(offer=offer_to_update, new_values=new_values, commit=False)
-        if new_venue:
-            educational_models.CollectiveBooking.query.filter(
-                educational_models.CollectiveBooking.collectiveStockId == offer_to_update.collectiveStock.id
-            ).update({"venueId": new_venue.id}, synchronize_session="fetch")
+    if new_venue:
+        move_collective_offer_venue(offer_to_update, new_venue)
 
-    educational_api_offer.notify_educational_redactor_on_collective_offer_or_stock_edit(
-        offer_to_update.id,
-        updated_fields,
+    updated_fields = _update_collective_offer(offer=offer_to_update, new_values=new_values)
+
+    on_commit(
+        partial(
+            educational_api_offer.notify_educational_redactor_on_collective_offer_or_stock_edit,
+            offer_to_update.id,
+            updated_fields,
+        )
     )
 
 
@@ -520,15 +509,16 @@ def update_collective_offer_template(offer_id: int, new_values: dict) -> None:
 
     _update_collective_offer(offer=offer_to_update, new_values=new_values)
 
-    search.async_index_collective_offer_template_ids(
-        [offer_to_update.id],
-        reason=search.IndexationReason.OFFER_UPDATE,
+    on_commit(
+        partial(
+            search.async_index_collective_offer_template_ids,
+            [offer_to_update.id],
+            reason=search.IndexationReason.OFFER_UPDATE,
+        )
     )
 
 
-def _update_collective_offer(
-    offer: educational_api_offer.AnyCollectiveOffer, new_values: dict, commit: bool = True
-) -> list[str]:
+def _update_collective_offer(offer: educational_api_offer.AnyCollectiveOffer, new_values: dict) -> list[str]:
     validation.check_validation_status(offer)
     validation.check_contact_request(offer, new_values)
     # This variable is meant for Adage mailing
@@ -549,9 +539,7 @@ def _update_collective_offer(
         setattr(offer, key, value)
 
     db.session.add(offer)
-
-    if commit:
-        db.session.commit()
+    db.session.flush()
 
     return updated_fields
 
@@ -613,6 +601,20 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
                 )
 
 
+def archive_collective_offers(
+    offers: list[educational_models.CollectiveOffer], date_archived: datetime.datetime
+) -> None:
+    for offer in offers:
+        educational_validation.check_collective_offer_action_is_allowed(
+            offer, educational_models.CollectiveOfferAllowedAction.CAN_ARCHIVE
+        )
+
+        offer.isActive = False
+        offer.dateArchived = date_archived
+
+    db.session.flush()
+
+
 def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> None:
     allowed_validation_status = {models.OfferValidationStatus.APPROVED}
     if "dateArchived" in update_fields:
@@ -635,7 +637,11 @@ def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> Non
             educational_models.CollectiveOffer.id.in_(collective_offer_ids_batch)
         )
         query_to_update.update(update_fields, synchronize_session=False)
-        db.session.commit()
+
+        if is_managed_transaction():
+            db.session.flush()
+        else:
+            db.session.commit()
 
 
 def batch_update_collective_offers_template(query: BaseQuery, update_fields: dict) -> None:
@@ -660,12 +666,19 @@ def batch_update_collective_offers_template(query: BaseQuery, update_fields: dic
             educational_models.CollectiveOfferTemplate.id.in_(collective_offer_template_ids_batch)
         )
         query_to_update.update(update_fields, synchronize_session=False)
-        db.session.commit()
 
-        search.async_index_collective_offer_template_ids(
-            collective_offer_template_ids_batch,
-            reason=search.IndexationReason.OFFER_BATCH_UPDATE,
-            log_extra={"changes": set(update_fields.keys())},
+        if is_managed_transaction():
+            db.session.flush()
+        else:
+            db.session.commit()
+
+        on_commit(
+            partial(
+                search.async_index_collective_offer_template_ids,
+                collective_offer_template_ids_batch,
+                reason=search.IndexationReason.OFFER_BATCH_UPDATE,
+                log_extra={"changes": set(update_fields.keys())},
+            )
         )
 
 
@@ -673,6 +686,43 @@ def activate_future_offers(publication_date: datetime.datetime | None = None) ->
     query = offers_repository.get_offers_by_publication_date(publication_date=publication_date)
     query = offers_repository.exclude_offers_from_inactive_venue_provider(query)
     batch_update_offers(query, {"isActive": True})
+
+
+def set_upper_timespan_of_inactive_headline_offers() -> None:
+    inactive_headline_offers = offers_repository.get_inactive_headline_offers()
+    for headline_offer in inactive_headline_offers:
+        headline_offer.timespan = db_utils.make_timerange(headline_offer.timespan.lower, datetime.datetime.utcnow())
+
+    db.session.commit()
+
+
+def make_offer_headline(offer: models.Offer) -> models.HeadlineOffer:
+    offers_validation.check_offerer_is_eligible_for_headline_offers(offer.venue.managingOffererId)
+    offers_validation.check_offer_is_eligible_to_be_headline(offer)
+    try:
+        headline_offer = models.HeadlineOffer(offer=offer, venue=offer.venue, timespan=(datetime.datetime.utcnow(),))
+        db.session.add(headline_offer)
+        # Note: We use flush and not commit to be compliant with atomic. At this moment,
+        # the timespan is a str because the __init__ overloaded method of HeadlineOffer calls
+        # make_timerange which transforms timespan into a str using .isoformat. Thus, you will get
+        # a TypeError if you try to access the isActive property of this headline_offer object
+        # before any session commit. To fix this error, you need to commit your session
+        # as the TSRANGE object saves the timespan as a datetime in the database
+        db.session.flush()
+    except sqla_exc.IntegrityError as error:
+        db.session.rollback()
+        if "exclude_offer_timespan" in str(error.orig):
+            raise exceptions.OfferHasAlreadyAnActiveHeadlineOffer
+        if "exclude_venue_timespan" in str(error.orig):
+            raise exceptions.VenueHasAlreadyAnActiveHeadlineOffer
+        raise error
+
+    return headline_offer
+
+
+def remove_headline_offer(headline_offer: models.HeadlineOffer) -> None:
+    headline_offer.timespan = db_utils.make_timerange(headline_offer.timespan.lower, datetime.datetime.utcnow())
+    db.session.flush()
 
 
 def _notify_pro_upon_stock_edit_for_event_offer(stock: models.Stock, bookings: list[bookings_models.Booking]) -> None:
@@ -951,7 +1001,7 @@ def update_offer_fraud_information(offer: AnyOffer, user: users_models.User | No
         and not venue_already_has_validated_offer
         and isinstance(offer, models.Offer)
     ):
-        transactional_mails.send_first_venue_approved_offer_email_to_pro(offer)
+        on_commit(partial(transactional_mails.send_first_venue_approved_offer_email_to_pro, offer))
 
 
 def _invalidate_bookings(bookings: list[bookings_models.Booking]) -> list[bookings_models.Booking]:
@@ -977,10 +1027,19 @@ def _delete_stock(stock: models.Stock, author_id: int | None = None, user_connec
             transactional_mails.send_booking_cancellation_by_pro_to_beneficiary_email(booking)
         transactional_mails.send_booking_cancellation_confirmation_by_pro_email(cancelled_bookings)
         if not FeatureToggle.WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION.is_active():
-            push_notification_job.send_cancel_booking_notification.delay([booking.id for booking in cancelled_bookings])
-    search.async_index_offer_ids(
-        [stock.offerId],
-        reason=search.IndexationReason.STOCK_DELETION,
+            on_commit(
+                partial(
+                    push_notification_job.send_cancel_booking_notification.delay,
+                    [booking.id for booking in cancelled_bookings],
+                )
+            )
+
+    on_commit(
+        partial(
+            search.async_index_offer_ids,
+            [stock.offerId],
+            reason=search.IndexationReason.STOCK_DELETION,
+        )
     )
 
 
@@ -1035,9 +1094,12 @@ def create_mediation(
     )
     _delete_mediations_and_thumbs(previous_mediations)
 
-    search.async_index_offer_ids(
-        [offer.id],
-        reason=search.IndexationReason.MEDIATION_CREATION,
+    on_commit(
+        partial(
+            search.async_index_offer_ids,
+            [offer.id],
+            reason=search.IndexationReason.MEDIATION_CREATION,
+        ),
     )
 
     return mediation
@@ -1582,7 +1644,7 @@ def batch_delete_draft_offers(query: BaseQuery) -> None:
         synchronize_session=False
     )
     models.Offer.query.filter(*filters).delete(synchronize_session=False)
-    db.session.commit()
+    db.session.flush()
 
 
 def batch_delete_stocks(
@@ -1664,7 +1726,7 @@ def delete_price_category(offer: models.Offer, price_category: models.PriceCateg
     """
     validation.check_price_categories_deletable(offer)
     db.session.delete(price_category)
-    db.session.commit()
+    db.session.flush()
 
 
 def approves_provider_product_and_rejected_offers(ean: str) -> None:
@@ -1784,6 +1846,41 @@ def check_can_move_event_offer(offer: models.Offer) -> list[offerers_models.Venu
     if count_reimbursed_bookings > 0:
         raise exceptions.OfferHasReimbursedBookings(count_reimbursed_bookings)
 
+    return get_venues_with_same_pricing_point(offer)
+
+
+def check_can_move_collective_offer_venue(
+    collective_offer: educational_models.CollectiveOffer,
+) -> list[offerers_models.Venue]:
+    count_started_stocks = (
+        educational_models.CollectiveStock.query.with_entities(educational_models.CollectiveStock.id)
+        .filter(
+            educational_models.CollectiveStock.collectiveOfferId == collective_offer.id,
+            educational_models.CollectiveStock.startDatetime < datetime.datetime.utcnow(),
+        )
+        .count()
+    )
+    if count_started_stocks > 0:
+        raise exceptions.OfferEventInThePast(count_started_stocks)
+
+    count_reimbursed_bookings = (
+        educational_models.CollectiveBooking.query.with_entities(educational_models.CollectiveBooking.id)
+        .join(educational_models.CollectiveBooking.collectiveStock)
+        .filter(
+            educational_models.CollectiveStock.collectiveOfferId == collective_offer.id,
+            educational_models.CollectiveBooking.isReimbursed,
+        )
+        .count()
+    )
+    if count_reimbursed_bookings > 0:
+        raise exceptions.OfferHasReimbursedBookings(count_reimbursed_bookings)
+
+    return get_venues_with_same_pricing_point(collective_offer)
+
+
+def get_venues_with_same_pricing_point(
+    offer: models.Offer | educational_models.CollectiveOffer,
+) -> list[offerers_models.Venue]:
     venues_choices = (
         offerers_models.Venue.query.filter(
             offerers_models.Venue.managingOffererId == offer.venue.managingOffererId,
@@ -1924,6 +2021,78 @@ def move_event_offer(
 
     if notify_beneficiary:
         on_commit(partial(transactional_mails.send_email_for_each_ongoing_booking, offer))
+
+
+def move_collective_offer_venue(
+    collective_offer: educational_models.CollectiveOffer, destination_venue: offerers_models.Venue
+) -> None:
+    venue_choices = check_can_move_collective_offer_venue(collective_offer)
+
+    if destination_venue not in venue_choices:
+        raise exceptions.ForbiddenDestinationVenue()
+
+    destination_pricing_point_link = destination_venue.current_pricing_point_link
+    assert destination_pricing_point_link  # for mypy - it would not be in venue_choices without link
+    destination_pricing_point_id = destination_pricing_point_link.pricingPointId
+
+    collective_bookings = (
+        educational_models.CollectiveBooking.query.join(educational_models.CollectiveBooking.collectiveStock)
+        .outerjoin(
+            # max 1 row joined thanks to idx_uniq_collective_booking_id
+            finance_models.FinanceEvent,
+            sa.and_(
+                finance_models.FinanceEvent.collectiveBookingId == educational_models.CollectiveBooking.id,
+                finance_models.FinanceEvent.status.in_(
+                    (finance_models.FinanceEventStatus.PENDING, finance_models.FinanceEventStatus.READY)
+                ),
+            ),
+        )
+        .outerjoin(
+            # max 1 row joined thanks to idx_uniq_booking_id
+            finance_models.Pricing,
+            sa.and_(
+                finance_models.Pricing.collectiveBookingId == educational_models.CollectiveBooking.id,
+                finance_models.Pricing.status != finance_models.PricingStatus.CANCELLED,
+            ),
+        )
+        .options(
+            sa.orm.load_only(educational_models.CollectiveBooking.status),
+            sa.orm.contains_eager(educational_models.CollectiveBooking.finance_events).load_only(
+                finance_models.FinanceEvent.status
+            ),
+            sa.orm.contains_eager(educational_models.CollectiveBooking.pricings).load_only(
+                finance_models.Pricing.pricingPointId, finance_models.Pricing.status
+            ),
+        )
+        .filter(educational_models.CollectiveStock.collectiveOfferId == collective_offer.id)
+        .all()
+    )
+
+    collective_offer.venue = destination_venue
+    collective_offer.offererAddressId = destination_venue.offererAddressId
+    db.session.add(collective_offer)
+
+    for collective_booking in collective_bookings:
+        assert not collective_booking.isReimbursed
+        collective_booking.venueId = destination_venue.id
+        db.session.add(collective_booking)
+
+        # when offer has priced bookings, pricing point for destination venue must be the same as pricing point
+        # used for pricing (same as venue pricing point at the time pricing was processed)
+        pricing = collective_booking.pricings[0] if collective_booking.pricings else None
+        if pricing and pricing.pricingPointId != destination_pricing_point_id:
+            raise exceptions.BookingsHaveOtherPricingPoint()
+
+        finance_event = collective_booking.finance_events[0] if collective_booking.finance_events else None
+        if finance_event:
+            finance_event.venueId = destination_venue.id
+            finance_event.pricingPointId = destination_pricing_point_id
+            if finance_event.status == finance_models.FinanceEventStatus.PENDING:
+                finance_event.status = finance_models.FinanceEventStatus.READY
+                finance_event.pricingOrderingDate = finance_api.get_pricing_ordering_date(collective_booking)
+            db.session.add(finance_event)
+
+    db.session.flush()
 
 
 def update_used_stock_price(

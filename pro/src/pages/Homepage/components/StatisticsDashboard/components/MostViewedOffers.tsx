@@ -1,5 +1,4 @@
 import cn from 'classnames'
-import React from 'react'
 
 import { TopOffersResponseData } from 'apiClient/v1'
 import { pluralizeString } from 'commons/utils/pluralize'

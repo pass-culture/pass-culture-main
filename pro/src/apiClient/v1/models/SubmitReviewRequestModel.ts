@@ -5,6 +5,7 @@
 export type SubmitReviewRequestModel = {
   location: string;
   offererId: number;
+  pageTitle: string;
   userComment: string;
   userSatisfaction: string;
 };

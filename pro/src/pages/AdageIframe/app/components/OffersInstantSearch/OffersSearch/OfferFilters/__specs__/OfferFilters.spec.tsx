@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
-import React from 'react'
 
 import { EacFormat } from 'apiClient/adage'
 import { defaultAdageUser } from 'commons/utils/factories/adageFactories'

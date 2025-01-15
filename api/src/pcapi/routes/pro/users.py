@@ -10,6 +10,7 @@ from sqlalchemy.exc import IntegrityError
 from werkzeug import Response
 
 from pcapi import settings
+from pcapi.connectors import harvestr
 from pcapi.connectors.api_recaptcha import ReCaptchaException
 from pcapi.connectors.api_recaptcha import check_web_recaptcha_token
 from pcapi.core import token as token_utils
@@ -29,6 +30,7 @@ from pcapi.domain.password import check_password_validity
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.api_errors import UnauthorizedError
+from pcapi.models.feature import FeatureToggle
 from pcapi.routes.serialization import users as users_serializers
 from pcapi.routes.shared.cookies_consent import CookieConsentRequest
 from pcapi.serialization.decorator import spectree_serialize
@@ -158,16 +160,6 @@ def get_user_email_pending_validation() -> users_serializers.UserEmailValidation
     user = current_user._get_current_object()
     pending_validation = email_repository.get_latest_pending_email_validation(user)
     return users_serializers.UserEmailValidationResponseModel.from_orm(pending_validation)
-
-
-@blueprint.pro_private_api.route("/users/token/<token>", methods=["GET"])
-@spectree_serialize(on_error_statuses=[404], on_success_status=204, api=blueprint.pro_private_schema)
-def check_activation_token_exists(token: str) -> None:
-    # TODO (yacine-pc) 04-10-23 check if this route is needed, remove it else
-    try:
-        token_utils.Token.load_and_check(token, token_utils.TokenType.RESET_PASSWORD)
-    except users_exceptions.InvalidToken:
-        flask.abort(404)
 
 
 @blueprint.pro_private_api.route("/users/password", methods=["POST"])
@@ -344,7 +336,21 @@ def connect_as(token: str) -> Response:
 @login_required
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def submit_user_review(body: users_serializers.SubmitReviewRequestModel) -> None:
+    if not FeatureToggle.ENABLE_PRO_FEEDBACK.is_active():
+        raise ApiErrors(errors={"global": "service not available"}, status_code=503)
+
     check_user_has_access_to_offerer(current_user, body.offererId)
+
+    harvestr.create_message(
+        title=f"Retour - {body.pageTitle}",
+        content=body.userComment,
+        requester=harvestr.HaverstrRequester(
+            name=current_user.full_name,
+            externalUid=str(current_user.id),
+            email=current_user.email,
+        ),
+        labels=["AC", f"location: {body.location}"],
+    )
 
     logger.info(
         "User submitting review",

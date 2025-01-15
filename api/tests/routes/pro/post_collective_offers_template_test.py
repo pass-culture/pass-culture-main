@@ -199,7 +199,7 @@ class Returns200Test:
         assert response.status_code == 201
         offer = CollectiveOfferTemplate.query.filter_by(id=response.json["id"]).one()
         assert offer.dateRange.lower == now
-        assert offer.dateRange.upper == now.replace(second=now.second + 1)
+        assert offer.dateRange.upper == now + timedelta(seconds=1)
 
 
 class Returns403Test:

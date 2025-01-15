@@ -24,7 +24,6 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.routes.backoffice.finance import validation
@@ -569,7 +568,6 @@ def test_generate_payment_files(mocked_gdrive_create_file, clean_temp_files):
     assert gdrive_file_names == {
         "bank_accounts_20230201_1334.csv",
         f"down_payment_{cashflow.batch.label}_20230201_1334.csv",
-        f"down_payment_nc_{cashflow.batch.label}_20230201_1334.csv",
     }
 
 
@@ -635,15 +633,37 @@ def test_generate_bank_accounts_file(clean_temp_files):
     assert len(rows) == 3
     for row, bank_account in zip(rows, [bank_account_2, bank_account_3, bank_account_4]):
         assert row == {
-            "Lieux liés au compte bancaire": ", ".join(
-                map(str, sorted(link.venueId for link in bank_account.venueLinks))
-            ),
+            "Numéro": "",
+            "Actif": "True",
+            "Traité": "False",
             "Identifiant des coordonnées bancaires": str(bank_account.id),
-            "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account.id),
-            "SIREN de la structure": bank_account.offerer.siren,
-            "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account.offerer.name} - {bank_account.label}",
+            "Nom du fournisseur - Libellé des coordonnées bancaires": f"{bank_account.offerer.name} - {bank_account.label}",
+            "Statut": "A",
+            "Famille de fournisseurs": "ACTEURCULT",
+            "Condition de règlement": "30J",
+            "Cycle du relevé": "15J",
+            "Devise": "EUR",
+            "Type de taux de change": "SPOT",
+            "Courriel": "",
+            "Site web": "",
+            "Téléphone 1": "",
+            "Téléphone 2": "",
+            "Fax": "",
+            "Langue": "fr-FR",
+            "Adresse 1": "1 boulevard Poissonnière",
+            "Adresse 2": "",
+            "Ville": "Paris",
+            "Pays": "FR",
+            "Département": "",
+            "Code postal": "75002",
+            "Mode de règlement bis": "VSEPA",
             "IBAN": bank_account.iban,
+            "Compte de trésorerie": "",
+            "Nature économique": "",
             "BIC": bank_account.bic,
+            "SIREN": bank_account.offerer.siren,
+            "Numéro de TVA Intracom": "",
+            "Zone de taxes": "EXO",
         }
 
 
@@ -984,25 +1004,6 @@ def test_generate_payments_file(clean_temp_files):
         "Montant net offreur": -12,  # [0 - 12 = -12] from collective incident
     } in rows
 
-    n_queries = 1  # select individual pricings only (batch already selected)
-    with assert_num_queries(n_queries):
-        path = api._generate_payments_file(batch, only_caledonian=True)
-
-    with open(path, encoding="utf-8") as fp:
-        reader = csv.DictReader(fp, quoting=csv.QUOTE_NONNUMERIC)
-        rows = list(reader)
-
-    assert len(rows) == 1
-    assert {
-        "Identifiant des coordonnées bancaires": str(nc_bank_account.id),
-        "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(nc_bank_account.id),
-        "SIREN de la structure": nc_bank_account.offerer.rid7,
-        "Nom de la structure - Libellé des coordonnées bancaires": f"{nc_bank_account.offerer.name} - {nc_bank_account.label}",
-        "Type de réservation": "PC",
-        "Ministère": "NC",
-        "Montant net offreur": 1193.32,  # 10 € = 10*(1000/8.38) XPF = 1193.32 XPF
-    } in rows
-
 
 @pytest.mark.usefixtures("clean_temp_files", "css_font_http_request_mock")
 def test_invoices_csv_commercial_gesture():
@@ -1136,7 +1137,7 @@ def test_invoices_csv_commercial_gesture():
 
 @pytest.mark.usefixtures("clean_temp_files", "css_font_http_request_mock")
 @pytest.mark.parametrize("with_oa", [True, False])
-def test_invoice_pdf_commercial_gesture(monkeypatch, with_oa):
+def test_invoice_pdf_commercial_gesture(features, monkeypatch, with_oa):
     invoice_htmls = []
 
     def _store_invoice_pdf(invoice_storage_id, invoice_html) -> None:
@@ -1215,8 +1216,8 @@ def test_invoice_pdf_commercial_gesture(monkeypatch, with_oa):
 
     cutoff = datetime.datetime.utcnow() + datetime.timedelta(days=1)
     batch = api.generate_cashflows_and_payment_files(cutoff)
-    with override_features(WIP_ENABLE_OFFER_ADDRESS=with_oa):
-        api.generate_invoices_and_debit_notes_legacy(batch)
+    features.WIP_ENABLE_OFFER_ADDRESS = with_oa
+    api.generate_invoices_and_debit_notes_legacy(batch)
 
     invoices = models.Invoice.query.all()
     assert len(invoices) == 1
@@ -1291,7 +1292,7 @@ def test_invoice_pdf_commercial_gesture(monkeypatch, with_oa):
     total_account_table_rows = html_parser.extract_table_rows(str(total_account_table_soup).encode("utf-8"))
     assert len(total_account_table_rows) == 1
     total_account_table_row = total_account_table_rows[0]
-    assert total_account_table_row["Date"] == invoice.date.strftime("%d/%m/%Y")
+    assert total_account_table_row["Date"] == (invoice.date + datetime.timedelta(days=2)).strftime("%d/%m/%Y")
     assert total_account_table_row["Destinataire"] == bank_account.label
     assert total_account_table_row["Mode de règlement"] == f"Virement {bank_account.iban}"
     assert total_account_table_row["Montant réglé"] == "308,40 €"
@@ -2383,7 +2384,7 @@ class PrepareInvoiceContextTest:
 class GenerateDebitNoteHtmlTest:
     TEST_FILES_PATH = pathlib.Path(tests.__path__[0]) / "files"
 
-    def generate_and_compare_invoice(self, bank_account, venue, expected_generated_file_name, with_oa):
+    def generate_and_compare_invoice(self, features, bank_account, venue, expected_generated_file_name, with_oa):
         user = users_factories.RichBeneficiaryFactory()
         book_offer = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
         factories.CustomReimbursementRuleFactory(amount=2850, offer=book_offer)
@@ -2447,52 +2448,52 @@ class GenerateDebitNoteHtmlTest:
             is_debit_note=True,
         )
         batch = models.CashflowBatch.query.get(batch.id)
-        with override_features(WIP_ENABLE_OFFER_ADDRESS=with_oa):
-            invoice_html = api._generate_debit_note_html(invoice, batch)
+        features.WIP_ENABLE_OFFER_ADDRESS = with_oa
+        invoice_html = api._generate_debit_note_html(invoice, batch)
 
         with open(self.TEST_FILES_PATH / "invoice" / expected_generated_file_name, "r", encoding="utf-8") as f:
             expected_invoice_html = f.read()
         # We need to replace Cashflow IDs and dates that were used when generating the expected html
 
         expected_invoice_html = expected_invoice_html.replace(
-            'content: "Relevé n°A240000001 du 26/01/2024";',
-            f'content: "Relevé n°{invoice.reference} du {cashflows[0].batch.cutoff.strftime("%d/%m/%Y")}";',
+            'content: "Relevé n°A240000001 du 28/01/2024";',
+            f'content: "Relevé n°{invoice.reference} du {(cashflows[0].batch.cutoff+ datetime.timedelta(days=2)).strftime("%d/%m/%Y")}";',
         )
         assert expected_invoice_html == invoice_html
 
-    def test_basics(self, invoice_data):
+    def test_basics(self, features, invoice_data):
         bank_account, stocks, venue = invoice_data
 
         del stocks  # we don't need it
 
-        self.generate_and_compare_invoice(bank_account, venue, "rendered_debit_note.html", False)
+        self.generate_and_compare_invoice(features, bank_account, venue, "rendered_debit_note.html", False)
 
-    def test_basics_with_oa(self, invoice_data):
+    def test_basics_with_oa(self, features, invoice_data):
         bank_account, stocks, venue = invoice_data
 
         del stocks  # we don't need it
 
-        self.generate_and_compare_invoice(bank_account, venue, "rendered_debit_note_with_oa.html", True)
+        self.generate_and_compare_invoice(features, bank_account, venue, "rendered_debit_note_with_oa.html", True)
 
-    def test_nc_invoice(self, invoice_nc_data):
+    def test_nc_invoice(self, features, invoice_nc_data):
         bank_account, stocks, venue = invoice_nc_data
 
         del stocks  # we don't need it
 
-        self.generate_and_compare_invoice(bank_account, venue, "rendered_nc_debit_note.html", False)
+        self.generate_and_compare_invoice(features, bank_account, venue, "rendered_nc_debit_note.html", False)
 
-    def test_nc_invoice_with_oa(self, invoice_nc_data):
+    def test_nc_invoice_with_oa(self, features, invoice_nc_data):
         bank_account, stocks, venue = invoice_nc_data
 
         del stocks  # we don't need it
 
-        self.generate_and_compare_invoice(bank_account, venue, "rendered_nc_debit_note_with_oa.html", True)
+        self.generate_and_compare_invoice(features, bank_account, venue, "rendered_nc_debit_note_with_oa.html", True)
 
 
 class GenerateInvoiceHtmlTest:
     TEST_FILES_PATH = pathlib.Path(tests.__path__[0]) / "files"
 
-    def generate_and_compare_invoice(self, stocks, bank_account, venue, is_caledonian, with_oa):
+    def generate_and_compare_invoice(self, features, stocks, bank_account, venue, is_caledonian, with_oa):
         user = users_factories.RichBeneficiaryFactory()
         book_offer = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
         factories.CustomReimbursementRuleFactory(amount=2850, offer=book_offer)
@@ -2584,8 +2585,8 @@ class GenerateInvoiceHtmlTest:
         )
 
         batch = models.CashflowBatch.query.get(batch.id)
-        with override_features(WIP_ENABLE_OFFER_ADDRESS=with_oa):
-            invoice_html = api._generate_invoice_html(invoice, batch)
+        features.WIP_ENABLE_OFFER_ADDRESS = with_oa
+        invoice_html = api._generate_invoice_html(invoice, batch)
 
         if with_oa:
             expected_generated_file_name = (
@@ -2603,12 +2604,12 @@ class GenerateInvoiceHtmlTest:
             f'<td class="cashflow_batch_label">{cashflows[0].batch.label}</td>',
         )
         expected_invoice_html = expected_invoice_html.replace(
-            '<td class="cashflow_creation_date">21/12/2021</td>',
-            f'<td class="cashflow_creation_date">{invoice.date.strftime("%d/%m/%Y")}</td>',
+            '<td class="cashflow_creation_date">23/12/2021</td>',
+            f'<td class="cashflow_creation_date">{(invoice.date + datetime.timedelta(days=2)).strftime("%d/%m/%Y")}</td>',
         )
         expected_invoice_html = expected_invoice_html.replace(
-            'content: "Relevé n°F220000001 du 30/01/2022";',
-            f'content: "Relevé n°{invoice.reference} du {cashflows[0].batch.cutoff.strftime("%d/%m/%Y")}";',
+            'content: "Relevé n°F220000001 du 01/02/2022";',
+            f'content: "Relevé n°{invoice.reference} du {(cashflows[0].batch.cutoff + datetime.timedelta(days=2)).strftime("%d/%m/%Y")}";',
         )
         start_period, end_period = api.get_invoice_period(cashflows[0].batch.cutoff)
         expected_invoice_html = expected_invoice_html.replace(
@@ -2617,7 +2618,7 @@ class GenerateInvoiceHtmlTest:
         )
         assert expected_invoice_html == invoice_html
 
-    def basics(self, invoice_data, with_oa):
+    def basics(self, features, invoice_data, with_oa):
         bank_account, stocks, venue = invoice_data
         pricing_point = offerers_models.Venue.query.get(venue.current_pricing_point_id)
         only_educational_venue = offerers_factories.VenueFactory(
@@ -2650,21 +2651,21 @@ class GenerateInvoiceHtmlTest:
         api.price_event(collective_booking_finance_event1)
         api.price_event(collective_booking_finance_event2)
 
-        self.generate_and_compare_invoice(stocks, bank_account, venue, False, with_oa)
+        self.generate_and_compare_invoice(features, stocks, bank_account, venue, False, with_oa)
 
-    def test_basics(self, invoice_data):
-        self.basics(invoice_data, False)
+    def test_basics(self, features, invoice_data):
+        self.basics(features, invoice_data, False)
 
-    def test_basics_with_oa(self, invoice_data):
-        self.basics(invoice_data, True)
+    def test_basics_with_oa(self, features, invoice_data):
+        self.basics(features, invoice_data, True)
 
-    def nc_invoice(self, invoice_nc_data, with_oa):
+    def nc_invoice(self, features, invoice_nc_data, with_oa):
         bank_account, stocks, venue = invoice_nc_data
 
-        self.generate_and_compare_invoice(stocks, bank_account, venue, True, with_oa)
+        self.generate_and_compare_invoice(features, stocks, bank_account, venue, True, with_oa)
 
-    def test_nc_invoice(self, invoice_nc_data):
-        self.nc_invoice(invoice_nc_data, False)
+    def test_nc_invoice(self, features, invoice_nc_data):
+        self.nc_invoice(features, invoice_nc_data, False)
 
-    def test_nc_invoice_with_oa(self, invoice_nc_data):
-        self.nc_invoice(invoice_nc_data, True)
+    def test_nc_invoice_with_oa(self, features, invoice_nc_data):
+        self.nc_invoice(features, invoice_nc_data, True)

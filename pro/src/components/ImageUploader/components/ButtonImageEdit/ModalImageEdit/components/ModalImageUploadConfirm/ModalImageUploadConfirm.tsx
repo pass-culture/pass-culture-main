@@ -1,5 +1,7 @@
 import * as Dialog from '@radix-ui/react-dialog'
 
+import { useAnalytics } from 'app/App/analytics/firebase'
+import { Events } from 'commons/core/FirebaseEvents/constants'
 import { AppPreviewOffer } from 'components/ImageUploader/components/ButtonAppPreview/components/AppPreviewOffer/AppPreviewOffer'
 import { AppPreviewVenue } from 'components/ImageUploader/components/ButtonAppPreview/components/AppPreviewVenue/AppPreviewVenue'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
@@ -8,7 +10,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 
 import style from './ModalImageUploadConfirm.module.scss'
 
-interface ModalImageUploadConfirmProps {
+export type ModalImageUploadConfirmProps = {
   imageUrl: string
   children?: never
   mode: UploaderModeEnum
@@ -24,6 +26,8 @@ export const ModalImageUploadConfirm = ({
   onUploadImage,
   mode,
 }: ModalImageUploadConfirmProps): JSX.Element => {
+  const { logEvent } = useAnalytics()
+
   const AppPreview = {
     [UploaderModeEnum.VENUE]: AppPreviewVenue,
     [UploaderModeEnum.OFFER]: AppPreviewOffer,
@@ -57,7 +61,12 @@ export const ModalImageUploadConfirm = ({
             className={style['button']}
             disabled={false}
             isLoading={!!isUploading}
-            onClick={onUploadImage}
+            onClick={() => {
+              logEvent(Events.CLICKED_ADD_IMAGE, {
+                imageCreationStage: 'save image',
+              })
+              onUploadImage()
+            }}
           >
             Enregistrer
           </Button>

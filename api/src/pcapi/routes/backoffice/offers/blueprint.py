@@ -188,32 +188,6 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
         "column": offers_models.Offer.extraData["visa"].astext,
         "special": string_utils.format_ean_or_visa,
     },
-    "MUSIC_TYPE_GTL": {
-        "field": "music_type_gtl",
-        "custom_filters": {
-            "IN": lambda values: (
-                sa.and_(
-                    offers_models.Offer.subcategoryId.in_(subcategories_v2.MUSIC_TITELIVE_SUBCATEGORY_SEARCH_IDS),
-                    sa.func.substring(offers_models.Offer.extraData["gtl_id"].astext, 1, 2).in_(values),
-                )
-            ),
-            "NOT_IN": lambda values: (
-                sa.and_(
-                    offers_models.Offer.subcategoryId.in_(subcategories_v2.MUSIC_TITELIVE_SUBCATEGORY_SEARCH_IDS),
-                    sa.func.substring(offers_models.Offer.extraData["gtl_id"].astext, 1, 2).not_in(values),
-                )
-            ),
-        },
-    },
-    "SHOW_TYPE": {
-        "field": "show_type",
-        "column": offers_models.Offer.extraData["showType"].astext,
-        "facet": "offer.showType",
-    },
-    "SHOW_SUB_TYPE": {
-        "field": "show_sub_type",
-        "column": offers_models.Offer.extraData["showSubType"].astext,
-    },
     "PRICE": {
         "field": "price",
         "column": offers_models.Stock.price,
@@ -437,25 +411,31 @@ def _get_offers_by_ids(
                 offers_models.Offer.isActive,
                 offers_models.Offer.extraData,
             ),
-            sa.orm.contains_eager(offers_models.Offer.venue)
-            .load_only(
-                offerers_models.Venue.id,
-                offerers_models.Venue.name,
-                offerers_models.Venue.publicName,
-                offerers_models.Venue.departementCode,
-            )
-            .contains_eager(offerers_models.Venue.managingOfferer)
-            .load_only(
-                offerers_models.Offerer.id,
-                offerers_models.Offerer.name,
-                offerers_models.Offerer.siren,
-                offerers_models.Offerer.postalCode,
-            )
-            .joinedload(offerers_models.Offerer.confidenceRule)
-            .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
-            sa.orm.contains_eager(offers_models.Offer.venue)
-            .joinedload(offerers_models.Venue.confidenceRule)
-            .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
+            sa.orm.contains_eager(offers_models.Offer.venue).options(
+                sa.orm.load_only(
+                    offerers_models.Venue.id,
+                    offerers_models.Venue.name,
+                    offerers_models.Venue.publicName,
+                    offerers_models.Venue.departementCode,
+                ),
+                sa.orm.contains_eager(offerers_models.Venue.managingOfferer).options(
+                    sa.orm.load_only(
+                        offerers_models.Offerer.id,
+                        offerers_models.Offerer.name,
+                        offerers_models.Offerer.siren,
+                        offerers_models.Offerer.postalCode,
+                    ),
+                    sa.orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
+                        offerers_models.OffererConfidenceRule.confidenceLevel
+                    ),
+                    sa.orm.with_expression(
+                        offerers_models.Offerer.isTopActeur, offerers_models.Offerer.is_top_acteur.expression  # type: ignore[attr-defined]
+                    ),
+                ),
+                sa.orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
+                    offerers_models.OffererConfidenceRule.confidenceLevel
+                ),
+            ),
             sa.orm.joinedload(offers_models.Offer.author).load_only(
                 users_models.User.id,
                 users_models.User.firstName,
@@ -537,9 +517,11 @@ def list_offers() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/algolia", methods=["GET"])
+@atomic()
 def list_algolia_offers() -> utils.BackofficeResponse:
     form = forms.GetOfferAlgoliaSearchForm(formdata=utils.get_query_params())
     if not form.validate():
+        mark_transaction_as_invalid()
         return _render_offer_list(
             algolia_form=form,
             code=400,
@@ -955,21 +937,32 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
 @utils.permission_required(perm_models.Permissions.READ_OFFERS)
 def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
     offer_query = offers_models.Offer.query.filter(offers_models.Offer.id == offer_id).options(
-        sa.orm.joinedload(offers_models.Offer.venue)
-        .load_only(
-            offerers_models.Venue.id,
-            offerers_models.Venue.name,
-            offerers_models.Venue.publicName,
-            offerers_models.Venue.managingOffererId,
-        )
-        .joinedload(offerers_models.Venue.managingOfferer)
-        .load_only(
-            offerers_models.Offerer.id,
-            offerers_models.Offerer.name,
-            offerers_models.Offerer.isActive,
-            offerers_models.Offerer.validationStatus,
-            offerers_models.Offerer.siren,
-            offerers_models.Offerer.postalCode,
+        sa.orm.joinedload(offers_models.Offer.venue).options(
+            sa.orm.load_only(
+                offerers_models.Venue.id,
+                offerers_models.Venue.name,
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.managingOffererId,
+            ),
+            sa.orm.joinedload(offerers_models.Venue.managingOfferer).options(
+                sa.orm.load_only(
+                    offerers_models.Offerer.id,
+                    offerers_models.Offerer.name,
+                    offerers_models.Offerer.isActive,
+                    offerers_models.Offerer.validationStatus,
+                    offerers_models.Offerer.siren,
+                    offerers_models.Offerer.postalCode,
+                ),
+                sa.orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
+                    offerers_models.OffererConfidenceRule.confidenceLevel
+                ),
+                sa.orm.with_expression(
+                    offerers_models.Offerer.isTopActeur, offerers_models.Offerer.is_top_acteur.expression  # type: ignore[attr-defined]
+                ),
+            ),
+            sa.orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
+                offerers_models.OffererConfidenceRule.confidenceLevel
+            ),
         ),
         sa.orm.joinedload(offers_models.Offer.stocks)
         .joinedload(offers_models.Stock.priceCategory)

@@ -1,5 +1,5 @@
 import { format } from 'date-fns'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'

@@ -6,7 +6,7 @@ import type {
   StatisticsModel,
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
-  AggregatedRevenue,
+  AggregatedRevenueModel,
 } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import {
@@ -70,9 +70,10 @@ const renderIncome = () => {
   renderWithProviders(<Income />, {
     user: sharedCurrentUserFactory(),
     storeOverrides: {
-      user: {
-        currentUser: sharedCurrentUserFactory(),
+      user: { currentUser: sharedCurrentUserFactory() },
+      offerer: {
         selectedOffererId: MOCK_DATA.selectedOffererId,
+        offererNames: [],
       },
     },
   })
@@ -409,7 +410,9 @@ describe('Income', () => {
         )
 
         const income = MOCK_DATA.incomeByYear[y]
-        const incomeTypes = Object.keys(income) as (keyof AggregatedRevenue)[]
+        const incomeTypes = Object.keys(
+          income
+        ) as (keyof AggregatedRevenueModel)[]
         for (const t of incomeTypes) {
           const incomeResults = income[t]
           if (incomeResults) {

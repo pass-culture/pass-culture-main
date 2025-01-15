@@ -1,10 +1,9 @@
 import cn from 'classnames'
-import React from 'react'
 
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import radioOffIcon from './assets/ico-radio-off.svg'
-import radioOnIcon from './assets/ico-radio-on.svg'
+import { RadioButtonCheckedSVG } from './RadioButtonCheckedSVG'
+import { RadioButtonUncheckedSVG } from './RadioButtonUncheckedSVG'
 import styles from './RadioButtonWithImage.module.scss'
 
 /**
@@ -104,29 +103,15 @@ export const RadioButtonWithImage = ({
       className
     )}
   >
-    {isChecked ? (
-      <SvgIcon
-        alt=""
-        src={radioOnIcon}
-        className={styles['button-radio-on']}
-        viewBox="0 0 16 16"
-        width="16"
-      />
-    ) : (
-      <SvgIcon
-        alt=""
-        src={radioOffIcon}
-        className={styles['button-radio-off']}
-        viewBox="0 0 16 16"
-        width="16"
-      />
-    )}
+    <div className={styles['button-radio-icon']}>
+      {isChecked ? <RadioButtonCheckedSVG /> : <RadioButtonUncheckedSVG />}
+    </div>
 
     <SvgIcon src={icon} className={styles['button-icon']} alt="" />
 
     <input
       checked={isChecked}
-      className="visually-hidden"
+      className={styles['visually-hidden']}
       disabled={disabled}
       name={name}
       onChange={onChange}

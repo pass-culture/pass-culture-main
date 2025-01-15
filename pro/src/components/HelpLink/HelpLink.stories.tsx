@@ -1,4 +1,3 @@
-import React from 'react'
 import { withRouter } from 'storybook-addon-remix-react-router'
 
 import { HelpLink } from './HelpLink'

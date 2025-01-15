@@ -8,7 +8,6 @@ from pcapi.core.offerers import factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.offer_metadata import get_metadata_from_offer
 from pcapi.core.providers.constants import BookFormat
-from pcapi.core.testing import override_features
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -222,7 +221,7 @@ class OfferMetadataTest:
 
             assert metadata["offers"]["availability"] == "https://schema.org/SoldOut"
 
-        @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+        @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
         def should_have_offer_location_when_available(self):
             venue = offerers_factories.VenueFactory(
                 name="Le Poney qui tousse",

@@ -2,8 +2,8 @@ import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
 import { Layout } from 'app/App/layout/Layout'
-import { isCollectiveOffer, Mode } from 'commons/core/OfferEducational/types'
-import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { Mode } from 'commons/core/OfferEducational/types'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { queryParamsFromOfferer } from 'commons/utils/queryParamsFromOfferer'
 import {
   OptionalCollectiveOfferFromParamsProps,
@@ -37,7 +37,7 @@ export const CollectiveOfferCreation = ({
           subTitle={offer?.name}
           isCreation
           isTemplate={isTemplate}
-          isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
+          isFromTemplate={location.pathname.includes('vitrine')}
           requestId={requestId}
           offer={offer}
         >

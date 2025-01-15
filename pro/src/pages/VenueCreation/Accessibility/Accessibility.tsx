@@ -1,6 +1,6 @@
 import { useFormikContext } from 'formik'
 import isEqual from 'lodash.isequal'
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 
 import { useAccessibilityOptions } from 'commons/hooks/useAccessibilityOptions'
 import { FormLayout } from 'components/FormLayout/FormLayout'

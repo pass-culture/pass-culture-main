@@ -2,7 +2,6 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { beforeEach } from 'vitest'
 
-import { api } from 'apiClient/api'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { useLogExtraProData } from 'app/App/hook/useLogExtraProData'
 import { getOffererNameFactory } from 'commons/utils/factories/individualApiFactories'
@@ -24,12 +23,17 @@ const renderLogExtraProData = async () => {
     </>,
     {
       initialRouterEntries: ['/accueil'],
+      storeOverrides: {
+        offerer: {
+          selectedOffererId: 1,
+          offererNames: [
+            getOffererNameFactory({ id: 1 }),
+            getOffererNameFactory({ id: 2, name: 'super structure' }),
+          ],
+        },
+      },
     }
   )
-
-  await waitFor(() => {
-    expect(api.listOfferersNames).toHaveBeenCalled()
-  })
 
   await waitFor(() => {
     expect(screen.queryByTestId('offerer-select')).toBeInTheDocument()
@@ -40,12 +44,6 @@ const renderLogExtraProData = async () => {
 
 describe('useLogExtraProData', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [
-        getOffererNameFactory({ id: 1 }),
-        getOffererNameFactory({ id: 2, name: 'super structure' }),
-      ],
-    })
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))

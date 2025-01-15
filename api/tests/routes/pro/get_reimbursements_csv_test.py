@@ -1,7 +1,6 @@
 import csv
 import datetime
 from io import StringIO
-import urllib.parse
 
 import pytest
 
@@ -13,7 +12,6 @@ import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offers import models as offers_models
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementDetails
 from pcapi.utils.date import utc_datetime_to_department_timezone
@@ -140,7 +138,7 @@ def test_with_venue_filter_with_pricings(client, cutoff, fortnight):
     assert row["Montant remboursé"] == "{:.2f}".format(-pricing.amount / 100).replace(".", ",")
 
 
-@override_features(WIP_ENABLE_OFFER_ADDRESS=False)
+@pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=False)
 @pytest.mark.usefixtures("db_session")
 @pytest.mark.parametrize(
     "cutoff,fortnight",
@@ -255,7 +253,7 @@ def test_with_reimbursement_period_filter_with_pricings(client, cutoff, fortnigh
         assert row["Montant remboursé"] == "{:.2f}".format(-pricing.amount / 100).replace(".", ",")
 
 
-@override_features(WIP_ENABLE_OFFER_ADDRESS=True)
+@pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True)
 @pytest.mark.usefixtures("db_session")
 @pytest.mark.parametrize(
     "cutoff,fortnight",
@@ -331,8 +329,8 @@ def test_with_reimbursement_period_filter_with_pricings(client, cutoff, fortnigh
     reader = csv.DictReader(StringIO(response.data.decode("utf-8-sig")), delimiter=";")
     assert reader.fieldnames[:6] == ReimbursementDetails.CSV_HEADER[:6]
     assert reader.fieldnames[6:10] == [
-        "SIRET du partenaire culturel",
-        "Raison sociale du partenaire culturel",
+        "SIRET de la structure",
+        "Raison sociale de la structure",
         "Nom de l'offre",
         "Adresse de l'offre",
     ]
@@ -358,11 +356,10 @@ def test_with_reimbursement_period_filter_with_pricings(client, cutoff, fortnigh
         assert row["N° du justificatif"] == invoice.reference
         assert row["N° de virement"] == batch.label
         assert row["Intitulé du compte bancaire"] == bank_account.label
-        assert row["SIRET du partenaire culturel"] == venue.siret
         assert row["IBAN"] == bank_account.iban
-        assert row["Raison sociale du partenaire culturel"] == venue.name
+        assert row["Raison sociale de la structure"] == venue.name
         assert row["Adresse de l'offre"] == f"{venue.street} {venue.postalCode} {venue.city}"
-        assert row["SIRET du partenaire culturel"] == venue.siret
+        assert row["SIRET de la structure"] == venue.siret
         assert row["Nom de l'offre"] == offer.name
         assert row["N° de réservation (offre collective)"] == ""
         assert row["Nom (offre collective)"] == ""
@@ -595,7 +592,7 @@ def test_with_reimbursement_period_filter_with_pricings_collective_use_case(clie
         assert row["Montant remboursé"] == "{:.2f}".format(-pricing.amount / 100).replace(".", ",")
 
 
-@testing.override_features(WIP_ENABLE_OFFER_ADDRESS=True)
+@pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True)
 @pytest.mark.usefixtures("db_session")
 @pytest.mark.parametrize(
     "offer_has_oa, len_offerer_addresses, expected_address",
@@ -672,8 +669,8 @@ def test_with_offer_address_and_venue_address(client, offer_has_oa, len_offerer_
         "N° de virement",
         "Intitulé du compte bancaire",
         "IBAN",
-        "SIRET du partenaire culturel",
-        "Raison sociale du partenaire culturel",
+        "SIRET de la structure",
+        "Raison sociale de la structure",
         "Nom de l'offre",
         "Adresse de l'offre",
         "N° de réservation (offre collective)",

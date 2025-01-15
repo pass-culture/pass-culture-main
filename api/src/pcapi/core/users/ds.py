@@ -4,6 +4,7 @@ import logging
 
 import sqlalchemy as sa
 
+from pcapi import settings
 from pcapi.connectors.dms import api as ds_api
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.permissions import models as perm_models
@@ -17,6 +18,9 @@ from pcapi.utils import phone_number as phone_number_utils
 
 
 logger = logging.getLogger(__name__)
+
+# Avoid connection timeout when DS takes time to respond in daily or hourly cloud tasks (not in synchronous requests)
+LONG_TIMEOUT = 60
 
 
 class DsUserAccountUpdateProcredureField(enum.Enum):
@@ -41,7 +45,7 @@ DS_CHOICE_TO_UPDATE_TYPE = {
 def sync_instructor_ids(procedure_number: int) -> None:
     logger.info("[DS] Sync instructor ids from DS procedure %s", procedure_number)
 
-    ds_client = ds_api.DMSGraphQLClient()
+    ds_client = ds_api.DMSGraphQLClient(timeout=LONG_TIMEOUT)
     instructors = ds_client.get_instructors(procedure_number=procedure_number)
     emails = instructors.keys()
 
@@ -69,9 +73,7 @@ def sync_instructor_ids(procedure_number: int) -> None:
     db.session.flush()
 
 
-def sync_user_account_update_requests(
-    procedure_number: int, since: datetime.datetime | None, archived: bool = False
-) -> list:
+def sync_user_account_update_requests(procedure_number: int, since: datetime.datetime | None) -> list:
     logger.info("[DS] Started processing User Update Account procedure %s", procedure_number)
 
     # Fetch instructors' User IDs only once
@@ -82,12 +84,10 @@ def sync_user_account_update_requests(
         .all()
     )
 
-    ds_client = ds_api.DMSGraphQLClient()
+    ds_client = ds_api.DMSGraphQLClient(timeout=LONG_TIMEOUT)
     application_numbers = []
 
-    for node in ds_client.get_beneficiary_account_update_nodes(
-        procedure_number=procedure_number, since=since, archived=archived
-    ):
+    for node in ds_client.get_beneficiary_account_update_nodes(procedure_number=procedure_number, since=since):
         try:
             ds_application_id = _sync_ds_application(procedure_number, node, user_id_by_email)
         except Exception:  # pylint: disable=broad-exception-caught
@@ -264,11 +264,36 @@ def _sync_ds_application(procedure_number: int, node: dict, user_id_by_email: di
     return ds_application_id
 
 
+def sync_deleted_user_account_update_requests(procedure_number: int, since: datetime.datetime | None = None) -> list:
+    logger.info("[DS] Started processing User Update Account to delete, procedure %s", procedure_number)
+
+    ds_client = ds_api.DMSGraphQLClient(timeout=LONG_TIMEOUT)
+    application_numbers = []
+    count_deleted = 0
+
+    for deleted_application in ds_client.get_deleted_applications(procedure_number, deletedSince=since):
+        application_numbers.append(deleted_application.number)
+
+    if application_numbers:
+        count_deleted = users_models.UserAccountUpdateRequest.query.filter(
+            users_models.UserAccountUpdateRequest.dsApplicationId.in_(application_numbers)
+        ).delete()
+
+    logger.info(
+        "[DS] Finished deleting User Update Account procedure %s.",
+        procedure_number,
+        extra={"procedure_number": procedure_number, "count_deleted": count_deleted},
+    )
+
+    return application_numbers
+
+
 def update_state(
     user_request: users_models.UserAccountUpdateRequest,
     *,
     new_state: dms_models.GraphQLApplicationStates,
     instructor: users_models.User,
+    motivation: str | None = None,
 ) -> None:
     ds_client = ds_api.DMSGraphQLClient()
 
@@ -277,6 +302,12 @@ def update_state(
             application_techid=user_request.dsTechnicalId,
             instructeur_techid=instructor.backoffice_profile.dsInstructorId,
         )
+    elif new_state == dms_models.GraphQLApplicationStates.accepted:
+        node = ds_client.make_accepted(
+            application_techid=user_request.dsTechnicalId,
+            instructeur_techid=instructor.backoffice_profile.dsInstructorId,
+            motivation=motivation,
+        )
     else:
         raise NotImplementedError()
 
@@ -284,4 +315,30 @@ def update_state(
         setattr(user_request, key, value)
     user_request.lastInstructor = instructor
     db.session.add(user_request)
+    db.session.flush()
+
+
+def archive(user_request: users_models.UserAccountUpdateRequest, *, motivation: str) -> None:
+    ds_client = ds_api.DMSGraphQLClient()
+
+    if user_request.status in (dms_models.GraphQLApplicationStates.draft, dms_models.GraphQLApplicationStates.on_going):
+        if user_request.status == dms_models.GraphQLApplicationStates.draft:
+            ds_client.make_on_going(
+                application_techid=user_request.dsTechnicalId,
+                instructeur_techid=settings.DMS_INSTRUCTOR_ID,
+                disable_notification=True,
+            )
+        ds_client.mark_without_continuation(
+            application_techid=user_request.dsTechnicalId,
+            instructeur_techid=settings.DMS_INSTRUCTOR_ID,
+            motivation=motivation,
+            disable_notification=True,
+        )
+
+    ds_client.archive_application(
+        application_techid=user_request.dsTechnicalId,
+        instructeur_techid=settings.DMS_INSTRUCTOR_ID,
+    )
+
+    db.session.delete(user_request)
     db.session.flush()

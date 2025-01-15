@@ -13,7 +13,6 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.dms import api as dms_subscription_api
-from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
@@ -131,6 +130,22 @@ class HandleDmsApplicationTest:
             "event_payload": {"type": "dms"},
             "user_id": applicant.id,
         }
+
+    def test_handle_dms_application_updates_birth_date(self):
+        beneficiary = users_factories.ExUnderageBeneficiaryFactory()
+        sixteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=16, months=1)
+        dms_response = make_parsed_graphql_application(
+            application_number=1234,
+            state=dms_models.GraphQLApplicationStates.accepted,
+            email=beneficiary.email,
+            birth_date=sixteen_years_ago,
+            first_name="little",
+            last_name="sister",
+        )
+
+        dms_subscription_api.handle_dms_application(dms_response)
+
+        assert beneficiary.validatedBirthDate == sixteen_years_ago.date()
 
     def test_concurrent_accepted_calls(self):
         user = users_factories.UserFactory(
@@ -356,7 +371,7 @@ class HandleDmsApplicationTest:
             updated_at=fraud_check.updatedAt,
         )
 
-    @override_settings(ENABLE_PERMISSIVE_NAME_VALIDATION=False)
+    @pytest.mark.settings(ENABLE_PERMISSIVE_NAME_VALIDATION=False)
     def test_field_error_allows_fraud_check_content(self):
         user = users_factories.UserFactory()
         dms_response = make_parsed_graphql_application(

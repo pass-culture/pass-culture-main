@@ -1,6 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 
 import { api } from 'apiClient/api'
 import { CancelablePromise, GetOffererResponseModel } from 'apiClient/v1'
@@ -27,9 +26,9 @@ const renderOffererStatsScreen = (options?: RenderWithProvidersOptions) => {
     user,
     storeOverrides: {
       user: {
-        selectedOffererId: 1,
         currentUser: user,
       },
+      offerer: { selectedOffererId: 1, offererNames: [] },
     },
     ...options,
   })

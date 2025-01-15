@@ -9,6 +9,7 @@ import {
   OfferDatesType,
 } from 'commons/core/OfferEducational/types'
 import { toDateStrippedOfTimezone } from 'commons/utils/date'
+import { emailSchema } from 'commons/utils/isValidEmail'
 
 const threeYearsFromNow = addYears(new Date(), 3)
 
@@ -130,9 +131,7 @@ export function getOfferEducationalValidationSchema(
       then: (schema) =>
         schema
           .required('Veuillez renseigner une adresse email')
-          .email(
-            'Veuillez renseigner une adresse email valide, exemple : mail@exemple.com'
-          ),
+          .test(emailSchema),
     }),
     contactUrl: yup.string().when(['contactOptions', 'contactFormType'], {
       is: (
@@ -160,10 +159,8 @@ export function getOfferEducationalValidationSchema(
       .of(
         yup
           .string()
-          .email(
-            'Veuillez renseigner un email valide, exemple : mail@exemple.com'
-          )
           .required('Veuillez renseigner une adresse email')
+          .test(emailSchema)
       ),
     domains: yup.array().test({
       message: 'Veuillez renseigner un domaine',

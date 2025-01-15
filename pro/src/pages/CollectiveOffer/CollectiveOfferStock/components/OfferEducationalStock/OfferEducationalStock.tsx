@@ -1,7 +1,7 @@
 /* @debt standard "Gautier: Do not load internal page dependencies"*/
 import { addDays, isAfter, isBefore } from 'date-fns'
 import { FormikProvider, useFormik } from 'formik'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import * as yup from 'yup'
 
 import {
@@ -94,10 +94,20 @@ export const OfferEducationalStock = <
   const areCollectiveNewStatusesEnabled = useActiveFeature(
     'ENABLE_COLLECTIVE_NEW_STATUSES'
   )
-  
-  const canEditDiscount = areCollectiveNewStatusesEnabled ? isActionAllowedOnCollectiveOffer(offer, CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT) : !disablePriceAndParticipantInputs
 
-  const canEditDates = areCollectiveNewStatusesEnabled ? isActionAllowedOnCollectiveOffer(offer, CollectiveOfferAllowedAction.CAN_EDIT_DATES) : mode !== Mode.READ_ONLY
+  const canEditDiscount = areCollectiveNewStatusesEnabled
+    ? isActionAllowedOnCollectiveOffer(
+        offer,
+        CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
+      )
+    : !disablePriceAndParticipantInputs
+
+  const canEditDates = areCollectiveNewStatusesEnabled
+    ? isActionAllowedOnCollectiveOffer(
+        offer,
+        CollectiveOfferAllowedAction.CAN_EDIT_DATES
+      )
+    : mode !== Mode.READ_ONLY
 
   const postForm = async (values: OfferEducationalStockFormValues) => {
     setIsLoading(true)
@@ -167,7 +177,7 @@ export const OfferEducationalStock = <
               avec l’établissement scolaire tant que le chef d’établissement n’a
               pas validé la réservation.
             </Callout>
-            <FormLayout.Section title="Dates et prix">
+            <FormLayout.Section title="Indiquez le prix et la date de votre offre">
               <>
                 <p className={styles['description-text']}>
                   Indiquez le prix total TTC de l’évènement et le nombre de
@@ -180,9 +190,7 @@ export const OfferEducationalStock = <
                 </p>
                 <FormStock
                   mode={mode}
-                  canEditDiscount={
-                    canEditDiscount
-                  }
+                  canEditDiscount={canEditDiscount}
                   canEditDates={canEditDates}
                   preventPriceIncrease={preventPriceIncrease}
                 />
@@ -243,7 +251,9 @@ export const OfferEducationalStock = <
                 <Button
                   type="submit"
                   disabled={
-                    areCollectiveNewStatusesEnabled ? !(canEditDiscount || canEditDates) : disablePriceAndParticipantInputs
+                    areCollectiveNewStatusesEnabled
+                      ? !(canEditDiscount || canEditDates)
+                      : disablePriceAndParticipantInputs
                   }
                   isLoading={isLoading}
                 >

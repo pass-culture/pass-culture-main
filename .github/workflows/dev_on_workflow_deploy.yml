@@ -46,7 +46,7 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4.2.2
       - name: "Authentification to Google"
         uses: 'google-github-actions/auth@v2'
         with:
@@ -62,13 +62,13 @@ jobs:
             API_TOKEN_GITHUB:passculture-metier-ehp/passculture-main-sa-access-token
 
       - name: "Connect to cluster"
-        uses: pass-culture/common-workflows/actions/teleport-connect@teleport-connect/v0.1.0
+        uses: pass-culture/common-workflows/actions/teleport-connect@teleport-connect/v0.2.0
         with:
           teleport_proxy: ${{ inputs.teleport_proxy }}
           teleport_kubernetes_cluster: ${{ inputs.teleport_kubernetes_cluster }}
 
       - name: "Play pre-migrations"
-        uses: pass-culture/common-workflows/actions/pcapi-migration@pcapi-migration/v0.2.2
+        uses: pass-culture/common-workflows/actions/pcapi-migration@pcapi-migration/v0.2.3
         with:
           environment: ${{ inputs.environment }}
           app_version: ${{ inputs.app_version }}
@@ -88,7 +88,7 @@ jobs:
           echo "PCAPI_SECRETS=$PCAPI_SECRETS" >> "$GITHUB_OUTPUT"
 
       # Checkout pass-culture-deployment repository containing pcapi helm value files
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4.2.2
         with:
           repository: pass-culture/pass-culture-deployment
           token: ${{ steps.get-github-token.outputs.API_TOKEN_GITHUB }}
@@ -122,8 +122,9 @@ jobs:
         uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.5.0
         with:
           app_name: pcapi-${{ inputs.environment }}
+          sync_timeout: 900
       - name: "Play post-migrations"
-        uses: pass-culture/common-workflows/actions/pcapi-migration@pcapi-migration/v0.2.2
+        uses: pass-culture/common-workflows/actions/pcapi-migration@pcapi-migration/v0.2.3
         with:
           environment: ${{ inputs.environment }}
           app_version: ${{ inputs.app_version }}
@@ -139,7 +140,7 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4.2.2
       - name: "Authentification to Google"
         uses: 'google-github-actions/auth@v2'
         with:
@@ -229,7 +230,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: "Connect to cluster"
-        uses: pass-culture/common-workflows/actions/teleport-connect@teleport-connect/v0.1.0
+        uses: pass-culture/common-workflows/actions/teleport-connect@teleport-connect/v0.2.0
         with:
           teleport_proxy: ${{ inputs.teleport_proxy }}
           teleport_kubernetes_cluster: ${{ inputs.teleport_kubernetes_cluster }}

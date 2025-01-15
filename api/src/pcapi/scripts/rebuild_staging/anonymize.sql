@@ -95,11 +95,6 @@ UPDATE invoice SET token = 'anonymized-' || id::text;
 UPDATE activation_code SET code = 'FAKE-' || id::text ;
 
 UPDATE provider
-SET "authToken" = 'anonymized, you may have to set it if you want to use this provider'
-WHERE "authToken" IS NOT NULL
-;
-
-UPDATE provider
 SET 
     "bookingExternalUrl" = 'http://mock-api-billeterie.mock-api-billeterie.svc.cluster.local:5003/tickets/create',
     "cancelExternalUrl" = 'http://mock-api-billeterie.mock-api-billeterie.svc.cluster.local:5003/tickets/cancel'
@@ -163,10 +158,15 @@ SET
     "newDomainEmail" = 'anonymized.email'
 ;
 
--- Keep those which doesn't contain personal data
+-- Keep those which do not contain personal data
 UPDATE action_history
 SET "jsonData" = '{}'
-WHERE "ruleId" is null and "financeIncidentId" is null
+WHERE "actionType" IN (
+  'INFO_MODIFIED',
+  'OFFERER_NEW',
+  'USER_OFFERER_NEW',
+  'FRAUD_INFO_MODIFIED'
+)
 ;
 
 -- We probably should anonymize `offer.bookingEmail`
@@ -336,4 +336,43 @@ WHERE email NOT LIKE '%@passculture.app';
 UPDATE "chronicle"
 SET
     "email" = 'chronicle' || "id" || '@anonymized.email',
-    "firstName" = pg_temp.fake_first_name(id);
+    "firstName" = pg_temp.fake_first_name("id");
+
+-- anonymize special events response
+UPDATE "special_event_response"
+SET
+  "email" = 'special_event' || "id" || '@anonymized.email',
+  "phoneNumber" = pg_temp.fake_phone_number_from_id("userId");
+
+-- anonymize user_account_update_request
+UPDATE "user_account_update_request"
+SET
+  "firstName" = pg_temp.fake_first_name("id")
+WHERE "firstName" IS NOT NULL;
+UPDATE "user_account_update_request"
+SET
+  "newFirstName" = pg_temp.fake_first_name("dsApplicationId")
+WHERE "newFirstName" IS NOT NULL;
+UPDATE "user_account_update_request"
+SET
+  "lastName" = pg_temp.fake_last_name("id")
+WHERE "lastName" IS NOT NULL;
+UPDATE "user_account_update_request"
+SET
+  "newLastName" = pg_temp.fake_last_name("dsApplicationId")
+WHERE "newLastName" IS NOT NULL;
+UPDATE "user_account_update_request"
+SET
+  "email" = 'user_account_update_request' || "id" || '@anonymized.email';
+UPDATE "user_account_update_request"
+SET
+  "newEmail" = 'new_email_user_account_update_request' || "id" || '@anonymized.email'
+WHERE "newEmail" IS NOT NULL;
+UPDATE "user_account_update_request"
+SET
+  "oldEmail" = 'old_email_user_account_update_request' || "id" || '@anonymized.email'
+WHERE "oldEmail" IS NOT NULL;
+UPDATE "user_account_update_request"
+SET
+  "newPhoneNumber" = pg_temp.fake_phone_number_from_id("id")
+WHERE "newPhoneNumber" IS NOT NULL;

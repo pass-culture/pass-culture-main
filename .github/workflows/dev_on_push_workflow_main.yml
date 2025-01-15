@@ -22,7 +22,7 @@ jobs:
       checksum-tag-exists: ${{ steps.check-checksum-tag.outputs.tag-exists }}
       checksum-console-tag-exists: ${{ steps.check-console-checksum-tag.outputs.tag-exists }}
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
           fetch-tags: false
@@ -64,13 +64,13 @@ jobs:
           echo $PUSH_TAGS >> "$GITHUB_OUTPUT"
           echo $API_TAG >> "$GITHUB_OUTPUT"
       - name: "Authentification to Google"
-        uses: 'google-github-actions/auth@v2'
+        uses: "google-github-actions/auth@v2"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - name: "Get Secret"
-        id: 'secrets'
-        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        id: "secrets"
+        uses: "google-github-actions/get-secretmanager-secrets@v2"
         with:
           secrets: |-
             ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/passculture-main-gcp-workload-identity-provider
@@ -120,7 +120,7 @@ jobs:
       maintenance-site-changed: ${{ steps.check-maintenance-site-changes.outputs.any_modified }}
       db-migrations-changed: ${{ steps.check-db-migrations-changes.outputs.any_modified }}
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
           fetch-tags: false
@@ -140,7 +140,7 @@ jobs:
   build-pcapi:
     name: "[pcapi] build docker image."
     needs: [pcapi-init-job]
-    if: needs.pcapi-init-job.outputs.api-changed == 'true' && needs.pcapi-init-job.outputs.checksum-tag-exists == 'false'
+    if: needs.pcapi-init-job.outputs.api-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
     with:
       ref: ${{ github.sha }}
@@ -169,7 +169,6 @@ jobs:
     if: |
       ( needs.pcapi-init-job.outputs.api-changed == 'true' ||
       needs.pcapi-init-job.outputs.pro-changed == 'true' ) &&
-      needs.pcapi-init-job.outputs.checksum-console-tag-exists == 'false' &&
       github.ref == 'refs/heads/master'
     uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
     with:
@@ -180,7 +179,7 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-  prepare-cache-master:  # on "master" branch only
+  prepare-cache-master: # on "master" branch only
     name: "Reset cache on master on dependency update"
     needs: [build-pcapi]
     uses: ./.github/workflows/dev_on_workflow_update_api_client_template.yml
@@ -241,6 +240,59 @@ jobs:
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+  merge-allure-reports:
+    name: "Merge Allure Reports and Push to Allure Repository"
+    needs: [test-pro, test-pro-e2e]
+    runs-on: ubuntu-22.04
+    if: |
+      always() &&
+      !cancelled() &&
+      (needs.test-pro.result == 'success' || needs.test-pro-e2e.result == 'success')
+    steps:
+      - name: "Install Allure CLI via Yarn"
+        run: yarn global add allure-commandline
+
+      - name: "Download Allure results artifacts for pro"
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-results-pro-unit
+          path: allure-results/pro-unit
+
+      # - name: "Download Allure results artifacts for pro E2E"
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: allure-results-pro-e2e
+      #     path: allure-results/pro-e2e
+
+      - name: "Merge Allure Results"
+        run: |
+          mkdir -p allure-results
+          cp -r allure-results/pro-unit/* allure-results/
+
+      - name: "Clone Allure Report Repository to Retrieve History"
+        env:
+          TOKEN: ${{ secrets.PAT_ALLURE_REPORTS_TEMP }}
+        run: |
+          git clone https://x-access-token:${TOKEN}@github.com/fseguin-pass/allure-reports-temp.git allure-report-temp
+          mkdir -p allure-results/history
+          if [ -d "allure-report-temp/history" ]; then
+            cp -r allure-report-temp/history/* allure-results/history/
+          fi
+
+      - name: "Generate Allure Report with Updated History"
+        run: allure generate allure-results --clean -o allure-report
+
+      - name: "Push Updated Allure Report with History to Repository"
+        run: |
+          cd allure-report-temp
+          rm -rf *
+          cp -r ../allure-report/* .
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Update Allure Report with history"
+          git push origin main
 
   deploy-storybook:
     name: "Deploy Storybook"
@@ -356,13 +408,13 @@ jobs:
     steps:
       - uses: technote-space/workflow-conclusion-action@v3
       - name: "Authentification to Google"
-        uses: 'google-github-actions/auth@v2'
+        uses: "google-github-actions/auth@v2"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - name: "Get Secret"
-        id: 'secrets'
-        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        id: "secrets"
+        uses: "google-github-actions/get-secretmanager-secrets@v2"
         with:
           secrets: |-
             SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token

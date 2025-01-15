@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 
 import {
+  CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
   CollectiveOfferStatus,
 } from 'apiClient/v1'
@@ -21,6 +22,7 @@ describe('ExpirationCell', () => {
             <ExpirationCell
               offer={offerParam}
               bookingLimitDate={bookingLimitDate}
+              rowId="rowId"
             />
           </tr>
         </tbody>
@@ -64,7 +66,7 @@ describe('ExpirationCell', () => {
   it('should display a banner saying that the offer needs to be booked if it is already pre-booked', () => {
     const offerExpiring = {
       ...offer,
-      status: CollectiveOfferStatus.SOLD_OUT,
+      displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
     }
     offerExpiring.booking = { booking_status: 'PENDING', id: 1 }
     const today = new Date()

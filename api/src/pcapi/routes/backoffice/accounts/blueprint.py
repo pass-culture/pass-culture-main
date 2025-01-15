@@ -47,7 +47,6 @@ from pcapi.domain.password import random_password
 from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
-from pcapi.models.feature import FeatureToggle
 from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import search_utils
@@ -1320,9 +1319,6 @@ def get_public_account_history(
 @atomic()
 @utils.permission_required(perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT)
 def create_extract_user_gdpr_data(user_id: int) -> utils.BackofficeResponse:
-    if not FeatureToggle.WIP_BENEFICIARY_EXTRACT_TOOL.is_active():
-        return redirect(url_for(".get_public_account", user_id=user_id))
-
     user = (
         users_models.User.query.filter(
             users_models.User.id == user_id,

@@ -1,6 +1,5 @@
 import cn from 'classnames'
 import { format } from 'date-fns'
-import React from 'react'
 
 import { FORMAT_ISO_DATE_ONLY, isDateValid } from 'commons/utils/date'
 

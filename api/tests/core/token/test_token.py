@@ -10,7 +10,6 @@ import time_machine
 
 from pcapi import settings
 from pcapi.core import token as token_tools
-from pcapi.core.testing import override_settings
 from pcapi.core.users.exceptions import InvalidToken
 from pcapi.core.users.utils import encode_jwt_payload
 
@@ -229,7 +228,7 @@ class AsymetricTokenTest:
         format=serialization.PublicFormat.SubjectPublicKeyInfo,
     )
 
-    @override_settings(DISCORD_JWT_PRIVATE_KEY=private_key_pem, DISCORD_JWT_PUBLIC_KEY=public_key_pem)
+    @pytest.mark.settings(DISCORD_JWT_PRIVATE_KEY=private_key_pem, DISCORD_JWT_PUBLIC_KEY=public_key_pem)
     def test_create_token_then_get_data(self):
         """testing the creation of a token and getting the data"""
         token = token_tools.AsymetricToken.create(
@@ -245,7 +244,7 @@ class AsymetricTokenTest:
             timespec="hours"
         ) == (datetime.utcnow() + self.ttl).isoformat(timespec="hours")
 
-    @override_settings(DISCORD_JWT_PRIVATE_KEY=private_key_pem, DISCORD_JWT_PUBLIC_KEY=public_key_pem)
+    @pytest.mark.settings(DISCORD_JWT_PRIVATE_KEY=private_key_pem, DISCORD_JWT_PUBLIC_KEY=public_key_pem)
     def test_create_token_with_non_corresponding_keys(self):
         """if the keys do not correspond, an exception should be raised"""
 
@@ -254,7 +253,7 @@ class AsymetricTokenTest:
                 self.token_type, settings.DISCORD_JWT_PRIVATE_KEY, self.wrong_public_key, self.ttl, data=self.data
             )
 
-    @override_settings(DISCORD_JWT_PRIVATE_KEY=private_key_pem, DISCORD_JWT_PUBLIC_KEY=public_key_pem)
+    @pytest.mark.settings(DISCORD_JWT_PRIVATE_KEY=private_key_pem, DISCORD_JWT_PUBLIC_KEY=public_key_pem)
     def test_token_from_encoded_token_and_get_data(self):
         """if the token is created from an encoded token, the data should be the same"""
         old_token = token_tools.AsymetricToken.create(
@@ -274,7 +273,7 @@ class AsymetricTokenTest:
             timespec="hours"
         ) == (datetime.utcnow() + self.ttl).isoformat(timespec="hours")
 
-    @override_settings(DISCORD_JWT_PRIVATE_KEY=private_key_pem, DISCORD_JWT_PUBLIC_KEY=public_key_pem)
+    @pytest.mark.settings(DISCORD_JWT_PRIVATE_KEY=private_key_pem, DISCORD_JWT_PUBLIC_KEY=public_key_pem)
     def test_load_without_checking_wrong_public_key(self):
         """if the token has the wrong signature, an exception should be raised"""
         old_token = token_tools.AsymetricToken.create(

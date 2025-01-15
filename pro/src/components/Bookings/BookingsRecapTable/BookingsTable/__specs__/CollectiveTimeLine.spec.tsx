@@ -266,7 +266,7 @@ describe('collective timeline', () => {
       const bookingRecap = collectiveBookingFactory({
         bookingStatus: BOOKING_STATUS.CONFIRMED,
         stock: collectiveBookingCollectiveStockFactory({
-          eventBeginningDatetime: addDays(new Date(), 1).toISOString(),
+          eventStartDatetime: addDays(new Date(), 1).toISOString(),
         }),
       })
       renderCollectiveTimeLine(bookingRecap, bookingDetails)
@@ -286,7 +286,7 @@ describe('collective timeline', () => {
       const bookingRecap = collectiveBookingFactory({
         bookingStatus: BOOKING_STATUS.CONFIRMED,
         stock: collectiveBookingCollectiveStockFactory({
-          eventBeginningDatetime: addDays(new Date(), -2).toISOString(),
+          eventStartDatetime: addDays(new Date(), -2).toISOString(),
         }),
       })
 
@@ -306,7 +306,7 @@ describe('collective timeline', () => {
       const bookingRecap = collectiveBookingFactory({
         bookingStatus: BOOKING_STATUS.CONFIRMED,
         stock: collectiveBookingCollectiveStockFactory({
-          eventBeginningDatetime: addDays(new Date(), -2).toISOString(),
+          eventStartDatetime: addDays(new Date(), -2).toISOString(),
         }),
       })
 
@@ -324,7 +324,7 @@ describe('collective timeline', () => {
       const bookingRecap = collectiveBookingFactory({
         bookingStatus: BOOKING_STATUS.CONFIRMED,
         stock: collectiveBookingCollectiveStockFactory({
-          eventBeginningDatetime: addDays(new Date(), -2).toISOString(),
+          eventStartDatetime: addDays(new Date(), -2).toISOString(),
         }),
       })
 

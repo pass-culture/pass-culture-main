@@ -1,3 +1,4 @@
+from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
@@ -8,6 +9,7 @@ import re
 from unittest.mock import patch
 
 import pytest
+from pytest import approx
 import time_machine
 
 from pcapi.core.bookings import factories as booking_factories
@@ -32,7 +34,6 @@ from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.reactions.factories import ReactionFactory
 from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 import pcapi.notifications.push.testing as push_testing
@@ -180,13 +181,14 @@ class PostBookingTest:
         assert booking.status == BookingStatus.CONFIRMED
         assert not booking.dateUsed
 
-    @time_machine.travel("2022-10-12 17:09:25")
     @patch("pcapi.tasks.external_api_booking_notification_tasks.external_api_booking_notification_task.delay")
     def test_bookings_send_notification_to_external_api_with_external_event_booking(self, mocked_task, client):
         base_url = "https://book_my_offer.com"
         external_notification_url = base_url + "/notify"
+
+        eighteen_years_ago = datetime(date.today().year - 18, 1, 1)
         user = users_factories.BeneficiaryGrant18Factory(
-            email=self.identifier, dateOfBirth=datetime(2007, 1, 1), phoneNumber="+33101010101"
+            email=self.identifier, dateOfBirth=eighteen_years_ago, phoneNumber="+33101010101"
         )
         provider = providers_factories.ProviderFactory(
             name="Technical provider",
@@ -237,11 +239,12 @@ class PostBookingTest:
 
         assert mocked_task.call_args.args[0].notificationUrl == external_notification_url
 
-    @time_machine.travel("2022-10-12 17:09:25", tick=False)
     def test_bookings_with_external_event_booking_infos(self, client, requests_mock):
         external_booking_url = "https://book_my_offer.com/confirm"
+
+        eighteen_years_ago = datetime(date.today().year - 18, 1, 1)
         user = users_factories.BeneficiaryGrant18Factory(
-            email=self.identifier, dateOfBirth=datetime(2007, 1, 1), phoneNumber="+33101010101"
+            email=self.identifier, dateOfBirth=eighteen_years_ago, phoneNumber="+33101010101"
         )
         provider = providers_factories.ProviderFactory(
             name="Technical provider",
@@ -275,9 +278,22 @@ class PostBookingTest:
         )
 
         assert response.status_code == 200
-        payload = {
-            "booking_confirmation_date": "2022-10-14T17:09:25",
-            "booking_creation_date": "2022-10-12T17:09:25",
+
+        json_data = json.loads(requests_mock.last_request.json())
+
+        assert (
+            requests_mock.last_request.headers["PassCulture-Signature"]
+            == hmac.new(provider.hmacKey.encode(), json.dumps(json_data).encode(), hashlib.sha256).hexdigest()
+        )
+
+        now = datetime.now()
+        json_confirmation_date = datetime.fromisoformat(json_data.pop("booking_confirmation_date"))
+        json_creation_date = datetime.fromisoformat(json_data.pop("booking_creation_date"))
+
+        assert json_confirmation_date.timestamp() == approx(now.timestamp(), rel=1)
+        assert json_creation_date.timestamp() == approx(now.timestamp(), rel=1)
+
+        assert json_data == {
             "booking_quantity": 1,
             "offer_ean": "1234567890123",
             "offer_id": stock.offer.id,
@@ -289,7 +305,7 @@ class PostBookingTest:
             "price_category_label": stock.priceCategory.label,
             "stock_id": stock.id,
             "stock_id_at_provider": "",
-            "user_birth_date": "2007-01-01",
+            "user_birth_date": f"{eighteen_years_ago.year}-01-01",
             "user_email": user.email,
             "user_first_name": user.firstName,
             "user_last_name": user.lastName,
@@ -299,11 +315,6 @@ class PostBookingTest:
             "venue_id": stock.offer.venue.id,
             "venue_name": stock.offer.venue.name,
         }
-        assert json.loads(requests_mock.last_request.json()) == payload
-        assert (
-            requests_mock.last_request.headers["PassCulture-Signature"]
-            == hmac.new(provider.hmacKey.encode(), json.dumps(payload).encode(), hashlib.sha256).hexdigest()
-        )
         external_bookings = bookings_models.ExternalBooking.query.one()
         assert external_bookings.bookingId == response.json["bookingId"]
         assert external_bookings.barcode == "12123932898127"
@@ -311,11 +322,11 @@ class PostBookingTest:
         assert stock.quantity == 50 + 15  # remainingQuantity + dnBookedQuantity after new booking
         assert stock.dnBookedQuantity == 15
 
-    @time_machine.travel("2022-10-12 17:09:25", tick=False)
     def test_bookings_with_external_event_booking_and_remaining_quantity_unlimited(self, client, requests_mock):
         external_booking_url = "https://book_my_offer.com/confirm"
+        eighteen_years_ago = datetime(date.today().year - 18, 1, 1)
         user = users_factories.BeneficiaryGrant18Factory(
-            email=self.identifier, dateOfBirth=datetime(2007, 1, 1), phoneNumber="+33101010101"
+            email=self.identifier, dateOfBirth=eighteen_years_ago, phoneNumber="+33101010101"
         )
         provider = providers_factories.ProviderFactory(
             name="Technical provider",
@@ -349,9 +360,16 @@ class PostBookingTest:
         )
 
         assert response.status_code == 200
-        assert json.loads(requests_mock.last_request.json()) == {
-            "booking_confirmation_date": "2022-10-14T17:09:25",
-            "booking_creation_date": "2022-10-12T17:09:25",
+        json_data = json.loads(requests_mock.last_request.json())
+
+        now = datetime.now()
+        json_confirmation_date = datetime.fromisoformat(json_data.pop("booking_confirmation_date"))
+        json_creation_date = datetime.fromisoformat(json_data.pop("booking_creation_date"))
+
+        assert json_confirmation_date.timestamp() == approx(now.timestamp(), rel=1)
+        assert json_creation_date.timestamp() == approx(now.timestamp(), rel=1)
+
+        assert json_data == {
             "booking_quantity": 1,
             "offer_ean": "1234567890123",
             "offer_id": stock.offer.id,
@@ -363,7 +381,7 @@ class PostBookingTest:
             "price_category_label": stock.priceCategory.label,
             "stock_id": stock.id,
             "stock_id_at_provider": "",
-            "user_birth_date": "2007-01-01",
+            "user_birth_date": eighteen_years_ago.strftime("%Y-%m-%d"),
             "user_email": user.email,
             "user_first_name": user.firstName,
             "user_last_name": user.lastName,
@@ -490,7 +508,7 @@ class PostBookingTest:
             "message": "External booking failed.",
         }
 
-    @override_features(ENABLE_EMS_INTEGRATION=True)
+    @pytest.mark.features(ENABLE_EMS_INTEGRATION=True)
     def test_handle_ems_empty_showtime_case(self, client, requests_mock):
         users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         ems_provider = get_provider_by_local_class("EMSStocks")
@@ -607,12 +625,12 @@ class PostBookingTest:
         assert len(bookings_models.ExternalBooking.query.all()) == 0
         assert len(bookings_models.Booking.query.all()) == 0
 
-    @time_machine.travel("2022-10-12 17:09:25")
     def test_bookings_with_external_event_api_return_more_tickets_than_quantity(self, client, requests_mock):
         external_booking_url = "https://book_my_offer.com/confirm"
         cancel_booking_url = "https://book_my_offer.com/cancel"
+        eighteen_years_ago = datetime(date.today().year - 18, 1, 1)
         users_factories.BeneficiaryGrant18Factory(
-            email=self.identifier, dateOfBirth=datetime(2007, 1, 1), phoneNumber="+33101010101", deposit__amount=500
+            email=self.identifier, dateOfBirth=eighteen_years_ago, phoneNumber="+33101010101", deposit__amount=500
         )
         provider = providers_factories.ProviderFactory(
             name="Technical provider",
@@ -762,6 +780,7 @@ class GetBookingsTest:
         used2_json = next(booking for booking in response.json["ended_bookings"] if booking["id"] == used2.id)
         assert used2_json == {
             "enablePopUpReaction": False,
+            "canReact": False,
             "userReaction": None,
             "activationCode": None,
             "cancellationDate": None,
@@ -965,7 +984,7 @@ class GetBookingsTest:
         assert offer["withdrawalType"] == "on_site"
         assert offer["withdrawalDelay"] == 60 * 30
 
-    @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+    @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
     def test_get_bookings_with_external_booking_infos(self, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
 

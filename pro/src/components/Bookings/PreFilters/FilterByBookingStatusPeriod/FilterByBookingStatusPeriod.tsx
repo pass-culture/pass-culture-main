@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { PreFiltersParams } from 'commons/core/Bookings/types'
 import { PeriodSelector } from 'ui-kit/form/PeriodSelector/PeriodSelector'
 
@@ -31,7 +29,7 @@ export const FilterByBookingStatusPeriod = ({
 
   return (
     <fieldset className={styles['status-period-filter']}>
-      <legend className="visually-hidden">Période</legend>
+      <legend className={styles['visually-hidden']}>Période</legend>
       <FilterByStatus
         isDisabled={isDisabled}
         selectedStatusId={selectedBookingFilter}

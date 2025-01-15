@@ -1,5 +1,6 @@
 import datetime
 from decimal import Decimal
+from functools import partial
 import logging
 import typing
 
@@ -17,8 +18,10 @@ from pcapi.core.educational import validation
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer_request
 from pcapi.core.educational.api import adage as educational_api_adage
+from pcapi.core.educational.api import shared as api_shared
 import pcapi.core.educational.api.national_program as national_program_api
 from pcapi.core.educational.exceptions import AdageException
+from pcapi.core.educational.schemas import EducationalBookingEdition
 from pcapi.core.educational.utils import get_image_from_url
 from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.mails import transactional as transactional_mails
@@ -32,6 +35,8 @@ from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
+from pcapi.repository import is_managed_transaction
+from pcapi.repository import on_commit
 from pcapi.routes.adage.v1.serialization import prebooking
 from pcapi.routes.adage_iframe.serialization.offers import PostCollectiveRequestBodyModel
 from pcapi.routes.public.collective.serialization import offers as public_api_collective_offers_serialize
@@ -58,7 +63,7 @@ def notify_educational_redactor_on_collective_offer_or_stock_edit(
     if active_collective_bookings is None:
         return
 
-    data = prebooking.EducationalBookingEdition(
+    data = EducationalBookingEdition(
         **prebooking.serialize_collective_booking(active_collective_bookings).dict(),
         updatedFields=updated_fields,
     )
@@ -97,7 +102,7 @@ def list_collective_offers_for_pro_user(
     offerer_id: int | None,
     venue_id: int | None = None,
     name_keywords: str | None = None,
-    statuses: list[str] | None = None,
+    statuses: list[educational_models.CollectiveOfferDisplayedStatus] | None = None,
     period_beginning_date: datetime.date | None = None,
     period_ending_date: datetime.date | None = None,
     offer_type: collective_offers_serialize.CollectiveOfferType | None = None,
@@ -227,7 +232,7 @@ def create_collective_offer_template(
 
     collective_offer_template.bookingEmails = offer_data.booking_emails
     db.session.add(collective_offer_template)
-    db.session.commit()
+    db.session.flush()
 
     if offer_data.nationalProgramId:
         national_program_api.link_or_unlink_offer_to_program(offer_data.nationalProgramId, collective_offer_template)
@@ -282,7 +287,7 @@ def create_collective_offer(
         update_external_pro(email)
 
     db.session.add(collective_offer)
-    db.session.commit()
+    db.session.flush()
 
     if offer_data.nationalProgramId:
         national_program_api.link_or_unlink_offer_to_program(offer_data.nationalProgramId, collective_offer)
@@ -323,7 +328,7 @@ def create_collective_offer_template_from_collective_offer(
     )
     db.session.delete(offer)
     db.session.add(collective_offer_template)
-    db.session.commit()
+    db.session.flush()
 
     logger.info(
         "Collective offer template has been created and regular collective offer deleted",
@@ -367,10 +372,15 @@ def update_collective_offer_educational_institution(
     offer_id: int, educational_institution_id: int | None, teacher_email: str | None
 ) -> educational_models.CollectiveOffer:
     offer = educational_repository.get_collective_offer_by_id(offer_id)
+
     if educational_institution_id is not None:
         validation.check_institution_id_exists(educational_institution_id)
 
-    if offer.collectiveStock and not offer.collectiveStock.isEditable:
+    if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+        validation.check_collective_offer_action_is_allowed(
+            offer, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION
+        )
+    elif offer.collectiveStock and not offer.collectiveStock.isEditable:
         raise exceptions.CollectiveOfferNotEditable()
 
     offer.institutionId = educational_institution_id
@@ -403,10 +413,10 @@ def update_collective_offer_educational_institution(
         else:
             raise exceptions.EducationalRedactorNotFound()
 
-    db.session.commit()
+    db.session.flush()
 
     if educational_institution_id is not None and offer.validation == offer_mixin.OfferValidationStatus.APPROVED:
-        adage_client.notify_institution_association(serialize_collective_offer(offer))
+        on_commit(partial(adage_client.notify_institution_association, serialize_collective_offer(offer)))
 
     return offer
 
@@ -421,8 +431,6 @@ def create_collective_offer_public(
     if not offerers_api.can_offerer_create_educational_offer(venue.managingOffererId):
         raise exceptions.CulturalPartnerNotFoundException("No venue has been found for the selected siren")
 
-    offer_validation.check_offer_subcategory_is_valid(body.subcategory_id)
-    offer_validation.check_offer_is_eligible_for_educational(body.subcategory_id)
     validation.validate_offer_venue(body.offer_venue)
 
     educational_domains = educational_repository.get_educational_domains_from_ids(body.domains)
@@ -451,7 +459,6 @@ def create_collective_offer_public(
         venue=venue,
         name=body.name,
         description=body.description,
-        subcategoryId=body.subcategory_id,
         contactEmail=body.contact_email,
         contactPhone=body.contact_phone,
         domains=educational_domains,
@@ -499,22 +506,31 @@ def edit_collective_offer_public(
     new_values: dict,
     offer: educational_models.CollectiveOffer,
 ) -> educational_models.CollectiveOffer:
-    from pcapi.core.educational.api.stock import update_collective_booking_cancellation_limit_date
-    from pcapi.core.educational.api.stock import update_collective_booking_educational_year_id
-    from pcapi.core.educational.api.stock import update_collective_booking_pending
-
-    if not (offer.isEditable and offer.collectiveStock.isEditable):
+    if not offer.isEditable:
         raise exceptions.CollectiveOfferNotEditable()
 
     if provider_id != offer.providerId:
         raise exceptions.CollectiveOfferNotEditable()
 
+    collective_stock_unique_booking = offer.collectiveStock.get_unique_non_cancelled_booking()
+    if collective_stock_unique_booking is not None:
+        if collective_stock_unique_booking.status == educational_models.CollectiveBookingStatus.CONFIRMED:
+            # if the booking is CONFIRMED, we can only edit the price related fields and the price cannot be increased
+            allowed_fields_for_confirmed_booking = {"price", "priceDetail", "numberOfTickets"}
+            unallowed_fields = set(new_values) - allowed_fields_for_confirmed_booking
+            if unallowed_fields:
+                raise exceptions.CollectiveOfferForbiddenFields(
+                    allowed_fields=["totalPrice", "educationalPriceDetail", "numberOfTickets"]
+                )
+
+            if "price" in new_values and offer.collectiveStock.price < new_values["price"]:
+                raise exceptions.PriceRequesteCantBedHigherThanActualPrice()
+        else:
+            # if the booking is PENDING, we can edit any field
+            validation.check_collective_booking_status_pending(collective_stock_unique_booking)
+
     offer_fields = {field for field in dir(educational_models.CollectiveOffer) if not field.startswith("_")}
     stock_fields = {field for field in dir(educational_models.CollectiveStock) if not field.startswith("_")}
-
-    collective_stock_unique_booking = offer.collectiveStock.get_unique_non_cancelled_booking()
-    if collective_stock_unique_booking:
-        validation.check_collective_booking_status_pending(collective_stock_unique_booking)
 
     # This variable is meant for Adage mailing
     updated_fields = []
@@ -556,17 +572,6 @@ def edit_collective_offer_public(
             offer.collectiveStock.bookingLimitDatetime = new_values.get(
                 "beginningDatetime", offer.collectiveStock.beginningDatetime
             )
-            if collective_stock_unique_booking:
-                collective_stock_unique_booking.confirmationLimitDate = value
-        elif key == "beginningDatetime":
-            offer.collectiveStock.beginningDatetime = value
-            if collective_stock_unique_booking:
-                update_collective_booking_cancellation_limit_date(collective_stock_unique_booking, value)
-                update_collective_booking_educational_year_id(collective_stock_unique_booking, value)
-        elif key == "price":
-            offer.collectiveStock.price = value
-            if collective_stock_unique_booking:
-                collective_stock_unique_booking.amount = value
         elif key in stock_fields:
             setattr(offer.collectiveStock, key, value)
         elif key in offer_fields:
@@ -574,18 +579,11 @@ def edit_collective_offer_public(
         else:
             raise ValueError(f"unknown field {key}")
 
-    # if the booking limit date is set in the future and a PENDING booking was automatically cancelled, set it back to PENDING
-    booking_limit_value = offer.collectiveStock.bookingLimitDatetime
-    if (
-        feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active()
-        and "bookingLimitDatetime" in new_values
-        and booking_limit_value
-        and booking_limit_value > datetime.datetime.utcnow()
-    ):
-        booking = offer.collectiveStock.lastBooking
-        if booking and booking.is_expired:
-            update_collective_booking_pending(booking)
-            db.session.add(booking)
+    api_shared.update_collective_stock_booking(
+        stock=offer.collectiveStock,
+        current_booking=collective_stock_unique_booking,
+        beginning_datetime_has_changed="beginningDatetime" in new_values,
+    )
 
     db.session.commit()
 
@@ -614,18 +612,27 @@ def publish_collective_offer_template(
 
     if offer_template.validation == offer_mixin.OfferValidationStatus.DRAFT:
         update_offer_fraud_information(offer_template, user)
-        search.async_index_collective_offer_template_ids(
-            [offer_template.id],
-            reason=search.IndexationReason.OFFER_PUBLICATION,
+
+        on_commit(
+            partial(
+                search.async_index_collective_offer_template_ids,
+                [offer_template.id],
+                reason=search.IndexationReason.OFFER_PUBLICATION,
+            )
         )
-        db.session.commit()
+
+        db.session.flush()
 
     return offer_template
 
 
 def delete_image(obj: educational_models.HasImageMixin) -> None:
     obj.delete_image()
-    db.session.commit()
+
+    if is_managed_transaction():
+        db.session.flush()
+    else:
+        db.session.commit()
 
 
 def attach_image(
@@ -634,18 +641,18 @@ def attach_image(
     crop_params: image_conversion.CropParams,
     credit: str,
 ) -> None:
-    try:
-        obj.set_image(
-            image=image,
-            credit=credit,
-            crop_params=crop_params,
-            ratio=image_conversion.ImageRatio.PORTRAIT,
-            keep_original=False,
-        )
-    except:
-        db.session.rollback()
-        raise
-    db.session.commit()
+    obj.set_image(
+        image=image,
+        credit=credit,
+        crop_params=crop_params,
+        ratio=image_conversion.ImageRatio.PORTRAIT,
+        keep_original=False,
+    )
+
+    if is_managed_transaction():
+        db.session.flush()
+    else:
+        db.session.commit()
 
 
 def _get_expired_collective_offer_template_ids(
@@ -660,8 +667,13 @@ def _get_expired_collective_offer_template_ids(
 def duplicate_offer_and_stock(
     original_offer: educational_models.CollectiveOffer,
 ) -> educational_models.CollectiveOffer:
-    if original_offer.validation == offer_mixin.OfferValidationStatus.DRAFT:
+    if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+        validation.check_collective_offer_action_is_allowed(
+            original_offer, educational_models.CollectiveOfferAllowedAction.CAN_DUPLICATE
+        )
+    elif original_offer.validation == offer_mixin.OfferValidationStatus.DRAFT:
         raise exceptions.ValidationFailedOnCollectiveOffer()
+
     offerer = original_offer.venue.managingOfferer
     if offerer.validationStatus != validation_status_mixin.ValidationStatus.VALIDATED:
         raise exceptions.OffererNotAllowedToDuplicate()
@@ -694,19 +706,21 @@ def duplicate_offer_and_stock(
         nationalProgramId=original_offer.nationalProgramId,
         formats=original_offer.formats,
     )
-    educational_models.CollectiveStock(
-        beginningDatetime=original_offer.collectiveStock.beginningDatetime,
-        startDatetime=original_offer.collectiveStock.startDatetime,
-        endDatetime=original_offer.collectiveStock.endDatetime,
-        collectiveOffer=offer,
-        price=original_offer.collectiveStock.price,
-        bookingLimitDatetime=original_offer.collectiveStock.bookingLimitDatetime,
-        numberOfTickets=original_offer.collectiveStock.numberOfTickets,
-        priceDetail=original_offer.collectiveStock.priceDetail,
-    )
+
+    if original_offer.collectiveStock is not None:
+        educational_models.CollectiveStock(
+            beginningDatetime=original_offer.collectiveStock.beginningDatetime,
+            startDatetime=original_offer.collectiveStock.startDatetime,
+            endDatetime=original_offer.collectiveStock.endDatetime,
+            collectiveOffer=offer,
+            price=original_offer.collectiveStock.price,
+            bookingLimitDatetime=original_offer.collectiveStock.bookingLimitDatetime,
+            numberOfTickets=original_offer.collectiveStock.numberOfTickets,
+            priceDetail=original_offer.collectiveStock.priceDetail,
+        )
 
     db.session.add(offer)
-    db.session.commit()
+    db.session.flush()
 
     if original_offer.imageUrl:
         image_file = get_image_from_url(original_offer.imageUrl)
@@ -720,7 +734,7 @@ def duplicate_offer_and_stock(
             content_type="image/jpeg",
         )
 
-        db.session.commit()
+        db.session.flush()
     return offer
 
 

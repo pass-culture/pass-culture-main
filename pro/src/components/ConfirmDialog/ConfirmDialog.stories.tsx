@@ -15,6 +15,7 @@ export const Default: StoryObj<typeof ConfirmDialog> = {
     confirmText: 'confirm',
     cancelText: 'cancel',
     children: 'lorem ipsum dolor sit amet',
+    open: true,
   },
 }
 
@@ -25,6 +26,7 @@ export const WithLoading: StoryObj<typeof ConfirmDialog> = {
     cancelText: 'cancel',
     children: 'lorem ipsum dolor sit amet',
     isLoading: true,
+    open: true,
   },
 }
 
@@ -35,5 +37,6 @@ export const WithIcon: StoryObj<typeof ConfirmDialog> = {
     cancelText: 'cancel',
     children: 'lorem ipsum dolor sit amet',
     icon: strokeTrashIcon,
+    open: true,
   },
 }

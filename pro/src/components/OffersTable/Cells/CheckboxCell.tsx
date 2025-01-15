@@ -3,12 +3,15 @@ import classNames from 'classnames'
 import styles from 'styles/components/Cells.module.scss'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 
+import { CELLS_DEFINITIONS } from '../utils/cellDefinitions'
+
 interface CheckboxCellProps {
   offerName: string
   isSelected: boolean
   disabled?: boolean
   selectOffer: () => void
-  headers?: string
+  rowId: string
+  className?: string
 }
 
 export const CheckboxCell = ({
@@ -16,20 +19,23 @@ export const CheckboxCell = ({
   isSelected,
   disabled,
   selectOffer,
-  headers,
+  rowId,
+  className,
 }: CheckboxCellProps) => {
   return (
     <td
+      role="cell"
       className={classNames(
         styles['offers-table-cell'],
-        styles['checkbox-column']
+        styles['checkbox-column'],
+        className
       )}
-      headers={headers}
+      headers={`${rowId} ${CELLS_DEFINITIONS.CHECKBOX.id}`}
     >
       <BaseCheckbox
         checked={isSelected}
         className="select-offer-checkbox"
-        label={offerName}
+        label={`Sélectionner l'offre "${offerName}"`}
         exceptionnallyHideLabelDespiteA11y={true}
         disabled={disabled}
         onChange={selectOffer}

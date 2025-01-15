@@ -9,15 +9,13 @@ from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
+from pcapi.core.educational.schemas import EducationalBookingEdition
 import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 from pcapi.models import db
 from pcapi.models import offer_mixin
-from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
 
 
@@ -121,9 +119,9 @@ class Return200Test:
             "educationalPriceDetail": "Détail du prix",
         }
 
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @time_machine.travel("2020-11-17 15:00:00")
     def test_edit_collective_stock_partially(self, client):
-        # Given
         _educational_year_2021_2022 = educational_factories.EducationalYearFactory(
             beginningDate=datetime(2021, 9, 1), expirationDate=datetime(2022, 8, 31)
         )
@@ -134,13 +132,10 @@ class Return200Test:
             bookingLimitDatetime=datetime(2021, 12, 1),
             priceDetail="Détail du prix",
         )
-        educational_factories.CancelledCollectiveBookingFactory(collectiveStock=stock)
         offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=stock.collectiveOffer.venue.managingOfferer,
+            user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
         )
 
-        # When
         stock_edition_payload = {
             "beginningDatetime": "2022-01-17T22:00:00Z",
             "totalPrice": 1500,
@@ -149,7 +144,6 @@ class Return200Test:
         client.with_session_auth("user@example.com")
         response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
-        # Then
         assert response.status_code == 200
         edited_stock = CollectiveStock.query.get(stock.id)
         assert edited_stock.beginningDatetime == datetime(2022, 1, 17, 22)
@@ -161,7 +155,7 @@ class Return200Test:
         assert len(adage_api_testing.adage_requests) == 0
 
     @time_machine.travel("2020-11-17 15:00:00")
-    @override_settings(ADAGE_API_URL="https://adage_base_url")
+    @pytest.mark.settings(ADAGE_API_URL="https://adage_base_url")
     def test_edit_collective_stock_with_pending_booking(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory(
@@ -196,7 +190,6 @@ class Return200Test:
         assert edited_stock.price == 1500
         assert edited_stock.numberOfTickets == 38
         assert edited_stock.priceDetail == "Nouvelle description du prix"
-        assert edited_booking.amount == 1500
         assert edited_booking.confirmationLimitDate is not None
 
         expected_payload = EducationalBookingEdition(
@@ -207,7 +200,7 @@ class Return200Test:
         assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/prereservation-edit"
 
     @time_machine.travel("2020-11-17 15:00:00")
-    @override_settings(ADAGE_API_URL="https://adage_base_url")
+    @pytest.mark.settings(ADAGE_API_URL="https://adage_base_url")
     def test_edit_collective_stock_does_not_send_notification_when_no_modification(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory(
@@ -233,7 +226,7 @@ class Return200Test:
         assert len(adage_api_testing.adage_requests) == 0
 
     @time_machine.travel("2020-11-17 15:00:00")
-    @override_settings(ADAGE_API_URL="https://adage_base_url")
+    @pytest.mark.settings(ADAGE_API_URL="https://adage_base_url")
     def test_edit_collective_stock_update_booking_educational_year(self, client):
         # Given
         educational_year_2021_2022 = educational_factories.EducationalYearFactory(
@@ -270,7 +263,7 @@ class Return200Test:
         edited_collective_booking = CollectiveBooking.query.get(collective_booking.id)
         assert edited_collective_booking.educationalYearId == educational_year_2022_2023.adageId
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_edit_collective_stock_update_booking_limit_date_with_expired_booking(self, client):
         now = datetime.utcnow()
         stock = educational_factories.CollectiveStockFactory(
@@ -298,7 +291,7 @@ class Return200Test:
         assert booking.cancellationReason == None
         assert booking.cancellationDate == None
 
-    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_edit_collective_stock_update_booking_limit_date_with_expired_booking_no_ff(self, client):
         now = datetime.utcnow()
         stock = educational_factories.CollectiveStockFactory(
@@ -353,25 +346,41 @@ class Return403Test:
             "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."]
         }
 
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_edit_collective_stocks_should_not_be_possible_when_offer_created_by_public_api(self, client):
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__provider=providers_factories.ProviderFactory(),
+            collectiveOffer__provider=providers_factories.ProviderFactory()
         )
         offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=stock.collectiveOffer.venue.managingOfferer,
+            user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
         )
-        # When
-        stock_edition_payload = {
-            "totalPrice": 1500,
-        }
+
+        stock_edition_payload = {"totalPrice": 1500}
 
         client.with_session_auth("user@example.com")
         response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
-        # Then
         assert response.status_code == 403
         assert response.json == {"global": ["Les stocks créés par l'api publique ne sont pas editables."]}
+
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    def test_edit_collective_stocks_should_not_be_possible_when_offer_created_by_public_api_with_new_satuses(
+        self, client
+    ):
+        stock = educational_factories.CollectiveStockFactory(
+            collectiveOffer__provider=providers_factories.ProviderFactory()
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
+        )
+
+        stock_edition_payload = {"totalPrice": 1500}
+
+        client.with_session_auth("user@example.com")
+        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
+
+        assert response.status_code == 403
+        assert response.json == {"global": ["Cette action n'est pas autorisée sur l'offre collective liée à ce stock."]}
 
 
 class Return400Test:
@@ -459,26 +468,19 @@ class Return400Test:
         edited_stock = CollectiveStock.query.get(stock.id)
         assert edited_stock.bookingLimitDatetime == stock.bookingLimitDatetime
 
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     @time_machine.travel("2020-11-17 15:00:00")
     def should_edit_stock_when_event_expired(self, client):
-        # Given
-        stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime.utcnow() - timedelta(minutes=1),
-        )
+        stock = educational_factories.CollectiveStockFactory(beginningDatetime=datetime.utcnow() - timedelta(minutes=1))
         offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=stock.collectiveOffer.venue.managingOfferer,
+            user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
         )
 
-        # When
-        stock_edition_payload = {
-            "totalPrice": 1500,
-        }
+        stock_edition_payload = {"totalPrice": 1500}
 
         client.with_session_auth("user@example.com")
         response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
-        # Then
         assert response.status_code == 200
 
     @time_machine.travel("2020-11-17 15:00:00")
@@ -599,18 +601,16 @@ class Return400Test:
         assert response.status_code == 400
         assert response.json == {"beginningDatetime": ["L'évènement ne peut commencer dans le passé."]}
 
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     @time_machine.travel("2020-11-17 15:00:00")
     def test_doesnot_edit_offer_if_rejected(self, client):
         offer = educational_factories.CollectiveOfferFactory(validation=offer_mixin.OfferValidationStatus.REJECTED)
         stock = educational_factories.CollectiveStockFactory(price=1200, collectiveOffer=offer)
         offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=stock.collectiveOffer.venue.managingOfferer,
+            user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
         )
 
-        stock_edition_payload = {
-            "totalPrice": 111,
-        }
+        stock_edition_payload = {"totalPrice": 111}
         response = client.with_session_auth("user@example.com").patch(
             f"/collective/stocks/{stock.id}", json=stock_edition_payload
         )
@@ -686,23 +686,26 @@ class Return400Test:
 
         stock_id = stock.id
 
-        with assert_num_queries(7):
+        with assert_num_queries(9):
             # query += 1 -> load session
             # query += 1 -> load user
             # query += 1 -> load existing stock
             # query += 1 -> ensure the offerer is VALIDATED
+            # query += 1 -> load FF
             # query += 1 -> check the number of existing stock for the offer id
             # query += 1 -> find education year for start date
             # query += 1 -> find education year for end date
+            # query += 1 -> rollback
 
             response = client.patch(f"/collective/stocks/{stock_id}", json=stock_edition_payload)
 
             # Then
             assert response.status_code == 400
             assert response.json == {"code": "START_AND_END_EDUCATIONAL_YEAR_DIFFERENT"}
-            edited_stock = CollectiveStock.query.get(stock.id)
-            assert edited_stock.startDatetime == startDatetime
-            assert edited_stock.endDatetime == endDatetime
+
+        edited_stock = CollectiveStock.query.get(stock.id)
+        assert edited_stock.startDatetime == startDatetime
+        assert edited_stock.endDatetime == endDatetime
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_accept_payload_with_startDatetime_with_no_educational_year(self, client):
@@ -732,13 +735,16 @@ class Return400Test:
 
         stock_id = stock.id
 
-        with assert_num_queries(6):
+        with assert_num_queries(9):
             # query += 1 -> load session
             # query += 1 -> load user
             # query += 1 -> load existing stock
+            # query += 1 -> load FF
             # query += 1 -> ensure the offerer is VALIDATED
             # query += 1 -> check the number of existing stock for the offer id
             # query += 1 -> find education year for start date
+            # query += 1 -> rollback
+            # query += 1 -> load existing stock after rollback
 
             response = client.patch(f"/collective/stocks/{stock_id}", json=stock_edition_payload)
 
@@ -780,14 +786,17 @@ class Return400Test:
 
         stock_id = stock.id
 
-        with assert_num_queries(7):
+        with assert_num_queries(10):
             # query += 1 -> load session
             # query += 1 -> load user
             # query += 1 -> load existing stock
+            # query += 1 -> load FF
             # query += 1 -> ensure the offerer is VALIDATED
             # query += 1 -> check the number of existing stock for the offer id
             # query += 1 -> find education year for start date
             # query += 1 -> find education year for end date
+            # query += 1 -> rollback
+            # query += 1 -> load existing stock after rollback
 
             response = client.patch(f"/collective/stocks/{stock_id}", json=stock_edition_payload)
 

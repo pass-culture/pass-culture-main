@@ -11,6 +11,7 @@ from urllib.parse import urlunparse
 from flask import Flask
 from flask import url_for
 from markupsafe import Markup
+from markupsafe import escape
 import psycopg2.extras
 import pytz
 
@@ -96,10 +97,18 @@ def empty_string_if_null(data: typing.Any | None) -> str:
 
 
 def format_date(data: datetime.date | datetime.datetime | None, strformat: str = "%d/%m/%Y") -> str:
+    def get_utc_offset(dt: datetime.datetime) -> int:
+        try:
+            return int(dt.astimezone(PARIS_TZ).utcoffset().total_seconds() / 3600)  # type: ignore[union-attr]
+        except AttributeError:
+            return 0
+
     if not data:
         return ""
+
     if isinstance(data, datetime.datetime):
-        return data.astimezone(PARIS_TZ).strftime(strformat)
+        adjusted_dt = data + datetime.timedelta(hours=get_utc_offset(data))
+        return adjusted_dt.strftime(strformat)
     return data.strftime(strformat)
 
 
@@ -481,16 +490,16 @@ def format_validation_status(status: validation_status_mixin.ValidationStatus) -
             return status.value
 
 
-def format_offer_validation_status(status: offer_mixin.OfferValidationStatus) -> str:
+def format_offer_validation_status(status: offer_mixin.OfferValidationStatus, with_badge: bool = False) -> str:
     match status:
         case offer_mixin.OfferValidationStatus.DRAFT:
-            return "Nouvelle"
+            return Markup('<span class="badge text-bg-info">Nouvelle</span>') if with_badge else "Nouvelle"
         case offer_mixin.OfferValidationStatus.PENDING:
-            return "En attente"
+            return Markup('<span class="badge text-bg-warning">En attente</span>') if with_badge else "En attente"
         case offer_mixin.OfferValidationStatus.APPROVED:
-            return "Validée"
+            return Markup('<span class="badge text-bg-success">Validée</span>') if with_badge else "Validée"
         case offer_mixin.OfferValidationStatus.REJECTED:
-            return "Rejetée"
+            return Markup('<span class="badge text-bg-danger">Rejetée</span>') if with_badge else "Rejetée"
         case _:
             return status.value
 
@@ -500,17 +509,17 @@ def format_offer_status(status: offer_mixin.OfferStatus) -> str:
         case offer_mixin.OfferStatus.DRAFT | offer_mixin.CollectiveOfferStatus.DRAFT:
             return "Brouillon"
         case offer_mixin.OfferStatus.ACTIVE | offer_mixin.CollectiveOfferStatus.ACTIVE:
-            return "Active"
+            return "Publiée"
         case offer_mixin.OfferStatus.PENDING | offer_mixin.CollectiveOfferStatus.PENDING:
-            return "Pré-réservée"
+            return "En instruction"
         case offer_mixin.OfferStatus.EXPIRED | offer_mixin.CollectiveOfferStatus.EXPIRED:
             return "Expirée"
         case offer_mixin.OfferStatus.REJECTED | offer_mixin.CollectiveOfferStatus.REJECTED:
-            return "Rejetée"
+            return "Non conforme"
         case offer_mixin.OfferStatus.SOLD_OUT | offer_mixin.CollectiveOfferStatus.SOLD_OUT:
             return "Épuisée"
         case offer_mixin.OfferStatus.INACTIVE | offer_mixin.CollectiveOfferStatus.INACTIVE:
-            return "Inactive"
+            return "En pause"
         case offer_mixin.CollectiveOfferStatus.ARCHIVED:
             return "Archivée"
         case _:
@@ -588,6 +597,42 @@ def format_subcategories(subcategories: list[str]) -> str:
     return displayed_labels
 
 
+def format_collective_offer_rejection_reason(reason: educational_models.CollectiveOfferRejectionReason) -> str:
+    match reason:
+        case educational_models.CollectiveOfferRejectionReason.CO_FUNDING:
+            return "Tarif global/Co-financement"
+        case educational_models.CollectiveOfferRejectionReason.CSTI_IRRELEVANT:
+            return "Ne relève pas de la CSTI"
+        case educational_models.CollectiveOfferRejectionReason.EXAMS_PREPARATION:
+            return "Préparation aux examens"
+        case educational_models.CollectiveOfferRejectionReason.HOUSING_CATERING_TRANSPORT:
+            return "Restauration/Hébergement/Transport"
+        case educational_models.CollectiveOfferRejectionReason.INELIGIBLE_OFFER:
+            return "Offre inéligible"
+        case educational_models.CollectiveOfferRejectionReason.INELIGIBLE_SERVICE:
+            return "Prestation inéligible"
+        case educational_models.CollectiveOfferRejectionReason.MISSING_DESCRIPTION:
+            return "Description manquante"
+        case educational_models.CollectiveOfferRejectionReason.MISSING_DESCRIPTION_AND_DATE:
+            return "Date et description manquante"
+        case educational_models.CollectiveOfferRejectionReason.MISSING_MEDIATION:
+            return "Mediation manquante"
+        case educational_models.CollectiveOfferRejectionReason.MISSING_PRICE:
+            return "Prix manquant"
+        case educational_models.CollectiveOfferRejectionReason.OTHER:
+            return "Autre"
+        case educational_models.CollectiveOfferRejectionReason.PAST_DATE_OFFER:
+            return "Offre anti-datée"
+        case educational_models.CollectiveOfferRejectionReason.PRIMARY_ELEMENTARY_SCHOOL:
+            return "Offre maternelle/primaire"
+        case educational_models.CollectiveOfferRejectionReason.WRONG_DATE:
+            return "Date erronée"
+        case educational_models.CollectiveOfferRejectionReason.WRONG_PRICE:
+            return "Tarif erroné"
+        case _:
+            return reason.value
+
+
 def format_fraud_review_status(status: fraud_models.FraudReviewStatus) -> str:
     match status:
         case fraud_models.FraudReviewStatus.OK:
@@ -640,8 +685,11 @@ def format_dms_application_status(
 
 
 def format_dms_application_status_badge(
-    status: GraphQLApplicationStates | finance_models.BankAccountApplicationStatus,
+    status: GraphQLApplicationStates | finance_models.BankAccountApplicationStatus | str,
 ) -> str:
+    if isinstance(status, str):
+        status = GraphQLApplicationStates(status)
+
     match status:
         case GraphQLApplicationStates.accepted | finance_models.BankAccountApplicationStatus.ACCEPTED:
             return Markup('<span class="badge text-bg-success">Accepté</span>')
@@ -678,7 +726,9 @@ def format_user_account_update_flag(flag: users_models.UserAccountUpdateFlag) ->
             return flag.value
 
 
-def format_user_account_update_flags(flags: typing.Iterable[users_models.UserAccountUpdateFlag]) -> str:
+def format_user_account_update_flags(
+    flags: typing.Iterable[users_models.UserAccountUpdateFlag], multiline: bool = False
+) -> str:
     badges = []
     for flag in flags:
         match flag:
@@ -708,7 +758,7 @@ def format_user_account_update_flags(flags: typing.Iterable[users_models.UserAcc
                 badges.append(
                     Markup('<span class="badge text-bg-light shadow-sm">{name}</span>').format(name=flag.value)
                 )
-    return Markup("<br/>").join(badges)
+    return (Markup("<br/>") if multiline else Markup("")).join(badges)
 
 
 def format_user_account_update_type(update_type: users_models.UserAccountUpdateType) -> str:
@@ -921,7 +971,7 @@ def format_modified_info_values(modified_info: typing.Any, name: str | None = No
     new_info = modified_info.get("new_info")
 
     if old_info is not None and new_info is not None:
-        return Markup("{old_value} => {new_value}").format(
+        return Markup("{old_value} → {new_value}").format(
             old_value=_format_modified_info_value(old_info, name),
             new_value=_format_modified_info_value(new_info, name),
         )
@@ -1469,18 +1519,35 @@ def format_finance_incident_type(incident_kind: finance_models.IncidentType) -> 
             return incident_kind.value
 
 
-def format_special_event_response_status(response_status: operations_models.SpecialEventResponseStatus) -> str:
+def format_special_event_response_status_str(response_status: operations_models.SpecialEventResponseStatus) -> str:
     match response_status:
         case operations_models.SpecialEventResponseStatus.NEW:
-            return Markup('<span class="badge text-bg-info">Nouvelle</span>')
+            return "Nouvelle"
         case operations_models.SpecialEventResponseStatus.VALIDATED:
-            return Markup('<span class="badge text-bg-success">Retenue</span>')
+            return "Retenue"
         case operations_models.SpecialEventResponseStatus.REJECTED:
-            return Markup('<span class="badge text-bg-danger">Rejetée</span>')
+            return "Rejetée"
         case operations_models.SpecialEventResponseStatus.PRESELECTED:
-            return Markup('<span class="badge border border-success text-success">Préselectionnée</span>')
+            return "Préselectionnée"
         case _:
             return response_status.value
+
+
+def format_special_event_response_status(response_status: operations_models.SpecialEventResponseStatus) -> str:
+    response_status_str = format_special_event_response_status_str(response_status)
+    match response_status:
+        case operations_models.SpecialEventResponseStatus.NEW:
+            return Markup('<span class="badge text-bg-info">{status}</span>').format(status=response_status_str)
+        case operations_models.SpecialEventResponseStatus.VALIDATED:
+            return Markup('<span class="badge text-bg-success">{status}</span>').format(status=response_status_str)
+        case operations_models.SpecialEventResponseStatus.REJECTED:
+            return Markup('<span class="badge text-bg-danger">{status}</span>').format(status=response_status_str)
+        case operations_models.SpecialEventResponseStatus.PRESELECTED:
+            return Markup('<span class="badge border border-success text-success">{status}</span>').format(
+                status=response_status_str
+            )
+        case _:
+            return response_status_str
 
 
 def field_list_get_number_from_name(field_name: str) -> str:
@@ -1511,6 +1578,10 @@ def get_offer_type(
     if isinstance(offer, educational_models.CollectiveOfferTemplate):
         return "collective_offer_template"
     return "offer"
+
+
+def nl2br(text: str) -> str:
+    return escape(text).replace("\n", Markup("<br>"))
 
 
 def install_template_filters(app: Flask) -> None:
@@ -1547,6 +1618,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_offerer_rejection_reason"] = format_offerer_rejection_reason
     app.jinja_env.filters["format_collective_offer_formats"] = format_collective_offer_formats
     app.jinja_env.filters["format_subcategories"] = format_subcategories
+    app.jinja_env.filters["format_collective_offer_rejection_reason"] = format_collective_offer_rejection_reason
     app.jinja_env.filters["format_as_badges"] = format_as_badges
     app.jinja_env.filters["format_compliance_reasons"] = format_compliance_reasons
     app.jinja_env.filters["format_confidence_level_badge"] = format_confidence_level_badge
@@ -1558,6 +1630,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_dms_application_status"] = format_dms_application_status
     app.jinja_env.filters["format_dms_application_status_badge"] = format_dms_application_status_badge
     app.jinja_env.filters["format_user_account_update_flags"] = format_user_account_update_flags
+    app.jinja_env.filters["format_user_account_update_type"] = format_user_account_update_type
     app.jinja_env.filters["format_registration_step_description"] = format_registration_step_description
     app.jinja_env.filters["format_subscription_step"] = format_subscription_step
     app.jinja_env.filters["format_eligibility_value"] = format_eligibility_value
@@ -1605,3 +1678,4 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_venue_provider_count"] = format_venue_provider_count
     app.jinja_env.filters["build_pro_link"] = build_pro_link
     app.jinja_env.filters["offer_type"] = get_offer_type
+    app.jinja_env.filters["nl2br"] = nl2br

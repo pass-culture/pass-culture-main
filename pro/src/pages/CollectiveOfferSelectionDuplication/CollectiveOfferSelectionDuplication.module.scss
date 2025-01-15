@@ -1,6 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
+@use "styles/mixins/_a11y.scss" as a11y;
 
 .search-container {
   position: relative;
@@ -13,13 +13,13 @@
 }
 
 .title {
-  @include fonts-design-system.title1;
+  @include fonts.title1;
 
   margin-bottom: rem.torem(32px);
 }
 
 .sub-title {
-  @include fonts-design-system.title4;
+  @include fonts.title4;
 }
 
 .search-input input {
@@ -32,7 +32,7 @@
 }
 
 .offer-info {
-  @include fonts.caption;
+  @include fonts.body-accent-xs;
 }
 
 .offer-selection {
@@ -72,4 +72,8 @@
 .offer-title {
   display: flex;
   flex-direction: column;
+}
+
+.visually-hidden {
+  @include a11y.visually-hidden;
 }

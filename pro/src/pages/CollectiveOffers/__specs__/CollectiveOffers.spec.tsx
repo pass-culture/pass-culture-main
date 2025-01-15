@@ -56,9 +56,9 @@ const renderOffers = async (
     features: features,
     storeOverrides: {
       user: {
-        selectedOffererId: 1,
         currentUser: user,
       },
+      offerer: { selectedOffererId: 1, offererNames: [] },
     },
   })
 
@@ -69,7 +69,7 @@ describe('route CollectiveOffers', () => {
   let offersRecap: CollectiveOfferResponseModel[]
   const stocks: Array<CollectiveOffersStockResponseModel> = [
     {
-      beginningDatetime: String(new Date()),
+      startDatetime: String(new Date()),
       hasBookingLimitDatetimePassed: false,
       remainingQuantity: 1,
     },
@@ -360,8 +360,8 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(nextIcon)
 
       expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
-      expect(screen.getByLabelText(offers[10].name)).toBeInTheDocument()
-      expect(screen.queryByText(offers[0].name)).not.toBeInTheDocument()
+      expect(screen.getByLabelText(`Sélectionner l'offre "${offers[10].name}"`)).toBeInTheDocument()
+      expect(screen.queryByText(`Sélectionner l'offre "${offers[0].name}"`)).not.toBeInTheDocument()
     })
 
     it('should display previous page when clicking on left arrow', async () => {
@@ -379,8 +379,8 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(previousIcon)
 
       expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
-      expect(screen.getByLabelText(offers[0].name)).toBeInTheDocument()
-      expect(screen.queryByText(offers[10].name)).not.toBeInTheDocument()
+      expect(screen.getByLabelText(`Sélectionner l'offre "${offers[0].name}"`)).toBeInTheDocument()
+      expect(screen.queryByText(`Sélectionner l'offre "${offers[10].name}"`)).not.toBeInTheDocument()
     })
 
     describe('when 501 offers are fetched', () => {
@@ -407,9 +407,9 @@ describe('route CollectiveOffers', () => {
           await userEvent.click(nextIcon)
         }
 
-        expect(screen.getByLabelText(offersRecap[499].name)).toBeInTheDocument()
+        expect(screen.getByLabelText(`Sélectionner l'offre "${offersRecap[499].name}"`)).toBeInTheDocument()
         expect(
-          screen.queryByText(offersRecap[500].name)
+          screen.queryByText(`Sélectionner l'offre "${offersRecap[500].name}"`)
         ).not.toBeInTheDocument()
       })
     })

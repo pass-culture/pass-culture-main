@@ -1,8 +1,3 @@
-type Error = {
-  status: number
-  code: string
-}
-
 type ErrorWithErrorsCode = {
   status: number
   errors: {

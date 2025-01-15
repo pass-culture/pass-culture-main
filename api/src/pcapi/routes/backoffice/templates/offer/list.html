@@ -1,3 +1,4 @@
+{% import "components/badges.html" as badges with context %}
 {% from "components/display_selector.html" import display_selector %}
 {% from "components/forms.html" import build_advanced_filters_form with context %}
 {% import "components/links.html" as links with context %}
@@ -5,19 +6,13 @@
 {% extends "layouts/connected.html" %}
 {% block page %}
   <div class="pt-3 px-5">
-    {% if is_feature_active("WIP_ENABLE_ALGOLIA_SEARCH_IN_BO") %}
-      <div class="d-flex justify-content-between">
-        <h2 class="fw-light p-2">Offres individuelles</h2>
-        {{ display_selector("form-selector-individual-offer", (("Recherche exhaustive", "Toutes les offres, même celles non réservables","advanced-search") , ("Recherche dans l'app", "Même résultats que dans l’app jeune : offres réservables", "algolia-search")), "p-2") }}
-        <div class="p-2"></div>
-      </div>
-    {% else %}
-      <h2 class="fw-light">Offres individuelles</h2>
-    {% endif %}
+    <div class="d-flex justify-content-between">
+      <h2 class="fw-light p-2">Offres individuelles</h2>
+      {{ display_selector("form-selector-individual-offer", (("Recherche exhaustive", "Toutes les offres, même celles non réservables","advanced-search") , ("Recherche dans l'app", "Même résultats que dans l’app jeune : offres réservables", "algolia-search")), "p-3") }}
+      <div class="p-2"></div>
+    </div>
     <div id="advanced-search">{{ build_advanced_filters_form(advanced_form, advanced_dst) }}</div>
-    {% if is_feature_active("WIP_ENABLE_ALGOLIA_SEARCH_IN_BO") %}
-      <div id="algolia-search">{{ build_advanced_filters_form(algolia_form, algolia_dst) }}</div>
-    {% endif %}
+    <div id="algolia-search">{{ build_advanced_filters_form(algolia_form, algolia_dst) }}</div>
     <div>
       {% if rows %}
         <div class="d-flex justify-content-between">
@@ -227,17 +222,17 @@
                   <td>{{ links.build_pro_user_name_to_details_link(offer.author.id, offer.author.full_name) }}</td>
                 {% endif %}
                 {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<td>{{ offer.rankingWeight | empty_string_if_null }}</td>{% endif %}
-                <td>{{ offer.validation | format_offer_validation_status }}</td>
+                <td>{{ offer.validation | format_offer_validation_status(with_badge=True) }}</td>
                 <td>{{ offer.dateCreated | format_date("%d/%m/%Y") }}</td>
                 <td>{{ offer.lastValidationDate | format_date("%d/%m/%Y") }}</td>
                 <td>{{ offer.venue.departementCode | empty_string_if_null }}</td>
                 <td>
                   {{ links.build_offerer_name_to_details_link(offer.venue.managingOfferer) }}
-                  {% if has_permission("PRO_FRAUD_ACTIONS") %}{{ offer.venue.managingOfferer.confidenceLevel | format_confidence_level_badge }}{% endif %}
+                  {{ badges.build_offer_offerer_fraud_badges(offer.venue.managingOfferer) }}
                 </td>
                 <td>
                   {{ links.build_venue_name_to_details_link(offer.venue) }}
-                  {% if has_permission("PRO_FRAUD_ACTIONS") %}{{ offer.venue.confidenceLevel | format_confidence_level_badge }}{% endif %}
+                  {{ badges.build_offer_venue_fraud_badges(offer.venue) }}
                 </td>
                 <td>{{ links.build_venue_offers_icon_link_advanced(".list_offers", "Offres individuelles", offer.venue) }}</td>
               </tr>

@@ -39,8 +39,8 @@ class SendinblueProAvailableInvoiceEmailDataTest:
         assert set(mails_testing.outbox[0]["To"].split(", ")) == {"other_pro@example.com", "pro@example.com"}
         assert mails_testing.outbox[0]["params"] == {
             "MONTANT_REMBOURSEMENT": 10,
-            "PERIODE_DEBUT": "16-02-2023",
-            "PERIODE_FIN": "28-02-2023",
+            "PERIODE_DEBUT": "jeudi 16 février 2023",
+            "PERIODE_FIN": "mardi 28 février 2023",
         }
 
     def test_send_email_in_second_half_of_month(self):
@@ -69,8 +69,8 @@ class SendinblueProAvailableInvoiceEmailDataTest:
         assert set(mails_testing.outbox[0]["To"].split(", ")) == {"pro@example.com"}
         assert mails_testing.outbox[0]["params"] == {
             "MONTANT_REMBOURSEMENT": 10,
-            "PERIODE_DEBUT": "01-07-2023",
-            "PERIODE_FIN": "15-07-2023",
+            "PERIODE_DEBUT": "samedi 1er juillet 2023",
+            "PERIODE_FIN": "samedi 15 juillet 2023",
         }
 
     def test_fail_silently_if_no_booking_email(self):

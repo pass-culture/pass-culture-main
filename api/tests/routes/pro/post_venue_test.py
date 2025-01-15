@@ -1,16 +1,18 @@
 from datetime import datetime
 import pathlib
+from unittest.mock import patch
 
 import pytest
 
+from pcapi.connectors.api_adresse import AddressInfo
 from pcapi.core import testing
 from pcapi.core.external.zendesk_sell_backends import testing as zendesk_testing
 from pcapi.core.geography import models as geography_models
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models
+from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Venue
-from pcapi.core.testing import override_settings
 from pcapi.core.users import testing as external_testing
 from pcapi.core.users.factories import ProFactory
 
@@ -63,15 +65,17 @@ def create_valid_venue_data(user=None):
     venue_label = offerers_factories.VenueLabelFactory(label="CAC - Centre d'art contemporain d'intérêt national")
 
     return {
+        "address": {
+            "street": "Chemin de Chaniaux 48250 Laveyrune",
+            "postalCode": "48250",
+            "city": "Laveyrune",
+            "latitude": 44.626322,
+            "longitude": 3.893166,
+        },
         "name": "MINISTERE DE LA CULTURE",
         "siret": f"{user_offerer.offerer.siren}10045",
-        "street": "Chemin de Chaniaux 48250 Laveyrune",
-        "postalCode": "48250",
         "bookingEmail": "toto@example.com",
-        "city": "Laveyrune",
         "managingOffererId": user_offerer.offerer.id,
-        "latitude": 44.626322,
-        "longitude": 3.893166,
         "publicName": "Ma venue publique",
         "venueTypeCode": "BOOKSTORE",
         "venueLabelId": venue_label.id,
@@ -95,8 +99,8 @@ venue_malformed_test_data = [
 
 
 class Returns201Test:
-    @testing.override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
-    @testing.override_features(ENABLE_ZENDESK_SELL_CREATION=True)
+    @pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+    @pytest.mark.features(ENABLE_ZENDESK_SELL_CREATION=True)
     def test_register_new_venue(self, client, requests_mock):
         api_adresse_response = get_api_address_response()
         user = ProFactory(
@@ -166,11 +170,11 @@ class Returns201Test:
         assert venue.action_history[0].actionType == history_models.ActionType.VENUE_CREATED
         assert venue.action_history[0].authorUser == user
 
-    @testing.override_settings(
+    @pytest.mark.settings(
         ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend",
         IS_INTEGRATION=True,
     )
-    @testing.override_features(ENABLE_ZENDESK_SELL_CREATION=True)
+    @pytest.mark.features(ENABLE_ZENDESK_SELL_CREATION=True)
     def test_register_new_venue_from_integration_env(self, client, requests_mock):
         api_adresse_response = get_api_address_response()
         user = ProFactory()
@@ -212,35 +216,29 @@ class Returns400Test:
         user = ProFactory()
         venue_data = create_valid_venue_data(user)
 
-        venue_data = {
-            **venue_data,
-            "latitude": -98.82387,
-            "longitude": "112°3534",
-        }
+        venue_data["address"]["latitude"] = -98.82387
+        venue_data["address"]["longitude"] = "112°3534"
 
         client = client.with_session_auth(email=user.email)
         response = client.post("/venues", json=venue_data)
 
         assert response.status_code == 400
-        assert response.json["latitude"] == ["La latitude doit être comprise entre -90.0 et +90.0"]
-        assert response.json["longitude"] == ["Format incorrect"]
+        assert response.json["address.latitude"] == ["La latitude doit être comprise entre -90.0 et +90.0"]
+        assert response.json["address.longitude"] == ["Format incorrect"]
 
     def test_longitude_out_of_range_and_latitude_wrong_format(self, client):
         user = ProFactory()
 
         venue_data = create_valid_venue_data(user)
-        venue_data = {
-            **venue_data,
-            "latitude": "76°8237",
-            "longitude": 210.43251,
-        }
+        venue_data["address"]["latitude"] = "76°8237"
+        venue_data["address"]["longitude"] = 210.43251
 
         client = client.with_session_auth(email=user.email)
         response = client.post("/venues", json=venue_data)
 
         assert response.status_code == 400
-        assert response.json["longitude"] == ["La longitude doit être comprise entre -180.0 et +180.0"]
-        assert response.json["latitude"] == ["Format incorrect"]
+        assert response.json["address.longitude"] == ["La longitude doit être comprise entre -180.0 et +180.0"]
+        assert response.json["address.latitude"] == ["Format incorrect"]
 
     def test_mandatory_accessibility_fields(self, client):
         user = ProFactory()
@@ -312,7 +310,7 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["withdrawalDetails"] == ["ensure this value has at most 500 characters"]
 
-    @override_settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
+    @pytest.mark.settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
     def test_with_inactive_siret(self, requests_mock, client):
         siret = "30255917810045"
         requests_mock.get(

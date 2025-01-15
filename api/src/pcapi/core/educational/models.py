@@ -87,6 +87,17 @@ class StudentLevels(enum.Enum):
         }
 
 
+class AdageFrontRoles(enum.Enum):
+    REDACTOR = "redactor"
+    READONLY = "readonly"
+
+
+class OfferAddressType(enum.Enum):
+    OFFERER_VENUE = "offererVenue"
+    SCHOOL = "school"
+    OTHER = "other"
+
+
 class CollectiveBookingCancellationReasons(enum.Enum):
     OFFERER = "OFFERER"
     BENEFICIARY = "BENEFICIARY"
@@ -454,6 +465,24 @@ class OfferContactFormEnum(enum.Enum):
     FORM = "form"
 
 
+class CollectiveOfferRejectionReason(enum.Enum):
+    CO_FUNDING = "CO_FUNDING"
+    CSTI_IRRELEVANT = "CSTI_IRRELEVANT"
+    EXAMS_PREPARATION = "EXAMS_PREPARATION"
+    HOUSING_CATERING_TRANSPORT = "HOUSING_CATERING_TRANSPORT"
+    INELIGIBLE_OFFER = "INELIGIBLE_OFFER"
+    INELIGIBLE_SERVICE = "INELIGIBLE_SERVICE"
+    MISSING_DESCRIPTION = "MISSING_DESCRIPTION"
+    MISSING_DESCRIPTION_AND_DATE = "MISSING_DESCRIPTION_AND_DATE"
+    MISSING_MEDIATION = "MISSING_MEDIATION"
+    MISSING_PRICE = "MISSING_PRICE"
+    OTHER = "OTHER"
+    PAST_DATE_OFFER = "PAST_DATE_OFFER"
+    PRIMARY_ELEMENTARY_SCHOOL = "PRIMARY_ELEMENTARY_SCHOOL"
+    WRONG_DATE = "WRONG_DATE"
+    WRONG_PRICE = "WRONG_PRICE"
+
+
 class CollectiveOffer(
     PcObject, Base, offer_mixin.ValidationMixin, AccessibilityMixin, CollectiveStatusMixin, HasImageMixin, Model
 ):
@@ -501,7 +530,7 @@ class CollectiveOffer(
         server_default="{}",
     )
 
-    collectiveStock: "CollectiveStock" = relationship(
+    collectiveStock: sa_orm.Mapped["CollectiveStock"] = relationship(
         "CollectiveStock", back_populates="collectiveOffer", uselist=False
     )
 
@@ -577,6 +606,10 @@ class CollectiveOffer(
 
     formats: list[subcategories.EacFormat] | None = sa.Column(
         postgresql.ARRAY(sa.Enum(subcategories.EacFormat, create_constraint=False, native_enum=False)), nullable=True
+    )
+
+    rejectionReason: CollectiveOfferRejectionReason | None = sa.Column(
+        MagicEnum(CollectiveOfferRejectionReason), default=None
     )
 
     isNonFreeOffer: sa_orm.Mapped["bool | None"] = sa.orm.query_expression()
@@ -1092,6 +1125,11 @@ class CollectiveOfferTemplate(
         server_default=None,
         default=None,
     )
+
+    rejectionReason: CollectiveOfferRejectionReason | None = sa.Column(
+        MagicEnum(CollectiveOfferRejectionReason), default=None
+    )
+
     offererAddressId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=True, index=True)
     offererAddress: sa_orm.Mapped["OffererAddress | None"] = relationship(
         "OffererAddress", foreign_keys=[offererAddressId], uselist=False
@@ -1394,8 +1432,8 @@ class CollectiveStock(PcObject, Base, Model):
 
     beginningDatetime: datetime = sa.Column(sa.DateTime, index=True, nullable=False)
 
-    startDatetime: datetime = sa.Column(sa.DateTime, nullable=True)
-    endDatetime: datetime = sa.Column(sa.DateTime, nullable=True)
+    startDatetime: datetime = sa.Column(sa.DateTime, nullable=False)
+    endDatetime: datetime = sa.Column(sa.DateTime, nullable=False)
 
     collectiveOfferId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("collective_offer.id"), index=True, nullable=False, unique=True

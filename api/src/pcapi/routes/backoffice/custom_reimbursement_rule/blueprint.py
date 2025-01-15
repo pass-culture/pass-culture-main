@@ -53,7 +53,7 @@ def _get_custom_reimbursement_rules(
 ) -> list[finance_models.CustomReimbursementRule]:
     base_query = (
         finance_models.CustomReimbursementRule.query.outerjoin(offers_models.Offer)
-        .outerjoin(offerers_models.Venue)
+        .outerjoin(offerers_models.Venue, offers_models.Offer.venue)
         .outerjoin(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
         .options(
             sa.orm.joinedload(finance_models.CustomReimbursementRule.offerer).load_only(
@@ -108,9 +108,11 @@ def _get_custom_reimbursement_rules(
     if form.offerer.data:
         # search on offererId for custom rules on offerers, on offer's venue's offerer id
         # for custom rules on venues and on offer's offerer id for custom rules on offers
-        base_query = base_query.filter(
+        aliased_venue = sa.orm.aliased(offerers_models.Venue)
+        base_query = base_query.outerjoin(aliased_venue, finance_models.CustomReimbursementRule.venue).filter(
             sa.or_(
                 finance_models.CustomReimbursementRule.offererId.in_(form.offerer.data),
+                aliased_venue.managingOffererId.in_(form.offerer.data),
                 offerers_models.Venue.managingOffererId.in_(form.offerer.data),
                 offerers_models.Offerer.id.in_(form.offerer.data),
             )

@@ -15,7 +15,7 @@ from tests.scripts.beneficiary.fixture import make_parsed_graphql_application
 class ArchiveDMSApplicationsTest:
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
     @patch.object(api_dms.DMSGraphQLClient, "archive_application")
-    @testing.override_settings(DMS_ENROLLMENT_INSTRUCTOR="SomeInstructorId")
+    @pytest.mark.settings(DMS_ENROLLMENT_INSTRUCTOR="SomeInstructorId")
     def test_archive_applications(self, dms_archive, dms_applications):
         to_archive_applications_id = 123
         pending_applications_id = 456

@@ -2,7 +2,6 @@ import * as firebaseAnalytics from '@firebase/analytics'
 import * as firebase from '@firebase/app'
 import * as firebaseRemoteConfig from '@firebase/remote-config'
 import { waitFor } from '@testing-library/react'
-import React from 'react'
 import { expect, vi } from 'vitest'
 
 import { firebaseConfig } from 'commons/config/firebase'

@@ -18,7 +18,6 @@ import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfte
 import fullBackIcon from 'icons/full-back.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import { ReimbursementFields } from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
-import { BankAccountInfos } from 'pages/VenueCreation/BankAccountInfos/BankAccountInfos'
 import { buildVenueTypesOptions } from 'pages/VenueCreation/buildVenueTypesOptions'
 import { SiretOrCommentFields } from 'pages/VenueCreation/SiretOrCommentFields/SiretOrCommentFields'
 import { VenueFormActionBar } from 'pages/VenueCreation/VenueFormActionBar/VenueFormActionBar'
@@ -194,14 +193,12 @@ export const VenueSettingsForm = ({
         </FormLayout.Section>
 
         {!venue.siret && (
-          // FIXME: Uncontrolled field warning (debt)
           <ReimbursementFields
             offerer={offerer}
             scrollToSection={Boolean(location.state) || Boolean(location.hash)}
             venue={venue}
           />
         )}
-        <BankAccountInfos venueBankAccount={venue.bankAccount} />
       </FormLayout>
 
       <VenueFormActionBar venue={venue} />

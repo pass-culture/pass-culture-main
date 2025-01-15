@@ -1,6 +1,5 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 import { Outlet, Route, Routes } from 'react-router-dom'
 import { expect } from 'vitest'
 
@@ -54,10 +53,8 @@ const renderBankInformations = (offerer: GetOffererResponseModel | null) => {
     {
       initialRouterEntries: ['/remboursements/informations-bancaires'],
       storeOverrides: {
-        user: {
-          currentUser: sharedCurrentUserFactory(),
-          selectedOffererId: 1,
-        },
+        user: { currentUser: sharedCurrentUserFactory() },
+        offerer: { selectedOffererId: 1, offererNames: [] },
       },
     }
   )

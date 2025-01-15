@@ -9,7 +9,6 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.reactions.factories import ReactionFactory
 from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.utils.date import format_into_utc_date
 
@@ -148,7 +147,7 @@ class GetAvailableReactionTest:
             response = client.get("/native/v1/reaction/available")
 
         assert response.status_code == 200
-        assert response.json == {"bookings": []}
+        assert response.json == {"numberOfReactableBookings": 0, "bookings": []}
 
     def test_handles_multiple_eligible_offers(self, client):
         """Rules for eligible bookings:
@@ -197,26 +196,35 @@ class GetAvailableReactionTest:
 
         assert response.status_code == 200
         response_bookings = response.json.get("bookings")
+        response_number_of_reactable_bookings = response.json.get("numberOfReactableBookings")
         expected_bookings = [
             {
                 "image": med_1.thumbUrl,
                 "dateUsed": format_into_utc_date(booking_offer_1.dateUsed),
-                "name": booking_offer_1.stock.offer.name,
+                "name": offer_1.name,
+                "offerId": offer_1.id,
+                "subcategoryId": offer_1.subcategoryId,
             },
             {
                 "image": None,
                 "dateUsed": format_into_utc_date(booking_offer_2.dateUsed),
-                "name": booking_offer_2.stock.offer.name,
+                "name": offer_2.name,
+                "offerId": offer_2.id,
+                "subcategoryId": offer_2.subcategoryId,
             },
             {
                 "image": None,
                 "dateUsed": format_into_utc_date(booking_offer_4.dateUsed),
-                "name": booking_offer_4.stock.offer.name,
+                "name": offer_4.name,
+                "offerId": offer_4.id,
+                "subcategoryId": offer_4.subcategoryId,
             },
             {
                 "image": None,
                 "dateUsed": format_into_utc_date(booking_offer_3.dateUsed),
-                "name": booking_offer_3.stock.offer.name,
+                "name": offer_3.name,
+                "offerId": offer_3.id,
+                "subcategoryId": offer_3.subcategoryId,
             },
         ]
 
@@ -224,3 +232,4 @@ class GetAvailableReactionTest:
         expected_bookings.sort(key=sorting_key)
         response_bookings.sort(key=sorting_key)
         assert response_bookings == expected_bookings
+        assert response_number_of_reactable_bookings == 4
