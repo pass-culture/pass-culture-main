@@ -84,4 +84,3 @@ jobs:
             # Delete DNS entry
             gcloud dns record-sets delete a-backend-$id.testing.passculture.team. --type=TXT --zone=testing-passculture-team
           done
-

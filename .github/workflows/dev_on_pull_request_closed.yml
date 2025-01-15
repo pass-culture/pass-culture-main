@@ -29,6 +29,12 @@ jobs:
             API_TOKEN_GITHUB:passculture-metier-ehp/passculture-main-sa-access-token
             FIREBASE_SERVICE_ACCOUNT_TESTING:passculture-metier-ehp/pc_pro_testing_firebase_json
 
+      # Set up Cloud SDK
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+        with:
+          version: '>= 363.0.0'
+
       # Checkout rendered-manifests repository
       - uses: actions/checkout@v4.2.1
         with:
@@ -69,6 +75,10 @@ jobs:
           # Check for PR namespace and delete it
           kubectl get ns pcapi-pr-${{ github.event.pull_request.number }}
           [[ $? -eq 0 ]] && kubectl delete ns pcapi-pr-${{ github.event.pull_request.number }} || echo "namespace pcapi-pr-${{ github.event.pull_request.number }} does not exist"
+          # Set active project for DNS entry deletion
+          gcloud config set project passculture-metier-ehp
+          # Delete DNS entry
+          gcloud dns record-sets delete a-backend-${{ github.event.pull_request.number }}.testing.passculture.team. --type=TXT --zone=testing-passculture-team
 
   # Delete pro preview deployment
   delete-pro-firebase-preview-deployment:
