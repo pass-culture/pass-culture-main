@@ -2601,10 +2601,10 @@ ajv@^8.0.1:
     require-from-string "^2.0.2"
     uri-js "^4.2.2"
 
-algoliasearch-helper@3.22.6:
-  version "3.22.6"
-  resolved "https://registry.yarnpkg.com/algoliasearch-helper/-/algoliasearch-helper-3.22.6.tgz#6a31c67d277a32f3f7ae1b8a6e57ca73f1e1a0b0"
-  integrity sha512-F2gSb43QHyvZmvH/2hxIjbk/uFdO2MguQYTFP7J+RowMW1csjIODMobEnpLI8nbLQuzZnGZdIxl5Bpy1k9+CFQ==
+algoliasearch-helper@3.23.0:
+  version "3.23.0"
+  resolved "https://registry.yarnpkg.com/algoliasearch-helper/-/algoliasearch-helper-3.23.0.tgz#638e766bf6be2308b8dcda3282e47aff66438712"
+  integrity sha512-8CK4Gb/ju4OesAYcS+mjBpNiVA7ILWpg7D2vhBZohh0YkG8QT1KZ9LG+8+EntQBUGoKtPy06OFhiwP4f5zzAQg==
   dependencies:
     "@algolia/events" "^4.0.1"
 
@@ -5349,27 +5349,27 @@ inquirer@^6.0.0:
     strip-ansi "^5.1.0"
     through "^2.3.6"
 
-instantsearch-ui-components@0.9.0:
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/instantsearch-ui-components/-/instantsearch-ui-components-0.9.0.tgz#f7ae71fe623d18eff32b73071749f31826cb7b89"
-  integrity sha512-ugQ+XdPx3i3Sxu+woRo6tPE0Fz/kWd4KblTUfZD1TZZBsm/8qFvcbg5dVBDvXX9v7ntoyugXCzC/XCZMzrSkig==
+instantsearch-ui-components@0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/instantsearch-ui-components/-/instantsearch-ui-components-0.10.0.tgz#4657407faed49bf7ffd4e45ca1f34810d639626d"
+  integrity sha512-6ecGULfGR1sXxkMeGqqGccPKkyQAYTJ9qqmOCYoDzoFk8Qct7k1/ZZqt0ZmVxi2AIxsJt6yXVPPf3VhkIdus6w==
   dependencies:
     "@babel/runtime" "^7.1.2"
 
-instantsearch.js@4.75.7:
-  version "4.75.7"
-  resolved "https://registry.yarnpkg.com/instantsearch.js/-/instantsearch.js-4.75.7.tgz#581185f335990d45dbd011deaa275e7c004e8d35"
-  integrity sha512-xniCraV4SM017LA5iaw8ntvWurq7WC09Kpn/hfsIhoP52woqdiXTaKvo/8Z6oOb2BGSLBkcOU/RY1ntASsrUxA==
+instantsearch.js@4.76.0:
+  version "4.76.0"
+  resolved "https://registry.yarnpkg.com/instantsearch.js/-/instantsearch.js-4.76.0.tgz#0f89de776c9412aab67caecd4e25771daa701398"
+  integrity sha512-uKJ1TYDb7nnm2KOj2mzyG53ByhVk8nCUUmzauNnvwVglR9PMpk/ZksJ97uNtmEeDxjh+ZEO+K6FUnCmLrG61mg==
   dependencies:
     "@algolia/events" "^4.0.1"
     "@types/dom-speech-recognition" "^0.0.1"
     "@types/google.maps" "^3.55.12"
     "@types/hogan.js" "^3.0.0"
     "@types/qs" "^6.5.3"
-    algoliasearch-helper "3.22.6"
+    algoliasearch-helper "3.23.0"
     hogan.js "^3.0.2"
     htm "^3.0.0"
-    instantsearch-ui-components "0.9.0"
+    instantsearch-ui-components "0.10.0"
     preact "^10.10.0"
     qs "^6.5.1 < 6.10"
     search-insights "^2.17.2"
@@ -6915,25 +6915,25 @@ react-inspector@6.0.2:
   resolved "https://registry.yarnpkg.com/react-inspector/-/react-inspector-6.0.2.tgz#aa3028803550cb6dbd7344816d5c80bf39d07e9d"
   integrity sha512-x+b7LxhmHXjHoU/VrFAzw5iutsILRoYyDq97EDYdFpPLcvqtEzk4ZSZSQjnFPbr5T57tLXnHcqFYoN1pI6u8uQ==
 
-react-instantsearch-core@7.13.10:
-  version "7.13.10"
-  resolved "https://registry.yarnpkg.com/react-instantsearch-core/-/react-instantsearch-core-7.13.10.tgz#35d2ffdc8f40a5dd1858bf44b8eb20e3f1a08fba"
-  integrity sha512-4vHYtuyDfW4fgUsR9V/QdkiO3HTMhrQR6zvI3jDJjpnQZTFFyRghnXaljpLp4ZF63Ry5n3JxQ1AGpspSZyNfJA==
+react-instantsearch-core@7.14.0:
+  version "7.14.0"
+  resolved "https://registry.yarnpkg.com/react-instantsearch-core/-/react-instantsearch-core-7.14.0.tgz#b51cf950f5e07f8c321d249a6c7cdc447534274b"
+  integrity sha512-4Rq+OFoXlQ7caotS4DIBX4oAnYyjSKxL42Ws4xHNmudX2/3VC7kMbcSCb95eclF5zX7/p6S1hhQWIbh/9PbZ7w==
   dependencies:
     "@babel/runtime" "^7.1.2"
-    algoliasearch-helper "3.22.6"
-    instantsearch.js "4.75.7"
+    algoliasearch-helper "3.23.0"
+    instantsearch.js "4.76.0"
     use-sync-external-store "^1.0.0"
 
-react-instantsearch@^7.13.10:
-  version "7.13.10"
-  resolved "https://registry.yarnpkg.com/react-instantsearch/-/react-instantsearch-7.13.10.tgz#df1caa32845dd853deff321ef3c2395b84e87235"
-  integrity sha512-AcgDUvBGP4UH3XveNt+vFWdqpjrq0ujYjw/blaE0zEIsHPDu7ottr5I24RLSCzjLsOc1sIPh69yW/HNKppG/XA==
+react-instantsearch@^7.14.0:
+  version "7.14.0"
+  resolved "https://registry.yarnpkg.com/react-instantsearch/-/react-instantsearch-7.14.0.tgz#0db8ef3ff2fff9a9385621a7fa21460802d4aa3b"
+  integrity sha512-BmSftwim4WaGteoS/BrgwPQZ2Bzor9u9jdO7rhIW+K+/xBpXqM726dU6U2GxAoPcLBKUQCltI8zPM5GNYYXpKQ==
   dependencies:
     "@babel/runtime" "^7.1.2"
-    instantsearch-ui-components "0.9.0"
-    instantsearch.js "4.75.7"
-    react-instantsearch-core "7.13.10"
+    instantsearch-ui-components "0.10.0"
+    instantsearch.js "4.76.0"
+    react-instantsearch-core "7.14.0"
 
 react-is@18.2.0:
   version "18.2.0"
