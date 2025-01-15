@@ -101,14 +101,36 @@ class OfferStockResponse(ConfiguredBaseModel):
         getter_dict = OfferStockResponseGetterDict
 
 
-class OfferVenueResponse(BaseModel):
-    @classmethod
-    def from_orm(cls, venue: offerers_models.Venue) -> "OfferVenueResponse":
-        venue.coordinates = {"latitude": venue.latitude, "longitude": venue.longitude}
-        venue.address = venue.street
-        result = super().from_orm(venue)
-        return result
+class OfferVenueResponseGetterDict(GetterDict):
+    def get(self, key: str, default: Any = None) -> Any:
+        venue = self._obj
+        latitude = None
+        longitude = None
+        city = None
+        postalCode = None
+        address = None
+        timezone = venue.timezone
+        if venue.offererAddress:
+            latitude = venue.offererAddress.address.latitude
+            longitude = venue.offererAddress.address.longitude
+            city = venue.offererAddress.address.city
+            postalCode = venue.offererAddress.address.postalCode
+            timezone = venue.offererAddress.address.timezone
+            address = venue.offererAddress.address.street
+        if key == "coordinates":
+            return {"latitude": latitude, "longitude": longitude}
+        if key == "address":
+            return address
+        if key == "city":
+            return city
+        if key == "postalCode":
+            return postalCode
+        if key == "timezone":
+            return timezone
+        return super().get(key, default)
 
+
+class OfferVenueResponse(BaseModel):
     id: int
     address: str | None
     city: str | None
@@ -123,6 +145,7 @@ class OfferVenueResponse(BaseModel):
 
     class Config:
         orm_mode = True
+        getter_dict = OfferVenueResponseGetterDict
         allow_population_by_field_name = True
 
 

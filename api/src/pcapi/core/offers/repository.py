@@ -290,8 +290,10 @@ def get_offers_details(offer_ids: list[int]) -> BaseQuery:
                 offerers_models.Venue.isPermanent,
                 offerers_models.Venue.bannerUrl,
                 offerers_models.Venue.venueTypeCode,
+                # FIXME (dramelet, 17-01-2025)
                 # For tests purposes only
                 # Those legacy location fields are still used by CalculatedOfferAddress with FF off
+                # It will be removed along side column removals of the Venue table
                 offerers_models.Venue.departementCode,
                 offerers_models.Venue.latitude,
                 offerers_models.Venue.longitude,
@@ -306,6 +308,11 @@ def get_offers_details(offer_ids: list[int]) -> BaseQuery:
             )
         )
         .options(sa_orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.googlePlacesInfo))
+        .options(
+            sa_orm.joinedload(models.Offer.venue)
+            .joinedload(offerers_models.Venue.offererAddress)
+            .joinedload(offerers_models.OffererAddress.address)
+        )
         .options(sa_orm.joinedload(models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address))
         .options(sa_orm.selectinload(models.Offer.mediations))
         .options(sa_orm.with_expression(models.Offer.likesCount, get_offer_reaction_count_subquery()))
