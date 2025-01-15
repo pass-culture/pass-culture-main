@@ -14,7 +14,7 @@ const renderOfferTypes = (initialRoute = '/') => {
     {
       storeOverrides: {
         user: { currentUser: sharedCurrentUserFactory() },
-        offerer: { selectedOffererId: 1, offererNames: [] },
+        offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: true },
       },
       user: sharedCurrentUserFactory(),
       initialRouterEntries: [initialRoute],

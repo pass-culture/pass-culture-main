@@ -54,7 +54,7 @@ const renderOffers = async (
       user: {
         currentUser: user,
       },
-      offerer: { selectedOffererId: 1, offererNames: [] },
+      offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: true },
     },
     initialRouterEntries: [route],
   })

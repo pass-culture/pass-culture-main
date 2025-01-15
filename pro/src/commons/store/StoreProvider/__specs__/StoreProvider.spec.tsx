@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react'
 
 import { api } from 'apiClient/api'
 import { UserRole } from 'apiClient/v1'
+import { getOffererNameFactory } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { StoreProvider } from '../StoreProvider'
@@ -19,6 +20,7 @@ vi.mock('apiClient/api', () => ({
     getProfile: vi.fn(),
     listFeatures: vi.fn(),
     listOfferersNames: vi.fn(),
+    getOfferer: vi.fn(),
   },
 }))
 
@@ -31,6 +33,14 @@ describe('src | App', () => {
       roles: [UserRole.ADMIN],
       isEmailValidated: true,
       dateCreated: '2022-07-29T12:18:43.087097Z',
+    })
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: [
+        getOffererNameFactory({
+          id: 1,
+          name: 'Ma super structure',
+        }),
+      ],
     })
     vi.spyOn(api, 'listFeatures').mockResolvedValue([])
   })
@@ -54,5 +64,12 @@ describe('src | App', () => {
 
     // Then
     expect(api.listOfferersNames).toHaveBeenCalled()
+  })
+
+  it('should load offerer', async () => {
+    renderStoreProvider()
+    await screen.findByText('Sub component')
+
+    expect(api.getOfferer).toHaveBeenCalled()
   })
 })

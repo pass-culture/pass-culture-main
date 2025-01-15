@@ -5,11 +5,13 @@ import type { GetOffererNameResponseModel } from 'apiClient/v1'
 type OffererState = {
   offererNames: null | GetOffererNameResponseModel[]
   selectedOffererId: number | null
+  isOnboarded: boolean | null
 }
 
 const initialState: OffererState = {
   offererNames: null,
   selectedOffererId: null,
+  isOnboarded: null,
 }
 
 const offererSlice = createSlice({
@@ -28,10 +30,19 @@ const offererSlice = createSlice({
     ) => {
       state.selectedOffererId = action.payload
     },
+    updateOffererIsOnboarded: (
+      state: OffererState,
+      action: PayloadAction<boolean | null>
+    ) => {
+      state.isOnboarded = action.payload
+    },
   },
 })
 
 export const offererReducer = offererSlice.reducer
 
-export const { updateOffererNames, updateSelectedOffererId } =
-  offererSlice.actions
+export const {
+  updateOffererNames,
+  updateSelectedOffererId,
+  updateOffererIsOnboarded,
+} = offererSlice.actions

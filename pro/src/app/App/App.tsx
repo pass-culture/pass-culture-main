@@ -17,8 +17,10 @@ import {
   GET_DATA_ERROR_MESSAGE,
   SAVED_OFFERER_ID_KEY,
 } from 'commons/core/shared/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { updateSelectedOffererId } from 'commons/store/offerer/reducer'
+import { selecteOffererIsOnboarded } from 'commons/store/offerer/selectors'
 import { updateUser } from 'commons/store/user/reducer'
 import { selectCurrentUser } from 'commons/store/user/selectors'
 import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
@@ -40,8 +42,12 @@ export const App = (): JSX.Element | null => {
   const location = useLocation()
   const navigate = useNavigate()
   const currentUser = useSelector(selectCurrentUser)
+  const isOffererOnboarded = useSelector(selecteOffererIsOnboarded)
   const dispatch = useDispatch()
   const notify = useNotification()
+  const isDidacticOnboardingEnabled = useActiveFeature(
+    'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING'
+  )
 
   // Main hooks
   useLoadFeatureFlags()
@@ -83,6 +89,19 @@ export const App = (): JSX.Element | null => {
         : `/connexion?de=${fromUrl}`
 
     return <Navigate to={loginUrl} replace />
+  }
+
+  if (isDidacticOnboardingEnabled) {
+    if (
+      location.pathname.includes('accueil') &&
+      isOffererOnboarded !== null &&
+      !isOffererOnboarded
+    ) {
+      return <Navigate to="/onboarding" replace />
+    }
+    if (location.pathname.includes('onboarding') && isOffererOnboarded) {
+      return <Navigate to="/accueil" replace />
+    }
   }
 
   if (

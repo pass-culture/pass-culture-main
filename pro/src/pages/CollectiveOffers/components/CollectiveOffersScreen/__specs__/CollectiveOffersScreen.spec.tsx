@@ -36,7 +36,7 @@ const renderOffers = (
           isAdmin: false,
         }),
       },
-      offerer: { selectedOffererId: 1, offererNames: [] },
+      offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: true },
     },
     ...options,
   })
@@ -136,8 +136,12 @@ describe('CollectiveOffersScreen', () => {
       offers: [firstOffer, secondOffer],
     })
 
-    expect(screen.getByLabelText(`Sélectionner l'offre "${firstOffer.name}"`)).toBeInTheDocument()
-    expect(screen.getByLabelText(`Sélectionner l'offre "${secondOffer.name}"`)).toBeInTheDocument()
+    expect(
+      screen.getByLabelText(`Sélectionner l'offre "${firstOffer.name}"`)
+    ).toBeInTheDocument()
+    expect(
+      screen.getByLabelText(`Sélectionner l'offre "${secondOffer.name}"`)
+    ).toBeInTheDocument()
   })
 
   it('should display an unchecked by default checkbox to select all offers when user is not admin', () => {
@@ -299,7 +303,9 @@ describe('CollectiveOffersScreen', () => {
       user: currentUser,
     })
 
-    const checkbox = screen.getByLabelText(`Sélectionner l'offre "${offersRecap[0].name}"`)
+    const checkbox = screen.getByLabelText(
+      `Sélectionner l'offre "${offersRecap[0].name}"`
+    )
     await userEvent.click(checkbox)
 
     const actionBar = await screen.findByTestId('actions-bar')
@@ -360,10 +366,18 @@ describe('CollectiveOffersScreen', () => {
         offers: offers,
       })
 
-      const firstOfferCheckbox = screen.getByLabelText(`Sélectionner l'offre "${offers[0].name}"`)
-      const secondOfferCheckbox = screen.getByLabelText(`Sélectionner l'offre "${offers[1].name}"`)
-      const thirdOfferCheckbox = screen.getByLabelText(`Sélectionner l'offre "${offers[2].name}"`)
-      const fourthOfferCheckbox = screen.getByLabelText(`Sélectionner l'offre "${offers[3].name}"`)
+      const firstOfferCheckbox = screen.getByLabelText(
+        `Sélectionner l'offre "${offers[0].name}"`
+      )
+      const secondOfferCheckbox = screen.getByLabelText(
+        `Sélectionner l'offre "${offers[1].name}"`
+      )
+      const thirdOfferCheckbox = screen.getByLabelText(
+        `Sélectionner l'offre "${offers[2].name}"`
+      )
+      const fourthOfferCheckbox = screen.getByLabelText(
+        `Sélectionner l'offre "${offers[3].name}"`
+      )
 
       await userEvent.click(screen.getByLabelText('Tout sélectionner'))
 
@@ -414,36 +428,32 @@ describe('CollectiveOffersScreen', () => {
   })
 
   it('should display a new column "Date de l’évènement"', async () => {
-    renderOffers(
-      {
-        ...props,
-        offers: [collectiveOfferFactory()],
-      }
-    )
+    renderOffers({
+      ...props,
+      offers: [collectiveOfferFactory()],
+    })
 
     expect(await screen.findByText('Date de l’évènement'))
   })
 
   it('should filter new column "Date de l’évènement"', async () => {
-    renderOffers(
-      {
-        ...props,
-        offers: [
-          collectiveOfferFactory({
-            dates: {
-              start: '2024-07-31T09:11:00Z',
-              end: '2024-07-31T09:11:00Z',
-            },
-          }),
-          collectiveOfferFactory({
-            dates: {
-              start: '2024-06-30T09:11:00Z',
-              end: '2024-06-30T09:11:00Z',
-            },
-          }),
-        ],
-      }
-    )
+    renderOffers({
+      ...props,
+      offers: [
+        collectiveOfferFactory({
+          dates: {
+            start: '2024-07-31T09:11:00Z',
+            end: '2024-07-31T09:11:00Z',
+          },
+        }),
+        collectiveOfferFactory({
+          dates: {
+            start: '2024-06-30T09:11:00Z',
+            end: '2024-06-30T09:11:00Z',
+          },
+        }),
+      ],
+    })
 
     const firstOfferEventDate =
       screen.getAllByTestId('offer-event-date')[0].textContent

@@ -32,7 +32,7 @@ vi.mock('react-router-dom', async () => ({
 
 const renderOffers = async (
   filters: Partial<CollectiveSearchFiltersParams> = DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
-  user = sharedCurrentUserFactory(),
+  user = sharedCurrentUserFactory()
 ) => {
   const shouldComputeTemplateOfferUrl = true
   const route = computeCollectiveOffersUrl(
@@ -54,7 +54,7 @@ const renderOffers = async (
         user: {
           currentUser: user,
         },
-        offerer: { selectedOffererId: 1, offererNames: [] },
+        offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: true },
       },
     }
   )

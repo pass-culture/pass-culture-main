@@ -30,6 +30,7 @@ const renderLogExtraProData = async () => {
             getOffererNameFactory({ id: 1 }),
             getOffererNameFactory({ id: 2, name: 'super structure' }),
           ],
+          isOnboarded: true,
         },
       },
     }

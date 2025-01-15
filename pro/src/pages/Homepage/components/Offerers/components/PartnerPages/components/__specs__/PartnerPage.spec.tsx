@@ -27,7 +27,7 @@ const renderPartnerPages = (props: Partial<PartnerPageProps>) => {
     {
       storeOverrides: {
         user: { currentUser: sharedCurrentUserFactory() },
-        offerer: { selectedOffererId: 1, offererNames: [] },
+        offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: true },
       },
     }
   )

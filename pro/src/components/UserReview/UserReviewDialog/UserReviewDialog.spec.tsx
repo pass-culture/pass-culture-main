@@ -15,7 +15,7 @@ const renderUserReviewDialog = () => {
     user: {
       currentUser: sharedCurrentUserFactory(),
     },
-    offerer: { selectedOffererId: 1, offererNames: [] },
+    offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: true },
   }
   return renderWithProviders(
     <Dialog.Root defaultOpen>

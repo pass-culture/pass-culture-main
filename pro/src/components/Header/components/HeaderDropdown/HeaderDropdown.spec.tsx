@@ -58,6 +58,7 @@ const renderHeaderDropdown = (options?: RenderWithProvidersOptions) => {
         offerer: {
           selectedOffererId: 1,
           offererNames: baseOfferersNames,
+          isOnboarded: true,
         },
       },
     }

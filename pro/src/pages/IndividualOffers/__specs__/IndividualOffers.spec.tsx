@@ -73,7 +73,7 @@ const renderOffers = async (
     audience?: Audience
   } = DEFAULT_SEARCH_FILTERS,
   features: string[] = [],
-  user = sharedCurrentUserFactory(),
+  user = sharedCurrentUserFactory()
 ) => {
   const route = computeIndividualOffersUrl(filters)
 
@@ -93,7 +93,7 @@ const renderOffers = async (
         user: {
           currentUser: user,
         },
-        offerer: { selectedOffererId: 1, offererNames: [] },
+        offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: true },
       },
     }
   )
@@ -641,8 +641,12 @@ describe('route Offers', () => {
 
       await userEvent.click(nextIcon)
 
-      expect(screen.getByLabelText(`Sélectionner l'offre "${offers[10].name}"`)).toBeInTheDocument()
-      expect(screen.queryByLabelText(`Sélectionner l'offre "${offers[0].name}"`)).not.toBeInTheDocument()
+      expect(
+        screen.getByLabelText(`Sélectionner l'offre "${offers[10].name}"`)
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByLabelText(`Sélectionner l'offre "${offers[0].name}"`)
+      ).not.toBeInTheDocument()
     })
 
     it('should display previous page when clicking on left arrow', async () => {
@@ -658,8 +662,12 @@ describe('route Offers', () => {
 
       await userEvent.click(previousIcon)
 
-      expect(screen.getByLabelText(`Sélectionner l'offre "${offers[0].name}"`)).toBeInTheDocument()
-      expect(screen.queryByText(`Sélectionner l'offre "${offers[10].name}"`)).not.toBeInTheDocument()
+      expect(
+        screen.getByLabelText(`Sélectionner l'offre "${offers[0].name}"`)
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByText(`Sélectionner l'offre "${offers[10].name}"`)
+      ).not.toBeInTheDocument()
     })
 
     describe('when 501 offers are fetched', () => {
@@ -686,9 +694,15 @@ describe('route Offers', () => {
           await userEvent.click(nextIcon)
         }
 
-        expect(screen.getByLabelText(`Sélectionner l'offre "${offersRecap[499].name}"`)).toBeInTheDocument()
         expect(
-          screen.queryByLabelText(`Sélectionner l'offre "${offersRecap[500].name}"`)
+          screen.getByLabelText(
+            `Sélectionner l'offre "${offersRecap[499].name}"`
+          )
+        ).toBeInTheDocument()
+        expect(
+          screen.queryByLabelText(
+            `Sélectionner l'offre "${offersRecap[500].name}"`
+          )
         ).not.toBeInTheDocument()
       })
     })

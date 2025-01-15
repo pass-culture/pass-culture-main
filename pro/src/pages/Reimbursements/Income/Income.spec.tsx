@@ -74,6 +74,7 @@ const renderIncome = () => {
       offerer: {
         selectedOffererId: MOCK_DATA.selectedOffererId,
         offererNames: [],
+        isOnboarded: true,
       },
     },
   })
