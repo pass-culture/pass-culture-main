@@ -3,6 +3,7 @@ import {
   expectOffersOrBookingsAreFound,
   logInAndGoToPage,
 } from '../support/helpers.ts'
+// dummy changes
 
 describe('Adage confirmation', () => {
   let login: string
