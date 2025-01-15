@@ -10,10 +10,7 @@ import {
 import { DraftOffers } from './DraftOffers'
 
 const renderDraftOffers = (options?: RenderWithProvidersOptions) => {
-  return renderWithProviders(
-    <DraftOffers offers={[]} onDraftChange={() => {}} />,
-    { ...options }
-  )
+  return renderWithProviders(<DraftOffers offers={[]} />, { ...options })
 }
 
 vi.mock('apiClient/api', () => ({

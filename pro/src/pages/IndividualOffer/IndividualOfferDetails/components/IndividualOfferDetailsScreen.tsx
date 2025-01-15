@@ -30,9 +30,9 @@ import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/cons
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import {
-  getOfferSubtypeFromParam,
-  getCategoryStatusFromOfferSubtype,
   filterCategories,
+  getCategoryStatusFromOfferSubtype,
+  getOfferSubtypeFromParam,
   isOfferSubtypeEvent,
 } from 'pages/IndividualOffer/commons/filterCategories'
 import { getFilteredVenueListByCategoryStatus } from 'pages/IndividualOffer/commons/getFilteredVenueList'
@@ -43,12 +43,12 @@ import {
 } from 'pages/IndividualOffer/IndividualOfferDetails/commons/types'
 import { useIndividualOfferImageUpload } from 'pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
 import {
+  hasMusicType,
   serializeDetailsPatchData,
   serializeDetailsPostData,
   setDefaultInitialValues,
   setDefaultInitialValuesFromOffer,
   setFormReadOnlyFields,
-  hasMusicType,
 } from 'pages/IndividualOffer/IndividualOfferDetails/commons/utils'
 import { getValidationSchema } from 'pages/IndividualOffer/IndividualOfferDetails/commons/validationSchema'
 
@@ -194,7 +194,11 @@ export const IndividualOfferDetailsScreen = ({
   })
   const handlePreviousStepOrBackToReadOnly = () => {
     if (mode === OFFER_WIZARD_MODE.CREATION) {
-      navigate(`${isOnboarding ? '/onboarding' : ''}/offre/creation`)
+      if (isOnboarding) {
+        // Just go back because the previous screen can be either the offer creation screen or the drafts list
+        return navigate(-1)
+      }
+      navigate('/offre/creation')
     } else {
       navigate(
         getIndividualOfferUrl({

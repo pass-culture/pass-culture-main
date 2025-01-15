@@ -1,13 +1,17 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
+import { OfferStatus } from 'apiClient/v1'
+import { listOffersOfferFactory } from 'commons/utils/factories/individualApiFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
 
-import { OnboardingOfferIndividual } from './OnboardingOfferIndividual'
+import {
+  MAX_DRAFT_TO_DISPLAY,
+  OnboardingOfferIndividual,
+} from './OnboardingOfferIndividual'
 
 const renderOnboardingOfferIndividual = (
   options?: RenderWithProvidersOptions
@@ -26,29 +30,91 @@ describe('<OnboardingOfferIndividual />', () => {
     vi.spyOn(api, 'listOffers').mockResolvedValue([])
   })
 
-  it('should render correctly', async () => {
+  it('should propose how to create the 1st offer', async () => {
     renderOnboardingOfferIndividual()
 
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     expect(
       await screen.findByRole('heading', {
-        name: /Offre à destination des jeunes/,
+        name: /Comment souhaitez-vous créer votre 1ère offre ?/,
       })
     ).toBeInTheDocument()
+
+    const links = await screen.findAllByText(/Manuellement|Automatiquement/)
+
+    expect(links).toHaveLength(2)
   })
 
-  it('should update offerType state when a radio button is selected', async () => {
+  it('should not display drafts if listOffers returns an empty array', async () => {
     renderOnboardingOfferIndividual()
 
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-    const individualRadioButton = screen.getByLabelText(
-      /Créer une offre manuellement/i
-    )
-    await userEvent.click(individualRadioButton)
+    expect(
+      screen.queryByRole('heading', {
+        name: /Reprendre une offre déjà commencée/,
+      })
+    ).not.toBeInTheDocument()
+  })
 
-    const nextStepButton = screen.getByText(/Étape suivante/i)
-    expect(nextStepButton).not.toBeDisabled()
+  it('should display drafts if there is any', async () => {
+    vi.spyOn(api, 'listOffers').mockResolvedValue([
+      listOffersOfferFactory({
+        id: 1,
+        name: 'Foo',
+        status: OfferStatus.DRAFT,
+      }),
+      listOffersOfferFactory({
+        id: 2,
+        name: 'Bar',
+        status: OfferStatus.DRAFT,
+      }),
+    ])
+
+    renderOnboardingOfferIndividual()
+
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+    expect(
+      screen.queryByRole('heading', {
+        name: /Reprendre une offre déjà commencée/,
+      })
+    ).toBeInTheDocument()
+
+    expect(await screen.findAllByText(/Foo|Bar/)).toHaveLength(2)
+  })
+
+  it(`should not display over ${MAX_DRAFT_TO_DISPLAY} draft offers`, async () => {
+    vi.spyOn(api, 'listOffers').mockResolvedValue([
+      ...Array(MAX_DRAFT_TO_DISPLAY + 1)
+        .fill(true)
+        .map(() =>
+          listOffersOfferFactory({
+            status: OfferStatus.DRAFT,
+          })
+        ),
+    ])
+
+    renderOnboardingOfferIndividual()
+
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+    const heading = await screen.findByRole('heading', {
+      name: 'Reprendre une offre déjà commencée',
+    })
+
+    // Find all card links after that heading
+    const cardLinks = [...nextAllSiblings(heading, '.cardlink')]
+    expect(cardLinks).toHaveLength(MAX_DRAFT_TO_DISPLAY)
   })
 })
+
+// Util function to iterate over all siblings of an element
+function* nextAllSiblings(e: Element | null, selector: string) {
+  while ((e = e!.nextElementSibling)) {
+    if (e.matches(selector)) {
+      yield e
+    }
+  }
+}

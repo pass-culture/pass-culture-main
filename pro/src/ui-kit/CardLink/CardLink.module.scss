@@ -12,9 +12,6 @@ $border-size-selected: rem.torem(2px);
   border-radius: rem.torem(8px);
   position: relative;
 
-  // reserve space for border
-  // padding: $border-size-selected;
-
   // Direction: horizontal (default)
   padding: rem.torem(16px);
   display: flex;
@@ -33,17 +30,30 @@ $border-size-selected: rem.torem(2px);
     flex-direction: column;
   }
 
+  &-link {
+    &:focus {
+      outline: none;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+  }
+
+  &:hover {
+    box-shadow: forms.$input-hover-shadow;
+    cursor: pointer;
+  }
+
   &-icon {
     flex-shrink: 0;
     width: rem.torem(44px);
     height: rem.torem(44px);
     color: var(--color-secondary-light);
     margin-left: rem.torem(12px);
-  }
-
-  &:hover {
-    box-shadow: forms.$input-hover-shadow;
-    cursor: pointer;
   }
 
   &:focus-within {
@@ -86,8 +96,4 @@ $border-size-selected: rem.torem(2px);
       align-items: center;
     }
   }
-}
-
-.visually-hidden {
-  @include a11y.visually-hidden;
 }
