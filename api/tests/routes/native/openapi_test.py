@@ -1821,6 +1821,13 @@ def test_public_api(client):
                     "title": "ProfileUpdateRequest",
                     "type": "object",
                 },
+                "Rates": {
+                    "properties": {
+                        "pacificFrancToEuro": {"default": 0.00838, "title": "Pacificfranctoeuro", "type": "number"}
+                    },
+                    "title": "Rates",
+                    "type": "object",
+                },
                 "ReactionCount": {
                     "properties": {"likes": {"title": "Likes", "type": "integer"}},
                     "required": ["likes"],
@@ -1984,6 +1991,11 @@ def test_public_api(client):
                         "idCheckAddressAutocompletion": {"title": "Idcheckaddressautocompletion", "type": "boolean"},
                         "isRecaptchaEnabled": {"title": "Isrecaptchaenabled", "type": "boolean"},
                         "objectStorageUrl": {"title": "Objectstorageurl", "type": "string"},
+                        "rates": {
+                            "allOf": [{"$ref": "#/components/schemas/Rates"}],
+                            "default": {"pacificFrancToEuro": 0.00838},
+                            "title": "Rates",
+                        },
                     },
                     "required": [
                         "accountCreationMinimumAge",

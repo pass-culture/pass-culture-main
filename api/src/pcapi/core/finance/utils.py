@@ -11,6 +11,7 @@ ROUNDING = decimal.ROUND_HALF_UP
 # Article D721-2, Code monétaire et financier
 # 1000 CFP = 8.38 €
 EUR_TO_XPF_RATE = 1000 / 8.38
+XPR_TO_EUR_RATE = 1 / EUR_TO_XPF_RATE
 
 
 def to_cents(amount_in_euros: decimal.Decimal | float) -> int:

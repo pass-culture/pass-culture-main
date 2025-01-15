@@ -1,4 +1,5 @@
 import pcapi.core.finance.conf as finance_conf
+from pcapi.core.finance.utils import XPR_TO_EUR_RATE
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.shared.price import convert_to_cent
 from pcapi.serialization.utils import to_camel
@@ -9,6 +10,10 @@ class DepositAmountsByAge(BaseModel):
     age_16 = convert_to_cent(finance_conf.GRANTED_DEPOSIT_AMOUNT_16)
     age_17 = convert_to_cent(finance_conf.GRANTED_DEPOSIT_AMOUNT_17)
     age_18 = convert_to_cent(finance_conf.GRANTED_DEPOSIT_AMOUNT_18_v2)
+
+
+class Rates(BaseModel):
+    pacificFrancToEuro = XPR_TO_EUR_RATE
 
 
 class SettingsResponse(BaseModel):
@@ -23,6 +28,7 @@ class SettingsResponse(BaseModel):
     is_recaptcha_enabled: bool
     object_storage_url: str
     account_unsuspension_limit: int
+    rates = Rates()
 
     class Config:
         alias_generator = to_camel
