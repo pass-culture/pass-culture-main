@@ -247,12 +247,59 @@ def get_offers_data_from_top_offers(top_offers: list[dict]) -> list[dict]:
 def get_offers_details(offer_ids: list[int]) -> BaseQuery:
     return (
         models.Offer.query.options(
+            sa_orm.load_only(
+                models.Offer.id,
+                models.Offer.name,
+                models.Offer.extraData,
+                models.Offer.withdrawalDetails,
+                models.Offer.subcategoryId,
+                models.Offer.url,
+                models.Offer.isActive,
+                models.Offer.lastProviderId,
+                models.Offer.audioDisabilityCompliant,
+                models.Offer.mentalDisabilityCompliant,
+                models.Offer.motorDisabilityCompliant,
+                models.Offer.visualDisabilityCompliant,
+                models.Offer.venueId,
+                models.Offer.isDuo,
+                models.Offer.externalTicketOfficeUrl,
+            )
+        )
+        .options(
             sa_orm.selectinload(models.Offer.stocks)
+            .load_only(
+                models.Stock.idAtProviders,
+                models.Stock.beginningDatetime,
+                models.Stock.bookingLimitDatetime,
+                models.Stock.features,
+                models.Stock.price,
+                models.Stock.offerId,
+                models.Stock.isSoftDeleted,
+                models.Stock.quantity,
+                models.Stock.dnBookedQuantity,
+            )
             .joinedload(models.Stock.priceCategory)
             .joinedload(models.PriceCategory.priceCategoryLabel)
         )
         .options(
             sa_orm.joinedload(models.Offer.venue)
+            .load_only(
+                offerers_models.Venue.id,
+                offerers_models.Venue.name,
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.isPermanent,
+                offerers_models.Venue.bannerUrl,
+                offerers_models.Venue.venueTypeCode,
+                # For tests purposes only
+                # Those legacy location fields are still used by CalculatedOfferAddress with FF off
+                offerers_models.Venue.departementCode,
+                offerers_models.Venue.latitude,
+                offerers_models.Venue.longitude,
+                offerers_models.Venue.postalCode,
+                offerers_models.Venue.city,
+                offerers_models.Venue.timezone,
+                offerers_models.Venue.street,
+            )
             .joinedload(offerers_models.Venue.managingOfferer)
             .load_only(
                 offerers_models.Offerer.name, offerers_models.Offerer.validationStatus, offerers_models.Offerer.isActive
