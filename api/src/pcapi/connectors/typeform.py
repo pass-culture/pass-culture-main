@@ -186,7 +186,7 @@ class TypeformBackend(BaseBackend):
         for field in fields:
             if "fields" in field["properties"]:
                 questions += self._extract_questions(field["properties"]["fields"])
-            elif field["type"] in ("multiple_choice", "short_text", "long_text"):
+            elif field["type"] not in ("phone_number", "email"):
                 questions.append(TypeformQuestion(field_id=field["id"], title=field["title"].strip()))
         return questions
 
@@ -248,6 +248,10 @@ class TypeformBackend(BaseBackend):
                         phone_number = _strip(answer["phone_number"])
                     case "email":
                         email = _strip(answer["email"])
+                    case "boolean":
+                        answers.append(
+                            TypeformAnswer(field_id=answer["field"]["id"], text="Oui" if answer["boolean"] else "Non")
+                        )
                     case "choice":
                         answers.append(
                             TypeformAnswer(
@@ -256,10 +260,17 @@ class TypeformBackend(BaseBackend):
                                 choice_id=answer["choice"]["id"],
                             )
                         )
-                    case "number":
-                        answers.append(TypeformAnswer(field_id=answer["field"]["id"], text=str(answer["number"])))
-                    case "text":
-                        answers.append(TypeformAnswer(field_id=answer["field"]["id"], text=_strip(answer["text"])))
+                    case "date":
+                        answers.append(
+                            TypeformAnswer(
+                                field_id=answer["field"]["id"],
+                                text=datetime.fromisoformat(answer["date"]).strftime("%d/%m/%Y"),
+                            )
+                        )
+                    case "number" | "text" | "url" | "file_url":
+                        answers.append(
+                            TypeformAnswer(field_id=answer["field"]["id"], text=_strip(str(answer[answer["type"]])))
+                        )
                     case _:
                         raise ValueError("Unexpected answer type from Typeform API: %s" % (answer["type"],))
 

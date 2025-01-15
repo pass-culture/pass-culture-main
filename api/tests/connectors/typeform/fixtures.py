@@ -151,18 +151,9 @@ RESPONSE_SINGLE_FORM = {
             "id": "fC7aoAXHEfNR",
             "title": "Es-tu *bénéficiaire du pass Culture* ? ",
             "ref": "15c7f155-c67d-4729-a250-2942037acf68",
-            "properties": {
-                "randomize": False,
-                "allow_multiple_selection": False,
-                "allow_other_choice": False,
-                "vertical_alignment": True,
-                "choices": [
-                    {"id": "WzLwoZPepLy2", "ref": "d9411af1-b2a2-45cf-bae2-f206cfd5c025", "label": "Oui"},
-                    {"id": "AjxafZMU5kfh", "ref": "470bfdd6-1224-4266-8f27-9f2a20d0f876", "label": "Non"},
-                ],
-            },
+            "properties": {},
             "validations": {"required": True},
-            "type": "multiple_choice",
+            "type": "yes_no",
         },
         {
             "id": "HXMURW9ecHCn",
@@ -376,11 +367,11 @@ RESPONSE_FORM_RESPONSES = {
                 {
                     "field": {
                         "id": "fC7aoAXHEfNR",
-                        "type": "multiple_choice",
+                        "type": "yes_no",
                         "ref": "15c7f155-c67d-4729-a250-2942037acf68",
                     },
-                    "type": "choice",
-                    "choice": {"id": "WzLwoZPepLy2", "ref": "d9411af1-b2a2-45cf-bae2-f206cfd5c025", "label": "Oui"},
+                    "type": "boolean",
+                    "boolean": True,
                 },
                 {
                     "field": {
@@ -413,11 +404,11 @@ RESPONSE_FORM_RESPONSES = {
                 {
                     "field": {
                         "id": "fC7aoAXHEfNR",
-                        "type": "multiple_choice",
+                        "type": "yes_no",
                         "ref": "15c7f155-c67d-4729-a250-2942037acf68",
                     },
-                    "type": "choice",
-                    "choice": {"id": "AjxafZMU5kfh", "ref": "470bfdd6-1224-4266-8f27-9f2a20d0f876", "label": "Non"},
+                    "type": "boolean",
+                    "boolean": False,
                 }
             ],
         },
@@ -478,11 +469,11 @@ RESPONSE_FORM_RESPONSES = {
                 {
                     "field": {
                         "id": "fC7aoAXHEfNR",
-                        "type": "multiple_choice",
+                        "type": "yes_no",
                         "ref": "15c7f155-c67d-4729-a250-2942037acf68",
                     },
-                    "type": "choice",
-                    "choice": {"id": "WzLwoZPepLy2", "ref": "d9411af1-b2a2-45cf-bae2-f206cfd5c025", "label": "Oui"},
+                    "type": "boolean",
+                    "boolean": True,
                 },
                 {
                     "field": {
@@ -574,11 +565,11 @@ RESPONSE_FORM_RESPONSES = {
                 {
                     "field": {
                         "id": "fC7aoAXHEfNR",
-                        "type": "multiple_choice",
+                        "type": "yes_no",
                         "ref": "15c7f155-c67d-4729-a250-2942037acf68",
                     },
-                    "type": "choice",
-                    "choice": {"id": "WzLwoZPepLy2", "ref": "d9411af1-b2a2-45cf-bae2-f206cfd5c025", "label": "Oui"},
+                    "type": "boolean",
+                    "boolean": True,
                 },
                 {
                     "field": {
@@ -670,11 +661,11 @@ RESPONSE_FORM_RESPONSES = {
                 {
                     "field": {
                         "id": "fC7aoAXHEfNR",
-                        "type": "multiple_choice",
+                        "type": "yes_no",
                         "ref": "15c7f155-c67d-4729-a250-2942037acf68",
                     },
-                    "type": "choice",
-                    "choice": {"id": "WzLwoZPepLy2", "ref": "d9411af1-b2a2-45cf-bae2-f206cfd5c025", "label": "Oui"},
+                    "type": "boolean",
+                    "boolean": True,
                 },
                 {
                     "field": {
@@ -734,11 +725,11 @@ RESPONSE_FORM_RESPONSES = {
                 {
                     "field": {
                         "id": "fC7aoAXHEfNR",
-                        "type": "multiple_choice",
+                        "type": "yes_no",
                         "ref": "15c7f155-c67d-4729-a250-2942037acf68",
                     },
-                    "type": "choice",
-                    "choice": {"id": "WzLwoZPepLy2", "ref": "d9411af1-b2a2-45cf-bae2-f206cfd5c025", "label": "Oui"},
+                    "type": "boolean",
+                    "boolean": True,
                 },
                 {
                     "field": {
@@ -830,11 +821,11 @@ RESPONSE_FORM_RESPONSES = {
                 {
                     "field": {
                         "id": "fC7aoAXHEfNR",
-                        "type": "multiple_choice",
+                        "type": "yes_no",
                         "ref": "15c7f155-c67d-4729-a250-2942037acf68",
                     },
-                    "type": "choice",
-                    "choice": {"id": "WzLwoZPepLy2", "ref": "d9411af1-b2a2-45cf-bae2-f206cfd5c025", "label": "Oui"},
+                    "type": "boolean",
+                    "boolean": True,
                 },
                 {
                     "field": {
@@ -926,16 +917,366 @@ RESPONSE_FORM_RESPONSES = {
                 {
                     "field": {
                         "id": "fC7aoAXHEfNR",
-                        "type": "multiple_choice",
+                        "type": "yes_no",
                         "ref": "15c7f155-c67d-4729-a250-2942037acf68",
                     },
-                    "type": "choice",
-                    "choice": {"id": "AjxafZMU5kfh", "ref": "470bfdd6-1224-4266-8f27-9f2a20d0f876", "label": "Non"},
+                    "type": "boolean",
+                    "boolean": False,
                 }
             ],
         },
     ],
     "total_items": 9,
+    "page_count": 1,
+}
+
+RESPONSE_FORM_WITH_ALL_TYPES = {
+    "id": "AllTypes",
+    "type": "quiz",
+    "title": "Test types",
+    "workspace": {"href": "https://api.typeform.com/workspaces/nU4RKi"},
+    "theme": {"href": "https://api.typeform.com/themes/qHWOQ7"},
+    "settings": {
+        "language": "en",
+        "progress_bar": "proportion",
+        "meta": {"allow_indexing": False},
+        "hide_navigation": False,
+        "is_public": True,
+        "is_trial": False,
+        "show_progress_bar": True,
+        "show_typeform_branding": True,
+        "are_uploads_public": False,
+        "show_time_to_complete": True,
+        "show_number_of_submissions": False,
+        "show_cookie_consent": False,
+        "show_question_number": True,
+        "show_key_hint_on_choices": True,
+        "autosave_progress": True,
+        "free_form_navigation": False,
+        "use_lead_qualification": False,
+        "pro_subdomain_enabled": False,
+    },
+    "thankyou_screens": [
+        {
+            "id": "DefaultTyScreen",
+            "ref": "default_tys",
+            "title": "Thanks for completing this typeform\nNow *create your own* \u2014 it's free, easy, & beautiful",
+            "type": "thankyou_screen",
+            "properties": {
+                "show_button": True,
+                "share_icons": False,
+                "button_mode": "default_redirect",
+                "button_text": "Create a *typeform*",
+            },
+            "attachment": {"type": "image", "href": "https://images.typeform.com/images/2dpnUBBkz2VN"},
+        }
+    ],
+    "fields": [
+        {
+            "id": "roLXsK1FpiIW",
+            "title": "Phone Number",
+            "ref": "a4691847-bb60-4dbc-a7da-073eedc4bc03",
+            "properties": {"default_country_code": "FR"},
+            "validations": {"required": False},
+            "type": "phone_number",
+        },
+        {
+            "id": "eMgPD1PWAYmf",
+            "title": "Short Text",
+            "ref": "099594c0-2522-41dd-aaf8-8a0cd8f6b47b",
+            "properties": {},
+            "validations": {"required": False},
+            "type": "short_text",
+        },
+        {
+            "id": "ba8LmrqdUYMB",
+            "title": "Long Text",
+            "ref": "131efbb9-44ab-4244-98ad-82293b5dbf3a",
+            "properties": {},
+            "validations": {"required": False},
+            "type": "long_text",
+        },
+        {
+            "id": "EniCkHaRUqAl",
+            "title": "Picture Choice",
+            "ref": "a3776967-f0a4-4634-9253-117ffa97abbb",
+            "properties": {
+                "randomize": False,
+                "allow_multiple_selection": False,
+                "allow_other_choice": False,
+                "supersized": False,
+                "show_labels": True,
+                "choices": [
+                    {
+                        "id": "eis9XyZw90pa",
+                        "ref": "5439c61e-9988-4bbe-ae7f-47279e8108f1",
+                        "label": "choice 1",
+                        "attachment": {"type": "image", "href": "https://images.typeform.com/images/default"},
+                    }
+                ],
+            },
+            "validations": {"required": False},
+            "type": "picture_choice",
+        },
+        {
+            "id": "hAYANL7tc8LC",
+            "title": "Email",
+            "ref": "2e863091-f986-43bd-8f5c-c9f7c5c1c82b",
+            "properties": {},
+            "validations": {"required": False},
+            "type": "email",
+        },
+        {
+            "id": "y6JnBEAUwTL3",
+            "title": "Opinion Scale",
+            "ref": "421fcc7d-8d6d-4928-aee0-193aecec6d76",
+            "properties": {"start_at_one": False, "steps": 11},
+            "validations": {"required": False},
+            "type": "opinion_scale",
+        },
+        {
+            "id": "aTnnmOIKQ1sI",
+            "title": "Net Promoter Score",
+            "ref": "a61d2955-f06a-4af7-9e93-40aa28083aa2",
+            "properties": {"steps": 11},
+            "validations": {"required": False},
+            "type": "nps",
+        },
+        {
+            "id": "JcQyr9fRYDf0",
+            "title": "Rating",
+            "ref": "591888d3-20df-45fd-be28-275cb83023a9",
+            "properties": {"shape": "star", "steps": 10},
+            "validations": {"required": False},
+            "type": "rating",
+        },
+        {
+            "id": "I4uQIqJBAMp4",
+            "title": "Date",
+            "ref": "1b08f32a-f650-4a74-9eb5-abc9cde5c902",
+            "properties": {"separator": "/", "structure": "DDMMYYYY"},
+            "validations": {"required": False},
+            "type": "date",
+        },
+        {
+            "id": "TJyr1v48AHpy",
+            "title": "Dropdown",
+            "ref": "7f764b9e-9de0-46fd-abb7-6b44e0f9c252",
+            "properties": {
+                "randomize": False,
+                "alphabetical_order": False,
+                "choices": [
+                    {"id": "iNLyeY8Pu2ML", "ref": "880428a4-4f00-4708-8c17-fb88c80cbd06", "label": "First choice"},
+                    {"id": "WU0lkYJKqzG5", "ref": "b20f2266-350f-4223-8d14-2c44acba5c12", "label": "Second choice"},
+                    {"id": "xBN05P319tjq", "ref": "b8def4b0-0a46-4189-b593-339ebb6f8419", "label": "Third choice"},
+                ],
+            },
+            "validations": {"required": False},
+            "type": "dropdown",
+        },
+        {
+            "id": "MaR4S8YbxCJa",
+            "title": "Number",
+            "ref": "03f9e0d5-9fb5-4467-af72-fa6282ad86a2",
+            "properties": {},
+            "validations": {"required": False},
+            "type": "number",
+        },
+        {
+            "id": "piy78v4evI30",
+            "title": "File Upload",
+            "ref": "0e2ecb2a-3f57-4367-b421-257bb0bca941",
+            "properties": {},
+            "validations": {"required": False},
+            "type": "file_upload",
+        },
+        {
+            "id": "7FEILVHV7F2z",
+            "title": "Website",
+            "ref": "d63122cb-af09-449e-a1ef-f2ebecb70052",
+            "properties": {},
+            "validations": {"required": False},
+            "type": "website",
+        },
+        {
+            "id": "vZBb9AFZ7fRa",
+            "title": "Yes/No",
+            "ref": "f51f66a7-4628-4302-9ca0-00134c4a94cb",
+            "properties": {},
+            "validations": {"required": False},
+            "type": "yes_no",
+        },
+        {
+            "id": "gsLpt8bpaP0u",
+            "title": "Legal",
+            "ref": "7a44478a-5e5c-427e-a1a8-c3c78a572d16",
+            "properties": {},
+            "validations": {"required": False},
+            "type": "legal",
+        },
+        {
+            "id": "VjdqXQRZyK70",
+            "title": "Multiple Choice",
+            "ref": "d762eb05-42f9-4925-9300-cd61f0b5ef86",
+            "properties": {
+                "randomize": False,
+                "allow_multiple_selection": False,
+                "allow_other_choice": False,
+                "vertical_alignment": True,
+                "choices": [
+                    {"id": "MmZE3BmgKD8t", "ref": "d936e145-0635-432f-9cf3-1883241af27e", "label": "First choice"},
+                    {"id": "XpFpTzNygSf2", "ref": "3ce16f40-58ab-4e34-9010-dadbae6b3135", "label": "Second choice"},
+                    {"id": "08vEWpUbjUTV", "ref": "cb1d2847-c03a-4061-b2ad-c61c86dcd98c", "label": "Third choice"},
+                ],
+            },
+            "validations": {"required": False},
+            "type": "multiple_choice",
+        },
+    ],
+    "created_at": "2025-01-15T12:44:47+00:00",
+    "last_updated_at": "2025-01-15T13:20:45+00:00",
+    "published_at": "2025-01-15T13:20:45+00:00",
+    "_links": {
+        "display": "https://passculture.typeform.com/to/AllTypes",
+        "responses": "https://api.typeform.com/forms/AllTypes/responses",
+    },
+}
+
+RESPONSE_FORM_RESPONSE_WITH_ALL_TYPES = {
+    "items": [
+        {
+            "landing_id": "nj0g9wtuhxhkqdw11qnj0g9wnf3edhxu",
+            "token": "nj0g9wtuhxhkqdw11qnj0g9wnf3edhxu",  # ggignore
+            "response_id": "nj0g9wtuhxhkqdw11qnj0g9wnf3edhxu",
+            "response_type": "completed",
+            "landed_at": "2025-01-15T13:20:56Z",
+            "submitted_at": "2025-01-15T13:22:27Z",
+            "metadata": {
+                "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+                "platform": "other",
+                "referer": "https://passculture.typeform.com/to/AllTypes",
+                "network_id": "02caf8bf57",
+                "browser": "default",
+            },
+            "hidden": {},
+            "calculated": {"score": 0},
+            "answers": [
+                {
+                    "field": {
+                        "id": "roLXsK1FpiIW",
+                        "type": "phone_number",
+                        "ref": "a4691847-bb60-4dbc-a7da-073eedc4bc03",
+                    },
+                    "type": "phone_number",
+                    "phone_number": "+33123456789",
+                },
+                {
+                    "field": {
+                        "id": "eMgPD1PWAYmf",
+                        "type": "short_text",
+                        "ref": "099594c0-2522-41dd-aaf8-8a0cd8f6b47b",
+                    },
+                    "type": "text",
+                    "text": "pass",
+                },
+                {
+                    "field": {"id": "ba8LmrqdUYMB", "type": "long_text", "ref": "131efbb9-44ab-4244-98ad-82293b5dbf3a"},
+                    "type": "text",
+                    "text": "pass Culture",
+                },
+                {
+                    "field": {
+                        "id": "EniCkHaRUqAl",
+                        "type": "picture_choice",
+                        "ref": "a3776967-f0a4-4634-9253-117ffa97abbb",
+                    },
+                    "type": "choice",
+                    "choice": {
+                        "id": "eis9XyZw90pa",
+                        "ref": "5439c61e-9988-4bbe-ae7f-47279e8108f1",
+                        "label": "choice 1",
+                    },
+                },
+                {
+                    "field": {"id": "hAYANL7tc8LC", "type": "email", "ref": "2e863091-f986-43bd-8f5c-c9f7c5c1c82b"},
+                    "type": "email",
+                    "email": "user@example.com",
+                },
+                {
+                    "field": {
+                        "id": "y6JnBEAUwTL3",
+                        "type": "opinion_scale",
+                        "ref": "421fcc7d-8d6d-4928-aee0-193aecec6d76",
+                    },
+                    "type": "number",
+                    "number": 8,
+                },
+                {
+                    "field": {"id": "aTnnmOIKQ1sI", "type": "nps", "ref": "a61d2955-f06a-4af7-9e93-40aa28083aa2"},
+                    "type": "number",
+                    "number": 7,
+                },
+                {
+                    "field": {"id": "JcQyr9fRYDf0", "type": "rating", "ref": "591888d3-20df-45fd-be28-275cb83023a9"},
+                    "type": "number",
+                    "number": 9,
+                },
+                {
+                    "field": {"id": "I4uQIqJBAMp4", "type": "date", "ref": "1b08f32a-f650-4a74-9eb5-abc9cde5c902"},
+                    "type": "date",
+                    "date": "2025-01-15T00:00:00.000Z",
+                },
+                {
+                    "field": {"id": "TJyr1v48AHpy", "type": "dropdown", "ref": "7f764b9e-9de0-46fd-abb7-6b44e0f9c252"},
+                    "type": "text",
+                    "text": "Second choice",
+                },
+                {
+                    "field": {"id": "MaR4S8YbxCJa", "type": "number", "ref": "03f9e0d5-9fb5-4467-af72-fa6282ad86a2"},
+                    "type": "number",
+                    "number": 123,
+                },
+                {
+                    "field": {
+                        "id": "piy78v4evI30",
+                        "type": "file_upload",
+                        "ref": "0e2ecb2a-3f57-4367-b421-257bb0bca941",
+                    },
+                    "type": "file_url",
+                    "file_url": "https://api.typeform.com/forms/AllTypes/responses/nj0g9wtuhxhkqdw11qnj0g9wnf3edhxu/fields/piy78v4evI30/files/file.jpg",
+                },
+                {
+                    "field": {"id": "7FEILVHV7F2z", "type": "website", "ref": "d63122cb-af09-449e-a1ef-f2ebecb70052"},
+                    "type": "url",
+                    "url": "https://example.com",
+                },
+                {
+                    "field": {"id": "vZBb9AFZ7fRa", "type": "yes_no", "ref": "f51f66a7-4628-4302-9ca0-00134c4a94cb"},
+                    "type": "boolean",
+                    "boolean": True,
+                },
+                {
+                    "field": {"id": "gsLpt8bpaP0u", "type": "legal", "ref": "7a44478a-5e5c-427e-a1a8-c3c78a572d16"},
+                    "type": "boolean",
+                    "boolean": True,
+                },
+                {
+                    "field": {
+                        "id": "VjdqXQRZyK70",
+                        "type": "multiple_choice",
+                        "ref": "d762eb05-42f9-4925-9300-cd61f0b5ef86",
+                    },
+                    "type": "choice",
+                    "choice": {
+                        "id": "MmZE3BmgKD8t",
+                        "ref": "d936e145-0635-432f-9cf3-1883241af27e",
+                        "label": "First choice",
+                    },
+                },
+            ],
+        }
+    ],
+    "total_items": 1,
     "page_count": 1,
 }
 

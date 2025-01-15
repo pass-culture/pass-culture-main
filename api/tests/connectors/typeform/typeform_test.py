@@ -11,8 +11,12 @@ from pcapi.connectors import typeform
 from tests.connectors.typeform import fixtures
 
 
+pytestmark = [
+    pytest.mark.settings(TYPEFORM_BACKEND="pcapi.connectors.typeform.TypeformBackend"),
+]
+
+
 class SearchFormTest:
-    @pytest.mark.settings(TYPEFORM_BACKEND="pcapi.connectors.typeform.TypeformBackend")
     def test_search_forms(self):
         with requests_mock.Mocker() as mock:
             mock.get("https://api.typeform.com/forms?search=concours", json=fixtures.RESPONSE_SEARCH_FORMS)
@@ -29,13 +33,11 @@ class SearchFormTest:
         assert forms[2].form_id == "T9XBuGwX"
         assert forms[2].title == "Concours - Visite des coulisses La Cigale et la Fourmi"
 
-    @pytest.mark.settings(TYPEFORM_BACKEND="pcapi.connectors.typeform.TypeformBackend")
     def test_search_forms_no_result(self):
         pass
 
 
 class GetFormTest:
-    @pytest.mark.settings(TYPEFORM_BACKEND="pcapi.connectors.typeform.TypeformBackend")
     def test_get_form(self):
         form_id = "aBCdEF12"
         with requests_mock.Mocker() as mock:
@@ -73,7 +75,15 @@ class GetFormTest:
             == "*En participant à ce tirage, je m'engage, si je suis sélectionné.e, à honorer ma participation et à me présenter au jour et à l'horaire qui me seront communiqués.*"
         )
 
-    @pytest.mark.settings(TYPEFORM_BACKEND="pcapi.connectors.typeform.TypeformBackend")
+    def test_get_form_with_all_types(self):
+        form_id = "AllTypes"
+        with requests_mock.Mocker() as mock:
+            mock.get(f"https://api.typeform.com/forms/{form_id}", json=fixtures.RESPONSE_FORM_WITH_ALL_TYPES)
+            form = typeform.get_form(form_id)
+
+        assert form.form_id == form_id
+        # Types are not returned here, but this test ensures that any future development will not break any type
+
     def test_get_form_not_found(self):
         form_id = "AaAaAa"
         with requests_mock.Mocker() as mock:
@@ -85,8 +95,7 @@ class GetFormTest:
 
 
 class GetResponsesTest:
-    @pytest.mark.settings(TYPEFORM_BACKEND="pcapi.connectors.typeform.TypeformBackend")
-    def test_get_responses(self):
+    def test_get_all_responses(self):
         form_id = "aBCdEF12"
         with requests_mock.Mocker() as mock:
             mock.get(f"https://api.typeform.com/forms/{form_id}/responses", json=fixtures.RESPONSE_FORM_RESPONSES)
@@ -143,7 +152,39 @@ class GetResponsesTest:
             == "J'ai lu et compris  les conditions. Je confirme ma participation au tirage au sort."
         )
 
-    @pytest.mark.settings(TYPEFORM_BACKEND="pcapi.connectors.typeform.TypeformBackend")
+    def test_get_response_with_many_types(self):
+        form_id = "AllTypes"
+        with requests_mock.Mocker() as mock:
+            mock.get(
+                f"https://api.typeform.com/forms/{form_id}/responses",
+                json=fixtures.RESPONSE_FORM_RESPONSE_WITH_ALL_TYPES,
+            )
+            responses = typeform.get_responses(form_id)
+
+        assert len(responses) == 1
+        response = responses[0]
+
+        assert response.phone_number == "+33123456789"
+        assert response.email == "user@example.com"
+        assert len(response.answers) == 14
+        assert response.answers[0].text == "pass"
+        assert response.answers[1].text == "pass Culture"
+        assert response.answers[2].text == "choice 1"
+        assert response.answers[3].text == "8"
+        assert response.answers[4].text == "7"
+        assert response.answers[5].text == "9"
+        assert response.answers[6].text == "15/01/2025"
+        assert response.answers[7].text == "Second choice"
+        assert response.answers[8].text == "123"
+        assert (
+            response.answers[9].text
+            == "https://api.typeform.com/forms/AllTypes/responses/nj0g9wtuhxhkqdw11qnj0g9wnf3edhxu/fields/piy78v4evI30/files/file.jpg"
+        )
+        assert response.answers[10].text == "https://example.com"
+        assert response.answers[11].text == "Oui"
+        assert response.answers[12].text == "Oui"
+        assert response.answers[13].text == "First choice"
+
     def test_get_responses_not_found(self):
         form_id = "AaAaAa"
         with requests_mock.Mocker() as mock:
