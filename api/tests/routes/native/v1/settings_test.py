@@ -33,6 +33,7 @@ class SettingsTest:
             "isRecaptchaEnabled": True,
             "objectStorageUrl": "http://localhost/storage",
             "accountUnsuspensionLimit": 60,
+            "rates": {"pacificFrancToEuro": 0.00838},
         }
 
     @pytest.mark.features(
@@ -61,4 +62,5 @@ class SettingsTest:
             "isRecaptchaEnabled": False,
             "objectStorageUrl": "http://localhost/storage",
             "accountUnsuspensionLimit": 60,
+            "rates": {"pacificFrancToEuro": 0.00838},
         }
