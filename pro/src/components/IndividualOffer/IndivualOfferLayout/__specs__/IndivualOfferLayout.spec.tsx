@@ -199,4 +199,20 @@ describe('IndivualOfferLayout', () => {
 
     expect(screen.queryByText(/Publication prévue le/)).not.toBeInTheDocument()
   })
+
+  it('should display a proper tag when offer is an headline offer and feature is active', () => {
+    const offer = getIndividualOfferFactory({
+      isHeadlineOffer: true,
+    })
+
+    renderIndivualOfferLayout({
+      offer,
+    }, {
+      features: [
+        'WIP_HEADLINE_OFFER',
+      ]
+    })
+
+    expect(screen.getByText('Offre à la une')).toBeInTheDocument()
+  })
 })
