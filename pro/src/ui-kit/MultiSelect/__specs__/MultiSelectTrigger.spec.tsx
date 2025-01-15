@@ -1,360 +1,107 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
-import { Option } from '../MultiSelect'
-import { MultiSelectPanel } from '../MultiSelectPanel'
+import { MultiSelectTrigger } from '../MultiSelectTrigger'
 
-describe('<MultiSelectPanel />', () => {
-  const options: (Option & { checked: boolean })[] = [
-    { id: '1', label: 'Option 1', checked: false },
-    { id: '2', label: 'Option 2', checked: false },
-    { id: '3', label: 'Option 3', checked: false },
-  ]
+describe('<MultiSelectTrigger />', () => {
+  const mockToggleDropdown = vi.fn()
 
-  const onOptionSelect = vi.fn()
-  const onSelectAll = vi.fn()
-
-  it('renders options with checkboxes', () => {
-    render(
-      <MultiSelectPanel
+  const renderMultiSelectPanel = ({
+    disabled = false,
+    isOpen = false,
+    selectedCount = 0,
+  }: {
+    disabled?: boolean
+    isOpen?: boolean
+    selectedCount?: number
+  } = {}) => {
+    return render(
+      <MultiSelectTrigger
         id="1"
-        options={options}
-        label={''}
-        hasSearch={false}
-        onOptionSelect={onOptionSelect}
-        onSelectAll={onSelectAll}
-        isAllChecked={false}
+        toggleDropdown={mockToggleDropdown}
+        legend={'Select Options'}
+        label={'Options Label'}
+        disabled={disabled}
+        isOpen={isOpen}
+        selectedCount={selectedCount}
       />
     )
+  }
 
-    expect(screen.getByLabelText('Option 1')).toBeInTheDocument()
-    expect(screen.getByLabelText('Option 2')).toBeInTheDocument()
-    expect(screen.getByLabelText('Option 3')).toBeInTheDocument()
+  it('should render correctly', () => {
+    renderMultiSelectPanel({ selectedCount: 2 })
+
+    expect(screen.getByText('Options Label')).toBeInTheDocument()
+    expect(screen.getByText('2')).toBeInTheDocument()
   })
 
-  it('renders the search input if hasSearch is true', () => {
-    render(
-      <MultiSelectPanel
-        id="1"
-        options={[]}
-        label={''}
-        onOptionSelect={onOptionSelect}
-        hasSearch={true}
-        searchExample="Exemple: Nantes"
-        searchLabel="Search label"
-        onSelectAll={onSelectAll}
-        isAllChecked={false}
-      />
-    )
+  it('should have no accessibility violations', async () => {
+    const { container } = renderMultiSelectPanel()
 
-    expect(screen.getByText(/Exemple: Nantes/i)).toBeInTheDocument()
+    const results = await axe(container)
+    expect(results).toHaveNoViolations()
   })
 
-  test('updates search value on input change', async () => {
-    render(
-      <MultiSelectPanel
-        id="1"
-        options={[]}
-        label={''}
-        onOptionSelect={onOptionSelect}
-        hasSearch={true}
-        searchExample="Exemple: Nantes"
-        searchLabel="Search label"
-        onSelectAll={onSelectAll}
-        isAllChecked={false}
-      />
-    )
+  it('should disable the button when disabled prop is passed', () => {
+    renderMultiSelectPanel({ disabled: true })
 
-    const input = screen.getByRole('searchbox')
+    const button = screen.getByRole('button')
 
-    await userEvent.type(input, 'apple')
-
-    expect(input).toHaveValue('apple')
+    expect(button).toBeDisabled()
   })
 
-  test('displays the search example text', () => {
-    render(
-      <MultiSelectPanel
-        id="1"
-        options={[]}
-        label={''}
-        onOptionSelect={onOptionSelect}
-        hasSearch={true}
-        searchExample="Exemple: Nantes"
-        searchLabel="Search label"
-        onSelectAll={onSelectAll}
-        isAllChecked={false}
-      />
-    )
-
-    expect(screen.getByText('Exemple: Nantes')).toBeInTheDocument()
-  })
-
-  it('not renders the search input if hasSearch is false', () => {
-    render(
-      <MultiSelectPanel
-        id="1"
-        options={[]}
-        label={''}
-        onOptionSelect={onOptionSelect}
-        hasSearch={false}
-        onSelectAll={onSelectAll}
-        isAllChecked={false}
-      />
-    )
-
-    expect(screen.queryByText(/Exemple: Nantes/i)).not.toBeInTheDocument()
-  })
-
-  it('should filter options based on the search input', async () => {
-    render(
-      <MultiSelectPanel
-        id="1"
-        options={options}
-        label={''}
-        onOptionSelect={onOptionSelect}
-        hasSearch={true}
-        searchExample="Exemple: Nantes"
-        searchLabel="Search label"
-        onSelectAll={onSelectAll}
-        isAllChecked={false}
-      />
-    )
-
-    expect(screen.getByText('Option 1')).toBeInTheDocument()
-    expect(screen.getByText('Option 2')).toBeInTheDocument()
-    expect(screen.getByText('Option 3')).toBeInTheDocument()
-
-    const searchInput = screen.getByRole('searchbox')
-
-    await userEvent.type(searchInput, 'Option 1')
-
-    await waitFor(() => {
-      expect(screen.queryByText('Option 2')).not.toBeInTheDocument()
-      expect(screen.queryByText('Option 3')).not.toBeInTheDocument()
-      expect(screen.getByText('Option 1')).toBeInTheDocument()
+  it('should display the chevron open icon if panel is opened', () => {
+    const { container } = renderMultiSelectPanel({
+      disabled: true,
+      isOpen: true,
     })
 
-    await userEvent.clear(searchInput)
+    let chevronIcon = container.querySelector('svg')
 
-    await waitFor(() => {
-      expect(screen.getByText('Option 1')).toBeInTheDocument()
-      expect(screen.getByText('Option 2')).toBeInTheDocument()
-      expect(screen.getByText('Option 3')).toBeInTheDocument()
-    })
+    expect(chevronIcon).toHaveClass('chevron chevronOpen')
   })
 
-  it('should show "No results found" when no options match the search', async () => {
-    render(
-      <MultiSelectPanel
-        id="1"
-        options={options}
-        label={''}
-        onOptionSelect={onOptionSelect}
-        hasSearch={true}
-        searchExample="Exemple: Nantes"
-        searchLabel="Search label"
-        onSelectAll={onSelectAll}
-        isAllChecked={false}
-      />
-    )
+  it('should not display the chevron icon open if panel is closed', () => {
+    const { container } = renderMultiSelectPanel()
 
-    const searchInput = screen.getByRole('searchbox')
+    let chevronIcon = container.querySelector('svg')
 
-    await userEvent.type(searchInput, 'Non-matching option')
+    chevronIcon = container.querySelector('svg')
 
-    await waitFor(() =>
-      expect(
-        screen.getByText('Aucun résultat trouvé pour votre recherche.')
-      ).toBeInTheDocument()
-    )
+    expect(chevronIcon).not.toHaveClass('chevron chevronOpen')
   })
 
-  it('should not have accessibility violations', async () => {
-    const { container } = render(
-      <MultiSelectPanel
-        id="1"
-        options={[]}
-        label=""
-        onOptionSelect={onOptionSelect}
-        hasSearch={false}
-        onSelectAll={onSelectAll}
-        isAllChecked={false}
-      />
-    )
+  it('should render badge with correct count when options are selected', () => {
+    renderMultiSelectPanel({ selectedCount: 3 })
 
-    expect(await axe(container)).toHaveNoViolations()
+    expect(screen.getByText('3')).toBeInTheDocument()
   })
 
-  it('selects and deselects individual options', async () => {
-    render(
-      <MultiSelectPanel
-        id="1"
-        options={options}
-        label=""
-        hasSearch={false}
-        onOptionSelect={onOptionSelect}
-        onSelectAll={onSelectAll}
-        isAllChecked={false}
-      />
-    )
+  it('should not render badge when no options are selected', () => {
+    renderMultiSelectPanel({ selectedCount: 0 })
 
-    const option2Checkbox = screen.getByLabelText(/Option 2/i)
-    await userEvent.click(option2Checkbox)
-    expect(onOptionSelect).toHaveBeenCalledWith(options[1])
-
-    await userEvent.click(option2Checkbox)
-    expect(onOptionSelect).toHaveBeenCalledWith(options[1])
+    const badge = screen.queryByText('0')
+    expect(badge).toBeNull()
   })
 
-  test('renders "Select All" checkbox when hasSelectAllOptions is true', () => {
-    render(
-      <MultiSelectPanel
-        id="1"
-        options={options}
-        label=""
-        onOptionSelect={onOptionSelect}
-        onSelectAll={onSelectAll}
-        hasSelectAllOptions={true}
-        isAllChecked={false}
-        hasSearch={false}
-      />
-    )
+  it('should update badge count when selecting and deselecting options', () => {
+    const { rerender } = renderMultiSelectPanel({ selectedCount: 2 })
 
-    expect(screen.getByLabelText('Tout sélectionner')).toBeInTheDocument()
+    expect(screen.getByText('2')).toBeInTheDocument()
+
+    rerender(5)
+
+    expect(screen.getByText('5')).toBeInTheDocument()
   })
 
-  test('triggers onSelectAll when "Select All" checkbox is clicked', async () => {
-    render(
-      <MultiSelectPanel
-        id="1"
-        options={options}
-        label=""
-        onOptionSelect={onOptionSelect}
-        onSelectAll={onSelectAll}
-        hasSelectAllOptions={true}
-        isAllChecked={false}
-        hasSearch={false}
-      />
-    )
+  it('should call toggleDropdown when the button is clicked', async () => {
+    renderMultiSelectPanel()
 
-    const selectAllCheckbox = screen.getByLabelText('Tout sélectionner')
-    await userEvent.click(selectAllCheckbox)
+    const button = screen.getByRole('button')
 
-    expect(onSelectAll).toHaveBeenCalledTimes(1)
-  })
+    await userEvent.click(button)
 
-  test('reflects isAllChecked state in "Select All" checkbox', () => {
-    render(
-      <MultiSelectPanel
-        id="1"
-        options={options}
-        label=""
-        onOptionSelect={onOptionSelect}
-        onSelectAll={onSelectAll}
-        hasSelectAllOptions={true}
-        isAllChecked={true}
-        hasSearch={false}
-      />
-    )
-
-    const selectAllCheckbox = screen.getByLabelText('Tout sélectionner')
-    expect(selectAllCheckbox).toBeChecked()
-  })
-
-  test('does not render "Select All" checkbox when hasSelectAllOptions is false', () => {
-    render(
-      <MultiSelectPanel
-        id="1"
-        options={options}
-        label=""
-        onOptionSelect={onOptionSelect}
-        onSelectAll={onSelectAll}
-        hasSelectAllOptions={false}
-        isAllChecked={false}
-        hasSearch={false}
-      />
-    )
-
-    const selectAllCheckbox = screen.queryByLabelText('Tout sélectionner')
-    expect(selectAllCheckbox).not.toBeInTheDocument()
-  })
-
-  test('calls onOptionSelect when Enter key is pressed on an option', async () => {
-    render(
-      <MultiSelectPanel
-        id="1"
-        options={options}
-        label=""
-        onOptionSelect={onOptionSelect}
-        onSelectAll={onSelectAll}
-        hasSelectAllOptions={true}
-        isAllChecked={false}
-        hasSearch={false}
-      />
-    )
-
-    const optionCheckbox = screen.getByLabelText('Option 1')
-
-    optionCheckbox.focus()
-
-    await userEvent.keyboard('[Space]')
-
-    expect(onOptionSelect).toHaveBeenCalledWith({
-      id: '1',
-      label: 'Option 1',
-      checked: false,
-    })
-  })
-
-  test('calls onOptionSelect when Space key is pressed on an option', async () => {
-    render(
-      <MultiSelectPanel
-        id="1"
-        label=""
-        options={options}
-        onOptionSelect={onOptionSelect}
-        onSelectAll={onSelectAll}
-        hasSelectAllOptions={true}
-        isAllChecked={false}
-        hasSearch={false}
-      />
-    )
-
-    const optionCheckbox = screen.getByLabelText('Option 2')
-
-    optionCheckbox.focus()
-
-    await userEvent.keyboard('[Space]')
-
-    expect(onOptionSelect).toHaveBeenCalledWith({
-      id: '2',
-      label: 'Option 2',
-      checked: false,
-    })
-  })
-
-  test('does not call onOptionSelect when other keys are pressed', async () => {
-    render(
-      <MultiSelectPanel
-        id="1"
-        options={options}
-        label=""
-        onOptionSelect={onOptionSelect}
-        onSelectAll={onSelectAll}
-        hasSelectAllOptions={true}
-        isAllChecked={false}
-        hasSearch={false}
-      />
-    )
-
-    const optionCheckbox = screen.getByLabelText('Option 3')
-
-    optionCheckbox.focus()
-
-    await userEvent.keyboard('[ArrowDown]')
-
-    expect(onOptionSelect).not.toHaveBeenCalled()
+    expect(mockToggleDropdown).toHaveBeenCalledTimes(1)
   })
 })

@@ -35,6 +35,7 @@ export const MultiSelectTrigger = ({
         })}
         onClick={toggleDropdown}
         aria-haspopup="listbox"
+        aria-label={label}
         aria-expanded={isOpen}
         aria-controls={id}
         disabled={disabled}

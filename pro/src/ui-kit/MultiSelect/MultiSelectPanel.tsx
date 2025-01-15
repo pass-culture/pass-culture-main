@@ -85,7 +85,6 @@ export const MultiSelectPanel = ({
                   labelClassName={styles['label']}
                   inputClassName={styles['checkbox']}
                   onChange={onSelectAll}
-                  tabIndex={0}
                 />
                 <div className={styles['separator']} />
               </li>
@@ -98,7 +97,6 @@ export const MultiSelectPanel = ({
                   label={option.label}
                   checked={option.checked}
                   onChange={() => onOptionSelect(option)}
-                  tabIndex={0}
                 />
               </li>
             ))}
