@@ -85,10 +85,10 @@ export const orejimeConfig = {
       consentModal: {
         title: 'Gestion des cookies',
         description:
-          'Un cookie est un fichier texte déposé sur votre appareil lors de votre visite sur la plateforme. Nous utilisons les données collectées par ces cookies et traceurs afin de vous proposer la meilleure expérience possible. Vous pouvez accepter ou refuser l’activation de leur suivi. \n' +
-          '\n' +
-          'Votre choix est conservé pendant 6 mois. À tout moment, vous pouvez consulter et modifier vos préférences à partir de la page « Gérer les cookies » dans la rubrique \n' +
-          '« Aide et support ».',
+          'Un cookie est un fichier texte déposé sur votre appareil lors de votre visite sur la plateforme. Nous utilisons les données collectées par ces cookies et traceurs afin de vous proposer la meilleure expérience possible. Vous pouvez accepter ou refuser l’activation de leur suivi. Votre choix est conservé pendant 6 mois. Les cookies mentionnés ci-dessous sont ceux pour lesquels votre consentement est requis. À tout moment, vous pouvez consulter et modifier vos préférences à partir de la page « Gérer les cookies » dans la rubrique « Aide et support ».',
+        privacyPolicy: {
+          text: 'Pour en savoir plus, notamment sur les cookies dits "essentiels", merci de consulter notre {privacyPolicy}.',
+        },
       },
       acceptTitle: 'Tout accepter',
       accept: 'Tout accepter',
@@ -116,7 +116,7 @@ export const orejimeConfig = {
   apps: [
     {
       name: Consents.FIREBASE,
-      title: 'Firebase',
+      title: 'Firebase  (Google Analytics)',
       cookies: /_ga.*/,
       purposes: ['personalization'],
     },
