@@ -2,8 +2,8 @@ name: "1 [on_pull_request] Delete PR deployment"
 
 on:
   pull_request:
-    types:
-      - closed
+    #    types:
+    #  - closed
 
 jobs:
   # Delete pcapi preview deployment
