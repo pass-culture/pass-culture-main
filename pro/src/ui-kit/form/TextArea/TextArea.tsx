@@ -173,6 +173,7 @@ export const TextArea = ({
       showError={meta.touched && !!meta.error}
       smallLabel={smallLabel}
       description={description}
+      showMandatoryAsterisk={props.showMandatoryAsterisk}
     >
       <textarea
         aria-invalid={meta.touched && !!meta.error}

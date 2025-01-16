@@ -7,8 +7,6 @@
 
   &-title {
     @include fonts.title3;
-
-    margin-bottom: rem.torem(24px);
   }
 
   &-buttons {
@@ -25,6 +23,14 @@
   @media screen and (min-width: size.$tablet) {
     max-width: rem.torem(592px);
   }
+}
+
+.dialog-mandatory {
+  margin: rem.torem(16px) 0;
+}
+
+.text-area-container {
+  margin: rem.torem(24px) 0;
 }
 
 .radio-legend {

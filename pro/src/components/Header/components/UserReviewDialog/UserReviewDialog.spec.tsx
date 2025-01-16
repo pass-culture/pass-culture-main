@@ -43,26 +43,14 @@ describe('UserReviewDialog', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should disable submit button when no options selected', () => {
-    renderUserReviewDialog()
-
-    const submitButton = screen.getByRole('button', { name: 'Envoyer' })
-
-    expect(submitButton).toBeDisabled()
-  })
-
   it('should submit data when submit button is clicked', async () => {
     vi.spyOn(api, 'submitUserReview').mockResolvedValueOnce()
     renderUserReviewDialog()
 
+    await userEvent.type(screen.getByRole('textbox'), 'Commentaire utilisateur')
+
     const submitButton = screen.getByRole('button', { name: 'Envoyer' })
     await userEvent.click(screen.getByRole('radio', { name: 'Excellente' }))
-    await userEvent.type(
-      screen.getByLabelText(
-        'Souhaitez-vous préciser ? Nous lisons tous les commentaires. 🙂'
-      ),
-      'Commentaire utilisateur'
-    )
 
     await userEvent.click(submitButton)
 
@@ -80,6 +68,7 @@ describe('UserReviewDialog', () => {
     renderUserReviewDialog()
 
     await userEvent.click(screen.getByRole('radio', { name: 'Excellente' }))
+    await userEvent.type(screen.getByRole('textbox'), 'description')
 
     const submitButton = screen.getByRole('button', { name: 'Envoyer' })
 
@@ -94,6 +83,7 @@ describe('UserReviewDialog', () => {
     renderUserReviewDialog()
 
     await userEvent.click(screen.getByRole('radio', { name: 'Excellente' }))
+    await userEvent.type(screen.getByRole('textbox'), 'description')
 
     const submitButton = screen.getByRole('button', { name: 'Envoyer' })
     await userEvent.click(submitButton)
@@ -117,6 +107,7 @@ describe('UserReviewDialog', () => {
     renderUserReviewDialog()
 
     await userEvent.click(screen.getByRole('radio', { name: 'Excellente' }))
+    await userEvent.type(screen.getByRole('textbox'), 'description')
 
     const submitButton = screen.getByRole('button', { name: 'Envoyer' })
     await userEvent.click(submitButton)
