@@ -4,14 +4,18 @@ import style from './FormLayout.module.scss'
 
 interface FormLayoutMandatoryInfoProps {
   className?: string
+  areAllFieldsMandatory?: boolean
 }
 
 export const MandatoryInfo = ({
   className,
+  areAllFieldsMandatory = false,
 }: FormLayoutMandatoryInfoProps): JSX.Element => {
   return (
     <p className={cn(style['mandatory-info'], className)}>
-      Tous les champs suivis d’un * sont obligatoires.
+      {areAllFieldsMandatory
+        ? 'Tous les champs sont obligatoires.'
+        : 'Tous les champs suivis d’un * sont obligatoires.'}
     </p>
   )
 }
