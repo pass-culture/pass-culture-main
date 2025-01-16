@@ -5,9 +5,12 @@ import sqlalchemy as sa
 
 from pcapi.connectors import typeform
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.subscription.phone_validation.exceptions import InvalidPhoneNumber
+from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
+from pcapi.utils.phone_number import ParsedPhoneNumber
 
 from . import models
 
@@ -130,6 +133,27 @@ def download_responses_from_typeform(
         )
 
 
+from contextlib import suppress
+
+
+def _get_user_for_form(form: typeform.TypeformResponse) -> users_models.User | None:
+    user = None
+    if form.email:
+        user = users_models.User.query.filter(users_models.User.email == form.email).one_or_none()
+    if form.phone_number and not user:
+        with suppress(InvalidPhoneNumber):
+            parsed_phone_number = ParsedPhoneNumber(form.phone_number)
+            with suppress(sa.exc.MultipleResultsFound):
+                user = (
+                    users_models.User.query.filter(
+                        users_models.User._phoneNumber == parsed_phone_number.phone_number,
+                    )
+                    .limit(2)
+                    .one_or_none()
+                )
+    return user
+
+
 @atomic()
 def save_response(
     event: models.SpecialEvent, form: typeform.TypeformResponse, questions: dict[str, models.SpecialEventQuestion]
@@ -141,6 +165,7 @@ def save_response(
             dateSubmitted=form.date_submitted,
             phoneNumber=form.phone_number,
             email=form.email,
+            user=_get_user_for_form(form),
         )
         db.session.add(response)
         db.session.flush()

@@ -11,6 +11,7 @@ import typing
 import pydantic.v1 as pydantic_v1
 
 from pcapi import settings
+from pcapi.utils import email as email_utils
 from pcapi.utils import module_loading
 from pcapi.utils import requests
 
@@ -247,7 +248,7 @@ class TypeformBackend(BaseBackend):
                     case "phone_number":
                         phone_number = _strip(answer["phone_number"])
                     case "email":
-                        email = _strip(answer["email"])
+                        email = email_utils.sanitize_email(answer["email"]) if answer["email"] else None
                     case "boolean":
                         answers.append(
                             TypeformAnswer(field_id=answer["field"]["id"], text="Oui" if answer["boolean"] else "Non")
