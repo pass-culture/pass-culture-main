@@ -4,6 +4,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.utils import format_price
 from pcapi.core.offerers.models import Offerer
 import pcapi.utils.postal_code as postal_code_utils
 from pcapi.utils.urls import build_pc_pro_offer_link
@@ -16,7 +17,7 @@ def get_bookings_expiration_to_pro_email_data(
     return models.TransactionalEmailData(
         template=TransactionalEmail.BOOKING_EXPIRATION_TO_PRO.value,
         params={
-            "BOOKINGS": _extract_bookings_information_from_bookings_list(bookings),
+            "BOOKINGS": _extract_bookings_information_from_bookings_list(bookings, offerer),
             "DEPARTMENT": departement_code,
             "WITHDRAWAL_PERIOD": withdrawal_period,
             "OFFER_ADDRESS": bookings[0].stock.offer.fullAddress,
@@ -24,7 +25,7 @@ def get_bookings_expiration_to_pro_email_data(
     )
 
 
-def _extract_bookings_information_from_bookings_list(bookings: list[Booking]) -> list[dict]:
+def _extract_bookings_information_from_bookings_list(bookings: list[Booking], offerer: Offerer) -> list[dict]:
     bookings_info = []
     for booking in bookings:
         bookings_info.append(
@@ -32,6 +33,7 @@ def _extract_bookings_information_from_bookings_list(bookings: list[Booking]) ->
                 "offer_name": booking.stock.offer.name,
                 "venue_name": booking.stock.offer.venue.common_name,
                 "price": str(booking.stock.price) if booking.stock.price > 0 else "gratuit",
+                "formatted_price": format_price(booking.stock.price, offerer),
                 "user_name": booking.userName,
                 "user_email": booking.email,
                 "pcpro_offer_link": build_pc_pro_offer_link(booking.stock.offer),

@@ -39,6 +39,7 @@ class SendinblueProAvailableInvoiceEmailDataTest:
         assert set(mails_testing.outbox[0]["To"].split(", ")) == {"other_pro@example.com", "pro@example.com"}
         assert mails_testing.outbox[0]["params"] == {
             "MONTANT_REMBOURSEMENT": 10,
+            "FORMATTED_MONTANT_REMBOURSEMENT": "10 €",
             "PERIODE_DEBUT": "jeudi 16 février 2023",
             "PERIODE_FIN": "mardi 28 février 2023",
         }
@@ -69,6 +70,7 @@ class SendinblueProAvailableInvoiceEmailDataTest:
         assert set(mails_testing.outbox[0]["To"].split(", ")) == {"pro@example.com"}
         assert mails_testing.outbox[0]["params"] == {
             "MONTANT_REMBOURSEMENT": 10,
+            "FORMATTED_MONTANT_REMBOURSEMENT": "10 €",
             "PERIODE_DEBUT": "samedi 1er juillet 2023",
             "PERIODE_FIN": "samedi 15 juillet 2023",
         }

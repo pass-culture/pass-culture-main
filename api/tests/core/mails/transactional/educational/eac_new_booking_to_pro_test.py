@@ -32,6 +32,7 @@ class SendEacNewBookingEmailToProTest:
             "EVENT_HOUR": "19h29",
             "QUANTITY": 1,
             "PRICE": "100.00 €",
+            "FORMATTED_PRICE": "100 €",
             "REDACTOR_FIRSTNAME": booking.educationalRedactor.firstName,
             "REDACTOR_LASTNAME": booking.educationalRedactor.lastName,
             "REDACTOR_EMAIL": booking.educationalRedactor.email,

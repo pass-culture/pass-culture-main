@@ -5,6 +5,7 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.mails import models as mails_models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.utils import format_price
 from pcapi.core.offers import models as offers_models
 
 
@@ -98,14 +99,16 @@ def send_commercial_gesture_email(finance_incident: finance_models.FinanceIncide
         offers_incidents.setdefault(offer, []).append(booking_finance_incident)
 
     for offer, offer_booking_incidents in offers_incidents.items():
+        amount = finance_utils.cents_to_full_unit(
+            sum((booking_incident.due_amount_by_offerer or 0) for booking_incident in offer_booking_incidents)
+        )
         data = mails_models.TransactionalEmailData(
             template=TransactionalEmail.COMMERCIAL_GESTURE_REIMBURSEMENT.value,
             params={
                 "OFFER_NAME": offer.name,
                 "VENUE_NAME": venue.common_name,
-                "MONTANT_REMBOURSEMENT": finance_utils.cents_to_full_unit(
-                    sum((booking_incident.due_amount_by_offerer or 0) for booking_incident in offer_booking_incidents)
-                ),
+                "MONTANT_REMBOURSEMENT": amount,
+                "FORMATTED_MONTANT_REMBOURSEMENT": format_price(amount, venue),
                 "TOKEN_LIST": ", ".join(
                     [
                         booking_incident.booking.token

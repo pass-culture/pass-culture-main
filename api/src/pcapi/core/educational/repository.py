@@ -80,6 +80,8 @@ def find_bookings_in_interval(
         sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True)
         .joinedload(educational_models.CollectiveStock.collectiveOffer, innerjoin=True)
         .joinedload(educational_models.CollectiveOffer.venue, innerjoin=True)
+        .joinedload(offerers_models.Venue.managingOfferer, innerjoin=True)
+        .load_only(offerers_models.Offerer.siren, offerers_models.Offerer.postalCode)
     )
     query = query.options(sa.orm.joinedload(educational_models.CollectiveBooking.educationalRedactor, innerjoin=True))
     query = query.options(
@@ -257,8 +259,8 @@ def _get_bookings_for_adage_base_query() -> BaseQuery:
                 offerers_models.Venue.name,
                 offerers_models.Venue.street,
             )
-            .joinedload(offerers_models.Venue.managingOfferer)
-            .load_only(offerers_models.Offerer.name),
+            .joinedload(offerers_models.Venue.managingOfferer, innerjoin=True)
+            .load_only(offerers_models.Offerer.name, offerers_models.Offerer.siren, offerers_models.Offerer.postalCode),
         )
     )
 

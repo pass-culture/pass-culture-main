@@ -42,7 +42,14 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
         assert mails_testing.outbox[0]["reply_to"] == {"email": "user@example.com", "name": "Guy G."}
 
     @pytest.mark.usefixtures("db_session")
-    def test_should_send_one_side_booking_cancellation_email(self):
+    @pytest.mark.parametrize(
+        "venue_factory, event_hour, formatted_price",
+        [
+            (offerers_factories.VenueFactory, "12h20", "10 €"),
+            (offerers_factories.CaledonianVenueFactory, "21h20", "1193 F"),
+        ],
+    )
+    def test_should_send_one_side_booking_cancellation_email(self, venue_factory, event_hour, formatted_price):
         ems_provider = get_provider_by_local_class("EMSStocks")
         stock = offers_factories.EventStockFactory(
             price=10,
@@ -50,6 +57,7 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
             offer__bookingEmail="booking@example.com",
             offer__lastProvider=ems_provider,
             offer__subcategoryId=subcategories.SEANCE_CINE.id,
+            offer__venue=venue_factory(),
         )
         booking = bookings_factories.BookingFactory(
             user__email="user@example.com",
@@ -78,13 +86,14 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
         assert mails_testing.outbox[0]["params"] == {
             "DEPARTMENT_CODE": booking.venue.departementCode,
             "EVENT_DATE": "mercredi 9 octobre 2019",
-            "EVENT_HOUR": "12h20",
+            "EVENT_HOUR": event_hour,
             "EXTERNAL_BOOKING_INFORMATION": "barcode: 123456789, additional_information: {'num_ope': 147149, "
             "'num_cine': '9997', 'num_trans': 1257, 'num_caisse': '255'}",
             "IS_EVENT": True,
             "IS_EXTERNAL": True,
             "OFFER_NAME": booking.stock.offer.name,
             "PRICE": booking.stock.price,
+            "FORMATTED_PRICE": formatted_price,
             "PROVIDER_NAME": "EMS",
             "QUANTITY": booking.quantity,
             "USER_EMAIL": booking.email,
@@ -116,6 +125,7 @@ class MakeOffererBookingRecapEmailAfterUserCancellationTest:
             "IS_EXTERNAL": False,
             "OFFER_NAME": stock.offer.name,
             "PRICE": stock.price,
+            "FORMATTED_PRICE": "10,10 €",
             "PROVIDER_NAME": None,
             "QUANTITY": booking.quantity,
             "USER_EMAIL": booking.email,
@@ -145,6 +155,7 @@ class MakeOffererBookingRecapEmailAfterUserCancellationTest:
             "IS_EXTERNAL": False,
             "OFFER_NAME": stock.offer.name,
             "PRICE": "Gratuit",
+            "FORMATTED_PRICE": "Gratuit",
             "PROVIDER_NAME": None,
             "QUANTITY": booking1.quantity,
             "USER_EMAIL": booking1.email,
@@ -174,6 +185,7 @@ class MakeOffererBookingRecapEmailAfterUserCancellationTest:
             "IS_EXTERNAL": False,
             "OFFER_NAME": stock.offer.name,
             "PRICE": stock.price,
+            "FORMATTED_PRICE": "10,10 €",
             "PROVIDER_NAME": None,
             "QUANTITY": booking1.quantity,
             "USER_EMAIL": booking1.email,

@@ -2,6 +2,7 @@ from pcapi.core import mails
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.utils import format_price
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.mailing import get_event_datetime
@@ -32,6 +33,7 @@ def get_eac_new_booking_to_pro_email_data(booking: CollectiveBooking) -> models.
             "EVENT_HOUR": get_time_formatted_for_email(get_event_datetime(stock)),
             "QUANTITY": 1,  #  business rule: It must always be 1
             "PRICE": price,
+            "FORMATTED_PRICE": format_price(stock.price, offer.venue),
             "REDACTOR_FIRSTNAME": educational_redactor.firstName,
             "REDACTOR_LASTNAME": educational_redactor.lastName,
             "REDACTOR_EMAIL": educational_redactor.email,

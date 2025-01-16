@@ -5,6 +5,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.utils import format_price
 from pcapi.repository import on_commit
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
@@ -28,6 +29,7 @@ def get_booking_cancellation_confirmation_by_pro_email_data(
             "OFFER_NAME": offer.name,
             "VENUE_NAME": offer.venue.common_name,
             "PRICE": offer_price,
+            "FORMATTED_PRICE": format_price(stock.price, offer.venue),
             "IS_EVENT": offer.isEvent,
             "IS_EXTERNAL": booking.isExternal,
             "EVENT_DATE": event_date,
@@ -54,6 +56,7 @@ def get_collective_booking_cancellation_confirmation_by_pro_email_data(
             "OFFER_NAME": offer.name,
             "VENUE_NAME": offer.venue.common_name,
             "PRICE": offer_price,
+            "FORMATTED_PRICE": format_price(stock.price, offer.venue),
             "IS_EVENT": True,
             "EVENT_DATE": event_date,
             "EVENT_HOUR": event_hour,
