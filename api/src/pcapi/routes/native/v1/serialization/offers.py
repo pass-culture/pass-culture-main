@@ -351,24 +351,21 @@ class ChronicleAuthor(ConfiguredBaseModel):
     city: str | None
 
 
-class ChroniclePreview(ConfiguredBaseModel):
+class BaseChronicle(ConfiguredBaseModel):
     id: int
+    date_created: datetime
+    author: ChronicleAuthor | None
+
+    class Config:
+        getter_dict = ChronicleGetterDict
+
+
+class ChroniclePreview(BaseChronicle):
     content_preview: str
-    date_created: datetime
-    author: ChronicleAuthor | None
-
-    class Config:
-        getter_dict = ChronicleGetterDict
 
 
-class OfferChronicle(ConfiguredBaseModel):
-    id: int
+class OfferChronicle(BaseChronicle):
     content: str
-    date_created: datetime
-    author: ChronicleAuthor | None
-
-    class Config:
-        getter_dict = ChronicleGetterDict
 
 
 class OfferChronicles(ConfiguredBaseModel):
