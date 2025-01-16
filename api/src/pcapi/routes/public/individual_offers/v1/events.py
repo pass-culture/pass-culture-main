@@ -1,8 +1,8 @@
 import copy
+from functools import partial
 
 import sqlalchemy as sqla
 
-from pcapi import repository
 from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.finance import utils as finance_utils
@@ -15,6 +15,8 @@ from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.offers.validation import check_for_duplicated_price_categories
 from pcapi.models import api_errors
 from pcapi.models import db
+from pcapi.repository import atomic
+from pcapi.repository import on_commit
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.documentation_constants import http_responses
@@ -60,6 +62,7 @@ def _deserialize_has_ticket(
         )
     ),
 )
+@atomic()
 def post_event_offer(body: serialization.EventOfferCreation) -> serialization.EventOfferResponse:
     """
     Create Event Offer
@@ -76,7 +79,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
 
     withdrawal_type = _deserialize_has_ticket(body.has_ticket, body.category_related_fields.subcategory_id)
     try:
-        with repository.transaction():
+        with atomic():
             offerer_address = venue.offererAddress  # default offerer_address
 
             if body.location.type == "address":
@@ -130,7 +133,6 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
                 utils.save_image(body.image, created_offer)
 
             offers_api.publish_offer(created_offer, user=None, publication_date=body.publication_date)
-
     except (
         offers_exceptions.OfferCreationBaseException,
         offers_exceptions.OfferEditionBaseException,
@@ -157,6 +159,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
         )
     ),
 )
+@atomic()
 def get_event(event_id: int) -> serialization.EventOfferResponse:
     """
     Get Event Offer
@@ -190,6 +193,7 @@ def get_event(event_id: int) -> serialization.EventOfferResponse:
         )
     ),
 )
+@atomic()
 def get_events(query: serialization.GetOffersQueryParams) -> serialization.EventOffersResponse:
     """
     Get Event Offers
@@ -224,6 +228,7 @@ def get_events(query: serialization.GetOffersQueryParams) -> serialization.Event
         )
     ),
 )
+@atomic()
 def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serialization.EventOfferResponse:
     """
     Update Event Offer
@@ -243,7 +248,7 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
     venue, offerer_address = utils.extract_venue_and_offerer_address_from_location(body)
 
     try:
-        with repository.transaction():
+        with atomic():
             updates = body.dict(by_alias=True, exclude_unset=True)
             dc = updates.get("accessibility", {})
             extra_data = copy.deepcopy(offer.extraData)
@@ -272,7 +277,7 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
             )  # type: ignore[call-arg]
             offer = offers_api.update_offer(offer, offer_body, venue=venue, offerer_address=offerer_address)
             if body.image:
-                utils.save_image(body.image, offer)
+                on_commit(partial(utils.save_image, body.image, offer))
     except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
@@ -295,6 +300,7 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
         )
     ),
 )
+@atomic()
 def post_event_price_categories(
     event_id: int, body: serialization.PriceCategoriesCreation
 ) -> serialization.PriceCategoriesResponse:
@@ -313,7 +319,7 @@ def post_event_price_categories(
 
     created_price_categories: list[offers_models.PriceCategory] = []
     try:
-        with repository.transaction():
+        with atomic():
             for price_category in body.price_categories:
                 created_price_categories.append(
                     offers_api.create_price_category(
@@ -348,6 +354,7 @@ def post_event_price_categories(
         )
     ),
 )
+@atomic()
 def get_event_price_categories(
     event_id: int, query: serialization.GetPriceCategoriesQueryParams
 ) -> serialization.PriceCategoriesResponse:
@@ -387,6 +394,7 @@ def get_event_price_categories(
         )
     ),
 )
+@atomic()
 def patch_event_price_category(
     event_id: int,
     price_category_id: int,
@@ -408,7 +416,7 @@ def patch_event_price_category(
 
     update_body = body.dict(exclude_unset=True)
     try:
-        with repository.transaction():
+        with atomic():
             eurocent_price = update_body.get("price", offers_api.UNCHANGED)
             offers_api.edit_price_category(
                 event_offer,
@@ -444,6 +452,7 @@ def patch_event_price_category(
         )
     ),
 )
+@atomic()
 def post_event_stocks(event_id: int, body: serialization.EventStocksCreation) -> serialization.PostDatesResponse:
     """
     Add Stocks to an Event
@@ -475,7 +484,7 @@ def post_event_stocks(event_id: int, body: serialization.EventStocksCreation) ->
         )
 
     try:
-        with repository.transaction():
+        with atomic():
             for date in body.dates:
                 price_category = next((c for c in offer.priceCategories if c.id == date.price_category_id), None)
                 if not price_category:
@@ -522,6 +531,7 @@ def post_event_stocks(event_id: int, body: serialization.EventStocksCreation) ->
         )
     ),
 )
+@atomic()
 def get_event_stocks(event_id: int, query: serialization.GetEventStocksQueryParams) -> serialization.GetDatesResponse:
     """
     Get Event Stocks
@@ -575,6 +585,7 @@ def get_event_stocks(event_id: int, query: serialization.GetEventStocksQueryPara
         )
     ),
 )
+@atomic()
 def delete_event_stock(event_id: int, stock_id: int) -> None:
     """
     Delete Event Stock
@@ -615,6 +626,7 @@ def delete_event_stock(event_id: int, stock_id: int) -> None:
         )
     ),
 )
+@atomic()
 def patch_event_stock(
     event_id: int,
     stock_id: int,
@@ -639,7 +651,7 @@ def patch_event_stock(
 
     update_body = body.dict(exclude_unset=True)
     try:
-        with repository.transaction():
+        with atomic():
             price_category_id = update_body.get("price_category_id", None)
             price_category = (
                 next((c for c in offer.priceCategories if c.id == price_category_id), None)
@@ -693,6 +705,7 @@ def patch_event_stock(
         )
     ),
 )
+@atomic()
 @provider_api_key_required
 def get_event_categories() -> serialization.GetEventCategoriesResponse:
     """

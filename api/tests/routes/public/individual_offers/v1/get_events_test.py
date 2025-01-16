@@ -16,10 +16,12 @@ class GetEventsTest(PublicAPIVenueEndpointHelper):
     endpoint_url = "/public/offers/v1/events"
     endpoint_method = "get"
 
-    num_queries_with_error = 1  # select api_key, offerer and provider
-    num_queries_with_error += 1  # select features
-    num_queries_with_error += 1  # check provider EXISTS
-    num_queries = num_queries_with_error + 1  # select offers
+    num_queries_base = 1  # select api_key, offerer and provider
+    num_queries_base += 1  # select features
+    num_queries_base += 1  # check provider EXISTS
+
+    num_queries = num_queries_base + 1  # select offers
+    num_queries_with_error = num_queries_base + 1  # rollback
 
     def test_should_raise_404_because_has_no_access_to_venue(self, client):
         plain_api_key, _ = self.setup_provider()
@@ -62,8 +64,8 @@ class GetEventsTest(PublicAPIVenueEndpointHelper):
                 self.endpoint_url, params={"venueId": venue_id, "limit": 5}
             )
 
-            assert response.status_code == 200
-            assert [event["id"] for event in response.json["events"]] == [offer.id for offer in offers[0:5]]
+        assert response.status_code == 200
+        assert [event["id"] for event in response.json["events"]] == [offer.id for offer in offers[0:5]]
 
     # This test should be removed when our database has consistant data
     def test_get_offers_with_missing_fields(self, client):
@@ -145,8 +147,8 @@ class GetEventsTest(PublicAPIVenueEndpointHelper):
                 },
             )
 
-            assert response.status_code == 200
-            assert [event["id"] for event in response.json["events"]] == [event_1.id, event_2.id]
+        assert response.status_code == 200
+        assert [event["id"] for event in response.json["events"]] == [event_1.id, event_2.id]
 
     def test_should_return_offers_linked_to_address_id(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -162,6 +164,6 @@ class GetEventsTest(PublicAPIVenueEndpointHelper):
                 self.endpoint_url, {"addressId": offerer_address_1.addressId}
             )
 
-            assert response.status_code == 200
-            assert len(response.json["events"]) == 1
-            assert response.json["events"][0]["id"] == offer1.id
+        assert response.status_code == 200
+        assert len(response.json["events"]) == 1
+        assert response.json["events"][0]["id"] == offer1.id
