@@ -6,6 +6,7 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.finance import factories as finance_factories
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.bookings.new_booking_to_pro import get_new_booking_to_pro_email_data
 from pcapi.core.mails.transactional.bookings.new_booking_to_pro import send_user_new_booking_to_pro_email
@@ -56,6 +57,7 @@ def get_expected_base_email_data(booking, **overrides):
         "OFFER_NAME": "Super évènement",
         "OFFER_SUBCATEGORY": "SPECTACLE_REPRESENTATION",
         "PRICE": "10.00 €",
+        "FORMATTED_PRICE": "10 €",
         "QUANTITY": 1,
         "USER_EMAIL": "john@example.com",
         "USER_FIRSTNAME": "John",
@@ -188,6 +190,7 @@ class OffererBookingRecapTest:
             EVENT_HOUR="",
             IS_EVENT=False,
             PRICE="Gratuit",
+            FORMATTED_PRICE="Gratuit",
             OFFER_NAME="Super offre numérique",
             OFFER_SUBCATEGORY="VOD",
             QUANTITY=10,
@@ -223,7 +226,9 @@ class OffererBookingRecapTest:
         email_data = get_new_booking_to_pro_email_data(booking)
 
         # Then
-        expected = get_expected_base_email_data(booking, PRICE="Gratuit", MUST_USE_TOKEN_FOR_PAYMENT=False)
+        expected = get_expected_base_email_data(
+            booking, PRICE="Gratuit", FORMATTED_PRICE="Gratuit", MUST_USE_TOKEN_FOR_PAYMENT=False
+        )
         assert email_data.params == expected
 
     @pytest.mark.usefixtures("db_session")
@@ -273,6 +278,7 @@ class OffererBookingRecapTest:
             MUST_USE_TOKEN_FOR_PAYMENT=False,
             OFFER_SUBCATEGORY="VOD",
             PRICE="10.10 €",
+            FORMATTED_PRICE="10,10 €",
             COUNTERMARK=booking.token,
             IS_THING=True,
             IS_DIGITAL=True,
@@ -312,6 +318,7 @@ class OffererBookingRecapTest:
             OFFER_NAME="Super offre numérique",
             OFFER_SUBCATEGORY="VOD",
             PRICE="10.10 €",
+            FORMATTED_PRICE="10,10 €",
             QUANTITY=1,
             CAN_EXPIRE=False,
             IS_BOOKING_AUTOVALIDATED=True,
@@ -328,7 +335,7 @@ class OffererBookingRecapTest:
 
         email_data = get_new_booking_to_pro_email_data(booking)
 
-        expected = get_expected_base_email_data(booking, PRICE="5.86 €")
+        expected = get_expected_base_email_data(booking, PRICE="5.86 €", FORMATTED_PRICE="5,86 €")
         assert email_data.params == expected
 
     @pytest.mark.usefixtures("db_session")
@@ -379,6 +386,25 @@ class OffererBookingRecapTest:
         email_data = get_new_booking_to_pro_email_data(booking)
 
         assert email_data.params["FEATURES"] == "VO, IMAX"
+
+    @pytest.mark.usefixtures("db_session")
+    def test_when_venue_is_caledonian(self):
+        venue = offerers_factories.CaledonianVenueFactory()
+        offerers_factories.VenueBankAccountLinkFactory(
+            venue=venue, bankAccount=finance_factories.CaledonianBankAccountFactory()
+        )
+        booking = make_booking(stock__offer__venue=venue)
+        # Preload available data - calling functions should do that
+        _ = booking.stock.offer.venue.offererAddress.address
+        _ = booking.user
+        # 1 - SELECT venue with bank account
+        # 1 - SELECT feature (WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE)
+        # 1 - SELECT external booking (might be preloaded ?)
+        # 1 - SELECT activation code (might be preloaded ?)
+        with assert_num_queries(4):
+            email_data = get_new_booking_to_pro_email_data(booking)
+
+        assert email_data.params["FORMATTED_PRICE"] == "1193 F"
 
 
 class SendNewBookingEmailToProTest:

@@ -2,6 +2,7 @@ from pcapi.core import mails
 from pcapi.core.educational import models as educational_models
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.utils import format_price
 from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.mailing import get_event_datetime
 
@@ -31,6 +32,7 @@ def get_eac_one_day_before_event_data(
             "EVENT_HOUR": get_time_formatted_for_email(get_event_datetime(stock)),
             "QUANTITY": 1,
             "PRICE": str(stock.price) if stock.price > 0 else "Gratuit",
+            "FORMATTED_PRICE": format_price(stock.price, offer.venue),
             "REDACTOR_FIRSTNAME": booking.educationalRedactor.firstName,
             "REDACTOR_LASTNAME": booking.educationalRedactor.lastName,
             "REDACTOR_EMAIL": booking.educationalRedactor.email,

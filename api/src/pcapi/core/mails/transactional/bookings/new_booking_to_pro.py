@@ -9,6 +9,7 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.utils import format_price
 from pcapi.core.offerers import models as offerers_models
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
@@ -38,7 +39,11 @@ def get_new_booking_to_pro_email_data(
             sa.orm.contains_eager(offerers_models.Venue.bankAccountLinks)
             .load_only(offerers_models.VenueBankAccountLink.timespan)
             .contains_eager(offerers_models.VenueBankAccountLink.bankAccount)
-            .load_only(finance_models.BankAccount.id, finance_models.BankAccount.status)
+            .load_only(finance_models.BankAccount.id, finance_models.BankAccount.status),
+            # fetch offerer info to check if caledonian or not
+            sa.orm.contains_eager(offerers_models.Venue.managingOfferer).load_only(
+                offerers_models.Offerer.siren, offerers_models.Offerer.postalCode
+            ),
         )
         .one()
     )
@@ -90,6 +95,7 @@ def get_new_booking_to_pro_email_data(
             "OFFER_NAME": offer.name,
             "OFFER_SUBCATEGORY": offer_subcategory,
             "PRICE": "Gratuit" if stock.price == 0 else f"{stock.price} €",
+            "FORMATTED_PRICE": format_price(stock.price, venue),
             "QUANTITY": booking.quantity,
             "USER_EMAIL": booking.user.email,
             "USER_FIRSTNAME": booking.user.firstName,
