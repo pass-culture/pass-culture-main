@@ -107,10 +107,7 @@ export const UserReviewDialog = () => {
               legend="Comment évalueriez-vous votre expérience avec le pass Culture Pro ?"
               group={group}
               showMandatoryAsterisk={false}
-            >
-              <span>Très mauvaise</span>
-              <span>Excellente</span>
-            </IconRadioGroup>
+            />
 
             <TextArea
               name="userComment"

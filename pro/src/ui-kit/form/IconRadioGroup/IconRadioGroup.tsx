@@ -1,4 +1,5 @@
 import { useField } from 'formik'
+import { useId } from 'react'
 
 import { IconRadio } from 'ui-kit/form/IconRadioGroup/IconRadio/IconRadio'
 
@@ -34,12 +35,18 @@ export const IconRadioGroup = ({
   group,
   name,
   legend,
-  children,
   isOptional = false,
   showMandatoryAsterisk,
 }: IconRadioGroupProps): JSX.Element => {
   const [, meta] = useField({ name })
+
+  const scaleId = useId()
+
   const hasError = meta.touched && !!meta.error
+  const scale =
+    group.length > 0 ? [group[0].label, group[group.length - 1].label] : []
+
+  const displayScale = scale.length > 1
 
   return (
     <>
@@ -51,7 +58,13 @@ export const IconRadioGroup = ({
         hideFooter
         isOptional={isOptional}
         showMandatoryAsterisk={showMandatoryAsterisk}
+        ariaDescribedBy={displayScale ? scaleId : undefined}
       >
+        {displayScale && (
+          <p className={styles['visually-hidden']} id={scaleId}>
+            L’échelle de sélection va de {scale[0]} à {scale[1]}
+          </p>
+        )}
         <div className={styles['icon-radio-group-items']}>
           {group.map((item) => (
             <IconRadio
@@ -65,7 +78,16 @@ export const IconRadioGroup = ({
               {...(hasError ? { 'aria-describedby': `error-${name}` } : {})}
             />
           ))}
-          <div className={styles['icon-radio-group-scale']}>{children}</div>
+          {displayScale && (
+            <div
+              className={styles['icon-radio-group-scale']}
+              aria-hidden="true"
+            >
+              {scale.map((s) => (
+                <span key={s}>{s}</span>
+              ))}
+            </div>
+          )}
         </div>
       </FieldSetLayout>
     </>
