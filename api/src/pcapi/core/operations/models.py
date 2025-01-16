@@ -72,7 +72,7 @@ class SpecialEventResponse(PcObject, Base, Model):
         MagicEnum(SpecialEventResponseStatus), nullable=False, default=SpecialEventResponseStatus.NEW
     )
     userId: int | None = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=True)
-    user: users_models.User = sa.orm.relationship(
+    user: users_models.User | None = sa.orm.relationship(
         "User", foreign_keys=[userId], backref=sa.orm.backref("specialEventResponses")
     )
 
