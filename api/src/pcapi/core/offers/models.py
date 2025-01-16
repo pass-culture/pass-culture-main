@@ -159,6 +159,13 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     description = sa.Column(sa.Text, nullable=True)
     durationMinutes = sa.Column(sa.Integer, nullable=True)
     extraData: OfferExtraData | None = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
+    ean: str = sa.Column(
+        sa.Text,
+        sa.CheckConstraint("ean ~ '^\\d{13}$'", name="check_ean_validity"),
+        nullable=True,
+        unique=True,
+        index=True,
+    )
     gcuCompatibilityType = sa.Column(
         db_utils.MagicEnum(GcuCompatibilityType),
         nullable=False,
@@ -602,7 +609,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     )
     _description = sa.Column("description", sa.Text, nullable=True)
     _durationMinutes = sa.Column("durationMinutes", sa.Integer, nullable=True)
-    ean = sa.Column(sa.Text, nullable=True)
+    ean: str = sa.Column(sa.Text, nullable=True)
     externalTicketOfficeUrl = sa.Column(sa.String, nullable=True)
     extraData: OfferExtraData | None = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
     fieldsUpdated: list[str] = sa.Column(

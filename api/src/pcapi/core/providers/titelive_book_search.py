@@ -65,6 +65,7 @@ class TiteliveBookSearch(TiteliveSearch[TiteLiveBookWork]):
         return offers_models.Product(
             description=article.resume,
             extraData=build_book_extra_data(article, authors),
+            ean=article.gencod,
             idAtProviders=article.gencod,
             lastProvider=self.provider,
             name=title,

@@ -70,6 +70,7 @@ class TiteliveMusicSearch(TiteliveSearch[TiteliveMusicWork]):
             description=article.resume,
             extraData=build_music_extra_data(article, common_article_fields),
             idAtProviders=article.gencod,
+            ean=article.gencod,
             lastProvider=self.provider,
             name=self.truncate_string(common_article_fields["titre"]),
             subcategoryId=parse_titelive_music_codesupport(article.codesupport).id,
