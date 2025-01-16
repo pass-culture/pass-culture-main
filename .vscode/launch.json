@@ -85,6 +85,21 @@
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}/api",
             "justMyCode": false
+        },
+        // Pro test debug
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug current spec test file",
+            "cwd": "${workspaceFolder}/pro",
+            "runtimeExecutable": "yarn",
+            "runtimeArgs": [
+                "test:unit",
+                "run",
+                "${file}"
+            ],
+            "smartStep": true,
+            "console": "integratedTerminal"
         }
     ],
     "inputs": [
