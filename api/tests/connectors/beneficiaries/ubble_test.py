@@ -133,7 +133,7 @@ class StartIdentificationV1Test:
         assert attributes["redirect_url"] == "http://redirect/url"
 
         assert len(caplog.records) >= 1
-        record = caplog.records[1]
+        record = caplog.records[2]
         assert record.extra["status_code"] == 201
         assert record.extra["identification_id"] == str(response.identification_id)
         assert record.extra["request_type"] == "start-identification"
