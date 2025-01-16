@@ -15,6 +15,7 @@ class SettingsTest:
         ENABLE_PHONE_VALIDATION=True,
         ID_CHECK_ADDRESS_AUTOCOMPLETION=True,
         APP_ENABLE_AUTOCOMPLETE=True,
+        WIP_ENABLE_CREDIT_V3=True,
     )
     def test_get_settings_feature_combination_1(self, client):
         with assert_num_queries(1):  # feature
@@ -34,6 +35,7 @@ class SettingsTest:
             "objectStorageUrl": "http://localhost/storage",
             "accountUnsuspensionLimit": 60,
             "rates": {"pacificFrancToEuro": 0.00838},
+            "wipEnableCreditV3": True,
         }
 
     @pytest.mark.features(
@@ -44,6 +46,7 @@ class SettingsTest:
         ENABLE_PHONE_VALIDATION=False,
         ID_CHECK_ADDRESS_AUTOCOMPLETION=False,
         APP_ENABLE_AUTOCOMPLETE=False,
+        WIP_ENABLE_CREDIT_V3=False,
     )
     def test_get_settings_feature_combination_2(self, client):
         with assert_num_queries(1):  # feature
@@ -63,4 +66,5 @@ class SettingsTest:
             "objectStorageUrl": "http://localhost/storage",
             "accountUnsuspensionLimit": 60,
             "rates": {"pacificFrancToEuro": 0.00838},
+            "wipEnableCreditV3": False,
         }

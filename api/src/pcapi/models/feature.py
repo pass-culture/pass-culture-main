@@ -86,6 +86,7 @@ class FeatureToggle(enum.Enum):
         "Permettre l'import journalier du référentiel de la musique à travers l'API Titelive"
     )
     UPDATE_BOOKING_USED = "Permettre la validation automatique des contremarques 48h après la fin de lévènement"
+    WIP_ENABLE_CREDIT_V3 = "Active la V3 du crédit pour les jeunes"
     ENABLE_VENUE_STRICT_SEARCH = (
         "Active le fait d'indiquer si un lieu a un moins une offre éligible lors de l'indexation (Algolia)"
     )
@@ -212,7 +213,10 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
-    FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API,)
+    FEATURES_DISABLED_BY_DEFAULT += (
+        FeatureToggle.WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API,
+        FeatureToggle.WIP_ENABLE_CREDIT_V3,
+    )
 
 
 def add_feature_to_database(feature: Feature) -> None:
