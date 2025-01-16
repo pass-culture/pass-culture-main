@@ -10,7 +10,6 @@
 
   &-label {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     white-space: nowrap;
 
@@ -20,6 +19,10 @@
 
     &-break {
       white-space: break-spaces;
+    }
+
+    &-asterisk {
+      margin-left: rem.torem(8px);
     }
   }
 

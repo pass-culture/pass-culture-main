@@ -106,7 +106,7 @@ export const RadioGroup = ({
       legend={legend}
       name={`radio-group-${name}`}
       ariaDescribedBy={describedBy}
-      isOptional // There should always be an element selected in a radio group, thus it doesn't need to be marked as required
+      isOptional
       hideFooter
     >
       {group.map((item) => (

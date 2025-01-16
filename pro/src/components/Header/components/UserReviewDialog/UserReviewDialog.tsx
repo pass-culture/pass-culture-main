@@ -8,6 +8,8 @@ import { api } from 'apiClient/api'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { sendSentryCustomError } from 'commons/utils/sendSentryCustomError'
+import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
+import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import strokeValidIcon from 'icons/stroke-valid.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -46,7 +48,7 @@ export const UserReviewDialog = () => {
   }
 
   const initialValues: UserReviewDialogFormValues = {
-    userSatisfaction: '',
+    userSatisfaction: 'Correcte',
     userComment: '',
   }
 
@@ -95,11 +97,16 @@ export const UserReviewDialog = () => {
             <Dialog.Title asChild>
               <h1 className={styles['dialog-title']}>Votre avis compte !</h1>
             </Dialog.Title>
-
+            <MandatoryInfo
+              areAllFieldsMandatory
+              className={styles['dialog-mandatory']}
+            />
+            <ScrollToFirstErrorAfterSubmit />
             <IconRadioGroup
               name="userSatisfaction"
               legend="Comment évalueriez-vous votre expérience avec le pass Culture Pro ?"
               group={group}
+              showMandatoryAsterisk={false}
             >
               <span>Très mauvaise</span>
               <span>Excellente</span>
@@ -108,28 +115,21 @@ export const UserReviewDialog = () => {
             <TextArea
               name="userComment"
               label={
-                <span>
-                  Souhaitez-vous préciser ? Nous lisons tous les commentaires.
+                <>
+                  Pourriez-vous préciser ? Nous lisons tous les commentaires.
                   <span aria-hidden="true"> 🙂</span>
-                </span>
+                </>
               }
               maxLength={500}
-              isOptional
+              showMandatoryAsterisk={false}
+              className={styles['text-area-container']}
             />
 
             <div className={styles['dialog-buttons']}>
               <Dialog.Close asChild>
                 <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
               </Dialog.Close>
-              <Button
-                type="submit"
-                disabled={
-                  formik.values.userSatisfaction ===
-                  initialValues.userSatisfaction
-                }
-              >
-                Envoyer
-              </Button>
+              <Button type="submit">Envoyer</Button>
             </div>
           </Form>
         </FormikProvider>
