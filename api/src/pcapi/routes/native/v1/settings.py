@@ -28,6 +28,7 @@ def get_settings() -> serializers.SettingsResponse:
         FeatureToggle.ENABLE_PHONE_VALIDATION,
         FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
         FeatureToggle.APP_ENABLE_AUTOCOMPLETE,
+        FeatureToggle.WIP_ENABLE_CREDIT_V3,
     )
 
     return serializers.SettingsResponse(
@@ -41,4 +42,5 @@ def get_settings() -> serializers.SettingsResponse:
         is_recaptcha_enabled=features[FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA],
         object_storage_url=OBJECT_STORAGE_URL,
         account_unsuspension_limit=constants.ACCOUNT_UNSUSPENSION_DELAY,
+        wip_enable_credit_v3=features[FeatureToggle.WIP_ENABLE_CREDIT_V3],
     )

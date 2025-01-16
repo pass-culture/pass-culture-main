@@ -29,6 +29,7 @@ class SettingsResponse(BaseModel):
     object_storage_url: str
     account_unsuspension_limit: int
     rates = Rates()
+    wip_enable_credit_v3: bool
 
     class Config:
         alias_generator = to_camel
