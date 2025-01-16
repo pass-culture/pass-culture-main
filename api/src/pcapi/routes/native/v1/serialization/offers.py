@@ -12,6 +12,7 @@ from pydantic.v1.utils import GetterDict
 
 from pcapi.core.bookings.api import compute_booking_cancellation_limit_date
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.chronicles.api import get_offer_published_chronicles
 from pcapi.core.geography.models import Address
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import offer_metadata
@@ -309,10 +310,8 @@ class BaseOfferResponseGetterDict(GetterDict):
             )
 
         if key == "chronicles":
-            if offer.product:
-                published_chronicles = [chronicle for chronicle in offer.product.chronicles if chronicle.isPublished]
-                return sorted(published_chronicles, key=lambda c: c.id, reverse=True)[:MAX_PREVIEW_CHRONICLES]
-            return []
+            published_chronicles = get_offer_published_chronicles(offer)
+            return sorted(published_chronicles, key=lambda c: c.id, reverse=True)[:MAX_PREVIEW_CHRONICLES]
 
         return super().get(key, default)
 

@@ -1,6 +1,7 @@
 from sqlalchemy.orm import joinedload
 
 from pcapi.core.categories import subcategories_v2
+import pcapi.core.chronicles.api as chronicles_api
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api
@@ -121,12 +122,10 @@ def offer_chronicles(offer_id: int) -> serializers.OfferChronicles:
 
     offer = query.first_or_404()
 
-    if offer.product:
-        all_chronicles = offer.product.chronicles
-    else:
-        all_chronicles = offer.chronicles
-    chronicles = [chronicle for chronicle in all_chronicles if chronicle.isPublished]
-    return serializers.OfferChronicles(chronicles=chronicles)
+    chronicles = chronicles_api.get_offer_published_chronicles(offer)
+
+    # mypy does not accept the model type for the pydantic serializer defined on this very model
+    return serializers.OfferChronicles(chronicles=chronicles)  # type: ignore[arg-type]
 
 
 @blueprint.native_route("/send_offer_webapp_link_by_email/<int:offer_id>", methods=["POST"])

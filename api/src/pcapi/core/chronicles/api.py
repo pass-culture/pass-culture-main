@@ -139,3 +139,11 @@ def save_book_club_chronicle(form: typeform.TypeformResponse) -> None:
                 "has_email": bool(form.email),
             },
         )
+
+
+def get_offer_published_chronicles(offer: offers_models.Offer) -> list[models.Chronicle]:
+    if offer.product:
+        all_chronicles = offer.product.chronicles
+    else:
+        all_chronicles = offer.chronicles
+    return [chronicle for chronicle in all_chronicles if chronicle.isPublished]
