@@ -31,6 +31,9 @@ export const CardLink = ({
       )}
     >
       <div className={styles['cardlink-body']}>
+        {icon && (
+          <SvgIcon src={icon} className={styles['cardlink-icon']} alt="" />
+        )}
         <div className={styles['cardlink-content']}>
           <p>
             <Link to={to} className={styles['cardlink-link']}>
@@ -42,9 +45,6 @@ export const CardLink = ({
             <p className={styles['cardlink-description']}>{description}</p>
           )}
         </div>
-        {icon && (
-          <SvgIcon src={icon} className={styles['cardlink-icon']} alt="" />
-        )}
       </div>
     </div>
   )
