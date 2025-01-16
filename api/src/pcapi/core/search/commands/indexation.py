@@ -212,3 +212,15 @@ def index_offers_staging(clear: bool) -> None:
 @log_cron_with_transaction
 def clean_indexation_processing_queues() -> None:
     search.clean_processing_queues()
+
+
+@blueprint.cli.command("index_new_caledonia_objects")
+def index_new_caledonia_objects() -> None:
+    """
+    Index new caledonian venues and their offers.
+    """
+    new_caledonian_venues = staging_indexation.get_new_caledonian_venues()
+    search.reindex_venue_ids([venue.id for venue in new_caledonian_venues])
+
+    new_caledonian_offers = [offer.id for venue in new_caledonian_venues for offer in venue.offers]
+    search.reindex_offer_ids(offer_ids_to_reindex)

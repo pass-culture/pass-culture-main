@@ -1,9 +1,12 @@
 import logging
 
+from sqlalchemy import orm as sqla_orm
+
 from pcapi.core.categories.subcategories_v2 import ALL_SUBCATEGORIES
 from pcapi.core.logging import log_elapsed
 from pcapi.core.offerers import models as offerer_models
 import pcapi.core.offers.models as offers_models
+from pcapi.utils.regions import NEW_CALEDONIA_DEPARTMENT_CODE
 
 
 logger = logging.getLogger(__name__)
@@ -87,3 +90,18 @@ def get_random_offers(size: int, excluded_offer_ids: set[int]) -> set[int]:
     with log_elapsed(logger, "random offers to complete the dataset"):
         result = {offer_id for offer_id, in query}
     return result
+
+
+def get_new_caledonian_venues() -> list[offerer_models.Venue]:
+    venues = (
+        offerer_models.Venue.query.join(offerer_models.Venue.offers)
+        .join(offers_models.Offer.stocks)
+        .filter(
+            offerer_models.Venue.postalCode.like(f"{NEW_CALEDONIA_DEPARTMENT_CODE}%"),
+            offers_models.Offer.is_eligible_for_search.is_(True),
+        )
+        .options(sqla_orm.contains_eager(offerer_models.Venue.offers))
+        .options(sqla_orm.joinedload(offerer_models.Venue.managingOfferer))
+        .all()
+    )
+    return [venue for venue in venues if venue.is_eligible_for_search]

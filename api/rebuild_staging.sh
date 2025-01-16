@@ -10,6 +10,7 @@ export IS_REBUILD_STAGING=1
 
 flask import_test_users --default --update
 flask sandbox --name beneficiaries --clean false
+flask sandbox --name new_caledonia --clean false
 
 flask add_permissions_to_staging_specific_roles
 
