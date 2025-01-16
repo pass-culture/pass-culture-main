@@ -83,10 +83,10 @@ def log_and_handle_ubble_response(
 
 @log_and_handle_ubble_response("applicant")
 def create_applicant(external_applicant_id: str, email: str) -> str:
-    response = requests.post(
+    session = _configure_v2_session()
+    response = session.post(
         build_url("/v2/applicants"),
         json={"external_applicant_id": external_applicant_id, "email": email},
-        cert=(settings.UBBLE_CLIENT_CERTIFICATE_PATH, settings.UBBLE_CLIENT_KEY_PATH),
     )
     response.raise_for_status()
 
@@ -107,7 +107,8 @@ def create_applicant(external_applicant_id: str, email: str) -> str:
 def create_identity_verification(
     applicant_id: str, first_name: str, last_name: str, redirect_url: str, webhook_url: str
 ) -> fraud_models.UbbleContent:
-    response = requests.post(
+    session = _configure_v2_session()
+    response = session.post(
         build_url("/v2/identity-verifications"),
         json={
             "applicant_id": applicant_id,
@@ -115,7 +116,6 @@ def create_identity_verification(
             "redirect_url": redirect_url,
             "webhook_url": webhook_url,
         },
-        cert=(settings.UBBLE_CLIENT_CERTIFICATE_PATH, settings.UBBLE_CLIENT_KEY_PATH),
     )
     response.raise_for_status()
 
@@ -132,10 +132,9 @@ def create_identity_verification(
 
 @log_and_handle_ubble_response("identity-verifications-attempt")
 def create_identity_verification_attempt(identification_id: str, redirect_url: str) -> str:
-    response = requests.post(
-        build_url(f"/v2/identity-verifications/{identification_id}/attempts"),
-        json={"redirect_url": redirect_url},
-        cert=(settings.UBBLE_CLIENT_CERTIFICATE_PATH, settings.UBBLE_CLIENT_KEY_PATH),
+    session = _configure_v2_session()
+    response = session.post(
+        build_url(f"/v2/identity-verifications/{identification_id}/attempts"), json={"redirect_url": redirect_url}
     )
     response.raise_for_status()
 
@@ -150,14 +149,14 @@ def create_identity_verification_attempt(identification_id: str, redirect_url: s
 def create_and_start_identity_verification(
     first_name: str, last_name: str, redirect_url: str, webhook_url: str
 ) -> fraud_models.UbbleContent:
-    response = requests.post(
+    session = _configure_v2_session()
+    response = session.post(
         build_url("/v2/create-and-start-idv"),
         json={
             "declared_data": {"name": f"{first_name} {last_name}"},
             "webhook_url": webhook_url,
             "redirect_url": redirect_url,
         },
-        cert=(settings.UBBLE_CLIENT_CERTIFICATE_PATH, settings.UBBLE_CLIENT_KEY_PATH),
     )
     response.raise_for_status()
 
@@ -195,6 +194,12 @@ def request_webhook_notification(identification_id: str, webhook_url: str) -> No
         cert=(settings.UBBLE_CLIENT_CERTIFICATE_PATH, settings.UBBLE_CLIENT_KEY_PATH),
     )
     response.raise_for_status()
+
+
+def _configure_v2_session() -> requests.Session:
+    session = requests.Session()
+    session.cert = (settings.UBBLE_CLIENT_CERTIFICATE_PATH, settings.UBBLE_CLIENT_KEY_PATH)
+    return session
 
 
 def download_ubble_picture(http_url: pydantic_networks.HttpUrl) -> tuple[str | None, typing.Any]:
@@ -240,6 +245,7 @@ def start_identification(
     user_id: int, first_name: str, last_name: str, redirect_url: str, webhook_url: str
 ) -> fraud_models.UbbleContent:
     session = configure_session()
+    logger.info("Ubble v1 request session state", extra=session.__dict__)
 
     data = {
         "data": {
@@ -380,6 +386,7 @@ def configure_session() -> requests.Session:
             "Content-Type": "application/vnd.api+json",
         }
     )
+    session.cert = None
 
     return session
 
