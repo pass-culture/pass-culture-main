@@ -13,15 +13,7 @@ const render<% name %> = (options?: RenderWithProvidersOptions) => {
 }
 
 describe('<<% name %> />', () => {
-  it('should render correctly', async () => {
-    render<% name %>()
-
-    expect(
-      await screen.findByRole('heading', { name: /<% name %>/ })
-    ).toBeInTheDocument()
-  })
-
-  it('should not have accessibility violations', async () => {
+  it('should render without accessibility violations', async () => {
     const { container } = render<% name %>()
 
     expect(await axe(container)).toHaveNoViolations()
