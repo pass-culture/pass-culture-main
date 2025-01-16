@@ -1844,17 +1844,22 @@ class OffersV2Test:
         assert response.json["extraData"]["bookFormat"] == "MOYEN FORMAT"
 
     def test_offer_with_chronicles(self, client):
-        offer = offers_factories.OfferFactory()
+        product = offers_factories.ProductFactory()
+        offer = offers_factories.OfferFactory(product=product)
         chronicle = chronicles_factories.ChronicleFactory(
-            offers=[offer], content="a " * 150, isActive=True, isSocialMediaDiffusible=True, isIdentityDiffusible=True
+            products=[product],
+            content="a " * 150,
+            isActive=True,
+            isSocialMediaDiffusible=True,
+            isIdentityDiffusible=True,
         )
 
         # The following should not be displayed in the response
         chronicles_factories.ChronicleFactory(
-            offers=[offer], isActive=False, isSocialMediaDiffusible=True
+            products=[product], isActive=False, isSocialMediaDiffusible=True
         )  # Not yet published by pass culture (isActive)
         chronicles_factories.ChronicleFactory(
-            offers=[offer], isActive=True, isSocialMediaDiffusible=False
+            products=[product], isActive=True, isSocialMediaDiffusible=False
         )  # Not marked OK for publication by the author (isSocialMediaDiffusible)
 
         offer_id = offer.id
@@ -1876,9 +1881,10 @@ class OffersV2Test:
         ]
 
     def test_offer_with_n_chronicles(self, client):
-        offer = offers_factories.OfferFactory()
+        product = offers_factories.ProductFactory()
+        offer = offers_factories.OfferFactory(product=product)
         chronicles_factories.ChronicleFactory.create_batch(
-            MAX_PREVIEW_CHRONICLES + 5, offers=[offer], isActive=True, isSocialMediaDiffusible=True
+            MAX_PREVIEW_CHRONICLES + 5, products=[product], isActive=True, isSocialMediaDiffusible=True
         )
 
         offer_id = offer.id
@@ -1893,9 +1899,10 @@ class OffersV2Test:
         assert len(response.json["chronicles"]) == MAX_PREVIEW_CHRONICLES
 
     def test_anonymize_author_of_chronicles(self, client):
-        offer = offers_factories.OfferFactory()
+        product = offers_factories.ProductFactory()
+        offer = offers_factories.OfferFactory(product=product)
         chronicle = chronicles_factories.ChronicleFactory(
-            offers=[offer],
+            products=[product],
             isActive=True,
             isSocialMediaDiffusible=True,
             firstName="Angharad",
