@@ -734,6 +734,11 @@ describe('IndividualOfferDetails', () => {
           },
           contextValue: context,
           options: { features: ['WIP_EAN_CREATION'] },
+          initialRoute:
+            getIndividualOfferPath({
+              step: OFFER_WIZARD_STEP_IDS.DETAILS,
+              mode: OFFER_WIZARD_MODE.CREATION,
+            }) + '?offer-type=PHYSICAL_GOOD',
         })
 
         expect(screen.getByText(eanSearchTitle)).toBeInTheDocument()
@@ -756,6 +761,11 @@ describe('IndividualOfferDetails', () => {
           },
           contextValue: context,
           options: { features: ['WIP_EAN_CREATION'] },
+          initialRoute:
+            getIndividualOfferPath({
+              step: OFFER_WIZARD_STEP_IDS.DETAILS,
+              mode: OFFER_WIZARD_MODE.CREATION,
+            }) + '?offer-type=PHYSICAL_GOOD',
         })
 
         expect(screen.queryByText(eanSearchTitle)).not.toBeInTheDocument()
@@ -794,6 +804,11 @@ describe('IndividualOfferDetails', () => {
             },
             contextValue: context,
             options: { features: ['WIP_EAN_CREATION'] },
+            initialRoute:
+              getIndividualOfferPath({
+                step: OFFER_WIZARD_STEP_IDS.DETAILS,
+                mode: OFFER_WIZARD_MODE.CREATION,
+              }) + '?offer-type=PHYSICAL_GOOD',
           })
 
           const button = screen.getByRole('button', {
@@ -854,6 +869,11 @@ describe('IndividualOfferDetails', () => {
             },
             contextValue: context,
             options: { features: ['WIP_EAN_CREATION'] },
+            initialRoute:
+              getIndividualOfferPath({
+                step: OFFER_WIZARD_STEP_IDS.DETAILS,
+                mode: OFFER_WIZARD_MODE.CREATION,
+              }) + '?offer-type=PHYSICAL_GOOD',
           })
 
           const button = screen.getByRole('button', {
@@ -902,6 +922,11 @@ describe('IndividualOfferDetails', () => {
             },
             contextValue: context,
             options: { features: ['WIP_EAN_CREATION'] },
+            initialRoute:
+              getIndividualOfferPath({
+                step: OFFER_WIZARD_STEP_IDS.DETAILS,
+                mode: OFFER_WIZARD_MODE.CREATION,
+              }) + '?offer-type=PHYSICAL_GOOD',
           })
 
           expect(screen.getByText(eanSearchTitle)).toBeInTheDocument()
@@ -926,6 +951,11 @@ describe('IndividualOfferDetails', () => {
             },
             contextValue: context,
             options: { features: ['WIP_EAN_CREATION'] },
+            initialRoute:
+              getIndividualOfferPath({
+                step: OFFER_WIZARD_STEP_IDS.DETAILS,
+                mode: OFFER_WIZARD_MODE.CREATION,
+              }) + '?offer-type=PHYSICAL_GOOD',
           })
 
           expect(screen.queryByText(eanSearchTitle)).not.toBeInTheDocument()

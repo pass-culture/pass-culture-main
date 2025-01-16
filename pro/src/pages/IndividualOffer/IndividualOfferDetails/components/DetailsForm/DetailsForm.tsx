@@ -58,8 +58,7 @@ export const DetailsForm = ({
   onImageDelete,
   imageOffer,
 }: DetailsFormProps): JSX.Element => {
-  const areSuggestedSubcategoriesUsed =
-    useSuggestedSubcategoriesAbTest(filteredVenues)
+  const areSuggestedSubcategoriesUsed = useSuggestedSubcategoriesAbTest()
   const [hasSuggestionsApiBeenCalled, setHasSuggestionsApiBeenCalled] =
     useState(false)
   const [suggestedSubcategories, setSuggestedSubcategories] = useState<

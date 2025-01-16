@@ -11,9 +11,7 @@ export const isRecordStore = (
   )
 }
 
-export const useSuggestedSubcategoriesAbTest = (
-  venues: { venueTypeCode: VenueTypeCode }[]
-): boolean => {
+export const useSuggestedSubcategoriesAbTest = (): boolean => {
   const { SUGGESTED_CATEGORIES: suggestedSubcategoriesRemoteConfig } =
     useRemoteConfigParams()
 
@@ -21,7 +19,7 @@ export const useSuggestedSubcategoriesAbTest = (
     'WIP_SUGGESTED_SUBCATEGORIES'
   )
   const isInSuggestedSubcategoriesAbTest =
-    suggestedSubcategoriesRemoteConfig === 'true' || isRecordStore(venues)
+    suggestedSubcategoriesRemoteConfig === 'true'
   const areSuggestedSubcategoriesUsed =
     areSuggestedCategoriesEnabled && isInSuggestedSubcategoriesAbTest
 
