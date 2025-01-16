@@ -570,7 +570,7 @@ def test_public_api(client):
                         "dateCreated": {"format": "date-time", "title": "Datecreated", "type": "string"},
                         "id": {"title": "Id", "type": "integer"},
                     },
-                    "required": ["id", "contentPreview", "dateCreated"],
+                    "required": ["id", "dateCreated", "contentPreview"],
                     "title": "ChroniclePreview",
                     "type": "object",
                 },
@@ -1324,6 +1324,33 @@ def test_public_api(client):
                     },
                     "required": ["postalCode", "city", "coordinates", "timezone"],
                     "title": "OfferAddressResponse",
+                    "type": "object",
+                },
+                "OfferChronicle": {
+                    "properties": {
+                        "author": {
+                            "anyOf": [{"$ref": "#/components/schemas/ChronicleAuthor"}],
+                            "nullable": True,
+                            "title": "ChronicleAuthor",
+                        },
+                        "content": {"title": "Content", "type": "string"},
+                        "dateCreated": {"format": "date-time", "title": "Datecreated", "type": "string"},
+                        "id": {"title": "Id", "type": "integer"},
+                    },
+                    "required": ["id", "dateCreated", "content"],
+                    "title": "OfferChronicle",
+                    "type": "object",
+                },
+                "OfferChronicles": {
+                    "properties": {
+                        "chronicles": {
+                            "items": {"$ref": "#/components/schemas/OfferChronicle"},
+                            "title": "Chronicles",
+                            "type": "array",
+                        }
+                    },
+                    "required": ["chronicles"],
+                    "title": "OfferChronicles",
                     "type": "object",
                 },
                 "OfferExtraDataResponse": {
@@ -3904,6 +3931,39 @@ def test_public_api(client):
                         },
                     },
                     "summary": "get_offers_showtimes <POST>",
+                    "tags": [],
+                }
+            },
+            "/native/v1/offers/{offer_id}/chronicles": {
+                "get": {
+                    "description": "",
+                    "operationId": "get__native_v1_offers_{offer_id}_chronicles",
+                    "parameters": [
+                        {
+                            "description": "",
+                            "in": "path",
+                            "name": "offer_id",
+                            "required": True,
+                            "schema": {"format": "int32", "type": "integer"},
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/OfferChronicles"}}
+                            },
+                            "description": "OK",
+                        },
+                        "403": {"description": "Forbidden"},
+                        "404": {"description": "Not Found"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "offer_chronicles <GET>",
                     "tags": [],
                 }
             },

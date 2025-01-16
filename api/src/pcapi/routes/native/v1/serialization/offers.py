@@ -362,6 +362,20 @@ class ChroniclePreview(ConfiguredBaseModel):
         getter_dict = ChronicleGetterDict
 
 
+class OfferChronicle(ConfiguredBaseModel):
+    id: int
+    content: str
+    date_created: datetime
+    author: ChronicleAuthor | None
+
+    class Config:
+        getter_dict = ChronicleGetterDict
+
+
+class OfferChronicles(ConfiguredBaseModel):
+    chronicles: list[OfferChronicle]
+
+
 class BaseOfferResponse(ConfiguredBaseModel):
     id: int
     accessibility: OfferAccessibilityResponse

@@ -8,6 +8,7 @@ from pcapi.core.offers import repository
 from pcapi.core.offers.exceptions import OfferReportError
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import PriceCategory
+from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Reason
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
@@ -106,6 +107,26 @@ def report_offer_reasons(user: User) -> serializers.OfferReportReasons:
 @authenticated_and_active_user_required
 def user_reported_offers(user: User) -> serializers.UserReportedOffersResponse:
     return serializers.UserReportedOffersResponse(reportedOffers=user.reported_offers)  # type: ignore[call-arg]
+
+
+@blueprint.native_route("/offers/<int:offer_id>/chronicles", methods=["GET"])
+@spectree_serialize(on_success_status=200, api=blueprint.api, response_model=serializers.OfferChronicles)
+@atomic()
+def offer_chronicles(offer_id: int) -> serializers.OfferChronicles:
+    query = (
+        Offer.query.filter(Offer.id == offer_id)
+        .options(joinedload(Offer.chronicles))
+        .options(joinedload(Offer.product).joinedload(Product.chronicles))
+    )
+
+    offer = query.first_or_404()
+
+    if offer.product:
+        all_chronicles = offer.product.chronicles
+    else:
+        all_chronicles = offer.chronicles
+    chronicles = [chronicle for chronicle in all_chronicles if chronicle.isPublished]
+    return serializers.OfferChronicles(chronicles=chronicles)
 
 
 @blueprint.native_route("/send_offer_webapp_link_by_email/<int:offer_id>", methods=["POST"])
