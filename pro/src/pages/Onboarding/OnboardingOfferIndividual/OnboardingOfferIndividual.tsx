@@ -8,7 +8,7 @@ import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import editFullIcon from 'icons/full-edit.svg'
 import connectStrokeIcon from 'icons/stroke-connect.svg'
-import { CardLink } from 'ui-kit/CardLink/CardLink'
+import { CardLink } from 'pages/Onboarding/OnboardingOfferIndividual/CardLink/CardLink'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { OnboardingLayout } from '../components/OnboardingLayout/OnboardingLayout'
