@@ -1,6 +1,6 @@
 import { EditVenueBodyModel } from 'apiClient/v1'
-import { DEFAULT_INTITIAL_OPENING_HOURS } from 'pages/VenueCreation/constants'
 
+import { DEFAULT_INTITIAL_OPENING_HOURS } from './constants'
 import { VenueEditionFormValues, Day } from './types'
 
 export const serializeEditVenueBodyModel = (
