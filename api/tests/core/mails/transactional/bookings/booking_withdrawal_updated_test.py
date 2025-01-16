@@ -55,4 +55,4 @@ class SendBookingWithdrawalUpdatedTest:
         # load booking
         BookingFactory(stock=offers_factories.EventStockFactory(offer=offer))
         with core_testing.assert_num_queries(5):
-            send_email_for_each_ongoing_booking(offer)
+            send_email_for_each_ongoing_booking(offer.id)

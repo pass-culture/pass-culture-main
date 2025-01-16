@@ -16,7 +16,9 @@ from pcapi.tasks.serialization.mails_tasks import WithdrawalChangedMailRequest
 from pcapi.utils.date import format_time_in_second_to_human_readable
 
 
-def send_email_for_each_ongoing_booking(offer: Offer) -> None:
+def send_email_for_each_ongoing_booking(offer_id: int) -> None:
+    offer = Offer.query.get(offer_id)
+
     ongoing_bookings = (
         bookings_models.Booking.query.join(bookings_models.Booking.stock)
         .join(Stock.offer)
