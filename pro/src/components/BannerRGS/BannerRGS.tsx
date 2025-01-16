@@ -1,4 +1,5 @@
 import { Callout } from 'ui-kit/Callout/Callout'
+import { CalloutVariant } from 'ui-kit/Callout/types'
 
 interface Props {
   closable?: boolean
@@ -13,6 +14,7 @@ export const BannerRGS: React.FC<Props> = ({
 }: Props) => (
   <Callout
     closable={closable}
+    variant={CalloutVariant.INFO}
     onClose={onClose}
     links={[
       {

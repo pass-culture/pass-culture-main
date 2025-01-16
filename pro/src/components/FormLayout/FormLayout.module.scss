@@ -6,8 +6,6 @@ $info-box-width: clamp(rem.torem(240px), 29vw, rem.torem(316px));
 $info-box-margin-left: rem.torem(24px);
 
 .form-layout {
-  background-color: var(--color-white);
-
   &.full-width-actions {
     @media (min-width: size.$tablet) {
       & > *:not(.form-layout-actions) {
@@ -119,7 +117,7 @@ $info-box-margin-left: rem.torem(24px);
   @include fonts.body-xs;
 
   margin-bottom: rem.torem(32px);
-  color: var(--color-grey-dark);
+  color: var(--color-text-subtle);
 }
 
 @media (min-width: size.$laptop) {

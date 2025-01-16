@@ -19,7 +19,7 @@
   &-description {
     @include fonts.body-accent-xs;
 
-    color: var(--color-grey-dark);
+    color: var(--color-text-subtle);
     margin-top: rem.torem(4px);
   }
 
@@ -31,13 +31,13 @@
 
     &-svg {
       width: rem.torem(20px);
-      fill: var(--color-input-text-color);
+      fill: var(--color-border-default);
     }
   }
 
   &-input {
     appearance: none;
-    border: rem.torem(2px) solid var(--color-grey-dark);
+    border: rem.torem(2px) solid var(--color-border-default);
     border-radius: rem.torem(3px);
     transition:
       border 150ms ease,
@@ -54,8 +54,8 @@
 
     &:checked,
     &:indeterminate {
-      background-color: var(--color-secondary-light);
-      border-color: var(--color-secondary-light);
+      background-color: var(--color-background-brand);
+      border-color: var(--color-border-brand);
 
       &::after {
         background-image: url("./checkbox-check.svg");
@@ -75,7 +75,7 @@
     }
 
     &:focus-visible {
-      outline: rem.torem(1px) solid var(--color-black);
+      outline: rem.torem(1px) solid var(--color-outline-default);
       outline-offset: rem.torem(4px);
     }
   }
@@ -127,12 +127,12 @@
     text-decoration: underline;
 
     .base-checkbox-input {
-      border-color: var(--color-secondary-light);
+      border-color: var(--color-border-brand);
 
       &:checked,
       &:indeterminate {
-        border-color: var(--color-grey-dark);
-        background-color: var(--color-grey-dark);
+        border-color: var(--color-background-brand-hover);
+        background-color: var(--color-background-brand-hover);
       }
     }
   }
