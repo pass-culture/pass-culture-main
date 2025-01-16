@@ -9,7 +9,10 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { Events } from 'commons/core/FirebaseEvents/constants'
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import {
+  INDIVIDUAL_OFFER_SUBTYPE,
+  OFFER_WIZARD_MODE,
+} from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
 import {
@@ -97,8 +100,7 @@ export const IndividualOfferDetailsScreen = ({
     categoryStatus
   )
 
-  const areSuggestedSubcategoriesUsed =
-    useSuggestedSubcategoriesAbTest(filteredVenues)
+  const areSuggestedSubcategoriesUsed = useSuggestedSubcategoriesAbTest()
 
   const initialValues = isDirtyDraftOffer
     ? setDefaultInitialValues({
@@ -214,7 +216,9 @@ export const IndividualOfferDetailsScreen = ({
 
   const readOnlyFields = setFormReadOnlyFields(offer, isProductBased)
   const isEanSearchAvailable =
-    isSearchByEanEnabled && isRecordStore(filteredVenues)
+    isSearchByEanEnabled &&
+    isRecordStore(filteredVenues) &&
+    queryOfferType === INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD
   const isEanSearchDisplayed =
     isEanSearchAvailable &&
     mode === OFFER_WIZARD_MODE.CREATION &&

@@ -65,9 +65,7 @@ export const OfferTypeScreen = (): JSX.Element => {
 
   const offerer = offererQuery.data
 
-  const areSuggestedSubcategoriesUsed = useSuggestedSubcategoriesAbTest(
-    offerer?.managedVenues ?? []
-  )
+  const areSuggestedSubcategoriesUsed = useSuggestedSubcategoriesAbTest()
 
   const onSubmit = async (values: OfferTypeFormValues) => {
     if (values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO) {

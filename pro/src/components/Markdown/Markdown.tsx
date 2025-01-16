@@ -1,4 +1,5 @@
 import DOMPurify from 'dompurify'
+
 import styles from './Markdown.module.scss'
 
 const BOLD_REGEXP = /\*\*(.*?)\*\*/gim
