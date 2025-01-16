@@ -5,15 +5,6 @@ title: Pass Culture API change logs
 # Change logs
 
 :::warning
-💡 Important notice some old resources are going to be removed in the coming months.
-
-- If you were using `/v2/venue/<venue_id>/stocks` to manage stocks, you will have to migrate to this endpoint : [/public/offers/v1/products/ean](/rest-api#tag/Product-Offer-Bulk-Operations/operation/PostProductOfferByEan). The endpoint `/v2/stock` will not be available anymore starting from September, the 31st 2024.
-- If you were using `/v2/bookings` to manage bookings, you will have to migrate to those endpoints [/public/bookings/v1/bookings](/rest-api#tag/Bookings).  The endpoint `/v2/bookings` will not be available anymore starting from June, the 30th 2025.
-
-**You can find a migration tutorial [here](/docs/tutorials/migrate-to-the-new-api).**
-:::
-
-:::warning
 💡 The `beginningDatetime` field is going to be removed in the following endpoints:
 
 Removed from the return value:
@@ -27,6 +18,15 @@ Removed from the input body and the return value:
 Please use the `startDatetime` and `endDatetime` fields instead.
 
 The `startDatetime` field will be required when creating a collective offer and its value will be copied to `endDatetime` if `endDatetime` is not provided.
+:::
+
+:::warning
+💡 Important notice some old resources are going to be removed in the coming months.
+
+- If you were using `/v2/venue/<venue_id>/stocks` to manage stocks, you will have to migrate to this endpoint : [/public/offers/v1/products/ean](/rest-api#tag/Product-Offer-Bulk-Operations/operation/PostProductOfferByEan). The endpoint `/v2/stock` will not be available anymore starting from September, the 31st 2024.
+- If you were using `/v2/bookings` to manage bookings, you will have to migrate to those endpoints [/public/bookings/v1/bookings](/rest-api#tag/Bookings).  The endpoint `/v2/bookings` will not be available anymore starting from June, the 30th 2025.
+
+**You can find a migration tutorial [here](/docs/tutorials/migrate-to-the-new-api).**
 :::
 
 ## December 2024
