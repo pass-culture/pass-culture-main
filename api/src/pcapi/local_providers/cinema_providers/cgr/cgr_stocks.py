@@ -16,6 +16,8 @@ import pcapi.core.offers.repository as offers_repository
 import pcapi.core.providers.models as providers_models
 from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.local_providers.local_provider import LocalProvider
+from pcapi.local_providers.movie_festivals import api as movie_festivals_api
+from pcapi.local_providers.movie_festivals import constants as movie_festivals_constants
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
 from pcapi.repository.providable_queries import get_last_update_for_provider
@@ -190,7 +192,13 @@ class CGRStocks(LocalProvider):
             features.append(ShowtimeFeatures.ICE.value)
         stock.features = features
 
-        if "price" not in stock.fieldsUpdated:
+        if movie_festivals_api.should_apply_movie_festival_rate(stock.offer.id, stock.beginningDatetime.date()):
+            stock.price = movie_festivals_constants.FESTIVAL_RATE
+            stock.priceCategory = self.get_or_create_price_category(
+                movie_festivals_constants.FESTIVAL_RATE,
+                movie_festivals_constants.FESTIVAL_NAME,
+            )
+        elif "price" not in stock.fieldsUpdated:
             stock.price = show_price
             price_category = self.get_or_create_price_category(show_price, price_label)
 

@@ -13,6 +13,8 @@ from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
+from pcapi.local_providers.movie_festivals import api as movie_festivals_api
+from pcapi.local_providers.movie_festivals import constants as movie_festivals_constants
 from pcapi.models import db
 import pcapi.utils.date as utils_date
 from pcapi.validation.models import entity_validator
@@ -211,11 +213,19 @@ class EMSStocks:
         stock.bookingLimitDatetime = beginning_datetime_no_tz
         _maybe_update_finance_event_pricing_date(stock, old_beginning_datetime)
 
-        show_price = decimal.Decimal(session.pass_culture_price)
-        price_label = f"Tarif pass Culture {show_price}€"
-        price_category = self.get_or_create_price_category(stock, show_price, price_label)
-        stock.price = show_price
-        stock.priceCategory = price_category
+        if movie_festivals_api.should_apply_movie_festival_rate(stock.offer.id, stock.beginningDatetime.date()):
+            stock.price = movie_festivals_constants.FESTIVAL_RATE
+            stock.priceCategory = self.get_or_create_price_category(
+                stock,
+                movie_festivals_constants.FESTIVAL_RATE,
+                movie_festivals_constants.FESTIVAL_NAME,
+            )
+        else:
+            show_price = decimal.Decimal(session.pass_culture_price)
+            price_label = f"Tarif pass Culture {show_price}€"
+            price_category = self.get_or_create_price_category(stock, show_price, price_label)
+            stock.price = show_price
+            stock.priceCategory = price_category
 
         return stock
 

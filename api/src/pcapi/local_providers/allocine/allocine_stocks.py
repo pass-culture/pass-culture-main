@@ -15,6 +15,8 @@ from pcapi.core.providers.allocine import get_movies_showtimes
 import pcapi.core.providers.models as providers_models
 from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.local_providers.local_provider import LocalProvider
+from pcapi.local_providers.movie_festivals import api as movie_festivals_api
+from pcapi.local_providers.movie_festivals import constants as movie_festivals_constants
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
 from pcapi.repository.providable_queries import get_last_update_for_provider
@@ -167,7 +169,16 @@ class AllocineStocks(LocalProvider):
         if "quantity" not in allocine_stock.fieldsUpdated:
             allocine_stock.quantity = self.quantity
 
-        if "price" not in allocine_stock.fieldsUpdated:
+        if movie_festivals_api.should_apply_movie_festival_rate(
+            allocine_stock.offer.id, allocine_stock.beginningDatetime.date()
+        ):
+            allocine_stock.price = movie_festivals_constants.FESTIVAL_RATE
+            allocine_stock.priceCategory = self.get_or_create_allocine_price_category(
+                movie_festivals_constants.FESTIVAL_RATE,
+                allocine_stock,
+                movie_festivals_constants.FESTIVAL_NAME,
+            )
+        elif "price" not in allocine_stock.fieldsUpdated:
             if allocine_stock.priceCategory is None:
                 allocine_stock.price = self.price
                 allocine_stock.priceCategory = self.get_or_create_allocine_price_category(self.price, allocine_stock)
@@ -177,7 +188,10 @@ class AllocineStocks(LocalProvider):
                 allocine_stock.priceCategory.price = self.price
 
     def get_or_create_allocine_price_category(
-        self, price: decimal.Decimal, allocine_stock: offers_models.Stock
+        self,
+        price: decimal.Decimal,
+        allocine_stock: offers_models.Stock,
+        custom_label: str | None = None,
     ) -> offers_models.PriceCategory:
         offer = allocine_stock.offer
         if not offer in self.price_categories_by_offer:
@@ -193,7 +207,11 @@ class AllocineStocks(LocalProvider):
         if price_category:
             return price_category
 
-        price_category = offers_models.PriceCategory(priceCategoryLabel=self.label, price=price, offer=offer)
+        price_category_label = self.label
+        if custom_label:
+            price_category_label = offers_api.get_or_create_label(custom_label, self.venue)
+
+        price_category = offers_models.PriceCategory(priceCategoryLabel=price_category_label, price=price, offer=offer)
         self.price_categories_by_offer[offer].insert(0, price_category)
         return price_category
 

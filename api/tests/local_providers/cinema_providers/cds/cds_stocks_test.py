@@ -543,6 +543,57 @@ class CDSStocksTest:
         assert cds_stocks.erroredObjects == 0
         assert cds_stocks.erroredThumbs == 0
 
+    @patch("pcapi.local_providers.movie_festivals.constants.FESTIVAL_RATE", Decimal("4.0"))
+    @patch("pcapi.local_providers.movie_festivals.constants.FESTIVAL_NAME", "My awesome festival")
+    @patch("pcapi.local_providers.movie_festivals.api.should_apply_movie_festival_rate")
+    @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
+    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
+    def should_update_stock_with_movie_festival_rate(
+        self, mock_get_venue_movies, mock_get_shows, should_apply_movie_festival_rate_mock, requests_mock
+    ):
+        # Given
+        self._create_products()
+        _, venue_provider = setup_cinema()
+
+        requests_mock.get(
+            "https://account_id.fakeurl/cinemas?api_token=token",
+            json=[fixtures.CINEMA_WITH_INTERNET_SALE_GAUGE_ACTIVE_FALSE],
+        )
+        requests_mock.get("https://account_id.fakeurl/mediaoptions?api_token=token", json=fixtures.MEDIA_OPTIONS)
+        mocked_movies = [fixtures.MOVIE_1]
+        mock_get_venue_movies.return_value = mocked_movies
+        mocked_same_film_shows = [
+            {"show_information": fixtures.MOVIE_1_SHOW_1, "price": 5.0, "price_label": "Diffusion 2D"},
+        ]
+        mock_get_shows.return_value = mocked_same_film_shows
+
+        requests_mock.get("https://example.com/coupez.png", content=bytes())
+
+        cds_stocks = CDSStocks(venue_provider=venue_provider)
+        should_apply_movie_festival_rate_mock.return_value = True
+        # When
+        cds_stocks.updateObjects()
+
+        # Then
+        created_offer = Offer.query.one()
+        created_stock = Stock.query.one()
+        created_price_category = PriceCategory.query.one()
+        created_price_category_label = PriceCategoryLabel.query.one()
+
+        should_apply_movie_festival_rate_mock.assert_called_with(
+            created_offer.id,
+            created_stock.beginningDatetime.date(),
+        )
+
+        assert created_stock.price == 4.0
+        assert created_stock.priceCategory == created_price_category
+
+        assert created_price_category.price == 4.0
+        assert created_price_category.priceCategoryLabel == created_price_category_label
+
+        assert created_price_category_label.label == "My awesome festival"
+
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
