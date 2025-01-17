@@ -175,7 +175,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
   height: $profil-button-size;
   text-align: left;
   display: flex;
-  flex-flow: row wrap;
+  flex-direction: row;
   place-content: center flex-start;
   align-items: center;
   gap: rem.torem(8px);
@@ -268,6 +268,10 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
   @media (min-width: size.$tablet) {
     display: none;
   }
+}
+
+.menu-item-review-dialog {
+  width: 100%;
 }
 
 .sub-popin-header {

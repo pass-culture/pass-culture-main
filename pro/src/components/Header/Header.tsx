@@ -88,24 +88,26 @@ export const Header = forwardRef(
             )}
           </div>
           <div className={styles['top-right-menu']}>
-            <div className={styles['tablet-and-above']}>
-              {isProFeedbackEnabled && (
-                <DialogBuilder
-                  trigger={
-                    <Button
-                      variant={ButtonVariant.QUATERNARY}
-                      icon={fullSmsIcon}
-                    >
-                      Donner mon avis
-                    </Button>
-                  }
-                >
-                  <UserReviewDialog />
-                </DialogBuilder>
-              )}
-            </div>
-            <div className={styles['tablet-and-above']}>
-              <HeaderHelpDropdown />
+            <div className={styles['top-right-menu-links']}>
+              <div className={styles['tablet-and-above']}>
+                {isProFeedbackEnabled && (
+                  <DialogBuilder
+                    trigger={
+                      <Button
+                        variant={ButtonVariant.QUATERNARY}
+                        icon={fullSmsIcon}
+                      >
+                        Donner mon avis
+                      </Button>
+                    }
+                  >
+                    <UserReviewDialog />
+                  </DialogBuilder>
+                )}
+              </div>
+              <div className={styles['tablet-and-above']}>
+                <HeaderHelpDropdown />
+              </div>
             </div>
             <HeaderDropdown />
           </div>
