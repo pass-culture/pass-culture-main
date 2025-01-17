@@ -3,6 +3,7 @@ import React, { useId } from 'react'
 
 import fullClearIcon from 'icons/full-clear.svg'
 import fullCloseIcon from 'icons/full-close.svg'
+import fullHelpIcon from 'icons/full-help.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -71,6 +72,7 @@ type FieldLayoutProps = FieldLayoutBaseProps & {
   showError?: boolean
   error?: string
   count?: number
+  help?: string
 }
 
 /* istanbul ignore next: DEBT, TO FIX */
@@ -96,6 +98,7 @@ export const FieldLayout = ({
   description,
   clearButtonProps,
   ErrorDetails,
+  help,
 }: FieldLayoutProps): JSX.Element => {
   const hasError = showError && !!error
   const hasCounter = count !== undefined && maxLength !== undefined
@@ -122,15 +125,36 @@ export const FieldLayout = ({
           [styles['visually-hidden']]: isLabelHidden,
         })}
       >
-        <label
-          className={cn(
-            styles['field-layout-label'],
-            hasLabelLineBreak && styles['field-layout-label-break']
-          )}
-          htmlFor={name}
+        <div
+          className={cn({
+            [styles['field-layout-label-with-help']]: !!help,
+          })}
         >
-          {label} {!isOptional && showMandatoryAsterisk && '*'}
-        </label>
+          <label
+            className={cn(
+              styles['field-layout-label'],
+              hasLabelLineBreak && styles['field-layout-label-break']
+            )}
+            htmlFor={name}
+          >
+            {label} {!isOptional && showMandatoryAsterisk && '*'}
+          </label>
+          {help && (
+            <Button
+              className={styles['field-layout-button-tooltip-help']}
+              tooltipContentClassName={
+                styles['field-layout-button-tooltip-help-content']
+              }
+              icon={fullHelpIcon}
+              iconAlt="À propos"
+              type="button"
+              hasTooltip
+              variant={ButtonVariant.SECONDARY}
+            >
+              {help}
+            </Button>
+          )}
+        </div>
         {description && (
           <span
             id={`description-${name}`}
