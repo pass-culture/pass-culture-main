@@ -1,5 +1,4 @@
 import { screen } from '@testing-library/react'
-
 import * as router from 'react-router'
 
 import { api } from 'apiClient/api'
@@ -31,7 +30,6 @@ vi.mock('react-router', async () => ({
   ...(await vi.importActual('react-router')),
   useSearchParams: () => [],
 }))
-const mockLogEvent = vi.fn()
 
 const renderSignIn = (options?: RenderWithProvidersOptions) => {
   renderWithProviders(

@@ -259,16 +259,17 @@ describe('screens:StocksEventEdition', () => {
 
     await waitFor(() => {
       expect(api.deleteStock).toHaveBeenCalled()
+      expect(api.getStocks).toHaveBeenNthCalledWith(
+        2,
+        apiOffer.id,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        false,
+        5
+      )
     })
-    expect(api.getStocks).toHaveBeenCalledWith(
-      apiOffer.id,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      false,
-      5
-    )
   })
 
   it('should not allow user to delete a stock undeletable', async () => {
@@ -480,10 +481,12 @@ describe('screens:StocksEventEdition', () => {
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
     expect(screen.getByText(PATCH_SUCCESS_MESSAGE)).toBeInTheDocument()
-    expect(screen.queryByTestId('stock-event-form')).not.toBeInTheDocument()
-    expect(
-      screen.getByText(/This is the read only route content/)
-    ).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.queryByTestId('stock-event-form')).not.toBeInTheDocument()
+      expect(
+        screen.getByText(/This is the read only route content/)
+      ).toBeInTheDocument()
+    })
   })
 
   it('should not display any message when user delete empty stock', async () => {

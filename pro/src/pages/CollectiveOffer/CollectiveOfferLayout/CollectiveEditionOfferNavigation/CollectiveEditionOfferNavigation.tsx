@@ -2,6 +2,7 @@ import cn from 'classnames'
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router'
+import { mutate } from 'swr'
 
 import { api } from 'apiClient/api'
 import {
@@ -44,7 +45,6 @@ import { Tab, Tabs } from 'ui-kit/Tabs/Tabs'
 import { CollectiveOfferStep } from '../CollectiveOfferNavigation/CollectiveCreationOfferNavigation'
 
 import styles from './CollectiveEditionOfferNavigation.module.scss'
-import { mutate } from 'swr'
 
 export interface CollectiveEditionOfferNavigationProps {
   activeStep: CollectiveOfferStep

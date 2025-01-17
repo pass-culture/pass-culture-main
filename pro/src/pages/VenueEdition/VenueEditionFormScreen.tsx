@@ -1,3 +1,5 @@
+import { useLocation } from 'react-router'
+
 import { GetVenueResponseModel } from 'apiClient/v1'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { PartnerPageIndividualSection } from 'pages/Homepage/components/Offerers/components/PartnerPages/components/PartnerPageIndividualSection'
@@ -7,7 +9,6 @@ import { AccesLibreSection } from './AccesLibreSection/AccesLibreSection'
 import { VenueEditionForm } from './VenueEditionForm'
 import styles from './VenueEditionFormScreen.module.scss'
 import { VenueEditionReadOnly } from './VenueEditionReadOnly'
-import { useLocation } from 'react-router'
 
 interface VenueEditionProps {
   venue: GetVenueResponseModel

@@ -51,6 +51,7 @@ export const VenueEdition = (): JSX.Element | null => {
 
   useEffect(() => {
     if (selectedOffererId?.toString() !== offererId) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate('/accueil')
     }
   }, [selectedOffererId, offererId])

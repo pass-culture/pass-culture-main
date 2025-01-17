@@ -1,6 +1,5 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-
 import * as router from 'react-router'
 
 import { api } from 'apiClient/api'
