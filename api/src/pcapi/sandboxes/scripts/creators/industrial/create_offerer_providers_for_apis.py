@@ -133,15 +133,17 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
 
     total_views_last_30_days = sum((today - datetime.timedelta(days=i)).day for i in range(90))
 
+    top_offer = offers[0]
     offerers_factories.OffererStatsFactory(
         offerer=offerer,
         syncDate=datetime.datetime.utcnow(),
         table=TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE,
         jsonData=offerers_models.OffererStatsData(
-            top_offers=[offerers_models.TopOffersData(offerId=random.choice(offers).id, numberOfViews=today.day)],
+            top_offers=[offerers_models.TopOffersData(offerId=top_offer.id, numberOfViews=today.day)],
             total_views_last_30_days=total_views_last_30_days,
         ),
     )
+    offers_factories.HeadlineOfferFactory(offer=top_offer, create_mediation=True)
 
     offers_factories.EventStockFactory(
         offer__name="Taylor à Besançon !",
