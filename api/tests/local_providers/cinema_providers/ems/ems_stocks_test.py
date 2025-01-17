@@ -66,6 +66,42 @@ class EMSStocksTest:
 
         self._assert_seyne_sur_mer_initial_sync(venue, venue_provider, cinema_detail, 86400)
 
+    @mock.patch("pcapi.local_providers.movie_festivals.constants.FESTIVAL_RATE", Decimal("4.0"))
+    @mock.patch("pcapi.local_providers.movie_festivals.constants.FESTIVAL_NAME", "My awesome festival")
+    @mock.patch("pcapi.local_providers.movie_festivals.api.should_apply_movie_festival_rate")
+    def should_update_stock_with_movie_festival_rate(self, should_apply_movie_festival_rate_mock, requests_mock):
+        requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0_MOVIE_FESTIVAL)
+        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
+        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
+
+        venue = offerers_factories.VenueFactory(
+            bookingEmail="seyne-sur-mer-booking@example.com", withdrawalDetails="Modalité de retrait"
+        )
+        ems_provider = get_provider_by_local_class("EMSStocks")
+        providers_factories.VenueProviderFactory(
+            venue=venue, provider=ems_provider, venueIdAtOfferProvider="9997", isDuoOffers=True
+        )
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue, provider=ems_provider, idAtProvider="9997"
+        )
+        providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
+
+        assert offers_models.Product.query.count() == 0
+        should_apply_movie_festival_rate_mock.return_value = True
+
+        synchronize_ems_venue_providers()
+
+        created_offer = offers_models.Offer.query.one()
+        created_stock = offers_models.Stock.query.one()
+
+        should_apply_movie_festival_rate_mock.assert_called_with(
+            created_offer.id, created_stock.beginningDatetime.date()
+        )
+
+        assert created_stock.price == Decimal("4.0")
+        assert created_stock.priceCategory.price == Decimal("4.0")
+        assert created_stock.priceCategory.priceCategoryLabel.label == "My awesome festival"
+
     def should_fill_and_create_offer_and_stock_information_for_each_movie_based_on_product(self, requests_mock):
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
         requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())

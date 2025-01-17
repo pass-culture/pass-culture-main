@@ -153,6 +153,47 @@ class UpdateObjectsTest:
         assert created_offer.subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offer.withdrawalDetails == venue.withdrawalDetails
 
+    @patch("pcapi.local_providers.movie_festivals.constants.FESTIVAL_RATE", decimal.Decimal("4.0"))
+    @patch("pcapi.local_providers.movie_festivals.constants.FESTIVAL_NAME", "My awesome festival")
+    @patch("pcapi.local_providers.movie_festivals.api.should_apply_movie_festival_rate")
+    @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
+    @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
+    @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
+    @pytest.mark.usefixtures("db_session")
+    def test_should_create_one_offer_with_movie_info(
+        self, mock_call_allocine_api, mock_api_poster, mock_should_apply_movie_festival_rate
+    ):
+        # Given
+        mock_call_allocine_api.return_value = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
+            fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
+        )
+        mock_api_poster.return_value = bytes()
+
+        venue = offerers_factories.VenueFactory(
+            managingOfferer__siren="775671464",
+            name="Cinema Allocine",
+            siret="77567146400110",
+            bookingEmail="toto@example.com",
+            withdrawalDetails="Modalités",
+        )
+        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(
+            venue=venue, internalId="PXXXXX", isDuo=False
+        )
+        allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
+        mock_should_apply_movie_festival_rate.return_value = True
+
+        # When
+        allocine_stocks_provider.updateObjects()
+
+        # Then
+        created_offer = offers_models.Offer.query.one()
+        created_stocks = offers_models.Stock.query.all()
+
+        for created_stock in created_stocks:
+            assert created_stock.price == decimal.Decimal("4.0")
+            assert created_stock.priceCategory.price == decimal.Decimal("4.0")
+            assert created_stock.priceCategory.priceCategoryLabel.label == "My awesome festival"
+
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")

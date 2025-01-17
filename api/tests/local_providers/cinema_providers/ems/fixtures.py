@@ -94,6 +94,43 @@ DATA_VERSION_0 = {
     "version": 86400,
 }
 
+DATA_VERSION_0_MOVIE_FESTIVAL = {
+    "sites": [
+        {
+            "id": "9997",
+            "allocine_id": "Z9997",
+            "name": "Ems Cine",
+            "address": "Monnaie-Services, 334 rue du Luxembourg",
+            "zip_code": "83500",
+            "city": "La seyne sur mer",
+            "time_zone": "Europe/Paris",
+            "events": [
+                {
+                    "id": "SHJRH",
+                    "allocine_id": 269975,
+                    "title": "Spider-Man : Across the Spider-Verse",
+                    "director": "Joaquim Dos Santos, Justin K. Thompson, Kemp Powers",
+                    "release_date": "20230531",
+                    "synopsis": "Après avoir retrouvé Gwen Stacy, Spider-Man, le sympathique héros originaire de Brooklyn, est catapulté à travers le Multivers, où il rencontre une équipe de Spider-Héros chargée d'en protéger l'existence. Mais lorsque les héros s'opposent sur la façon de gérer une nouvelle menace, Miles se retrouve confronté à eux et doit redéfinir ce que signifie être un héros afin de sauver les personnes qu'il aime le plus.",
+                    "duration": 141,
+                    "bill_url": "https://example.com/FR/poster/5F988F1C/120/SHJRH.jpg",
+                    "sessions": [
+                        {
+                            "id": "999700079243",
+                            "date": "202307111000",
+                            "features": ["video_3d", "vf", "disabled_access"],
+                            "hall_id": 5,
+                            "hall_name": "Salle 5",
+                            "pass_culture_price": 7.15,
+                        },
+                    ],
+                }
+            ],
+        },
+    ],
+    "version": 86400,
+}
+
 DATA_VERSION_86400 = {
     "sites": [
         {

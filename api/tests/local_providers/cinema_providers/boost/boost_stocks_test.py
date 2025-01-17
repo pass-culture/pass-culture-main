@@ -2,6 +2,7 @@ import datetime
 import decimal
 from pathlib import Path
 from unittest import mock
+from unittest.mock import patch
 
 import pytest
 
@@ -357,6 +358,40 @@ class BoostStocksTest:
         assert created_stocks[0].dnBookedQuantity == 2
 
         assert get_cinema_attr_adapter.call_count == 2
+
+    @patch("pcapi.local_providers.movie_festivals.constants.FESTIVAL_RATE", decimal.Decimal("4.0"))
+    @patch("pcapi.local_providers.movie_festivals.constants.FESTIVAL_NAME", "My awesome festival")
+    @patch("pcapi.local_providers.movie_festivals.api.should_apply_movie_festival_rate")
+    def should_update_stock_with_movie_festival_rate(
+        self,
+        should_apply_movie_festival_rate_mock,
+        requests_mock,
+    ):
+        boost_provider = get_provider_by_local_class("BoostStocks")
+        venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
+        cinema_provider_pivot = BoostCinemaProviderPivotFactory(
+            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
+        )
+        BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
+
+        requests_mock.get(
+            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
+        )
+        requests_mock.get(
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
+            json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
+        )
+        requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
+        should_apply_movie_festival_rate_mock.return_value = True
+        boost_stocks = BoostStocks(venue_provider=venue_provider)
+        boost_stocks.updateObjects()
+
+        stock = Stock.query.one()
+
+        assert stock.price == decimal.Decimal("4.0")
+        assert stock.priceCategory.price == decimal.Decimal("4.0")
+        assert stock.priceCategory.priceCategoryLabel.label == "My awesome festival"
+        should_apply_movie_festival_rate_mock.assert_called_with(stock.offer.id, stock.beginningDatetime.date())
 
     def should_update_finance_event_when_stock_beginning_datetime_is_updated(self, requests_mock):
         venue_provider = self._create_cinema_and_pivot()

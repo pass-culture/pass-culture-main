@@ -102,6 +102,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_SWITCH_ALLOCINE_SYNC_TO_EMS_SYNC = "Activer le passage automatique des synchronisations Allociné à EMS"
     LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC = "Stocker dans Google Drive les cinémas EMS activables"
     ENABLE_PRO_FEEDBACK = "Activer l'envoi des commentaires du portail pro vers Harvestr"
+    ENABLE_MOVIE_FESTIVAL_RATE = "Activer les tarifs spéciaux pour un festival cinéma"
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
     WIP_ENABLE_BREVO_PRO_SUBACCOUNT = "Activer l'utilisation du sous-compte Brevo pour les mails pros"
     WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY = "Changer le template d'email de confirmation de réservation"
@@ -182,6 +183,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_EAC_FINANCIAL_PROTECTION,
     FeatureToggle.ENABLE_EMS_INTEGRATION,
     FeatureToggle.ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION,
+    FeatureToggle.ENABLE_MOVIE_FESTIVAL_RATE,
     FeatureToggle.ENABLE_PHONE_VALIDATION,
     FeatureToggle.ENABLE_PRO_FEEDBACK,
     FeatureToggle.ENABLE_SWITCH_ALLOCINE_SYNC_TO_EMS_SYNC,
