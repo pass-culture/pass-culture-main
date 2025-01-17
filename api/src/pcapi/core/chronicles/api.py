@@ -142,8 +142,13 @@ def save_book_club_chronicle(form: typeform.TypeformResponse) -> None:
 
 
 def get_offer_published_chronicles(offer: offers_models.Offer) -> list[models.Chronicle]:
-    if offer.product:
-        all_chronicles = offer.product.chronicles
+    if offer.productId:
+        chronicles_query = models.Chronicle.query.join(models.Chronicle.products).filter(
+            offers_models.Product.id == offer.productId
+        )
     else:
-        all_chronicles = offer.chronicles
-    return [chronicle for chronicle in all_chronicles if chronicle.isPublished]
+        chronicles_query = models.Chronicle.query.join(models.Chronicle.offers).filter(
+            offers_models.Offer.id == offer.id
+        )
+
+    return chronicles_query.filter(models.Chronicle.isPublished).all()

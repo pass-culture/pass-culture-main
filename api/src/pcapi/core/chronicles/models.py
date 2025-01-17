@@ -3,7 +3,9 @@ import logging
 import typing
 
 import sqlalchemy as sa
+from sqlalchemy.ext.hybrid import hybrid_property
 import sqlalchemy.orm as sa_orm
+from sqlalchemy.sql.elements import BinaryExpression
 
 from pcapi.models import Base
 from pcapi.models import Model
@@ -53,9 +55,13 @@ class Chronicle(PcObject, Base, Model, DeactivableMixin):
     )
     __table_args__ = (sa.Index("ix_chronicle_content___ts_vector__", __content_ts_vector__, postgresql_using="gin"),)
 
-    @property
+    @hybrid_property
     def isPublished(self) -> bool:
         return self.isActive and self.isSocialMediaDiffusible
+
+    @isPublished.expression  # type: ignore[no-redef]
+    def isPublished(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+        return sa.and_(cls.isActive.is_(True), cls.isSocialMediaDiffusible.is_(True))
 
 
 class ProductChronicle(PcObject, Base, Model):

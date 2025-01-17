@@ -123,6 +123,7 @@ class OffersTest:
         nb_queries += 1  # select stocks
         nb_queries += 1  # select mediations
         nb_queries += 1  # select feature
+        nb_queries += 1  # select chronicles
         with assert_num_queries(nb_queries):
             with assert_no_duplicated_queries():
                 response = client.get(f"/native/v1/offer/{offer_id}")
@@ -285,10 +286,11 @@ class OffersTest:
         offers_factories.ThingStockFactory(offer=offer, price=12.34, quantity=None)
 
         offer_id = offer.id
-        # 1. select offer
-        # 2. select stocks
-        # 3. select mediations
-        with assert_num_queries(3):
+        nb_queries = 1  # select offer
+        nb_queries += 1  # select stocks
+        nb_queries += 1  # select mediations
+        nb_queries += 1  # select chronicles
+        with assert_num_queries(nb_queries):
             with assert_no_duplicated_queries():
                 response = client.get(f"/native/v1/offer/{offer_id}")
                 assert response.status_code == 200
@@ -298,10 +300,11 @@ class OffersTest:
         offers_factories.ThingStockFactory(offer=offer, price=12.34)
 
         offer_id = offer.id
-        # 1. select offer
-        # 2. select stocks
-        # 3. select mediations
-        with assert_num_queries(3):
+        nb_queries = 1  # select offer
+        nb_queries += 1  # select stocks
+        nb_queries += 1  # select mediations
+        nb_queries += 1  # select chronicles
+        with assert_num_queries(nb_queries):
             with assert_no_duplicated_queries():
                 response = client.get(f"/native/v1/offer/{offer_id}")
                 assert response.status_code == 200
@@ -365,11 +368,12 @@ class OffersTest:
         stock = offers_factories.StockWithActivationCodesFactory()
         offer_id = stock.offer.id
 
-        # 1. select offer
-        # 2. select stocks
-        # 3. select mediations
-        # 4. select activation_code
-        with assert_num_queries(4):
+        nb_queries = 1  # select offer
+        nb_queries += 1  # select stocks
+        nb_queries += 1  # select mediations
+        nb_queries += 1  # select activation_code
+        nb_queries += 1  # select chronicles
+        with assert_num_queries(nb_queries):
             with assert_no_duplicated_queries():
                 response = client.get(f"/native/v1/offer/{offer_id}")
                 assert response.status_code == 200
@@ -380,11 +384,12 @@ class OffersTest:
         stock = offers_factories.StockWithActivationCodesFactory(activationCodes__expirationDate=datetime(2050, 1, 1))
         offer_id = stock.offer.id
 
-        # 1. select offer
-        # 2. select stocks
-        # 3. select mediations
-        # 4. select activation_code
-        with assert_num_queries(4):
+        nb_queries = 1  # select offer
+        nb_queries += 1  # select stocks
+        nb_queries += 1  # select mediations
+        nb_queries += 1  # select activation_code
+        nb_queries += 1  # select chronicles
+        with assert_num_queries(nb_queries):
             with assert_no_duplicated_queries():
                 response = client.get(f"/native/v1/offer/{offer_id}")
                 assert response.status_code == 200
@@ -395,11 +400,12 @@ class OffersTest:
         stock = offers_factories.StockWithActivationCodesFactory(activationCodes__expirationDate=datetime(2000, 1, 1))
         offer_id = stock.offer.id
 
-        # 1. select offer
-        # 2. select stocks
-        # 3. select mediations
-        # 4. select activation_code
-        with assert_num_queries(4):
+        nb_queries = 1  # select offer
+        nb_queries += 1  # select stocks
+        nb_queries += 1  # select mediations
+        nb_queries += 1  # select activation_code
+        nb_queries += 1  # select chronicles
+        with assert_num_queries(nb_queries):
             with assert_no_duplicated_queries():
                 response = client.get(f"/native/v1/offer/{offer_id}")
                 assert response.status_code == 200
@@ -416,6 +422,7 @@ class OffersTest:
         nb_queries += 1  # select stocks
         nb_queries += 1  # select mediations
         nb_queries += 1  # select feature
+        nb_queries += 1  # select chronicles
         with assert_num_queries(nb_queries):
             with assert_no_duplicated_queries():
                 response = client.get(f"/native/v1/offer/{offer_id}")
@@ -472,15 +479,16 @@ class OffersTest:
         )
         offer_id = offer.id
 
-        # 1. select offer
-        # 2. select stocks
-        # 3. select mediations
-        # 4. check cinema venue_provider exists
-        # 5. select active cinema provider
-        # 6. select cinema_provider_pivot
-        # 7. select feature
-        # 8. update stock
-        with assert_num_queries(8):
+        nb_queries = 1  # select offer
+        nb_queries += 1  # select stocks
+        nb_queries += 1  # select mediations
+        nb_queries += 1  # check cinema venue_provider exists
+        nb_queries += 1  # select active cinema provider
+        nb_queries += 1  # select cinema_provider_pivot
+        nb_queries += 1  # select feature
+        nb_queries += 1  # update stock
+        nb_queries += 1  # select chronicles
+        with assert_num_queries(nb_queries):
             response = client.get(f"/native/v1/offer/{offer_id}")
             assert response.status_code == 200
 
@@ -526,17 +534,18 @@ class OffersTest:
         )
 
         offer_id = offer.id
-        # 1. select offer
-        # 2. select stocks
-        # 3. select mediations
-        # 4. select EXISTS venue_provider
-        # 5. select EXISTS provider
-        # 6. select cinema_provider_pivot
-        # 7. select feature
-        # 8. select EXISTS provider
-        # 9. select boost_cinema_details
-        # 10. update stock
-        with assert_num_queries(10):
+        nb_queries = 1  # select offer
+        nb_queries += 1  # select stocks
+        nb_queries += 1  # select mediations
+        nb_queries += 1  # select EXISTS venue_provider
+        nb_queries += 1  # select EXISTS provider
+        nb_queries += 1  # select cinema_provider_pivot
+        nb_queries += 1  # select feature
+        nb_queries += 1  # select EXISTS provider
+        nb_queries += 1  # select boost_cinema_details
+        nb_queries += 1  # update stock
+        nb_queries += 1  # select chronicles
+        with assert_num_queries(nb_queries):
             response = client.get(f"/native/v1/offer/{offer_id}")
             assert response.status_code == 200
         assert first_show_stock.remainingQuantity == 96
@@ -580,17 +589,18 @@ class OffersTest:
         )
 
         offer_id = offer.id
-        # 1. select offer
-        # 2. select stocks
-        # 3. select mediations
-        # 4. select EXISTS venue_provider
-        # 5. select EXISTS provider
-        # 6. select cinema_provider_pivot
-        # 7. select feature
-        # 8. select EXISTS provider
-        # 9. select cgr_cinema_details
-        # 10. update stock
-        with assert_num_queries(10):
+        nb_queries = 1  # select offer
+        nb_queries += 1  # select stocks
+        nb_queries += 1  # select mediations
+        nb_queries += 1  # select EXISTS venue_provider
+        nb_queries += 1  # select EXISTS provider
+        nb_queries += 1  # select cinema_provider_pivot
+        nb_queries += 1  # select feature
+        nb_queries += 1  # select EXISTS provider
+        nb_queries += 1  # select cgr_cinema_details
+        nb_queries += 1  # update stock
+        nb_queries += 1  # select chronicles
+        with assert_num_queries(nb_queries):
             response = client.get(f"/native/v1/offer/{offer_id}")
             assert response.status_code == 200
 
@@ -616,14 +626,15 @@ class OffersTest:
         offers_factories.EventStockFactory(offer=offer, idAtProviders="toto")
 
         offer_id = offer.id
-        # 1. select offer
-        # 2. select stocks
-        # 3. select mediations
-        # 4. check cinema venue_provider exists
-        # 5. select active cinema provider
-        # 6. update offer
-        # 7. select feature
-        with assert_num_queries(7):
+        nb_query = 1  # select offer
+        nb_query += 1  # select stocks
+        nb_query += 1  # select mediations
+        nb_query += 1  # check cinema venue_provider exists
+        nb_query += 1  # select active cinema provider
+        nb_query += 1  # update offer
+        nb_query += 1  # select feature
+        nb_query += 1  # select chronicles
+        with assert_num_queries(nb_query):
             response = client.get(f"/native/v1/offer/{offer_id}")
             assert response.status_code == 200
 
@@ -634,10 +645,11 @@ class OffersTest:
         offer = offers_factories.ThingOfferFactory()
 
         offer_id = offer.id
-        # 1. select offer
-        # 2. select stocks
-        # 3. select mediations
-        with assert_num_queries(3):
+        nb_query = 1  # select offer
+        nb_query += 1  # select stocks
+        nb_query += 1  # select mediations
+        nb_query += 1  # select chronicles
+        with assert_num_queries(nb_query):
             response = client.get(f"/native/v1/offer/{offer_id}")
             assert response.status_code == 200
 
@@ -650,10 +662,11 @@ class OffersTest:
         non_deleted_stock = offers_factories.StockFactory(offer=offer, quantity=1)
 
         offer_id = offer.id
-        # 1. select offer
-        # 2. select stocks
-        # 3. select mediations
-        with assert_num_queries(3):
+        nb_query = 1  # select offer
+        nb_query += 1  # select stocks
+        nb_query += 1  # select mediations
+        nb_query += 1  # select chronicles
+        with assert_num_queries(nb_query):
             with assert_no_duplicated_queries():
                 response = client.get(f"/native/v1/offer/{offer_id}")
 
@@ -667,10 +680,11 @@ class OffersTest:
         offers_factories.StockFactory(offer=offer, quantity=1)
 
         offer_id = offer.id
-        # 1. select offer
-        # 2. select stocks
-        # 3. select mediations
-        with assert_num_queries(3):
+        nb_query = 1  # select offer
+        nb_query += 1  # select stocks
+        nb_query += 1  # select mediations
+        nb_query += 1  # select chronicles
+        with assert_num_queries(nb_query):
             response = client.get(f"/native/v1/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -856,6 +870,7 @@ class OffersV2Test:
         nb_queries += 1  # select stocks
         nb_queries += 1  # select mediations
         nb_queries += 1  # select feature
+        nb_queries += 1  # select chronicles
         with assert_num_queries(nb_queries):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
@@ -1017,10 +1032,11 @@ class OffersV2Test:
         offers_factories.ThingStockFactory(offer=offer, price=12.34)
 
         offer_id = offer.id
-        # 1. select offer
-        # 2. select stocks
-        # 3. select mediations
-        with assert_num_queries(3):
+        nb_query = 1  # select offer
+        nb_query += 1  # select stocks
+        nb_query += 1  # select mediations
+        nb_query += 1  # select chronicles
+        with assert_num_queries(nb_query):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -1084,11 +1100,12 @@ class OffersV2Test:
         offer_id = stock.offer.id
 
         # when
-        # 1. select offer
-        # 2. select stocks
-        # 3. select mediations
-        # 4. select activation_code
-        with assert_num_queries(4):
+        nb_query = 1  # select offer
+        nb_query += 1  # select stocks
+        nb_query += 1  # select mediations
+        nb_query += 1  # select activation_code
+        nb_query += 1  # select chronicles
+        with assert_num_queries(nb_query):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         # then
@@ -1101,11 +1118,12 @@ class OffersV2Test:
         offer_id = stock.offer.id
 
         # when
-        # 1. select offer
-        # 2. select stocks
-        # 3. select mediations
-        # 4. select activation_code
-        with assert_num_queries(4):
+        nb_query = 1  # select offer
+        nb_query += 1  # select stocks
+        nb_query += 1  # select mediations
+        nb_query += 1  # select activation_code
+        nb_query += 1  # select chronicles
+        with assert_num_queries(nb_query):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         # then
@@ -1118,11 +1136,12 @@ class OffersV2Test:
         offer_id = stock.offer.id
 
         # when
-        # 1. select offer
-        # 2. select stocks
-        # 3. select mediations
-        # 4. select activation_code
-        with assert_num_queries(4):
+        nb_query = 1  # select offer
+        nb_query += 1  # select stocks
+        nb_query += 1  # select mediations
+        nb_query += 1  # select activation_code
+        nb_query += 1  # select chronicles
+        with assert_num_queries(nb_query):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         # then
@@ -1138,6 +1157,7 @@ class OffersV2Test:
         nb_queries += 1  # select stocks
         nb_queries += 1  # select mediations
         nb_queries += 1  # select feature
+        nb_queries += 1  # select chronicles
         with assert_num_queries(nb_queries):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
@@ -1193,15 +1213,16 @@ class OffersV2Test:
         )
 
         offer_id = offer.id
-        # 1. select offer
-        # 2. select stocks
-        # 3. select mediations
-        # 4. select EXISTS venue_provider
-        # 5. select EXISTS venue_provider
-        # 6. select cinema_provider_pivot
-        # 7. select feature
-        # 8. update stock
-        with assert_num_queries(8):
+        nb_query = 1  # select offer
+        nb_query += 1  # select stocks
+        nb_query += 1  # select mediations
+        nb_query += 1  # select EXISTS venue_provider
+        nb_query += 1  # select EXISTS venue_provider
+        nb_query += 1  # select cinema_provider_pivot
+        nb_query += 1  # select feature
+        nb_query += 1  # update stock
+        nb_query += 1  # select chronicles
+        with assert_num_queries(nb_query):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert stock.remainingQuantity == 0
@@ -1246,17 +1267,18 @@ class OffersV2Test:
         )
 
         offer_id = offer.id
-        # 1. select offer
-        # 2. select stocks
-        # 3. select mediations
-        # 4. select EXISTS venue_provider
-        # 5. select EXISTS venue_provider
-        # 6. select cinema_provider_pivot
-        # 7. select feature
-        # 8. select EXISTS venue_provider
-        # 9. select boost_cinema_details
-        # 10. update stock
-        with assert_num_queries(10):
+        nb_query = 1  # select offer
+        nb_query += 1  # select stocks
+        nb_query += 1  # select mediations
+        nb_query += 1  # select EXISTS venue_provider
+        nb_query += 1  # select EXISTS venue_provider
+        nb_query += 1  # select cinema_provider_pivot
+        nb_query += 1  # select feature
+        nb_query += 1  # select EXISTS venue_provider
+        nb_query += 1  # select boost_cinema_details
+        nb_query += 1  # update stock
+        nb_query += 1  # select chronicles
+        with assert_num_queries(nb_query):
             response = client.get(f"/native/v2/offer/{offer_id}")
         assert response.status_code == 200
         assert first_show_stock.remainingQuantity == 96
@@ -1300,17 +1322,18 @@ class OffersV2Test:
         )
 
         offer_id = offer.id
-        # 1. select offer
-        # 2. select stocks
-        # 3. select mediations
-        # 4. select EXISTS venue_provider
-        # 5. select EXISTS venue_provider
-        # 6. select cinema_provider_pivot
-        # 7. select feature
-        # 8. select EXISTS venue_provider
-        # 9. select cgr_cinema_details
-        # 10. update stock
-        with assert_num_queries(10):
+        nb_query = 1  # select offer
+        nb_query += 1  # select stocks
+        nb_query += 1  # select mediations
+        nb_query += 1  # select EXISTS venue_provider
+        nb_query += 1  # select EXISTS venue_provider
+        nb_query += 1  # select cinema_provider_pivot
+        nb_query += 1  # select feature
+        nb_query += 1  # select EXISTS venue_provider
+        nb_query += 1  # select cgr_cinema_details
+        nb_query += 1  # update stock
+        nb_query += 1  # select chronicles
+        with assert_num_queries(nb_query):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -1429,14 +1452,15 @@ class OffersV2Test:
 
         offer_id = offer.id
 
-        # 1. select offer
-        # 2. select stocks
-        # 3. select mediations
-        # 4. select EXISTS venue_provider
-        # 5. select EXISTS venue_provider
-        # 6. update offer
-        # 7. select feature
-        with assert_num_queries(7):
+        nb_query = 1  # select offer
+        nb_query += 1  # select stocks
+        nb_query += 1  # select mediations
+        nb_query += 1  # select EXISTS venue_provider
+        nb_query += 1  # select EXISTS venue_provider
+        nb_query += 1  # update offer
+        nb_query += 1  # select feature
+        nb_query += 1  # select chronicles
+        with assert_num_queries(nb_query):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -1472,17 +1496,17 @@ class OffersV2Test:
         )
 
         offer_id = offer.id
-
-        # 1. select offer
-        # 2. select stocks
-        # 3. select mediations
-        # 4. select EXISTS venue_provider
-        # 5. select EXISTS provider
-        # 6. select cinema_provider_pivot
-        # 7. select feature
-        # 8. select EXISTS provider
-        # 9. select boost_cinema_details
-        with assert_num_queries(9):
+        nb_query = 1  # select offer
+        nb_query += 1  # select stocks
+        nb_query += 1  # select mediations
+        nb_query += 1  # select EXISTS venue_provider
+        nb_query += 1  # select EXISTS venue_provider
+        nb_query += 1  # update cinema_provider_pivot
+        nb_query += 1  # select feature
+        nb_query += 1  # select provider
+        nb_query += 1  # select boost_cinema_details
+        nb_query += 1  # select chronicles
+        with assert_num_queries(nb_query):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -1507,14 +1531,15 @@ class OffersV2Test:
         offers_factories.EventStockFactory(offer=offer, idAtProviders="toto")
 
         offer_id = offer.id
-        # 1. select offer
-        # 2. select stocks
-        # 3. select mediations
-        # 4. select EXISTS venue_provider
-        # 5. select EXISTS provider
-        # 6. update offer
-        # 7. select feature
-        with assert_num_queries(7):
+        nb_query = 1  # select offer
+        nb_query += 1  # select stocks
+        nb_query += 1  # select mediations
+        nb_query += 1  # select EXISTS venue_provider
+        nb_query += 1  # select EXISTS provider
+        nb_query += 1  # update offer
+        nb_query += 1  # select feature
+        nb_query += 1  # select chronicles
+        with assert_num_queries(nb_query):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.json["isReleased"] is False
@@ -1524,7 +1549,11 @@ class OffersV2Test:
         offer = offers_factories.ThingOfferFactory()
 
         offer_id = offer.id
-        with assert_num_queries(3):
+        nb_query = 1  # select offer
+        nb_query += 1  # select stocks
+        nb_query += 1  # select mediations
+        nb_query += 1  # select chronicles
+        with assert_num_queries(nb_query):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert isinstance(response.json["metadata"], dict)
@@ -1536,10 +1565,11 @@ class OffersV2Test:
         non_deleted_stock = offers_factories.StockFactory(offer=offer, quantity=1)
 
         offer_id = offer.id
-        # 1. select offer
-        # 2. select stocks
-        # 3. select mediations
-        with assert_num_queries(3):
+        nb_query = 1  # select offer
+        nb_query += 1  # select stocks
+        nb_query += 1  # select mediations
+        nb_query += 1  # select chronicles
+        with assert_num_queries(nb_query):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -1552,10 +1582,11 @@ class OffersV2Test:
         offers_factories.StockFactory(offer=offer, quantity=1)
 
         offer_id = offer.id
-        # 1. select offer
-        # 2. select stocks
-        # 3. select mediations
-        with assert_num_queries(3):
+        nb_query = 1  # select offer
+        nb_query += 1  # select stocks
+        nb_query += 1  # select mediations
+        nb_query += 1  # select chronicles
+        with assert_num_queries(nb_query):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -1678,6 +1709,7 @@ class OffersV2Test:
         nb_queries += 1  # select stocks
         nb_queries += 1  # select mediations
         nb_queries += 1  # select feature
+        nb_queries += 1  # select chronicles
         with assert_num_queries(nb_queries):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
@@ -1713,6 +1745,7 @@ class OffersV2Test:
         nb_queries += 1  # select stocks
         nb_queries += 1  # select mediations
         nb_queries += 1  # select feature
+        nb_queries += 1  # select chronicles
         with assert_num_queries(nb_queries):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
@@ -1728,6 +1761,7 @@ class OffersV2Test:
         nb_queries = 1  # select offer
         nb_queries += 1  # select stocks
         nb_queries += 1  # select mediations
+        nb_queries += 1  # select chronicles
         with assert_num_queries(nb_queries):
             response = client.get(f"/native/v2/offer/{offer_id}/")
         response_offer = response.json
@@ -1752,6 +1786,7 @@ class OffersV2Test:
         nb_queries = 1  # select offer
         nb_queries += 1  # select stocks
         nb_queries += 1  # select mediations
+        nb_queries += 1  # select chronicles
         with assert_num_queries(nb_queries):
             response = client.get(f"/native/v2/offer/{offer_id}")
         assert response.status_code == 200
@@ -1808,6 +1843,7 @@ class OffersV2Test:
         nb_queries = 1  # select offer
         nb_queries += 1  # select stocks
         nb_queries += 1  # select mediations
+        nb_queries += 1  # select chronicles
         with assert_num_queries(nb_queries):
             response = client.get(f"/native/v2/offer/{offer_id}")
         assert response.status_code == 200
@@ -2173,6 +2209,7 @@ class OffersStocksV2Test:
         nb_queries += 1  # select stocks
         nb_queries += 1  # select mediations
         nb_queries += 1  # select feature
+        nb_queries += 1  # select chronicles
         with assert_num_queries(nb_queries):
             response = client.post("/native/v2/offers/stocks", json=payload)
 
@@ -3700,15 +3737,15 @@ class OfferChroniclesTest:
             content="Test Chronicle",
             isActive=True,
             isSocialMediaDiffusible=True,
-            firstName="Book club user",
-            isIdentityDiffusible=True,
         )
         chronicles_factories.ChronicleFactory(
             products=[product], content="Test Chronicle 2", isActive=True, isSocialMediaDiffusible=True
         )
 
         offer_id = offer.id
-        with assert_num_queries(1):
+        nb_queries = 1  # select offer
+        nb_queries += 1  # select chronicles
+        with assert_num_queries(nb_queries):
             response = client.get(f"/native/v1/offers/{offer_id}/chronicles")
         assert response.status_code == 200
 
@@ -3716,8 +3753,31 @@ class OfferChroniclesTest:
         assert "Test Chronicle 2" in contents
         assert "Test Chronicle" in contents
 
-        print(response.json)
-        assert response.json["chronicles"][0]["author"]["firstName"] == "Book club user"
+    def test_get_offer_chronicles_with_no_author(self, client):
+        product = offers_factories.ProductFactory(name="Test Product")
+        offer = offers_factories.OfferFactory(product=product)
+        chronicles_factories.ChronicleFactory(
+            products=[product],
+            content="Test Chronicle",
+            isActive=True,
+            isSocialMediaDiffusible=True,
+            firstName="Book club user",
+            isIdentityDiffusible=True,
+            age=18,
+            city="Paris",
+        )
+
+        offer_id = offer.id
+        nb_queries = 1  # select offer
+        nb_queries += 1  # select chronicles
+        with assert_num_queries(nb_queries):
+            response = client.get(f"/native/v1/offers/{offer_id}/chronicles")
+        assert response.status_code == 200
+
+        author = response.json["chronicles"][0]["author"]
+        assert author["firstName"] == "Book club user"
+        assert author["age"] == 18
+        assert author["city"] == "Paris"
 
     def test_get_offer_chronicles_without_product(self, client):
         offer = offers_factories.OfferFactory()
@@ -3729,7 +3789,9 @@ class OfferChroniclesTest:
         )
 
         offer_id = offer.id
-        with assert_num_queries(1):
+        nb_queries = 1  # select offer
+        nb_queries += 1  # select chronicles
+        with assert_num_queries(nb_queries):
             response = client.get(f"/native/v1/offers/{offer_id}/chronicles")
 
         assert response.status_code == 200
@@ -3740,7 +3802,9 @@ class OfferChroniclesTest:
     def test_get_offer_chronicles_with_no_chronicles(self, client):
         offer = offers_factories.OfferFactory()
         offer_id = offer.id
-        with assert_num_queries(1):
+        nb_queries = 1  # select offer
+        nb_queries += 1  # select chronicles
+        with assert_num_queries(nb_queries):
             response = client.get(f"/native/v1/offers/{offer_id}/chronicles")
         assert response.status_code == 200
         assert response.json["chronicles"] == []
@@ -3769,7 +3833,9 @@ class OfferChroniclesTest:
         )
 
         offer_id = offer.id
-        with assert_num_queries(1):
+        nb_queries = 1  # select offer
+        nb_queries += 1  # select chronicles
+        with assert_num_queries(nb_queries):
             response = client.get(f"/native/v1/offers/{offer_id}/chronicles")
 
         assert response.status_code == 200
@@ -3782,7 +3848,9 @@ class OfferChroniclesTest:
         chronicles_factories.ChronicleFactory(products=[product], isActive=True, isSocialMediaDiffusible=False)
 
         offer_id = offer.id
-        with assert_num_queries(1):
+        nb_queries = 1  # select offer
+        nb_queries += 1  # select chronicles
+        with assert_num_queries(nb_queries):
             response = client.get(f"/native/v1/offers/{offer_id}/chronicles")
 
         assert response.status_code == 200
@@ -3800,7 +3868,9 @@ class OfferChroniclesTest:
         )
 
         offer_id = offer.id
-        with assert_num_queries(1):
+        nb_queries = 1  # select offer
+        nb_queries += 1  # select chronicles
+        with assert_num_queries(nb_queries):
             response = client.get(f"/native/v1/offers/{offer_id}/chronicles")
 
         assert response.status_code == 200
