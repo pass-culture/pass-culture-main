@@ -188,10 +188,10 @@ def request_webhook_notification(identification_id: str, webhook_url: str) -> No
     Request Ubble to call the webhook url with the given identification id data.
     This function is useful for development and post-outage recovery purposes.
     """
-    response = requests.post(
+    session = _configure_v2_session()
+    response = session.post(
         build_url(f"/v2/identity-verifications/{identification_id}/notify"),
         json={"webhook_url": webhook_url},
-        cert=(settings.UBBLE_CLIENT_CERTIFICATE_PATH, settings.UBBLE_CLIENT_KEY_PATH),
     )
     response.raise_for_status()
 
@@ -245,7 +245,7 @@ def start_identification(
     user_id: int, first_name: str, last_name: str, redirect_url: str, webhook_url: str
 ) -> fraud_models.UbbleContent:
     session = configure_session()
-    logger.info("Ubble v1 request session state", extra=session.__dict__)
+    logger.info("Ubble v1 request session state", extra={"cert": session.cert})
 
     data = {
         "data": {
@@ -266,7 +266,7 @@ def start_identification(
     }
 
     try:
-        response = session.post(build_url("/identifications/", user_id), json=data)
+        response = session.post(build_url("/identifications/", user_id), json=data, cert=None)
     except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
         logger.error(
             "Ubble start-identification: Network error",
@@ -328,10 +328,11 @@ def start_identification(
 
 def get_content(identification_id: str) -> fraud_models.UbbleContent:
     session = configure_session()
+    logger.info("Ubble v1 request session state", extra={"cert": session.cert})
     base_extra_log = {"request_type": "get-content", "identification_id": identification_id}
 
     try:
-        response = session.get(build_url(f"/identifications/{identification_id}/", identification_id))
+        response = session.get(build_url(f"/identifications/{identification_id}/", identification_id), cert=None)
     except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
         logger.error(
             "Ubble get-content: Network error",
@@ -386,7 +387,6 @@ def configure_session() -> requests.Session:
             "Content-Type": "application/vnd.api+json",
         }
     )
-    session.cert = None
 
     return session
 
