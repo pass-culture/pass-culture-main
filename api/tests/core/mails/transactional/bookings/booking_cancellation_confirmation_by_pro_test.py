@@ -17,21 +17,21 @@ from pcapi.core.users import factories as users_factories
 
 
 @pytest.mark.usefixtures("db_session")
-class BookingCancellationConfirmationByProEmailData:
+class BookingCancellationConfirmationByProEmailDataTest:
     def test_should_return_email_data_with_correct_information_when_offer_is_an_event(self):
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             firstName="John", lastName="Doe", email="john@example.com"
         )
-        offer = offers_factories.EventOfferFactory(
-            venue__name="Venue name",
-            product__name="My Event",
+        stock = offers_factories.EventStockFactory(
+            offer__name="My Event",
+            offer__venue__name="Venue name",
+            beginningDatetime=datetime(2019, 10, 9, 10, 20, 00),
+            price=12.52,
         )
         booking = booking_factories.BookingFactory(
             user=beneficiary,
-            stock__offer=offer,
-            stock__beginningDatetime=datetime(2019, 10, 9, 10, 20, 00),
-            stock__price=12.52,
+            stock=stock,
             quantity=2,
             token="12345",
         )
@@ -47,11 +47,12 @@ class BookingCancellationConfirmationByProEmailData:
             "PRICE": "12.52",
             "FORMATTED_PRICE": "12,52 €",
             "IS_EVENT": True,
-            "EVENT_DATE": "09-Oct-2019",
+            "IS_EXTERNAL": False,
+            "EVENT_DATE": "mercredi 9 octobre 2019",
             "EVENT_HOUR": "12h20",
             "QUANTITY": 2,
             "RESERVATIONS_NUMBER": 1,
-            "OFFER_ADDRESS": offer.fullAddress,
+            "OFFER_ADDRESS": stock.offer.fullAddress,
         }
 
     def test_should_return_email_data_when_multiple_bookings_and_offer_is_a_thing(self):
@@ -62,7 +63,7 @@ class BookingCancellationConfirmationByProEmailData:
         offer = offers_factories.ThingOfferFactory(
             venue__name="La petite librairie",
             venue__publicName="La grande librairie",
-            product__name="Le récit de voyage",
+            product=offers_factories.ProductFactory(name="Le récit de voyage"),
         )
         booking = booking_factories.BookingFactory(
             user=beneficiary,
@@ -94,6 +95,7 @@ class BookingCancellationConfirmationByProEmailData:
             "PRICE": "Gratuit",
             "FORMATTED_PRICE": "Gratuit",
             "IS_EVENT": False,
+            "IS_EXTERNAL": False,
             "EVENT_DATE": "",
             "EVENT_HOUR": "",
             "QUANTITY": 7,
