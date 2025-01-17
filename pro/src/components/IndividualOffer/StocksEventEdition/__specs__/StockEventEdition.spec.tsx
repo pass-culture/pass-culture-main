@@ -198,7 +198,6 @@ describe('screens:StocksEventEdition', () => {
     const stock2 = getOfferStockFactory()
 
     await renderStockEventScreen(apiOffer, [stock1, stock2])
-    vi.clearAllMocks()
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
 
     await userEvent.click(
@@ -209,7 +208,7 @@ describe('screens:StocksEventEdition', () => {
       await screen.findByText('Le stock a été supprimé.')
     ).toBeInTheDocument()
     expect(api.deleteStock).toHaveBeenCalledWith(stock1.id)
-    expect(api.getStocks).not.toHaveBeenCalled()
+    expect(api.getStocks).toHaveBeenCalledTimes(1)
 
     vi.spyOn(api, 'upsertStocks')
     await userEvent.click(
