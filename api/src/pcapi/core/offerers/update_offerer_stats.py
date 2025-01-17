@@ -1,6 +1,8 @@
 from datetime import datetime
 import logging
 
+import sqlalchemy as sa
+
 from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
 from pcapi.connectors.big_query.queries.offerer_stats import OffererDailyViewsLast180Days
 from pcapi.connectors.big_query.queries.offerer_stats import OffererTopOffersAndTotalViewsLast30Days
@@ -12,6 +14,22 @@ from pcapi.models import db
 logger = logging.getLogger(__name__)
 
 PAGE_SIZE = 1000
+
+
+def save_offerer_stats(daily_views: list[offerers_models.OffererStats]) -> None:
+    try:
+        db.session.bulk_save_objects(daily_views)
+        db.session.commit()
+    except sa.exc.IntegrityError:
+        db.session.rollback()
+        # batch failed, try inserting one by one
+        for daily_view in daily_views:
+            try:
+                db.session.add(daily_view)
+                db.session.commit()
+            except sa.exc.IntegrityError:
+                db.session.rollback()
+                logger.error("save_offerer_stats failed for offerer #%i", daily_view.offererId, stack_info=True)
 
 
 def update_offerer_daily_views_stats() -> None:
@@ -28,13 +46,11 @@ def update_offerer_daily_views_stats() -> None:
         daily_views.append(daily_views_model)
         counter += 1
         if counter % PAGE_SIZE == 0:
-            db.session.bulk_save_objects(daily_views)
-            db.session.commit()
+            save_offerer_stats(daily_views)
             daily_views = []
 
     if daily_views:  # we need this because the last chunk might not be a full page
-        db.session.bulk_save_objects(daily_views)
-        db.session.commit()
+        save_offerer_stats(daily_views)
 
 
 def update_offerer_top_views_stats() -> None:
