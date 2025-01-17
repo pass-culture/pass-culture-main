@@ -26,7 +26,10 @@ import {
   defaultGetOffererResponseModel,
   venueListItemFactory,
 } from 'commons/utils/factories/individualApiFactories'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+import {
+  currentOffererFactory,
+  sharedCurrentUserFactory,
+} from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { TemplateCollectiveOffers } from '../TemplateCollectiveOffers'
@@ -61,7 +64,7 @@ const renderOffers = async (
       user: {
         currentUser: user,
       },
-      offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: true },
+      offerer: currentOffererFactory(),
     },
   })
 

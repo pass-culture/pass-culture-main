@@ -4,7 +4,10 @@ import { Route, Routes } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { routesSignup } from 'app/AppRouter/subroutesSignupMap'
 import { getOffererNameFactory } from 'commons/utils/factories/individualApiFactories'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+import {
+  sharedCurrentUserFactory,
+  currentOffererFactory,
+} from 'commons/utils/factories/storeFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
@@ -112,7 +115,7 @@ describe('src | components | pages | Signup', () => {
         user: {
           currentUser: user,
         },
-        offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: true },
+        offerer: currentOffererFactory(),
       },
     })
 

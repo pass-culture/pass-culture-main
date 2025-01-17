@@ -18,7 +18,10 @@ import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
 } from 'commons/utils/factories/collectiveApiFactories'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+import {
+  sharedCurrentUserFactory,
+  currentOffererFactory,
+} from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {
@@ -49,7 +52,7 @@ const renderOfferEducationalActions = (
   return renderWithProviders(<OfferEducationalActions {...props} />, {
     storeOverrides: {
       user: { currentUser: sharedCurrentUserFactory() },
-      offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: true },
+      offerer: currentOffererFactory(),
     },
     features,
   })

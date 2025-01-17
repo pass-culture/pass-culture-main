@@ -1,7 +1,10 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+import {
+  sharedCurrentUserFactory,
+  currentOffererFactory,
+} from 'commons/utils/factories/storeFactories'
 import {
   managedVenuesFactory,
   userOffererFactory,
@@ -19,7 +22,7 @@ function renderOfferEducational(props: OfferEducationalProps) {
       user: {
         currentUser: user,
       },
-      offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: true },
+      offerer: currentOffererFactory(),
     },
   })
 }

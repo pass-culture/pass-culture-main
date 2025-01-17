@@ -11,7 +11,10 @@ import { BankAccountResponseModel } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { defaultBankAccount } from 'commons/utils/factories/individualApiFactories'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+import {
+  sharedCurrentUserFactory,
+  currentOffererFactory,
+} from 'commons/utils/factories/storeFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
@@ -34,7 +37,7 @@ const renderReimbursementsInvoices = (options?: RenderWithProvidersOptions) => {
     ...options,
     storeOverrides: {
       user: { currentUser: user },
-      offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: true },
+      offerer: currentOffererFactory(),
     },
   })
 }

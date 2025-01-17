@@ -1,6 +1,9 @@
 import { screen } from '@testing-library/react'
 
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+import {
+  sharedCurrentUserFactory,
+  currentOffererFactory,
+} from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { AccessibilityLayout } from 'pages/Accessibility/AccessibilityLayout'
 
@@ -13,7 +16,7 @@ describe('Accessibility layout', () => {
         user: {
           currentUser: user,
         },
-        offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: true },
+        offerer: currentOffererFactory(),
       },
     })
     expect(screen.queryByTestId('logged-out-section')).not.toBeInTheDocument()

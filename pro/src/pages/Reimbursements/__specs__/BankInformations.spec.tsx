@@ -12,7 +12,10 @@ import {
   defaultGetOffererResponseModel,
   defaultManagedVenues,
 } from 'commons/utils/factories/individualApiFactories'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+import {
+  sharedCurrentUserFactory,
+  currentOffererFactory,
+} from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { BankInformations } from 'pages/Reimbursements/BankInformations/BankInformations'
 import { ReimbursementsContextProps } from 'pages/Reimbursements/Reimbursements'
@@ -53,7 +56,7 @@ function renderBankInformations() {
     user: sharedCurrentUserFactory(),
     storeOverrides: {
       user: { currentUser: sharedCurrentUserFactory() },
-      offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: true },
+      offerer: currentOffererFactory(),
     },
   })
 }

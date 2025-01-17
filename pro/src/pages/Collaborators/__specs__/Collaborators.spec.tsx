@@ -6,7 +6,10 @@ import { ApiError, OffererMemberStatus } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+import {
+  sharedCurrentUserFactory,
+  currentOffererFactory,
+} from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { Notification } from 'components/Notification/Notification'
 import { Collaborators } from 'pages/Collaborators/Collaborators'
@@ -31,7 +34,7 @@ const renderAttachmentInvitations = async () => {
         user: {
           currentUser: sharedCurrentUserFactory(),
         },
-        offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: true },
+        offerer: currentOffererFactory(),
       },
     }
   )

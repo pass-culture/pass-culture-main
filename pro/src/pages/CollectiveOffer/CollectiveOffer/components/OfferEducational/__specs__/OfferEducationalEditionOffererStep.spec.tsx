@@ -7,7 +7,10 @@ import {
   getCollectiveOfferManagingOffererFactory,
   getCollectiveOfferVenueFactory,
 } from 'commons/utils/factories/collectiveApiFactories'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+import {
+  sharedCurrentUserFactory,
+  currentOffererFactory,
+} from 'commons/utils/factories/storeFactories'
 import {
   managedVenuesFactory,
   userOffererFactory,
@@ -25,7 +28,7 @@ function renderComponent(props: OfferEducationalProps) {
       user: {
         currentUser: user,
       },
-      offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: true },
+      offerer: currentOffererFactory(),
     },
   })
 }

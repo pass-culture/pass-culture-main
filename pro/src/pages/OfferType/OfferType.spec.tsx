@@ -1,7 +1,10 @@
 import { screen } from '@testing-library/react'
 import { Route, Routes } from 'react-router-dom'
 
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+import {
+  sharedCurrentUserFactory,
+  currentOffererFactory,
+} from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { OfferType } from 'pages/OfferType/OfferType'
 
@@ -14,7 +17,7 @@ const renderOfferTypes = (initialRoute = '/') => {
     {
       storeOverrides: {
         user: { currentUser: sharedCurrentUserFactory() },
-        offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: true },
+        offerer: currentOffererFactory(),
       },
       user: sharedCurrentUserFactory(),
       initialRouterEntries: [initialRoute],

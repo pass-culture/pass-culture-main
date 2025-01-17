@@ -8,7 +8,10 @@ import {
   IndividualOfferContextValues,
 } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { subcategoryFactory } from 'commons/utils/factories/individualApiFactories'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+import {
+  sharedCurrentUserFactory,
+  currentOffererFactory,
+} from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { DEFAULT_DETAILS_FORM_VALUES } from 'pages/IndividualOffer/IndividualOfferDetails/commons/constants'
 
@@ -86,7 +89,7 @@ const renderDetailsEanSearch = (props: DetailsEanSearchTestProps = {}) => {
     {
       storeOverrides: {
         user: { currentUser: sharedCurrentUserFactory() },
-        offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: true },
+        offerer: currentOffererFactory(),
       },
     }
   )

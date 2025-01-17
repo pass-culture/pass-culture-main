@@ -14,7 +14,10 @@ import {
   defaultGetOffererVenueResponseModel,
 } from 'commons/utils/factories/individualApiFactories'
 import { statisticsFactory } from 'commons/utils/factories/statisticsFactories'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+import {
+  sharedCurrentUserFactory,
+  currentOffererFactory,
+} from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { Income } from './Income'
@@ -71,11 +74,9 @@ const renderIncome = () => {
     user: sharedCurrentUserFactory(),
     storeOverrides: {
       user: { currentUser: sharedCurrentUserFactory() },
-      offerer: {
+      offerer: currentOffererFactory({
         selectedOffererId: MOCK_DATA.selectedOffererId,
-        offererNames: [],
-        isOnboarded: true,
-      },
+      }),
     },
   })
 }

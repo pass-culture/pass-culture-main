@@ -9,7 +9,10 @@ import * as orejime from 'app/App/analytics/orejime'
 import { App } from 'app/App/App'
 import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { RootState } from 'commons/store/rootReducer'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+import {
+  sharedCurrentUserFactory,
+  currentOffererFactory,
+} from 'commons/utils/factories/storeFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
@@ -149,7 +152,7 @@ describe('App', () => {
       user: {
         currentUser: user,
       },
-      offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: false },
+      offerer: currentOffererFactory({ isOnboarded: false }),
     }
 
     it('should redirect to onboarding if user is not onboarded and tries to go to home page', async () => {

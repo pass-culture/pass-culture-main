@@ -1,6 +1,9 @@
 import { screen, within } from '@testing-library/react'
 
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+import {
+  sharedCurrentUserFactory,
+  currentOffererFactory,
+} from 'commons/utils/factories/storeFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
@@ -14,7 +17,7 @@ const renderSitemap = (options: RenderWithProvidersOptions = {}) => {
     user: sharedCurrentUserFactory(),
     storeOverrides: {
       user: { currentUser: sharedCurrentUserFactory() },
-      offerer: { selectedOffererId: 42, offererNames: [], isOnboarded: true },
+      offerer: currentOffererFactory({ selectedOffererId: 42 }),
     },
   })
 }

@@ -15,7 +15,10 @@ import {
 import * as useNotification from 'commons/hooks/useNotification'
 import { collectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+import {
+  sharedCurrentUserFactory,
+  currentOffererFactory,
+} from 'commons/utils/factories/storeFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
@@ -37,7 +40,7 @@ const renderOffers = (
           isAdmin: false,
         }),
       },
-      offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: true },
+      offerer: currentOffererFactory(),
     },
     ...options,
   })
