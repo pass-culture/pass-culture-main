@@ -184,6 +184,43 @@ class CGRStocksTest:
         assert created_stocks[1].priceCategory.priceCategoryLabel.label == "Tarif standard 3D"
         assert created_stocks[1].features == ["VF", "3D", "ICE"]
 
+    @mock.patch("pcapi.local_providers.movie_festivals.constants.FESTIVAL_RATE", Decimal("4.0"))
+    @mock.patch("pcapi.local_providers.movie_festivals.constants.FESTIVAL_NAME", "My awesome festival")
+    @mock.patch("pcapi.local_providers.movie_festivals.api.should_apply_movie_festival_rate")
+    def should_update_stock_with_movie_festival_rate(self, should_apply_movie_festival_rate_mock, requests_mock):
+        self._create_products()
+        requests_mock.get("https://example.com/149341.jpg", content=bytes())
+        requests_mock.get("https://example.com/82382.jpg", content=bytes())
+        requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
+        requests_mock.post(
+            "https://cgr-cinema-0.example.com/web_service",
+            text=fixtures.cgr_response_template([fixtures.FILM_138473]),
+        )
+
+        cgr_provider = get_provider_by_local_class("CGRStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider, isDuoOffers=True)
+        cinema_provider_pivot = providers_factories.CGRCinemaProviderPivotFactory(
+            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
+        )
+        providers_factories.CGRCinemaDetailsFactory(
+            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cgr-cinema-0.example.com/web_service"
+        )
+        should_apply_movie_festival_rate_mock.return_value = True
+
+        cgr_stocks = CGRStocks(venue_provider=venue_provider)
+        cgr_stocks.updateObjects()
+
+        created_offer = offers_models.Offer.query.one()
+        created_stock = offers_models.Stock.query.one()
+
+        should_apply_movie_festival_rate_mock.assert_called_with(
+            created_offer.id, created_stock.beginningDatetime.date()
+        )
+
+        assert created_stock.price == Decimal("4.0")
+        assert created_stock.priceCategory.price == Decimal("4.0")
+        assert created_stock.priceCategory.priceCategoryLabel.label == "My awesome festival"
+
     def should_fill_stocks_and_price_categories_for_a_movie_based_on_product(self, requests_mock):
         self._create_products()
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
