@@ -3,6 +3,8 @@
 from alembic import op
 from sqlalchemy import text
 
+from pcapi import settings
+
 
 # pre/post deployment: post
 # revision identifiers, used by Alembic.
@@ -13,7 +15,8 @@ depends_on: list[str] | None = None
 
 
 def upgrade() -> None:
-    op.execute(text("""ALTER TABLE offer VALIDATE CONSTRAINT "check_ean_validity";"""))
+    if not settings.IS_PROD:
+        op.execute(text("""ALTER TABLE offer VALIDATE CONSTRAINT "check_ean_validity";"""))
 
 
 def downgrade() -> None:
