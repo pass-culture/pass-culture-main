@@ -1,0 +1,34 @@
+import{j as t}from"./jsx-runtime-CfatFE5O.js";import{useMDXComponents as i}from"./index-DUy19JZU.js";import{af as s}from"./index-DcDfb5tW.js";import{Q as r}from"./QuantityInput.stories-CvV3qQMR.js";import"./index-ClcD9ViR.js";import"./_commonjsHelpers-Cpj98o6Y.js";import"./iframe-DLrt1Zz3.js";import"../sb-preview/runtime.js";import"./index-CBV61OJ-.js";import"./index-CJyPbrN5.js";import"./formik.esm-DyanDbCL.js";import"./BaseCheckbox-BfUFLPp4.js";import"./index-DeARc5FM.js";import"./SvgIcon-B6esR8Vf.js";import"./TextInput-DDsKk2Wq.js";import"./BaseInput-CQqD6LQv.js";import"./FieldLayout-hOWU3bse.js";import"./full-clear-Q4kCtSRL.js";import"./full-close-5Oxr7nnd.js";import"./Button-B0q_wITZ.js";import"./stroke-pass-CALgybTM.js";import"./Tooltip-CPMX2zM9.js";import"./useTooltipProps-C5TDwaI9.js";import"./Button.module-Dtkn584L.js";import"./types-DjX_gQD6.js";import"./FieldError-Bb6I73np.js";import"./stroke-error-DSZD431a.js";function o(n){const e={a:"a",blockquote:"blockquote",br:"br",code:"code",h1:"h1",h2:"h2",p:"p",pre:"pre",strong:"strong",...i(),...n.components};return t.jsxs(t.Fragment,{children:[`
+`,`
+`,`
+`,t.jsx(s,{of:r}),`
+`,t.jsx(e.h1,{id:"quantityinput",children:"QuantityInput"}),`
+`,t.jsxs(e.p,{children:[`A QuantityInput component is a combinaison of a TextInput and a Checkbox
+to define `,t.jsx(e.strong,{children:"quantities"}),`. This component should be used when undefined quantity
+is meant to be interpreted as unlimited.`]}),`
+`,t.jsx(e.h2,{id:"using-quantityinput-over-textinput",children:"Using QuantityInput over TextInput"}),`
+`,t.jsx(e.pre,{children:t.jsx(e.code,{className:"language-jsx",children:`<TextInput
+  label="Quantity"
+  placeholder="Illimité"
+  type="number"
+  value={quantity}
+  onChange={setQuantity}
+/>
+`})}),`
+`,t.jsx(e.p,{children:`This lacks accessibility support.
+Placeholders are generally something to avoid since they disappear when the input is focused,
+or when the user starts typing.
+They tend to be stylised with a lighter color, which can be hard to read for some users.
+In this case, the placeholder was used to indicate that the quantity was unlimited,
+which is not a placeholder's purpose.`}),`
+`,t.jsxs(e.blockquote,{children:[`
+`,t.jsxs(e.p,{children:['"The placeholder text should provide a brief hint to the user as to the expected type of data that should be entered into the control."',t.jsx(e.br,{}),`
+`,"-- ",t.jsx(e.a,{href:"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#attr-placeholder",rel:"nofollow",children:"MDN Web Docs"})]}),`
+`]}),`
+`,t.jsxs(e.p,{children:["If undefined quantity is meant to be interpreted as unlimited, the QuantityInput component should always be used.",t.jsx(e.br,{}),`
+`,"Otherwise, using TextInput is fine enough (mind min, max, and step props attributes)."]}),`
+`,t.jsx(e.h2,{id:"extending-props",children:"Extending props"}),`
+`,t.jsxs(e.p,{children:[`The QuantityInput component picks a few props from the TextInput component,
+which itself sees its props extended from FieldLayoutBase and BaseInput.`,t.jsx(e.br,{}),`
+`,`It's best to choose what needs to be picked than extending the props from the TextInput component
+so the QuantityInput component can be more flexible and easier to maintain.`]})]})}function B(n={}){const{wrapper:e}={...i(),...n.components};return e?t.jsx(e,{...n,children:t.jsx(o,{...n})}):o(n)}export{B as default};
