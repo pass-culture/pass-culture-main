@@ -13,6 +13,7 @@ interface DatePickerProps extends FieldLayoutBaseProps {
   maxDate?: Date
   minDate?: Date
   onChange?: React.InputHTMLAttributes<HTMLInputElement>['onChange']
+  help?: string
 }
 
 export const DatePicker = ({
@@ -31,6 +32,7 @@ export const DatePicker = ({
   hideFooter = false,
   filterVariant,
   onChange,
+  help,
 }: DatePickerProps): JSX.Element => {
   const [field, meta] = useField({ name, type: 'date' })
   const showError = meta.touched && !!meta.error
@@ -59,6 +61,7 @@ export const DatePicker = ({
       smallLabel={smallLabel}
       isOptional={isOptional}
       hideFooter={hideFooter}
+      help={help}
     >
       <BaseDatePicker
         {...field}

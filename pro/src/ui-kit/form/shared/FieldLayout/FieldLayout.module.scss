@@ -24,6 +24,11 @@
     &-asterisk {
       margin-left: rem.torem(8px);
     }
+
+    &-with-help {
+      display: flex;
+      align-items: center;
+    }
   }
 
   &-small-label &-label {
@@ -32,6 +37,20 @@
     display: block;
     min-height: forms.$input-label-min-height;
     margin-bottom: forms.$label-small-space-before-input;
+  }
+
+  &-button-tooltip-help {
+    border: none;
+    padding: 0;
+    min-height: 0;
+    margin-left: rem.torem(4px);
+    margin-top: 0;
+
+    &-content {
+      top: calc(100% - rem.torem(4px));
+      min-width: 260px;
+      padding: rem.torem(4px) rem.torem(8px);
+    }
   }
 
   &-inline {

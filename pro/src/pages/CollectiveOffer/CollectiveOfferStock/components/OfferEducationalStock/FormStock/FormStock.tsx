@@ -33,7 +33,7 @@ export interface FormStockProps {
 export const FormStock = ({
   mode,
   canEditDiscount,
-  canEditDates
+  canEditDates,
 }: FormStockProps): JSX.Element => {
   const { values, setFieldValue } =
     useFormikContext<OfferEducationalStockFormValues>()
@@ -71,6 +71,9 @@ export const FormStock = ({
         minDate={minEndDatetime}
         name="endDatetime"
         className={styles['input-date']}
+        help={
+          'Le remboursement de votre offre sera effectué 2 à 3 semaines après la fin de votre évènement.'
+        }
       />
       <TimePicker
         disabled={!canEditDates}
