@@ -29,6 +29,7 @@ export const CardLink = ({
         direction === 'vertical' && styles['vertical'],
         className
       )}
+      data-testid="cardlink"
     >
       <div className={styles['cardlink-body']}>
         {icon && (

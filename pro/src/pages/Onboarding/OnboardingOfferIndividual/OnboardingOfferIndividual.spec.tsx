@@ -1,4 +1,8 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import {
+  screen,
+  waitForElementToBeRemoved,
+  within,
+} from '@testing-library/react'
 
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
@@ -100,21 +104,10 @@ describe('<OnboardingOfferIndividual />', () => {
 
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-    const heading = await screen.findByRole('heading', {
-      name: 'Reprendre une offre déjà commencée',
-    })
-
     // Find all card links after that heading
-    const cardLinks = [...nextAllSiblings(heading, '.cardlink')]
+    const cardLinks = within(screen.getByTestId('draft-offers')).getAllByTestId(
+      'cardlink'
+    )
     expect(cardLinks).toHaveLength(MAX_DRAFT_TO_DISPLAY)
   })
 })
-
-// Util function to iterate over all siblings of an element
-function* nextAllSiblings(e: Element | null, selector: string) {
-  while ((e = e!.nextElementSibling)) {
-    if (e.matches(selector)) {
-      yield e
-    }
-  }
-}
