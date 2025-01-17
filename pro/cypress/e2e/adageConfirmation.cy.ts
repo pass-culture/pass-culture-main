@@ -230,7 +230,7 @@ describe('Adage confirmation', () => {
       })
 
       cy.stepLog({ message: 'I cancel the booking' })
-      cy.get('button[title="Action"]').click()
+      cy.findByRole('button', { name: 'Voir les actions' }).click()
       cy.findByText('Annuler la réservation').click()
       cy.findByTestId('confirm-dialog-button-confirm').click()
 
