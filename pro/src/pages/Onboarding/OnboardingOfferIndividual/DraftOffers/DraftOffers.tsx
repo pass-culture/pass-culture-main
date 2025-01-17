@@ -46,25 +46,27 @@ export const DraftOffers = ({ offers }: DraftOffersProps): JSX.Element => {
         Reprendre une offre déjà commencée
       </h2>
 
-      {offers.map((offer) => {
-        const { category, subcategory } = extractOfferCategoriesData(
-          offer,
-          categories,
-          subcategories
-        )
-        const categoryLabel = `${category?.proLabel} - ${subcategory?.proLabel}`
+      <div data-testid="draft-offers">
+        {offers.map((offer) => {
+          const { category, subcategory } = extractOfferCategoriesData(
+            offer,
+            categories,
+            subcategories
+          )
+          const categoryLabel = `${category?.proLabel} - ${subcategory?.proLabel}`
 
-        return (
-          <CardLink
-            to={`/onboarding/offre/individuelle/${offer.id}/creation/details`}
-            className={styles['offer']}
-            key={offer.id}
-            label={offer.name}
-            description={categoryLabel}
-            direction="horizontal"
-          />
-        )
-      })}
+          return (
+            <CardLink
+              to={`/onboarding/offre/individuelle/${offer.id}/creation/details`}
+              className={styles['offer']}
+              key={offer.id}
+              label={offer.name}
+              description={categoryLabel}
+              direction="horizontal"
+            />
+          )
+        })}
+      </div>
     </>
   )
 }

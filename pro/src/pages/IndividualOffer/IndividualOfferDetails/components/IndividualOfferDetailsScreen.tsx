@@ -192,11 +192,7 @@ export const IndividualOfferDetailsScreen = ({
   })
   const handlePreviousStepOrBackToReadOnly = () => {
     if (mode === OFFER_WIZARD_MODE.CREATION) {
-      if (isOnboarding) {
-        // Just go back because the previous screen can be either the offer creation screen or the drafts list
-        return navigate(-1)
-      }
-      navigate('/offre/creation')
+      navigate(`${isOnboarding ? '/onboarding' : ''}/offre/creation`)
     } else {
       navigate(
         getIndividualOfferUrl({

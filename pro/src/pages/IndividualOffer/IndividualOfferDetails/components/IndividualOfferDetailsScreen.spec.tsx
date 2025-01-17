@@ -1054,7 +1054,7 @@ describe('IndividualOfferDetails', () => {
       })
       await userEvent.click(screen.getByText('Retour'))
       await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith(-1)
+        expect(mockNavigate).toHaveBeenCalledWith('/onboarding/offre/creation')
       })
     })
   })
