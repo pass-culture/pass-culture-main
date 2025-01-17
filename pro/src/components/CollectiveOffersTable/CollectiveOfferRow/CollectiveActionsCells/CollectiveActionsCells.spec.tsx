@@ -119,7 +119,7 @@ describe('CollectiveActionsCells', () => {
       }),
     })
 
-    await userEvent.click(screen.getByTitle('Action'))
+    await userEvent.click(screen.getByText('Voir les actions'))
 
     const archiveOfferButton = screen.getByText('Archiver')
     await userEvent.click(archiveOfferButton)
@@ -150,7 +150,7 @@ describe('CollectiveActionsCells', () => {
       isSelected: true,
     })
 
-    await userEvent.click(screen.getByTitle('Action'))
+    await userEvent.click(screen.getByText('Voir les actions'))
 
     const archiveOfferButton = screen.getByText('Archiver')
     await userEvent.click(archiveOfferButton)
@@ -175,14 +175,14 @@ describe('CollectiveActionsCells', () => {
       }),
     })
 
-    await userEvent.click(screen.getByTitle('Action'))
+    await userEvent.click(screen.getByText('Voir les actions'))
 
     expect(
       screen.queryByText('Créer une offre réservable')
     ).not.toBeInTheDocument()
   })
 
-  it('should not display duplicate button for pending template offer', async () => {
+  it('should not display duplicate button for pending template offer', () => {
     renderCollectiveActionsCell({
       offer: collectiveOfferFactory({
         isShowcase: true,
@@ -190,11 +190,7 @@ describe('CollectiveActionsCells', () => {
       }),
     })
 
-    await userEvent.click(screen.getByTitle('Action'))
-
-    expect(
-      screen.queryByText('Créer une offre réservable')
-    ).not.toBeInTheDocument()
+    expect(screen.queryByText('Voir les actions')).not.toBeInTheDocument()
   })
 
   it('should not display duplicate button for draft bookable offer', async () => {
@@ -204,7 +200,7 @@ describe('CollectiveActionsCells', () => {
       }),
     })
 
-    await userEvent.click(screen.getByTitle('Action'))
+    await userEvent.click(screen.getByText('Voir les actions'))
 
     expect(screen.queryByText('Dupliquer')).not.toBeInTheDocument()
   })
@@ -216,7 +212,7 @@ describe('CollectiveActionsCells', () => {
       }),
     })
 
-    await userEvent.click(screen.getByTitle('Action'))
+    await userEvent.click(screen.getByText('Voir les actions'))
 
     expect(screen.getByText('Créer une offre réservable')).toBeInTheDocument()
   })
@@ -224,7 +220,7 @@ describe('CollectiveActionsCells', () => {
   it('should display duplicate button for draft bookable offer', async () => {
     renderCollectiveActionsCell()
 
-    await userEvent.click(screen.getByTitle('Action'))
+    await userEvent.click(screen.getByText('Voir les actions'))
 
     expect(screen.getByText('Dupliquer')).toBeInTheDocument()
   })
@@ -244,7 +240,7 @@ describe('CollectiveActionsCells', () => {
         }),
       })
 
-      await userEvent.click(screen.getByTitle('Action'))
+      await userEvent.click(screen.getByText('Voir les actions'))
       await userEvent.click(screen.getByText('Dupliquer'))
       expect(notifyError).toBeCalledWith(
         'Une erreur est survenue lors de la récupération de votre offre'
@@ -268,7 +264,7 @@ describe('CollectiveActionsCells', () => {
         }),
       })
 
-      await userEvent.click(screen.getByTitle('Action'))
+      await userEvent.click(screen.getByText('Voir les actions'))
       await userEvent.click(screen.getByText('Dupliquer'))
       expect(api.duplicateCollectiveOffer).toBeCalledWith(200)
       expect(fetchMock).toHaveBeenCalledWith('https://http.cat/201')
@@ -299,7 +295,7 @@ describe('CollectiveActionsCells', () => {
         }),
       })
 
-      await userEvent.click(screen.getByTitle('Action'))
+      await userEvent.click(screen.getByText('Voir les actions'))
       await userEvent.click(screen.getByText('Dupliquer'))
       expect(mockLogEvent).toHaveBeenCalledTimes(1)
       expect(mockLogEvent).toHaveBeenNthCalledWith(
@@ -333,7 +329,7 @@ describe('CollectiveActionsCells', () => {
         }),
       })
 
-      await userEvent.click(screen.getByTitle('Action'))
+      await userEvent.click(screen.getByText('Voir les actions'))
       await userEvent.click(screen.getByText('Créer une offre réservable'))
       expect(api.createCollectiveOffer).toBeCalledWith({
         audioDisabilityCompliant: false,
@@ -388,7 +384,7 @@ describe('CollectiveActionsCells', () => {
       ['ENABLE_COLLECTIVE_NEW_STATUSES']
     )
 
-    await userEvent.click(screen.getByTitle('Action'))
+    await userEvent.click(screen.getByText('Voir les actions'))
 
     expect(screen.getByText('Modifier')).toBeInTheDocument()
   })
@@ -404,7 +400,7 @@ describe('CollectiveActionsCells', () => {
       ['ENABLE_COLLECTIVE_NEW_STATUSES']
     )
 
-    await userEvent.click(screen.getByTitle('Action'))
+    await userEvent.click(screen.getByText('Voir les actions'))
 
     expect(screen.queryByText('Modifier')).not.toBeInTheDocument()
   })
@@ -446,7 +442,7 @@ describe('CollectiveActionsCells', () => {
         ['ENABLE_COLLECTIVE_NEW_STATUSES']
       )
 
-      await userEvent.click(screen.getByTitle('Action'))
+      await userEvent.click(screen.getByText('Voir les actions'))
 
       expect(screen.getByText('Modifier')).toBeInTheDocument()
     }
@@ -466,7 +462,7 @@ describe('CollectiveActionsCells', () => {
       ['ENABLE_COLLECTIVE_NEW_STATUSES']
     )
 
-    await userEvent.click(screen.getByTitle('Action'))
+    await userEvent.click(screen.getByText('Voir les actions'))
 
     expect(screen.queryByText('Modifier')).not.toBeInTheDocument()
   })
@@ -482,7 +478,7 @@ describe('CollectiveActionsCells', () => {
       ['ENABLE_COLLECTIVE_NEW_STATUSES']
     )
 
-    await userEvent.click(screen.getByTitle('Action'))
+    await userEvent.click(screen.getByText('Voir les actions'))
 
     expect(screen.getByText('Annuler la réservation')).toBeInTheDocument()
   })
@@ -498,7 +494,7 @@ describe('CollectiveActionsCells', () => {
       ['ENABLE_COLLECTIVE_NEW_STATUSES']
     )
 
-    await userEvent.click(screen.getByTitle('Action'))
+    await userEvent.click(screen.getByText('Voir les actions'))
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -538,7 +534,7 @@ describe('CollectiveActionsCells', () => {
       ['ENABLE_COLLECTIVE_NEW_STATUSES']
     )
 
-    await userEvent.click(screen.getByTitle('Action'))
+    await userEvent.click(screen.getByText('Voir les actions'))
 
     await userEvent.click(
       screen.getByRole('button', {

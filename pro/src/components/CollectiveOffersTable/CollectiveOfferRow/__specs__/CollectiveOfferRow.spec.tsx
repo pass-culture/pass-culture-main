@@ -62,7 +62,7 @@ describe('ollectiveOfferRow', () => {
     {
       startDatetime: String(new Date()),
       remainingQuantity: 0,
-      hasBookingLimitDatetimePassed: false
+      hasBookingLimitDatetimePassed: false,
     },
   ]
 
@@ -209,7 +209,9 @@ describe('ollectiveOfferRow', () => {
     props.offer.isEditable = false
     renderOfferItem(props)
 
-    expect(screen.getByRole('presentation')).toHaveClass('thumb-column-inactive')
+    expect(screen.getByRole('presentation')).toHaveClass(
+      'thumb-column-inactive'
+    )
   })
 
   it('should display disabled checkbox when offer is not editable', () => {
@@ -229,7 +231,9 @@ describe('ollectiveOfferRow', () => {
       props.offer.status = status
       renderOfferItem(props)
 
-      expect(screen.getByRole('presentation')).not.toHaveClass('thumb-column-inactive')
+      expect(screen.getByRole('presentation')).not.toHaveClass(
+        'thumb-column-inactive'
+      )
     }
   )
 
@@ -256,7 +260,7 @@ describe('ollectiveOfferRow', () => {
 
     renderOfferItem(props)
 
-    await userEvent.click(screen.getByTitle('Action'))
+    await userEvent.click(screen.getByText('Voir les actions'))
 
     const duplicateButton = screen.getByRole('button', {
       name: 'Créer une offre réservable',
@@ -274,7 +278,7 @@ describe('ollectiveOfferRow', () => {
     Storage.prototype.getItem = vi.fn(() => 'true')
     renderOfferItem(props)
 
-    await userEvent.click(screen.getByTitle('Action'))
+    await userEvent.click(screen.getByText('Voir les actions'))
 
     const duplicateButton = screen.getByRole('button', {
       name: 'Créer une offre réservable',
@@ -380,7 +384,7 @@ describe('ollectiveOfferRow', () => {
     })
     renderOfferItem(props)
 
-    await userEvent.click(screen.getByTitle('Action'))
+    await userEvent.click(screen.getByText('Voir les actions'))
 
     const cancelBookingButton = screen.getByText('Annuler la réservation')
     await userEvent.click(cancelBookingButton)
@@ -418,7 +422,7 @@ describe('ollectiveOfferRow', () => {
 
     renderOfferItem(props)
 
-    await userEvent.click(screen.getByTitle('Action'))
+    await userEvent.click(screen.getByText('Voir les actions'))
 
     const cancelBookingButton = screen.getByText('Annuler la réservation')
     await userEvent.click(cancelBookingButton)
