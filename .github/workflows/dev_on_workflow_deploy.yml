@@ -120,6 +120,12 @@ jobs:
           git pull -r
           git push origin master
 
+      - name: "Authentification to Google"
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
       # Executes helmfile templating and push results to render-manifests repository
       - name: "Generate and push rendered manifests"
         uses: pass-culture/common-workflows/actions/render-push-manifests@render-push-manifests/v2.0.0
