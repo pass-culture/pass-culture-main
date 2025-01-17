@@ -1,4 +1,5 @@
 import { SharedCurrentUserResponseModel } from 'apiClient/v1'
+import { OffererState } from 'commons/store/offerer/reducer'
 
 export const sharedCurrentUserFactory = (
   customSharedCurrentUser: Partial<SharedCurrentUserResponseModel> = {}
@@ -12,4 +13,13 @@ export const sharedCurrentUserFactory = (
   isImpersonated: false,
   roles: [],
   ...customSharedCurrentUser,
+})
+
+export const currentOffererFactory = (
+  customOfferer: Partial<OffererState> = {}
+): OffererState => ({
+  selectedOffererId: 1,
+  offererNames: [],
+  isOnboarded: true,
+  ...customOfferer,
 })

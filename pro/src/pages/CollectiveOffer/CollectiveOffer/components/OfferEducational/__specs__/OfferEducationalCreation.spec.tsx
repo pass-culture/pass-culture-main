@@ -5,7 +5,10 @@ import * as router from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 import { getCollectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+import {
+  sharedCurrentUserFactory,
+  currentOffererFactory,
+} from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { defaultCreationProps } from '../__tests-utils__/defaultProps'
@@ -40,7 +43,7 @@ function renderComponent(props: OfferEducationalProps, route?: string) {
       user: {
         currentUser: user,
       },
-      offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: true },
+      offerer: currentOffererFactory(),
     },
     initialRouterEntries: route ? [route] : undefined,
   })

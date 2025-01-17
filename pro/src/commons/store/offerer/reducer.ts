@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 import type { GetOffererNameResponseModel } from 'apiClient/v1'
 
-type OffererState = {
+export type OffererState = {
   offererNames: null | GetOffererNameResponseModel[]
   selectedOffererId: number | null
   isOnboarded: boolean | null

@@ -10,6 +10,7 @@ import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
 } from 'commons/utils/factories/individualApiFactories'
+import { currentOffererFactory } from 'commons/utils/factories/storeFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
@@ -55,11 +56,9 @@ const renderHeaderDropdown = (options?: RenderWithProvidersOptions) => {
       ...options,
       storeOverrides: {
         ...options?.storeOverrides,
-        offerer: {
-          selectedOffererId: 1,
+        offerer: currentOffererFactory({
           offererNames: baseOfferersNames,
-          isOnboarded: true,
-        },
+        }),
       },
     }
   }

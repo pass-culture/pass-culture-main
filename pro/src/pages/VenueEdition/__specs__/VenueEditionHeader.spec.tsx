@@ -6,7 +6,10 @@ import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+import {
+  sharedCurrentUserFactory,
+  currentOffererFactory,
+} from 'commons/utils/factories/storeFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
@@ -34,7 +37,7 @@ const renderPartnerPages = (
     {
       storeOverrides: {
         user: { currentUser: sharedCurrentUserFactory() },
-        offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: true },
+        offerer: currentOffererFactory(),
       },
       ...options,
     }
@@ -103,11 +106,7 @@ describe('PartnerPages', () => {
         user: sharedCurrentUserFactory(),
         storeOverrides: {
           user: { currentUser: sharedCurrentUserFactory() },
-          offerer: {
-            selectedOffererId: 1,
-            offererNames: [],
-            isOnboarded: true,
-          },
+          offerer: currentOffererFactory(),
         },
       }
     )

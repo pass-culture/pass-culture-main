@@ -9,7 +9,10 @@ import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
 } from 'commons/utils/factories/individualApiFactories'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+import {
+  sharedCurrentUserFactory,
+  currentOffererFactory,
+} from 'commons/utils/factories/storeFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
@@ -94,7 +97,7 @@ describe('SideNavLinks', () => {
         user: {
           currentUser: sharedCurrentUserFactory({ hasPartnerPage: true }),
         },
-        offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: true },
+        offerer: currentOffererFactory(),
       },
     })
 
@@ -119,7 +122,7 @@ describe('SideNavLinks', () => {
         user: {
           currentUser: sharedCurrentUserFactory({ hasPartnerPage: false }),
         },
-        offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: true },
+        offerer: currentOffererFactory(),
       },
       user: sharedCurrentUserFactory({ hasPartnerPage: false }),
     })

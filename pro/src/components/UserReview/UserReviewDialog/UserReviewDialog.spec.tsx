@@ -4,7 +4,10 @@ import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
 import * as useNotification from 'commons/hooks/useNotification'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+import {
+  sharedCurrentUserFactory,
+  currentOffererFactory,
+} from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { UserReviewDialog } from 'components/UserReview/UserReviewDialog/UserReviewDialog'
 
@@ -15,7 +18,7 @@ const renderUserReviewDialog = () => {
     user: {
       currentUser: sharedCurrentUserFactory(),
     },
-    offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: true },
+    offerer: currentOffererFactory(),
   }
   return renderWithProviders(
     <Dialog.Root defaultOpen>

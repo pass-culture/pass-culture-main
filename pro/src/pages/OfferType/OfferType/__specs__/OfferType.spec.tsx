@@ -16,7 +16,10 @@ import {
   defaultGetOffererVenueResponseModel,
   getOffererNameFactory,
 } from 'commons/utils/factories/individualApiFactories'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+import {
+  sharedCurrentUserFactory,
+  currentOffererFactory,
+} from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { OfferTypeScreen } from '../OfferType'
@@ -62,7 +65,7 @@ const renderOfferTypes = (structureId?: string, venueId?: string) => {
     {
       storeOverrides: {
         user: { currentUser: sharedCurrentUserFactory() },
-        offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: true },
+        offerer: currentOffererFactory(),
       },
       user: sharedCurrentUserFactory(),
       initialRouterEntries: [
