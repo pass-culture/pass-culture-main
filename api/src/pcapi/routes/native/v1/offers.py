@@ -9,7 +9,6 @@ from pcapi.core.offers import repository
 from pcapi.core.offers.exceptions import OfferReportError
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import PriceCategory
-from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Reason
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
@@ -111,21 +110,18 @@ def user_reported_offers(user: User) -> serializers.UserReportedOffersResponse:
 
 
 @blueprint.native_route("/offers/<int:offer_id>/chronicles", methods=["GET"])
-@spectree_serialize(on_success_status=200, api=blueprint.api, response_model=serializers.OfferChronicles)
+@spectree_serialize(
+    on_success_status=200, on_error_statuses=[404], api=blueprint.api, response_model=serializers.OfferChronicles
+)
 @atomic()
 def offer_chronicles(offer_id: int) -> serializers.OfferChronicles:
-    query = (
-        Offer.query.filter(Offer.id == offer_id)
-        .options(joinedload(Offer.chronicles))
-        .options(joinedload(Offer.product).joinedload(Product.chronicles))
-    )
-
-    offer = query.first_or_404()
+    offer = Offer.query.get_or_404(offer_id)
 
     chronicles = chronicles_api.get_offer_published_chronicles(offer)
 
-    # mypy does not accept the model type for the pydantic serializer defined on this very model
-    return serializers.OfferChronicles(chronicles=chronicles)  # type: ignore[arg-type]
+    return serializers.OfferChronicles(
+        chronicles=[serializers.OfferChronicle.from_orm(chronicle) for chronicle in chronicles]
+    )
 
 
 @blueprint.native_route("/send_offer_webapp_link_by_email/<int:offer_id>", methods=["POST"])
