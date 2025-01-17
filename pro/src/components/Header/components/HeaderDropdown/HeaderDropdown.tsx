@@ -22,20 +22,24 @@ import fullCloseIcon from 'icons/full-close.svg'
 import fullLogoutIcon from 'icons/full-logout.svg'
 import fullMoreIcon from 'icons/full-more.svg'
 import fullProfilIcon from 'icons/full-profil.svg'
+import fullSmsIcon from 'icons/full-sms.svg'
 import fullSwitchIcon from 'icons/full-switch.svg'
 import fulValidateIcon from 'icons/full-validate.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { HelpDropdownMenu } from '../HeaderHelpDropdown/HelpDropdownMenu'
+import { UserReviewDialog } from '../UserReviewDialog/UserReviewDialog'
 
 import styles from './HeaderDropdown.module.scss'
 
 export const HeaderDropdown = () => {
   const { logEvent } = useAnalytics()
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+  const isProFeedbackEnabled = useActiveFeature('ENABLE_PRO_FEEDBACK')
 
   const currentUser = useSelector(selectCurrentUser)
   const currentOffererId = useSelector(selectCurrentOffererId)
@@ -272,6 +276,34 @@ export const HeaderDropdown = () => {
               <HelpDropdownMenu />
             </div>
             <DropdownMenu.Separator className={styles['separator']} />
+
+            {isProFeedbackEnabled && (
+              <div
+                className={cn(
+                  styles['tablet-only'],
+                  styles['menu-item-review-dialog']
+                )}
+              >
+                <DialogBuilder
+                  trigger={
+                    <DropdownMenu.Item
+                      asChild
+                      onSelect={(e) => e.preventDefault()} //  Necessary to prenent selecting the item from closing the DropdownMenu
+                    >
+                      <Button
+                        variant={ButtonVariant.TERNARY}
+                        icon={fullSmsIcon}
+                      >
+                        Donner mon avis
+                      </Button>
+                    </DropdownMenu.Item>
+                  }
+                >
+                  <UserReviewDialog />
+                </DialogBuilder>
+                <DropdownMenu.Separator className={styles['separator']} />
+              </div>
+            )}
             <DropdownMenu.Item className={styles['menu-item']} asChild>
               <ButtonLink
                 icon={fullLogoutIcon}

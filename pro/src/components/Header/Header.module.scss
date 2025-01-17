@@ -82,9 +82,16 @@
 
 .top-right-menu {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   gap: rem.torem(32px);
+
+  &-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    column-gap: rem.torem(32px);
+  }
 }
 
 .tablet-and-above {
