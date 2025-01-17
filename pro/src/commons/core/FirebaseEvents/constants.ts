@@ -64,6 +64,8 @@ export enum Events {
   CLICKED_INVOICES_DOWNLOAD = 'hasClickedInvoicesDownload',
   CLICKED_PUBLISH_FUTURE_OFFER_EARLIER = 'hasClickedPublishFutureOfferEarlier',
   EXTRA_PRO_DATA = 'extra_pro_data',
+  CLICKED_NEW_EVOLUTIONS = 'hasClickedNewEvolutions',
+  CLICKED_CONSULT_HELP = 'hasClickedConsultHelp',
 }
 
 export enum VenueEvents {

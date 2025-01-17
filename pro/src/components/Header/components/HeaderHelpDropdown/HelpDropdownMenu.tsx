@@ -18,7 +18,7 @@ export const HelpDropdownMenu = () => {
           opensInNewTab
           icon={fullLinkIcon}
           onClick={() =>
-            logEvent(Events.CLICKED_HELP_CENTER, {
+            logEvent(Events.CLICKED_CONSULT_HELP, {
               from: location.pathname,
             })
           }
@@ -39,6 +39,21 @@ export const HelpDropdownMenu = () => {
           }
         >
           Contacter nos équipes
+        </ButtonLink>
+      </DropdownMenu.Item>
+      <DropdownMenu.Item className={dropdownStyles['menu-item']} asChild>
+        <ButtonLink
+          icon={fullLinkIcon}
+          to="https://passcultureapp.notion.site/db6b4a9f5fc84fb28626cfeb18d20340?v=19911882c20b4bb39524825164fcf3c2"
+          isExternal
+          opensInNewTab
+          onClick={() =>
+            logEvent(Events.CLICKED_NEW_EVOLUTIONS, {
+              from: location.pathname,
+            })
+          }
+        >
+          Découvrir les nouveautés
         </ButtonLink>
       </DropdownMenu.Item>
       <DropdownMenu.Item className={dropdownStyles['menu-item']} asChild>
