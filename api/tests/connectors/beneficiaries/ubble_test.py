@@ -239,9 +239,9 @@ class GetContentTest:
             with caplog.at_level(logging.INFO):
                 ubble.get_content(ubble_response.data.attributes.identification_id)
 
-            assert caplog.records[0].message == "External service called"
+            assert caplog.records[1].message == "External service called"
 
-            supervision_record = caplog.records[1]
+            supervision_record = caplog.records[2]
             assert supervision_record.message == "Valid response from Ubble"
             assert supervision_record.extra["status_code"] == 200
             assert supervision_record.extra["identification_id"] == ubble_response.data.attributes.identification_id
