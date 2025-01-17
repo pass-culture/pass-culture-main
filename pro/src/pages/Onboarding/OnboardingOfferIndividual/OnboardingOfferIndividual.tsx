@@ -3,7 +3,10 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1/models/OfferStatus'
-import { GET_OFFERS_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import {
+  GET_OFFERER_QUERY_KEY,
+  GET_OFFERS_QUERY_KEY,
+} from 'commons/config/swrQueryKeys'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import editFullIcon from 'icons/full-edit.svg'
@@ -20,6 +23,12 @@ export const MAX_DRAFT_TO_DISPLAY = 50
 
 export const OnboardingOfferIndividual = (): JSX.Element => {
   const selectedOffererId = useSelector(selectCurrentOffererId)
+
+  const selectedOffererQuery = useSWR(
+    selectedOffererId ? [GET_OFFERER_QUERY_KEY, selectedOffererId] : null,
+    ([, offererIdParam]) => api.getOfferer(Number(offererIdParam))
+  )
+
   const offersQuery = useSWR(
     [GET_OFFERS_QUERY_KEY, { status: 'DRAFT' }],
     () => {
@@ -28,13 +37,23 @@ export const OnboardingOfferIndividual = (): JSX.Element => {
     { fallbackData: [] }
   )
 
-  if (offersQuery.isLoading) {
+  if (offersQuery.isLoading || selectedOffererQuery.isLoading) {
     return <Spinner />
   }
 
   const draftOffers = offersQuery.data
     .filter(({ status }) => status === OfferStatus.DRAFT)
     .slice(0, MAX_DRAFT_TO_DISPLAY)
+
+  const offerer = selectedOffererQuery.data
+  const venue = offerer?.managedVenues?.filter(
+    ({ isPermanent }) => isPermanent
+  )[0]
+
+  // Assumed choice to redirect offerers without permanent venues (old cases) to /accueil
+  const synchronizedLink = venue
+    ? `/structures/${selectedOffererId}/lieux/${venue.id}/parametres`
+    : '/accueil'
 
   return (
     <OnboardingLayout verticallyCentered={draftOffers.length <= 1}>
@@ -55,7 +74,7 @@ export const OnboardingOfferIndividual = (): JSX.Element => {
             />
 
             <CardLink
-              to="/onboarding/synchro"
+              to={synchronizedLink}
               icon={connectStrokeIcon}
               label="Automatiquement"
               description="(via mon logiciel de stocks)"
