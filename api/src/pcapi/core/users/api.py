@@ -28,6 +28,7 @@ from pcapi import settings
 from pcapi.connectors import api_adresse
 from pcapi.connectors.beamer import BeamerException
 from pcapi.connectors.beamer import delete_beamer_user
+from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.core import mails as mails_api
 from pcapi.core import object_storage
 from pcapi.core import token as token_utils
@@ -1581,7 +1582,12 @@ def anonymize_user(user: models.User, *, author: models.User | None = None, forc
         models.UserAccountUpdateRequest.userId == user.id
     ).all():
         # UserAccountUpdateRequest objects are deleted after being archived in DS
-        users_ds.archive(update_request, motivation="Anonymisation du compte")
+        try:
+            users_ds.archive(update_request, motivation="Anonymisation du compte")
+        except dms_exceptions.DmsGraphQLApiError as dms_api_error:
+            # Ignore not found: the application is already deleted or on staging after dump/restore with fake id
+            if not dms_api_error.is_not_found:
+                raise
 
     user.password = b"Anonymized"  # ggignore
     user.firstName = f"Anonymous_{user.id}"

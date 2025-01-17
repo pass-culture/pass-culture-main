@@ -252,7 +252,7 @@ def instruct(ds_application_id: int) -> utils.BackofficeResponse:
         flash(
             Markup("Le dossier <b>{ds_application_id}</b> ne peut pas passer en instruction : {message}").format(
                 ds_application_id=ds_application_id,
-                message="dossier non trouvé" if err.code == "not_found" else err.message,
+                message="dossier non trouvé" if err.is_not_found else err.message,
             ),
             "warning",
         )
@@ -413,7 +413,7 @@ def accept(ds_application_id: int) -> utils.BackofficeResponse:
         flash(
             Markup("Le dossier <b>{ds_application_id}</b> ne peut pas être accepté : {message}").format(
                 ds_application_id=ds_application_id,
-                message="dossier non trouvé" if err.code == "not_found" else err.message,
+                message="dossier non trouvé" if err.is_not_found else err.message,
             ),
             "warning",
         )

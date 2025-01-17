@@ -68,6 +68,13 @@ BEGIN
 END; $$
 LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION pg_temp.fake_ds_technical_id_from_id(id BIGINT)
+  RETURNS TEXT AS $$
+BEGIN
+  RETURN 'DOSSIER=PROD=' || "id"::text || '==';
+END; $$
+LANGUAGE plpgsql;
+
 BEGIN;
   -- Temporarily disable trigger to speed up updates.
   ALTER TABLE booking DISABLE TRIGGER stock_update_cancellation_date;
@@ -376,3 +383,7 @@ UPDATE "user_account_update_request"
 SET
   "newPhoneNumber" = pg_temp.fake_phone_number_from_id("id")
 WHERE "newPhoneNumber" IS NOT NULL;
+UPDATE "user_account_update_request"
+SET
+  "dsTechnicalId" = pg_temp.fake_ds_technical_id_from_id("id")
+WHERE "dsTechnicalId" IS NOT NULL;

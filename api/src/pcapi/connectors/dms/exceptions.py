@@ -18,3 +18,7 @@ class DmsGraphQLApiError(DmsGraphQLApiException):
         if not self.errors:
             return None
         return ";".join(item.get("extensions", {}).get("code", "unknown") for item in self.errors)
+
+    @property
+    def is_not_found(self) -> bool:
+        return self.code == "not_found"
