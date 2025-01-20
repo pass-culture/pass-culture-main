@@ -113,7 +113,7 @@ class FeatureToggle(enum.Enum):
     )
     WIP_ENABLE_NEW_HASHING_ALGORITHM = "Activer le nouveau système de hachage des clés publiques d'API"
     WIP_ENABLE_OFFER_ADDRESS = "Activer l'association des offres à des adresses."
-    WIP_ENABLE_COLLECTIVE_OA = "Activer l'association des offres à des adresses pour les offres collectives"
+    WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE = "Activer l'association des offres collectives à des adresses."
     WIP_SUGGESTED_SUBCATEGORIES = "Activer les sous-catégories suggérées par IA lors de la création d'offre"
     WIP_EAN_CREATION = "Activer la création d'offre par EAN"
     WIP_OFFERER_STATS_V2 = "Activer la nouvelle version de la page de statistiques / revenus d'une structure"
@@ -204,7 +204,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_EAN_CREATION,
     FeatureToggle.WIP_ENABLE_BREVO_PRO_SUBACCOUNT,
     FeatureToggle.WIP_ENABLE_CLICKHOUSE_IN_BO,
-    FeatureToggle.WIP_ENABLE_COLLECTIVE_OA,
+    FeatureToggle.WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE,
     FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE,
     FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW,
     FeatureToggle.WIP_ENABLE_NEW_HASHING_ALGORITHM,
