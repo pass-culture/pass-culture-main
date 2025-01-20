@@ -35,6 +35,7 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.models as subscription_models
+from pcapi.core.subscription.ubble import exceptions as ubble_exceptions
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -2577,6 +2578,20 @@ class IdentificationSessionTest:
         ][0]
         assert check
         assert response.json["identificationUrl"] == expected_url
+
+    def test_existing_processing_id_check(self, client):
+        user = build_user_at_id_check(18)
+
+        with patch(
+            "pcapi.core.subscription.ubble.api.start_ubble_workflow",
+            side_effect=ubble_exceptions.ExistingProcessingIdentityVerification,
+        ):
+            response = client.with_token(user.email).post(
+                "/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"}
+            )
+
+        assert response.status_code == 400
+        assert response.json["code"] == "IDCHECK_ALREADY_PROCESSED"
 
 
 class AccountSecurityTest:
