@@ -44,10 +44,30 @@ def get_show_nodes() -> list[ShowGenre]:
     return [ShowGenre(label=show_type.label, search_value=show_type.label) for show_type in SHOW_TYPES]
 
 
+def get_theatre_et_humour_genres() -> list[ShowGenre]:
+    return [
+        ShowGenre(label=show_sub_type.label)
+        for show_type in SHOW_TYPES
+        for show_sub_type in show_type.children
+        if show_type.code in (400, 1300) and show_sub_type.code != -1
+    ]
+
+
+def get_spectacles_genres() -> list[ShowGenre]:
+    return [
+        ShowGenre(label=show_sub_type.label)
+        for show_type in SHOW_TYPES
+        for show_sub_type in show_type.children
+        if show_type.code not in (400, 1300) and show_sub_type.code != -1
+    ]
+
+
 BOOK_GENRES: list[BookGenre] = get_book_nodes()
 MOVIE_GENRES: list[MovieGenre] = get_movie_nodes()
 MUSIC_GENRES: list[MusicGenre] = get_music_nodes()
 SHOW_GENRES: list[ShowGenre] = get_show_nodes()
+SPECTACLES_GENRES: list[ShowGenre] = get_spectacles_genres()
+THEATRE_ET_HUMOUR_GENRES: list[ShowGenre] = get_theatre_et_humour_genres()
 
 # endregion
 
@@ -173,6 +193,11 @@ NATIVE_CATEGORY_JEUX_PHYSIQUES = NativeCategory(
     label="Jeux physiques",
     included_subcategories=["JEU_SUPPORT_PHYSIQUE"],
 )
+NATIVE_CATEGORY_LIVESTREAM_EVENEMENT = NativeCategory(
+    search_value="LIVESTREAM_EVENEMENT",
+    label="Livestream d'évènements",
+    included_subcategories=["LIVESTREAM_EVENEMENT"],
+)
 NATIVE_CATEGORY_LIVRES_AUDIO_PHYSIQUES = NativeCategory(
     search_value="LIVRES_AUDIO_PHYSIQUES",
     label="Livres audio",
@@ -272,6 +297,11 @@ NATIVE_CATEGORY_SEANCES_DE_CINEMA = NativeCategory(
     included_subcategories=["CINE_PLEIN_AIR", "SEANCE_CINE"],
     genre_type=GenreType.MOVIE,
 )
+NATIVE_CATEGORY_SPECTACLE_VIVANT_VENTE_A_DISTANCE = NativeCategory(
+    search_value="SPECTACLE_VIVANT_VENTE_A_DISTANCE",
+    label="Spectacle vivant - vente à distance",
+    included_subcategories=["SPECTACLE_VENTE_DISTANCE"],
+)
 NATIVE_CATEGORY_SPECTACLES_ENREGISTRES = NativeCategory(
     search_value="SPECTACLES_ENREGISTRES",
     label="Spectacles enregistrés",
@@ -283,6 +313,28 @@ NATIVE_CATEGORY_SPECTACLES_REPRESENTATIONS = NativeCategory(
     search_value="SPECTACLES_REPRESENTATIONS",
     label="Spectacles & représentations",
     children=SHOW_GENRES,
+    included_subcategories=[
+        "FESTIVAL_SPECTACLE",
+        "SPECTACLE_REPRESENTATION",
+        "SPECTACLE_VENTE_DISTANCE",
+    ],
+    genre_type=GenreType.SHOW,
+)
+NATIVE_CATEGORY_SPECTACLES = NativeCategory(
+    search_value="SPECTACLES",
+    label="Spectacles",
+    children=SPECTACLES_GENRES,
+    included_subcategories=[
+        "FESTIVAL_SPECTACLE",
+        "SPECTACLE_REPRESENTATION",
+        "SPECTACLE_VENTE_DISTANCE",
+    ],
+    genre_type=GenreType.SHOW,
+)
+NATIVE_CATEGORY_THEATRES_ET_HUMOUR = NativeCategory(
+    search_value="THEATRES_ET_HUMOUR",
+    label="Théâtre et humour",
+    children=THEATRE_ET_HUMOUR_GENRES,
     included_subcategories=[
         "FESTIVAL_SPECTACLE",
         "SPECTACLE_REPRESENTATION",
@@ -311,6 +363,24 @@ NATIVE_CATEGORY_VISITES_CULTURELLES_EN_LIGNE = NativeCategory(
     search_value="VISITES_CULTURELLES_EN_LIGNE",
     label="Visites culturelles en ligne",
     included_subcategories=["VISITE_VIRTUELLE"],
+)
+NATIVE_CATEGORY_AUTRES_REPRESENTATIONS = NativeCategory(
+    search_value="AUTRES_REPRESENTATIONS",
+    label="Autres représentations",
+    children=[
+        NATIVE_CATEGORY_SPECTACLES_ENREGISTRES,
+        NATIVE_CATEGORY_LIVESTREAM_EVENEMENT,
+        NATIVE_CATEGORY_SPECTACLE_VIVANT_VENTE_A_DISTANCE,
+    ],
+    included_subcategories=["LIVESTREAM_EVENEMENT", "SPECTACLE_ENREGISTRE", "SPECTACLE_VENTE_DISTANCE"],
+    genre_type=GenreType.SHOW,
+)
+NATIVE_CATEGORY_FESTIVALS_DE_SPECTACLES = NativeCategory(
+    search_value="FESTIVALS_DE_SPECTACLES",
+    label="Festivals de spectacles",
+    children=SPECTACLES_GENRES + [NATIVE_CATEGORY_THEATRES_ET_HUMOUR],
+    included_subcategories=["FESTIVAL_SPECTACLE"],
+    genre_type=GenreType.SHOW,
 )
 # endregion
 
@@ -566,6 +636,24 @@ SEARCH_GROUP_SPECTACLES = SearchGroup(
         "SPECTACLE_VENTE_DISTANCE",
     ],
 )
+SEARCH_GROUP_THEATRE_ET_SPECTACLES = SearchGroup(
+    children=[
+        NATIVE_CATEGORY_THEATRES_ET_HUMOUR,
+        NATIVE_CATEGORY_SPECTACLES,
+        NATIVE_CATEGORY_FESTIVALS_DE_SPECTACLES,
+        NATIVE_CATEGORY_ABONNEMENTS_SPECTACLE,
+        NATIVE_CATEGORY_AUTRES_REPRESENTATIONS,
+    ],
+    search_value="THEATRE_ET_SPECTACLES",
+    label="Théâtre et spectacles",
+    included_subcategories=[
+        "ABO_SPECTACLE",
+        "FESTIVAL_SPECTACLE",
+        "SPECTACLE_ENREGISTRE",
+        "SPECTACLE_REPRESENTATION",
+        "SPECTACLE_VENTE_DISTANCE",
+    ],
+)
 # endregion
 
 SEARCH_NODES_ROOT = SearchNode(
@@ -587,6 +675,7 @@ SEARCH_NODES_ROOT = SearchNode(
         SEARCH_GROUP_CARTES_JEUNES,
         SEARCH_GROUP_RENCONTRES_CONFERENCES,
         SEARCH_GROUP_EVENEMENTS_EN_LIGNE,
+        SEARCH_GROUP_THEATRE_ET_SPECTACLES,
         SEARCH_GROUP_NONE,
     ],
 )
