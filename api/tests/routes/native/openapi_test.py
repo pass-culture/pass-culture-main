@@ -3936,10 +3936,10 @@ def test_public_api(client):
                     "tags": [],
                 }
             },
-            "/native/v1/offers/{offer_id}/chronicles": {
+            "/native/v1/offer/{offer_id}/chronicles": {
                 "get": {
                     "description": "",
-                    "operationId": "get__native_v1_offers_{offer_id}_chronicles",
+                    "operationId": "get__native_v1_offer_{offer_id}_chronicles",
                     "parameters": [
                         {
                             "description": "",

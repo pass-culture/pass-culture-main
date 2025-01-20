@@ -109,7 +109,7 @@ def user_reported_offers(user: User) -> serializers.UserReportedOffersResponse:
     return serializers.UserReportedOffersResponse(reportedOffers=user.reported_offers)  # type: ignore[call-arg]
 
 
-@blueprint.native_route("/offers/<int:offer_id>/chronicles", methods=["GET"])
+@blueprint.native_route("/offer/<int:offer_id>/chronicles", methods=["GET"])
 @spectree_serialize(
     on_success_status=200, on_error_statuses=[404], api=blueprint.api, response_model=serializers.OfferChronicles
 )
