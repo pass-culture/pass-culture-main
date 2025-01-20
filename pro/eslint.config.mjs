@@ -117,6 +117,7 @@ export default tseslint.config(
       'import/no-default-export': 'error',
       'no-console': 'error',
       'require-await': 'error',
+      'react/forbid-elements': [2, { forbid: [{ element: "DevTool", message: "Don't forget to remove before commit" }], }],
       'react/no-unescaped-entities': [
         'error',
         {
