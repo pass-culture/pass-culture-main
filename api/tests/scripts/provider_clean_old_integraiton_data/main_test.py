@@ -3,7 +3,7 @@ import pytest
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.providers import factories as providers_factories
 from pcapi.models import db
-from pcapi.scripts.provider_clean_old_integration_data.main import _clean_id_at_providers
+from pcapi.scripts.provider_clean_old_integration_data.main import _clean_id_a_provider_for_provider
 from pcapi.scripts.provider_clean_old_integration_data.main import clean_old_provider_data
 
 
@@ -47,7 +47,7 @@ def test_clean_id_at_providers():
     offer_provider_3 = offers_factories.ThingOfferFactory(lastProvider=provider_1, idAtProvider="12347")
     offer_provider_4 = offers_factories.ThingOfferFactory(lastProvider=provider_3, idAtProvider="offerId3")
 
-    _clean_id_at_providers([provider_1.id], batch_size=2)
+    _clean_id_a_provider_for_provider(provider_1.id, batch_size=2)
 
     # should be deprecated
     assert not offer_provider_1.idAtProvider
