@@ -47,8 +47,8 @@ describe('components:UserPhoneForm', () => {
 
     renderUserPhoneForm(props)
 
-    await userEvent.clear(screen.getByLabelText('Téléphone *'))
-    await userEvent.type(screen.getByLabelText('Téléphone *'), '0692790350')
+    await userEvent.clear(screen.getByLabelText('Téléphone'))
+    await userEvent.type(screen.getByLabelText('Téléphone'), '0692790350')
     await userEvent.tab()
     await userEvent.click(screen.getByText('Enregistrer'))
 
