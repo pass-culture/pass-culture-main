@@ -314,7 +314,8 @@ jobs:
       CHANNEL: ""
       REF: "${{ github.ref }}"
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
-      is_pull_request: true
+      # 2025/01/20 : Deactivate deploy backend env preview for PR
+      is_pull_request: false
 
   deploy-pro-on-firebase-testing:
     name: "[PRO] Deploy PR version for validation with testing backend"
