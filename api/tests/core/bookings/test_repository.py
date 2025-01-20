@@ -43,46 +43,6 @@ THREE_DAYS_AGO = NOW - timedelta(days=3)
 FOUR_DAYS_AGO = NOW - timedelta(days=4)
 FIVE_DAYS_AGO = NOW - timedelta(days=5)
 ONE_WEEK_FROM_NOW = NOW + timedelta(weeks=1)
-LEGACY_BOOKINGS_CSV_HEADER = [
-    "Lieu",
-    "Nom de l’offre",
-    "Date de l'évènement",
-    "EAN",
-    "Prénom du bénéficiaire",
-    "Nom du bénéficiaire",
-    "Email du bénéficiaire",
-    "Téléphone du bénéficiaire",
-    "Date et heure de réservation",
-    "Date et heure de validation",
-    "Contremarque",
-    "Intitulé du tarif",
-    "Prix de la réservation",
-    "Statut de la contremarque",
-    "Date et heure de remboursement",
-    "Type d'offre",
-    "Code postal du bénéficiaire",
-    "Duo",
-]
-BOOKINGS_CSV_HEADER = [
-    "Structure",
-    "Nom de l’offre",
-    "Date de l'évènement",
-    "EAN",
-    "Prénom du bénéficiaire",
-    "Nom du bénéficiaire",
-    "Email du bénéficiaire",
-    "Téléphone du bénéficiaire",
-    "Date et heure de réservation",
-    "Date et heure de validation",
-    "Contremarque",
-    "Intitulé du tarif",
-    "Prix de la réservation",
-    "Statut de la contremarque",
-    "Date et heure de remboursement",
-    "Type d'offre",
-    "Code postal du bénéficiaire",
-    "Duo",
-]
 
 
 def test_find_all_ongoing_bookings(app):
@@ -1364,9 +1324,11 @@ class GetOfferBookingsByStatusCSVTest:
     ):
         assert data_dict["Structure"] == venue.name
         assert data_dict["Nom de l’offre"] == offer.name
+        offerer_address = booking.stock.offer.offererAddress
+        location = f"{offerer_address.label or venue.common_name} - {offerer_address.address.street} {offerer_address.address.postalCode} {offerer_address.address.city}"
+        assert data_dict["Localisation"] == location
         booking.venueDepartmentCode = booking.venue.departementCode
-        if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
-            booking.offerDepartmentCode = booking.stock.offer.offererAddress.address.departmentCode
+        booking.offerDepartmentCode = booking.stock.offer.offererAddress.address.departmentCode
         assert data_dict["Date de l'évènement"] == str(
             convert_booking_dates_utc_to_venue_timezone(booking.stock.beginningDatetime, booking)
         )
@@ -1407,7 +1369,6 @@ class GetOfferBookingsByStatusCSVTest:
         assert data_dict["Code postal du bénéficiaire"] == beneficiary.postalCode
         assert data_dict["Duo"] == duo
 
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True)
     def should_return_validated_bookings_for_offer(self):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory(
@@ -1452,7 +1413,7 @@ class GetOfferBookingsByStatusCSVTest:
             )
 
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == BOOKINGS_CSV_HEADER
+        assert headers == booking_repository.BOOKING_EXPORT_HEADER
         assert len(data) == 2
         self._validate_csv_row(
             dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "Non"
@@ -1461,7 +1422,6 @@ class GetOfferBookingsByStatusCSVTest:
             dict(zip(headers, data[1])), beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non"
         )
 
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True)
     def should_return_validated_bookings_for_offer_with_old_cancelled_booking(self):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory(
@@ -1509,7 +1469,7 @@ class GetOfferBookingsByStatusCSVTest:
             )
 
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == BOOKINGS_CSV_HEADER
+        assert headers == booking_repository.BOOKING_EXPORT_HEADER
         assert len(data) == 2
         self._validate_csv_row(
             dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "Non"
@@ -1518,7 +1478,6 @@ class GetOfferBookingsByStatusCSVTest:
             dict(zip(headers, data[1])), beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non"
         )
 
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True)
     def should_return_validated_bookings_for_offer_with_duo(self):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory(
@@ -1554,7 +1513,7 @@ class GetOfferBookingsByStatusCSVTest:
         )
 
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == BOOKINGS_CSV_HEADER
+        assert headers == booking_repository.BOOKING_EXPORT_HEADER
         assert len(data) == 3
         self._validate_csv_row(
             dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "DUO 1"
@@ -1566,7 +1525,6 @@ class GetOfferBookingsByStatusCSVTest:
             dict(zip(headers, data[2])), beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non"
         )
 
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True)
     def should_return_all_bookings_for_offer(self):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory(
@@ -1605,7 +1563,7 @@ class GetOfferBookingsByStatusCSVTest:
         )
 
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == BOOKINGS_CSV_HEADER
+        assert headers == booking_repository.BOOKING_EXPORT_HEADER
         assert len(data) == 4
         self._validate_csv_row(
             dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "Non"
@@ -1618,7 +1576,6 @@ class GetOfferBookingsByStatusCSVTest:
         )
         self._validate_csv_row(dict(zip(headers, data[3])), beneficiary_4, offer, venue, new_booking, "réservé", "Non")
 
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True)
     def should_return_all_bookings_for_offer_with_duo(self):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory(
@@ -1649,7 +1606,7 @@ class GetOfferBookingsByStatusCSVTest:
         )
 
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == BOOKINGS_CSV_HEADER
+        assert headers == booking_repository.BOOKING_EXPORT_HEADER
         assert len(data) == 6
         self._validate_csv_row(
             dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "DUO 1"
@@ -1670,7 +1627,6 @@ class GetOfferBookingsByStatusCSVTest:
             dict(zip(headers, data[5])), beneficiary_2, offer, venue, new_booking, "réservé", "DUO 2"
         )
 
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True, WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def should_return_validated_bookings_for_offer(self):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory(
@@ -1715,7 +1671,7 @@ class GetOfferBookingsByStatusCSVTest:
             )
 
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == BOOKINGS_CSV_HEADER
+        assert headers == booking_repository.BOOKING_EXPORT_HEADER
         assert len(data) == 2
         self._validate_csv_row(
             dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "Non"
@@ -1724,7 +1680,6 @@ class GetOfferBookingsByStatusCSVTest:
             dict(zip(headers, data[1])), beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non"
         )
 
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True, WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def should_return_validated_bookings_for_offer_with_old_cancelled_booking(self):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory(
@@ -1772,7 +1727,7 @@ class GetOfferBookingsByStatusCSVTest:
             )
 
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == BOOKINGS_CSV_HEADER
+        assert headers == booking_repository.BOOKING_EXPORT_HEADER
         assert len(data) == 2
         self._validate_csv_row(
             dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "Non"
@@ -1781,7 +1736,6 @@ class GetOfferBookingsByStatusCSVTest:
             dict(zip(headers, data[1])), beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non"
         )
 
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True, WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def should_return_validated_bookings_for_offer_with_duo(self):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory(
@@ -1817,7 +1771,7 @@ class GetOfferBookingsByStatusCSVTest:
         )
 
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == BOOKINGS_CSV_HEADER
+        assert headers == booking_repository.BOOKING_EXPORT_HEADER
         assert len(data) == 3
         self._validate_csv_row(
             dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "DUO 1"
@@ -1829,7 +1783,6 @@ class GetOfferBookingsByStatusCSVTest:
             dict(zip(headers, data[2])), beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non"
         )
 
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True, WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def should_return_all_bookings_for_offer(self):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory(
@@ -1868,7 +1821,7 @@ class GetOfferBookingsByStatusCSVTest:
         )
 
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == BOOKINGS_CSV_HEADER
+        assert headers == booking_repository.BOOKING_EXPORT_HEADER
         assert len(data) == 4
         self._validate_csv_row(
             dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "Non"
@@ -1881,7 +1834,6 @@ class GetOfferBookingsByStatusCSVTest:
         )
         self._validate_csv_row(dict(zip(headers, data[3])), beneficiary_4, offer, venue, new_booking, "réservé", "Non")
 
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True, WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def should_return_all_bookings_for_offer_with_duo(self):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory(
@@ -1912,7 +1864,7 @@ class GetOfferBookingsByStatusCSVTest:
         )
 
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == BOOKINGS_CSV_HEADER
+        assert headers == booking_repository.BOOKING_EXPORT_HEADER
         assert len(data) == 6
         self._validate_csv_row(
             dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "DUO 1"
@@ -2028,7 +1980,7 @@ class LegacyGetOfferBookingsByStatusCSVTest:
             )
 
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == LEGACY_BOOKINGS_CSV_HEADER
+        assert headers == booking_repository.LEGACY_BOOKING_EXPORT_HEADER
         assert len(data) == 2
         self._validate_csv_row(
             dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "Non"
@@ -2081,7 +2033,7 @@ class LegacyGetOfferBookingsByStatusCSVTest:
             )
 
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == LEGACY_BOOKINGS_CSV_HEADER
+        assert headers == booking_repository.LEGACY_BOOKING_EXPORT_HEADER
         assert len(data) == 2
         self._validate_csv_row(
             dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "Non"
@@ -2137,7 +2089,7 @@ class LegacyGetOfferBookingsByStatusCSVTest:
             )
 
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == LEGACY_BOOKINGS_CSV_HEADER
+        assert headers == booking_repository.LEGACY_BOOKING_EXPORT_HEADER
         assert len(data) == 2
         self._validate_csv_row(
             dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "Non"
@@ -2181,7 +2133,7 @@ class LegacyGetOfferBookingsByStatusCSVTest:
         )
 
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == LEGACY_BOOKINGS_CSV_HEADER
+        assert headers == booking_repository.LEGACY_BOOKING_EXPORT_HEADER
         assert len(data) == 3
         self._validate_csv_row(
             dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "DUO 1"
@@ -2231,7 +2183,7 @@ class LegacyGetOfferBookingsByStatusCSVTest:
         )
 
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == LEGACY_BOOKINGS_CSV_HEADER
+        assert headers == booking_repository.LEGACY_BOOKING_EXPORT_HEADER
         assert len(data) == 4
         self._validate_csv_row(
             dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "Non"
@@ -2274,7 +2226,7 @@ class LegacyGetOfferBookingsByStatusCSVTest:
         )
 
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == LEGACY_BOOKINGS_CSV_HEADER
+        assert headers == booking_repository.LEGACY_BOOKING_EXPORT_HEADER
         assert len(data) == 6
         self._validate_csv_row(
             dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "DUO 1"
@@ -2415,7 +2367,7 @@ class GetOfferBookingsByStatusExcelTest:
                 event_beginning_date=date.today() + timedelta(days=3),
                 export_type=BookingExportType.EXCEL,
             )
-        headers = BOOKINGS_CSV_HEADER
+        headers = booking_repository.BOOKING_EXPORT_HEADER
 
         self._validate_excel_row(
             bookings_excel, 2, headers, beneficiary, offer, venue, validated_booking, "validé", "Non"
@@ -2460,7 +2412,7 @@ class GetOfferBookingsByStatusExcelTest:
             event_beginning_date=date.today() + timedelta(days=3),
             export_type=BookingExportType.EXCEL,
         )
-        headers = BOOKINGS_CSV_HEADER
+        headers = booking_repository.BOOKING_EXPORT_HEADER
 
         self._validate_excel_row(
             bookings_excel, 2, headers, beneficiary, offer, venue, validated_booking, "validé", "DUO 1"
@@ -2517,7 +2469,7 @@ class GetOfferBookingsByStatusExcelTest:
             event_beginning_date=date.today() + timedelta(days=30),
             export_type=BookingExportType.EXCEL,
         )
-        headers = BOOKINGS_CSV_HEADER
+        headers = booking_repository.BOOKING_EXPORT_HEADER
 
         self._validate_excel_row(
             bookings_excel, 2, headers, beneficiary, offer, venue, validated_booking, "validé", "Non"
@@ -2572,7 +2524,7 @@ class GetOfferBookingsByStatusExcelTest:
             event_beginning_date=date.today() + timedelta(days=3),
             export_type=BookingExportType.EXCEL,
         )
-        headers = BOOKINGS_CSV_HEADER
+        headers = booking_repository.BOOKING_EXPORT_HEADER
 
         self._validate_excel_row(
             bookings_excel, 2, headers, beneficiary, offer, venue, validated_booking, "validé", "DUO 1"
@@ -2623,7 +2575,7 @@ class GetOfferBookingsByStatusExcelTest:
             event_beginning_date=date.today() + timedelta(days=30),
             export_type=BookingExportType.EXCEL,
         )
-        headers = BOOKINGS_CSV_HEADER
+        headers = booking_repository.BOOKING_EXPORT_HEADER
 
         self._validate_excel_row(
             bookings_excel, 2, headers, beneficiary, offer, venue, validated_booking, "validé", "DUO 1"
@@ -2765,7 +2717,7 @@ class LegacyGetOfferBookingsByStatusExcelTest:
                 event_beginning_date=date.today() + timedelta(days=3),
                 export_type=BookingExportType.EXCEL,
             )
-        headers = LEGACY_BOOKINGS_CSV_HEADER
+        headers = booking_repository.LEGACY_BOOKING_EXPORT_HEADER
 
         self._validate_excel_row(
             bookings_excel, 2, headers, beneficiary, offer, venue, validated_booking, "validé", "Non"
@@ -2810,7 +2762,7 @@ class LegacyGetOfferBookingsByStatusExcelTest:
             event_beginning_date=date.today() + timedelta(days=3),
             export_type=BookingExportType.EXCEL,
         )
-        headers = LEGACY_BOOKINGS_CSV_HEADER
+        headers = booking_repository.LEGACY_BOOKING_EXPORT_HEADER
 
         self._validate_excel_row(
             bookings_excel, 2, headers, beneficiary, offer, venue, validated_booking, "validé", "DUO 1"
@@ -2867,7 +2819,7 @@ class LegacyGetOfferBookingsByStatusExcelTest:
             event_beginning_date=date.today() + timedelta(days=30),
             export_type=BookingExportType.EXCEL,
         )
-        headers = LEGACY_BOOKINGS_CSV_HEADER
+        headers = booking_repository.LEGACY_BOOKING_EXPORT_HEADER
 
         self._validate_excel_row(
             bookings_excel, 2, headers, beneficiary, offer, venue, validated_booking, "validé", "Non"
@@ -2880,6 +2832,7 @@ class LegacyGetOfferBookingsByStatusExcelTest:
         )
         self._validate_excel_row(bookings_excel, 5, headers, beneficiary_4, offer, venue, new_booking, "réservé", "Non")
 
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=False, WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def should_return_validated_bookings_for_offer_with_duo_offerer_with_mutiple_users(self):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory(
@@ -2920,7 +2873,7 @@ class LegacyGetOfferBookingsByStatusExcelTest:
             event_beginning_date=date.today() + timedelta(days=3),
             export_type=BookingExportType.EXCEL,
         )
-        headers = LEGACY_BOOKINGS_CSV_HEADER
+        headers = booking_repository.LEGACY_BOOKING_EXPORT_HEADER
 
         self._validate_excel_row(
             bookings_excel, 2, headers, beneficiary, offer, venue, validated_booking, "validé", "DUO 1"
@@ -2932,6 +2885,7 @@ class LegacyGetOfferBookingsByStatusExcelTest:
             bookings_excel, 4, headers, beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non"
         )
 
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=False, WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def should_return_all_bookings_for_offer_with_duo(self):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory(
@@ -2971,7 +2925,7 @@ class LegacyGetOfferBookingsByStatusExcelTest:
             event_beginning_date=date.today() + timedelta(days=30),
             export_type=BookingExportType.EXCEL,
         )
-        headers = LEGACY_BOOKINGS_CSV_HEADER
+        headers = booking_repository.LEGACY_BOOKING_EXPORT_HEADER
 
         self._validate_excel_row(
             bookings_excel, 2, headers, beneficiary, offer, venue, validated_booking, "validé", "DUO 1"
@@ -3021,7 +2975,7 @@ class GetCsvReportTest:
         )
 
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == LEGACY_BOOKINGS_CSV_HEADER
+        assert headers == booking_repository.LEGACY_BOOKING_EXPORT_HEADER
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
         assert data_dict["Lieu"] == venue.name
@@ -3044,6 +2998,86 @@ class GetCsvReportTest:
         assert data_dict["Type d'offre"] == "offre grand public"
         assert data_dict["Code postal du bénéficiaire"] == beneficiary.postalCode
         assert data_dict["Duo"] == "Non"
+
+    def test_location_column_is_included_in_the_bookings_csv(self, app: fixture):
+
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        offerer_address_1 = offerers_factories.OffererAddressFactory(address__street="1 Boulevard Poissonnière")
+        offerer_address_2 = offerers_factories.OffererAddressFactory(address__street="2 Boulevard Poissonnière")
+        offerer_address_3 = offerers_factories.OffererAddressFactory(address__street="3 Boulevard Poissonnière")
+
+        venue1 = offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress=offerer_address_1)
+        venue2 = offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress=offerer_address_2)
+        venue3 = offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress=offerer_address_3)
+        offer1 = offers_factories.ThingOfferFactory(venue=venue1, offererAddress=offerer_address_1)
+        offer2 = offers_factories.ThingOfferFactory(venue=venue2, offererAddress=offerer_address_2)
+        offer3 = offers_factories.ThingOfferFactory(venue=venue3, offererAddress=offerer_address_3)
+        stock1 = offers_factories.ThingStockFactory(offer=offer1, price=10)
+        stock2 = offers_factories.ThingStockFactory(offer=offer2, price=10)
+        stock3 = offers_factories.ThingStockFactory(offer=offer3, price=10)
+        booking_date = datetime(2020, 1, 1, 10, 0, 0)
+        booking1 = bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock1,
+            dateCreated=booking_date - timedelta(days=1),
+            token="ABCDEF",
+            amount=10,
+        )
+        booking2 = bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock2,
+            dateCreated=booking_date - timedelta(days=2),
+            token="GHIJKL",
+            amount=10,
+        )
+        booking3 = bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock3,
+            dateCreated=booking_date - timedelta(days=3),
+            token="MNOPQR",
+            amount=10,
+        )
+
+        bookings_csv = booking_repository.get_export(
+            user=pro,
+            booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365)),
+            offerer_address_id=offerer_address_3.id,
+        )
+
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert headers == booking_repository.BOOKING_EXPORT_HEADER
+        assert len(data) == 1
+        data_dict = dict(zip(headers, data[0]))
+        assert data_dict["Structure"] == venue3.name
+        assert data_dict["Nom de l’offre"] == offer3.name
+        assert data_dict["Date de l'évènement"] == ""
+        assert data_dict["EAN"] == ((offer3.extraData or {}).get("ean") or "")
+        assert data_dict["Prénom du bénéficiaire"] == beneficiary.firstName
+        assert data_dict["Nom du bénéficiaire"] == beneficiary.lastName
+        assert data_dict["Email du bénéficiaire"] == beneficiary.email
+        assert data_dict["Téléphone du bénéficiaire"] == (beneficiary.phoneNumber or "")
+        assert data_dict["Date et heure de réservation"] == str(
+            booking3.dateCreated.astimezone(tz.gettz("Europe/Paris"))
+        )
+        assert data_dict["Date et heure de validation"] == str(booking3.dateUsed.astimezone(tz.gettz("Europe/Paris")))
+        assert data_dict["Contremarque"] == booking3.token
+        assert data_dict["Intitulé du tarif"] == ""
+        assert data_dict["Prix de la réservation"] == f"{booking3.amount:.2f}"
+        assert data_dict["Statut de la contremarque"] == booking_repository.BOOKING_STATUS_LABELS[booking3.status]
+        assert data_dict["Date et heure de remboursement"] == ""
+        assert data_dict["Type d'offre"] == "offre grand public"
+        assert data_dict["Code postal du bénéficiaire"] == beneficiary.postalCode
+        assert data_dict["Duo"] == "Non"
+        assert (
+            data_dict["Localisation"]
+            == f'{offerer_address_3.label} - {offerer_address_3.address.street + " " + offerer_address_3.address.postalCode + " " + offerer_address_3.address.city}'
+        )
 
     def test_should_return_only_expected_booking_attributes_with_offerer_address_as_data_source(self, app: fixture):
 
@@ -3071,7 +3105,7 @@ class GetCsvReportTest:
         )
 
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == BOOKINGS_CSV_HEADER
+        assert headers == booking_repository.BOOKING_EXPORT_HEADER
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
         assert data_dict["Structure"] == venue.name
@@ -3123,7 +3157,7 @@ class GetCsvReportTest:
         )
 
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == LEGACY_BOOKINGS_CSV_HEADER
+        assert headers == booking_repository.LEGACY_BOOKING_EXPORT_HEADER
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
         assert data_dict["Lieu"] == venue.name
@@ -3173,7 +3207,7 @@ class GetCsvReportTest:
         )
 
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == BOOKINGS_CSV_HEADER
+        assert headers == booking_repository.BOOKING_EXPORT_HEADER
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
         assert data_dict["Structure"] == venue.name
@@ -3326,8 +3360,8 @@ class GetCsvReportTest:
 
         _, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 2
-        assert data[0][17] == "Oui"
-        assert data[1][17] == "Oui"
+        assert data[0][18] == "Oui"
+        assert data[1][18] == "Oui"
 
     @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False, WIP_ENABLE_OFFER_ADDRESS=False)
     def test_should_not_duplicate_bookings_when_user_is_admin_and_bookings_offerer_has_multiple_user(
@@ -3397,7 +3431,7 @@ class GetCsvReportTest:
         )
 
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == LEGACY_BOOKINGS_CSV_HEADER
+        assert headers == booking_repository.LEGACY_BOOKING_EXPORT_HEADER
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
         assert data_dict["Lieu"] == venue.name
@@ -3446,7 +3480,7 @@ class GetCsvReportTest:
         )
 
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == BOOKINGS_CSV_HEADER
+        assert headers == booking_repository.BOOKING_EXPORT_HEADER
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
         assert data_dict["Structure"] == venue.name
@@ -3751,10 +3785,8 @@ class GetCsvReportTest:
         _, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 0
 
-    @pytest.mark.parametrize("use_oa", (False, True))
-    def test_should_return_booking_date_with_offerer_timezone_when_venue_is_digital(
-        self, features, use_oa, app: fixture
-    ):
+    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False, WIP_ENABLE_OFFER_ADDRESS=False)
+    def test_should_return_booking_date_with_offerer_timezone_when_venue_is_digital_without_oa(self, app: fixture):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
@@ -3773,7 +3805,34 @@ class GetCsvReportTest:
             token="ABCDEF",
         )
 
-        features.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE = use_oa
+        bookings_csv = booking_repository.get_export(
+            user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
+        )
+
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert len(data) == 1
+        data_dict = dict(zip(headers, data[0]))
+        assert data_dict["Date et heure de réservation"] == str(booking_date.astimezone(tz.gettz("America/Cayenne")))
+
+    def test_should_return_booking_date_with_offerer_timezone_when_venue_is_digital_with_oa(self, app: fixture):
+
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory(postalCode="97300")
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+
+        offer = offers_factories.ThingOfferFactory(venue=venue, offererAddress=None)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
+        bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock,
+            dateCreated=booking_date,
+            token="ABCDEF",
+        )
+
         bookings_csv = booking_repository.get_export(
             user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
         )
@@ -4654,7 +4713,7 @@ class GetExcelReportTest:
             token="ABCDEF",
             amount=12,
         )
-        headers = LEGACY_BOOKINGS_CSV_HEADER
+        headers = booking_repository.LEGACY_BOOKING_EXPORT_HEADER
 
         bookings_excel = booking_repository.get_export(
             user=pro,
@@ -4724,7 +4783,7 @@ class GetExcelReportTest:
             token="ABCDEF",
             amount=12,
         )
-        headers = BOOKINGS_CSV_HEADER
+        headers = booking_repository.BOOKING_EXPORT_HEADER
 
         bookings_excel = booking_repository.get_export(
             user=pro,

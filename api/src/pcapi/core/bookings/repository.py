@@ -92,6 +92,7 @@ LEGACY_BOOKING_EXPORT_HEADER = [
 BOOKING_EXPORT_HEADER = [
     "Structure",
     "Nom de l’offre",
+    "Localisation",
     "Date de l'évènement",
     "EAN",
     "Prénom du bénéficiaire",
@@ -326,6 +327,10 @@ def _create_export_query(offer_id: int, event_beginning_date: date) -> BaseQuery
         with_entities += (
             Address.departmentCode.label("offerDepartmentCode"),
             VenueAddress.departmentCode.label("venueDepartmentCode"),
+            func.coalesce(func.nullif(OffererAddress.label, ""), Venue.common_name).label("locationName"),
+            Address.street.label("locationStreet"),
+            Address.postalCode.label("locationPostalCode"),
+            Address.city.label("locationCity"),
         )
     else:
         with_entities += (Venue.departementCode.label("venueDepartmentCode"),)
@@ -394,6 +399,7 @@ def get_export(
     event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
+    offerer_address_id: int | None = None,
     export_type: BookingExportType | None = BookingExportType.CSV,
 ) -> str | bytes:
     bookings_query = _get_filtered_booking_report(
@@ -403,6 +409,7 @@ def get_export(
         event_date=event_date,
         venue_id=venue_id,
         offer_id=offer_id,
+        offerer_address_id=offerer_address_id,
     )
     bookings_query = _duplicate_booking_when_quantity_is_two(bookings_query)
     if export_type == BookingExportType.EXCEL:
@@ -527,6 +534,8 @@ def _get_filtered_bookings_query(
         bookings_query = bookings_query.filter(
             field_to_venue_timezone(Stock.beginningDatetime, timezone_column) == event_date
         )
+    if offerer_address_id:
+        bookings_query = bookings_query.filter(OffererAddress.id == offerer_address_id)
     return bookings_query
 
 
@@ -649,6 +658,7 @@ def _get_filtered_booking_report(
     event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
+    offerer_address_id: int | None = None,
 ) -> BaseQuery:
     VenueOffererAddress = aliased(OffererAddress)
     VenueAddress = aliased(Address)
@@ -686,6 +696,10 @@ def _get_filtered_booking_report(
         with_entities += (
             Address.departmentCode.label("offerDepartmentCode"),
             VenueAddress.departmentCode.label("venueDepartmentCode"),
+            func.coalesce(func.nullif(OffererAddress.label, ""), Venue.common_name).label("locationName"),
+            Address.street.label("locationStreet"),
+            Address.postalCode.label("locationPostalCode"),
+            Address.city.label("locationCity"),
         )
     else:
         with_entities += (Venue.departementCode.label("venueDepartmentCode"),)
@@ -698,6 +712,7 @@ def _get_filtered_booking_report(
             event_date=event_date,
             venue_id=venue_id,
             offer_id=offer_id,
+            offerer_address_id=offerer_address_id,
             extra_joins=(
                 (Stock.offer,),
                 (Booking.user,),
@@ -811,33 +826,39 @@ def _write_bookings_to_csv(query: BaseQuery) -> str:
 
 
 def _write_csv_row(csv_writer: typing.Any, booking: Booking, booking_duo_column: str) -> None:
-    csv_writer.writerow(
-        (
-            booking.venueName,
-            booking.offerName,
-            convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking),
-            booking.ean,
-            booking.beneficiaryFirstName,
-            booking.beneficiaryLastName,
-            booking.beneficiaryEmail,
-            booking.beneficiaryPhoneNumber,
-            convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking),
-            convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking),
-            booking_recap_utils.get_booking_token(
-                booking.token,
-                booking.status,
-                booking.isExternal,
-                booking.stockBeginningDatetime,
-            ),
-            booking.priceCategoryLabel or "",
-            booking.amount,
-            _get_booking_status(booking.status, booking.isConfirmed),
-            convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking),
-            serialize_offer_type_educational_or_individual(offer_is_educational=False),
-            booking.beneficiaryPostalCode or "",
-            booking_duo_column,
-        )
+    row: tuple[typing.Any, ...] = (
+        booking.venueName,
+        booking.offerName,
     )
+    if FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
+        location = (
+            f"{booking.locationName} - {booking.locationStreet} {booking.locationPostalCode} {booking.locationCity}"
+        )
+        row += (location,)
+    row += (
+        convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking),
+        booking.ean,
+        booking.beneficiaryFirstName,
+        booking.beneficiaryLastName,
+        booking.beneficiaryEmail,
+        booking.beneficiaryPhoneNumber,
+        convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking),
+        convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking),
+        booking_recap_utils.get_booking_token(
+            booking.token,
+            booking.status,
+            booking.isExternal,
+            booking.stockBeginningDatetime,
+        ),
+        booking.priceCategoryLabel or "",
+        booking.amount,
+        _get_booking_status(booking.status, booking.isConfirmed),
+        convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking),
+        serialize_offer_type_educational_or_individual(offer_is_educational=False),
+        booking.beneficiaryPostalCode or "",
+        booking_duo_column,
+    )
+    csv_writer.writerow(row)
 
 
 def _write_bookings_to_excel(query: BaseQuery) -> bytes:
@@ -909,34 +930,37 @@ def _serialize_csv_report(query: BaseQuery) -> str:
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
     writer.writerow(booking_export_header())
     for booking in query.yield_per(1000):
-        writer.writerow(
-            (
-                booking.venueName,
-                booking.offerName,
-                convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking),
-                booking.ean,
-                booking.beneficiaryFirstName,
-                booking.beneficiaryLastName,
-                booking.beneficiaryEmail,
-                booking.beneficiaryPhoneNumber,
-                convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking),
-                convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking),
-                booking_recap_utils.get_booking_token(
-                    booking.token,
-                    booking.status,
-                    booking.isExternal,
-                    booking.stockBeginningDatetime,
-                ),
-                booking.priceCategoryLabel or "",
-                booking.amount,
-                _get_booking_status(booking.status, booking.isConfirmed),
-                convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking),
-                # This method is still used in the old Payment model
-                serialize_offer_type_educational_or_individual(offer_is_educational=False),
-                booking.beneficiaryPostalCode or "",
-                "Oui" if booking.quantity == DUO_QUANTITY else "Non",
+        row: tuple[typing.Any, ...] = (booking.venueName, booking.offerName)
+        if FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
+            location = (
+                f"{booking.locationName} - {booking.locationStreet} {booking.locationPostalCode} {booking.locationCity}"
             )
+            row += (location,)
+        row += (
+            convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking),
+            booking.ean,
+            booking.beneficiaryFirstName,
+            booking.beneficiaryLastName,
+            booking.beneficiaryEmail,
+            booking.beneficiaryPhoneNumber,
+            convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking),
+            convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking),
+            booking_recap_utils.get_booking_token(
+                booking.token,
+                booking.status,
+                booking.isExternal,
+                booking.stockBeginningDatetime,
+            ),
+            booking.priceCategoryLabel or "",
+            booking.amount,
+            _get_booking_status(booking.status, booking.isConfirmed),
+            convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking),
+            # This method is still used in the old Payment model
+            serialize_offer_type_educational_or_individual(offer_is_educational=False),
+            booking.beneficiaryPostalCode or "",
+            "Oui" if booking.quantity == DUO_QUANTITY else "Non",
         )
+        writer.writerow(row)
 
     return output.getvalue()
 
