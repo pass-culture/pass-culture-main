@@ -1,0 +1,1 @@
+CREATE INDEX CONCURRENTLY IF NOT EXISTS ix_offer_ean ON public.offer USING btree (ean);
