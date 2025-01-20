@@ -61,6 +61,7 @@ class GetOffererTest:
             "dateCreated": format_into_utc_date(offerer.dateCreated),
             "hasAvailablePricingPoints": True,
             "hasDigitalVenueAtLeastOneOffer": False,
+            "hasHeadlineOffer": False,
             "hasValidBankAccount": False,
             "hasPendingBankAccount": False,
             "hasActiveOffer": False,
@@ -193,6 +194,7 @@ class GetOffererTest:
         assert response.json["hasPendingBankAccount"] is False
         assert response.json["venuesWithNonFreeOffersWithoutBankAccounts"] == []
         assert response.json["hasNonFreeOffer"] is False
+        assert response.json["hasHeadlineOffer"] is False
 
     def test_offerer_has_non_free_offer(self, client):
         pro = users_factories.ProFactory()
@@ -1029,3 +1031,35 @@ class GetOffererTest:
             second_venue.id,
             third_venue.id,
         }
+
+    def test_offerer_has_headline_offer(self, client):
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        offer = offers_factories.OfferFactory(venue__managingOfferer=offerer)
+        inactive_offer_on_another_venue = offers_factories.OfferFactory(venue__managingOfferer=offerer, isActive=False)
+        inactive_timespan = (
+            datetime.datetime.utcnow() - datetime.timedelta(days=2),
+            datetime.datetime.utcnow() - datetime.timedelta(days=2),
+        )
+        offers_factories.HeadlineOfferFactory(offer=offer, create_mediation=True)
+        offers_factories.HeadlineOfferFactory(offer=offer, timespan=inactive_timespan, create_mediation=True)
+        offers_factories.HeadlineOfferFactory(offer=inactive_offer_on_another_venue, create_mediation=True)
+
+        offerer_id = offerer.id
+        client = client.with_session_auth(pro.email)
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # check user_offerer exists
+        num_queries += 1  # select offerer
+        num_queries += 1  # select api_key
+        num_queries += 1  # select venue
+        num_queries += 1  # check offerer has non free offers
+        num_queries += 1  # select venue_id
+        num_queries += 1  # select offerer_address
+
+        num_queries += 1  # select venues_id with active offers
+        with testing.assert_num_queries(num_queries):
+            response = client.get(f"/offerers/{offerer_id}")
+            assert response.status_code == 200
+        assert response.json["hasHeadlineOffer"] is True

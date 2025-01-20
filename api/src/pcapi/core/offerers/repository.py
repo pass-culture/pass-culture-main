@@ -428,6 +428,7 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
         - hasNonFreeOffers
         - hasBankAccountWithPendingCorrections
         - isOnboarded
+        - hasHeadlineOffer
     """
     has_non_free_offers_subquery = (
         sqla.select(1)
@@ -582,6 +583,21 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
         .correlate(models.Offerer)
         .exists()
     )
+    has_headline_offer = (
+        sqla.select(1)
+        .select_from(offers_models.Offer)
+        .join(models.Venue, offers_models.Offer.venueId == models.Venue.id)
+        .join(models.Offerer, models.Venue.managingOffererId == models.Offerer.id)
+        .join(offers_models.HeadlineOffer, offers_models.HeadlineOffer.offerId == offers_models.Offer.id)
+        .where(
+            sqla.and_(
+                models.Offerer.id == offerer_id,
+                offers_models.HeadlineOffer.isActive == True,
+            )
+        )
+        .correlate(models.Offerer)
+        .exists()
+    )
 
     return (
         db.session.query(
@@ -595,6 +611,7 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
                 "isOnboarded"
             ),
             sqla.and_(has_offer, ~has_adage_ds_application, ~has_non_draft_offers).label("isOnboardingOngoing"),
+            has_headline_offer.label("hasHeadlineOffer"),
         )
         .filter(models.Offerer.id == offerer_id)
         .options(sqla_orm.load_only(models.Offerer.id, models.Offerer.name))
