@@ -3746,7 +3746,7 @@ class OfferChroniclesTest:
         nb_queries = 1  # select offer
         nb_queries += 1  # select chronicles
         with assert_num_queries(nb_queries):
-            response = client.get(f"/native/v1/offers/{offer_id}/chronicles")
+            response = client.get(f"/native/v1/offer/{offer_id}/chronicles")
         assert response.status_code == 200
 
         contents = [chronicle["content"] for chronicle in response.json["chronicles"]]
@@ -3771,7 +3771,7 @@ class OfferChroniclesTest:
         nb_queries = 1  # select offer
         nb_queries += 1  # select chronicles
         with assert_num_queries(nb_queries):
-            response = client.get(f"/native/v1/offers/{offer_id}/chronicles")
+            response = client.get(f"/native/v1/offer/{offer_id}/chronicles")
         assert response.status_code == 200
 
         author = response.json["chronicles"][0]["author"]
@@ -3792,7 +3792,7 @@ class OfferChroniclesTest:
         nb_queries = 1  # select offer
         nb_queries += 1  # select chronicles
         with assert_num_queries(nb_queries):
-            response = client.get(f"/native/v1/offers/{offer_id}/chronicles")
+            response = client.get(f"/native/v1/offer/{offer_id}/chronicles")
 
         assert response.status_code == 200
         contents = [chronicle["content"] for chronicle in response.json["chronicles"]]
@@ -3805,7 +3805,7 @@ class OfferChroniclesTest:
         nb_queries = 1  # select offer
         nb_queries += 1  # select chronicles
         with assert_num_queries(nb_queries):
-            response = client.get(f"/native/v1/offers/{offer_id}/chronicles")
+            response = client.get(f"/native/v1/offer/{offer_id}/chronicles")
         assert response.status_code == 200
         assert response.json["chronicles"] == []
 
@@ -3836,7 +3836,7 @@ class OfferChroniclesTest:
         nb_queries = 1  # select offer
         nb_queries += 1  # select chronicles
         with assert_num_queries(nb_queries):
-            response = client.get(f"/native/v1/offers/{offer_id}/chronicles")
+            response = client.get(f"/native/v1/offer/{offer_id}/chronicles")
 
         assert response.status_code == 200
         assert response.json["chronicles"][0]["content"] == long_text
@@ -3851,7 +3851,7 @@ class OfferChroniclesTest:
         nb_queries = 1  # select offer
         nb_queries += 1  # select chronicles
         with assert_num_queries(nb_queries):
-            response = client.get(f"/native/v1/offers/{offer_id}/chronicles")
+            response = client.get(f"/native/v1/offer/{offer_id}/chronicles")
 
         assert response.status_code == 200
         assert response.json["chronicles"] == []
@@ -3871,7 +3871,7 @@ class OfferChroniclesTest:
         nb_queries = 1  # select offer
         nb_queries += 1  # select chronicles
         with assert_num_queries(nb_queries):
-            response = client.get(f"/native/v1/offers/{offer_id}/chronicles")
+            response = client.get(f"/native/v1/offer/{offer_id}/chronicles")
 
         assert response.status_code == 200
         assert response.json["chronicles"][0]["author"] is None
