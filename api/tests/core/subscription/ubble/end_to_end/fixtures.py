@@ -139,13 +139,7 @@ ID_CHECKS_IN_PROGRESS_RESPONSE = {
     "applicant_id": "aplt_01je97fqhmtk2jmn6gcgyram3s",
     "created_on": "2024-12-04T16:19:09.766392Z",
     "declared_data": {"name": "Catherine Destivelle"},
-    "documents": [
-        {
-            "back_image_signed_url": "https://minio.ubble.example.com/production.ubble.ai/OIOXQTAYFYMF/idv_01je97fqt08dn6a687jcqnxd1b/a9febddd-6a89-4aa5-bd6a-912f4ca9f5da/dd1e68f6-1a8d-4267-916f-8b381b6d7f87/back_id.jpeg?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=6nzrc5UNPR864KRwHLkZ%2F20241204%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20241204T162302Z&X-Amz-Expires=600&X-Amz-SignedHeaders=host&X-Amz-Signature=38ef832caeb76326b96676b2ad0a0d5041888b35764a99373bf9dab7c8de7933",
-            "front_image_signed_url": "https://minio.ubble.example.com/production.ubble.ai/OIOXQTAYFYMF/idv_01je97fqt08dn6a687jcqnxd1b/a9febddd-6a89-4aa5-bd6a-912f4ca9f5da/dd1e68f6-1a8d-4267-916f-8b381b6d7f87/front_id.jpeg?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=6nzrc5UNPR864KRwHLkZ%2F20241204%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20241204T162302Z&X-Amz-Expires=600&X-Amz-SignedHeaders=host&X-Amz-Signature=97f6d7bb582ae373c1ec653e4274bd77cc95a5398b015289b03a69e3f3141e3b",
-            "full_name": "",
-        }
-    ],
+    "documents": [{"full_name": ""}],
     "face": {
         "image_signed_url": "https://minio.ubble.example.com/production.ubble.ai/OIOXQTAYFYMF/idv_01je97fqt08dn6a687jcqnxd1b/a9febddd-6a89-4aa5-bd6a-912f4ca9f5da/dd1e68f6-1a8d-4267-916f-8b381b6d7f87/face.jpeg?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=6nzrc5UNPR864KRwHLkZ%2F20241204%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20241204T162302Z&X-Amz-Expires=600&X-Amz-SignedHeaders=host&X-Amz-Signature=efa1440aeb03afb107562924d22de89643cc3a248ace772907147921cba5f921"
     },
