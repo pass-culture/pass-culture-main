@@ -755,6 +755,32 @@ class Returns403Test:
             "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."]
         }
 
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    def test_update_venue_from_past_stock(self, auth_client, venue, other_related_venue):
+        offer = educational_factories.CollectiveOfferFactory(venue=other_related_venue)
+        educational_factories.CollectiveStockFactory(collectiveOffer=offer, startDatetime=datetime(2024, 1, 1))
+
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = auth_client.patch(
+                url_for("Private API.edit_collective_offer", offer_id=offer.id), json={"venueId": venue.id}
+            )
+            assert response.status_code == 403
+            assert response.json == {
+                "offer": "This collective offer that has already started does not allow editing details"
+            }
+
+    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    def test_update_venue_from_past_stock_with_new_statuses(self, auth_client, venue, other_related_venue):
+        offer = educational_factories.CollectiveOfferFactory(venue=other_related_venue)
+        educational_factories.CollectiveStockFactory(collectiveOffer=offer, startDatetime=datetime(2024, 1, 1))
+
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = auth_client.patch(
+                url_for("Private API.edit_collective_offer", offer_id=offer.id), json={"venueId": venue.id}
+            )
+            assert response.status_code == 403
+            assert response.json == {"offer": "This collective offer status does not allow editing details"}
+
 
 class Returns404Test:
     def test_returns_404_if_offer_does_not_exist(self, app, client):
