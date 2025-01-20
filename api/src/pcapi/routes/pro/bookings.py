@@ -217,6 +217,7 @@ def get_offer_price_categories_and_schedules_by_dates(offer_id: int) -> EventDat
 def _create_booking_export_file(query: ListBookingsQueryModel, export_type: BookingExportType) -> bytes:
     venue_id = query.venue_id
     event_date = query.event_date
+    offerer_address_id = query.offerer_address_id
     booking_period = None
     if query.booking_period_beginning_date and query.booking_period_ending_date:
         booking_period = (
@@ -232,6 +233,7 @@ def _create_booking_export_file(query: ListBookingsQueryModel, export_type: Book
         event_date=event_date,
         venue_id=venue_id,
         export_type=export_type,
+        offerer_address_id=offerer_address_id,
     )
 
     if export_type == BookingExportType.CSV:

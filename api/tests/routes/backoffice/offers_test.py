@@ -3385,8 +3385,8 @@ class DownloadBookingsCSVTest(GetEndpointHelper):
     # session + current user + bookings + check if WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE is active
     expected_num_queries = 4
 
-    @pytest.mark.parametrize("is_oa_as_data_source_ff_active", (False, True))
-    def test_download_bookings_csv(self, features, legit_user, authenticated_client, is_oa_as_data_source_ff_active):
+    @pytest.mark.feature(WIP_ENABLE_OFFER_ADDRESS=False, WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
+    def test_download_bookings_csv(self, legit_user, authenticated_client):
         offerer = offerers_factories.UserOffererFactory().offerer  # because of join on UserOfferers
         offer = offers_factories.ThingOfferFactory(venue__managingOfferer=offerer)
         bookings_factories.UsedBookingFactory(stock__offer=offer)
@@ -3396,7 +3396,22 @@ class DownloadBookingsCSVTest(GetEndpointHelper):
 
         url = url_for(self.endpoint, offer_id=offer.id)
 
-        features.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE = is_oa_as_data_source_ff_active
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        assert len(response.data.split(b"\n")) == 1 + 3 + 1
+
+    def test_download_bookings_csv_with_oa(self, legit_user, authenticated_client):
+        offerer = offerers_factories.UserOffererFactory().offerer  # because of join on UserOfferers
+        offer = offers_factories.ThingOfferFactory(venue__managingOfferer=offerer)
+        bookings_factories.UsedBookingFactory(stock__offer=offer)
+        bookings_factories.ReimbursedBookingFactory(stock__offer=offer)
+        bookings_factories.BookingFactory(stock__offer=offer)
+        bookings_factories.BookingFactory()  # other offer
+
+        url = url_for(self.endpoint, offer_id=offer.id)
+
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
