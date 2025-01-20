@@ -891,6 +891,24 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 400
         assert response.json == {"nationalProgramId": ["Dispositif inconnu"]}
 
+    def test_national_program_null(self, client):
+        key, venue_provider = self.setup_active_venue_provider()
+        client_with_token = client.with_explicit_token(key)
+        offer = educational_factories.CollectiveOfferFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            nationalProgram=educational_factories.NationalProgramFactory(),
+        )
+        educational_factories.CollectiveStockFactory(collectiveOffer=offer)
+        assert offer.nationalProgramId is not None
+
+        payload = {"nationalProgramId": None}
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client_with_token.patch(f"/v2/collective/offers/{offer.id}", json=payload)
+
+        assert response.status_code == 200
+        assert offer.nationalProgramId is None
+
     @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_should_update_expired_booking(self, client):
         now = datetime.utcnow()
