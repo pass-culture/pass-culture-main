@@ -359,6 +359,7 @@ NATIVE_CATEGORY_ACHAT_LOCATION_INSTRUMENT = NativeCategory(
     technical_name="ACHAT_LOCATION_INSTRUMENT",
     label="Achat et location d'instruments",
     parents=[SEARCH_GROUP_INSTRUMENTS.id, SEARCH_GROUP_MUSIQUE.id],
+    positions={SEARCH_GROUP_MUSIQUE.id: 6},
 )
 NATIVE_CATEGORY_ARTS_VISUELS = NativeCategory(
     technical_name="ARTS_VISUELS",
@@ -386,6 +387,7 @@ NATIVE_CATEGORY_CD = NativeCategory(
     label="CDs",
     parents=[SEARCH_GROUP_CD_VINYLE_MUSIQUE_EN_LIGNE.id, SEARCH_GROUP_MUSIQUE.id],
     genre_type=GenreType.MUSIC,
+    positions={SEARCH_GROUP_MUSIQUE.id: 4},
 )
 NATIVE_CATEGORY_CONCERTS_EN_LIGNE = NativeCategory(
     technical_name="CONCERTS_EN_LIGNE",
@@ -398,6 +400,7 @@ NATIVE_CATEGORY_CONCERTS_EVENEMENTS = NativeCategory(
     label="Concerts",
     parents=[SEARCH_GROUP_CONCERTS_FESTIVALS.id, SEARCH_GROUP_MUSIQUE.id],
     genre_type=GenreType.MUSIC,
+    positions={SEARCH_GROUP_MUSIQUE.id: 2},
 )
 NATIVE_CATEGORY_CONCOURS = NativeCategory(
     technical_name="CONCOURS",
@@ -440,6 +443,7 @@ NATIVE_CATEGORY_FESTIVALS = NativeCategory(
     label="Festivals",
     parents=[SEARCH_GROUP_CONCERTS_FESTIVALS.id, SEARCH_GROUP_MUSIQUE.id],
     genre_type=GenreType.MUSIC,
+    positions={SEARCH_GROUP_MUSIQUE.id: 3},
 )
 NATIVE_CATEGORY_FESTIVAL_DU_LIVRE = NativeCategory(
     technical_name="FESTIVAL_DU_LIVRE",
@@ -487,12 +491,14 @@ NATIVE_CATEGORY_MUSIQUE_EN_LIGNE = NativeCategory(
     label="Musique en ligne",
     parents=[SEARCH_GROUP_CD_VINYLE_MUSIQUE_EN_LIGNE.id, SEARCH_GROUP_MUSIQUE.id],
     genre_type=GenreType.MUSIC,
+    positions={SEARCH_GROUP_MUSIQUE.id: 1},
 )
 NATIVE_CATEGORY_NONE = NativeCategory(technical_name="NATIVE_CATEGORY_NONE", label="None", parents=[])
 NATIVE_CATEGORY_PARTITIONS_DE_MUSIQUE = NativeCategory(
     technical_name="PARTITIONS_DE_MUSIQUE",
     label="Partitions de musique",
     parents=[SEARCH_GROUP_INSTRUMENTS.id, SEARCH_GROUP_MUSIQUE.id],
+    positions={SEARCH_GROUP_MUSIQUE.id: 7},
 )
 NATIVE_CATEGORY_PODCAST = NativeCategory(
     technical_name="PODCAST",
@@ -569,6 +575,7 @@ NATIVE_CATEGORY_VINYLES = NativeCategory(
     label="Vinyles",
     parents=[SEARCH_GROUP_CD_VINYLE_MUSIQUE_EN_LIGNE.id, SEARCH_GROUP_MUSIQUE.id],
     genre_type=GenreType.MUSIC,
+    positions={SEARCH_GROUP_MUSIQUE.id: 5},
 )
 NATIVE_CATEGORY_VISITES_CULTURELLES = NativeCategory(
     technical_name="VISITES_CULTURELLES",
