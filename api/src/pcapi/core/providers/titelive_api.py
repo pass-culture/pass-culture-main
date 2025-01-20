@@ -53,10 +53,10 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveWorkType]):
         self, from_date: datetime.date | None = None, to_date: datetime.date | None = None, from_page: int = 1
     ) -> None:
         if from_date is None:
-            from_date = self.get_last_sync_date()
+            from_date = self.get_last_sync_date() - datetime.timedelta(days=1)
 
         if to_date is None:
-            to_date = from_date
+            to_date = datetime.date.today() - datetime.timedelta(days=1)
 
         with repository.transaction():
             start_sync_event = self.log_sync_status(providers_models.LocalProviderEventType.SyncStart)
@@ -100,7 +100,7 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveWorkType]):
         )
         if last_sync_event is None:
             raise TiteliveDatabaseNotInitializedException()
-        return last_sync_event.date.date() - datetime.timedelta(days=1)
+        return last_sync_event.date.date()
 
     def log_sync_status(
         self, provider_event_type: providers_models.LocalProviderEventType, message: str | None = None
