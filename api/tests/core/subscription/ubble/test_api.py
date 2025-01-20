@@ -295,7 +295,7 @@ class UbbleWorkflowV2Test:
 
         ubble_content = fraud_check.resultContent
         assert ubble_content["status"] == ubble_serializers.UbbleIdentificationStatus.DECLINED.value
-        assert fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
+        assert fraud_check.status == fraud_models.FraudCheckStatus.KO
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH]
         assert "Ubble DECLINED" in fraud_check.reason
 
