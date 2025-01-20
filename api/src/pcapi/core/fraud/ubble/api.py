@@ -40,11 +40,11 @@ def _ubble_result_fraud_item_using_status(
             if id_provider_detected_eligibility:
                 return fraud_models.FraudItem(status=fraud_models.FraudStatus.OK, detail=detail, reason_codes=[])
             return _ubble_not_eligible_fraud_item(user, content)
-        case (
-            ubble_serializers.UbbleIdentificationStatus.RETRY_REQUIRED
-            | ubble_serializers.UbbleIdentificationStatus.DECLINED
-        ):
+        case ubble_serializers.UbbleIdentificationStatus.RETRY_REQUIRED:
             status = fraud_models.FraudStatus.SUSPICIOUS
+        case ubble_serializers.UbbleIdentificationStatus.DECLINED:
+            status = fraud_models.FraudStatus.KO
+
         case _:
             raise ValueError(f"unhandled Ubble status {content.status} for identification {content.identification_id}")
 
