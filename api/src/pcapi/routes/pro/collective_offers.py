@@ -276,6 +276,8 @@ def edit_collective_offer(
         raise ApiErrors({"subcategoryId": "this subcategory is not educational"}, 400)
     except offers_exceptions.OfferUsedOrReimbursedCantBeEdit:
         raise ApiErrors({"offer": "the used or refund offer can't be edited."}, 403)
+    except offers_exceptions.OfferEventInThePast:
+        raise ApiErrors({"offer": "This collective offer that has already started does not allow editing details"}, 403)
     except offers_exceptions.NoDestinationVenue:
         raise ApiErrors({"venueId": ["No venue with a pricing point found for the destination venue."]}, 400)
     except educational_exceptions.CollectiveOfferForbiddenAction:
