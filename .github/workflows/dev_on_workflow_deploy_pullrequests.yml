@@ -20,6 +20,10 @@ on:
         type: string
         required: false
         default: ehp
+      deploy:
+        type: boolean
+        required: false
+        default: false
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
         required: true
@@ -31,7 +35,7 @@ jobs:
     name: "Deploy pullrequest"
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    if: ${{ github.actor != 'dependabot[bot]' }}
+    if: ${{ github.actor != 'dependabot[bot]' }} || ${{ inputs.deploy == 'true' }}
     permissions:
       id-token: write
       contents: read
