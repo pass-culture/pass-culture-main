@@ -15,11 +15,9 @@
 }
 
 .trash {
-  @include size.input-center-with-top-margin(size.$button-icon-size);
-
-  &:hover {
-    svg {
-      fill: var(--color-primary);
-    }
-  }
+  margin-top: calc(
+    #{var(--typography-body-line-height)} + #{forms.$label-space-before-input} +
+      #{var(--typography-body-xs-line-height)} + rem.torem(4px) +
+      (#{size.$input-min-height} - #{size.$button-icon-size}) / 2
+  );
 }

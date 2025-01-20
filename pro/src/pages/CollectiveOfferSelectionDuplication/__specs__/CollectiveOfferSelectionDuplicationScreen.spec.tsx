@@ -95,15 +95,11 @@ describe('CollectiveOfferConfirmation', () => {
       await screen.findByText('Les dernières offres vitrines créées')
     ).toBeInTheDocument()
 
-    const searchField = screen.getByRole('searchbox', {
-      name: 'Rechercher l’offre vitrine à dupliquer',
-    })
+    const searchField = screen.getByRole('searchbox')
 
     await userEvent.type(searchField, 'Le nom de l’offre 3')
 
-    await userEvent.click(
-      screen.getByRole('button', { name: /Button de recherche/i })
-    )
+    await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
     expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
       'Le nom de l’offre 3',
@@ -200,9 +196,7 @@ describe('CollectiveOfferConfirmation', () => {
 
     await userEvent.type(searchField, 'Le nom de l’offre 3')
 
-    await userEvent.click(
-      screen.getByRole('button', { name: /Button de recherche/i })
-    )
+    await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
     await waitFor(() =>
       expect(notifyError).toHaveBeenNthCalledWith(
         1,

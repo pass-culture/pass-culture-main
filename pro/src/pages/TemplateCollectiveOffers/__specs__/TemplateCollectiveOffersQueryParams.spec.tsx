@@ -129,7 +129,7 @@ describe('route TemplateCollectiveOffers', () => {
       await renderOffers()
 
       await userEvent.type(
-        screen.getByRole('textbox', {
+        screen.getByRole('searchbox', {
           name: 'Nom de l’offre',
         }),
         'AnyWord'
@@ -148,9 +148,9 @@ describe('route TemplateCollectiveOffers', () => {
       await renderOffers()
 
       await userEvent.clear(
-        screen.getByRole('textbox', {
+        screen.getByRole('searchbox', {
           name: 'Nom de l’offre',
-        }),
+        })
       )
       await userEvent.click(screen.getByText('Rechercher'))
 

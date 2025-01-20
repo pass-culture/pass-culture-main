@@ -225,13 +225,15 @@ describe('route Offers', () => {
       it('should load offers with written offer name filter', async () => {
         await renderOffers()
         await userEvent.type(
-          screen.getByRole('textbox', {
+          screen.getByRole('searchbox', {
             name: LABELS.nameSearchInput,
           }),
           'Any word'
         )
 
-        await userEvent.click(screen.getByText('Rechercher'))
+        await userEvent.click(
+          screen.getByRole('button', { name: 'Rechercher' })
+        )
 
         await waitFor(() => {
           expect(api.listOffers).toHaveBeenCalledWith(
@@ -407,12 +409,12 @@ describe('route Offers', () => {
 
     it('should store search value', async () => {
       await renderOffers()
-      const searchInput = screen.getByRole('textbox', {
+      const searchInput = screen.getByRole('searchbox', {
         name: LABELS.nameSearchInput,
       })
 
       await userEvent.type(searchInput, 'search string')
-      await userEvent.click(screen.getByText('Rechercher'))
+      await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       await waitFor(() => {
         expect(api.listOffers).toHaveBeenCalledWith(
@@ -434,11 +436,11 @@ describe('route Offers', () => {
       await renderOffers()
 
       await userEvent.clear(
-        screen.getByRole('textbox', {
+        screen.getByRole('searchbox', {
           name: LABELS.nameSearchInput,
         })
       )
-      await userEvent.click(screen.getByText('Rechercher'))
+      await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
       await waitFor(() => {
         expect(api.listOffers).toHaveBeenCalledWith(
           undefined,
@@ -739,7 +741,7 @@ describe('route Offers', () => {
       const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.label)
 
       await userEvent.selectOptions(venueSelect, firstVenueOption)
-      await userEvent.click(screen.getByText('Rechercher'))
+      await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       await waitFor(() => {
         expect(api.listOffers).toHaveBeenNthCalledWith(

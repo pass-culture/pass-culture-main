@@ -68,7 +68,7 @@ export const OffersTableSearch = ({
           hideFooter
         >
           <BaseInput
-            type="text"
+            type="search"
             disabled={nameInputProps.disabled}
             name="offre"
             onChange={nameInputProps.onChange}

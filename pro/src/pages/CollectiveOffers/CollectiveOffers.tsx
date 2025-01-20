@@ -27,12 +27,16 @@ import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { CollectiveOffersScreen } from './components/CollectiveOffersScreen/CollectiveOffersScreen'
 
 export const CollectiveOffers = (): JSX.Element => {
-  const isToggleAndMemorizeFiltersEnabled = useActiveFeature('WIP_COLLAPSED_MEMORIZED_FILTERS')
+  const isToggleAndMemorizeFiltersEnabled = useActiveFeature(
+    'WIP_COLLAPSED_MEMORIZED_FILTERS'
+  )
   const urlSearchFilters = useQueryCollectiveSearchFilters()
   const { storedFilters } = getStoredFilterConfig('collective')
   const finalSearchFilters = {
     ...urlSearchFilters,
-    ...isToggleAndMemorizeFiltersEnabled ? (storedFilters as Partial<CollectiveSearchFiltersParams>) : {}
+    ...(isToggleAndMemorizeFiltersEnabled
+      ? (storedFilters as Partial<CollectiveSearchFiltersParams>)
+      : {}),
   }
 
   const isNewOffersAndBookingsActive = useActiveFeature(
@@ -65,7 +69,9 @@ export const CollectiveOffers = (): JSX.Element => {
 
   const venues = formatAndOrderVenues(data.venues)
 
-  const redirectWithUrlFilters = (filters: Partial<CollectiveSearchFiltersParams>) => {
+  const redirectWithUrlFilters = (
+    filters: Partial<CollectiveSearchFiltersParams>
+  ) => {
     navigate(computeCollectiveOffersUrl(filters, defaultCollectiveFilters), {
       replace: true,
     })

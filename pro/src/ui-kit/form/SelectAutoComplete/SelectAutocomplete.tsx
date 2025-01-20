@@ -27,8 +27,6 @@ export type SelectAutocompleteProps = FieldLayoutBaseProps & {
   onSearch?: (pattern: string) => void
   searchInOptions?: (options: SelectOption[], pattern: string) => SelectOption[]
   onReset?: () => void
-  type?: 'text' | 'search'
-  leftIcon?: string
   maxDisplayedOptions?: number
   selectedValuesTagsClassName?: string
   /**
@@ -65,8 +63,6 @@ export const SelectAutocomplete = ({
       opt.label.toLowerCase().includes(pattern.trim().toLowerCase())
     ),
   onReset = () => {},
-  type = 'text',
-  leftIcon,
   maxDisplayedOptions,
   isLabelHidden,
   shouldFocusOnMount,
@@ -291,13 +287,9 @@ export const SelectAutocomplete = ({
           })}
           onClick={openFieldOnClick}
           onFocus={openFieldOnFocus}
-          style={{
-            paddingLeft:
-              (multi && field.value.length > 0) || leftIcon ? '2.2rem' : '1rem',
-          }}
           className={styles['multi-select-autocomplete-placeholder-input']}
           hasError={searchMeta.touched && !!meta.error}
-          type={type}
+          type="search"
           disabled={disabled}
           {...searchField}
           aria-autocomplete="list"
@@ -307,7 +299,6 @@ export const SelectAutocomplete = ({
           aria-haspopup="listbox"
           aria-required={!isOptional}
           role="combobox"
-          leftIcon={leftIcon}
           ref={inputRef}
         />
         <div

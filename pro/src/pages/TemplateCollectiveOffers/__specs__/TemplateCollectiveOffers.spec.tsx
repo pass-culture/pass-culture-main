@@ -210,8 +210,13 @@ describe('route TemplateCollectiveOffers', () => {
     describe('on click on search button', () => {
       it('should load offers with written offer name filter', async () => {
         await renderOffers()
+
+        await waitFor(() => {
+          expect(api.getVenues).toHaveBeenCalledWith(null, null, 1)
+        })
+
         await userEvent.type(
-          screen.getByRole('textbox', {
+          screen.getByRole('searchbox', {
             name: 'Nom de l’offre',
           }),
           'Any word'
