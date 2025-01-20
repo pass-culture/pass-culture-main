@@ -13,3 +13,10 @@
   height: 100%;
   position: relative;
 }
+
+.banner {
+  position: absolute;
+  height: rem.torem(216px);
+  bottom: 0;
+  right: 10%;
+}

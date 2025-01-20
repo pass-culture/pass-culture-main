@@ -4,7 +4,7 @@ import { userEvent } from '@testing-library/user-event'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import * as storageAvailable from 'commons/utils/storageAvailable'
 
-import { DiffuseHelp } from '../DiffuseHelp'
+import { DiffuseHelp } from '../HighlightBanner'
 
 describe('DiffuseHelp', () => {
   it('should close diffuse help', async () => {
