@@ -117,6 +117,7 @@ class GetOffererResponseModel(BaseModel):
     hasBankAccountWithPendingCorrections: bool
     isOnboarded: bool
     isOnboardingOngoing: bool
+    hasHeadlineOffer: bool
 
     @classmethod
     def from_orm(cls, row: Row) -> "GetOffererResponseModel":
@@ -149,6 +150,7 @@ class GetOffererResponseModel(BaseModel):
         offerer.hasBankAccountWithPendingCorrections = row.hasBankAccountWithPendingCorrections
         offerer.isOnboarded = row.isOnboarded
         offerer.isOnboardingOngoing = row.isOnboardingOngoing
+        offerer.hasHeadlineOffer = row.hasHeadlineOffer
 
         # We would like the response attribute to be called
         # `managedVenues` but we don't want to use the
