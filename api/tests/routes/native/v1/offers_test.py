@@ -3875,3 +3875,21 @@ class OfferChroniclesTest:
 
         assert response.status_code == 200
         assert response.json["chronicles"][0]["author"] is None
+
+    def test_chronicles_are_ordered_by_id(self, client):
+        product = offers_factories.ProductFactory()
+        offer = offers_factories.OfferFactory(product=product)
+        chronicles_factories.ChronicleFactory(id=7777, products=[product], isActive=True, isSocialMediaDiffusible=True)
+        chronicles_factories.ChronicleFactory(id=8888, products=[product], isActive=True, isSocialMediaDiffusible=True)
+
+        offer_id = offer.id
+        nb_queries = 1  # select offer
+        nb_queries += 1  # select chronicles
+        with assert_num_queries(nb_queries):
+            response = client.get(f"/native/v1/offer/{offer_id}/chronicles")
+
+        assert response.status_code == 200
+        chronicles = response.json["chronicles"]
+
+        assert chronicles[0]["id"] == 8888
+        assert chronicles[1]["id"] == 7777

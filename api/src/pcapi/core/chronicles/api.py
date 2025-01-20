@@ -151,4 +151,4 @@ def get_offer_published_chronicles(offer: offers_models.Offer) -> list[models.Ch
             offers_models.Offer.id == offer.id
         )
 
-    return chronicles_query.filter(models.Chronicle.isPublished).all()
+    return chronicles_query.filter(models.Chronicle.isPublished).order_by(models.Chronicle.id.desc()).all()

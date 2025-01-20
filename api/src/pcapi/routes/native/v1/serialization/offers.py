@@ -311,7 +311,7 @@ class BaseOfferResponseGetterDict(GetterDict):
 
         if key == "chronicles":
             published_chronicles = get_offer_published_chronicles(offer)
-            return sorted(published_chronicles, key=lambda c: c.id, reverse=True)[:MAX_PREVIEW_CHRONICLES]
+            return published_chronicles[:MAX_PREVIEW_CHRONICLES]
 
         return super().get(key, default)
 
