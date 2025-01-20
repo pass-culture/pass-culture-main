@@ -448,7 +448,8 @@ def patch_collective_offer_public(
                 )
         image_file = new_values.pop("imageFile")
 
-    if "nationalProgramId" in new_values and not np_api.get_national_program(new_values["nationalProgramId"]):
+    national_program_id: int | None = new_values.get("nationalProgramId")
+    if national_program_id is not None and np_api.get_national_program(national_program_id) is None:
         raise ApiErrors(errors={"nationalProgramId": ["Dispositif inconnu"]}, status_code=400)
 
     # real edition
