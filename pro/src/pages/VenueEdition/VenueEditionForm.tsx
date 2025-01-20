@@ -24,6 +24,7 @@ import { setInitialFormValues } from './setInitialFormValues'
 import { VenueEditionFormValues } from './types'
 import { getValidationSchema } from './validationSchema'
 import { VenueFormActionBar } from './VenueFormActionBar/VenueFormActionBar'
+import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 
 interface VenueFormProps {
   venue: GetVenueResponseModel
@@ -112,6 +113,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
 
         <FormLayout fullWidthActions>
           <FormLayout.Section title="Vos informations pour le grand public">
+            {showAccessibilitySection && <MandatoryInfo />}
             <FormLayout.SubSection
               title="À propos de votre activité"
               description={
