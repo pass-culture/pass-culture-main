@@ -17,7 +17,9 @@ const LABELS = {
 type OffersTableSearchTableTestProps = OffersTableSearchTestProps & {
   isCollapsedMemorizedFiltersEnabled?: boolean
 }
-const renderOffersTableSearch = (props: OffersTableSearchTableTestProps = {}) => {
+const renderOffersTableSearch = (
+  props: OffersTableSearchTableTestProps = {}
+) => {
   const features = []
   if (props.isCollapsedMemorizedFiltersEnabled) {
     features.push('WIP_COLLAPSED_MEMORIZED_FILTERS')
@@ -39,8 +41,8 @@ const renderOffersTableSearch = (props: OffersTableSearchTableTestProps = {}) =>
       onResetFilters={props.onResetFilters || vi.fn()}
     >
       {props.children}
-    </OffersTableSearch>
-    , { features }
+    </OffersTableSearch>,
+    { features }
   )
 }
 
@@ -57,8 +59,10 @@ describe('OffersTableSearch', () => {
       },
     })
 
-    const nameInput = screen.getByRole('textbox', { name: nameInputLabel })
-    const searchButton = screen.getByRole('button', { name: LABELS.searchButton })
+    const nameInput = screen.getByRole('searchbox', { name: nameInputLabel })
+    const searchButton = screen.getByRole('button', {
+      name: LABELS.searchButton,
+    })
 
     expect(nameInput).toBeInTheDocument()
     expect(searchButton).toBeInTheDocument()
@@ -67,7 +71,7 @@ describe('OffersTableSearch', () => {
     await userEvent.type(nameInput, newText)
     expect(mockedOnChange).toHaveBeenCalledTimes(newText.length)
   })
-  
+
   it('should always display a reset button', async () => {
     const mockedOnResetFilters = vi.fn()
     renderOffersTableSearch({
@@ -94,7 +98,9 @@ describe('OffersTableSearch', () => {
     // They are always visible without toggling.
     // There is a better way to do this, but .isVisible() does not seem to work.
     const filtersWrapper = screen.getByTestId('offers-filter')
-    expect(filtersWrapper).not.toHaveClass('offers-table-search-filters-collapsed')
+    expect(filtersWrapper).not.toHaveClass(
+      'offers-table-search-filters-collapsed'
+    )
   })
 
   describe('when filters toggling and storing is enabled', () => {
@@ -105,29 +111,37 @@ describe('OffersTableSearch', () => {
     it('should display a filter toggle button', () => {
       renderOffersTableSearch({ isCollapsedMemorizedFiltersEnabled: true })
 
-      const filterToggleButton = screen.getByRole('button', { name: LABELS.filterToggleButton })
+      const filterToggleButton = screen.getByRole('button', {
+        name: LABELS.filterToggleButton,
+      })
       expect(filterToggleButton).toBeInTheDocument()
     })
 
     it('should hide filters passed as children and the reset button by default', () => {
       renderOffersTableSearch({ isCollapsedMemorizedFiltersEnabled: true })
-  
+
       // Filters are hidden by default.
       // There is a better way to do this, but .isVisible() does not seem to work.
-      const filtersWrapper= screen.getByTestId('offers-filter')
+      const filtersWrapper = screen.getByTestId('offers-filter')
       expect(filtersWrapper).toBeInTheDocument()
-      expect(filtersWrapper).toHaveClass('offers-table-search-filters-collapsed')
+      expect(filtersWrapper).toHaveClass(
+        'offers-table-search-filters-collapsed'
+      )
     })
 
     it('should display filters passed as children and make reset button visible when toggled', async () => {
       renderOffersTableSearch({ isCollapsedMemorizedFiltersEnabled: true })
 
-      await userEvent.click(screen.getByRole('button', { name: LABELS.filterToggleButton }))
+      await userEvent.click(
+        screen.getByRole('button', { name: LABELS.filterToggleButton })
+      )
 
       // Filters are now made visible.
       // There is a better way to do this, but .isVisible() does not seem to work.
       const filtersWrapper = screen.getByTestId('offers-filter')
-      expect(filtersWrapper).not.toHaveClass('offers-table-search-filters-collapsed')
+      expect(filtersWrapper).not.toHaveClass(
+        'offers-table-search-filters-collapsed'
+      )
     })
   })
 })

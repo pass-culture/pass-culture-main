@@ -37,7 +37,6 @@ import { BannerPublicApi } from 'components/BannerPublicApi/BannerPublicApi'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OfferEducationalActions } from 'components/OfferEducationalActions/OfferEducationalActions'
 import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
-import strokeSearch from 'icons/stroke-search.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -273,7 +272,6 @@ export const CollectiveOfferVisibilityScreen = ({
                   <>
                     <SelectAutocomplete
                       name="institution"
-                      type="search"
                       options={institutionsOptions}
                       label="Nom de l’établissement scolaire ou code UAI"
                       description="Ex : Lycee General Simone Weil ou 010456E ou Le Havre"
@@ -293,7 +291,6 @@ export const CollectiveOfferVisibilityScreen = ({
                       searchInOptions={(options, pattern) =>
                         searchPatternInOptions(options, pattern, 300)
                       }
-                      leftIcon={strokeSearch}
                     />
                   </>
                 )}
@@ -302,7 +299,6 @@ export const CollectiveOfferVisibilityScreen = ({
               <FormLayout.Row className={styles['row-layout']}>
                 <SelectAutocomplete
                   name="teacher"
-                  type="search"
                   options={teachersOptions}
                   label="Prénom et nom de l’enseignant (au moins 3 caractères)"
                   isOptional
@@ -313,7 +309,6 @@ export const CollectiveOfferVisibilityScreen = ({
                     await onChangeTeacher()
                   }}
                   resetOnOpen={false}
-                  leftIcon={strokeSearch}
                 />
               </FormLayout.Row>
             </FormLayout.Section>

@@ -31,6 +31,7 @@ export const EmailInputRow = ({
         disabled={disableForm}
         className={styles['notification-mail-input']}
         autoFocus={autoFocus}
+        description="Format : email@exemple.com"
       />
       {displayTrash && (
         <div className={styles['trash']}>

@@ -1,6 +1,7 @@
 import cn from 'classnames'
 import React, { ForwardedRef, forwardRef } from 'react'
 
+import strokeSearchIcon from 'icons/stroke-search.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './BaseInput.module.scss'
@@ -33,9 +34,13 @@ export const BaseInput = forwardRef(
     }: BaseInputProps,
     ref: ForwardedRef<HTMLInputElement>
   ): JSX.Element => {
+    if (props.type === 'search') {
+      rightIcon = undefined
+      leftIcon = strokeSearchIcon
+    }
+
     if (rightIcon || leftIcon || rightButton) {
-      const hasLeftIcon = !!leftIcon
-      const hasRightIcon = !hasLeftIcon && !!rightIcon
+      const hasRightIcon = !leftIcon && !!rightIcon
       const hasButton = !!rightButton
 
       return (
@@ -46,11 +51,12 @@ export const BaseInput = forwardRef(
             {...(hasError
               ? { 'aria-describedby': `error-details-${name}` }
               : {})}
+            placeholder={props.type === 'search' ? 'Rechercher' : undefined}
             className={cn(
               styles['base-input'],
               {
                 [styles['base-input-with-right-icon']]: hasRightIcon,
-                [styles['base-input-with-left-icon']]: hasLeftIcon,
+                [styles['base-input-with-left-icon']]: Boolean(leftIcon),
                 [styles['has-error']]: hasError,
                 [styles['filter-variant']]: filterVariant,
               },
@@ -63,13 +69,13 @@ export const BaseInput = forwardRef(
           <span
             className={cn({
               [styles['base-input-right-icon']]: hasRightIcon,
-              [styles['base-input-left-icon']]: hasLeftIcon,
+              [styles['base-input-left-icon']]: Boolean(leftIcon),
               [styles['base-input-right-button']]: hasButton,
               [styles['filter-variant']]: filterVariant,
             })}
           >
-            {hasLeftIcon && <SvgIcon src={leftIcon} alt="" />}
-            {hasRightIcon && <SvgIcon src={rightIcon} alt="" />}
+            {leftIcon && <SvgIcon src={leftIcon} alt="" />}
+            {hasRightIcon && rightIcon && <SvgIcon src={rightIcon} alt="" />}
             {hasButton && rightButton()}
           </span>
         </div>

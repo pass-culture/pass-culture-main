@@ -239,7 +239,7 @@ describe('IndividualOffersScreen', () => {
     renderOffers(props)
 
     const searchAndChecked = async (params: Partial<SearchFiltersParams>) => {
-      await userEvent.click(screen.getByText('Rechercher'))
+      await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
       expect(redirectWithSelectedFiltersSpy).toHaveBeenCalled()
       expect(redirectWithSelectedFiltersSpy).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -252,13 +252,13 @@ describe('IndividualOffersScreen', () => {
     await searchAndChecked({})
 
     expect(
-      screen.getByRole('textbox', {
+      screen.getByRole('searchbox', {
         name: LABELS.nameSearchInput,
       })
     ).toBeInTheDocument()
 
     await userEvent.type(
-      screen.getByRole('textbox', {
+      screen.getByRole('searchbox', {
         name: LABELS.nameSearchInput,
       }),
       'Test'

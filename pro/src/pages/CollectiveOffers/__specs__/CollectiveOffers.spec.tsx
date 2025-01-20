@@ -213,41 +213,16 @@ describe('route CollectiveOffers', () => {
           expect(api.getVenues).toHaveBeenCalledWith(null, null, 1)
         })
 
-        await userEvent.type(
-          screen.getByRole('textbox', {
-            name: LABELS.nameSearchInput,
-          }),
-          'Any word'
-        )
+        const searchInput = screen.getByRole('searchbox', {
+          name: LABELS.nameSearchInput,
+        })
+
+        await userEvent.type(searchInput, 'Any word')
 
         await userEvent.click(screen.getByText('Rechercher'))
         await waitFor(() => {
           expect(api.getCollectiveOffers).toHaveBeenCalledWith(
             'Any word',
-            '1',
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined
-          )
-        })
-      })
-
-      it('should store search value', async () => {
-        await renderOffers()
-        const searchInput = screen.getByRole('textbox', {
-          name: LABELS.nameSearchInput,
-        })
-
-        await userEvent.type(searchInput, 'search string')
-        await userEvent.click(screen.getByText('Rechercher'))
-        await waitFor(() => {
-          expect(api.getCollectiveOffers).toHaveBeenCalledWith(
-            'search string',
             '1',
             undefined,
             undefined,
@@ -348,7 +323,10 @@ describe('route CollectiveOffers', () => {
         const offerTypeSelect = screen.getByLabelText('Type de l’offre')
         await userEvent.selectOptions(offerTypeSelect, 'template')
 
-        await userEvent.click(screen.getByText('Rechercher'))
+        const button = screen.getByRole('button', { name: 'Rechercher' })
+
+        await userEvent.click(button)
+
         await waitFor(() => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,

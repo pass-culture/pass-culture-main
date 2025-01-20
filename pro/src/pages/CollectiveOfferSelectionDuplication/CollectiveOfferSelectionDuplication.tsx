@@ -155,14 +155,11 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                     className={styles['search-input']}
                     aria-labelledby="search-filter"
                     isOptional
-                    leftIcon={strokeSearchIcon}
                   />
                   <Button
                     type="submit"
                     className={styles['search-button']}
                     isLoading={isLoading}
-                    aria-label="Button de recherche"
-                    icon={strokeSearchIcon}
                   >
                     Rechercher
                   </Button>
