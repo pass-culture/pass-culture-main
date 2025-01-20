@@ -54,7 +54,7 @@ class UbbleDocument(pydantic_v1.BaseModel):
     document_type: str | None
     document_number: str | None
     gender: users_models.GenderEnum | None
-    front_image_signed_url: str
+    front_image_signed_url: str | None
     back_image_signed_url: str | None
 
     @pydantic_v1.validator("gender", pre=True)
