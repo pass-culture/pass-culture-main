@@ -2905,6 +2905,7 @@ def test_public_api(client):
                         "PLATEFORME",
                         "RENCONTRES",
                         "SPECTACLES",
+                        "STAGE_ATELIER",
                         "VISITES",
                     ],
                     "title": "(HomepageLabelNameEnumv2",
