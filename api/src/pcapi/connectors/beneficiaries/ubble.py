@@ -245,7 +245,6 @@ def start_identification(
     user_id: int, first_name: str, last_name: str, redirect_url: str, webhook_url: str
 ) -> fraud_models.UbbleContent:
     session = configure_session()
-    logger.info("Ubble v1 request session state", extra={"cert": session.cert})
 
     data = {
         "data": {
@@ -328,7 +327,6 @@ def start_identification(
 
 def get_content(identification_id: str) -> fraud_models.UbbleContent:
     session = configure_session()
-    logger.info("Ubble v1 request session state", extra={"cert": session.cert})
     base_extra_log = {"request_type": "get-content", "identification_id": identification_id}
 
     try:
