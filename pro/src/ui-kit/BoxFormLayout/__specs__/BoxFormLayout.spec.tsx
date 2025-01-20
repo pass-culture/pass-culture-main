@@ -18,7 +18,7 @@ describe('components:BoxFormLayout', () => {
     )
     expect(screen.getByText('I’m a test')).toBeInTheDocument()
     expect(
-      screen.getByText('Tous les champs suivis d’un * sont obligatoires.')
+      screen.getByText('Tous les champs sont obligatoires.')
     ).toBeInTheDocument()
   })
 })
