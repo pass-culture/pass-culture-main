@@ -28,10 +28,11 @@ import { isCollectiveOfferTemplate } from 'pages/AdageIframe/app/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { OfferCardComponent } from '../../../AdageDiscovery/OfferCard/OfferCard'
-import { DiffuseHelp } from '../../../DiffuseHelp/DiffuseHelp'
 import { CustomPagination } from '../../../Pagination/Pagination'
 import { AdageSkeleton } from '../../../Skeleton/AdageSkeleton'
 import { SurveySatisfaction } from '../../../SurveySatisfaction/SurveySatisfaction'
+import TFMAC2025 from 'pages/AdageIframe/app/components/DiffuseHelp/assets/TFMAC-2025.png'
+import fullLinkIcon from 'icons/full-link.svg'
 import {
   ToggleButtonGroup,
   ToggleButton,
@@ -41,6 +42,10 @@ import { AdageOfferListCard } from './AdageOfferListCard/AdageOfferListCard'
 import { NoResultsPage } from './NoResultsPage/NoResultsPage'
 import styles from './Offers.module.scss'
 import { offerIsBookable } from './utils/offerIsBookable'
+import { ShadowTipsHelpIcon } from 'ui-kit/Icons/SVGs/ShadowTipsHelpIcon'
+import { HighlightBanner } from '../../../DiffuseHelp/HighlightBanner'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 export interface OffersProps {
   displayStats?: boolean
@@ -75,7 +80,10 @@ export const Offers = ({
     ? scopedResults.find((res) => res.indexId === indexId)?.results
     : nonScopedResult
 
-  const showDiffuseHelp = (submitCount ?? 0) > 0
+  const targetDate = new Date('2025-02-03')
+  const currentDate = new Date()
+
+  const showDiffuseHelp = (submitCount ?? 0) > 0 && currentDate >= targetDate
 
   const isInSuggestions = indexId?.startsWith('no_results_offers')
 
@@ -222,10 +230,46 @@ export const Offers = ({
                 viewType={adageViewType}
               />
             )}
-            {adageViewType === 'list' && index === 0 && showDiffuseHelp && (
-              <DiffuseHelp
+            {adageViewType === 'list' && index === 0 && showDiffuseHelp ? (
+              <HighlightBanner
+                title={'Le saviez-vous ?'}
                 description={
                   "Pour certaines offres, le pass Culture peut prendre en charge certains coûts accessoires nécessaires à la réalisation d'activités d'éducation artistique et culturelle menées en classe ou hors les murs. Cela peut inclure par exemple les frais de transport d’un intervenant ou le matériel consommable d’un atelier artistique. Cette prise en charge doit bien sûr faire l’objet d’un accord entre vous et le partenaire qui porte le projet. Il n’est en revanche pas possible d'acheter des livres ou des équipements pérennes avec les crédits pass Culture ou de financer le transport des élèves."
+                }
+                localStorageKey={'DIFFUSE_HELP_ADAGE_SEEN'}
+                img={<ShadowTipsHelpIcon className={styles['highlight-banner-icon']} />}
+              />
+            ) : (
+              <HighlightBanner
+                title={
+                  'Permettre aux jeunes de découvrir les métiers de la culture'
+                }
+                description={
+                  'Du 24 janvier au 2 février 2025, le pass Culture propose aux jeunes de 15 à 20 ans une multitude de rencontres avec les métiers des arts et de la culture sur leur application pass Culture.'
+                }
+                localStorageKey={'TFMAC_2025_ADAGE_SEEN'}
+                img={
+                  <img
+                    src={TFMAC2025}
+                    className={styles['banner']}
+                    role="presentation"
+                    alt=""
+                  />
+                }
+                primaryButton={
+                  <ButtonLink
+                    variant={ButtonVariant.PRIMARY}
+                    to="https://pass.culture.fr/TFMAC-2025"
+                    isExternal
+                    opensInNewTab
+                    icon={fullLinkIcon}
+                    className={styles['highlight-banner-button']}
+                    onClick={() => {
+                      console.log('tracker')
+                    }}
+                  >
+                    en savoir plus
+                  </ButtonLink>
                 }
               />
             )}
