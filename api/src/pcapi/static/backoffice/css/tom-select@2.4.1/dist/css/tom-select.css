@@ -1,5 +1,5 @@
 /**
- * tom-select.css (v2.3.1)
+ * tom-select.css (v2.4.1)
  * Copyright (c) contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
@@ -55,7 +55,7 @@
   border: 0 solid #cacaca;
 }
 .ts-wrapper.multi.disabled .ts-control > div, .ts-wrapper.multi.disabled .ts-control > div.active {
-  color: #7d7d7d;
+  color: rgb(124.5, 124.5, 124.5);
   background: white;
   border: 0 solid white;
 }
