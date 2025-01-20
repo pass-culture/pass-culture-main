@@ -31,6 +31,7 @@ import { VenueSettingsFormValues } from './types'
 import { getValidationSchema } from './validationSchema'
 import { VenueSettingsForm } from './VenueSettingsForm'
 import styles from './VenueSettingsScreen.module.scss'
+import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 
 interface VenueSettingsScreenProps {
   initialValues: VenueSettingsFormValues
@@ -195,6 +196,7 @@ export const VenueSettingsScreen = ({
       </Button>
 
       <h1 className={styles['title']}>Paramètres généraux</h1>
+      <MandatoryInfo />
 
       <FormikProvider value={formik}>
         <form onSubmit={formik.handleSubmit} noValidate>

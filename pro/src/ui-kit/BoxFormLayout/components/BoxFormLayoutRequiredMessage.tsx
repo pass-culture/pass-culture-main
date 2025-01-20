@@ -12,6 +12,7 @@ export const RequiredMessage = ({
   className,
 }: BoxFormLayoutRequiredMessageProps): JSX.Element => (
   <FormLayout.MandatoryInfo
+    areAllFieldsMandatory
     className={cn(style['box-form-layout-required-message'], className)}
   />
 )
