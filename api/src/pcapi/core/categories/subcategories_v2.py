@@ -616,6 +616,7 @@ class HomepageLabels(Enum):
     PLATEFORME = "Plateforme"
     RENCONTRES = "Rencontres"
     SPECTACLES = "Spectacles"
+    STAGE_ATELIER = "Stage, atelier"
     VISITES = "Visites"
 
 
@@ -1812,7 +1813,7 @@ SEANCE_ESSAI_PRATIQUE_ART = Subcategory(
     pro_label="Séance d'essai",
     app_label="Séance d'essai",
     search_group_name=SEARCH_GROUP_ARTS_LOISIRS_CREATIFS.id,
-    homepage_label_name=HomepageLabels.BEAUX_ARTS.name,
+    homepage_label_name=HomepageLabels.STAGE_ATELIER.name,
     is_event=True,
     conditional_fields={ExtraDataFieldEnum.SPEAKER.value: FieldCondition()},
     can_expire=True,
@@ -1831,7 +1832,7 @@ ATELIER_PRATIQUE_ART = Subcategory(
     pro_label="Atelier, stage de pratique artistique",
     app_label="Atelier, stage de pratique artistique",
     search_group_name=SEARCH_GROUP_ARTS_LOISIRS_CREATIFS.id,
-    homepage_label_name=HomepageLabels.BEAUX_ARTS.name,
+    homepage_label_name=HomepageLabels.STAGE_ATELIER.name,
     is_event=True,
     conditional_fields={ExtraDataFieldEnum.SPEAKER.value: FieldCondition()},
     can_expire=False,
@@ -1868,7 +1869,7 @@ PRATIQUE_ART_VENTE_DISTANCE = Subcategory(
     pro_label="Pratique artistique - vente à distance",
     app_label="Pratique artistique - vente à distance",
     search_group_name=SEARCH_GROUP_ARTS_LOISIRS_CREATIFS.id,
-    homepage_label_name=HomepageLabels.BEAUX_ARTS.name,
+    homepage_label_name=HomepageLabels.COURS.name,
     is_event=False,
     conditional_fields={ExtraDataFieldEnum.SPEAKER.value: FieldCondition()},
     can_expire=False,
