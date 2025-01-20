@@ -1,15 +1,17 @@
-import { Form, FormikProvider, useFormik } from 'formik'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useForm } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
+import { useNotification } from 'commons/hooks/useNotification'
 import { updateUser } from 'commons/store/user/reducer'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { BoxFormLayout } from 'ui-kit/BoxFormLayout/BoxFormLayout'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 
 import styles from '../UserPhoneForm/UserForm.module.scss'
 
@@ -20,13 +22,24 @@ export interface UserIdentityFormProps {
   closeForm: () => void
   initialValues: UserIdentityFormValues
 }
-
 export const UserIdentityForm = ({
   closeForm,
   initialValues,
 }: UserIdentityFormProps): JSX.Element => {
   const { currentUser } = useCurrentUser()
   const dispatch = useDispatch()
+  const notify = useNotification()
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { isSubmitting, errors },
+  } = useForm<UserIdentityFormValues>({
+    defaultValues: initialValues,
+    resolver: yupResolver(validationSchema),
+    mode: 'onBlur',
+  })
 
   const onSubmit = async (values: UserIdentityFormValues) => {
     try {
@@ -40,23 +53,16 @@ export const UserIdentityForm = ({
       closeForm()
     } catch (error) {
       if (isErrorAPIError(error)) {
-        for (const field in error.body) {
-          formik.setFieldError(field, error.body[field])
+        // Handle server-side errors and set field errors
+        for (const field of Object.keys(error.body)) {
+          notify.error(error.body[field])
         }
       }
     }
-    formik.setSubmitting(false)
   }
 
-  const formik = useFormik({
-    initialValues,
-    onSubmit,
-    validationSchema,
-    validateOnChange: false,
-  })
-
   const onCancel = () => {
-    formik.resetForm()
+    reset()
     closeForm()
   }
 
@@ -64,27 +70,32 @@ export const UserIdentityForm = ({
     <>
       <BoxFormLayout.RequiredMessage />
       <BoxFormLayout.Fields>
-        <FormikProvider value={formik}>
-          <Form onSubmit={formik.handleSubmit}>
-            <FormLayout>
-              <FormLayout.Row>
-                <TextInput label="Prénom" name="firstName" />
-              </FormLayout.Row>
-              <FormLayout.Row>
-                <TextInput label="Nom" name="lastName" />
-              </FormLayout.Row>
-            </FormLayout>
-
-            <div className={styles['buttons-field']}>
-              <Button onClick={onCancel} variant={ButtonVariant.SECONDARY}>
-                Annuler
-              </Button>
-              <Button type="submit" isLoading={formik.isSubmitting}>
-                Enregistrer
-              </Button>
-            </div>
-          </Form>
-        </FormikProvider>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <FormLayout>
+            <FormLayout.Row>
+              <TextInput
+                label="Prénom"
+                error={errors.firstName?.message}
+                {...register('firstName')}
+              />
+            </FormLayout.Row>
+            <FormLayout.Row>
+              <TextInput
+                label="Nom"
+                error={errors.lastName?.message}
+                {...register('lastName')}
+              />
+            </FormLayout.Row>
+          </FormLayout>
+          <div className={styles['buttons-field']}>
+            <Button onClick={onCancel} variant={ButtonVariant.SECONDARY}>
+              Annuler
+            </Button>
+            <Button type="submit" isLoading={isSubmitting}>
+              Enregistrer
+            </Button>
+          </div>
+        </form>
       </BoxFormLayout.Fields>
     </>
   )
