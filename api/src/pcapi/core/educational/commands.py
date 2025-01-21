@@ -8,8 +8,7 @@ from pcapi.core import search
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api import booking as educational_api_booking
 import pcapi.core.educational.api.adage as adage_api
-from pcapi.core.educational.api.dms import EAC_DS_PROCEDURES
-from pcapi.core.educational.api.dms import import_dms_applications
+from pcapi.core.educational.api.dms import import_dms_applications_for_all_eac_procedures
 import pcapi.core.educational.api.institution as institution_api
 import pcapi.core.educational.api.playlists as playlists_api
 import pcapi.core.educational.models as educational_models
@@ -153,9 +152,7 @@ def handle_pending_collective_booking_j3() -> None:
 @log_cron_with_transaction
 def import_eac_dms_application(ignore_previous: bool = False) -> None:
     """Import procedures from dms."""
-    procedures = [proc for proc in EAC_DS_PROCEDURES if proc > 0]
-    for procedure_number in procedures:
-        import_dms_applications(procedure_number=procedure_number, ignore_previous=ignore_previous)
+    import_dms_applications_for_all_eac_procedures(ignore_previous=ignore_previous)
 
 
 @blueprint.cli.command("notify_reimburse_collective_booking")

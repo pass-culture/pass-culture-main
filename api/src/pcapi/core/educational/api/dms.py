@@ -20,6 +20,13 @@ EAC_DS_PROCEDURES = [
 ]
 
 
+def import_dms_applications_for_all_eac_procedures(ignore_previous: bool = False) -> None:
+    """import dms applications for all eac procedures"""
+    procedures = [proc for proc in EAC_DS_PROCEDURES if proc > 0]
+    for procedure_number in procedures:
+        import_dms_applications(procedure_number=procedure_number, ignore_previous=ignore_previous)
+
+
 def import_dms_applications(procedure_number: int, ignore_previous: bool = False) -> None:
     """import dms applications for eac status"""
     previous_import = _get_previous_import(procedure_number)

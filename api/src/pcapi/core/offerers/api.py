@@ -36,6 +36,8 @@ from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational.api import dms as dms_api
+import pcapi.core.educational.api.adage as adage_api
 import pcapi.core.educational.api.address as educational_address_api
 from pcapi.core.external import zendesk_sell
 from pcapi.core.external.attributes import api as external_attributes_api
@@ -3093,3 +3095,20 @@ def update_offerer_address(offerer_address_id: int, address_id: int, label: str 
         # We shouldn't enp up here, but if so log the exception so we can investigate
         db.session.rollback()
         logger.exception(exc)
+
+
+def synchronize_from_adage_and_check_registration(offerer_id: int) -> bool:
+    # FIXME: to be modified when adage sync cron frequency is updated
+    since_date = datetime.utcnow() - timedelta(days=1)
+    adage_api.synchronize_adage_ids_on_venues(debug=False, since_date=since_date)
+    return offerers_repository.offerer_has_venue_with_adage_id(offerer_id)
+
+
+def synchronize_from_ds_and_check_application(offerer_id: int) -> bool:
+    dms_api.import_dms_applications_for_all_eac_procedures(ignore_previous=False)
+    query = (
+        db.session.query(offerers_models.Venue)
+        .filter(offerers_models.Venue.managingOffererId == offerer_id)
+        .filter(offerers_models.Venue.collectiveDmsApplications.any())
+    )
+    return db.session.query(query.exists()).scalar()

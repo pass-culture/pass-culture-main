@@ -20,6 +20,7 @@ from pcapi.routes.serialization import finance_serialize
 from pcapi.routes.serialization.address_serialize import AddressResponseModel
 from pcapi.routes.serialization.venues_serialize import BannerMetaModel
 from pcapi.routes.serialization.venues_serialize import DMSApplicationForEAC
+from pcapi.serialization.utils import to_camel
 import pcapi.utils.date as date_utils
 from pcapi.utils.email import sanitize_email
 
@@ -435,3 +436,14 @@ class OffererHeadLineOfferResponseModel(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class OffererEligibilityResponseModel(BaseModel):
+    offerer_id: int
+    has_adage_id: bool | None
+    has_ds_application: bool | None
+    is_onboarded: bool | None
+
+    class Config:
+        allow_population_by_field_name = True
+        alias_generator = to_camel
