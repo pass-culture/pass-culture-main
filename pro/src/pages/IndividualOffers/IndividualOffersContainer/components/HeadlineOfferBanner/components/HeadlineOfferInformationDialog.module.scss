@@ -1,0 +1,73 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.dialog {
+  display: flex;
+  flex-direction: column;
+}
+
+.dialog-title {
+  @include fonts.title3;
+
+  margin-top: rem.torem(16px);
+  margin-bottom: rem.torem(16px);
+}
+
+.dialog-content {
+  margin-bottom: rem.torem(32px);
+  max-width: rem.torem(532px);
+}
+
+.informations-title {
+  @include fonts.body-accent;
+
+  text-align: left;
+}
+
+.informations {
+  list-style: disc inside;
+  margin-bottom: rem.torem(24px);
+}
+
+.information-option {
+  display: inline;
+}
+
+.dialog-button {
+  text-align: center;
+  margin: 0 auto;
+}
+
+.placeholder-video {
+   max-width: 100%;
+}
+
+.options-icon {
+  border: var(--color-black) solid 1px;
+  border-radius: 50%;
+  padding: rem.torem(2px);
+  max-height: rem.torem(20px);
+  vertical-align: middle;
+  display: inline-block;
+}
+
+
+@media screen and (min-width: size.$tablet) {
+  .video-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    background: var(--color-secondary-light);
+    max-width: rem.torem(500px);
+    min-height: rem.torem(252px);
+    border-radius: rem.torem(10px);
+  }
+
+  .placeholder-video {
+    position: absolute;
+    top: -4%;
+    max-width: rem.torem(390px);
+    border-radius: rem.torem(6px);
+  }
+}

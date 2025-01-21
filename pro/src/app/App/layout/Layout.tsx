@@ -30,11 +30,13 @@ export interface LayoutProps {
     | 'sticky-onboarding'
     | 'logged-out'
   showFooter?: boolean
+  mainBanner?: React.ReactNode
 }
 
 export const Layout = ({
   children,
   mainHeading,
+  mainBanner,
   layout = 'basic',
   showFooter = layout !== 'funnel',
 }: LayoutProps) => {
@@ -153,15 +155,22 @@ export const Layout = ({
                     {children}
                   </>
                 ) : (
-                  <div
-                    className={cn(styles.content, styles[`content-${layout}`], {
-                      [styles['content-logged-out-with-heading']]:
-                        layout === 'logged-out' && mainHeading,
-                    })}
-                  >
-                    {mainHeadingWrapper}
-                    {children}
-                  </div>
+                  <>
+                    {mainBanner}
+                    <div
+                      className={cn(
+                        styles.content,
+                        styles[`content-${layout}`],
+                        {
+                          [styles['content-logged-out-with-heading']]:
+                            layout === 'logged-out' && mainHeading,
+                        }
+                      )}
+                    >
+                      {mainHeadingWrapper}
+                      {children}
+                    </div>
+                  </>
                 )}
               </main>
               {showFooter && <Footer layout={layout} />}
