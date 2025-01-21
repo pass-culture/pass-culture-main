@@ -25,6 +25,8 @@ class AdageRedactor(educational_schemas.AdageBaseResponseModel):
 class AdageCollectiveOffer(educational_schemas.AdageBaseResponseModel):
     UAICode: str
     address: str
+    # TODO: once Adage has made the switch to startDatetime, we can remove beginningDatetime here
+    beginningDatetime: datetime
     startDatetime: datetime
     endDatetime: datetime
     city: str
@@ -60,6 +62,7 @@ def serialize_collective_offer(collective_offer: models.CollectiveOffer) -> Adag
     return AdageCollectiveOffer(
         UAICode=institution.institutionId,
         address=_get_collective_offer_address(collective_offer),
+        beginningDatetime=stock.startDatetime,
         startDatetime=stock.startDatetime,
         endDatetime=stock.endDatetime,
         city=venue.city,  # type: ignore[arg-type]  # TODO: check that it cannot be None
