@@ -106,7 +106,7 @@ export const PriceInput = ({
 
   return (
     <TextInput
-      refForInput={priceRef}
+    focusRef={priceRef}
       className={className}
       smallLabel={smallLabel}
       name={priceName}

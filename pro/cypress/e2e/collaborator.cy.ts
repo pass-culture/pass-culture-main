@@ -38,7 +38,7 @@ describe('Collaborator list feature', () => {
 
     cy.stepLog({ message: 'add a collaborator in the list' })
     cy.findByText('Ajouter un collaborateur').click()
-    cy.findByLabelText('Adresse email *').type(randomEmail)
+    cy.findByLabelText('Adresse email').type(randomEmail)
     cy.findByText('Inviter').click()
 
     cy.stepLog({ message: 'check notification about invitation sent' })
