@@ -139,7 +139,9 @@
     "vitest-fetch-mock": "^0.4.3"
   },
   "resolutions": {
-    "@babel/traverse": ">=7.23.2"
+    "@babel/traverse": ">=7.23.2",
+    "wrap-ansi": "7.0.0",
+    "string-width": "4.1.0"
   },
   "engines": {
     "node": ">=20 <21"
