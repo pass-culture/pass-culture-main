@@ -134,7 +134,7 @@ export const QuantityInput = ({
 
   return (
     <TextInput
-      refForInput={quantityRef}
+      focusRef={quantityRef}
       smallLabel={smallLabel}
       name={quantityName}
       label={label}

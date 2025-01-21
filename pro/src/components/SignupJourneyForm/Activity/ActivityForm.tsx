@@ -1,5 +1,6 @@
 import cn from 'classnames'
 import { FieldArray, useFormikContext } from 'formik'
+import { useRef } from 'react'
 
 import { VenueTypeResponseModel } from 'apiClient/v1'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -34,6 +35,7 @@ export const ActivityForm = ({
 }: ActivityFormProps): JSX.Element => {
   const { values, errors } = useFormikContext<ActivityFormValues>()
   const venueTypesOptions = buildVenueTypesOptions(venueTypes)
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([])
 
   return (
     <FormLayout.Section>
@@ -67,6 +69,9 @@ export const ActivityForm = ({
                   className={styles['url-input']}
                   isLabelHidden={index !== 0}
                   isOptional
+                  focusRef={(el) => {
+                    inputRefs.current[index] = el;
+                  }}
                 />
 
                 <div
@@ -77,7 +82,12 @@ export const ActivityForm = ({
                 >
                   <ListIconButton
                     icon={fullTrashIcon}
-                    onClick={() => arrayHelpers.remove(index)}
+                    onClick={() => {
+                      const newIndex = index - 1
+                      inputRefs.current[newIndex]?.focus();
+                      
+                      arrayHelpers.remove(index)
+                    }}
                     disabled={values.socialUrls.length <= 1}
                     className={styles['delete-button']}
                   >

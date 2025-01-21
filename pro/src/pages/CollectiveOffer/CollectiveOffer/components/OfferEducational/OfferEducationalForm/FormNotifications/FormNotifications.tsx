@@ -1,13 +1,12 @@
 import { FieldArray, useFormikContext } from 'formik'
-
-import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
+import { useRef } from 'react'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullMoreIcon from 'icons/full-more.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-
 import { EmailInputRow } from './EmailInputRow/EmailInputRow'
 import styles from './FormNotifications.module.scss'
+import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 
 interface FormNotificationsProps {
   disableForm: boolean
@@ -17,6 +16,7 @@ export const FormNotifications = ({
   disableForm,
 }: FormNotificationsProps): JSX.Element => {
   const { values } = useFormikContext<OfferEducationalFormValues>()
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([])
 
   return (
     <FormLayout.Section title="À quel email le pass Culture peut-il vous envoyer des notifications ?">
@@ -29,7 +29,11 @@ export const FormNotifications = ({
                 displayTrash={index > 0}
                 name={`notificationEmails.${index}`}
                 key={`notificationEmails.${index}`}
+                ref={(el) => (inputRefs.current[index] = el)}
                 onDelete={() => {
+                  const newIndex = index - 1
+                  inputRefs.current[newIndex]?.focus()
+
                   remove(index)
                 }}
                 //  The field should autoFocus only if it's the last of the emails list (the one being just added)
