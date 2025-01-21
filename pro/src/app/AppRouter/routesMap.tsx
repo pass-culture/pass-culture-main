@@ -413,15 +413,6 @@ export const routes: RouteConfig[] = [
     featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
   },
   {
-    lazy: () =>
-      import(
-        'pages/Onboarding/OnboardingOfferIndividualAutomatic/OnboardingOfferIndividualAutomatic'
-      ),
-    path: '/onboarding/synchro',
-    title: 'Connecter à mon logiciel - Onboarding',
-    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
-  },
-  {
     lazy: () => import('pages/Errors/NotFound/NotFound'),
     path: '/404',
     title: 'Erreur 404 - Page indisponible',
