@@ -14,6 +14,7 @@ interface DatePickerProps extends FieldLayoutBaseProps {
   minDate?: Date
   onChange?: React.InputHTMLAttributes<HTMLInputElement>['onChange']
   help?: string
+  onBlur?: React.FocusEventHandler<HTMLInputElement>
 }
 
 export const DatePicker = ({
@@ -33,6 +34,7 @@ export const DatePicker = ({
   filterVariant,
   onChange,
   help,
+  onBlur,
 }: DatePickerProps): JSX.Element => {
   const [field, meta] = useField({ name, type: 'date' })
   const showError = meta.touched && !!meta.error
@@ -73,6 +75,7 @@ export const DatePicker = ({
         minDate={minDate}
         onChange={onCustomChange}
         aria-required={!isOptional}
+        onBlur={onBlur}
       />
     </FieldLayout>
   )

@@ -4,6 +4,7 @@ import { userEvent } from '@testing-library/user-event'
 import { addDays, format } from 'date-fns'
 import { axe } from 'vitest-axe'
 
+import * as useAnalytics from 'app/App/analytics/firebase'
 import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
 import { priceCategoryFactory } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
@@ -28,6 +29,14 @@ function renderRecurrenceForm(props: RecurrenceFormProps = defaultProps) {
 }
 
 describe('RecurrenceForm', () => {
+  let mockLogEvent = vi.fn()
+
+  beforeEach(() => {
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
+  })
+
   it('should pass axe accessibility tests', async () => {
     const { container } = renderRecurrenceForm()
     expect(await axe(container)).toHaveNoViolations()
@@ -122,5 +131,20 @@ describe('RecurrenceForm', () => {
     expect(screen.getByLabelText('Vendredi')).toBeInTheDocument()
     expect(screen.getByLabelText('Samedi')).toBeInTheDocument()
     expect(screen.getByLabelText('Dimanche')).toBeInTheDocument()
+  })
+
+  it('should not log an event when the limit date is updated but the value is the same as the initial value', async () => {
+    renderRecurrenceForm(defaultProps)
+
+    const input = screen.getByLabelText('Date limite de réservation', {
+      exact: false,
+    })
+    await userEvent.type(input, '12')
+    await userEvent.clear(input)
+    await userEvent.click(
+      screen.getByLabelText('Ajouter une ou plusieurs dates')
+    )
+
+    expect(mockLogEvent).not.toHaveBeenCalled()
   })
 })

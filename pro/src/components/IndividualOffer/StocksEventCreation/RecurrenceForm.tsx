@@ -2,6 +2,8 @@ import * as Dialog from '@radix-ui/react-dialog'
 import { FieldArray, FormikProvider, useFormik } from 'formik'
 
 import { PriceCategoryResponseModel } from 'apiClient/v1'
+import { useAnalytics } from 'app/App/analytics/firebase'
+import { Events } from 'commons/core/FirebaseEvents/constants'
 import { isDateValid } from 'commons/utils/date'
 import { formatLocalTimeDateString } from 'commons/utils/timezone'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -104,6 +106,8 @@ export const RecurrenceForm = ({
   priceCategories,
   handleSubmit,
 }: RecurrenceFormProps): JSX.Element => {
+  const { logEvent } = useAnalytics()
+
   const priceCategoryOptions = getPriceCategoryOptions(priceCategories)
 
   const formik = useFormik({
@@ -436,6 +440,17 @@ export const RecurrenceForm = ({
                 step="1"
                 min={0}
                 className={styles['booking-date-limit-input']}
+                onBlur={() => {
+                  if (
+                    formik.initialValues.bookingLimitDateInterval !==
+                    values.bookingLimitDateInterval
+                  ) {
+                    logEvent(Events.UPDATED_BOOKING_LIMIT_DATE, {
+                      from: location.pathname,
+                      bookingLimitDateInterval: values.bookingLimitDateInterval,
+                    })
+                  }
+                }}
               />
 
               <div className={styles['booking-date-limit-text']}>

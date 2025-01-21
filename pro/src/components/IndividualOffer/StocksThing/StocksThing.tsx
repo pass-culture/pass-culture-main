@@ -9,8 +9,10 @@ import {
   GetOfferStockResponseModel,
   SubcategoryIdEnum,
 } from 'apiClient/v1'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { Events } from 'commons/core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
@@ -65,6 +67,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const notify = useNotification()
   const { subCategories } = useIndividualOfferContext()
   const { mutate } = useSWRConfig()
+  const { logEvent } = useAnalytics()
 
   const [stocks, setStocks] = useState<GetOfferStockResponseModel[]>([])
   const [isActivationCodeFormVisible, setIsActivationCodeFormVisible] =
@@ -396,6 +399,17 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                 maxDate={getMaximumBookingDatetime(maxDateTime)}
                 disabled={readOnlyFields.includes('bookingLimitDatetime')}
                 className={styles['field-layout-small']}
+                onBlur={() => {
+                  if (
+                    formik.initialValues.bookingLimitDatetime !==
+                    formik.values.bookingLimitDatetime
+                  ) {
+                    logEvent(Events.UPDATED_BOOKING_LIMIT_DATE, {
+                      from: location.pathname,
+                      bookingLimitDatetime: formik.values.bookingLimitDatetime,
+                    })
+                  }
+                }}
               />
 
               {showExpirationDate && (
