@@ -204,7 +204,7 @@ describe('OfferFilters', () => {
     )
 
     expect(
-      screen.getByRole('searchbox', { name: 'Rechercher une académie' })
+      screen.getByRole('listbox', { name: 'Rechercher une académie' })
     ).toBeInTheDocument()
   })
 
