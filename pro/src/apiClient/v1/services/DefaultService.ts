@@ -73,6 +73,7 @@ import type { ListVenueProviderResponse } from '../models/ListVenueProviderRespo
 import type { LoginUserBodyModel } from '../models/LoginUserBodyModel';
 import type { NewPasswordBodyModel } from '../models/NewPasswordBodyModel';
 import type { OffererHeadLineOfferResponseModel } from '../models/OffererHeadLineOfferResponseModel';
+import type { OffererEligibilityResponseModel } from '../models/OffererEligibilityResponseModel';
 import type { OffererStatsResponseModel } from '../models/OffererStatsResponseModel';
 import type { OfferStatus } from '../models/OfferStatus';
 import type { PatchAllOffersActiveStatusBodyModel } from '../models/PatchAllOffersActiveStatusBodyModel';
@@ -1449,7 +1450,28 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
+  }
+  /**
+   * get_offerer_eligibility <GET>
+   * @param offererId
+   * @returns OffererEligibilityResponseModel OK
+   * @throws ApiError
+   */
+  public getOffererEligibility(
+    offererId: number
+  ): CancelablePromise<OffererEligibilityResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/offerers/{offerer_id}/eligibility',
+      path: {
+        offerer_id: offererId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    })
   }
   /**
    * get_offerer_headline_offer <GET>

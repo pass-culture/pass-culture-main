@@ -1,0 +1,70 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_a11y.scss" as a11y;
+@use "styles/mixins/_size.scss" as size;
+
+.onboarding-collective-modal {
+  max-width: rem.torem(910px);
+  padding: rem.torem(16px);
+}
+
+.onboarding-collective-title {
+  @include fonts.title1;
+
+  margin-bottom: rem.torem(16px);
+}
+
+.onboarding-collective-text {
+  @include fonts.body;
+
+  line-height: var(--line-height-m);
+  margin-bottom: rem.torem(32px);
+}
+
+.onboarding-collective-steps {
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-items: center;
+  gap: rem.torem(16px);
+  margin-bottom: rem.torem(46px);
+
+  @media (min-width: size.$tablet) {
+    grid-template-columns: repeat(2, rem.torem(177px));
+    justify-content: center;
+    gap: rem.torem(32px);
+  }
+
+  @media (min-width: size.$laptop) {
+    grid-template-columns: repeat(4, rem.torem(177px));
+    gap: rem.torem(32px);
+  }
+}
+
+.onboarding-collective-step {
+  max-width: rem.torem(177px);
+
+  &-icon {
+    width: rem.torem(116px);
+    aspect-ratio: 1/1;
+  }
+
+  &-text {
+    @include fonts.body-s;
+
+    line-height: var(--line-height-s);
+  }
+}
+
+.onboarding-collective-actions {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.onboarding-collective-button {
+  margin-bottom: rem.torem(24px);
+}
+
+.error-message {
+  color: var(--color-error);
+}
