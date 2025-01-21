@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 
@@ -27,6 +27,8 @@ import {
 } from 'commons/utils/renderWithProviders'
 import { computeAddressDisplayName } from 'repository/venuesService'
 
+import { IndividualOffersContextProvider } from '../context/IndividualOffersContext'
+
 import {
   IndividualOffersContainer,
   IndividualOffersContainerProps,
@@ -41,16 +43,22 @@ const renderOffers = (
   options?: RenderWithProvidersOptions
 ) => {
   const user = sharedCurrentUserFactory()
-  renderWithProviders(<IndividualOffersContainer {...props} />, {
-    user,
-    storeOverrides: {
-      user: {
-        currentUser: user,
+  renderWithProviders(
+    <IndividualOffersContextProvider isHeadlineOfferAllowedForOfferer={true}>
+      <IndividualOffersContainer {...props} />
+    </IndividualOffersContextProvider>,
+
+    {
+      user,
+      storeOverrides: {
+        user: {
+          currentUser: user,
+        },
+        offerer: currentOffererFactory(),
       },
-      offerer: currentOffererFactory(),
-    },
-    ...options,
-  })
+      ...options,
+    }
+  )
 }
 
 const categoriesAndSubcategories = {
@@ -108,6 +116,7 @@ vi.mock('apiClient/api', () => ({
     listOfferersNames: vi.fn().mockReturnValue({}),
     deleteDraftOffers: vi.fn(),
     patchAllOffersActiveStatus: vi.fn(),
+    getOffererHeadlineOffer: vi.fn(),
   },
 }))
 
@@ -222,7 +231,10 @@ describe('IndividualOffersScreen', () => {
   })
 
   it('should send correct information when filling filter fields', async () => {
-    const redirectWithSelectedFiltersSpy = vi.spyOn(props, 'redirectWithSelectedFilters')
+    const redirectWithSelectedFiltersSpy = vi.spyOn(
+      props,
+      'redirectWithSelectedFilters'
+    )
 
     renderOffers(props)
 
@@ -242,7 +254,7 @@ describe('IndividualOffersScreen', () => {
     expect(
       screen.getByRole('textbox', {
         name: LABELS.nameSearchInput,
-      }),
+      })
     ).toBeInTheDocument()
 
     await userEvent.type(
@@ -678,5 +690,21 @@ describe('IndividualOffersScreen', () => {
     expect(mockNotifySuccess).toHaveBeenCalledWith(
       '2 brouillons ont bien été supprimés'
     )
+  })
+
+  it('should display healine offer block', async () => {
+    vi.spyOn(api, 'getOffererHeadlineOffer').mockResolvedValue({
+      id: 42,
+      name: 'My offer',
+      venueId: 1,
+    })
+
+    renderOffers(props, { features: ['WIP_HEADLINE_OFFER'] })
+
+    await waitFor(() => {
+      expect(screen.getByText('Votre offre à la une')).toBeInTheDocument()
+    })
+
+    expect(screen.getByText('My offer')).toBeInTheDocument()
   })
 })
