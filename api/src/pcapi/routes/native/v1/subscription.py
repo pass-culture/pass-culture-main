@@ -12,7 +12,6 @@ from pcapi.core.subscription import exceptions
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import profile_options
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
-from pcapi.core.subscription.ubble import exceptions as ubble_exceptions
 from pcapi.core.users import models as users_models
 from pcapi.models import api_errors
 from pcapi.routes.native.security import authenticated_and_active_user_required
@@ -228,8 +227,7 @@ def start_identification_session(
             user, declared_names[0], declared_names[1], body.redirectUrl
         )
         return serializers.IdentificationSessionResponse(identificationUrl=identification_url)  # type: ignore[arg-type]
-    except ubble_exceptions.ExistingProcessingIdentityVerification:
-        raise api_errors.ApiErrors({"code": "IDCHECK_ALREADY_PROCESSED"})
+
     except requests_utils.ExternalAPIException as exception:
         if exception.is_retryable:
             code = "IDCHECK_SERVICE_UNAVAILABLE"
