@@ -66,6 +66,7 @@ export enum Events {
   EXTRA_PRO_DATA = 'extra_pro_data',
   CLICKED_NEW_EVOLUTIONS = 'hasClickedNewEvolutions',
   CLICKED_CONSULT_HELP = 'hasClickedConsultHelp',
+  UPDATED_BOOKING_LIMIT_DATE = 'hasUpdatedBookingLimitDate',
 }
 
 export enum VenueEvents {

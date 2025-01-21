@@ -13,10 +13,12 @@ import {
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import * as useAnalytics from 'app/App/analytics/firebase'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
 } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { Events } from 'commons/core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import {
   getIndividualOfferPath,
@@ -105,6 +107,7 @@ describe('screens:StocksThing', () => {
   let props: StocksThingProps
   let contextValue: IndividualOfferContextValues
   let offer: GetIndividualOfferWithAddressResponseModel
+  let mockLogEvent = vi.fn()
   const offerId = 1
 
   beforeEach(() => {
@@ -133,6 +136,10 @@ describe('screens:StocksThing', () => {
     vi.spyOn(api, 'patchOffer').mockResolvedValue(
       {} as GetIndividualOfferResponseModel
     )
+
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
   })
 
   it('should render physical stock thing', async () => {
@@ -546,5 +553,47 @@ describe('screens:StocksThing', () => {
     expect(api.upsertStocks).toHaveBeenCalledTimes(0)
 
     expect(screen.getByText('This is outside stock form')).toBeInTheDocument()
+  })
+
+  it('should log an event when the limit date is updated', async () => {
+    await renderStockThingScreen(
+      [
+        getOfferStockFactory({
+          bookingLimitDatetime: '2020-12-15',
+        }),
+      ],
+      props,
+      contextValue
+    )
+
+    const input = screen.getByLabelText('Date limite de réservation')
+
+    await userEvent.clear(input)
+    await userEvent.click(screen.getByLabelText('Prix *'))
+
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      Events.UPDATED_BOOKING_LIMIT_DATE,
+      expect.objectContaining({ bookingLimitDatetime: '' })
+    )
+  })
+
+  it('should not log an event when the limit date is updated but the value is the same as the initial value', async () => {
+    await renderStockThingScreen(
+      [
+        getOfferStockFactory({
+          bookingLimitDatetime: '2020-12-15',
+        }),
+      ],
+      props,
+      contextValue
+    )
+
+    const input = screen.getByLabelText('Date limite de réservation')
+
+    await userEvent.clear(input)
+    await userEvent.type(input, '2020-12-15')
+    await userEvent.click(screen.getByLabelText('Prix *'))
+
+    expect(mockLogEvent).not.toHaveBeenCalled()
   })
 })
