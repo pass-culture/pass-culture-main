@@ -10,7 +10,6 @@ from urllib3 import exceptions as urllib3_exceptions
 from pcapi import settings
 from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.fraud import models as fraud_models
-from pcapi.core.subscription.ubble import exceptions as ubble_exceptions
 from pcapi.core.users import models as users_models
 from pcapi.utils import requests
 
@@ -118,9 +117,6 @@ def create_identity_verification(
             "webhook_url": webhook_url,
         },
     )
-    if response.status_code == 409:
-        # user tried to reattempt an identity verification while a previous one is being checked
-        raise ubble_exceptions.ExistingProcessingIdentityVerification()
     response.raise_for_status()
 
     ubble_identification = parse_obj_as(ubble_serializers.UbbleV2IdentificationResponse, response.json())
