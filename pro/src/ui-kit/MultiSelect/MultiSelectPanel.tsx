@@ -15,7 +15,6 @@ type MultiSelectPanelProps = {
   hasSelectAllOptions?: boolean
   isAllChecked: boolean
   hasSearch?: boolean
-  searchExample?: string
   searchLabel?: string
   onOptionSelect: (option: Option) => void
   onSelectAll: () => void
@@ -27,7 +26,6 @@ export const MultiSelectPanel = ({
   onOptionSelect,
   onSelectAll,
   hasSearch = false,
-  searchExample,
   searchLabel,
   hasSelectAllOptions,
   isAllChecked,
@@ -58,16 +56,9 @@ export const MultiSelectPanel = ({
             leftIcon={strokeSearch}
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
-            aria-describedby={`search-input-example-${id}`}
             autoComplete="off"
             spellCheck={false}
           />
-          <span
-            id={`search-input-example-${id}`}
-            className={styles['search-example']}
-          >
-            {searchExample}
-          </span>
         </div>
       )}
 
@@ -86,7 +77,6 @@ export const MultiSelectPanel = ({
                   inputClassName={styles['checkbox']}
                   onChange={onSelectAll}
                 />
-                <div className={styles['separator']} />
               </li>
             )}
             {filteredOptions.map((option) => (
@@ -102,9 +92,9 @@ export const MultiSelectPanel = ({
             ))}
           </ul>
         ) : (
-          <span className={styles['empty-search']}>
-            {'Aucun résultat trouvé pour votre recherche.'}
-          </span>
+          <div className={styles['empty-search']}>
+            <span>{'Aucun résultat trouvé pour votre recherche.'}</span>
+          </div>
         )}
       </div>
     </div>

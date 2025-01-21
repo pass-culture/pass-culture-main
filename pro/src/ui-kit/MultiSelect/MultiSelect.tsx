@@ -20,12 +20,11 @@ type MultiSelectProps = {
   legend: string
   hasSelectAllOptions?: boolean
   disabled?: boolean
-} & ( // If `hasSearch` is `true`, `searchExample` and `searchLabel` are required. // This part applies the condition
-  | { hasSearch: true; searchExample: string; searchLabel: string }
-  // If `hasSearch` is `false` or undefined, `searchExample` and `searchLabel` are optional.
+} & ( // If `hasSearch` is `true`, `searchLabel` are required. // This part applies the condition
+  | { hasSearch: true; searchLabel: string }
+  // If `hasSearch` is `false` or undefined, `searchLabel` are optional.
   | {
       hasSearch?: false | undefined
-      searchExample?: never
       searchLabel?: never
     }
 )
@@ -34,7 +33,6 @@ export const MultiSelect = ({
   options,
   defaultOptions = [],
   hasSearch = false,
-  searchExample,
   searchLabel,
   label,
   legend,
@@ -108,7 +106,6 @@ export const MultiSelect = ({
           onSelectAll={handleSelectAll}
           isAllChecked={isSelectAllChecked}
           hasSearch={hasSearch}
-          searchExample={searchExample}
           searchLabel={searchLabel}
           hasSelectAllOptions={hasSelectAllOptions}
         />

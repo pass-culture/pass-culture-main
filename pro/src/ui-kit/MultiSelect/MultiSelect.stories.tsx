@@ -62,7 +62,6 @@ export const WithSearchInput: StoryObj<typeof MultiSelect> = {
   args: {
     ...defaultProps,
     hasSearch: true,
-    searchExample: 'Ex : 44 - Nantes',
     searchLabel: 'Rechercher des départements',
     legend: 'Départements',
     label: 'Sélectionner des départements',
@@ -82,7 +81,6 @@ export const WithSearchInputAndSelectAllOption: StoryObj<typeof MultiSelect> = {
   args: {
     ...defaultProps,
     hasSearch: true,
-    searchExample: 'Ex : 44 - Nantes',
     searchLabel: 'Rechercher des départements',
     hasSelectAllOptions: true,
     legend: 'Départements',

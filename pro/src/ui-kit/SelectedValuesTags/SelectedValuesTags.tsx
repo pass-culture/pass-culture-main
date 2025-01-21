@@ -22,7 +22,7 @@ export const SelectedValuesTags = ({
   selectedOptions,
   removeOption,
   className,
-}: TagsProps): JSX.Element => {
+}: TagsProps): JSX.Element | null => {
   const tagListRef = useRef<HTMLUListElement>(null)
 
   function onTagRemoved(tag: string, index: number) {
@@ -35,6 +35,10 @@ export const SelectedValuesTags = ({
 
   const visibleTags = selectedOptions.slice(0, 5)
   const extraTagsCount = selectedOptions.length - visibleTags.length
+
+  if (selectedOptions.length === 0) {
+    return null
+  }
 
   return (
     <ul className={cn(styles['selected-tags'], className)} ref={tagListRef}>

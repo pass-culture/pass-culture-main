@@ -24,12 +24,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: rem.torem(12px);
+  padding: rem.torem(8px) rem.torem(12px);
   background-color: var(--color-white);
-  border: 1px solid var(--color-grey-dark);
-  border-radius:rem.torem(10px);
+  border: 1px solid var(--color-grey-semi-dark);
+  border-radius: rem.torem(10px);
   width: 100%;
   cursor: pointer;
+  height: rem.torem(42px);
 
   &:disabled {
     background-color: var(--color-grey-light);
@@ -119,14 +120,14 @@
   background-color: var(--color-white);
   left: 0;
   right: 0;
-  top: rem.torem(60px);
+  top: rem.torem(42px);
   box-shadow: 0 rem.torem(3px) rem.torem(4px) var(--color-medium-shadow);
-  padding: rem.torem(24px) 0 rem.torem(24px);
+  padding-top: rem.torem(16px);
   border-radius: rem.torem(8px);
 }
 
 .panel-scrollable {
-  max-height: rem.torem(340px);
+  max-height: rem.torem(288px);
   overflow: auto;
 }
 
@@ -142,22 +143,15 @@
 
 .search-input {
   margin: 0 rem.torem(24px);
+  margin-bottom: rem.torem(8px);
 }
 
 .empty-search {
-  @include fonts.body-s;
+  @include fonts.body;
 
-  margin: 0 rem.torem(24px);
-}
-
-.search-example {
-  @include fonts.body-accent-xs;
-
-  display: block;
-  min-height: rem.torem(16px);
-  color: var(--color-grey-dark);
-  padding-top: rem.torem(8px);
-  padding-bottom: rem.torem(24px); 
+  text-align: center;
+  margin-top: rem.torem(16px);
+  margin-bottom: rem.torem(16px);
 }
 
 .visually-hidden {

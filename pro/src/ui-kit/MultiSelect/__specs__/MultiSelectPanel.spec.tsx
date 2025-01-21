@@ -20,13 +20,11 @@ describe('<MultiSelectPanel />', () => {
     isAllChecked = false,
     hasSearch = false,
     searchLabel = '',
-    searchExample = '',
   }: {
     hasSelectAllOptions?: boolean
     isAllChecked?: boolean
     hasSearch?: boolean
     searchLabel?: string
-    searchExample?: string
   } = {}) => {
     return render(
       <MultiSelectPanel
@@ -39,7 +37,6 @@ describe('<MultiSelectPanel />', () => {
         isAllChecked={isAllChecked}
         hasSearch={hasSearch}
         searchLabel={searchLabel}
-        searchExample={searchExample}
       />
     )
   }
@@ -55,17 +52,15 @@ describe('<MultiSelectPanel />', () => {
   it('renders the search input if hasSearch is true', () => {
     renderMultiSelectPanel({
       hasSearch: true,
-      searchExample: 'Exemple: Nantes',
       searchLabel: 'Search label',
     })
 
-    expect(screen.getByText(/Exemple: Nantes/i)).toBeInTheDocument()
+    expect(screen.getByRole('searchbox')).toBeInTheDocument()
   })
 
   it('updates search value on input change', async () => {
     renderMultiSelectPanel({
       hasSearch: true,
-      searchExample: 'Exemple: Nantes',
       searchLabel: 'Search label',
     })
 
@@ -76,26 +71,15 @@ describe('<MultiSelectPanel />', () => {
     expect(input).toHaveValue('apple')
   })
 
-  it('displays the search example text', () => {
-    renderMultiSelectPanel({
-      hasSearch: true,
-      searchExample: 'Exemple: Nantes',
-      searchLabel: 'Search label',
-    })
-
-    expect(screen.getByText('Exemple: Nantes')).toBeInTheDocument()
-  })
-
   it('not renders the search input if hasSearch is false', () => {
     renderMultiSelectPanel()
 
-    expect(screen.queryByText(/Exemple: Nantes/i)).not.toBeInTheDocument()
+    expect(screen.queryByText('searchLabel')).not.toBeInTheDocument()
   })
 
   it('should filter options based on the search input', async () => {
     renderMultiSelectPanel({
       hasSearch: true,
-      searchExample: 'Exemple: Nantes',
       searchLabel: 'Search label',
     })
 
@@ -125,7 +109,6 @@ describe('<MultiSelectPanel />', () => {
   it('should show "No results found" when no options match the search', async () => {
     renderMultiSelectPanel({
       hasSearch: true,
-      searchExample: 'Exemple: Nantes',
       searchLabel: 'Search label',
     })
 
