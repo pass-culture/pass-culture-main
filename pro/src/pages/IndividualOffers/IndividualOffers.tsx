@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
@@ -29,6 +30,7 @@ import {
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { IndividualOffersContextProvider } from './context/IndividualOffersContext'
+import { HeadlineOfferBanner } from './IndividualOffersContainer/components/HeadlineOfferBanner/HeadlineOfferBanner'
 import { IndividualOffersContainer } from './IndividualOffersContainer/IndividualOffersContainer'
 import { computeIndividualApiFilters } from './utils/computeIndividualApiFilters'
 
@@ -50,6 +52,9 @@ export const IndividualOffers = (): JSX.Element => {
   const { currentUser } = useCurrentUser()
   const selectedOffererId = useSelector(selectCurrentOffererId)
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+  const isHeadlineOfferEnabled = useActiveFeature('WIP_HEADLINE_OFFER')
+  const [isHeadlineOfferBannerOpen, setIsHeadlineOfferBannerOpen] =
+    useState(true)
 
   const categoriesQuery = useSWR(
     [GET_CATEGORIES_QUERY_KEY],
@@ -140,7 +145,20 @@ export const IndividualOffers = (): JSX.Element => {
   const offers = offersQuery.error ? [] : offersQuery.data || []
 
   return (
-    <Layout mainHeading="Offres individuelles">
+    <Layout
+      mainHeading="Offres individuelles"
+      mainBanner={
+        isHeadlineOfferEnabled &&
+        isHeadlineOfferAllowedForOfferer &&
+        isHeadlineOfferBannerOpen && (
+          <HeadlineOfferBanner
+            close={() => {
+              setIsHeadlineOfferBannerOpen(false)
+            }}
+          />
+        )
+      }
+    >
       {isLoadingVenues || isValidatingVenues ? (
         <Spinner />
       ) : (

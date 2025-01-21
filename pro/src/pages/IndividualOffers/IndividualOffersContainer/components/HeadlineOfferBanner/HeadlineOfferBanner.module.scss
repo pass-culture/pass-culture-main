@@ -1,0 +1,59 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.headline-offer-banner {
+  width: 100%;
+  min-height: rem.torem(175px);
+  padding: rem.torem(24px);
+  border-radius: rem.torem(10px);
+  background: var(--gradient, linear-gradient(180deg, var(--color-secondary-light) 30%, #320096 70%));
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: rem.torem(24px);
+  position: relative;
+}
+
+.headline-offer-text-container {
+  color: var(--color-white);
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.headline-offer-title {
+  @include fonts.title2;
+}
+
+.headline-offer-description {
+  @include fonts.body-xs;
+
+  margin-bottom: rem.torem(16px);
+}
+
+.headline-offer-button {
+  color: var(--color-white);
+}
+
+.headline-offer-img {
+  display: none;
+}
+
+.headline-offer-close-button {
+  color: var(--color-white);
+  background: none;
+  border: none;
+  cursor: pointer;
+  min-width: rem.torem(20px);
+  min-height: rem.torem(20px);
+}
+
+@media screen and (min-width: size.$desktop) {
+  .headline-offer-img {
+    display: block;
+    position: absolute;
+    right: 10%;
+    bottom: 0;
+    max-width: rem.torem(184px);
+  }
+}

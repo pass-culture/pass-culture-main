@@ -918,4 +918,14 @@ describe('route Offers', () => {
       })
     })
   })
+
+  describe('with FF WIP_HEADLINE_OFFER', () => {
+    it('should render awesome headline offer banner when ff is activated and actor is elligible', async () => {
+      await renderOffers(undefined, ['WIP_HEADLINE_OFFER'])
+
+      expect(
+        screen.getByText(/Nouvelle fonctionnalité : l’offre à la une !/)
+      ).toBeInTheDocument()
+    })
+  })
 })
