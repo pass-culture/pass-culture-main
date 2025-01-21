@@ -163,7 +163,7 @@ describe('Create collective offers', () => {
 
     cy.url().should('contain', '/offres/collectives')
 
-    cy.findByRole('textbox', { name: /Nom de l’offre/ }).type(newOfferName)
+    cy.findByRole('searchbox', { name: /Nom de l’offre/ }).type(newOfferName)
     cy.findByText('Rechercher').click()
 
     const expectedNewResults = [

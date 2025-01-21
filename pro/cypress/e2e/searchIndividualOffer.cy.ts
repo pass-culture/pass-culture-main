@@ -45,9 +45,7 @@ describe('Search individual offers', () => {
 
   it('I should be able to search with a name and see expected results', () => {
     cy.stepLog({ message: 'I search with the text "Une super offre"' })
-    cy.findByRole('textbox', { name: /Nom de l’offre/ }).type(
-      offerName1
-    )
+    cy.findByRole('searchbox', { name: /Nom de l’offre/ }).type(offerName1)
 
     cy.stepLog({ message: 'I validate my filters' })
     cy.findByText('Rechercher').click()
@@ -56,7 +54,13 @@ describe('Search individual offers', () => {
     cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
       ['', 'Titre', 'Localisation', 'Stocks', 'Status'],
-      ['', offerName1, `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`, 'Stocks :1 000', 'Statut :publiée'],
+      [
+        '',
+        offerName1,
+        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        'Stocks :1 000',
+        'Statut :publiée',
+      ],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
@@ -66,9 +70,7 @@ describe('Search individual offers', () => {
     const ean = '1234567891234'
 
     cy.stepLog({ message: 'I search with the text:' + ean })
-    cy.findByRole('textbox', { name: /Nom de l’offre/ }).type(
-      ean
-    )
+    cy.findByRole('searchbox', { name: /Nom de l’offre/ }).type(ean)
 
     cy.stepLog({ message: 'I validate my filters' })
     cy.findByText('Rechercher').click()
@@ -77,7 +79,13 @@ describe('Search individual offers', () => {
     cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
       ['', 'Titre', 'Localisation', 'Stocks', 'Status'],
-      ['', offerName2 + ean, `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`, 'Stocks :1 000', 'Statut :publiée'],
+      [
+        '',
+        offerName2 + ean,
+        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        'Stocks :1 000',
+        'Statut :publiée',
+      ],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
@@ -98,7 +106,13 @@ describe('Search individual offers', () => {
     cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
       ['', 'Titre', 'Localisation', 'Stocks', 'Status'],
-      ['', offerName3, `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`, 'Stocks :1 000', 'Statut :publiée'],
+      [
+        '',
+        offerName3,
+        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        'Stocks :1 000',
+        'Statut :publiée',
+      ],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
@@ -119,12 +133,48 @@ describe('Search individual offers', () => {
     cy.stepLog({ message: 'These 6 results should be displayed' })
     const expectedResults = [
       ['', 'Titre', 'Localisation', 'Stocks', 'Status'],
-      ['', offerName6, `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`, 'Stocks :1 000', 'Statut :publiée'],
-      ['', offerName5, `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`, 'Stocks :1 000', 'Statut :publiée'],
-      ['', offerName4, `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`, 'Stocks :1 000', 'Statut :publiée'],
-      ['', offerName3, `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`, 'Stocks :1 000', 'Statut :publiée'],
-      ['', offerName2, `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`, 'Stocks :1 000', 'Statut :publiée'],
-      ['', offerName1, `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`, 'Stocks :1 000', 'Statut :publiée'],
+      [
+        '',
+        offerName6,
+        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        'Stocks :1 000',
+        'Statut :publiée',
+      ],
+      [
+        '',
+        offerName5,
+        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        'Stocks :1 000',
+        'Statut :publiée',
+      ],
+      [
+        '',
+        offerName4,
+        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        'Stocks :1 000',
+        'Statut :publiée',
+      ],
+      [
+        '',
+        offerName3,
+        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        'Stocks :1 000',
+        'Statut :publiée',
+      ],
+      [
+        '',
+        offerName2,
+        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        'Stocks :1 000',
+        'Statut :publiée',
+      ],
+      [
+        '',
+        offerName1,
+        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        'Stocks :1 000',
+        'Statut :publiée',
+      ],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
@@ -143,7 +193,13 @@ describe('Search individual offers', () => {
     cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
       ['', 'Titre', 'Localisation', 'Stocks', 'Status'],
-      ['', offerName4, `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`, 'Stocks :1 000', 'Statut :publiée'],
+      [
+        '',
+        offerName4,
+        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        'Stocks :1 000',
+        'Statut :publiée',
+      ],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
@@ -151,9 +207,7 @@ describe('Search individual offers', () => {
 
   it('I should be able to search combining several filters and see expected results', () => {
     cy.stepLog({ message: 'I search with the text "Livre"' })
-    cy.findByRole('textbox', { name: /Nom de l’offre/ }).type(
-      'incroyable'
-    )
+    cy.findByRole('searchbox', { name: /Nom de l’offre/ }).type('incroyable')
 
     cy.stepLog({ message: 'I validate my filters' })
     cy.findByText('Rechercher').click()
@@ -163,7 +217,9 @@ describe('Search individual offers', () => {
     cy.findByLabelText('Catégorie').select('Livre')
 
     cy.stepLog({ message: 'I select "Mon lieu" in "Localisation"' })
-    cy.findByLabelText('Localisation').select(`${venueName} - 1 boulevard Poissonnière 75002 Paris`)
+    cy.findByLabelText('Localisation').select(
+      `${venueName} - 1 boulevard Poissonnière 75002 Paris`
+    )
 
     cy.stepLog({ message: 'I select "Publiée" in offer status' })
     cy.findByTestId('wrapper-status').within(() => {
@@ -177,8 +233,20 @@ describe('Search individual offers', () => {
     cy.stepLog({ message: 'These 2 results should be displayed' })
     const expectedResults = [
       ['', 'Titre', 'Localisation', 'Stocks', 'Status'],
-      ['', offerName6, `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`, 'Stocks :1 000', 'Statut :publiée'],
-      ['', offerName5, `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`, 'Stocks :1 000', 'Statut :publiée'],
+      [
+        '',
+        offerName6,
+        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        'Stocks :1 000',
+        'Statut :publiée',
+      ],
+      [
+        '',
+        offerName5,
+        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        'Stocks :1 000',
+        'Statut :publiée',
+      ],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
@@ -187,9 +255,7 @@ describe('Search individual offers', () => {
     cy.findByText('Réinitialiser les filtres').click()
 
     cy.stepLog({ message: 'All filters are empty' })
-    cy.findByRole('textbox', { name: /Nom de l’offre/ }).should(
-      'be.empty'
-    )
+    cy.findByRole('searchbox', { name: /Nom de l’offre/ }).should('be.empty')
     cy.findByTestId('wrapper-address').within(() => {
       cy.get('select').invoke('val').should('eq', 'all')
     })
@@ -208,13 +274,55 @@ describe('Search individual offers', () => {
     cy.stepLog({ message: 'These 7 results should be displayed' })
     const expectedResults2 = [
       ['', 'Titre', 'Localisation', 'Stocks', 'Status'],
-      ['', offerName7, `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`, 'Stocks :0', 'Statut :épuisée'],
-      ['', offerName6, `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`, 'Stocks :1 000', 'Statut :publiée'],
-      ['', offerName5, `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`, 'Stocks :1 000', 'Statut :publiée'],
-      ['', offerName4, `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`, 'Stocks :1 000', 'Statut :publiée'],
-      ['', offerName3, `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`, 'Stocks :1 000', 'Statut :publiée'],
-      ['', offerName2, `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`, 'Stocks :1 000', 'Statut :publiée'],
-      ['', offerName1, `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`, 'Stocks :1 000', 'Statut :publiée'],
+      [
+        '',
+        offerName7,
+        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        'Stocks :0',
+        'Statut :épuisée',
+      ],
+      [
+        '',
+        offerName6,
+        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        'Stocks :1 000',
+        'Statut :publiée',
+      ],
+      [
+        '',
+        offerName5,
+        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        'Stocks :1 000',
+        'Statut :publiée',
+      ],
+      [
+        '',
+        offerName4,
+        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        'Stocks :1 000',
+        'Statut :publiée',
+      ],
+      [
+        '',
+        offerName3,
+        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        'Stocks :1 000',
+        'Statut :publiée',
+      ],
+      [
+        '',
+        offerName2,
+        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        'Stocks :1 000',
+        'Statut :publiée',
+      ],
+      [
+        '',
+        offerName1,
+        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        'Stocks :1 000',
+        'Statut :publiée',
+      ],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults2)

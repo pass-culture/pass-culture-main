@@ -20,7 +20,7 @@ describe('Account creation', () => {
     cy.findByLabelText('Prénom *').type('Jean')
     cy.findByLabelText('Adresse email *').type(randomEmail)
     cy.findByLabelText('Mot de passe *').type('user@AZERTY123')
-    cy.findByPlaceholderText('6 12 34 56 78').type('612345678')
+    cy.findByLabelText('Numéro de téléphone').type('612345678')
 
     cy.stepLog({ message: 'I submit' })
     cy.intercept({ method: 'POST', url: '/v2/users/signup/pro' }).as(
@@ -37,7 +37,7 @@ describe('Account creation', () => {
     cy.request({
       method: 'GET',
       url: 'http://localhost:5001/sandboxes/get_unique_email',
-      timeout: 60000
+      timeout: 60000,
     }).then((response) => {
       expect(response.status).to.eq(200)
       expect(response.body.To).to.eq(randomEmail)
