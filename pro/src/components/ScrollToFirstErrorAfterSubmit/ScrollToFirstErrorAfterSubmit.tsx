@@ -6,7 +6,8 @@ import { doesUserPreferReducedMotion } from 'commons/utils/windowMatchMedia'
 const scrollToFirstError = () => {
   const firstErrorElement = document.querySelector<
     HTMLInputElement | HTMLElement
-  >('[aria-invalid="true"]')
+  >('[aria-invalid="true"], [data-error="true"]')
+
   const scrollBehavior = doesUserPreferReducedMotion() ? 'auto' : 'smooth'
 
   // Without the setTimeout, the smooth behavior isn't working
