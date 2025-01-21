@@ -624,9 +624,11 @@ def check_offer_extra_data(
 
     try:
         ean = extra_data.get(ExtraDataFieldEnum.EAN.value)
-        if ean and (not offer or (offer.extraData and ean != offer.extraData.get(ExtraDataFieldEnum.EAN.value))):
+        if ean:
             _check_ean_field(extra_data, ExtraDataFieldEnum.EAN.value)
-            check_ean_does_not_exist(ean, venue)
+
+            offer_id = offer.id if offer else None
+            check_other_offer_with_ean_does_not_exist(ean, venue, offer_id)
     except (exceptions.EanFormatException, exceptions.OfferAlreadyExists) as e:
         errors.add_client_error(e)
 
@@ -661,8 +663,10 @@ def check_product_for_venue_and_subcategory(
     )
 
 
-def check_ean_does_not_exist(ean: str | None, venue: offerers_models.Venue) -> None:
-    if repository.has_active_offer_with_ean(ean, venue):
+def check_other_offer_with_ean_does_not_exist(
+    ean: str | None, venue: offerers_models.Venue, offer_id: int | None = None
+) -> None:
+    if repository.has_active_offer_with_ean(ean, venue, offer_id):
         if ean:
             raise exceptions.OfferAlreadyExists("ean")
 
@@ -699,7 +703,7 @@ def check_product_cgu_and_offerer(
     # We can only check the existence of an offer with this EAN if the offerer has one venue.
     if len(not_virtual_venues) == 1:
         try:
-            check_ean_does_not_exist(ean, not_virtual_venues[0])
+            check_other_offer_with_ean_does_not_exist(ean, not_virtual_venues[0])
         except exceptions.OfferAlreadyExists:
             raise api_errors.ApiErrors(
                 errors={"ean": ["Une offre avec cet EAN existe déjà. Vous pouvez la retrouver dans l'onglet Offres."]},

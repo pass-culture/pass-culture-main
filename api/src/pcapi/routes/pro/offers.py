@@ -374,6 +374,8 @@ def patch_publish_offer(
                 offers_api.publish_offer(offer, current_user, publication_date=body.publicationDate)
             except exceptions.FutureOfferException as exc:
                 raise api_errors.ApiErrors(exc.errors, status_code=400)
+            except (exceptions.OfferCreationBaseException, exceptions.OfferEditionBaseException) as exc:
+                raise api_errors.ApiErrors(exc.errors, status_code=400)
 
             return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 

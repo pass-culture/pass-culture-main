@@ -27,6 +27,7 @@ import pcapi.core.bookings.models as bookings_models
 from pcapi.core.bookings.models import BookingCancellationReasons
 import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories.subcategories_v2 import ExtraDataFieldEnum
 import pcapi.core.criteria.models as criteria_models
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
@@ -1071,6 +1072,10 @@ def publish_offer(
 ) -> models.Offer:
     publication_date = _format_publication_date(publication_date, offer.venue.timezone)
     validation.check_publication_date(offer, publication_date)
+
+    if offer.extraData:
+        if ean := offer.extraData.get(ExtraDataFieldEnum.EAN.value):
+            validation.check_other_offer_with_ean_does_not_exist(ean, offer.venue, offer.id)
 
     update_offer_fraud_information(offer, user)
 

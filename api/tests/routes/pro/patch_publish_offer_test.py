@@ -5,6 +5,7 @@ import pytest
 
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offerers.schemas import VenueTypeCode
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 from pcapi.core.testing import assert_num_queries
@@ -242,3 +243,40 @@ class Returns400Test:
         assert response.json["publication_date"] == ["Impossible de sélectionner une date de publication dans le passé"]
         offer = offers_models.Offer.query.get(stock.offerId)
         assert offer.validation == OfferValidationStatus.DRAFT
+
+    def test_cannot_publish_offer_if_ean_is_already_used(
+        self,
+        client,
+    ):
+        ean = "0000000000001"
+        email = "user@example.com"
+
+        user_offerer = offerers_factories.UserOffererFactory(user__email=email)
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer, venueTypeCode=VenueTypeCode.RECORD_STORE
+        )
+
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": ean})
+        offers_factories.OfferFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            venue=venue,
+            product=product,
+            validation=OfferValidationStatus.APPROVED,
+            extraData={"ean": ean},
+        )
+
+        offer = offers_factories.StockFactory(
+            offer__venue=venue,
+            offer__isActive=False,
+            offer__validation=OfferValidationStatus.DRAFT,
+            offer__product=product,
+            offer__extraData={"ean": ean},
+        ).offer
+
+        client = client.with_session_auth(email)
+        response = client.patch("/offers/publish", json={"id": offer.id})
+
+        assert response.status_code == 400
+        assert response.json == {
+            "ean": ["Une offre avec cet EAN existe déjà. Vous pouvez la retrouver dans l’onglet Offres."]
+        }
