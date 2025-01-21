@@ -2341,6 +2341,33 @@ class HeadlineOfferTest:
         assert not headline_offer.isActive
         assert headline_offer.timespan.upper is not None
 
+    def test_upsert_headline_offer_on_another_offer(self):
+        offer = factories.OfferFactory()
+        another_offer = factories.OfferFactory(venue=offer.venue)
+        headline_offer = factories.HeadlineOfferFactory(offer=offer, create_mediation=True)
+
+        new_headline_offer = api.upsert_headline_offer(another_offer)
+
+        assert not offer.is_headline_offer
+        assert another_offer.is_headline_offer
+        assert not headline_offer.isActive
+        assert headline_offer.timespan.upper is not None
+        assert new_headline_offer.isActive
+        assert new_headline_offer.timespan.upper is None
+
+    def test_upsert_headline_offer_on_same_offer(self):
+        offer = factories.OfferFactory()
+        creation_time = datetime.utcnow() - timedelta(days=20)
+        finished_timespan = (creation_time, creation_time + timedelta(days=10))
+        headline_offer = factories.HeadlineOfferFactory(offer=offer, timespan=finished_timespan, create_mediation=True)
+
+        new_headline_offer = api.upsert_headline_offer(offer)
+
+        assert not headline_offer.isActive
+        assert headline_offer.timespan.upper is not None
+        assert new_headline_offer.isActive
+        assert new_headline_offer.timespan.upper is None
+
 
 @pytest.mark.usefixtures("db_session")
 class OfferExpenseDomainsTest:

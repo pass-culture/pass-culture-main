@@ -786,6 +786,24 @@ def set_upper_timespan_of_inactive_headline_offers() -> None:
     db.session.commit()
 
 
+def upsert_headline_offer(offer: models.Offer) -> models.HeadlineOffer:
+    offerer_id = offer.venue.managingOffererId
+    headline_offer = offers_repository.get_offerers_active_headline_offer(offerer_id)
+    if headline_offer and headline_offer.offerId != offer.id:
+        remove_headline_offer(headline_offer)
+        logger.info(
+            "Headline Offer Deactivation",
+            extra={
+                "analyticsSource": "app-pro",
+                "HeadlineOfferId": headline_offer.id,
+                "Reason": "User chose to replace this headline offer by another offer",
+            },
+            technical_message_id="headline_offer_deactivation",
+        )
+    new_headline_offer = make_offer_headline(offer)
+    return new_headline_offer
+
+
 def make_offer_headline(offer: models.Offer) -> models.HeadlineOffer:
     offers_validation.check_offerer_is_eligible_for_headline_offers(offer.venue.managingOffererId)
     offers_validation.check_offer_is_eligible_to_be_headline(offer)
@@ -809,12 +827,24 @@ def make_offer_headline(offer: models.Offer) -> models.HeadlineOffer:
     return headline_offer
 
 
-def remove_headline_offer(headline_offer: models.HeadlineOffer) -> None:
-    try:
-        headline_offer.timespan = db_utils.make_timerange(headline_offer.timespan.lower, datetime.datetime.utcnow())
-        db.session.flush()
-    except sqla_exc.IntegrityError:
-        raise exceptions.CannotRemoveHeadlineOffer
+def remove_headline_offer(offerer_id: int) -> None:
+    if active_headline_offer := offers_repository.get_offerers_active_headline_offer(offerer_id):
+        try:
+            active_headline_offer.timespan = db_utils.make_timerange(
+                active_headline_offer.timespan.lower, datetime.datetime.utcnow()
+            )
+            db.session.flush()
+            logger.info(
+                "Headline Offer Deactivation",
+                extra={
+                    "analyticsSource": "app-pro",
+                    "HeadlineOfferId": active_headline_offer.id,
+                    "Reason": "Headline offer has been deactivated by user",
+                },
+                technical_message_id="headline_offer_deactivation",
+            )
+        except sqla_exc.IntegrityError:
+            raise exceptions.CannotRemoveHeadlineOffer
 
 
 def _notify_pro_upon_stock_edit_for_event_offer(stock: models.Stock, bookings: list[bookings_models.Booking]) -> None:

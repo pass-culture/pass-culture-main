@@ -1196,9 +1196,7 @@ def get_active_headline_offer(offer_id: int) -> models.HeadlineOffer | None:
 
 def get_offerers_active_headline_offer(offerer_id: int) -> models.HeadlineOffer | None:
     managed_venue_ids_subquery = (
-        offerers_models.Venue.query.filter(offerers_models.Venue.managingOffererId == offerer_id)
-        .with_entities(offerers_models.Venue.id)
-        .subquery()
+        sa.select(offerers_models.Venue.id).filter(offerers_models.Venue.managingOffererId == offerer_id).subquery()
     )
     return (
         models.HeadlineOffer.query.join(models.Offer)
