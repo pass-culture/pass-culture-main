@@ -68,24 +68,24 @@ class SendinblueBackendTest:
         self.mock_template = models.TemplatePro(
             id_prod=1,
             id_not_prod=10,
-            subaccount_id_prod=0,
-            subaccount_id_not_prod=0,
+            subaccount_id_prod=2,
+            subaccount_id_not_prod=11,
             tags=["this_is_such_a_great_tag", "it_would_be_a_pity_if_anything_happened_to_it"],
         )
         self.data = models.TransactionalEmailData(template=self.mock_template, params=self.params, reply_to=None)
 
         expected_sent_data = sendinblue_tasks.SendTransactionalEmailRequest(
             recipients=self.recipients,
-            params=SendinblueBackendTest.params,
-            template_id=SendinblueBackendTest.data.template.id,
-            tags=SendinblueBackendTest.data.template.tags,
+            params=self.params,
+            template_id=self.data.template.id,
+            tags=self.data.template.tags,
             sender=None,
             reply_to=None,
             enable_unsubscribe=False,
         )
 
         backend = self._get_backend_for_test()
-        backend(use_pro_subaccount=False).send_mail(
+        backend(use_pro_subaccount=True).send_mail(
             recipients=self.recipients, bcc_recipients=self.bcc_recipients, data=self.data
         )
 
