@@ -42,6 +42,7 @@ export const MultiSelectTrigger = ({
         aria-expanded={isOpen}
         aria-controls={id}
         disabled={disabled}
+        data-error={!!error}
       >
         <div className={styles['trigger-content']}>
           {selectedCount > 0 && (
