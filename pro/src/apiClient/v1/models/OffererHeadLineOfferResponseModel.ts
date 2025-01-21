@@ -7,5 +7,6 @@ export type OffererHeadLineOfferResponseModel = {
   id: number;
   image?: OfferImage | null;
   name: string;
+  venueId: number;
 };
 
