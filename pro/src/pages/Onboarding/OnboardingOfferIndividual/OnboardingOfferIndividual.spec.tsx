@@ -6,7 +6,11 @@ import {
 
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
-import { listOffersOfferFactory } from 'commons/utils/factories/individualApiFactories'
+import {
+  defaultGetOffererResponseModel,
+  defaultGetOffererVenueResponseModel,
+  listOffersOfferFactory,
+} from 'commons/utils/factories/individualApiFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
@@ -26,12 +30,20 @@ const renderOnboardingOfferIndividual = (
 vi.mock('apiClient/api', () => ({
   api: {
     listOffers: vi.fn(),
+    getOfferer: vi.fn(),
   },
 }))
 
 describe('<OnboardingOfferIndividual />', () => {
   beforeEach(() => {
     vi.spyOn(api, 'listOffers').mockResolvedValue([])
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+      id: 42,
+      managedVenues: [
+        { ...defaultGetOffererVenueResponseModel, isPermanent: true, id: 1337 },
+      ],
+    })
   })
 
   it('should propose how to create the 1st offer', async () => {
@@ -48,6 +60,26 @@ describe('<OnboardingOfferIndividual />', () => {
     const links = await screen.findAllByText(/Manuellement|Automatiquement/)
 
     expect(links).toHaveLength(2)
+  })
+
+  it('should redirect to venue settings if user chooses "automatiquement"', async () => {
+    renderOnboardingOfferIndividual({
+      storeOverrides: {
+        offerer: {
+          isOnboarded: false,
+          selectedOffererId: 42,
+          offererNames: [],
+        },
+      },
+    })
+
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+    expect(api.getOfferer).toHaveBeenCalledOnce()
+
+    expect(
+      await screen.findByRole('link', { name: /Automatiquement/ })
+    ).toHaveAttribute('href', '/structures/42/lieux/1337/parametres')
   })
 
   it('should not display drafts if listOffers returns an empty array', async () => {
