@@ -56,6 +56,10 @@
   &-selected {
     border: 1px solid var(--color-black);
   }
+
+  &-error {
+    border: 1px solid var(--color-error);
+  }
 }
 
 .trigger-content {

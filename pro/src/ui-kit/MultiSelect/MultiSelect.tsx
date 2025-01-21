@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react'
 
 import { useOnClickOrFocusOutside } from 'commons/hooks/useOnClickOrFocusOutside'
+import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 
 import { SelectedValuesTags } from '../SelectedValuesTags/SelectedValuesTags'
 
@@ -17,9 +18,12 @@ type MultiSelectProps = {
   options: Option[]
   defaultOptions?: Option[]
   label: string
-  legend: string
   hasSelectAllOptions?: boolean
   disabled?: boolean
+  onSelectedOptionsChanged: (options: Option[]) => void
+  error?: string
+  name: string
+  buttonLabel: string
 } & ( // If `hasSearch` is `true`, `searchLabel` are required. // This part applies the condition
   | { hasSearch: true; searchLabel: string }
   // If `hasSearch` is `false` or undefined, `searchLabel` are optional.
@@ -35,9 +39,12 @@ export const MultiSelect = ({
   hasSearch = false,
   searchLabel,
   label,
-  legend,
   hasSelectAllOptions,
   disabled,
+  onSelectedOptionsChanged,
+  error,
+  name,
+  buttonLabel,
 }: MultiSelectProps): JSX.Element => {
   const [isOpen, setIsOpen] = useState(false)
   const [selectedItems, setSelectedItems] = useState<Option[]>(defaultOptions)
@@ -54,6 +61,7 @@ export const MultiSelect = ({
       : [...selectedItems, item]
 
     setSelectedItems(updatedSelectedItems)
+    onSelectedOptionsChanged(updatedSelectedItems)
   }
 
   const handleSelectAll = () => {
@@ -83,44 +91,47 @@ export const MultiSelect = ({
   useOnClickOrFocusOutside(containerRef, () => setIsOpen(false))
 
   return (
-    <fieldset className={styles.container} ref={containerRef}>
-      <MultiSelectTrigger
-        id={id}
-        legend={legend}
-        label={label}
-        isOpen={isOpen}
-        toggleDropdown={toggleDropdown}
-        selectedCount={selectedItems.length}
-        disabled={disabled}
-      />
-
-      {isOpen && (
-        <MultiSelectPanel
+    <FieldLayout label={label} name={name} error={error} showError={!!error}>
+      <fieldset className={styles.container} ref={containerRef}>
+        <MultiSelectTrigger
           id={id}
-          label={label}
-          options={options.map((option) => ({
-            ...option,
-            checked: selectedItems.some((item) => item.id === option.id),
-          }))}
-          onOptionSelect={handleSelectItem}
-          onSelectAll={handleSelectAll}
-          isAllChecked={isSelectAllChecked}
-          hasSearch={hasSearch}
-          searchLabel={searchLabel}
-          hasSelectAllOptions={hasSelectAllOptions}
+          buttonLabel={buttonLabel}
+          fieldLabel={label}
+          isOpen={isOpen}
+          toggleDropdown={toggleDropdown}
+          selectedCount={selectedItems.length}
+          disabled={disabled}
+          error={error}
         />
-      )}
 
-      <SelectedValuesTags
-        disabled={false}
-        selectedOptions={selectedItems.map((item) => item.id)}
-        removeOption={handleRemoveTag}
-        fieldName="tags"
-        optionsLabelById={selectedItems.reduce(
-          (acc, item) => ({ ...acc, [item.id]: item.label }),
-          {}
+        {isOpen && (
+          <MultiSelectPanel
+            id={id}
+            label={label}
+            options={options.map((option) => ({
+              ...option,
+              checked: selectedItems.some((item) => item.id === option.id),
+            }))}
+            onOptionSelect={handleSelectItem}
+            onSelectAll={handleSelectAll}
+            isAllChecked={isSelectAllChecked}
+            hasSearch={hasSearch}
+            searchLabel={searchLabel}
+            hasSelectAllOptions={hasSelectAllOptions}
+          />
         )}
-      />
-    </fieldset>
+
+        <SelectedValuesTags
+          disabled={false}
+          selectedOptions={selectedItems.map((item) => item.id)}
+          removeOption={handleRemoveTag}
+          fieldName="tags"
+          optionsLabelById={selectedItems.reduce(
+            (acc, item) => ({ ...acc, [item.id]: item.label }),
+            {}
+          )}
+        />
+      </fieldset>
+    </FieldLayout>
   )
 }

@@ -38,8 +38,7 @@ const defaultOptions = [
 const defaultProps = {
   options: defaultOptions,
   legend: 'Département',
-  label:
-    'Sélectionner un département Sélectionner un département Sélectionner un département',
+  label: 'Sélectionner un département',
 }
 
 export const Default: StoryObj<typeof MultiSelect> = {
@@ -63,8 +62,9 @@ export const WithSearchInput: StoryObj<typeof MultiSelect> = {
     ...defaultProps,
     hasSearch: true,
     searchLabel: 'Rechercher des départements',
-    legend: 'Départements',
+    buttonLabel: 'Départements',
     label: 'Sélectionner des départements',
+    name: 'départements',
   },
 }
 
@@ -72,8 +72,9 @@ export const WithSelectAllOption: StoryObj<typeof MultiSelect> = {
   args: {
     ...defaultProps,
     hasSelectAllOptions: true,
-    legend: 'Départements',
+    buttonLabel: 'Départements',
     label: 'Sélectionner des départements',
+    name: 'départements',
   },
 }
 
@@ -83,7 +84,17 @@ export const WithSearchInputAndSelectAllOption: StoryObj<typeof MultiSelect> = {
     hasSearch: true,
     searchLabel: 'Rechercher des départements',
     hasSelectAllOptions: true,
-    legend: 'Départements',
+    buttonLabel: 'Départements',
     label: 'Sélectionner des départements',
+  },
+}
+
+export const WithError: StoryObj<typeof MultiSelect> = {
+  args: {
+    ...defaultProps,
+    buttonLabel: 'Départements',
+    label: 'Sélectionner des départements',
+    error: 'Veuillez sélectionner un département',
+    name: 'départements',
   },
 }
