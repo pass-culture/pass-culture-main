@@ -299,7 +299,7 @@ class BulkImportUsersDataTest:
         expected_pro_call = RequestContactImport(
             **expected_common_params,
         )
-        expected_pro_call.list_ids = [settings.SENDINBLUE_PRO_CONTACT_LIST_ID]
+        expected_pro_call.list_ids = []
         expected_pro_call.file_body = f"{self.expected_header}\n{self.mikasa_expected_file_body}"
 
         mock_import_contacts.assert_has_calls([call(expected_young_call), call(expected_pro_call)], any_order=True)
