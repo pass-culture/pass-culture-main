@@ -20,7 +20,7 @@ export type TextInputProps = FieldLayoutBaseProps &
     /**
      * A flag to make the input read-only.
      * It becomes a span element with the value displayed.
-     * Only FieldLayout props, refForInput & value will then be used.
+     * Only FieldLayout props, focusRef & value will then be used.
      */
     readOnly?: boolean
     /**
@@ -40,7 +40,7 @@ export type TextInputProps = FieldLayoutBaseProps &
     /**
      * A forward ref to the span or the input element.
      */
-    refForInput?: ForwardedRef<HTMLInputElement>
+    focusRef?: ForwardedRef<HTMLInputElement>
     /**
      * A custom error message to be displayed.
      * If this prop is provided, the error message will be displayed
@@ -98,7 +98,7 @@ export const TextInput = ({
   maxLength = 255,
   smallLabel,
   isOptional = false,
-  refForInput,
+  focusRef,
   leftIcon,
   rightButton,
   rightIcon,
@@ -140,7 +140,7 @@ export const TextInput = ({
       step={step}
       type={type}
       rightButton={rightButton}
-      ref={refForInput}
+      ref={focusRef}
       rightIcon={rightIcon}
       leftIcon={leftIcon}
       aria-required={!isOptional}
@@ -179,7 +179,7 @@ export const TextInput = ({
       hasLabelLineBreak={hasLabelLineBreak}
     >
       {readOnly ? (
-        <span className={styles['text-input-readonly']} ref={refForInput}>
+        <span className={styles['text-input-readonly']} ref={focusRef}>
           {props.value}
         </span>
       ) : InputExtension ? (

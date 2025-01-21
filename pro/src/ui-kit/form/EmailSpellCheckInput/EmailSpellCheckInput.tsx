@@ -66,6 +66,7 @@ export const EmailSpellCheckInput = <FormType,>({
         onBlur={handleEmailValidation}
         onFocus={resetEmailValidation}
         autoComplete="email"
+        autoFocus={true}
         className={className}
         maxLength={maxLength}
         showMandatoryAsterisk={showMandatoryAsterisk}
