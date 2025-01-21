@@ -11,9 +11,10 @@ type MultiSelectTriggerProps = {
   isOpen: boolean
   selectedCount: number
   toggleDropdown: () => void
-  legend: string
-  label: string
+  buttonLabel: string
+  fieldLabel: string
   disabled?: boolean
+  error?: string
 }
 
 export const MultiSelectTrigger = ({
@@ -21,21 +22,23 @@ export const MultiSelectTrigger = ({
   isOpen,
   selectedCount,
   toggleDropdown,
-  legend,
-  label,
+  buttonLabel,
+  fieldLabel,
   disabled,
+  error,
 }: MultiSelectTriggerProps): JSX.Element => {
   return (
     <>
-      <legend className={styles['legend']}>{legend}</legend>
+      <legend className={styles['visually-hidden']}>{fieldLabel}</legend>
       <button
         type="button"
         className={cn(styles['trigger'], {
           [styles['trigger-selected']]: selectedCount > 0,
+          [styles['trigger-error']]: !!error,
         })}
         onClick={toggleDropdown}
         aria-haspopup="listbox"
-        aria-label={label}
+        aria-label={buttonLabel}
         aria-expanded={isOpen}
         aria-controls={id}
         disabled={disabled}
@@ -49,7 +52,7 @@ export const MultiSelectTrigger = ({
               </span>
             </div>
           )}
-          <span className={styles['trigger-label']}>{label}</span>
+          <span className={styles['trigger-label']}>{buttonLabel}</span>
         </div>
         <SvgIcon
           className={`${styles['chevron']} ${isOpen ? styles['chevronOpen'] : ''}`}
