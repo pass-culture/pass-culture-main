@@ -208,6 +208,34 @@ describe('PriceCategories', () => {
     expect(api.deletePriceCategory).toHaveBeenNthCalledWith(1, 42, 144)
   })
 
+  it('should be able to delete the first price category when it has stocks', async () => {
+    vi.spyOn(api, 'deletePriceCategory').mockResolvedValue()
+    const values: PriceCategoriesFormValues = {
+      priceCategories: [
+        priceCategoryFormFactory({ id: 2 }),
+        priceCategoryFormFactory({ id: 144 }),
+      ],
+      isDuo: false,
+    }
+
+    renderPriceCategoriesForm(values, {
+      offer: getIndividualOfferFactory({ id: 42, hasStocks: true }),
+    })
+
+    // I can cancel
+    await userEvent.click(
+      screen.getAllByRole('button', { name: 'Supprimer le tarif' })[0]
+    )
+    expect(
+      screen.getByText(
+        'En supprimant ce tarif vous allez aussi supprimer l’ensemble des dates qui lui sont associées.'
+      )
+    ).toBeInTheDocument()
+
+    await userEvent.click(screen.getByText('Confirmer la supression'))
+    expect(api.deletePriceCategory).toHaveBeenCalledWith(42, 2)
+  })
+
   it('should handle unique line label cases', async () => {
     renderPriceCategoriesForm({
       priceCategories: [FIRST_INITIAL_PRICE_CATEGORY],

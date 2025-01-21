@@ -53,9 +53,10 @@ export const PriceCategoriesForm = ({
   const onDeletePriceCategory = async (
     index: number,
     arrayHelpers: FieldArrayRenderProps,
-    priceCategories: PriceCategoryForm[],
-    priceCategoryId?: number
+    priceCategories: PriceCategoryForm[]
   ) => {
+    const priceCategoryId = priceCategories[index].id
+
     if (priceCategoryId) {
       if (currentDeletionIndex === null && offer.hasStocks) {
         setCurrentDeletionIndex(index)
@@ -113,15 +114,12 @@ export const PriceCategoriesForm = ({
               <ConfirmDialog
                 onCancel={() => setCurrentDeletionIndex(null)}
                 onConfirm={() => {
-                  if (!currentDeletionIndex) {
-                    return
-                  }
-
                   return onDeletePriceCategory(
-                    currentDeletionIndex,
+                    //  TODO : restructure this composant so that this hack is not necessary
+                    //  By creating a component for each of the price category lines
+                    currentDeletionIndex!,
                     arrayHelpers,
-                    values.priceCategories,
-                    values.priceCategories[currentDeletionIndex].id
+                    values.priceCategories
                   )
                 }}
                 title="En supprimant ce tarif vous allez aussi supprimer l’ensemble des dates qui lui sont associées."
@@ -176,8 +174,7 @@ export const PriceCategoriesForm = ({
                           onDeletePriceCategory(
                             index,
                             arrayHelpers,
-                            values.priceCategories,
-                            values.priceCategories[index].id
+                            values.priceCategories
                           )
                         }
                         hasTooltip={
