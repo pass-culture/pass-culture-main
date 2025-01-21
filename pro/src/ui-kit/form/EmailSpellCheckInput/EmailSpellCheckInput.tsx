@@ -70,6 +70,7 @@ export const EmailSpellCheckInput = <FormType,>({
         onFocus={resetEmailValidation}
         hideFooter={emailValidationTip !== null} // This is needed to hide the footer div that takes some space
         autoComplete="email"
+        autoFocus={true}
         className={className}
         maxLength={maxLength}
         showMandatoryAsterisk={showMandatoryAsterisk}
