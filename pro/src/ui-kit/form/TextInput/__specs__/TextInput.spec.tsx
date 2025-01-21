@@ -77,4 +77,23 @@ describe('TextInput', () => {
 
     expect(screen.getByText(inputExtensionContent)).toBeInTheDocument()
   })
+
+  it('should not let the user type "." or "," in a number input with no decimals', async () => {
+    render(
+      <Formik initialValues={{ test1: '1', test2: '' }} onSubmit={() => {}}>
+        <TextInput
+          type="number"
+          label="Input 1"
+          name="test1"
+          hasDecimal={false}
+        />
+      </Formik>
+    )
+
+    const input = screen.getByRole('spinbutton')
+
+    await userEvent.type(input, '.,')
+
+    expect(input).toHaveValue(1)
+  })
 })

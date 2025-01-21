@@ -208,6 +208,11 @@ describe('route CollectiveOffers', () => {
     describe('on click on search button', () => {
       it('should load offers with written offer name filter', async () => {
         await renderOffers()
+
+        await waitFor(() => {
+          expect(api.getVenues).toHaveBeenCalledWith(null, null, 1)
+        })
+
         await userEvent.type(
           screen.getByRole('textbox', {
             name: LABELS.nameSearchInput,
@@ -335,6 +340,11 @@ describe('route CollectiveOffers', () => {
 
       it('should load offers with selected offer type if the WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE FF is not active', async () => {
         await renderOffers()
+
+        await waitFor(() => {
+          expect(api.getVenues).toHaveBeenCalledWith(null, null, 1)
+        })
+
         const offerTypeSelect = screen.getByLabelText('Type de l’offre')
         await userEvent.selectOptions(offerTypeSelect, 'template')
 

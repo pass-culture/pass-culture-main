@@ -356,46 +356,44 @@ export const RecurrenceForm = ({
               name="quantityPerPriceCategories"
               render={(arrayHelpers) => (
                 <>
-                  {values.quantityPerPriceCategories.map(
-                    (quantityPerPriceCategory, index) => (
-                      <FormLayout.Row key={index} inline mdSpaceAfter>
-                        <QuantityInput
-                          label="Nombre de places"
-                          name={`quantityPerPriceCategories[${index}].quantity`}
-                          className={styles['quantity-input']}
-                          hideFooter
-                          isOptional
-                          min={1}
-                        />
-                        <Select
-                          label="Tarif"
-                          name={`quantityPerPriceCategories[${index}].priceCategory`}
-                          options={priceCategoryOptions}
-                          defaultOption={{
-                            label: 'Sélectionner un tarif',
-                            value: '',
-                          }}
-                          className={styles['price-category-input']}
-                          hideFooter
-                        />
+                  {values.quantityPerPriceCategories.map((_, index) => (
+                    <FormLayout.Row key={index} inline mdSpaceAfter>
+                      <QuantityInput
+                        label="Nombre de places"
+                        name={`quantityPerPriceCategories[${index}].quantity`}
+                        className={styles['quantity-input']}
+                        hideFooter
+                        isOptional
+                        min={1}
+                      />
+                      <Select
+                        label="Tarif"
+                        name={`quantityPerPriceCategories[${index}].priceCategory`}
+                        options={priceCategoryOptions}
+                        defaultOption={{
+                          label: 'Sélectionner un tarif',
+                          value: '',
+                        }}
+                        className={styles['price-category-input']}
+                        hideFooter
+                      />
 
-                        <div className={styles['align-icon']}>
-                          <Button
-                            variant={ButtonVariant.TERNARY}
-                            icon={fullTrashIcon}
-                            iconPosition={IconPositionEnum.CENTER}
-                            disabled={
-                              values.quantityPerPriceCategories.length <= 1
-                            }
-                            onClick={() => arrayHelpers.remove(index)}
-                            hasTooltip
-                          >
-                            Supprimer les places
-                          </Button>
-                        </div>
-                      </FormLayout.Row>
-                    )
-                  )}
+                      <div className={styles['align-icon']}>
+                        <Button
+                          variant={ButtonVariant.TERNARY}
+                          icon={fullTrashIcon}
+                          iconPosition={IconPositionEnum.CENTER}
+                          disabled={
+                            values.quantityPerPriceCategories.length <= 1
+                          }
+                          onClick={() => arrayHelpers.remove(index)}
+                          hasTooltip
+                        >
+                          Supprimer les places
+                        </Button>
+                      </div>
+                    </FormLayout.Row>
+                  ))}
                   {values.quantityPerPriceCategories.length <
                     priceCategoryOptions.length && (
                     <ButtonLink
@@ -436,6 +434,7 @@ export const RecurrenceForm = ({
                 isLabelHidden
                 type="number"
                 step="1"
+                min={0}
                 className={styles['booking-date-limit-input']}
               />
 
