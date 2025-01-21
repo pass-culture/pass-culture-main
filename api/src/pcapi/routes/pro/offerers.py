@@ -10,6 +10,7 @@ from pcapi.connectors.api_recaptcha import check_web_recaptcha_token
 from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
 from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
 from pcapi.connectors.entreprise import sirene
+import pcapi.core.educational.exceptions as educational_exceptions
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.finance.repository as finance_repository
@@ -25,6 +26,7 @@ from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils import requests
 from pcapi.utils.rest import check_user_has_access_to_offerer
 
 from . import blueprint
@@ -326,3 +328,58 @@ def get_offerer_headline_offer(
     if not offerer_headline_offer:
         raise ResourceNotFoundError()
     return offerers_serialize.OffererHeadLineOfferResponseModel.from_orm(offerer_headline_offer)
+
+
+@private_api.route("/offerers/<int:offerer_id>/eligibility", methods=["GET"])
+@login_required
+@atomic()
+@spectree_serialize(
+    response_model=offerers_serialize.OffererEligibilityResponseModel,
+    api=blueprint.pro_private_schema,
+    on_success_status=200,
+)
+def get_offerer_eligibility(
+    offerer_id: int,
+) -> offerers_serialize.OffererEligibilityResponseModel:
+    check_user_has_access_to_offerer(current_user, offerer_id)
+
+    try:
+        has_adage_id = api.synchronize_from_adage_and_check_registration(offerer_id)
+        if has_adage_id:
+            return offerers_serialize.OffererEligibilityResponseModel(
+                offerer_id=offerer_id,
+                has_adage_id=has_adage_id,
+                has_ds_application=None,
+                is_onboarded=True,
+            )
+    except (educational_exceptions.AdageException, requests.exceptions.RequestException) as exception:
+        has_adage_id = None
+        logger.error(
+            "Error while checking Adage status",
+            extra={
+                "offerer_id": offerer_id,
+                "error": str(exception),
+            },
+        )
+
+    try:
+        has_ds_application = api.synchronize_from_ds_and_check_application(offerer_id)
+    except Exception as exception:  # pylint: disable=broad-exception-caught
+        has_ds_application = None
+        logger.error(
+            "Error while checking Adage status",
+            extra={
+                "offerer_id": offerer_id,
+                "error": str(exception),
+            },
+        )
+
+    if has_adage_id is None and has_ds_application is None:
+        raise ApiErrors(errors={"eligibility": ["Le statut de la structure n'a pas pu être vérifié"]}, status_code=400)
+
+    return offerers_serialize.OffererEligibilityResponseModel(
+        offerer_id=offerer_id,
+        has_adage_id=has_adage_id,
+        has_ds_application=has_ds_application,
+        is_onboarded=has_adage_id or has_ds_application,
+    )

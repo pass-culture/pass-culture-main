@@ -178,6 +178,7 @@ export { OfferAddressType } from './models/OfferAddressType';
 export { OfferContactFormEnum } from './models/OfferContactFormEnum';
 export type { OfferDomain } from './models/OfferDomain';
 export type { OffererApiKey } from './models/OffererApiKey';
+export type { OffererEligibilityResponseModel } from './models/OffererEligibilityResponseModel';
 export type { OffererHeadLineOfferResponseModel } from './models/OffererHeadLineOfferResponseModel';
 export { OffererMemberStatus } from './models/OffererMemberStatus';
 export type { OffererStatsDataModel } from './models/OffererStatsDataModel';
