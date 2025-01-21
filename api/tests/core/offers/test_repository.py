@@ -2692,11 +2692,17 @@ class GetHeadlineOfferFiltersTest:
             offer=another_inactive_offer, timespan=timespan_finishing_in_the_future, create_mediation=True
         )
 
-        headline_offer_query_result = repository.get_inactive_headline_offers()
-        assert headline_offer_query_result == [
-            inactive_offer_headline_offer,
-            headline_offer_finishing_in_the_future_but_offer_is_inactive,
-        ]
+        headline_offer_query_result = sorted(
+            repository.get_inactive_headline_offers(), key=lambda headline_offer: headline_offer.id
+        )
+
+        assert headline_offer_query_result == sorted(
+            [
+                inactive_offer_headline_offer,
+                headline_offer_finishing_in_the_future_but_offer_is_inactive,
+            ],
+            key=lambda headline_offer: headline_offer.id,
+        )
 
     def test_get_inactive_headline_offers_without_images(self):
         offer = factories.OfferFactory(isActive=True)
