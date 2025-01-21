@@ -39,6 +39,7 @@ class Return200Test:
                 "credit": offer.image.credit,
                 "url": offer.image.url,
             },
+            "venueId": offer.venueId,
         }
 
     def test_get_offerer_headline_offer_with_product_mediations(self, client):

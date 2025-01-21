@@ -428,6 +428,7 @@ class OffererHeadLineOfferResponseModel(BaseModel):
     id: int
     name: str
     image: offers_models.OfferImage | None
+    venueId: int
 
     class Config:
         orm_mode = True
