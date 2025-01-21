@@ -1928,10 +1928,10 @@
     axe-core "^4.2.0"
     vitest-axe "^0.1.0"
 
-"@storybook/addon-controls@^8.4.7":
-  version "8.4.7"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-controls/-/addon-controls-8.4.7.tgz#0c2ace0c7056248577f08f90471f29e861b485be"
-  integrity sha512-377uo5IsJgXLnQLJixa47+11V+7Wn9KcDEw+96aGCBCfLbWNH8S08tJHHnSu+jXg9zoqCAC23MetntVp6LetHA==
+"@storybook/addon-controls@^8.5.0":
+  version "8.5.0"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-controls/-/addon-controls-8.5.0.tgz#7fd9379b88305194014771fdbe1010af5206e4f1"
+  integrity sha512-1fivx77A/ahObrPl0L66o9i9MUNfqXxsrpekne5gjMNXw9XJFIRNUe/ddL4CMmwu7SgVbj2QV+q5E5mlnZNTJw==
   dependencies:
     "@storybook/global" "^5.0.0"
     dequal "^2.0.2"
