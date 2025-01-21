@@ -18,14 +18,14 @@ export function HeadlineOfferCell({
   offer,
   setIsConfirmDialogOpen,
 }: HeadlineOfferCellProps) {
-  const { headlineOfferId, upsertHeadlineOffer, removeHeadlineOffer } =
+  const { headlineOffer, upsertHeadlineOffer, removeHeadlineOffer } =
     useIndividualOffersContext()
 
   async function onSelect() {
-    if (offer.id === headlineOfferId) {
+    if (offer.id === headlineOffer?.id) {
       await removeHeadlineOffer()
     } else {
-      if (!headlineOfferId) {
+      if (!headlineOffer?.id) {
         await upsertHeadlineOffer(offer.id)
       } else {
         setIsConfirmDialogOpen(true)
@@ -36,7 +36,7 @@ export function HeadlineOfferCell({
   return (
     <DropdownItem onSelect={onSelect} asChild>
       <Button variant={ButtonVariant.TERNARY} icon={fullStarIcon}>
-        {offer.id === headlineOfferId
+        {offer.id === headlineOffer?.id
           ? 'Ne plus mettre à la une'
           : 'Mettre à la une'}
         <Tag variant={TagVariant.BLUE} className={styles['new-tag']}>

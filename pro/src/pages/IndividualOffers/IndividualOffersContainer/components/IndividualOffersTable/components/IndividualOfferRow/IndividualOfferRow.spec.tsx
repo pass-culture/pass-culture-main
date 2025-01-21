@@ -15,7 +15,10 @@ import {
   listOffersOfferFactory,
   listOffersStockFactory,
 } from 'commons/utils/factories/individualApiFactories'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+import {
+  currentOffererFactory,
+  sharedCurrentUserFactory,
+} from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { Notification } from 'components/Notification/Notification'
 import { IndividualOffersContextProvider } from 'pages/IndividualOffers/context/IndividualOffersContext'
@@ -64,11 +67,7 @@ const renderOfferItem = ({
     {
       storeOverrides: {
         user: { currentUser: sharedCurrentUserFactory() },
-        offerer: {
-          selectedOffererId: offererId,
-          offererNames: [],
-          isOnboarded: true,
-        },
+        offerer: currentOffererFactory(),
       },
       features,
     }
@@ -289,6 +288,7 @@ describe('IndividualOfferRow', () => {
         vi.spyOn(api, 'getOffererHeadlineOffer').mockResolvedValue({
           id: 666,
           name: 'another headline offer',
+          venueId: 1,
         })
 
         renderOfferItem({ props, features: ['WIP_HEADLINE_OFFER'] })
@@ -320,6 +320,7 @@ describe('IndividualOfferRow', () => {
         vi.spyOn(api, 'getOffererHeadlineOffer').mockResolvedValue({
           id: offer.id,
           name: offer.name,
+          venueId: 1,
         })
 
         renderOfferItem({ props, features: ['WIP_HEADLINE_OFFER'] })
@@ -352,6 +353,7 @@ describe('IndividualOfferRow', () => {
         vi.spyOn(api, 'getOffererHeadlineOffer').mockResolvedValue({
           id: offer.id,
           name: offer.name,
+          venueId: 1,
         })
 
         renderOfferItem({ props, features: ['WIP_HEADLINE_OFFER'] })
