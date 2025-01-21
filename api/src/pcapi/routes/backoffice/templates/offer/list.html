@@ -96,6 +96,7 @@
                 <th scope="col">Tarif</th>
               {% endif %}
               {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<th scope="col">Tag</th>{% endif %}
+              <th scope="col">Date(s) de l'évènement</th>
               {% if not has_permission("PRO_FRAUD_ACTIONS") %}<th scope="col">Créateur de l'offre</th>{% endif %}
               {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<th scope="col">Pond.</th>{% endif %}
               <th scope="col">État</th>
@@ -218,6 +219,15 @@
                   </td>
                 {% endif %}
                 {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<td>{{ row.tags | format_as_badges }}</td>{% endif %}
+                <td>
+                  {% if row.offer_event_dates|length > 0 %}
+                    {% if row.offer_event_dates|length == 1 %}
+                      {{ row.offer_event_dates[0] | format_date("%d/%m/%Y") }}
+                    {% else %}
+                      {{ row.offer_event_dates[0] | format_date("%d/%m/%Y") }} → {{ row.offer_event_dates[1] | format_date("%d/%m/%Y") }}
+                    {% endif %}
+                  {% endif %}
+                </td>
                 {% if not has_permission("PRO_FRAUD_ACTIONS") %}
                   <td>{{ links.build_pro_user_name_to_details_link(offer.author.id, offer.author.full_name) }}</td>
                 {% endif %}
