@@ -1509,15 +1509,18 @@ def get_next_offer_id_from_database() -> int:
     return db.session.execute(sequence)
 
 
-def has_active_offer_with_ean(ean: str | None, venue: offerers_models.Venue) -> bool:
+def has_active_offer_with_ean(ean: str | None, venue: offerers_models.Venue, offer_id: int | None) -> bool:
     if not ean:
         # We should never be there (an ean or an ean must be given), in case we are alert sentry.
         logger.error("Could not search for an offer without ean")
-    return db.session.query(
-        models.Offer.query.filter(
-            models.Offer.venue == venue, models.Offer.isActive.is_(True), models.Offer.extraData["ean"].astext == ean
-        ).exists()
-    ).scalar()
+    base_query = models.Offer.query.filter(
+        models.Offer.venue == venue, models.Offer.isActive.is_(True), models.Offer.extraData["ean"].astext == ean
+    )
+
+    if offer_id is not None:
+        base_query = base_query.filter(models.Offer.id != offer_id)
+
+    return db.session.query(base_query.exists()).scalar()
 
 
 def get_movie_product_by_allocine_id(allocine_id: str) -> models.Product | None:

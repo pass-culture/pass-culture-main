@@ -14,6 +14,7 @@ from pcapi.core.offers.models import OfferStatus
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 import pcapi.core.users.factories as users_factories
+from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -52,7 +53,7 @@ class Returns200Test:
     def test_patch_draft_offer_without_product_with_new_ean_should_succeed(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-        offer = offers_factories.OfferFactory(
+        offer = offers_factories.DraftOfferFactory(
             name="Name",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             venue=venue,

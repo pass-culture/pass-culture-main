@@ -219,6 +219,11 @@ class OfferFactory(BaseFactory):
         return super()._create(model_class, *args, **kwargs)
 
 
+class DraftOfferFactory(OfferFactory):
+    isActive = False
+    validation = models.OfferValidationStatus.DRAFT
+
+
 class ArtistProductLinkFactory(BaseFactory):
     class Meta:
         model = artist_models.ArtistProductLink
