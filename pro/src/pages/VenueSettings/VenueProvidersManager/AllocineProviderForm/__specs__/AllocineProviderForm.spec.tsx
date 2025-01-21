@@ -272,13 +272,24 @@ describe('AllocineProviderForm', () => {
     }
     await renderAllocineProviderForm(props)
 
+    const saveEditionProviderButton = screen.getByRole('button', {
+      name: 'Modifier',
+    })
+
     const priceField = screen.getByLabelText('Prix de vente/place *', {
       exact: false,
     })
 
     await userEvent.clear(priceField)
     await userEvent.type(priceField, '-1')
-    expect(priceField).toHaveValue(1)
+
+    await userEvent.click(saveEditionProviderButton)
+
+    expect(
+      screen.getByText(
+        'Veuillez renseigner un prix de vente supérieur ou égal à zero'
+      )
+    ).toBeInTheDocument()
   })
 
   it('should not fill input quantity with negative value', async () => {
@@ -290,13 +301,24 @@ describe('AllocineProviderForm', () => {
     }
     await renderAllocineProviderForm(props)
 
+    const saveEditionProviderButton = screen.getByRole('button', {
+      name: 'Modifier',
+    })
+
     const quantityField = screen.getByRole('spinbutton', {
       name: /Nombre de places\/séance/,
     })
 
     await userEvent.clear(quantityField)
     await userEvent.type(quantityField, '-1')
-    expect(quantityField).toHaveValue(1)
+
+    await userEvent.click(saveEditionProviderButton)
+
+    expect(
+      screen.getByText(
+        'Veuillez renseigner un nombre de place supérieur à zero'
+      )
+    ).toBeInTheDocument()
   })
 
   it('should be able to submit when price field is filled on edition', async () => {

@@ -107,9 +107,8 @@
 }
 
 .booking-date-limit-text {
-  @include size.input-center-with-top-margin(
-    var(--typography-body-font-size),
-    true
+  margin-top: calc(
+    (size.$input-min-height - var(--typography-body-line-height)) / 2
   );
 }
 

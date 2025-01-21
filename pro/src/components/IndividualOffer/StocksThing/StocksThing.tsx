@@ -382,6 +382,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                 data-testid="input-price"
                 rightIcon={strokeEuroIcon}
                 step="0.01"
+                min={0}
                 className={styles['field-layout-xsmall']}
               />
               <DatePicker

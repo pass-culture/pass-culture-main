@@ -16,21 +16,6 @@
     display: none;
   }
 
-  // we don't want little arrow for input number
-
-  /* Chrome, Safari, Edge, Opera */
-  &::-webkit-outer-spin-button,
-  &::-webkit-inner-spin-button {
-    appearance: none;
-    appearance: textfield;
-    margin: 0;
-  }
-
-  /* Firefox */
-  &[type="number"] {
-    appearance: textfield;
-  }
-
   &.has-error {
     @include forms.input-theme-error;
   }

@@ -13,12 +13,7 @@ type Price = number | ''
  */
 export type PriceInputProps = Pick<
   TextInputProps,
-  | 'name'
-  | 'max'
-  | 'rightIcon'
-  | 'disabled'
-  | 'smallLabel'
-  | 'className'
+  'name' | 'max' | 'rightIcon' | 'disabled' | 'smallLabel' | 'className'
 > & {
   /**
    * A label for the input,
@@ -98,26 +93,31 @@ export const PriceInput = ({
     await setFieldValue(priceName, nextFieldValue)
   }
 
-  const inputExtension = <BaseCheckbox
-    ref={freeRef}
-    label="Gratuit"
-    checked={isFree}
-    name={freeName}
-    onChange={onCheckboxChange}
-    disabled={disabled}
-  />
+  const inputExtension = (
+    <BaseCheckbox
+      ref={freeRef}
+      label="Gratuit"
+      checked={isFree}
+      name={freeName}
+      onChange={onCheckboxChange}
+      disabled={disabled}
+    />
+  )
 
-  return <TextInput
-    refForInput={priceRef}
-    className={className}
-    smallLabel={smallLabel}
-    name={priceName}
-    label={label}
-    type="number"
-    step="0.01"
-    max={max}
-    rightIcon={rightIcon}
-    disabled={disabled}
-    {...(showFreeCheckbox ? { InputExtension: inputExtension } : {})}
-  />
+  return (
+    <TextInput
+      refForInput={priceRef}
+      className={className}
+      smallLabel={smallLabel}
+      name={priceName}
+      label={label}
+      type="number"
+      step="0.01"
+      min={0}
+      max={max}
+      rightIcon={rightIcon}
+      disabled={disabled}
+      {...(showFreeCheckbox ? { InputExtension: inputExtension } : {})}
+    />
+  )
 }

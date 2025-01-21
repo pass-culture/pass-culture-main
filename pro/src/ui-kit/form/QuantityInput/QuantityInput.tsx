@@ -126,32 +126,36 @@ export const QuantityInput = ({
     }
   }
 
-  const inputExtension = <BaseCheckbox
-    ref={unlimitedRef}
-    label="Illimité"
-    name={unlimitedName}
-    onChange={onCheckboxChange}
-    checked={isUnlimited}
-    disabled={disabled}
-  />
+  const inputExtension = (
+    <BaseCheckbox
+      ref={unlimitedRef}
+      label="Illimité"
+      name={unlimitedName}
+      onChange={onCheckboxChange}
+      checked={isUnlimited}
+      disabled={disabled}
+    />
+  )
 
-  return <TextInput
-    refForInput={quantityRef}
-    smallLabel={smallLabel}
-    name={quantityName}
-    label={label}
-    isOptional={isOptional}
-    disabled={disabled}
-    type="number"
-    hasDecimal={false}
-    className={className}
-    classNameFooter={classNameFooter}
-    min={min}
-    max={1_000_000}
-    isLabelHidden={isLabelHidden}
-    hideFooter={hideFooter}
-    step={1}
-    InputExtension={inputExtension}
-    {...(onChange && { onChange: onQuantityChange })}
-  />
+  return (
+    <TextInput
+      refForInput={quantityRef}
+      smallLabel={smallLabel}
+      name={quantityName}
+      label={label}
+      isOptional={isOptional}
+      disabled={disabled}
+      type="number"
+      hasDecimal={false}
+      className={className}
+      classNameFooter={classNameFooter}
+      min={min}
+      max={1_000_000}
+      isLabelHidden={isLabelHidden}
+      hideFooter={hideFooter}
+      step={1}
+      InputExtension={inputExtension}
+      {...(onChange && { onChange: onQuantityChange })}
+    />
+  )
 }

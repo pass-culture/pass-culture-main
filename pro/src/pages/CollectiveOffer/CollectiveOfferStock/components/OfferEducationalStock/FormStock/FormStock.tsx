@@ -95,6 +95,7 @@ export const FormStock = ({
         label={TOTAL_PRICE_LABEL}
         name="totalPrice"
         step={0.01} // allow user to enter a price with cents
+        min={0}
         type="number"
         rightIcon={strokeEuroIcon}
         classNameInput={styles['input-custom-width']}

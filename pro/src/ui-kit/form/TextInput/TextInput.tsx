@@ -129,10 +129,6 @@ export const TextInput = ({
     type,
   })
 
-  // Regex patterns for input validation
-  const regexHasDecimal = /[0-9,.]/
-  const regexHasNotDecimal = /[0-9]/
-  const regexIsNavigationKey = /Tab|Backspace|Enter/
   const showError = !!externalError || (meta.touched && !!meta.error)
 
   // Constructing aria-describedby attribute
@@ -146,43 +142,30 @@ export const TextInput = ({
     describedBy.push(`field-characters-count-description-${name}`)
   }
 
-  const input = <BaseInput
-    disabled={disabled}
-    hasError={showError}
-    maxLength={maxLength}
-    placeholder={placeholder}
-    step={step}
-    type={type}
-    rightButton={rightButton}
-    ref={refForInput}
-    rightIcon={rightIcon}
-    leftIcon={leftIcon}
-    aria-required={!isOptional}
-    aria-describedby={describedBy.join(' ') || undefined}
-    onKeyDown={(event) => {
-      // Restrict input for number types
-      if (type === 'number') {
-        if (regexIsNavigationKey.test(event.key)) {
-          return
-        }
-        const testInput = hasDecimal
-          ? !regexHasDecimal.test(event.key)
-          : !regexHasNotDecimal.test(event.key)
-        if (testInput) {
+  const input = (
+    <BaseInput
+      disabled={disabled}
+      hasError={showError}
+      maxLength={maxLength}
+      placeholder={placeholder}
+      step={step}
+      type={type}
+      rightButton={rightButton}
+      ref={refForInput}
+      rightIcon={rightIcon}
+      leftIcon={leftIcon}
+      aria-required={!isOptional}
+      aria-describedby={describedBy.join(' ') || undefined}
+      onKeyDown={(event) => {
+        // If the number input should have no decimal, prevent the user from typing "," or "."
+        if (type === 'number' && !hasDecimal && /[,.]/.test(event.key)) {
           event.preventDefault()
         }
-      }
-    }}
-    // Disable changing input value on scroll over a number input
-    onWheel={(event) => {
-      if (type === 'number') {
-        // Blur the input to prevent value change on scroll
-        event.currentTarget.blur()
-      }
-    }}
-    {...field}
-    {...props}
-  />
+      }}
+      {...field}
+      {...props}
+    />
+  )
 
   return (
     <FieldLayout
@@ -218,7 +201,9 @@ export const TextInput = ({
             {InputExtension}
           </div>
         </div>
-      ) : input}
+      ) : (
+        input
+      )}
     </FieldLayout>
   )
 }
