@@ -776,6 +776,18 @@ class DecideEligibilityTest:
                 == users_models.EligibilityType.UNDERAGE
             )
 
+    @time_machine.travel("2022-03-01 13:45:00")  # 2022-03-02 00:45 in Noumea timezone
+    def test_decide_underage_eligibility_with_timezone(self):
+        today = datetime.date.today()
+        march_2nd_fifteen_years_ago = today - relativedelta(years=15, days=-1)
+        new_caledonian_user = users_factories.UserFactory(
+            dateOfBirth=march_2nd_fifteen_years_ago, departementCode="988"
+        )
+
+        eligibility = fraud_api.decide_eligibility(new_caledonian_user, march_2nd_fifteen_years_ago, today)
+
+        assert eligibility == users_models.EligibilityType.UNDERAGE
+
     @time_machine.travel("2022-01-01")
     def test_decide_eligibility_for_18_yo_users_is_always_age_18(self):
         # 18 users are always eligible

@@ -54,8 +54,8 @@ def get_age_at_date(birth_date: date, specified_datetime: datetime, department_c
     return max(0, relativedelta(timezoned_datetime, timezoned_birth_date).years)
 
 
-def get_age_from_birth_date(birth_date: date) -> int:
-    return get_age_at_date(birth_date, datetime.utcnow())
+def get_age_from_birth_date(birth_date: date, department_code: str | None = None) -> int:
+    return get_age_at_date(birth_date, datetime.utcnow(), department_code)
 
 
 def format_login_location(country_name: str | None, city_name: str | None) -> str | None:
