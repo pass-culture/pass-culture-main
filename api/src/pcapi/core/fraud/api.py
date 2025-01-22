@@ -79,7 +79,7 @@ def educonnect_fraud_checks(
     user: users_models.User, educonnect_content: models.EduconnectContent
 ) -> list[models.FraudItem]:
     fraud_items = []
-    fraud_items.append(_underage_user_fraud_item(educonnect_content.get_birth_date()))
+    fraud_items.append(_underage_user_fraud_item(educonnect_content.get_birth_date(), user.departementCode))
     fraud_items.append(_duplicate_ine_hash_fraud_item(educonnect_content.ine_hash, user.id))
 
     return fraud_items
@@ -343,8 +343,8 @@ def _check_user_email_is_validated(user: users_models.User) -> models.FraudItem:
     return models.FraudItem(status=models.FraudStatus.OK, detail="L'email est validé")
 
 
-def _underage_user_fraud_item(birth_date: datetime.date) -> models.FraudItem:
-    age = users_utils.get_age_from_birth_date(birth_date)
+def _underage_user_fraud_item(birth_date: datetime.date, department_code: str | None = None) -> models.FraudItem:
+    age = users_utils.get_age_from_birth_date(birth_date, department_code)
     if age in constants.ELIGIBILITY_UNDERAGE_RANGE:
         return models.FraudItem(
             status=models.FraudStatus.OK,
@@ -574,7 +574,7 @@ def decide_eligibility(
     if birth_date is None:
         return None
 
-    user_age_today = users_utils.get_age_from_birth_date(birth_date)
+    user_age_today = users_utils.get_age_from_birth_date(birth_date, user.departementCode)
     if user_age_today < 15:
         return None
     if user_age_today < 18:
