@@ -30,7 +30,7 @@ QUERY = """
             'ACHAT_INSTRUMENT'
         )
     LIMIT
-        10000
+        1000
 """
 
 
@@ -44,10 +44,10 @@ def run() -> None:
 
 
 def parse_offers(rows: Collection[utils.SharedOfferEanQueryRow]) -> None:
-    for chunk in get_chunks(rows, chunk_size=2_000):
+    for chunk in get_chunks(rows, chunk_size=100):
 
-        ean_as_name_rows = set()
-        other_rows = set()
+        ean_as_name_rows = []
+        other_rows = []
 
         for offer_row in chunk:
             if offer_row.name.strip().lower() == offer_row.ean:
@@ -60,21 +60,22 @@ def parse_offers(rows: Collection[utils.SharedOfferEanQueryRow]) -> None:
 
 
 @atomic()
-@utils.retry_and_log
 def reject_offers_with_ean_as_name(offer_rows: Collection[utils.SharedOfferEanQueryRow]) -> None:
     utils.reject_offers(offer_rows)
 
 
 @atomic()
-@utils.retry_and_log
 def update_legit_offers(offer_rows: Collection[utils.SharedOfferEanQueryRow]) -> None:
     ids = {row.id for row in offer_rows}
     offer_eans = {row.id: row.ean for row in offer_rows}
 
     legit_offers = Offer.query.filter(Offer.id.in_(ids))
 
-    with atomic():
-        for offer in legit_offers:
-            offer.name = offer.name.replace(offer_eans[offer.id], "").replace("  ", "")
-            offer.extraData = {**offer.extraData, "ean": offer_eans[offer.id]}
-            db.session.add(offer)
+    for offer in legit_offers:
+        offer.name = offer.name.replace(offer_eans[offer.id], "").replace("  ", "")
+        offer.extraData = {**offer.extraData, "ean": offer_eans[offer.id]}
+
+
+if __name__ == "__main__":
+    app.app_context().push()
+    run()

@@ -49,36 +49,6 @@ def get_offers_with_ean_inside_title(raw_query: str) -> Collection[SharedOfferEa
     return rows
 
 
-def retry_and_log(func: Callable) -> Callable:
-    @atomic()
-    def retry_one_chunk_at_a_time(offer_rows: Collection) -> None:
-        chunk_size = len(offer_rows) // 5
-        chunk_size = max(chunk_size, 1)
-
-        for chunk in get_chunks(offer_rows, chunk_size=chunk_size):
-            try:
-                with atomic():
-                    func(chunk)
-            except Exception as exc:  # pylint: disable=broad-exception-caught
-                if chunk_size == 1:
-                    row = chunk[0]
-                    msg = "[%s][%s] could not handle offer #%s (ean: %s)"
-                    logger.info(msg, str(exc), func.__name__, row.id, row.ean)
-                else:
-                    retry_one_chunk_at_a_time(chunk)
-                continue
-
-    def inner(offer_rows: Collection) -> bool:
-        try:
-            func(offer_rows)
-        except Exception:  # pylint: disable=broad-exception-caught
-            retry_one_chunk_at_a_time(offer_rows)
-            return False
-        return True
-
-    return inner
-
-
 def reject_offers(offer_rows: Collection) -> None:
     def cancel_booking(offer: Offer) -> None:
         cancelled_bookings = bookings_api.cancel_bookings_from_rejected_offer(offer)

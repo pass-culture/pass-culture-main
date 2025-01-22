@@ -1,10 +1,9 @@
 from typing import Collection
 
-
 from pcapi.flask_app import app
 from pcapi.repository import atomic
-from pcapi.utils.chunks import get_chunks
 from pcapi.scripts.clean_offers_ean_title import utils
+from pcapi.utils.chunks import get_chunks
 
 
 # Mandatory since this module uses atomic() which needs an application context.
@@ -51,6 +50,12 @@ def parse_offers(rows: Collection[utils.SharedOfferEanQueryRow]) -> None:
 
 
 @atomic()
-@utils.retry_and_log
-def reject_offers_with_eans_from_unauthorized_subcategories(offer_rows: Collection[utils.SharedOfferEanQueryRow]) -> None:
+def reject_offers_with_eans_from_unauthorized_subcategories(
+    offer_rows: Collection[utils.SharedOfferEanQueryRow],
+) -> None:
     utils.reject_offers(offer_rows)
+
+
+if __name__ == "__main__":
+    app.app_context().push()
+    run()
