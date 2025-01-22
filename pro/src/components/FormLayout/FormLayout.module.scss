@@ -79,15 +79,8 @@ $info-box-margin-left: rem.torem(24px);
 
     &.inline-group {
       display: flex;
-      flex-wrap: wrap;
-
-      > *:not(:last-child) {
-        margin-right: rem.torem(16px);
-      }
-    }
-
-    &:last-child {
-      margin-bottom: 0 !important;
+      flex-flow: row wrap;
+      flex-direction: row;
     }
   }
 
@@ -133,6 +126,7 @@ $info-box-margin-left: rem.torem(24px);
   .form-layout {
     &-row.inline-group {
       flex-wrap: unset;
+      gap: rem.torem(16px);
     }
 
     &-row-info-info {

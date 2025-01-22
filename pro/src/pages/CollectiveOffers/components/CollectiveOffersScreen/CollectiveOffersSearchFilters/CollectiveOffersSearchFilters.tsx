@@ -19,13 +19,12 @@ import {
 } from 'commons/core/Offers/types'
 import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OffersTableSearch } from 'components/OffersTable/OffersTableSearch/OffersTableSearch'
-import styles from 'components/OffersTable/OffersTableSearch/OffersTableSearch.module.scss'
 import { PeriodSelector } from 'ui-kit/form/PeriodSelector/PeriodSelector'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
-
 
 interface CollectiveOffersSearchFiltersProps {
   hasFilters: boolean
@@ -214,7 +213,7 @@ export const CollectiveOffersSearchFilters = ({
 
   return (
     <OffersTableSearch
-      type='collective'
+      type="collective"
       onSubmit={requestFilteredOffers}
       isDisabled={disableAllFilters}
       hasActiveFilters={hasFilters}
@@ -226,50 +225,61 @@ export const CollectiveOffersSearchFilters = ({
       }}
       onResetFilters={onResetFilters}
     >
-      <FieldLayout
-        label={isOfferAddressEnabled ? 'Structure' : 'Lieu'}
-        name="lieu"
-        isOptional
-      >
-        <SelectInput
-          defaultOption={
-            isOfferAddressEnabled
-              ? ALL_STRUCTURES_OPTION
-              : ALL_VENUES_OPTION
-          }
-          onChange={storeSelectedVenue}
-          disabled={disableAllFilters}
-          name="lieu"
-          options={venues}
-          value={selectedFilters.venueId}
-        />
-      </FieldLayout>
-      <FieldLayout label="Format" name="format" isOptional>
-        <SelectInput
-          defaultOption={ALL_FORMATS_OPTION}
-          onChange={storeSelectedFormat}
-          disabled={disableAllFilters}
-          name="format"
-          options={formats}
-          value={selectedFilters.format}
-        />
-      </FieldLayout>
-      {!isNewOffersAndBookingsActive && (
+      <FormLayout.Row inline>
+        <FormikProvider value={formik}>
+          <SelectAutocomplete
+            multi
+            name="status"
+            label="Statut"
+            options={statusFilterOptions}
+            placeholder="Statuts"
+            isOptional
+            disabled={disableAllFilters || isRestrictedAsAdmin}
+          />
+        </FormikProvider>
         <FieldLayout
-          label="Type de l’offre"
-          name="collectiveOfferType"
+          label={isOfferAddressEnabled ? 'Structure' : 'Lieu'}
+          name="lieu"
           isOptional
         >
           <SelectInput
-            onChange={storeCollectiveOfferType}
+            defaultOption={
+              isOfferAddressEnabled ? ALL_STRUCTURES_OPTION : ALL_VENUES_OPTION
+            }
+            onChange={storeSelectedVenue}
             disabled={disableAllFilters}
-            name="collectiveOfferType"
-            options={COLLECTIVE_OFFER_TYPES_OPTIONS}
-            value={selectedFilters.collectiveOfferType}
+            name="lieu"
+            options={venues}
+            value={selectedFilters.venueId}
           />
         </FieldLayout>
-      )}
-      <FieldLayout label="Période de l’évènement" name="period" isOptional className={styles['offers-table-search-filter-full-width']}>
+        <FieldLayout label="Format" name="format" isOptional>
+          <SelectInput
+            defaultOption={ALL_FORMATS_OPTION}
+            onChange={storeSelectedFormat}
+            disabled={disableAllFilters}
+            name="format"
+            options={formats}
+            value={selectedFilters.format}
+          />
+        </FieldLayout>
+        {!isNewOffersAndBookingsActive && (
+          <FieldLayout
+            label="Type de l’offre"
+            name="collectiveOfferType"
+            isOptional
+          >
+            <SelectInput
+              onChange={storeCollectiveOfferType}
+              disabled={disableAllFilters}
+              name="collectiveOfferType"
+              options={COLLECTIVE_OFFER_TYPES_OPTIONS}
+              value={selectedFilters.collectiveOfferType}
+            />
+          </FieldLayout>
+        )}
+      </FormLayout.Row>
+      <FieldLayout label="Période de l’évènement" name="period" isOptional>
         <PeriodSelector
           onBeginningDateChange={onBeginningDateChange}
           onEndingDateChange={onEndingDateChange}
@@ -278,17 +288,6 @@ export const CollectiveOffersSearchFilters = ({
           periodEndingDate={selectedFilters.periodEndingDate}
         />
       </FieldLayout>
-      <FormikProvider value={formik}>
-        <SelectAutocomplete
-          multi
-          name="status"
-          label="Statut"
-          options={statusFilterOptions}
-          placeholder="Statuts"
-          isOptional
-          disabled={disableAllFilters || isRestrictedAsAdmin}
-        />
-      </FormikProvider>
     </OffersTableSearch>
   )
 }
