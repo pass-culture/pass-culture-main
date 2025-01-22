@@ -42,7 +42,6 @@ class SubcategoryResponseModel(BaseModel):
     category_id: str
     pro_label: str
     app_label: str
-    search_group_name: str | None
     is_event: bool
     conditional_fields: list[str]
     can_expire: bool
