@@ -10,7 +10,7 @@ import pytest
 
 from pcapi import settings
 from pcapi.connectors.ems import EMSScheduleConnector
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers.models import Venue

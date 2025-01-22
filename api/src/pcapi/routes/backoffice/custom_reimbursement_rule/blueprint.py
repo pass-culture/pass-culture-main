@@ -12,7 +12,7 @@ import pytz
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import subcategories
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import exceptions as finance_exceptions
 from pcapi.core.finance import models as finance_models
@@ -132,7 +132,7 @@ def _get_custom_reimbursement_rules(
                 sa.dialects.postgresql.array(
                     [
                         subcategory.id
-                        for subcategory in subcategories_v2.ALL_SUBCATEGORIES
+                        for subcategory in subcategories.ALL_SUBCATEGORIES
                         if subcategory.category.id in form.categories.data
                     ]
                 )

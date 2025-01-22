@@ -6,7 +6,7 @@ import pytest
 
 from pcapi.connectors import api_adresse
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.geography import models as geography_models
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories

@@ -8,7 +8,7 @@ from markupsafe import Markup
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import subcategories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
@@ -49,7 +49,7 @@ def list_rules() -> utils.BackofficeResponse:
         query = query.filter(
             offers_models.OfferPriceLimitationRule.subcategoryId.in_(
                 subcategory.id
-                for subcategory in subcategories_v2.ALL_SUBCATEGORIES
+                for subcategory in subcategories.ALL_SUBCATEGORIES
                 if subcategory.category.id in form.category.data
             )
         )
@@ -59,8 +59,8 @@ def list_rules() -> utils.BackofficeResponse:
         rules,
         key=(
             lambda rule: (
-                subcategories_v2.ALL_SUBCATEGORIES_DICT[rule.subcategoryId].category.pro_label,
-                subcategories_v2.ALL_SUBCATEGORIES_DICT[rule.subcategoryId].pro_label,
+                subcategories.ALL_SUBCATEGORIES_DICT[rule.subcategoryId].category.pro_label,
+                subcategories.ALL_SUBCATEGORIES_DICT[rule.subcategoryId].pro_label,
             )
         ),
     )

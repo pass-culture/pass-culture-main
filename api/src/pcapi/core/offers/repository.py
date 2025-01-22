@@ -13,7 +13,7 @@ from sqlalchemy.sql import and_
 from sqlalchemy.sql import or_
 
 from pcapi.core.bookings import models as bookings_models
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus as DisplayedStatus
 from pcapi.core.geography import models as geography_models

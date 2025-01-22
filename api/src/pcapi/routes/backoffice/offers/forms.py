@@ -10,10 +10,10 @@ from flask import url_for
 from flask_wtf import FlaskForm
 import wtforms
 
-from pcapi.core.categories import categories
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import pro_categories
+from pcapi.core.categories import subcategories
+from pcapi.core.categories.genres import show
 from pcapi.core.offerers import models as offerers_models
-from pcapi.domain import show_types
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.backoffice import autocomplete
@@ -203,13 +203,13 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
     )
     category = fields.PCSelectMultipleField(
         "Catégories",
-        choices=forms_utils.choices_from_enum(categories.CategoryIdLabelEnum),
+        choices=forms_utils.choices_from_enum(pro_categories.CategoryIdLabelEnum),
         search_inline=True,
         field_list_compatibility=True,
     )
     subcategory = fields.PCSelectMultipleField(
         "Sous-catégories",
-        choices=forms_utils.choices_from_enum(subcategories.SubcategoryProLabelEnumv2),
+        choices=forms_utils.choices_from_enum(subcategories.SubcategoryProLabelEnum),
         search_inline=True,
         field_list_compatibility=True,
     )
@@ -317,7 +317,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
     )
     show_type = fields.PCSelectMultipleField(
         "Type de spectacle",
-        choices=[(str(s), show_types.SHOW_TYPES_LABEL_BY_CODE[s]) for s in show_types.SHOW_TYPES_LABEL_BY_CODE],
+        choices=[(str(s), show.SHOW_TYPES_LABEL_BY_CODE[s]) for s in show.SHOW_TYPES_LABEL_BY_CODE],
         search_inline=True,
         field_list_compatibility=True,
     )
@@ -387,13 +387,13 @@ class OfferAlgoliaSearchSubForm(forms_utils.PCForm):
     )
     category = fields.PCSelectMultipleField(
         "Catégories",
-        choices=forms_utils.choices_from_enum(categories.CategoryIdLabelEnum),
+        choices=forms_utils.choices_from_enum(pro_categories.CategoryIdLabelEnum),
         search_inline=True,
         field_list_compatibility=True,
     )
     subcategory = fields.PCSelectMultipleField(
         "Sous-catégories",
-        choices=forms_utils.choices_from_enum(subcategories.SubcategoryProLabelEnumv2),
+        choices=forms_utils.choices_from_enum(subcategories.SubcategoryProLabelEnum),
         search_inline=True,
         field_list_compatibility=True,
     )
@@ -448,7 +448,7 @@ class OfferAlgoliaSearchSubForm(forms_utils.PCForm):
     )
     show_type = fields.PCSelectMultipleField(
         "Type de spectacle",
-        choices=[(label, label) for label in show_types.SHOW_TYPES_LABEL_BY_CODE.values()],
+        choices=[(label, label) for label in show.SHOW_TYPES_LABEL_BY_CODE.values()],
         search_inline=True,
         field_list_compatibility=True,
     )

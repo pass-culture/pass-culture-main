@@ -2,8 +2,8 @@ import re
 
 import pytest
 
+from pcapi.core.categories.genres.book import BOOK_TYPES
 from pcapi.core.providers.titelive_gtl import GTLS
-from pcapi.domain.book_types import BOOK_TYPES
 
 
 class BookTypesTest:

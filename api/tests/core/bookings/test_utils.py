@@ -5,8 +5,8 @@ import pytest
 import pytz
 import time_machine
 
-from pcapi.core.bookings import utils
-from pcapi.core.categories import subcategories_v2 as subcategories
+import pcapi.core.bookings.utils as utils
+from pcapi.core.categories import subcategories
 
 
 @pytest.mark.parametrize(

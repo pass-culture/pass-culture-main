@@ -1,12 +1,12 @@
 import pytest
 
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
+from pcapi.core.categories.genres import music
+from pcapi.core.categories.genres import show
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.offers.models import OfferExtraData
 from pcapi.core.providers.titelive_gtl import GTLS
-from pcapi.domain import music_types
-from pcapi.domain import show_types
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -56,11 +56,11 @@ class OfferFactoryTest:
         assert isinstance(concert_offer.extraData.get("performer"), str)
 
         music_type_code = int(concert_offer.extraData.get("musicType"))
-        music_type = music_types.MUSIC_TYPES_BY_CODE.get(music_type_code)
-        assert music_type_code in music_types.MUSIC_TYPES_BY_CODE
+        music_type = music.MUSIC_TYPES_BY_CODE.get(music_type_code)
+        assert music_type_code in music.MUSIC_TYPES_BY_CODE
 
         music_sub_type_code = int(concert_offer.extraData.get("musicSubType"))
-        music_sub_type = music_types.MUSIC_SUB_TYPES_BY_CODE.get(music_sub_type_code)
+        music_sub_type = music.MUSIC_SUB_TYPES_BY_CODE.get(music_sub_type_code)
 
         assert music_sub_type_code == -1 or music_sub_type in music_type.children
 
@@ -73,11 +73,11 @@ class OfferFactoryTest:
         assert isinstance(concert_offer.extraData.get("performer"), str)
 
         show_type_code = int(concert_offer.extraData.get("showType"))
-        show_type = show_types.SHOW_TYPES_BY_CODE.get(show_type_code)
-        assert show_type_code in show_types.SHOW_TYPES_BY_CODE
+        show_type = show.SHOW_TYPES_BY_CODE.get(show_type_code)
+        assert show_type_code in show.SHOW_TYPES_BY_CODE
 
         show_sub_type_code = int(concert_offer.extraData.get("showSubType"))
-        show_sub_type = show_types.SHOW_SUB_TYPES_BY_CODE.get(show_sub_type_code)
+        show_sub_type = show.SHOW_SUB_TYPES_BY_CODE.get(show_sub_type_code)
 
         assert show_sub_type_code == -1 or show_sub_type in show_type.children
 
@@ -125,11 +125,11 @@ class ProductFactoryTest:
         assert isinstance(concert_product.extraData.get("performer"), str)
 
         music_type_code = int(concert_product.extraData.get("musicType"))
-        music_type = music_types.MUSIC_TYPES_BY_CODE.get(music_type_code)
-        assert music_type_code in music_types.MUSIC_TYPES_BY_CODE
+        music_type = music.MUSIC_TYPES_BY_CODE.get(music_type_code)
+        assert music_type_code in music.MUSIC_TYPES_BY_CODE
 
         music_sub_type_code = int(concert_product.extraData.get("musicSubType"))
-        music_sub_type = music_types.MUSIC_SUB_TYPES_BY_CODE.get(music_sub_type_code)
+        music_sub_type = music.MUSIC_SUB_TYPES_BY_CODE.get(music_sub_type_code)
 
         assert music_sub_type_code == -1 or music_sub_type in music_type.children
 
@@ -143,10 +143,10 @@ class ProductFactoryTest:
         assert isinstance(concert_product.extraData.get("performer"), str)
 
         music_type_code = int(concert_product.extraData.get("musicType"))
-        music_type = music_types.MUSIC_TYPES_BY_CODE.get(music_type_code)
-        assert music_type_code in music_types.MUSIC_TYPES_BY_CODE
+        music_type = music.MUSIC_TYPES_BY_CODE.get(music_type_code)
+        assert music_type_code in music.MUSIC_TYPES_BY_CODE
 
         music_sub_type_code = int(concert_product.extraData.get("musicSubType"))
-        music_sub_type = music_types.MUSIC_SUB_TYPES_BY_CODE.get(music_sub_type_code)
+        music_sub_type = music.MUSIC_SUB_TYPES_BY_CODE.get(music_sub_type_code)
 
         assert music_sub_type_code == -1 or music_sub_type in music_type.children

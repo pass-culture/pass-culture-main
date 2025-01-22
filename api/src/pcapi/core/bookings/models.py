@@ -36,7 +36,7 @@ from pcapi.core.bookings.constants import BOOKINGS_AUTO_EXPIRY_DELAY
 from pcapi.core.bookings.constants import BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY
 from pcapi.core.bookings.utils import SUBCATEGORY_IDS_WITH_REACTION_AVAILABLE
 from pcapi.core.bookings.utils import get_cooldown_datetime_by_subcategories
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 import pcapi.core.finance.models as finance_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.reactions.models import ReactionTypeEnum

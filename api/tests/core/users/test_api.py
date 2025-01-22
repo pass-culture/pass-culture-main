@@ -22,7 +22,7 @@ from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import subcategories
 from pcapi.core.chronicles import factories as chronicles_factories
 from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.finance import api as finance_api
@@ -98,7 +98,7 @@ class CancelBeneficiaryBookingsOnSuspendAccountTest:
     )
     def should_cancel_booking_when_the_offer_is_a_thing(self, reason, is_backoffice_action):
         booking_thing = bookings_factories.BookingFactory(
-            stock__offer__subcategoryId=subcategories_v2.CARTE_CINE_ILLIMITE.id,
+            stock__offer__subcategoryId=subcategories.CARTE_CINE_ILLIMITE.id,
             status=BookingStatus.CONFIRMED,
         )
 
@@ -141,7 +141,7 @@ class CancelBeneficiaryBookingsOnSuspendAccountTest:
         in_the_past = datetime.datetime.utcnow() - relativedelta(days=1)
         in_the_future = datetime.datetime.utcnow() + relativedelta(days=1)
         booking_event = bookings_factories.BookingFactory(
-            stock__offer__subcategoryId=subcategories_v2.SEANCE_CINE.id,
+            stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
             status=BookingStatus.CONFIRMED,
             dateCreated=in_the_past,
             cancellationLimitDate=in_the_future,
@@ -167,7 +167,7 @@ class CancelBeneficiaryBookingsOnSuspendAccountTest:
         in_the_past = datetime.datetime.utcnow() - relativedelta(seconds=1)
         further_in_the_past = datetime.datetime.utcnow() - relativedelta(days=3)
         booking_event = bookings_factories.BookingFactory(
-            stock__offer__subcategoryId=subcategories_v2.SEANCE_CINE.id,
+            stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
             status=BookingStatus.CONFIRMED,
             dateCreated=further_in_the_past,
             cancellationLimitDate=in_the_past,
@@ -727,19 +727,19 @@ class DomainsCreditTest:
         bookings_factories.BookingFactory(
             user=user,
             amount=50,
-            stock__offer__subcategoryId=subcategories_v2.SEANCE_CINE.id,
+            stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
         )
         bookings_factories.BookingFactory(
             user=user,
             amount=5,
-            stock__offer__subcategoryId=subcategories_v2.SEANCE_CINE.id,
+            stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
         )
 
         # booking in digital domain
         bookings_factories.BookingFactory(
             user=user,
             amount=80,
-            stock__offer__subcategoryId=subcategories_v2.JEU_EN_LIGNE.id,
+            stock__offer__subcategoryId=subcategories.JEU_EN_LIGNE.id,
             stock__offer__url="http://on.line",
         )
 
@@ -747,14 +747,14 @@ class DomainsCreditTest:
         bookings_factories.BookingFactory(
             user=user,
             amount=150,
-            stock__offer__subcategoryId=subcategories_v2.JEU_SUPPORT_PHYSIQUE.id,
+            stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )
 
         # cancelled booking
         bookings_factories.CancelledBookingFactory(
             user=user,
             amount=150,
-            stock__offer__subcategoryId=subcategories_v2.JEU_SUPPORT_PHYSIQUE.id,
+            stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )
 
         assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
@@ -770,7 +770,7 @@ class DomainsCreditTest:
         bookings_factories.BookingFactory(
             user=user,
             amount=250,
-            stock__offer__subcategoryId=subcategories_v2.JEU_SUPPORT_PHYSIQUE.id,
+            stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )
 
         assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
@@ -786,7 +786,7 @@ class DomainsCreditTest:
         bookings_factories.BookingFactory(
             user=user,
             amount=250,
-            stock__offer__subcategoryId=subcategories_v2.JEU_SUPPORT_PHYSIQUE.id,
+            stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )
 
         with time_machine.travel(deposit_expiration_date):
@@ -839,7 +839,7 @@ class DomainsCreditTest:
             stock__price=Decimal("5.0"),
             stock__offer__venue=venue,
             stock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
-            stock__offer__subcategoryId=subcategories_v2.SEANCE_CINE.id,
+            stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
         )  # 20€
         self._price_booking(booking1)
 
@@ -851,7 +851,7 @@ class DomainsCreditTest:
             stock__price=Decimal("3.0"),
             stock__offer__venue=venue,
             stock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
-            stock__offer__subcategoryId=subcategories_v2.SEANCE_CINE.id,
+            stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
         )  # 6€ → 0€
         self._price_booking(booking2)
 
@@ -863,7 +863,7 @@ class DomainsCreditTest:
             stock__price=Decimal("3.0"),
             stock__offer__venue=venue,
             stock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
-            stock__offer__subcategoryId=subcategories_v2.SEANCE_CINE.id,
+            stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
         )  # 15€ → 10€
         self._price_booking(booking3)
 
@@ -938,7 +938,7 @@ class DomainsCreditTest:
             stock__price=Decimal("5.0"),
             stock__offer__venue=venue,
             stock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
-            stock__offer__subcategoryId=subcategories_v2.SEANCE_CINE.id,
+            stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
         )  # 20€
         self._price_booking(booking1)
 
@@ -950,7 +950,7 @@ class DomainsCreditTest:
             stock__price=Decimal("3.0"),
             stock__offer__venue=venue,
             stock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
-            stock__offer__subcategoryId=subcategories_v2.SEANCE_CINE.id,
+            stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
         )  # 6€ → 0€
         self._price_booking(booking2)
 
@@ -962,7 +962,7 @@ class DomainsCreditTest:
             stock__price=Decimal("3.0"),
             stock__offer__venue=venue,
             stock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
-            stock__offer__subcategoryId=subcategories_v2.SEANCE_CINE.id,
+            stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
         )  # 15€ → 10€
         self._price_booking(booking3)
 
@@ -980,7 +980,7 @@ class DomainsCreditTest:
             quantity=4,
             stock__price=Decimal("5.0"),
             stock__offer__venue=venue,
-            stock__offer__subcategoryId=subcategories_v2.SEANCE_CINE.id,
+            stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
         )  # 20€
         self._price_booking(booking4)
 
@@ -1050,7 +1050,7 @@ class DomainsCreditTest:
             quantity=2,
             stock__price=Decimal("4.5"),
             stock__offer__venue=venue,
-            stock__offer__subcategoryId=subcategories_v2.JEU_EN_LIGNE.id,
+            stock__offer__subcategoryId=subcategories.JEU_EN_LIGNE.id,
             stock__offer__url="http://on.line",
         )  # 9€
         self._price_booking(booking1)
@@ -1061,7 +1061,7 @@ class DomainsCreditTest:
             quantity=1,
             stock__price=Decimal("45.0"),
             stock__offer__venue=venue,
-            stock__offer__subcategoryId=subcategories_v2.JEU_EN_LIGNE.id,
+            stock__offer__subcategoryId=subcategories.JEU_EN_LIGNE.id,
             stock__offer__url="http://on.line",
         )  # 45€ → 0€
         self._price_booking(booking2)
@@ -1072,7 +1072,7 @@ class DomainsCreditTest:
             quantity=3,
             stock__price=Decimal("8.0"),
             stock__offer__venue=venue,
-            stock__offer__subcategoryId=subcategories_v2.JEU_EN_LIGNE.id,
+            stock__offer__subcategoryId=subcategories.JEU_EN_LIGNE.id,
             stock__offer__url="http://on.line",
         )  # 24€ → 15€
         self._price_booking(booking3)
@@ -1143,7 +1143,7 @@ class DomainsCreditTest:
             quantity=4,
             stock__price=Decimal("17"),
             stock__offer__venue=venue,
-            stock__offer__subcategoryId=subcategories_v2.JEU_SUPPORT_PHYSIQUE.id,
+            stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )  # 68€
         self._price_booking(booking1)
 
@@ -1153,7 +1153,7 @@ class DomainsCreditTest:
             quantity=2,
             stock__price=Decimal("16"),
             stock__offer__venue=venue,
-            stock__offer__subcategoryId=subcategories_v2.JEU_SUPPORT_PHYSIQUE.id,
+            stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )  # 32€ → 0€
         self._price_booking(booking2)
 
@@ -1163,7 +1163,7 @@ class DomainsCreditTest:
             quantity=3,
             stock__price=Decimal("13"),
             stock__offer__venue=venue,
-            stock__offer__subcategoryId=subcategories_v2.JEU_SUPPORT_PHYSIQUE.id,
+            stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )  # 39€ → 27€
         self._price_booking(booking3)
 

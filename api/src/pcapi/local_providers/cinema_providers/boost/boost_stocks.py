@@ -4,7 +4,7 @@ import logging
 from typing import Iterator
 
 from pcapi.connectors.serialization import boost_serializers
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.boost.client import BoostClientAPI
 from pcapi.core.external_bookings.boost.client import get_pcu_pricing_if_exists
 from pcapi.core.offerers.models import Venue

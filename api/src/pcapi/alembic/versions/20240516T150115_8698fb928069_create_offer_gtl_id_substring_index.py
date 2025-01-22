@@ -4,7 +4,7 @@
 from alembic import op
 
 from pcapi import settings
-from pcapi.core.categories.subcategories_v2 import MUSIC_TITELIVE_SUBCATEGORY_SEARCH_IDS
+from pcapi.core.categories.subcategories import MUSIC_TITELIVE_SUBCATEGORY_SEARCH_IDS
 
 
 # pre/post deployment: post

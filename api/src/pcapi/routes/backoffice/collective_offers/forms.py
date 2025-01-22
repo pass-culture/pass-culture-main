@@ -9,7 +9,7 @@ from flask import flash
 from flask_wtf import FlaskForm
 import wtforms
 
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.educational import models as educational_models
 from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus

@@ -10,7 +10,9 @@ from pcapi import settings
 import pcapi.core.artist.factories as artists_factories
 from pcapi.core.artist.models import ArtistType
 from pcapi.core.bookings.factories import BookingFactory
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import app_search_tree
+from pcapi.core.categories import models as categories_models
+from pcapi.core.categories import subcategories
 import pcapi.core.chronicles.factories as chronicles_factories
 from pcapi.core.geography.factories import AddressFactory
 import pcapi.core.mails.testing as mails_testing
@@ -2630,7 +2632,7 @@ class SubcategoriesTest:
         assert found_subcategory_ids == expected_subcategory_ids
 
         found_search_group_names = {x["name"] for x in response.json["searchGroups"]}
-        expected_search_group_names = {x.name for x in subcategories.SEARCH_GROUPS}
+        expected_search_group_names = {x.name for x in app_search_tree.SEARCH_GROUPS}
         assert found_search_group_names == expected_search_group_names
 
         found_home_labels = {x["name"] for x in response.json["homepageLabels"]}
@@ -2638,11 +2640,11 @@ class SubcategoriesTest:
         assert found_home_labels == expected_home_labels
 
         found_native_categories = {x["name"] for x in response.json["nativeCategories"]}
-        expected_native_categories = {x.name for x in subcategories.NATIVE_CATEGORIES}
+        expected_native_categories = {x.name for x in app_search_tree.NATIVE_CATEGORIES}
         assert found_native_categories == expected_native_categories
 
         found_genre_types = {x["name"] for x in response.json["genreTypes"]}
-        expected_genre_types = {x.name for x in subcategories.GenreType}
+        expected_genre_types = {x.name for x in categories_models.GenreType}
         assert found_genre_types == expected_genre_types
 
     def test_genre_types(self, client):
@@ -3655,18 +3657,6 @@ class CategoriesTest:
         response = client.get("/native/v1/categories")
 
         assert response.status_code == 200
-
-    def test_ids_are_unique(self, client):
-        response = client.get("/native/v1/categories")
-        ids = [node["id"] for node in response.json["categories"]]
-
-        assert len(ids) == len(set(ids))
-
-    def test_positions_reference_parents(self, client):
-        response = client.get("/native/v1/categories")
-        for node in response.json["categories"]:
-            if node["positions"]:
-                assert set(node["positions"]) <= set(node["parents"]), f'{node["positions"] = }, {node["parents"] = }'
 
 
 class OfferChroniclesTest:

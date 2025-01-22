@@ -11,13 +11,13 @@ from pydantic.v1 import validator
 from pydantic.v1.utils import GetterDict
 from spectree import BaseFile
 
-from pcapi.core.categories import subcategories_v2 as subcategories
-from pcapi.core.categories.categories import TITELIVE_MUSIC_TYPES
+from pcapi.core.categories import subcategories
+from pcapi.core.categories.genres import music
+from pcapi.core.categories.genres import show
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import constants
-from pcapi.domain import music_types
-from pcapi.domain import show_types
+from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
 from pcapi.models import offer_mixin
 from pcapi.routes import serialization
 from pcapi.routes.public.documentation_constants import descriptions
@@ -67,7 +67,7 @@ ALLOWED_PRODUCT_SUBCATEGORIES = [
 
 MusicTypeEnum = StrEnum(  # type: ignore[call-overload]
     "MusicTypeEnum (deprecated)",
-    {music_sub_type_slug: music_sub_type_slug for music_sub_type_slug in music_types.MUSIC_SUB_TYPES_BY_SLUG},
+    {music_sub_type_slug: music_sub_type_slug for music_sub_type_slug in music.MUSIC_SUB_TYPES_BY_SLUG},
 )
 
 TiteliveMusicTypeEnum = StrEnum(  # type: ignore[call-overload]
@@ -87,7 +87,7 @@ TiteliveEventMusicTypeEnum = StrEnum(  # type: ignore[call-overload]
 
 ShowTypeEnum = StrEnum(  # type: ignore[call-overload]
     "ShowTypeEnum",
-    {show_sub_type_slug: show_sub_type_slug for show_sub_type_slug in show_types.SHOW_SUB_TYPES_BY_SLUG},
+    {show_sub_type_slug: show_sub_type_slug for show_sub_type_slug in show.SHOW_SUB_TYPES_BY_SLUG},
 )
 
 EventCategoryEnum = StrEnum(  # type: ignore[call-overload]
@@ -293,9 +293,9 @@ def serialize_extra_data(offer: offers_models.Offer) -> CategoryRelatedFields:
         show_sub_type = "-1"  # Use 'Other' when not filled
 
     if music_sub_type:
-        serialized_data["musicType"] = MusicTypeEnum(music_types.MUSIC_SUB_TYPES_BY_CODE[int(music_sub_type)].slug)
+        serialized_data["musicType"] = MusicTypeEnum(music.MUSIC_SUB_TYPES_BY_CODE[int(music_sub_type)].slug)
     if show_sub_type:
-        serialized_data["showType"] = ShowTypeEnum(show_types.SHOW_SUB_TYPES_BY_CODE[int(show_sub_type)].slug)
+        serialized_data["showType"] = ShowTypeEnum(show.SHOW_SUB_TYPES_BY_CODE[int(show_sub_type)].slug)
 
     if (
         gtl_id
@@ -325,8 +325,8 @@ def deserialize_extra_data(
             if field_value in TiteliveMusicTypeEnum.__members__:
                 extra_data["gtl_id"] = constants.GTL_ID_BY_TITELIVE_MUSIC_GENRE[field_value]
                 music_slug = constants.MUSIC_SLUG_BY_GTL_ID[extra_data["gtl_id"]]
-                extra_data["musicType"] = str(music_types.MUSIC_TYPES_BY_SLUG[music_slug].code)
-                extra_data["musicSubType"] = str(music_types.MUSIC_SUB_TYPES_BY_SLUG[music_slug].code)
+                extra_data["musicType"] = str(music.MUSIC_TYPES_BY_SLUG[music_slug].code)
+                extra_data["musicSubType"] = str(music.MUSIC_SUB_TYPES_BY_SLUG[music_slug].code)
             else:
                 extra = {
                     "venue": venue_id if venue_id else "",
@@ -337,13 +337,13 @@ def deserialize_extra_data(
 
                 logger.info("offer: using old music type", extra=extra)
 
-                extra_data["musicSubType"] = str(music_types.MUSIC_SUB_TYPES_BY_SLUG[field_value].code)
-                extra_data["musicType"] = str(music_types.MUSIC_TYPES_BY_SLUG[field_value].code)
+                extra_data["musicSubType"] = str(music.MUSIC_SUB_TYPES_BY_SLUG[field_value].code)
+                extra_data["musicType"] = str(music.MUSIC_TYPES_BY_SLUG[field_value].code)
                 extra_data["gtl_id"] = constants.MUSIC_SLUG_TO_GTL_ID[field_value]
         elif field_name == subcategories.ExtraDataFieldEnum.SHOW_TYPE.value:
             # Convert showType slug to showType and showSubType codes
-            extra_data["showSubType"] = str(show_types.SHOW_SUB_TYPES_BY_SLUG[field_value].code)
-            extra_data["showType"] = str(show_types.SHOW_TYPES_BY_SLUG[field_value].code)
+            extra_data["showSubType"] = str(show.SHOW_SUB_TYPES_BY_SLUG[field_value].code)
+            extra_data["showType"] = str(show.SHOW_TYPES_BY_SLUG[field_value].code)
         else:
             extra_data[field_name] = field_value
     return extra_data

@@ -5,7 +5,7 @@ import logging
 import pcapi.connectors.ems as ems_connector
 from pcapi.connectors.serialization import ems_serializers
 from pcapi.core import search
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.finance import api as finance_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api

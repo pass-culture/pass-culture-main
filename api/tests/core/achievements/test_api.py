@@ -3,15 +3,13 @@ import pytest
 from pcapi.core.achievements import api as achievements_api
 from pcapi.core.achievements import models as achievements_models
 from pcapi.core.bookings import factories as bookings_factories
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import subcategories
 from pcapi.core.users import factories as users_factories
 
 
 @pytest.mark.usefixtures("db_session")
 class AchievementUnlockTest:
-    @pytest.mark.parametrize(
-        "movie_subcategory_id", [subcategories_v2.SEANCE_CINE.id, subcategories_v2.CINE_PLEIN_AIR.id]
-    )
+    @pytest.mark.parametrize("movie_subcategory_id", [subcategories.SEANCE_CINE.id, subcategories.CINE_PLEIN_AIR.id])
     def test_movie_booking_achievement_unlock(self, movie_subcategory_id):
         user = users_factories.BeneficiaryGrant18Factory()
         movie_booking = bookings_factories.BookingFactory(user=user, stock__offer__subcategoryId=movie_subcategory_id)
@@ -25,7 +23,7 @@ class AchievementUnlockTest:
     def test_book_booking_achievement_unlock(self):
         user = users_factories.BeneficiaryGrant18Factory()
         book_booking = bookings_factories.BookingFactory(
-            user=user, stock__offer__subcategoryId=subcategories_v2.LIVRE_PAPIER.id
+            user=user, stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id
         )
 
         achievements_api.unlock_achievement(book_booking)
@@ -36,7 +34,7 @@ class AchievementUnlockTest:
 
     @pytest.mark.parametrize(
         "recorded_music_subcategory_id",
-        [subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id],
+        [subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id],
     )
     def test_recorded_music_booking_achievement_unlock(self, recorded_music_subcategory_id):
         user = users_factories.BeneficiaryGrant18Factory()
@@ -53,10 +51,10 @@ class AchievementUnlockTest:
     @pytest.mark.parametrize(
         "show_subcategory_id",
         [
-            subcategories_v2.SPECTACLE_REPRESENTATION.id,
-            subcategories_v2.SPECTACLE_VENTE_DISTANCE.id,
-            subcategories_v2.ABO_SPECTACLE.id,
-            subcategories_v2.FESTIVAL_SPECTACLE.id,
+            subcategories.SPECTACLE_REPRESENTATION.id,
+            subcategories.SPECTACLE_VENTE_DISTANCE.id,
+            subcategories.ABO_SPECTACLE.id,
+            subcategories.FESTIVAL_SPECTACLE.id,
         ],
     )
     def test_show_booking_achievement_unlock(self, show_subcategory_id):
@@ -72,12 +70,12 @@ class AchievementUnlockTest:
     @pytest.mark.parametrize(
         "museum_subcategory_id",
         [
-            subcategories_v2.VISITE.id,
-            subcategories_v2.CARTE_MUSEE.id,
-            subcategories_v2.MUSEE_VENTE_DISTANCE.id,
-            subcategories_v2.VISITE_GUIDEE.id,
-            subcategories_v2.CONFERENCE.id,
-            subcategories_v2.EVENEMENT_PATRIMOINE.id,
+            subcategories.VISITE.id,
+            subcategories.CARTE_MUSEE.id,
+            subcategories.MUSEE_VENTE_DISTANCE.id,
+            subcategories.VISITE_GUIDEE.id,
+            subcategories.CONFERENCE.id,
+            subcategories.EVENEMENT_PATRIMOINE.id,
         ],
     )
     def test_museum_booking_achievement_unlock(self, museum_subcategory_id):
@@ -93,10 +91,10 @@ class AchievementUnlockTest:
     @pytest.mark.parametrize(
         "live_music_subcategory_id",
         [
-            subcategories_v2.CONCERT.id,
-            subcategories_v2.FESTIVAL_MUSIQUE.id,
-            subcategories_v2.ABO_CONCERT.id,
-            subcategories_v2.EVENEMENT_MUSIQUE.id,
+            subcategories.CONCERT.id,
+            subcategories.FESTIVAL_MUSIQUE.id,
+            subcategories.ABO_CONCERT.id,
+            subcategories.EVENEMENT_MUSIQUE.id,
         ],
     )
     def test_live_music_booking_achievement_unlock(self, live_music_subcategory_id):
@@ -114,7 +112,7 @@ class AchievementUnlockTest:
     def test_news_booking_achievement_unlock(self):
         user = users_factories.BeneficiaryGrant18Factory()
         news_booking = bookings_factories.BookingFactory(
-            user=user, stock__offer__subcategoryId=subcategories_v2.ABO_PRESSE_EN_LIGNE.id
+            user=user, stock__offer__subcategoryId=subcategories.ABO_PRESSE_EN_LIGNE.id
         )
 
         achievements_api.unlock_achievement(news_booking)
@@ -126,11 +124,11 @@ class AchievementUnlockTest:
     @pytest.mark.parametrize(
         "art_lesson_subcategory_id",
         [
-            subcategories_v2.SEANCE_ESSAI_PRATIQUE_ART.id,
-            subcategories_v2.ATELIER_PRATIQUE_ART.id,
-            subcategories_v2.PLATEFORME_PRATIQUE_ARTISTIQUE.id,
-            subcategories_v2.ABO_PRATIQUE_ART.id,
-            subcategories_v2.PRATIQUE_ART_VENTE_DISTANCE.id,
+            subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
+            subcategories.ATELIER_PRATIQUE_ART.id,
+            subcategories.PLATEFORME_PRATIQUE_ARTISTIQUE.id,
+            subcategories.ABO_PRATIQUE_ART.id,
+            subcategories.PRATIQUE_ART_VENTE_DISTANCE.id,
         ],
     )
     def test_art_lesson_booking_achievement_unlock(self, art_lesson_subcategory_id):
@@ -148,7 +146,7 @@ class AchievementUnlockTest:
     def test_booking_without_achievement(self):
         user = users_factories.BeneficiaryGrant18Factory()
         booking_without_achievement = bookings_factories.BookingFactory(
-            user=user, stock__offer__subcategoryId=subcategories_v2.CONCOURS.id
+            user=user, stock__offer__subcategoryId=subcategories.CONCOURS.id
         )
 
         achievements_api.unlock_achievement(booking_without_achievement)
@@ -158,7 +156,7 @@ class AchievementUnlockTest:
     def test_booking_achievement_idempotence(self):
         user = users_factories.BeneficiaryGrant18Factory()
         book_booking = bookings_factories.BookingFactory(
-            user=user, stock__offer__subcategoryId=subcategories_v2.LIVRE_PAPIER.id
+            user=user, stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id
         )
 
         achievements_api.unlock_achievement(book_booking)

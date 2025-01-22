@@ -1,7 +1,7 @@
 import pytest
 
 from pcapi.core import testing
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.offerers import factories as offerers_factories
 
 from . import utils

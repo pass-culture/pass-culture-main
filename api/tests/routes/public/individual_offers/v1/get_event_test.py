@@ -4,7 +4,7 @@ from datetime import timedelta
 import pytest
 
 from pcapi.core import testing
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.utils import human_ids

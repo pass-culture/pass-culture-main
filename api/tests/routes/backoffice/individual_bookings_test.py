@@ -10,8 +10,8 @@ import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
-from pcapi.core.categories import categories
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import pro_categories
+from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings import factories as external_bookings_factories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
@@ -56,7 +56,7 @@ def bookings_fixture() -> tuple:
         stock__quantity="212",
         stock__offer__isDuo=True,
         stock__offer__name="Guide du Routard Sainte-Hélène",
-        stock__offer__subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+        stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=4),
         validationAuthorType=bookings_models.BookingValidationAuthorType.BACKOFFICE,
     )
@@ -67,7 +67,7 @@ def bookings_fixture() -> tuple:
         quantity=1,
         amount=12.5,
         token="CNCL02",
-        stock__offer__subcategoryId=subcategories_v2.FESTIVAL_SPECTACLE.id,
+        stock__offer__subcategoryId=subcategories.FESTIVAL_SPECTACLE.id,
         stock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=11),
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=3),
     )
@@ -79,7 +79,7 @@ def bookings_fixture() -> tuple:
         stock__price=13.95,
         stock__quantity="2",
         stock__offer__name="Guide Ile d'Elbe 1814 Petit Futé",
-        stock__offer__subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+        stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=2),
         cancellation_limit_date=datetime.datetime.utcnow() - datetime.timedelta(days=1),
     )
@@ -87,7 +87,7 @@ def bookings_fixture() -> tuple:
         id=1000004,
         user=user3,
         token="REIMB3",
-        stock__offer__subcategoryId=subcategories_v2.SPECTACLE_REPRESENTATION.id,
+        stock__offer__subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id,
         stock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=12),
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1),
     )
@@ -99,7 +99,7 @@ def bookings_fixture() -> tuple:
         stock__price=12.34,
         stock__quantity="1",
         stock__offer__name="Guide Ile d'Elbe 1814 Petit Futé",
-        stock__offer__subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+        stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
         dateCreated=datetime.datetime.utcnow(),
     )
 
@@ -150,8 +150,8 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert rows[0]["Partenaire culturel"] == bookings[0].venue.name
 
         extra_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[0]
-        assert f"Catégorie : {categories.LIVRE.pro_label}" in extra_data
-        assert f"Sous-catégorie : {subcategories_v2.LIVRE_PAPIER.pro_label}" in extra_data
+        assert f"Catégorie : {pro_categories.LIVRE.pro_label}" in extra_data
+        assert f"Sous-catégorie : {subcategories.LIVRE_PAPIER.pro_label}" in extra_data
         assert f"Date de validation : {datetime.date.today().strftime('%d/%m/%Y')} à " in extra_data
         assert "Date limite de réservation" not in extra_data
         assert "Date d'annulation" not in extra_data
@@ -287,8 +287,8 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert row["Partenaire culturel"] == bookings[2].venue.name
 
         extra_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[row_index]
-        assert f"Catégorie : {categories.LIVRE.pro_label}" in extra_data
-        assert f"Sous-catégorie : {subcategories_v2.LIVRE_PAPIER.pro_label}" in extra_data
+        assert f"Catégorie : {pro_categories.LIVRE.pro_label}" in extra_data
+        assert f"Sous-catégorie : {subcategories.LIVRE_PAPIER.pro_label}" in extra_data
         assert "Date" not in extra_data
 
         assert html_parser.extract_pagination_info(response.data) == (1, 1, len(rows))
@@ -315,7 +315,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
 
     def test_list_bookings_by_category(self, authenticated_client, bookings):
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, category=categories.SPECTACLE.id))
+            response = authenticated_client.get(url_for(self.endpoint, category=pro_categories.SPECTACLE.id))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
@@ -512,11 +512,11 @@ class ListIndividualBookingsTest(GetEndpointHelper):
     def test_list_bookings_more_than_max(self, authenticated_client):
         bookings_factories.BookingFactory.create_batch(
             25,
-            stock__offer__subcategoryId=subcategories_v2.CINE_PLEIN_AIR.id,
+            stock__offer__subcategoryId=subcategories.CINE_PLEIN_AIR.id,
         )
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, category=categories.CINEMA.id, limit=20))
+            response = authenticated_client.get(url_for(self.endpoint, category=pro_categories.CINEMA.id, limit=20))
             assert response.status_code == 200
 
         assert html_parser.count_table_rows(response.data) == 2 * 20  # extra data in second row for each booking
@@ -926,7 +926,7 @@ class CancelBookingTest(PostEndpointHelper):
         offer = offers_factories.EventOfferFactory(
             name="Film",
             venue=venue_provider.venue,
-            subcategoryId=subcategories_v2.SEANCE_CINE.id,
+            subcategoryId=subcategories.SEANCE_CINE.id,
             lastProviderId=ems_provider.id,
         )
         stock = offers_factories.EventStockFactory(
@@ -1010,7 +1010,7 @@ class CancelBookingTest(PostEndpointHelper):
         offer = offers_factories.OfferFactory(
             lastProvider=cgr_provider,
             idAtProvider="123%12354114%CGR",
-            subcategoryId=subcategories_v2.SEANCE_CINE.id,
+            subcategoryId=subcategories.SEANCE_CINE.id,
             venue=venue_provider.venue,
         )
         stock = offers_factories.StockFactory(

@@ -11,7 +11,7 @@ from pcapi import settings
 from pcapi.connectors.big_query import queries as big_query_queries
 from pcapi.connectors.big_query.queries.last_30_days_booking import Last30DaysBookingsModel
 from pcapi.core.bookings import models as bookings_models
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import subcategories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
@@ -724,7 +724,7 @@ def get_last_x_days_bookings_for_movies(days: int = 30) -> dict[int, int]:
         .join(offers_models.Stock.offer)
         .join(offers_models.Offer.product)
         .filter(
-            offers_models.Product.subcategoryId == subcategories_v2.SEANCE_CINE.id,
+            offers_models.Product.subcategoryId == subcategories.SEANCE_CINE.id,
             bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED,
             bookings_models.Booking.dateCreated > datetime.date.today() - datetime.timedelta(days=days),
         )

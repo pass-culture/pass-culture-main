@@ -10,7 +10,7 @@ import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.sql.expression import extract
 
-import pcapi.core.categories.subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.schemas import RedactorInformation

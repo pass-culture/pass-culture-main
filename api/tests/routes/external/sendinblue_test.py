@@ -5,7 +5,7 @@ import pytest
 
 from pcapi.connectors.recommendation import RecommendationApiException
 from pcapi.connectors.recommendation import RecommendationApiTimeoutException
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.history import models as history_models
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import ProductFactory
