@@ -111,23 +111,27 @@ export const MultiSelect = ({
 
   const toggleDropdown = () => setIsOpen((prev) => !prev)
 
-  const handleSelectItem = (item: Option) => {
-    const updatedSelectedItems = selectedItems.some((i) => i.id === item.id)
-      ? selectedItems.filter((i) => i.id !== item.id)
-      : [...selectedItems, item]
-
+  function updateSelectedItems(updatedSelectedItems: Option[]) {
     setSelectedItems(updatedSelectedItems)
     onSelectedOptionsChanged(updatedSelectedItems)
   }
 
+  const handleSelectItem = (item: Option) => {
+    const updatedItems = selectedItems.some((i) => i.id === item.id)
+      ? selectedItems.filter((i) => i.id !== item.id)
+      : [...selectedItems, item]
+
+    updateSelectedItems(updatedItems)
+  }
+
   const handleSelectAll = () => {
     const updatedItems = isSelectAllChecked ? [] : options
-    setSelectedItems(updatedItems)
+    updateSelectedItems(updatedItems)
   }
 
   const handleRemoveTag = (itemId: string) => {
     const updatedItems = selectedItems.filter((item) => item.id !== itemId)
-    setSelectedItems(updatedItems)
+    updateSelectedItems(updatedItems)
   }
 
   const handleKeyDown = (event: KeyboardEvent) => {
