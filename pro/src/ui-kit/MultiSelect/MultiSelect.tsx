@@ -106,7 +106,7 @@ export const MultiSelect = ({
   const [selectedItems, setSelectedItems] = useState<Option[]>(defaultOptions)
   const isSelectAllChecked = selectedItems.length === options.length
 
-  const containerRef = useRef<HTMLFieldSetElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const id = useId()
 
   const toggleDropdown = () => setIsOpen((prev) => !prev)
@@ -152,34 +152,36 @@ export const MultiSelect = ({
 
   return (
     <FieldLayout label={label} name={name} error={error} showError={!!error}>
-      <fieldset className={styles.container} ref={containerRef}>
-        <MultiSelectTrigger
-          id={id}
-          buttonLabel={buttonLabel}
-          fieldLabel={label}
-          isOpen={isOpen}
-          toggleDropdown={toggleDropdown}
-          selectedCount={selectedItems.length}
-          disabled={disabled}
-          error={error}
-        />
-
-        {isOpen && (
-          <MultiSelectPanel
+      <fieldset className={styles.container}>
+        <div ref={containerRef}>
+          <MultiSelectTrigger
             id={id}
-            label={label}
-            options={options.map((option) => ({
-              ...option,
-              checked: selectedItems.some((item) => item.id === option.id),
-            }))}
-            onOptionSelect={handleSelectItem}
-            onSelectAll={handleSelectAll}
-            isAllChecked={isSelectAllChecked}
-            hasSearch={hasSearch}
-            searchLabel={searchLabel}
-            hasSelectAllOptions={hasSelectAllOptions}
+            buttonLabel={buttonLabel}
+            fieldLabel={label}
+            isOpen={isOpen}
+            toggleDropdown={toggleDropdown}
+            selectedCount={selectedItems.length}
+            disabled={disabled}
+            error={error}
           />
-        )}
+
+          {isOpen && (
+            <MultiSelectPanel
+              id={id}
+              label={label}
+              options={options.map((option) => ({
+                ...option,
+                checked: selectedItems.some((item) => item.id === option.id),
+              }))}
+              onOptionSelect={handleSelectItem}
+              onSelectAll={handleSelectAll}
+              isAllChecked={isSelectAllChecked}
+              hasSearch={hasSearch}
+              searchLabel={searchLabel}
+              hasSelectAllOptions={hasSelectAllOptions}
+            />
+          )}
+        </div>
 
         <SelectedValuesTags
           disabled={false}

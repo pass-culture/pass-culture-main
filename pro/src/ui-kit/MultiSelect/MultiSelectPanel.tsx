@@ -67,7 +67,7 @@ export const MultiSelectPanel = ({
           <span>{filteredOptions.length} résultats trouvés</span>
         </p>
         {filteredOptions.length > 0 ? (
-          <ul className={styles['container']} aria-label="Liste des options">
+          <ul className={styles['container']}>
             {hasSelectAllOptions && (
               <li key={'all-options'} className={styles.item}>
                 <BaseCheckbox
