@@ -608,7 +608,7 @@ class GetPublicAccountTest(GetEndpointHelper):
     expected_num_queries = 6
 
     class ReviewButtonTest(button_helpers.ButtonHelper):
-        needed_permission = perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS
+        needed_permission = perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW
         button_label = "Revue manuelle"
 
         @property
@@ -1541,7 +1541,7 @@ class SendValidationCodeTest(PostEndpointHelper):
 class UpdatePublicAccountReviewTest(PostEndpointHelper):
     endpoint = "backoffice_web.public_accounts.review_public_account"
     endpoint_kwargs = {"user_id": 1}
-    needed_permission = perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW
 
     def test_add_new_fraud_review_to_account(self, authenticated_client, legit_user):
         user = users_factories.UserFactory()

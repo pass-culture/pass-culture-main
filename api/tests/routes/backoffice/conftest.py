@@ -45,6 +45,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     "support_n2": [
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
         perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT,
+        perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW,
         perm_models.Permissions.SUSPEND_USER,
         perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT,
         perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST,
@@ -89,6 +90,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.SUSPEND_USER,
         perm_models.Permissions.UNSUSPEND_USER,
         perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS,
+        perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW,
         perm_models.Permissions.MANAGE_BOOKINGS,
         perm_models.Permissions.READ_BOOKINGS,
     ],
@@ -148,6 +150,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.FEATURE_FLIPPING,
         perm_models.Permissions.PRO_FRAUD_ACTIONS,
         perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS,
+        perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW,
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
         perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT,
         perm_models.Permissions.SUSPEND_USER,

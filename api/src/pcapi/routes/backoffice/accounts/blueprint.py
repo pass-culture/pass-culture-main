@@ -392,7 +392,7 @@ def render_public_account_details(
                 "edit_account_dst": url_for(".update_public_account", user_id=user.id),
                 "manual_review_form": (
                     account_forms.ManualReviewForm()
-                    if utils.has_current_user_permission(perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS)
+                    if utils.has_current_user_permission(perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW)
                     else None
                 ),
                 "manual_review_dst": url_for(".review_public_account", user_id=user.id),
@@ -1113,7 +1113,7 @@ def send_validation_code(user_id: int) -> utils.BackofficeResponse:
 
 @public_accounts_blueprint.route("/<int:user_id>/review", methods=["POST"])
 @atomic()
-@utils.permission_required(perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS)
+@utils.permission_required(perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW)
 def review_public_account(user_id: int) -> utils.BackofficeResponse:
     user = (
         users_models.User.query.filter_by(id=user_id).populate_existing().with_for_update(key_share=True).one_or_none()
