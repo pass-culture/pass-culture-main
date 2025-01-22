@@ -30,6 +30,7 @@ class Permissions(enum.Enum):
 
     PRO_FRAUD_ACTIONS = "actions exclusives à l'équipe Fraude et Conformité (PRO)"
     BENEFICIARY_FRAUD_ACTIONS = "actions exclusives à l'équipe Fraude (jeune)"
+    BENEFICIARY_MANUAL_REVIEW = "effectuer une revue manuelle d'obtention de crédit"
 
     READ_PUBLIC_ACCOUNT = "visualiser un compte bénéficiaire/grand public"
     MANAGE_PUBLIC_ACCOUNT = "gérer un compte bénéficiaire/grand public"
