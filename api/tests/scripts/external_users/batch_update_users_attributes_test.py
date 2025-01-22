@@ -188,7 +188,6 @@ def test_format_sendinblue_user():
     }
 
 
-@pytest.mark.features(WIP_ENABLE_BREVO_PRO_SUBACCOUNT=True)
 @pytest.mark.usefixtures("db_session")
 def test_format_sendinblue_pro():
     user_offerer = UserOffererFactory()

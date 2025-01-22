@@ -705,7 +705,7 @@ class GetRedirectToBrevoUserPageTest(GetEndpointHelper):
     def test_pro_in_brevo(self, mocked_get_contact_url, authenticated_client):
         user_offerer = offerers_factories.UserOffererFactory()
         user_id = user_offerer.user.id
-        with assert_num_queries(4):  # session + current user + get_user + FF WIP_ENABLE_BREVO_PRO_SUBACCOUNT
+        with assert_num_queries(3):  # session + current user + get_user
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 302
 
@@ -716,7 +716,7 @@ class GetRedirectToBrevoUserPageTest(GetEndpointHelper):
     def test_pro_not_in_brevo(self, authenticated_client):
         user_offerer = offerers_factories.UserOffererFactory()
         user_id = user_offerer.user.id
-        with assert_num_queries(4):  # session + current user + get_user + FF WIP_ENABLE_BREVO_PRO_SUBACCOUNT
+        with assert_num_queries(3):  # session + current user + get_user
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 303
 

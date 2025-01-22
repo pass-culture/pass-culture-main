@@ -104,7 +104,6 @@ class FeatureToggle(enum.Enum):
     ENABLE_PRO_FEEDBACK = "Activer l'envoi des commentaires du portail pro vers Harvestr"
     ENABLE_MOVIE_FESTIVAL_RATE = "Activer les tarifs spéciaux pour un festival cinéma"
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
-    WIP_ENABLE_BREVO_PRO_SUBACCOUNT = "Activer l'utilisation du sous-compte Brevo pour les mails pros"
     WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY = "Changer le template d'email de confirmation de réservation"
     WIP_ENABLE_NEW_FINANCE_WORKFLOW = "Active le nouveau workflow finance"
     WIP_ENABLE_MARSEILLE = "Activer Marseille en grand"

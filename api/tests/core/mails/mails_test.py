@@ -68,8 +68,6 @@ class SendinblueBackendTest:
         self.mock_template = models.TemplatePro(
             id_prod=1,
             id_not_prod=10,
-            subaccount_id_prod=2,
-            subaccount_id_not_prod=11,
             tags=["this_is_such_a_great_tag", "it_would_be_a_pity_if_anything_happened_to_it"],
         )
         self.data = models.TransactionalEmailData(template=self.mock_template, params=self.params, reply_to=None)
@@ -274,32 +272,23 @@ class SendTest:
         assert caplog.records == []
 
     @pytest.mark.parametrize(
-        "feature_flag,template_class,expected_use_pro_subaccount",
+        "template_class,expected_use_pro_subaccount",
         [
-            (True, models.TemplatePro, True),
-            (True, models.Template, False),
-            (False, models.TemplatePro, False),
-            (False, models.Template, False),
+            (models.TemplatePro, True),
+            (models.Template, False),
         ],
     )
     @pytest.mark.settings(EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.SendinblueBackend")
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
-    def test_send_mail_to_pro_with_FF(
+    def test_send_mail_to_pro(
         self,
         mock_send_transactional_email_secondary_task,
-        features,
         caplog,
-        feature_flag,
         template_class,
         expected_use_pro_subaccount,
     ):
-        features.WIP_ENABLE_BREVO_PRO_SUBACCOUNT = feature_flag
-        if template_class == models.TemplatePro:
-            mock_template = template_class(
-                id_prod=1, id_not_prod=10, send_to_ehp=False, subaccount_id_prod=0, subaccount_id_not_prod=0
-            )
-        else:
-            mock_template = template_class(id_prod=1, id_not_prod=10, send_to_ehp=False)
+
+        mock_template = template_class(id_prod=1, id_not_prod=10, send_to_ehp=False)
         data = models.TransactionalEmailData(template=mock_template)
         recipients = ["lucy.ellingson@example.com", "avery.kelly@example.com"]
 
@@ -313,40 +302,26 @@ class SendTest:
         )
 
     @pytest.mark.parametrize(
-        "feature_flag,template_class,enable_unsubscribe,expected_use_pro_subaccount",
+        "template_class,enable_unsubscribe,expected_use_pro_subaccount",
         [
-            (True, models.TemplatePro, True, True),
-            (True, models.Template, False, False),
-            (False, models.TemplatePro, False, False),
-            (False, models.Template, True, False),
+            (models.TemplatePro, True, True),
+            (models.Template, False, False),
         ],
     )
     @pytest.mark.settings(IS_TESTING=True, EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.SendinblueBackend")
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
-    def test_send_mail_to_pro_with_FF_in_ehp(
+    def test_send_mail_to_pro_in_ehp(
         self,
         mock_send_transactional_email_secondary_task,
-        features,
         caplog,
-        feature_flag,
         template_class,
         enable_unsubscribe,
         expected_use_pro_subaccount,
     ):
-        features.WIP_ENABLE_BREVO_PRO_SUBACCOUNT = feature_flag
-        if template_class == models.TemplatePro:
-            mock_template = template_class(
-                id_prod=1,
-                id_not_prod=10,
-                send_to_ehp=False,
-                subaccount_id_prod=0,
-                subaccount_id_not_prod=0,
-                enable_unsubscribe=enable_unsubscribe,
-            )
-        else:
-            mock_template = template_class(
-                id_prod=1, id_not_prod=10, send_to_ehp=False, enable_unsubscribe=enable_unsubscribe
-            )
+
+        mock_template = template_class(
+            id_prod=1, id_not_prod=10, send_to_ehp=False, enable_unsubscribe=enable_unsubscribe
+        )
         data = models.TransactionalEmailData(template=mock_template)
         recipients = ["lucy.ellingson@example.com", "avery.kelly@example.com"]
 
@@ -357,6 +332,6 @@ class SendTest:
         assert caplog.messages[0] == (
             f"An email would be sent via Sendinblue {'using the PRO subaccount ' if expected_use_pro_subaccount else ''}to=lucy.ellingson@example.com, "
             "avery.kelly@example.com, bcc=(): {'template': {'id_prod': 1, 'id_not_prod': 10, 'tags': [], 'use_priority_queue': False, "
-            f"'send_to_ehp': False, 'enable_unsubscribe': {enable_unsubscribe}{''', 'subaccount_id_prod': 0, 'subaccount_id_not_prod': 0''' if template_class==models.TemplatePro else ''}"
+            f"'send_to_ehp': False, 'enable_unsubscribe': {enable_unsubscribe}"
             "}, 'reply_to': None, 'params': {}}"
         )

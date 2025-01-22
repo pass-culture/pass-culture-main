@@ -2015,9 +2015,7 @@ class CreateFromOnboardingDataTest:
 
     def assert_only_welcome_email_to_pro_was_sent(self) -> None:
         assert len(mails_testing.outbox) == 1
-        assert (
-            mails_testing.outbox[0]["template"]["subaccount_id_not_prod"] == TransactionalEmail.WELCOME_TO_PRO.value.id
-        )
+        assert mails_testing.outbox[0]["template"]["id_not_prod"] == TransactionalEmail.WELCOME_TO_PRO.value.id
 
     def get_onboarding_data(
         self, create_venue_without_siret: bool
@@ -2337,7 +2335,7 @@ class InviteMembersTest:
         assert offerer_invitation.status == offerers_models.InvitationStatus.PENDING
         assert len(mails_testing.outbox) == 1
         assert (
-            mails_testing.outbox[0]["template"]["subaccount_id_not_prod"]
+            mails_testing.outbox[0]["template"]["id_not_prod"]
             == TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_NEW_USER.value.id
         )
 
@@ -2358,7 +2356,7 @@ class InviteMembersTest:
         assert offerer_invitation.status == offerers_models.InvitationStatus.PENDING
         assert len(mails_testing.outbox) == 1
         assert (
-            mails_testing.outbox[0]["template"]["subaccount_id_not_prod"]
+            mails_testing.outbox[0]["template"]["id_not_prod"]
             == TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_EXISTING_NOT_VALIDATED_USER_EMAIL.value.id
         )
 
@@ -2413,7 +2411,7 @@ class InviteMembersTest:
         offerer_invitation = offerers_models.OffererInvitation.query.one()
         assert len(mails_testing.outbox) == 1
         assert (
-            mails_testing.outbox[0]["template"]["subaccount_id_not_prod"]
+            mails_testing.outbox[0]["template"]["id_not_prod"]
             == TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_EXISTING_VALIDATED_USER_EMAIL.value.id
         )
         user_offerer = offerers_models.UserOfferer.query.filter_by(

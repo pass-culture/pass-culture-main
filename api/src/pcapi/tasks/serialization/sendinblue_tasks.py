@@ -7,7 +7,7 @@ class UpdateSendinblueContactRequest(BaseModel):
     email: str
     use_pro_subaccount: bool
     attributes: dict
-    contact_list_ids: list[int]
+    contact_list_ids: list[int] | None
     emailBlacklisted: bool
 
 

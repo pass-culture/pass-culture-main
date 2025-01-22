@@ -8,7 +8,6 @@ from sib_api_v3_sdk.rest import ApiException as SendinblueApiException
 
 from pcapi import settings
 from pcapi.core.users.repository import find_user_by_email
-from pcapi.models.feature import FeatureToggle
 from pcapi.tasks.sendinblue_tasks import send_transactional_email_primary_task
 from pcapi.tasks.sendinblue_tasks import send_transactional_email_secondary_task
 import pcapi.tasks.serialization.sendinblue_tasks as serializers
@@ -27,7 +26,7 @@ class SendinblueBackend(BaseBackend):
     def __init__(self, use_pro_subaccount: bool) -> None:
         super().__init__()
         configuration = sib_api_v3_sdk.Configuration()
-        if FeatureToggle.WIP_ENABLE_BREVO_PRO_SUBACCOUNT.is_active() and use_pro_subaccount:
+        if use_pro_subaccount:
             configuration.api_key["api-key"] = settings.SENDINBLUE_PRO_API_KEY
         else:
             configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY

@@ -148,12 +148,6 @@ def get_anonymized_attributes(user: users_models.User) -> models.UserAttributes 
     )
 
 
-def get_user_or_pro_attributes(user: users_models.User) -> models.UserAttributes | models.ProAttributes:
-    if user.has_any_pro_role:
-        return get_pro_attributes(user.email)
-    return get_user_attributes(user)
-
-
 def get_pro_attributes(email: str) -> models.ProAttributes:
     # Offerer name attribute is the list of all offerers either managed by the user account (associated in user_offerer)
     # or the parent offerer of the venue which bookingEmail is the requested email address.
