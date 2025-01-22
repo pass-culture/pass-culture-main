@@ -5,6 +5,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+import time_machine
 
 from pcapi import settings
 import pcapi.core.categories.subcategories_v2 as subcategories
@@ -23,6 +24,8 @@ from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 
 IMAGES_DIR = Path(tests.__path__[0]) / "files"
 UPLOAD_FOLDER = settings.LOCAL_STORAGE_DIR / educational_models.CollectiveOffer.FOLDER
+
+time_travel_str = "2021-10-01 15:00:00"
 
 
 @pytest.mark.usefixtures("db_session")
@@ -46,7 +49,10 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
                     continue
                 child.unlink()
 
+    @time_machine.travel(time_travel_str)
     def test_patch_offer(self, client):
+        educational_factories.EducationalCurrentYearFactory()
+
         venue_provider = provider_factories.VenueProviderFactory()
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
         venue2 = offerers_factories.VenueFactory(venueProviders=[venue_provider])
@@ -276,8 +282,10 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert offer.institutionId == educational_institution.id
         assert educational_institution.isActive is True
 
+    @time_machine.travel(time_travel_str)
     def test_should_update_endDatetime_and_startDatetime(self, client):
-        # Given
+        educational_factories.EducationalCurrentYearFactory()
+
         venue_provider = provider_factories.VenueProviderFactory()
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
 
@@ -285,9 +293,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         offer = educational_factories.CollectiveOfferFactory(
             imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
         )
-        stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
-        )
+        stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
         next_month = datetime.utcnow().replace(second=0, microsecond=0) + timedelta(days=30)
         next_month_minus_one_day = next_month - timedelta(days=1)
@@ -302,13 +308,11 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             "endDatetime": stringified_next_month,
         }
 
-        # When
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
 
-        # Then
         assert response.status_code == 200
 
         offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
@@ -409,7 +413,10 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
         assert offer.institutionId is None
 
+    @time_machine.travel(time_travel_str)
     def test_patch_offer_invalid_domain(self, client):
+        educational_factories.EducationalCurrentYearFactory()
+
         venue_provider = provider_factories.VenueProviderFactory()
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
 
@@ -483,7 +490,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
                 "otherAddress": None,
             },
             # stock part
-            "beginningDatetime": stock.beginningDatetime.isoformat(timespec="seconds"),
+            "startDatetime": stock.startDatetime.isoformat(timespec="seconds"),
             "bookingLimitDatetime": stock.bookingLimitDatetime.isoformat(timespec="seconds"),
             "totalPrice": 35621,
             "numberOfTickets": 30,
@@ -544,7 +551,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 403
         assert response.json == {
-            "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à " "cette offre collective."]
+            "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette offre collective."]
         }
 
     def test_patch_offer_invalid_phone_number(self, client):
@@ -609,7 +616,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             },
             "isActive": False,
             # stock part
-            "beginningDatetime": "2022-09-25T11:00",
+            "startDatetime": "2022-09-25T11:00",
             "bookingLimitDatetime": "2022-09-15T11:00",
             "totalPrice": 216.25,
             "numberOfTickets": 30,
@@ -902,7 +909,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             venue=venue_provider.venue, provider=venue_provider.provider
         )
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer, beginningDatetime=now + timedelta(days=5), bookingLimitDatetime=limit
+            collectiveOffer=offer, startDatetime=now + timedelta(days=5), bookingLimitDatetime=limit
         )
         booking = educational_factories.CollectiveBookingFactory(
             collectiveStock=stock,
@@ -938,7 +945,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             venue=venue_provider.venue, provider=venue_provider.provider
         )
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer, beginningDatetime=now + timedelta(days=5), bookingLimitDatetime=limit
+            collectiveOffer=offer, startDatetime=now + timedelta(days=5), bookingLimitDatetime=limit
         )
         booking = educational_factories.CollectiveBookingFactory(
             collectiveStock=stock,
@@ -977,6 +984,107 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 400
         assert response.json == {"description": ["La description de l’offre doit faire au maximum 1500 caractères."]}
+
+    @time_machine.travel(time_travel_str)
+    def test_different_educational_years(self, client):
+        key, venue_provider = self.setup_active_venue_provider()
+        client_with_token = client.with_explicit_token(key)
+
+        # 2021-2022
+        educational_factories.EducationalYearFactory(
+            beginningDate=datetime(2021, 9, 1), expirationDate=datetime(2022, 8, 31)
+        )
+        # 2022-2023
+        educational_factories.EducationalYearFactory(
+            beginningDate=datetime(2022, 9, 1), expirationDate=datetime(2023, 8, 31)
+        )
+        # 2023-2024
+        educational_factories.EducationalYearFactory(
+            beginningDate=datetime(2023, 9, 1), expirationDate=datetime(2024, 8, 31)
+        )
+        # offer on year 2022-2023
+        offer = educational_factories.CollectiveOfferFactory(
+            venue=venue_provider.venue, provider=venue_provider.provider
+        )
+        stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer, startDatetime=datetime(2022, 10, 5))
+        stock_start = stock.startDatetime
+        stock_end = stock.endDatetime
+
+        # update end to year 2023-2024
+        payload = {
+            "endDatetime": date_utils.utc_datetime_to_department_timezone(datetime(2023, 10, 5), None).isoformat()
+        }
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client_with_token.patch(self.endpoint_url.format(offer_id=offer.id), json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"global": ["Les dates de début et de fin ne sont pas sur la même année scolaire."]}
+        db.session.refresh(stock)
+        assert stock.startDatetime == stock_start
+        assert stock.endDatetime == stock_end
+
+        # update start to year 2021-2022
+        payload = {
+            "startDatetime": date_utils.utc_datetime_to_department_timezone(datetime(2021, 10, 5), None).isoformat()
+        }
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client_with_token.patch(self.endpoint_url.format(offer_id=offer.id), json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"global": ["Les dates de début et de fin ne sont pas sur la même année scolaire."]}
+        db.session.refresh(stock)
+        assert stock.startDatetime == stock_start
+        assert stock.endDatetime == stock_end
+
+        # update start and end to different years
+        payload = {
+            "startDatetime": date_utils.utc_datetime_to_department_timezone(datetime(2021, 10, 5), None).isoformat(),
+            "endDatetime": date_utils.utc_datetime_to_department_timezone(datetime(2022, 10, 5), None).isoformat(),
+        }
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client_with_token.patch(self.endpoint_url.format(offer_id=offer.id), json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"global": ["Les dates de début et de fin ne sont pas sur la même année scolaire."]}
+        db.session.refresh(stock)
+        assert stock.startDatetime == stock_start
+        assert stock.endDatetime == stock_end
+
+    @time_machine.travel(time_travel_str)
+    def test_educational_year_missing_start(self, client):
+        key, venue_provider = self.setup_active_venue_provider()
+        client_with_token = client.with_explicit_token(key)
+
+        educational_factories.EducationalCurrentYearFactory()
+        offer = educational_factories.CollectiveOfferFactory(
+            venue=venue_provider.venue, provider=venue_provider.provider
+        )
+        stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer)
+
+        payload = {"startDatetime": stock.startDatetime.replace(stock.startDatetime.year + 1).isoformat()}
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client_with_token.patch(self.endpoint_url.format(offer_id=offer.id), json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"startDatetime": ["Année scolaire manquante pour la date de début."]}
+
+    @time_machine.travel(time_travel_str)
+    def test_educational_year_missing_end(self, client):
+        key, venue_provider = self.setup_active_venue_provider()
+        client_with_token = client.with_explicit_token(key)
+
+        educational_factories.EducationalCurrentYearFactory()
+        offer = educational_factories.CollectiveOfferFactory(
+            venue=venue_provider.venue, provider=venue_provider.provider
+        )
+        stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer)
+
+        payload = {"endDatetime": stock.endDatetime.replace(stock.endDatetime.year + 1).isoformat()}
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client_with_token.patch(self.endpoint_url.format(offer_id=offer.id), json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"endDatetime": ["Année scolaire manquante pour la date de fin."]}
 
 
 @pytest.mark.usefixtures("db_session")

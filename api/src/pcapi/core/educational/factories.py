@@ -207,21 +207,32 @@ class EducationalYearFactory(BaseFactory):
     )
 
 
+def _get_educational_year_beginning(date_time: datetime.datetime) -> int:
+    if 1 <= date_time.month < 9:
+        return date_time.year - 1
+
+    return date_time.year
+
+
 def _get_current_educational_year() -> int:
     current_date = datetime.datetime.utcnow()
-    current_year = current_date.year
-    current_month = current_date.month
-    current_educational_year = current_year
 
-    if 1 <= current_month < 9:
-        current_educational_year = current_year - 1
+    return _get_educational_year_beginning(current_date)
 
-    return current_educational_year
+
+def create_educational_year(date_time: datetime.datetime) -> None:
+    beginning_year = _get_educational_year_beginning(date_time)
+    EducationalYearFactory(
+        beginningDate=datetime.datetime(beginning_year, 9, 1),
+        expirationDate=datetime.datetime(beginning_year + 1, 8, 31, 23, 59, 59),
+    )
 
 
 class EducationalCurrentYearFactory(EducationalYearFactory):
-    beginningDate = datetime.datetime(_get_current_educational_year(), 9, 1)
-    expirationDate = datetime.datetime(_get_current_educational_year() + 1, 8, 31, 23, 59, 59)
+    beginningDate = factory.LazyFunction(lambda: datetime.datetime(_get_current_educational_year(), 9, 1))
+    expirationDate = factory.LazyFunction(
+        lambda: datetime.datetime(_get_current_educational_year() + 1, 8, 31, 23, 59, 59)
+    )
 
 
 def _get_current_educational_year_adage_id() -> int:

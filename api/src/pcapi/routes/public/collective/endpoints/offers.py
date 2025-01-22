@@ -238,6 +238,14 @@ def post_collective_offer_public(
             errors={"subcategoryId": ["La sous-catégorie n'est pas éligible pour les offres collectives."]},
             status_code=404,
         )
+    except educational_exceptions.StartAndEndEducationalYearDifferent:
+        raise ApiErrors(
+            errors={"global": ["Les dates de début et de fin ne sont pas sur la même année scolaire."]}, status_code=400
+        )
+    except educational_exceptions.StartEducationalYearMissing:
+        raise ApiErrors(errors={"startDatetime": ["Année scolaire manquante pour la date de début."]}, status_code=400)
+    except educational_exceptions.EndEducationalYearMissing:
+        raise ApiErrors(errors={"endDatetime": ["Année scolaire manquante pour la date de fin."]}, status_code=400)
     except offers_validation.OfferValidationError as err:
         raise ApiErrors(errors={err.field: err.msg}, status_code=400)
 
@@ -522,6 +530,14 @@ def patch_collective_offer_public(
             errors={"subcategoryId": ["La sous-catégorie n'est pas éligible pour les offres collectives."]},
             status_code=404,
         )
+    except educational_exceptions.StartAndEndEducationalYearDifferent:
+        raise ApiErrors(
+            errors={"global": ["Les dates de début et de fin ne sont pas sur la même année scolaire."]}, status_code=400
+        )
+    except educational_exceptions.StartEducationalYearMissing:
+        raise ApiErrors(errors={"startDatetime": ["Année scolaire manquante pour la date de début."]}, status_code=400)
+    except educational_exceptions.EndEducationalYearMissing:
+        raise ApiErrors(errors={"endDatetime": ["Année scolaire manquante pour la date de fin."]}, status_code=400)
     except offers_validation.OfferValidationError as err:
         raise ApiErrors(errors={err.field: err.msg}, status_code=400)
 

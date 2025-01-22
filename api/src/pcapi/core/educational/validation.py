@@ -172,3 +172,21 @@ def check_collective_offer_description_length_is_valid(offer_description: str) -
                 ]
             }
         )
+
+
+def check_start_and_end_dates_in_same_educational_year(
+    start_datetime: datetime.datetime, end_datetime: datetime.datetime
+) -> None:
+    start_year = repository.find_educational_year_by_date(start_datetime)
+    if not start_year:
+        raise exceptions.StartEducationalYearMissing()
+
+    if start_datetime == end_datetime:
+        return
+
+    end_year = repository.find_educational_year_by_date(end_datetime)
+    if not end_year:
+        raise exceptions.EndEducationalYearMissing()
+
+    if start_year.id != end_year.id:
+        raise exceptions.StartAndEndEducationalYearDifferent()

@@ -480,6 +480,9 @@ def create_collective_offer_public(
     if not institution.isActive:
         raise exceptions.EducationalInstitutionIsNotActive()
 
+    end_datetime = body.end_datetime or body.start_datetime
+    validation.check_start_and_end_dates_in_same_educational_year(body.start_datetime, end_datetime)
+
     offer_venue = {
         "venueId": body.offer_venue.venueId,
         "addressType": body.offer_venue.addressType,
@@ -513,7 +516,7 @@ def create_collective_offer_public(
         collectiveOffer=collective_offer,
         beginningDatetime=body.start_datetime,  # TODO: this field is still required, the column will be removed later
         startDatetime=body.start_datetime,
-        endDatetime=body.end_datetime or body.start_datetime,
+        endDatetime=end_datetime,
         bookingLimitDatetime=body.booking_limit_datetime,
         price=body.total_price,
         numberOfTickets=body.number_of_tickets,
@@ -561,6 +564,16 @@ def edit_collective_offer_public(
 
     offer_fields = {field for field in dir(educational_models.CollectiveOffer) if not field.startswith("_")}
     stock_fields = {field for field in dir(educational_models.CollectiveStock) if not field.startswith("_")}
+
+    start_datetime = new_values.get("startDatetime")
+    end_datetime = new_values.get("endDatetime")
+    if start_datetime or end_datetime:
+        after_update_start_datetime = start_datetime or offer.collectiveStock.startDatetime
+        after_update_end_datetime = end_datetime or offer.collectiveStock.endDatetime
+
+        validation.check_start_and_end_dates_in_same_educational_year(
+            after_update_start_datetime, after_update_end_datetime
+        )
 
     # This variable is meant for Adage mailing
     updated_fields = []
