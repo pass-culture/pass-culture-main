@@ -331,8 +331,8 @@ class GetVenueTest(GetEndpointHelper):
         assert f"Venue ID : {venue.id} " in response_text
         assert f"SIRET : {venue.siret} " in response_text
         assert "Région : Île-de-France " in response_text
-        assert f"Ville : {venue.city} " in response_text
-        assert f"Code postal : {venue.postalCode} " in response_text
+        assert f"Ville : {venue.offererAddress.address.city} " in response_text
+        assert f"Code postal : {venue.offererAddress.address.postalCode} " in response_text
         assert f"Email : {venue.bookingEmail} " in response_text
         assert f"Numéro de téléphone : {venue.contact.phone_number} " in response_text
         assert "Peut créer une offre EAC : Non" in response_text
@@ -858,16 +858,16 @@ class UpdateVenueTest(PostEndpointHelper):
             "name": venue.name or "",
             "public_name": venue.publicName or "",
             "siret": venue.siret or "",
-            "city": venue.city or "",
-            "postal_code": venue.postalCode or "",
-            "street": venue.street or "",
-            "ban_id": venue.banId or "",
+            "city": venue.offererAddress.address.city or "",
+            "postal_code": venue.offererAddress.address.postalCode or "",
+            "street": venue.offererAddress.address.street or "",
+            "ban_id": venue.offererAddress.address.banId or "",
             "acceslibre_url": venue.external_accessibility_url or "",
             "acceslibre_id": venue.external_accessibility_id or "",
             "booking_email": venue.bookingEmail or "",
             "phone_number": venue.contact.phone_number or "",
-            "longitude": venue.longitude,
-            "latitude": venue.latitude,
+            "longitude": venue.offererAddress.address.longitude,
+            "latitude": venue.offererAddress.address.latitude,
             "is_permanent": venue.isPermanent,
             "venue_type_code": venue.venueTypeCode.name,
         }
@@ -1734,9 +1734,9 @@ class UpdateVenueTest(PostEndpointHelper):
 
         assert response.status_code == 400
         assert "Les données envoyées comportent des erreurs." in html_parser.extract_alert(response.data)
-        assert venue.street
-        assert venue.postalCode
-        assert venue.city
+        assert venue.offererAddress.address.street
+        assert venue.offererAddress.address.postalCode
+        assert venue.offererAddress.address.city
 
     def test_update_venue_siret_disabled(self, client, roles_with_permissions, offerer):
         bo_user = users_factories.AdminFactory()
@@ -1768,7 +1768,7 @@ class UpdateVenueTest(PostEndpointHelper):
 
         db.session.refresh(venue)
 
-        assert venue.street == data["street"]
+        assert venue.offererAddress.address.street == data["street"]
         assert venue.banId == data["ban_id"]
         assert venue.action_history[0].extraData == {
             "modified_info": {
@@ -1789,8 +1789,8 @@ class UpdateVenueTest(PostEndpointHelper):
 
         db.session.refresh(venue)
 
-        assert venue.latitude == Decimal("48.87004")
-        assert venue.longitude == Decimal("2.37850")
+        assert venue.offererAddress.address.latitude == Decimal("48.87004")
+        assert venue.offererAddress.address.longitude == Decimal("2.37850")
         assert len(venue.action_history) == 0
 
     def test_update_venue_latitude_longitude_not_changed(self, authenticated_client):
