@@ -11,7 +11,6 @@ from pcapi.core.external.sendinblue import add_contacts_to_list
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 
@@ -79,10 +78,6 @@ def pro_inactive_venues_automation() -> bool:
     """
     return add_contacts_to_list(
         get_inactive_venues_emails(),
-        (
-            settings.SENDINBLUE_PRO_SUBACCOUNT_INACTIVE_90_DAYS_ID
-            if FeatureToggle.WIP_ENABLE_BREVO_PRO_SUBACCOUNT.is_active()
-            else settings.SENDINBLUE_PRO_INACTIVE_90_DAYS_ID
-        ),
+        settings.SENDINBLUE_PRO_INACTIVE_90_DAYS_ID,
         use_pro_subaccount=True,
     )

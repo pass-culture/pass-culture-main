@@ -18,7 +18,6 @@ from pcapi.core import mails as mails_api
 from pcapi.core.cultural_survey import models as cultural_survey_models
 from pcapi.core.external.attributes import models as attributes_models
 import pcapi.core.users.models as users_models
-from pcapi.models.feature import FeatureToggle
 from pcapi.tasks.sendinblue_tasks import update_contact_attributes_task
 from pcapi.tasks.serialization.sendinblue_tasks import UpdateSendinblueContactRequest
 
@@ -108,11 +107,7 @@ class SendinblueOptionalAttributes(Enum):
 
 def update_contact_email(user: users_models.User, old_email: str, new_email: str, asynchronous: bool = True) -> None:
     if user.has_any_pro_role:
-        contact_list_ids = (
-            []
-            if FeatureToggle.WIP_ENABLE_BREVO_PRO_SUBACCOUNT.is_active()
-            else [settings.SENDINBLUE_PRO_CONTACT_LIST_ID]
-        )
+        contact_list_ids = None
     else:
         contact_list_ids = [settings.SENDINBLUE_YOUNG_CONTACT_LIST_ID]
 
@@ -136,22 +131,14 @@ def update_contact_attributes(
     cultural_survey_answers: dict[str, list[str]] | None = None,
     asynchronous: bool = True,
 ) -> None:
-    if attributes.is_pro and FeatureToggle.WIP_ENABLE_BREVO_PRO_SUBACCOUNT.is_active():
+    if attributes.is_pro:
         assert isinstance(attributes, attributes_models.ProAttributes)  # helps mypy
         formatted_attributes = format_pro_attributes(attributes)
+        contact_list_ids = None
     else:
         formatted_attributes = format_user_attributes(attributes)
-
-    if cultural_survey_answers:
-        formatted_attributes.update(format_cultural_survey_answers(cultural_survey_answers))
-
-    if attributes.is_pro:
-        contact_list_ids = (
-            []
-            if FeatureToggle.WIP_ENABLE_BREVO_PRO_SUBACCOUNT.is_active()
-            else [settings.SENDINBLUE_PRO_CONTACT_LIST_ID]
-        )
-    else:
+        if cultural_survey_answers:
+            formatted_attributes.update(format_cultural_survey_answers(cultural_survey_answers))
         contact_list_ids = [settings.SENDINBLUE_YOUNG_CONTACT_LIST_ID]
 
     contact_request = UpdateSendinblueContactRequest(
@@ -315,7 +302,7 @@ def make_update_request(payload: UpdateSendinblueContactRequest) -> None:
 
 
 def send_import_contacts_request(
-    api_instance: ContactsApi, file_body: str, list_ids: list[int], email_blacklist: bool = False
+    api_instance: ContactsApi, file_body: str, list_ids: list[int] | None, email_blacklist: bool = False
 ) -> None:
     request_contact_import = sib_api_v3_sdk.RequestContactImport(
         email_blacklist=email_blacklist,
@@ -375,22 +362,14 @@ def import_contacts_in_sendinblue(
     # send pro users request
     if pro_users:
         configuration = sib_api_v3_sdk.Configuration()
-        configuration.api_key["api-key"] = (
-            settings.SENDINBLUE_PRO_API_KEY
-            if FeatureToggle.WIP_ENABLE_BREVO_PRO_SUBACCOUNT.is_active()
-            else settings.SENDINBLUE_API_KEY
-        )
+        configuration.api_key["api-key"] = settings.SENDINBLUE_PRO_API_KEY
         api_instance = sib_api_v3_sdk.ContactsApi(sib_api_v3_sdk.ApiClient(configuration))
 
         pro_users_file_body = build_file_body(pro_users)
         send_import_contacts_request(
             api_instance,
             file_body=pro_users_file_body,
-            list_ids=(
-                []
-                if FeatureToggle.WIP_ENABLE_BREVO_PRO_SUBACCOUNT.is_active()
-                else [settings.SENDINBLUE_PRO_CONTACT_LIST_ID]
-            ),
+            list_ids=None,
             email_blacklist=email_blacklist,
         )
     # send young users request
@@ -451,7 +430,7 @@ def add_contacts_to_list(user_emails: Iterable[str], sib_list_id: int, use_pro_s
     """
 
     configuration = sib_api_v3_sdk.Configuration()
-    if FeatureToggle.WIP_ENABLE_BREVO_PRO_SUBACCOUNT.is_active() and use_pro_subaccount:
+    if use_pro_subaccount:
         configuration.api_key["api-key"] = settings.SENDINBLUE_PRO_API_KEY
     else:
         configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY

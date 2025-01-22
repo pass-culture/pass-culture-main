@@ -12,11 +12,9 @@ from pcapi.core.external import batch
 from pcapi.core.external import sendinblue
 from pcapi.core.external.attributes.api import get_pro_attributes
 from pcapi.core.external.attributes.api import get_user_attributes
-from pcapi.core.external.attributes.api import get_user_or_pro_attributes
 from pcapi.core.external.sendinblue import SendinblueUserUpdateData
 from pcapi.core.external.sendinblue import import_contacts_in_sendinblue
 from pcapi.core.users.models import User
-from pcapi.models.feature import FeatureToggle
 from pcapi.notifications.push import update_users_attributes
 from pcapi.notifications.push.backends.batch import UserUpdateData
 
@@ -33,10 +31,10 @@ def format_batch_users(users: list[User]) -> list[UserUpdateData]:
 def format_sendinblue_users(users: list[User]) -> list[SendinblueUserUpdateData]:
     res = []
     for user in users:
-        if user.has_any_pro_role and FeatureToggle.WIP_ENABLE_BREVO_PRO_SUBACCOUNT.is_active():
+        if user.has_any_pro_role:
             attributes = sendinblue.format_pro_attributes(get_pro_attributes(user.email))
         else:
-            attributes = sendinblue.format_user_attributes(get_user_or_pro_attributes(user))
+            attributes = sendinblue.format_user_attributes(get_user_attributes(user))
         res.append(SendinblueUserUpdateData(email=user.email, attributes=attributes))
     print(f"{len(res)} users formatted for sendinblue...")
     return res

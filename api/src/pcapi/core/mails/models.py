@@ -2,7 +2,6 @@ import dataclasses
 from enum import Enum
 
 from pcapi import settings
-from pcapi.models.feature import FeatureToggle
 
 
 @dataclasses.dataclass
@@ -67,18 +66,9 @@ class Template:
 
 @dataclasses.dataclass(kw_only=True)
 class TemplatePro(Template):
-    subaccount_id_prod: int
-    subaccount_id_not_prod: int
-
-    @property
-    def id(self) -> int:
-        if FeatureToggle.WIP_ENABLE_BREVO_PRO_SUBACCOUNT.is_active():
-            return self.subaccount_id_prod if settings.IS_PROD else self.subaccount_id_not_prod
-        return super().id
-
     @property
     def use_pro_subaccount(self) -> bool:
-        return FeatureToggle.WIP_ENABLE_BREVO_PRO_SUBACCOUNT.is_active()
+        return True
 
 
 @dataclasses.dataclass

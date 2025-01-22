@@ -2,7 +2,6 @@ from dataclasses import asdict
 from typing import Iterable
 
 from pcapi.core.users import testing as users_testing
-from pcapi.models.feature import FeatureToggle
 from pcapi.tasks.serialization import sendinblue_tasks
 
 from .. import models
@@ -17,7 +16,7 @@ class TestingBackend(BaseBackend):
 
     def __init__(self, use_pro_subaccount: bool) -> None:
         super().__init__()
-        self.use_pro_subaccount = use_pro_subaccount and FeatureToggle.WIP_ENABLE_BREVO_PRO_SUBACCOUNT.is_active()
+        self.use_pro_subaccount = use_pro_subaccount
 
     def send_mail(
         self,

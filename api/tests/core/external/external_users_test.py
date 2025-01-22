@@ -96,21 +96,7 @@ def test_email_should_not_be_blacklisted_in_sendinblue_by_default():
     assert sendinblue_testing.sendinblue_requests[0].get("emailBlacklisted") is False
 
 
-@pytest.mark.features(WIP_ENABLE_BREVO_PRO_SUBACCOUNT=False)
 def test_update_external_pro_user():
-    user = ProFactory()
-    assert user.email  # preload the user to avoid duplicated queries
-
-    with assert_no_duplicated_queries():
-        update_external_user(user)
-
-    assert len(batch_testing.requests) == 0
-    assert len(sendinblue_testing.sendinblue_requests) == 1
-    assert sendinblue_testing.sendinblue_requests[0].get("use_pro_subaccount") is False
-
-
-@pytest.mark.features(WIP_ENABLE_BREVO_PRO_SUBACCOUNT=True)
-def test_update_external_pro_user_with_FF():
     user = ProFactory()
     assert user.email  # preload the user to avoid duplicated queries
 

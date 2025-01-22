@@ -26,7 +26,6 @@ from . import common_user_attributes
 
 # Do not use this identifier with production account when running skipped tests
 SENDINBLUE_AUTOMATION_TEST_CONTACT_LIST_ID = 18
-SENDINBLUE_PRO_TESTING_CONTACT_LIST_ID = 12
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
@@ -299,23 +298,14 @@ class BulkImportUsersDataTest:
         expected_pro_call = RequestContactImport(
             **expected_common_params,
         )
-        expected_pro_call.list_ids = []
+        expected_pro_call.list_ids = None
         expected_pro_call.file_body = f"{self.expected_header}\n{self.mikasa_expected_file_body}"
 
         mock_import_contacts.assert_has_calls([call(expected_young_call), call(expected_pro_call)], any_order=True)
 
-    @pytest.mark.parametrize(
-        "feature_flag,use_pro_subaccount",
-        [
-            (True, True),
-            (True, False),
-            (False, True),
-            (False, False),
-        ],
-    )
+    @pytest.mark.parametrize("use_pro_subaccount", [True, False])
     @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
-    def test_add_contacts_to_list(self, mock_import_contacts, features, feature_flag, use_pro_subaccount):
-        features.WIP_ENABLE_BREVO_PRO_SUBACCOUNT = feature_flag
+    def test_add_contacts_to_list(self, mock_import_contacts, use_pro_subaccount):
         result = add_contacts_to_list(
             ["eren.yeager@shinganshina.paradis", "armin.arlert@shinganshina.paradis"],
             SENDINBLUE_AUTOMATION_TEST_CONTACT_LIST_ID,
@@ -389,31 +379,21 @@ class BulkImportUsersDataTest:
                 email=f"test.pro.{datetime.utcnow().strftime('%y%m%d.%H%M')}@example.net",
                 use_pro_subaccount=True,
                 attributes=format_user_attributes(common_pro_attributes),
-                contact_list_ids=[SENDINBLUE_PRO_TESTING_CONTACT_LIST_ID],
+                contact_list_ids=None,
                 emailBlacklisted=False,
             )
         )
 
-    @pytest.mark.parametrize(
-        "feature_flag,use_pro_subaccount,expected_use_pro_subaccount",
-        [
-            (True, True, True),
-            (True, False, False),
-            (False, True, False),
-            (False, False, False),
-        ],
-    )
-    def test_make_update_request(self, features, feature_flag, use_pro_subaccount, expected_use_pro_subaccount):
+    def test_make_update_request(self):
         email = f"test.pro.{datetime.utcnow().strftime('%y%m%d.%H%M')}@example.net"
         attributes = format_user_attributes(common_pro_attributes)
 
-        features.WIP_ENABLE_BREVO_PRO_SUBACCOUNT = feature_flag
         make_update_request(
             sendinblue_tasks.UpdateSendinblueContactRequest(
                 email=email,
-                use_pro_subaccount=use_pro_subaccount,
+                use_pro_subaccount=True,
                 attributes=attributes,
-                contact_list_ids=[] if feature_flag else [SENDINBLUE_PRO_TESTING_CONTACT_LIST_ID],
+                contact_list_ids=None,
                 emailBlacklisted=False,
             )
         )
@@ -422,5 +402,5 @@ class BulkImportUsersDataTest:
             "email": email,
             "attributes": attributes,
             "emailBlacklisted": False,
-            "use_pro_subaccount": expected_use_pro_subaccount,
+            "use_pro_subaccount": True,
         }
