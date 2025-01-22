@@ -18,6 +18,5 @@ export type SubcategoryResponseModel = {
   onlineOfflinePlatform: string;
   proLabel: string;
   reimbursementRule: string;
-  searchGroupName?: string | null;
 };
 
