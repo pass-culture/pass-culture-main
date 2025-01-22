@@ -4,8 +4,8 @@ import pytest
 import time_machine
 
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.categories import categories
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import pro_categories
+from pcapi.core.categories import subcategories
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
 from pcapi.core.geography import factories as geography_factories
@@ -125,7 +125,7 @@ class GetCappedOffersForFiltersTest:
             user_id=user_offerer.user.id,
             user_is_admin=user_offerer.user.has_admin_role,
             offers_limit=10,
-            category_id=categories.FILM.id,
+            category_id=pro_categories.FILM.id,
         )
 
         # then

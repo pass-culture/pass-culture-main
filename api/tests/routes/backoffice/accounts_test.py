@@ -14,7 +14,7 @@ from pcapi import settings
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core import token as token_utils
 from pcapi.core.bookings import factories as bookings_factories
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models

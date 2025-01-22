@@ -8,7 +8,7 @@ from pydantic.v1 import Field
 from pydantic.v1 import root_validator
 from pydantic.v1 import validator
 
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.educational import validation as educational_validation
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer

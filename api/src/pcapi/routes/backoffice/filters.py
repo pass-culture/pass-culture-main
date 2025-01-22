@@ -18,8 +18,11 @@ import pytz
 from pcapi import settings
 from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.core.bookings import models as bookings_models
-from pcapi.core.categories import categories
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import pro_categories
+from pcapi.core.categories.genres import show
+import pcapi.core.categories.genres.music
+from pcapi.core.categories.models import EacFormat
+from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES_DICT
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import api as finance_api
@@ -33,7 +36,6 @@ from pcapi.core.operations import models as operations_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
-from pcapi.domain import show_types
 from pcapi.models import feature as feature_model
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
@@ -565,20 +567,20 @@ def format_collective_offer_displayed_status(
 
 
 def format_offer_category(subcategory_id: str) -> str:
-    subcategory = subcategories_v2.ALL_SUBCATEGORIES_DICT.get(subcategory_id)
+    subcategory = ALL_SUBCATEGORIES_DICT.get(subcategory_id)
     if subcategory:
         return subcategory.category.pro_label
     return ""
 
 
 def format_offer_subcategory(subcategory_id: str) -> str:
-    subcategory = subcategories_v2.ALL_SUBCATEGORIES_DICT.get(subcategory_id)
+    subcategory = ALL_SUBCATEGORIES_DICT.get(subcategory_id)
     if subcategory:
         return subcategory.pro_label
     return ""
 
 
-def format_collective_offer_formats(formats: typing.Sequence[subcategories_v2.EacFormat] | None) -> str:
+def format_collective_offer_formats(formats: typing.Sequence[EacFormat] | None) -> str:
     if not formats:
         return ""
     try:
@@ -590,9 +592,7 @@ def format_collective_offer_formats(formats: typing.Sequence[subcategories_v2.Ea
 def format_subcategories(subcategories: list[str]) -> str:
     if subcategories == []:
         return ""
-    labels = sorted(
-        subcategories_v2.ALL_SUBCATEGORIES_DICT[subcategory_id].pro_label for subcategory_id in subcategories
-    )
+    labels = sorted(ALL_SUBCATEGORIES_DICT[subcategory_id].pro_label for subcategory_id in subcategories)
     displayed_labels = ", ".join(labels)
     return displayed_labels
 
@@ -989,7 +989,7 @@ def format_music_gtl_id(music_gtl_id: str) -> str:
     return next(
         (
             music_genre.label
-            for music_genre in categories.TITELIVE_MUSIC_TYPES
+            for music_genre in pcapi.core.categories.genres.music.TITELIVE_MUSIC_TYPES
             if music_genre.gtl_id[:2] == music_gtl_id[:2]
         ),
         f"Gtl inconnu [{music_gtl_id}]",
@@ -998,14 +998,14 @@ def format_music_gtl_id(music_gtl_id: str) -> str:
 
 def format_show_type(show_type_id: int | str) -> str:
     try:
-        return show_types.SHOW_TYPES_LABEL_BY_CODE.get(int(show_type_id), f"Autre[{show_type_id}]")
+        return show.SHOW_TYPES_LABEL_BY_CODE.get(int(show_type_id), f"Autre[{show_type_id}]")
     except ValueError:
         return f"Autre[{show_type_id}]"
 
 
 def format_show_subtype(show_subtype_id: int | str) -> str:
     try:
-        return show_types.SHOW_SUB_TYPES_LABEL_BY_CODE.get(int(show_subtype_id), f"Autre[{show_subtype_id}]")
+        return show.SHOW_SUB_TYPES_LABEL_BY_CODE.get(int(show_subtype_id), f"Autre[{show_subtype_id}]")
     except ValueError:
         return f"Autre[{show_subtype_id}]"
 
@@ -1263,13 +1263,13 @@ def get_comparated_format_function(
         ):
             return lambda venue_id: venue_dict.get(venue_id, str(f"Venue ID : {venue_id}"))
         if sub_rule.attribute == offers_models.OfferValidationAttribute.CATEGORY_ID:
-            return lambda category_id: categories.ALL_CATEGORIES_DICT[category_id].pro_label
+            return lambda category_id: pro_categories.ALL_CATEGORIES_DICT[category_id].pro_label
         if sub_rule.attribute == offers_models.OfferValidationAttribute.SUBCATEGORY_ID:
-            return lambda subcategory_id: subcategories_v2.ALL_SUBCATEGORIES_DICT[subcategory_id].pro_label
+            return lambda subcategory_id: ALL_SUBCATEGORIES_DICT[subcategory_id].pro_label
         if sub_rule.attribute == offers_models.OfferValidationAttribute.SHOW_SUB_TYPE:
-            return lambda show_sub_type_code: show_types.SHOW_SUB_TYPES_LABEL_BY_CODE[int(show_sub_type_code)]
+            return lambda show_sub_type_code: show.SHOW_SUB_TYPES_LABEL_BY_CODE[int(show_sub_type_code)]
         if sub_rule.attribute == offers_models.OfferValidationAttribute.FORMATS:
-            return lambda fmt: subcategories_v2.EacFormat[fmt].value
+            return lambda fmt: EacFormat[fmt].value
     except ValueError as err:
         logger.error(
             "Unhandled object in the formatter of the offer validation rules list page",

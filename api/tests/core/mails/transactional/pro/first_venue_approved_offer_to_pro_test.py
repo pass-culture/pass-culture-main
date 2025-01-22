@@ -1,6 +1,6 @@
 import pytest
 
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.pro.first_venue_approved_offer_to_pro import (
     get_first_venue_approved_offer_email_data,

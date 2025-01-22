@@ -3,7 +3,7 @@ import decimal
 import logging
 
 from pcapi.connectors.serialization import allocine_serializers
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions

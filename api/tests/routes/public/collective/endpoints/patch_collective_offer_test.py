@@ -7,7 +7,7 @@ from unittest.mock import patch
 import pytest
 
 from pcapi import settings
-import pcapi.core.categories.subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import factories as offerers_factories

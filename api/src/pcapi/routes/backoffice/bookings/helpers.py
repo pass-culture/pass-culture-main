@@ -7,7 +7,7 @@ from sqlalchemy import and_
 from sqlalchemy import or_
 
 from pcapi.core.bookings import models as bookings_models
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offers import models as offers_models

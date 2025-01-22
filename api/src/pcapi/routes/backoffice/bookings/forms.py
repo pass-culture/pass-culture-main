@@ -6,8 +6,8 @@ from flask_wtf import FlaskForm
 import wtforms
 
 from pcapi.core.bookings import models as bookings_models
-from pcapi.core.categories import categories
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import pro_categories
+from pcapi.core.categories import subcategories
 from pcapi.core.educational import models as educational_models
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.forms import fields
@@ -173,7 +173,7 @@ class GetCollectiveBookingListForm(BaseBookingListForm):
 
 class GetIndividualBookingListForm(BaseBookingListForm):
     category = fields.PCSelectMultipleField(
-        "Catégories", choices=utils.choices_from_enum(categories.CategoryIdLabelEnum)
+        "Catégories", choices=utils.choices_from_enum(pro_categories.CategoryIdLabelEnum)
     )
     cancellation_reason = fields.PCSelectMultipleField(
         "Raison d'annulation",

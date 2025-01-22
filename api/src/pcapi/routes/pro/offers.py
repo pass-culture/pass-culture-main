@@ -8,9 +8,8 @@ from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import load_only
 
 from pcapi import repository
-from pcapi.core.categories import categories
-from pcapi.core.categories import subcategories_v2 as subcategories
-from pcapi.core.categories.categories import TITELIVE_MUSIC_TYPES
+from pcapi.core.categories import pro_categories
+from pcapi.core.categories import subcategories
 from pcapi.core.external import subcategory_suggestion
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
@@ -23,6 +22,7 @@ import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.validation import check_for_duplicated_price_categories
 from pcapi.core.offers.validation import check_product_cgu_and_offerer
+from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.repository import atomic
@@ -514,7 +514,7 @@ def delete_thumbnail(offer_id: int) -> None:
 def get_categories() -> offers_serialize.CategoriesResponseModel:
     return offers_serialize.CategoriesResponseModel(
         categories=[
-            offers_serialize.CategoryResponseModel.from_orm(category) for category in categories.ALL_CATEGORIES
+            offers_serialize.CategoryResponseModel.from_orm(category) for category in pro_categories.ALL_CATEGORIES
         ],
         subcategories=[
             offers_serialize.SubcategoryResponseModel.from_orm(subcategory)

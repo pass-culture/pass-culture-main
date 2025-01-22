@@ -6,10 +6,12 @@ import typing
 from flask_wtf import FlaskForm
 import wtforms
 
-from pcapi.core.categories import categories
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import models as categories_models
+from pcapi.core.categories import pro_categories
+from pcapi.core.categories.genres.show import SHOW_SUB_TYPES_LABEL_BY_CODE
+from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES
+from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.offers import models as offers_models
-from pcapi.domain.show_types import SHOW_SUB_TYPES_LABEL_BY_CODE
 from pcapi.routes.backoffice import autocomplete
 import pcapi.routes.backoffice.forms.utils as forms_utils
 from pcapi.utils.clean_accents import clean_accents
@@ -91,11 +93,9 @@ class SearchRuleForm(FlaskForm):
         endpoint="backoffice_web.autocomplete_venues",
     )
     category = fields.PCSelectMultipleField(
-        "Catégories", choices=utils.choices_from_enum(categories.CategoryIdLabelEnum)
+        "Catégories", choices=utils.choices_from_enum(pro_categories.CategoryIdLabelEnum)
     )
-    subcategory = fields.PCSelectMultipleField(
-        "Sous-catégories", choices=utils.choices_from_enum(subcategories_v2.SubcategoryIdEnumv2)
-    )
+    subcategory = fields.PCSelectMultipleField("Sous-catégories", choices=utils.choices_from_enum(SubcategoryIdEnum))
 
     def is_empty(self) -> bool:
         return not any((self.q.data, self.offerer.data, self.venue.data, self.category.data, self.subcategory.data))
@@ -159,11 +159,11 @@ class OfferValidationSubRuleForm(FlaskForm):
     )
     subcategories = fields.PCSelectMultipleField(
         "Sous-catégories",
-        choices=[(s.id, s.pro_label) for s in subcategories_v2.ALL_SUBCATEGORIES],
+        choices=[(s.id, s.pro_label) for s in ALL_SUBCATEGORIES],
         field_list_compatibility=True,
     )
     categories = fields.PCSelectMultipleField(
-        "Catégories", choices=utils.choices_from_enum(categories.CategoryIdLabelEnum), field_list_compatibility=True
+        "Catégories", choices=utils.choices_from_enum(pro_categories.CategoryIdLabelEnum), field_list_compatibility=True
     )
     show_sub_type = fields.PCSelectMultipleField(
         "Sous-type de spectacle",
@@ -171,7 +171,7 @@ class OfferValidationSubRuleForm(FlaskForm):
         field_list_compatibility=True,
     )
     formats = fields.PCSelectMultipleField(
-        "Formats", choices=utils.choices_from_enum(subcategories_v2.EacFormat), field_list_compatibility=True
+        "Formats", choices=utils.choices_from_enum(categories_models.EacFormat), field_list_compatibility=True
     )
 
     form_field_configuration = OFFER_VALIDATION_SUB_RULE_FORM_FIELD_CONFIGURATION

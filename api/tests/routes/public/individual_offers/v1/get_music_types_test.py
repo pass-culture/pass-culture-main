@@ -1,7 +1,7 @@
 import pytest
 
 from pcapi.core import testing
-from pcapi.domain import music_types
+from pcapi.core.categories.genres import music
 
 from tests.routes.public.helpers import PublicAPIEndpointBaseHelper
 
@@ -23,7 +23,7 @@ class GetMusicTypesTest(PublicAPIEndpointBaseHelper):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
             assert response.status_code == 200
 
-        assert set(music_type["id"] for music_type in response.json) == set(music_types.MUSIC_SUB_TYPES_BY_SLUG)
+        assert set(music_type["id"] for music_type in response.json) == set(music.MUSIC_SUB_TYPES_BY_SLUG)
 
     def test_music_serialization(self, client):
         plain_api_key, _ = self.setup_provider()

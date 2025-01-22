@@ -1,6 +1,10 @@
 from sqlalchemy.orm import joinedload
 
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import subcategories
+from pcapi.core.categories.app_search_tree import NATIVE_CATEGORIES
+from pcapi.core.categories.app_search_tree import SEARCH_GROUPS
+from pcapi.core.categories.app_search_tree import SEARCH_NODES
+from pcapi.core.categories.models import GenreType
 import pcapi.core.chronicles.api as chronicles_api
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers.models import Venue
@@ -156,24 +160,21 @@ def get_subcategories_v2() -> subcategories_v2_serializers.SubcategoriesResponse
     return subcategories_v2_serializers.SubcategoriesResponseModelv2(
         subcategories=[
             subcategories_v2_serializers.SubcategoryResponseModelv2.from_orm(subcategory)
-            for subcategory in subcategories_v2.ALL_SUBCATEGORIES
+            for subcategory in subcategories.ALL_SUBCATEGORIES
         ],
         searchGroups=[
             subcategories_v2_serializers.SearchGroupResponseModelv2.from_orm(search_group)
-            for search_group in subcategories_v2.SEARCH_GROUPS
+            for search_group in SEARCH_GROUPS
         ],
         homepageLabels=[
             subcategories_v2_serializers.HomepageLabelResponseModelv2.from_orm(homepage_label_name)
-            for homepage_label_name in subcategories_v2.HomepageLabels
+            for homepage_label_name in subcategories.HomepageLabels
         ],
         nativeCategories=[
             subcategories_v2_serializers.NativeCategoryResponseModelv2.from_orm(native_category)
-            for native_category in subcategories_v2.NATIVE_CATEGORIES
+            for native_category in NATIVE_CATEGORIES
         ],
-        genreTypes=[
-            subcategories_v2_serializers.GenreTypeModel.from_orm(genre_type)
-            for genre_type in subcategories_v2.GenreType
-        ],
+        genreTypes=[subcategories_v2_serializers.GenreTypeModel.from_orm(genre_type) for genre_type in GenreType],
     )
 
 
@@ -181,7 +182,5 @@ def get_subcategories_v2() -> subcategories_v2_serializers.SubcategoriesResponse
 @spectree_serialize(api=blueprint.api, response_model=subcategories_v2_serializers.CategoriesResponseModel)
 def get_categories() -> subcategories_v2_serializers.CategoriesResponseModel:
     return subcategories_v2_serializers.CategoriesResponseModel(
-        categories=[
-            subcategories_v2_serializers.CategoryResponseModel.from_orm(node) for node in subcategories_v2.SEARCH_NODES
-        ]
+        categories=[subcategories_v2_serializers.CategoryResponseModel.from_orm(node) for node in SEARCH_NODES]
     )

@@ -10,7 +10,7 @@ from sqlalchemy.orm import load_only
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as bookings_repository
-from pcapi.core.categories import categories
+from pcapi.core.categories import pro_categories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.repository import has_collective_offers_for_program_and_venue_ids
 from pcapi.core.external.attributes import models
@@ -517,16 +517,16 @@ def get_bookings_categories_and_subcategories(
     most_booked_subcategory = _get_most_booked(bookings_by_subcategories)
 
     most_booked_movie_genre = None
-    if most_booked_category == categories.CINEMA.id:
+    if most_booked_category == pro_categories.CINEMA.id:
         cinema_bookings_by_genre = defaultdict(list)
-        for booking in bookings_by_categories[categories.CINEMA.id]:
+        for booking in bookings_by_categories[pro_categories.CINEMA.id]:
             if extra_data := booking.stock.offer.extraData:
                 for genre in extra_data.get("genres") or []:
                     cinema_bookings_by_genre[genre].append(booking)
         most_booked_movie_genre = _get_most_booked(cinema_bookings_by_genre)
 
     most_booked_music_type = None
-    music_categories = (categories.MUSIQUE_ENREGISTREE.id, categories.MUSIQUE_LIVE.id)
+    music_categories = (pro_categories.MUSIQUE_ENREGISTREE.id, pro_categories.MUSIQUE_LIVE.id)
     if most_booked_category in music_categories:
         music_bookings_by_type = defaultdict(list)
         for category in music_categories:

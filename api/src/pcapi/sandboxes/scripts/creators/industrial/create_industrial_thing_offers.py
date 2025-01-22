@@ -1,6 +1,6 @@
 import logging
 
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import subcategories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
@@ -23,7 +23,7 @@ def create_industrial_thing_offers(
 
     thing_offers_by_name: dict[str, offers_models.Offer] = {}
 
-    thing_subcategories = [s for s in subcategories_v2.ALL_SUBCATEGORIES if not s.is_event]
+    thing_subcategories = [s for s in subcategories.ALL_SUBCATEGORIES if not s.is_event]
 
     id_at_provider = 1234
     thing_index = 0

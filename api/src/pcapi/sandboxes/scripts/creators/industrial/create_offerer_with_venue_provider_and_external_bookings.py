@@ -2,7 +2,7 @@ import datetime
 import logging
 import random
 
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.factories import BookingFactory
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
 from pcapi.core.offerers.factories import UserOffererFactory

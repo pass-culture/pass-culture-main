@@ -3,10 +3,10 @@ import logging
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import insert
 
+from pcapi.core.categories.genres import music
+from pcapi.core.categories.genres import show
 from pcapi.core.external.compliance_backends import compliance_backend
 from pcapi.core.offers import models as offers_models
-from pcapi.domain import music_types
-from pcapi.domain import show_types
 from pcapi.models import db
 from pcapi.repository import is_managed_transaction
 from pcapi.tasks import compliance_tasks
@@ -62,15 +62,15 @@ def _get_payload_for_compliance_api(offer: offers_models.Offer) -> GetCompliance
 
     offer_type_label = None
     if show_type := extra_data.get("showType"):
-        offer_type_label = show_types.SHOW_TYPES_LABEL_BY_CODE[int(show_type)]
+        offer_type_label = show.SHOW_TYPES_LABEL_BY_CODE[int(show_type)]
     elif music_type := extra_data.get("musicType"):
-        offer_type_label = music_types.MUSIC_TYPES_LABEL_BY_CODE[int(music_type)]
+        offer_type_label = music.MUSIC_TYPES_LABEL_BY_CODE[int(music_type)]
 
     offer_sub_type_label = None
     if show_sub_type := extra_data.get("showSubType"):
-        offer_sub_type_label = show_types.SHOW_SUB_TYPES_LABEL_BY_CODE[int(show_sub_type)]
+        offer_sub_type_label = show.SHOW_SUB_TYPES_LABEL_BY_CODE[int(show_sub_type)]
     elif music_sub_type := extra_data.get("musicSubType"):
-        offer_sub_type_label = music_types.MUSIC_SUB_TYPES_LABEL_BY_CODE[int(music_sub_type)]
+        offer_sub_type_label = music.MUSIC_SUB_TYPES_LABEL_BY_CODE[int(music_sub_type)]
 
     payload = GetComplianceScoreRequest(
         offer_id=str(offer.id),

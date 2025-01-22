@@ -7,7 +7,7 @@ from unittest.mock import patch
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.boost import constants as boost_constants
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.factories import ProductFactory

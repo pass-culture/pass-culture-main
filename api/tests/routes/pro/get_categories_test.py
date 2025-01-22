@@ -2,25 +2,25 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.categories import categories
-from pcapi.core.categories.subcategories_v2 import ABO_BIBLIOTHEQUE
-from pcapi.core.categories.subcategories_v2 import CINE_PLEIN_AIR
+from pcapi.core.categories import pro_categories
+from pcapi.core.categories.subcategories import ABO_BIBLIOTHEQUE
+from pcapi.core.categories.subcategories import CINE_PLEIN_AIR
 from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 
 
 @patch(
-    "pcapi.core.categories.subcategories_v2.ALL_SUBCATEGORIES",
+    "pcapi.core.categories.subcategories.ALL_SUBCATEGORIES",
     (ABO_BIBLIOTHEQUE, CINE_PLEIN_AIR),
 )
 @patch(
-    "pcapi.core.categories.categories.ALL_CATEGORIES",
+    "pcapi.core.categories.pro_categories.ALL_CATEGORIES",
     (
-        categories.Category(
+        pro_categories.Category(
             id="LIVRE",
             pro_label="Livre",
         ),
-        categories.Category(
+        pro_categories.Category(
             id="CINEMA",
             pro_label="Cinéma",
         ),

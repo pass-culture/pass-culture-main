@@ -6,7 +6,7 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models

@@ -25,7 +25,7 @@ from pcapi.core import search
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as booking_repository
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import subcategories
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
@@ -76,10 +76,10 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
         "column": offers_models.Offer.subcategoryId,
         "facet": "offer.subcategoryId",
         "special": lambda l: [
-            subcategory.id for subcategory in subcategories_v2.ALL_SUBCATEGORIES if subcategory.category.id in l
+            subcategory.id for subcategory in subcategories.ALL_SUBCATEGORIES if subcategory.category.id in l
         ],
         "algolia_special": lambda l: [
-            subcategory.id for subcategory in subcategories_v2.ALL_SUBCATEGORIES if subcategory.category.id in l
+            subcategory.id for subcategory in subcategories.ALL_SUBCATEGORIES if subcategory.category.id in l
         ],
     },
     "CREATION_DATE": {

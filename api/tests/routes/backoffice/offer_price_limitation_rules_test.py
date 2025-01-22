@@ -3,7 +3,7 @@ from decimal import Decimal
 from flask import url_for
 import pytest
 
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import subcategories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
@@ -23,13 +23,13 @@ pytestmark = [
 @pytest.fixture(name="offer_price_limitation_rules")
 def offer_price_limitation_rules_fixture():
     rule1 = offers_factories.OfferPriceLimitationRuleFactory(
-        subcategoryId=subcategories_v2.ACHAT_INSTRUMENT.id, rate=Decimal("0.3")
+        subcategoryId=subcategories.ACHAT_INSTRUMENT.id, rate=Decimal("0.3")
     )
     rule2 = offers_factories.OfferPriceLimitationRuleFactory(
-        subcategoryId=subcategories_v2.LIVRE_NUMERIQUE.id, rate=Decimal("0.10")
+        subcategoryId=subcategories.LIVRE_NUMERIQUE.id, rate=Decimal("0.10")
     )
     rule3 = offers_factories.OfferPriceLimitationRuleFactory(
-        subcategoryId=subcategories_v2.LIVRE_PAPIER.id, rate=Decimal("0.15")
+        subcategoryId=subcategories.LIVRE_PAPIER.id, rate=Decimal("0.15")
     )
     return rule1, rule2, rule3
 
@@ -52,18 +52,18 @@ class ListRulesTest(GetEndpointHelper):
         rows = sorted(rows, key=lambda row: row["Sous-catégorie"])
 
         assert rows[0]["ID"] == str(offer_price_limitation_rules[0].id)
-        assert rows[0]["Catégorie"] == subcategories_v2.ACHAT_INSTRUMENT.category.pro_label
-        assert rows[0]["Sous-catégorie"] == subcategories_v2.ACHAT_INSTRUMENT.pro_label
+        assert rows[0]["Catégorie"] == subcategories.ACHAT_INSTRUMENT.category.pro_label
+        assert rows[0]["Sous-catégorie"] == subcategories.ACHAT_INSTRUMENT.pro_label
         assert rows[0]["Limite de modification de prix"] == "± 30,00 %"
 
         assert rows[1]["ID"] == str(offer_price_limitation_rules[1].id)
-        assert rows[1]["Catégorie"] == subcategories_v2.LIVRE_NUMERIQUE.category.pro_label
-        assert rows[1]["Sous-catégorie"] == subcategories_v2.LIVRE_NUMERIQUE.pro_label
+        assert rows[1]["Catégorie"] == subcategories.LIVRE_NUMERIQUE.category.pro_label
+        assert rows[1]["Sous-catégorie"] == subcategories.LIVRE_NUMERIQUE.pro_label
         assert rows[1]["Limite de modification de prix"] == "± 10,00 %"
 
         assert rows[2]["ID"] == str(offer_price_limitation_rules[2].id)
-        assert rows[2]["Catégorie"] == subcategories_v2.LIVRE_PAPIER.category.pro_label
-        assert rows[2]["Sous-catégorie"] == subcategories_v2.LIVRE_PAPIER.pro_label
+        assert rows[2]["Catégorie"] == subcategories.LIVRE_PAPIER.category.pro_label
+        assert rows[2]["Sous-catégorie"] == subcategories.LIVRE_PAPIER.pro_label
         assert rows[2]["Limite de modification de prix"] == "± 15,00 %"
 
     def test_search_rule_by_category(self, authenticated_client, offer_price_limitation_rules):
@@ -108,7 +108,7 @@ class CreateOfferPriceLimitationRuleTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form={
-                "subcategory": subcategories_v2.BON_ACHAT_INSTRUMENT.id,
+                "subcategory": subcategories.BON_ACHAT_INSTRUMENT.id,
                 "rate": "20,00",
             },
         )
@@ -119,7 +119,7 @@ class CreateOfferPriceLimitationRuleTest(PostEndpointHelper):
         )
 
         rule = offers_models.OfferPriceLimitationRule.query.one()
-        assert rule.subcategoryId == subcategories_v2.BON_ACHAT_INSTRUMENT.id
+        assert rule.subcategoryId == subcategories.BON_ACHAT_INSTRUMENT.id
         assert rule.rate == Decimal("0.20")
 
     def test_create_already_existing_offer_price_limitation_rule(
@@ -128,7 +128,7 @@ class CreateOfferPriceLimitationRuleTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form={
-                "subcategory": subcategories_v2.ACHAT_INSTRUMENT.id,
+                "subcategory": subcategories.ACHAT_INSTRUMENT.id,
                 "rate": "20,00",
             },
         )
@@ -204,7 +204,7 @@ class EditOfferPriceLimitationRuleTest(PostEndpointHelper):
         )
 
         rule = offers_models.OfferPriceLimitationRule.query.filter_by(id=rule.id).one_or_none()
-        assert rule.subcategoryId == subcategories_v2.ACHAT_INSTRUMENT.id
+        assert rule.subcategoryId == subcategories.ACHAT_INSTRUMENT.id
         assert rule.rate == Decimal("0.50")
 
     def test_edit_offer_price_limitation_rule_with_big_rate(
@@ -218,5 +218,5 @@ class EditOfferPriceLimitationRuleTest(PostEndpointHelper):
         assert response.status_code == 303
 
         rule = offers_models.OfferPriceLimitationRule.query.filter_by(id=rule.id).one_or_none()
-        assert rule.subcategoryId == subcategories_v2.ACHAT_INSTRUMENT.id
+        assert rule.subcategoryId == subcategories.ACHAT_INSTRUMENT.id
         assert rule.rate == Decimal("0.30")

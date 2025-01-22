@@ -4,7 +4,7 @@ from datetime import datetime
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 import pcapi.core.external_bookings.factories as external_bookings_factories
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_beneficiary_to_pro import (

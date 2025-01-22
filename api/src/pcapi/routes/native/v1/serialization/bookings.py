@@ -5,7 +5,7 @@ from pydantic.v1.class_validators import validator
 from pydantic.v1.utils import GetterDict
 
 from pcapi.core.bookings import models as bookings_models
-from pcapi.core.categories.subcategories_v2 import SubcategoryIdEnum
+from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.geography.models import Address
 from pcapi.core.offerers.models import OffererAddress
 from pcapi.core.offerers.models import Venue

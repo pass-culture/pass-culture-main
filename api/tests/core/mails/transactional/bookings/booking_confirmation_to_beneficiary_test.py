@@ -7,7 +7,7 @@ import time_machine
 
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.factories import UsedBookingFactory
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 import pcapi.core.criteria.factories as criteria_factories
 from pcapi.core.mails import models
 import pcapi.core.mails.testing as mails_testing

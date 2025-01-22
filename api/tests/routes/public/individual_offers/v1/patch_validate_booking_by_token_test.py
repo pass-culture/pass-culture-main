@@ -4,7 +4,7 @@ from dateutil.relativedelta import relativedelta
 import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import subcategories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.utils import date as date_utils
 
@@ -23,7 +23,7 @@ class ValidateBookingByTokenTest(PublicAPIVenueEndpointHelper):
     def setup_base_resource(self, venue=None):
         venue = venue or self.setup_venue()
         offer = offers_factories.ThingOfferFactory(
-            subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
             venue=venue,
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",

@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from pydantic.v1.class_validators import validator
 
-from pcapi.core.categories.subcategories_v2 import SubcategoryIdEnum
+from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.offers.api import get_expense_domains
 from pcapi.core.offers.models import Offer
 from pcapi.core.users.models import ExpenseDomain

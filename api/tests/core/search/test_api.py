@@ -7,7 +7,7 @@ import pytest
 from pcapi.core import search
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import subcategories
 from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import models as offers_models
@@ -96,9 +96,7 @@ def test_index_offers_of_venues_in_queue(app):
 
     # `index_offers_of_venues_in_queue` pops 1 venue from the queue
     # (REDIS_VENUE_IDS_FOR_OFFERS_CHUNK_SIZE).
-    print(app.redis_client.smembers(queue))
     search.index_offers_of_venues_in_queue()
-    print(app.redis_client.smembers(queue))
     assert app.redis_client.scard(queue) == 1
 
     search.index_offers_of_venues_in_queue()
@@ -415,7 +413,7 @@ def test_limit_products_to_reindex_depending_on_algolia_limit(_mock_eans, _mock_
 
 
 def test_booking_count_for_movies():
-    product = offers_factories.ProductFactory(subcategoryId=subcategories_v2.SEANCE_CINE.id)
+    product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id)
     offer = offers_factories.OfferFactory(product=product)
     bookings_factories.BookingFactory(
         stock__offer=offer,
