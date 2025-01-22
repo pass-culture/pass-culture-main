@@ -1,8 +1,9 @@
 /* istanbul ignore file */
-import { Outlet, RouteObject, useLocation } from 'react-router-dom'
+import { Outlet, useLocation, Navigate } from 'react-router-dom'
 
 import { Layout } from 'app/App/layout/Layout'
 import { IndividualOfferContextProvider } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { useHasAccessToDidacticOnboarding } from 'commons/hooks/useHasAccessToDidacticOnboarding'
 
 import styles from './IndividualOfferWizard.module.scss'
 
@@ -10,6 +11,11 @@ export const IndividualOfferWizard = () => {
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
   const isConfirmationPage = pathname.endsWith('confirmation')
+  const isDidacticOnboardingEnabled = useHasAccessToDidacticOnboarding()
+
+  if (isOnboarding && !isDidacticOnboardingEnabled) {
+    return <Navigate to="/accueil" />
+  }
 
   return (
     <Layout
@@ -32,4 +38,4 @@ export const IndividualOfferWizard = () => {
 
 // Lazy-loaded by react-router-dom
 // ts-unused-exports:disable-next-line
-export const Component: RouteObject['Component'] = IndividualOfferWizard
+export const Component = IndividualOfferWizard

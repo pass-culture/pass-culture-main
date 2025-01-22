@@ -11,6 +11,7 @@ import {
   defaultGetOffererVenueResponseModel,
   listOffersOfferFactory,
 } from 'commons/utils/factories/individualApiFactories'
+import * as useHasAccessToDidacticOnboarding from 'commons/hooks/useHasAccessToDidacticOnboarding'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
@@ -33,7 +34,7 @@ vi.mock('apiClient/api', () => ({
     getOfferer: vi.fn(),
   },
 }))
-
+vi.mock('commons/hooks/useHasAccessToDidacticOnboarding')
 describe('<OnboardingOfferIndividual />', () => {
   beforeEach(() => {
     vi.spyOn(api, 'listOffers').mockResolvedValue([])
@@ -44,6 +45,10 @@ describe('<OnboardingOfferIndividual />', () => {
         { ...defaultGetOffererVenueResponseModel, isPermanent: true, id: 1337 },
       ],
     })
+    vi.spyOn(
+      useHasAccessToDidacticOnboarding,
+      'useHasAccessToDidacticOnboarding'
+    ).mockResolvedValue(true)
   })
 
   it('should propose how to create the 1st offer', async () => {

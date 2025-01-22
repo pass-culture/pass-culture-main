@@ -1,8 +1,14 @@
 import cn from 'classnames'
+import { Navigate } from 'react-router'
+import { useLocation } from 'react-router-dom'
 
-import { GetIndividualOfferWithAddressResponseModel, OfferStatus } from 'apiClient/v1'
+import {
+  GetIndividualOfferWithAddressResponseModel,
+  OfferStatus,
+} from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { useHasAccessToDidacticOnboarding } from 'commons/hooks/useHasAccessToDidacticOnboarding'
 import { formatDateTimeParts, isDateValid } from 'commons/utils/date'
 import { storageAvailable } from 'commons/utils/storageAvailable'
 import { HeadlineOfferTag } from 'components/HeadlineOfferTag/HeadlineOfferTag'
@@ -32,6 +38,10 @@ export const IndivualOfferLayout = ({
   offer,
   mode,
 }: IndivualOfferLayoutProps) => {
+  const { pathname } = useLocation()
+  const isOnboarding = pathname.indexOf('onboarding') !== -1
+  const isDidacticOnboardingEnabled = useHasAccessToDidacticOnboarding()
+
   const offerHeadlineEnabled = useActiveFeature('WIP_HEADLINE_OFFER')
   const { date: publicationDate, time: publicationTime } = formatDateTimeParts(
     offer?.publicationDate
@@ -46,6 +56,10 @@ export const IndivualOfferLayout = ({
         `${LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED}_${offer?.id}`
       )) ||
     mode !== OFFER_WIZARD_MODE.CREATION
+
+  if (isOnboarding && !isDidacticOnboardingEnabled) {
+    return <Navigate to="/accueil" />
+  }
 
   return (
     <>
@@ -64,7 +78,11 @@ export const IndivualOfferLayout = ({
         {offer && (
           <p className={styles['offer-title']}>
             {offer.name}
-            {offerHeadlineEnabled && offer.isHeadlineOffer && <HeadlineOfferTag className={styles['offer-title-headline-tag']} />}
+            {offerHeadlineEnabled && offer.isHeadlineOffer && (
+              <HeadlineOfferTag
+                className={styles['offer-title-headline-tag']}
+              />
+            )}
           </p>
         )}
 

@@ -1,8 +1,11 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { addDays } from 'date-fns'
+import { Route } from 'react-router'
+import { Routes } from 'react-router-dom'
 
 import { OfferStatus } from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import * as useHasAccessToDidacticOnboarding from 'commons/hooks/useHasAccessToDidacticOnboarding'
 import { getIndividualOfferFactory } from 'commons/utils/factories/individualApiFactories'
 import {
   RenderWithProvidersOptions,
@@ -16,18 +19,42 @@ import {
 
 const renderIndivualOfferLayout = (
   props: Partial<IndivualOfferLayoutProps>,
-  options?: RenderWithProvidersOptions
+  options: RenderWithProvidersOptions = {
+    initialRouterEntries: ['/offre/creation'],
+  }
 ) => {
   renderWithProviders(
-    <IndivualOfferLayout
-      title="layout title"
-      withStepper
-      offer={getIndividualOfferFactory()}
-      mode={OFFER_WIZARD_MODE.EDITION}
-      {...props}
-    >
-      <div>Template child</div>
-    </IndivualOfferLayout>,
+    <Routes>
+      <Route
+        path="/offre/creation"
+        element={
+          <IndivualOfferLayout
+            title="layout title"
+            withStepper
+            offer={getIndividualOfferFactory()}
+            mode={OFFER_WIZARD_MODE.EDITION}
+            {...props}
+          >
+            <div>Template child</div>
+          </IndivualOfferLayout>
+        }
+      />
+      <Route
+        path="/onboarding/offre/creation"
+        element={
+          <IndivualOfferLayout
+            title="layout title"
+            withStepper
+            offer={getIndividualOfferFactory()}
+            mode={OFFER_WIZARD_MODE.EDITION}
+            {...props}
+          >
+            <div>Template child</div>
+          </IndivualOfferLayout>
+        }
+      />
+      <Route path="/accueil" element={<div>Accueil</div>} />
+    </Routes>,
     options
   )
 }
@@ -205,14 +232,54 @@ describe('IndivualOfferLayout', () => {
       isHeadlineOffer: true,
     })
 
-    renderIndivualOfferLayout({
-      offer,
-    }, {
-      features: [
-        'WIP_HEADLINE_OFFER',
-      ]
-    })
+    renderIndivualOfferLayout(
+      {
+        offer,
+      },
+      {
+        initialRouterEntries: ['/offre/creation'],
+        features: ['WIP_HEADLINE_OFFER'],
+      }
+    )
 
     expect(screen.getByText('Offre à la une')).toBeInTheDocument()
+  })
+
+  describe('onboarding', () => {
+    const options = { initialRouterEntries: ['/onboarding/offre/creation'] }
+
+    it("Should redirect to homepage if the user can't access it and is on onboarding url", async () => {
+      vi.spyOn(
+        useHasAccessToDidacticOnboarding,
+        'useHasAccessToDidacticOnboarding'
+      ).mockReturnValue(false)
+
+      renderIndivualOfferLayout(
+        {
+          offer: getIndividualOfferFactory(),
+        },
+        options
+      )
+      await waitFor(() => {
+        expect(screen.getByText('Accueil')).toBeInTheDocument()
+      })
+    })
+
+    it('Should display the page if the user can access onboarding and is on onboarding url', async () => {
+      vi.spyOn(
+        useHasAccessToDidacticOnboarding,
+        'useHasAccessToDidacticOnboarding'
+      ).mockReturnValue(true)
+
+      renderIndivualOfferLayout(
+        {
+          offer: getIndividualOfferFactory(),
+        },
+        options
+      )
+      await waitFor(() => {
+        expect(screen.getByText('Template child')).toBeInTheDocument()
+      })
+    })
   })
 })
