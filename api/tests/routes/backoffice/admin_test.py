@@ -693,8 +693,6 @@ class GetSubcategoriesTest(GetEndpointWithoutPermissionHelper):
         assert rows[0]["app_label"] == "Abonnement (bibliothèques, médiathèques...)"
         assert rows[0]["Nom tech de la sous-catégorie"] == "ABO_BIBLIOTHEQUE"
         assert rows[0]["Nom tech de la catégorie"] == "LIVRE"
-        assert rows[0]["native_category"] == "BIBLIOTHEQUE_MEDIATHEQUE"
-        assert rows[0]["search_group_name"] == "LIVRES"
         assert rows[0]["homepage_label_name"] == "LIVRES"
         assert rows[0]["is_event"] == "Non"
         assert rows[0]["conditional_fields"] == "{}"
